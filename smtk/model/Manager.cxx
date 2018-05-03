@@ -2812,7 +2812,7 @@ bool Manager::disassociateAttribute(
   if ((didRemove = ref->second.disassociateAttribute(attribId)))
   {
     // If the AttributeAssignments instance is now empty, remove it.
-    if (ref->second.attributes().empty())
+    if (ref->second.attributeIds().empty())
     {
       this->m_attributeAssignments->erase(ref);
     }
@@ -2847,11 +2847,11 @@ bool Manager::insertEntityAssociations(
 {
   bool didFind = false;
   auto eait = this->m_attributeAssignments->find(modelEntity.entity());
-  if (eait == this->m_attributeAssignments->end() || eait->second.attributes().empty())
+  if (eait == this->m_attributeAssignments->end() || eait->second.attributeIds().empty())
   {
     return didFind;
   }
-  for (auto attribId : eait->second.attributes())
+  for (auto attribId : eait->second.attributeIds())
   {
     for (auto attribSys : this->m_attributeCollections)
     {

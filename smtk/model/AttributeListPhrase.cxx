@@ -29,7 +29,7 @@ AttributeListPhrase::AttributeListPhrase()
   * a \a subset of attributes from the given entity.
   *
   * Only attribute IDs in \a subset will be displayed.
-  * Note that \a subset must not contain any attribute IDs not present in entity.attributes().
+  * Note that \a subset must not contain any attribute IDs not present in entity.attributeIds().
   */
 AttributeListPhrase::Ptr AttributeListPhrase::setup(
   const EntityRef& entity, const smtk::common::UUIDs& subset, DescriptivePhrasePtr parnt)
@@ -44,7 +44,7 @@ std::string AttributeListPhrase::title()
 {
   std::ostringstream message;
   DescriptivePhrases::size_type sz =
-    this->m_attributes.empty() ? this->m_entity.attributes().size() : this->m_attributes.size();
+    this->m_attributes.empty() ? this->m_entity.attributeIds().size() : this->m_attributes.size();
   message << sz << " " << (sz == 1 ? "attribute" : "attributes");
   return message.str();
 }

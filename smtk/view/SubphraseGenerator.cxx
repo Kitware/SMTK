@@ -326,7 +326,7 @@ void SubphraseGenerator::attributesOfModelEntity(
 {
   if (!m_skipAttributes && ent.hasAttributes())
   {
-    result.push_back(AttributeListPhrase::create()->setup(ent, ent.attributes(), src));
+    result.push_back(AttributeListPhrase::create()->setup(ent, ent.attributeIds(), src));
   }
 }
 

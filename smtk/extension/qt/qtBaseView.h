@@ -142,6 +142,9 @@ protected:
   // Set the information to be displayed in the ViewInfoDialog
   virtual void setInfoToBeDisplayed();
 
+  void invokeEntitiesSelected(
+    const smtk::model::EntityRefs& selEnts, const std::string& selectionSource);
+
   QWidget* Widget;
   QScrollArea* m_ScrollArea;
   bool m_isTopLevel;

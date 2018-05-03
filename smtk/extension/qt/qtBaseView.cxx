@@ -450,3 +450,9 @@ void qtBaseView::setInfoToBeDisplayed()
 {
   this->m_infoDialog->displayInfo(this->getObject());
 }
+
+void qtBaseView::invokeEntitiesSelected(
+  const smtk::model::EntityRefs& selEnts, const std::string& selectionSource)
+{
+  this->uiManager()->invokeEntitiesSelected(selEnts, selectionSource);
+}

@@ -71,7 +71,7 @@ class TestExodusSession(smtk.testing.TestCase):
                         'Not all cell names recognized.')
 
         someCell = allCells[0]
-        self.assertEqual(someCell.attributes(), set([]),
+        self.assertEqual(someCell.attributeIds(), set([]),
                          'Cell should not have any attribute associations.')
         asys = smtk.attribute.Collection.create()
         adef = asys.createDefinition('testDef')
@@ -82,7 +82,7 @@ class TestExodusSession(smtk.testing.TestCase):
 
         self.assertTrue(attr.associateEntity(someCell),
                         'Could not associate cell to attribute')
-        self.assertEqual(someCell.attributes(), set([attr.id()]),
+        self.assertEqual(someCell.attributeIds(), set([attr.id()]),
                          'Cell should have the assigned attribute.')
 
         # Verify that no cells which are not in the list above are present.
