@@ -39,6 +39,7 @@ namespace XMLAttribute
 const std::string CORE_TAG = "NuclearCore";
 const std::string MATERIALS_TAG = "Materials";
 const std::string MATERIAL_TAG = "Material";
+const std::string DESCRIPTION_TAG = "Description";
 const std::string NAME_TAG = "Name";
 const std::string LABEL_TAG = "Label";
 const std::string COLOR_TAG = "Color";
