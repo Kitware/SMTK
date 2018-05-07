@@ -372,7 +372,6 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
   }
 
   smtk::model::AuxiliaryGeometry aux(entity);
-  std::string url;
   if (aux.isValid())
   {
     bool bShow = true;
@@ -384,11 +383,16 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     }
     if (bShow)
     {
-      auto ext = vtkAuxiliaryGeometryExtension::create();
+      bool canHandle(false);
       std::vector<double> bbox;
-      if (ext->canHandleAuxiliaryGeometry(aux, bbox))
+      smtk::common::Extension::visit<vtkAuxiliaryGeometryExtension::Ptr>([&canHandle, &bbox, &aux](
+        const std::string&, vtkAuxiliaryGeometryExtension::Ptr vtkAuxPtr) {
+        canHandle |= vtkAuxPtr->canHandleAuxiliaryGeometry(aux, bbox);
+        return canHandle ? std::make_pair(true, true) : std::make_pair(false, false);
+      });
+      if (canHandle)
       {
-        auto cgeom = ext->fetchCachedGeometry(aux);
+        auto cgeom = vtkAuxiliaryGeometryExtension::fetchCachedGeometry(aux);
         // Only create the color array if there is a valid default:
         vtkPolyData* pd = vtkPolyData::SafeDownCast(cgeom);
         if (this->DefaultColor[3] >= 0. && pd)

@@ -32,7 +32,7 @@ public:
   /**\brief Implement the extension's API.
     *
     * This fetches (and caches) the auxiliary geometry for a given
-    * aux. geom. entitity, returning true if the entity had a
+    * aux. geom. entity, returning true if the entity had a
     * valid description (i.e., "url" or "shape" property with
     * additional properties as needed to fully specify a VTK data
     * object).
@@ -52,6 +52,11 @@ public:
     */
   bool canHandleAuxiliaryGeometry(
     smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut) override;
+
+  /// This can be used by other smtk::model::AuxiliaryGeometryExtension
+  /// subclasses to provide VTK representations to the vtkModelMultiBlockSource.
+  static void addCacheGeometry(const vtkSmartPointer<vtkDataObject> dataset,
+    const smtk::model::AuxiliaryGeometry& entity, std::time_t& mtime, bool trimCache);
 
   /// Return VTK data created by a previous call to canHandleAuxiliaryGeometry.
   static vtkSmartPointer<vtkDataObject> fetchCachedGeometry(
@@ -95,14 +100,9 @@ protected:
   /// Internal method called by generateRepresentation when \a src has children.
   static vtkSmartPointer<vtkDataObject> createHierarchy(const smtk::model::AuxiliaryGeometry& src,
     const smtk::model::AuxiliaryGeometries& children, bool genNormals);
-  static vtkSmartPointer<vtkDataObject> generateRGGRepresentation(
-    const smtk::model::AuxiliaryGeometry& pin, bool genNormals);
-  // Helper function for generateRGGRepresentation
-  static vtkSmartPointer<vtkDataObject> generateRGGPinRepresentation(
-    const smtk::model::AuxiliaryGeometry& pin, bool genNormals);
-  // Helper function for generateRGGRepresentation
-  static vtkSmartPointer<vtkDataObject> generateRGGDuctRepresentation(
-    const smtk::model::AuxiliaryGeometry& duct, bool genNormals);
+
+  static bool updateBoundsFromDataSet(smtk::model::AuxiliaryGeometry& aux,
+    std::vector<double>& bboxOut, vtkSmartPointer<vtkDataObject> dataobj);
 
   class ClassInternal;
   static ClassInternal* s_p;

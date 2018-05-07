@@ -22,6 +22,7 @@ set (srcs
 
 set (non_ui_srcs
   smtkRGGViewHelper.cxx
+  rggAuxiliaryGeometryExtension.cxx
 )
 
 set (hdrs

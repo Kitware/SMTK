@@ -124,20 +124,27 @@ smtk::model::OperatorResult AddAuxiliaryGeometry::operateInternal()
   std::vector<double> bbox;
   if (!urlStr.empty())
   {
-    AuxiliaryGeometryExtension::Ptr ext;
+    std::vector<AuxiliaryGeometryExtension::Ptr> exts;
     smtk::common::Extension::visit<AuxiliaryGeometryExtension::Ptr>(
-      [&ext](const std::string&, AuxiliaryGeometryExtension::Ptr obj) {
+      [&exts](const std::string&, AuxiliaryGeometryExtension::Ptr obj) {
         if (obj)
         {
-          ext = obj;
-          return std::make_pair(true, true);
+          exts.push_back(obj);
+          return std::make_pair(true, false);
         }
         return std::make_pair(false, false);
       });
-    if (ext)
+    if (exts.size() > 0)
     {
-      isURLValid = ext->canHandleAuxiliaryGeometry(auxGeom, bbox);
-      haveBBox = true;
+      for (auto ext : exts)
+      {
+        isURLValid = ext->canHandleAuxiliaryGeometry(auxGeom, bbox);
+        if (isURLValid)
+        {
+          haveBBox = true;
+          break;
+        }
+      }
     }
     else
     { // We can at least test whether the file exists.
