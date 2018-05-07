@@ -105,6 +105,7 @@ target_link_libraries(smtkRGGSessionPlugin
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
     vtkSMTKWidgetsExtCS
+    vtkSMTKSourceExt
 )
 if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_bridge_rgg_plugin
