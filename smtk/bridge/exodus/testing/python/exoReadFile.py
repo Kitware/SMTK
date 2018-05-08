@@ -45,16 +45,16 @@ class TestExodusSession(smtk.testing.TestCase):
         subgroups = self.model.groups()
         numGroups = len(subgroups)
         self.assertEqual(
-            numGroups, 3, 'Expected 3 groups, found %d' % numGroups)
+            numGroups, 0, 'Expected 0 groups, found %d' % numGroups)
 
-        numGroupMembersExpected = [1, 7, 3]
-        allCells = []
-        for i in range(len(numGroupMembersExpected)):
-            numMembers = len(subgroups[i].members())
-            self.assertEqual(
-                numGroupMembersExpected[i], numMembers,
-                'Expected {e} groups, found {a}'.format(e=numGroupMembersExpected[i], a=numMembers))
-            allCells += subgroups[i].members()
+        expectedCellsOfDim = [3, 0, 7, 1]
+        allCells = self.model.cells()
+        numCellsOfDim = [0, 0, 0, 0]
+        for cell in allCells:
+            numCellsOfDim[cell.dimension()] += 1
+        for dim in range(len(expectedCellsOfDim)):
+            self.assertEqual(expectedCellsOfDim, numCellsOfDim,
+                             'Expected {e} cells of dimension {d}, found {f}'.format(d=dim, e=expectedCellsOfDim[dim], f=numCellsOfDim[dim]))
 
         # Verify that the cell names match those from the Exodus file.
         nameset = {

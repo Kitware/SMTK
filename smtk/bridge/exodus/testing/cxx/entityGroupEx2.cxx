@@ -191,6 +191,6 @@ int main(int argc, char* argv[])
     std::cout << "  " << it->name() << "\n";
   }
   std::cout << std::endl;
-  test(groups.size() == 3, "Expecting 3 groups.");
+  test(groups.size() == 0, "Expecting 0 groups.");
   return 0;
 }
