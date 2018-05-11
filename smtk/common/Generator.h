@@ -15,6 +15,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <set>
 
 namespace smtk
@@ -127,20 +128,31 @@ public:
   Output operator()(const Input&) override;
 
 protected:
-  static std::set<GeneratorBase<Input, Output>*>& generators();
+  /// Even though the set of generators is static, we cannot guarantee its
+  /// existence across compilation units due to our plugin-based architecture.
+  /// We therefore use a weak pointer to guard ourselves against the unlikely
+  /// event of a generator implementation outliving its base generator class.
+  static std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > generators();
 };
 
 template <class Input, class Output>
-std::set<GeneratorBase<Input, Output>*>& Generator<Input, Output>::generators()
+std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > Generator<Input, Output>::generators()
 {
-  static std::set<GeneratorBase<Input, Output>*> generators;
+  static std::shared_ptr<std::set<GeneratorBase<Input, Output>*> > generators =
+    std::make_shared<std::set<GeneratorBase<Input, Output>*> >(
+      std::set<GeneratorBase<Input, Output>*>());
   return generators;
 }
 
 template <class Input, class Output>
 bool Generator<Input, Output>::valid(const Input& input) const
 {
-  for (auto gen : Generator<Input, Output>::generators())
+  auto gens = Generator<Input, Output>::generators().lock();
+  if (gens == nullptr)
+  {
+    return false;
+  }
+  for (auto gen : *gens)
   {
     if (gen->valid(input))
     {
@@ -154,7 +166,12 @@ template <class Input, class Output>
 Output Generator<Input, Output>::operator()(const Input& input)
 {
   Output output;
-  for (auto gen : Generator<Input, Output>::generators())
+  auto gens = Generator<Input, Output>::generators().lock();
+  if (gens == nullptr)
+  {
+    return output;
+  }
+  for (auto gen : *gens)
   {
     if (!gen->valid(input))
     {
@@ -183,6 +200,35 @@ Output Generator<Input, Output>::operator()(const Input& input)
 template <class Input, class Output, class Self>
 class GeneratorType : public GeneratorBase<Input, Output>
 {
+  /// The Registry is needed to scope the lifetime of the generator type to the
+  /// library that defines it. This prevents the base generator from attempting
+  /// to call an instance of this generator type after the library defining it
+  /// has been removed.
+  class Registry
+  {
+    friend GeneratorType;
+
+    Registry(std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > generators)
+      : m_generators(generators)
+      , m_self(new Self())
+    {
+      if (auto gens = m_generators.lock())
+      {
+        gens->insert(m_self);
+      }
+    }
+    ~Registry()
+    {
+      if (auto gens = m_generators.lock())
+      {
+        gens->erase(m_self);
+      }
+      delete m_self;
+    }
+    std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > m_generators;
+    Self* m_self;
+  };
+
   friend Self;
 
 public:
@@ -199,7 +245,7 @@ bool GeneratorType<Input, Output, Self>::registerClass()
   static bool registered = false;
   if (!registered)
   {
-    Generator<Input, Output>::generators().insert(new Self());
+    static Registry registry(Generator<Input, Output>::generators());
     registered = true;
   }
   return registered;
