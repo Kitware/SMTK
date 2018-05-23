@@ -379,7 +379,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
         paraview)
       set(paraview_PYTHONPATH
         "${PARAVIEW_PYTHONPATH}"
-        "${PARAVIEW_PYTHONPATH}/vtk")
+        "${PARAVIEW_PYTHONPATH}/vtkmodules")
       set(paraview_libpath
         "${PARAVIEW_RUNTIME_DIRS}")
     elseif (SMTK_ENABLE_VTK_SUPPORT)
