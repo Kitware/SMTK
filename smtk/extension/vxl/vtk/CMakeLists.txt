@@ -7,6 +7,8 @@ set(srcs
 
 set(headers
   vtkTerrainExtractionFilter.h
+  rtvl_level_refine.h
+  rtvl_level_refine.hxx
 )
 
 set(${vtk-module}_NO_HeaderTest 1)
@@ -53,5 +55,6 @@ smtk_public_headers(${headers})
 
 if (SMTK_ENABLE_TESTING)
   # ... and make header compilation tests link properly:
+  target_include_directories(TestBuild_smtk_extension_vxl_vtk PRIVATE ${VXL_RPL_INCLUDE_DIR})
   target_link_libraries(TestBuild_smtk_extension_vxl_vtk LINK_PRIVATE vtkCommonCore)
 endif()
