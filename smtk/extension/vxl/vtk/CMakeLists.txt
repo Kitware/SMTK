@@ -18,7 +18,6 @@ target_include_directories(${vtk-module}
     $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
     $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../../thirdparty/rtvl/
 
     ${VXL_RPL_INCLUDE_DIR}
     ${VXL_VCL_INCLUDE_DIR}
