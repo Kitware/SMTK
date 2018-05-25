@@ -33,16 +33,15 @@
 #include "vtkTransform.h"
 
 // refine
-#include <rgtl/rgtl_serialize_ostream.hxx>
-#include <rtvl/rtvl_refine.hxx>
-#include <rtvl/rtvl_tokens.hxx>
+#include "rtvl_level_refine.hxx"
+#include <rgtl/rgtl_serialize_ostream.h>
 
 #include <vcl_fstream.h>
 #include <vcl_memory.h>
 #include <vcl_string.h>
 
 // extract
-#include <rgtl/rgtl_serialize_istream.hxx>
+#include <rgtl/rgtl_serialize_istream.h>
 #include <rtvl/rtvl_tensor.hxx>
 #include <rtvl/rtvl_tensor_d.hxx>
 #include <rtvl/rtvl_vote.hxx>
@@ -172,7 +171,7 @@ public:
 
   vcl_vector<rtvl_tokens<3> > CachedTokens;
 
-  rtvl_refine<3>* Refine;
+  rtvl_level_refine<3>* Refine;
   rtvl_tokens<3> Tokens;
   unsigned int LevelIndex;
   typedef vcl_multimap<double, int> SegmentVotersType;
@@ -453,7 +452,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
     {
       delete this->Internal->Refine;
     }
-    this->Internal->Refine = new rtvl_refine<3>(n, &points[0], this->InputBounds);
+    this->Internal->Refine = new rtvl_level_refine<3>(n, &points[0], this->InputBounds);
     this->Internal->Refine->set_mask_size(this->MaskSize);
     if (this->ComputeInitialScale)
     {
@@ -1169,7 +1168,7 @@ bool vtkTerrainExtractionFilter::TerrainExtract(
   // want X and Y bounds in internal structure
   memcpy(this->Internal->InputBounds, this->InputBounds, sizeof(double) * 4);
   this->Internal->MinExtractLevel = this->MinExtractLevel;
-  // this is the value it is initialized to in rtvl_refine
+  // this is the value it is initialized to in rtvl_level_refine
   // the remainder of "Internal" InputBounds set from Block's bounds
   this->Internal->InputBounds[4] = this->InputBounds[4];
   this->Internal->InputBounds[5] = this->InputBounds[5];
