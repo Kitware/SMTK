@@ -33,6 +33,8 @@
 #include <vcl_string.h>
 #include <vcl_vector.h>
 
+#include <functional>
+
 template <typename T>
 using vcl_auto_ptr = std::auto_ptr<T>;
 
