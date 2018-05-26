@@ -1,3 +1,15 @@
+//=============================================================================
+//
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//
+//=============================================================================
+
 /* Copyright 2007-2009 Brad King, Chuck Stewart
    Distributed under the Boost Software License, Version 1.0.
    (See accompanying file rtvl_license_1_0.txt or copy at
@@ -32,6 +44,8 @@
 #include <vcl_memory.h>
 #include <vcl_string.h>
 #include <vcl_vector.h>
+
+#include <functional>
 
 template <typename T>
 using vcl_auto_ptr = std::auto_ptr<T>;
