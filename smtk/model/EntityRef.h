@@ -234,7 +234,9 @@ public:
     return removedAny;
   }
 
-  smtk::common::UUIDs attributes() const;
+  smtk::common::UUIDs attributeIds() const;
+  /// Return a list of attributes on the entity based on an attribute definition
+  smtk::attribute::Attributes attributes(smtk::attribute::DefinitionPtr def) const;
 
   // For T = {IntegerData, FloatData, StringData}:
   template <typename T>

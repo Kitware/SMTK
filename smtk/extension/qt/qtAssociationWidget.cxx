@@ -376,7 +376,7 @@ QList<smtk::attribute::DefinitionPtr> qtAssociationWidget::processDefUniqueness(
 {
   QList<smtk::attribute::DefinitionPtr> uniqueDefs;
 
-  smtk::common::UUIDs associatedAtts = theEntity.attributes();
+  smtk::common::UUIDs associatedAtts = theEntity.attributeIds();
   if (associatedAtts.size() == 0)
   {
     return uniqueDefs;
@@ -545,7 +545,7 @@ void qtAssociationWidget::addDomainListItem(
   QComboBox* combo = new QComboBox(this);
   combo->addItems(attNames);
   int idx = -1;
-  smtk::common::UUIDs associatedAtts = domainEnt.attributes();
+  smtk::common::UUIDs associatedAtts = domainEnt.attributeIds();
   if (associatedAtts.size() > 0)
   {
     smtk::attribute::AttributePtr first_att =
