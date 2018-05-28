@@ -15,6 +15,7 @@
 
 #include "smtk/model/Manager.h"
 
+#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -28,14 +29,12 @@ class Session;
 typedef smtk::shared_ptr<Session> SessionPtr;
 typedef smtk::shared_ptr<const Session> ConstSessionPtr;
 
-class SMTKPOLYGONSESSION_EXPORT Resource : public smtk::model::Manager
+class SMTKPOLYGONSESSION_EXPORT Resource
+  : public smtk::resource::DerivedFrom<Resource, smtk::model::Manager>
 {
 public:
   smtkTypeMacro(smtk::bridge::polygon::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-
-  // typedef referring to the parent resource.
-  typedef smtk::model::Manager ParentResource;
 
   virtual ~Resource() {}
 

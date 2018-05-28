@@ -15,6 +15,7 @@
 
 #include "smtk/model/Manager.h"
 
+#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 class vtkModelItem;
@@ -30,14 +31,12 @@ class Session;
 typedef smtk::shared_ptr<Session> SessionPtr;
 typedef smtk::shared_ptr<const Session> ConstSessionPtr;
 
-class SMTKDISCRETESESSION_EXPORT Resource : public smtk::model::Manager
+class SMTKDISCRETESESSION_EXPORT Resource
+  : public smtk::resource::DerivedFrom<Resource, smtk::model::Manager>
 {
 public:
   smtkTypeMacro(smtk::bridge::discrete::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-
-  // typedef referring to the parent resource.
-  typedef smtk::model::Manager ParentResource;
 
   virtual ~Resource() {}
 

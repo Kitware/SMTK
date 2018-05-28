@@ -19,12 +19,12 @@ namespace mesh
 {
 
 Resource::Resource(const smtk::common::UUID& id, resource::Manager::Ptr manager)
-  : smtk::model::Manager(id, manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::model::Manager>(id, manager)
 {
 }
 
 Resource::Resource(resource::Manager::Ptr manager)
-  : smtk::model::Manager(manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::model::Manager>(manager)
 {
 }
 

@@ -11,6 +11,7 @@ set(resourceSrcs
 
 set(resourceHeaders
   Component.h
+  DerivedFrom.h
   Event.h
   Lock.h
   Manager.h

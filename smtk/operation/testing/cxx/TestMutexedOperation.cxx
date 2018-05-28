@@ -38,7 +38,7 @@
 
 namespace
 {
-class MyResource : public smtk::resource::Resource
+class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>
 {
 public:
   smtkTypeMacro(MyResource);
@@ -60,7 +60,7 @@ public:
 
 protected:
   MyResource()
-    : Resource()
+    : smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>()
   {
   }
 };

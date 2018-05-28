@@ -65,7 +65,8 @@ private:
 };
 
 Collection::Collection()
-  : smtk::resource::Resource(smtk::common::UUIDGenerator::instance().random())
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(
+      smtk::common::UUIDGenerator::instance().random())
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -77,7 +78,7 @@ Collection::Collection()
 }
 
 Collection::Collection(const smtk::common::UUID& collectionID)
-  : smtk::resource::Resource(collectionID)
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -89,7 +90,7 @@ Collection::Collection(const smtk::common::UUID& collectionID)
 }
 
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface)
-  : smtk::resource::Resource(collectionID)
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -101,7 +102,7 @@ Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::Inter
 }
 
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr)
-  : smtk::resource::Resource(collectionID)
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -114,7 +115,7 @@ Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::Manag
 
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface,
   smtk::mesh::ManagerPtr mngr)
-  : smtk::resource::Resource(collectionID)
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()

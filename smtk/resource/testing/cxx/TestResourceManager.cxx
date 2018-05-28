@@ -10,11 +10,12 @@
 
 #include "smtk/common/UUIDGenerator.h"
 #include "smtk/resource/Component.h"
+#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-class ResourceA : public smtk::resource::Resource
+class ResourceA : public smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>
 {
 public:
   smtkTypeMacro(ResourceA);
@@ -36,12 +37,12 @@ public:
 
 protected:
   ResourceA()
-    : Resource()
+    : smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>()
   {
   }
 };
 
-class ResourceB : public ResourceA
+class ResourceB : public smtk::resource::DerivedFrom<ResourceB, ResourceA>
 {
 public:
   smtkTypeMacro(ResourceB);
@@ -55,7 +56,7 @@ public:
 
 protected:
   ResourceB()
-    : ResourceA()
+    : smtk::resource::DerivedFrom<ResourceB, ResourceA>()
   {
   }
 };

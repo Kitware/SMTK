@@ -20,6 +20,7 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
+#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
 #include "smtk/resource/Resource.h"
@@ -32,7 +33,7 @@
 
 namespace
 {
-class ResourceA : public smtk::resource::Resource
+class ResourceA : public smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>
 {
 public:
   smtkTypeMacro(ResourceA);
@@ -54,36 +55,29 @@ public:
 
 protected:
   ResourceA()
-    : Resource()
+    : smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>()
   {
   }
 };
 
-class ResourceB : public ResourceA
+class ResourceB : public smtk::resource::DerivedFrom<ResourceB, ResourceA>
 {
 public:
   smtkTypeMacro(ResourceB);
-  smtkCreateMacro(ResourceA);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
-
-  // typedef referring to the parent resource. This is necessary if the derived
-  // resource is to be returned by both queries for resources of type <derived>
-  // and <base>.
-  typedef ResourceA ParentResource;
+  smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
 protected:
   ResourceB()
-    : ResourceA()
+    : smtk::resource::DerivedFrom<ResourceB, ResourceA>()
   {
   }
 };
 
-class ResourceX : public smtk::resource::Resource
+class ResourceX : public smtk::resource::DerivedFrom<ResourceX, smtk::resource::Resource>
 {
 public:
   smtkTypeMacro(ResourceX);
-  smtkCreateMacro(ResourceX);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
   {
@@ -100,7 +94,7 @@ public:
 
 protected:
   ResourceX()
-    : Resource()
+    : smtk::resource::DerivedFrom<ResourceX, smtk::resource::Resource>()
   {
   }
 };

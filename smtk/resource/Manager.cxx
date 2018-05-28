@@ -351,8 +351,7 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
     smtkErrorMacro(smtk::io::Logger::instance(), "Resource manager "
         << this << " is refusing to add resource " << resource << " of type \""
         << resource->typeName() << "\" "
-        << "as that type has not been registered.\n"
-        << "Perhaps you should link to the proper environment?");
+        << "as that type has not been registered.");
     return false;
   }
 
