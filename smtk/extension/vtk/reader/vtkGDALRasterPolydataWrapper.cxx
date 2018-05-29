@@ -116,7 +116,10 @@ const std::string& vtkGDALRasterPolydataWrapper::GetDriverLongName()
 
 vtkIdType vtkGDALRasterPolydataWrapper::GetTotalNumberOfPoints()
 {
-  return this->Reader->GetNumberOfPoints();
+  // This filter converts the cells from vtkGDALRasterReader into a point cloud.
+  // The number of points this filter returns is therefore equal to the number
+  // of cells the reader has read.
+  return this->Reader->GetNumberOfCells();
 }
 
 void vtkGDALRasterPolydataWrapper::SetFileName(std::string const& fname)
@@ -184,6 +187,8 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
   vtkCellArray* verts = vtkCellArray::New();
   int xyz[3];
   xyz[2] = 0;
+  double pcoords[3];
+  double weights[8];
   double pt[] = { 0, 0, 0 };
   double tranpt[] = { 0, 0, 0 };
   double* cp = pt;
@@ -205,10 +210,13 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
     for (int y = extent[2]; y <= extent[3]; y += step)
     {
       xyz[1] = y - Origin[1];
-      vtkIdType id = img->ComputePointId(xyz);
-      if (ugrid == NULL || ugrid->IsPointVisible(id))
+      vtkIdType id = img->ComputeCellId(xyz);
+      if (ugrid == NULL || ugrid->IsCellVisible(id))
       {
-        img->GetPoint(id, pt);
+        vtkCell* cell = img->GetCell(id);
+        vtkPoints* cellPts = cell->GetPoints();
+        auto subId = cell->GetParametricCenter(pcoords);
+        cell->EvaluateLocation(subId, pcoords, pt, weights);
         pt[2] = img->GetScalarComponentAsDouble(x, y, 0, 0) - Origin[2];
         if (dotrans)
         {
