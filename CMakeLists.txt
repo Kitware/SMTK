@@ -388,9 +388,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       # TODO: VTK needs to export a variable for this
       set(vtk_PYTHONPATH
         "${VTK_INSTALL_PREFIX}/lib/python2.7/site-packages"
-        "${VTK_INSTALL_PREFIX}/lib")
+        "${VTK_INSTALL_PREFIX}/lib"
+        "${VTK_INSTALL_PREFIX}/lib64/python2.7/site-packages"
+        "${VTK_INSTALL_PREFIX}/lib64")
       set(vtk_libpath
-        "${VTK_INSTALL_PREFIX}/lib")
+        "${VTK_INSTALL_PREFIX}/lib"
+        "${VTK_INSTALL_PREFIX}/lib64")
     endif ()
 
     set(envsep ":")
