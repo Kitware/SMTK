@@ -109,8 +109,7 @@ set(attributeHeaders
   ReferenceItemDefinition.h
   RefItem.h
   RefItemDefinition.h
-  RegisterOperations.h
-  RegisterResources.h
+  Registrar.h
   ResourceItem.h
   ResourceItemDefinition.h
   SearchStyle.h
@@ -157,8 +156,7 @@ set(attributeSrcs
   RefItemDefinition.cxx
   ReferenceItem.cxx
   ReferenceItemDefinition.cxx
-  RegisterOperations.cxx
-  RegisterResources.cxx
+  Registrar.cxx
   ResourceItem.cxx
   ResourceItemDefinition.cxx
   StringItem.cxx
@@ -171,8 +169,6 @@ set(attributeSrcs
 
 #install the headers
 smtk_public_headers(${attributeHeaders})
-
-add_subdirectory(environment)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

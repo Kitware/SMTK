@@ -30,7 +30,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindEulerCharacteristicRatio.h"
 #include "PybindWrite.h"
 
-#include "PybindRegisterSession.h"
+#include "PybindRegistrar.h"
 
 #include "smtk/model/Session.h"
 
@@ -51,6 +51,5 @@ PYBIND11_MODULE(_smtkPybindMeshSession, mesh)
   PySharedPtrClass< smtk::bridge::mesh::Read, smtk::operation::XMLOperation > smtk_bridge_mesh_Read = pybind11_init_smtk_bridge_mesh_Read(mesh);
   PySharedPtrClass< smtk::bridge::mesh::Write, smtk::operation::XMLOperation > smtk_bridge_mesh_Write = pybind11_init_smtk_bridge_mesh_Write(mesh);
 
-  pybind11_init__bridge_mesh_registerResources(mesh);
-  pybind11_init__bridge_mesh_registerOperations(mesh);
+  py::class_< smtk::bridge::mesh::Registrar > smtk_bridge_mesh_Registrar = pybind11_init_smtk_bridge_mesh_Registrar(mesh);
 }

@@ -11,6 +11,10 @@
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/SubphraseGenerator.h"
 
+#include "smtk/bridge/polygon/Registrar.h"
+
+#include "smtk/common/Registry.h"
+
 #include "smtk/resource/Manager.h"
 
 #include "smtk/operation/Manager.h"
@@ -25,8 +29,6 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
-
-#include "smtk/environment/Environment.h"
 
 #include "smtk/AutoInit.h"
 
@@ -89,8 +91,11 @@ int unitComponentPhraseModel(int argc, char* argv[])
     argc = 2;
     argv = &dataArgs[0];
   }
-  auto rsrcMgr = smtk::environment::ResourceManager::instance();
-  auto operMgr = smtk::environment::OperationManager::instance();
+  auto rsrcMgr = smtk::resource::Manager::create();
+  auto operMgr = smtk::operation::Manager::create();
+  auto registry = smtk::common::Registry<smtk::bridge::polygon::Registrar, smtk::resource::Manager,
+    smtk::operation::Manager>(rsrcMgr, operMgr);
+
   auto phraseModel = smtk::view::ComponentPhraseModel::create();
   std::multimap<std::string, std::string> filters;
   filters.insert(

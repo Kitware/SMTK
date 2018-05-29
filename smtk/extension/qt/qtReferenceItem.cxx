@@ -21,8 +21,6 @@
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 
-#include "smtk/environment/Environment.h"
-
 #include <QEvent>
 #include <QKeyEvent>
 
@@ -142,8 +140,9 @@ void qtReferenceItem::updateUI()
     return;
   }
 
-  auto rsrcMgr = smtk::environment::ResourceManager::instance();
-  auto operMgr = smtk::environment::OperationManager::instance();
+  // TODO: this need to connect to the right managers
+  auto rsrcMgr = smtk::resource::Manager::create();
+  auto operMgr = smtk::operation::Manager::create();
 
   auto phraseModel = this->createPhraseModel();
   m_p->m_phraseModel = phraseModel;

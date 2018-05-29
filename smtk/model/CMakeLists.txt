@@ -42,8 +42,7 @@ set(modelSrcs
   Loop.cxx
   Model.cxx
   PointLocatorExtension.cxx
-  RegisterResources.cxx
-  RegisterOperations.cxx
+  Registrar.cxx
   Shell.cxx
   ShellEntity.cxx
   Manager.cxx
@@ -93,8 +92,7 @@ set(modelHeaders
   Loop.h
   Model.h
   PointLocatorExtension.h
-  RegisterResources.h
-  RegisterOperations.h
+  Registrar.h
   Shell.h
   ShellEntity.h
   Manager.h
@@ -121,8 +119,6 @@ endforeach()
 
 #install the headers
 smtk_public_headers(${modelHeaders})
-
-add_subdirectory(environment)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

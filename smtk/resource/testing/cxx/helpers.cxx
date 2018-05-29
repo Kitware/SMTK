@@ -10,7 +10,7 @@
 #include "smtk/resource/testing/cxx/helpers.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/RegisterResources.h"
+#include "smtk/model/Registrar.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 
@@ -34,7 +34,7 @@ namespace testing
 ResourceArray loadTestResources(
   smtk::resource::Manager::Ptr resourceManager, int argc, char* argv[])
 {
-  smtk::model::registerResources(resourceManager);
+  smtk::model::Registrar::registerTo(resourceManager);
 
   ResourceArray result;
   if (argc < 2)

@@ -1,7 +1,7 @@
 set(polygonSrcs
   Session.cxx
   SessionIOJSON.cxx
-  RegisterSession.cxx
+  Registrar.cxx
   Resource.cxx
   internal/ActiveFragmentTree.cxx
   internal/Fragment.cxx
@@ -44,7 +44,7 @@ set(polygonHeaders
   Session.h
   SessionIOJSON.h
   Operation.h
-  RegisterSession.h
+  Registrar.h
   Resource.h
   internal/ActiveFragmentTree.h
   internal/Config.h
@@ -171,8 +171,6 @@ target_include_directories(smtkPolygonSession
   PUBLIC
     $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}/smtk/extension/vtk/meshing>
 )
-
-add_subdirectory(environment)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(qt)

@@ -84,7 +84,10 @@ if(SMTK_ENABLE_OPENCV)
   add_subdirectory(opencv)
 endif()
 
+set(SMTK_PARAVIEW_SUPPORT_ENABLED "False")
+
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set(SMTK_PARAVIEW_SUPPORT_ENABLED "True")
   add_subdirectory(paraview)
 endif()
 

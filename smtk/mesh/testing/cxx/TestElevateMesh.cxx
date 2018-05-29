@@ -28,8 +28,6 @@
 
 #include "smtk/io/ExportMesh.h"
 
-#include "smtk/environment/Environment.h"
-
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/Manager.h"
@@ -112,9 +110,7 @@ int TestElevateMesh(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  auto opMgr = smtk::environment::OperationManager::instance();
-  smtk::operation::Operation::Ptr importOp =
-    opMgr->create<smtk::bridge::discrete::ImportOperation>();
+  smtk::operation::Operation::Ptr importOp = smtk::bridge::discrete::ImportOperation::create();
 
   if (!importOp)
   {
@@ -177,7 +173,7 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   // add auxiliary geometry
-  auto auxGeoOp = opMgr->create<smtk::model::AddAuxiliaryGeometry>();
+  auto auxGeoOp = smtk::model::AddAuxiliaryGeometry::create();
 
   {
     std::string file_path(data_root);
@@ -213,7 +209,7 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the elevate mesh operator
     std::cout << "Creating elevate mesh operator\n";
-    auto elevateMesh = opMgr->create<smtk::mesh::ElevateMesh>();
+    auto elevateMesh = smtk::mesh::ElevateMesh::create();
     if (!elevateMesh)
     {
       std::cerr << "No Elevate Mesh operator!\n";
@@ -253,7 +249,7 @@ int TestElevateMesh(int argc, char* argv[])
   {
     // create the undo elevate mesh operator
     std::cout << "Creating undo elevate mesh operator\n";
-    auto undoElevateMesh = opMgr->create<smtk::mesh::UndoElevateMesh>();
+    auto undoElevateMesh = smtk::mesh::UndoElevateMesh::create();
     if (!undoElevateMesh)
     {
       std::cerr << "No Undo Elevate Mesh operator!\n";

@@ -20,19 +20,20 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/testing/cxx/helpers.h"
 
-#include "smtk/environment/Environment.h"
-
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/io/LoadJSON.h"
+
+#include "smtk/common/Registry.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -167,8 +168,11 @@ int unitQtComponentItem(int argc, char* argv[])
   }
   QApplication app(argc, argv);
 
-  auto rsrcMgr = smtk::environment::ResourceManager::instance();
-  auto operMgr = smtk::environment::OperationManager::instance();
+  auto rsrcMgr = smtk::resource::Manager::create();
+  auto operMgr = smtk::operation::Manager::create();
+
+  auto registry = smtk::common::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
+    smtk::operation::Manager>(rsrcMgr, operMgr);
 
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
   // to point back to the model (thus ensuring subphrases are decorated). This is required

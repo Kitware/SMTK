@@ -63,8 +63,6 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscal
 # Install the headers
 smtk_public_headers(${multiscaleHeaders})
 
-add_subdirectory(environment)
-
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)
 endif()

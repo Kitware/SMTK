@@ -92,9 +92,6 @@ target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
   smtkPVServerExt
 
   smtkQtExt
-  smtkAttributeEnvironment
-  smtkOperationEnvironment
-  smtkEnvironment
   Qt5::Core
 )
 

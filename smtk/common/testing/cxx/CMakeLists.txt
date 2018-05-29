@@ -33,10 +33,11 @@ endif()
 set(unit_tests
   UnitTestDateTime.cxx
   UnitTestDateTimeZonePair.cxx
+  UnitTestRegistry.cxx
 )
 
 smtk_unit_tests(
-  Label "Attribute"
+  Label "Common"
   SOURCES ${unit_tests}
   LIBRARIES smtkCore ${Boost_LIBRARIES}
 )

@@ -45,7 +45,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindTweakEdge.h"
 #include "PybindWrite.h"
 
-#include "PybindRegisterSession.h"
+#include "PybindRegistrar.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -76,6 +76,5 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
   PySharedPtrClass< smtk::bridge::polygon::TweakEdge > smtk_bridge_polygon_TweakEdge = pybind11_init_smtk_bridge_polygon_TweakEdge(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::Write > smtk_bridge_polygon_Write = pybind11_init_smtk_bridge_polygon_Write(polygon, smtk_bridge_polygon_Operation);
 
-  pybind11_init__bridge_polygon_registerResources(polygon);
-  pybind11_init__bridge_polygon_registerOperations(polygon);
+  py::class_< smtk::bridge::polygon::Registrar > smtk_bridge_polygon_Registrar = pybind11_init_smtk_bridge_polygon_Registrar(polygon);
 }

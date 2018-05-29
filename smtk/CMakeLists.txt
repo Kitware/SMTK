@@ -123,6 +123,7 @@ install(
     SharedFromThis.h
     SharedPtr.h
     SystemConfig.h
+    TupleTraits.h
   DESTINATION
     include/smtk/${SMTK_VERSION}/smtk
 )
@@ -166,13 +167,6 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   set(VTK_BUILD_PYTHON_MODULES_DIR ${SMTK_PYTHON_MODULEDIR})
   set(VTK_INSTALL_PYTHON_MODULES_DIR ${SMTK_PYTHON_MODULEDIR})
 endif()
-
-################################################################################
-# Build smtk environment
-# Construct an interface for applications that require a singleton
-# representation of SMTK that uses auto-registration.
-################################################################################
-add_subdirectory(environment)
 
 ################################################################################
 # Build smtk extensions

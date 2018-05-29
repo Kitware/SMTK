@@ -5,8 +5,7 @@ set(operationSrcs
   MetadataObserver.cxx
   Observer.cxx
   Operation.cxx
-  RegisterOperations.cxx
-  RegisterResources.cxx
+  Registrar.cxx
   ResourceManagerOperation.cxx
   SpecificationOps.cxx
   XMLOperation.cxx
@@ -29,8 +28,7 @@ set(operationHeaders
   MetadataObserver.h
   Observer.h
   Operation.h
-  RegisterOperations.h
-  RegisterResources.h
+  Registrar.h
   ResourceManagerOperation.h
   XMLOperation.h
 
@@ -63,8 +61,6 @@ endif()
 
 #install the headers
 smtk_public_headers(${operationHeaders})
-
-add_subdirectory(environment)
 
 if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_operation

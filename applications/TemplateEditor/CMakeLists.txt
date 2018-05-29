@@ -71,9 +71,7 @@ target_link_libraries(TemplateEditor
   LINK_PRIVATE
   smtkCore
   smtkQtExt
-  smtkEnvironment
-  smtkOperationEnvironment
-  smtkPolygonSessionEnvironment
+  smtkPolygonSession
 )
 
 # ==============================================================================

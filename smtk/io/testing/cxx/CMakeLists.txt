@@ -17,9 +17,6 @@ set(ResourceSetWriterTest_ARGUMENTS
   writer_output.crf
 )
 set(ResourceSetWriterTest_EXTRA_LIBRARIES
-  smtkEnvironment
-  smtkAttributeEnvironment
-  smtkOperationEnvironment
 )
 
 set(ResourceSetReaderTest_ARGUMENTS

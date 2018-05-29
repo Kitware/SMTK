@@ -25,12 +25,12 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSession.h"
 #include "PybindSession_json.h"
 
-#include "PybindRegisterSession.h"
-
 #include "smtk/mesh/core/ForEachTypes.h"
 
 #include "smtk/model/ArrangementHelper.h"
 #include "smtk/model/Session.h"
+
+#include "PybindRegistrar.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -44,6 +44,5 @@ PYBIND11_MODULE(_smtkPybindDiscreteSession, discrete)
   // PySharedPtrClass< smtk::bridge::discrete::Operation, smtk::operation::Operation > smtk_bridge_discrete_Operation = pybind11_init_smtk_bridge_discrete_Operator(discrete);
   PySharedPtrClass< smtk::bridge::discrete::Session, smtk::model::Session > smtk_bridge_discrete_Session = pybind11_init_smtk_bridge_discrete_Session(discrete);
 
-  pybind11_init__bridge_discrete_registerResources(discrete);
-  pybind11_init__bridge_discrete_registerOperations(discrete);
+  py::class_< smtk::bridge::discrete::Registrar > smtk_bridge_discrete_Registrar = pybind11_init_smtk_bridge_discrete_Registrar(discrete);
 }

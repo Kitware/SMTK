@@ -214,6 +214,16 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
   return m_resourceObserver != -1;
 }
 
+std::set<std::string> Manager::availableOperations() const
+{
+  std::set<std::string> availableOperations;
+  for (auto& md : m_metadata)
+  {
+    availableOperations.insert(md.typeName());
+  }
+  return availableOperations;
+}
+
 std::set<Operation::Index> Manager::availableOperations(
   const smtk::resource::ComponentPtr& component) const
 {

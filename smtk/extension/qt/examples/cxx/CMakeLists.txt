@@ -11,11 +11,6 @@ target_link_libraries(browseModel
   smtkCore
   smtkCoreModelTesting
   smtkQtExt
-  smtkEnvironment
-  smtkOperationEnvironment
-  smtkDiscreteSessionEnvironment
-  smtkMeshSessionEnvironment
-  smtkPolygonSessionEnvironment
 )
 
 set_target_properties(

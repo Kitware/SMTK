@@ -34,8 +34,6 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/environment/Environment.h"
-
 #include "smtk/operation/Manager.h"
 
 using namespace smtk::model;
@@ -49,10 +47,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  auto operMgr = smtk::environment::OperationManager::instance();
-
   // Create an import operator
-  auto importOp = operMgr->create<smtk::bridge::discrete::ImportOperation>();
+  auto importOp = smtk::bridge::discrete::ImportOperation::create();
   if (!importOp)
   {
     std::cerr << "No import operator\n";
@@ -113,7 +109,7 @@ int main(int argc, char* argv[])
 
   // create entity group operator
   std::cout << "Create the entity group operator\n";
-  auto egOp = operMgr->create<smtk::bridge::discrete::EntityGroupOperation>();
+  auto egOp = smtk::bridge::discrete::EntityGroupOperation::create();
   if (!egOp)
   {
     std::cerr << "No entity group operator!\n";

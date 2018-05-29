@@ -27,6 +27,7 @@ set(commonHeaders
   json/jsonUUID.h
   Paths.h
   RangeDetector.h
+  Registry.h
   StringUtil.h
   TimeZone.h
   TypeName.h

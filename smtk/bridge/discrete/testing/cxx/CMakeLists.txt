@@ -67,7 +67,6 @@ if(SMTK_DATA_DIR)
     vtkSMTKSourceExt
     vtkRenderingGL2PSOpenGL2
     vtkTestingRendering
-    smtkDiscreteSessionEnvironment
     )
   add_test(
     NAME entityGroup2dmTest

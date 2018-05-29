@@ -20,12 +20,12 @@ namespace operation
 
 const std::string ResourceIOGroup::m_defaultFileItemName = "filename";
 
-const std::string& ResourceIOGroup::fileItemNameForOperation(const std::string& typeName) const
+std::string ResourceIOGroup::fileItemNameForOperation(const std::string& typeName) const
 {
   return *(m_fileItemName.values(typeName).begin());
 }
 
-const std::string& ResourceIOGroup::fileItemNameForOperation(const Operation::Index& index) const
+std::string ResourceIOGroup::fileItemNameForOperation(const Operation::Index& index) const
 {
   static const std::string nullString = "";
   auto manager = m_manager.lock();

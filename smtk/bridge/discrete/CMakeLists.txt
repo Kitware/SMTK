@@ -134,7 +134,7 @@ set(_module_src
 )
 
 set(discreteSessionSrcs
-  RegisterSession.cxx
+  Registrar.cxx
   Resource.cxx
   Session.cxx
   Operation.cxx
@@ -156,7 +156,7 @@ set(discreteSessionSrcs
 )
 
 set(discreteSessionHeaders
-  RegisterSession.h
+  Registrar.h
   Resource.h
   Session.h
   Operation.h
@@ -253,8 +253,6 @@ smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkDiscreteSession)
-
-add_subdirectory(environment)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
   add_subdirectory(plugin)

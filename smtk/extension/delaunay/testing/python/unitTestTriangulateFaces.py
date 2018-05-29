@@ -31,7 +31,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
 
         # Register polygon resource to the resource manager (this allows the
         # resource manager to track polygon resources)
-        smtk.bridge.polygon.registerResources(self.resourceManager)
+        smtk.bridge.polygon.Registrar.registerTo(self.resourceManager)
 
         # Construct an operation manager
         self.operationManager = smtk.operation.Manager.create()
@@ -40,7 +40,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
         # manager (the first two provide us with resource I/O, and the last
         # provides us with the TriangulateFaces operator we wish to test.
         smtk.operation.registerOperations(self.operationManager)
-        smtk.bridge.polygon.registerOperations(self.operationManager)
+        smtk.bridge.polygon.Registrar.registerTo(self.operationManager)
         smtk.extension.delaunay.registerOperations(self.operationManager)
 
         # Register resource manager to the operation manager

@@ -21,12 +21,12 @@
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/operation/RegisterOperations.h"
+#include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
-#include "smtk/bridge/polygon/RegisterSession.h"
+#include "smtk/bridge/polygon/Registrar.h"
 #include "smtk/bridge/polygon/Resource.h"
 
 #include "smtk/bridge/polygon/json/jsonResource.h"
@@ -118,15 +118,15 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
   {
-    smtk::bridge::polygon::registerResources(resourceManager);
+    smtk::bridge::polygon::Registrar::registerTo(resourceManager);
   }
 
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
   {
-    smtk::operation::registerOperations(operationManager);
-    smtk::bridge::polygon::registerOperations(operationManager);
+    smtk::operation::Registrar::registerTo(operationManager);
+    smtk::bridge::polygon::Registrar::registerTo(operationManager);
   }
 
   // Register the resource manager to the operation manager (newly created

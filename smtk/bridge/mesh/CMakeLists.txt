@@ -1,6 +1,6 @@
 set(meshSrcs
   Facade.cxx
-  RegisterSession.cxx
+  Registrar.cxx
   Resource.cxx
   Session.cxx
   Topology.cxx
@@ -13,7 +13,7 @@ set(meshSrcs
 
 set(meshHeaders
   Facade.h
-  RegisterSession.h
+  Registrar.h
   Resource.h
   Session.h
   Topology.h
@@ -51,8 +51,6 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" meshOperati
 
 # Install the headers
 smtk_public_headers(${meshHeaders})
-
-add_subdirectory(environment)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(plugin)

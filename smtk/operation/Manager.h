@@ -120,6 +120,9 @@ public:
   /// ResourceManagerOperation.
   bool registerResourceManager(smtk::resource::ManagerPtr&);
 
+  /// Return a set of type names for all operations.
+  std::set<std::string> availableOperations() const;
+
   /// Given a resource component, return a set of indices for operations that can
   /// accept the component as input.
   std::set<Operation::Index> availableOperations(const smtk::resource::ComponentPtr&) const;

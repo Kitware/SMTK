@@ -10,8 +10,6 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/environment/Environment.h"
-
 #include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/model/Manager.h"
@@ -31,11 +29,17 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
+#include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
+#include "smtk/common/Registry.h"
+
 #include "smtk/io/Logger.h"
+
+#include "smtk/operation/Manager.h"
+#include "smtk/resource/Manager.h"
 
 #include "smtk/attribute/json/jsonDirectoryItem.h"
 #include "smtk/attribute/json/jsonItem.h"
@@ -64,8 +68,12 @@ int unitJsonItems(int argc, char* argv[])
     argc = 2;
     argv = &dataArgs[0];
   }
-  auto rsrcMgr = smtk::environment::ResourceManager::instance();
-  auto operMgr = smtk::environment::OperationManager::instance();
+  auto rsrcMgr = smtk::resource::Manager::create();
+  auto operMgr = smtk::operation::Manager::create();
+
+  auto registry = smtk::common::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
+    smtk::operation::Manager>(rsrcMgr, operMgr);
+
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {

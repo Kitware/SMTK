@@ -14,13 +14,10 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/polygon/RegisterSession.h"
 #include "smtk/bridge/polygon/Resource.h"
 #include "smtk/bridge/polygon/operators/LegacyRead.h"
 
 #include "smtk/extension/delaunay/operators/TriangulateFaces.h"
-
-#include "smtk/environment/Environment.h"
 
 #include "smtk/io/ExportMesh.h"
 
@@ -35,10 +32,6 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
-
-#include "smtk/resource/Manager.h"
-
-#include "smtk/operation/Manager.h"
 
 #include <fstream>
 
@@ -72,17 +65,11 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 
 int UnitTestTriangulateFaces(int, char** const)
 {
-  auto resourceManager = smtk::environment::ResourceManager::instance();
-  auto operationManager = smtk::environment::OperationManager::instance();
-  operationManager->registerOperation<smtk::extension::delaunay::TriangulateFaces>(
-    "smtk::extension::delaunay::TriangulateFaces");
-
   smtk::bridge::polygon::Resource::Ptr resource;
 
   {
     // Create an import operator
-    smtk::bridge::polygon::LegacyRead::Ptr readOp =
-      operationManager->create<smtk::bridge::polygon::LegacyRead>();
+    smtk::bridge::polygon::LegacyRead::Ptr readOp = smtk::bridge::polygon::LegacyRead::create();
     if (!readOp)
     {
       std::cerr << "No read operator\n";
@@ -133,7 +120,7 @@ int UnitTestTriangulateFaces(int, char** const)
     }
 
     smtk::extension::delaunay::TriangulateFaces::Ptr triangulateFacesOp =
-      operationManager->create<smtk::extension::delaunay::TriangulateFaces>();
+      smtk::extension::delaunay::TriangulateFaces::create();
     if (!triangulateFacesOp)
     {
       std::cerr << "No triangulate faces operator\n";

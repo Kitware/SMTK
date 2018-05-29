@@ -23,7 +23,6 @@ if(SMTK_ENABLE_POLYGON_SESSION)
   )
   list(APPEND extra_libs
     smtkPolygonSession
-    smtkPolygonSessionEnvironment
   )
 endif()
 
