@@ -1,12 +1,24 @@
 # Find paraview
 find_package(ParaView)
 
-if (NOT TARGET pvpython)
+# On some operating systems and in certain configurations, ParaView creates a
+# launcher for each of its executables. The launcher is responsible for setting
+# up the appropriate environment and then launching the real executable. When a
+# launcher is not available, it is likely because the rpath for the real
+# executable has been set to accomplish the task of configuring the environment.
+# We first check if ParaView has a launcher for pvpython, and fall back to using
+# the real pvpython.
+set(PVPYTHON_TARGET pvpython-launcher)
+if (NOT TARGET ${PVPYTHON_TARGET})
+  set(PVPYTHON_TARGET pvpython)
+endif()
+
+if (NOT TARGET ${PVPYTHON_TARGET})
   message(FATAL_ERROR "Could not locate target pvpython. Either build ParaView with python support or disable SMTK's python support.")
 endif()
 
 # Access the location of ParaView's pvpython
-get_target_property(PVPYTHON_EXE pvpython LOCATION)
+get_target_property(PVPYTHON_EXE ${PVPYTHON_TARGET} LOCATION)
 
 # Execute a python script that prints the correct PYTHONPATH for ParaView.
 #
@@ -22,28 +34,6 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
   ERROR_STRIP_TRAILING_WHITESPACE
 )
-
-if (NOT rv EQUAL 0)
-  # Sometimes pvpython's LOCATION property points to the build location of
-  # pvpython, and sometimes this pvpython does not successfully run. If this
-  # happens, as a workaround we look for pvpython in our own runtime directory.
-  get_filename_component(PVPYTHON_NAME ${PVPYTHON_EXE} NAME)
-  set(PVPYTHON_EXE "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/${PVPYTHON_NAME}")
-
-  if (EXISTS ${PVPYTHON_EXE})
-    # If we can find the installed version of pvpython, we try our
-    # FindPVPythonEnvironment.py one more time.
-    execute_process(
-      COMMAND ${PVPYTHON_EXE}
-      ${PROJECT_SOURCE_DIR}/CMake/FindPVPythonEnvironment.py
-      RESULT_VARIABLE rv
-      OUTPUT_VARIABLE out
-      ERROR_VARIABLE out
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_STRIP_TRAILING_WHITESPACE
-      )
-  endif ()
-endif ()
 
 if (NOT rv EQUAL 0)
   message(FATAL_ERROR "Could not determine ParaView's PYTHONPATH; return value was ${rv} and output was ${out}.")
