@@ -22,6 +22,7 @@ set(srcs
    vtkDEMToMesh.cxx
    vtkExtractImageBlock.cxx
    vtkExtractLine.cxx
+   vtkImageDual.cxx
    vtkImageSpacingFlip.cxx
    vtkLIDARElevationFilter.cxx
    vtkPolyDataStatsFilter.cxx
@@ -33,6 +34,7 @@ set(headers
    vtkDEMToMesh.h
    vtkExtractImageBlock.h
    vtkExtractLine.h
+   vtkImageDual.h
    vtkImageSpacingFlip.h
    vtkLIDARElevationFilter.h
    vtkPolyDataStatsFilter.h

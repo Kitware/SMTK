@@ -40,7 +40,6 @@
 #include "vtkCellData.h"
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkDoubleArray.h"
-#include "vtkGDALRasterReader.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
 #include "vtkImageMapToColors.h"

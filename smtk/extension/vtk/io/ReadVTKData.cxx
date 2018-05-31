@@ -14,6 +14,7 @@
 
 #include "smtk/common/Paths.h"
 
+#include "smtk/extension/vtk/filter/vtkImageDual.h"
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #include "smtk/extension/vtk/reader/vtkLASReader.h"
@@ -253,6 +254,14 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_tif::operator()(
   vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
   if (outImage.GetPointer())
   {
+    // vtkGDALRasterReader has switched from storing its data as point data to
+    // cell data. Traditional vtkImageData routines expect data as point data.
+    // We therefore construct a dual graph to maintain VTK's paradigm.
+    vtkNew<vtkImageDual> imageDual;
+    imageDual->SetInputData(outImage);
+    imageDual->Update();
+    outImage->ShallowCopy(imageDual->GetOutput());
+
     // When dealing with indexed data into a color map, vtkGDALRasterReader
     // creates a point data named "Categories" and associates to it the
     // appropriate lookup table to convert to RGB space. We key off of the
