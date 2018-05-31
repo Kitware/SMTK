@@ -214,7 +214,6 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
       if (ugrid == NULL || ugrid->IsCellVisible(id))
       {
         vtkCell* cell = img->GetCell(id);
-        vtkPoints* cellPts = cell->GetPoints();
         auto subId = cell->GetParametricCenter(pcoords);
         cell->EvaluateLocation(subId, pcoords, pt, weights);
         pt[2] = img->GetScalarComponentAsDouble(x, y, 0, 0) - Origin[2];
