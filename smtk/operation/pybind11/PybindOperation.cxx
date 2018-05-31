@@ -31,6 +31,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindReadResource.h"
 #include "PybindWriteResource.h"
 
+#include "PybindRegistrar.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -52,4 +53,6 @@ PYBIND11_MODULE(_smtkPybindOperation, operation)
 
   PySharedPtrClass< smtk::operation::ReadResource, smtk::operation::XMLOperation > smtk_operation_ReadResource = pybind11_init_smtk_operation_ReadResource(operation);
   PySharedPtrClass< smtk::operation::WriteResource, smtk::operation::XMLOperation > smtk_operation_WriteResource = pybind11_init_smtk_operation_WriteResource(operation);
+
+  py::class_< smtk::operation::Registrar > smtk_operation_Registrar = pybind11_init_smtk_operation_Registrar(operation);
 }
