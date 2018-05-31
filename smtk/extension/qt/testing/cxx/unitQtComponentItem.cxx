@@ -23,10 +23,11 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ReadResource.h"
 
+#include "smtk/bridge/polygon/Registrar.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/SessionRef.h"
@@ -171,7 +172,7 @@ int unitQtComponentItem(int argc, char* argv[])
   auto rsrcMgr = smtk::resource::Manager::create();
   auto operMgr = smtk::operation::Manager::create();
 
-  auto registry = smtk::common::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
+  auto registry = smtk::common::Registry<smtk::bridge::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
 
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
