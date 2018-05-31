@@ -58,6 +58,7 @@
 #include "smtk/extension/vtk/filter/vtkCleanPolylines.h"
 #include "smtk/extension/vtk/filter/vtkGrabCutFilter.h"
 #include "smtk/extension/vtk/filter/vtkImageClassFilter.h"
+#include "smtk/extension/vtk/filter/vtkImageDual.h"
 #include "smtk/extension/vtk/filter/vtkWatershedFilter.h"
 
 #include <QCoreApplication>
@@ -635,6 +636,14 @@ void imageFeatureExtractorWidget::setImage(std::string imagefile)
     source->SetFileName(imagefile.c_str());
     source->Update();
     inputImage = source->GetOutput();
+
+    // vtkGDALRasterReader has switched from storing its data as point data to
+    // cell data. Traditional vtkImageData routines expect data as point data.
+    // We therefore construct a dual graph to maintain VTK's paradigm.
+    vtkNew<vtkImageDual> imageDual;
+    imageDual->SetInputData(inputImage);
+    imageDual->Update();
+    inputImage->ShallowCopy(imageDual->GetOutput());
 
     // When dealing with indexed data into a color map, vtkGDALRasterReader
     // creates a point data named "Categories" and associates to it the

@@ -29,7 +29,6 @@
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkDataSet.h"
 #include "vtkDoubleArray.h"
-#include "vtkGDALRasterReader.h"
 #include "vtkGraph.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
