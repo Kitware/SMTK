@@ -34,6 +34,9 @@ class Key
   Key() {}
 };
 
+template <typename Self, typename Parent>
+class DerivedFrom;
+
 class Manager;
 class Metadata;
 
@@ -46,6 +49,9 @@ public:
   typedef std::function<void(const ResourcePtr&)> Visitor;
 
   friend class Manager;
+
+  template <typename Child, typename Parent>
+  friend class DerivedFrom;
 
   smtkTypedefs(smtk::resource::Resource);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
@@ -66,11 +72,11 @@ public:
 
   /// given a resource index, return whether or not this resource is or is
   /// derived from the resource described by the index.
-  bool isOfType(const Index& index) const;
+  virtual bool isOfType(const Index& index) const;
 
   /// given a resource's unique name, return whether or not this resource is or
   /// is derived from the resource described by the name.
-  bool isOfType(const std::string& typeName) const;
+  virtual bool isOfType(const std::string& typeName) const;
 
   /// id and location are run-time intrinsics of the derived resource; we need
   /// to allow the user to reset these values.
@@ -114,11 +120,13 @@ public:
   /// lock.
   Lock& lock(Key()) const { return m_lock; }
 
-protected:
+private:
+  // Derived resources should inherit
+  // smtk::resource::DerivedFrom<Self, smtk::resource::Resource>. Resource's
+  // constructors are declared private to enforce this relationship.
   Resource(const smtk::common::UUID&, ManagerPtr manager = nullptr);
   Resource(ManagerPtr manager = nullptr);
 
-private:
   smtk::common::UUID m_id;
   std::string m_location;
   /// True when m_location is in sync with this instance.

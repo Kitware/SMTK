@@ -34,12 +34,12 @@
 using namespace smtk::attribute;
 
 Collection::Collection(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager)
-  : Resource(myID, manager)
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(myID, manager)
 {
 }
 
 Collection::Collection(smtk::resource::ManagerPtr manager)
-  : Resource(manager)
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(manager)
 {
 }
 

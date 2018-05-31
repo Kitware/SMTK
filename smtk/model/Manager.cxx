@@ -73,7 +73,7 @@ namespace model
 //@{
 /// Create a default, empty model manager.
 Manager::Manager(smtk::resource::ManagerPtr mgr)
-  : smtk::resource::Resource(mgr)
+  : smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>(mgr)
   , m_topology(new UUIDsToEntities)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -91,7 +91,7 @@ Manager::Manager(smtk::resource::ManagerPtr mgr)
 }
 
 Manager::Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
-  : smtk::resource::Resource(uid, mgr)
+  : smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>(uid, mgr)
   , m_topology(new UUIDsToEntities)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -113,7 +113,7 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTesse
   shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
   shared_ptr<UUIDsToAttributeAssignments> attribs, const smtk::common::UUID& uid,
   smtk::resource::ManagerPtr mgr)
-  : smtk::resource::Resource(uid, mgr)
+  : smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>(uid, mgr)
   , m_topology(inTopology)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)

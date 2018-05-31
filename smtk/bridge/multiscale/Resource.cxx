@@ -19,12 +19,12 @@ namespace multiscale
 {
 
 Resource::Resource(const smtk::common::UUID& id, resource::Manager::Ptr manager)
-  : smtk::bridge::mesh::Resource(id, manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::bridge::mesh::Resource>(id, manager)
 {
 }
 
 Resource::Resource(resource::Manager::Ptr manager)
-  : smtk::bridge::mesh::Resource(manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::bridge::mesh::Resource>(manager)
 {
 }
 }

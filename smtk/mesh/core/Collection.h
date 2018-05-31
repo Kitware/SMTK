@@ -32,7 +32,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
-#include "smtk/resource/Resource.h"
+#include "smtk/resource/DerivedFrom.h"
 
 #include <vector>
 
@@ -56,7 +56,8 @@ namespace mesh
 
 //Flyweight interface around a moab database of meshes. When constructed
 //becomes registered with a manager with a weak relationship.
-class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
+class SMTKCORE_EXPORT Collection
+  : public smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>
 {
   //default constructor generates an invalid collection
   Collection();

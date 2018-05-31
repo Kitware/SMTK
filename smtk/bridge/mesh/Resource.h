@@ -15,6 +15,7 @@
 
 #include "smtk/model/Manager.h"
 
+#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -24,14 +25,12 @@ namespace bridge
 namespace mesh
 {
 
-class SMTKMESHSESSION_EXPORT Resource : public smtk::model::Manager
+class SMTKMESHSESSION_EXPORT Resource
+  : public smtk::resource::DerivedFrom<Resource, smtk::model::Manager>
 {
 public:
   smtkTypeMacro(smtk::bridge::mesh::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-
-  // typedef referring to the parent resource.
-  typedef smtk::model::Manager ParentResource;
 
   virtual ~Resource() {}
 

@@ -17,7 +17,7 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Component.h"
-#include "smtk/resource/Resource.h" // base class
+#include "smtk/resource/DerivedFrom.h"
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -37,7 +37,8 @@ namespace attribute
 class Attribute;
 class Definition;
 
-class SMTKCORE_EXPORT Collection : public smtk::resource::Resource
+class SMTKCORE_EXPORT Collection
+  : public smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>
 {
 public:
   smtkTypeMacro(smtk::attribute::Collection);

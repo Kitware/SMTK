@@ -15,6 +15,7 @@
 
 #include "smtk/bridge/mesh/Resource.h"
 
+#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -25,14 +26,12 @@ namespace bridge
 namespace multiscale
 {
 
-class SMTKMULTISCALESESSION_EXPORT Resource : public smtk::bridge::mesh::Resource
+class SMTKMULTISCALESESSION_EXPORT Resource
+  : public smtk::resource::DerivedFrom<Resource, smtk::bridge::mesh::Resource>
 {
 public:
   smtkTypeMacro(smtk::bridge::multiscale::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
-
-  // typedef referring to the parent resource.
-  typedef smtk::bridge::mesh::Resource ParentResource;
 
   virtual ~Resource() {}
 

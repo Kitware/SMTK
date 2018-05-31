@@ -30,7 +30,7 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/resource/Resource.h"
+#include "smtk/resource/DerivedFrom.h"
 
 #include "smtk/io/Logger.h"
 
@@ -88,7 +88,8 @@ typedef UUIDsToEntities::const_iterator UUIDWithConstEntityPtr;
 /**\brief Store information about solid models.
   *
   */
-class SMTKCORE_EXPORT Manager : public smtk::resource::Resource
+class SMTKCORE_EXPORT Manager
+  : public smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>
 {
 public:
   typedef UUIDsToEntities storage_type;

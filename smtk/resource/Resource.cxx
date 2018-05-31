@@ -64,49 +64,11 @@ ComponentSet Resource::find(const std::string& queryString) const
 
 bool Resource::isOfType(const Resource::Index& index) const
 {
-  Manager::Ptr mgr = m_manager.lock();
-  if (mgr)
-  {
-    // if the resource's manager is set, then the resource is registered to a
-    // manager. The resource metadata has the resource's inheritence
-    // information, so we can query it.
-    auto metadata = mgr->metadata().get<IndexTag>().find(this->index());
-    if (metadata != mgr->metadata().get<IndexTag>().end())
-    {
-      return metadata->isOfType(index);
-    }
-  }
-
-  // this resource is not registered to a manager. Simply check if the resource
-  // index matches the resource's index.
   return this->index() == index;
 }
 
 bool Resource::isOfType(const std::string& typeName) const
 {
-  Manager::Ptr mgr = m_manager.lock();
-  if (mgr)
-  {
-    // if the resource's manager is set, then the resource is registered to a
-    // manager. The resource metadata has the resource's inheritence
-    // information, so we can query it.
-
-    // First, find the metadata associated with the input resource.
-    auto md = mgr->metadata().get<NameTag>().find(typeName);
-    if (md != mgr->metadata().get<NameTag>().end())
-    {
-      // Next, find the metadata associated with this resource
-      auto metadata = mgr->metadata().get<IndexTag>().find(this->index());
-      if (metadata != mgr->metadata().get<IndexTag>().end())
-      {
-        // Check the relationship using indices.
-        return metadata->isOfType(md->index());
-      }
-    }
-  }
-
-  // this resource is not registered to a manager. Simply check if the resource
-  // name matches the resource's name.
   return this->typeName() == typeName;
 }
 

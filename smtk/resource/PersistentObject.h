@@ -37,7 +37,7 @@ namespace resource
 class SMTKCORE_EXPORT PersistentObject : smtkEnableSharedPtr(PersistentObject)
 {
 public:
-  smtkTypeMacroBase(PersistentObject);
+  smtkTypeMacroBase(smtk::resource::PersistentObject);
   virtual ~PersistentObject();
 
   /// Return a unique identifier for the object which will be persistent across sessions.

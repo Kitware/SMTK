@@ -34,44 +34,56 @@ namespace detail
 template <typename T>
 class is_named
 {
-  class No
-  {
-  };
-  class Yes
-  {
-    No no[2];
-  };
-
-  template <typename C>
-  static Yes Test(typename C::type_name*);
-  template <typename C>
-  static No Test(...);
+  template <typename X>
+  static std::true_type testNamed(decltype(X::type_name)*);
+  template <typename X>
+  static std::false_type testNamed(...);
 
 public:
-  enum
-  {
-    value = sizeof(Test<T>(0)) == sizeof(Yes)
-  };
+  using type = decltype(testNamed<T>(nullptr));
+};
+
+template <typename T>
+class is_constructible
+{
+  template <typename X>
+  static std::true_type testConstructible(decltype(X::create())*);
+  template <typename X>
+  static std::false_type testConstructible(...);
+
+public:
+  using type = decltype(testConstructible<T>(nullptr));
 };
 
 // The signature for our name-finding struct has two template parameters.
-template <typename Type, bool is_named>
+template <typename Type, typename is_named>
 struct name;
 
 // This partial template specialization deals with the case where
 // <Type> does not have a type_name. In this case, we create a temporary
-/// object and ask for its typeName.
+// object and ask for its typeName.
 template <typename Type>
-struct name<Type, false>
+struct name<Type, std::false_type>
 {
-  static std::string value() { return Type::create()->typeName(); }
+
+  static typename std::enable_if<is_constructible<Type>::type, std::string>::type value()
+  {
+    return Type::create()->typeName();
+  }
+
+  // As a last resort, we return the machine-dependent name for tye type.
+  static typename std::enable_if<!is_constructible<Type>::type, std::string>::type value(int i = 0)
+  {
+    (void)i;
+    return typeid(Type).name();
+  }
 };
 
 // This partial template specialization deals with the case where
 // <Type> has a type_name. In this case, we can return the class type
 // name without instantiating the class.
 template <typename Type>
-struct name<Type, true>
+struct name<Type, std::true_type>
 {
   static std::string value() { return Type::type_name; }
 };
@@ -81,7 +93,7 @@ struct name<Type, true>
 template <typename Type>
 std::string typeName()
 {
-  return detail::name<Type, detail::is_named<Type>::value>::value();
+  return detail::name<Type, typename detail::is_named<Type>::type>::value();
 }
 }
 }

@@ -230,37 +230,11 @@ bool ReferenceItemDefinition::checkResource(smtk::resource::ResourcePtr rsrc) co
   // For now all we do is test the resource names in m_acceptable
   // to see if any are exact matches for rsrc.
 
-  // Search for the resource index in the resource metdata.
-  const smtk::resource::Metadata* metadata = nullptr;
-
-  auto manager = rsrc->manager();
-  if (manager)
-  {
-    auto& container = manager->metadata().get<smtk::resource::IndexTag>();
-    auto metadataIt = container.find(rsrc->index());
-    if (metadataIt != container.end())
-    {
-      metadata = &(*metadataIt);
-    }
-  }
-
-  if (!metadata)
-  {
-    // If we don't have a resource manager, see if the resource type is
-    // listed explicitly. If so, presume that's OK.
-    return m_acceptable.find(rsrc->typeName()) != m_acceptable.end();
-  }
-
-  auto& container = manager->metadata().get<smtk::resource::NameTag>();
-
   // For every element in the filter map...
   for (auto& acceptable : m_acceptable)
   {
-    // ...we access the metadata for that resource type...
-    auto md = container.find(acceptable.first);
-    // ...and ask (a) if our resource is of that type, and (b) if its associated
-    // filter accepts the component.
-    if (md != container.end() && metadata->isOfType(md->index()))
+    // ...we check if the resource in question is of that type.
+    if (rsrc->isOfType(acceptable.first))
     {
       return true;
     }
@@ -290,48 +264,12 @@ bool ReferenceItemDefinition::checkComponent(smtk::resource::ComponentPtr comp) 
     return true;
   }
 
-  // Search for the resource index in the resource metdata.
-  const smtk::resource::Metadata* metadata = nullptr;
-
-  auto manager = rsrc->manager();
-  if (manager)
-  {
-    auto& container = manager->metadata().get<smtk::resource::IndexTag>();
-    auto metadataIt = container.find(rsrc->index());
-    if (metadataIt != container.end())
-    {
-      metadata = &(*metadataIt);
-    }
-  }
-
-  if (metadata == nullptr)
-  {
-    // If we can't find the resource's metadata, that's ok. It just means we do
-    // not have the ability to accept derived resources from base resource
-    // indices. We can still check if the resource is explicitly accepted.
-    auto range = m_acceptable.equal_range(rsrc->typeName());
-    for (auto& it = range.first; it != range.second; ++it)
-    {
-      if (rsrc->queryOperation(it->second)(comp))
-      {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // With the resource's metadata, we can resolve queries for derived resources.
-  auto& container = manager->metadata().get<smtk::resource::NameTag>();
-
   // For every element in the filter map...
   for (auto& acceptable : m_acceptable)
   {
-    // ...we access the metadata for that resource type...
-    auto md = container.find(acceptable.first);
-    // ...and ask (a) if our resource is of that type, and (b) if its associated
+    // ...ask (a) if our resource is of that type, and (b) if its associated
     // filter accepts the component.
-    if (md != container.end() && metadata->isOfType(md->index()) &&
-      rsrc->queryOperation(acceptable.second)(comp))
+    if (rsrc->isOfType(acceptable.first) && rsrc->queryOperation(acceptable.second)(comp))
     {
       return true;
     }
