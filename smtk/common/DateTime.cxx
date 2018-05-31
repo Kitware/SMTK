@@ -43,8 +43,6 @@ bool DateTime::setComponents(
     boost::local_time::local_date_time local(ptimeDate, ptimeTime, timeZone->boostPointer(),
       boost::local_time::local_date_time::NOT_DATE_TIME_ON_ERROR);
     m_ptime = local.utc_time();
-    // std::cout << "local: " << local
-    //           << "\nm_ptime: " << m_ptime << std::endl;
   }
   else
   {
@@ -77,10 +75,8 @@ bool DateTime::components(
     // Convert time
     boost::posix_time::ptime ptimeLocal = local.local_time();
     boost::posix_time::time_duration workingTime = ptimeLocal.time_of_day();
-    std::cout << "m_ptime " << m_ptime << std::endl;
-    std::cout << "workingTime " << workingTime << std::endl;
-    hr = workingTime.hours();
-    min = workingTime.minutes();
+    hr = static_cast<int>(workingTime.hours());
+    min = static_cast<int>(workingTime.minutes());
     sec = static_cast<int>(workingTime.seconds());
     msec = static_cast<int>(workingTime.total_milliseconds() - 1000 * workingTime.total_seconds());
 
@@ -94,10 +90,8 @@ bool DateTime::components(
   day = ptimeDate.day();
 
   boost::posix_time::time_duration ptimeTime = m_ptime.time_of_day();
-  std::cout << "m_ptime " << m_ptime << std::endl;
-  std::cout << "ptimeTime " << ptimeTime << std::endl;
-  hr = ptimeTime.hours();
-  min = ptimeTime.minutes();
+  hr = static_cast<int>(ptimeTime.hours());
+  min = static_cast<int>(ptimeTime.minutes());
   sec = static_cast<int>(ptimeTime.seconds());
   msec = static_cast<int>(ptimeTime.total_milliseconds() - 1000 * ptimeTime.total_seconds());
 

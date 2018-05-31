@@ -172,8 +172,8 @@ bool TimeZone::utcOffset(int& hours, int& minutes) const
   if (m_boostTimeZone)
   {
     boost::posix_time::time_duration delta = m_boostTimeZone->base_utc_offset();
-    hours = delta.hours();
-    minutes = delta.minutes();
+    hours = static_cast<int>(delta.hours());
+    minutes = static_cast<int>(delta.minutes());
     return true;
   }
   // else
@@ -185,8 +185,8 @@ bool TimeZone::dstShift(int& hours, int& minutes) const
   if (m_boostTimeZone)
   {
     boost::posix_time::time_duration delta = m_boostTimeZone->dst_offset();
-    hours = delta.hours();
-    minutes = delta.minutes();
+    hours = static_cast<int>(delta.hours());
+    minutes = static_cast<int>(delta.minutes());
     return true;
   }
   // else
