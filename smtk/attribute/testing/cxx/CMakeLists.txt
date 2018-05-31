@@ -52,6 +52,7 @@ if (SMTK_DATA_DIR)
     add_executable(${tst} ${tst}.cxx)
     target_link_libraries(${tst} smtkCore ${Boost_LIBRARIES})
     add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
+    set_tests_properties(${tst} PROPERTIES LABELS "Attribute")
   endforeach()
 endif()
 
@@ -65,12 +66,24 @@ set(unit_tests
   unitComponentItem.cxx
   unitDateTimeItem.cxx
   unitJsonItemDefinitions.cxx
-  unitJsonItems.cxx
 )
+
+set(extra_libs)
+
+if(SMTK_ENABLE_POLYGON_SESSION)
+  list(APPEND unit_tests
+    unitJsonItems.cxx
+    )
+  list(APPEND extra_libs
+    smtkPolygonSession
+    )
+endif()
+
 
 smtk_unit_tests(
   Label "Attribute"
   SOURCES ${unit_tests}
   LIBRARIES
     smtkCore
+    ${extra_libs}
 )

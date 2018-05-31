@@ -34,11 +34,14 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
+#include "smtk/bridge/polygon/Registrar.h"
+
 #include "smtk/common/Registry.h"
 
 #include "smtk/io/Logger.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/Registrar.h"
 #include "smtk/resource/Manager.h"
 
 #include "smtk/attribute/json/jsonDirectoryItem.h"
@@ -70,14 +73,20 @@ int unitJsonItems(int argc, char* argv[])
   }
   auto rsrcMgr = smtk::resource::Manager::create();
   auto operMgr = smtk::operation::Manager::create();
+  operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::common::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
+  auto attRegistry = smtk::common::Registry<smtk::attribute::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
+  auto opRegistry = smtk::common::Registry<smtk::operation::Registrar, smtk::resource::Manager,
+    smtk::operation::Manager>(rsrcMgr, operMgr);
+  auto polyRegistry = smtk::common::Registry<smtk::bridge::polygon::Registrar,
+    smtk::resource::Manager, smtk::operation::Manager>(rsrcMgr, operMgr);
 
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {
     auto rdr = operMgr->create<smtk::operation::ReadResource>();
+    std::cout << "reading " << argv[i] << std::endl;
     rdr->parameters()->findFile("filename")->setValue(argv[i]);
     rdr->operate();
   }
@@ -163,7 +172,9 @@ int unitJsonItems(int argc, char* argv[])
   refItm->setIsEnabled(true);
   refItm->setNumberOfValues(2);
   auto basicRsrc = rsrcMgr->get(argv[1]);
+  test(basicRsrc != nullptr, "Failed to access basic resource");
   auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(basicRsrc);
+  test(modelRsrc != nullptr, "Failed to cast model resource");
   auto allFaces =
     modelRsrc->entitiesMatchingFlagsAs<smtk::model::EntityRefArray>(smtk::model::FACE);
   std::cout << "Model " << modelRsrc->id().toString() << " has " << allFaces.size() << " faces\n";
