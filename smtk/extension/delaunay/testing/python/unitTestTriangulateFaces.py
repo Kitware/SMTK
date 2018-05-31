@@ -25,34 +25,12 @@ from smtk.simple import *
 class UnitTriangulateFaces(smtk.testing.TestCase):
 
     def setUp(self):
-
-        # Construct a resource manager
-        self.resourceManager = smtk.resource.Manager.create()
-
-        # Register polygon resource to the resource manager (this allows the
-        # resource manager to track polygon resources)
-        smtk.bridge.polygon.Registrar.registerTo(self.resourceManager)
-
-        # Construct an operation manager
-        self.operationManager = smtk.operation.Manager.create()
-
-        # Register operation, polygon and delaunay operations to the operation
-        # manager (the first two provide us with resource I/O, and the last
-        # provides us with the TriangulateFaces operator we wish to test.
-        smtk.operation.registerOperations(self.operationManager)
-        smtk.bridge.polygon.Registrar.registerTo(self.operationManager)
-        smtk.extension.delaunay.registerOperations(self.operationManager)
-
-        # Register resource manager to the operation manager
-        self.operationManager.registerResourceManager(self.resourceManager)
-
         # Set up the path to the test's input file
         modelFile = os.path.join(
             smtk.testing.DATA_DIR, 'mesh', '2d', 'boxWithHole.smtk')
 
         # Load the input file
-        loadOp = self.operationManager.createOperation(
-            'smtk::operation::ReadResource')
+        loadOp = smtk.bridge.polygon.LegacyRead.create()
         loadOp.parameters().find('filename').setValue(modelFile)
         loadRes = loadOp.operate()
 
@@ -62,8 +40,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
 
     def testMeshing2D(self):
         face = self.resource.findEntitiesOfType(int(smtk.model.FACE))[0]
-        triangulateFace = self.operationManager.createOperation(
-            'smtk::extension::delaunay::TriangulateFaces')
+        triangulateFace = smtk.extension.delaunay.TriangulateFaces.create()
         triangulateFace.parameters().associateEntity(face)
         result = triangulateFace.operate()
         triangulatedFace = self.resource.meshes().associatedCollections(
