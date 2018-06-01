@@ -237,7 +237,6 @@ namespace io
 {
 class SaveJSON;
 class LoadJSON;
-class OperationLog;
 class Logger;
 typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 }
