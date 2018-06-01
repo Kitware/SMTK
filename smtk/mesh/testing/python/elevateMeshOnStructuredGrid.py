@@ -117,7 +117,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         # Set the auxiliary geometry
         op.parameters().find("auxiliary geometry").setValue(
-            smtk.model.AuxiliaryGeometry(self.auxGeo.modelResource(), self.auxGeo.id()))
+            smtk.model.AuxiliaryGeometry(self.auxGeo.modelResource(), self.auxGeo.id()).component())
 
         # Set a threshold range for the input data
         inputFilter = op.parameters().find("input filter")

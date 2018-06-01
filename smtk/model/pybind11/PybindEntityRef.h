@@ -53,6 +53,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     // .def("checkForArrangements", &smtk::model::EntityRef::checkForArrangements, py::arg("k"), py::arg("entry"), py::arg("arr"))
     .def("clearArrangements", &smtk::model::EntityRef::clearArrangements)
     .def("color", &smtk::model::EntityRef::color)
+    .def("component", &smtk::model::EntityRef::component)
     .def("containingGroups", &smtk::model::EntityRef::containingGroups)
     .def("dimension", &smtk::model::EntityRef::dimension)
     .def("dimensionBits", &smtk::model::EntityRef::dimensionBits)
