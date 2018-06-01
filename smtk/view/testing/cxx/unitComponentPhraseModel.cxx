@@ -93,6 +93,8 @@ int unitComponentPhraseModel(int argc, char* argv[])
   }
   auto rsrcMgr = smtk::resource::Manager::create();
   auto operMgr = smtk::operation::Manager::create();
+  operMgr->registerResourceManager(rsrcMgr);
+
   auto registry = smtk::common::Registry<smtk::bridge::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
 
