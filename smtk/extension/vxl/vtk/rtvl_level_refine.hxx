@@ -48,7 +48,7 @@
 #include <functional>
 
 template <typename T>
-using vcl_auto_ptr = std::auto_ptr<T>;
+using vcl_auto_ptr = std::unique_ptr<T>;
 
 template <unsigned int N>
 class rtvl_level_refine_quadtree;
