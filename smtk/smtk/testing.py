@@ -194,7 +194,17 @@ class TestCase:
         mbs.SetModelManager(self.mgr)
         mbs.SetModelEntityID(str(model.entity()))
         # mbs.ShowAnalysisTessellationOff()
-        return self.addToScene(mbs)
+        addedToScene = self.addToScene(mbs)
+        mp = addedToScene[2]
+        mp.SetScalarModeToUseFieldData()
+        mp.SelectColorArray('entity color')
+
+        # When coloring by field data, the default action is to assume that the
+        # selected field data has as many tuples as cells. In our case, we want
+        # to color the entire block by a single tuple (the first tuple).
+        mp.SetFieldDataTupleId(0)
+
+        return addedToScene
 
     def addMeshToScene(self, mesh):
         import smtk

@@ -32,7 +32,6 @@ class TestSelection(smtk.testing.TestCase):
         fpath = [smtk.testing.DATA_DIR, 'model',
                  '2d', 'smtk', 'epic-trex-drummer.smtk']
         op = smtk.bridge.polygon.LegacyRead.create()
-        print 'here', os.path.join(*fpath)
         op.parameters().find('filename').setValue(os.path.join(*fpath))
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):

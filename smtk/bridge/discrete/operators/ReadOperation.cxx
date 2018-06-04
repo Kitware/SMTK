@@ -19,6 +19,7 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 

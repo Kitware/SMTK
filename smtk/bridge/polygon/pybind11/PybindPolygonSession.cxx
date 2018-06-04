@@ -33,6 +33,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindCreateEdgeFromPoints.h"
 #include "PybindCreateEdgeFromVertices.h"
 #include "PybindCreateFaces.h"
+#include "PybindCreateModel.h"
 #include "PybindCreateVertices.h"
 #include "PybindDelete.h"
 #include "PybindDemoteVertex.h"
@@ -64,6 +65,7 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
   PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromPoints > smtk_bridge_polygon_CreateEdgeFromPoints = pybind11_init_smtk_bridge_polygon_CreateEdgeFromPoints(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::CreateEdgeFromVertices > smtk_bridge_polygon_CreateEdgeFromVertices = pybind11_init_smtk_bridge_polygon_CreateEdgeFromVertices(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::CreateFaces > smtk_bridge_polygon_CreateFaces = pybind11_init_smtk_bridge_polygon_CreateFaces(polygon, smtk_bridge_polygon_Operation);
+  PySharedPtrClass< smtk::bridge::polygon::CreateModel > smtk_bridge_polygon_CreateModel = pybind11_init_smtk_bridge_polygon_CreateModel(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::CreateVertices > smtk_bridge_polygon_CreateVertices = pybind11_init_smtk_bridge_polygon_CreateVertices(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::Delete > smtk_bridge_polygon_Delete = pybind11_init_smtk_bridge_polygon_Delete(polygon, smtk_bridge_polygon_Operation);
   PySharedPtrClass< smtk::bridge::polygon::DemoteVertex > smtk_bridge_polygon_DemoteVertex = pybind11_init_smtk_bridge_polygon_DemoteVertex(polygon, smtk_bridge_polygon_Operation);

@@ -24,6 +24,10 @@ from smtk import model
 # print(dir(smtk.io))
 
 if __name__ == '__main__':
+    print('This test has been disabled until resource links are in place.')
+    import sys
+    sys.exit(125)
+
     import sys
 
     status = 0

@@ -51,6 +51,7 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("appliesToBoundaryNodes", &smtk::attribute::Attribute::appliesToBoundaryNodes)
     .def("appliesToInteriorNodes", &smtk::attribute::Attribute::appliesToInteriorNodes)
     .def("associatedObjects", (smtk::attribute::ReferenceItemPtr (smtk::attribute::Attribute::*)()) &smtk::attribute::Attribute::associatedObjects)
+    .def("associate", &smtk::attribute::Attribute::associate)
     .def("associateEntity", (bool (smtk::attribute::Attribute::*)(::smtk::common::UUID const &)) &smtk::attribute::Attribute::associateEntity, py::arg("entity"))
     .def("associateEntity", (bool (smtk::attribute::Attribute::*)(::smtk::model::EntityRef const &)) &smtk::attribute::Attribute::associateEntity, py::arg("entity"))
     .def("associatedModelEntityIds", &smtk::attribute::Attribute::associatedModelEntityIds)

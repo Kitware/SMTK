@@ -27,6 +27,7 @@ foreach(tst ${attributeTests})
     ${Boost_LIBRARIES}
   )
   add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
+  set_tests_properties(${tst} PROPERTIES SKIP_RETURN_CODE 125)
 endforeach()
 
 ################################################################################
@@ -53,6 +54,7 @@ if (SMTK_DATA_DIR)
     target_link_libraries(${tst} smtkCore ${Boost_LIBRARIES})
     add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
     set_tests_properties(${tst} PROPERTIES LABELS "Attribute")
+    set_tests_properties(${tst} PROPERTIES SKIP_RETURN_CODE 125)
   endforeach()
 endif()
 

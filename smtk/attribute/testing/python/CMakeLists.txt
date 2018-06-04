@@ -20,6 +20,7 @@ endforeach()
 
 # Tests that use command line args
 smtk_add_test_python(basicAttributeXMLWriterTestPy basicAttributeXMLWriterTest.py dummypy.sbi)
+set_tests_properties(basicAttributeXMLWriterTestPy PROPERTIES SKIP_RETURN_CODE 125)
 smtk_add_test_python(definitionDefaultValueTestPy definitionDefaultValueTest.py dummy.sbt)
 
 
@@ -36,10 +37,12 @@ if (SMTK_DATA_DIR)
   foreach (test ${smtkAttributePythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
       ${SMTK_DATA_DIR})
+    set_tests_properties(${test}Py PROPERTIES SKIP_RETURN_CODE 125)
   endforeach()
   # New-style tests that use smtk.testing.TestCase
   foreach (test ${smtkAttributePythonNewDataTests})
     smtk_add_test_python(${test}Py ${test}.py
       -D ${SMTK_DATA_DIR})
+    set_tests_properties(${test}Py PROPERTIES SKIP_RETURN_CODE 125)
   endforeach()
 endif()

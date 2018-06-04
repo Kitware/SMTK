@@ -14,6 +14,7 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/resource/Component.h"
+#include "smtk/resource/PersistentObject.h"
 
 #include "smtk/resource/Resource.h"
 #include "smtk/common/UUID.h"
@@ -21,9 +22,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::resource::Component > pybind11_init_smtk_resource_Component(py::module &m)
+PySharedPtrClass< smtk::resource::Component, smtk::resource::PersistentObject > pybind11_init_smtk_resource_Component(py::module &m)
 {
-  PySharedPtrClass< smtk::resource::Component > instance(m, "Component");
+  PySharedPtrClass< smtk::resource::Component, smtk::resource::PersistentObject > instance(m, "Component");
   instance
     .def("deepcopy", (smtk::resource::Component & (smtk::resource::Component::*)(::smtk::resource::Component const &)) &smtk::resource::Component::operator=)
     .def("id", &smtk::resource::Component::id)

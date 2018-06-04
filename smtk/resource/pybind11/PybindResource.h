@@ -14,12 +14,13 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/resource/Resource.h"
+#include "smtk/resource/PersistentObject.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::resource::Resource > pybind11_init_smtk_resource_Resource(py::module &m)
+PySharedPtrClass< smtk::resource::Resource, smtk::resource::PersistentObject > pybind11_init_smtk_resource_Resource(py::module &m)
 {
-  PySharedPtrClass< smtk::resource::Resource > instance(m, "Resource");
+  PySharedPtrClass< smtk::resource::Resource, smtk::resource::PersistentObject > instance(m, "Resource");
   instance
     .def("index", &smtk::resource::Resource::index)
     .def("id", &smtk::resource::Resource::id)
