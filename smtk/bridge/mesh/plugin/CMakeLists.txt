@@ -15,6 +15,9 @@ if (SMTK_ENABLE_MESH_SESSION)
 
   target_link_libraries(smtkMeshSessionPlugin
     LINK_PUBLIC
+      smtkCore
+      smtkMeshSession
+      smtkPluginSupport
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS

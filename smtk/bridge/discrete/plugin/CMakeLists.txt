@@ -16,6 +16,9 @@ if (SMTK_ENABLE_DISCRETE_SESSION)
 
   target_link_libraries(smtkDiscreteSessionPlugin
     LINK_PUBLIC
+      smtkCore
+      smtkDiscreteSession
+      smtkPluginSupport
       vtkPVServerManagerApplication
     LINK_PRIVATE
       vtkPVServerManagerApplicationCS
