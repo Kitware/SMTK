@@ -18,7 +18,6 @@ import smtk.mesh
 import smtk.model
 import smtk.extension.matplotlib.render_mesh
 import smtk.testing
-from smtk.simple import *
 
 
 class RenderMesh(smtk.testing.TestCase):

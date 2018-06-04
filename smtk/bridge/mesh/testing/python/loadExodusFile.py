@@ -18,7 +18,6 @@ import smtk.model
 import smtk.operation
 import smtk.bridge.mesh
 import smtk.testing
-from smtk.simple import *
 
 
 class LoadExodusFile(smtk.testing.TestCase):

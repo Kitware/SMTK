@@ -19,7 +19,6 @@ import smtk.extension.delaunay
 import smtk.operation
 import smtk.bridge.polygon
 import smtk.testing
-from smtk.simple import *
 
 
 class UnitTriangulateFaces(smtk.testing.TestCase):

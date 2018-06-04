@@ -18,7 +18,6 @@ import smtk.model
 import smtk.bridge.mesh
 import smtk.testing
 import smtk.io.vtk
-from smtk.simple import *
 
 
 class EulerRatio(smtk.testing.TestCase):

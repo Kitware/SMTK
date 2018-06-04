@@ -14,7 +14,6 @@ import sys
 import smtk
 import smtk.bridge.cgm
 import smtk.testing
-from smtk.simple import *
 
 
 class CGMTransforms(smtk.testing.TestCase):

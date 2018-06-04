@@ -13,7 +13,6 @@
 import smtk
 import smtk.bridge.cgm
 import smtk.io
-from smtk.simple import *
 
 # def SetVectorValue(x,v):
 #  x.setNumberOfValues(len(v))

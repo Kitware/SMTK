@@ -15,7 +15,6 @@ import sys
 import smtk
 import smtk.bridge.cgm
 import smtk.model
-from smtk.simple import *
 import smtk.testing
 
 
