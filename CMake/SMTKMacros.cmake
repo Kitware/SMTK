@@ -17,17 +17,34 @@ function(smtk_get_kit_name kitvar)
   endif (${ARGC} GREATER 1)
 endfunction(smtk_get_kit_name)
 
+# Computes the name for the header Test Build cxx file given a header file. If
+# the operating system is Windows and if the include path is too long, a hash of
+# the path is used in the cxx name.
+function(smtk_header_test_cxx_name name header_name return_cxx_name)
+
+  set(max_len 100)
+  set(suffix ".cxx")
+  set(cxx_name ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername}${suffix})
+  string(LENGTH ${cxx_name} len)
+  if(len GREATER max_len AND WIN32)
+    string(MD5 hashed_cxx_name ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername})
+    set(cxx_name HT/TB_${hashed_cxx_name}${suffix})
+  endif()
+
+  set(${return_cxx_name} ${cxx_name} PARENT_SCOPE)
+
+endfunction(smtk_header_test_cxx_name header_name)
 
 # Builds a source file and an executable that does nothing other than
 # compile the given header files.
 function(smtk_add_header_test name dir_prefix)
   set(hfiles ${ARGN})
-  set(suffix ".cxx")
   set(cxxfiles)
   foreach (header ${ARGN})
     string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}" "" header "${header}")
     get_filename_component(headername ${header} NAME_WE)
-    set(src ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername}${suffix})
+    smtk_header_test_cxx_name(${name} ${headername} src)
+#    set(src ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername}${suffix})
     configure_file(${SMTK_SOURCE_DIR}/CMake/TestBuild.cxx.in ${src} @ONLY)
     set(cxxfiles ${cxxfiles} ${src})
   endforeach (header)
