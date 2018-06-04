@@ -42,6 +42,7 @@
 #include <QVBoxLayout>
 #include <QVariant>
 
+#include <cassert>
 #include <iostream>
 #include <set>
 
@@ -94,7 +95,10 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
   {
     if (cb->currentIndex() > -1)
     {
+      // Block signals on first setData, so that only 1 cellChanged signal is emitted
+      model->blockSignals(true);
       model->setData(index, cb->currentText(), Qt::EditRole);
+      model->blockSignals(false);
       model->setData(index, QColor(Qt::white), Qt::BackgroundRole);
     }
   }
@@ -116,6 +120,23 @@ public:
     }
     return this->AllDefs;
   }
+
+  smtk::attribute::AttributePtr getAttribute(const smtk::model::EntityRef& modelEnt) const
+  {
+    // Check against all our definitions; should only find 1 attribute at the most
+    auto iter = this->m_attDefinitions.cbegin();
+    for (; iter != this->m_attDefinitions.cend(); ++iter)
+    {
+      auto atts = modelEnt.attributes(*iter);
+      assert(atts.size() <= 1); // debug
+      if (atts.size())
+      {
+        return atts.at(0);
+      }
+    } // for
+    return nullptr;
+  }
+
   qtTableWidget* ListTable;
 
   QFrame* ButtonsFrame;
@@ -265,7 +286,6 @@ void qtModelEntityAttributeView::createWidget()
   this->Internals->ListTable->setSelectionMode(QAbstractItemView::SingleSelection);
   this->Internals->ListTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   this->Internals->ListTable->setSizePolicy(tableSizePolicy);
-  this->Internals->ListTable->setSortingEnabled(true);
   this->Internals->ListTable->setEditTriggers(
     QAbstractItemView::SelectedClicked | QAbstractItemView::DoubleClicked);
 
@@ -329,6 +349,9 @@ void qtModelEntityAttributeView::updateModelEntities()
     return;
   }
 
+  // Disable sorting when modifying ListTable
+  this->Internals->ListTable->setSortingEnabled(false);
+
   auto entityRefs = modelCol->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
     this->Internals->m_modelEntityMask, false);
   smtk::model::Model activeModel = qtActiveObjects::instance().activeModel();
@@ -350,15 +373,15 @@ void qtModelEntityAttributeView::updateModelEntities()
       item->setFlags(item->flags() ^ Qt::ItemIsEditable);
       this->Internals->ListTable->insertRow(rcount);
       this->Internals->ListTable->setItem(rcount, 0, item);
-      item = new QTableWidgetItem(QString::fromStdString(name));
-      auto atts = iter->attributes(this->Internals->m_attDefinitions.at(0));
-      if (atts.size() == 0)
+
+      auto att = this->Internals->getAttribute(*iter);
+      if (!att)
       {
         item = new QTableWidgetItem(slist.at(slist.size() - 1));
       }
       else
       {
-        std::string typeName = atts.at(0)->definition()->displayedTypeName();
+        std::string typeName = att->definition()->displayedTypeName();
         QColor icolor = Qt::white;
         if (!slist.contains(typeName.c_str()))
         {
@@ -372,8 +395,10 @@ void qtModelEntityAttributeView::updateModelEntities()
       ++rcount;
     }
   }
-  this->Internals->ListTable->sortByColumn(Qt::AscendingOrder);
   this->Internals->ListTable->blockSignals(false);
+  this->Internals->ListTable->setSortingEnabled(true);
+  this->Internals->ListTable->sortByColumn(Qt::AscendingOrder);
+  this->Internals->ListTable->sortItems(0);
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
   {
     delete this->Internals->CurrentAtt;
@@ -398,6 +423,10 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   {
     std::cerr << "ERROR: cell changed at (" << row << "," << column << ")\n";
   }
+
+  // Get selected type
+  std::string tname = this->Internals->ListTable->item(row, 1)->text().toStdString();
+
   auto attCol = this->uiManager()->attCollection();
   auto modelCol = attCol->refModelManager();
   QList<smtk::attribute::DefinitionPtr> currentDefs =
@@ -407,16 +436,19 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   std::string val = data.toString().toStdString();
   smtk::common::UUID mid(val);
   smtk::model::EntityRef eref(modelCol, mid);
-  // Get the current attribute asscoiated with the model entity (if any)
-  auto atts = eref.attributes(this->Internals->m_attDefinitions.at(0));
-  if (atts.size())
+  // Get the current attribute associated with the model entity (if any)
+  auto att = this->Internals->getAttribute(eref);
+  if (att && att->definition()->displayedTypeName() == tname)
   {
-    attCol->removeAttribute(atts.at(0));
+    // The attribute itself didn't change, so we can stop here
+    return;
   }
-  //Debug - lets make sure we don't still have an attribute of this type
-  atts = eref.attributes(this->Internals->m_attDefinitions.at(0));
+  else if (att)
+  {
+    attCol->removeAttribute(att);
+  }
+
   // Now create a new attribute for the model entity of the correct type
-  std::string tname = this->Internals->ListTable->item(row, 1)->text().toStdString();
   // Find the def we need to use
   for (int j = 0; j < currentDefs.size(); ++j)
   {
@@ -424,7 +456,6 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
     {
       auto att = attCol->createAttribute(currentDefs.at(j));
       att->associateEntity(eref);
-      atts = eref.attributes(this->Internals->m_attDefinitions.at(0));
       break;
     }
   }
@@ -446,16 +477,9 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
   std::string val = data.toString().toStdString();
   smtk::common::UUID mid(val);
   smtk::model::EntityRef eref(modelCol, mid);
-  // Get the current attribute asscoiated with the model entity (if any)
-  auto atts = eref.attributes(this->Internals->m_attDefinitions.at(0));
-  if (atts.size())
-  {
-    this->displayAttribute(atts.at(0));
-  }
-  else
-  {
-    this->displayAttribute(nullptr);
-  }
+  // Get the current attribute associated with the model entity (if any)
+  auto att = this->Internals->getAttribute(eref);
+  this->displayAttribute(att);
 
   if (broadcastSelected)
   {
