@@ -109,7 +109,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   # set because it makes more sense for us to maintain parity betwen the build and
   # install locations.
   set_target_properties(${vtk-module}Python
-    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+    PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
   smtk_install_library(${vtk-module}PythonD)
   smtk_install_library(${vtk-module}Python)
 endif()
