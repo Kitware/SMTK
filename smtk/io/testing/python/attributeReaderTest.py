@@ -14,7 +14,6 @@ import sys
 import smtk
 import smtk.attribute
 import smtk.io
-from smtk.simple import *
 
 
 class TestAttributeReader():

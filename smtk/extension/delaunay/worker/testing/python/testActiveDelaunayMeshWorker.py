@@ -29,7 +29,6 @@ import smtk.model
 import smtk.model.remus
 import smtk.bridge.polygon
 import smtk.testing
-from smtk.simple import *
 
 
 class TestActiveDelaunayMeshWorker(smtk.testing.TestCase):

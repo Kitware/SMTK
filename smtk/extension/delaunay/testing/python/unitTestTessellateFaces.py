@@ -18,7 +18,6 @@ import smtk.model
 import smtk.extension.delaunay
 import smtk.bridge.polygon
 import smtk.testing
-from smtk.simple import *
 
 
 class UnitTessellateFaces(smtk.testing.TestCase):

@@ -26,7 +26,6 @@ from paraview import simple as pvsimple
 import smtk
 import smtk.common
 import smtk.testing
-from smtk.simple import *
 
 
 class OpenSMTKFileInParaView(smtk.testing.TestCase):

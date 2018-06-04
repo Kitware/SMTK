@@ -11,7 +11,6 @@
 #=============================================================================
 import os
 import smtk
-from smtk.simple import *
 import smtk.io
 import smtk.testing
 import sys

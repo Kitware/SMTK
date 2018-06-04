@@ -1,4 +1,3 @@
-import sys
 #=============================================================================
 #
 #  Copyright (c) Kitware, Inc.
@@ -10,9 +9,9 @@ import sys
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+import sys
 import smtk
 import smtk.bridge.polygon
-from smtk.simple import *
 import smtk.testing
 
 

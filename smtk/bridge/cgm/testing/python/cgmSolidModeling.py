@@ -76,7 +76,6 @@ class TestCGMSolidModeling(smtk.testing.TestCase):
         # Note that su has same UUID as sph2
 
         # Test cylinder creation.
-        from smtk.simple import *
         SetActiveSession(self.sref)
         cyl = CreateCylinder(top_radius=1.0)
 

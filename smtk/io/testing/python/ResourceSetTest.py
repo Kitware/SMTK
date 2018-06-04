@@ -15,7 +15,6 @@ from pprint import pprint
 import smtk
 import smtk.attribute
 import smtk.common
-from smtk.simple import *
 
 
 def RSTest():

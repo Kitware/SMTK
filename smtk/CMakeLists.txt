@@ -143,7 +143,6 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     )
 
   set(SMTK_PYTHON_MODULE_SRCS
-    simple
     testing
     )
   foreach(pyfile ${SMTK_PYTHON_MODULE_SRCS})

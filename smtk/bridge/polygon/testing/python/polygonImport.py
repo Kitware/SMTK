@@ -13,7 +13,6 @@ import os
 #=============================================================================
 import smtk
 import smtk.bridge.polygon
-from smtk.simple import *
 import smtk.testing
 
 
