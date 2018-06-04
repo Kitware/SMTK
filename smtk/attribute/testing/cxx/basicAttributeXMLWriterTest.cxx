@@ -49,6 +49,9 @@ void cleanup(const std::string& file_path)
 
 int main(int argc, char* argv[])
 {
+  std::cout << "This test has been disabled until resource links are in place." << std::endl;
+  return 125;
+
   int status = 0;
   if (argc != 3)
   {

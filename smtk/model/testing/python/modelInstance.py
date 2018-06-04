@@ -13,7 +13,6 @@ import smtk
 import smtk.attribute
 import smtk.bridge.polygon
 import smtk.model
-from smtk.simple import *
 import smtk.testing
 import sys
 import uuid
@@ -23,14 +22,16 @@ class TestEntityInstances(smtk.testing.TestCase):
 
     def setUp(self):
         import os
-        self.mgr = smtk.model.Manager.create()
-        SetActiveSession(self.mgr.createSession('polygon'))
-        self.assertIsNotNone(
-            GetActiveSession(), 'Could not create polygon session.')
         fpath = [smtk.testing.DATA_DIR, 'model',
                  '2d', 'smtk', 'epic-trex-drummer.smtk']
-        self.models = LoadSMTKModel(os.path.join(*fpath))
-        self.model = smtk.model.Model(self.models[0])
+        op = smtk.bridge.polygon.LegacyRead.create()
+        op.parameters().find('filename').setValue(os.path.join(*fpath))
+        res = op.operate()
+        if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
+            raise ImportError
+        self.mgr = smtk.model.Manager.CastTo(res.find('resource').value())
+        self.model = self.mgr.findEntitiesOfType(
+            int(smtk.model.MODEL_ENTITY))[0]
         self.faces = self.model.cells()
 
     def testInstanceCreation(self):
@@ -113,9 +114,5 @@ class TestEntityInstances(smtk.testing.TestCase):
         tess = inst.hasTessellation()
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until SMTK\'s simple.py can be updated.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     smtk.testing.main()

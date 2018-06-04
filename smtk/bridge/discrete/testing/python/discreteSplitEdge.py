@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #=============================================================================
 #
 #  Copyright (c) Kitware, Inc.
@@ -11,11 +10,11 @@
 #
 #=============================================================================
 from __future__ import print_function
+import os
 import sys
 import smtk
 import smtk.bridge.discrete
 import smtk.testing
-from smtk.simple import *
 
 
 def hex2rgb(hexstr):
@@ -27,6 +26,69 @@ def hex2rgb(hexstr):
 
 
 class TestDiscreteSplitEdge(smtk.testing.TestCase):
+
+    def read(self, filename):
+        readOp = smtk.bridge.discrete.ReadOperation.create()
+        readOp.parameters().find('filename').setValue(filename)
+        result = readOp.operate()
+        self.assertEqual(
+            result.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'discrete read operation failed')
+
+        # store the resource so it doesn't go out of scope
+        self.mgr = smtk.model.Manager.CastTo(result.find('resource').value(0))
+        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
+
+    def setEntityProperty(self, ents, propName, **kwargs):
+        """Set a property value (or vector of values) on an entity (or vector of entities).
+
+        You may pass any combination of "as_int", "as_float", or "as_string" as named
+        arguments specifying the property values. The values of these named arguments may
+        be a single value or a list of values. Values will be coerced to the named type.
+
+        Example:
+
+          SetEntityProperty(face, 'color', as_float=(1., 0., 0.))
+          SetEntityProperty(edge, 'name', as_string='edge 20')
+          SetEntityProperty(body, 'visited', as_int='edge 20')
+        """
+        spr = smtk.model.SetProperty.create()
+        if hasattr(ents, '__iter__'):
+            [spr.parameters().associate(ent.component()) for ent in ents]
+        else:
+            spr.parameters().associate(ents.component())
+        spr.parameters().find('name').setValue(propName)
+        if 'as_int' in kwargs:
+            vlist = kwargs['as_int']
+            if not hasattr(vlist, '__iter__'):
+                vlist = [vlist, ]
+            intVal = spr.parameters().find('integer value')
+            intVal.setNumberOfValues(len(vlist))
+            for i in xrange(len(vlist)):
+                intVal.setValue(i, vlist[i])
+        if 'as_float' in kwargs:
+            vlist = kwargs['as_float']
+            if not hasattr(vlist, '__iter__'):
+                vlist = [vlist, ]
+            floatVal = spr.parameters().find('float value')
+            floatVal.setNumberOfValues(len(vlist))
+            for i in xrange(len(vlist)):
+                floatVal.setValue(i, vlist[i])
+        if 'as_string' in kwargs:
+            vlist = kwargs['as_string']
+            if not hasattr(vlist, '__iter__'):
+                vlist = [vlist, ]
+            stringVal = spr.parameters().find('string value')
+            stringVal.setNumberOfValues(len(vlist))
+            for i in xrange(len(vlist)):
+                stringVal.setValue(i, vlist[i])
+        res = spr.operate()
+        self.assertEqual(
+            res.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'set property failed')
+        return res.findInt('outcome').value(0)
 
     def resetTestFiles(self):
         self.filesToTest = []
@@ -101,7 +163,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
                 'Edge11':            '#104c57'
             }
             for (name, color) in entityColors.iteritems():
-                SetEntityProperty(
+                self.setEntityProperty(
                     self.mgr.findEntitiesByProperty('name', name),
                     'color', as_float=hex2rgb(color))
 
@@ -128,11 +190,6 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
         self.resetTestFiles()
         self.addTestFile(['model', '2d', 'cmb', 'test2D.cmb'],
                          self.findSplitsTest2D, self.validateTest2D)
-
-        self.mgr = smtk.model.Manager.create()
-        sess = self.mgr.createSession('discrete')
-        sess.assignDefaultName()
-        SetActiveSession(sess)
         self.shouldSave = False
 
     def verifySplitEdge(self, filename, findSplits, validator):
@@ -143,20 +200,21 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
 
         print('\n\nFile: {fname}'.format(fname=filename))
 
-        mod = smtk.model.Model(Read(filename)[0])
+        mod = smtk.model.Model(self.read(filename)[0])
 
         # Find the edges to split for this given model
         splits = findSplits(mod)
 
-        spl = GetActiveSession().op('modify edge')
+        spl = smtk.bridge.discrete.EdgeOperation.create()
         self.assertIsNotNone(spl, 'Missing modify edge operator.')
-        SetVectorValue(spl.findAsModelEntity('model'), [mod, ])
-        sel = spl.specification().findMeshSelection('selection')
+        spl.parameters().associate(mod.component())
+        sel = spl.parameters().findMeshSelection('selection')
         sel.setModifyMode(smtk.attribute.ACCEPT)
         [sel.setValues(ent, set(tess)) for (ent, tess) in splits]
         res = spl.operate()
         self.assertEqual(
-            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
+            res.findInt('outcome').value(0), int(
+                smtk.operation.Operation.SUCCEEDED),
                          'Split failed.')
 
         if validator:
@@ -177,9 +235,5 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until SMTK\'s simple.py can be updated.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     smtk.testing.main()

@@ -38,6 +38,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::EntityPtr>())
     .def("__ne__", (bool (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &) const) &smtk::model::EntityRef::operator!=)
     .def("__lt__", (bool (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &) const) &smtk::model::EntityRef::operator<)
     .def("deepcopy", (smtk::model::EntityRef & (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &)) &smtk::model::EntityRef::operator=)

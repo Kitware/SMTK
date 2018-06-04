@@ -17,9 +17,9 @@ import os
 import sys
 import smtk
 import smtk.bridge
+import smtk.bridge.discrete
 import smtk.io
 import smtk.model
-from smtk.simple import *
 import smtk.testing
 from uuid import uuid4
 import unittest
@@ -30,7 +30,6 @@ class TestModelCloseModelOp(unittest.TestCase):
     def loadThenCloseSessionModel(self, sessionname, filename):
         actMgr = smtk.model.Manager.create()
         actSession = actMgr.createSession(sessionname, smtk.model.SessionRef())
-        SetActiveSession(actSession)
 
         models = None
         print('Reading {fname} into {sname}'.format(
@@ -50,21 +49,27 @@ class TestModelCloseModelOp(unittest.TestCase):
                 int(smtk.model.MODEL_ENTITY), True)
             # Assign imported models to current session so they have operators
             [smtk.model.Model(x).setSession(actSession) for x in models]
-        else:
-            models = Read(filename)
+        elif sessionname == 'discrete':
+            readOp = smtk.bridge.discrete.ReadOperation.create()
+            readOp.parameters().find('filename').setValue(filename)
+            result = readOp.operate()
+            self.assertEqual(
+                result.find('outcome').value(0),
+                int(smtk.operation.Operation.SUCCEEDED),
+                'discrete read operation failed')
+            models = smtk.model.Manager.CastTo(
+                result.find('resource').value(0)).findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
         print('Closing %d models.' % len(models))
 
-        result = CloseModel(models)
+        closeModelOp = smtk.model.CloseModel.create()
+        closeModelOp.parameters().associate(models[0].component())
+        result = closeModelOp.operate()
         self.assertEqual(
-            result.findInt('outcome').value(0),
-            smtk.model.OPERATION_SUCCEEDED,
+            result.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
             'close model operator failed')
-        remModels = GetVectorValue(result.findModelEntity('expunged'))
-
-        print('%d models closed.' % len(remModels))
-        self.assertEqual(len(models), len(remModels),
-                         'Not all models marked as removed')
+        return True
 
     def testCloseModelOp(self):
 
@@ -73,8 +78,8 @@ class TestModelCloseModelOp(unittest.TestCase):
             session_files = {
                 'native': ['model', '2d', 'smtk', 'pyramid.json'],
                 'discrete': ['model', '2d', 'cmb', 'test2D.cmb'],
-                'exodus': ['model', '3d', 'exodus', 'disk_out_ref.ex2'],
-                'cgm': ['model', '3d', 'solidmodel', 'occ', 'pyramid.brep']
+                #                'exodus': ['model', '3d', 'exodus', 'disk_out_ref.ex2'],
+                #                'cgm': ['model', '3d', 'solidmodel', 'occ', 'pyramid.brep']
             }
 
             for (session_type, path) in session_files.items():
@@ -89,9 +94,5 @@ class TestModelCloseModelOp(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until SMTK\'s simple.py can be updated.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     unittest.main()

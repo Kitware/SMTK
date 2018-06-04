@@ -16,10 +16,22 @@ import sys
 import smtk
 import smtk.bridge.discrete
 import smtk.testing
-from smtk.simple import *
 
 
 class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
+
+    def read(self, filename):
+        readOp = smtk.bridge.discrete.ReadOperation.create()
+        readOp.parameters().find('filename').setValue(filename)
+        result = readOp.operate()
+        self.assertEqual(
+            result.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'discrete read operation failed')
+
+        # store the resource so it doesn't go out of scope
+        self.mgr = smtk.model.Manager.CastTo(result.find('resource').value(0))
+        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
     def resetTestFiles(self):
         self.filesToTest = []
@@ -63,11 +75,6 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
         self.resetTestFiles()
         self.addTestFile(
             ['model', '3d', 'cmb', 'hybridModelOneCube.cmb'], self.validateCreateAndSaveEdges)
-
-        self.mgr = smtk.model.Manager.create()
-        sess = self.mgr.createSession('discrete')
-        sess.assignDefaultName()
-        SetActiveSession(sess)
         self.shouldSave = False
 
     def verifyCreateAndSaveEdges(self, filename, validator):
@@ -78,33 +85,35 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
 
         print('\n\nFile: {fname}'.format(fname=filename))
 
-        mod = smtk.model.Model(Read(filename)[0])
+        mod = smtk.model.Model(self.read(filename)[0])
         self.assertEqual(len(mod.cells()), 2,
                          'Expected {nc} free cells'.format(nc=2))
 
-        btm = GetActiveSession().op('create edges')
+        btm = smtk.bridge.discrete.CreateEdgesOperation.create()
         self.assertIsNotNone(btm, 'Missing create edges operator.')
-        SetVectorValue(btm.findAsModelEntity('model'), [mod, ])
+        btm.parameters().associate(mod.component())
 
         res = btm.operate()
         sys.stdout.flush()
         self.assertEqual(
-            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
-                         'create edges failed.')
+            res.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'create edges operation failed')
 
-        writeop = GetActiveSession().op('write')
+        writeop = smtk.bridge.discrete.WriteOperation.create()
         self.assertIsNotNone(writeop, 'Missing discrete write operator.')
-        SetVectorValue(writeop.specification().associations(), [mod, ])
+        writeop.parameters().associate(mod.component())
         tmpfile = ['testCreateAndSaveEdges.cmb', ]
         outfilename = os.path.join(*([smtk.testing.TEMP_DIR, ] + tmpfile))
-        writeop.findAsFile('filename').setValue(0, outfilename)
+        writeop.parameters().find('filename').setValue(outfilename)
         res = writeop.operate()
         sys.stdout.flush()
         self.assertEqual(
-            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
-                         'write SimpleBox model with edges failed.')
+            res.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'write SimpleBox model with edges failed')
 
-        mod = smtk.model.Model(Read(outfilename)[0])
+        mod = smtk.model.Model(self.read(outfilename)[0])
         self.assertEqual(len(mod.cells()), 2,
                          'Expected {nc} free cells'.format(nc=2))
 
@@ -126,9 +135,5 @@ class TestDiscreteCreateAndSaveEdges(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until SMTK\'s simple.py can be updated.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     smtk.testing.main()

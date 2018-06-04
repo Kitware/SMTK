@@ -16,10 +16,22 @@ import sys
 import smtk
 import smtk.bridge.discrete
 import smtk.testing
-from smtk.simple import *
 
 
 class TestDiscreteCreateEdges(smtk.testing.TestCase):
+
+    def read(self, filename):
+        readOp = smtk.bridge.discrete.ReadOperation.create()
+        readOp.parameters().find('filename').setValue(filename)
+        result = readOp.operate()
+        self.assertEqual(
+            result.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'discrete read operation failed')
+
+        # store the resource so it doesn't go out of scope
+        self.mgr = smtk.model.Manager.CastTo(result.find('resource').value(0))
+        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
     def resetTestFiles(self):
         self.filesToTest = []
@@ -62,11 +74,6 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
         self.resetTestFiles()
         self.addTestFile(['model', '3d', 'cmb', 'simplebox.cmb'],
                          self.validateCreateEdges)
-
-        self.mgr = smtk.model.Manager.create()
-        sess = self.mgr.createSession('discrete')
-        sess.assignDefaultName()
-        SetActiveSession(sess)
         self.shouldSave = False
 
     def verifyCreateEdges(self, filename, validator):
@@ -77,21 +84,22 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
 
         print('\n\nFile: {fname}'.format(fname=filename))
 
-        mod = smtk.model.Model(Read(filename)[0])
+        mod = smtk.model.Model(self.read(filename)[0])
         self.assertEqual(len(mod.cells()), 1,
                          'Expected {nc} free cells'.format(nc=1))
 
-        btm = GetActiveSession().op('create edges')
+        btm = smtk.bridge.discrete.CreateEdgesOperation.create()
         self.assertIsNotNone(btm, 'Missing create edges operator.')
-        SetVectorValue(btm.findAsModelEntity('model'), [mod, ])
+        btm.parameters().associate(mod.component())
 
         res = btm.operate()
 
         sys.stdout.flush()
 
         self.assertEqual(
-            res.findInt('outcome').value(0), smtk.model.OPERATION_SUCCEEDED,
-                         'create edges failed.')
+            res.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'create edges operation failed')
 
         if validator:
             validator(mod)
@@ -112,9 +120,5 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until SMTK\'s simple.py can be updated.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     smtk.testing.main()

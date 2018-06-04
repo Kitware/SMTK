@@ -29,6 +29,7 @@ foreach (test ${ioTests})
   target_link_libraries(${test} smtkCore smtkCoreModelTesting ${Boost_LIBRARIES})
   add_test(NAME ${test} COMMAND ${test})
   target_compile_definitions(${test} PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
+  set_tests_properties(${test} PROPERTIES SKIP_RETURN_CODE 125)
 endforeach()
 
 # ResourceSetWriterTest uses input files in SMTKTestData
@@ -45,5 +46,6 @@ if (SMTK_DATA_DIR)
       NAME ${test}
       COMMAND ${test} ${${test}_ARGUMENTS}
     )
+    set_tests_properties(${test} PROPERTIES SKIP_RETURN_CODE 125)
   endforeach()
 endif()

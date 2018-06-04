@@ -263,5 +263,8 @@ class TestModelAttributes(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    print('This test has been disabled until resource links are in place.')
+    sys.exit(125)
+
     smtk.testing.process_arguments()
     unittest.main()

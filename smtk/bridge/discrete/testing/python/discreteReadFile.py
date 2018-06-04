@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #=============================================================================
 #
 #  Copyright (c) Kitware, Inc.
@@ -16,10 +15,72 @@ import sys
 import smtk
 import smtk.bridge.discrete
 import smtk.testing
-from smtk.simple import *
 
 
 class TestDiscreteSession(smtk.testing.TestCase):
+
+    def read(self, filename):
+        readOp = smtk.bridge.discrete.ReadOperation.create()
+        readOp.parameters().find('filename').setValue(filename)
+        result = readOp.operate()
+        self.assertEqual(
+            result.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'discrete read operation failed')
+
+        # store the resource so it doesn't go out of scope
+        self.mgr = smtk.model.Manager.CastTo(result.find('resource').value(0))
+        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
+
+    def setEntityProperty(self, ents, propName, **kwargs):
+        """Set a property value (or vector of values) on an entity (or vector of entities).
+
+        You may pass any combination of "as_int", "as_float", or "as_string" as named
+        arguments specifying the property values. The values of these named arguments may
+        be a single value or a list of values. Values will be coerced to the named type.
+
+        Example:
+
+          SetEntityProperty(face, 'color', as_float=(1., 0., 0.))
+          SetEntityProperty(edge, 'name', as_string='edge 20')
+          SetEntityProperty(body, 'visited', as_int='edge 20')
+        """
+        spr = smtk.model.SetProperty.create()
+        if hasattr(ents, '__iter__'):
+            [spr.parameters().associate(ent.component()) for ent in ents]
+        else:
+            spr.parameters().associate(ents.component())
+        spr.parameters().find('name').setValue(propName)
+        if 'as_int' in kwargs:
+            vlist = kwargs['as_int']
+            if not hasattr(vlist, '__iter__'):
+                vlist = [vlist, ]
+            intVal = spr.parameters().find('integer value')
+            intVal.setNumberOfValues(len(vlist))
+            for i in xrange(len(vlist)):
+                intVal.setValue(i, vlist[i])
+        if 'as_float' in kwargs:
+            vlist = kwargs['as_float']
+            if not hasattr(vlist, '__iter__'):
+                vlist = [vlist, ]
+            floatVal = spr.parameters().find('float value')
+            floatVal.setNumberOfValues(len(vlist))
+            for i in xrange(len(vlist)):
+                floatVal.setValue(i, vlist[i])
+        if 'as_string' in kwargs:
+            vlist = kwargs['as_string']
+            if not hasattr(vlist, '__iter__'):
+                vlist = [vlist, ]
+            stringVal = spr.parameters().find('string value')
+            stringVal.setNumberOfValues(len(vlist))
+            for i in xrange(len(vlist)):
+                stringVal.setValue(i, vlist[i])
+        res = spr.operate()
+        self.assertEqual(
+            res.find('outcome').value(0),
+            int(smtk.operation.Operation.SUCCEEDED),
+            'set property failed')
+        return res.findInt('outcome').value(0)
 
     def resetTestFiles(self):
         self.filesToTest = []
@@ -108,8 +169,8 @@ class TestDiscreteSession(smtk.testing.TestCase):
         for grp in model.groups():
             if grp.name() in groupColors:
                 color = groupColors[grp.name()]
-                SetEntityProperty(grp.members(), 'color',
-                                  as_float=self.hex2rgb(color))
+                self.setEntityProperty(grp.members(), 'color',
+                                       as_float=self.hex2rgb(color))
 
         # TODO: Should run grow operator on some of the faces here.
         #       Especially if we test group membership afterwards.
@@ -146,25 +207,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
                          7, 13, self.validatePMDC)
         self.addTestFile(
             ['model', '3d', 'cmb', 'hybridModelOneCube.cmb'], 2, 1, self.validateHybrid)
-
-        self.mgr = smtk.model.Manager.create()
-        sess = self.mgr.createSession('discrete')
-        sess.assignDefaultName()
-        SetActiveSession(sess)
         self.shouldSave = False
-
-    def testFileTypes(self):
-        sref = GetActiveSession()
-        print('\n\n%s: type "%s" %s %s' %
-              (sref.name(), sref.session().name(),
-               sref.flagSummary(0), sref.session().sessionId()))
-        print('  Site: %s' % (sref.site() or 'local'))
-        for eng in sref.engines():
-            print('  Engine %s filetypes:\n    %s' %
-                  (eng, '\n    '.join(sref.fileTypes(eng))))
-        print('Operations:\n  ')
-        print('\n  '.join(sref.operatorNames()))
-        print('\n')
 
     def verifyRead(self, filename, numCells, numGroups, validator):
         """Read a single file and validate that the reader worked.
@@ -174,7 +217,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
 
         print('\n\nFile: {fname}'.format(fname=filename))
 
-        mod = smtk.model.Model(Read(filename)[0])
+        mod = smtk.model.Model(self.read(filename)[0])
 
         print('  {mt} model'.format(
             mt=smtk.model.ModelGeometryStyleName(mod.geometryStyle())))
@@ -211,9 +254,5 @@ class TestDiscreteSession(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until SMTK\'s simple.py can be updated.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     smtk.testing.main()

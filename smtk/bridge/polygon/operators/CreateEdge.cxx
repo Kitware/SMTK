@@ -96,9 +96,11 @@ CreateEdge::Result CreateEdge::operateInternal()
                                 " and there must be at least 2 vertices");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
-
   internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(parentModel.entity());
   bool ok = true;
+  // TODO: If method == 2 (interactive), which it does by default, then
+  // offsetsItem can be nullptr here. Perhaps CreateEdge.sbt needs to be
+  // updated?
   int numEdges = static_cast<int>(offsetsItem->numberOfValues());
   int numCoordsPerPt = coordinatesItem->value(0);
   if ((method == 0 || method == 2) && numCoordsPerPt == 0)

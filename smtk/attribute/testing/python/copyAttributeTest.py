@@ -40,6 +40,9 @@ INPUT_FILENAME = 'copyAttributeTest.sbi'
 OUTPUT_FILENAME = 'copyAttributeOut.sbi'
 
 if __name__ == '__main__':
+    print('This test has been disabled until resource links are in place.')
+    sys.exit(125)
+
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:
         print()

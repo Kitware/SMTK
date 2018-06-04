@@ -23,6 +23,8 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/model/CloseModel_xml.h"
 
@@ -39,44 +41,45 @@ bool CloseModel::ableToOperate()
   {
     return false;
   }
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->findModelEntity("model");
+  smtk::attribute::ConstReferenceItemPtr modelItem = this->parameters()->associations();
   return modelItem && modelItem->numberOfValues() > 0;
 }
 
 CloseModel::Result CloseModel::operateInternal()
 {
   // ableToOperate should have verified that model(s) are set
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->findModelEntity("model");
+  smtk::attribute::ReferenceItem::Ptr modelItem = this->parameters()->associations();
 
-  smtk::model::Manager::Ptr resource =
-    std::static_pointer_cast<smtk::model::Manager>(modelItem->value().component()->resource());
+  smtk::model::Manager::Ptr resource = std::static_pointer_cast<smtk::model::Manager>(
+    std::static_pointer_cast<smtk::resource::Component>(modelItem->objectValue())->resource());
 
   EntityRefArray expunged;
   smtk::mesh::MeshSets expungedMeshes;
   bool success = true;
-  for (EntityRefArray::const_iterator mit = modelItem->begin(); mit != modelItem->end(); ++mit)
+  for (auto it = modelItem->begin(); it != modelItem->end(); ++it)
   {
+    auto model =
+      std::static_pointer_cast<smtk::model::Entity>(*it)->referenceAs<smtk::model::Model>();
     // Auxiliary geometry must be added to the "expunged" attribute so it can be properly closed on
     // the client side. It must be added before we erase the model, or else the auxiliary geometries
     // will not be accessible via the model.
-    AuxiliaryGeometries auxs = mit->as<smtk::model::Model>().auxiliaryGeometry();
+    AuxiliaryGeometries auxs = model.auxiliaryGeometry();
     for (AuxiliaryGeometries::iterator ait = auxs.begin(); ait != auxs.end(); ++ait)
     {
       expunged.push_back(*ait);
     }
 
     // Similarly, meshes must be added to the "mesh_expunged" attribute.
-    for (auto cit : resource->meshes()->associatedCollections(mit->as<smtk::model::Model>()))
+    for (auto cit : resource->meshes()->associatedCollections(model))
     {
       expungedMeshes.insert(cit->meshes());
     }
 
-    if (!resource->eraseModel(*mit))
+    if (!resource->eraseModel(model))
     {
       success = false;
       break;
     }
-    expunged.push_back(*mit);
   }
 
   Result result = this->createResult(success ? smtk::operation::Operation::Outcome::SUCCEEDED
@@ -84,6 +87,9 @@ CloseModel::Result CloseModel::operateInternal()
 
   if (success)
   {
+    smtk::attribute::ResourceItem::Ptr modifiedItem = result->findResource("resource modified");
+    modifiedItem->appendValue(resource);
+
     smtk::attribute::ComponentItem::Ptr expungedItem = result->findComponent("expunged");
     for (auto& e : expunged)
     {
