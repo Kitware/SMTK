@@ -30,8 +30,8 @@ py::class_< smtk::model::AttributeAssignments > pybind11_init_smtk_model_Attribu
     .def("associateAttribute", &smtk::model::AttributeAssignments::associateAttribute, py::arg("attribId"))
     .def("disassociateAttribute", &smtk::model::AttributeAssignments::disassociateAttribute, py::arg("attribId"))
     .def("isAssociated", &smtk::model::AttributeAssignments::isAssociated, py::arg("attribId"))
-    .def("attributes", (smtk::common::UUIDs & (smtk::model::AttributeAssignments::*)()) &smtk::model::AttributeAssignments::attributes)
-    .def("attributes", (smtk::common::UUIDs const & (smtk::model::AttributeAssignments::*)() const) &smtk::model::AttributeAssignments::attributes)
+    .def("attributeIds", (smtk::common::UUIDs & (smtk::model::AttributeAssignments::*)()) &smtk::model::AttributeAssignments::attributeIds)
+    .def("attributeIds", (smtk::common::UUIDs const & (smtk::model::AttributeAssignments::*)() const) &smtk::model::AttributeAssignments::attributeIds)
     ;
   return instance;
 }

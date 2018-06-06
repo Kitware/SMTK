@@ -9,6 +9,9 @@
 //=========================================================================
 #include "smtk/model/EntityRef.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
@@ -906,7 +909,7 @@ bool EntityRef::hasAttributes() const
   UUIDsToAttributeAssignments::const_iterator it = mgr->attributeAssignments().find(m_entity);
   if (it != mgr->attributeAssignments().end())
   {
-    return it->second.attributes().empty() ? false : true;
+    return it->second.attributeIds().empty() ? false : true;
   }
   return false;
 }
@@ -941,7 +944,7 @@ bool EntityRef::disassociateAttribute(
   */
 bool EntityRef::disassociateAllAttributes(smtk::attribute::CollectionPtr sys, bool reverse)
 {
-  smtk::common::UUIDs atts = this->attributes();
+  smtk::common::UUIDs atts = this->attributeIds();
   smtk::common::UUIDs::const_iterator it;
   bool res = true;
   for (it = atts.begin(); it != atts.end(); ++it)
@@ -954,7 +957,7 @@ bool EntityRef::disassociateAllAttributes(smtk::attribute::CollectionPtr sys, bo
 
 /**\brief Does the entityref have any attributes associated with it?
   */
-smtk::common::UUIDs EntityRef::attributes() const
+smtk::common::UUIDs EntityRef::attributeIds() const
 {
   ManagerPtr mgr = m_manager.lock();
   UUIDsToAttributeAssignments::const_iterator entry = mgr->attributeAssignments().find(m_entity);
@@ -962,8 +965,53 @@ smtk::common::UUIDs EntityRef::attributes() const
   {
     return smtk::common::UUIDs();
   }
-  return entry->second.attributes();
+  return entry->second.attributeIds();
 }
+/**\brief Return the attributes associated with the entity
+that are of type (or derived type) def.
+  */
+smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::DefinitionPtr def) const
+{
+  smtk::attribute::Attributes atts;
+  // If there was no definition return empty list
+  if (def == nullptr)
+  {
+    return atts;
+  }
+  auto attCollection = def->collection();
+  // If there is no collection then return an empty list
+  if (attCollection == nullptr)
+  {
+    return atts;
+  }
+
+  // First lets find all attribute IDs that are assoicated with the entity
+  ManagerPtr mgr = this->m_manager.lock();
+  UUIDsToAttributeAssignments::const_iterator entry =
+    mgr->attributeAssignments().find(this->m_entity);
+  // No attributes then just return an emoty list
+  if (entry == mgr->attributeAssignments().end())
+  {
+    return atts;
+  }
+  // Lets go through all of the attributes and find the ones that come from def
+  for (auto id : entry->second.attributeIds())
+  {
+    auto a = attCollection->findAttribute(id);
+    if (a == nullptr)
+    {
+      // Could not find the attribute for that ID
+      continue;
+    }
+    // Is this attribute based on def
+    if (a->definition()->isA(def))
+    {
+      atts.push_back(a);
+    }
+  }
+  return atts;
+}
+
 ///@}
 
 void EntityRef::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
