@@ -26,6 +26,7 @@ namespace resource
 Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
   : m_id(myID)
   , m_location()
+  , m_links(this)
   , m_manager(manager)
 {
 }
@@ -33,6 +34,7 @@ Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
 Resource::Resource(ManagerPtr manager)
   : m_id(smtk::common::UUIDGenerator::instance().random())
   , m_location()
+  , m_links(this)
   , m_manager(manager)
 {
 }

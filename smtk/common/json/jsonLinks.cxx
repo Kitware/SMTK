@@ -7,29 +7,22 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Component.cxx - Abstract base class for CMB Resource Components
-// .SECTION Description
-// .SECTION See Also
 
-#include "smtk/resource/Component.h"
-
-#include "smtk/resource/Resource.h"
-
-#include <cassert>
+#include "smtk/common/json/jsonLinks.h"
 
 namespace smtk
 {
-namespace resource
+namespace common
 {
-
-Component::Component()
-  : m_links(this)
+namespace detail
 {
-}
-
-Component::~Component()
+void to_json(json&, const NullLinkBase&)
 {
 }
 
-} // namespace resource
-} // namespace smtk
+void from_json(const json&, NullLinkBase&)
+{
+}
+}
+}
+}
