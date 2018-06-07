@@ -35,6 +35,7 @@ vtkStandardNewMacro(vtkSMTKAttributeReader);
 
 vtkSMTKAttributeReader::vtkSMTKAttributeReader()
 {
+  this->IncludePathToFile = true;
   //std::cout << "Create reader " << this << "\n";
   this->Defs = vtkSmartPointer<vtkTable>::New();
   this->SetNumberOfOutputPorts(1);
@@ -55,6 +56,7 @@ void vtkSMTKAttributeReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "AttributeResource: " << this->AttributeResource << "\n";
+  os << indent << "IncludePathToFile: " << this->IncludePathToFile << "\n";
 }
 
 smtk::resource::ResourcePtr vtkSMTKAttributeReader::GetResource() const
@@ -112,8 +114,9 @@ bool vtkSMTKAttributeReader::LoadFile()
   rsrc->setLocation(this->FileName);
 
   smtk::io::AttributeReader rdr;
-  if (rdr.read(rsrc, this->FileName, this->IncludePath, smtk::io::Logger::instance()))
+  if (rdr.read(rsrc, this->FileName, this->IncludePathToFile, smtk::io::Logger::instance()))
   {
+    vtkErrorMacro("Errors encountered: " << smtk::io::Logger::instance().convertToString() << "\n");
     this->AttributeResource = nullptr;
     vtkErrorMacro("Could not read \"" << this->FileName << "\"");
     return false;
