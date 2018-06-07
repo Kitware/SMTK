@@ -285,18 +285,20 @@ void qtBaseView::makeTopLevel()
   if ((!view->details().attributeAsBool("FilterByCategory", flag)) || flag)
   {
     std::string fbcm;
+    std::string catLabel("Show by Category: ");
+    view->details().attribute("FilterByCategoryLabel", catLabel);
     view->details().attribute("FilterByCategoryMode", fbcm);
     // is category filtering always suppose to be on?
     if (fbcm == "alwaysOn")
     {
       this->Internals->FilterByCategoryLabel = new QLabel(this->parentWidget());
-      this->Internals->FilterByCategoryLabel->setText("Show by Category");
+      this->Internals->FilterByCategoryLabel->setText(catLabel.c_str());
       this->Internals->FilterByCategoryLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
     else
     {
       this->Internals->FilterByCategory = new QCheckBox(this->parentWidget());
-      this->Internals->FilterByCategory->setText("Show by Category: ");
+      this->Internals->FilterByCategory->setText(catLabel.c_str());
       this->Internals->FilterByCategory->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     }
     this->Internals->ShowCategoryCombo = new QComboBox(this->parentWidget());

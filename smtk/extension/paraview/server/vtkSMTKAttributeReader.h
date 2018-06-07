@@ -31,8 +31,8 @@ public:
   static vtkSMTKAttributeReader* New();
 
   /// Set/get whether to include the parent directory of \a FileName in the include path.
-  vtkGetMacro(IncludePath, bool);
-  vtkSetMacro(IncludePath, bool);
+  vtkGetMacro(IncludePathToFile, bool);
+  vtkSetMacro(IncludePathToFile, bool);
 
   /// Return the SMTK resource that holds data read from \a FileName.
   smtk::resource::ResourcePtr GetResource() const override;
@@ -49,7 +49,7 @@ protected:
 
   bool LoadFile();
 
-  bool IncludePath;
+  bool IncludePathToFile;
   smtk::attribute::CollectionPtr AttributeResource;
   vtkSmartPointer<vtkTable> Defs;
 

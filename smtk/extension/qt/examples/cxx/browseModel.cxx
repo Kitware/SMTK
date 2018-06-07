@@ -14,8 +14,6 @@
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/View.h"
 
-#include "smtk/environment/Environment.h"
-
 #include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -66,13 +64,13 @@ int main(int argc, char* argv[])
   qdelegate->setSubtitleFontSize(10);
   qdelegate->setSubtitleFontWeight(1);
   ModelBrowser* qview = new ModelBrowser;
-  auto operationManager = smtk::environment::OperationManager::instance();
-  auto resourceManager = smtk::environment::ResourceManager::instance();
+  auto operationManager = smtk::operation::Manager::create();
+  auto resourceManager = smtk::resource::Manager::create();
   auto view = smtk::view::View::New("ModelBrowser", "SMTK Model");
   auto phraseModel = smtk::view::ResourcePhraseModel::create(view);
   phraseModel->addSource(resourceManager, operationManager);
   qmodel->setPhraseModel(phraseModel);
-  qview->setup(smtk::environment::ResourceManager::instance(), qmodel, qdelegate, nullptr);
+  qview->setup(resourceManager, qmodel, qdelegate, nullptr);
 
   auto readOp = operationManager->create<smtk::operation::ReadResource>();
   if (!readOp)
