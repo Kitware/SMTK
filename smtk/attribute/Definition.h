@@ -69,6 +69,9 @@ public:
   bool addTag(const Tag& tag);
   bool removeTag(const std::string& name);
 
+  // Returns the label if set else it will return the type
+  const std::string& displayedTypeName() const { return m_label.empty() ? m_type : m_label; }
+
   // The label is what can be displayed in an application.  Unlike the type
   // which is constant w/r to the definition, an application can change the label
   // By default it is set to the same value as the type.
