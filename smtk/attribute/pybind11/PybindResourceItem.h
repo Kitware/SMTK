@@ -15,16 +15,16 @@
 
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/resource/Resource.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::Item > pybind11_init_smtk_attribute_ResourceItem(py::module &m)
+PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::ReferenceItem > pybind11_init_smtk_attribute_ResourceItem(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::Item > instance(m, "ResourceItem");
+  PySharedPtrClass< smtk::attribute::ResourceItem, smtk::attribute::ReferenceItem > instance(m, "ResourceItem");
   instance
     .def(py::init<::smtk::attribute::ResourceItem const &>())
     .def("deepcopy", (smtk::attribute::ResourceItem & (smtk::attribute::ResourceItem::*)(::smtk::attribute::ResourceItem const &)) &smtk::attribute::ResourceItem::operator=)
