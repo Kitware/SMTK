@@ -82,6 +82,9 @@ PySharedPtrClass< smtk::attribute::Collection, smtk::resource::Resource > pybind
     .def("views", &smtk::attribute::Collection::views)
     .def_static("New", [](){ return smtk::attribute::Collection::create(); }, py::return_value_policy::take_ownership)
     .def_static("create", [](){ return smtk::attribute::Collection::create(); }, py::return_value_policy::take_ownership)
+    .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Resource> i) {
+        return std::dynamic_pointer_cast<smtk::attribute::Collection>(i);
+      })
     ;
   py::enum_<smtk::attribute::Collection::CopyOptions>(instance, "CopyOptions")
     .value("COPY_ASSOCIATIONS", smtk::attribute::Collection::CopyOptions::COPY_ASSOCIATIONS)
