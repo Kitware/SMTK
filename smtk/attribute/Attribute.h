@@ -69,7 +69,7 @@ public:
   }
 
   // NOTE: To rename an attribute use the collection!
-  const std::string& name() const { return m_name; }
+  std::string name() const override { return m_name; }
 
   const std::string& type() const;
   std::vector<std::string> types() const;

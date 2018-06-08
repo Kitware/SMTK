@@ -107,3 +107,12 @@ qtItem* qtAttributeItemWidgetFactory::createComponentItemWidget(
 {
   return new qtComponentItem(smtk::dynamic_pointer_cast<ComponentItem>(item), p, bview, orient);
 }
+/**\brief Create a widget that illustrates an item whose value is an array of resource components.
+  *
+  */
+/*qtItem* qtAttributeItemWidgetFactory::createReferenceItemWidget(
+  ReferenceItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
+{
+  return new qtReferenceItem(smtk::dynamic_pointer_cast<ReferenceItem>(item), p, bview, orient);
+}
+*/

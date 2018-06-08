@@ -62,6 +62,8 @@ public:
 
   smtk::attribute::CollectionPtr attCollection() const { return m_AttCollection; }
 
+  smtk::resource::ManagerPtr resourceManager() const { return m_AttCollection->manager(); }
+
   void setActiveModelView(smtk::extension::qtModelView*);
   smtk::extension::qtModelView* activeModelView();
 
@@ -137,7 +139,16 @@ public:
   virtual int getWidthOfItemsMaxLabel(
     const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, const QFont& font);
 
+  //Mechanism for creating new GUI view based on registered factory functions
   qtBaseView* createView(const ViewInfo& info);
+
+  // Methods for dealing with selection process
+  smtk::view::SelectionPtr selection() const { return m_selection; }
+
+  void setSelection(smtk::view::SelectionPtr newSel) { m_selection = newSel; }
+
+  int selectionBit() const { return m_selectionBit; }
+  void setSelectionBit(int val) { m_selectionBit = val; }
 
 #ifdef _WIN32
 #define LINE_BREAKER_STRING "\n";
@@ -159,7 +170,7 @@ signals:
   void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
   void refreshEntityItems();
 
-  friend class qtRootView;
+  friend class qtBaseView;
   friend class qtAssociationWidget;
 
 protected:
@@ -194,6 +205,9 @@ private:
   void getItemsLongLabel(
     const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, std::string& labelText);
   std::map<std::string, widgetConstructor> m_constructors;
+
+  smtk::view::SelectionPtr m_selection;
+  int m_selectionBit;
 
 }; // class
 

@@ -210,9 +210,10 @@ bool qtSelectorView::createChildren()
     if (qtView)
     {
       this->addChildView(qtView, static_cast<int>(enumIndex));
+      // Should this view be visible?
+      qtView->widget()->setVisible(
+        hasDefaultIndex && (defaultIndex == static_cast<int>(enumIndex)));
     }
-    // Should this view be visible?
-    qtView->widget()->setVisible(hasDefaultIndex && (defaultIndex == static_cast<int>(enumIndex)));
   }
   return true;
 }

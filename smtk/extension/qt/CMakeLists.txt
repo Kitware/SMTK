@@ -18,6 +18,7 @@ set(QAttrLibSrcs
   qtGroupView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
+  qtModelEntityAttributeView.cxx
   qtReferenceItem.cxx
   qtOperationView.cxx
   #qtModelView.cxx
@@ -76,6 +77,7 @@ set(QAttrLibMocHeaders
   qtGroupView.h
   qtAttributeView.h
   qtInstancedView.h
+  qtModelEntityAttributeView.h
   qtReferenceItem.h
   qtReferenceItemData.h
   qtOperationView.h
@@ -120,7 +122,6 @@ qt5_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
 qt5_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
 qt5_add_resources(RCS_RESOURCES
   qtDescriptivePhraseModelIcons.qrc
-  qtEntityItemModelIcons.qrc
   qtAttributeIcons.qrc
 )
 

@@ -187,7 +187,7 @@ PySharedPtrClass< smtk::model::Manager, smtk::resource::Resource > pybind11_init
     .def("lowerDimensionalBoundaries", &smtk::model::Manager::lowerDimensionalBoundaries, py::arg("ofEntity"), py::arg("lowerDimension"))
     .def("meshes", &smtk::model::Manager::meshes)
     .def("modelOwningEntity", &smtk::model::Manager::modelOwningEntity, py::arg("uid"))
-    .def("name", &smtk::model::Manager::name, py::arg("ofEntity"))
+    .def("name", (std::string (smtk::model::Manager::*)(const smtk::common::UUID& ) const) &smtk::model::Manager::name, py::arg("ofEntity"))
     .def("observe", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::ConditionCallback, void *)) &smtk::model::Manager::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("observe", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::OneToOneCallback, void *)) &smtk::model::Manager::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("observe", (void (smtk::model::Manager::*)(::smtk::model::ManagerEventType, ::smtk::model::OneToManyCallback, void *)) &smtk::model::Manager::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))

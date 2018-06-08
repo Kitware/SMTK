@@ -134,6 +134,8 @@ public:
 
   BitFlags type(const smtk::common::UUID& ofEntity) const;
   int dimension(const smtk::common::UUID& ofEntity) const;
+
+  using smtk::resource::Resource::name;
   std::string name(const smtk::common::UUID& ofEntity) const;
 
   EntityPtr findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;

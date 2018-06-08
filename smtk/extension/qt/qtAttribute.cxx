@@ -23,7 +23,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
@@ -241,6 +241,10 @@ qtItem* qtAttribute::createItem(
       aItem = qtAttribute::s_factory->createComponentItemWidget(
         smtk::dynamic_pointer_cast<ComponentItem>(item), pW, bview, enVectorItemOrient);
       break;
+      /*    case smtk::attribute::Item::ReferenceType:
+      aItem = qtAttribute::s_factory->createReferenceItemWidget(
+        smtk::dynamic_pointer_cast<ReferenceItem>(item), pW, bview, enVectorItemOrient);
+ */ break;
     default:
       //m_errorStatus << "Error: Unsupported Item Type: " <<
       // smtk::attribute::Item::type2String(item->type()) << "\n";

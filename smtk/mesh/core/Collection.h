@@ -123,7 +123,7 @@ public:
   bool isModified() const;
 
   //get the name of a mesh collection
-  const std::string& name() const;
+  std::string name() const override;
   void name(const std::string& n);
 
   std::shared_ptr<smtk::mesh::Manager> manager() const;

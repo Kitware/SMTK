@@ -102,6 +102,9 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
   }
 
   m_attrUIMgr = new smtk::extension::qtUIManager(rsrc);
+  m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
+  m_attrUIMgr->setSelectionBit(1);   // ToDo: should be set by application
+
   smtk::view::ViewPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
   if (view)
   {
@@ -124,7 +127,6 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
         }
       });
   }
-  // m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
   return didDisplay;
 }
 

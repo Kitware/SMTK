@@ -44,6 +44,8 @@ public:
   virtual const common::UUID& id() const = 0;
   /// Assign an ID to this object (used by readers; not for arbitrary reuse).
   virtual bool setId(const common::UUID& myID) = 0;
+  /// Return the name of the object - by default it will return the UUID but that can be overriden
+  virtual std::string name() const;
 
 protected:
   PersistentObject();

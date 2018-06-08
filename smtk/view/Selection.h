@@ -361,6 +361,47 @@ private:
 };
 
 template <typename T>
+T& Selection::currentSelectionByValue(T& selection, int value, bool exactMatch)
+{
+  if (exactMatch)
+  {
+    for (auto entry : m_selection)
+    {
+      if ((entry.second & value) == value)
+      {
+        auto entryT = std::dynamic_pointer_cast<typename T::value_type::element_type>(entry.first);
+        if (entryT)
+        {
+          selection.insert(selection.end(), entryT);
+        }
+      }
+    }
+  }
+  else
+  {
+    for (auto entry : m_selection)
+    {
+      if (entry.second & value)
+      {
+        auto entryT = std::dynamic_pointer_cast<typename T::value_type::element_type>(entry.first);
+        if (entryT)
+        {
+          selection.insert(selection.end(), entryT);
+        }
+      }
+    }
+  }
+  return selection;
+}
+
+template <typename T>
+T& Selection::currentSelectionByValue(T& selection, const std::string& valueLabel, bool exactMatch)
+{
+  int val = this->selectionValueFromLabel(valueLabel);
+  return this->currentSelectionByValue(selection, val, exactMatch);
+}
+
+template <typename T>
 bool Selection::modifySelection(
   const T& components, const std::string& source, int value, SelectionAction action)
 {

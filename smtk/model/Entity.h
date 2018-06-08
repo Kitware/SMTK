@@ -73,6 +73,8 @@ public:
 
   bool reparent(ManagerPtr newParent);
 
+  std::string name() const override;
+
   int dimension() const;
   BitFlags dimensionBits() const;
   BitFlags entityFlags() const;
@@ -155,6 +157,11 @@ public:
   bool isEdgeUse() const { return smtk::model::isEdgeUse(this->entityFlags()); }
   bool isFaceUse() const { return smtk::model::isFaceUse(this->entityFlags()); }
   bool isVolumeUse() const { return smtk::model::isVolumeUse(this->entityFlags()); }
+
+  // Attribute Stuff
+  /// Return a list of attributes on the entity based on an attribute definition
+  smtk::attribute::Attributes attributes(smtk::attribute::DefinitionPtr def) const;
+
 protected:
   Entity();
   int consumeInvalidIndex(const smtk::common::UUID& uid);

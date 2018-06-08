@@ -81,7 +81,7 @@ PySharedPtrClass< smtk::mesh::Collection > pybind11_init_smtk_mesh_Collection(py
     .def("meshes", (smtk::mesh::MeshSet (smtk::mesh::Collection::*)(::smtk::mesh::Dirichlet const &) const) &smtk::mesh::Collection::meshes, py::arg("d"))
     .def("meshes", (smtk::mesh::MeshSet (smtk::mesh::Collection::*)(::smtk::mesh::Neumann const &) const) &smtk::mesh::Collection::meshes, py::arg("n"))
     .def("meshes", (smtk::mesh::MeshSet (smtk::mesh::Collection::*)(::std::string const &) const) &smtk::mesh::Collection::meshes, py::arg("name"))
-    .def("name", (std::string const & (smtk::mesh::Collection::*)() const) &smtk::mesh::Collection::name)
+    .def("name", (std::string (smtk::mesh::Collection::*)() const) &smtk::mesh::Collection::name)
     .def("name", (void (smtk::mesh::Collection::*)(::std::string const &)) &smtk::mesh::Collection::name, py::arg("n"))
     .def("neumannMeshes", &smtk::mesh::Collection::neumannMeshes, py::arg("n"))
     .def("neumanns", &smtk::mesh::Collection::neumanns)

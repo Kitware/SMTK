@@ -59,7 +59,9 @@ public:
     attribute::DateTimeItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
   virtual qtItem* createComponentItemWidget(
     attribute::ComponentItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
-};
+/*  virtual qtItem* createReferenceItemWidget(
+    attribute::ReferenceItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient);
+*/};
 
 } // namespace extension
 } // namespace smtk
