@@ -11,6 +11,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/view/View.h"
 
@@ -56,6 +57,18 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
     auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Collection>(rsrc->getResource());
     if (attrRsrc)
     {
+      pqSMTKWrapper* wrapper =
+        pqSMTKBehavior::instance()->resourceManagerForServer(rsrc->getServer());
+      if (wrapper)
+      {
+        // Keep hold of the selection instance for the active server connection
+        // so that this->displayResource() below can make use of it.
+        m_seln = wrapper->smtkSelection();
+      }
+      else
+      {
+        m_seln = nullptr;
+      }
       return this->displayResource(attrRsrc);
     }
   }
@@ -107,9 +120,11 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
           delete m_attrUIMgr;
           m_attrUIMgr = nullptr;
           m_rsrc = nullptr;
+          m_seln = nullptr;
         }
       });
   }
+  // m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
   return didDisplay;
 }
 
