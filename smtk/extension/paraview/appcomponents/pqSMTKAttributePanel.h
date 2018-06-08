@@ -70,5 +70,6 @@ public slots:
 protected:
   smtk::extension::qtUIManager* m_attrUIMgr;
   smtk::resource::ResourcePtr m_rsrc;
+  smtk::view::SelectionPtr m_seln;
   int m_observer;
 };
