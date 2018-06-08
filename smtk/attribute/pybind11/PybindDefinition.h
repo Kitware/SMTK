@@ -31,6 +31,7 @@ PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attribute_Def
     .def("deepcopy", (smtk::attribute::Definition & (smtk::attribute::Definition::*)(::smtk::attribute::Definition const &)) &smtk::attribute::Definition::operator=)
     .def("type", &smtk::attribute::Definition::type)
     .def("collection", &smtk::attribute::Definition::collection)
+    .def("displayedTypeName", &smtk::attribute::Definition::displayedTypeName)
     .def("label", &smtk::attribute::Definition::label)
     .def("setLabel", &smtk::attribute::Definition::setLabel, py::arg("newLabel"))
     .def("baseDefinition", &smtk::attribute::Definition::baseDefinition)
