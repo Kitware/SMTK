@@ -17,14 +17,14 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/resource/Resource.h"
 
 namespace py = pybind11;
 
-py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute_ResourceItemDefinition(py::module &m)
+py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::ReferenceItemDefinition > pybind11_init_smtk_attribute_ResourceItemDefinition(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::ResourceItemDefinition, smtk::attribute::ItemDefinition > instance(m, "ResourceItemDefinition");
+  PySharedPtrClass< smtk::attribute::ResourceItemDefinition, smtk::attribute::ReferenceItemDefinition > instance(m, "ResourceItemDefinition");
   instance
     .def(py::init<::smtk::attribute::ResourceItemDefinition const &>())
     .def_static("New", &smtk::attribute::ResourceItemDefinition::New, py::arg("sname"))
@@ -36,7 +36,6 @@ py::class_< smtk::attribute::ResourceItemDefinition, smtk::attribute::ItemDefini
     .def("isValueValid", &smtk::attribute::ResourceItemDefinition::isValueValid, py::arg("entity"))
     .def("maxNumberOfValues", &smtk::attribute::ResourceItemDefinition::maxNumberOfValues)
     .def("numberOfRequiredValues", &smtk::attribute::ResourceItemDefinition::numberOfRequiredValues)
-    .def("setAcceptsEntries", (bool (smtk::attribute::ResourceItemDefinition::*)(::std::string const &, bool)) &smtk::attribute::ResourceItemDefinition::setAcceptsEntries, py::arg("typeName"), py::arg("accept"))
     // .def("setAcceptsEntries", (bool (smtk::attribute::ResourceItemDefinition::*)(::smtk::resource::Resource::Index, bool)) &smtk::attribute::ResourceItemDefinition::setAcceptsEntries, py::arg("resourceIndex"), py::arg("accept"))
     .def("setCommonValueLabel", &smtk::attribute::ResourceItemDefinition::setCommonValueLabel, py::arg("elabel"))
     .def("setIsExtensible", &smtk::attribute::ResourceItemDefinition::setIsExtensible, py::arg("extensible"))

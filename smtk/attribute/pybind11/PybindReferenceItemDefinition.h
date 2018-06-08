@@ -14,12 +14,13 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/attribute/ReferenceItemDefinition.h"
+#include "smtk/attribute/ItemDefinition.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::ReferenceItemDefinition > pybind11_init_smtk_attribute_ReferenceItemDefinition(py::module &m)
+PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute_ReferenceItemDefinition(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::ReferenceItemDefinition > instance(m, "ReferenceItemDefinition");
+  PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::ItemDefinition > instance(m, "ReferenceItemDefinition");
   instance
     .def(py::init<::smtk::attribute::ReferenceItemDefinition const &>())
     .def_static("New", &smtk::attribute::ReferenceItemDefinition::New, py::arg("name"))

@@ -17,14 +17,14 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/resource/Component.h"
 
 namespace py = pybind11;
 
-py::class_< smtk::attribute::ComponentItemDefinition, smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute_ComponentItemDefinition(py::module &m)
+py::class_< smtk::attribute::ComponentItemDefinition, smtk::attribute::ReferenceItemDefinition > pybind11_init_smtk_attribute_ComponentItemDefinition(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::ComponentItemDefinition, smtk::attribute::ItemDefinition > instance(m, "ComponentItemDefinition");
+  PySharedPtrClass< smtk::attribute::ComponentItemDefinition, smtk::attribute::ReferenceItemDefinition > instance(m, "ComponentItemDefinition");
   instance
     .def(py::init<::smtk::attribute::ComponentItemDefinition const &>())
     .def_static("New", &smtk::attribute::ComponentItemDefinition::New, py::arg("sname"))
@@ -36,7 +36,6 @@ py::class_< smtk::attribute::ComponentItemDefinition, smtk::attribute::ItemDefin
     .def("isValueValid", &smtk::attribute::ComponentItemDefinition::isValueValid, py::arg("entity"))
     .def("maxNumberOfValues", &smtk::attribute::ComponentItemDefinition::maxNumberOfValues)
     .def("numberOfRequiredValues", &smtk::attribute::ComponentItemDefinition::numberOfRequiredValues)
-    .def("setAcceptsEntries", (bool (smtk::attribute::ComponentItemDefinition::*)(::std::string const &, ::std::string const &, bool)) &smtk::attribute::ComponentItemDefinition::setAcceptsEntries, py::arg("typeName"), py::arg("queryString"), py::arg("accept"))
     // .def("setAcceptsResourceComponents", (bool (smtk::attribute::ComponentItemDefinition::*)(::smtk::resource::Resource::Index, ::std::string const &, bool)) &smtk::attribute::ComponentItemDefinition::setAcceptsResourceComponents, py::arg("resourceIndex"), py::arg("queryString"), py::arg("accept"))
     .def("setCommonValueLabel", &smtk::attribute::ComponentItemDefinition::setCommonValueLabel, py::arg("elabel"))
     .def("setIsExtensible", &smtk::attribute::ComponentItemDefinition::setIsExtensible, py::arg("extensible"))
