@@ -12,6 +12,8 @@
 
 #include "smtk/bridge/discrete/Exports.h"
 
+#include "smtk/attribute/Registrar.h"
+#include "smtk/mesh/resource/Registrar.h"
 #include "smtk/model/Registrar.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
@@ -27,7 +29,8 @@ namespace discrete
 class SMTKDISCRETESESSION_EXPORT Registrar
 {
 public:
-  using Dependencies = std::tuple<operation::Registrar, model::Registrar>;
+  using Dependencies =
+    std::tuple<operation::Registrar, model::Registrar, attribute::Registrar, mesh::Registrar>;
 
   static void registerTo(const smtk::operation::Manager::Ptr&);
   static void unregisterFrom(const smtk::operation::Manager::Ptr&);
