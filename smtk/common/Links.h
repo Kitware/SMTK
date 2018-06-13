@@ -323,7 +323,7 @@ bool Links<id_type, left_type, right_type, base_type>::erase_all(
   auto& self = this->Parent::template get<tag>();
   auto to_erase = self.equal_range(value);
   auto pos = self.erase(to_erase.first, to_erase.second);
-  return pos == self.end();
+  return pos != self.end();
 }
 
 template <typename id_type, typename left_type, typename right_type, typename base_type>
