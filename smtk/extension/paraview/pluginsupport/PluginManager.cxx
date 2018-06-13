@@ -33,6 +33,21 @@ PluginManager::~PluginManager()
 void PluginManager::addPluginClient(const std::weak_ptr<PluginClientBase>& pluginClient)
 {
   m_clients.push_back(pluginClient);
+
+  // Loop through the set of functions associated with extant managers and
+  // attempt to register this plugin to those managers. If the manager
+  // associated with the function has expired, remove it from the set.
+  for (auto it = m_registerToExistingManagers.begin(); it != m_registerToExistingManagers.end();)
+  {
+    if ((*it)(pluginClient))
+    {
+      ++it;
+    }
+    else
+    {
+      m_registerToExistingManagers.erase(it++);
+    }
+  }
 }
 }
 
