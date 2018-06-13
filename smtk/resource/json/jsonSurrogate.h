@@ -7,29 +7,23 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Component.cxx - Abstract base class for CMB Resource Components
-// .SECTION Description
-// .SECTION See Also
+#ifndef smtk_resource_json_jsonSurrogate_h
+#define smtk_resource_json_jsonSurrogate_h
 
-#include "smtk/resource/Component.h"
+#include "smtk/resource/Surrogate.h"
 
-#include "smtk/resource/Resource.h"
-
-#include <cassert>
+#include "nlohmann/json.hpp"
 
 namespace smtk
 {
 namespace resource
 {
+using json = nlohmann::json;
 
-Component::Component()
-  : m_links(this)
-{
+void to_json(json&, const Surrogate&);
+
+Surrogate from_json(const json&);
+}
 }
 
-Component::~Component()
-{
-}
-
-} // namespace resource
-} // namespace smtk
+#endif

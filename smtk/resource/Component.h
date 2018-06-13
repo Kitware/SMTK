@@ -16,6 +16,7 @@
 #ifndef smtk_resource_Component_h
 #define smtk_resource_Component_h
 
+#include "smtk/resource/ComponentLinks.h"
 #include "smtk/resource/PersistentObject.h"
 
 #include <string>
@@ -24,6 +25,7 @@ namespace smtk
 {
 namespace resource
 {
+class Resource;
 
 class SMTKCORE_EXPORT Component : public PersistentObject
 {
@@ -31,15 +33,23 @@ class SMTKCORE_EXPORT Component : public PersistentObject
 
 public:
   typedef std::function<void(const ComponentPtr&)> Visitor;
+  typedef ComponentLinks Links;
 
   smtkTypeMacro(Component);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
+
   virtual ~Component();
   virtual const ResourcePtr resource() const = 0;
 
+  Links& links() { return m_links; }
+  const Links& links() const { return m_links; }
+
 protected:
   Component();
+
+private:
+  Links m_links;
 };
 }
 }

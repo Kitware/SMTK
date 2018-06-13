@@ -7,29 +7,21 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Component.cxx - Abstract base class for CMB Resource Components
-// .SECTION Description
-// .SECTION See Also
+#ifndef smtk_resource_json_jsonLinkBase_h
+#define smtk_resource_json_jsonLinkBase_h
 
-#include "smtk/resource/Component.h"
+#include "smtk/resource/ResourceLinks.h"
 
-#include "smtk/resource/Resource.h"
+#include "nlohmann/json.hpp"
 
-#include <cassert>
-
-namespace smtk
+namespace nlohmann
 {
-namespace resource
+template <>
+struct adl_serializer<smtk::resource::detail::LinkBase>
 {
-
-Component::Component()
-  : m_links(this)
-{
+  static smtk::resource::detail::LinkBase from_json(const json&);
+  static void to_json(json&, const smtk::resource::detail::LinkBase&);
+};
 }
 
-Component::~Component()
-{
-}
-
-} // namespace resource
-} // namespace smtk
+#endif

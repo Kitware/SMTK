@@ -11,11 +11,17 @@
 #ifndef smtk_resource_Resource_h
 #define smtk_resource_Resource_h
 
+#include "smtk/CoreExports.h"
+
+#include "smtk/common/UUID.h"
+
 #include "smtk/resource/Lock.h"
 #include "smtk/resource/PersistentObject.h"
+#include "smtk/resource/ResourceLinks.h"
 
 #include <string>
 #include <typeindex>
+#include <unordered_map>
 
 namespace smtk
 {
@@ -47,6 +53,7 @@ public:
   typedef std::size_t Index;
   typedef smtk::resource::Metadata Metadata;
   typedef std::function<void(const ResourcePtr&)> Visitor;
+  typedef ResourceLinks Links;
 
   friend class Manager;
 
@@ -116,6 +123,9 @@ public:
   /// satisfy the query criteria.
   ComponentSet find(const std::string& queryString) const;
 
+  Links& links() { return m_links; }
+  const Links& links() const { return m_links; }
+
   /// classes that are granted permission to the key may retrieve the resource's
   /// lock.
   Lock& lock(Key()) const { return m_lock; }
@@ -132,6 +142,7 @@ private:
   /// True when m_location is in sync with this instance.
   bool m_clean;
 
+  Links m_links;
   mutable Lock m_lock;
 
   WeakManagerPtr m_manager;

@@ -7,31 +7,27 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/resource/json/jsonResource.h"
+#include "smtk/resource/json/jsonSurrogate.h"
 
-#include "smtk/resource/json/jsonLinkBase.h"
+#include "smtk/resource/Surrogate.h"
 
-#include "smtk/common/json/jsonLinks.h"
 #include "smtk/common/json/jsonUUID.h"
 
-// Define how resources are serialized.
 namespace smtk
 {
 namespace resource
 {
-void to_json(json& j, const ResourcePtr& resource)
+void to_json(json& j, const Surrogate& surrogate)
 {
-  j["type"] = resource->typeName();
-  j["links"] = resource->links().data();
+  j["index"] = surrogate.index();
+  j["type"] = surrogate.typeName();
+  j["id"] = surrogate.id();
+  j["location"] = surrogate.location();
 }
 
-void from_json(const json& j, ResourcePtr& resource)
+Surrogate from_json(const json& j)
 {
-  // For backwards compatibility, do not require "links" json item.
-  if (j.find("links") != j.end())
-  {
-    resource->links().data() = j.at("links");
-  }
+  return Surrogate(j["index"], j["type"], j["id"], j["location"]);
 }
 }
 }

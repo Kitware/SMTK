@@ -33,6 +33,7 @@ endif()
 set(unit_tests
   UnitTestDateTime.cxx
   UnitTestDateTimeZonePair.cxx
+  UnitTestLinks
   UnitTestRegistry.cxx
 )
 

@@ -6,6 +6,7 @@ set(commonSrcs
   Environment.cxx
   Extension.cxx
   FileLocation.cxx
+  json/jsonLinks.cxx
   json/jsonUUID.cxx
   Paths.cxx
   StringUtil.cxx
@@ -24,7 +25,9 @@ set(commonHeaders
   FileLocation.h
   Generator.h
   GeometryUtilities.h
+  json/jsonLinks.h
   json/jsonUUID.h
+  Links.h
   Paths.h
   RangeDetector.h
   Registry.h
