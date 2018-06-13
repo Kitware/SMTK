@@ -120,6 +120,10 @@ endforeach()
 #install the headers
 smtk_public_headers(${modelHeaders})
 
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(plugin)
+endif()
+
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()

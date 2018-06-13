@@ -62,6 +62,10 @@ endif()
 #install the headers
 smtk_public_headers(${operationHeaders})
 
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(plugin)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_operation
     PUBLIC nlohmann_json)
