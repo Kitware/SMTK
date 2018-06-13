@@ -34,6 +34,7 @@ public:
   friend class Component;
 
   typedef smtk::common::Links<smtk::common::UUID> Data;
+  typedef Data::RoleType RoleType;
 
   /// A Key is a pair of UUIDs. the First UUID is the id of the resource link,
   /// and the second one is the id of the component link.
@@ -49,8 +50,8 @@ public:
   /// key composed of the resource link id and component link id (when linking
   /// to a resource, the component id is set to a reserved value), or return a
   /// key comprised of a pair of null UUIDs if the link construction failed.
-  Key addLinkTo(const ResourcePtr&, const std::string&);
-  Key addLinkTo(const ComponentPtr&, const std::string&);
+  Key addLinkTo(const ResourcePtr&, const RoleType&);
+  Key addLinkTo(const ComponentPtr&, const RoleType&);
 
   /// Given a Link key, remove the associated link. Return true if successful.
   bool removeLink(const Key&);
@@ -60,16 +61,14 @@ public:
   /// link id, (b) the link does not have this component as the "from"
   /// component, or (c) the link is not a resource link (i.e. it is a component
   /// link).
-  std::pair<ResourcePtr, std::reference_wrapper<const std::string> > linkedResource(
-    const Key&) const;
+  std::pair<ResourcePtr, RoleType> linkedResource(const Key&) const;
 
   /// Given a Link key, return the resource component and role to which this
   /// component is linked, or return nullptr if (a) no link exists with this
   /// link id, (b) the link does not have this component as the "from"
   /// component or (c) the link is not a component link (i.e. it is a resource
   /// link).
-  std::pair<ComponentPtr, std::reference_wrapper<const std::string> > linkedComponent(
-    const Key&) const;
+  std::pair<ComponentPtr, RoleType> linkedComponent(const Key&) const;
 
 private:
   ComponentLinks(const Component*);
@@ -82,7 +81,7 @@ private:
   /// from this component to the input and assign the link a random UUID. Return
   /// a key composed of the resource link id and component link id (when linking
   /// to a resource, the component id is set to a reserved value).
-  Key addLinkTo(const ResourcePtr&, const smtk::common::UUID&, const std::string&);
+  Key addLinkTo(const ResourcePtr&, const smtk::common::UUID&, const RoleType&);
 
   const Component* m_component;
 };

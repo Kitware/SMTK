@@ -23,8 +23,9 @@ namespace common
 {
 using json = nlohmann::json;
 
-template <typename id_type, typename left_type, typename right_type, typename base_type>
-void to_json(json& j, const Links<id_type, left_type, right_type, base_type>& links)
+template <typename id_type, typename left_type, typename right_type, typename role_type,
+  typename base_type>
+void to_json(json& j, const Links<id_type, left_type, right_type, role_type, base_type>& links)
 {
   for (auto link : links)
   {
@@ -39,8 +40,9 @@ void to_json(json& j, const Links<id_type, left_type, right_type, base_type>& li
   }
 }
 
-template <typename id_type, typename left_type, typename right_type, typename base_type>
-void from_json(const json& j, Links<id_type, left_type, right_type, base_type>& links)
+template <typename id_type, typename left_type, typename right_type, typename role_type,
+  typename base_type>
+void from_json(const json& j, Links<id_type, left_type, right_type, role_type, base_type>& links)
 {
   for (json::const_iterator it = j.begin(); it != j.end(); ++it)
   {
@@ -48,8 +50,8 @@ void from_json(const json& j, Links<id_type, left_type, right_type, base_type>& 
     id_type id = it->at("id");
     left_type left = it->at("left");
     right_type right = it->at("right");
-    std::string role = it->at("role");
-    links.insert(std::move(base), id, std::move(left), std::move(right), role);
+    role_type role = it->at("role");
+    links.insert(std::move(base), id, left, right, role);
   }
 }
 

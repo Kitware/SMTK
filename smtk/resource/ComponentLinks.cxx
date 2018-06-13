@@ -86,7 +86,8 @@ bool ComponentLinks::isLinkedTo(
   return (linkedTo.find(componentId) != linkedTo.end());
 }
 
-ComponentLinks::Key ComponentLinks::addLinkTo(const ResourcePtr& resource, const std::string& role)
+ComponentLinks::Key ComponentLinks::addLinkTo(
+  const ResourcePtr& resource, const ComponentLinks::RoleType& role)
 {
   // If the resource pointer cannot be resolved, return a null link.
   if (resource == nullptr)
@@ -98,7 +99,7 @@ ComponentLinks::Key ComponentLinks::addLinkTo(const ResourcePtr& resource, const
 }
 
 ComponentLinks::Key ComponentLinks::addLinkTo(
-  const ComponentPtr& component, const std::string& role)
+  const ComponentPtr& component, const ComponentLinks::RoleType& role)
 {
   // If the component pointer cannot be resolved, there is no link.
   if (component == nullptr)
@@ -109,8 +110,8 @@ ComponentLinks::Key ComponentLinks::addLinkTo(
   return this->addLinkTo(component->resource(), component->id(), role);
 }
 
-ComponentLinks::Key ComponentLinks::addLinkTo(
-  const ResourcePtr& resource, const smtk::common::UUID& componentId, const std::string& role)
+ComponentLinks::Key ComponentLinks::addLinkTo(const ResourcePtr& resource,
+  const smtk::common::UUID& componentId, const ComponentLinks::RoleType& role)
 {
   // Access the Resource Link data that connects this component's resource to
   // the input resource. If it doesn't exist, then create a new resource link.
@@ -178,7 +179,7 @@ bool ComponentLinks::removeLink(const ComponentLinks::Key& key)
   return resourceLinkData.value(key.first).erase(key.second) > 0;
 }
 
-std::pair<ResourcePtr, std::reference_wrapper<const std::string> > ComponentLinks::linkedResource(
+std::pair<ResourcePtr, ComponentLinks::RoleType> ComponentLinks::linkedResource(
   const Key& key) const
 {
   typedef ResourceLinks::ResourceLinkData ResourceLinkData;
@@ -189,7 +190,7 @@ std::pair<ResourcePtr, std::reference_wrapper<const std::string> > ComponentLink
   // Check that the component link has a resource as its rhs
   if (componentLink.right != linkToResource)
   {
-    return std::make_pair(ResourcePtr(), std::cref(ResourceLinkData::undefinedRole));
+    return std::make_pair(ResourcePtr(), Data::undefinedRole);
   }
 
   if (resourceLink.resource() == nullptr && m_component->resource()->manager() != nullptr)
@@ -200,7 +201,7 @@ std::pair<ResourcePtr, std::reference_wrapper<const std::string> > ComponentLink
   return std::make_pair(resourceLink.resource(), componentLink.role);
 }
 
-std::pair<ComponentPtr, std::reference_wrapper<const std::string> > ComponentLinks::linkedComponent(
+std::pair<ComponentPtr, ComponentLinks::RoleType> ComponentLinks::linkedComponent(
   const Key& key) const
 {
   typedef ResourceLinks::ResourceLinkData ResourceLinkData;
@@ -211,7 +212,7 @@ std::pair<ComponentPtr, std::reference_wrapper<const std::string> > ComponentLin
   // Check that the component link has a component as its rhs
   if (componentLink.right == linkToResource)
   {
-    return std::make_pair(ComponentPtr(), std::cref(ResourceLinkData::undefinedRole));
+    return std::make_pair(ComponentPtr(), Data::undefinedRole);
   }
 
   if (resourceLink.resource() == nullptr && m_component->resource()->manager() != nullptr)

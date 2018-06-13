@@ -77,7 +77,8 @@ public:
   /// and the second one is the id of the component link.
   typedef std::pair<smtk::common::UUID, smtk::common::UUID> Key;
 
-  typedef smtk::common::Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, LinkBase>
+  typedef smtk::common::Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int,
+    LinkBase>
     ResourceLinkData;
 
   typedef ResourceLinkData::Link Link;
