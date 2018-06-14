@@ -30,9 +30,10 @@ using namespace smtk::extension;
 class qtInstancedViewInternals
 {
 public:
-  qtInstancedViewInternals() {}
+  qtInstancedViewInternals() { m_isEmpty = true; }
   //QScrollArea *ScrollArea;
   QList<QPointer<qtAttribute> > AttInstances;
+  bool m_isEmpty;
 };
 
 qtBaseView* qtInstancedView::createViewWidget(const ViewInfo& info)
@@ -153,6 +154,8 @@ void qtInstancedView::updateAttributeData()
   this->setFixedLabelWidth(longLabelWidth);
   n = atts.size();
 
+  // Assume by default the view is empty
+  this->Internals->m_isEmpty = true;
   for (i = 0; i < n; i++)
   {
     if (atts[i]->numberOfItems() > 0)
@@ -167,9 +170,10 @@ void qtInstancedView::updateAttributeData()
         // if any exists
         attInstance->createBasicLayout(true);
         this->Internals->AttInstances.push_back(attInstance);
-        if (attInstance->widget())
+        if (attInstance->widget() && !attInstance->isEmpty())
         {
           this->Widget->layout()->addWidget(attInstance->widget());
+          this->Internals->m_isEmpty = false;
         }
         QObject::connect(attInstance, SIGNAL(modified()), this, SIGNAL(modified()));
       }
@@ -207,4 +211,9 @@ void qtInstancedView::requestModelEntityAssociation()
   {
     att->onRequestEntityAssociation();
   }
+}
+
+bool qtInstancedView::isEmpty() const
+{
+  return this->Internals->m_isEmpty;
 }

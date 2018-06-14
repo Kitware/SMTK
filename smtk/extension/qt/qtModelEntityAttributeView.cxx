@@ -638,3 +638,10 @@ void qtModelEntityAttributeView::showAdvanceLevelOverlay(bool show)
     this->Internals->CurrentAtt->showAdvanceLevelOverlay(show);
   }
 }
+
+bool qtModelEntityAttributeView::isEmpty() const
+{
+  QList<smtk::attribute::DefinitionPtr> currentDefs =
+    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+  return currentDefs.isEmpty();
+}

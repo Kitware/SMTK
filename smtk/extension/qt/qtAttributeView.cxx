@@ -1481,3 +1481,10 @@ void qtAttributeView::showAdvanceLevelOverlay(bool show)
   }
   this->qtBaseView::showAdvanceLevelOverlay(show);
 }
+
+bool qtAttributeView::isEmpty() const
+{
+  QList<smtk::attribute::DefinitionPtr> currentDefs =
+    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+  return currentDefs.isEmpty();
+}
