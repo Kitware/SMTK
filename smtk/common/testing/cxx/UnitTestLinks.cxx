@@ -43,12 +43,12 @@ void from_json(const nlohmann::json& j, MyBase& myBase)
 
 void UnitTest()
 {
-  typedef smtk::common::Links<int, std::size_t, short, MyBase> MyLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyBase> MyLinks;
   MyLinks links;
   smtkTest(links.empty() == true, "Should be empty.");
 
   // Try to insert a link (id, left, right) into our links (should succeed).
-  auto inserted = links.insert(0, 3, 4, "foo");
+  auto inserted = links.insert(0, 3, 4, 100);
   smtkTest(inserted.second == true, "Should be able to insert a link.");
   smtkTest(links.empty() == false, "Should not be empty.");
   smtkTest(links.size() == 1, "Should have 1 link.");
@@ -58,12 +58,12 @@ void UnitTest()
   smtkTest(inserted.second == false, "Should not be able to insert a link with the same id.");
 
   // Add a link that reuses one of the original values
-  inserted = links.insert(1, 3, 5, "bar");
+  inserted = links.insert(1, 3, 5, 101);
   smtkTest(inserted.second == true, "Should be able to insert a link.");
   smtkTest(links.size() == 2, "Should have 2 links.");
   smtkTest(links.get<MyLinks::Right>().find(5)->left == 3,
     "Should be able to access the left value via the right value.");
-  smtkTest(links.get<MyLinks::Role>().find("bar")->left == 3,
+  smtkTest(links.get<MyLinks::Role>().find(101)->left == 3,
     "Should be able to access the left value via the role.");
 
   // Access values by id
@@ -71,11 +71,11 @@ void UnitTest()
   smtkTest(links.at<MyLinks::Left>(1) == 3, "Should be set to 3.");
   smtkTest(links.at(1).right == 5, "Should be set to 5.");
   smtkTest(links.at<MyLinks::Right>(1) == 5, "Should be set to 5.");
-  smtkTest(links.at(1).role == "bar", "Should be set to \"bar\".")
-    smtkTest(links.at<MyLinks::Role>(1) == "bar", "Should be set to \"bar\".")
+  smtkTest(links.at(1).role == 101, "Should be set to 101.");
+  smtkTest(links.at<MyLinks::Role>(1) == 101, "Should be set to 101.");
 
-    // Try to modify a value using an id that is not in the links (should throw).
-    bool modified = true;
+  // Try to modify a value using an id that is not in the links (should throw).
+  bool modified = true;
   try
   {
     modified = links.set<MyLinks::Right>(2, 6);
@@ -112,9 +112,9 @@ void UnitTest()
   }
 
   // Add another link
-  links.insert(7, 4, 5, "foo");
+  links.insert(7, 4, 5, 100);
   smtkTest(links.size() == 3, "Should have 3 links.");
-  smtkTest(links.size<MyLinks::Role>("foo") == 2, "Should have 2 links.");
+  smtkTest(links.size<MyLinks::Role>(100) == 2, "Should have 2 links.");
 
   smtkTest(links.has<MyLinks::Left>(4) == true, "Should have a left value of 4.");
   smtkTest(links.has<MyLinks::Right>(1) == false, "Should not have a right value of 1.");
@@ -124,7 +124,7 @@ void UnitTest()
   bool erased = links.erase_all<MyLinks::Right>(5);
   smtkTest(erased && links.size() == 2, "Should have 2 links.");
 
-  links.insert(MyBase("base_class_value"), 10, std::move(4), std::move(5), "baz");
+  links.insert(MyBase("base_class_value"), 10, std::move(4), std::move(5), 102);
   smtkTest(links.at(10).value == "base_class_value", "Should be able to access base class");
 }
 
@@ -158,12 +158,12 @@ namespace
 {
 void MoveOnlyTest()
 {
-  typedef smtk::common::Links<int, std::size_t, short, MyMoveOnlyBase> MyLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyMoveOnlyBase> MyLinks;
   MyLinks links;
   smtkTest(links.empty() == true, "Should be empty.");
 
   // Try to insert a link (id, left, right) into our links (should succeed).
-  auto inserted = links.insert(MyMoveOnlyBase("m"), 0, 3, 4, "foo");
+  auto inserted = links.insert(MyMoveOnlyBase("m"), 0, 3, 4, 100);
   smtkTest(inserted.second == true, "Should be able to insert a link.");
   smtkTest(links.empty() == false, "Should not be empty.");
   smtkTest(links.size() == 1, "Should have 1 link.");
@@ -173,12 +173,12 @@ void MoveOnlyTest()
   smtkTest(inserted.second == false, "Should not be able to insert a link with the same id.");
 
   // Add a link that reuses one of the original values
-  inserted = links.insert(MyMoveOnlyBase("m"), 1, 3, 5, "bar");
+  inserted = links.insert(MyMoveOnlyBase("m"), 1, 3, 5, 101);
   smtkTest(inserted.second == true, "Should be able to insert a link.");
   smtkTest(links.size() == 2, "Should have 2 links.");
   smtkTest(links.get<MyLinks::Right>().find(5)->left == 3,
     "Should be able to access the left value via the right value.");
-  smtkTest(links.get<MyLinks::Role>().find("bar")->left == 3,
+  smtkTest(links.get<MyLinks::Role>().find(101)->left == 3,
     "Should be able to access the left value via the role.");
 
   // Access values by id
@@ -186,8 +186,8 @@ void MoveOnlyTest()
   smtkTest(links.at<MyLinks::Left>(1) == 3, "Should be set to 3.");
   smtkTest(links.at(1).right == 5, "Should be set to 5.");
   smtkTest(links.at<MyLinks::Right>(1) == 5, "Should be set to 5.");
-  smtkTest(links.at(1).role == "bar", "Should be set to \"bar\".")
-    smtkTest(links.at<MyLinks::Role>(1) == "bar", "Should be set to \"bar\".")
+  smtkTest(links.at(1).role == 101, "Should be set to \"bar\".")
+    smtkTest(links.at<MyLinks::Role>(1) == 101, "Should be set to \"bar\".")
 
     // Try to modify a value using an id that is not in the links (should throw).
     bool modified = true;
@@ -227,9 +227,9 @@ void MoveOnlyTest()
   }
 
   // Add another link
-  links.insert(MyMoveOnlyBase("m"), 7, 4, 5, "foo");
+  links.insert(MyMoveOnlyBase("m"), 7, 4, 5, 100);
   smtkTest(links.size() == 3, "Should have 3 links.");
-  smtkTest(links.size<MyLinks::Role>("foo") == 2, "Should have 2 links.");
+  smtkTest(links.size<MyLinks::Role>(100) == 2, "Should have 2 links.");
 
   smtkTest(links.has<MyLinks::Left>(4) == true, "Should have a left value of 4.");
   smtkTest(links.has<MyLinks::Right>(1) == false, "Should not have a right value of 1.");
@@ -239,17 +239,17 @@ void MoveOnlyTest()
   bool erased = links.erase_all<MyLinks::Right>(5);
   smtkTest(erased && links.size() == 2, "Should have 2 links.");
 
-  links.insert(MyMoveOnlyBase("base_class_value"), 10, std::move(4), std::move(5), "baz");
+  links.insert(MyMoveOnlyBase("base_class_value"), 10, std::move(4), std::move(5), 102);
   smtkTest(links.at(10).value == "base_class_value", "Should be able to access base class");
 }
 
 void JsonTest()
 {
-  typedef smtk::common::Links<int, std::size_t, short, MyBase> MyLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyBase> MyLinks;
   MyLinks links;
-  links.insert(MyBase("base_value"), 0, 3, 4, "foo");
-  links.insert(7, 4, 5, "foo");
-  links.insert(MyBase("base_class_value"), 10, std::move(4), std::move(5), "baz");
+  links.insert(MyBase("base_value"), 0, 3, 4, 100);
+  links.insert(7, 4, 5, 100);
+  links.insert(MyBase("base_class_value"), 10, std::move(4), std::move(5), 102);
 
   nlohmann::json j = links;
 
@@ -270,11 +270,11 @@ void JsonTest()
 
 void MoveOnlyJsonTest()
 {
-  typedef smtk::common::Links<int, std::size_t, short, MyMoveOnlyBase> MyLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyMoveOnlyBase> MyLinks;
   MyLinks links;
-  links.insert(MyMoveOnlyBase("base_value"), 0, 3, 4, "foo");
-  links.insert(MyMoveOnlyBase("another_value"), 7, 4, 5, "foo");
-  links.insert(MyMoveOnlyBase("base_class_value"), 10, std::move(4), std::move(5), "baz");
+  links.insert(MyMoveOnlyBase("base_value"), 0, 3, 4, 100);
+  links.insert(MyMoveOnlyBase("another_value"), 7, 4, 5, 100);
+  links.insert(MyMoveOnlyBase("base_class_value"), 10, std::move(4), std::move(5), 102);
 
   nlohmann::json j = links;
 
@@ -295,21 +295,21 @@ void MoveOnlyJsonTest()
 
 void RecursionTest()
 {
-  typedef smtk::common::Links<int, std::size_t, short, MyBase> MyLinks;
-  typedef smtk::common::Links<int, std::size_t, short, MyLinks> MyMetaLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyBase> MyLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyLinks> MyMetaLinks;
 
   MyMetaLinks metaLinks;
   {
-    metaLinks.insert(0, 1, 2, "foo");
+    metaLinks.insert(0, 1, 2, 100);
     auto& links = metaLinks.value(0);
-    links.insert(MyBase("test"), 0, 3, 4, "bar");
-    links.insert(MyBase("test2"), 1, 4, 5, "baz");
+    links.insert(MyBase("test"), 0, 3, 4, 101);
+    links.insert(MyBase("test2"), 1, 4, 5, 102);
 
-    metaLinks.insert(1, 7, 8, "foo2");
+    metaLinks.insert(1, 7, 8, 200);
     auto& links2 = metaLinks.value(1);
-    links2.insert(MyBase("test3"), 8, 6, 1, "bar2");
-    links2.insert(MyBase("test4"), 11, 3, 8, "baz2");
-    links2.insert(MyBase("test5"), 13, 2, 18, "baz3");
+    links2.insert(MyBase("test3"), 8, 6, 1, 201);
+    links2.insert(MyBase("test4"), 11, 3, 8, 203);
+    links2.insert(MyBase("test5"), 13, 2, 18, 303);
   }
 
   smtkTest(metaLinks.at(0).size() == 2, "first set of links should have 2 links.");
@@ -318,21 +318,21 @@ void RecursionTest()
 
 void MoveOnlyRecursionTest()
 {
-  typedef smtk::common::Links<int, std::size_t, short, MyMoveOnlyBase> MyLinks;
-  typedef smtk::common::Links<int, std::size_t, short, MyLinks> MyMetaLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyMoveOnlyBase> MyLinks;
+  typedef smtk::common::Links<int, std::size_t, short, int, MyLinks> MyMetaLinks;
 
   MyMetaLinks metaLinks;
   {
-    metaLinks.insert(0, 1, 2, "foo");
+    metaLinks.insert(0, 1, 2, 100);
     auto& links = metaLinks.value(0);
-    links.insert(MyMoveOnlyBase("test"), 0, 3, 4, "bar");
-    links.insert(MyMoveOnlyBase("test2"), 1, 4, 5, "baz");
+    links.insert(MyMoveOnlyBase("test"), 0, 3, 4, 101);
+    links.insert(MyMoveOnlyBase("test2"), 1, 4, 5, 102);
 
-    metaLinks.insert(1, 7, 8, "foo2");
+    metaLinks.insert(1, 7, 8, 200);
     auto& links2 = metaLinks.value(1);
-    links2.insert(MyMoveOnlyBase("test3"), 8, 6, 1, "bar2");
-    links2.insert(MyMoveOnlyBase("test4"), 11, 3, 8, "baz2");
-    links2.insert(MyMoveOnlyBase("test5"), 13, 2, 18, "baz3");
+    links2.insert(MyMoveOnlyBase("test3"), 8, 6, 1, 201);
+    links2.insert(MyMoveOnlyBase("test4"), 11, 3, 8, 203);
+    links2.insert(MyMoveOnlyBase("test5"), 13, 2, 18, 303);
   }
 
   smtkTest(metaLinks.at(0).size() == 2, "first set of links should have 2 links.");
