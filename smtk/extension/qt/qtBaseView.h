@@ -97,6 +97,10 @@ public:
 
   bool isTopLevel() const { return this->m_isTopLevel; }
 
+  //Returns true if the view does not contain any information to display - the default
+  // behavior is to return false
+  virtual bool isEmpty() const;
+
 signals:
   void modified(smtk::attribute::ItemPtr);
 

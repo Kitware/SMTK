@@ -68,6 +68,8 @@ public:
   has been selected - when the row changed is initiated by the Selection Manager this is set to false */
   void showCurrentRow(bool broadcastSelected);
 
+  bool isEmpty() const override;
+
 public slots:
   void onShowCategory() override;
   void showAdvanceLevelOverlay(bool show) override;

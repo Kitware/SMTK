@@ -51,6 +51,9 @@ public:
   // A basic layout for an attribute
   void createBasicLayout(bool includeAssociations);
 
+  //Returns true if it does not display any of its items
+  bool isEmpty() const;
+
   // create all the items
   static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,
     Qt::Orientation enVectorItemOrient = Qt::Horizontal);
@@ -82,6 +85,7 @@ protected slots:
 private:
   qtAttributeInternals* m_internals;
   bool m_useSelectionManager;
+  bool m_isEmpty;
 };
 
 } // namespace attribute

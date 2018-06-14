@@ -458,3 +458,8 @@ void qtBaseView::invokeEntitiesSelected(
 {
   this->uiManager()->invokeEntitiesSelected(selEnts, selectionSource);
 }
+
+bool qtBaseView::isEmpty() const
+{
+  return false;
+}

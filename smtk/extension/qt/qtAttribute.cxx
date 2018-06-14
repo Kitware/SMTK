@@ -61,6 +61,7 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p, 
   this->m_widget = NULL;
   this->m_useSelectionManager = false;
   this->createWidget();
+  this->m_isEmpty = true;
 }
 
 qtAttribute::~qtAttribute()
@@ -82,6 +83,8 @@ qtAttribute::~qtAttribute()
 
 void qtAttribute::createWidget()
 {
+  // Initially there are no items being displayed
+  this->m_isEmpty = true;
   if (!this->attribute() ||
     (!this->attribute()->numberOfItems() && !this->attribute()->associations()))
   {
@@ -119,7 +122,7 @@ void qtAttribute::createWidget()
   {
     return;
   }
-
+  this->m_isEmpty = false;
   QFrame* attFrame = new QFrame(this->parentWidget());
   attFrame->setFrameShape(QFrame::Box);
   this->m_widget = attFrame;
@@ -154,6 +157,8 @@ void qtAttribute::showAdvanceLevelOverlay(bool show)
 
 void qtAttribute::createBasicLayout(bool includeAssociations)
 {
+  // Initially we have not displayed any items
+  this->m_isEmpty = true;
   //If there is no main widget there is nothing to show
   if (!this->m_widget)
   {
@@ -172,6 +177,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     qItem = this->createItem(att->associations(), this->m_widget, this->m_internals->m_view);
     if (qItem && qItem->widget())
     {
+      this->m_isEmpty = false;
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
       auto mitem = dynamic_cast<qtModelEntityItem*>(qItem);
@@ -189,6 +195,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
       this->createItem(att->item(static_cast<int>(i)), this->m_widget, this->m_internals->m_view);
     if (qItem && qItem->widget())
     {
+      this->m_isEmpty = false;
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
       auto mitem = dynamic_cast<qtModelEntityItem*>(qItem);
@@ -349,4 +356,9 @@ void qtAttribute::onItemModified()
 qtAttributeItemWidgetFactory* qtAttribute::itemWidgetFactory()
 {
   return qtAttribute::s_factory;
+}
+
+bool qtAttribute::isEmpty() const
+{
+  return this->m_isEmpty;
 }
