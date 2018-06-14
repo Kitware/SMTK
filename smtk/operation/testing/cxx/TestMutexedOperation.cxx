@@ -32,12 +32,15 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
+#include <atomic>
 #include <chrono>
 #include <future>
 #include <thread>
 
 namespace
 {
+static std::atomic<bool> semaphore(false);
+
 class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>
 {
 public:
@@ -109,9 +112,24 @@ private:
 
 ReadOperation::Result ReadOperation::operateInternal()
 {
-  int sleep = this->parameters()->findAs<smtk::attribute::IntItem>("sleep")->value();
-  std::this_thread::sleep_for(std::chrono::milliseconds(sleep * 100));
+  bool semaphoreValue =
+    (this->parameters()->findAs<smtk::attribute::IntItem>("semaphore")->value() != 0);
 
+  int sleep = this->parameters()->findAs<smtk::attribute::IntItem>("sleep")->value();
+
+  int timeout = 0;
+  while (semaphore != semaphoreValue)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    if (++timeout > sleep)
+    {
+      return this->createResult(Outcome::FAILED);
+    }
+  }
+
+  while (semaphore.compare_exchange_weak(semaphoreValue, !semaphoreValue))
+  {
+  }
   return this->createResult(Outcome::SUCCEEDED);
 }
 
@@ -154,6 +172,11 @@ ReadOperation::Specification ReadOperation::createSpecification()
   sleepDef->setDefaultValue(0);
   readOpDef->addItemDefinition(sleepDef);
 
+  smtk::attribute::IntItemDefinitionPtr semaphoreDef =
+    smtk::attribute::IntItemDefinition::New("semaphore");
+  semaphoreDef->setDefaultValue(0);
+  readOpDef->addItemDefinition(semaphoreDef);
+
   smtk::attribute::ComponentItemDefinitionPtr compDef =
     smtk::attribute::ComponentItemDefinition::New("component");
   compDef->setNumberOfRequiredValues(1);
@@ -189,9 +212,14 @@ private:
 
 WriteOperation::Result WriteOperation::operateInternal()
 {
+  if (semaphore == true)
+  {
+    return this->createResult(Outcome::FAILED);
+  }
+  semaphore = true;
   int sleep = this->parameters()->findAs<smtk::attribute::IntItem>("sleep")->value();
   std::this_thread::sleep_for(std::chrono::milliseconds(sleep * 100));
-
+  semaphore = false;
   return this->createResult(Outcome::SUCCEEDED);
 }
 
@@ -248,24 +276,24 @@ WriteOperation::Specification WriteOperation::createSpecification()
 }
 }
 
-int TestMutexedOperation(int, char** const)
+int readTest(int sleepValue)
 {
   auto resource = MyResource::create();
   auto component = MyComponent::create();
   component->setResource(resource);
 
-  int sleepValue = 4;
-
   std::cout << "Read test" << std::endl;
 
   smtk::operation::Operation::Ptr readOperation1 = ReadOperation::create();
   readOperation1->parameters()->findAs<smtk::attribute::IntItem>("sleep")->setValue(sleepValue);
+  readOperation1->parameters()->findAs<smtk::attribute::IntItem>("semaphore")->setValue(0);
   readOperation1->parameters()
     ->findAs<smtk::attribute::ComponentItem>("component")
     ->setValue(component);
 
   smtk::operation::Operation::Ptr readOperation2 = ReadOperation::create();
   readOperation2->parameters()->findAs<smtk::attribute::IntItem>("sleep")->setValue(sleepValue);
+  readOperation2->parameters()->findAs<smtk::attribute::IntItem>("semaphore")->setValue(1);
   readOperation2->parameters()
     ->findAs<smtk::attribute::ComponentItem>("component")
     ->setValue(component);
@@ -281,14 +309,12 @@ int TestMutexedOperation(int, char** const)
 
   while (status1 != std::future_status::ready)
   {
-    std::cout << "polling threads" << std::endl;
     status1 = result1.wait_for(std::chrono::milliseconds(100));
     nMilliseconds += 100;
   }
 
   while (status2 != std::future_status::ready)
   {
-    std::cout << "polling threads" << std::endl;
     status2 = result2.wait_for(std::chrono::milliseconds(100));
     nMilliseconds += 100;
   }
@@ -299,12 +325,20 @@ int TestMutexedOperation(int, char** const)
   smtk::operation::Operation::Outcome outcome2 =
     smtk::operation::Operation::Outcome(result2.get()->findInt("outcome")->value());
 
-  smtkTest(
-    (outcome1 == smtk::operation::Operation::Outcome::SUCCEEDED), "Operation 1 should succeed.");
-  smtkTest(
-    (outcome2 == smtk::operation::Operation::Outcome::SUCCEEDED), "Operation 2 should succeed.");
+  if (outcome1 != smtk::operation::Operation::Outcome::SUCCEEDED ||
+    outcome2 != smtk::operation::Operation::Outcome::SUCCEEDED)
+  {
+    return 1;
+  }
 
-  smtkTest((nMilliseconds < sleepValue * 100 * 1.5), "Read operations should run in parallel.");
+  return 0;
+}
+
+int writeTest(int sleepValue)
+{
+  auto resource = MyResource::create();
+  auto component = MyComponent::create();
+  component->setResource(resource);
 
   std::cout << "Write test" << std::endl;
 
@@ -327,18 +361,16 @@ int TestMutexedOperation(int, char** const)
 
   std::future_status status3 = std::future_status::timeout;
   std::future_status status4 = std::future_status::timeout;
-  nMilliseconds = 0;
+  int nMilliseconds = 0;
 
   while (status3 != std::future_status::ready)
   {
-    std::cout << "polling threads" << std::endl;
     status3 = result3.wait_for(std::chrono::milliseconds(100));
     nMilliseconds += 100;
   }
 
   while (status4 != std::future_status::ready)
   {
-    std::cout << "polling threads" << std::endl;
     status4 = result4.wait_for(std::chrono::milliseconds(100));
     nMilliseconds += 100;
   }
@@ -354,7 +386,32 @@ int TestMutexedOperation(int, char** const)
   smtkTest(
     (outcome4 == smtk::operation::Operation::Outcome::SUCCEEDED), "Operation 4 should succeed.");
 
-  smtkTest((nMilliseconds > sleepValue * 100 * 1.5), "Write operations should run serially.");
-
   return 0;
+}
+
+// Test mutexed operations by executing two parallel read operations and two
+// parallel write operations. Each read operation waits for a global semaphore
+// to hold its value, failing after a timeout period, and then switches the
+// semaphore's value. When two of these operations are executed within a time
+// window less than the timeout period, both operations should pass. Each write
+// operation fails if the semaphore is false, then toggles it to true, waits for
+// a time, and toggles it back to false. If two of these operations are executed
+// within a time window less than the wait period, both tests should pass.
+int TestMutexedOperation(int, char** const)
+{
+  int returnValue = 1;
+
+  int sleepValue = 4;
+  for (int i = 1; i < 4; i++)
+  {
+    returnValue = readTest(i * 4);
+    if (returnValue == 0)
+    {
+      break;
+    }
+  }
+
+  smtkTest(returnValue == 0, "Mutexed read test failed.");
+
+  return writeTest(sleepValue);
 }
