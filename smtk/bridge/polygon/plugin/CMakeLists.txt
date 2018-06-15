@@ -24,10 +24,9 @@ ADD_SMTK_UI_VIEW(
   VIEW_NAME smtkPolygonContourView
   )
 
-add_paraview_plugin(
+add_smtk_plugin(
   smtkPolygonSessionPlugin "1.0"
   SERVER_MANAGER_XML smconfig.xml
-  SERVER_SOURCES sessionInit.cxx
   GUI_INTERFACES ${OUTIFACES} ${OUTIFACES1} ${OUTIFACES2}
   GUI_SOURCES ${OUTSRCS} ${OUTSRCS1} ${OUTSRCS2} ${MOC_SRCS} ${UI_SRCS}
               qtPolygonEdgeOperationView.cxx
@@ -35,21 +34,19 @@ add_paraview_plugin(
   CS_KITS
     vtkSMTKWidgetsExt
     vtkPolygonOperationsExt
-  )
-
-target_link_libraries(smtkPolygonSessionPlugin
-  LINK_PUBLIC
+  REGISTRAR
+    smtk::bridge::polygon::Registrar
+  MANAGERS
+    smtk::operation::Manager smtk::resource::Manager
+  LIBRARIES
     smtkCore
     smtkPluginSupport
     smtkPolygonQtExt
     smtkPolygonSession
     smtkQtExt
     smtkPQWidgetsExt
-    vtkPVServerManagerApplication
-  LINK_PRIVATE
-    vtkPVServerManagerApplicationCS
+  LIBRARIES_PRIVATE
     vtkSMTKWidgetsExtCS
     vtkPolygonOperationsExtCS
     vtkSMTKFilterExtCS
-)
-smtk_install_library(smtkPolygonSessionPlugin)
+  )

@@ -121,7 +121,11 @@ endforeach()
 smtk_public_headers(${modelHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_subdirectory(plugin)
+  add_smtk_plugin(
+    smtkModelPlugin "1.0"
+    REGISTRAR smtk::model::Registrar
+    MANAGERS smtk::operation::Manager smtk::resource::Manager
+    LIBRARIES smtkCore)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

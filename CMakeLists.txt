@@ -52,6 +52,9 @@ include(GenerateExportHeader)
 # export install targets
 include(SMTKMacros)
 
+# Include cmake code that generates and installs smtk plugins
+include(SMTKPluginMacros)
+
 # include cmake code that allows for easier testing of SMTK classes
 # and also provides helpers around create_test_sourcelist
 include(CMake/SMTKTestingMacros.cmake)
@@ -622,6 +625,11 @@ if (BUILD_SHARED_LIBS AND NOT DEFINED CMAKE_INSTALL_NAME_DIR)
 endif ()
 
 add_subdirectory(smtk)
+
+# Create a library that initializes all of SMTK's plugins
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  generate_plugins_init()
+endif()
 
 # Build SMTK Applications
 if(SMTK_ENABLE_APPLICATIONS)

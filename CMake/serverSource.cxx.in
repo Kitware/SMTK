@@ -1,3 +1,5 @@
+/// Generated file. Do not edit.
+
 //=========================================================================
 //  Copyright (c) Kitware, Inc.
 //  All rights reserved.
@@ -8,16 +10,14 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+@SMTK_PLUGIN_REGISTRAR_HEADER@
+
 #include "smtk/extension/paraview/pluginsupport/PluginClient.txx"
-#include "smtk/model/Registrar.h"
-#include "smtk/operation/Manager.h"
-#include "smtk/resource/Manager.h"
 
 #include <memory>
 
-typedef smtk::extension::paraview::PluginClient<smtk::model::Registrar, smtk::resource::Manager,
-  smtk::operation::Manager>
-  ModelPluginClient;
+typedef smtk::extension::paraview::PluginClient<
+  @SMTK_PLUGIN_REGISTRAR@, @SMTK_PLUGIN_MANAGERS_CS@> @SMTK_PLUGIN_NAME@Client;
 
-static std::shared_ptr<ModelPluginClient> model_client =
-  std::dynamic_pointer_cast<ModelPluginClient>(ModelPluginClient::create());
+static std::shared_ptr<@SMTK_PLUGIN_NAME@Client> my@SMTK_PLUGIN_NAME@Client =
+  std::dynamic_pointer_cast<@SMTK_PLUGIN_NAME@Client>(@SMTK_PLUGIN_NAME@Client::create());
