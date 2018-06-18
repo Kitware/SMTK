@@ -88,6 +88,7 @@ add_paraview_plugin(
   CS_KITS
   vtkSMTKWidgetsExt
 )
+set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPQOperationViewsPlugin" CACHE INTERNAL "")
 target_link_libraries(smtkPQOperationViewsPlugin
   LINK_PUBLIC
     smtkPQOperationViewsExt

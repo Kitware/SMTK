@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/bridge/polygon/Registrar.h"
-#include "smtk/extension/paraview/pluginsupport/PluginClient.txx"
+#include "smtk/extension/paraview/pluginsupport/management/PluginClient.txx"
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
 

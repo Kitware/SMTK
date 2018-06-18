@@ -26,21 +26,7 @@ add_library(smtkPluginSupport
 
 smtk_install_library(smtkPluginSupport)
 
-add_paraview_plugin(smtkPluginSupportPlugin "1.0"
-  SERVER_SOURCES sessionInit.cxx
-  )
-
 smtk_export_header(smtkPluginSupport Exports.h)
-
-target_link_libraries(smtkPluginSupportPlugin
-  LINK_PUBLIC
-    smtkCore
-    smtkPluginSupport
-    vtkPVServerManagerApplication
-  LINK_PRIVATE
-    vtkPVServerManagerApplicationCS
-)
-smtk_install_library(smtkPluginSupportPlugin)
 
 smtk_public_headers(${hdrs})
 

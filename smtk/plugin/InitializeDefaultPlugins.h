@@ -7,3 +7,19 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef __smtk_InitializeDefaultPlugins_h
+#define __smtk_InitializeDefaultPlugins_h
+
+namespace smtk
+{
+namespace extension
+{
+namespace paraview
+{
+void initializeDefaultPlugins();
+void loadDefaultPlugins();
+}
+}
+}
+
+#endif

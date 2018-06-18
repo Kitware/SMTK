@@ -18,7 +18,7 @@ set(SMTK_PLUGINS "" CACHE INTERNAL "")
 #  LIBRARIES_PRIVATE is a list of libraries against which the plugin must
 #  privately link
 #
-#  All other arguments are forwarded on to add_paraview_plugin()
+#  All other arguments are forwarded to add_paraview_plugin()
 #
 # add_smtk_plugin(Name Version
 #     [REGISTRAR registrar]
@@ -79,86 +79,3 @@ function(add_smtk_plugin SMTK_PLUGIN_NAME SMTK_PLUGIN_VERSION)
 smtk_install_library(${SMTK_PLUGIN_NAME})
 
 endfunction(add_smtk_plugin)
-
-# Once all of the plugins have been processed, the cache variable SMTK_PLUGINS
-# will contain all of the plugins to be built by SMTK. The
-# generate_plugins_init() function creates the smtkPluginsInit library that
-# provides an API for loading smtk plugins at runtime by name.
-function(generate_plugins_init)
-
-  write_plugins_init_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/smtk/PluginsInit.h
-    ${CMAKE_CURRENT_BINARY_DIR}/smtk/PluginsInit.cxx
-    ${SMTK_PLUGINS})
-
-  include(${PARAVIEW_USE_FILE})
-
-  vtk_module_dep_includes(vtkPVClientServerCoreCore)
-  include_directories(${vtkPVClientServerCoreCore_INCLUDE_DIRS} ${vtkPVClientServerCoreCore_DEPENDS_INCLUDE_DIRS})
-  add_library(smtkPluginsInit
-    ${CMAKE_CURRENT_BINARY_DIR}/smtk/PluginsInit.h
-    ${CMAKE_CURRENT_BINARY_DIR}/smtk/PluginsInit.cxx)
-  target_link_libraries(smtkPluginsInit
-    LINK_PRIVATE ${SMTK_PLUGINS})
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/smtk/PluginsInit.h DESTINATION include/smtk/${SMTK_VERSION}/smtk)
-smtk_install_library(smtkPluginsInit)
-
-endfunction(generate_plugins_init)
-
-# Internal function used to generate a header file initializing all plugins that
-# can be used by executables to link against the plugins.
-function(write_plugins_init_file header source)
-
-  file(WRITE "${header}" "void smtk_plugins_init();\n")
-
-  set(plugins_init "#include \"vtkPVPlugin.h\"\n")
-  set(plugins_init "${plugins_init}#include \"vtkPVPluginLoader.h\"\n\n")
-  set(plugins_init "${plugins_init}#include \"vtkPVPluginTracker.h\"\n\n")
-  set(plugins_init "${plugins_init}#include <string>\n\n")
-
-  # write PV_PLUGIN_IMPORT_INIT calls
-  foreach(plugin_name ${ARGN})
-    set(plugins_init "${plugins_init}PV_PLUGIN_IMPORT_INIT(${plugin_name});\n")
-  endforeach()
-  set(plugins_init "${plugins_init}\n")
-
-  set(plugins_init "${plugins_init}static bool smtk_plugins_load(const char* name);\n\n")
-  set(plugins_init "${plugins_init}static bool smtk_plugins_search(const char* name);\n\n")
-  set(plugins_init "${plugins_init}void smtk_plugins_init()\n{\n")
-  set(plugins_init "${plugins_init}  vtkPVPluginLoader::SetStaticPluginLoadFunction(smtk_plugins_load);\n")
-  set(plugins_init "${plugins_init}  vtkPVPluginTracker::SetStaticPluginSearchFunction(smtk_plugins_search);\n")
-  set(plugins_init "${plugins_init}}\n\n")
-
-  # write callback functions
-  set(plugins_init "${plugins_init}static bool smtk_plugins_func(const char* name, bool load);\n\n")
-  set(plugins_init "${plugins_init}static bool smtk_plugins_load(const char* name)\n{\n")
-  set(plugins_init "${plugins_init}  return smtk_plugins_func(name, true);\n")
-  set(plugins_init "${plugins_init}}\n\n")
-  set(plugins_init "${plugins_init}static bool smtk_plugins_search(const char* name)\n{\n")
-  set(plugins_init "${plugins_init}  return smtk_plugins_func(name, false);\n")
-  set(plugins_init "${plugins_init}}\n\n")
-
-  # write PV_PLUGIN_IMPORT calls
-  set(plugins_init "${plugins_init}static bool smtk_plugins_func(const char* name, bool load)\n{\n")
-  set(plugins_init "${plugins_init}  std::string sname = name;\n\n")
-  foreach(plugin_name ${ARGN})
-    set(plugins_init "${plugins_init}  if (sname == \"${plugin_name}\")\n")
-    set(plugins_init "${plugins_init}    {\n")
-    set(plugins_init "${plugins_init}    if (load)\n")
-    set(plugins_init "${plugins_init}      {\n")
-    set(plugins_init "${plugins_init}      static bool loaded = false;\n")
-    set(plugins_init "${plugins_init}      if (!loaded)\n")
-    set(plugins_init "${plugins_init}        {\n")
-    set(plugins_init "${plugins_init}        loaded = PV_PLUGIN_IMPORT(${plugin_name});\n")
-    set(plugins_init "${plugins_init}        }\n")
-    set(plugins_init "${plugins_init}      }\n")
-    set(plugins_init "${plugins_init}    return true;\n")
-    set(plugins_init "${plugins_init}    }\n")
-  endforeach()
-  set(plugins_init "${plugins_init}  return false;\n")
-  set(plugins_init "${plugins_init}}\n")
-
-  file(WRITE "${source}" "${plugins_init}")
-
-endfunction()

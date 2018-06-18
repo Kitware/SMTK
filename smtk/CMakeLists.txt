@@ -180,3 +180,13 @@ add_subdirectory(extension)
 # any custom model bridge sessions that the user has enabled.
 ################################################################################
 add_subdirectory(bridge)
+
+################################################################################
+# Build smtk default plugin initialization
+# At this point, all plugins that are built by smtk core have been
+# configured. We then aggregate the plugin targets and construct a
+# single library for initializing them in a ParaView-derived application.
+################################################################################
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_subdirectory(plugin)
+endif()

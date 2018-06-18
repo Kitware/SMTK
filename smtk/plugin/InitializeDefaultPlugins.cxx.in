@@ -1,0 +1,71 @@
+#include "vtkPVPlugin.h"
+#include "vtkPVPluginLoader.h"
+
+#include "vtkPVPluginTracker.h"
+
+#include <string>
+
+@SMTK_PLUGIN_IMPORT_INIT@
+
+namespace
+{
+bool queryPlugins(const char* name, bool load);
+
+bool loadPlugins(const char* name)
+{
+  return queryPlugins(name, true);
+}
+
+bool searchPlugins(const char* name)
+{
+  return queryPlugins(name, false);
+}
+}
+
+namespace smtk
+{
+namespace extension
+{
+namespace paraview
+{
+void initializeDefaultPlugins()
+{
+  vtkPVPluginLoader::SetStaticPluginLoadFunction(loadPlugins);
+  vtkPVPluginTracker::SetStaticPluginSearchFunction(searchPlugins);
+}
+
+void loadDefaultPlugins()
+{
+  @SMTK_PLUGIN_IMPORT@
+}
+}
+}
+}
+
+namespace
+{
+bool queryPlugins(const char* name, bool load)
+{
+  std::string sname = name;
+
+#define queryPlugin(plugin_name)                        \
+  if (sname == #plugin_name)                            \
+  {                                                     \
+    if (load)                                           \
+    {                                                   \
+      static bool loaded = false;                       \
+      if (!loaded)                                      \
+      {                                                 \
+        loaded = PV_PLUGIN_IMPORT(plugin_name);         \
+      }                                                 \
+    }                                                   \
+    return true;                                        \
+  }
+
+@SMTK_PLUGIN_QUERY@
+
+#undef queryPlugin
+
+  return false;
+}
+}

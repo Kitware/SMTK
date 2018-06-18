@@ -626,11 +626,6 @@ endif ()
 
 add_subdirectory(smtk)
 
-# Create a library that initializes all of SMTK's plugins
-if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-  generate_plugins_init()
-endif()
-
 # Build SMTK Applications
 if(SMTK_ENABLE_APPLICATIONS)
   add_subdirectory(applications)
