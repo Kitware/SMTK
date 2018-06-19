@@ -63,8 +63,6 @@ protected:
 
   void processReferenceDefCommon(pugi::xml_node& node,
     smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelName);
-  void processReferenceItemCommon(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item,
-    std::function<void(pugi::xml_node&, const smtk::resource::PersistentObjectPtr&)> processValue);
 
 private:
 };

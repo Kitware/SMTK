@@ -13,6 +13,7 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
@@ -220,18 +221,114 @@ void XmlV3StringWriter::processReferenceDef(
 
 void XmlV3StringWriter::processReferenceItem(pugi::xml_node& node, attribute::ReferenceItemPtr item)
 {
-  this->processReferenceItemCommon(
-    node, item, [](pugi::xml_node& val, const smtk::resource::PersistentObjectPtr& obj) {
-      auto compPtr = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
-      auto rsrcPtr = compPtr->resource();
-      if (rsrcPtr)
-      {
-        xml_node rsrc = val.append_child("Resource");
-        rsrc.text().set(rsrcPtr->id().toString().c_str());
-      }
-      xml_node comp = val.append_child("Component");
-      comp.text().set(compPtr->id().toString().c_str());
-    });
+  size_t i = 0, n = item->numberOfValues();
+  std::size_t numRequiredVals = item->numberOfRequiredValues();
+  // we should always have "NumberOfValues" set
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+
+  xml_node val;
+  if (!n)
+  {
+    return;
+  }
+
+  if ((numRequiredVals == 1) && (!item->isExtensible()))
+  {
+    if (item->isSet())
+    {
+      val = node.append_child("Val");
+
+      // Because resource links are not serialized into XML, we add enough dta
+      // to each reference item to recreate the link.
+      auto objKey = item->objectKey(i);
+
+      xml_node key = val.append_child("Key");
+      auto key1 = key.append_child("_1_");
+      key1.text().set(objKey.first.toString().c_str());
+      auto key2 = key.append_child("_2_");
+      key2.text().set(objKey.second.toString().c_str());
+
+      const smtk::resource::Surrogate& surrogate =
+        item->attribute()->resource()->links().data().value(objKey.first);
+
+      xml_node rhs = val.append_child("RHS");
+      auto rhs1 = rhs.append_child("_1_");
+      rhs1.text().set(
+        item->attribute()->resource()->links().data().at(objKey.first).right.toString().c_str());
+      auto rhs2 = rhs.append_child("_2_");
+      rhs2.text().set(item->attribute()
+                        ->resource()
+                        ->links()
+                        .data()
+                        .at(objKey.first)
+                        .at(objKey.second)
+                        .right.toString()
+                        .c_str());
+
+      val.append_attribute("Role").set_value(
+        item->attribute()->resource()->links().data().at(objKey.first).at(objKey.second).role);
+
+      xml_node surrogateNode = val.append_child("Surrogate");
+      surrogateNode.append_attribute("Index").set_value(
+        static_cast<unsigned int>(surrogate.index()));
+      surrogateNode.append_attribute("TypeName").set_value(surrogate.typeName().c_str());
+      surrogateNode.append_attribute("Id").set_value(surrogate.id().toString().c_str());
+      surrogateNode.append_attribute("Location").set_value(surrogate.location().c_str());
+    }
+    return;
+  }
+  xml_node values = node.append_child("Values");
+  for (i = 0; i < n; i++)
+  {
+    if (item->isSet(i))
+    {
+      val = values.append_child("Val");
+
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+
+      // Because resource links are not serialized into XML, we add enough dta
+      // to each reference item to recreate the link.
+      auto objKey = item->objectKey(i);
+
+      xml_node key = val.append_child("Key");
+      auto key1 = key.append_child("_1_");
+      key1.text().set(objKey.first.toString().c_str());
+      auto key2 = key.append_child("_2_");
+      key2.text().set(objKey.second.toString().c_str());
+
+      const smtk::resource::Surrogate& surrogate =
+        item->attribute()->resource()->links().data().value(objKey.first);
+
+      xml_node rhs = val.append_child("RHS");
+      auto rhs1 = rhs.append_child("_1_");
+      rhs1.text().set(
+        item->attribute()->resource()->links().data().at(objKey.first).right.toString().c_str());
+      auto rhs2 = rhs.append_child("_2_");
+      rhs2.text().set(item->attribute()
+                        ->resource()
+                        ->links()
+                        .data()
+                        .at(objKey.first)
+                        .at(objKey.second)
+                        .right.toString()
+                        .c_str());
+
+      val.append_attribute("Role").set_value(
+        item->attribute()->resource()->links().data().at(objKey.first).at(objKey.second).role);
+
+      xml_node surrogateNode = val.append_child("Surrogate");
+      surrogateNode.append_attribute("Index").set_value(
+        static_cast<unsigned int>(surrogate.index()));
+      surrogateNode.append_attribute("TypeName").set_value(surrogate.typeName().c_str());
+      surrogateNode.append_attribute("Id").set_value(surrogate.id().toString().c_str());
+      surrogateNode.append_attribute("Location").set_value(surrogate.location().c_str());
+    }
+    else
+    {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+    }
+  }
 }
 
 void XmlV3StringWriter::processResourceDef(
@@ -242,14 +339,7 @@ void XmlV3StringWriter::processResourceDef(
 
 void XmlV3StringWriter::processResourceItem(pugi::xml_node& node, attribute::ResourceItemPtr item)
 {
-  this->processReferenceItemCommon(
-    node, item, [](pugi::xml_node& val, const smtk::resource::PersistentObjectPtr& obj) {
-      if (obj)
-      {
-        xml_node rsrc = val.append_child("Resource");
-        rsrc.text().set(obj->id().toString().c_str());
-      }
-    });
+  this->processReferenceItem(node, item);
 }
 
 void XmlV3StringWriter::processComponentDef(
@@ -260,18 +350,7 @@ void XmlV3StringWriter::processComponentDef(
 
 void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
 {
-  this->processReferenceItemCommon(
-    node, item, [](pugi::xml_node& val, const smtk::resource::PersistentObjectPtr& obj) {
-      auto compPtr = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
-      auto rsrcPtr = compPtr->resource();
-      if (rsrcPtr)
-      {
-        xml_node rsrc = val.append_child("Resource");
-        rsrc.text().set(rsrcPtr->id().toString().c_str());
-      }
-      xml_node comp = val.append_child("Component");
-      comp.text().set(compPtr->id().toString().c_str());
-    });
+  this->processReferenceItem(node, item);
 }
 
 void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
@@ -323,47 +402,6 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
         ln.set_name("Label");
         ln.set_value(idef->valueLabel(i).c_str());
       }
-    }
-  }
-}
-
-void XmlV3StringWriter::processReferenceItemCommon(pugi::xml_node& node,
-  smtk::attribute::ReferenceItemPtr item,
-  std::function<void(pugi::xml_node&, const smtk::resource::PersistentObjectPtr&)> processValue)
-{
-  size_t i = 0, n = item->numberOfValues();
-  std::size_t numRequiredVals = item->numberOfRequiredValues();
-  // we should always have "NumberOfValues" set
-  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
-
-  xml_node val;
-  if (!n)
-  {
-    return;
-  }
-
-  if ((numRequiredVals == 1) && (!item->isExtensible()))
-  {
-    if (item->isSet())
-    {
-      val = node.append_child("Val");
-      processValue(val, item->objectValue(i));
-    }
-    return;
-  }
-  xml_node values = node.append_child("Values");
-  for (i = 0; i < n; i++)
-  {
-    if (item->isSet(i))
-    {
-      val = values.append_child("Val");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      processValue(val, item->objectValue(i));
-    }
-    else
-    {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
     }
   }
 }

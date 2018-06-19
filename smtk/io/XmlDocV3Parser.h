@@ -47,27 +47,13 @@ protected:
     smtk::attribute::ReferenceItemDefinitionPtr idef,
     const std::string& labelsElement = "ReferenceLabels") override;
 
-  smtk::resource::PersistentObjectPtr processReferenceItemValue(
-    const pugi::xml_node& val, smtk::resource::ManagerPtr mgr);
-
   void processResourceItem(pugi::xml_node& node, smtk::attribute::ResourceItemPtr item) override;
   void processResourceDef(
     pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef) override;
 
-  smtk::resource::PersistentObjectPtr processResourceItemValue(
-    const pugi::xml_node& val, smtk::resource::ManagerPtr mgr);
-
   void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item) override;
   void processComponentDef(
     pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef) override;
-
-  smtk::resource::PersistentObjectPtr processComponentItemValue(
-    const pugi::xml_node& val, smtk::resource::ManagerPtr mgr);
-
-  void processReferenceItemCommon(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item,
-    std::function<smtk::resource::PersistentObjectPtr(
-      const pugi::xml_node&, smtk::resource::ManagerPtr)>
-      processItemValue);
 
 private:
 };

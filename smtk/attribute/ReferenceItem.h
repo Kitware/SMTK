@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/Item.h"
 
+#include "smtk/common/UUID.h"
 #include "smtk/resource/Lock.h"
 
 #include <vector>
@@ -50,6 +51,11 @@ class SMTKCORE_EXPORT ReferenceItem : public Item
 public:
   using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
   using const_iterator = std::vector<smtk::resource::PersistentObjectPtr>::const_iterator;
+
+  /// A Key is a pair of UUIDs. the First UUID is the id of the resource link,
+  /// and the second one is the id of the component link.
+  using Key = std::pair<smtk::common::UUID, smtk::common::UUID>;
+
   smtkTypeMacro(ReferenceItem);
   smtkSuperclassMacro(Item);
   /// Destructor
@@ -122,6 +128,10 @@ public:
     this->as(result, converter);
     return result;
   }
+
+  /// Set/get object key (used for serialization).
+  Key objectKey(std::size_t i = 0) const;
+  bool setObjectKey(std::size_t i, const Key& key);
 
   /// Return the \a i-th component stored in this item.
   PersistentObjectPtr objectValue(std::size_t i = 0) const;
@@ -237,7 +247,18 @@ protected:
   /// Set the definition of this attribute.
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
 
+  /// Return the object stored in this item associated with \a key.
+  PersistentObjectPtr objectValue(const ReferenceItem::Key& key) const;
+
+  /// Resolve the object pointers by accessing them using their associated keys.
+  /// Return true if all object pointers were successfully resolved.
+  bool resolve();
+
+  /// Construct a link between the attribute that owns this item and \a val.
+  Key linkTo(PersistentObjectPtr val);
+
   std::vector<PersistentObjectPtr> m_values;
+  std::vector<Key> m_keys;
 };
 
 template <typename I>
