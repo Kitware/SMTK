@@ -255,7 +255,11 @@ smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
 smtk_install_library(smtkDiscreteSession)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
-  add_subdirectory(plugin)
+  add_smtk_plugin(
+    smtkDiscreteSessionPlugin "1.0"
+    REGISTRAR smtk::bridge::discrete::Registrar
+    MANAGERS smtk::operation::Manager smtk::resource::Manager
+    LIBRARIES smtkCore smtkDiscreteSession)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

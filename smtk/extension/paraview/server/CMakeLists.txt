@@ -64,6 +64,7 @@ add_paraview_plugin(
   SERVER_MANAGER_SOURCES ${serverWrappedHdrs}
   SERVER_MANAGER_XML ${serverXMLSrcs}
 )
+set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPVServerExtPlugin" CACHE INTERNAL "")
 target_link_libraries(smtkPVServerExtPlugin
   LINK_PUBLIC
     smtkPVServerExt

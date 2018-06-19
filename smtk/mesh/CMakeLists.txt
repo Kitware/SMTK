@@ -122,7 +122,12 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXM
 smtk_public_headers(${meshHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_subdirectory(plugin)
+  add_smtk_plugin(
+    smtkMeshPlugin "1.0"
+    REGISTRAR smtk::mesh::Registrar
+    REGISTRAR_HEADER smtk/mesh/resource/Registrar.h
+    MANAGERS smtk::operation::Manager smtk::resource::Manager
+    LIBRARIES smtkCore)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

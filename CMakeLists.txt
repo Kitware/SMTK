@@ -52,6 +52,9 @@ include(GenerateExportHeader)
 # export install targets
 include(SMTKMacros)
 
+# Include cmake code that generates and installs smtk plugins
+include(SMTKPluginMacros)
+
 # include cmake code that allows for easier testing of SMTK classes
 # and also provides helpers around create_test_sourcelist
 include(CMake/SMTKTestingMacros.cmake)
