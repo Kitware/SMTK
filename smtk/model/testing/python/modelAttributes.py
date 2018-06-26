@@ -118,14 +118,16 @@ class TestModelAttributes(unittest.TestCase):
 
             for item_name in ['Density', 'Viscosity']:
                 item = att.find(item_name)
-                concrete_item = smtk.attribute.to_concrete(item)
-                concrete_item.setValue(0, value)
+                item.setValue(0, value)
                 value += 0.491
 
             face_id = uuid.UUID(face)
             logging.debug('Associate attribute \"%s\" to face %s' %
                           (att_name, face_id))
-            att.associateEntity(face_id)
+            associated = att.associate(scope.store.find(face_id))
+            if not associated:
+                logging.error(
+                    'Failed to associate %s to %s' % (face_id, att_name))
 
             # Save attribute name and model entity (uuid) for checking later
             meta = (att.name(), face_id)
@@ -149,23 +151,29 @@ class TestModelAttributes(unittest.TestCase):
         defn = collection.findDefinition('Velocity')
         left_att = collection.createAttribute('leftBC', defn)
         item = left_att.item(0)
-        concrete_item = smtk.attribute.to_concrete(item)
-        concrete_item.setValue(0, 3.14159)
-        concrete_item.setValue(1, 2.71828)
+        item.setValue(0, 3.14159)
+        item.setValue(1, 2.71828)
         logging.debug('Associate attribute \"%s\" to boundary group %s' %
                       (left_att.name(), left_edges.name()))
-        ok = left_att.associateEntity(left_edges.entity())
+        ok = left_att.associate(left_edges.component())
+        if not ok:
+            logging.error("Unable to associate entity to leftBC")
+            logging.error(logger.convertToString())
+            sys.exit(4)
         meta = (left_att.name(), left_edges.entity())
         scope.att_data.append(meta)
 
         defn = collection.findDefinition('Pressure')
         right_att = collection.createAttribute('rightBC', defn)
         item = left_att.item(0)
-        concrete_item = smtk.attribute.to_concrete(item)
-        concrete_item.setValue(0, 14.1)
+        item.setValue(0, 14.1)
         logging.debug('Associate attribute \"%s\" to boundary group %s' %
                       (right_att.name(), right_edges.name()))
-        ok = right_att.associateEntity(right_edges.entity())
+        ok = right_att.associate(right_edges.component())
+        if not ok:
+            logging.error("Unable to associate entity to rightBC")
+            logging.error(logger.convertToString())
+            sys.exit(4)
         meta = (right_att.name(), right_edges.entity())
         scope.att_data.append(meta)
 
@@ -190,6 +198,7 @@ class TestModelAttributes(unittest.TestCase):
                 logging.error(
                     'Missing model entity on attribute %s' % att_name)
                 error_count += 1
+                continue
 
             entity_ids = list(entity_id_set)
             entity_id = entity_ids[0]
@@ -263,8 +272,5 @@ class TestModelAttributes(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print('This test has been disabled until resource links are in place.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     unittest.main()

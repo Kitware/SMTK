@@ -29,9 +29,11 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/resource/Component.h"
+#include "smtk/resource/ComponentLinks.h"
 #include "smtk/resource/Lock.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
+#include "smtk/resource/ResourceLinks.h"
 
 using namespace pugi;
 using namespace smtk::io;
@@ -256,10 +258,121 @@ void XmlDocV3Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTi
 void XmlDocV3Parser::processReferenceItem(
   pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item)
 {
-  this->processReferenceItemCommon(
-    node, item, [this](const pugi::xml_node& val, smtk::resource::ManagerPtr mgr) {
-      return this->processReferenceItemValue(val, mgr);
-    });
+  xml_attribute xatt;
+  xml_node valsNode;
+  std::size_t i, n = item->numberOfValues();
+  smtk::common::UUID uid;
+  xml_node val;
+  std::size_t numRequiredVals = item->numberOfRequiredValues();
+  std::string attName;
+  AttRefInfo info;
+  if (!numRequiredVals || item->isExtensible())
+  {
+    // The node should have an attribute indicating how many values are
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+    {
+      smtkErrorMacro(
+        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+      return;
+    }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+  }
+  if (!n)
+  {
+    return;
+  }
+
+  valsNode = node.child("Values");
+  if (valsNode)
+  {
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+    {
+      xatt = val.attribute("Ith");
+      if (!xatt)
+      {
+        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
+        continue;
+      }
+      i = xatt.as_uint();
+      if (i >= n)
+      {
+        smtkErrorMacro(
+          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
+        continue;
+      }
+
+      auto& links = item->attribute()->resource()->links().data();
+
+      xml_node keyNode = val.child("Key");
+      smtk::attribute::ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
+        smtk::common::UUID(keyNode.child("_2_").text().get()));
+      item->setObjectKey(static_cast<int>(i), key);
+
+      xml_node rhsNode = val.child("RHS");
+      smtk::common::UUID rhs1(rhsNode.child("_1_").text().get());
+      smtk::common::UUID rhs2(rhsNode.child("_2_").text().get());
+
+      xatt = val.attribute("Role");
+      int role = xatt.as_int();
+
+      xml_node surrogateNode = val.child("Surrogate");
+      unsigned int surrogateIndex = surrogateNode.attribute("Index").as_uint();
+      std::string surrogateTypeName(surrogateNode.attribute("TypeName").as_string());
+      smtk::common::UUID surrogateId(surrogateNode.attribute("Id").as_string());
+      std::string surrogateLocation(surrogateNode.attribute("Location").as_string());
+
+      if (!links.has(key.first))
+      {
+        links.insert(smtk::resource::Surrogate(
+                       surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
+          key.first, item->attribute()->resource()->id(), rhs1);
+      }
+
+      links.value(key.first).insert(key.second, item->attribute()->id(), rhs2, role);
+    }
+  }
+  else if (numRequiredVals == 1)
+  {
+    val = node.child("Val");
+    if (val)
+    {
+      auto& links = item->attribute()->resource()->links().data();
+
+      xml_node keyNode = val.child("Key");
+      smtk::attribute::ReferenceItem::Key key(smtk::common::UUID(keyNode.child("_1_").text().get()),
+        smtk::common::UUID(keyNode.child("_2_").text().get()));
+      item->setObjectKey(0, key);
+
+      xml_node rhsNode = val.child("RHS");
+      smtk::common::UUID rhs1(rhsNode.child("_1_").text().get());
+      smtk::common::UUID rhs2(rhsNode.child("_2_").text().get());
+
+      xatt = val.attribute("Role");
+      int role = xatt.as_int();
+
+      xml_node surrogateNode = val.child("Surrogate");
+      unsigned int surrogateIndex = surrogateNode.attribute("Index").as_uint();
+      std::string surrogateTypeName(surrogateNode.attribute("TypeName").as_string());
+      smtk::common::UUID surrogateId(surrogateNode.attribute("Id").as_string());
+      std::string surrogateLocation(surrogateNode.attribute("Location").as_string());
+
+      if (!links.has(key.first))
+      {
+        links.insert(smtk::resource::Surrogate(
+                       surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
+          key.first, item->attribute()->resource()->id(), rhs1);
+      }
+
+      links.value(key.first).insert(key.second, item->attribute()->id(), rhs2, role);
+    }
+  }
+  else
+  {
+    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
+  }
 }
 
 void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
@@ -332,34 +445,10 @@ void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
   }
 }
 
-smtk::resource::PersistentObjectPtr XmlDocV3Parser::processReferenceItemValue(
-  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
-{
-  auto rsrcNode = val.child("Resource");
-  auto compNode = val.child("Component");
-  if (rsrcNode && !compNode)
-  {
-    return this->processResourceItemValue(val, rsrcMgr);
-  }
-  else if (compNode && rsrcNode)
-  {
-    return this->processComponentItemValue(val, rsrcMgr);
-  }
-  else // (!rsrcNode && !compNode) || (!rsrcNode && compNode)
-  {
-    smtkErrorMacro(
-      m_logger, "ReferenceItem Val node should have a Resource and optionally a Component.");
-    return smtk::resource::ResourcePtr();
-  }
-}
-
 void XmlDocV3Parser::processResourceItem(
   pugi::xml_node& node, smtk::attribute::ResourceItemPtr item)
 {
-  this->processReferenceItemCommon(
-    node, item, [this](const pugi::xml_node& val, smtk::resource::ManagerPtr mgr) {
-      return this->processResourceItemValue(val, mgr);
-    });
+  this->processReferenceItem(node, item);
 }
 
 void XmlDocV3Parser::processResourceDef(
@@ -368,141 +457,14 @@ void XmlDocV3Parser::processResourceDef(
   this->processReferenceDef(node, idef, "ResourceLabels");
 }
 
-smtk::resource::PersistentObjectPtr XmlDocV3Parser::processResourceItemValue(
-  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
-{
-  auto rsrcNode = val.child("Resource");
-  if (!rsrcNode)
-  {
-    smtkErrorMacro(m_logger, "ResourceItem Val node does not have a Resource as required.");
-    return smtk::resource::PersistentObjectPtr();
-  }
-  auto ruid = smtk::common::UUID(rsrcNode.text().get());
-  auto rsrc = rsrcMgr->get(ruid);
-  if (!rsrc)
-  {
-    smtkWarningMacro(m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
-    return smtk::resource::PersistentObjectPtr();
-  }
-  return rsrc;
-}
-
 void XmlDocV3Parser::processComponentItem(
   pugi::xml_node& node, smtk::attribute::ComponentItemPtr item)
 {
-  this->processReferenceItemCommon(
-    node, item, [this](const pugi::xml_node& val, smtk::resource::ManagerPtr mgr) {
-      return this->processComponentItemValue(val, mgr);
-    });
+  this->processReferenceItem(node, item);
 }
 
 void XmlDocV3Parser::processComponentDef(
   pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
 {
   this->processReferenceDef(node, idef, "ComponentLabels");
-}
-
-smtk::resource::PersistentObjectPtr XmlDocV3Parser::processComponentItemValue(
-  const pugi::xml_node& val, smtk::resource::ManagerPtr rsrcMgr)
-{
-  auto rsrcNode = val.child("Resource");
-  auto compNode = val.child("Component");
-  if (!rsrcNode || !compNode)
-  {
-    smtkErrorMacro(
-      m_logger, "ComponentItem Val node does not have both a Resource and Component as required.");
-    return smtk::resource::PersistentObjectPtr();
-  }
-  auto ruid = smtk::common::UUID(rsrcNode.text().get());
-  auto rsrc = rsrcMgr->get(ruid);
-  if (!rsrc)
-  {
-    smtkWarningMacro(m_logger, "Resource " << ruid << " is not loaded. Ignoring.");
-    return smtk::resource::PersistentObjectPtr();
-  }
-  auto cuid = smtk::common::UUID(compNode.text().get());
-  return rsrc->find(cuid);
-}
-
-void XmlDocV3Parser::processReferenceItemCommon(pugi::xml_node& node,
-  smtk::attribute::ReferenceItemPtr item, std::function<smtk::resource::PersistentObjectPtr(
-                                            const pugi::xml_node&, smtk::resource::ManagerPtr)>
-                                            processItemValue)
-{
-  xml_attribute xatt;
-  xml_node valsNode;
-  std::size_t i, n = item->numberOfValues();
-  smtk::common::UUID uid;
-  xml_node val;
-  std::size_t numRequiredVals = item->numberOfRequiredValues();
-  std::string attName;
-  AttRefInfo info;
-  if (!numRequiredVals || item->isExtensible())
-  {
-    // The node should have an attribute indicating how many values are
-    // associated with the item
-    xatt = node.attribute("NumberOfValues");
-    if (!xatt)
-    {
-      smtkErrorMacro(
-        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
-      return;
-    }
-    n = xatt.as_uint();
-    item->setNumberOfValues(n);
-  }
-  if (!n)
-  {
-    return;
-  }
-
-  auto rsrcMgr = m_collection->manager();
-  if (!rsrcMgr && item->numberOfValues() > 0)
-  {
-    static bool once = true;
-    if (once)
-    {
-      smtkErrorMacro(m_logger, "The resource manager for the attribute collection being read is "
-                               "not set but the ComponentItem \""
-          << item->name() << "\" of \"" << item->attribute()->name()
-          << "\" has entries "
-             "that need to find resources using a resource manager.");
-      once = false;
-    }
-    return;
-  }
-
-  valsNode = node.child("Values");
-  if (valsNode)
-  {
-    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
-    {
-      xatt = val.attribute("Ith");
-      if (!xatt)
-      {
-        smtkErrorMacro(m_logger, "XML Attribute Ith is missing for Item: " << item->name());
-        continue;
-      }
-      i = xatt.as_uint();
-      if (i >= n)
-      {
-        smtkErrorMacro(
-          m_logger, "XML Attribute Ith = " << i << " is out of range for Item: " << item->name());
-        continue;
-      }
-      item->setObjectValue(static_cast<int>(i), processItemValue(val, rsrcMgr));
-    }
-  }
-  else if (numRequiredVals == 1)
-  {
-    val = node.child("Val");
-    if (val)
-    {
-      item->setObjectValue(0, processItemValue(val, rsrcMgr));
-    }
-  }
-  else
-  {
-    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
-  }
 }

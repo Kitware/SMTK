@@ -13,6 +13,9 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Collection.h"
 
+#include "smtk/resource/Component.h"
+
+#include <cassert>
 #include <sstream>
 
 namespace smtk
@@ -46,14 +49,17 @@ bool ReferenceItem::isValid() const
   {
     return false;
   }
-  for (auto it = m_values.begin(); it != m_values.end(); ++it)
+
+  // Do all objects resolve to a valid reference?
+  //
+  // NOTE: we const_cast here because we treat m_values as a cache variable with
+  //       lazy evalutation semantics. We could declare m_values to be mutable
+  //       instead.
+  if (const_cast<ReferenceItem*>(this)->resolve() == false)
   {
-    // If the pointer is NULL then it's unset:
-    if (!(*it))
-    {
-      return false;
-    }
+    return false;
   }
+
   return true;
 }
 
@@ -84,6 +90,7 @@ bool ReferenceItem::setNumberOfValues(std::size_t newSize)
   if (n > 0 && newSize > n)
     return false; // The number of values requested is too large.
 
+  m_keys.resize(newSize);
   m_values.resize(newSize);
   return true;
 }
@@ -126,10 +133,35 @@ void ReferenceItem::visit(std::function<bool(PersistentObjectPtr)> visitor) cons
   }
 }
 
+smtk::attribute::ReferenceItem::Key ReferenceItem::objectKey(std::size_t i) const
+{
+  if (i >= static_cast<std::size_t>(m_values.size()))
+    return Key();
+  return m_keys[i];
+}
+
+bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::ReferenceItem::Key& key)
+{
+  if (i < m_values.size())
+  {
+    this->attribute()->links().removeLink(m_keys[i]);
+    m_keys[i] = key;
+    return true;
+  }
+  return false;
+}
+
 smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(std::size_t i) const
 {
   if (i >= static_cast<std::size_t>(m_values.size()))
     return nullptr;
+  if (m_values[i] == nullptr)
+  {
+    // NOTE: we const_cast here because we treat m_values as a cache variable
+    //       with lazy evalutation semantics. We could declare m_values to be
+    //       mutable instead.
+    const_cast<ReferenceItem*>(this)->m_values[i] = this->objectValue(m_keys[i]);
+  }
   auto result = m_values[i];
   return result;
 }
@@ -139,11 +171,31 @@ bool ReferenceItem::setObjectValue(PersistentObjectPtr val)
   return this->setObjectValue(0, val);
 }
 
+ReferenceItem::Key ReferenceItem::linkTo(PersistentObjectPtr val)
+{
+  // If the object is a component...
+  if (auto component = std::dynamic_pointer_cast<smtk::resource::Component>(val))
+  {
+    return this->attribute()->links().addLinkTo(component, -1);
+  }
+  // If the object is a resource...
+  else if (auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(val))
+  {
+    return this->attribute()->links().addLinkTo(resource, -1);
+  }
+
+  // If the object cannot be cast to a resource or component, there's not much
+  // we can do.
+  return ReferenceItem::Key();
+}
+
 bool ReferenceItem::setObjectValue(std::size_t i, PersistentObjectPtr val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (i < m_values.size() && def->isValueValid(val))
   {
+    this->attribute()->links().removeLink(m_keys[i]);
+    m_keys[i] = this->linkTo(val);
     m_values[i] = val;
     return true;
   }
@@ -188,6 +240,7 @@ bool ReferenceItem::appendObjectValue(PersistentObjectPtr val)
     return false;
   }
 
+  m_keys.push_back(this->linkTo(val));
   m_values.push_back(val);
   return true;
 }
@@ -201,15 +254,20 @@ bool ReferenceItem::removeValue(std::size_t i)
     return this->setObjectValue(i, nullptr); // The number of values is fixed
   }
 
+  m_keys.erase(m_keys.begin() + i);
   m_values.erase(m_values.begin() + i);
   return true;
 }
 
 void ReferenceItem::reset()
 {
+  m_keys.clear();
   m_values.clear();
   if (this->numberOfRequiredValues() > 0)
+  {
+    m_keys.resize(this->numberOfRequiredValues());
     m_values.resize(this->numberOfRequiredValues());
+  }
 }
 
 std::string ReferenceItem::valueAsString() const
@@ -246,7 +304,7 @@ std::string ReferenceItem::valueAsString(std::size_t i) const
 
 bool ReferenceItem::isSet(std::size_t i) const
 {
-  return i < m_values.size() ? !!m_values[i] : false;
+  return i < m_keys.size() ? !m_keys[i].first.isNull() : false;
 }
 
 void ReferenceItem::unset(std::size_t i)
@@ -306,6 +364,11 @@ bool ReferenceItem::has(PersistentObjectPtr entity) const
 
 typename ReferenceItem::const_iterator ReferenceItem::begin() const
 {
+  // NOTE: we const_cast here because we treat m_values as a cache variable with
+  //       lazy evalutation semantics. We could declare m_values to be mutable
+  //       instead.
+  const_cast<ReferenceItem*>(this)->resolve();
+
   return m_values.begin();
 }
 
@@ -367,9 +430,60 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   std::size_t n = def->numberOfRequiredValues();
   if (n != 0)
   {
+    m_keys.resize(n);
     m_values.resize(n);
   }
   return true;
+}
+
+smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceItem::Key& key) const
+{
+  // We first try to resolve the item as a component.
+  auto linkedComponent = this->attribute()->links().linkedComponent(key);
+  if (linkedComponent.first != nullptr)
+  {
+    // We can resolve the linked component.
+    return linkedComponent.first;
+  }
+
+  // We then try to resolve the item as a resource.
+  auto linkedResource = this->attribute()->links().linkedResource(key);
+  if (linkedResource.first != nullptr)
+  {
+    // We can resolve the linked resource.
+    return linkedResource.first;
+  }
+  return PersistentObjectPtr();
+}
+
+bool ReferenceItem::resolve()
+{
+  bool allResolved = true;
+
+  // We treat keys and values as vectors in lockstep with each other. If they
+  // are not, then something unexpected has occured.
+  assert(m_keys.size() == m_values.size());
+
+  // Iterate over the objects' keys and values.
+  auto key = m_keys.begin();
+  auto value = m_values.begin();
+  for (; value != m_values.end(); ++value, ++key)
+  {
+    // If a value is not currently resolved...
+    if (*value == nullptr)
+    {
+      // ...set it equal to the object pointer accessed using its key.
+      *value = this->objectValue(*key);
+
+      // If it's still not resolved...
+      if (*value == nullptr)
+      {
+        // ...there's not much we can do.
+        allResolved = false;
+      }
+    }
+  }
+  return allResolved;
 }
 }
 }

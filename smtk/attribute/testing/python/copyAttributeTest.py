@@ -40,9 +40,6 @@ INPUT_FILENAME = 'copyAttributeTest.sbi'
 OUTPUT_FILENAME = 'copyAttributeOut.sbi'
 
 if __name__ == '__main__':
-    print('This test has been disabled until resource links are in place.')
-    sys.exit(125)
-
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:
         print()
@@ -54,9 +51,6 @@ if __name__ == '__main__':
     # To help with debugging, write some environment vars
     logging.debug('LD_LIBRARY_PATH = %s' % os.environ.get('LD_LIBRARY_PATH'))
     logging.debug('PYTHONPATH = %s' % os.environ.get('PYTHONPATH'))
-
-    # Resource management
-    rsrcMgr = smtk.resource.Manager.create()
 
     smtk_test_data = sys.argv[1]
 
@@ -73,7 +67,6 @@ if __name__ == '__main__':
         logging.error('Unable to load input file %s' % model_path)
         sys.exit(-3)
     model_manager = smtk.model.Manager.create()
-    rsrcMgr.add(model_manager)
     ok = smtk.io.LoadJSON.intoModelManager(json_string, model_manager)
     if not ok:
         logging.error("Unable to create model from contents of %s" %
@@ -89,7 +82,6 @@ if __name__ == '__main__':
     logging.info('Reading %s' % att_path)
     input_collection = smtk.attribute.Collection.create()
     input_collection.setRefModelManager(model_manager)
-    rsrcMgr.add(input_collection)
 
     reader = smtk.io.AttributeReader()
     logger = smtk.io.Logger()
@@ -127,12 +119,13 @@ if __name__ == '__main__':
     second_concrete.associateEntity(vertex_id)
 
     # Also test model entity item
-    item = second_concrete.find('ModelFace')
-    model_entity_item = smtk.attribute.to_concrete(item)
-    face26 = '0bbc9685-e506-4fe7-b52f-ae52888d744b'
-    face_id = uuid.UUID(face26)
-    entityref = smtk.model.EntityRef(model_manager, face_id)
-    model_entity_item.setValue(0, entityref)
+#    item = second_concrete.find('ModelFace')
+#    model_entity_item = smtk.attribute.to_concrete(item)
+
+#    face26 = '0bbc9685-e506-4fe7-b52f-ae52888d744b'
+#    face_id = uuid.UUID(face26)
+#    entityref = smtk.model.EntityRef(model_manager, face_id)
+#    model_entity_item.setValue(0, entityref)
 
     #
     # Instantiate 2nd/test collection

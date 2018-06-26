@@ -176,6 +176,10 @@ bool ComponentLinks::removeLink(const ComponentLinks::Key& key)
 {
   typedef ResourceLinks::ResourceLinkData ResourceLinkData;
   ResourceLinkData& resourceLinkData = m_component->resource()->links().data();
+  if (resourceLinkData.has(key.first) == false)
+  {
+    return false;
+  }
   return resourceLinkData.value(key.first).erase(key.second) > 0;
 }
 
@@ -184,6 +188,11 @@ std::pair<ResourcePtr, ComponentLinks::RoleType> ComponentLinks::linkedResource(
 {
   typedef ResourceLinks::ResourceLinkData ResourceLinkData;
   const ResourceLinkData& resourceLinkData = m_component->resource()->links().data();
+  if (resourceLinkData.has(key.first) == false)
+  {
+    return std::make_pair(ResourcePtr(), Data::undefinedRole);
+  }
+
   auto& resourceLink = resourceLinkData.value(key.first);
   auto& componentLink = resourceLink.at(key.second);
 
@@ -206,6 +215,11 @@ std::pair<ComponentPtr, ComponentLinks::RoleType> ComponentLinks::linkedComponen
 {
   typedef ResourceLinks::ResourceLinkData ResourceLinkData;
   const ResourceLinkData& resourceLinkData = m_component->resource()->links().data();
+  if (resourceLinkData.has(key.first) == false)
+  {
+    return std::make_pair(ComponentPtr(), Data::undefinedRole);
+  }
+
   auto& resourceLink = resourceLinkData.value(key.first);
   auto& componentLink = resourceLink.at(key.second);
 

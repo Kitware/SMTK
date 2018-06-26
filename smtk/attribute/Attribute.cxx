@@ -394,9 +394,14 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
   auto assoc = this->associations();
   if (assoc)
   {
-    assoc->as(result, [](smtk::resource::PersistentObjectPtr obj) {
-      return obj ? obj->id() : smtk::common::UUID::null();
-    });
+    for (std::size_t i = 0; i < assoc->numberOfValues(); ++i)
+    {
+      if (assoc->isSet(i))
+      {
+        auto key = assoc->objectKey(i);
+        result.insert(this->resource()->links().data().at(key.first).at(key.second).right);
+      }
+    }
   }
   return result;
 }

@@ -39,7 +39,7 @@ PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item > pybind
     .def("maxNumberOfValues", &smtk::attribute::ReferenceItem::maxNumberOfValues)
     .def("numberOfRequiredValues", &smtk::attribute::ReferenceItem::numberOfRequiredValues)
     .def("numberOfValues", &smtk::attribute::ReferenceItem::numberOfValues)
-    .def("objectValue", &smtk::attribute::ReferenceItem::objectValue, py::arg("i") = 0)
+    .def("objectValue", (smtk::resource::PersistentObjectPtr (smtk::attribute::ReferenceItem::*)(std::size_t) const) &smtk::attribute::ReferenceItem::objectValue, py::arg("i") = 0)
     .def("removeValue", &smtk::attribute::ReferenceItem::removeValue, py::arg("i"))
     .def("reset", &smtk::attribute::ReferenceItem::reset)
     .def("setNumberOfValues", &smtk::attribute::ReferenceItem::setNumberOfValues, py::arg("newSize"))
