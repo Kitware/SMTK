@@ -63,9 +63,13 @@ smtk::view::PhraseModelPtr qtComponentItem::createPhraseModel() const
   phraseModel->root()->findDelegate()->setModel(phraseModel);
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ComponentItemDefinition>(
     this->getObject()->definition());
+  std::cerr << "Address of " << def->name() << "( " << def << ") \n";
+
   std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
     ->setComponentFilters(def->acceptableEntries());
 
+  // ToDo: need to be aware of resource links!
+  phraseModel->addSource(this->uiManager()->resourceManager(), nullptr);
   return phraseModel;
 }
 
@@ -95,8 +99,15 @@ std::string qtComponentItem::synopsis(bool& ok) const
     return "uninitialized item";
   }
 
-  static const std::size_t numRequired = item->numberOfRequiredValues();
-  static const std::size_t maxAllowed = item->maxNumberOfValues();
+  if (m_p->m_members.size())
+  {
+    auto foo = m_p->m_members.begin()->first;
+    std::cerr << "Number of Components = " << m_p->m_members.size() << std::endl;
+    std::cerr << "Type of Component is : " << typeid(foo.get()).name() << " its value is "
+              << foo.get() << std::endl;
+  }
+  std::size_t numRequired = item->numberOfRequiredValues();
+  std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
   std::size_t numSel = 0;
   for (auto entry : m_p->m_members)
@@ -109,12 +120,10 @@ std::string qtComponentItem::synopsis(bool& ok) const
   ok = true;
   if (numRequired < 2 && maxAllowed == 1)
   {
-    auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(m_p->m_members.empty()
-        ? smtk::resource::PersistentObjectPtr()
-        : m_p->m_members.begin()->first);
-    label << (numSel == 1
-        ? (ment ? ment->referenceAs<smtk::model::EntityRef>().name() : "TODO (report item name)")
-        : (numSel > 0 ? "too many" : "(none)"));
+    auto ment = (m_p->m_members.empty() ? smtk::resource::PersistentObjectPtr()
+                                        : m_p->m_members.begin()->first);
+    label << (numSel == 1 ? (ment ? ment->name() : "NULL!!")
+                          : (numSel > 0 ? "too many" : "(none)"));
     ok = numSel >= numRequired && numSel <= maxAllowed;
   }
   else

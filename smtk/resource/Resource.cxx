@@ -15,7 +15,6 @@
 
 #include "smtk/common/UUIDGenerator.h"
 
-#include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -45,6 +44,7 @@ Resource::~Resource()
 
 ComponentSet Resource::find(const std::string& queryString) const
 {
+  //  return this->findAs<ComponentSet>(queryString);
   // Construct a query operation from the query string
   auto queryOp = this->queryOperation(queryString);
 

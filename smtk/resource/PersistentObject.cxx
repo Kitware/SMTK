@@ -22,5 +22,9 @@ PersistentObject::~PersistentObject()
 {
 }
 
+std::string PersistentObject::name() const
+{
+  return this->id().toString();
+}
 } // namespace resource
 } // namespace smtk

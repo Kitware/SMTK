@@ -1,19 +1,19 @@
 <RCC>
   <qresource prefix="/icons/attribute">
-    <file>edit.png</file>
-    <file>expand-up.png</file>
-    <file>expand-down.png</file>
-    <file>lock.png</file>
-    <file>minus.png</file>
-    <file>plus.png</file>
-    <file>selLinkIn.png</file>
-    <file>clearLinkIn.png</file>
-    <file>growcell32.png</file>
-    <file>growplus32.png</file>
-    <file>growminus32.png</file>
-    <file>cancel32.png</file>
-    <file>growaccept24.png</file>
-    <file>edgesplit.png</file>
-    <file>function.png</file>
+    <file alias = "edit.png">icons/edit.png</file>
+    <file alias = "expand-up.png">icons/expand-up.png</file>
+    <file alias = "expand-down.png">icons/expand-down.png</file>
+    <file alais = "lock.png">icons/lock.png</file>
+    <file alias = "minus.png">icons/minus.png</file>
+    <file alias = "plus.png">icons/plus.png</file>
+    <file alias = "selLinkIn.png">icons/selLinkIn.png</file>
+    <file alias = " clearLinkIn.png">icons/clearLinkIn.png</file>
+    <file alias = "growcell32.png">icons/growcell32.png</file>
+    <file alias = "growplus32.png">icons/growplus32.png</file>
+    <file alias = "growminus32.png">icons/growminus32.png</file>
+    <file alias = "cancel32.png">icons/cancel32.png</file>
+    <file alias = "growaccept24.png">icons/growaccept24.png</file>
+    <file alias = "edgesplit.png">icons/edgesplit.png</file>
+    <file alias = "function.png">icons/function.png</file>
   </qresource>
 </RCC>

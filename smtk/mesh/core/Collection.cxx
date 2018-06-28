@@ -190,7 +190,7 @@ bool Collection::isModified() const
   return this->interface()->isModified();
 }
 
-const std::string& Collection::name() const
+std::string Collection::name() const
 {
   return m_name;
 }

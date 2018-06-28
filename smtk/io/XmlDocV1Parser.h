@@ -101,9 +101,9 @@ protected:
   void processStringItem(pugi::xml_node& node, smtk::attribute::StringItemPtr item);
   virtual void processStringDef(
     pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef);
-  virtual void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ReferenceItemPtr item);
+  virtual void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
   void processModelEntityDef(
-    pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef);
+    pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
   virtual void processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item);
   virtual void processMeshEntityDef(
     pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef);

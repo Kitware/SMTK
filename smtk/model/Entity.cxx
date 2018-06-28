@@ -10,6 +10,9 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+
 #include "smtk/common/StringUtil.h"
 #include "smtk/common/UUIDGenerator.h"
 
@@ -161,6 +164,16 @@ bool Entity::setEntityFlags(BitFlags flags)
     }
   }
   return allowed;
+}
+
+std::string Entity::name() const
+{
+  auto mr = this->modelResource();
+  if (mr)
+  {
+    return mr->name(m_id);
+  }
+  return std::string();
 }
 
 /**\brief Return the dimension of the associated entity.
@@ -1484,6 +1497,50 @@ int Entity::consumeInvalidIndex(const smtk::common::UUID& uid)
     }
   m_firstInvalid = -1;
   return result;
+}
+
+/**\brief Return the attributes associated with the entity
+that are of type (or derived type) def.
+  */
+smtk::attribute::Attributes Entity::attributes(smtk::attribute::DefinitionPtr def) const
+{
+  smtk::attribute::Attributes atts;
+  // If there was no definition return empty list
+  if (def == nullptr)
+  {
+    return atts;
+  }
+  auto attCollection = def->collection();
+  // If there is no collection then return an empty list
+  if (attCollection == nullptr)
+  {
+    return atts;
+  }
+
+  // First lets find all attribute IDs that are assoicated with the entity
+  ManagerPtr mgr = this->modelResource();
+  UUIDsToAttributeAssignments::const_iterator entry = mgr->attributeAssignments().find(m_id);
+  // No attributes then just return an emoty list
+  if (entry == mgr->attributeAssignments().end())
+  {
+    return atts;
+  }
+  // Lets go through all of the attributes and find the ones that come from def
+  for (auto id : entry->second.attributeIds())
+  {
+    auto a = attCollection->findAttribute(id);
+    if (a == nullptr)
+    {
+      // Could not find the attribute for that ID
+      continue;
+    }
+    // Is this attribute based on def
+    if (a->definition()->isA(def))
+    {
+      atts.push_back(a);
+    }
+  }
+  return atts;
 }
 
 } // namespace model

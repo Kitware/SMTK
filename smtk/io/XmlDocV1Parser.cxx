@@ -836,9 +836,9 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
           node, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
       case smtk::attribute::Item::ModelEntityType:
-        idef = def->addItemDefinition<smtk::attribute::ReferenceItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         this->processModelEntityDef(
-          node, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(idef));
+          node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
         break;
       case smtk::attribute::Item::VoidType:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
@@ -978,7 +978,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node& node, attribute::StringIte
 }
 
 void XmlDocV1Parser::processModelEntityDef(
-  pugi::xml_node& node, attribute::ReferenceItemDefinitionPtr idef)
+  pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
 {
   xml_node labels, mmask, child;
   xml_attribute xatt;
@@ -988,6 +988,8 @@ void XmlDocV1Parser::processModelEntityDef(
   if (mmask)
   {
     idef->setAcceptsEntries("smtk::model::Manager", mmask.text().as_string(), true);
+    std::cerr << "Mem Mask of " << idef->name() << "( " << idef << ") is "
+              << mmask.text().as_string() << "\n";
   }
 
   xatt = node.attribute("NumberOfRequiredValues");
@@ -1259,10 +1261,10 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         break;
       case smtk::attribute::Item::ModelEntityType:
-        if ((cidef = idef->addItemDefinition<smtk::attribute::ReferenceItemDefinition>(citemName)))
+        if ((cidef = idef->addItemDefinition<smtk::attribute::ComponentItemDefinition>(citemName)))
         {
           this->processModelEntityDef(
-            cinode, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(cidef));
+            cinode, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef));
         }
         else
         {
@@ -1627,7 +1629,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
           child, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
       case smtk::attribute::Item::ModelEntityType:
-        idef = def->addItemDefinition<smtk::attribute::ReferenceItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         if (!idef)
         {
           smtkErrorMacro(m_logger, "Failed to create Model Entity Item definition Type: "
@@ -1635,7 +1637,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
           continue;
         }
         this->processModelEntityDef(
-          child, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(idef));
+          child, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
         break;
       case smtk::attribute::Item::VoidType:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
@@ -1917,7 +1919,7 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
       break;
     case smtk::attribute::Item::ModelEntityType:
       this->processModelEntityItem(
-        node, smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItem>(item));
+        node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(item));
       break;
     case smtk::attribute::Item::MeshSelectionType:
       this->processMeshSelectionItem(
@@ -2239,7 +2241,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node& node, attribute::StringIt
     node, item, m_collection, m_itemExpressionInfo, m_logger);
 }
 
-void XmlDocV1Parser::processModelEntityItem(pugi::xml_node& node, attribute::ReferenceItemPtr item)
+void XmlDocV1Parser::processModelEntityItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
 {
   (void)node;
   smtkWarningMacro(m_logger, "All Model Entity Items will be ignored for Attribute Version 1 Format"

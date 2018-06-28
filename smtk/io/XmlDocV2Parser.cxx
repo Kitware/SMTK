@@ -13,6 +13,7 @@
 #include "cJSON.h"
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
@@ -22,8 +23,6 @@
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
-#include "smtk/attribute/ReferenceItem.h"
-// #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -337,7 +336,7 @@ void XmlDocV2Parser::processDirectoryItem(pugi::xml_node& node, attribute::Direc
   }
 }
 
-void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::ReferenceItemPtr item)
+void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
 {
   xml_attribute xatt;
   xml_node valsNode;

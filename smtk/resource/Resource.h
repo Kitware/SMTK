@@ -15,6 +15,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/resource/Component.h"
 #include "smtk/resource/Lock.h"
 #include "smtk/resource/PersistentObject.h"
 #include "smtk/resource/ResourceLinks.h"
@@ -122,6 +123,11 @@ public:
   /// given a a std::string describing a query, return a set of components that
   /// satisfy the query criteria.
   ComponentSet find(const std::string& queryString) const;
+  /// given a a std::string describing a query and a type of container, return a set of components that
+  /// satisfy both.  Note that since this uses a dynamic_pointer cast this can be slower than other
+  /// find methods
+  template <typename Collection>
+  Collection findAs(const std::string& queryString) const;
 
   Links& links() { return m_links; }
   const Links& links() const { return m_links; }
@@ -147,6 +153,33 @@ private:
 
   WeakManagerPtr m_manager;
 };
+
+template <typename Collection>
+Collection Resource::findAs(const std::string& queryString) const
+{
+  // Construct a query operation from the query string
+  auto queryOp = this->queryOperation(queryString);
+
+  // Construct a component set to fill
+  Collection col;
+
+  // Visit each component and add it to the set if it satisfies the query
+  smtk::resource::Component::Visitor visitor = [&](const ComponentPtr& component) {
+    if (queryOp(component))
+    {
+      auto entry =
+        std::dynamic_pointer_cast<typename Collection::value_type::element_type>(component);
+      if (entry)
+      {
+        col.insert(col.end(), entry);
+      }
+    }
+  };
+
+  this->visit(visitor);
+
+  return col;
+}
 }
 }
 
