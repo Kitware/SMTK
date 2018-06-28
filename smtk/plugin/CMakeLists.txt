@@ -20,10 +20,17 @@ vtk_module_dep_includes(vtkPVClientServerCoreCore)
 include_directories(${vtkPVClientServerCoreCore_INCLUDE_DIRS}
   ${vtkPVClientServerCoreCore_DEPENDS_INCLUDE_DIRS})
 add_library(smtkDefaultPlugins
-  ${CMAKE_CURRENT_SOURCE_DIR}/InitializeDefaultPlugins.h
   ${CMAKE_CURRENT_BINARY_DIR}/InitializeDefaultPlugins.cxx)
+target_include_directories(smtkDefaultPlugins
+  PUBLIC
+  $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+  $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
+  )
 target_link_libraries(smtkDefaultPlugins
   LINK_PRIVATE ${SMTK_PLUGINS})
+
+smtk_export_header(smtkDefaultPlugins Exports.h)
 
 smtk_public_headers(InitializeDefaultPlugins.h)
 smtk_install_library(smtkDefaultPlugins)
