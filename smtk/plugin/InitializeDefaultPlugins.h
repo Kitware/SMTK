@@ -10,14 +10,16 @@
 #ifndef __smtk_InitializeDefaultPlugins_h
 #define __smtk_InitializeDefaultPlugins_h
 
+#include "smtk/plugin/Exports.h"
+
 namespace smtk
 {
 namespace extension
 {
 namespace paraview
 {
-void initializeDefaultPlugins();
-void loadDefaultPlugins();
+SMTKDEFAULTPLUGINS_EXPORT void initializeDefaultPlugins();
+SMTKDEFAULTPLUGINS_EXPORT void loadDefaultPlugins();
 }
 }
 }
