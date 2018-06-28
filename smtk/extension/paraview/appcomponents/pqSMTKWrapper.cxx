@@ -13,7 +13,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h" // TODO: remove need for me
+#include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h" // TODO: remove need for me
@@ -30,6 +30,7 @@
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/Manager.h"
 
 // PV Client side
 #include "pqApplicationCore.h"
@@ -238,7 +239,7 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
   {
     auto dataInput = port->getSourceProxy();
     auto dataThing = dataInput->GetClientSideObject();
-    auto smtkThing = dynamic_cast<vtkSMTKModelReader*>(dataThing);
+    auto smtkThing = dynamic_cast<vtkSMTKResourceReader*>(dataThing);
     auto mbdsThing = smtkThing ? smtkThing->GetOutput() : nullptr;
     auto selnInput = port->getSelectionInput();
     vtkPVSelectionSource* selnThing =
@@ -291,25 +292,29 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
         //std::cout << " )\n";
         if (mbdsThing)
         {
-          smtk::model::ManagerPtr mgr = smtkThing->GetModelSource()->GetModelManager();
-          //std::cout << "  selected model entities:";
-          auto mit = mbdsThing->NewIterator();
-          for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
+          smtk::model::ManagerPtr mgr =
+            std::dynamic_pointer_cast<smtk::model::Manager>(smtkThing->GetResource());
+          if (mgr)
           {
-            if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
+            //std::cout << "  selected model entities:";
+            auto mit = mbdsThing->NewIterator();
+            for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
             {
-              auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
-                mgr, mit->GetCurrentMetaData());
-              auto cmp = ent.component();
-              if (cmp)
+              if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
               {
-                seln.insert(seln.end(), cmp);
+                auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
+                  mgr, mit->GetCurrentMetaData());
+                auto cmp = ent.component();
+                if (cmp)
+                {
+                  seln.insert(seln.end(), cmp);
+                }
+                //std::cout << ", " << ent.name();
               }
-              //std::cout << ", " << ent.name();
             }
+            //std::cout << "\n";
+            selnMgr->modifySelection(seln, selnSrc, selnVal);
           }
-          //std::cout << "\n";
-          selnMgr->modifySelection(seln, selnSrc, selnVal);
         }
       }
     }
