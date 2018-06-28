@@ -53,6 +53,12 @@ bool Manager::unregisterResource(const Resource::Index& index)
   return false;
 }
 
+void Manager::clear()
+{
+  std::for_each(m_resources.begin(), m_resources.end(),
+    [this](const Resource::Ptr& resource) { this->remove(resource); });
+}
+
 smtk::resource::ResourcePtr Manager::create(const std::string& typeName)
 {
   // Locate the metadata associated with this resource type
