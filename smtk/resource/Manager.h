@@ -67,6 +67,10 @@ public:
   /// Unregister a resource identified by its type index.
   bool unregisterResource(const Resource::Index&);
 
+  /// Remove all resources. This doesn't explicitly release the memory of the
+  /// resources, it only stops the tracking of the resources by the manager.
+  void clear();
+
   /// Construct a resource identified by its type name.
   ResourcePtr create(const std::string&);
 
