@@ -67,8 +67,8 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   smtk::resource::ResourcePtr rsrc;
   auto pxy = this->getProxy()->GetClientSideObject();
   // std::cout << "get resource from " << pxy->GetClassName() << "\n";
-  auto smtkModelRdr = vtkSMTKModelReader::SafeDownCast(pxy);
-  rsrc = smtkModelRdr ? smtkModelRdr->GetSMTKResource() : nullptr;
+  auto smtkRsrcRdr = vtkSMTKResourceReader::SafeDownCast(pxy);
+  rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetResource() : nullptr;
   if (rsrc)
   {
     return rsrc;
