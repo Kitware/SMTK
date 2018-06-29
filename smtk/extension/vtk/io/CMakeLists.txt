@@ -1,5 +1,5 @@
 set(srcs
-  ReadVTKData.cxx
+  ImportAsVTKData.cxx
   RedirectOutput.cxx
   vtkLIDARPtsWriter.cxx # For terrain extraction
   mesh/ExportVTKData.cxx
@@ -10,7 +10,7 @@ set(srcs
   )
 
 set(headers
-  ReadVTKData.h
+  ImportAsVTKData.h
   RedirectOutput.h
   vtkLIDARPtsWriter.h # For terrain extraction
   mesh/ExportVTKData.h

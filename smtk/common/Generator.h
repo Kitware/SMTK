@@ -85,12 +85,25 @@ namespace common
 /// Foo foo = generateFoo(foo_string);
 /// ...
 
+namespace detail
+{
+struct NullGeneratorBase
+{
+};
+}
+
 /// Base for all generators. Describes the two methods used for generator
 /// selection and object generation.
-template <class Input, class Output>
-class GeneratorBase
+template <class Input, class Output, class Base = detail::NullGeneratorBase>
+class GeneratorBase : public Base
 {
 public:
+  template <typename... T>
+  GeneratorBase(T&&... all)
+    : Base(std::forward<T>(all)...)
+  {
+  }
+
   virtual ~GeneratorBase() {}
 
   /// A discriminating method to determine whether or not the input should be
@@ -110,13 +123,19 @@ public:
 /// Interface generator class. Implements the base methods valid() and the
 /// function call operator as a loop over the registered GeneratorTypes. Also
 /// contains the static set of generator types.
-template <class Input, class Output>
-class Generator : public GeneratorBase<Input, Output>
+template <class Input, class Output, class Base = detail::NullGeneratorBase>
+class Generator : public GeneratorBase<Input, Output, Base>
 {
-  template <class U, class V, class W>
+  template <class U, class V, class W, class X>
   friend class GeneratorType;
 
 public:
+  template <typename... T>
+  Generator(T&&... all)
+    : GeneratorBase<Input, Output, Base>(std::forward<T>(all)...)
+  {
+  }
+
   /// Loop over registered generators and return true if any of the generators'
   /// valid() calls return true; otherwise, return false.
   bool valid(const Input&) const override;
@@ -132,22 +151,23 @@ protected:
   /// existence across compilation units due to our plugin-based architecture.
   /// We therefore use a weak pointer to guard ourselves against the unlikely
   /// event of a generator implementation outliving its base generator class.
-  static std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > generators();
+  static std::weak_ptr<std::set<GeneratorBase<Input, Output, Base>*> > generators();
 };
 
-template <class Input, class Output>
-std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > Generator<Input, Output>::generators()
+template <class Input, class Output, class Base>
+std::weak_ptr<std::set<GeneratorBase<Input, Output, Base>*> >
+Generator<Input, Output, Base>::generators()
 {
-  static std::shared_ptr<std::set<GeneratorBase<Input, Output>*> > generators =
-    std::make_shared<std::set<GeneratorBase<Input, Output>*> >(
-      std::set<GeneratorBase<Input, Output>*>());
+  static std::shared_ptr<std::set<GeneratorBase<Input, Output, Base>*> > generators =
+    std::make_shared<std::set<GeneratorBase<Input, Output, Base>*> >(
+      std::set<GeneratorBase<Input, Output, Base>*>());
   return generators;
 }
 
-template <class Input, class Output>
-bool Generator<Input, Output>::valid(const Input& input) const
+template <class Input, class Output, class Base>
+bool Generator<Input, Output, Base>::valid(const Input& input) const
 {
-  auto gens = Generator<Input, Output>::generators().lock();
+  auto gens = Generator<Input, Output, Base>::generators().lock();
   if (gens == nullptr)
   {
     return false;
@@ -162,11 +182,11 @@ bool Generator<Input, Output>::valid(const Input& input) const
   return false;
 }
 
-template <class Input, class Output>
-Output Generator<Input, Output>::operator()(const Input& input)
+template <class Input, class Output, class Base>
+Output Generator<Input, Output, Base>::operator()(const Input& input)
 {
   Output output;
-  auto gens = Generator<Input, Output>::generators().lock();
+  auto gens = Generator<Input, Output, Base>::generators().lock();
   if (gens == nullptr)
   {
     return output;
@@ -197,8 +217,8 @@ Output Generator<Input, Output>::operator()(const Input& input)
 
 /// Base class for specific generator types. Uses CRTP to simplify the process
 /// of registration to the interface class.
-template <class Input, class Output, class Self>
-class GeneratorType : public GeneratorBase<Input, Output>
+template <class Input, class Output, class Self, class Base = detail::NullGeneratorBase>
+class GeneratorType : public GeneratorBase<Input, Output, Base>
 {
   /// The Registry is needed to scope the lifetime of the generator type to the
   /// library that defines it. This prevents the base generator from attempting
@@ -208,7 +228,7 @@ class GeneratorType : public GeneratorBase<Input, Output>
   {
     friend GeneratorType;
 
-    Registry(std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > generators)
+    Registry(std::weak_ptr<std::set<GeneratorBase<Input, Output, Base>*> > generators)
       : m_generators(generators)
       , m_self(new Self())
     {
@@ -225,7 +245,7 @@ class GeneratorType : public GeneratorBase<Input, Output>
       }
       delete m_self;
     }
-    std::weak_ptr<std::set<GeneratorBase<Input, Output>*> > m_generators;
+    std::weak_ptr<std::set<GeneratorBase<Input, Output, Base>*> > m_generators;
     Self* m_self;
   };
 
@@ -234,26 +254,32 @@ class GeneratorType : public GeneratorBase<Input, Output>
 public:
   static bool registerClass();
 
+protected:
+  template <typename... T>
+  GeneratorType(T&&... all)
+    : GeneratorBase<Input, Output, Base>(std::forward<T>(all)...)
+  {
+  }
+
 private:
   static bool s_registered;
-  GeneratorType() {}
 };
 
-template <class Input, class Output, class Self>
-bool GeneratorType<Input, Output, Self>::registerClass()
+template <class Input, class Output, class Self, class Base>
+bool GeneratorType<Input, Output, Self, Base>::registerClass()
 {
   static bool registered = false;
   if (!registered)
   {
-    static Registry registry(Generator<Input, Output>::generators());
+    static Registry registry(Generator<Input, Output, Base>::generators());
     registered = true;
   }
   return registered;
 }
 
-template <class Input, class Output, class Self>
-bool GeneratorType<Input, Output, Self>::s_registered =
-  GeneratorType<Input, Output, Self>::registerClass();
+template <class Input, class Output, class Self, class Base>
+bool GeneratorType<Input, Output, Self, Base>::s_registered =
+  GeneratorType<Input, Output, Self, Base>::registerClass();
 }
 }
 

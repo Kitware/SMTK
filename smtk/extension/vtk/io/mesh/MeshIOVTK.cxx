@@ -18,6 +18,7 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
+#include "smtk/extension/vtk/io/ImportAsVTKData.h"
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
@@ -45,6 +46,18 @@ MeshIOVTK::MeshIOVTK()
       smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
   this->Formats.push_back(smtk::io::mesh::Format("vtk legacy", std::vector<std::string>({ ".vtk" }),
     smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
+  smtk::extension::vtk::io::ImportAsVTKData import;
+  auto formats = import.fileFormats();
+  for (auto& format : formats)
+  {
+    std::vector<std::string> extensionVector;
+    for (auto ext : format.Extensions)
+    {
+      extensionVector.push_back("." + ext);
+    }
+    this->Formats.push_back(
+      smtk::io::mesh::Format(format.Name, extensionVector, smtk::io::mesh::Format::Import));
+  }
 }
 
 smtk::mesh::CollectionPtr MeshIOVTK::importMesh(const std::string& filePath,

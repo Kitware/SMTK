@@ -10,7 +10,7 @@
 
 #include "smtk/extension/vtk/io/mesh/StructuredGridFromVTKFile.h"
 
-#include "smtk/extension/vtk/io/ReadVTKData.h"
+#include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 
@@ -41,14 +41,14 @@ static bool registered = StructuredGridFromVTKFile::registerClass();
 
 bool StructuredGridFromVTKFile::valid(const std::string& fileName) const
 {
-  smtk::extension::vtk::io::ReadVTKData readVTKData;
-  return readVTKData.valid(fileName);
+  smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
+  return importAsVTKData.valid(fileName);
 }
 
 smtk::mesh::StructuredGrid StructuredGridFromVTKFile::operator()(const std::string& fileName)
 {
-  smtk::extension::vtk::io::ReadVTKData readVTKData;
-  auto externalData = vtkDataSet::SafeDownCast(readVTKData(fileName));
+  smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
+  auto externalData = vtkDataSet::SafeDownCast(importAsVTKData(fileName));
   if (!externalData)
   {
     // Something went wrong and we have no vtkDataSet.
