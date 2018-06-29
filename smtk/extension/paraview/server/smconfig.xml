@@ -209,8 +209,7 @@
         <BooleanDomain name="bool"/>
       </IntVectorProperty>
       <Hints>
-        <ReaderFactory extensions="fac obj poly
-				   smesh pts sol stl tin xyz"
+        <ReaderFactory extensions="fac obj poly smesh pts sol stl tin xyz"
                        file_description="CMB Point, Edge and Surface Geometry Files" />
       </Hints>
     </SourceProxy>
