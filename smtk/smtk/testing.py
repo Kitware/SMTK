@@ -191,7 +191,7 @@ class TestCase:
         import smtk
         import smtk.extension.vtk.source
         mbs = smtk.extension.vtk.source.vtkModelMultiBlockSource()
-        mbs.SetModelManager(self.mgr)
+        mbs.SetModelManager(model.manager())
         mbs.SetModelEntityID(str(model.entity()))
         # mbs.ShowAnalysisTessellationOff()
         addedToScene = self.addToScene(mbs)
