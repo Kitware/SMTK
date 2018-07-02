@@ -665,3 +665,10 @@ void qtModelEntityAttributeView::selectionMade()
       new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
   }
 }
+
+bool qtModelEntityAttributeView::isEmpty() const
+{
+  QList<smtk::attribute::DefinitionPtr> currentDefs =
+    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+  return currentDefs.isEmpty();
+}

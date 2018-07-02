@@ -37,6 +37,8 @@ public:
   // Returns true if all attributes in the view are valid
   bool isValid() const;
 
+  bool isEmpty() const override;
+
 public slots:
   void showAdvanceLevelOverlay(bool show) override;
   void onShowCategory() override { this->updateAttributeData(); }

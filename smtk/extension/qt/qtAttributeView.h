@@ -44,6 +44,7 @@ public:
   QTableWidgetItem* getSelectedItem();
   int currentViewBy();
   virtual void createNewAttribute(smtk::attribute::DefinitionPtr attDef);
+  bool isEmpty() const override;
 
   enum enumViewBy
   {
