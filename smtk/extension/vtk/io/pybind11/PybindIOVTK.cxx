@@ -27,7 +27,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindExportVTKData.h"
 #include "PybindImportVTKData.h"
 #include "PybindMeshIOVTK.h"
-#include "PybindReadVTKData.h"
+#include "PybindImportAsVTKData.h"
 
 #include "smtk/io/mesh/MeshIO.h"
 
@@ -51,7 +51,7 @@ PYBIND11_MODULE(_smtkPybindIOVTK, io)
   py::class_< smtk::extension::vtk::io::mesh::ExportVTKData > smtk_extension_vtk_io_mesh_ExportVTKData = pybind11_init_smtk_extension_vtk_io_mesh_ExportVTKData(io);
   py::class_< smtk::extension::vtk::io::mesh::ImportVTKData > smtk_extension_vtk_io_mesh_ImportVTKData = pybind11_init_smtk_extension_vtk_io_mesh_ImportVTKData(io);
   PySharedPtrClass< smtk::extension::vtk::io::mesh::MeshIOVTK, smtk::io::mesh::MeshIO > smtk_extension_vtk_io_mesh_MeshIOVTK = pybind11_init_smtk_extension_vtk_io_mesh_MeshIOVTK(io);
-  py::class_<smtk::extension::vtk::io::ReadVTKData> smtk_extension_vtk_io_ReadVTKData = pybind11_init_smtk_extension_vtk_io_ReadVTKData(io);
+  py::class_<smtk::extension::vtk::io::ImportAsVTKData> smtk_extension_vtk_io_ImportAsVTKData = pybind11_init_smtk_extension_vtk_io_ImportAsVTKData(io);
 
   bool pcRegistered = smtk::extension::vtk::mesh::PointCloudFromVTKFile::registerClass();
   (void)pcRegistered;

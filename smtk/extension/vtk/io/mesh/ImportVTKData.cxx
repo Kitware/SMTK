@@ -29,7 +29,6 @@
 #include "vtkCellData.h"
 #include "vtkDataArray.h"
 #include "vtkDataSet.h"
-#include "vtkDataSetReader.h"
 #include "vtkDoubleArray.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
@@ -41,14 +40,12 @@
 #include "vtkSmartPointer.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
-#include "vtkXMLPolyDataReader.h"
-#include "vtkXMLPolyDataWriter.h"
-#include "vtkXMLUnstructuredGridReader.h"
-#include "vtkXMLUnstructuredGridWriter.h"
 
 #include "vtksys/SystemTools.hxx"
 
 #include "moab/ReadUtilIface.hpp"
+
+#include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/Interface.h"
@@ -161,16 +158,6 @@ smtk::mesh::HandleRange convertVTKDataSet(
   return subtract(alloc->cells(), initRange);
 }
 
-template <typename TReader>
-vtkDataSet* readFile(const std::string& fileName)
-{
-  vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
-  reader->SetFileName(fileName.c_str());
-  reader->Update();
-  reader->GetOutput()->Register(reader);
-  return vtkDataSet::SafeDownCast(reader->GetOutput());
-}
-
 smtk::mesh::HandleRange convertDomain(vtkCellData* cellData, const smtk::mesh::InterfacePtr& iface,
   const smtk::mesh::HandleRange& cells, const std::string& materialPropertyName)
 {
@@ -239,35 +226,20 @@ smtk::mesh::CollectionPtr ImportVTKData::operator()(const std::string& filename,
 bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::CollectionPtr collection,
   std::string materialPropertyName) const
 {
-  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
-
-  // Dispatch based on the file extension
-  vtkDataSet* data;
-  if (extension == ".vtu")
+  ImportAsVTKData importAsVTKData;
+  auto data = importAsVTKData(filename);
+  if (auto ugrid = vtkUnstructuredGrid::SafeDownCast(data.GetPointer()))
   {
-    data = readFile<vtkXMLUnstructuredGridReader>(filename);
-    return this->operator()(
-      vtkUnstructuredGrid::SafeDownCast(data), collection, materialPropertyName);
+    return this->operator()(ugrid, collection, materialPropertyName);
   }
-  else if (extension == ".vtp")
+  else if (auto poly = vtkPolyData::SafeDownCast(data.GetPointer()))
   {
-    data = readFile<vtkXMLPolyDataReader>(filename);
-    return this->operator()(vtkPolyData::SafeDownCast(data), collection, materialPropertyName);
+    return this->operator()(poly, collection, materialPropertyName);
   }
-  else if (extension == ".vtk")
+  else
   {
-    data = readFile<vtkDataSetReader>(filename);
-    if (vtkUnstructuredGrid* ugrid = vtkUnstructuredGrid::SafeDownCast(data))
-    {
-      return this->operator()(ugrid, collection, materialPropertyName);
-    }
-    else if (vtkPolyData* polydata = vtkPolyData::SafeDownCast(data))
-    {
-      return this->operator()(polydata, collection, materialPropertyName);
-    }
+    return false;
   }
-
-  return false;
 }
 
 smtk::mesh::MeshSet ImportVTKData::operator()(

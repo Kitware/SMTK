@@ -10,7 +10,7 @@
 //
 //=============================================================================
 
-#include "smtk/extension/vtk/io/ReadVTKData.h"
+#include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
 #include "smtk/common/Paths.h"
 
@@ -19,6 +19,7 @@
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #include "smtk/extension/vtk/reader/vtkLASReader.h"
 
+#include "vtkAppendFilter.h"
 #include "vtkAppendPoints.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -26,6 +27,7 @@
 #include "vtkDataObject.h"
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkDataSet.h"
+#include "vtkDataSetReader.h"
 #include "vtkDoubleArray.h"
 #include "vtkGDALRasterReader.h"
 #include "vtkGraph.h"
@@ -48,6 +50,7 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
 #include "vtkProperty.h"
+#include "vtkSLACReader.h"
 #include "vtkStringArray.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkXMLImageDataReader.h"
@@ -64,11 +67,30 @@ namespace vtk
 namespace io
 {
 
-ReadVTKData::~ReadVTKData()
+ImportAsVTKData::ImportAsVTKData()
 {
 }
 
-bool ReadVTKData::valid(const std::string& file) const
+ImportAsVTKData::~ImportAsVTKData()
+{
+}
+
+std::vector<ImportFormat> ImportAsVTKData::fileFormats() const
+{
+  std::vector<ImportFormat> formats;
+  auto gens = this->generators().lock();
+  if (gens != nullptr)
+  {
+    for (auto gen : *gens)
+    {
+      auto formats_ = gen->fileFormats();
+      formats.insert(formats.end(), formats_.begin(), formats_.end());
+    }
+  }
+  return formats;
+}
+
+bool ImportAsVTKData::valid(const std::string& file) const
 {
   std::string fileType = smtk::common::Paths::extension(file);
   // If the file type isn't the empty string, remove the leading ".".
@@ -80,7 +102,7 @@ bool ReadVTKData::valid(const std::string& file) const
   return this->valid(std::make_pair(fileType, file));
 }
 
-vtkSmartPointer<vtkDataObject> ReadVTKData::operator()(const std::string& file)
+vtkSmartPointer<vtkDataObject> ImportAsVTKData::operator()(const std::string& file)
 {
   std::string fileType = smtk::common::Paths::extension(file);
   // If the file type isn't the empty string, remove the leading ".".
@@ -100,22 +122,21 @@ namespace
 {
 /// Reader types for each VTK file type that SMTK supports.
 #define DeclareReader_type(FTYPE)                                                                  \
-  class ReadVTKData_##FTYPE                                                                        \
-    : public smtk::common::GeneratorType<std::pair<std::string, std::string>,                      \
-        vtkSmartPointer<vtkDataObject>, ReadVTKData_##FTYPE>                                       \
+  class ImportAsVTKData_##FTYPE                                                                    \
+    : public smtk::extension::vtk::io::ImportAsVTKDataType<ImportAsVTKData_##FTYPE>                \
   {                                                                                                \
   public:                                                                                          \
-    bool valid(const std::pair<std::string, std::string>& fileInfo) const override;                \
-                                                                                                   \
+    ImportAsVTKData_##FTYPE();                                                                     \
     vtkSmartPointer<vtkDataObject> operator()(                                                     \
       const std::pair<std::string, std::string>& fileInfo) override;                               \
   };                                                                                               \
-  static bool registered_##FTYPE = ReadVTKData_##FTYPE::registerClass()
+  static bool registered_##FTYPE = ImportAsVTKData_##FTYPE::registerClass()
 
 DeclareReader_type(vtp);
 DeclareReader_type(vtu);
 DeclareReader_type(vti);
 DeclareReader_type(vtm);
+DeclareReader_type(vtk);
 DeclareReader_type(obj);
 DeclareReader_type(ply);
 DeclareReader_type(pts);
@@ -123,16 +144,17 @@ DeclareReader_type(tif);
 DeclareReader_type(png);
 DeclareReader_type(cmb);
 DeclareReader_type(las);
+DeclareReader_type(slac);
 
 #undef DeclareReader_type
 
-#define BasicReader_type(FTYPE, CLASS, READER)                                                     \
-  bool ReadVTKData_##FTYPE::valid(const std::pair<std::string, std::string>& fileInfo) const       \
+#define BasicReader_type(FTYPE, DESC, CLASS, READER)                                               \
+  ImportAsVTKData_##FTYPE::ImportAsVTKData_##FTYPE()                                               \
+    : ImportAsVTKDataType<ImportAsVTKData_##FTYPE>(                                                \
+        { smtk::extension::vtk::io::ImportFormat(DESC, { #FTYPE }) })                              \
   {                                                                                                \
-    return fileInfo.first == #FTYPE;                                                               \
   }                                                                                                \
-                                                                                                   \
-  vtkSmartPointer<vtkDataObject> ReadVTKData_##FTYPE::operator()(                                  \
+  vtkSmartPointer<vtkDataObject> ImportAsVTKData_##FTYPE::operator()(                              \
     const std::pair<std::string, std::string>& fileInfo)                                           \
   {                                                                                                \
     vtkNew<READER> rdr;                                                                            \
@@ -145,11 +167,11 @@ DeclareReader_type(las);
   }
 
 /* clang-format off */
-BasicReader_type(vtp, vtkPolyData, vtkXMLPolyDataReader)
-BasicReader_type(vtu, vtkUnstructuredGrid, vtkXMLUnstructuredGridReader)
-BasicReader_type(vti, vtkImageData, vtkXMLImageDataReader)
-BasicReader_type(vtm, vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader)
-BasicReader_type(png, vtkImageData, vtkPNGReader)
+BasicReader_type(vtp, "VTK PolyData", vtkPolyData, vtkXMLPolyDataReader)
+BasicReader_type(vtu, "VTK Unstructured Grid", vtkUnstructuredGrid, vtkXMLUnstructuredGridReader)
+BasicReader_type(vti, "VTK Image Data", vtkImageData, vtkXMLImageDataReader)
+BasicReader_type(vtm, "VTK MultiBlock Data Set", vtkMultiBlockDataSet, vtkXMLMultiBlockDataReader)
+BasicReader_type(png, "Portable Network Graphics File", vtkImageData, vtkPNGReader)
 #ifdef HELP_CLANG_FORMAT
 ;
 #endif
@@ -157,12 +179,39 @@ BasicReader_type(png, vtkImageData, vtkPNGReader)
 
 #undef BasicReader_type
 
-bool ReadVTKData_obj::valid(const std::pair<std::string, std::string>& fileInfo) const
+ImportAsVTKData_vtk::ImportAsVTKData_vtk()
+  : ImportAsVTKDataType<ImportAsVTKData_vtk>(
+      smtk::extension::vtk::io::ImportFormat("Legacy VTK File", { "vtk" }))
 {
-  return fileInfo.first == "obj";
 }
 
-vtkSmartPointer<vtkDataObject> ReadVTKData_obj::operator()(
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_vtk::operator()(
+  const std::pair<std::string, std::string>& fileInfo)
+{
+  vtkNew<vtkDataSetReader> rdr;
+  rdr->SetFileName(fileInfo.second.c_str());
+  rdr->Update();
+
+  vtkDataSet* data = rdr->GetOutput();
+  if (vtkUnstructuredGrid* ugrid = vtkUnstructuredGrid::SafeDownCast(data))
+  {
+    return ugrid;
+  }
+  else if (vtkPolyData* polydata = vtkPolyData::SafeDownCast(data))
+  {
+    return polydata;
+  }
+
+  return vtkSmartPointer<vtkDataObject>();
+}
+
+ImportAsVTKData_obj::ImportAsVTKData_obj()
+  : ImportAsVTKDataType<ImportAsVTKData_obj>(
+      { smtk::extension::vtk::io::ImportFormat("Wavefront OBJ File", { "obj" }) })
+{
+}
+
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_obj::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
   vtkNew<vtkOBJReader> rdr;
@@ -188,12 +237,13 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_obj::operator()(
   return data;
 }
 
-bool ReadVTKData_ply::valid(const std::pair<std::string, std::string>& fileInfo) const
+ImportAsVTKData_ply::ImportAsVTKData_ply()
+  : ImportAsVTKDataType<ImportAsVTKData_ply>(
+      { smtk::extension::vtk::io::ImportFormat("Polygon File Format", { "ply" }) })
 {
-  return fileInfo.first == "ply";
 }
 
-vtkSmartPointer<vtkDataObject> ReadVTKData_ply::operator()(
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_ply::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
   vtkNew<vtkPLYReader> rdr;
@@ -219,12 +269,13 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_ply::operator()(
   return data;
 }
 
-bool ReadVTKData_pts::valid(const std::pair<std::string, std::string>& fileInfo) const
+ImportAsVTKData_pts::ImportAsVTKData_pts()
+  : ImportAsVTKDataType<ImportAsVTKData_pts>(
+      { smtk::extension::vtk::io::ImportFormat("Points File", { "pts", "xyz" }) })
 {
-  return fileInfo.first == "pts" || fileInfo.first == "xyz";
 }
 
-vtkSmartPointer<vtkDataObject> ReadVTKData_pts::operator()(
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_pts::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
   vtkNew<vtkPTSReader> rdr;
@@ -236,12 +287,13 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_pts::operator()(
   return data;
 }
 
-bool ReadVTKData_tif::valid(const std::pair<std::string, std::string>& fileInfo) const
+ImportAsVTKData_tif::ImportAsVTKData_tif()
+  : ImportAsVTKDataType<ImportAsVTKData_tif>(
+      { smtk::extension::vtk::io::ImportFormat("Tagged Image File", { "tif", "tiff", "dem" }) })
 {
-  return fileInfo.first == "tif" || fileInfo.first == "tiff" || fileInfo.first == "dem";
 }
 
-vtkSmartPointer<vtkDataObject> ReadVTKData_tif::operator()(
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
   vtkNew<vtkGDALRasterReader> rdr;
@@ -284,15 +336,13 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_tif::operator()(
   return data;
 }
 
-bool ReadVTKData_cmb::valid(const std::pair<std::string, std::string>& fileInfo) const
+ImportAsVTKData_cmb::ImportAsVTKData_cmb()
+  : ImportAsVTKDataType<ImportAsVTKData_cmb>({ smtk::extension::vtk::io::ImportFormat(
+      "CMB File", { "bin", "vtk", "2dm", "3dm", "tin", "poly", "smesh", "fac", "sol", "stl" }) })
 {
-  return (fileInfo.first == "bin" || fileInfo.first == "vtk" || fileInfo.first == "2dm" ||
-    fileInfo.first == "3dm" || fileInfo.first == "tin" || fileInfo.first == "poly" ||
-    fileInfo.first == "smesh" || fileInfo.first == "fac" || fileInfo.first == "sol" ||
-    fileInfo.first == "stl");
 }
 
-vtkSmartPointer<vtkDataObject> ReadVTKData_cmb::operator()(
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_cmb::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
   vtkNew<vtkCMBGeometryReader> reader;
@@ -306,12 +356,13 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_cmb::operator()(
   return polyOutput;
 }
 
-bool ReadVTKData_las::valid(const std::pair<std::string, std::string>& fileInfo) const
+ImportAsVTKData_las::ImportAsVTKData_las()
+  : ImportAsVTKDataType<ImportAsVTKData_las>(
+      { smtk::extension::vtk::io::ImportFormat("LIDAR Data Exchange File", { "las" }) })
 {
-  return fileInfo.first == "las";
 }
 
-vtkSmartPointer<vtkDataObject> ReadVTKData_las::operator()(
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_las::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
   vtkNew<vtkLASReader> reader;
@@ -338,5 +389,43 @@ vtkSmartPointer<vtkDataObject> ReadVTKData_las::operator()(
   auto polyOutput = vtkSmartPointer<vtkPolyData>::New();
   polyOutput->ShallowCopy(appendPoints->GetOutput());
   return polyOutput;
+}
+
+ImportAsVTKData_slac::ImportAsVTKData_slac()
+  : ImportAsVTKDataType<ImportAsVTKData_slac>(
+      { smtk::extension::vtk::io::ImportFormat("SLAC File", { "nc", "ncdf", "slac" }) })
+{
+}
+
+vtkSmartPointer<vtkDataObject> ImportAsVTKData_slac::operator()(
+  const std::pair<std::string, std::string>& fileInfo)
+{
+  vtkNew<vtkSLACReader> reader;
+  reader->SetMeshFileName(fileInfo.second.c_str());
+  reader->SetReadInternalVolume(1);
+  reader->ReadExternalSurfaceOn();
+  reader->ReadMidpointsOff();
+  reader->Update();
+
+  vtkMultiBlockDataSet* readout = reader->GetOutput();
+  vtkNew<vtkAppendFilter> appendFilter;
+
+  vtkCompositeDataIterator* iter = readout->NewIterator();
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
+  {
+    vtkUnstructuredGrid* block = vtkUnstructuredGrid::SafeDownCast(iter->GetCurrentDataObject());
+    if (!block)
+    {
+      vtkGenericWarningMacro(<< "This block from SLAC reader is not an unstructured grid!\n");
+      continue;
+    }
+    appendFilter->AddInputData(block);
+  }
+  iter->Delete();
+  appendFilter->Update();
+
+  auto uGridOutput = vtkSmartPointer<vtkUnstructuredGrid>::New();
+  uGridOutput->ShallowCopy(appendFilter->GetOutput());
+  return uGridOutput;
 }
 }

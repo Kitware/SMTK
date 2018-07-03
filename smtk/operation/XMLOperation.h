@@ -34,10 +34,10 @@ protected:
   // Perform the actual operation and construct the result.
   virtual Result operateInternal() override = 0;
 
-private:
   // Construct the operation's specification from the class's XML description.
   Specification createSpecification() override;
 
+private:
   // Access a block of text representing the XML description of the operation.
   virtual const char* xmlDescription() const = 0;
 };

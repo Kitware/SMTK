@@ -16,7 +16,7 @@
 
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
-          FileFilters="Moab files (*.h5m);;Exodus II Datasets (*.e *.exo *.ex2);;Genesis files (*.g *.gen);;VTK files (*.vtu *.vtp *.vtk);;General Mesh Viewer (*.gmv);;Ansys (*.ans);;Gmsh (*.msh *.gmsh);;STL (*.stl);;AdH 2D Mesh file (*.2dm);;AdH 3D Mesh file (*.3dm);;All files (*.*)">
+          FileFilters="[defined programatically]">
         </File>
 
         <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">

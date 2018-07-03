@@ -14,7 +14,9 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -183,6 +185,47 @@ Import::Result Import::operateInternal()
   result->findComponent("mesh_created")->setValue(model.component());
 
   return result;
+}
+
+Import::Specification Import::createSpecification()
+{
+  Specification spec = this->smtk::operation::XMLOperation::createSpecification();
+  auto importDef = spec->findDefinition("import");
+
+  std::vector<smtk::attribute::FileItemDefinition::Ptr> fileItemDefinitions;
+  auto fileItemDefinitionFilter = [](
+    smtk::attribute::FileItemDefinition::Ptr ptr) { return ptr->name() == "filename"; };
+  importDef->filterItemDefinitions(fileItemDefinitions, fileItemDefinitionFilter);
+
+  assert(fileItemDefinitions.size() == 1);
+
+  std::stringstream fileFilters;
+  for (auto& ioType : smtk::io::ImportMesh::SupportedIOTypes())
+  {
+    for (auto& format : ioType->FileFormats())
+    {
+      if (format.CanImport())
+      {
+        fileFilters << format.Name << "(";
+        bool first = true;
+        for (auto& ext : format.Extensions)
+        {
+          if (first)
+          {
+            first = false;
+          }
+          else
+          {
+            fileFilters << " ";
+          }
+          fileFilters << "*" << ext;
+        }
+        fileFilters << ");;";
+      }
+    }
+  }
+  fileItemDefinitions[0]->setFileFilters(fileFilters.str());
+  return spec;
 }
 
 const char* Import::xmlDescription() const

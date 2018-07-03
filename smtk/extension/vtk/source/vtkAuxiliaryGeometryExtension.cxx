@@ -12,7 +12,7 @@
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
-#include "smtk/extension/vtk/io/ReadVTKData.h"
+#include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
 #include "smtk/AutoInit.h"
 #include "smtk/PublicPointerDefs.h"
@@ -411,8 +411,8 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::readFromFile(
 
   std::string fileType = vtkAuxiliaryGeometryExtension::getAuxiliaryFileType(auxGeom);
 
-  smtk::extension::vtk::io::ReadVTKData readVTKData;
-  return readVTKData(std::make_pair(fileType, auxGeom.url()));
+  smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
+  return importAsVTKData(std::make_pair(fileType, auxGeom.url()));
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
