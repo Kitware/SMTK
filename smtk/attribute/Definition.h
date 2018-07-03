@@ -11,7 +11,7 @@
 // .SECTION Description
 // Stores all of the necessary information for a definition of a
 // single attribute. Attributes should be created through
-// Collection::createAttribute().
+// Resource::createAttribute().
 // .SECTION See Also
 
 #ifndef __smtk_attribute_Definition_h
@@ -44,7 +44,7 @@ namespace attribute
 {
 class Attribute;
 class ItemDefinition;
-class Collection;
+class Resource;
 
 class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
 {
@@ -54,10 +54,10 @@ public:
 
   // Description:
   // The type is the identifier that is used to access the
-  // attribute definition through the Collection. It should never change.
+  // attribute definition through the Resource. It should never change.
   const std::string& type() const { return m_type; }
 
-  smtk::attribute::CollectionPtr collection() const { return m_collection.lock(); }
+  smtk::attribute::ResourcePtr resource() const { return m_resource.lock(); }
 
   const Tags& tags() const { return m_tags; }
 
@@ -246,9 +246,9 @@ public:
   // type.
   //
   // Warning:
-  // It is up to the caller to ensure integrity of the attribute::Collection
+  // It is up to the caller to ensure integrity of the attribute::Resource
   // instance (e.g. Attribute instances of this Definition type need to be
-  // cleansed from the collection).
+  // cleansed from the Resource).
   bool removeItemDefinition(ItemDefinitionPtr itemDef);
 
   int findItemPosition(const std::string& name) const;
@@ -266,24 +266,24 @@ public:
 
   // Description:
   // Sets and returns the root name to be used to construct the name for
-  // an attribute. This is used by the attribute collection when creating an
+  // an attribute. This is used by the attribute resource when creating an
   // attribute without specifying a name - by default it is set to be the
   // type name of the definition
   void setRootName(const std::string& val) { m_rootName = val; }
   std::string rootName() const { return m_rootName; }
 
   //This method resets the definition item offset - this is used by the
-  // collection when a definition is modified
+  // resource when a definition is modified
   void resetItemOffset();
   std::size_t itemOffset() const { return m_baseItemOffset; }
 
 protected:
-  friend class smtk::attribute::Collection;
-  // AttributeDefinitions can only be created by an attribute collection
+  friend class smtk::attribute::Resource;
+  // AttributeDefinitions can only be created by an attribute resource
   Definition(const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef,
-    smtk::attribute::CollectionPtr myCollection);
+    smtk::attribute::ResourcePtr myResource);
 
-  void clearCollection() { m_collection.reset(); }
+  void clearResource() { m_resource.reset(); }
 
   void setCategories();
 
@@ -291,7 +291,7 @@ protected:
   // definition's items have been changed
   void updateDerivedDefinitions();
 
-  smtk::attribute::WeakCollectionPtr m_collection;
+  smtk::attribute::WeakResourcePtr m_resource;
   int m_version;
   bool m_isAbstract;
   smtk::attribute::DefinitionPtr m_baseDefinition;

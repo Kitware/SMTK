@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/Definition.h"
@@ -24,6 +23,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/ValueItem.h"
@@ -264,26 +264,26 @@ bool Attribute::isValid() const
   return true;
 }
 
-CollectionPtr Attribute::collection() const
+ResourcePtr Attribute::attributeResource() const
 {
-  return m_definition->collection();
+  return m_definition->resource();
 }
 
 const smtk::resource::ResourcePtr Attribute::resource() const
 {
-  return this->collection();
+  return this->attributeResource();
 }
 
 /**\brief Return the model Manager instance whose entities may have attributes.
   *
   * This returns a shared pointer to smtk::model::Manager, which may be
-  * null if no manager is referenced by the attribute collection (or if the
-  * attribute definition does not reference a valid collection).
+  * null if no manager is referenced by the attribute resource (or if the
+  * attribute definition does not reference a valid resource).
   */
 smtk::model::ManagerPtr Attribute::modelManager() const
 {
   smtk::model::ManagerPtr result;
-  smtk::attribute::CollectionPtr attSys = this->collection();
+  smtk::attribute::ResourcePtr attSys = this->attributeResource();
   if (attSys)
   {
     result = attSys->refModelManager();
@@ -453,10 +453,10 @@ bool Attribute::associate(smtk::resource::PersistentObjectPtr obj)
 bool Attribute::associateEntity(const smtk::common::UUID& objId)
 {
   std::set<smtk::resource::Resource::Ptr> rsrcs;
-  rsrcs.insert(this->collection()); // We can always look for other attributes.
+  rsrcs.insert(this->attributeResource()); // We can always look for other attributes.
 
   // If we have a resource manager, we can also look for components in other resources:
-  auto rsrcMgr = this->collection()->manager();
+  auto rsrcMgr = this->attributeResource()->manager();
   if (rsrcMgr)
   {
     rsrcMgr->visit([&rsrcs](smtk::resource::Resource::Ptr rsrc) { rsrcs.insert(rsrc); });
@@ -525,7 +525,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
       smtk::model::ManagerPtr modelMgr = this->modelManager();
       if (modelMgr)
       {
-        modelMgr->disassociateAttribute(this->collection(), this->id(), entity, false);
+        modelMgr->disassociateAttribute(this->attributeResource(), this->id(), entity, false);
       }
     }
   }
@@ -548,7 +548,7 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
     if (reverse)
     {
       smtk::model::EntityRef mutableEntity(entity);
-      mutableEntity.disassociateAttribute(this->collection(), this->id(), false);
+      mutableEntity.disassociateAttribute(this->attributeResource(), this->id(), false);
     }
   }
 }

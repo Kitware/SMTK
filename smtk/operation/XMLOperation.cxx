@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/operation/XMLOperation.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/io/AttributeReader.h"
 
@@ -29,7 +29,7 @@ XMLOperation::~XMLOperation()
 
 smtk::operation::XMLOperation::Specification XMLOperation::createSpecification()
 {
-  Specification spec = smtk::attribute::Collection::create();
+  Specification spec = smtk::attribute::Resource::create();
   smtk::io::AttributeReader reader;
   reader.readContents(spec, this->xmlDescription(), this->log());
 

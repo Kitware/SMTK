@@ -19,8 +19,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <type_traits>
 
-#include "smtk/attribute/Collection.h"
-
 #include "smtk/io/Logger.h"
 
 #include "smtk/operation/Operation.h"

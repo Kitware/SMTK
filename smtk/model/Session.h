@@ -19,8 +19,6 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/attribute/Collection.h"
-
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/SessionRegistrar.h"
 

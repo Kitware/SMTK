@@ -15,7 +15,6 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -30,6 +29,7 @@
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Registrar.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
@@ -92,12 +92,12 @@ int unitJsonItems(int argc, char* argv[])
   }
 
   // Reference childrenItemsTest
-  smtk::attribute::CollectionPtr sysptr = rsrcMgr->create<smtk::attribute::Collection>();
-  smtk::attribute::Collection& collection(*sysptr.get());
-  std::cout << "Collection Created\n";
+  smtk::attribute::ResourcePtr resptr = rsrcMgr->create<smtk::attribute::Resource>();
+  smtk::attribute::Resource& resource(*resptr.get());
+  std::cout << "Resource Created\n";
 
   // Lets create an attribute to represent an expression
-  smtk::attribute::DefinitionPtr expDef = collection.createDefinition("ExpDef");
+  smtk::attribute::DefinitionPtr expDef = resource.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
   expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
   // StringItemDefinition
@@ -120,7 +120,7 @@ int unitJsonItems(int argc, char* argv[])
   refDef->setMaxNumberOfValues(0);
   refDef->setAcceptsEntries("smtk::model::Manager", "face", true);
 
-  smtk::attribute::DefinitionPtr base = collection.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = resource.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::attribute::IntItemDefinitionPtr iitemdef =
     base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
@@ -136,7 +136,7 @@ int unitJsonItems(int argc, char* argv[])
   iitemdef->addCategory("Heat");
 
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::attribute::AttributePtr expAtt1 = collection.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr expAtt1 = resource.createAttribute("Exp1", expDef);
 
   /**********************       item          ********************/
   smtk::attribute::ItemPtr expressionString1 = expAtt1->find("Expression String");

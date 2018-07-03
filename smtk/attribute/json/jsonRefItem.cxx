@@ -11,8 +11,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonItem.h"
 
 #include "nlohmann/json.hpp"
@@ -68,7 +68,7 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto colPtr = itemPtr->attribute()->collection();
+  auto resPtr = itemPtr->attribute()->attributeResource();
   auto temp = smtk::dynamic_pointer_cast<Item>(itemPtr);
   smtk::attribute::from_json(j, temp);
 
@@ -113,7 +113,7 @@ SMTKCORE_EXPORT void from_json(
         if (!iter->is_null())
         {
           attName = *iter;
-          att = colPtr->findAttribute(attName);
+          att = resPtr->findAttribute(attName);
           if (!att)
           {
             info.item = itemPtr;
@@ -137,7 +137,7 @@ SMTKCORE_EXPORT void from_json(
     try
     {
       attName = j.at("Val");
-      att = colPtr->findAttribute(attName);
+      att = resPtr->findAttribute(attName);
       if (!att)
       {
         info.item = itemPtr;

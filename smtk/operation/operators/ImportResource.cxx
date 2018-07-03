@@ -14,6 +14,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
 

@@ -10,7 +10,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -196,7 +196,7 @@ void Manager::clear()
   m_attributeAssignments->clear();
   m_sessions->clear();
   // m_resources->clear(); TODO
-  m_attributeCollections.clear();
+  m_attributeResources.clear();
   m_defaultSession = nullptr;
   m_globalCounters.clear();
   // TODO: remove triggers?
@@ -2859,17 +2859,17 @@ bool Manager::hasAttribute(const UUID& attribId, const UUID& toEntity)
   * and false otherwise.
   */
 bool Manager::associateAttribute(
-  smtk::attribute::CollectionPtr sys, const UUID& attribId, const UUID& toEntity)
+  smtk::attribute::ResourcePtr attResource, const UUID& attribId, const UUID& toEntity)
 {
   bool allowed = true;
-  if (sys)
+  if (attResource)
   {
-    attribute::AttributePtr att = sys->findAttribute(attribId);
+    attribute::AttributePtr att = attResource->findAttribute(attribId);
     if (!att || !att->associateEntity(toEntity))
     {
       allowed = false;
     }
-    m_attributeCollections.insert(sys);
+    m_attributeResources.insert(attResource);
   }
   if (allowed)
     (*m_attributeAssignments)[toEntity].associateAttribute(attribId);
@@ -2879,8 +2879,8 @@ bool Manager::associateAttribute(
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Manager::disassociateAttribute(
-  smtk::attribute::CollectionPtr sys, const UUID& attribId, const UUID& fromEntity, bool reverse)
+bool Manager::disassociateAttribute(smtk::attribute::ResourcePtr attResource, const UUID& attribId,
+  const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = m_attributeAssignments->find(fromEntity);
@@ -2896,9 +2896,9 @@ bool Manager::disassociateAttribute(
       m_attributeAssignments->erase(ref);
     }
     // Notify the Attribute of the removal
-    if (reverse && sys)
+    if (reverse && attResource)
     {
-      smtk::attribute::AttributePtr attrib = sys->findAttribute(attribId);
+      smtk::attribute::AttributePtr attrib = attResource->findAttribute(attribId);
       // FIXME: Should we check that the manager's refManager
       //        is this Manager instance?
       if (attrib)
@@ -2913,9 +2913,9 @@ bool Manager::disassociateAttribute(
 /**\brief Insert the attributes associated with \a modelEntity into the \a associations set.
   *
   * Returns true when modelEntity had any attributes (whether they were already
-  * present in \a associations or not) in any attribute collection and false otherwise.
+  * present in \a associations or not) in any attribute resource and false otherwise.
   *
-  * Note that attribute UUIDs may not be stored in any of the attribute collections
+  * Note that attribute UUIDs may not be stored in any of the attribute resources
   * (e.g., when a model was loaded from a save file but the attributes were not),
   * in which case this method will return false even though attribute UUIDs were
   * stored on the model entity.
@@ -2932,15 +2932,15 @@ bool Manager::insertEntityAssociations(
   }
   for (auto attribId : eait->second.attributeIds())
   {
-    for (auto attribSys : m_attributeCollections)
+    for (auto attribResource : m_attributeResources)
     {
-      smtk::attribute::Collection::Ptr asys = attribSys.lock();
+      smtk::attribute::Resource::Ptr aresource = attribResource.lock();
       smtk::attribute::AttributePtr att;
-      if (asys && (att = asys->findAttribute(attribId)))
+      if (aresource && (att = aresource->findAttribute(attribId)))
       {
         associations.insert(att);
         didFind = true;
-        break; // no need to check other attribute collections (attributes are unique across collections).
+        break; // no need to check other attribute resources (attributes are unique across resources).
       }
     }
   }

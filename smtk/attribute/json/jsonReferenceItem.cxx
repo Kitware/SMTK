@@ -14,8 +14,8 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonItem.h"
 
 #include "smtk/resource/Manager.h"
@@ -115,7 +115,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
   {
     return;
   }
-  auto rsrcMgr = itemPtr->attribute()->collection()->manager();
+  auto rsrcMgr = itemPtr->attribute()->resource()->manager();
   bool oneError = false;
   if (values.is_array())
   {

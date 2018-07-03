@@ -11,8 +11,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/common/UUID.h"
 #include "smtk/mesh/core/Collection.h"
@@ -49,7 +49,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::MeshItemPtr& itemPt
     if (itemPtr->isSet(i))
     {
       json value;
-      value["Collectionid"] = it->collection()->entity().toString();
+      value["Resourceid"] = it->collection()->entity().toString();
       cJSON* jrange = smtk::mesh::to_json(it->range());
       char* cjson = cJSON_Print(jrange);
       cJSON_Delete(jrange);
@@ -73,7 +73,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& item
 
   std::size_t i(0), n = itemPtr->numberOfValues();
   smtk::common::UUID cid;
-  smtk::model::ManagerPtr modelmgr = itemPtr->attribute()->collection()->refModelManager();
+  smtk::model::ManagerPtr modelmgr = itemPtr->attribute()->attributeResource()->refModelManager();
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
   if (!numRequiredVals || itemPtr->isExtensible())
   {
@@ -105,15 +105,15 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& item
     for (auto iter = values.begin(); iter != values.end(); iter++, i++)
     {
       json value = *iter;
-      std::string collectionId;
+      std::string resourceId;
       try
       {
-        collectionId = value.at("Collectionid");
+        resourceId = value.at("Resourceid");
       }
       catch (std::exception& /*e*/)
       {
       }
-      if (collectionId.empty())
+      if (resourceId.empty())
       {
         continue;
       }
@@ -121,7 +121,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& item
       {
         break;
       }
-      cid = smtk::common::UUID(collectionId);
+      cid = smtk::common::UUID(resourceId);
       //convert back to a handle
       std::string val = value.at("Val");
       cJSON* jshandle = cJSON_Parse(val.c_str());

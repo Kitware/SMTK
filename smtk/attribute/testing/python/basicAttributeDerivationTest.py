@@ -30,9 +30,9 @@ if __name__ == '__main__':
 
     status = 0
 
-    collection = smtk.attribute.Collection.create()
-    print('Collection created')
-    base = collection.createDefinition("BaseDef")
+    resource = smtk.attribute.Resource.create()
+    print('Resource created')
+    base = resource.createDefinition("BaseDef")
 
     # Lets add some item definitions
     icompdef = smtk.attribute.IntItemDefinition.New(itemNames[0])
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     itemdef2 = smtk.attribute.IntItemDefinition.ToItemDefinition(icompdef2)
     base.addItemDefinition(itemdef2)
 
-    def1 = collection.createDefinition('Derived1', 'BaseDef')
+    def1 = resource.createDefinition('Derived1', 'BaseDef')
     # Lets add some item definitions
     dcompdef = smtk.attribute.DoubleItemDefinition.New(itemNames[2])
     itemdef = smtk.attribute.DoubleItemDefinition.ToItemDefinition(dcompdef)
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     itemdef2 = smtk.attribute.DoubleItemDefinition.ToItemDefinition(dcompdef2)
     def1.addItemDefinition(itemdef2)
 
-    def2 = collection.createDefinition('Derived2', 'Derived1')
+    def2 = resource.createDefinition('Derived2', 'Derived1')
     # Lets add some item definitions
     scompdef = smtk.attribute.StringItemDefinition.New(itemNames[4])
     itemdef = smtk.attribute.StringItemDefinition.ToItemDefinition(scompdef)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     itemdef2 = smtk.attribute.StringItemDefinition.ToItemDefinition(scompdef2)
     def2.addItemDefinition(itemdef2)
 
-    def3 = collection.createDefinition('Derived3', 'Derived1')
+    def3 = resource.createDefinition('Derived3', 'Derived1')
     # Lets add some item definitions
     scompdef = smtk.attribute.ModelEntityItemDefinition.New(itemNames[6])
     scompdef.setMembershipMask(int(smtk.model.FACE))
@@ -112,7 +112,7 @@ if __name__ == '__main__':
         print("Insertion Position Test Failed!\n")
         status = -1
 
-    att = collection.createAttribute('testAtt', 'Derived2')
+    att = resource.createAttribute('testAtt', 'Derived2')
     if not att is None:
         print('Attribute testAtt created')
     else:
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     # Now test setting entity-valued attribute-items
     # I. Create a model manager and add some entities to it:
     mmgr = smtk.model.Manager.create()
-    collection.setRefModelManager(mmgr)
+    resource.setRefModelManager(mmgr)
     mdl = mmgr.addModel(3, 3, 'TestModel')
     edg = mmgr.addEdge()
     fac = mmgr.addFace()
@@ -161,8 +161,8 @@ if __name__ == '__main__':
     gr0.addEntity(fac)
     gr1.addEntity(edg)
 
-    # II. Have the attribute collection create an attribute with model-entity
-    att = collection.createAttribute('testMEAtt', 'Derived3')
+    # II. Have the attribute resource create an attribute with model-entity
+    att = resource.createAttribute('testMEAtt', 'Derived3')
     if not att is None:
         print('Attribute testMEAtt created')
     else:
@@ -227,7 +227,7 @@ if __name__ == '__main__':
                 print(comp)
     # ======
 
-    del collection
-    print('Collection destroyed')
+    del resource
+    print('Resource destroyed')
 
     sys.exit(status)

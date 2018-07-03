@@ -15,7 +15,7 @@
 #ifndef __smtk_extension_qtUIManager_h
 #define __smtk_extension_qtUIManager_h
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
 #include "smtk/extension/qt/qtItem.h"
@@ -49,7 +49,7 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
   Q_OBJECT
 
 public:
-  qtUIManager(smtk::attribute::CollectionPtr collection);
+  qtUIManager(smtk::attribute::ResourcePtr resource);
   virtual ~qtUIManager();
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
@@ -60,9 +60,9 @@ public:
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
   smtk::view::ViewPtr smtkView() const { return m_smtkView; }
 
-  smtk::attribute::CollectionPtr attCollection() const { return m_AttCollection; }
+  smtk::attribute::ResourcePtr attResource() const { return m_AttResource; }
 
-  smtk::resource::ManagerPtr resourceManager() const { return m_AttCollection->manager(); }
+  smtk::resource::ManagerPtr resourceManager() const { return m_AttResource->manager(); }
 
   void setActiveModelView(smtk::extension::qtModelView*);
   smtk::extension::qtModelView* activeModelView();
@@ -188,7 +188,7 @@ private:
   bool AdvancedBold;   // true by default
   bool AdvancedItalic; // false by default
 
-  smtk::attribute::CollectionPtr m_AttCollection;
+  smtk::attribute::ResourcePtr m_AttResource;
   bool m_useInternalFileBrowser;
 
   int m_maxValueLabelLength;

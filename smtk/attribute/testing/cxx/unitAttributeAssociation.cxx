@@ -8,9 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
@@ -26,17 +26,17 @@ using namespace smtk;
 int unitAttributeAssociation(int, char* [])
 {
   // ----
-  // I. First see how things work when Collection is not yet set.
-  attribute::CollectionPtr sysptr = attribute::Collection::create();
-  attribute::Collection& sys(*sysptr.get());
-  smtkTest(!sys.refModelManager(), "Collection should not have model storage by default.");
+  // I. First see how things work when Resource is not yet set.
+  attribute::ResourcePtr resptr = attribute::Resource::create();
+  attribute::Resource& res(*resptr.get());
+  smtkTest(!res.refModelManager(), "Resource should not have model storage by default.");
 
-  DefinitionPtr def = sys.createDefinition("testDef");
+  DefinitionPtr def = res.createDefinition("testDef");
   auto arule = def->createLocalAssociationRule();
   def->setLocalAssociationMask(smtk::model::VERTEX);
   arule->setIsExtensible(true);
   arule->setMaxNumberOfValues(2);
-  AttributePtr att = sys.createAttribute("testAtt", "testDef");
+  AttributePtr att = res.createAttribute("testAtt", "testDef");
 
   UUID fakeEntityId = UUID::random();
   smtkTest(!att->associateEntity(fakeEntityId),
@@ -47,12 +47,11 @@ int unitAttributeAssociation(int, char* [])
   att->disassociateEntity(anotherFakeId);
 
   // ----
-  // II. Now see how things work when the attribute collection has
+  // II. Now see how things work when the attribute resource has
   //     a valid model modelMgr pointer.
   model::Manager::Ptr modelMgr = model::Manager::create();
-  sys.setRefModelManager(modelMgr);
-  smtkTest(
-    sys.refModelManager() == modelMgr, "Could not set attribute collection's model-manager.");
+  res.setRefModelManager(modelMgr);
+  smtkTest(res.refModelManager() == modelMgr, "Could not set attribute resource's model-manager.");
 
   smtkTest(att->modelManager() == modelMgr, "Attribute's idea of model manager incorrect.");
 
@@ -68,28 +67,27 @@ int unitAttributeAssociation(int, char* [])
   att->disassociateEntity(v1.entity());
   smtkTest(!v1.hasAttributes(), "Disassociating a non-existent attribute appears to associate it.");
 
-  v1.associateAttribute(att->collection(), att->id());
+  v1.associateAttribute(att->attributeResource(), att->id());
   att->removeAllAssociations();
   smtkTest(att->associatedModelEntityIds().empty(),
     "Removing all attribute associations did not empty association list.");
 
   smtk::model::Vertex v2 = modelMgr->addVertex();
-  v0.associateAttribute(att->collection(), att->id());
-  v1.associateAttribute(att->collection(), att->id());
-  smtkTest(v2.associateAttribute(att->collection(), att->id()) == false,
+  v0.associateAttribute(att->attributeResource(), att->id());
+  v1.associateAttribute(att->attributeResource(), att->id());
+  smtkTest(v2.associateAttribute(att->attributeResource(), att->id()) == false,
     "Should not have been able to associate more than 2 entities.");
 
   att->removeAllAssociations();
   smtk::model::Edge e0 = modelMgr->addEdge();
-  smtkTest(e0.associateAttribute(att->collection(), att->id()) == false,
+  smtkTest(e0.associateAttribute(att->attributeResource(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
 
   // ----
-  // III. Test corner cases when switch model managers on the attribute collection.
+  // III. Test corner cases when switch model managers on the attribute resource.
   model::Manager::Ptr auxModelManager = model::Manager::create();
-  sys.setRefModelManager(auxModelManager);
-  smtkTest(
-    sys.refModelManager() == auxModelManager, "Attribute collection's modelMgr not changed.");
+  res.setRefModelManager(auxModelManager);
+  smtkTest(res.refModelManager() == auxModelManager, "Attribute resource's modelMgr not changed.");
 
   return 0;
 }

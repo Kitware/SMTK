@@ -8,13 +8,13 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
 #include "nlohmann/json.hpp"
-#include "smtk/attribute/json/jsonCollection.h"
+#include "smtk/attribute/json/jsonResource.h"
 #include <iostream>
 
 int main(int argc, char* argv[])
@@ -25,10 +25,10 @@ int main(int argc, char* argv[])
     return -1;
   }
   {
-    smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
+    smtk::attribute::ResourcePtr resource = smtk::attribute::Resource::create();
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
-    if (reader.read(collection, argv[1], logger))
+    if (reader.read(resource, argv[1], logger))
     {
       std::cerr << "Encountered Errors while processing " << argv[1] << "\n";
       std::cerr << logger.convertToString();
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     {
       std::cout << logger.convertToString();
     }
-    nlohmann::json json = collection;
+    nlohmann::json json = resource;
     std::cout << json.dump(2) << std::endl;
     return 0;
   }

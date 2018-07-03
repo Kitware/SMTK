@@ -10,19 +10,19 @@ from smtk import attribute
 from smtk import io
 from smtk import model
 
-asys = smtk.attribute.Collection.create()
+ares = smtk.attribute.Resource.create()
 mmgr = smtk.model.Manager.create()
 
 # Connect the managers:
-asys.setRefModelManager(mmgr)
+ares.setRefModelManager(mmgr)
 
 # -- 1 --
 
 # II. Basic attribute definitions
 # ++ 2 ++
-bcDef = asys.createDefinition('boundary condition')
-icDef = asys.createDefinition('initial condition')
-matDef = asys.createDefinition('material properties')
+bcDef = ares.createDefinition('boundary condition')
+icDef = ares.createDefinition('initial condition')
+matDef = ares.createDefinition('material properties')
 
 # Our material is defined by a viscosity
 viscosity = smtk.attribute.DoubleItemDefinition.New('viscosity')
@@ -32,15 +32,15 @@ matDef.addItemDefinition(viscosity)
 # III. Attribute definitions may inherit other definitions:
 # ++ 3 ++
 # We have one initial condition for the interior of the domain:
-fluidICDef = asys.createDefinition('fluid ic', icDef)
+fluidICDef = ares.createDefinition('fluid ic', icDef)
 
 # The specific types of BCDefs our example must define:
 # At the outlet, pressure must be given.
 # At the inlet, fluid velocity and temperature must be given.
 # On the wall, heat flux must be specified.
-outletBCDef = asys.createDefinition('outlet bc', bcDef)
-inletBCDef = asys.createDefinition('inlet bc', bcDef)
-wallBCDef = asys.createDefinition('wall bc', bcDef)
+outletBCDef = ares.createDefinition('outlet bc', bcDef)
+inletBCDef = ares.createDefinition('inlet bc', bcDef)
+wallBCDef = ares.createDefinition('wall bc', bcDef)
 
 # Each ICDef/BCDef holds a different type of value:
 temperature = smtk.attribute.DoubleItemDefinition.New('temperature')
@@ -80,11 +80,11 @@ velocity.setDefaultValue(0.)
 
 # V. Create attributes from the definitions
 # ++ 5 ++
-fluidIC = asys.createAttribute('fluidIC', fluidICDef)
-wallBC = asys.createAttribute('wallBC', wallBCDef)
-inletBC = asys.createAttribute('inletBC', inletBCDef)
-outletBC = asys.createAttribute('outletBC', outletBCDef)
-matProp = asys.createAttribute('fluid', matDef)
+fluidIC = ares.createAttribute('fluidIC', fluidICDef)
+wallBC = ares.createAttribute('wallBC', wallBCDef)
+inletBC = ares.createAttribute('inletBC', inletBCDef)
+outletBC = ares.createAttribute('outletBC', outletBCDef)
+matProp = ares.createAttribute('fluid', matDef)
 # -- 5 --
 
 # VI. Now tie these to the model

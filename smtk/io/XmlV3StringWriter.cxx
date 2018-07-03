@@ -32,8 +32,8 @@ namespace smtk
 namespace io
 {
 
-XmlV3StringWriter::XmlV3StringWriter(const attribute::CollectionPtr myCollection)
-  : XmlV2StringWriter(myCollection)
+XmlV3StringWriter::XmlV3StringWriter(const attribute::ResourcePtr myResource)
+  : XmlV2StringWriter(myResource)
 {
 }
 
@@ -49,6 +49,11 @@ std::string XmlV3StringWriter::className() const
 unsigned int XmlV3StringWriter::fileVersion() const
 {
   return 3;
+}
+
+std::string XmlV3StringWriter::rootNodeName() const
+{
+  return std::string("SMTK_AttributeResource");
 }
 
 void XmlV3StringWriter::processDefinitionInternal(

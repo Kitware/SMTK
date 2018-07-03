@@ -349,10 +349,10 @@ public:
   bool findOrAddEntityToGroup(const smtk::common::UUID& grp, const smtk::common::UUID& ent);
 
   bool hasAttribute(const smtk::common::UUID& attribId, const smtk::common::UUID& toEntity);
-  bool associateAttribute(smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId,
-    const smtk::common::UUID& toEntity);
-  bool disassociateAttribute(smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId,
-    const smtk::common::UUID& fromEntity, bool reverse = true);
+  bool associateAttribute(smtk::attribute::ResourcePtr attResource,
+    const smtk::common::UUID& attribId, const smtk::common::UUID& toEntity);
+  bool disassociateAttribute(smtk::attribute::ResourcePtr attResource,
+    const smtk::common::UUID& attribId, const smtk::common::UUID& fromEntity, bool reverse = true);
   bool insertEntityAssociations(
     const EntityRef& modelEntity, std::set<smtk::attribute::AttributePtr>& associations);
   std::set<smtk::attribute::AttributePtr> associations(const EntityRef& modelEntity);
@@ -451,7 +451,7 @@ public:
   smtk::io::Logger& log() { return smtk::io::Logger::instance(); }
 
 protected:
-  friend class smtk::attribute::Collection;
+  friend class smtk::attribute::Resource;
 
   void assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const smtk::common::UUID& owner,
     const std::string& ownersName, std::set<smtk::common::UUID>& remaining, bool nokids);
@@ -475,9 +475,9 @@ protected:
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
   smtk::shared_ptr<resource::Set> m_resources;
-  typedef std::owner_less<smtk::attribute::WeakCollectionPtr> CollectionLessThan;
-  typedef std::set<smtk::attribute::WeakCollectionPtr, CollectionLessThan> WeakCollectionSet;
-  WeakCollectionSet m_attributeCollections; // weak references to attribute collections
+  typedef std::owner_less<smtk::attribute::WeakResourcePtr> ResourceLessThan;
+  typedef std::set<smtk::attribute::WeakResourcePtr, ResourceLessThan> WeakResourceSet;
+  WeakResourceSet m_attributeResources; // weak references to attribute resources
 
   smtk::shared_ptr<Session> m_defaultSession;
 

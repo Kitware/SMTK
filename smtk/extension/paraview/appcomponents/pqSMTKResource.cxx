@@ -16,6 +16,8 @@
 #include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 
+#include "smtk/attribute/Resource.h"
+
 #include "smtk/model/Manager.h"
 
 #include <iostream>

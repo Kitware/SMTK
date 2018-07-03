@@ -27,9 +27,9 @@ namespace operation
 {
 
 /// smtk::operation::Operation::Specification is a typedef for
-/// std::shared_ptr<smtk::attribute::Collection>. In the future, it could
+/// std::shared_ptr<smtk::attribute::Resource>. In the future, it could
 /// become a class that simply holds a
-/// std::shared_ptr<smtk::attribute::Collection>. For now, though, we construct
+/// std::shared_ptr<smtk::attribute::Resource>. For now, though, we construct
 /// an API around Specification, giving it functions that are unique to its role
 /// as an operation specification.
 

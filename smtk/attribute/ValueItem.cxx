@@ -10,9 +10,9 @@
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include <algorithm> // for std::find
@@ -360,8 +360,8 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
-  // Get reference to attribute collection
-  CollectionPtr collection = this->attribute()->collection();
+  // Get reference to attribute resource
+  ResourcePtr resource = this->attribute()->attributeResource();
 
   // Update values
   for (std::size_t i = 0; i < sourceValueItem->numberOfValues(); ++i)
@@ -380,10 +380,10 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
       else
       {
         std::string nameStr = sourceValueItem->expression(i)->name();
-        AttributePtr att = collection->findAttribute(nameStr);
+        AttributePtr att = resource->findAttribute(nameStr);
         if (!att)
         {
-          att = collection->copyAttribute(sourceValueItem->expression(i),
+          att = resource->copyAttribute(sourceValueItem->expression(i),
             (options & Item::COPY_MODEL_ASSOCIATIONS) != 0, options);
           if (att == nullptr)
           {

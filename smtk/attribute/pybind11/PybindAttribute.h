@@ -30,7 +30,7 @@
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
@@ -117,7 +117,7 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("setColor", (void (smtk::attribute::Attribute::*)(double, double, double, double)) &smtk::attribute::Attribute::setColor, py::arg("r"), py::arg("g"), py::arg("b"), py::arg("alpha"))
     .def("setColor", (void (smtk::attribute::Attribute::*)(double const *)) &smtk::attribute::Attribute::setColor, py::arg("l_color"))
     .def("setUserData", &smtk::attribute::Attribute::setUserData, py::arg("key"), py::arg("value"))
-    .def("collection", &smtk::attribute::Attribute::collection)
+    .def("attributeResource", &smtk::attribute::Attribute::attributeResource)
     .def("type", &smtk::attribute::Attribute::type)
     .def("types", &smtk::attribute::Attribute::types)
     .def("unsetColor", &smtk::attribute::Attribute::unsetColor)

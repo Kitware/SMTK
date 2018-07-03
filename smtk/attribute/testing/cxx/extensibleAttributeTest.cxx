@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
@@ -22,6 +21,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
@@ -607,12 +607,12 @@ int checkDirectoryItem(const char* name, smtk::attribute::AttributePtr att, bool
   return checkItem<>(sitem, isExtensible);
 }
 
-int checkCollection(smtk::attribute::CollectionPtr collection)
+int checkResource(smtk::attribute::ResourcePtr resource)
 {
   int status = 0;
 
   std::cout << "Checking Extensible Value Items........\n";
-  smtk::attribute::DefinitionPtr def = collection->findDefinition("Derived2");
+  smtk::attribute::DefinitionPtr def = resource->findDefinition("Derived2");
   if (!def)
   {
     std::cerr << "Could not find Derived 2 Def! - ERROR\n";
@@ -710,10 +710,10 @@ int checkCollection(smtk::attribute::CollectionPtr collection)
   }
 
   // Find or Create an attribute
-  smtk::attribute::AttributePtr att = collection->findAttribute("Derived2Att");
+  smtk::attribute::AttributePtr att = resource->findAttribute("Derived2Att");
   if (!att)
   {
-    att = collection->createAttribute("Derived2Att", def);
+    att = resource->createAttribute("Derived2Att", def);
     if (!att)
     {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -781,7 +781,7 @@ int checkCollection(smtk::attribute::CollectionPtr collection)
   }
 
   std::cout << "Checking Extensible Group Items........\n";
-  def = collection->findDefinition("Derived3");
+  def = resource->findDefinition("Derived3");
   if (!def)
   {
     std::cerr << "Could not find Derived 3 Def! - ERROR\n";
@@ -836,10 +836,10 @@ int checkCollection(smtk::attribute::CollectionPtr collection)
   }
 
   // Find or Create an attribute
-  att = collection->findAttribute("Derived3Att");
+  att = resource->findAttribute("Derived3Att");
   if (!att)
   {
-    att = collection->createAttribute("Derived3Att", def);
+    att = resource->createAttribute("Derived3Att", def);
     if (!att)
     {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -885,11 +885,11 @@ int main(int argc, char* argv[])
   std::string outputFilename = argv[2];
 
   {
-    smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
-    std::cout << "Collection Created\n";
+    smtk::attribute::ResourcePtr resource = smtk::attribute::Resource::create();
+    std::cout << "Resource Created\n";
     smtk::io::AttributeReader reader;
     smtk::io::Logger logger;
-    if (reader.read(collection, argv[1], true, logger))
+    if (reader.read(resource, argv[1], true, logger))
     {
       std::cerr << "Errors encountered reading Attribute File: " << argv[1] << "\n";
       std::cerr << logger.convertToString();
@@ -900,10 +900,10 @@ int main(int argc, char* argv[])
       std::cout << "Read in template - PASSED\n";
     }
 
-    // Write output file *before* checking collection (checking changes collection)
+    // Write output file *before* checking resource (checking changes resource)
     smtk::io::AttributeWriter writer;
     smtk::io::Logger logger1;
-    if (writer.write(collection, outputFilename, logger1))
+    if (writer.write(resource, outputFilename, logger1))
     {
       std::cerr << "Errors encountered creating Attribute File:\n";
       std::cerr << logger1.convertToString();
@@ -914,30 +914,30 @@ int main(int argc, char* argv[])
       std::cout << "Wrote " << outputFilename << std::endl;
     }
 
-    // Check collection
-    status = checkCollection(collection);
+    // Check resource
+    status = checkResource(resource);
     if (status < 0)
     {
       return status;
     }
 
-    std::cout << "Collection destroyed\n";
+    std::cout << "Resource destroyed\n";
   }
 
-  //Use separate scope to read attribute collection back in
+  //Use separate scope to read attribute resource back in
   {
-    smtk::attribute::CollectionPtr readbackCollection = smtk::attribute::Collection::create();
-    std::cout << "Readback Collection Created\n";
+    smtk::attribute::ResourcePtr readbackResource = smtk::attribute::Resource::create();
+    std::cout << "Readback Resource Created\n";
     smtk::io::AttributeReader reader2;
     smtk::io::Logger logger2;
-    if (reader2.read(readbackCollection, outputFilename, true, logger2))
+    if (reader2.read(readbackResource, outputFilename, true, logger2))
     {
       std::cerr << "Errors encountered reading Attribute File: " << outputFilename << "\n";
       std::cerr << logger2.convertToString();
       return -1;
     }
 
-    status = checkCollection(readbackCollection);
+    status = checkResource(readbackResource);
   }
   if (status == 0)
   {

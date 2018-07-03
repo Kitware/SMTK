@@ -41,7 +41,6 @@
 #include <QToolButton>
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -55,6 +54,7 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -77,9 +77,9 @@ QSize qtTextEdit::sizeHint() const
   return QSize(200, 70);
 }
 
-qtUIManager::qtUIManager(smtk::attribute::CollectionPtr collection)
+qtUIManager::qtUIManager(smtk::attribute::ResourcePtr resource)
   : m_parentWidget(NULL)
-  , m_AttCollection(collection)
+  , m_AttResource(resource)
   , m_useInternalFileBrowser(false)
 {
   m_topView = NULL;
@@ -230,7 +230,7 @@ void qtUIManager::internalInitialize()
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
-  const std::map<int, std::string>& levels = m_AttCollection->advanceLevels();
+  const std::map<int, std::string>& levels = m_AttResource->advanceLevels();
   if (levels.size() > 0)
   {
     // use the minimum enum value as initial advance level
@@ -263,7 +263,7 @@ void qtUIManager::setAdvanceLevel(int b)
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
   combo->blockSignals(true);
-  const std::map<int, std::string>& levels = m_AttCollection->advanceLevels();
+  const std::map<int, std::string>& levels = m_AttResource->advanceLevels();
   if (levels.size() == 0)
   {
     // for backward compatibility, we automatically add
@@ -705,13 +705,13 @@ void qtUIManager::findDefinitionsLongLabels()
   // Generate list of all concrete definitions in the manager
   std::vector<smtk::attribute::DefinitionPtr> defs;
   std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-  m_AttCollection->findBaseDefinitions(baseDefinitions);
+  m_AttResource->findBaseDefinitions(baseDefinitions);
   std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
   for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
   {
     std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-    m_AttCollection->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+    m_AttResource->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
     defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
   }
 

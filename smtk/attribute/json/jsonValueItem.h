@@ -12,7 +12,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
@@ -104,7 +104,7 @@ template <typename ItemType, typename BasicType>
 static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
   std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& /*attRefInfo*/)
 {
-  auto colPtr = itemPtr->attribute()->collection();
+  auto resPtr = itemPtr->attribute()->attributeResource();
   if (itemPtr->isDiscrete())
   {
     return;
@@ -166,7 +166,7 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
         try
         {
           expName = iter->at("Expression").at("Name");
-          expAtt = colPtr->findAttribute(expName);
+          expAtt = resPtr->findAttribute(expName);
           if (!expAtt)
           {
             info.item = itemPtr;
@@ -210,7 +210,7 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
         try
         {
           expName = j.at("ExpressionName");
-          expAtt = colPtr->findAttribute(expName);
+          expAtt = resPtr->findAttribute(expName);
         }
         catch (std::exception& /*e*/)
         {

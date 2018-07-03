@@ -11,7 +11,7 @@
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/resource/Component.h"
 
@@ -327,7 +327,7 @@ bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   }
 
   // Update values
-  // Only set values if both att collections are using the same model
+  // Only set values if both att resources are using the same model
   this->setNumberOfValues(sourceReferenceItem->numberOfValues());
   for (std::size_t i = 0; i < sourceReferenceItem->numberOfValues(); ++i)
   {

@@ -35,9 +35,9 @@ AttributeBrowser::AttributeBrowser(QWidget* parent)
 AttributeBrowser::~AttributeBrowser() = default;
 
 //------------------------------------------------------------------------------
-void AttributeBrowser::populate(smtk::attribute::CollectionPtr collection)
+void AttributeBrowser::populate(smtk::attribute::ResourcePtr resource)
 {
-  this->populateDefinitions(collection);
+  this->populateDefinitions(resource);
   //this->populateAnaylsis();
   //this->populateCategories();
   //this->populateViews();
@@ -49,7 +49,7 @@ void AttributeBrowser::clear()
 }
 
 //------------------------------------------------------------------------------
-void AttributeBrowser::populateDefinitions(smtk::attribute::CollectionPtr collection)
+void AttributeBrowser::populateDefinitions(smtk::attribute::ResourcePtr resource)
 {
   if (this->AttDefModel)
   {
@@ -57,7 +57,7 @@ void AttributeBrowser::populateDefinitions(smtk::attribute::CollectionPtr collec
   }
   this->AttDefModel = new AttDefDataModel(this);
 
-  this->AttDefModel->populate(collection);
+  this->AttDefModel->populate(resource);
   this->Ui->viewDefinitions->setModel(this->AttDefModel);
   this->Ui->viewDefinitions->expandAll();
 
@@ -97,7 +97,7 @@ void AttributeBrowser::onAddDefinition()
   if (dialog.exec() == QDialog::Accepted)
   {
     this->AttDefModel->insert(dialog.getInputValues());
-    emit collectionChanged(true);
+    emit resourceChanged(true);
   }
 }
 
@@ -108,7 +108,7 @@ void AttributeBrowser::onDeleteDefinition()
   auto attDefIndex = sm->currentIndex();
 
   this->AttDefModel->remove(attDefIndex);
-  emit collectionChanged(true);
+  emit resourceChanged(true);
 }
 
 //------------------------------------------------------------------------------

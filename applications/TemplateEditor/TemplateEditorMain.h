@@ -56,7 +56,7 @@ public slots:
   void onSave();
 
   /**
-   * Modify the window title if there has been an Attribute Collection change.
+   * Modify the window title if there has been an Attribute Resource change.
    */
   void updateTitle(bool needsSaving);
   ///@}
@@ -80,11 +80,11 @@ private:
 
   /**
    * Save template file to filePath. Currently saves the current
-   * attribute collection to a single file.
+   * attribute resource to a single file.
    */
   void save(const QString& filePath);
 
-  smtk::attribute::CollectionPtr AttributeCollection;
+  smtk::attribute::ResourcePtr AttributeResource;
   QString ActiveFilePath;
 
   std::unique_ptr<Ui::TemplateEditorMain> Ui;

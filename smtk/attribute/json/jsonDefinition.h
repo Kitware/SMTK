@@ -14,7 +14,6 @@
 
 #include "nlohmann/json.hpp"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
 

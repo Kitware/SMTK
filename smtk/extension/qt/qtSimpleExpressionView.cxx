@@ -15,7 +15,6 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
@@ -23,6 +22,7 @@
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/view/View.h"
@@ -383,8 +383,8 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
   smtk::attribute::AttributePtr func = this->getFunctionFromItem(item);
   if (func)
   {
-    CollectionPtr attCollection = func->definition()->collection();
-    attCollection->rename(func, item->text().toLatin1().constData());
+    ResourcePtr attResource = func->definition()->resource();
+    attResource->rename(func, item->text().toLatin1().constData());
   }
 }
 
@@ -489,9 +489,9 @@ void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr at
     return;
   }
   this->Internals->FuncList->blockSignals(true);
-  CollectionPtr attCollection = attDef->collection();
+  ResourcePtr attResource = attDef->resource();
 
-  smtk::attribute::AttributePtr newFunc = attCollection->createAttribute(attDef->type());
+  smtk::attribute::AttributePtr newFunc = attResource->createAttribute(attDef->type());
   QListWidgetItem* item = this->addFunctionListItem(newFunc);
   if (item)
   {
@@ -631,8 +631,8 @@ void qtSimpleExpressionView::onDeleteSelected()
       return;
     }
 
-    smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
-    sys->removeAttribute(this->getFunctionFromItem(selItem));
+    smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
+    resource->removeAttribute(this->getFunctionFromItem(selItem));
 
     this->Internals->FuncList->takeItem(this->Internals->FuncList->row(selItem));
   }
@@ -798,7 +798,7 @@ void qtSimpleExpressionView::initFunctionList()
   {
     return;
   }
-  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
+  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
   // There should be only 1 child component called Type
   if ((view->details().numberOfChildren() != 1) || (view->details().child(0).name() != "Att"))
   {
@@ -810,9 +810,9 @@ void qtSimpleExpressionView::initFunctionList()
   {
     return;
   }
-  this->Internals->m_attDefinition = sys->findDefinition(defType);
+  this->Internals->m_attDefinition = resource->findDefinition(defType);
   std::vector<smtk::attribute::AttributePtr> result;
-  sys->findAttributes(this->Internals->m_attDefinition, result);
+  resource->findAttributes(this->Internals->m_attDefinition, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   this->Internals->FuncList->blockSignals(true);
   this->Internals->FuncList->clear();

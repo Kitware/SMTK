@@ -19,7 +19,7 @@ Inputs and Outputs
 The inputs that an operator requires in order to run and
 the outputs that an operator may produce are each modeled
 as :smtk:`attribute definitions <smtk::attribute::Definition>`.
-These definitions reside in an :smtk:`attribute collection <smtk::attribute::Collection>`.
+These definitions reside in an :smtk:`attribute resource <smtk::attribute::Resource>`.
 
 Each operator's inputs are specified by a Definition that inherits a base attribute-definition
 named "operator" while the its outputs are specified by a Definition that inherits a
@@ -33,7 +33,7 @@ Given an instance of an Operator subclass, you can call its
 the Attribute which models its inputs.
 When the operator is executed, it returns an Attribute instance that models its result.
 
-Recall that the attribute.Collection holds Definitions which contain ItemDefinitions.
+Recall that the attribute.Resource holds Definitions which contain ItemDefinitions.
 When a Definition is instantiated as an Attribute, all its active ItemDefinitions
 are instantiated as Items.
 The Definitions themselves specify what types of model-entities may be
@@ -43,7 +43,7 @@ denote the entities that the operator will act upon.
 The operator-attribute's Items specify input parameters such as point locations,
 geometric distances, etc.
 
-The fact that inputs and outputs are specified using SMTK's own attribute collection
+The fact that inputs and outputs are specified using SMTK's own attribute resource
 means that one need not construct an instance of the operator's C++ class in order
 to obtain information about it;
 instead, simply call :smtk:`operatorSystem() <smtk::model::Session::operatorSystem>`

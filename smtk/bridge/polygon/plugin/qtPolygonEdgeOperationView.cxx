@@ -318,7 +318,7 @@ void qtPolygonEdgeOperationView::onHideAllFaces(bool status)
 
   if (setPropertyOp && setPropertyOp->parameters())
   {
-    setPropertyOp->parameters()->collection()->setRefModelManager(activeSession.manager());
+    setPropertyOp->parameters()->attributeResource()->setRefModelManager(activeSession.manager());
     if (status)
     { // cache faces' visiblity and set them all to invisible
       for (const auto& face : faces)

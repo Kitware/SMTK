@@ -14,7 +14,6 @@
 #include "pugixml/src/pugixml.cpp"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
@@ -37,6 +36,7 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -229,8 +229,8 @@ struct XmlV2StringWriter::PugiPrivate
   }
 };
 
-XmlV2StringWriter::XmlV2StringWriter(const attribute::CollectionPtr myCollection)
-  : XmlStringWriter(myCollection)
+XmlV2StringWriter::XmlV2StringWriter(const attribute::ResourcePtr myResource)
+  : XmlStringWriter(myResource)
 {
 }
 
@@ -242,6 +242,11 @@ XmlV2StringWriter::~XmlV2StringWriter()
 std::string XmlV2StringWriter::className() const
 {
   return std::string("XmlV2StringWriter");
+}
+
+std::string XmlV2StringWriter::rootNodeName() const
+{
+  return std::string("SMTK_AttributeSystem");
 }
 
 unsigned int XmlV2StringWriter::fileVersion() const
@@ -256,7 +261,7 @@ std::string XmlV2StringWriter::convertToString(Logger& logger, bool no_declarati
   std::stringstream oss;
   oss << "Created by " << this->className();
   doc.append_child(node_comment).set_value(oss.str().c_str());
-  xml_node root = doc.append_child("SMTK_AttributeSystem");
+  xml_node root = doc.append_child(this->rootNodeName().c_str());
   root.append_attribute("Version").set_value(this->fileVersion());
 
   // Generate the element tree
@@ -283,15 +288,15 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
   xml_node root;
   if (createRoot)
   {
-    // This option is used to insert an attribute collection
+    // This option is used to insert an attribute resource
     // into an existing xml document (for writing resource files).
-    root = parent_node.append_child("SMTK_AttributeSystem");
+    root = parent_node.append_child(this->rootNodeName().c_str());
     root.append_attribute("Version").set_value(2);
     m_pugi = new PugiPrivate(root);
   }
   else
   {
-    // This option is used when writing a single attribute collection,
+    // This option is used when writing a single attribute resource,
     // and the root node has already been created by the caller.
     m_pugi = new PugiPrivate(parent_node);
   }
@@ -300,22 +305,22 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
     .set_value("**********  Category and Analysis Information ***********");
 
   // Write out the category and analysis information
-  if (m_collection->numberOfCategories())
+  if (m_resource->numberOfCategories())
   {
     xml_node cnode, catNodes = m_pugi->root.append_child("Categories");
     std::set<std::string>::const_iterator it;
-    const std::set<std::string>& cats = m_collection->categories();
+    const std::set<std::string>& cats = m_resource->categories();
     for (it = cats.begin(); it != cats.end(); it++)
     {
       catNodes.append_child("Cat").text().set(it->c_str());
     }
   }
 
-  if (m_collection->numberOfAnalyses())
+  if (m_resource->numberOfAnalyses())
   {
     xml_node cnode, catNodes = m_pugi->root.append_child("Analyses");
     std::map<std::string, std::set<std::string> >::const_iterator it;
-    const std::map<std::string, std::set<std::string> >& analyses = m_collection->analyses();
+    const std::map<std::string, std::set<std::string> >& analyses = m_resource->analyses();
     for (it = analyses.begin(); it != analyses.end(); it++)
     {
       xml_node anode = catNodes.append_child("Analysis");
@@ -329,19 +334,19 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
   }
 
   // Write out the advance levels information
-  if (m_collection->numberOfAdvanceLevels())
+  if (m_resource->numberOfAdvanceLevels())
   {
     xml_node cnode, catNodes = m_pugi->root.append_child("AdvanceLevels");
     std::map<int, std::string>::const_iterator it;
-    const std::map<int, std::string>& levels = m_collection->advanceLevels();
+    const std::map<int, std::string>& levels = m_resource->advanceLevels();
     for (it = levels.begin(); it != levels.end(); it++)
     {
       xml_node anode = catNodes.append_child("Level");
       anode.append_attribute("Label").set_value(it->second.c_str());
-      if (m_collection->advanceLevelColor(it->first))
+      if (m_resource->advanceLevelColor(it->first))
       {
         anode.append_attribute("Color").set_value(
-          this->encodeColor(m_collection->advanceLevelColor(it->first)).c_str());
+          this->encodeColor(m_resource->advanceLevelColor(it->first)).c_str());
       }
       anode.text().set(getValueForXMLElement(it->first));
     }
@@ -365,7 +370,7 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
 void XmlV2StringWriter::processAttributeInformation()
 {
   std::vector<smtk::attribute::DefinitionPtr> baseDefs;
-  m_collection->findBaseDefinitions(baseDefs);
+  m_resource->findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   xml_node definitions, attributes;
 
@@ -400,7 +405,7 @@ void XmlV2StringWriter::processDefinition(
   {
     // Process all attributes based on this class
     std::vector<smtk::attribute::AttributePtr> atts;
-    m_collection->findDefinitionAttributes(def->type(), atts);
+    m_resource->findDefinitionAttributes(def->type(), atts);
     std::size_t n = atts.size();
     for (std::size_t i = 0; i < n; i++)
     {
@@ -409,7 +414,7 @@ void XmlV2StringWriter::processDefinition(
   }
   // Now process all of its derived classes
   std::vector<smtk::attribute::DefinitionPtr> defs;
-  m_collection->derivedDefinitions(def, defs);
+  m_resource->derivedDefinitions(def, defs);
   std::size_t n = defs.size();
   for (std::size_t i = 0; i < n; i++)
   {
@@ -1378,7 +1383,7 @@ void XmlV2StringWriter::processViews()
   xml_node views = m_pugi->root.append_child("Views");
   std::map<std::string, smtk::view::ViewPtr>::const_iterator iter;
   bool isTop;
-  for (iter = m_collection->views().begin(); iter != m_collection->views().end(); iter++)
+  for (iter = m_resource->views().begin(); iter != m_resource->views().end(); iter++)
   {
     if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
     {
@@ -1395,7 +1400,7 @@ void XmlV2StringWriter::processViews()
     }
     this->processViewComponent(iter->second->details(), node);
   }
-  for (iter = m_collection->views().begin(); iter != m_collection->views().end(); iter++)
+  for (iter = m_resource->views().begin(); iter != m_resource->views().end(); iter++)
   {
     if (iter->second->details().attributeAsBool("TopLevel", isTop) && isTop)
     {

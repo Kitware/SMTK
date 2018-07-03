@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/extension/qt/qtBaseView.h"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/View.h"
@@ -95,8 +95,8 @@ void qtBaseView::getDefinitions(
   smtk::attribute::DefinitionPtr attDef, QList<smtk::attribute::DefinitionPtr>& defs)
 {
   std::vector<smtk::attribute::DefinitionPtr> newdefs;
-  attribute::CollectionPtr attCollection = attDef->collection();
-  attCollection->findAllDerivedDefinitions(attDef, true, newdefs);
+  attribute::ResourcePtr attResource = attDef->resource();
+  attResource->findAllDerivedDefinitions(attDef, true, newdefs);
   if (!attDef->isAbstract() && !defs.contains(attDef))
   {
     defs.push_back(attDef);
@@ -254,7 +254,7 @@ void qtBaseView::makeTopLevel()
   }
 
   this->Internals->clearWidgets();
-  const attribute::CollectionPtr attSys = this->uiManager()->attCollection();
+  const attribute::ResourcePtr attResource = this->uiManager()->attResource();
 
   bool flag;
   // Do we need to provide advance level filtering? - this is on by default
@@ -303,7 +303,7 @@ void qtBaseView::makeTopLevel()
     }
     this->Internals->ShowCategoryCombo = new QComboBox(this->parentWidget());
     std::set<std::string>::const_iterator it;
-    const std::set<std::string>& cats = attSys->categories();
+    const std::set<std::string>& cats = attResource->categories();
     for (it = cats.begin(); it != cats.end(); it++)
     {
       this->Internals->ShowCategoryCombo->addItem(it->c_str());

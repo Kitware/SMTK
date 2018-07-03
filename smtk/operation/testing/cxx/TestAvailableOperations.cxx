@@ -14,8 +14,8 @@
 #include "smtk/operation/XMLOperation.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -138,7 +138,7 @@ public:
 
 const char operationA_xml[] =
   "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
-  "<SMTK_AttributeSystem Version=\"3\">"
+  "<SMTK_AttributeResource Version=\"3\">"
   "  <Definitions>"
   "    <AttDef Type=\"operation\" Label=\"operation\" Abstract=\"True\">"
   "      <ItemDefinitions>"
@@ -167,7 +167,7 @@ const char operationA_xml[] =
   "    <AttDef Type=\"result(OperationA)\" BaseType=\"result\">"
   "    </AttDef>"
   "  </Definitions>"
-  "</SMTK_AttributeSystem>";
+  "</SMTK_AttributeResource>";
 
 const char* OperationA::xmlDescription() const
 {
@@ -191,7 +191,7 @@ public:
 
 const char operationB_xml[] =
   "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
-  "<SMTK_AttributeSystem Version=\"3\">"
+  "<SMTK_AttributeResource Version=\"3\">"
   "  <Definitions>"
   "    <AttDef Type=\"operation\" Label=\"operation\" Abstract=\"True\">"
   "      <ItemDefinitions>"
@@ -220,7 +220,7 @@ const char operationB_xml[] =
   "    <AttDef Type=\"result(OperationB)\" BaseType=\"result\">"
   "    </AttDef>"
   "  </Definitions>"
-  "</SMTK_AttributeSystem>";
+  "</SMTK_AttributeResource>";
 
 const char* OperationB::xmlDescription() const
 {

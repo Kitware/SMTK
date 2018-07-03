@@ -9,12 +9,12 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include <iostream>
@@ -32,24 +32,24 @@ int main()
     typedef smtk::attribute::ValueItem ValueComp;
     typedef smtk::attribute::Item AttComp;
 
-    smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
-    smtk::attribute::Collection& collection(*sysptr.get());
-    std::cout << "Collection Created\n";
-    smtk::attribute::DefinitionPtr base = collection.createDefinition("BaseDef");
+    smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
+    smtk::attribute::Resource& resource(*resptr.get());
+    std::cout << "Resource Created\n";
+    smtk::attribute::DefinitionPtr base = resource.createDefinition("BaseDef");
     // Lets add some item definitions
     base->addItemDefinition<IntCompDef>(itemNames[0]);
     smtk::attribute::IntItemDefinitionPtr icompdef2 =
       base->addItemDefinition<IntCompDef>(itemNames[1]);
     icompdef2->setDefaultValue(10);
 
-    smtk::attribute::DefinitionPtr def1 = collection.createDefinition("Derived1", "BaseDef");
+    smtk::attribute::DefinitionPtr def1 = resource.createDefinition("Derived1", "BaseDef");
     // Lets add some item definitions
     def1->addItemDefinition<DoubleCompDef>(itemNames[2]);
     smtk::attribute::DoubleItemDefinitionPtr dcompdef2 =
       def1->addItemDefinition<DoubleCompDef>(itemNames[3]);
     dcompdef2->setDefaultValue(-35.2);
 
-    smtk::attribute::DefinitionPtr def2 = collection.createDefinition("Derived2", "Derived1");
+    smtk::attribute::DefinitionPtr def2 = resource.createDefinition("Derived2", "Derived1");
     // Lets add some item definitions
     def2->addItemDefinition<StringCompDef>(itemNames[4]);
     smtk::attribute::StringItemDefinitionPtr scompdef2 =
@@ -98,7 +98,7 @@ int main()
       std::cout << "Insertion Position Test Failed!\n";
     }
 
-    smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "Derived2");
+    smtk::attribute::AttributePtr att = resource.createAttribute("testAtt", "Derived2");
     if (att)
     {
       std::cout << "Attribute testAtt created\n";
@@ -148,7 +148,7 @@ int main()
         }
       }
     }
-    std::cout << "Collection destroyed\n";
+    std::cout << "Resource destroyed\n";
   }
   return status;
 }

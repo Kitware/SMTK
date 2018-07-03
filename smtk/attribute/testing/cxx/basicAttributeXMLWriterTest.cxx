@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -19,6 +18,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
@@ -55,39 +55,39 @@ int main(int argc, char* argv[])
     std::cerr << "Usage: " << argv[0] << " FullAttributeFilename InstanceOnlyFileName\n";
     return -1;
   }
-  auto sysptr = smtk::attribute::Collection::create();
-  smtk::attribute::Collection& collection(*sysptr.get());
-  std::cout << "Collection Created\n";
+  auto resptr = smtk::attribute::Resource::create();
+  smtk::attribute::Resource& resource(*resptr.get());
+  std::cout << "Resource Created\n";
   // Lets add some analyses
   std::set<std::string> analysis;
   analysis.insert("Flow");
   analysis.insert("General");
   analysis.insert("Time");
-  collection.defineAnalysis("CFD Flow", analysis);
+  resource.defineAnalysis("CFD Flow", analysis);
   analysis.clear();
 
   analysis.insert("Flow");
   analysis.insert("Heat");
   analysis.insert("General");
   analysis.insert("Time");
-  collection.defineAnalysis("CFD Flow with Heat Transfer", analysis);
+  resource.defineAnalysis("CFD Flow with Heat Transfer", analysis);
   analysis.clear();
 
   analysis.insert("Constituent");
   analysis.insert("General");
   analysis.insert("Time");
-  collection.defineAnalysis("Constituent Transport", analysis);
+  resource.defineAnalysis("Constituent Transport", analysis);
   analysis.clear();
 
   double lcolor1[] = { 1.0, 1.0, 0.0, 0.1 };
   double lcolor2[] = { 1.0, 0.0, 1.0, 0.2 };
   double lcolor3[] = { 0.0, 1.0, 1.0, 0.3 };
-  collection.addAdvanceLevel(0, "Level 0", lcolor1);
-  collection.addAdvanceLevel(1, "Level 1", lcolor2);
-  collection.addAdvanceLevel(2, "Level 2", lcolor3);
+  resource.addAdvanceLevel(0, "Level 0", lcolor1);
+  resource.addAdvanceLevel(1, "Level 1", lcolor2);
+  resource.addAdvanceLevel(2, "Level 2", lcolor3);
 
   // Lets create an attribute to represent an expression
-  smtk::attribute::DefinitionPtr expDef = collection.createDefinition("ExpDef");
+  smtk::attribute::DefinitionPtr expDef = resource.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
   expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
   expDef->addTag(smtk::attribute::Tag("My Tag"));
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::attribute::DefinitionPtr base = collection.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = resource.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::attribute::IntItemDefinitionPtr iitemdef =
     base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
   iitemdef->setDefaultValue(10);
   iitemdef->addCategory("Heat");
 
-  smtk::attribute::DefinitionPtr def1 = collection.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = resource.createDefinition("Derived1", "BaseDef");
   def1->setLocalAssociationMask(smtk::model::MODEL_ENTITY); // belongs on model
   // Lets add some item definitions
   smtk::attribute::DoubleItemDefinitionPtr ditemdef =
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
   vdef->setIsOptional(true);
   vdef->setLabel("Option 1");
 
-  smtk::attribute::DefinitionPtr def2 = collection.createDefinition("Derived2", "Derived1");
+  smtk::attribute::DefinitionPtr def2 = resource.createDefinition("Derived2", "Derived1");
   def2->setLocalAssociationMask(smtk::model::VOLUME);
   // Lets add some item definitions
   smtk::attribute::StringItemDefinitionPtr sitemdef =
@@ -165,17 +165,17 @@ int main(int argc, char* argv[])
   sitemdef->addCategory("Flow");
 
   // Add in a Attribute definition with a reference to another attribute
-  smtk::attribute::DefinitionPtr attrefdef = collection.createDefinition("AttributeReferenceDef");
+  smtk::attribute::DefinitionPtr attrefdef = resource.createDefinition("AttributeReferenceDef");
   smtk::attribute::RefItemDefinitionPtr aritemdef =
     attrefdef->addItemDefinition<smtk::attribute::RefItemDefinitionPtr>("BaseDefItem");
   aritemdef->setCommonValueLabel("A reference to another attribute");
   aritemdef->setAttributeDefinition(base);
 
   // Process Categories
-  collection.updateCategories();
+  resource.updateCategories();
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::attribute::AttributePtr expAtt = collection.createAttribute("Exp1", expDef);
-  smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr expAtt = resource.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr att = resource.createAttribute("testAtt", "Derived2");
   if (!att)
   {
     std::cout << "ERROR: Attribute testAtt not created\n";
@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
   smtk::io::AttributeWriter writer;
   writer.setFileVersion(3);
   smtk::io::Logger logger;
-  if (writer.write(sysptr, argv[1], logger))
+  if (writer.write(resptr, argv[1], logger))
   {
     std::cerr << "Errors encountered creating Attribute File:\n";
     std::cerr << logger.convertToString();
@@ -199,9 +199,9 @@ int main(int argc, char* argv[])
   }
 
   // Sanity check readback
-  auto inputSysptr = smtk::attribute::Collection::create();
+  auto inputResptr = smtk::attribute::Resource::create();
   smtk::io::AttributeReader reader;
-  if (reader.read(inputSysptr, argv[1], logger))
+  if (reader.read(inputResptr, argv[1], logger))
   {
     std::cerr << "Errors encountered reading back Attribute File:\n";
     std::cerr << logger.convertToString();
@@ -212,14 +212,14 @@ int main(int argc, char* argv[])
   writer.includeModelInformation(false);
   writer.includeDefinitions(false);
   writer.includeViews(false);
-  if (writer.write(sysptr, argv[2], logger))
+  if (writer.write(resptr, argv[2], logger))
   {
     std::cerr << "Errors encountered creating Instance Only Attribute File:\n";
     std::cerr << logger.convertToString();
     status = -1;
   }
 
-  std::cout << "Collection destroyed\n";
+  std::cout << "Resource destroyed\n";
 
   return status;
 }

@@ -17,7 +17,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/io/XmlV2StringWriter.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include <functional>
 
@@ -33,13 +33,14 @@ namespace io
 class SMTKCORE_EXPORT XmlV3StringWriter : public XmlV2StringWriter
 {
 public:
-  XmlV3StringWriter(const smtk::attribute::CollectionPtr collection);
+  XmlV3StringWriter(const smtk::attribute::ResourcePtr resource);
   virtual ~XmlV3StringWriter();
 
 protected:
   // Override methods
-  // Two virtual methods for writing contents
+  // Three virtual methods for writing contents
   std::string className() const override;
+  std::string rootNodeName() const override;
   unsigned int fileVersion() const override;
 
   void processDefinitionInternal(

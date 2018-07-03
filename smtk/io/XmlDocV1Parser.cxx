@@ -14,7 +14,6 @@
 #include "pugixml/src/pugixml.cpp"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
@@ -36,6 +35,7 @@
 #include "smtk/attribute/MeshItemDefinition.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 //#include "smtk/attribute/ModelEntityItem.h"
 //#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
@@ -257,7 +257,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
 }
 
 template <typename ItemType, typename BasicType>
-void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::CollectionPtr asys,
+void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::ResourcePtr resource,
   std::vector<ItemExpressionInfo>& itemExpressionInfo, Logger& logger)
 {
   if (item->isDiscrete())
@@ -322,7 +322,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Collect
       else if (allowsExpressions && (nodeName == "Expression"))
       {
         expName = val.text().get();
-        expAtt = asys->findAttribute(expName);
+        expAtt = resource->findAttribute(expName);
         if (!expAtt)
         {
           info.item = item;
@@ -352,7 +352,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Collect
       if (allowsExpressions && xatt)
       {
         expName = node.text().get();
-        expAtt = asys->findAttribute(expName);
+        expAtt = resource->findAttribute(expName);
         if (!expAtt)
         {
           info.item = item;
@@ -378,9 +378,9 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Collect
 }
 };
 
-XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::CollectionPtr myCollection)
+XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::ResourcePtr myResource)
   : m_reportAsError(true)
-  , m_collection(myCollection)
+  , m_resource(myResource)
 {
 }
 
@@ -396,7 +396,7 @@ xml_node XmlDocV1Parser::getRootNode(xml_document& doc)
 
 bool XmlDocV1Parser::canParse(xml_document& doc)
 {
-  // Get the attribute collection node
+  // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeManager");
   if (amnode.empty())
   {
@@ -444,7 +444,7 @@ bool XmlDocV1Parser::canParse(xml_node& node)
 
 void XmlDocV1Parser::process(xml_document& doc)
 {
-  // Get the attribute collection node
+  // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeManager");
 
   // Check that there is content
@@ -470,7 +470,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
   xml_node node, cnode;
 
   // Get the category information, starting with current set
-  std::set<std::string> secCatagories = m_collection->categories();
+  std::set<std::string> secCatagories = m_resource->categories();
   std::string s;
   node = amnode.child("Categories");
   if (node)
@@ -510,7 +510,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         }
         catagories.insert(cnode.text().get());
       }
-      m_collection->defineAnalysis(s, catagories);
+      m_resource->defineAnalysis(s, catagories);
     }
   }
 
@@ -529,7 +529,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         tmp << "Level " << val;
         s = tmp.str();
       }
-      m_collection->addAdvanceLevel(val, s);
+      m_resource->addAdvanceLevel(val, s);
 
       xml_attribute xatt = anode.attribute("Color");
       if (xatt)
@@ -538,7 +538,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
         s = xatt.value();
         if (!s.empty() && this->decodeColorInfo(s, color) == 0)
         {
-          m_collection->setAdvanceLevelColor(val, color);
+          m_resource->setAdvanceLevelColor(val, color);
         }
       }
     }
@@ -548,18 +548,18 @@ void XmlDocV1Parser::process(xml_node& amnode)
   this->processViews(amnode);
   this->processModelInfo(amnode);
 
-  // Now we need to check to see if there are any catagories in the collection
+  // Now we need to check to see if there are any catagories in the resource
   // that were not explicitly listed in the catagories section - first update catagories
-  m_collection->updateCategories();
+  m_resource->updateCategories();
 
   std::set<std::string>::const_iterator it;
-  const std::set<std::string>& cats = m_collection->categories();
+  const std::set<std::string>& cats = m_resource->categories();
   for (it = cats.begin(); it != cats.end(); it++)
   {
     if (secCatagories.find(*it) == secCatagories.end())
     {
       smtkErrorMacro(
-        m_logger, "Category: " << *it << " was not listed in Collection's Category Section");
+        m_logger, "Category: " << *it << " was not listed in Resource's Category Section");
     }
   }
 }
@@ -581,7 +581,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
     attribute::DefinitionPtr def;
     for (i = 0; i < m_itemExpressionDefInfo.size(); i++)
     {
-      def = m_collection->findDefinition(m_itemExpressionDefInfo[i].second);
+      def = m_resource->findDefinition(m_itemExpressionDefInfo[i].second);
       if (def)
       {
         m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
@@ -596,7 +596,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
 
     for (i = 0; i < m_attRefDefInfo.size(); i++)
     {
-      def = m_collection->findDefinition(m_attRefDefInfo[i].second);
+      def = m_resource->findDefinition(m_attRefDefInfo[i].second);
       if (def)
       {
         m_attRefDefInfo[i].first->setAttributeDefinition(def);
@@ -625,7 +625,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
   attribute::AttributePtr att;
   for (i = 0; i < m_itemExpressionInfo.size(); i++)
   {
-    att = m_collection->findAttribute(m_itemExpressionInfo[i].expName);
+    att = m_resource->findAttribute(m_itemExpressionInfo[i].expName);
     if (att)
     {
       m_itemExpressionInfo[i].item->setExpression(m_itemExpressionInfo[i].pos, att);
@@ -640,7 +640,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
 
   for (i = 0; i < m_attRefInfo.size(); i++)
   {
-    att = m_collection->findAttribute(m_attRefInfo[i].attName);
+    att = m_resource->findAttribute(m_attRefInfo[i].attName);
     if (att)
     {
       m_attRefInfo[i].item->setValue(m_attRefInfo[i].pos, att);
@@ -672,28 +672,28 @@ void XmlDocV1Parser::createDefinition(xml_node& defNode)
   baseType = defNode.attribute("BaseType").value();
   if (baseType != "")
   {
-    baseDef = m_collection->findDefinition(baseType);
+    baseDef = m_resource->findDefinition(baseType);
     if (!baseDef)
     {
       smtkErrorMacro(m_logger,
         "Could not find Base Definition: " << baseType << " needed to create Definition: " << type);
       return;
     }
-    def = m_collection->createDefinition(type, baseDef);
+    def = m_resource->createDefinition(type, baseDef);
   }
   else
   {
-    def = m_collection->createDefinition(type);
+    def = m_resource->createDefinition(type);
   }
   if (!def)
   {
     if (m_reportAsError)
     {
-      smtkErrorMacro(m_logger, "Definition: " << type << " already exists in the Collection");
+      smtkErrorMacro(m_logger, "Definition: " << type << " already exists in the Resource");
     }
     else
     {
-      smtkWarningMacro(m_logger, "Definition: " << type << " already exists in the Collection");
+      smtkWarningMacro(m_logger, "Definition: " << type << " already exists in the Resource");
     }
     return;
   }
@@ -1153,9 +1153,9 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
   child = node.child("ExpressionType");
   if (child)
   {
-    // Is the attribute definition already in the collection?
+    // Is the attribute definition already in the resource?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = m_collection->findDefinition(etype);
+    attribute::DefinitionPtr adef = m_resource->findDefinition(etype);
     if (adef)
     {
       idef->setExpressionDefinition(adef);
@@ -1343,9 +1343,9 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::RefItemDefin
   child = node.child("AttDef");
   if (child)
   {
-    // Is the attribute definition already in the collection?
+    // Is the attribute definition already in the resource?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = m_collection->findDefinition(etype);
+    attribute::DefinitionPtr adef = m_resource->findDefinition(etype);
     if (adef)
     {
       idef->setAttributeDefinition(adef);
@@ -1744,7 +1744,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
 
   id = this->getAttributeID(attNode);
 
-  def = m_collection->findDefinition(type);
+  def = m_resource->findDefinition(type);
   if (!def)
   {
     smtkErrorMacro(m_logger, "Attribute: " << name << " of Type: " << type
@@ -1763,11 +1763,11 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
   // Do we have a valid uuid?
   if (id.isNull())
   {
-    att = m_collection->createAttribute(name, def);
+    att = m_resource->createAttribute(name, def);
   }
   else
   {
-    att = m_collection->createAttribute(name, def, id);
+    att = m_resource->createAttribute(name, def, id);
   }
 
   if (!att)
@@ -2123,7 +2123,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
         continue;
       }
       attName = val.text().get();
-      att = m_collection->findAttribute(attName);
+      att = m_resource->findAttribute(attName);
       if (!att)
       {
         info.item = item;
@@ -2143,7 +2143,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr 
     if (val)
     {
       attName = val.text().get();
-      att = m_collection->findAttribute(attName);
+      att = m_resource->findAttribute(attName);
       if (!att)
       {
         info.item = item;
@@ -2224,21 +2224,21 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node& node, attribute::DoubleIt
 {
   this->processValueItem(node, dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::DoubleItemPtr, double>(
-    node, item, m_collection, m_itemExpressionInfo, m_logger);
+    node, item, m_resource, m_itemExpressionInfo, m_logger);
 }
 
 void XmlDocV1Parser::processIntItem(pugi::xml_node& node, attribute::IntItemPtr item)
 {
   this->processValueItem(node, dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::IntItemPtr, int>(
-    node, item, m_collection, m_itemExpressionInfo, m_logger);
+    node, item, m_resource, m_itemExpressionInfo, m_logger);
 }
 
 void XmlDocV1Parser::processStringItem(pugi::xml_node& node, attribute::StringItemPtr item)
 {
   this->processValueItem(node, dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::StringItemPtr, std::string>(
-    node, item, m_collection, m_itemExpressionInfo, m_logger);
+    node, item, m_resource, m_itemExpressionInfo, m_logger);
 }
 
 void XmlDocV1Parser::processModelEntityItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
@@ -2685,7 +2685,7 @@ smtk::view::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::string
     val = xatt.value();
     view->details().setAttribute("Icon", val);
   }
-  m_collection->addView(view);
+  m_resource->addView(view);
   return view;
 }
 

@@ -11,9 +11,9 @@
 #define smtk_attribute_jsonValueItemDefinition_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
@@ -37,7 +37,7 @@ SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::ValueItemDefinitionPtr& defPtr);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::CollectionPtr& colPtr,
+  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
   std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo);
 
 /**\ A helper function to process Derived type of valueItemDefinition and
@@ -114,7 +114,7 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
    */
 template <typename ItemDefType, typename BasicType>
 static void processDerivedValueDefFromJson(const json& j, ItemDefType defPtr,
-  const smtk::attribute::CollectionPtr& /*colPtr*/,
+  const smtk::attribute::ResourcePtr& /*resPtr*/,
   std::vector<ItemExpressionDefInfo>& /*expressionDefInfo*/,
   std::vector<AttRefDefInfo>& /*attRefDefInfo*/)
 

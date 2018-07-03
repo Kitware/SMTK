@@ -11,17 +11,17 @@
 #include "ui_PreviewPanel.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/view/View.h"
 
 #include "AttDefDataModel.h"
 
 // -----------------------------------------------------------------------------
-PreviewPanel::PreviewPanel(QWidget* parent, smtk::attribute::CollectionPtr collection)
+PreviewPanel::PreviewPanel(QWidget* parent, smtk::attribute::ResourcePtr resource)
   : QDockWidget(parent)
-  , AttributeCollection(collection)
+  , AttributeResource(resource)
 {
   this->setWindowTitle("Preview Panel");
 }
@@ -41,7 +41,7 @@ smtk::view::ViewPtr PreviewPanel::createView(const smtk::attribute::DefinitionPt
   const std::string title = def->type();
   const std::string type = "Instanced";
   smtk::view::ViewPtr view = smtk::view::View::New(type, title);
-  this->AttributeCollection->addView(view);
+  this->AttributeResource->addView(view);
 
   smtk::view::View::Component& comp =
     view->details().addChild("InstancedAttributes").addChild("Att");
@@ -50,11 +50,11 @@ smtk::view::ViewPtr PreviewPanel::createView(const smtk::attribute::DefinitionPt
 
   if (this->CurrentViewAttr)
   {
-    this->AttributeCollection->removeAttribute(this->CurrentViewAttr);
+    this->AttributeResource->removeAttribute(this->CurrentViewAttr);
   }
   this->CurrentViewAttr = nullptr;
 
-  smtk::attribute::AttributePtr attr = this->AttributeCollection->createAttribute(title);
+  smtk::attribute::AttributePtr attr = this->AttributeResource->createAttribute(title);
   const std::string attrName = attr ? attr->name() : std::string();
   comp.setContents(attrName);
 
@@ -67,7 +67,7 @@ void PreviewPanel::createViewForAllAttributes(smtk::view::ViewPtr& root)
 {
   root = smtk::view::View::New("Group", "RootView");
   root->details().setAttribute("TopLevel", "true");
-  this->AttributeCollection->addView(root);
+  this->AttributeResource->addView(root);
 
   root->details().addChild("Views");
   int viewsIndex = root->details().findChild("Views");
@@ -80,7 +80,7 @@ void PreviewPanel::createViewForAllAttributes(smtk::view::ViewPtr& root)
 
   DefinitionPtrVec defs;
   DefinitionPtrVec baseDefs;
-  this->AttributeCollection->findBaseDefinitions(baseDefs);
+  this->AttributeResource->findBaseDefinitions(baseDefs);
 
   for (DefinitionVecIter baseIt = baseDefs.begin(); baseIt != baseDefs.end(); baseIt++)
   {
@@ -91,7 +91,7 @@ void PreviewPanel::createViewForAllAttributes(smtk::view::ViewPtr& root)
     }
 
     DefinitionPtrVec derivedDefs;
-    this->AttributeCollection->findAllDerivedDefinitions(*baseIt, true, derivedDefs);
+    this->AttributeResource->findAllDerivedDefinitions(*baseIt, true, derivedDefs);
     defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
   }
 
@@ -99,7 +99,7 @@ void PreviewPanel::createViewForAllAttributes(smtk::view::ViewPtr& root)
   for (DefinitionVecIter defIt = defs.begin(); defIt != defs.end(); defIt++)
   {
     smtk::view::ViewPtr instView = smtk::view::View::New("Instanced", (*defIt)->type());
-    this->AttributeCollection->addView(instView);
+    this->AttributeResource->addView(instView);
 
     smtk::view::View::Component& comp =
       instView->details().addChild("InstancedAttributes").addChild("Att");
@@ -107,7 +107,7 @@ void PreviewPanel::createViewForAllAttributes(smtk::view::ViewPtr& root)
     comp.setAttribute("Name", (*defIt)->type());
 
     smtk::attribute::AttributePtr instAttr =
-      this->AttributeCollection->createAttribute((*defIt)->type());
+      this->AttributeResource->createAttribute((*defIt)->type());
 
     comp.setContents(instAttr->name());
     viewsComp.addChild("View").setAttribute("Title", (*defIt)->type());
@@ -146,7 +146,7 @@ void PreviewPanel::createViewWidget(const smtk::view::ViewPtr& view)
 
   // Destroying qtUIManager will cleanup after the older PreviewWidget as it is
   // parented by one of its internal widgets (m_ScrollArea).
-  this->UIManager.reset(new smtk::extension::qtUIManager(this->AttributeCollection));
+  this->UIManager.reset(new smtk::extension::qtUIManager(this->AttributeResource));
 
   this->PreviewWidget = new QWidget(this);
   this->PreviewWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

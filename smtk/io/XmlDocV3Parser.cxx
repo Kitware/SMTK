@@ -39,8 +39,8 @@ using namespace pugi;
 using namespace smtk::io;
 using namespace smtk;
 
-XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::CollectionPtr myCollection)
-  : XmlDocV2Parser(myCollection)
+XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::ResourcePtr myResource)
+  : XmlDocV2Parser(myResource)
 {
 }
 
@@ -50,8 +50,8 @@ XmlDocV3Parser::~XmlDocV3Parser()
 
 bool XmlDocV3Parser::canParse(xml_document& doc)
 {
-  // Get the attribute collection node
-  xml_node amnode = doc.child("SMTK_AttributeSystem");
+  // Get the attribute resource node
+  xml_node amnode = doc.child("SMTK_AttributeResource");
   if (amnode.empty())
   {
     return false;
@@ -76,7 +76,7 @@ bool XmlDocV3Parser::canParse(xml_node& node)
 {
   // Check the name of the node
   std::string name = node.name();
-  if (name != "SMTK_AttributeSystem")
+  if (name != "SMTK_AttributeResource")
   {
     return false;
   }
@@ -98,19 +98,19 @@ bool XmlDocV3Parser::canParse(xml_node& node)
 
 xml_node XmlDocV3Parser::getRootNode(xml_document& doc)
 {
-  xml_node amnode = doc.child("SMTK_AttributeSystem");
+  xml_node amnode = doc.child("SMTK_AttributeResource");
   return amnode;
 }
 
 void XmlDocV3Parser::process(xml_document& doc)
 {
-  // Get the attribute collection node
-  xml_node amnode = doc.child("SMTK_AttributeSystem");
+  // Get the attribute resource node
+  xml_node amnode = doc.child("SMTK_AttributeResource");
 
   // Check that there is content
   if (amnode.empty())
   {
-    smtkWarningMacro(m_logger, "Missing SMTK_AttributeSystem element");
+    smtkWarningMacro(m_logger, "Missing SMTK_AttributeResource element");
     return;
   }
 

@@ -11,8 +11,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonItem.h"
 
 #include "nlohmann/json.hpp"
@@ -76,7 +76,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemPt
 
   std::size_t n = itemPtr->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = itemPtr->attribute()->collection()->refModelManager();
+  smtk::model::ManagerPtr mmgr = itemPtr->attribute()->attributeResource()->refModelManager();
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
   json values;
   try

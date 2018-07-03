@@ -47,13 +47,13 @@ public:
   struct CopyInfo
   {
     // Reference to collection that is getting modified ("to")
-    const smtk::attribute::Collection& ToCollection;
+    const smtk::attribute::Resource& ToResource;
     // List of ValueItemDefinitions that reference expressions not currently in this collection
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
     // List of RefItemDefinitions that reference types not currently in this collection
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
-    CopyInfo(const smtk::attribute::CollectionPtr mgr)
-      : ToCollection(*mgr)
+    CopyInfo(const smtk::attribute::ResourcePtr resource)
+      : ToResource(*resource)
     {
     }
   };

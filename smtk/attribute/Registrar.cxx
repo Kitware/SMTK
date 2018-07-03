@@ -11,7 +11,7 @@
 //=============================================================================
 #include "smtk/attribute/Registrar.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 namespace smtk
 {
@@ -19,12 +19,12 @@ namespace attribute
 {
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::attribute::Collection>();
+  resourceManager->registerResource<smtk::attribute::Resource>();
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->unregisterResource<smtk::attribute::Collection>();
+  resourceManager->unregisterResource<smtk::attribute::Resource>();
 }
 }
 }

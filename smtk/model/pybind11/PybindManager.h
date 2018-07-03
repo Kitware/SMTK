@@ -15,7 +15,6 @@
 
 #include "smtk/model/Manager.h"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"

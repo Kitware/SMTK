@@ -12,11 +12,11 @@
 
 #include "nlohmann/json.hpp"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/attribute/json/jsonAttribute.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
@@ -120,13 +120,13 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
 
   // Process all attributes based on this class
   std::vector<smtk::attribute::AttributePtr> atts;
-  defPtr->collection()->findDefinitionAttributes(defPtr->type(), atts);
+  defPtr->resource()->findDefinitionAttributes(defPtr->type(), atts);
   // TODO: process Attributes
   j["Attributes"] = atts;
 
   // Now process all of its derived classes
   std::vector<smtk::attribute::DefinitionPtr> derivedDefPtrs;
-  defPtr->collection()->derivedDefinitions(defPtr, derivedDefPtrs);
+  defPtr->resource()->derivedDefinitions(defPtr, derivedDefPtrs);
   j["DerivedDefinitions"] = derivedDefPtrs;
 }
 
@@ -138,11 +138,11 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   {
     return;
   }
-  smtk::attribute::CollectionPtr colPtr = defPtr->collection();
+  smtk::attribute::ResourcePtr colPtr = defPtr->resource();
   if (colPtr)
   {
     std::cerr << "When converting json, definition " << defPtr->label()
-              << "has an invalid collectionPtr" << std::endl;
+              << "has an invalid resourcePtr" << std::endl;
     return;
   }
   // Same logic in XmlDocV1Parser::processDefinition
@@ -273,7 +273,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       for (json::iterator iter = itemDefs.begin(); iter != itemDefs.end(); iter++)
       {
         smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-          iter, defPtr, defPtr->collection(), expressionDefInfo, attRefDefInfo);
+          iter, defPtr, defPtr->resource(), expressionDefInfo, attRefDefInfo);
       }
     }
   }
@@ -294,7 +294,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   attribute::DefinitionPtr def;
   for (size_t i = 0; i < expressionDefInfo.size(); i++)
   {
-    def = defPtr->collection()->findDefinition(expressionDefInfo[i].second);
+    def = defPtr->resource()->findDefinition(expressionDefInfo[i].second);
     if (def)
     {
       expressionDefInfo[i].first->setExpressionDefinition(def);

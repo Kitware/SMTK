@@ -11,7 +11,6 @@
 #include "smtk/attribute/ComponentItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 
 #include <sstream>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<SMTK_AttributeSystem Version="3">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <include href="smtk/operation/Result.xml"/>
   </Definitions>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

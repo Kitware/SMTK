@@ -49,7 +49,7 @@ With that in mind:
 * thirdparty
 
   * cJSON — used to serialize geometric model information
-  * pugiXML — used to serialize attribute collections
+  * pugiXML — used to serialize attribute resources
 
 * utilities — scripts to aid in the development of SMTK
 
@@ -87,7 +87,7 @@ Extending SMTK
 See the tutorials for in-depth guides on how to extend SMTK
 in certain obvious directions,
 
-* Writing an attribute collection template file to represent a solver's input format.
+* Writing an attribute resource template file to represent a solver's input format.
 * Writing an exporter to support a new solver's input format.
 * Adding a new solid-modeling operator
 * Bridging SMTK to a new solid-modeling kernel
@@ -115,8 +115,8 @@ The following rules apply to writing documentation:
   the Doxygen documentation *when appropriate*.
   Examples:
   ``:smtk:`UUID``` produces this link: :smtk:`UUID` while the
-  ``:smtk:`Collection <smtk::attribute::Collection>``` variant can produce
-  links (:smtk:`Collection <smtk::attribute::Collection>` in this case) whose text varies from the classname
+  ``:smtk:`Resource <smtk::attribute::Resource>``` variant can produce
+  links (:smtk:`Resource <smtk::attribute::Resource>` in this case) whose text varies from the classname
   or whose classnames are ambiguous because of namespaces.
   The leading ``:smtk:`` names the tag file holding the class and function definitions;
   other third-party-library tag files may be added in the future.

@@ -19,10 +19,10 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Manager.h"
@@ -326,9 +326,9 @@ bool qtModelOperationWidget::initOperationUI(const smtk::operation::OperationPtr
 
   // smtk::attribute::AttributePtr att = brOp->specification();
   // // TODO: the manager is no longer accessible through the operator
-  // // att->collection()->setRefModelManager(brOp->manager());
+  // // att->resource()->setRefModelManager(brOp->manager());
 
-  // smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(att->collection());
+  // smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(att->resource());
   // uiManager->setActiveModelView(this->Internals->ModelView);
 
   // // find out what view to use to construct the UI, if none is specified for this op
@@ -338,7 +338,7 @@ bool qtModelOperationWidget::initOperationUI(const smtk::operation::OperationPtr
   // smtk::view::ViewPtr opView;
 
   // std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
-  // for (it = att->collection()->views().begin(); it != att->collection()->views().end(); ++it)
+  // for (it = att->resource()->views().begin(); it != att->resource()->views().end(); ++it)
   // {
   //   //If  this is an Operation View we need to check its InstancedAttributes child else
   //   // we need to check AttributeTypes
@@ -384,7 +384,7 @@ bool qtModelOperationWidget::initOperationUI(const smtk::operation::OperationPtr
   //   smtk::view::View::Component& comp =
   //     opView->details().addChild("InstancedAttributes").addChild("Att");
   //   comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
-  //   att->collection()->addView(opView);
+  //   att->resource()->addView(opView);
   // }
 
   // opView->details().setAttribute("TopLevel", "true");

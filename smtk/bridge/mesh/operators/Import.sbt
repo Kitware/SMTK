@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the Mesh "Import" Operation -->
-<SMTK_AttributeSystem Version="3">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="import" Label="Model - Import" BaseType="operation">
@@ -74,4 +74,4 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

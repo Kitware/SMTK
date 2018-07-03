@@ -13,12 +13,12 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/io/Logger.h"
@@ -135,7 +135,7 @@ ReadOperation::Result ReadOperation::operateInternal()
 
 ReadOperation::Specification ReadOperation::createSpecification()
 {
-  Specification spec = smtk::attribute::Collection::create();
+  Specification spec = smtk::attribute::Resource::create();
 
   smtk::attribute::DefinitionPtr opDef = spec->createDefinition("operation");
   opDef->setLabel("operation");
@@ -225,7 +225,7 @@ WriteOperation::Result WriteOperation::operateInternal()
 
 WriteOperation::Specification WriteOperation::createSpecification()
 {
-  Specification spec = smtk::attribute::Collection::create();
+  Specification spec = smtk::attribute::Resource::create();
 
   smtk::attribute::DefinitionPtr opDef = spec->createDefinition("operation");
   opDef->setLabel("operation");

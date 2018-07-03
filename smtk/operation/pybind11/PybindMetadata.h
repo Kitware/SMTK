@@ -14,7 +14,7 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/operation/Metadata.h"
 

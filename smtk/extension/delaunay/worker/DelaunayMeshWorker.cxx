@@ -14,6 +14,7 @@
 #include "remus/common/LocateFile.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"

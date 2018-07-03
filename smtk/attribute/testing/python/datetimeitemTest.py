@@ -21,8 +21,8 @@ if __name__ == '__main__':
     errcode = 0
 
     # Create attribute definition with 2 datetime item definiitons
-    collection = smtk.attribute.Collection.create()
-    attdef = collection.createDefinition('test-att')
+    resource = smtk.attribute.Resource.create()
+    attdef = resource.createDefinition('test-att')
 
     # First DateTimeItemDefinition
     itemdef1 = smtk.attribute.DateTimeItemDefinition.New('dt1')
@@ -45,12 +45,12 @@ if __name__ == '__main__':
     attdef.addItemDefinition(itemdef2)
 
     # Create attribute and check item values
-    att = collection.createAttribute(attdef)
+    att = resource.createAttribute(attdef)
     # from smtk import io
     # writer = smtk.io.AttributeWriter()
     # logger = smtk.io.Logger()
     # filename = 'datetime-example.sbi'
-    # if writer.write(collection, filename, logger):
+    # if writer.write(resource, filename, logger):
     #   print('Error writing file', filename)
     # else:
     #   print('Wrote', filename)

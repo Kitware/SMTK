@@ -32,31 +32,31 @@ if __name__ == '__main__':
         print('Usage: %s filename' % sys.argv[0])
         sys.exit(-1)
 
-    collection = smtk.attribute.Collection.create()
-    print('Collection created')
+    resource = smtk.attribute.Resource.create()
+    print('Resource created')
     # Let's add some analyses
     analysis = set()
     analysis.add('Flow')
     analysis.add('General')
     analysis.add('Time')
-    collection.defineAnalysis('CFD Flow', analysis)
+    resource.defineAnalysis('CFD Flow', analysis)
     analysis.clear()
 
     analysis.add('Flow')
     analysis.add('Heat')
     analysis.add('General')
     analysis.add('Time')
-    collection.defineAnalysis('CFD Flow with Heat Transfer', analysis)
+    resource.defineAnalysis('CFD Flow with Heat Transfer', analysis)
     analysis.clear()
 
     analysis.add('Constituent')
     analysis.add('General')
     analysis.add('Time')
-    collection.defineAnalysis('Constituent Transport', analysis)
+    resource.defineAnalysis('Constituent Transport', analysis)
     analysis.clear()
 
     # Lets create an attribute to represent an expression
-    expDef = collection.createDefinition('ExpDef')
+    expDef = resource.createDefinition('ExpDef')
     expDef.setBriefDescription('Sample Expression')
     expDef.setDetailedDescription(
         'Sample Expression for testing\nThere is not much here!')
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     eitemdef4 = smtk.attribute.ModelEntityItemDefinition.New('Aux String')
     expDef.addItemDefinition(eitemdef4)
 
-    base = collection.createDefinition('BaseDef')
+    base = resource.createDefinition('BaseDef')
     # Lets add some item definitions
     iitemdef = smtk.attribute.IntItemDefinition.New('TEMPORAL')
     base.addItemDefinition(iitemdef)
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     iitemdef.setDefaultValue(10)
     iitemdef.addCategory('Heat')
 
-    def1 = collection.createDefinition('Derived1', 'BaseDef')
+    def1 = resource.createDefinition('Derived1', 'BaseDef')
     def1.setLocalAssociationMask(
         int(smtk.model.MODEL_DOMAIN))  # belongs on model
     # Lets add some item definitions
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     vdef.setIsOptional(True)
     vdef.setLabel('Option 1')
 
-    def2 = collection.createDefinition('Derived2', 'Derived1')
+    def2 = resource.createDefinition('Derived2', 'Derived1')
     def2.setLocalAssociationMask(int(smtk.model.VOLUME))
     # Lets add some item definitions
     sitemdef = smtk.attribute.StringItemDefinition.New('StringItem1')
@@ -151,18 +151,18 @@ if __name__ == '__main__':
     sitemdef.addCategory('Flow')
 
     # Add in a Attribute definition with a reference to another attribute
-    attrefdef = collection.createDefinition('AttributeReferenceDef')
+    attrefdef = resource.createDefinition('AttributeReferenceDef')
     aritemdef = smtk.attribute.RefItemDefinition.New('BaseDefItem')
     attrefdef.addItemDefinition(aritemdef)
     aritemdef.setCommonValueLabel('A reference to another attribute')
     aritemdef.setAttributeDefinition(base)
 
     # Process Categories
-    collection.updateCategories()
+    resource.updateCategories()
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
-    expAtt = collection.createAttribute('Exp1', expDef)
-    att = collection.createAttribute('testAtt', 'Derived2')
+    expAtt = resource.createAttribute('Exp1', expDef)
+    att = resource.createAttribute('testAtt', 'Derived2')
     if att is None:
         print('ERROR: Attribute testAtt not created')
         status = -1
@@ -172,13 +172,13 @@ if __name__ == '__main__':
     vitem = smtk.attribute.ValueItem.CastTo(item)
     writer = smtk.io.AttributeWriter()
     logger = smtk.io.Logger()
-    if writer.write(collection, sys.argv[1], logger):
+    if writer.write(resource, sys.argv[1], logger):
         sys.stderr.write('Errors encountered creating Attribute File:\n')
         sys.stderr.write(logger.convertToString())
         sys.stderr.write('\n')
         status = -1
 
-    del collection
-    print('Collection destroyed')
+    del resource
+    print('Resource destroyed')
 
     sys.exit(status)

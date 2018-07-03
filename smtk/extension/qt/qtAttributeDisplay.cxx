@@ -11,9 +11,9 @@
 #include "smtk/extension/qt/qtAttributeDisplay.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/extension/qt/qtItem.h"
@@ -115,14 +115,14 @@ void qtAttributeDisplay::createWidget()
   BottomLayout->setMargin(0);
   BottomFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 */
-  const CollectionPtr attSys = this->Internals->UIManager->attCollection();
+  const ResourcePtr attResource = this->Internals->UIManager->attResource();
 
   this->Internals->FilterByCheck = new QCheckBox(this->Internals->FiltersFrame);
   this->Internals->FilterByCheck->setText("Show by Category: ");
   this->Internals->FilterByCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   this->Internals->ShowCategoryCombo = new QComboBox(this->Internals->FiltersFrame);
   std::set<std::string>::const_iterator it;
-  const std::set<std::string>& cats = attSys->categories();
+  const std::set<std::string>& cats = attResource->categories();
   for (it = cats.begin(); it != cats.end(); it++)
   {
     this->Internals->ShowCategoryCombo->addItem(it->c_str());
@@ -274,8 +274,8 @@ void qtAttributeDisplay::initSelectPropCombo(
     return;
   }
   std::vector<smtk::attribute::AttributePtr> result;
-  CollectionPtr attCollection = attDef->collection();
-  attCollection->findAttributes(attDef, result);
+  ResourcePtr attResource = attDef->resource();
+  attResource->findAttributes(attDef, result);
   if (result.size() == 0)
   {
     this->Internals->SelectPropCombo->setCurrentIndex(0);
@@ -346,16 +346,16 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   if (!this->Internals->UIManager)
     return;
 
-  smtk::attribute::CollectionPtr attsys = this->Internals->UIManager->attCollection();
+  smtk::attribute::ResourcePtr attResource = this->Internals->UIManager->attResource();
   this->Internals->AllAssignedDefs.clear();
   this->Internals->AttDefMap.clear();
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  attsys->attributes(atts);
+  attResource->attributes(atts);
   if (atts.size() == 0)
     return;
 
-  if (!attsys->refModelManager())
+  if (!attResource->refModelManager())
     return;
 
   std::vector<smtk::attribute::AttributePtr>::const_iterator it;
@@ -369,7 +369,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
     if (!this->Internals->AllAssignedDefs.contains(attDef))
       this->Internals->AllAssignedDefs.push_back(attDef);
 
-    const std::set<std::string>& cats = attsys->categories();
+    const std::set<std::string>& cats = attResource->categories();
     std::set<std::string>::const_iterator catit;
     for (catit = cats.begin(); catit != cats.end(); ++catit)
     {

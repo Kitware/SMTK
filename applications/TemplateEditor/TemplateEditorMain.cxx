@@ -12,7 +12,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
@@ -66,20 +66,20 @@ void TemplateEditorMain::initialize()
 
   if (this->AttPreviewPanel == nullptr)
   {
-    this->AttPreviewPanel = new PreviewPanel(this, this->AttributeCollection);
+    this->AttPreviewPanel = new PreviewPanel(this, this->AttributeResource);
     this->Ui->menuView->addAction(this->AttPreviewPanel->toggleViewAction());
   }
 
-  connect(this->AttDefInfo, SIGNAL(collectionChanged(bool)), this, SLOT(updateTitle(bool)));
-  connect(this->AttDefInfo, SIGNAL(collectionChanged(bool)), this->AttDefBrowser,
+  connect(this->AttDefInfo, SIGNAL(resourceChanged(bool)), this, SLOT(updateTitle(bool)));
+  connect(this->AttDefInfo, SIGNAL(resourceChanged(bool)), this->AttDefBrowser,
     SLOT(emitAttDefChanged()));
-  connect(this->AttDefBrowser, SIGNAL(collectionChanged(bool)), this, SLOT(updateTitle(bool)));
+  connect(this->AttDefBrowser, SIGNAL(resourceChanged(bool)), this, SLOT(updateTitle(bool)));
   connect(this->AttDefBrowser, SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
     this->AttDefInfo, SLOT(onAttDefChanged(const QModelIndex&, const QModelIndex&)));
   connect(this->AttDefBrowser, SIGNAL(attDefChanged(const QModelIndex&, const QModelIndex&)),
     this->AttPreviewPanel, SLOT(updateCurrentView(const QModelIndex&, const QModelIndex&)));
 
-  this->AttDefBrowser->populate(this->AttributeCollection);
+  this->AttDefBrowser->populate(this->AttributeResource);
 
   /// TODO centralWidget -> make it a QStackedWidget and use a page per
   // Tab (Analysis, Categories, Definitions, Views, etc.)
@@ -106,7 +106,7 @@ void TemplateEditorMain::reset()
   delete this->AttPreviewPanel;
   this->AttPreviewPanel = nullptr;
 
-  this->AttributeCollection = nullptr;
+  this->AttributeResource = nullptr;
 
   this->Ui->actSave->setEnabled(false);
   this->Ui->actSaveAs->setEnabled(false);
@@ -116,7 +116,7 @@ void TemplateEditorMain::reset()
 void TemplateEditorMain::onNew()
 {
   this->reset();
-  this->AttributeCollection = smtk::attribute::Collection::create();
+  this->AttributeResource = smtk::attribute::Resource::create();
   this->initialize();
 }
 
@@ -138,11 +138,11 @@ void TemplateEditorMain::onLoad()
 void TemplateEditorMain::load(char const* fileName)
 {
   this->reset();
-  this->AttributeCollection = smtk::attribute::Collection::create();
+  this->AttributeResource = smtk::attribute::Resource::create();
 
   smtk::io::AttributeReader reader;
   smtk::io::Logger logger;
-  const bool err = reader.read(this->AttributeCollection, fileName, true, logger);
+  const bool err = reader.read(this->AttributeResource, fileName, true, logger);
 
   if (err)
   {
@@ -195,7 +195,7 @@ void TemplateEditorMain::save(const QString& filePath)
 {
   smtk::io::AttributeWriter writer;
   smtk::io::Logger logger;
-  const bool err = writer.write(this->AttributeCollection, filePath.toStdString(), logger);
+  const bool err = writer.write(this->AttributeResource, filePath.toStdString(), logger);
 
   if (err)
   {

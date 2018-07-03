@@ -13,9 +13,9 @@
 #include "smtk/operation/SpecificationOps.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -282,7 +282,7 @@ void Operation::generateSummary(Operation::Result& result)
 
 Operation::Specification Operation::createBaseSpecification() const
 {
-  Specification spec = smtk::attribute::Collection::create();
+  Specification spec = smtk::attribute::Resource::create();
   smtk::io::AttributeReader reader;
   reader.readContents(spec, Operation_xml, this->log());
   return spec;

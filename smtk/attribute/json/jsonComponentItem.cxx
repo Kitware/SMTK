@@ -10,8 +10,8 @@
 #include "jsonComponentItem.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
@@ -110,7 +110,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr&
   {
     return;
   }
-  auto rsrcMgr = itemPtr->attribute()->collection()->manager();
+  auto rsrcMgr = itemPtr->attribute()->resource()->manager();
   if (!rsrcMgr && itemPtr->numberOfValues() > 0)
   {
     // TODO: handle check logic in XmlDocV3Parser::249

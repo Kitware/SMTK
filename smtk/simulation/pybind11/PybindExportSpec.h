@@ -13,7 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/GridInfo.h"
 #include "smtk/simulation/ExportSpec.h"
@@ -35,8 +35,8 @@ py::class_< smtk::simulation::ExportSpec > pybind11_init_smtk_simulation_ExportS
     .def("getExportAttributes", &smtk::simulation::ExportSpec::getExportAttributes)
     .def("getLogger", &smtk::simulation::ExportSpec::getLogger)
     .def("clear", &smtk::simulation::ExportSpec::clear)
-    .def("setSimulationAttributes", &smtk::simulation::ExportSpec::setSimulationAttributes, py::arg("system"))
-    .def("setExportAttributes", &smtk::simulation::ExportSpec::setExportAttributes, py::arg("system"))
+    .def("setSimulationAttributes", &smtk::simulation::ExportSpec::setSimulationAttributes, py::arg("resource"))
+    .def("setExportAttributes", &smtk::simulation::ExportSpec::setExportAttributes, py::arg("resource"))
 
     // Converter method used by CMB vtkPythonExporter
     .def_static("_InternalConverterDoNotUse_", [](const std::string& specAddressString) {

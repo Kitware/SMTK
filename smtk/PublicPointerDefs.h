@@ -45,7 +45,7 @@ class Set;
 namespace attribute
 {
 class Attribute;
-class Collection;
+class Resource;
 class ComponentItem;
 class ComponentItemDefinition;
 class DateTimeItem;
@@ -429,9 +429,9 @@ typedef smtk::shared_ptr<const smtk::attribute::VoidItemDefinition> ConstVoidIte
 typedef smtk::shared_ptr<const smtk::attribute::RefItem> ConstRefItemPtr;
 typedef smtk::shared_ptr<const smtk::attribute::RefItemDefinition> ConstRefItemDefinitionPtr;
 
-typedef smtk::shared_ptr<smtk::attribute::Collection> CollectionPtr;
-typedef smtk::shared_ptr<const smtk::attribute::Collection> ConstCollectionPtr;
-typedef smtk::weak_ptr<smtk::attribute::Collection> WeakCollectionPtr;
+typedef smtk::shared_ptr<smtk::attribute::Resource> ResourcePtr;
+typedef smtk::shared_ptr<const smtk::attribute::Resource> ConstResourcePtr;
+typedef smtk::weak_ptr<smtk::attribute::Resource> WeakResourcePtr;
 }
 
 namespace view

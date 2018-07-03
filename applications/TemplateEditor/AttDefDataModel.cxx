@@ -9,8 +9,8 @@
 //=========================================================================
 #include <QTreeWidgetItem>
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "AttDefDataModel.h"
 
@@ -33,11 +33,11 @@ void AttDefDataModel::initializeRootItem()
 }
 
 // -----------------------------------------------------------------------------
-void AttDefDataModel::populate(smtk::attribute::CollectionPtr collection)
+void AttDefDataModel::populate(smtk::attribute::ResourcePtr resource)
 {
-  this->Collection = collection;
+  this->Resource = resource;
   DefinitionPtrVec defs;
-  this->Collection->findBaseDefinitions(defs);
+  this->Resource->findBaseDefinitions(defs);
 
   for (auto const& def : defs)
   {
@@ -54,7 +54,7 @@ void AttDefDataModel::appendRecursively(
   smtk::attribute::DefinitionPtr parentDef, QTreeWidgetItem* parentItem)
 {
   DefinitionPtrVec defsConcrete;
-  this->Collection->derivedDefinitions(parentDef, defsConcrete);
+  this->Resource->derivedDefinitions(parentDef, defsConcrete);
 
   for (auto const& def : defsConcrete)
   {
@@ -81,16 +81,16 @@ bool AttDefDataModel::hasDerivedTypes(const QModelIndex& index) const
   auto def = this->get(index);
 
   DefinitionPtrVec defVec;
-  def->collection()->derivedDefinitions(def, defVec);
+  def->resource()->derivedDefinitions(def, defVec);
   return defVec.size() > 0;
 }
 
 // -----------------------------------------------------------------------------
 void AttDefDataModel::insert(const AttDefContainer& props)
 {
-  // Attribute collection insert.
+  // Attribute resource insert.
   smtk::attribute::DefinitionPtr newDef =
-    this->Collection->createDefinition(props.Type, props.BaseType);
+    this->Resource->createDefinition(props.Type, props.BaseType);
 
   newDef->setIsUnique(props.IsUnique);
   newDef->setIsAbstract(props.IsAbstract);
@@ -119,10 +119,10 @@ void AttDefDataModel::insert(const AttDefContainer& props)
 // -----------------------------------------------------------------------------
 void AttDefDataModel::remove(const QModelIndex& attDefIndex)
 {
-  // Attribute collection remove.
+  // Attribute resource remove.
   const QModelIndex parentIndex = attDefIndex.parent();
   const auto child = static_cast<AttDefElement*>(this->getItem(attDefIndex));
-  if (!this->Collection->removeDefinition(child->getReferencedDataConst()))
+  if (!this->Resource->removeDefinition(child->getReferencedDataConst()))
   {
     return;
   }

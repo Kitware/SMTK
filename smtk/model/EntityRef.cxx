@@ -11,6 +11,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/DefaultSession.h"
@@ -925,31 +926,31 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
 /**\brief Does the entityref have any attributes associated with it?
   */
 bool EntityRef::associateAttribute(
-  smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId)
+  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId)
 {
   ManagerPtr mgr = m_manager.lock();
-  return mgr->associateAttribute(sys, attribId, m_entity);
+  return mgr->associateAttribute(attResource, attribId, m_entity);
 }
 
 /**\brief Does the entityref have any attributes associated with it?
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::CollectionPtr sys, const smtk::common::UUID& attribId, bool reverse)
+  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool reverse)
 {
   ManagerPtr mgr = m_manager.lock();
-  return mgr->disassociateAttribute(sys, attribId, m_entity, reverse);
+  return mgr->disassociateAttribute(attResource, attribId, m_entity, reverse);
 }
 
 /**\brief Remove all attribute association form this entityref
   */
-bool EntityRef::disassociateAllAttributes(smtk::attribute::CollectionPtr sys, bool reverse)
+bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool reverse)
 {
   smtk::common::UUIDs atts = this->attributeIds();
   smtk::common::UUIDs::const_iterator it;
   bool res = true;
   for (it = atts.begin(); it != atts.end(); ++it)
   {
-    if (!this->disassociateAttribute(sys, *it, reverse))
+    if (!this->disassociateAttribute(attResource, *it, reverse))
       res = false;
   }
   return res;
@@ -978,9 +979,9 @@ smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::DefinitionPtr
   {
     return atts;
   }
-  auto attCollection = def->collection();
-  // If there is no collection then return an empty list
-  if (attCollection == nullptr)
+  auto attResource = def->resource();
+  // If there is no resource then return an empty list
+  if (attResource == nullptr)
   {
     return atts;
   }
@@ -997,7 +998,7 @@ smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::DefinitionPtr
   // Lets go through all of the attributes and find the ones that come from def
   for (auto id : entry->second.attributeIds())
   {
-    auto a = attCollection->findAttribute(id);
+    auto a = attResource->findAttribute(id);
     if (a == nullptr)
     {
       // Could not find the attribute for that ID

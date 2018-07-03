@@ -25,7 +25,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "remus/common/MeshIOType.h"
 #include "remus/common/ContentTypes.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/common/Paths.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
@@ -83,14 +83,14 @@ PYBIND11_MODULE(_smtkPybindMeshWorkerDelaunay, delaunay)
     });
 
   delaunay.def("meshing_attributes", [](){
-  smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
+  smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
   smtk::io::Logger logger;
   smtk::io::AttributeReader reader;
-  reader.read(sysptr,
+  reader.read(resptr,
               remus::common::findFile("DelaunayMeshingDefs", "sbt",
                                       relative_search_paths(),
                                       absolute_search_paths()).path(),
               logger);
-  return sysptr;
+  return resptr;
     });
 }

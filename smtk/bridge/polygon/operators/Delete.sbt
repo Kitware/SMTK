@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the Polygon "Delete" Operation -->
-<SMTK_AttributeSystem Version="3">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
@@ -58,4 +58,4 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -19,6 +18,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
@@ -39,32 +39,32 @@ int main(int argc, char* argv[])
       std::cerr << "Usage: " << argv[0] << " filename\n";
       return -1;
     }
-    smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
-    smtk::attribute::Collection& collection(*sysptr.get());
-    std::cout << "Collection Created\n";
+    smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
+    smtk::attribute::Resource& resource(*resptr.get());
+    std::cout << "Resource Created\n";
     // Lets add some analyses
     std::set<std::string> analysis;
     analysis.insert("Flow");
     analysis.insert("General");
     analysis.insert("Time");
-    collection.defineAnalysis("CFD Flow", analysis);
+    resource.defineAnalysis("CFD Flow", analysis);
     analysis.clear();
 
     analysis.insert("Flow");
     analysis.insert("Heat");
     analysis.insert("General");
     analysis.insert("Time");
-    collection.defineAnalysis("CFD Flow with Heat Transfer", analysis);
+    resource.defineAnalysis("CFD Flow with Heat Transfer", analysis);
     analysis.clear();
 
     analysis.insert("Constituent");
     analysis.insert("General");
     analysis.insert("Time");
-    collection.defineAnalysis("Constituent Transport", analysis);
+    resource.defineAnalysis("Constituent Transport", analysis);
     analysis.clear();
 
     // Lets create an attribute to represent an expression
-    smtk::attribute::DefinitionPtr expDef = collection.createDefinition("ExpDef");
+    smtk::attribute::DefinitionPtr expDef = resource.createDefinition("ExpDef");
     expDef->setBriefDescription("Sample Expression");
     expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
     smtk::attribute::StringItemDefinitionPtr eitemdef =
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
       expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
     eitemdef->setDefaultValue("sample");
 
-    smtk::attribute::DefinitionPtr base = collection.createDefinition("BaseDef");
+    smtk::attribute::DefinitionPtr base = resource.createDefinition("BaseDef");
     // Lets add some item definitions
     smtk::attribute::IntItemDefinitionPtr iitemdef =
       base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
     iitemdef->setDefaultValue(10);
     iitemdef->addCategory("Heat");
 
-    smtk::attribute::DefinitionPtr def1 = collection.createDefinition("Derived1", "BaseDef");
+    smtk::attribute::DefinitionPtr def1 = resource.createDefinition("Derived1", "BaseDef");
     def1->setLocalAssociationMask(smtk::model::MODEL_ENTITY); // belongs on model
     // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
     vdef->setIsOptional(true);
     vdef->setLabel("Option 1");
 
-    smtk::attribute::DefinitionPtr def2 = collection.createDefinition("Derived2", "Derived1");
+    smtk::attribute::DefinitionPtr def2 = resource.createDefinition("Derived2", "Derived1");
     def2->setLocalAssociationMask(smtk::model::VOLUME);
     // Lets add some item definitions
     smtk::attribute::StringItemDefinitionPtr sitemdef =
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
     sitemdef->addCategory("Flow");
 
     // Add in a Attribute definition with a reference to another attribute
-    smtk::attribute::DefinitionPtr attrefdef = collection.createDefinition("AttributeReferenceDef");
+    smtk::attribute::DefinitionPtr attrefdef = resource.createDefinition("AttributeReferenceDef");
     smtk::attribute::RefItemDefinitionPtr aritemdef =
       attrefdef->addItemDefinition<smtk::attribute::RefItemDefinitionPtr>("BaseDefItem");
     aritemdef->setNumberOfRequiredValues(1);
@@ -158,10 +158,10 @@ int main(int argc, char* argv[])
     aritemdef->setAttributeDefinition(base);
 
     // Process Categories
-    collection.updateCategories();
+    resource.updateCategories();
     // Lets test creating an attribute by passing in the expression definition explicitly
-    smtk::attribute::AttributePtr expAtt = collection.createAttribute("Exp1", expDef);
-    smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "Derived2");
+    smtk::attribute::AttributePtr expAtt = resource.createAttribute("Exp1", expDef);
+    smtk::attribute::AttributePtr att = resource.createAttribute("testAtt", "Derived2");
     if (!att)
     {
       std::cout << "ERROR: Attribute testAtt not created\n";
@@ -233,13 +233,13 @@ int main(int argc, char* argv[])
     item = att->item(2);
     vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
     smtk::io::AttributeWriter writer;
-    if (writer.write(sysptr, argv[1], logger))
+    if (writer.write(resptr, argv[1], logger))
     {
       std::cerr << "Errors encountered creating Attribute File:\n";
       std::cerr << logger.convertToString();
       status = -1;
     }
-    std::cout << "Collection destroyed\n";
+    std::cout << "Resource destroyed\n";
   }
   return status;
 }

@@ -14,10 +14,10 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/resource/Manager.h"
@@ -64,7 +64,7 @@ smtk::resource::ResourcePtr vtkSMTKAttributeReader::GetResource() const
   return std::dynamic_pointer_cast<smtk::resource::Resource>(this->AttributeResource);
 }
 
-smtk::attribute::CollectionPtr vtkSMTKAttributeReader::GetSMTKResource() const
+smtk::attribute::ResourcePtr vtkSMTKAttributeReader::GetSMTKResource() const
 {
   return this->AttributeResource;
 }
@@ -109,7 +109,7 @@ bool vtkSMTKAttributeReader::LoadFile()
   {
     this->Wrapper->GetResourceManager()->remove(this->AttributeResource);
   }
-  auto rsrc = smtk::attribute::Collection::create();
+  auto rsrc = smtk::attribute::Resource::create();
   this->AttributeResource = rsrc;
   rsrc->setLocation(this->FileName);
 

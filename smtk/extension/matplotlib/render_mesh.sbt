@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the mesh "render mesh" Operation -->
-<SMTK_AttributeSystem Version="3">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
@@ -18,4 +18,4 @@
     <AttDef Type="result(render mesh)" BaseType="result">
     </AttDef>
   </Definitions>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

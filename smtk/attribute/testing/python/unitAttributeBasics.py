@@ -25,28 +25,28 @@ if __name__ == '__main__':
 
     status = 0
 
-    collection = smtk.attribute.Collection.create()
-    print('Collection created')
-    def_ = collection.createDefinition('testDef')
+    resource = smtk.attribute.Resource.create()
+    print('Resource created')
+    def_ = resource.createDefinition('testDef')
     if def_ is not None:
         print('Definition testDef created')
     else:
         print('ERROR: Definition testDef not created')
         status = -1
-    def1 = collection.createDefinition("testDef")
+    def1 = resource.createDefinition("testDef")
     if def1 is None:
         print('Duplicated definition testDef not created')
     else:
         print('ERROR: Duplicated definition testDef created')
         status = -1
-    att = collection.createAttribute('testAtt', 'testDef')
+    att = resource.createAttribute('testAtt', 'testDef')
     if not att is None:
         print('Attribute testAtt created')
     else:
         print('ERROR: Attribute testAtt not created')
         status = -1
 
-    att1 = collection.createAttribute('testAtt', 'testDef')
+    att1 = resource.createAttribute('testAtt', 'testDef')
     if att1 is None:
         print('Duplicate Attribute testAtt not created')
     else:
@@ -93,10 +93,10 @@ if __name__ == '__main__':
     if att.appliesToInteriorNodes():
         print("Should not applies to interior node.\n")
         status = -1
-#    if att.collection() is not None:
+#    if att.resource() is not None:
 #       print("Should not be null.\n")
 #       status = -1
-    del collection
-    print('Collection destroyed')
+    del resource
+    print('Resource destroyed')
 
     sys.exit(status)

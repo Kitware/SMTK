@@ -10,7 +10,6 @@
 #include "smtk/attribute/ResourceItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/resource/Container.h"

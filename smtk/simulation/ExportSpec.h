@@ -31,26 +31,23 @@ class SMTKCORE_EXPORT ExportSpec
 {
 public:
   // Data-get methods, intended to be called from python scripts
-  smtk::attribute::CollectionPtr getSimulationAttributes() const { return m_simulationCollection; }
-  smtk::attribute::CollectionPtr getExportAttributes() const { return m_exportCollection; }
+  smtk::attribute::ResourcePtr getSimulationAttributes() const { return m_simulationResource; }
+  smtk::attribute::ResourcePtr getExportAttributes() const { return m_exportResource; }
   smtk::io::LoggerPtr getLogger() const { return m_logger; }
 
   // Constructor and data-set methods, intended to be called from C/C++ code
   ExportSpec();
   void clear();
 
-  void setSimulationAttributes(smtk::attribute::CollectionPtr collection)
+  void setSimulationAttributes(smtk::attribute::ResourcePtr resource)
   {
-    m_simulationCollection = collection;
+    m_simulationResource = resource;
   }
-  void setExportAttributes(smtk::attribute::CollectionPtr collection)
-  {
-    m_exportCollection = collection;
-  }
+  void setExportAttributes(smtk::attribute::ResourcePtr resource) { m_exportResource = resource; }
 
 private:
-  smtk::attribute::CollectionPtr m_simulationCollection;
-  smtk::attribute::CollectionPtr m_exportCollection;
+  smtk::attribute::ResourcePtr m_simulationResource;
+  smtk::attribute::ResourcePtr m_exportResource;
   smtk::io::LoggerPtr m_logger;
 };
 }

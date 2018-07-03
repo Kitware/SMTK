@@ -13,7 +13,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/XmlStringWriter.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
@@ -72,7 +72,7 @@ bool ResourceSetWriter::writeString(
       continue;
     }
 
-    // Use XmlStringWriter to generate xml for this attribute collection
+    // Use XmlStringWriter to generate xml for this attribute resource
     smtk::resource::ResourcePtr resource;
     ok = resources.get(id, resource);
 
@@ -92,13 +92,13 @@ bool ResourceSetWriter::writeString(
 
     if ((("" == link) || (EXPAND_LINKED_FILES == option)) && Set::LOADED == state)
     {
-      smtk::attribute::CollectionPtr collection =
-        dynamic_pointer_cast<smtk::attribute::Collection>(resource);
+      smtk::attribute::ResourcePtr attResource =
+        dynamic_pointer_cast<smtk::attribute::Resource>(resource);
 
       AttributeWriter attWriter;
       // Get the default string writer instance
       // Could consider allowing application to assign version number
-      XmlStringWriter* xmlWriter = attWriter.newXmlStringWriter(collection);
+      XmlStringWriter* xmlWriter = attWriter.newXmlStringWriter(attResource);
       xmlWriter->generateXml(resourceElement, logger);
       delete xmlWriter;
     }
@@ -111,10 +111,10 @@ bool ResourceSetWriter::writeString(
       // Save linked resources if option selected
       if (option == WRITE_LINKED_FILES)
       {
-        smtk::attribute::CollectionPtr collection =
-          dynamic_pointer_cast<smtk::attribute::Collection>(resource);
+        smtk::attribute::ResourcePtr attResource =
+          dynamic_pointer_cast<smtk::attribute::Resource>(resource);
         AttributeWriter attWriter;
-        bool hasErr = attWriter.write(collection, link, logger);
+        bool hasErr = attWriter.write(attResource, link, logger);
         ok = !hasErr;
         if (ok)
         {

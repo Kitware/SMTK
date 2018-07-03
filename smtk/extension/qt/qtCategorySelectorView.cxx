@@ -84,7 +84,7 @@ void qtCategorySelectorView::createWidget()
 bool qtCategorySelectorView::createChildren()
 {
   smtk::view::ViewPtr view = this->getObject();
-  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
+  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
   int viewsIndex;
   viewsIndex = view->details().findChild("Views");
@@ -110,10 +110,10 @@ bool qtCategorySelectorView::createChildren()
     // Get the title
     std::string t;
     viewsComp.child(i).attribute("Title", t);
-    v = sys->findView(t);
+    v = resource->findView(t);
     if (!v)
     {
-      // No such View by that name in attribute collection
+      // No such View by that name in attribute resource
       continue;
     }
 
