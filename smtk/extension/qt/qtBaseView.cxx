@@ -451,3 +451,8 @@ void qtBaseView::setInfoToBeDisplayed()
 {
   m_infoDialog->displayInfo(this->getObject());
 }
+
+bool qtBaseView::isEmpty() const
+{
+  return false;
+}

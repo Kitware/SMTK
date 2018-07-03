@@ -61,6 +61,7 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute, QWidget* p, 
   m_widget = NULL;
   m_useSelectionManager = false;
   this->createWidget();
+  m_isEmpty = true;
 }
 
 qtAttribute::~qtAttribute()
@@ -82,6 +83,8 @@ qtAttribute::~qtAttribute()
 
 void qtAttribute::createWidget()
 {
+  // Initially there are no items being displayed
+  m_isEmpty = true;
   if (!this->attribute() ||
     (!this->attribute()->numberOfItems() && !this->attribute()->associations()))
   {
@@ -119,7 +122,7 @@ void qtAttribute::createWidget()
   {
     return;
   }
-
+  m_isEmpty = false;
   QFrame* attFrame = new QFrame(this->parentWidget());
   attFrame->setFrameShape(QFrame::Box);
   m_widget = attFrame;
@@ -154,6 +157,8 @@ void qtAttribute::showAdvanceLevelOverlay(bool show)
 
 void qtAttribute::createBasicLayout(bool includeAssociations)
 {
+  // Initially we have not displayed any items
+  m_isEmpty = true;
   //If there is no main widget there is nothing to show
   if (!m_widget)
   {
@@ -169,6 +174,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     qItem = this->createItem(att->associations(), m_widget, m_internals->m_view);
     if (qItem && qItem->widget())
     {
+      m_isEmpty = false;
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
     }
@@ -180,6 +186,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     qItem = this->createItem(att->item(static_cast<int>(i)), m_widget, m_internals->m_view);
     if (qItem && qItem->widget())
     {
+      m_isEmpty = false;
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
     }
@@ -302,4 +309,8 @@ void qtAttribute::onItemModified()
 qtAttributeItemWidgetFactory* qtAttribute::itemWidgetFactory()
 {
   return qtAttribute::s_factory;
+}
+bool qtAttribute::isEmpty() const
+{
+  return m_isEmpty;
 }

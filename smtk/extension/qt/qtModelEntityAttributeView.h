@@ -69,6 +69,8 @@ public:
   /**\brief method used when model entities are selected via the Selection System */
   void updateSelectedModelEntity(const std::string& selSource, smtk::view::SelectionPtr p);
 
+  bool isEmpty() const override;
+
 public slots:
   void onShowCategory() override;
   void showAdvanceLevelOverlay(bool show) override;

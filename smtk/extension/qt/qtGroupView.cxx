@@ -48,6 +48,7 @@ public:
   {
   }
   QList<smtk::extension::qtBaseView*> ChildViews;
+  QList<QLabel*> Labels;
   qtGroupViewInternals::Style m_style;
   std::vector<smtk::view::ViewPtr> m_views;
   int m_currentTabSelected;
@@ -257,21 +258,70 @@ void qtGroupView::clearChildViews()
     delete childView;
   }
   this->Internals->ChildViews.clear();
+  this->Internals->Labels.clear();
 }
 
 void qtGroupView::updateUI()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  // In the case of tiling we don't want to show the
+  // label for empty views
+  if (this->Internals->m_style == qtGroupViewInternals::TILED)
   {
-    childView->updateUI();
+    int i, size = this->Internals->ChildViews.size();
+    for (i = 0; i < size; i++)
+    {
+      auto child = this->Internals->ChildViews.at(i);
+      child->updateUI();
+      if (child->isEmpty())
+      {
+        child->widget()->hide();
+        this->Internals->Labels.at(i)->hide();
+      }
+      else
+      {
+        child->widget()->show();
+        this->Internals->Labels.at(i)->show();
+      }
+    }
+  }
+  else
+  {
+    foreach (qtBaseView* childView, this->Internals->ChildViews)
+    {
+      childView->updateUI();
+    }
   }
 }
 
 void qtGroupView::onShowCategory()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  // In the case of tiling we don't want to show the
+  // label for empty views
+  if (this->Internals->m_style == qtGroupViewInternals::TILED)
   {
-    childView->onShowCategory();
+    int i, size = this->Internals->ChildViews.size();
+    for (i = 0; i < size; i++)
+    {
+      auto child = this->Internals->ChildViews.at(i);
+      child->onShowCategory();
+      if (child->isEmpty())
+      {
+        child->widget()->hide();
+        this->Internals->Labels.at(i)->hide();
+      }
+      else
+      {
+        child->widget()->show();
+        this->Internals->Labels.at(i)->show();
+      }
+    }
+  }
+  else
+  {
+    foreach (qtBaseView* childView, this->Internals->ChildViews)
+    {
+      childView->onShowCategory();
+    }
   }
   this->qtBaseView::onShowCategory();
 }
@@ -365,6 +415,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
     return;
   }
   QLabel* label = new QLabel(child->getObject()->label().c_str(), this->Widget);
+  this->Internals->Labels.append(label);
   QFont titleFont;
   titleFont.setBold(true);
   titleFont.setItalic(true);
@@ -375,6 +426,11 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   vLayout->addWidget(label);
   vLayout->addWidget(child->widget());
   vLayout->setAlignment(Qt::AlignTop);
+  if (child->isEmpty())
+  {
+    label->hide();
+    child->widget()->hide();
+  }
 }
 
 void qtGroupView::updateModelAssociation()
