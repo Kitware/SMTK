@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the Mesh Session "Export" Operation -->
-<SMTK_AttributeSystem Version="3">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="write" Label="Model - Export" BaseType="operation">
@@ -19,4 +19,4 @@
     <AttDef Type="result(write)" BaseType="result">
     </AttDef>
   </Definitions>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

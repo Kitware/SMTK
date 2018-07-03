@@ -28,10 +28,10 @@ def RSTest():
     n = 0
     resourceSet = smtk.resource.Set()
 
-    collection1 = smtk.attribute.Collection.New()
-    print(collection1)
+    resource1 = smtk.attribute.Resource.New()
+    print(resource1)
     result = resourceSet.add(
-        collection1, "collection1", "", smtk.resource.Set.TEMPLATE)
+        resource1, "resource1", "", smtk.resource.Set.TEMPLATE)
 
     n = resourceSet.numberOfResources()
     if result == False:
@@ -41,9 +41,9 @@ def RSTest():
         print("Wrong number of resources: %i, should be 1" % n)
         status = status + 1
 
-    collection2 = smtk.attribute.Collection.New()
+    resource2 = smtk.attribute.Resource.New()
     result = resourceSet.add(
-        collection2, "collection2", "path2", smtk.resource.Set.INSTANCE)
+        resource2, "resource2", "path2", smtk.resource.Set.INSTANCE)
 
     n = resourceSet.numberOfResources()
     if result == False:
@@ -54,7 +54,7 @@ def RSTest():
         status = status + 1
 
     result = resourceSet.add(
-        collection1, "collection1-different-id", "", smtk.resource.Set.SCENARIO)
+        resource1, "resource1-different-id", "", smtk.resource.Set.SCENARIO)
     n = resourceSet.numberOfResources()
     if result == False:
         print("add() call failed")
@@ -63,7 +63,7 @@ def RSTest():
         print("Wrong number of resources: %i, should be 3" % n)
         status = status + 1
 
-    result = resourceSet.add(collection2, "collection2")
+    result = resourceSet.add(resource2, "resource2")
     n = resourceSet.numberOfResources()
     if result == True:
         print("add() call didn't fail failed")
@@ -78,7 +78,7 @@ def RSTest():
         status = status + 1
     else:
         expectedNames = [
-            "collection1", "collection2", "collection1-different-id"]
+            "resource1", "resource2", "resource1-different-id"]
         for i in range(len(ids)):
             if ids[i] != expectedNames[i]:
                 print("Wrong resource name %s, should be %s" %
@@ -88,7 +88,7 @@ def RSTest():
     # TODO: ResourceInfo tests (function not implemented)
     # TODO: ResourcePtr is not implemented
 
-    resource = resourceSet.get("collection2")
+    resource = resourceSet.get("resource2")
     if resource == None:
         print("get() failed")
         status = status + 1

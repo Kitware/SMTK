@@ -22,7 +22,7 @@ class TestAttributeReader():
 
     def setUp(self):
         if len(sys.argv) < 2:
-            print("Reads attribute collection file")
+            print("Reads attribute resource file")
             print("Usage: AttributeReaderTest attribute_file")
             print("  [expect_number_of_definitions]")
             print("  [expect_number_of_attributes]")
@@ -30,13 +30,13 @@ class TestAttributeReader():
 
         self.status = 0  # return value
 
-        self.attsys = smtk.attribute.Collection.create()
+        self.attresource = smtk.attribute.Resource.create()
         self.reader = smtk.io.AttributeReader()
         self.logger = smtk.io.Logger()
 
         input_path = sys.argv[1]
 
-        hasErrors = self.reader.read(self.attsys, input_path, self.logger)
+        hasErrors = self.reader.read(self.attresource, input_path, self.logger)
         if hasErrors:
             print("Reader has errors")
             print(self.logger.convertToString())
@@ -59,7 +59,7 @@ class TestAttributeReader():
                 print("ERROR: argv[2] not an unsigned integer")
                 self.status = self.status + 1
             else:
-                definitionList = self.attsys.definitions()
+                definitionList = self.attresource.definitions()
                 if len(definitionList) != expectedDefinitionCount:
                     print("ERROR: Expecting ", expectedDefinitionCount,
                           " definitions, loaded ", len(definitionList))
@@ -85,7 +85,7 @@ class TestAttributeReader():
                 print("ERROR: argv[2] not an unsigned integer")
                 self.status = self.status + 1
             else:
-                attributeList = self.attsys.attributes()
+                attributeList = self.attresource.attributes()
                 if len(attributeList) != expectedAttributeCount:
                     print("ERROR: Expecting ", expectedAttributeCount,
                           " attributes, loaded ", len(attributeList))

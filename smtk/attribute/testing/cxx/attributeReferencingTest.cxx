@@ -9,12 +9,12 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include <iostream>
@@ -23,18 +23,18 @@ int main()
 {
   int status = 0;
   {
-    smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
-    smtk::attribute::Collection& collection(*sysptr.get());
-    std::cout << "Collection Created\n";
+    smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
+    smtk::attribute::Resource& resource(*resptr.get());
+    std::cout << "Resource Created\n";
     // Lets create an attribute to represent an expression
-    smtk::attribute::DefinitionPtr expDef = collection.createDefinition("ExpDef");
+    smtk::attribute::DefinitionPtr expDef = resource.createDefinition("ExpDef");
     smtk::attribute::StringItemDefinitionPtr eitemdef =
       expDef->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("Expression String");
     smtk::attribute::StringItemDefinitionPtr eitemdef2 =
       expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
     eitemdef->setDefaultValue("sample");
 
-    smtk::attribute::DefinitionPtr base = collection.createDefinition("BaseDef");
+    smtk::attribute::DefinitionPtr base = resource.createDefinition("BaseDef");
     // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
       base->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
@@ -42,11 +42,11 @@ int main()
     ditemdef->setExpressionDefinition(expDef);
 
     // Lets test creating an attribute by passing in the expression definition explicitly
-    smtk::attribute::AttributePtr expAtt1 = collection.createAttribute("Exp1", expDef);
-    smtk::attribute::AttributePtr expAtt2 = collection.createAttribute("Exp2", expDef);
-    smtk::attribute::AttributePtr att = collection.createAttribute("testAtt1", "BaseDef");
-    smtk::attribute::AttributePtr att1 = collection.createAttribute("testAtt2", "BaseDef");
-    smtk::attribute::AttributePtr att2 = collection.createAttribute("testAtt3", "BaseDef");
+    smtk::attribute::AttributePtr expAtt1 = resource.createAttribute("Exp1", expDef);
+    smtk::attribute::AttributePtr expAtt2 = resource.createAttribute("Exp2", expDef);
+    smtk::attribute::AttributePtr att = resource.createAttribute("testAtt1", "BaseDef");
+    smtk::attribute::AttributePtr att1 = resource.createAttribute("testAtt2", "BaseDef");
+    smtk::attribute::AttributePtr att2 = resource.createAttribute("testAtt3", "BaseDef");
 
     smtk::attribute::ValueItemPtr vitem;
     smtk::attribute::ItemPtr item;
@@ -73,7 +73,7 @@ int main()
                 << " Item:" << refs[i]->owningItem()->name() << "\n";
     }
 
-    collection.removeAttribute(att1);
+    resource.removeAttribute(att1);
     att1.reset(); // Should delete att1
     std::cout << "testAtt1 deleted\n";
     expAtt1->references(refs);
@@ -111,7 +111,7 @@ int main()
                 << " Item:" << refs[i]->owningItem()->name() << "\n";
     }
 
-    std::cout << "Collection destroyed\n";
+    std::cout << "Resource destroyed\n";
   }
   return status;
 }

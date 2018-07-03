@@ -13,11 +13,11 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Metadata.h"

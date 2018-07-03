@@ -86,7 +86,7 @@ void qtInstancedView::updateAttributeData()
     return;
   }
 
-  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
+  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
   std::string attName, defName;
   smtk::attribute::AttributePtr att;
   smtk::attribute::DefinitionPtr attDef;
@@ -122,7 +122,7 @@ void qtInstancedView::updateAttributeData()
     }
 
     // See if the attribute exists and if not then create it
-    att = sys->findAttribute(attName);
+    att = resource->findAttribute(attName);
     if (!att)
     {
       if (!attComp.attribute("Type", defName))
@@ -130,14 +130,14 @@ void qtInstancedView::updateAttributeData()
         // No attribute definition name
         continue;
       }
-      attDef = sys->findDefinition(defName);
+      attDef = resource->findDefinition(defName);
       if (!attDef)
       {
         continue;
       }
       else
       {
-        att = sys->createAttribute(attName, attDef);
+        att = resource->createAttribute(attName, attDef);
       }
     }
     else

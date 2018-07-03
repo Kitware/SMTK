@@ -9,12 +9,12 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include <iostream>
@@ -23,10 +23,10 @@ int main()
 {
   int status = 0;
   {
-    smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
-    smtk::attribute::Collection& collection(*sysptr.get());
-    std::cout << "Collection Created\n";
-    smtk::attribute::DefinitionPtr def = collection.createDefinition("testDef");
+    smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
+    smtk::attribute::Resource& resource(*resptr.get());
+    std::cout << "Resource Created\n";
+    smtk::attribute::DefinitionPtr def = resource.createDefinition("testDef");
     if (def)
     {
       std::cout << "Definition testDef created\n";
@@ -48,7 +48,7 @@ int main()
     icompdef2->setAdvanceLevel(1, 4);
 
     def->addItemDefinition(icompdef2);
-    smtk::attribute::DefinitionPtr def1 = collection.createDefinition("testDef");
+    smtk::attribute::DefinitionPtr def1 = resource.createDefinition("testDef");
     if (!def1)
     {
       std::cout << "Duplicated definition testDef not created\n";
@@ -58,7 +58,7 @@ int main()
       std::cout << "ERROR: Duplicated definition testDef created\n";
       status = -1;
     }
-    smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "testDef");
+    smtk::attribute::AttributePtr att = resource.createAttribute("testAtt", "testDef");
     if (att)
     {
       std::cout << "Attribute testAtt created\n";
@@ -163,7 +163,7 @@ int main()
       std::cout << "Found IntComp2 - value = " << icptr->valueAsString() << std::endl;
     }
 
-    smtk::attribute::AttributePtr att1 = collection.createAttribute("testAtt", "testDef");
+    smtk::attribute::AttributePtr att1 = resource.createAttribute("testAtt", "testDef");
     if (!att1)
     {
       std::cout << "Duplicate Attribute testAtt not created\n";
@@ -175,7 +175,7 @@ int main()
     }
 
     //Lets test the RootName feature
-    att1 = collection.createAttribute("testDef");
+    att1 = resource.createAttribute("testDef");
     if (att1->name() != "testDef-0")
     {
       std::cout << "Name = " << att1->name() << "\n";
@@ -187,7 +187,7 @@ int main()
       std::cout << "Created attribute with default name testDef-0\n";
     }
     def->setRootName("Foo");
-    att1 = collection.createAttribute("testDef");
+    att1 = resource.createAttribute("testDef");
     if (att1->name() != "Foo-0")
     {
       std::cout << "Name = " << att1->name() << "\n";
@@ -199,7 +199,7 @@ int main()
       std::cout << "Created attribute with RootName name Foo-0\n";
     }
 
-    std::cout << "Collection destroyed\n";
+    std::cout << "Resource destroyed\n";
   }
   return status;
 }

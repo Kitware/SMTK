@@ -17,6 +17,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/bridge/polygon/Session.h"
 #include "smtk/bridge/polygon/operators/Read.h"

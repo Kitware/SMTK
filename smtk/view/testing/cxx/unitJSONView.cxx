@@ -13,7 +13,7 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -33,7 +33,7 @@ int unitJSONView(int argc, char* argv[])
   std::string jsonFile("/attribute/attribute_collection/viewproto3.json");
   std::string xmlFile("/attribute/attribute_collection/viewproto3.xml");
 
-  auto rsrc = smtk::attribute::Collection::create();
+  auto rsrc = smtk::attribute::Resource::create();
   rdr.read(rsrc, argc > 2 ? argv[2] : (readFilePath + xmlFile).c_str(), false,
     smtk::io::Logger::instance());
 

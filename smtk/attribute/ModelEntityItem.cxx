@@ -12,7 +12,7 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/model/Manager.h"
 
 using namespace smtk::attribute;
@@ -147,7 +147,7 @@ smtk::model::EntityRef ModelEntityItem::value(std::size_t i) const
   auto result = m_values[i];
   if (!result.manager())
   {
-    smtk::model::Manager::Ptr mgr = this->attribute()->collection()->refModelManager();
+    smtk::model::Manager::Ptr mgr = this->attribute()->attributeResource()->refModelManager();
     if (mgr)
     {
       result.setManager(mgr);
@@ -298,7 +298,7 @@ bool ModelEntityItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   }
 
   // Update values
-  // Only set values if both att collections are using the same model
+  // Only set values if both att resources are using the same model
   this->setNumberOfValues(sourceModelEntityItem->numberOfValues());
   for (std::size_t i = 0; i < sourceModelEntityItem->numberOfValues(); ++i)
   {

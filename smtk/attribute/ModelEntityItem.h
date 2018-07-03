@@ -13,10 +13,10 @@
 //
 // While the actual value stored is a EntityRef, only the UUID of the model entity
 // is saved when the attribute is serialized.
-// Then, when deserialized, the attribute collection's refModelManager()
+// Then, when deserialized, the attribute resource's refModelManager()
 // is used to recreate the entityref.
 // (Thus the UUID is assumed to be present in the model manager referenced by
-// the attribute collection. See smtk::attrib::Collection::refModelManager().)
+// the attribute resource. See smtk::attrib::Resource::refModelManager().)
 // If the entity is not present, the returned smtk::model::EntityRef
 // instances will be invalid and no type checking of attribute values
 // can be performed.

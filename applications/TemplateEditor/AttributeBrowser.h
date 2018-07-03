@@ -43,7 +43,7 @@ public:
   /**
  * Populate the UI with attribute definitions.
  */
-  void populate(smtk::attribute::CollectionPtr collection);
+  void populate(smtk::attribute::ResourcePtr resource);
 
 public slots:
   /**
@@ -55,7 +55,7 @@ public slots:
 
 signals:
   void attDefChanged(const QModelIndex& currentIndex, const QModelIndex& previousIndex);
-  void collectionChanged(bool needsSaving);
+  void resourceChanged(bool needsSaving);
 
 private slots:
   /**
@@ -85,9 +85,9 @@ private:
 
   void clear();
 
-  void populateDefinitions(smtk::attribute::CollectionPtr collection);
+  void populateDefinitions(smtk::attribute::ResourcePtr resource);
 
-  smtk::attribute::CollectionPtr Collection;
+  smtk::attribute::ResourcePtr Resource;
   std::unique_ptr<Ui::AttributeBrowser> Ui;
   AttDefDataModel* AttDefModel = nullptr;
 };

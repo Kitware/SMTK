@@ -22,12 +22,12 @@
 #include "smtk/extension/qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
@@ -157,9 +157,9 @@ void qtAttributeView::createWidget()
   // since the getAllDefinitions() call needs the categories list in AttDefMap
   // Create a map for all catagories so we can cluster the definitions
   this->Internals->AttDefMap.clear();
-  const CollectionPtr attSys = this->uiManager()->attCollection();
+  const ResourcePtr attResource = this->uiManager()->attResource();
   std::set<std::string>::const_iterator it;
-  const std::set<std::string>& cats = attSys->categories();
+  const std::set<std::string>& cats = attResource->categories();
 
   for (it = cats.begin(); it != cats.end(); it++)
   {
@@ -450,8 +450,8 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
   smtk::attribute::AttributePtr aAttribute = this->getAttributeFromItem(item);
   if (aAttribute && item->text().toStdString() != aAttribute->name())
   {
-    CollectionPtr attCollection = aAttribute->definition()->collection();
-    attCollection->rename(aAttribute, item->text().toStdString());
+    ResourcePtr attResource = aAttribute->definition()->resource();
+    attResource->rename(aAttribute, item->text().toStdString());
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
   }
 }
@@ -498,8 +498,8 @@ void qtAttributeView::updateTableWithProperties()
   }
 
   std::vector<smtk::attribute::AttributePtr> result;
-  CollectionPtr attCollection = rawPtr->collection();
-  attCollection->findAttributes(rawPtr->shared_from_this(), result);
+  ResourcePtr attResource = rawPtr->resource();
+  attResource->findAttributes(rawPtr->shared_from_this(), result);
   if (result.size() == 0)
   {
     this->Internals->ValuesTable->blockSignals(false);
@@ -667,9 +667,9 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
     return;
   }
 
-  CollectionPtr attCollection = attDef->collection();
+  ResourcePtr attResource = attDef->resource();
 
-  smtk::attribute::AttributePtr newAtt = attCollection->createAttribute(attDef->type());
+  smtk::attribute::AttributePtr newAtt = attResource->createAttribute(attDef->type());
   QTableWidgetItem* item = this->addAttributeListItem(newAtt);
   if (item)
   {
@@ -686,8 +686,8 @@ void qtAttributeView::onCopySelected()
     return;
   }
 
-  CollectionPtr attCollection = selObject->collection();
-  newObject = attCollection->copyAttribute(selObject);
+  ResourcePtr attResource = selObject->attributeResource();
+  newObject = attResource->copyAttribute(selObject);
   if (newObject)
   {
     QTableWidgetItem* item = this->addAttributeListItem(newObject);
@@ -708,8 +708,8 @@ void qtAttributeView::onDeleteSelected()
     this->Internals->AttSelections.remove(keyName);
 
     attribute::DefinitionPtr attDef = selObject->definition();
-    CollectionPtr attCollection = attDef->collection();
-    attCollection->removeAttribute(selObject);
+    ResourcePtr attResource = attDef->resource();
+    attResource->removeAttribute(selObject);
 
     QTableWidgetItem* selItem = this->getSelectedItem();
     this->Internals->ListTable->removeRow(selItem->row());
@@ -851,8 +851,8 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
     return;
   }
   std::vector<smtk::attribute::AttributePtr> result;
-  CollectionPtr attCollection = attDef->collection();
-  attCollection->findAttributes(attDef, result);
+  ResourcePtr attResource = attDef->resource();
+  attResource->findAttributes(attDef, result);
   if (result.size() && viewBy == VIEWBY_Attribute)
   {
     std::vector<smtk::attribute::AttributePtr>::iterator it;
@@ -948,8 +948,8 @@ void qtAttributeView::initSelectPropCombo(smtk::attribute::DefinitionPtr attDef)
     return;
   }
   std::vector<smtk::attribute::AttributePtr> result;
-  CollectionPtr attCollection = attDef->collection();
-  attCollection->findAttributes(attDef, result);
+  ResourcePtr attResource = attDef->resource();
+  attResource->findAttributes(attDef, result);
   if (result.size() == 0)
   {
     this->Internals->SelectPropCombo->blockSignals(false);
@@ -1016,8 +1016,8 @@ void qtAttributeView::initSelectAttCombo(smtk::attribute::DefinitionPtr attDef)
   }
 
   std::vector<smtk::attribute::AttributePtr> result;
-  CollectionPtr attCollection = attDef->collection();
-  attCollection->findAttributes(attDef, result);
+  ResourcePtr attResource = attDef->resource();
+  attResource->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   int row = 1;
   for (it = result.begin(); it != result.end(); ++it, ++row)
@@ -1252,8 +1252,8 @@ void qtAttributeView::addComparativeProperty(
   QTableWidget* vtWidget = this->Internals->ValuesTable;
 
   std::vector<smtk::attribute::AttributePtr> result;
-  CollectionPtr attCollection = attDef->collection();
-  attCollection->findAttributes(attDef, result);
+  ResourcePtr attResource = attDef->resource();
+  attResource->findAttributes(attDef, result);
 
   int numRows = this->Internals->ValuesTable->rowCount();
   int insertRow = numRows;
@@ -1306,7 +1306,7 @@ void qtAttributeView::getAllDefinitions()
     return;
   }
 
-  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
+  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
   std::string attName, defName, val;
   smtk::attribute::AttributePtr att;
@@ -1354,7 +1354,7 @@ void qtAttributeView::getAllDefinitions()
       continue;
     }
 
-    attDef = sys->findDefinition(defName);
+    attDef = resource->findDefinition(defName);
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);
   }

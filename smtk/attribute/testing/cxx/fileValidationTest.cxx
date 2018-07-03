@@ -9,9 +9,9 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 #include <iostream>
@@ -41,11 +41,11 @@ const char* testInput =
 
 int main()
 {
-  smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
+  smtk::attribute::ResourcePtr resource = smtk::attribute::Resource::create();
   smtk::io::Logger logger;
   smtk::io::AttributeReader reader;
 
-  if (reader.readContents(collection, testInput, logger))
+  if (reader.readContents(resource, testInput, logger))
   {
     std::cerr << "Encountered Errors while reading input data\n";
     std::cerr << logger.convertToString();
@@ -53,7 +53,7 @@ int main()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  collection->attributes(atts);
+  resource->attributes(atts);
   if (atts.size() != 1)
   {
     std::cerr << "Unexpected number of attributes: " << atts.size() << "\n";

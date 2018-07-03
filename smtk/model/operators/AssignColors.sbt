@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "AssignColors" Operation -->
-<SMTK_AttributeSystem Version="3">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
@@ -66,4 +66,4 @@
       </AttributeTypes>
     </View>
   </Views>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

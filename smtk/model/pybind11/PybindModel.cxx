@@ -21,6 +21,8 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "smtk/attribute/Resource.h"
+
 #include "PybindArrangement.h"
 #include "PybindArrangementHelper.h"
 #include "PybindArrangementKind.h"

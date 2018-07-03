@@ -33,7 +33,7 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::IntItemDe
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::IntItemDefinitionPtr& defPtr, const smtk::attribute::CollectionPtr& colPtr,
+  smtk::attribute::IntItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
   std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
@@ -42,9 +42,9 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
     return;
   }
   auto temp = smtk::dynamic_pointer_cast<ValueItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp, colPtr, expressionDefInfo, attRefDefInfo);
+  smtk::attribute::from_json(j, temp, resPtr, expressionDefInfo, attRefDefInfo);
   smtk::attribute::processDerivedValueDefFromJson<smtk::attribute::IntItemDefinitionPtr, int>(
-    j, defPtr, colPtr, expressionDefInfo, attRefDefInfo);
+    j, defPtr, resPtr, expressionDefInfo, attRefDefInfo);
 }
 }
 }

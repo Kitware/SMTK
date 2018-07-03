@@ -9,13 +9,13 @@
 //=========================================================================
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/attribute/json/jsonDoubleItemDefinition.h"
@@ -38,10 +38,10 @@ int unitJsonItemDefinitions(int, char** const)
 
   using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
 
-  smtk::attribute::CollectionPtr collptr = smtk::attribute::Collection::create();
-  smtk::attribute::Collection& collection(*collptr.get());
+  smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
+  smtk::attribute::Resource& resource(*resptr.get());
 
-  smtk::attribute::DefinitionPtr def = collection.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def = resource.createDefinition("testDef");
   smtkTest(!!def, "Definition testDef not created.");
 
   std::vector<ItemExpressionDefInfo> expressDefInfo;
@@ -98,7 +98,7 @@ int unitJsonItemDefinitions(int, char** const)
   json refDefToJson = refDef;
   //std::cout << " to_json result:\n" <<refDefToJson.dump(2) <<std::endl;
   smtk::attribute::RefItemDefinitionPtr refDef2 = RefItemDefinition::New("ref-def");
-  smtk::attribute::from_json(refDefToJson, refDef2, collptr, refDefInfo);
+  smtk::attribute::from_json(refDefToJson, refDef2, resptr, refDefInfo);
   json refDefFromJson = refDef2;
   //std::cout << " from_json result:\n" <<refDefFromJson.dump(2) <<std::endl;
 
@@ -127,7 +127,7 @@ int unitJsonItemDefinitions(int, char** const)
   std::cout << "DoubleItem to_json result:\n" << doubleItemToJson.dump(2) << std::endl;
   smtk::attribute::DoubleItemDefinitionPtr doubleDef2 =
     smtk::attribute::DoubleItemDefinition::New("double-ref");
-  smtk::attribute::from_json(doubleItemToJson, doubleDef2, collptr, expressDefInfo, refDefInfo);
+  smtk::attribute::from_json(doubleItemToJson, doubleDef2, resptr, expressDefInfo, refDefInfo);
   json doubleItemFromJson = doubleDef2;
   std::cout << "DoubleItem from_jsom result:\n" << doubleItemFromJson.dump(2) << std::endl;
   test(doubleItemToJson == doubleItemFromJson, "Failed to serialize and deserialize "

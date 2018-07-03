@@ -27,11 +27,11 @@ if __name__ == '__main__':
         intdef = smtk.attribute.IntItemDefinition.New('intdef')
         groupdef.addItemDefinition(intdef)
 
-        collection = smtk.attribute.Collection.create()
-        defn = collection.createDefinition('testdef')
+        resource = smtk.attribute.Resource.create()
+        defn = resource.createDefinition('testdef')
         defn.addItemDefinition(groupdef)
 
-        att = collection.createAttribute('t1', 'testdef')
+        att = resource.createAttribute('t1', 'testdef')
 
         # Retrieve GroupItem from attribute
         item = att.item(0)

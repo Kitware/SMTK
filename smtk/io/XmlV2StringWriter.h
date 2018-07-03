@@ -19,7 +19,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/view/View.h"
 
@@ -40,7 +40,7 @@ namespace io
 class SMTKCORE_EXPORT XmlV2StringWriter : public XmlStringWriter
 {
 public:
-  XmlV2StringWriter(const smtk::attribute::CollectionPtr collection);
+  XmlV2StringWriter(const smtk::attribute::ResourcePtr resource);
   virtual ~XmlV2StringWriter();
   std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) override;
   void generateXml(
@@ -52,8 +52,9 @@ public:
     const Container& v, std::string& sep, smtk::io::Logger* logger = nullptr);
 
 protected:
-  // Two virtual methods for writing contents
+  // Three virtual methods for writing contents
   std::string className() const override;
+  std::string rootNodeName() const override;
   unsigned int fileVersion() const override;
 
   void processAttributeInformation();

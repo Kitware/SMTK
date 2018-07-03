@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Discrete Model "Read" Operation -->
-<SMTK_AttributeSystem Version="3">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
@@ -19,4 +19,4 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(write)" BaseType="result"/>
   </Definitions>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

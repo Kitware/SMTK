@@ -14,8 +14,8 @@
 #include "smtk/operation/XMLOperation.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"

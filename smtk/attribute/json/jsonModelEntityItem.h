@@ -11,7 +11,6 @@
 #define smtk_attribute_jsonModelEntityItem_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/json/jsonItem.h"
 

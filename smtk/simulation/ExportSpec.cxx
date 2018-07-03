@@ -23,8 +23,8 @@ ExportSpec::ExportSpec()
 
 void ExportSpec::clear()
 {
-  m_simulationCollection = nullptr;
-  m_exportCollection = nullptr;
+  m_simulationResource = nullptr;
+  m_exportResource = nullptr;
   m_logger->reset();
 }
 

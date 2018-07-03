@@ -75,8 +75,8 @@ using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::stri
 
 template <typename itemDefPtr>
 void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
-  const smtk::attribute::CollectionPtr& colPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+  const smtk::attribute::ResourcePtr& resPtr, std::vector<ItemExpressionDefInfo>& expressionDefInfo,
+  std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   //iter format: {type: [{def1}, {def2}] }
   smtk::attribute::Item::Type citype = smtk::attribute::Item::string2Type(iter.key());
@@ -94,7 +94,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
         {
           smtk::attribute::RefItemDefinitionPtr temp =
             smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, colPtr, attRefDefInfo);
+          smtk::attribute::from_json((*itemDef), temp, resPtr, attRefDefInfo);
         }
         break;
       case smtk::attribute::Item::DoubleType:
@@ -103,7 +103,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
         {
           smtk::attribute::DoubleItemDefinitionPtr temp =
             smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, colPtr, expressionDefInfo, attRefDefInfo);
+          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
         }
         break;
       case smtk::attribute::Item::DirectoryType:
@@ -130,7 +130,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
         {
           smtk::attribute::GroupItemDefinitionPtr temp =
             smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, colPtr, expressionDefInfo, attRefDefInfo);
+          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
         }
         break;
       case smtk::attribute::Item::IntType:
@@ -139,7 +139,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
         {
           smtk::attribute::IntItemDefinitionPtr temp =
             smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, colPtr, expressionDefInfo, attRefDefInfo);
+          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
         }
         break;
       case smtk::attribute::Item::StringType:
@@ -148,7 +148,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
         {
           smtk::attribute::StringItemDefinitionPtr temp =
             smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, colPtr, expressionDefInfo, attRefDefInfo);
+          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
         }
         break;
       case smtk::attribute::Item::ModelEntityType:
@@ -319,27 +319,27 @@ void JsonHelperFunction::processItemDefinitionTypeToJson(
 }
 
 void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-  DefinitionPtr& idef, const CollectionPtr& colPtr,
+  DefinitionPtr& idef, const ResourcePtr& resPtr,
   std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   processItemDef<smtk::attribute::DefinitionPtr>(
-    iter, idef, colPtr, expressionDefInfo, attRefDefInfo);
+    iter, idef, resPtr, expressionDefInfo, attRefDefInfo);
 }
 
 void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-  GroupItemDefinitionPtr& idef, const CollectionPtr& colPtr,
+  GroupItemDefinitionPtr& idef, const ResourcePtr& resPtr,
   std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   processItemDef<smtk::attribute::GroupItemDefinitionPtr>(
-    iter, idef, colPtr, expressionDefInfo, attRefDefInfo);
+    iter, idef, resPtr, expressionDefInfo, attRefDefInfo);
 }
 
 void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-  ValueItemDefinitionPtr& idef, const CollectionPtr& colPtr,
+  ValueItemDefinitionPtr& idef, const ResourcePtr& resPtr,
   std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   processItemDef<smtk::attribute::ValueItemDefinitionPtr>(
-    iter, idef, colPtr, expressionDefInfo, attRefDefInfo);
+    iter, idef, resPtr, expressionDefInfo, attRefDefInfo);
 }
 
 void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr& item)

@@ -11,7 +11,6 @@
 #define smtk_attribute_jsonGroupItemDefinition_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
@@ -35,8 +34,8 @@ using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::stri
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinitionPtr& defPtr);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefinitionPtr& defPtr,
-  const smtk::attribute::CollectionPtr& colPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo);
+  const smtk::attribute::ResourcePtr& resPtr, std::vector<ItemExpressionDefInfo>& expressionDefInfo,
+  std::vector<AttRefDefInfo>& attRefDefInfo);
 }
 }
 

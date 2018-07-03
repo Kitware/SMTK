@@ -10,7 +10,6 @@
 
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 
 #include "smtk/model/Manager.h"
@@ -279,7 +278,7 @@ bool MeshItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 
   // Update values
   // Update values
-  // Only set values if both att collections are using the same model
+  // Only set values if both att resources are using the same model
   this->setNumberOfValues(sourceMeshItem->numberOfValues());
   for (std::size_t i = 0; i < sourceMeshItem->numberOfValues(); ++i)
   {

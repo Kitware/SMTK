@@ -23,7 +23,7 @@ namespace smtk
 namespace attribute
 {
 class Attribute;
-class Collection;
+class Resource;
 }
 namespace io
 {
@@ -59,9 +59,9 @@ public:
   // An attribute containing the operation's result.
   typedef std::shared_ptr<smtk::attribute::Attribute> Result;
 
-  // An attribute collection containing the operation's execution definition
+  // An attribute resource containing the operation's execution definition
   // result definition.
-  typedef std::shared_ptr<smtk::attribute::Collection> Specification;
+  typedef std::shared_ptr<smtk::attribute::Resource> Specification;
 
   typedef std::shared_ptr<smtk::attribute::Definition> Definition;
 
@@ -84,7 +84,7 @@ public:
   // resolve to the same index).
   virtual Index index() const { return std::type_index(typeid(*this)).hash_code(); }
 
-  // Check if the operation's attribute collection is valid. Derived operations
+  // Check if the operation's attribute resource is valid. Derived operations
   // may implement more task-specific checks to ensure that the operation is in
   // a valid state.
   virtual bool ableToOperate();

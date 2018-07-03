@@ -16,7 +16,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/io/Logger.h"
 
 #include <string>
@@ -33,8 +33,8 @@ namespace io
 class SMTKCORE_EXPORT XmlStringWriter
 {
 public:
-  XmlStringWriter(smtk::attribute::CollectionPtr collection)
-    : m_collection(collection)
+  XmlStringWriter(smtk::attribute::ResourcePtr resource)
+    : m_resource(resource)
     , m_includeDefinitions(true)
     , m_includeInstances(true)
     , m_includeModelInformation(true)
@@ -46,6 +46,7 @@ public:
 
   // Subclass methods
   virtual std::string className() const = 0;
+  virtual std::string rootNodeName() const = 0;
   virtual unsigned int fileVersion() const = 0;
 
   virtual std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) = 0;
@@ -53,7 +54,7 @@ public:
   virtual void generateXml(
     pugi::xml_node& parent_node, smtk::io::Logger& logger, bool createRoot = true) = 0;
 
-  //Control which sections of the attribute collection should be writtern out
+  //Control which sections of the attribute resource should be writtern out
   // By Default all sections are processed.  These are advance options!!
   // If val is false then defintions will not be saved
   void includeDefinitions(bool val) { m_includeDefinitions = val; }
@@ -68,7 +69,7 @@ public:
   void includeViews(bool val) { m_includeViews = val; }
 
 protected:
-  smtk::attribute::CollectionPtr m_collection;
+  smtk::attribute::ResourcePtr m_resource;
   bool m_includeDefinitions;
   bool m_includeInstances;
   bool m_includeModelInformation;

@@ -13,7 +13,7 @@
 #include "smtk/io/Logger.h"
 #include "smtk/io/ResourceSetReader.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Set.h"
@@ -51,7 +51,7 @@ int main(int argc, const char* argv[])
   smtk::resource::Set resources;
 
   // Build Set from input filenames
-  // This version presumes all attribute collections
+  // This version presumes all attribute resources
   smtk::io::Logger logger;
   std::string link;
   smtk::resource::Set::Role role;
@@ -60,9 +60,9 @@ int main(int argc, const char* argv[])
   {
     const char* input_path = argv[i];
 
-    auto collection = smtk::attribute::Collection::create();
+    auto attResource = smtk::attribute::Resource::create();
     smtk::io::AttributeReader reader;
-    bool err = reader.read(collection, input_path, logger);
+    bool err = reader.read(attResource, input_path, logger);
     if (err)
     {
       std::cerr << "Error loading " << input_path << ": \n" << logger.convertToString() << "\n";
@@ -70,7 +70,7 @@ int main(int argc, const char* argv[])
     }
 
     // Initialize ResourcePtr
-    smtk::resource::ResourcePtr resource(collection);
+    smtk::resource::ResourcePtr resource(attResource);
 
     // Generate id from index
     // Switch to std::to_string() once c++11 arrives

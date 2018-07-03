@@ -15,7 +15,6 @@
 
 #include "smtk/io/XmlStringWriter.h"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/io/Logger.h"
 
 namespace py = pybind11;

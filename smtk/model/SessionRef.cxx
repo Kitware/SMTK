@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 
 #include "smtk/model/Arrangement.h"

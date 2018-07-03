@@ -9,8 +9,8 @@
 //=========================================================================
 #include "jsonGroupItemDefinition.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
@@ -78,8 +78,8 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinition
 }
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefinitionPtr& defPtr,
-  const smtk::attribute::CollectionPtr& colPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+  const smtk::attribute::ResourcePtr& resPtr, std::vector<ItemExpressionDefInfo>& expressionDefInfo,
+  std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -131,7 +131,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefiniti
     for (json::iterator iter = childrenDefs.begin(); iter != childrenDefs.end(); iter++)
     {
       smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-        iter, defPtr, colPtr, expressionDefInfo, attRefDefInfo);
+        iter, defPtr, resPtr, expressionDefInfo, attRefDefInfo);
     }
   }
   catch (std::exception& /*e*/)

@@ -13,13 +13,13 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
@@ -35,11 +35,11 @@ int unitComponentItem(int, char** const)
   smtkTest(!!compDef, "Failed to instantiate ComponentItemDefinition");
   smtkTest(compDef->type() == Item::ComponentType, "Failed to return COMPONENT as definition type");
 
-  // Instantiate att collection, attdef, & attribute
-  CollectionPtr collection = Collection::create();
-  DefinitionPtr attDef = collection->createDefinition("test-component");
+  // Instantiate att resource, attdef, & attribute
+  ResourcePtr resource = Resource::create();
+  DefinitionPtr attDef = resource->createDefinition("test-component");
   attDef->addItemDefinition(compDef);
-  AttributePtr att = collection->createAttribute(attDef);
+  AttributePtr att = resource->createAttribute(attDef);
 
   ItemPtr item = att->find("comp-def");
   smtkTest(!!item, "Failed to find Item");

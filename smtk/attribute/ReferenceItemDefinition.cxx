@@ -13,7 +13,6 @@
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/resource/Container.h"

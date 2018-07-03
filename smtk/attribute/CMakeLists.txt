@@ -2,7 +2,7 @@ set(jsonAttributeHeaders
   json/jsonAttribute.h
   json/jsonComponentItem.h
   json/jsonComponentItemDefinition.h
-  json/jsonCollection.h
+  json/jsonResource.h
   json/jsonDateTimeItem.h
   json/jsonDateTimeItemDefinition.h
   json/jsonDirectoryItem.h
@@ -41,7 +41,7 @@ set(jsonAttributeSrcs
   json/jsonAttribute.cxx
   json/jsonComponentItem.cxx
   json/jsonComponentItemDefinition.cxx
-  json/jsonCollection.cxx
+  json/jsonResource.cxx
   json/jsonDateTimeItem.cxx
   json/jsonDateTimeItemDefinition.cxx
   json/jsonDirectoryItem.cxx
@@ -79,7 +79,7 @@ set(jsonAttributeSrcs
 set(attributeHeaders
   ${jsonAttributeHeaders}
   Attribute.h
-  Collection.h
+  Resource.h
   ComponentItem.h
   ComponentItemDefinition.h
   Definition.h
@@ -126,7 +126,7 @@ set(attributeHeaders
 set(attributeSrcs
   ${jsonAttributeSrcs}
   Attribute.cxx
-  Collection.cxx
+  Resource.cxx
   ComponentItem.cxx
   ComponentItemDefinition.cxx
   DateTimeItem.cxx

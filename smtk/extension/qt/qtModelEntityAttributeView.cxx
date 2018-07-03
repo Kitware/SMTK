@@ -17,8 +17,8 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
@@ -234,9 +234,9 @@ void qtModelEntityAttributeView::createWidget()
   }
 
   this->Internals->AttDefMap.clear();
-  const CollectionPtr attSys = this->uiManager()->attCollection();
+  const ResourcePtr attResource = this->uiManager()->attResource();
   std::set<std::string>::const_iterator it;
-  const std::set<std::string>& cats = attSys->categories();
+  const std::set<std::string>& cats = attResource->categories();
 
   for (it = cats.begin(); it != cats.end(); it++)
   {
@@ -438,7 +438,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   // Get selected type
   std::string tname = this->Internals->ListTable->item(row, 1)->text().toStdString();
 
-  auto attCol = this->uiManager()->attCollection();
+  auto attCol = this->uiManager()->attResource();
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
   // Get the model entity UUID
@@ -580,7 +580,7 @@ void qtModelEntityAttributeView::getAllDefinitions()
     return;
   }
 
-  smtk::attribute::CollectionPtr sys = this->uiManager()->attCollection();
+  smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
   std::string attName, defName, val;
   smtk::attribute::AttributePtr att;
@@ -618,7 +618,7 @@ void qtModelEntityAttributeView::getAllDefinitions()
       continue;
     }
 
-    attDef = sys->findDefinition(defName);
+    attDef = resource->findDefinition(defName);
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);
   }

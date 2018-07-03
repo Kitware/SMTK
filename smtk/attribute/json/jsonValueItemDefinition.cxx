@@ -10,9 +10,9 @@
 #include "jsonValueItemDefinition.h"
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
@@ -92,7 +92,7 @@ SMTKCORE_EXPORT void to_json(
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::CollectionPtr& colPtr,
+  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
   std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
@@ -155,7 +155,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   try
   {
     std::string etype = j.at("ExpressionType");
-    DefinitionPtr adef = colPtr->findDefinition(etype);
+    DefinitionPtr adef = resPtr->findDefinition(etype);
     if (adef)
     {
       defPtr->setExpressionDefinition(adef);
@@ -183,7 +183,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
     for (json::iterator iter = childrenDefs.begin(); iter != childrenDefs.end(); iter++)
     {
       smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-        iter, defPtr, colPtr, expressionDefInfo, attRefDefInfo);
+        iter, defPtr, resPtr, expressionDefInfo, attRefDefInfo);
     }
   }
   catch (std::exception& /*e*/)

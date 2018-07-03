@@ -11,7 +11,6 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"

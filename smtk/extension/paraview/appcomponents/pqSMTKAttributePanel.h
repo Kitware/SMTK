@@ -19,7 +19,7 @@ class pqPipelineSource;
 
 /**\brief A panel that displays a single SMTK resource for editing by the user.
   *
-  * Because attribute collections currently ship with a top-level view (implied
+  * Because attribute resources currently ship with a top-level view (implied
   * if none exists), we always display that view when asked to show a resource.
   * This may change in the future.
   *
@@ -48,7 +48,7 @@ public slots:
     *
     * Look up \a rsrc's top-level view and call displayView() with it.
     */
-  virtual bool displayResource(smtk::attribute::CollectionPtr rsrc);
+  virtual bool displayResource(smtk::attribute::ResourcePtr rsrc);
   /**\brief Populate the attribute panel with the given view.
     *
     * Note that the \a view should describe an attribute resource.
@@ -59,7 +59,7 @@ public slots:
   virtual bool displayView(smtk::view::ViewPtr view);
   /**\brief Update the attribute panel when the ParaView pipeline changes.
     *
-    * The attribute collection associated with the active
+    * The attribute resource associated with the active
     * ParaView pipeline source may have changed (i.e., the filename changed
     * and so the old resource is dropped and a new one constructed) or been
     * updated (i.e., the resource location has not changed, but the resource

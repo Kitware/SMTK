@@ -10,10 +10,10 @@
 #ifndef smtk_attribute_jsonRefItemDefinition_h
 #define smtk_attribute_jsonRefItemDefinition_h
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
@@ -35,7 +35,7 @@ SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::RefItemDefinitionPtr& defPtr);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::RefItemDefinitionPtr& defPtr, const smtk::attribute::CollectionPtr& colPtr,
+  smtk::attribute::RefItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& colPtr,
   std::vector<AttRefDefInfo>& expressionDefInfo);
 }
 }

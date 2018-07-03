@@ -9,8 +9,8 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -23,7 +23,7 @@ namespace
 {
 const char* testInput =
   "<?xml version=\"1.0\" encoding=\"utf-8\" ?>                                   "
-  "<SMTK_AttributeSystem Version=\"3\">                                          "
+  "<SMTK_AttributeResource Version=\"3\">                                          "
   "  <Definitions>                                                               "
   "    <AttDef Type=\"att1\" BaseType=\"\">                                      "
   "      <Tags>                                                                  "
@@ -41,17 +41,17 @@ const char* testInput =
   "  <Attributes>                                                                "
   "    <Att Name=\"att\" Type=\"att1\"/>                                         "
   "  </Attributes>                                                               "
-  "</SMTK_AttributeSystem>                                                       ";
+  "</SMTK_AttributeResource>                                                       ";
 }
 
 int main()
 {
-  smtk::attribute::CollectionPtr sysptr = smtk::attribute::Collection::create();
-  smtk::attribute::Collection& collection(*sysptr.get());
+  smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
+  smtk::attribute::Resource& resource(*resptr.get());
   smtk::io::Logger logger;
   smtk::io::AttributeReader reader;
 
-  if (reader.readContents(sysptr, testInput, logger))
+  if (reader.readContents(resptr, testInput, logger))
   {
     std::cerr << "Encountered Errors while reading input data\n";
     std::cerr << logger.convertToString();
@@ -59,7 +59,7 @@ int main()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  collection.attributes(atts);
+  resource.attributes(atts);
   if (atts.size() != 1)
   {
     std::cerr << "Unexpected number of attributes: " << atts.size() << "\n";

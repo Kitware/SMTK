@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the model "CompositeAuxiliaryGeometry" Operation -->
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeResource Version="2">
   <Definitions>
     <!-- Operation -->
     <AttDef Type="composite auxiliary geometry" BaseType="operation" Label="Model - Composite Auxiliary Geometry">
@@ -112,4 +112,4 @@
     </View>
   </Views>
 
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

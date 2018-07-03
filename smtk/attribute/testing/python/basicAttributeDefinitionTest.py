@@ -24,9 +24,9 @@ if __name__ == '__main__':
 
     status = 0
 
-    collection = smtk.attribute.Collection.create()
-    print('Collection created')
-    def_ = collection.createDefinition('testDef')
+    resource = smtk.attribute.Resource.create()
+    print('Resource created')
+    def_ = resource.createDefinition('testDef')
     if def_ is not None:
         print('Definition testDef created')
     else:
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # Lets add some item definitions
     icompdef = smtk.attribute.IntItemDefinition.New('IntComp1')
     # Must explicitly cast from ItemDefinition in order to add to Definition
-    # Use ToItemDefinition() method that was added to typecollection
+    # Use ToItemDefinition() method that was added to typeresource
     itemdef = smtk.attribute.IntItemDefinition.ToItemDefinition(icompdef)
     def_.addItemDefinition(itemdef)
 
@@ -44,14 +44,14 @@ if __name__ == '__main__':
     icompdef2.setDefaultValue(10)
     itemdef2 = smtk.attribute.IntItemDefinition.ToItemDefinition(icompdef2)
     def_.addItemDefinition(itemdef2)
-    def1 = collection.createDefinition("testDef")
+    def1 = resource.createDefinition("testDef")
     if def1 is None:
         print('Duplicated definition testDef not created')
     else:
         print('ERROR: Duplicated definition testDef created')
         status = -1
 
-    att = collection.createAttribute('testAtt', 'testDef')
+    att = resource.createAttribute('testAtt', 'testDef')
     if not att is None:
         print('Attribute testAtt created')
     else:
@@ -76,14 +76,14 @@ if __name__ == '__main__':
         int_item = smtk.attribute.IntItem.CastTo(att.item(1))
         print('Found IntComp2 - value = %s' % int_item.valueAsString())
 
-    att1 = collection.createAttribute('testAtt', 'testDef')
+    att1 = resource.createAttribute('testAtt', 'testDef')
     if att1 is None:
         print('Duplicate Attribute testAtt not created')
     else:
         print('ERROR: Duplicate Attribute testAtt  created')
         status = -1
 
-    del collection
-    print('Collection destroyed')
+    del resource
+    print('Resource destroyed')
 
     sys.exit(status)

@@ -22,7 +22,7 @@
 #include "smtk/model/UseEntity.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/view/SubphraseGenerator.txx"
 
@@ -151,7 +151,7 @@ void SubphraseGenerator::componentsOfResource(
   DescriptivePhrase::Ptr src, smtk::resource::ResourcePtr rsrc, DescriptivePhrases& result)
 {
   auto modelRsrc = dynamic_pointer_cast<smtk::model::Manager>(rsrc);
-  auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Collection>(rsrc);
+  auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
   //auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
   if (modelRsrc)
   {

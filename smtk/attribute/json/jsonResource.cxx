@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "jsonCollection.h"
+#include "jsonResource.h"
 #include "nlohmann/json.hpp"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonDefinition.h"
 #include "smtk/io/Logger.h"
 #include "smtk/resource/json/jsonResource.h"
@@ -30,37 +30,37 @@ using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::stri
 
 using json = nlohmann::json;
 
-/**\brief Provide a way to serialize Collection. It would stick with attribute
+/**\brief Provide a way to serialize Resource. It would stick with attribute
   * V3 format
   */
 /// Convert a SelectionManager's currentSelection() to JSON.
-SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::CollectionPtr& col)
+SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 {
-  smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(col));
+  smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(res));
   //TODO: write some meta data?
   // Write out the category and analysis information
-  if (col->numberOfCategories())
+  if (res->numberOfCategories())
   {
     // When parsing, it might has a default value, so here a value object is added
-    j["Categories"]["Value"] = col->categories();
+    j["Categories"]["Value"] = res->categories();
   }
-  if (col->numberOfAnalyses())
+  if (res->numberOfAnalyses())
   {
-    j["Analyses"] = col->analyses();
+    j["Analyses"] = res->analyses();
   }
 
   // Write out the advance levels information
-  if (col->numberOfAdvanceLevels())
+  if (res->numberOfAdvanceLevels())
   {
     json advanceLevelsObj = json::object();
-    const std::map<int, std::string>& levels = col->advanceLevels();
+    const std::map<int, std::string>& levels = res->advanceLevels();
     for (auto iter = levels.begin(); iter != levels.end(); iter++)
     {
       int intLevel = iter->first;
       json intLevelObj = json::object();
       // Json mandates key to be string
       intLevelObj["Label"] = iter->second;
-      const double* rgba = col->advanceLevelColor(intLevel);
+      const double* rgba = res->advanceLevelColor(intLevel);
       if (rgba)
       {
         intLevelObj["Color"] = { rgba[0], rgba[1], rgba[2], rgba[3] };
@@ -75,7 +75,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::CollectionPtr& col)
 
   // Process attribute info
   std::vector<smtk::attribute::DefinitionPtr> definitionPtrs;
-  col->definitions(definitionPtrs);
+  res->definitions(definitionPtrs);
   // a list of defObj
   j["Definitions"] = definitionPtrs;
 
@@ -85,7 +85,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::CollectionPtr& col)
   // is that the designer would probably like all the toplevel views clustered together
   json viewsObj = json::array();
   bool isTop;
-  for (auto iter = col->views().begin(); iter != col->views().end(); iter++)
+  for (auto iter = res->views().begin(); iter != res->views().end(); iter++)
   {
     if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
     {
@@ -93,7 +93,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::CollectionPtr& col)
     }
     viewsObj.push_back(iter->second);
   }
-  for (auto iter = col->views().begin(); iter != col->views().end(); iter++)
+  for (auto iter = res->views().begin(); iter != res->views().end(); iter++)
   {
     if ((iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
     {
@@ -106,19 +106,19 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::CollectionPtr& col)
   // Process model info
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::CollectionPtr& col)
+SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 {
   std::vector<smtk::attribute::ItemExpressionDefInfo> expressDefInfo;
   std::vector<smtk::attribute::AttRefDefInfo> refDefInfo;
   smtk::io::Logger logger;
   //TODO: v2Parser has a notion of rootName
-  if (!col.get() || j.is_null())
+  if (!res.get() || j.is_null())
   {
-    // Create a valid collectionPtr so we can assign it to someone else
-    col = smtk::attribute::Collection::create();
+    // Create a valid resourcePtr so we can assign it to someone else
+    res = smtk::attribute::Resource::create();
   }
 
-  auto temp = std::static_pointer_cast<smtk::resource::Resource>(col);
+  auto temp = std::static_pointer_cast<smtk::resource::Resource>(res);
   smtk::resource::from_json(j, temp);
 
   // Process Analysis Info
@@ -128,7 +128,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::CollectionPtr& co
     json analyses = j.at("Analyses");
     for (json::iterator iterAna = analyses.begin(); iterAna != analyses.end(); iterAna++)
     {
-      col->defineAnalysis(iterAna.key(), iterAna.value());
+      res->defineAnalysis(iterAna.key(), iterAna.value());
     }
   }
   catch (std::exception& /*e*/)
@@ -150,8 +150,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::CollectionPtr& co
       {
         color[i] = rgba[i];
       }
-      col->addAdvanceLevel(level, label);
-      col->setAdvanceLevelColor(level, color);
+      res->addAdvanceLevel(level, label);
+      res->setAdvanceLevelColor(level, color);
     }
   }
   catch (std::exception& /*e*/)
@@ -185,22 +185,22 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::CollectionPtr& co
         std::string baseType = currentDef.at("BaseType").is_null() ? "" : currentDef.at("BaseType");
         if (!baseType.empty())
         {
-          baseDef = col->findDefinition(baseType);
+          baseDef = res->findDefinition(baseType);
           if (!baseDef)
           {
             smtkErrorMacro(logger, "Could not find Base Definition: "
                 << baseType << " needed to create Definition: " << type);
             continue;
           }
-          def = col->createDefinition(type, baseDef);
+          def = res->createDefinition(type, baseDef);
         }
         else
         {
-          def = col->createDefinition(type);
+          def = res->createDefinition(type);
         }
         if (!def)
         {
-          smtkWarningMacro(logger, "Definition: " << type << " already exists in the Collection");
+          smtkWarningMacro(logger, "Definition: " << type << " already exists in the Resource");
           continue;
         }
         // process the definition
@@ -222,7 +222,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::CollectionPtr& co
     for (auto iterView = views.begin(); iterView != views.end(); iterView++)
     {
       smtk::view::ViewPtr view = *iterView;
-      col->addView(view);
+      res->addView(view);
     }
   }
   catch (std::exception& /*e*/)
@@ -231,7 +231,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::CollectionPtr& co
   // Process model info
 
   // Update category infomration
-  col->updateCategories();
+  res->updateCategories();
 }
 }
 }

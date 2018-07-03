@@ -16,7 +16,6 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"

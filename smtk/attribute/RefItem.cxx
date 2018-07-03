@@ -10,8 +10,8 @@
 
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include <iostream>
 #include <stdio.h>
 
@@ -288,8 +288,8 @@ bool RefItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     return Item::assign(sourceItem, options);
   }
 
-  // Get reference to attribute collection
-  CollectionPtr collection = this->attribute()->collection();
+  // Get reference to attribute resource
+  ResourcePtr resource = this->attribute()->attributeResource();
 
   // Update values, copying as practical
   this->setNumberOfValues(sourceRefItem->numberOfValues());
@@ -298,10 +298,10 @@ bool RefItem::assign(ConstItemPtr& sourceItem, unsigned int options)
     if (sourceRefItem->isSet(i))
     {
       std::string nameStr = sourceRefItem->value()->name();
-      AttributePtr att = collection->findAttribute(nameStr);
+      AttributePtr att = resource->findAttribute(nameStr);
       if (!att)
       {
-        att = collection->copyAttribute(
+        att = resource->copyAttribute(
           sourceRefItem->value(), (options & Item::COPY_MODEL_ASSOCIATIONS) != 0, options);
         if (!att)
         {

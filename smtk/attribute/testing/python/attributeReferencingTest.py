@@ -25,11 +25,11 @@ if __name__ == '__main__':
 
     status = 0
 
-    collection = smtk.attribute.Collection.create()
-    print('Collection created')
+    resource = smtk.attribute.Resource.create()
+    print('Resource created')
 
     # Lets create an attribute to represent an expression
-    expDef = collection.createDefinition("ExpDef")
+    expDef = resource.createDefinition("ExpDef")
     eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
     expDef.addItemDefinition(eitemdef)
     eitemdef2 = smtk.attribute.StringItemDefinition.New("Aux String")
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     print(eitemdef.name())
     print(eitemdef2.name())
 
-    base = collection.createDefinition("BaseDef")
+    base = resource.createDefinition("BaseDef")
 
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
@@ -48,11 +48,11 @@ if __name__ == '__main__':
 
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
-    expAtt1 = collection.createAttribute("Exp1", expDef)
-    expAtt2 = collection.createAttribute("Exp2", expDef)
-    att = collection.createAttribute("testAtt1", "BaseDef")
-    att1 = collection.createAttribute("testAtt2", "BaseDef")
-    att2 = collection.createAttribute("testAtt3", "BaseDef")
+    expAtt1 = resource.createAttribute("Exp1", expDef)
+    expAtt2 = resource.createAttribute("Exp2", expDef)
+    att = resource.createAttribute("testAtt1", "BaseDef")
+    att1 = resource.createAttribute("testAtt2", "BaseDef")
+    att2 = resource.createAttribute("testAtt3", "BaseDef")
 
     smtk.attribute.ValueItem.CastTo(att.item(0)).setExpression(expAtt1)
     smtk.attribute.ValueItem.CastTo(att1.item(0)).setExpression(expAtt1)
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         print("\tAtt: %s Item: %s " %
               (i.attribute().name(), i.owningItem().name()))
 
-    collection.removeAttribute(att1)
+    resource.removeAttribute(att1)
     del att1  # Should delete att1
     print("testAtt1 deleted")
     refs = expAtt1.references()
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         print("\tAtt: %s Item: %s " %
               (i.attribute().name(), i.owningItem().name()))
 
-    del collection
-    print('Collection destroyed')
+    del resource
+    print('Resource destroyed')
 
     sys.exit(status)

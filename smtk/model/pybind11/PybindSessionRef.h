@@ -15,7 +15,6 @@
 
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"

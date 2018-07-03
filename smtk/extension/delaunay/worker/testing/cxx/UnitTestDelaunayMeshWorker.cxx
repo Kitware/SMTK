@@ -16,10 +16,10 @@
 #include "smtk/AutoInit.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/polygon/Operation.h"
@@ -183,7 +183,7 @@ int main(int argc, char** const argv)
   // Set the meshing attributes for the operator
   std::string meshingAttributesStr;
   {
-    smtk::attribute::CollectionPtr meshingAttributes = smtk::attribute::Collection::create();
+    smtk::attribute::ResourcePtr meshingAttributes = smtk::attribute::Resource::create();
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
     reader.read(meshingAttributes, remus::common::findFile("DelaunayMeshingDefs", "sbt",
@@ -198,7 +198,7 @@ int main(int argc, char** const argv)
     // attribute ourselves.
     //
     // TODO: the construction of default attributes should be an automated
-    //       process that is callable within the attribute collection.
+    //       process that is callable within the attribute resource.
     meshingAttributes->createAttribute("Globals", "Globals");
     smtk::io::AttributeWriter writer;
     writer.writeContents(meshingAttributes, meshingAttributesStr, logger);
@@ -231,7 +231,7 @@ int main(int argc, char** const argv)
   // Access the face that was meshed
   smtk::model::Face face = model->modelResource()->findEntitiesOfType(smtk::model::FACE)[0];
 
-  // Access the mesh collection associated with the model
+  // Access the mesh resource associated with the model
   smtk::mesh::CollectionPtr triangulatedFace =
     model->modelResource()->meshes()->associatedCollections(face)[0];
 

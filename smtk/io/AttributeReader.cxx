@@ -29,7 +29,7 @@ using namespace smtk::io;
 namespace
 {
 
-// Returns the attribute collection root node in a pugi doc
+// Returns the attribute resource root node in a pugi doc
 pugi::xml_node Internal_getRootNode(pugi::xml_document& doc)
 {
   if (XmlDocV1Parser::canParse(doc))
@@ -127,7 +127,7 @@ bool Internal_scanIncludes(pugi::xml_node& root, std::vector<std::string>& inclu
     pugi::xml_node root1 = Internal_getRootNode(doc1);
     if (!root1)
     {
-      smtkErrorMacro(logger, "Cannot find attribute collection root node in file " << fname);
+      smtkErrorMacro(logger, "Cannot find attribute resource root node in file " << fname);
       return true;
     }
     if (Internal_scanIncludes(root1, includeStack, newSet, spaths, logger))
@@ -141,44 +141,44 @@ bool Internal_scanIncludes(pugi::xml_node& root, std::vector<std::string>& inclu
   return false; // everything is ok!
 }
 
-void Internal_parseXml(smtk::attribute::CollectionPtr collection, pugi::xml_node& root,
-  bool reportAsError, Logger& logger)
+void Internal_parseXml(
+  smtk::attribute::ResourcePtr resource, pugi::xml_node& root, bool reportAsError, Logger& logger)
 {
   if (!root)
   {
-    smtkErrorMacro(logger, "Attribute collection root node is missing");
+    smtkErrorMacro(logger, "Attribute resource root node is missing");
     return;
   }
 
   // Lets see if any of the parsers can process the node
   if (XmlDocV1Parser::canParse(root))
   {
-    XmlDocV1Parser theReader(collection);
+    XmlDocV1Parser theReader(resource);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
     logger.append(theReader.messageLog());
   }
   else if (XmlDocV2Parser::canParse(root))
   {
-    XmlDocV2Parser theReader(collection);
+    XmlDocV2Parser theReader(resource);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
     logger.append(theReader.messageLog());
   }
   else if (XmlDocV3Parser::canParse(root))
   {
-    XmlDocV3Parser theReader(collection);
+    XmlDocV3Parser theReader(resource);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
     logger.append(theReader.messageLog());
   }
   else
   {
-    smtkErrorMacro(logger, "Unsupported Attribute Collection Format");
+    smtkErrorMacro(logger, "Unsupported Attribute Resource Format");
   }
 }
 
-void Internal_readAttributes(smtk::attribute::CollectionPtr collection,
+void Internal_readAttributes(smtk::attribute::ResourcePtr resource,
   const std::string& initialFileName, pugi::xml_node& root, const std::vector<std::string>& spaths,
   bool reportAsError, Logger& logger)
 {
@@ -209,16 +209,16 @@ void Internal_readAttributes(smtk::attribute::CollectionPtr collection,
     pugi::xml_document doc1;
     doc1.load_file(includeStack.back().c_str());
     std::cout << "Processing Include File: " << includeStack.back().c_str() << "\n";
-    // Lets get the root attribute collection node
+    // Lets get the root attribute resource node
     pugi::xml_node root1 = Internal_getRootNode(doc1);
     if (!root)
     {
       smtkErrorMacro(
-        logger, "Root attribute collection node is missing from " << includeStack.back());
+        logger, "Root attribute resource node is missing from " << includeStack.back());
       return;
     }
 
-    Internal_parseXml(collection, root1, reportAsError, logger);
+    Internal_parseXml(resource, root1, reportAsError, logger);
     if (logger.hasErrors())
     {
       return;
@@ -226,11 +226,11 @@ void Internal_readAttributes(smtk::attribute::CollectionPtr collection,
     includeStack.pop_back();
   }
   // Finally process the initial doc
-  Internal_parseXml(collection, root, reportAsError, logger);
+  Internal_parseXml(resource, root, reportAsError, logger);
 }
 } // namespace
 
-bool AttributeReader::read(smtk::attribute::CollectionPtr collection, const std::string& filename,
+bool AttributeReader::read(smtk::attribute::ResourcePtr resource, const std::string& filename,
   bool includePath, Logger& logger)
 {
   logger.reset();
@@ -247,7 +247,7 @@ bool AttributeReader::read(smtk::attribute::CollectionPtr collection, const std:
   pugi::xml_node root = Internal_getRootNode(doc);
   if (!root)
   {
-    smtkErrorMacro(logger, "Cannot find root attribute collection node in file " << filename);
+    smtkErrorMacro(logger, "Cannot find root attribute resource node in file " << filename);
     return true;
   }
 
@@ -257,23 +257,23 @@ bool AttributeReader::read(smtk::attribute::CollectionPtr collection, const std:
     path p(filename);
     std::vector<std::string> newSPaths(1, p.parent_path().string());
     newSPaths.insert(newSPaths.end(), m_searchPaths.begin(), m_searchPaths.end());
-    Internal_readAttributes(collection, filename, root, newSPaths, m_reportAsError, logger);
+    Internal_readAttributes(resource, filename, root, newSPaths, m_reportAsError, logger);
   }
   else
   {
-    Internal_readAttributes(collection, filename, root, m_searchPaths, m_reportAsError, logger);
+    Internal_readAttributes(resource, filename, root, m_searchPaths, m_reportAsError, logger);
   }
   return logger.hasErrors();
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::CollectionPtr collection, const std::string& filecontents, Logger& logger)
+  smtk::attribute::ResourcePtr resource, const std::string& filecontents, Logger& logger)
 {
-  return this->readContents(collection, filecontents.c_str(), filecontents.size(), logger);
+  return this->readContents(resource, filecontents.c_str(), filecontents.size(), logger);
 }
 
-bool AttributeReader::readContents(smtk::attribute::CollectionPtr collection, const char* content,
-  std::size_t length, Logger& logger)
+bool AttributeReader::readContents(
+  smtk::attribute::ResourcePtr resource, const char* content, std::size_t length, Logger& logger)
 {
   logger.reset();
   // First load in the xml document
@@ -287,20 +287,20 @@ bool AttributeReader::readContents(smtk::attribute::CollectionPtr collection, co
 
   // Get root element
   pugi::xml_node root = Internal_getRootNode(doc);
-  return this->readContents(collection, root, logger);
+  return this->readContents(resource, root, logger);
 }
 
 bool AttributeReader::readContents(
-  smtk::attribute::CollectionPtr collection, pugi::xml_node& root, Logger& logger)
+  smtk::attribute::ResourcePtr resource, pugi::xml_node& root, Logger& logger)
 {
   logger.reset();
   if (root)
   {
-    Internal_readAttributes(collection, "", root, m_searchPaths, m_reportAsError, logger);
+    Internal_readAttributes(resource, "", root, m_searchPaths, m_reportAsError, logger);
   }
   else
   {
-    smtkErrorMacro(logger, "Can not find attribute collection root node");
+    smtkErrorMacro(logger, "Can not find attribute resource root node");
   }
   return logger.hasErrors();
 }

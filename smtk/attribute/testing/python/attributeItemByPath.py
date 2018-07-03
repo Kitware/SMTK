@@ -24,39 +24,39 @@ class TestAttributeItemByPath(smtk.testing.TestCase):
         if smtk.testing.DATA_DIR == '':
             self.skipTest('SMTK test-data directory not provided')
 
-        self.collection = smtk.attribute.Collection.create()
+        self.resource = smtk.attribute.Resource.create()
         logger = smtk.io.Logger()
         reader = smtk.io.AttributeReader()
         filenm = os.path.join(smtk.testing.DATA_DIR, 'attribute',
                               'attribute_collection', 'HydraTemplateV1.sbt')
-        status = reader.read(self.collection, filenm, logger)
+        status = reader.read(self.resource, filenm, logger)
         print(
             '\n'.join([logger.record(i).message for i in range(logger.numberOfRecords())]))
         self.assertFalse(status, 'Could not read {fn}'.format(fn=filenm))
 
     def testItemInSimplePath(self):
-        att = self.collection.createAttribute('hydrostat')
+        att = self.resource.createAttribute('hydrostat')
         itemInSimplePath = att.itemAtPath('Hydrostat', '/')
         self.assertIsNotNone(itemInSimplePath, 'Could not find expected item.')
         self.assertEqual(itemInSimplePath.name(), 'Hydrostat',
                          'Got wrong attribute "{nm}".'.format(nm=itemInSimplePath.name()))
 
     def testItemInChildPath(self):
-        att = self.collection.createAttribute('BasicTurbulenceModel')
+        att = self.resource.createAttribute('BasicTurbulenceModel')
         itemInChildren = att.itemAtPath('Method/prandtl', '/')
         self.assertIsNotNone(itemInChildren, 'Could not find expected item.')
         self.assertEqual(itemInChildren.name(
         ), 'prandtl', 'Got wrong attribute "{nm}".'.format(nm=itemInChildren.name()))
 
     def testItemInGroupPath(self):
-        att = self.collection.createAttribute('InitialConditions')
+        att = self.resource.createAttribute('InitialConditions')
         itemInGroup = att.itemAtPath('InitialConditions/Velocity', '/')
         self.assertIsNotNone(itemInGroup, 'Could not find expected item.')
         self.assertEqual(itemInGroup.name(), 'Velocity',
                          'Got wrong attribute "{nm}".'.format(nm=itemInGroup.name()))
 
     def testItemInDeepPath(self):
-        att = self.collection.createAttribute('ppesolver')
+        att = self.resource.createAttribute('ppesolver')
         deepItem = att.itemAtPath(
             'PressurePoissonSolver/ppetype/preconditioner', '/')
         self.assertIsNotNone(deepItem, 'Could not find expected item.')

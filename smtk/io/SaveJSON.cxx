@@ -22,15 +22,9 @@
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
-#include "smtk/attribute/Definition.h"
-#include "smtk/attribute/MeshItem.h"
-
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
-#include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 #include "smtk/io/WriteMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
@@ -51,64 +45,6 @@ namespace
 cJSON* cJSON_CreateLongArray(const long* ints, unsigned count);
 cJSON* cJSON_CreateStringArray(const std::string* strings, unsigned count);
 cJSON* cJSON_CreateUUIDArray(const smtk::common::UUID* uids, unsigned count);
-
-// cJSON* cJSON_AddAttributeSpec(cJSON* opEntry,
-//   const char* tagName,    // tag holding name of attribute
-//   const char* xmlTagName, // tag holding XML for attribute
-//   smtk::attribute::AttributePtr spec)
-// {
-//   if (spec)
-//   {
-//     smtk::attribute::CollectionPtr tmpSys = smtk::attribute::Collection::create();
-//     tmpSys->setRefModelManager(spec->modelManager());
-//     tmpSys->copyAttribute(
-//       spec, static_cast<bool>(smtk::attribute::Collection::FORCE_COPY_ASSOCIATIONS));
-//     smtk::io::Logger log;
-//     smtk::io::AttributeWriter wri;
-//     wri.setFileVersion(3); // Why isn't this the default? Is setMaxFileVersion bad?
-//     wri.includeDefinitions(false);
-//     wri.includeInstances(true);
-//     wri.includeModelInformation(false);
-//     wri.includeViews(true); // now operator could specify views
-//     std::string xml;
-//     bool err = wri.writeContents(tmpSys, xml, log, true);
-//     if (!err)
-//     {
-//       cJSON_AddItemToObject(opEntry, tagName, cJSON_CreateString(spec->name().c_str()));
-//       cJSON_AddItemToObject(opEntry, xmlTagName, cJSON_CreateString(xml.c_str()));
-//     }
-//   }
-//   return opEntry;
-// }
-
-// cJSON* cJSON_AddOperation(smtk::operation::OperationPtr op, cJSON* opEntry)
-// {
-//   cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
-//   smtk::attribute::AttributePtr spec = op->specification();
-//   if (spec)
-//   {
-//     cJSON_AddAttributeSpec(opEntry, "spec", "specXML", spec);
-//   }
-//   /*
-//     cJSON_AddItemToObject(opEntry, "parameters",
-//       cJSON_CreateParameterArray(op->parameters()));
-//       */
-//   return opEntry;
-// }
-
-/*
-  cJSON* cJSON_CreateOperationArray(const smtk::operation::Operations& ops)
-    {
-    cJSON* a = cJSON_CreateArray();
-    for (smtk::operation::Operations::const_iterator it = ops.begin(); it != ops.end(); ++it)
-      {
-      cJSON* opEntry = cJSON_CreateObject();
-      cJSON_AddItemToArray(a, opEntry);
-      cJSON_AddOperation(*it, opEntry);
-      }
-    return a;
-    }
-    */
 
 cJSON* cJSON_CreateUUIDArray(const smtk::common::UUID* uids, unsigned count)
 {
@@ -390,11 +326,9 @@ int SaveJSON::save(
       }
     }
 
-    //SaveJSON::addMeshesRecord(delegateIter->first.manager(), models, sess);
     SaveJSON::addModelsRecord(delegateIter->first.manager(), models, sess);
   }
 
-  //status &= SaveJSON::forOperationDefinitions(session->operatorCollection(), sess);
   return status;
 }
 
@@ -660,14 +594,12 @@ int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Mana
   if (delegate)
   {
     delegate->setReferencePath(refPath);
-    // status &= delegate->exportJSON(modelMgr, session, sess, writeNativeModels);
   }
 
   smtk::model::Models modelsOfSession = SessionRef(modelMgr, session).models<smtk::model::Models>();
   SaveJSON::addModelsRecord(modelMgr, modelsOfSession, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelsOfSession, sess);
 
-  // status &= SaveJSON::forOperationDefinitions(session->operatorCollection(), sess);
   return status;
 }
 
@@ -690,116 +622,11 @@ int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
   if (delegate)
   {
     delegate->setReferencePath(refPath);
-    // status &= delegate->exportJSON(modelMgr, session, modelIds, sess, writeNativeModels);
   }
   SaveJSON::addModelsRecord(modelMgr, modelIds, sess);
   SaveJSON::addMeshesRecord(modelMgr, modelIds, sess);
-  // status &= SaveJSON::forOperationDefinitions(session->operatorCollection(), sess);
   return status;
 }
-
-/*
-int SaveJSON::forModelOperations(const smtk::common::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
-{
-  smtk::model::Model mod(modelMgr, uid);
-  smtk::operation::Operations ops(mod.operators());
-  cJSON_AddItemToObject(entRec, "ops",
-    cJSON_CreateOperationArray(ops));`
-  return 1; // SaveJSON::forOperations(ops, entRec);
-} */
-
-/*
-int SaveJSON::forOperationDefinitions(smtk::attribute::CollectionPtr opSys, cJSON* entRec)
-{
-  smtk::io::Logger log;
-  smtk::io::AttributeWriter wri;
-  wri.setFileVersion(3); // Why isn't this the default? Is setMaxFileVersion bad?
-  wri.includeDefinitions(true);
-  wri.includeInstances(false);
-  wri.includeModelInformation(false);
-  wri.includeViews(true); // now operator could specify views
-  std::string xml;
-  bool err = wri.writeContents(opSys, xml, log, true);
-  if (!err)
-  {
-    cJSON_AddItemToObject(entRec, "ops", cJSON_CreateString(xml.c_str()));
-  }
-  std::vector<smtk::attribute::DefinitionPtr> ops;
-  opSys.derivedDefinitions(
-    opSys.findDefinition("operator"), ops);
-  if (!ops.empty())
-    {
-    cJSON_AddItemToObject(entRec, "ops",
-      cJSON_CreateOperationArray(ops));
-    }
-  return 1;
-}
-
-int SaveJSON::forOperation(OperationPtr op, cJSON* entRec)
-{
-  cJSON_AddOperation(op, entRec);
-  return 1;
-}
-
-int SaveJSON::forOperation(smtk::attribute::AttributePtr op, cJSON* entRec)
-{
-  cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(op->type().c_str()));
-  cJSON_AddAttributeSpec(entRec, "spec", "specXML", op);
-  return 1;
-}
-
-int SaveJSON::forOperationResult(OperationResult res, cJSON* entRec)
-{
-  cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
-  cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
-  EntityRefs ents = res->entityRefsAs<EntityRefs>("created");
-  EntityRefs mdfs = res->entityRefsAs<EntityRefs>("modified");
-  EntityRefs meshents = res->entityRefsAs<EntityRefs>("mesh_created");
-
-  ents.insert(mdfs.begin(), mdfs.end());
-  ents.insert(meshents.begin(), meshents.end());
-  if (!ents.empty())
-  {
-    // If the operator reports new/modified entities, transcribe the affected models.
-    // TODO: In the future, this may be more conservative (i.e., fewer records
-    //       would be included to save time and memory) than ITERATE_MODELS.
-    cJSON* records = cJSON_CreateObject();
-    SaveJSON::forEntities(records, ents, smtk::model::ITERATE_MODELS, JSON_CLIENT_DATA);
-    cJSON_AddItemToObject(entRec, "records", records);
-  }
-
-  smtk::attribute::MeshItemPtr modifiedMeshes = res->findMesh("mesh_modified");
-  // Also export JSON meshes as a new node "mesh_records"
-  if (!meshents.empty() || modifiedMeshes)
-  {
-    // get all collections associated with the input entities
-    smtk::common::UUIDs collectionIds;
-    smtk::mesh::ManagerPtr meshMgr = res->modelManager()->meshes();
-    smtk::model::EntityRefs::const_iterator iter;
-    for (iter = meshents.begin(); iter != meshents.end(); ++iter)
-    {
-      smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(*iter);
-      collectionIds.insert(cids.begin(), cids.end());
-    }
-    if (modifiedMeshes)
-    {
-      smtk::attribute::MeshItem::const_mesh_it it;
-      for (it = modifiedMeshes->begin(); it != modifiedMeshes->end(); ++it)
-      {
-        collectionIds.insert(it->collection()->entity());
-      }
-    }
-    if (collectionIds.size() > 0)
-    {
-      cJSON* mesh_records = cJSON_CreateObject();
-      SaveJSON::forMeshCollections(mesh_records, collectionIds, meshMgr);
-      cJSON_AddItemToObject(entRec, "mesh_records", mesh_records);
-    }
-  }
-
-  return 1;
-}
-  */
 
 /// Serialize a session's list of dangling entities held in the given \a modelMgr.
 int SaveJSON::forDanglingEntities(

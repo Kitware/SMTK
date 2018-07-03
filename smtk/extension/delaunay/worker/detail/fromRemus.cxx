@@ -13,7 +13,7 @@
 
 #include "smtk/model/Manager.h"
 
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/common/UUID.h"
 
@@ -74,7 +74,7 @@ namespace detail
 
 //----------------------------------------------------------------------------
 Resources::Resources(
-  smtk::model::ManagerPtr m, smtk::attribute::CollectionPtr s, const std::vector<FacesOfModel>& f)
+  smtk::model::ManagerPtr m, smtk::attribute::ResourcePtr s, const std::vector<FacesOfModel>& f)
   : m_model(m)
   , m_mesh(m->meshes())
   , m_attributes(s)
@@ -96,14 +96,14 @@ detail::Resources deserialize_smtk_model(const remus::proto::JobContent& jsonMod
   }
 
   //now that the model is loaded apply the mesh attributes to the model
-  smtk::attribute::CollectionPtr attCollection = smtk::attribute::Collection::create();
+  smtk::attribute::ResourcePtr attResource = smtk::attribute::Resource::create();
   if (meshAttributeData.dataSize() > 0)
   {
-    attCollection->setRefModelManager(mgr);
+    attResource->setRefModelManager(mgr);
     smtk::io::AttributeReader reader;
     smtk::io::Logger inputLogger;
     reader.readContents(
-      attCollection, meshAttributeData.data(), meshAttributeData.dataSize(), inputLogger);
+      attResource, meshAttributeData.data(), meshAttributeData.dataSize(), inputLogger);
   }
 
   //need to make smtkModelIdsToMesh be optional
@@ -125,6 +125,6 @@ detail::Resources deserialize_smtk_model(const remus::proto::JobContent& jsonMod
     load_selected_models(mgr, modelEnts, modelsToMesh);
   }
 
-  return Resources(mgr, attCollection, modelsToMesh);
+  return Resources(mgr, attResource, modelsToMesh);
 }
 }

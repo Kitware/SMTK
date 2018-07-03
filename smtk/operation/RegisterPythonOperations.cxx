@@ -11,6 +11,7 @@
 #include "smtk/operation/RegisterPythonOperations.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/PythonInterpreter.h"

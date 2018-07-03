@@ -9,10 +9,10 @@
 //=========================================================================
 #include "jsonRefItemDefinition.h"
 
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
@@ -58,7 +58,7 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::RefItemDe
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::RefItemDefinitionPtr& defPtr, const smtk::attribute::CollectionPtr& colPtr,
+  smtk::attribute::RefItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
   std::vector<AttRefDefInfo>& expressionDefInfo)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
@@ -69,12 +69,12 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
   smtk::attribute::from_json(j, temp);
   // Has the attribute definition been set?
-  // Handle at at constuction time since definition knows about collection
+  // Handle at at constuction time since definition knows about resource
   // Reference: XmlDocV1Parser: L1308
   try
   {
     std::string etype = j.at("AttDef");
-    DefinitionPtr adef = colPtr->findDefinition(etype);
+    DefinitionPtr adef = resPtr->findDefinition(etype);
     if (adef)
     {
       defPtr->setAttributeDefinition(adef);

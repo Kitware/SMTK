@@ -23,11 +23,11 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -289,7 +289,7 @@ bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
   // If the output entities do not include the input,
   // remove attributes from the input as otherwise
   // adding them to the target entities might be disallowed
-  // by the attribute collection.
+  // by the attribute resource.
   if (to.find(from) == to.end())
   {
     EntityRef mutableFrom(from);
@@ -302,7 +302,7 @@ bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
     {
       if (ent != from && ent.isValid())
       {
-        ok &= ent.associateAttribute(attr->collection(), attr->id());
+        ok &= ent.associateAttribute(attr->attributeResource(), attr->id());
       }
     }
   }
@@ -355,7 +355,7 @@ bool Session::mergeAttributes(const EntityRefs& from, EntityRef& to) const
   // Add attributes previously in {from \ to} to target (to).
   for (auto attr : attrs)
   {
-    ok &= to.associateAttribute(attr->collection(), attr->id());
+    ok &= to.associateAttribute(attr->attributeResource(), attr->id());
   }
   return ok;
 }

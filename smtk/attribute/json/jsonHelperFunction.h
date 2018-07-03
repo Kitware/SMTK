@@ -47,17 +47,17 @@ public:
    * given a json iterator
    */
   static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-    ValueItemDefinitionPtr& idef, const smtk::attribute::CollectionPtr& colPtr,
+    ValueItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr,
     std::vector<ItemExpressionDefInfo>& expressionDefInfo,
     std::vector<AttRefDefInfo>& attRefDefInfo);
 
   static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-    DefinitionPtr& idef, const smtk::attribute::CollectionPtr& colPtr,
+    DefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr,
     std::vector<ItemExpressionDefInfo>& expressionDefInfo,
     std::vector<AttRefDefInfo>& attRefDefInfo);
 
   static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-    GroupItemDefinitionPtr& idef, const smtk::attribute::CollectionPtr& colPtr,
+    GroupItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr,
     std::vector<ItemExpressionDefInfo>& expressionDefInfo,
     std::vector<AttRefDefInfo>& attRefDefInfo);
 

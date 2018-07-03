@@ -10,7 +10,7 @@
 #
 #=============================================================================
 """
-Test smtk.attribute.Collection.copyDefinition() method
+Test smtk.attribute.Resource.copyDefinition() method
 
 Uses copyDefinitionTest.sbt in the SMTKTestData repo.
 """
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # First (and) only argument is the path to the smtk data directory
     if len(sys.argv) < 2:
         print()
-        print('Test smtk.attribute.Collection.copyDefinition()')
+        print('Test smtk.attribute.Resource.copyDefinition()')
         print('Usage: python %s path-to-SMTKTestData')
         print()
         sys.exit(-1)
@@ -48,16 +48,16 @@ if __name__ == '__main__':
     logging.debug('LD_LIBRARY_PATH = %s' % os.environ.get('LD_LIBRARY_PATH'))
     logging.debug('PYTHONPATH = %s' % os.environ.get('PYTHONPATH'))
 
-    # Load attribute file into collection
+    # Load attribute file into resource
     smtk_test_data = sys.argv[1]
     att_folder = os.path.join(
         smtk_test_data, 'attribute', 'attribute_collection')
     att_path = os.path.join(att_folder, SBT_FILENAME)
     logging.info('Reading %s' % att_path)
-    input_collection = smtk.attribute.Collection.create()
+    input_resource = smtk.attribute.Resource.create()
     reader = smtk.io.AttributeReader()
     logger = smtk.io.Logger()
-    err = reader.read(input_collection, att_path, logger)
+    err = reader.read(input_resource, att_path, logger)
     if err:
         logging.error("Unable to load template file")
         logging.error(logger.convertToString())
@@ -65,24 +65,24 @@ if __name__ == '__main__':
 
     err_count = 0
 
-    # Instantiate 2nd collection
-    test_collection = smtk.attribute.Collection.create()
+    # Instantiate 2nd resource
+    test_resource = smtk.attribute.Resource.create()
 
     # Copy SecondConcrete definition, which should copy alot of stuff
-    source_def = input_collection.findDefinition('SecondConcrete')
-    test_collection.copyDefinition(source_def, 0)
+    source_def = input_resource.findDefinition('SecondConcrete')
+    test_resource.copyDefinition(source_def, 0)
     expected_types = [
         'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
         'FirstConcrete', 'PolyLinearFunction'
     ]
     for def_type in expected_types:
-        defn = test_collection.findDefinition(def_type)
+        defn = test_resource.findDefinition(def_type)
         if defn is None:
             logging.error('Expected %s definition, found None' % def_type)
             err_count += 1
 
     # Add explicit test for conditional children
-    defn = test_collection.findDefinition('SecondConcrete')
+    defn = test_resource.findDefinition('SecondConcrete')
     if defn:
         i = defn.findItemPosition('ConditionalSelectionList')
         item = defn.itemDefinition(i)
@@ -107,11 +107,11 @@ if __name__ == '__main__':
             err_count += 1
 
     # Note there is ALOT more that could & should be verified here
-    logging.debug('Writing collection')
+    logging.debug('Writing resource')
 
     # Write data out FYI
     writer = smtk.io.AttributeWriter()
-    err = writer.write(test_collection, SBI_FILENAME, logger)
+    err = writer.write(test_resource, SBI_FILENAME, logger)
     if err:
         logging.error("Unable to write output file")
         sys.exit(-3)

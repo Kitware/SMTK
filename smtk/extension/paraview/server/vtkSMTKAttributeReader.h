@@ -38,7 +38,7 @@ public:
   smtk::resource::ResourcePtr GetResource() const override;
 
   /// Return the SMTK attribute resource that holds data read from \a FileName.
-  smtk::attribute::CollectionPtr GetSMTKResource() const;
+  smtk::attribute::ResourcePtr GetSMTKResource() const;
 
 protected:
   vtkSMTKAttributeReader();
@@ -50,7 +50,7 @@ protected:
   bool LoadFile();
 
   bool IncludePathToFile;
-  smtk::attribute::CollectionPtr AttributeResource;
+  smtk::attribute::ResourcePtr AttributeResource;
   vtkSmartPointer<vtkTable> Defs;
 
 private:

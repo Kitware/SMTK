@@ -9,8 +9,8 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include <iostream>
@@ -20,33 +20,33 @@
 int unitAttributeBasics(int, char* [])
 {
   int status = 0;
-  smtk::attribute::CollectionPtr collptr = smtk::attribute::Collection::create();
-  smtk::attribute::WeakCollectionPtr wcollptr = collptr;
-  smtk::attribute::Collection& collection(*collptr.get());
-  std::cout << "Collection Created\n";
+  smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
+  smtk::attribute::WeakResourcePtr wresptr = resptr;
+  smtk::attribute::Resource& resource(*resptr.get());
+  std::cout << "Resource Created\n";
 
-  smtk::attribute::DefinitionPtr def = collection.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def = resource.createDefinition("testDef");
   smtkTest(!!def, "Definition testDef not created.");
   std::cout << "Definition testDef created\n";
 
-  smtk::attribute::DefinitionPtr def1 = collection.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def1 = resource.createDefinition("testDef");
   smtkTest(!def1, "Duplicated definition testDef created");
   std::cout << "Duplicated definition testDef not created\n";
 
-  smtk::attribute::AttributePtr att = collection.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att = resource.createAttribute("testAtt", "testDef");
   smtkTest(!!att, "Attribute testAtt not created.");
   std::cout << "Attribute testAtt created\n";
 
-  smtk::attribute::AttributePtr att1 = collection.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att1 = resource.createAttribute("testAtt", "testDef");
   smtkTest(!att1, "Duplicate Attribute testAtt created.");
   std::cout << "Duplicate Attribute testAtt not created\n";
 
   std::vector<smtk::attribute::AttributePtr> atts;
   std::vector<smtk::attribute::DefinitionPtr> defs;
 
-  // Check to see how many atts and defs are in the collection
-  collection.definitions(defs);
-  collection.attributes(atts);
+  // Check to see how many atts and defs are in the resource
+  resource.definitions(defs);
+  resource.attributes(atts);
 
   smtkTest(defs.size() == 1, "Incorrect number of definitions reported - definitions returned: "
       << defs.size() << " but should have returned 1.");
@@ -91,7 +91,7 @@ int unitAttributeBasics(int, char* [])
   smtkTest(att->appliesToInteriorNodes(), "Should be applied to interior node.");
   att->setAppliesToInteriorNodes(false);
   smtkTest(!att->appliesToInteriorNodes(), "Should not applied to interior node.");
-  smtkTest(att->collection() == collptr, "Should be this collection.");
-  collptr = nullptr;
-  smtkTest(wcollptr.lock() == nullptr, "Collection was not destroyed") return status;
+  smtkTest(att->resource() == resptr, "Should be this resource.");
+  resptr = nullptr;
+  smtkTest(wresptr.lock() == nullptr, "Resource was not destroyed") return status;
 }

@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/common/StringUtil.h"
 #include "smtk/common/UUIDGenerator.h"
@@ -1510,9 +1511,9 @@ smtk::attribute::Attributes Entity::attributes(smtk::attribute::DefinitionPtr de
   {
     return atts;
   }
-  auto attCollection = def->collection();
-  // If there is no collection then return an empty list
-  if (attCollection == nullptr)
+  auto attResource = def->resource();
+  // If there is no resource then return an empty list
+  if (attResource == nullptr)
   {
     return atts;
   }
@@ -1528,7 +1529,7 @@ smtk::attribute::Attributes Entity::attributes(smtk::attribute::DefinitionPtr de
   // Lets go through all of the attributes and find the ones that come from def
   for (auto id : entry->second.attributeIds())
   {
-    auto a = attCollection->findAttribute(id);
+    auto a = attResource->findAttribute(id);
     if (a == nullptr)
     {
       // Could not find the attribute for that ID

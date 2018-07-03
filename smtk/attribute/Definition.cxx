@@ -11,11 +11,11 @@
 #include "smtk/attribute/Definition.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 
 #include <algorithm>
 #include <cassert>
@@ -28,9 +28,9 @@ double Definition::s_notApplicableBaseColor[4] = { 0.0, 0.0, 0.0, 0.0 };
 double Definition::s_defaultBaseColor[4] = { 1.0, 1.0, 1.0, 1.0 };
 
 Definition::Definition(
-  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, CollectionPtr myCollection)
+  const std::string& myType, smtk::attribute::DefinitionPtr myBaseDef, ResourcePtr myResource)
 {
-  m_collection = myCollection;
+  m_resource = myResource;
   m_baseDefinition = myBaseDef;
   m_type = myType;
   m_label = m_type;
@@ -143,7 +143,7 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   }
 
   // Get the most "basic" definition that is unique
-  auto attresource = this->collection();
+  auto attresource = this->resource();
   if (attresource == nullptr)
   {
     return false; // there is no derived info
@@ -390,7 +390,7 @@ void Definition::updateDerivedDefinitions()
   DefinitionPtr def = this->shared_from_this();
   if (def)
   {
-    auto attresource = this->collection();
+    auto attresource = this->resource();
     if (attresource != nullptr)
     {
       attresource->updateDerivedDefinitionIndexOffsets(def);

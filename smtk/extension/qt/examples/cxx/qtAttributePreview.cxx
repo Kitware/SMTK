@@ -21,8 +21,8 @@
 #include "smtk/view/View.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/model/Manager.h"
 
@@ -46,24 +46,23 @@ int main(int argc, char* argv[])
 {
   if (argc < 2)
   {
-    std::cout
-      << "\n"
-      << "Simple program to load attribute collection and display corresponding editor panel"
-      << "\n"
-      << "Usage: qtAttributePreview attribute_filename  [output_filename]"
-      << "  [view_name | view_number]"
-      << "\n"
-      << std::endl;
+    std::cout << "\n"
+              << "Simple program to load attribute resource and display corresponding editor panel"
+              << "\n"
+              << "Usage: qtAttributePreview attribute_filename  [output_filename]"
+              << "  [view_name | view_number]"
+              << "\n"
+              << std::endl;
     return -1;
   }
 
-  // Instantiate and load attribute collection
-  smtk::attribute::CollectionPtr collection = smtk::attribute::Collection::create();
+  // Instantiate and load attribute resource
+  smtk::attribute::ResourcePtr resource = smtk::attribute::Resource::create();
   char* inputPath = argv[1];
   std::cout << "Loading simulation file: " << inputPath << std::endl;
   smtk::io::AttributeReader reader;
   smtk::io::Logger inputLogger;
-  bool err = reader.read(collection, inputPath, true, inputLogger);
+  bool err = reader.read(resource, inputPath, true, inputLogger);
   if (err)
   {
     std::cout << "Error loading simulation file -- exiting"
@@ -72,15 +71,15 @@ int main(int argc, char* argv[])
     return -2;
   }
 
-  // If collection contains no views, create InstancedView by default
+  // If resource contains no views, create InstancedView by default
   // assume there is at most one root type view
-  smtk::view::ViewPtr root = collection->findTopLevelView();
+  smtk::view::ViewPtr root = resource->findTopLevelView();
 
   if (!root)
   {
     root = smtk::view::View::New("Group", "RootView");
     root->details().setAttribute("TopLevel", "true");
-    collection->addView(root);
+    resource->addView(root);
     smtk::view::View::Component& temp = root->details().addChild("Views");
     (void)temp;
     int viewsIndex = root->details().findChild("Views");
@@ -90,7 +89,7 @@ int main(int argc, char* argv[])
     smtk::view::View::Component& viewsComp = root->details().child(viewsIndex);
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-    collection->findBaseDefinitions(baseDefinitions);
+    resource->findBaseDefinitions(baseDefinitions);
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
     for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
@@ -102,7 +101,7 @@ int main(int argc, char* argv[])
       }
 
       std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-      collection->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+      resource->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
       defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
     }
 
@@ -116,20 +115,20 @@ int main(int argc, char* argv[])
         instanced->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", (*defIter)->type());
       comp.setAttribute("Name", (*defIter)->type());
-      collection->addView(instanced);
-      smtk::attribute::AttributePtr instance = collection->createAttribute((*defIter)->type());
+      resource->addView(instanced);
+      smtk::attribute::AttributePtr instance = resource->createAttribute((*defIter)->type());
       comp.setContents(instance->name());
       viewsComp.addChild("View").setAttribute("Title", (*defIter)->type());
     }
   }
 
-  smtk::model::ManagerPtr modelManager = collection->refModelManager();
+  smtk::model::ManagerPtr modelManager = resource->refModelManager();
 
   // Instantiate Qt application
   QApplication* app = new QApplication(argc, argv);
 
   // Instantiate smtk's qtUIManager
-  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(collection);
+  smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(resource);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget* widget = new QWidget();
@@ -151,7 +150,7 @@ int main(int argc, char* argv[])
     // Render one view (experimental)
     // First check if argv[3] isa name
     std::string input = argv[3];
-    view = collection->findView(input);
+    view = resource->findView(input);
     if (!view)
     {
       std::cout << "ERROR: View \"" << input << "\" not found" << std::endl;
@@ -183,7 +182,7 @@ int main(int argc, char* argv[])
     std::cout << "Writing resulting simulation file: " << outputPath << std::endl;
     smtk::io::AttributeWriter writer;
     smtk::io::Logger outputLogger;
-    bool outputErr = writer.write(collection, outputPath, outputLogger);
+    bool outputErr = writer.write(resource, outputPath, outputLogger);
     if (outputErr)
     {
       std::cout << "Error writing simulation file -- exiting"

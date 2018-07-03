@@ -16,7 +16,7 @@
 #include "smtk/view/View.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Collection.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
@@ -54,7 +54,7 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
   pqSMTKResource* rsrc = dynamic_cast<pqSMTKResource*>(psrc);
   if (rsrc)
   {
-    auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Collection>(rsrc->getResource());
+    auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc->getResource());
     if (attrRsrc)
     {
       pqSMTKWrapper* wrapper =
@@ -75,7 +75,7 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
   return false;
 }
 
-bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
+bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
 {
   bool didDisplay = false;
   if (!rsrc || rsrc == m_rsrc)
@@ -117,7 +117,7 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::CollectionPtr rsrc)
       [this, rsrcMgr](smtk::resource::Event evnt, smtk::resource::Resource::Ptr attrRsrc) {
         if (evnt == smtk::resource::Event::RESOURCE_REMOVED && attrRsrc == m_rsrc)
         {
-          // The application is removing the attribute collection we are viewing.
+          // The application is removing the attribute resource we are viewing.
           // Clear out the panel and unobserve the manager.
           rsrcMgr->unobserve(m_observer);
           delete m_attrUIMgr;
