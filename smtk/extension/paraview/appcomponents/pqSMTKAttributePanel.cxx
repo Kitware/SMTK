@@ -124,6 +124,10 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
           m_attrUIMgr = nullptr;
           m_rsrc = nullptr;
           m_seln = nullptr;
+          while (QWidget* w = this->widget()->findChild<QWidget*>())
+          {
+            delete w;
+          }
         }
       });
   }
