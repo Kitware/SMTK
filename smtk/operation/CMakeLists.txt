@@ -11,6 +11,7 @@ set(operationSrcs
   XMLOperation.cxx
 
   groups/ImporterGroup.cxx
+  groups/ExporterGroup.cxx
   groups/ReaderGroup.cxx
   groups/ResourceIOGroup.cxx
   groups/WriterGroup.cxx
@@ -33,6 +34,7 @@ set(operationHeaders
   XMLOperation.h
 
   groups/ImporterGroup.h
+  groups/ExporterGroup.h
   groups/ReaderGroup.h
   groups/ResourceIOGroup.h
   groups/WriterGroup.h

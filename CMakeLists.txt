@@ -119,6 +119,8 @@ cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for d
   "SMTK_ENABLE_DISCRETE_SESSION" OFF)
 cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
+cmake_dependent_option(SMTK_ENABLE_VTK_SESSION "Build a session that uses VTK multiblock datasets" ON
+  SMTK_ENABLE_VTK_SUPPORT OFF)
 option(SMTK_ENABLE_MESH_SESSION
   "Build a session that uses smtk::mesh as its backing" ON)
 cmake_dependent_option(SMTK_ENABLE_MULTISCALE_SESSION "Build a session to Multiscale data" OFF
