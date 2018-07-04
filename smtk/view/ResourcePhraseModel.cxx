@@ -91,6 +91,31 @@ void ResourcePhraseModel::handleCreated(
   // TODO
 }
 
+void ResourcePhraseModel::handleModified(Operation::Ptr, Operation::Result, ComponentItemPtr)
+{
+}
+
+void ResourcePhraseModel::handleExpunged(
+  Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
+{
+  (void)op;
+  if (!res || !data)
+  {
+    return;
+  }
+
+  for (auto it = data->begin(); it != data->end(); ++it)
+  {
+    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(*it);
+    if (comp == nullptr)
+    {
+      continue;
+    }
+    smtk::resource::ResourcePtr rsrc = comp->resource();
+    this->processResource(rsrc, false);
+  }
+}
+
 void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 {
   if (adding)

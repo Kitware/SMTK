@@ -43,12 +43,11 @@ protected:
   virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
   virtual void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event);
   virtual int handleOperationEvent(Operation::Ptr op, Operator::EventType event, Operator::Result res);
-
-  virtual void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
-  virtual void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   */
   void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event) override;
   void handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data) override;
+  void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data) override;
+  void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data) override;
 
   virtual void processResource(Resource::Ptr rsrc, bool adding);
 
