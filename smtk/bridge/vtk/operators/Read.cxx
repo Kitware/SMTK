@@ -56,10 +56,6 @@ Read::Result Read::operateInternal()
     }
   }
 
-  // Initialize a monotonically increasing counter for assigning different
-  // blocks preserved UUIDs.
-  int curId = 0;
-
   // Create a new resource for the import
   auto resource = smtk::bridge::vtk::Resource::create();
   auto session = smtk::bridge::vtk::Session::create();
