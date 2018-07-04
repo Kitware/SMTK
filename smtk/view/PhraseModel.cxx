@@ -220,9 +220,9 @@ int PhraseModel::handleOperationEvent(
   }
 
   // Find out which resource components were created, modified, or expunged.
-  this->handleExpunged(op, res, res->findComponent("expunged components"));
-  this->handleModified(op, res, res->findComponent("modified components"));
-  this->handleCreated(op, res, res->findComponent("created components"));
+  this->handleExpunged(op, res, res->findComponent("expunged"));
+  this->handleModified(op, res, res->findComponent("modified"));
+  this->handleCreated(op, res, res->findComponent("created"));
   return 0;
 }
 
