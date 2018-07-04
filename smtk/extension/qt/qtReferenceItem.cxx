@@ -57,6 +57,7 @@ qtReferenceItem::qtReferenceItem(smtk::attribute::ItemPtr item, QWidget* parent,
 
 qtReferenceItem::~qtReferenceItem()
 {
+  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
   delete m_p;
   m_p = nullptr;
 }
