@@ -10,5 +10,7 @@
 
 #include "smtk/AutoInit.h"
 #include "smtk/Options.h"
+#include "smtk/PythonAutoInit.h"
 
 smtkComponentInitMacro(smtk_rgg_session);
+smtkPythonInitMacro(export_to_pyarc, smtk.bridge.rgg.export_to_pyarc, true);
