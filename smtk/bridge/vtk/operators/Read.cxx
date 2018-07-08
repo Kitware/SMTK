@@ -56,8 +56,12 @@ Read::Result Read::operateInternal()
     }
   }
 
+  std::string resourceIdStr = j.at("id");
+  smtk::common::UUID resourceId(resourceIdStr);
+
   // Create a new resource for the import
   auto resource = smtk::bridge::vtk::Resource::create();
+  resource->setId(resourceId);
   auto session = smtk::bridge::vtk::Session::create();
   resource->setLocation(filename);
   resource->setSession(session);

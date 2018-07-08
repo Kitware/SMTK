@@ -11,22 +11,60 @@
 #include "Write.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/vtk/Resource.h"
+#include "smtk/bridge/vtk/Session.h"
 #include "smtk/bridge/vtk/Write_xml.h"
 #include "smtk/bridge/vtk/json/jsonResource.h"
+#include "smtk/bridge/vtk/operators/Export.h"
+
+#include "smtk/common/Paths.h"
 
 #include "smtk/model/SessionIOJSON.h"
 
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+
 using namespace smtk::model;
+
+namespace
+{
+static void RetrievePreservedUUID(vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)
+{
+  if (!data)
+    return;
+
+  vtkInformation* info = data->GetInformation();
+  uuids.push_back(
+    smtk::common::UUID(std::string(info->Get(smtk::bridge::vtk::Session::SMTK_UUID_KEY()))));
+}
+
+static void RetrievePreservedUUIDsRecursive(
+  vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)
+{
+  RetrievePreservedUUID(data, uuids);
+
+  vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(data);
+  if (mbds)
+  {
+    int nb = mbds->GetNumberOfBlocks();
+    for (int i = 0; i < nb; ++i)
+    {
+      RetrievePreservedUUIDsRecursive(mbds->GetBlock(i), uuids);
+    }
+  }
+}
+}
 
 namespace smtk
 {
 namespace bridge
 {
-
 namespace vtk
 {
 
@@ -44,6 +82,69 @@ Write::Result Write::operateInternal()
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+
+  std::vector<smtk::common::UUID> preservedUUIDs;
+  smtk::common::UUIDs modelIds = rsrc->entitiesMatchingFlags(smtk::model::MODEL_ENTITY);
+  for (auto& id : modelIds)
+  {
+    smtk::model::Model dataset = smtk::model::Model(rsrc, id);
+    EntityHandle handle = rsrc->session()->toEntity(dataset);
+    vtkMultiBlockDataSet* mbds = handle.object<vtkMultiBlockDataSet>();
+    RetrievePreservedUUIDsRecursive(mbds, preservedUUIDs);
+  }
+
+  std::vector<std::string> preservedUUIDsStr;
+  for (auto& id : preservedUUIDs)
+  {
+    preservedUUIDsStr.push_back(id.toString());
+  }
+  j["preservedUUIDs"] = preservedUUIDsStr;
+
+  std::string fileDirectory = smtk::common::Paths::directory(rsrc->location()) + "/";
+
+  std::vector<std::string> modelFiles;
+
+  for (auto& id : modelIds)
+  {
+    smtk::model::Model dataset = smtk::model::Model(rsrc, id);
+
+    std::string modelFile =
+      fileDirectory + id.toString() + rsrc->session()->defaultFileExtension(dataset);
+
+    static const bool exportToExodus = false;
+    if (exportToExodus)
+    {
+      Export::Ptr exportOp = Export::create();
+      exportOp->parameters()->findString("filetype")->setValue("");
+
+      exportOp->parameters()->associate(dataset.entityRecord());
+      exportOp->parameters()->findFile("filename")->setValue(modelFile);
+      Result exportOpResult = exportOp->operate();
+
+      if (exportOpResult->findInt("outcome")->value() != static_cast<int>(Outcome::SUCCEEDED))
+      {
+        smtkErrorMacro(log(), "Cannot export file \"" << modelFile << "\".");
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+      }
+    }
+    else
+    {
+      std::string url = dataset.stringProperty("url")[0];
+      if (!boost::filesystem::is_regular_file(url))
+      {
+        smtkErrorMacro(log(), "Cannot copy file \"" << url << "\".");
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+      }
+      if (!boost::filesystem::is_regular_file(modelFile))
+      {
+        boost::filesystem::copy_file(url, modelFile);
+      }
+    }
+
+    modelFiles.push_back(id.toString() + rsrc->session()->defaultFileExtension(dataset));
+  }
+
+  j["modelFiles"] = modelFiles;
 
   // Write JSON records to the specified URL:
   bool ok = smtk::model::SessionIOJSON::saveModelRecords(j, rsrc->location());
