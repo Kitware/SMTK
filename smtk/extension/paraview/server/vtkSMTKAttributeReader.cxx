@@ -113,6 +113,11 @@ bool vtkSMTKAttributeReader::LoadFile()
   this->AttributeResource = rsrc;
   rsrc->setLocation(this->FileName);
 
+  if (this->Wrapper)
+  {
+    this->Wrapper->GetResourceManager()->add(this->AttributeResource);
+  }
+
   smtk::io::AttributeReader rdr;
   if (rdr.read(rsrc, this->FileName, this->IncludePathToFile, smtk::io::Logger::instance()))
   {
@@ -120,11 +125,6 @@ bool vtkSMTKAttributeReader::LoadFile()
     this->AttributeResource = nullptr;
     vtkErrorMacro("Could not read \"" << this->FileName << "\"");
     return false;
-  }
-
-  if (this->Wrapper)
-  {
-    this->Wrapper->GetResourceManager()->add(this->AttributeResource);
   }
 
   return true;
