@@ -21,6 +21,7 @@ namespace resource
 {
 void to_json(json& j, const ResourcePtr& resource)
 {
+  j["id"] = resource->id().toString();
   j["type"] = resource->typeName();
   j["links"] = resource->links().data();
 }

@@ -31,6 +31,7 @@
 #include "vtkDataArray.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkDataSetWriter.h"
+#include "vtkExodusIIWriter.h"
 #include "vtkFieldData.h"
 #include "vtkImageConstantPad.h"
 #include "vtkImageData.h"
@@ -95,7 +96,25 @@ Export::Result Export::operateInternal()
 
 Export::Result Export::exportExodus()
 {
-  return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  smtk::model::Models datasets = this->parameters()->associatedModelEntities<smtk::model::Models>();
+  if (datasets.empty())
+  {
+    smtkErrorMacro(this->log(), "No models to save.");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  smtk::model::Model dataset = datasets[0];
+  smtk::bridge::vtk::Resource::Ptr rsrc =
+    std::dynamic_pointer_cast<smtk::bridge::vtk::Resource>(dataset.entityRecord()->resource());
+  EntityHandle handle = rsrc->session()->toEntity(dataset);
+  vtkMultiBlockDataSet* mbds = handle.object<vtkMultiBlockDataSet>();
+
+  vtkNew<vtkExodusIIWriter> writer;
+  writer->SetFileName(this->parameters()->findFile("filename")->value().c_str());
+  writer->SetInputData(mbds);
+  writer->Write();
+
+  return this->createResult(Export::Outcome::SUCCEEDED);
 }
 
 Export::Result Export::exportSLAC()

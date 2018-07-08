@@ -13,8 +13,8 @@
           FileFilters="Exodus II Datasets (*.e *.exo *.ex2);;Label maps (*.vti);; NetCDF files (*.nc *.ncdf);;All files (*.*)">
         </File>
         <String Name="filetype" NumberOfRequiredValues="1"/>
-        <Double Name="nose sphere" NumberOfRequiredValues="4"/>
-        <Double Name="lower plane" NumberOfRequiredValues="6"/>
+        <Double Name="nose sphere" NumberOfRequiredValues="4" Optional="true" IsEnabledByDefault="false"/>
+        <Double Name="lower plane" NumberOfRequiredValues="6" Optional="true" IsEnabledByDefault="false"/>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
