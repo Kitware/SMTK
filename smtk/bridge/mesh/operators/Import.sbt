@@ -23,19 +23,18 @@
           <Accepts>
             <Resource Name="smtk::bridge::mesh::Resource"/>
           </Accepts>
-          <ChildrenDefinitions>
-            <String Name="session only" Label="session" Advanced="1">
-              <DiscreteInfo DefaultIndex="0">
-                <Structure>
-                  <Value Enum="this file">import into this file </Value>
-                </Structure>
-                <Structure>
-                  <Value Enum="this session">import into a new file using this file's session</Value>
-                </Structure>
-              </DiscreteInfo>
-            </String>
-          </ChildrenDefinitions>
         </Resource>
+
+        <String Name="session only" Label="session" Advanced="1">
+          <DiscreteInfo DefaultIndex="0">
+            <Structure>
+              <Value Enum="this file">import into this file </Value>
+            </Structure>
+            <Structure>
+              <Value Enum="this session">import into a new file using this file's session</Value>
+            </Structure>
+          </DiscreteInfo>
+        </String>
 
         <String Name="label" Label="Domain Property" NumberOfRequiredValues="1" AdvanceLevel="1">
 	  <DefaultValue></DefaultValue>

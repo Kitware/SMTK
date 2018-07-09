@@ -14,6 +14,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/bridge/mesh/Resource.h"
 
@@ -57,10 +58,24 @@ Read::Result Read::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
+  // Access the resource's id
+  std::string resourceIdStr = j.at("id");
+  smtk::common::UUID resourceId(resourceIdStr);
+
+  // Create a new resource for the import
+  auto resource = smtk::bridge::mesh::Resource::create();
+  resource->setId(resourceId);
+  auto session = smtk::bridge::mesh::Session::create();
+  resource->setLocation(filename);
+  resource->setSession(session);
+
   std::string meshFilename = j.at("Mesh URL");
 
   // Create an import operator
   smtk::bridge::mesh::Import::Ptr importOp = smtk::bridge::mesh::Import::create();
+  importOp->parameters()->findResource("resource")->setIsEnabled(true);
+  importOp->parameters()->findResource("resource")->setValue(resource);
+  importOp->parameters()->findString("session only")->setDiscreteIndex(0);
   importOp->parameters()->findFile("filename")->setValue(meshFilename);
 
   // Execute the operation
