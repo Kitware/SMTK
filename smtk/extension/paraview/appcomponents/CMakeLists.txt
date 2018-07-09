@@ -27,6 +27,7 @@ set(PQComponentsSrcs
   pqSMTKColorByToolBar.cxx
   pqSMTKColorByWidget.cxx
   pqSMTKModelRepresentation.cxx
+  pqSMTKSaveResourceBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKResource.cxx
   pqSMTKWrapper.cxx
@@ -40,6 +41,7 @@ set(PQComponentsHeaders
   pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.h
   pqSMTKModelRepresentation.h
+  pqSMTKSaveResourceBehavior.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKResource.h
   pqSMTKWrapper.h
@@ -53,6 +55,7 @@ set(PQComponentsUIs
 )
 
 set(PQComponentsResources
+  resources/pqSMTKSaveResourceBehavior.qrc
   resources/pqSMTKSelectionFilterBehavior.qrc
 )
 
