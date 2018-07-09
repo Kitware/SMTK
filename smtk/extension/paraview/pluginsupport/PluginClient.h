@@ -56,9 +56,9 @@ class PluginClient;
 #ifndef SMTK_MSVC
 
 template <typename Registrar, typename Manager, typename... T>
-class PluginClient : public detail::PluginClient<Registrar, Manager>,
-                     public detail::PluginClient<Registrar, T>...,
-                     public PluginClientBase
+class SMTK_ALWAYS_EXPORT PluginClient : public detail::PluginClient<Registrar, Manager>,
+                                        public detail::PluginClient<Registrar, T>...,
+                                        public PluginClientBase
 {
 public:
   static std::shared_ptr<PluginClientBase> create();
@@ -83,8 +83,8 @@ struct Sentinel
 }
 
 template <typename Registrar, typename Manager = detail::Sentinel, typename... T>
-class PluginClient : public detail::PluginClient<Registrar, Manager>,
-                     public PluginClient<Registrar, T...>
+class SMTK_ALWAYS_EXPORT PluginClient : public detail::PluginClient<Registrar, Manager>,
+                                        public PluginClient<Registrar, T...>
 {
 public:
   static std::shared_ptr<PluginClientBase> create();
@@ -99,7 +99,7 @@ protected:
 };
 
 template <typename Registrar>
-class PluginClient<Registrar, detail::Sentinel> : public PluginClientBase
+class SMTK_ALWAYS_EXPORT PluginClient<Registrar, detail::Sentinel> : public PluginClientBase
 {
 public:
   PluginClient()
@@ -120,7 +120,7 @@ namespace detail
 /// an API that only depends on the Manager type to the user, and we implement
 /// it in detail::PluginClient.
 template <typename Manager>
-class PluginClientFor
+class SMTK_ALWAYS_EXPORT PluginClientFor
 {
 public:
   virtual ~PluginClientFor();
@@ -149,7 +149,7 @@ PluginClientFor<Manager>::~PluginClientFor()
 /// Registries. The lifetime of these Registries are therefore tethered to the
 /// lifetime of the PluginClient, which lives in the plugin's library.
 template <typename Registrar, typename Manager>
-class PluginClient : public PluginClientFor<Manager>
+class SMTK_ALWAYS_EXPORT PluginClient : public PluginClientFor<Manager>
 {
 public:
   bool registerPluginTo(const std::shared_ptr<Manager>&) override;
