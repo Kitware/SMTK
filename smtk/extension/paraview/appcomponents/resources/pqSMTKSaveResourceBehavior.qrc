@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource prefix="/SaveResourceBehavior">
+    <file>Save16.png</file>
+    <file>Save24.png</file>
+    <file>Save32.png</file>
+  </qresource>
+</RCC>

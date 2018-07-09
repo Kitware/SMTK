@@ -21,6 +21,7 @@
 // Client side
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
+#include "pqCoreUtilities.h"
 #include "pqDataRepresentation.h"
 #include "pqObjectBuilder.h"
 #include "pqOutputPort.h"
@@ -32,6 +33,7 @@
 #include "vtkSMProxyDefinitionManager.h"
 #include "vtkSMSessionProxyManager.h"
 #include "vtkSMSourceProxy.h"
+
 #include <QObject>
 
 // We use either STL regex or Boost regex, depending on support. These flags
