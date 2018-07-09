@@ -42,9 +42,8 @@ void PluginManager::setRegistryStatus(const std::shared_ptr<Manager>& manager, b
         {
           clientForManager->unregisterPluginFrom(manager);
         }
-
-        ++clientIt;
       }
+      ++clientIt;
     }
     else
     {
