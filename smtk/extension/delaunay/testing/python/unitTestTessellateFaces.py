@@ -33,7 +33,7 @@ class UnitTessellateFaces(smtk.testing.TestCase):
         loadRes = loadOp.operate()
 
         # Access the resource
-        self.resource = smtk.model.Manager.CastTo(
+        self.resource = smtk.model.Resource.CastTo(
             loadRes.find('resource').value())
 
     def testMeshing2D(self):

@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/model/DefaultSession.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/SessionRegistrar.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -48,7 +47,7 @@ SessionInfoBits DefaultSession::transcribeInternal(
   * All this does is set the session's name and session ID to match
   * the remote session.
   * Subclasses are responsible for overriding transcribeInternal() to
-  * fetch records from the remote session's model manager on demand.
+  * fetch records from the remote session's model resource on demand.
   */
 void DefaultSession::backsRemoteSession(
   const std::string& remoteSessionName, const smtk::common::UUID& sessId)

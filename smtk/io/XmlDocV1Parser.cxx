@@ -54,7 +54,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/common/StringUtil.h"
 #include "smtk/view/View.h"
@@ -987,7 +987,7 @@ void XmlDocV1Parser::processModelEntityDef(
   mmask = node.child("MembershipMask");
   if (mmask)
   {
-    idef->setAcceptsEntries("smtk::model::Manager", mmask.text().as_string(), true);
+    idef->setAcceptsEntries("smtk::model::Resource", mmask.text().as_string(), true);
     std::cerr << "Mem Mask of " << idef->name() << "( " << idef << ") is "
               << mmask.text().as_string() << "\n";
   }
@@ -1851,7 +1851,7 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
     for (auto it = assocItem->begin(); it != assocItem->end(); ++it)
     {
       auto mcomp = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
-      auto mmgr = mcomp ? mcomp->modelResource() : smtk::model::ManagerPtr();
+      auto mmgr = mcomp ? mcomp->modelResource() : smtk::model::ResourcePtr();
       if (mcomp && mmgr)
       {
         mmgr->associateAttribute(nullptr, att->id(), mcomp->id());

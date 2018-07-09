@@ -99,7 +99,7 @@ class TestModelAttributes(unittest.TestCase):
         att_path = os.path.join(att_folder, SBT_FILENAME)
         logging.info('Reading %s' % att_path)
         resource = smtk.attribute.Resource.create()
-        # resource.setRefModelManager(scope.store)
+        # resource.setRefModelResource(scope.store)
         reader = smtk.io.AttributeReader()
         logger = smtk.io.Logger()
         err = reader.read(resource, att_path, logger)
@@ -109,7 +109,7 @@ class TestModelAttributes(unittest.TestCase):
             sys.exit(4)
 
         # Create material attribute & associate to model face
-        resource.setRefModelManager(scope.store)
+        resource.setRefModelResource(scope.store)
         defn = resource.findDefinition('Material')
         value = 1.01
         for i, face in enumerate(scope.face_list, start=1):
@@ -228,8 +228,8 @@ class TestModelAttributes(unittest.TestCase):
         if json_string is None:
             logging.error('Unable to load input file')
             sys.exit(2)
-        scope.store = smtk.model.Manager.create()
-        ok = smtk.io.LoadJSON.intoModelManager(json_string, scope.store)
+        scope.store = smtk.model.Resource.create()
+        ok = smtk.io.LoadJSON.intoModelResource(json_string, scope.store)
 
         # Load cross-reference file
         self.load_xref(scope, self.model_folder)
@@ -251,8 +251,8 @@ class TestModelAttributes(unittest.TestCase):
         del resource
 
         # Re-import model
-        test_store = smtk.model.Manager.create()
-        ok = smtk.io.LoadJSON.intoModelManager(json_string, test_store)
+        test_store = smtk.model.Resource.create()
+        ok = smtk.io.LoadJSON.intoModelResource(json_string, test_store)
         scope.store = test_store
 
         # Re-read attribute file
@@ -266,7 +266,7 @@ class TestModelAttributes(unittest.TestCase):
         self.assertTrue(not err, "Unable to read attribute file")
 
         # Set model and verify attributes
-        test_resource.setRefModelManager(scope.store)
+        test_resource.setRefModelResource(scope.store)
         error_count = self.check_attributes(scope, test_resource)
         self.assertEqual(error_count, 0, "At least one error occurred.")
 

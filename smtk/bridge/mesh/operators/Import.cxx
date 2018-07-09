@@ -30,8 +30,8 @@
 #include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -134,8 +134,8 @@ Import::Result Import::operateInternal()
     session->facade()["neumann"] = "Side Set";
   }
 
-  // Assign its model manager to the one associated with this session
-  collection->setModelManager(resource);
+  // Assign its model resource to the one associated with this session
+  collection->setModelResource(resource);
 
   // Construct the topology
   session->addTopology(Topology(collection, constructHierarchy));
@@ -144,7 +144,7 @@ Import::Result Import::operateInternal()
   int dimension = int(smtk::mesh::utility::highestDimension(collection->meshes()));
 
   // Our collections will already have a UUID, so here we create a model given
-  // the model manager and uuid
+  // the model resource and uuid
   smtk::model::Model model = resource->insertModel(collection->entity(), dimension, dimension);
 
   // Name the model according to the stem of the file

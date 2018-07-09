@@ -10,8 +10,8 @@
 #ifndef smtk_session_polygon_Session_txx
 #define smtk_session_polygon_Session_txx
 
-#include "smtk/model/Manager.h"
-#include "smtk/model/Manager.txx"
+#include "smtk/model/Resource.h"
+#include "smtk/model/Resource.txx"
 
 namespace smtk
 {
@@ -29,7 +29,7 @@ namespace polygon
   * Given an edge, it removes the corresponding incident-edge records from each endpoint.
   * Only lower-dimensional references are processed; this method assumes you have already
   * invoked consistentInternalDelete() on any parent entities.
-  * Finally, the SMTK model manager (assumed to be the same for all entities in \a container)
+  * Finally, the SMTK model resource (assumed to be the same for all entities in \a container)
   * is told to delete/reconcile records related to the entities.
   *
   * This method is provided by the session instead of the
@@ -39,7 +39,7 @@ namespace polygon
 template <typename T, typename U, typename V>
 void Session::consistentInternalDelete(T& container, U& modified, V& expunged, bool logDebug)
 {
-  smtk::model::Manager::Ptr mgr;
+  smtk::model::Resource::Ptr resource;
   typename T::iterator it;
   for (it = container.begin(); it != container.end(); ++it)
   {
@@ -50,15 +50,15 @@ void Session::consistentInternalDelete(T& container, U& modified, V& expunged, b
         smtkWarningMacro(this->log(), "Trying to delete polygon storage for "
             << it->name() << " (" << it->flagSummary() << ")");
       }
-      if (!mgr)
+      if (!resource)
       {
-        mgr = it->manager();
+        resource = it->resource();
       }
       continue;
     }
-    if (!mgr)
+    if (!resource)
     {
-      mgr = it->manager();
+      resource = it->resource();
     }
     switch (it->dimensionBits())
     {
@@ -73,9 +73,9 @@ void Session::consistentInternalDelete(T& container, U& modified, V& expunged, b
         break;
     }
   }
-  if (mgr)
+  if (resource)
   {
-    mgr->deleteEntities(container, modified, expunged, logDebug);
+    resource->deleteEntities(container, modified, expunged, logDebug);
   }
 }
 

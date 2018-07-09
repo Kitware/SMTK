@@ -19,7 +19,7 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
 
@@ -32,7 +32,7 @@ py::class_< smtk::model::VertexUse, smtk::model::UseEntity > pybind11_init_smtk_
     .def(py::init<::smtk::model::VertexUse const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::VertexUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VertexUse::operator!=)
     .def("deepcopy", (smtk::model::VertexUse & (smtk::model::VertexUse::*)(::smtk::model::VertexUse const &)) &smtk::model::VertexUse::operator=)
     .def("__eq__", (bool (smtk::model::VertexUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VertexUse::operator==)

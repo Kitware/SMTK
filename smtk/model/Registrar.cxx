@@ -11,7 +11,7 @@
 //=============================================================================
 #include "smtk/model/Registrar.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 #include "smtk/model/operators/AddImage.h"
@@ -49,12 +49,12 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::model::Manager>();
+  resourceManager->registerResource<smtk::model::Resource>();
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->unregisterResource<smtk::model::Manager>();
+  resourceManager->unregisterResource<smtk::model::Resource>();
 }
 }
 }

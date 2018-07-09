@@ -34,7 +34,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Manager.txx"
+#include "smtk/model/Resource.txx"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/bridge/polygon/ForceCreateFace_xml.h"

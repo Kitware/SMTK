@@ -12,7 +12,7 @@
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -78,7 +78,7 @@ void testExportEntityRef(const EntityRefs& entities, IteratorStyle relations, in
   if (numRecords != correctCount)
   { // For debugging, print out (names of) what we exported:
     if (!entities.empty())
-      entities.begin()->manager()->assignDefaultNames();
+      entities.begin()->resource()->assignDefaultNames();
     std::cout << SaveJSON::forEntities(entities, relations, JSON_PROPERTIES) << "\n\n"
               << "Exported " << numRecords << ","
               << " expecting " << correctCount << " for related record enum " << relations << "\n";
@@ -89,7 +89,7 @@ void testExportEntityRef(const EntityRefs& entities, IteratorStyle relations, in
 
 void testModelExport()
 {
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
   UUIDArray uids = smtk::model::testing::createTet(sm);
   UUIDArray::size_type modelStart = uids.size();
   uids.push_back(sm->addModel().entity());
@@ -117,21 +117,21 @@ int main(int argc, char* argv[])
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
   cJSON* json = cJSON_CreateObject();
 
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
 
   int status = 0;
-  status |= LoadJSON::intoModelManager(data.c_str(), sm);
-  status |= SaveJSON::fromModelManager(json, sm,
+  status |= LoadJSON::intoModelResource(data.c_str(), sm);
+  status |= SaveJSON::fromModelResource(json, sm,
     // Do not export sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
 
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   json = cJSON_CreateObject();
-  ManagerPtr sm2 = Manager::create();
+  ResourcePtr sm2 = Resource::create();
 
-  status |= LoadJSON::intoModelManager(exported, sm2);
-  status |= SaveJSON::fromModelManager(json, sm2,
+  status |= LoadJSON::intoModelResource(exported, sm2);
+  status |= SaveJSON::fromModelResource(json, sm2,
     // Do not export sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
   char* exported2 = cJSON_Print(json);

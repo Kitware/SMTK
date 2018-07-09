@@ -142,8 +142,8 @@ public:
   std::vector<smtk::view::ViewPtr> findTopLevelViews() const;
   const std::map<std::string, smtk::view::ViewPtr>& views() const { return m_views; }
 
-  smtk::model::ManagerPtr refModelManager() const { return m_refModelMgr.lock(); }
-  void setRefModelManager(smtk::model::ManagerPtr refModelMgr);
+  smtk::model::ResourcePtr refModelResource() const { return m_refModelResource.lock(); }
+  void setRefModelResource(smtk::model::ResourcePtr refModelResource);
 
   bool hasAttributes() { return m_attributes.size() > 0; }
 
@@ -185,7 +185,7 @@ protected:
   std::map<std::string, std::set<std::string> > m_analyses;
   std::map<std::string, smtk::view::ViewPtr> m_views;
 
-  smtk::model::WeakManagerPtr m_refModelMgr;
+  smtk::model::WeakResourcePtr m_refModelResource;
   // Advance levels, <int-level, <string-label, color[4]>
   // higher level means more advanced.
   std::map<int, std::string> m_advLevels;

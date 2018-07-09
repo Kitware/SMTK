@@ -33,7 +33,7 @@ class TestVTKSession(smtk.testing.TestCase):
                          'read model failed')
 
         # Access the resource
-        resource = smtk.model.Manager.CastTo(readRes.find('resource').value())
+        resource = smtk.model.Resource.CastTo(readRes.find('resource').value())
         models = resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
         self.assertEqual(len(models), 1)
         model = models[0]

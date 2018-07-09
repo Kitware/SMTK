@@ -18,7 +18,6 @@
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 
 #include <QAbstractItemView>
 #include <QMouseEvent>

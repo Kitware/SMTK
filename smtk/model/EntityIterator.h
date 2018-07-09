@@ -10,7 +10,7 @@
 #ifndef __smtk_model_EntityIterator_h
 #define __smtk_model_EntityIterator_h
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace smtk
 {

@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/io/SaveJSON.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -29,7 +29,7 @@ static int subgroups = 0;
 static int subcells = 0;
 static int submodels = 0;
 
-int entityManagerEvent(ManagerEventType evt, const smtk::model::EntityRef&, void*)
+int entityResourceEvent(ResourceEventType evt, const smtk::model::EntityRef&, void*)
 {
   if (evt.first == ADD_EVENT)
     ++entCount;
@@ -38,7 +38,7 @@ int entityManagerEvent(ManagerEventType evt, const smtk::model::EntityRef&, void
   return 0;
 }
 
-int addEntityToModel(ManagerEventType evt, const smtk::model::EntityRef& src,
+int addEntityToModel(ResourceEventType evt, const smtk::model::EntityRef& src,
   const smtk::model::EntityRef& related, void*)
 {
   if (evt.first == ADD_EVENT)
@@ -60,8 +60,8 @@ int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  ManagerPtr sm = Manager::create();
-  sm->observe(std::make_pair(ANY_EVENT, ENTITY_ENTRY), &entityManagerEvent, NULL);
+  ResourcePtr sm = Resource::create();
+  sm->observe(std::make_pair(ANY_EVENT, ENTITY_ENTRY), &entityResourceEvent, NULL);
   sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_FREE_CELL), &addEntityToModel, NULL);
   sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_GROUP), &addEntityToModel, NULL);
   sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_MODEL), &addEntityToModel, NULL);
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
   test(sm->hasStringProperty(uids[11], "name"));
 
   cJSON* root = cJSON_CreateObject();
-  SaveJSON::fromModelManager(root, sm);
+  SaveJSON::fromModelResource(root, sm);
   cJSON_AddItemToObject(root, "nodes", SaveJSON::fromUUIDs(nodes));
   cJSON_AddItemToObject(root, "edges", SaveJSON::fromUUIDs(edges));
   cJSON_AddItemToObject(root, "faces", SaveJSON::fromUUIDs(faces));

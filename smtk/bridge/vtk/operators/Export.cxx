@@ -24,7 +24,6 @@
 #include "smtk/common/CompilerInformation.h"
 
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include "vtkContourFilter.h"

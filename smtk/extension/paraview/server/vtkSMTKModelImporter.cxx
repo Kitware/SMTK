@@ -23,8 +23,8 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/operation/groups/ImporterGroup.h"
@@ -72,9 +72,9 @@ smtk::resource::ResourcePtr vtkSMTKModelImporter::GetResource() const
   return std::dynamic_pointer_cast<smtk::resource::Resource>(this->GetSMTKResource());
 }
 
-smtk::model::ManagerPtr vtkSMTKModelImporter::GetSMTKResource() const
+smtk::model::ResourcePtr vtkSMTKModelImporter::GetSMTKResource() const
 {
-  return this->ModelSource->GetModelManager();
+  return this->ModelSource->GetModelResource();
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
@@ -205,7 +205,7 @@ bool vtkSMTKModelImporter::LoadFile()
   }
 
   auto rsrc = result->findResource("resource")->value(0);
-  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   if (!modelRsrc)
   {
     vtkWarningMacro("Cannot access resource from succesful import.");
@@ -216,7 +216,7 @@ bool vtkSMTKModelImporter::LoadFile()
   if (rsrcMgr)
   {
     // ... remove the previous resource if we had one.
-    auto oldRsrc = this->ModelSource->GetModelManager();
+    auto oldRsrc = this->ModelSource->GetModelResource();
     if (oldRsrc)
     {
       rsrcMgr->remove(oldRsrc);
@@ -226,7 +226,7 @@ bool vtkSMTKModelImporter::LoadFile()
   }
 
   // Tell our multiblock source to generate VTK polydata for model/mesh entities.
-  this->ModelSource->SetModelManager(modelRsrc);
+  this->ModelSource->SetModelResource(modelRsrc);
 
   // Also, find the first model and tell the multiblock source to render only it.
   // TODO: Either we need a separate representation for each model (which is

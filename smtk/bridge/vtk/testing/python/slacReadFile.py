@@ -84,7 +84,7 @@ class TestVTKSession(smtk.testing.TestCase):
                          'import model failed')
 
         # Access the resource
-        resource = smtk.model.Manager.CastTo(
+        resource = smtk.model.Resource.CastTo(
             importRes.find('resource').value())
         self.model = resource.findEntitiesOfType(
             int(smtk.model.MODEL_ENTITY))[0]

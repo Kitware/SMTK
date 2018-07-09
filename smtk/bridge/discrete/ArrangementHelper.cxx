@@ -12,7 +12,7 @@
 #include "smtk/bridge/discrete/Session.h"
 
 #include "smtk/model/ArrangementKind.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/common/UUIDGenerator.h"
 
@@ -134,11 +134,11 @@ void ArrangementHelper::doneAddingEntities(
     //   << " sense " << it->sense
     //   << " iter_pos " << it->iter_pos << "\n";
 
-    if (it->parent.manager() != it->child.manager())
+    if (it->parent.resource() != it->child.resource())
     {
-      std::cerr << "  Mismatched or nil managers. Skipping.\n";
+      std::cerr << "  Mismatched or nil resources. Skipping.\n";
     }
-    it->parent.manager()->addDualArrangement(it->parent.entity(), it->child.entity(), it->kind,
+    it->parent.resource()->addDualArrangement(it->parent.entity(), it->child.entity(), it->kind,
       /* sense */ it->sense / 2, it->sense % 2 ? smtk::model::POSITIVE : smtk::model::NEGATIVE);
     if (it->parent.isGroup())
       groupToMember[it->parent] = it->child;
@@ -148,7 +148,7 @@ void ArrangementHelper::doneAddingEntities(
   smtk::model::Model owner;
   for (git = groupToMember.begin(); git != groupToMember.end(); ++git)
     if ((owner = git->second.owningModel()).isValid())
-      git->first.manager()->addDualArrangement(
+      git->first.resource()->addDualArrangement(
         owner.entity(), git->first.entity(), smtk::model::SUPERSET_OF, -1, smtk::model::UNDEFINED);
 
   // IV. Add tessellations for the entities.

@@ -45,7 +45,7 @@ public:
 public slots:
   void onClearSelection();
   void onViewTypeChanged();
-  void resetView(qtModelPanel::enumTreeView enType, smtk::model::ManagerPtr modelMgr);
+  void resetView(qtModelPanel::enumTreeView enType, smtk::model::ResourcePtr modelResource);
 
 private:
   class qInternal;

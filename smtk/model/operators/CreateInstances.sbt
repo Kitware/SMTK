@@ -71,7 +71,7 @@
         <Component Name="snap to entity"
           Optional="true" IsEnabledByDefault="true"
           NumberOfRequiredValues="1" Extensible="true">
-          <Accepts><Resource Name="smtk::model::Manager" Filter="cell|aux_geom"/></Accepts>
+          <Accepts><Resource Name="smtk::model::Resource" Filter="cell|aux_geom"/></Accepts>
           <BriefDescription>
             If enabled, instance placements will be snapped to the nearest
             point on the tessellation of the given entities.
@@ -86,7 +86,7 @@
     <AttDef Type="result(create instances)" BaseType="result">
       <ItemDefinitions>
         <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="true">
-          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+          <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
         </Component>
       </ItemDefinitions>
     </AttDef>

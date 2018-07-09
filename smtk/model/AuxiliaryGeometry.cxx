@@ -10,7 +10,7 @@
 #include "smtk/model/AuxiliaryGeometry.h"
 
 #include "smtk/model/Arrangement.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace smtk
 {
@@ -93,8 +93,8 @@ void AuxiliaryGeometry::setURL(const std::string& url)
 
 bool AuxiliaryGeometry::isModified() const
 {
-  smtk::model::Manager::Ptr mgr = this->manager();
-  if (!mgr || !this->hasIntegerProperty("clean"))
+  smtk::model::Resource::Ptr resource = this->resource();
+  if (!resource || !this->hasIntegerProperty("clean"))
   {
     return false;
   }
@@ -105,8 +105,8 @@ bool AuxiliaryGeometry::isModified() const
 
 void AuxiliaryGeometry::setIsModified(bool isModified)
 {
-  smtk::model::Manager::Ptr mgr = this->manager();
-  if (!mgr)
+  smtk::model::Resource::Ptr resource = this->resource();
+  if (!resource)
   {
     return;
   }

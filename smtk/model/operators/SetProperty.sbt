@@ -19,7 +19,7 @@
         All that are specified are set; those unspecified are removed.
 
         For example, specifying both a string and an integer value for
-        the "foo" property would set those values in the model manager's
+        the "foo" property would set those values in the model resource's
         string and integer maps while removing "foo" from the associated
         entities' floating-point map.
       </DetailedDescription>

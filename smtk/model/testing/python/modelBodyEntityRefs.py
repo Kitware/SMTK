@@ -31,8 +31,8 @@ if __name__ == '__main__':
     import sys
     status = 0
     try:
-        store = smtk.model.Manager.create()
-        # Add some models to the model manager:
+        store = smtk.model.Resource.create()
+        # Add some models to the model resource:
         model = store.addModel(3, 3, 'Test Model')
         # Create a model as if we were importing it (i.e., UUIDs already assigned).
         # This tests the methods created for use by Session subclasses.
@@ -109,7 +109,7 @@ if __name__ == '__main__':
             uids[4]).pushRelation(uids[3])
 
         store.assignDefaultNames()
-        print(smtk.io.SaveJSON.fromModelManager(store))
+        print(smtk.io.SaveJSON.fromModelResource(store))
 
         status = \
             len(vert1.edges()) != 2 or \

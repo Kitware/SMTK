@@ -10,7 +10,7 @@
 #ifndef __smtk_session_cgm_ImportSolid_h
 #define __smtk_session_cgm_ImportSolid_h
 
-#include "smtk/PublicPointerDefs.h"  // For ManagerPtr
+#include "smtk/PublicPointerDefs.h"  // For ResourcePtr
 #include "smtk/bridge/cgm/Exports.h" // for SMTKCGMSESSION_EXPORT
 
 #include "smtk/common/UUID.h"
@@ -19,7 +19,7 @@ namespace smtk
 {
 namespace model
 {
-class Manager;
+class Resource;
 }
 }
 
@@ -36,8 +36,8 @@ namespace cgm
 class SMTKCGMSESSION_EXPORT ImportSolid
 {
 public:
-  static smtk::common::UUIDArray fromFilenameIntoManager(
-    const std::string& filename, const std::string& filetype, smtk::model::ManagerPtr manager);
+  static smtk::common::UUIDArray fromFilenameIntoResource(
+    const std::string& filename, const std::string& filetype, smtk::model::ResourcePtr resource);
 };
 
 } // namespace cgm

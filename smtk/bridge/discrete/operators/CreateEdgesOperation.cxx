@@ -17,8 +17,8 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"

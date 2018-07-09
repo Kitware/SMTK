@@ -28,8 +28,6 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-#include "smtk/model/Manager.h"
-
 #include "vtkNew.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"

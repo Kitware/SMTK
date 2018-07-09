@@ -16,7 +16,7 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityIterator.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -36,7 +36,7 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-void create_simple_mesh_model(smtk::model::ManagerPtr mgr)
+void create_simple_mesh_model(smtk::model::ResourcePtr mgr)
 {
   std::string file_path(data_root);
   file_path += "/model/2d/smtk/test2D.json";
@@ -46,7 +46,7 @@ void create_simple_mesh_model(smtk::model::ManagerPtr mgr)
   std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
+  smtk::io::LoadJSON::intoModelResource(json.c_str(), mgr);
   mgr->assignDefaultNames();
 
   file.close();
@@ -57,23 +57,23 @@ void verify_null_managers()
   smtk::mesh::ManagerPtr null_meshManager;
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
 
-  smtk::model::ManagerPtr null_modelManager;
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr null_modelResource;
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   smtk::io::ModelToMesh convert;
 
   {
-    smtk::mesh::CollectionPtr c = convert(null_meshManager, null_modelManager);
+    smtk::mesh::CollectionPtr c = convert(null_meshManager, null_modelResource);
     test(!c, "collection should be invalid for a NULL managers");
   }
 
   {
-    smtk::mesh::CollectionPtr c = convert(null_meshManager, modelManager);
+    smtk::mesh::CollectionPtr c = convert(null_meshManager, modelResource);
     test(!c, "collection should be invalid for a NULL mesh manager");
   }
 
   {
-    smtk::mesh::CollectionPtr c = convert(meshManager, null_modelManager);
+    smtk::mesh::CollectionPtr c = convert(meshManager, null_modelResource);
     test(!c, "collection should be invalid for a NULL model manager");
   }
 }
@@ -81,22 +81,22 @@ void verify_null_managers()
 void verify_empty_model()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   test(!c, "collection should be invalid for an empty model");
 }
 
 void verify_model_association()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_mesh_model(modelManager);
+  create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
 
   //we need to verify that the collection is now has an associated model
   test(c->hasAssociations(), "collection should have associations");
@@ -106,23 +106,23 @@ void verify_model_association()
 
   //verify the MODEL_ENTITY is correct
   smtk::model::EntityRefs currentModels =
-    modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
+    modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   if (currentModels.size() > 0)
-  { //presuming only a single model in the model manager
+  { //presuming only a single model in the model resource
     test((c->associatedModel() == currentModels.begin()->entity()),
-      "collection associated model should match model manager");
+      "collection associated model should match model resource");
   }
 }
 
 void verify_cell_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_mesh_model(modelManager);
+  create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 21, "collection should have a mesh per tet");
 
@@ -140,12 +140,12 @@ void verify_cell_conversion()
 void verify_vertex_conversion()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_mesh_model(modelManager);
+  create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 21, "collection should have a mesh per tet");
 

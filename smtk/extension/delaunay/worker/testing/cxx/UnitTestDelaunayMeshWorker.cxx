@@ -99,7 +99,7 @@ int main(int argc, char** const argv)
 
   // Register the resources to the resource manager
   {
-    resourceManager->registerResource<smtk::model::Manager>();
+    resourceManager->registerResource<smtk::model::Resource>();
     resourceManager->registerResource<smtk::bridge::polygon::Resource>();
   }
 

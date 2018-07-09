@@ -13,7 +13,7 @@
 #include "smtk/bridge/mesh/Exports.h"
 #include "smtk/bridge/mesh/Session.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
@@ -26,7 +26,7 @@ namespace mesh
 {
 
 class SMTKMESHSESSION_EXPORT Resource
-  : public smtk::resource::DerivedFrom<Resource, smtk::model::Manager>
+  : public smtk::resource::DerivedFrom<Resource, smtk::model::Resource>
 {
 public:
   smtkTypeMacro(smtk::bridge::mesh::Resource);

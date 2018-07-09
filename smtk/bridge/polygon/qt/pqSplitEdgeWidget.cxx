@@ -48,7 +48,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/operation/Operation.h"
 
 #include <QToolButton>

@@ -21,7 +21,7 @@ namespace extension
 {
 
 class qtDescriptivePhraseModel;
-/**\brief Present the contents of an smtk::model::Manager instance via qtDescriptivePhraseModel.
+/**\brief Present the contents of an smtk::model::Resource instance via qtDescriptivePhraseModel.
   *
   */
 class SMTKQTEXT_EXPORT qtDescriptivePhraseDelegate : public QStyledItemDelegate

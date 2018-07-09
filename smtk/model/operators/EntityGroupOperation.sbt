@@ -15,7 +15,7 @@
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1">
         <BriefDescription>The model which does/will hold the edited/created group.</BriefDescription>
-        <Accepts><Resource Name="smtk::model::Manager" Filter="model"/></Accepts>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <String Name="Operation" Label="Operation" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
@@ -27,16 +27,16 @@
           </DetailedDescription>
           <ChildrenDefinitions>
             <Component Name="modify cell group" Label="modify entity group" NumberOfRequiredValues="1">
-              <Accepts><Resource Name="smtk::model::Manager" Filter="group"/></Accepts>
+              <Accepts><Resource Name="smtk::model::Resource" Filter="group"/></Accepts>
             </Component>
             <Component Name="remove cell group" Label="remove entity group" Extensible="1" NumberOfRequiredValues="0">
-              <Accepts><Resource Name="smtk::model::Manager" Filter="group"/></Accepts>
+              <Accepts><Resource Name="smtk::model::Resource" Filter="group"/></Accepts>
             </Component>
             <Component Name="cell to add" Label="entity to add" NumberOfRequiredValues="0" Extensible="1">
-              <Accepts><Resource Name="smtk::model::Manager" Filter="volume|face|edge|vertex"/></Accepts>
+              <Accepts><Resource Name="smtk::model::Resource" Filter="volume|face|edge|vertex"/></Accepts>
             </Component>
             <Component Name="cell to remove" Label="entity to remove" NumberOfRequiredValues="0" Extensible="1">
-              <Accepts><Resource Name="smtk::model::Manager" Filter="volume|face|edge|vertex"/></Accepts>
+              <Accepts><Resource Name="smtk::model::Resource" Filter="volume|face|edge|vertex"/></Accepts>
             </Component>
             <Void Name="Vertex" Label="Vertex" Version="0" NumberOfRequiredValues="1" Optional="true" AdvanceLevel = "1" Option = "true" IsEnabledByDefault = "true">
               <BriefDescription>Allow vertices to be added to the group.</BriefDescription>

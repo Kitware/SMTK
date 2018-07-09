@@ -19,7 +19,7 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityIterator.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -51,7 +51,7 @@ void cleanup(const std::string& file_path)
   }
 }
 
-void create_simple_mesh_model(smtk::model::ManagerPtr mgr)
+void create_simple_mesh_model(smtk::model::ResourcePtr resource)
 {
   std::string file_path(data_root);
   file_path += "/model/2d/smtk/test2D.json";
@@ -61,8 +61,8 @@ void create_simple_mesh_model(smtk::model::ManagerPtr mgr)
   std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
-  mgr->assignDefaultNames();
+  smtk::io::LoadJSON::intoModelResource(json.c_str(), resource);
+  resource->assignDefaultNames();
 
   file.close();
 }
@@ -93,13 +93,13 @@ smtk::mesh::MeshSet make_MeshPoint(
 void verify_simple_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_mesh_model(modelManager);
+  create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   test(c->isValid(), "collection should be valid");
 
   //make sure merging points works properly
@@ -121,13 +121,13 @@ void verify_simple_merge()
 void verify_complex_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_mesh_model(modelManager);
+  create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   test(c->isValid(), "collection should be valid");
 
   //add multiple new mesh points
@@ -173,13 +173,13 @@ void verify_complex_merge()
 void verify_write_valid_collection_hdf5_after_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_mesh_model(modelManager);
+  create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   test(c->isValid(), "collection should be valid");
 
   //make sure merging points works properly

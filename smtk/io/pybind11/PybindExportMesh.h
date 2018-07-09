@@ -23,7 +23,7 @@ PySharedPtrClass< smtk::io::ExportMesh > pybind11_init_smtk_io_ExportMesh(py::mo
   instance
     .def(py::init<>())
     .def("__call__", (bool (smtk::io::ExportMesh::*)(::std::string const &, ::smtk::mesh::CollectionPtr) const) &smtk::io::ExportMesh::operator())
-    .def("__call__", (bool (smtk::io::ExportMesh::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::smtk::model::ManagerPtr, ::std::string const &) const) &smtk::io::ExportMesh::operator())
+    .def("__call__", (bool (smtk::io::ExportMesh::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::smtk::model::ResourcePtr, ::std::string const &) const) &smtk::io::ExportMesh::operator())
     // .def_static("SupportedIOTypes", &smtk::io::ExportMesh::SupportedIOTypes)
     ;
   return instance;
@@ -34,9 +34,9 @@ void pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_t
   m.def("exportMesh", (bool (*)(::std::string const &, ::smtk::mesh::CollectionPtr)) &smtk::io::exportMesh, "", py::arg("filePath"), py::arg("collection"));
 }
 
-void pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEENSA_INS_5model7ManagerEEES9_(py::module &m)
+void pybind11_init__ZN4smtk2io10exportMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEENSA_INS_5model7ResourceEEES9_(py::module &m)
 {
-  m.def("exportMesh", (bool (*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::smtk::model::ManagerPtr, ::std::string const &)) &smtk::io::exportMesh, "", py::arg("filePath"), py::arg("collection"), py::arg("manager"), py::arg("modelPropertyName"));
+  m.def("exportMesh", (bool (*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::smtk::model::ResourcePtr, ::std::string const &)) &smtk::io::exportMesh, "", py::arg("filePath"), py::arg("collection"), py::arg("resource"), py::arg("modelPropertyName"));
 }
 
 #endif

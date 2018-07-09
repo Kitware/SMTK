@@ -26,7 +26,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -149,7 +149,7 @@ void DelaunayMeshWorker::meshJob()
 
   //serialize all the collections into a single string
   std::string meshesToJson =
-    smtk::io::SaveJSON::fromModelManager(resources.m_model, smtk::io::JSON_MESHES);
+    smtk::io::SaveJSON::fromModelResource(resources.m_model, smtk::io::JSON_MESHES);
 
   this->sendProgress(j, 100, "Finished serializing process");
   std::cout << "Finished serializing process" << std::endl;
@@ -224,7 +224,7 @@ bool DelaunayMeshWorker::meshFace(
   }
 
   // associate the collection with the face's model
-  collection->setModelManager(face.manager());
+  collection->setModelResource(face.resource());
   collection->associateToModel(face.model().entity());
 
   // populate the new collection

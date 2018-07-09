@@ -21,7 +21,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/view/View.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace py = pybind11;
 
@@ -72,11 +72,11 @@ PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource > pybind11
     .def("numberOfAdvanceLevels", &smtk::attribute::Resource::numberOfAdvanceLevels)
     .def("numberOfAnalyses", &smtk::attribute::Resource::numberOfAnalyses)
     .def("numberOfCategories", &smtk::attribute::Resource::numberOfCategories)
-    .def("refModelManager", &smtk::attribute::Resource::refModelManager)
+    .def("refModelResource", &smtk::attribute::Resource::refModelResource)
     .def("removeAttribute", &smtk::attribute::Resource::removeAttribute, py::arg("att"))
     .def("rename", &smtk::attribute::Resource::rename, py::arg("att"), py::arg("newName"))
     .def("setAdvanceLevelColor", &smtk::attribute::Resource::setAdvanceLevelColor, py::arg("level"), py::arg("l_color"))
-    .def("setRefModelManager", &smtk::attribute::Resource::setRefModelManager, py::arg("refModelMgr"))
+    .def("setRefModelResource", &smtk::attribute::Resource::setRefModelResource, py::arg("refModelMgr"))
     .def("updateCategories", &smtk::attribute::Resource::updateCategories)
     .def("updateDerivedDefinitionIndexOffsets", &smtk::attribute::Resource::updateDerivedDefinitionIndexOffsets, py::arg("def"))
     .def("views", &smtk::attribute::Resource::views)

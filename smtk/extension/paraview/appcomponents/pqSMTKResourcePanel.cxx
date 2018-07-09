@@ -28,7 +28,7 @@
 #include "smtk/view/VisibilityContent.h"
 
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
@@ -72,9 +72,9 @@ public:
                                                            smtk::view::ConstPhraseContentPtr data) {
         smtk::model::EntityPtr ent =
           data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
-        smtk::model::ManagerPtr mmgr = ent
+        smtk::model::ResourcePtr mResource = ent
           ? ent->modelResource()
-          : (data ? std::dynamic_pointer_cast<smtk::model::Manager>(data->relatedResource())
+          : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(data->relatedResource())
                   : nullptr);
         auto smtkBehavior = pqSMTKBehavior::instance();
 
@@ -86,9 +86,9 @@ public:
         switch (qq)
         {
           case smtk::view::VisibilityContent::DISPLAYABLE:
-            return validView && (ent || (!ent && mmgr)) ? 1 : 0;
+            return validView && (ent || (!ent && mResource)) ? 1 : 0;
           case smtk::view::VisibilityContent::EDITABLE:
-            return validView && (ent || (!ent && mmgr)) ? 1 : 0;
+            return validView && (ent || (!ent && mResource)) ? 1 : 0;
           case smtk::view::VisibilityContent::GET_VALUE:
             if (ent)
             {
@@ -99,10 +99,10 @@ public:
               }
               return 1; // visibility is assumed if there is no entry.
             }
-            else if (mmgr)
+            else if (mResource)
             {
               auto view = pqActiveObjects::instance().activeView();
-              auto pvrc = smtkBehavior->getPVResource(mmgr);
+              auto pvrc = smtkBehavior->getPVResource(mResource);
               auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
               return mapr ? mapr->isVisible() : 0;
             }
@@ -121,10 +121,10 @@ public:
                 return rval;
               }
             }
-            else if (mmgr)
+            else if (mResource)
             { // A resource, not a component, is being modified. Change the pipeline object's visibility.
               auto view = pqActiveObjects::instance().activeView();
-              auto pvrc = smtkBehavior->getPVResource(mmgr);
+              auto pvrc = smtkBehavior->getPVResource(mResource);
               auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
               if (mapr)
               {

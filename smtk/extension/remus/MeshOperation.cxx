@@ -15,8 +15,8 @@
 #include <remus/proto/SMTKMeshSubmission.h>
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/mesh/core/Collection.h"
@@ -113,10 +113,10 @@ MeshOperation::Result MeshOperation::operateInternal()
   }
 
   //convert the model and uuids to mesh into a string representation
-  smtk::model::Manager::Ptr resource =
-    std::dynamic_pointer_cast<smtk::model::Manager>(models[0].component()->resource());
+  smtk::model::Resource::Ptr resource =
+    std::dynamic_pointer_cast<smtk::model::Resource>(models[0].component()->resource());
 
-  std::string modelSerialized = smtk::io::SaveJSON::fromModelManager(resource);
+  std::string modelSerialized = smtk::io::SaveJSON::fromModelResource(resource);
   std::string modelUUIDSSerialized = extractModelUUIDSAsJSON(models);
 
   //deserialize the reqs from the string

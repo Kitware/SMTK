@@ -20,7 +20,7 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "CGMApp.hpp"
 #include "CubitAttribManager.hpp"
@@ -112,7 +112,7 @@ smtk::operation::OperationResult Read::operateInternal()
   CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (s != CUBIT_SUCCESS)
   {
-    smtkInfoMacro(this->manager()->log(), "Failed to import CGM model, status " << s);
+    smtkInfoMacro(this->resource()->log(), "Failed to import CGM model, status " << s);
     return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
   }
 

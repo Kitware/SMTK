@@ -19,8 +19,8 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
@@ -220,7 +220,7 @@ smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
     return EntityRef(); // an invalid entityref
 
   smtk::common::UUID uid = Session::uuidOfHandleObject(entData);
-  return EntityRef(this->manager(), uid);
+  return EntityRef(this->resource(), uid);
 }
 // -- 4 --
 
@@ -233,9 +233,12 @@ smtk::model::Model Session::addModel(vtkSmartPointer<vtkMultiBlockDataSet>& mode
   this->m_models.push_back(model);
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;
-  this->manager()->meshes()->makeCollection(result.entity())->name(result.name() + "_tessellation");
+  this->resource()
+    ->meshes()
+    ->makeCollection(result.entity())
+    ->name(result.name() + "_tessellation");
   this->transcribe(result, smtk::model::SESSION_EVERYTHING, false);
-  result.setSession(smtk::model::SessionRef(this->manager(), this->sessionId()));
+  result.setSession(smtk::model::SessionRef(this->resource(), this->sessionId()));
   return result;
 }
 // -- 6 --
@@ -323,25 +326,25 @@ SessionInfoBits Session::transcribeInternal(
     switch (handle.entityType())
     {
       case EXO_MODEL:
-        mutableEntityRef.manager()->insertModel(mutableEntityRef.entity(), dim, dim);
+        mutableEntityRef.resource()->insertModel(mutableEntityRef.entity(), dim, dim);
         mutableEntityRef.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
         break;
       case EXO_LABEL_MAP:
       case EXO_LABEL:
       case EXO_BLOCK:
-        mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
+        mutableEntityRef.resource()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
         mutableEntityRef.setName(handle.name());
         AddCellToParent(mutableEntityRef, handle, this);
         break;
       // .. and other cases.
       // -- 9 --
       case EXO_SIDE_SET:
-        mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
+        mutableEntityRef.resource()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), dim);
         mutableEntityRef.setName(handle.name());
         AddCellToParent(mutableEntityRef, handle, this);
         break;
       case EXO_NODE_SET:
-        mutableEntityRef.manager()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), 0);
+        mutableEntityRef.resource()->addCellOfDimensionWithUUID(mutableEntityRef.entity(), 0);
         mutableEntityRef.setName(handle.name());
         AddCellToParent(mutableEntityRef, handle, this);
         break;
@@ -349,7 +352,7 @@ SessionInfoBits Session::transcribeInternal(
       // Groups of groups:
       case EXO_BLOCKS:
         entityDimBits = Entity::dimensionToDimensionBits(dim);
-        mutableEntityRef.manager()->insertGroup(
+        mutableEntityRef.resource()->insertGroup(
           mutableEntityRef.entity(), GROUP_ENTITY | entityDimBits, handle.name());
         mutableEntityRef.as<Group>().setMembershipMask(VOLUME | GROUP_ENTITY);
         break;
@@ -357,12 +360,12 @@ SessionInfoBits Session::transcribeInternal(
         entityDimBits = 0;
         for (int i = 0; i <= dim; ++i)
           entityDimBits |= Entity::dimensionToDimensionBits(i);
-        mutableEntityRef.manager()->insertGroup(
+        mutableEntityRef.resource()->insertGroup(
           mutableEntityRef.entity(), GROUP_ENTITY | entityDimBits, handle.name());
         mutableEntityRef.as<Group>().setMembershipMask(CELL_ENTITY | GROUP_ENTITY | entityDimBits);
         break;
       case EXO_NODE_SETS:
-        mutableEntityRef.manager()->insertGroup(
+        mutableEntityRef.resource()->insertGroup(
           mutableEntityRef.entity(), GROUP_ENTITY | DIMENSION_0, handle.name());
         mutableEntityRef.as<Group>().setMembershipMask(VERTEX | GROUP_ENTITY);
         break;
@@ -418,7 +421,7 @@ SessionInfoBits Session::transcribeInternal(
       }
     }
 
-    // Mark that we added this information to the manager:
+    // Mark that we added this information to the resource:
     actual |= smtk::model::SESSION_ENTITY_RELATIONS | smtk::model::SESSION_ARRANGEMENTS;
   }
   // -- 11 --
@@ -652,7 +655,7 @@ bool Session::addTessellation(const smtk::model::EntityRef& entityref, const Ent
   }
 
   smtk::mesh::CollectionPtr collection =
-    this->manager()->meshes()->collection(this->uuidOfHandleObject(this->modelOfHandle(handle)));
+    this->resource()->meshes()->collection(this->uuidOfHandleObject(this->modelOfHandle(handle)));
   if (collection && collection->isValid())
   {
     smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(entityref);

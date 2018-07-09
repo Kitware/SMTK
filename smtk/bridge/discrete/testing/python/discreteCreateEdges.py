@@ -30,8 +30,9 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
             'discrete read operation failed')
 
         # store the resource so it doesn't go out of scope
-        self.mgr = smtk.model.Manager.CastTo(result.find('resource').value(0))
-        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
+        self.resource = smtk.model.Resource.CastTo(
+            result.find('resource').value(0))
+        return self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
     def resetTestFiles(self):
         self.filesToTest = []
@@ -114,7 +115,7 @@ class TestDiscreteCreateEdges(smtk.testing.TestCase):
         if self.shouldSave:
             ftmp = os.path.join(smtk.testing.TEMP_DIR, 'testcreateedges.json')
             out = file(ftmp, 'w')
-            print(smtk.io.SaveJSON.fromModelManager(self.mgr), file=out)
+            print(smtk.io.SaveJSON.fromModelResource(self.resource), file=out)
             out.close()
             os.remove(ftmp)
 

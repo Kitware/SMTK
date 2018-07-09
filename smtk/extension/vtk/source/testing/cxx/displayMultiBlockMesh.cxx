@@ -14,8 +14,6 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-#include "smtk/model/Manager.h"
-
 #include "vtkActor.h"
 #include "vtkColorTransferFunction.h"
 #include "vtkCommand.h"

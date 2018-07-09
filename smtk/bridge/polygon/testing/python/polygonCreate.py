@@ -65,8 +65,9 @@ class TestPolygonCreation(smtk.testing.TestCase):
         if featureSize is not None:
             cm.parameters().find('feature size').setValue(featureSize)
         res = cm.operate()
-        self.mgr = smtk.model.Manager.CastTo(res.find('resource').value(0))
-        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
+        self.resource = smtk.model.Resource.CastTo(
+            res.find('resource').value(0))
+        return self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
 
     class CurveType:
         ARC = 1
@@ -177,7 +178,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
                 model_scale / feature_size),
                          'Bad model scale {:1}'.format(*mod.floatProperty('model scale')))
 
-        # print(smtk.io.SaveJSON.fromModelManager(self.mgr,
+        # print(smtk.io.SaveJSON.fromModelResource(self.resource,
         # smtk.io.JSON_DEFAULT))
 
         # Print a summary of the model:
@@ -313,8 +314,9 @@ class TestPolygonCreation(smtk.testing.TestCase):
                          'create model failed')
 
         # store the resource so it doesn't go out of scope
-        self.mgr = smtk.model.Manager.CastTo(res.find('resource').value(0))
-        mod = self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
+        self.resource = smtk.model.Resource.CastTo(
+            res.find('resource').value(0))
+        mod = self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
 
         self.checkModel(mod, [0, 0, 0], [1, 0, 0], [
                         0, 1, 0], [0, 0, 1], 1e-6, 231)
@@ -344,7 +346,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             self.startRenderTest()
 
             mod = smtk.model.Model(mod)
-            [mod.addCell(x) for x in self.mgr.findEntitiesOfType(
+            [mod.addCell(x) for x in self.resource.findEntitiesOfType(
                 int(smtk.model.CELL_ENTITY), False)]
             ms, vs, mp, ac = self.addModelToScene(mod)
             ac.GetProperty().SetLineWidth(2)

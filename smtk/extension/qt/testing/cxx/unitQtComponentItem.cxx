@@ -284,17 +284,17 @@ int unitQtComponentItem(int argc, char* argv[])
              smtk::view::ConstPhraseContentPtr data) {
         smtk::model::EntityPtr ent =
           data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
-        smtk::model::ManagerPtr mmgr = ent
+        smtk::model::ResourcePtr mResource = ent
           ? ent->modelResource()
-          : (data ? std::dynamic_pointer_cast<smtk::model::Manager>(data->relatedResource())
+          : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(data->relatedResource())
                   : nullptr);
 
         switch (qq)
         {
           case smtk::view::VisibilityContent::DISPLAYABLE:
-            return (ent || (!ent && mmgr)) ? 1 : 0;
+            return (ent || (!ent && mResource)) ? 1 : 0;
           case smtk::view::VisibilityContent::EDITABLE:
-            return (ent || (!ent && mmgr)) ? 1 : 0;
+            return (ent || (!ent && mResource)) ? 1 : 0;
           case smtk::view::VisibilityContent::GET_VALUE:
             if (ent)
             {
@@ -336,7 +336,7 @@ int unitQtComponentItem(int argc, char* argv[])
   }
 
   auto rsrc = result->findResource("resource")->value(0);
-  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   if (!modelRsrc)
   {
     std::cout << "Read operator succeeded but had empty output\n";

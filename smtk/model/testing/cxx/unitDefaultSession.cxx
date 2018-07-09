@@ -25,9 +25,9 @@
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/common/UUIDGenerator.h"
 #include "smtk/model/DefaultSession.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/RemoteOperation.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 
@@ -135,7 +135,7 @@ public:
   smtkSharedFromThisMacro(Session);                 // Provides shared_from_this() method
   smtkDeclareModelingKernel();                      // Declares name() and utility methods/members.
 
-  smtk::model::Manager::Ptr remoteModel;
+  smtk::model::Resource::Ptr remoteModel;
   smtk::model::Session::Ptr remoteSession;
 
   void addSomeRemoteDanglers(const UUIDs& danglers)
@@ -148,13 +148,13 @@ public:
     }
   }
 
-  bool checkLocalDanglers(const UUIDs& danglers, smtk::model::ManagerPtr modelMgr)
+  bool checkLocalDanglers(const UUIDs& danglers, smtk::model::ResourcePtr modelResource)
   {
     UUIDs::const_iterator it;
     for (it = danglers.begin(); it != danglers.end(); ++it)
     {
       smtk::model::DanglingEntities::const_iterator cit =
-        m_dangling.find(smtk::model::EntityRef(modelMgr, *it));
+        m_dangling.find(smtk::model::EntityRef(modelResource, *it));
       if (cit == m_dangling.end())
         return false;
     }
@@ -242,7 +242,7 @@ protected:
 
   // Note that any state to be preserved between
   // invocations of the operator must be kept in
-  // smtk::model::Manager or class static. This is
+  // smtk::model::Resource or class static. This is
   // because the operator is created by the session
   // each time it is requested.
   static Integer s_state;
@@ -269,12 +269,12 @@ void printSessionOperationNames(const SessionRef& br, const std::string& msg)
   std::cout << "\n";
 }
 
-// Test remote bridging: create 2 model::Manager instances,
-// add a native operator to manager A's "native" session,
+// Test remote bridging: create 2 model::Resource instances,
+// add a native operator to resource A's "native" session,
 // serialize the session into a DefaultSession instance
-// that backs it into manager B, and invoke the remote version
-// of the operator attached to the DefaultSession on manager B.
-// Check that the operation was invoked on manager A and that
+// that backs it into resource B, and invoke the remote version
+// of the operator attached to the DefaultSession on resource B.
+// Check that the operation was invoked on resource A and that
 // the OperationResult from both operations are identical (by
 // having the native operator cache its result parameters).
 int main()
@@ -284,30 +284,30 @@ int main()
   try
   {
 
-    // Create the managers
-    smtk::model::Manager::Ptr remoteMgr = smtk::model::Manager::create();
-    smtk::model::Manager::Ptr localMgr = smtk::model::Manager::create();
+    // Create the resources
+    smtk::model::Resource::Ptr remoteResource = smtk::model::Resource::create();
+    smtk::model::Resource::Ptr localResource = smtk::model::Resource::create();
 
-    // The default session of the "remote" manager:
-    SessionRef remoteSess = remoteMgr->createSession("native");
+    // The default session of the "remote" resource:
+    SessionRef remoteSess = remoteResource->createSession("native");
     Session::Ptr remoteSession = remoteSess.session();
     remoteSess.setName("remote session");
     printSessionOperationNames(remoteSess, "remote");
 
-    // Now we want to mirror the remote manager locally.
+    // Now we want to mirror the remote resource locally.
     // Serialize the "remote" session:
     cJSON* sessJSON = cJSON_CreateObject();
-    SaveJSON::forManagerSession(remoteSession->sessionId(), sessJSON, remoteMgr);
+    SaveJSON::forResourceSession(remoteSession->sessionId(), sessJSON, remoteResource);
     // ... and import the session locally to a new session object.
     TestForwardingSession::Ptr localSession = TestForwardingSession::create();
     localSession->remoteSession = remoteSession;
-    localSession->remoteModel = remoteMgr;
-    localMgr->registerSession(localSession);
-    SessionRef localSess(localMgr, localSession->sessionId());
+    localSession->remoteModel = remoteResource;
+    localResource->registerSession(localSession);
+    SessionRef localSess(localResource, localSession->sessionId());
     test(localSession->operatorNames().size() == 0,
       "Forwarding session should have no operators by default.");
     printSessionOperationNames(localSess, "local, pre-import");
-    LoadJSON::ofRemoteSession(sessJSON->child, localSession, localMgr);
+    LoadJSON::ofRemoteSession(sessJSON->child, localSession, localResource);
     printSessionOperationNames(localSess, "local, post-import");
     test(localSession->operatorNames().size() == remoteSession->operatorNames().size(),
       "Forwarding session operator count should match remote session after import.");
@@ -367,10 +367,11 @@ int main()
       danglers.insert(UUIDGenerator::instance().random());
     localSession->addSomeRemoteDanglers(danglers);
     cJSON* jsonDanglers = cJSON_CreateObject();
-    smtk::io::SaveJSON::forDanglingEntities(remoteSession->sessionId(), jsonDanglers, remoteMgr);
+    smtk::io::SaveJSON::forDanglingEntities(
+      remoteSession->sessionId(), jsonDanglers, remoteResource);
     //std::cout << "\n\n\n" << cJSON_Print(jsonDanglers) << "\n\n\n";
-    smtk::io::LoadJSON::ofDanglingEntities(jsonDanglers, localMgr);
-    test(localSession->checkLocalDanglers(danglers, localMgr),
+    smtk::io::LoadJSON::ofDanglingEntities(jsonDanglers, localResource);
+    test(localSession->checkLocalDanglers(danglers, localResource),
       "All generated danglers should have been serialized.");
   }
   catch (const std::string& msg)

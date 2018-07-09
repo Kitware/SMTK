@@ -30,7 +30,7 @@
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 // PV Client side
 #include "pqApplicationCore.h"
@@ -292,9 +292,9 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
         //std::cout << " )\n";
         if (mbdsThing)
         {
-          smtk::model::ManagerPtr mgr =
-            std::dynamic_pointer_cast<smtk::model::Manager>(smtkThing->GetResource());
-          if (mgr)
+          smtk::model::ResourcePtr mResource =
+            std::dynamic_pointer_cast<smtk::model::Resource>(smtkThing->GetResource());
+          if (mResource)
           {
             //std::cout << "  selected model entities:";
             auto mit = mbdsThing->NewIterator();
@@ -303,7 +303,7 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
               if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
               {
                 auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
-                  mgr, mit->GetCurrentMetaData());
+                  mResource, mit->GetCurrentMetaData());
                 auto cmp = ent.component();
                 if (cmp)
                 {

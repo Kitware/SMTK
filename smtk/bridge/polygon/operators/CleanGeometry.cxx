@@ -48,7 +48,7 @@ smtk::model::Edge findEdgeFromSegmentId(size_t cur, T& lkup)
 }
 
 template <typename T>
-smtk::model::Vertex findOrAddInputModelVertex(smtk::model::ManagerPtr mgr,
+smtk::model::Vertex findOrAddInputModelVertex(smtk::model::ResourcePtr resource,
   const internal::Point& splitPt, T& endpoints, internal::pmodel* mod,
   smtk::model::EntityRefArray& created)
 {
@@ -69,7 +69,7 @@ smtk::model::Vertex findOrAddInputModelVertex(smtk::model::ManagerPtr mgr,
   // a pre-existing model vertex that we have **not** been
   // told to use. We've been told everything we are supposed
   // to clean, so we should only use model vertices provided as inputs.
-  smtk::model::Vertex vv = mod->addModelVertex(mgr, splitPt, /* isFreeCell */ false);
+  smtk::model::Vertex vv = mod->addModelVertex(resource, splitPt, /* isFreeCell */ false);
   created.push_back(vv);
   endpoints[splitPt].insert(vv);
   return vv;

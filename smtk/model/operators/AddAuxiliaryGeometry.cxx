@@ -11,9 +11,9 @@
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/AuxiliaryGeometryExtension.h"
-#include "smtk/model/Manager.h"
-#include "smtk/model/Manager.txx"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
+#include "smtk/model/Resource.txx"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -55,8 +55,8 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   }
 
   EntityRef parent = entities[0];
-  smtk::model::Manager::Ptr resource =
-    std::static_pointer_cast<smtk::model::Manager>(parent.component()->resource());
+  smtk::model::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::model::Resource>(parent.component()->resource());
 
   smtk::attribute::StringItemPtr dtypeItem = this->parameters()->findString("type");
   smtk::attribute::IntItemPtr dimItem = this->parameters()->findInt("dimension");

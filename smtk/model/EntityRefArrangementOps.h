@@ -41,7 +41,7 @@ public:
         std::vector<int>::iterator it;
         for (it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
         {
-          return T(c.manager(), relations[*it]);
+          return T(c.resource(), relations[*it]);
         }
       }
     }
@@ -65,26 +65,26 @@ public:
         case HAS_USE:
           if (isCellEntity(entRec->entityFlags()))
           {
-            appendAllCellHasUseRelations(c.manager(), entRec, arr, result);
+            appendAllCellHasUseRelations(c.resource(), entRec, arr, result);
             return;
           }
           else if (isShellEntity(entRec->entityFlags()))
           {
-            appendAllShellHasUseRelations(c.manager(), entRec, arr, result);
+            appendAllShellHasUseRelations(c.resource(), entRec, arr, result);
             return;
           }
           break;
         case HAS_CELL:
           if (isUseEntity(entRec->entityFlags()))
           {
-            appendAllUseHasCellRelations(c.manager(), entRec, arr, result);
+            appendAllUseHasCellRelations(c.resource(), entRec, arr, result);
             return;
           }
           break;
         default:
           break;
       }
-      appendAllSimpleRelations(c.manager(), entRec, arr, result);
+      appendAllSimpleRelations(c.resource(), entRec, arr, result);
     }
   }
 
@@ -92,7 +92,7 @@ public:
     */
   template <typename T>
   static void appendAllUseHasCellRelations(
-    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
+    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -101,7 +101,7 @@ public:
       int relIdx, relSense;
       if (arrIt->IndexAndSenseFromUseHasCell(relIdx, relSense) && relIdx >= 0)
       {
-        typename T::value_type entry(manager, relations[relIdx]);
+        typename T::value_type entry(resource, relations[relIdx]);
         if (entry.isValid())
           result.insert(result.end(), entry);
       }
@@ -109,7 +109,7 @@ public:
   }
   template <typename T>
   static void appendAllCellHasUseRelations(
-    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
+    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -119,7 +119,7 @@ public:
       Orientation relOrient;
       if (arrIt->IndexSenseAndOrientationFromCellHasUse(relIdx, relSense, relOrient) && relIdx >= 0)
       {
-        typename T::value_type entry(manager, relations[relIdx]);
+        typename T::value_type entry(resource, relations[relIdx]);
         if (entry.isValid())
           result.insert(result.end(), entry);
       }
@@ -127,7 +127,7 @@ public:
   }
   template <typename T>
   static void appendAllShellHasUseRelations(
-    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
+    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -138,7 +138,7 @@ public:
       arrIt->IndexRangeFromShellHasUse(i0, i1);
       for (int i = i0; i < i1; ++i)
       {
-        typename T::value_type entry(manager, relations[i]);
+        typename T::value_type entry(resource, relations[i]);
         if (entry.isValid())
           result.insert(result.end(), entry);
       }
@@ -151,7 +151,7 @@ public:
   /// This can be used as a first step in rewriting loops (which must have edge-uses remain in order).
   template <typename T, typename U>
   static void popAllShellHasUseRelations(
-    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result, U& rangeDetector)
+    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result, U& rangeDetector)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -162,7 +162,7 @@ public:
       arrIt->IndexRangeFromShellHasUse(i0, i1);
       for (int i = i0; i < i1; ++i)
       {
-        typename T::value_type entry(manager, relations[i]);
+        typename T::value_type entry(resource, relations[i]);
         rangeDetector.insert(i);
         entRec->invalidateRelationByIndex(i);
         if (entry.isValid())
@@ -175,7 +175,7 @@ public:
   }
   template <typename T>
   static void appendAllSimpleRelations(
-    ManagerPtr manager, EntityPtr entRec, Arrangements* arr, T& result)
+    ResourcePtr resource, EntityPtr entRec, Arrangements* arr, T& result)
   {
     smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -185,7 +185,7 @@ public:
       {
         if (*it < 0)
           continue; // Ignore invalid indices
-        typename T::value_type entry(manager, relations[*it]);
+        typename T::value_type entry(resource, relations[*it]);
         if (entry.isValid())
         {
           result.insert(result.end(), entry);

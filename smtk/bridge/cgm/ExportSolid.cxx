@@ -11,7 +11,6 @@
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 
 #include "CGMApp.hpp"
 #include "CubitAttribManager.hpp"

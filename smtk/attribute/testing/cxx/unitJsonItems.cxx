@@ -12,7 +12,7 @@
 
 #include "smtk/operation/operators/ReadResource.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -118,7 +118,7 @@ int unitJsonItems(int argc, char* argv[])
   refDef->setIsExtensible(true);
   refDef->setNumberOfRequiredValues(0);
   refDef->setMaxNumberOfValues(0);
-  refDef->setAcceptsEntries("smtk::model::Manager", "face", true);
+  refDef->setAcceptsEntries("smtk::model::Resource", "face", true);
 
   smtk::attribute::DefinitionPtr base = resource.createDefinition("BaseDef");
   // Lets add some item definitions
@@ -173,7 +173,7 @@ int unitJsonItems(int argc, char* argv[])
   refItm->setNumberOfValues(2);
   auto basicRsrc = rsrcMgr->get(argv[1]);
   test(basicRsrc != nullptr, "Failed to access basic resource");
-  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(basicRsrc);
+  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(basicRsrc);
   test(modelRsrc != nullptr, "Failed to cast model resource");
   auto allFaces =
     modelRsrc->entitiesMatchingFlagsAs<smtk::model::EntityRefArray>(smtk::model::FACE);

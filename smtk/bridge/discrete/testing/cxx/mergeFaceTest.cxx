@@ -23,7 +23,7 @@
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 using namespace smtk::model;
@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::model::Manager::Ptr resource =
-    std::static_pointer_cast<smtk::model::Manager>(model->resource());
+  smtk::model::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::model::Resource>(model->resource());
   smtk::model::Model modelCmb = model->referenceAs<smtk::model::Model>();
 
   int noVolumes = 0;

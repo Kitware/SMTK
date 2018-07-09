@@ -17,8 +17,8 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -112,7 +112,7 @@ smtk::operation::OperationResult BooleanIntersection::operateInternal()
     for (++wit; wit != assoc->end(); ++wit)
     {
       auto entry = std::dynamic_pointer_cast<smtk::model::Entity>(*wit);
-      this->manager()->erase(entry);
+      this->resource()->erase(entry);
       expunged.push_back(entry);
     }
   }

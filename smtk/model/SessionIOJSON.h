@@ -42,7 +42,7 @@ public:
 
   /**\brief Serialize a resource into a set of JSON records.
     */
-  static json saveJSON(const smtk::model::ManagerPtr& rsrc);
+  static json saveJSON(const smtk::model::ResourcePtr& rsrc);
 
   /**\brief Write a set of JSON records to the given location.
     */
@@ -57,7 +57,7 @@ public:
     * If the JSON object represents model data, it is added to the
     * given resource.
     */
-  static bool loadModelRecords(const json& j, smtk::model::ManagerPtr rsrc);
+  static bool loadModelRecords(const json& j, smtk::model::ResourcePtr rsrc);
 };
 
 } // namespace model

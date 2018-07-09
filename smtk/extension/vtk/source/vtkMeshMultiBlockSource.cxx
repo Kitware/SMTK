@@ -16,8 +16,8 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
@@ -78,7 +78,7 @@ void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "Model: " << m_modelMgr.get() << "\n";
+  os << indent << "Model: " << m_modelResource.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
   os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
   os << indent << "MeshCollectionID: " << this->MeshCollectionID << "\n";
@@ -86,21 +86,21 @@ void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Set the SMTK model to be displayed.
-void vtkMeshMultiBlockSource::SetModelManager(smtk::model::ManagerPtr model)
+void vtkMeshMultiBlockSource::SetModelResource(smtk::model::ResourcePtr model)
 {
-  if (m_modelMgr == model)
+  if (m_modelResource == model)
   {
     return;
   }
-  m_modelMgr = model;
+  m_modelResource = model;
   this->SetMeshManager(model ? model->meshes() : smtk::mesh::ManagerPtr());
   this->Modified();
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::ManagerPtr vtkMeshMultiBlockSource::GetModelManager()
+smtk::model::ResourcePtr vtkMeshMultiBlockSource::GetModelResource()
 {
-  return m_modelMgr;
+  return m_modelResource;
 }
 
 /// Set the SMTK mesh manager
@@ -296,10 +296,10 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
     smtk::mesh::CollectionPtr meshcollect = m_meshMgr->collection(mcuid);
     Model modelEntity;
     bool modelRequiresNormals = false;
-    if (this->ModelEntityID && this->ModelEntityID[0] && m_modelMgr)
+    if (this->ModelEntityID && this->ModelEntityID[0] && m_modelResource)
     {
       smtk::common::UUID uid(this->ModelEntityID);
-      smtk::model::EntityRef entity(m_modelMgr, uid);
+      smtk::model::EntityRef entity(m_modelResource, uid);
       modelEntity = entity.isModel() ? entity.as<smtk::model::Model>() : entity.owningModel();
     }
 

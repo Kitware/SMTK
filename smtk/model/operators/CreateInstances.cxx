@@ -10,9 +10,9 @@
 #include "smtk/model/operators/CreateInstances.h"
 
 #include "smtk/model/Instance.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/PointLocatorExtension.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -111,8 +111,8 @@ CreateInstances::Result CreateInstances::operateInternal()
 
   for (auto prototype : prototypes)
   {
-    smtk::model::Manager::Ptr resource =
-      std::static_pointer_cast<smtk::model::Manager>(prototype.component()->resource());
+    smtk::model::Resource::Ptr resource =
+      std::static_pointer_cast<smtk::model::Resource>(prototype.component()->resource());
 
     if (resource)
     {

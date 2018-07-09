@@ -29,8 +29,8 @@
 #include "smtk/mesh/core/TypeSet.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/DerivedFrom.h"
 
@@ -238,7 +238,7 @@ public:
 
   // Associate a model to the collection.
   //While a collection can be associated to just a model UUID, it is necessary
-  //to also call setModelManager() to facilitate calls that return associated
+  //to also call setModelResource() to facilitate calls that return associated
   //EntityRefs, rather than just UUIDs.
   bool associateToModel(const smtk::common::UUID& uuid);
 
@@ -307,8 +307,8 @@ public:
 
   const smtk::mesh::InterfacePtr& interface() const;
 
-  void setModelManager(smtk::model::ManagerPtr mgr) { m_modelManager = mgr; }
-  smtk::model::ManagerPtr modelManager() const { return m_modelManager.lock(); }
+  void setModelResource(smtk::model::ResourcePtr resource) { m_modelResource = resource; }
+  smtk::model::ResourcePtr modelResource() const { return m_modelResource.lock(); }
 
   // Float, String, Integer properties for a meshset given its handle range.
   void setFloatProperty(
@@ -380,7 +380,7 @@ private:
   smtk::common::FileLocation m_readLocation;
   smtk::common::FileLocation m_writeLocation;
 
-  smtk::model::WeakManagerPtr m_modelManager;
+  smtk::model::WeakResourcePtr m_modelResource;
   smtk::shared_ptr<MeshFloatData> m_floatData;
   smtk::shared_ptr<MeshStringData> m_stringData;
   smtk::shared_ptr<MeshIntegerData> m_integerData;

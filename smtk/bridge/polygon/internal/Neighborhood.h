@@ -17,7 +17,7 @@
 
 #include "smtk/common/UnionFind.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <list>
 #include <map>
@@ -103,7 +103,7 @@ public:
   std::set<std::pair<RegionId, RegionId> >
     m_related; // regions containing other regions (first = parent, second=child)
   RegionId m_outside;
-  smtk::model::Manager::Ptr m_mgr;
+  smtk::model::Resource::Ptr m_resource;
   smtk::bridge::polygon::SessionPtr m_session;
   int m_debugLevel;
 };

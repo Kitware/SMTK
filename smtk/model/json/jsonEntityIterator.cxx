@@ -17,8 +17,8 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "nlohmann/json.hpp"
 
@@ -36,7 +36,7 @@ using EntityPtr = smtk::model::EntityPtr;
 using KindsToArrangements = smtk::model::KindsToArrangements;
 using Models = smtk::model::Models;
 using Model = smtk::model::Model;
-using ManagerPtr = smtk::model::ManagerPtr;
+using ResourcePtr = smtk::model::ResourcePtr;
 using EntityIterator = smtk::model::EntityIterator;
 using EntityTypeBits = smtk::model::EntityTypeBits;
 using IteratorStyle = smtk::model::IteratorStyle;

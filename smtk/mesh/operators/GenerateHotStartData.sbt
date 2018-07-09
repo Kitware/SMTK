@@ -75,7 +75,7 @@
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <Component Name="tess_changed" NumberOfRequiredValues="0"
                      Extensible="true" AdvanceLevel="11">
-          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+          <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
         </Component>
       </ItemDefinitions>
     </AttDef>

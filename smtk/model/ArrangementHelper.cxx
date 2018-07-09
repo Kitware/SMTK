@@ -10,7 +10,6 @@
 #include "smtk/model/ArrangementHelper.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 
 namespace smtk
 {
@@ -55,7 +54,7 @@ void ArrangementHelper::resetMarks()
 }
 
 /**\brief Remove all relationships, arrangements, tessellations, and
-  *       modeling-kernel-generated properties from the manager.
+  *       modeling-kernel-generated properties from the resource.
   *
   * This method is invoked by Session instances inside transcribe().
   *

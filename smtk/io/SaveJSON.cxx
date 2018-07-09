@@ -16,8 +16,8 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/Tessellation.h"
@@ -104,10 +104,10 @@ cJSON* SaveJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int SaveJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
+int SaveJSON::fromModelResource(cJSON* json, ResourcePtr modelResource, JSONFlags sections)
 {
   int status = 0;
-  if (!json || !modelMgr)
+  if (!json || !modelResource)
   {
     std::cerr << "Invalid arguments.\n";
     return status;
@@ -138,15 +138,15 @@ int SaveJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags secti
 
   cJSON* mtyp = cJSON_CreateString("Manager");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = SaveJSON::forManager(body, sess, mesh, modelMgr, sections);
+  status = SaveJSON::forResource(body, sess, mesh, modelResource, sections);
 
   return status;
 }
 
-std::string SaveJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections)
+std::string SaveJSON::fromModelResource(ResourcePtr modelResource, JSONFlags sections)
 {
   cJSON* top = cJSON_CreateObject();
-  SaveJSON::fromModelManager(top, modelMgr, sections);
+  SaveJSON::fromModelResource(top, modelResource, sections);
   char* json = cJSON_Print(top);
   std::string result(json);
   free(json);
@@ -154,13 +154,13 @@ std::string SaveJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections)
   return result;
 }
 
-bool SaveJSON::fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename)
+bool SaveJSON::fromModelResourceToFile(smtk::model::ResourcePtr modelResource, const char* filename)
 {
-  if (!filename || !modelMgr)
+  if (!filename || !modelResource)
     return false;
 
   std::ofstream file(filename);
-  file << SaveJSON::fromModelManager(modelMgr, JSON_DEFAULT);
+  file << SaveJSON::fromModelResource(modelResource, JSON_DEFAULT);
   return true;
 }
 
@@ -204,16 +204,16 @@ int SaveJSON::fromSet(cJSON* pnode, smtk::resource::SetPtr& rset)
 
 bool SaveJSON::canSaveModels(const smtk::model::Models& models)
 {
-  std::set<smtk::model::Manager::Ptr> mgrs;
+  std::set<smtk::model::Resource::Ptr> resources;
   for (auto model : models)
   {
     if (!model.isValid())
     {
       continue;
     }
-    if (mgrs.find(model.manager()) == mgrs.end())
+    if (resources.find(model.resource()) == resources.end())
     {
-      (void)model.manager()->resources(); // force computeResources to be called
+      (void)model.resource()->resources(); // force computeResources to be called
     }
     if (!model.hasStringProperty("smtk_url"))
     {
@@ -229,7 +229,7 @@ int SaveJSON::save(
   (void)renameModels; // FIXME
 
   int status = 1;
-  std::set<smtk::model::Manager::Ptr> mgrs;
+  std::set<smtk::model::Resource::Ptr> resources;
   smtk::model::SessionIOJSON::Ptr delegate;
   std::map<smtk::model::SessionRef, smtk::model::SessionIOJSON::Ptr> delegates;
   std::map<smtk::model::SessionRef, smtk::model::SessionIOJSON::Ptr>::iterator delegateIter;
@@ -239,11 +239,11 @@ int SaveJSON::save(
     {
       continue;
     }
-    // If we have never seen this model's manager, save the
-    // models in this manager that have been requested:
-    if (mgrs.find(model.manager()) == mgrs.end())
+    // If we have never seen this model's resource, save the
+    // models in this resource that have been requested:
+    if (resources.find(model.resource()) == resources.end())
     {
-      smtk::resource::SetPtr rset = model.manager()->resources();
+      smtk::resource::SetPtr rset = model.resource()->resources();
       if (!embedDir.empty())
       {
         rset->setLinkStartPath(embedDir);
@@ -301,7 +301,7 @@ int SaveJSON::save(
     {
       if (model.owningSession() == delegateIter->first)
       {
-        smtk::mesh::ManagerPtr meshMgr = model.manager()->meshes();
+        smtk::mesh::ManagerPtr meshMgr = model.resource()->meshes();
         smtk::common::UUIDs cids = meshMgr->associatedCollectionIds(model);
         for (auto cid : cids)
         {
@@ -317,25 +317,25 @@ int SaveJSON::save(
             bool ok = write(meshFile, coll, smtk::io::mesh::Subset::EntireCollection);
             if (!ok)
             {
-              smtkErrorMacro(model.manager()->log(), "Could not write mesh ("
+              smtkErrorMacro(model.resource()->log(), "Could not write mesh ("
                   << coll->name() << ") to \"" << meshFile << "\".");
             }
           }
         }
-        smtk::io::SaveJSON::forModelMeshes(model.entity(), sess, model.manager());
+        smtk::io::SaveJSON::forModelMeshes(model.entity(), sess, model.resource());
       }
     }
 
-    SaveJSON::addModelsRecord(delegateIter->first.manager(), models, sess);
+    SaveJSON::addModelsRecord(delegateIter->first.resource(), models, sess);
   }
 
   return status;
 }
 
-int SaveJSON::forManager(
-  cJSON* dict, cJSON* sess, cJSON* mesh, ManagerPtr modelMgr, JSONFlags sections)
+int SaveJSON::forResource(
+  cJSON* dict, cJSON* sess, cJSON* mesh, ResourcePtr modelResource, JSONFlags sections)
 {
-  if (!dict || !modelMgr)
+  if (!dict || !modelResource)
   {
     return 0;
   }
@@ -345,7 +345,7 @@ int SaveJSON::forManager(
   if (sections == JSON_NOTHING)
     return status;
 
-  for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
+  for (it = modelResource->topology().begin(); it != modelResource->topology().end(); ++it)
   {
     if ((it->second->entityFlags() & SESSION) && !(sections & JSON_SESSIONS))
       continue;
@@ -357,38 +357,38 @@ int SaveJSON::forManager(
     }
     if (sections & JSON_ENTITIES)
     {
-      status &= SaveJSON::forManagerEntity(it, curChild, modelMgr);
+      status &= SaveJSON::forResourceEntity(it, curChild, modelResource);
     }
     if (sections & JSON_TESSELLATIONS)
-      status &= SaveJSON::forManagerTessellation(it->first, curChild, modelMgr);
+      status &= SaveJSON::forResourceTessellation(it->first, curChild, modelResource);
     if (sections & JSON_ANALYSISMESH)
-      status &= SaveJSON::forManagerAnalysis(it->first, curChild, modelMgr);
+      status &= SaveJSON::forResourceAnalysis(it->first, curChild, modelResource);
     if (sections & JSON_PROPERTIES)
     {
-      status &= SaveJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
-      status &= SaveJSON::forManagerStringProperties(it->first, curChild, modelMgr);
-      status &= SaveJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forResourceFloatProperties(it->first, curChild, modelResource);
+      status &= SaveJSON::forResourceStringProperties(it->first, curChild, modelResource);
+      status &= SaveJSON::forResourceIntegerProperties(it->first, curChild, modelResource);
     }
   }
 
   if (sections & JSON_SESSIONS)
   {
-    smtk::model::SessionRefs sessions = modelMgr->sessions();
+    smtk::model::SessionRefs sessions = modelResource->sessions();
     for (smtk::model::SessionRefs::iterator bit = sessions.begin(); bit != sessions.end(); ++bit)
     {
-      status &= SaveJSON::forManagerSession(bit->entity(), sess, modelMgr);
+      status &= SaveJSON::forResourceSession(bit->entity(), sess, modelResource);
     }
   }
 
   if (sections & JSON_MESHES)
   {
-    smtk::mesh::ManagerPtr meshPtr = modelMgr->meshes();
-    status &= SaveJSON::forManagerMeshes(meshPtr, mesh, modelMgr);
+    smtk::mesh::ManagerPtr meshPtr = modelResource->meshes();
+    status &= SaveJSON::forResourceMeshes(meshPtr, mesh, modelResource);
   }
   return status;
 }
 
-int SaveJSON::forManagerEntity(UUIDWithEntityPtr& entry, cJSON* entRec, ManagerPtr model)
+int SaveJSON::forResourceEntity(UUIDWithEntityPtr& entry, cJSON* entRec, ResourcePtr model)
 {
   (void)model;
   cJSON* ent = cJSON_CreateNumber(entry->second->entityFlags());
@@ -430,7 +430,7 @@ int SaveJSON::forManagerEntity(UUIDWithEntityPtr& entry, cJSON* entRec, ManagerP
   return 1;
 }
 
-int SaveJSON::forManagerTessellation(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forResourceTessellation(const smtk::common::UUID& uid, cJSON* dict, ResourcePtr model)
 {
   UUIDWithTessellation tessIt = model->tessellations().find(uid);
   if (tessIt == model->tessellations().end() || tessIt->second.coords().empty())
@@ -460,7 +460,7 @@ int SaveJSON::forManagerTessellation(const smtk::common::UUID& uid, cJSON* dict,
   return 1;
 }
 
-int SaveJSON::forManagerAnalysis(const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forResourceAnalysis(const smtk::common::UUID& uid, cJSON* dict, ResourcePtr model)
 {
   UUIDWithTessellation meshIt = model->analysisMesh().find(uid);
   if (meshIt == model->analysisMesh().end() || meshIt->second.coords().empty())
@@ -541,8 +541,8 @@ int SaveJSON::forIntegerData(cJSON* dict, const IntegerData& idata)
   return 1;
 }
 
-int SaveJSON::forManagerFloatProperties(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forResourceFloatProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ResourcePtr model)
 {
   int status = 1;
   UUIDWithFloatProperties entIt = model->floatProperties().find(uid);
@@ -553,20 +553,20 @@ int SaveJSON::forManagerFloatProperties(
   return SaveJSON::forFloatData(dict, entIt->second);
 }
 
-int SaveJSON::forManagerStringProperties(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr modelManager)
+int SaveJSON::forResourceStringProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ResourcePtr modelResource)
 {
   int status = 1;
-  UUIDWithStringProperties entIt = modelManager->stringProperties().find(uid);
-  if (entIt == modelManager->stringProperties().end() || entIt->second.empty())
+  UUIDWithStringProperties entIt = modelResource->stringProperties().find(uid);
+  if (entIt == modelResource->stringProperties().end() || entIt->second.empty())
   { // No properties is not an error
     return status;
   }
   return SaveJSON::forStringData(dict, entIt->second);
 }
 
-int SaveJSON::forManagerIntegerProperties(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr model)
+int SaveJSON::forResourceIntegerProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ResourcePtr model)
 {
   int status = 1;
   UUIDWithIntegerProperties entIt = model->integerProperties().find(uid);
@@ -577,11 +577,11 @@ int SaveJSON::forManagerIntegerProperties(
   return SaveJSON::forIntegerData(dict, entIt->second);
 }
 
-int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, ManagerPtr modelMgr,
-  bool /*writeNativeModels*/, const std::string& refPath)
+int SaveJSON::forResourceSession(const smtk::common::UUID& uid, cJSON* node,
+  ResourcePtr modelResource, bool /*writeNativeModels*/, const std::string& refPath)
 {
   int status = 1;
-  SessionPtr session = SessionRef(modelMgr, uid).session();
+  SessionPtr session = SessionRef(modelResource, uid).session();
   if (!session)
     return status;
 
@@ -596,19 +596,20 @@ int SaveJSON::forManagerSession(const smtk::common::UUID& uid, cJSON* node, Mana
     delegate->setReferencePath(refPath);
   }
 
-  smtk::model::Models modelsOfSession = SessionRef(modelMgr, session).models<smtk::model::Models>();
-  SaveJSON::addModelsRecord(modelMgr, modelsOfSession, sess);
-  SaveJSON::addMeshesRecord(modelMgr, modelsOfSession, sess);
+  smtk::model::Models modelsOfSession =
+    SessionRef(modelResource, session).models<smtk::model::Models>();
+  SaveJSON::addModelsRecord(modelResource, modelsOfSession, sess);
+  SaveJSON::addMeshesRecord(modelResource, modelsOfSession, sess);
 
   return status;
 }
 
-int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
-  const smtk::common::UUIDs& modelIds, cJSON* node, ManagerPtr modelMgr, bool /*writeNativeModels*/,
-  const std::string& refPath)
+int SaveJSON::forResourceSessionPartial(const smtk::common::UUID& sessionid,
+  const smtk::common::UUIDs& modelIds, cJSON* node, ResourcePtr modelResource,
+  bool /*writeNativeModels*/, const std::string& refPath)
 {
   int status = 1;
-  SessionPtr session = SessionRef(modelMgr, sessionid).session();
+  SessionPtr session = SessionRef(modelResource, sessionid).session();
   if (!session)
     return status;
 
@@ -623,18 +624,18 @@ int SaveJSON::forManagerSessionPartial(const smtk::common::UUID& sessionid,
   {
     delegate->setReferencePath(refPath);
   }
-  SaveJSON::addModelsRecord(modelMgr, modelIds, sess);
-  SaveJSON::addMeshesRecord(modelMgr, modelIds, sess);
+  SaveJSON::addModelsRecord(modelResource, modelIds, sess);
+  SaveJSON::addMeshesRecord(modelResource, modelIds, sess);
   return status;
 }
 
-/// Serialize a session's list of dangling entities held in the given \a modelMgr.
+/// Serialize a session's list of dangling entities held in the given \a modelResource.
 int SaveJSON::forDanglingEntities(
-  const smtk::common::UUID& sessionId, cJSON* node, ManagerPtr modelMgr)
+  const smtk::common::UUID& sessionId, cJSON* node, ResourcePtr modelResource)
 {
-  if (!modelMgr || !node || node->type != cJSON_Object)
+  if (!modelResource || !node || node->type != cJSON_Object)
     return 0;
-  SessionPtr session = SessionRef(modelMgr, sessionId).session();
+  SessionPtr session = SessionRef(modelResource, sessionId).session();
   if (!session)
     return 0;
 
@@ -646,7 +647,7 @@ int SaveJSON::forDanglingEntities(
   DanglingEntities::const_iterator it;
   for (it = session->danglingEntities().begin(); it != session->danglingEntities().end(); ++it)
   {
-    if (it->first.manager() == modelMgr)
+    if (it->first.resource() == modelResource)
       cJSON_AddItemToObject(
         darray, it->first.entity().toString().c_str(), cJSON_CreateNumber(it->second));
   }
@@ -709,10 +710,10 @@ int SaveJSON::forModelWorker(cJSON* wdesc, const std::string& meshTypeIn,
   * data required to recreate the smtk::mesh Collections
   * associated with the given smtk::model.
   */
-int SaveJSON::forManagerMeshes(
-  smtk::mesh::ManagerPtr meshes, cJSON* mdesc, smtk::model::ManagerPtr modelMgr)
+int SaveJSON::forResourceMeshes(
+  smtk::mesh::ManagerPtr meshes, cJSON* mdesc, smtk::model::ResourcePtr modelResource)
 {
-  (void)modelMgr;
+  (void)modelResource;
   //current issue is that a mesh Manager needs to know where to write
   //these collections to disk.
 
@@ -776,14 +777,14 @@ int SaveJSON::forMeshCollections(
   * all mesh collections associated with the given \a modelid.
   */
 int SaveJSON::forModelMeshes(
-  const smtk::common::UUID& modelid, cJSON* pnode, smtk::model::ManagerPtr modelMgr)
+  const smtk::common::UUID& modelid, cJSON* pnode, smtk::model::ResourcePtr modelResource)
 {
   if (!pnode || pnode->type != cJSON_Object)
   {
     return 0;
   }
-  smtk::mesh::ManagerPtr meshMgr = modelMgr->meshes();
-  smtk::model::Model model(modelMgr, modelid);
+  smtk::mesh::ManagerPtr meshMgr = modelResource->meshes();
+  smtk::model::Model model(modelResource, modelid);
   if (!model.isValid() || !meshMgr)
   {
     return 0;
@@ -1051,22 +1052,22 @@ int SaveJSON::forSingleCollection(cJSON* mdesc, smtk::mesh::CollectionPtr collec
   * This will add a "models" record to \a sessionRec, and all models
   * will be added as children of "models"
   */
-int SaveJSON::addModelsRecord(
-  const smtk::model::ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
+int SaveJSON::addModelsRecord(const smtk::model::ResourcePtr modelResource,
+  const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
 {
   smtk::model::Models models;
-  smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
-  return SaveJSON::addModelsRecord(modelMgr, models, sessionRec);
+  smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelResource, modelIds);
+  return SaveJSON::addModelsRecord(modelResource, models, sessionRec);
 }
 
-int SaveJSON::addModelsRecord(
-  const smtk::model::ManagerPtr modelMgr, const smtk::model::Models& inModels, cJSON* sessionRec)
+int SaveJSON::addModelsRecord(const smtk::model::ResourcePtr modelResource,
+  const smtk::model::Models& inModels, cJSON* sessionRec)
 {
   // This static method's signature matches the other "add###Record" methods,
-  // but parameter <modelMgr> is unused. To remove "unused parameter" warnings,
-  // we therefore cast <modelMgr> to void rather than remove the ManagerPtr from
+  // but parameter <modelResource> is unused. To remove "unused parameter" warnings,
+  // we therefore cast <modelResource> to void rather than remove the ResourcePtr from
   // the signature.
-  (void)modelMgr;
+  (void)modelResource;
 
   cJSON* jmodels = cJSON_CreateObject();
   cJSON_AddItemToObject(sessionRec, "models", jmodels);
@@ -1075,7 +1076,7 @@ int SaveJSON::addModelsRecord(
   smtk::model::Models::const_iterator modit;
   for (modit = inModels.begin(); modit != inModels.end(); ++modit)
   {
-    //smtk::model::Model model(modelMgr, *modit);
+    //smtk::model::Model model(modelResource, *modit);
     cJSON* jmodel = cJSON_CreateObject();
 
     // Write out all entities of the model, only the meta data
@@ -1094,16 +1095,16 @@ int SaveJSON::addModelsRecord(
   * This will add a "mesh_collections" record to \a sessionRec, and all meshes
   * will be added as children of "mesh_collections"
   */
-int SaveJSON::addMeshesRecord(
-  const smtk::model::ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
+int SaveJSON::addMeshesRecord(const smtk::model::ResourcePtr modelResource,
+  const smtk::common::UUIDs& modelIds, cJSON* sessionRec)
 {
   smtk::model::Models models;
-  smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelMgr, modelIds);
-  return SaveJSON::addMeshesRecord(modelMgr, models, sessionRec);
+  smtk::model::EntityRef::EntityRefsFromUUIDs(models, modelResource, modelIds);
+  return SaveJSON::addMeshesRecord(modelResource, models, sessionRec);
 }
 
-int SaveJSON::addMeshesRecord(
-  const smtk::model::ManagerPtr modelMgr, const smtk::model::Models& inModels, cJSON* sessionRec)
+int SaveJSON::addMeshesRecord(const smtk::model::ResourcePtr modelResource,
+  const smtk::model::Models& inModels, cJSON* sessionRec)
 {
   // Add record for each model
   smtk::model::Models::const_iterator modit;
@@ -1111,7 +1112,7 @@ int SaveJSON::addMeshesRecord(
   {
     // Write out related mesh collections.
     // When writing a single collection, all its MeshSets will also be written out.
-    smtk::io::SaveJSON::forModelMeshes(modit->entity(), sessionRec, modelMgr);
+    smtk::io::SaveJSON::forModelMeshes(modit->entity(), sessionRec, modelResource);
   }
   return 1;
 }

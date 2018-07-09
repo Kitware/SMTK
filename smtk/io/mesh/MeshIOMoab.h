@@ -52,7 +52,7 @@ public:
   //TODO:
   // bool exportMesh( const std::string& filePath,
   //                  smtk::mesh::CollectionPtr collection,
-  //                  smtk::model::ManagerPtr manager,
+  //                  smtk::model::ResourcePtr resource,
   //                  const std::string& modelPropertyName ) const
 
   //Load an entire moab data file as a new collection into the given manager

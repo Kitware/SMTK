@@ -247,7 +247,7 @@ bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
     }
 
     // V. Determine the disposition of each mesh of the model.
-    smtk::mesh::ManagerPtr meshMgr = model.manager()->meshes();
+    smtk::mesh::ManagerPtr meshMgr = model.resource()->meshes();
     std::vector<smtk::mesh::CollectionPtr> collections = meshMgr->associatedCollections(model);
     for (auto coll : collections)
     {
@@ -324,9 +324,9 @@ int SaveJSON::forEntities(
     EntityRef ent = *iter;
 
     // Generate JSON for the queued entity
-    ManagerPtr modelMgr = ent.manager();
-    UUIDWithEntityPtr it = modelMgr->topology().find(ent.entity());
-    if ((it == ent.manager()->topology().end()) ||
+    ResourcePtr modelResource = ent.resource();
+    UUIDWithEntityPtr it = modelResource->topology().find(ent.entity());
+    if ((it == ent.resource()->topology().end()) ||
       ((it->second->entityFlags() & SESSION) && !(sections & JSON_SESSIONS)))
       continue;
 
@@ -337,15 +337,15 @@ int SaveJSON::forEntities(
     }
     if (sections & JSON_ENTITIES)
     {
-      status &= SaveJSON::forManagerEntity(it, curChild, modelMgr);
+      status &= SaveJSON::forResourceEntity(it, curChild, modelResource);
     }
     if (sections & JSON_TESSELLATIONS)
-      status &= SaveJSON::forManagerTessellation(it->first, curChild, modelMgr);
+      status &= SaveJSON::forResourceTessellation(it->first, curChild, modelResource);
     if (sections & JSON_PROPERTIES)
     {
-      status &= SaveJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
-      status &= SaveJSON::forManagerStringProperties(it->first, curChild, modelMgr);
-      status &= SaveJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
+      status &= SaveJSON::forResourceFloatProperties(it->first, curChild, modelResource);
+      status &= SaveJSON::forResourceStringProperties(it->first, curChild, modelResource);
+      status &= SaveJSON::forResourceIntegerProperties(it->first, curChild, modelResource);
     }
   }
   return status;

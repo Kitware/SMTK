@@ -20,8 +20,8 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModel.h"
@@ -156,7 +156,7 @@ ReadOperation::Result ReadOperation::operateInternal()
   }
 
 #if defined(SMTK_DISCRETE_SESSION_DEBUG)
-  std::string json = smtk::io::SaveJSON::fromModelManager(resource);
+  std::string json = smtk::io::SaveJSON::fromModelResource(resource);
   std::ofstream file("/tmp/read_op_out.json");
   file << json;
   file.close();

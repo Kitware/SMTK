@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Manager_txx
-#define __smtk_model_Manager_txx
+#ifndef __smtk_model_Resource_txx
+#define __smtk_model_Resource_txx
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -33,7 +33,7 @@ namespace model
   * each model edge relative to the loop.
   */
 template <typename T>
-bool Manager::insertModelFaceWithOrientedOuterLoop(
+bool Resource::insertModelFaceWithOrientedOuterLoop(
   const smtk::common::UUID& faceId,    // to be created
   const smtk::common::UUID& faceUseId, // to be created
   const smtk::common::UUID& loopId,    // to be created
@@ -67,7 +67,7 @@ bool Manager::insertModelFaceWithOrientedOuterLoop(
   * each model edge relative to the loop.
   */
 template <typename T>
-bool Manager::insertModelFaceOrientedInnerLoop(const smtk::common::UUID& loopId,
+bool Resource::insertModelFaceOrientedInnerLoop(const smtk::common::UUID& loopId,
   const smtk::common::UUID& preExistingLoopId, const T& orderedEdgesWithOrientation)
 {
   Loop outer(shared_from_this(), preExistingLoopId);
@@ -103,7 +103,7 @@ bool Manager::insertModelFaceOrientedInnerLoop(const smtk::common::UUID& loopId,
   * the polygon session. Caveat emptor.
   */
 template <typename T, typename U, typename V>
-bool Manager::deleteEntities(T& entities, U& modified, V& expunged, bool debugLog)
+bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugLog)
 {
   typename T::iterator eit;
   expunged.reserve(entities.size());
@@ -113,7 +113,7 @@ bool Manager::deleteEntities(T& entities, U& modified, V& expunged, bool debugLo
     bool hadSomeEffect = false;
     smtk::model::EntityRefs bdys = eit->boundaryEntities();
     smtk::model::EntityRefs newFreeCells;
-    smtk::model::Manager::Ptr mgr = eit->manager();
+    smtk::model::Resource::Ptr mgr = eit->resource();
     if (mgr && eit->entity())
     {
       bool isCell = eit->isCellEntity();
@@ -259,4 +259,4 @@ bool Manager::deleteEntities(T& entities, U& modified, V& expunged, bool debugLo
 } // model namespace
 } // smtk namespace
 
-#endif // __smtk_model_Manager_txx
+#endif // __smtk_model_Resource_txx

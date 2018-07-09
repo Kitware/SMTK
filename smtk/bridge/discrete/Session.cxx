@@ -29,8 +29,8 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Instance.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
@@ -205,15 +205,15 @@ smtk::model::SessionInfoBits Session::allSupportedInformation() const
   return smtk::model::SESSION_EVERYTHING;
 }
 
-/**\brief Create records in \a mgr that reflect the CMB \a entity.
+/**\brief Create records in \a resource that reflect the CMB \a entity.
   *
   */
-smtk::model::EntityRef Session::addCMBEntityToManager(
-  const smtk::common::UUID& uid, smtk::model::ManagerPtr mgr, int relDepth)
+smtk::model::EntityRef Session::addCMBEntityToResource(
+  const smtk::common::UUID& uid, smtk::model::ResourcePtr resource, int relDepth)
 {
   vtkModelItem* ent = this->entityForUUID(uid);
   if (ent)
-    return this->addCMBEntityToManager(uid, ent, mgr, relDepth);
+    return this->addCMBEntityToResource(uid, ent, resource, relDepth);
   return smtk::model::EntityRef();
 }
 
@@ -341,11 +341,11 @@ std::string Session::defaultFileExtension(const smtk::model::Model& model) const
   return ".cmb";
 }
 
-/**\brief Find the kernel entity corresponding to \a entRef and add a record for it to \a entRef's manager.
+/**\brief Find the kernel entity corresponding to \a entRef and add a record for it to \a entRef's resource.
   *
   * No bidirectional relationships or arrangements should be added
   * at this point since there is no guarantee that their records
-  * exist in the manager.
+  * exist in the resource.
   */
 EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
 {
@@ -377,7 +377,7 @@ EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
         ++embeddingDim;
     if (embeddingDim < 1)
       embeddingDim = 3; // Default to 3D model if currently empty.
-    entRef.manager()->insertModel(
+    entRef.resource()->insertModel(
       entRef.entity(), modelEntity->GetModelDimension(), embeddingDim); // , name
   }
   else if (cellEntity)
@@ -387,17 +387,17 @@ EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
     vtkModelEdge* edge = dynamic_cast<vtkModelEdge*>(otherEntity);
     vtkModelVertex* vert = dynamic_cast<vtkModelVertex*>(otherEntity);
     if (region)
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_3D, 3);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_3D, 3);
     else if (face)
     {
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_2D, 2);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_2D, 2);
       // Now get rid of mandatory positive/negative uses since we overwrite those
-      entRef.manager()->clearArrangements(entRef.entity());
+      entRef.resource()->clearArrangements(entRef.entity());
     }
     else if (edge)
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_1D, 1);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_1D, 1);
     else if (vert)
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_0D, 0);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), CELL_0D, 0);
     else
     {
       smtkErrorMacro(this->log(), "Unknown vtkModelGeometricEntity subclass \""
@@ -416,17 +416,17 @@ EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
     bool isUse = false;
     if (faceUse)
     {
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), FACE_USE, 2);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), FACE_USE, 2);
       isUse = true;
     }
     else if (edgeUse)
     {
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), EDGE_USE, 1);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), EDGE_USE, 1);
       isUse = true;
     }
     else if (vertUse)
     {
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), VERTEX_USE, 0);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), VERTEX_USE, 0);
       isUse = true;
     }
     else if (group)
@@ -469,14 +469,14 @@ EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
           groupFlags = 0;
           break;
       }
-      entRef.manager()->insertGroup(entRef.entity(), groupFlags);
+      entRef.resource()->insertGroup(entRef.entity(), groupFlags);
     }
     else if (material)
-      entRef.manager()->insertGroup(entRef.entity(), smtk::model::MODEL_DOMAIN);
+      entRef.resource()->insertGroup(entRef.entity(), smtk::model::MODEL_DOMAIN);
     else if (shell)
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), SHELL, -1);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), SHELL, -1);
     else if (loop)
-      entRef.manager()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), LOOP, -1);
+      entRef.resource()->addEntityOfTypeAndDimensionWithUUID(entRef.entity(), LOOP, -1);
     else
     {
       smtkErrorMacro(this->log(), "Unknown vtkModel subclass \"" << otherEntity->GetClassName()
@@ -484,7 +484,7 @@ EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
     }
     (void)isUse;
   }
-  return entRef.manager()->findEntity(entRef.entity());
+  return entRef.resource()->findEntity(entRef.entity());
 }
 
 /// Create a helper specific to the SMTK discrete kernel.
@@ -637,7 +637,7 @@ int Session::findOrAddCellUses(
   {
     // NB: The discrete session does not have volume uses... we use the helper to
     //     store an extra UUID.
-    smtk::model::EntityRef volumeUse(cell.manager(), helper->useForRegion(modelRegion));
+    smtk::model::EntityRef volumeUse(cell.resource(), helper->useForRegion(modelRegion));
     /*
     if (!helper->isMarked(childRef))
       this->transcribe(childRef, smtk::model::SESSION_EVERYTHING, false, -1);
@@ -679,7 +679,7 @@ int Session::findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionIn
   if (entRef.isVolumeUse())
   {
     cell = smtk::model::Volume(
-      entRef.manager(), this->findOrSetEntityUUID(helper->regionFromUseId(entRef.entity())));
+      entRef.resource(), this->findOrSetEntityUUID(helper->regionFromUseId(entRef.entity())));
     this->addEntityRecord(cell);
     this->findOrAddRelatedEntities(cell, smtk::model::SESSION_EVERYTHING, helper);
     helper->addArrangement(cell, smtk::model::HAS_CELL, entRef, 0, smtk::model::POSITIVE);
@@ -695,7 +695,7 @@ int Session::findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionIn
     if (dscFaceUse)
     {
       cell = smtk::model::EntityRef(
-        entRef.manager(), this->findOrSetEntityUUID(dscFaceUse->GetModelFace()));
+        entRef.resource(), this->findOrSetEntityUUID(dscFaceUse->GetModelFace()));
       sense = 0;
       orientation =
         (dscFaceUse->GetModelFace()->GetModelFaceUse(1) == dscFaceUse ? smtk::model::POSITIVE
@@ -704,14 +704,14 @@ int Session::findOrAddOwningCell(const smtk::model::UseEntity& entRef, SessionIn
     else if (dscEdgeUse)
     {
       cell = smtk::model::EntityRef(
-        entRef.manager(), this->findOrSetEntityUUID(dscEdgeUse->GetModelEdge()));
+        entRef.resource(), this->findOrSetEntityUUID(dscEdgeUse->GetModelEdge()));
       sense = helper->findOrAssignSense(dscEdgeUse);
       orientation = dscEdgeUse->GetDirection() ? smtk::model::POSITIVE : smtk::model::NEGATIVE;
     }
     else if (dscVertexUse)
     {
       cell = smtk::model::EntityRef(
-        entRef.manager(), this->findOrSetEntityUUID(dscVertexUse->GetModelVertex()));
+        entRef.resource(), this->findOrSetEntityUUID(dscVertexUse->GetModelVertex()));
       sense = 0; // FIXME (see also LookupSenseOfUse)
       orientation = smtk::model::UNDEFINED;
     }
@@ -741,7 +741,7 @@ int Session::findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef,
   {
     vtkModelRegion* region = helper->regionFromUseId(entRef.entity());
     LookupSenseForShellEnt senseLookup(helper);
-    cell = smtk::model::Volume(entRef.manager(), this->findOrSetEntityUUID(region));
+    cell = smtk::model::Volume(entRef.resource(), this->findOrSetEntityUUID(region));
     numEnts += this->addEntities(
       entRef, region->NewModelShellUseIterator(), smtk::model::INCLUDES, helper, senseLookup);
   }
@@ -757,7 +757,7 @@ int Session::findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef,
       vtkModelShellUse* dscShell = dscFaceUse->GetModelShellUse();
       if (dscShell)
       {
-        smtk::model::Shell parent(entRef.manager(), this->findOrSetEntityUUID(dscShell));
+        smtk::model::Shell parent(entRef.resource(), this->findOrSetEntityUUID(dscShell));
         this->addEntity(parent, dscFaceUse, smtk::model::HAS_USE, helper);
         ++numEnts;
       }
@@ -776,7 +776,7 @@ int Session::findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef,
       vtkModelLoopUse* dscLoop = dscEdgeUse->GetModelLoopUse();
       if (dscLoop)
       {
-        smtk::model::Loop parent(entRef.manager(), this->findOrSetEntityUUID(dscLoop));
+        smtk::model::Loop parent(entRef.resource(), this->findOrSetEntityUUID(dscLoop));
         this->addEntity(parent, dscEdgeUse, smtk::model::HAS_USE, helper);
         ++numEnts;
       }
@@ -785,7 +785,7 @@ int Session::findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef,
       // Would call this->addEntityRecord(childRef); but there is no matching discrete item...
       // ... so manually insert the chain.
       smtk::model::Chain childRef =
-        entRef.manager()->insertChain(helper->chainForEdgeUse(dscEdgeUse));
+        entRef.resource()->insertChain(helper->chainForEdgeUse(dscEdgeUse));
       this->findOrAddRelatedEntities(childRef, smtk::model::SESSION_EVERYTHING, helper);
       helper->addArrangement(entRef, smtk::model::INCLUDES, childRef);
       numEnts += 2; // loop + outer chain
@@ -799,7 +799,7 @@ int Session::findOrAddShellAdjacencies(const smtk::model::UseEntity& entRef,
       vtkModelItemIterator* euit = dscVertexUse->NewModelEdgeUseIterator();
       for (euit->Begin(); !euit->IsAtEnd(); euit->Next(), ++numEnts)
       {
-        smtk::model::Chain chain = entRef.manager()->insertChain(
+        smtk::model::Chain chain = entRef.resource()->insertChain(
           helper->chainForEdgeUse(dynamic_cast<vtkModelEdgeUse*>(euit->GetCurrentItem())));
         this->addEntity(chain, dscVertexUse, smtk::model::HAS_USE, helper);
       }
@@ -862,7 +862,7 @@ int Session::findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef,
       if (dscShell == shellIt->GetCurrentItem())
       { // Only add other shells if we are the outer shell
         // Add parent volume-use of shell
-        smtk::model::VolumeUse parent(entRef.manager(), helper->useForRegion(region));
+        smtk::model::VolumeUse parent(entRef.resource(), helper->useForRegion(region));
         this->addEntity(parent, dscShell, smtk::model::INCLUDES, helper);
         ++numEnts;
 
@@ -876,7 +876,7 @@ int Session::findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef,
       {
         // This shell is the child of another shell; it has no child shells of its own.
         smtk::model::Shell parent(
-          entRef.manager(), this->findOrSetEntityUUID(shellIt->GetCurrentItem()));
+          entRef.resource(), this->findOrSetEntityUUID(shellIt->GetCurrentItem()));
         this->addEntity(parent, dscShell, smtk::model::INCLUDES, helper);
         ++numEnts;
       }
@@ -904,7 +904,7 @@ int Session::findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef,
         {
           // Only add other loops if we are the outer loop
           // Add parent volume-use of loop
-          smtk::model::FaceUse parent(entRef.manager(), this->findOrSetEntityUUID(faceUse));
+          smtk::model::FaceUse parent(entRef.resource(), this->findOrSetEntityUUID(faceUse));
           this->addEntity(parent, dscLoop, smtk::model::INCLUDES, helper);
           ++numEnts;
 
@@ -924,7 +924,7 @@ int Session::findOrAddUseAdjacencies(const smtk::model::ShellEntity& entRef,
         { // we are an inner loop use.
           // This loop is the child of another loop; it has no child loops of its own.
           smtk::model::Loop parent(
-            entRef.manager(), this->findOrSetEntityUUID(faceUse->GetOuterLoopUse()));
+            entRef.resource(), this->findOrSetEntityUUID(faceUse->GetOuterLoopUse()));
           this->addEntity(parent, dscLoop, smtk::model::INCLUDES, helper);
           ++numEnts;
         }
@@ -1016,7 +1016,7 @@ int Session::findOrAddFreeCells(
         {
           smtk::common::UUID rid = this->findOrSetEntityUUID(region);
           // make the associated region to be the parent of floating edge
-          this->addEntity(smtk::model::EntityRef(entRef.manager(), rid), edge,
+          this->addEntity(smtk::model::EntityRef(entRef.resource(), rid), edge,
             smtk::model::INCLUDES, helper, -1, smtk::model::UNDEFINED);
           ++numEnts;
         }
@@ -1128,7 +1128,7 @@ SessionInfoBits Session::updateTessellation(const smtk::model::EntityRef& entRef
 }
 
 smtk::common::UUID Session::trackModel(
-  vtkDiscreteModelWrapper* mod, const std::string& url, smtk::model::ManagerPtr mgr)
+  vtkDiscreteModelWrapper* mod, const std::string& url, smtk::model::ResourcePtr resource)
 {
   vtkDiscreteModel* dmod = mod->GetModel();
   if (!dmod)
@@ -1142,17 +1142,17 @@ smtk::common::UUID Session::trackModel(
   m_modelRefsToIds[mod] = mid;
   m_itemsToRefs[mid] = dmod;
   m_modelsToSessions[dmod] = shared_from_this();
-  smtk::model::Model smtkModel(mgr, mid);
-  smtkModel.setSession(smtk::model::SessionRef(mgr, this->sessionId()));
+  smtk::model::Model smtkModel(resource, mid);
+  smtkModel.setSession(smtk::model::SessionRef(resource, this->sessionId()));
 
   // Create a collection associated with the model id
-  this->manager()->meshes()->makeCollection(mid)->name(
-    smtk::model::EntityRef(mgr, mid).name() + "_tessellation");
+  this->resource()->meshes()->makeCollection(mid)->name(
+    smtk::model::EntityRef(resource, mid).name() + "_tessellation");
 
-  // Now add the record to manager and assign the URL to
+  // Now add the record to resource and assign the URL to
   // the model as a string property.
-  //smtk::model::EntityRef c = this->addCMBEntityToManager(mid, dmod, mgr, 8);
-  smtk::model::EntityRef c(mgr, mid);
+  //smtk::model::EntityRef c = this->addCMBEntityToResource(mid, dmod, resource, 8);
+  smtk::model::EntityRef c(resource, mid);
   this->declareDanglingEntity(c);
   this->transcribe(c, smtk::model::SESSION_EVERYTHING);
   c.setStringProperty("url", url);
@@ -1224,8 +1224,8 @@ void Session::untrackEntity(const smtk::common::UUID& uid)
   m_itemsToRefs.erase(uid);
 }
 
-smtk::model::EntityRef Session::addCMBEntityToManager(
-  const smtk::common::UUID& uid, vtkModelItem* ent, smtk::model::ManagerPtr mgr, int relDepth)
+smtk::model::EntityRef Session::addCMBEntityToResource(
+  const smtk::common::UUID& uid, vtkModelItem* ent, smtk::model::ResourcePtr resource, int relDepth)
 {
   this->assignUUIDToEntity(uid, ent);
   vtkModel* modelEntity = dynamic_cast<vtkModel*>(ent);
@@ -1233,7 +1233,7 @@ smtk::model::EntityRef Session::addCMBEntityToManager(
   vtkModelEntity* otherEntity = dynamic_cast<vtkModelEntity*>(ent);
   if (modelEntity)
   {
-    return this->addBodyToManager(uid, modelEntity, mgr, relDepth);
+    return this->addBodyToResource(uid, modelEntity, resource, relDepth);
   }
   else if (cellEntity)
   {
@@ -1242,13 +1242,13 @@ smtk::model::EntityRef Session::addCMBEntityToManager(
     vtkModelEdge* edge = dynamic_cast<vtkModelEdge*>(otherEntity);
     vtkModelVertex* vert = dynamic_cast<vtkModelVertex*>(otherEntity);
     if (region)
-      return this->addVolumeToManager(uid, region, mgr, relDepth);
+      return this->addVolumeToResource(uid, region, resource, relDepth);
     else if (face)
-      return this->addFaceToManager(uid, face, mgr, relDepth);
+      return this->addFaceToResource(uid, face, resource, relDepth);
     else if (edge)
-      return this->addEdgeToManager(uid, edge, mgr, relDepth);
+      return this->addEdgeToResource(uid, edge, resource, relDepth);
     else if (vert)
-      return this->addVertexToManager(uid, vert, mgr, relDepth);
+      return this->addVertexToResource(uid, vert, resource, relDepth);
     else
     {
       std::cerr << "Unknown vtkModelGeometricEntity subclass \"" << cellEntity->GetClassName()
@@ -1265,19 +1265,19 @@ smtk::model::EntityRef Session::addCMBEntityToManager(
     vtkModelShellUse* shell = dynamic_cast<vtkModelShellUse*>(otherEntity);
     vtkModelLoopUse* loop = dynamic_cast<vtkModelLoopUse*>(otherEntity);
     if (faceUse)
-      return this->addFaceUseToManager(uid, faceUse, mgr, relDepth);
+      return this->addFaceUseToResource(uid, faceUse, resource, relDepth);
     else if (edgeUse)
-      return this->addEdgeUseToManager(uid, edgeUse, mgr, relDepth);
+      return this->addEdgeUseToResource(uid, edgeUse, resource, relDepth);
     else if (vertUse)
-      return this->addVertexUseToManager(uid, vertUse, mgr, relDepth);
+      return this->addVertexUseToResource(uid, vertUse, resource, relDepth);
     else if (group)
-      return this->addGroupToManager(uid, group, mgr, relDepth);
+      return this->addGroupToResource(uid, group, resource, relDepth);
     else if (material)
-      return this->addMaterialToManager(uid, material, mgr, relDepth);
+      return this->addMaterialToResource(uid, material, resource, relDepth);
     else if (shell)
-      return this->addShellToManager(uid, shell, mgr, relDepth);
+      return this->addShellToResource(uid, shell, resource, relDepth);
     else if (loop)
-      return this->addLoopToManager(uid, loop, mgr, relDepth);
+      return this->addLoopToResource(uid, loop, resource, relDepth);
     else
     {
       std::cerr << "Unknown vtkModel subclass \"" << otherEntity->GetClassName()
@@ -1328,8 +1328,8 @@ void Session::addEntities(P& parent, vtkModelItemIterator* it, const H& helper, 
   for (it->Begin(); !it->IsAtEnd(); it->Next())
   {
     typename H::ChildType child =
-      this->addCMBEntityToManager(this->findOrSetEntityUUID(it->GetCurrentItem()),
-        it->GetCurrentItem(), parent.manager(), relDepth);
+      this->addCMBEntityToResource(this->findOrSetEntityUUID(it->GetCurrentItem()),
+        it->GetCurrentItem(), parent.resource(), relDepth);
     helper.invoke(parent, child);
   }
   it->Delete();
@@ -1342,13 +1342,13 @@ void Session::addEntityArray(P& parent, C& childContainer, const H& helper, int 
   typename C::const_iterator cit;
   for (cit = childContainer.begin(); cit != childContainer.end(); ++cit)
   {
-    typename H::ChildType child = this->addCMBEntityToManager(
-      this->findOrSetEntityUUID(*cit), *cit, parent.manager(), relDepth);
+    typename H::ChildType child = this->addCMBEntityToResource(
+      this->findOrSetEntityUUID(*cit), *cit, parent.resource(), relDepth);
     helper.invoke(parent, child);
   }
 }
 
-/// Add a child to \a parent's manager and a parent-child relationship to \a helper.
+/// Add a child to \a parent's resource and a parent-child relationship to \a helper.
 void Session::addEntity(const smtk::model::EntityRef& parent, vtkModelItem* child,
   smtk::model::ArrangementKind k, ArrangementHelper* helper, int sense,
   smtk::model::Orientation orientation, int iterpos)
@@ -1357,7 +1357,7 @@ void Session::addEntity(const smtk::model::EntityRef& parent, vtkModelItem* chil
   {
     return;
   }
-  smtk::model::EntityRef childRef(parent.manager(), this->findOrSetEntityUUID(child));
+  smtk::model::EntityRef childRef(parent.resource(), this->findOrSetEntityUUID(child));
 
   this->addEntityRecord(parent);
   if (parent.isUseEntity())
@@ -1372,7 +1372,7 @@ void Session::addEntity(const smtk::model::EntityRef& parent, vtkModelItem* chil
   helper->addArrangement(parent, k, childRef, sense, orientation, iterpos);
 }
 
-/// Add a parent to the manager and a parent-child relationship to the helper.
+/// Add a parent to the resource and a parent-child relationship to the helper.
 void Session::addEntity(vtkModelItem* parent, const smtk::model::EntityRef& child,
   smtk::model::ArrangementKind k, ArrangementHelper* helper, int sense,
   smtk::model::Orientation orientation, int iterpos)
@@ -1381,7 +1381,7 @@ void Session::addEntity(vtkModelItem* parent, const smtk::model::EntityRef& chil
   {
     return;
   }
-  smtk::model::EntityRef parentRef(child.manager(), this->findOrSetEntityUUID(parent));
+  smtk::model::EntityRef parentRef(child.resource(), this->findOrSetEntityUUID(parent));
 
   this->addEntityRecord(parentRef);
   if (parentRef.isUseEntity())
@@ -1396,7 +1396,7 @@ void Session::addEntity(vtkModelItem* parent, const smtk::model::EntityRef& chil
   helper->addArrangement(parentRef, k, child, sense, orientation, iterpos);
 }
 
-/**\brief Add children to \a parent's manager and parent-child relationships to \a helper.
+/**\brief Add children to \a parent's resource and parent-child relationships to \a helper.
   *
   * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
   */
@@ -1413,7 +1413,7 @@ int Session::addEntities(
   return numEnts;
 }
 
-/**\brief Add children to \a parent's manager and parent-child relationships to \a helper.
+/**\brief Add children to \a parent's resource and parent-child relationships to \a helper.
   *
   * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
   * This variant accepts a functor (\a senseLookup) which is invoked to determine the sense
@@ -1436,7 +1436,7 @@ int Session::addEntities(const smtk::model::EntityRef& parent, vtkModelItemItera
   return numEnts;
 }
 
-/**\brief Add multiple parents to \a child's manager and parent-child relationships to \a helper.
+/**\brief Add multiple parents to \a child's resource and parent-child relationships to \a helper.
   *
   * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
   */
@@ -1453,7 +1453,7 @@ int Session::addEntities(vtkModelItemIterator* it, const smtk::model::EntityRef&
   return numEnts;
 }
 
-/**\brief Add multiple parents to \a child's manager and parent-child relationships to \a helper.
+/**\brief Add multiple parents to \a child's resource and parent-child relationships to \a helper.
   *
   * The parent-child relationships map \a parent to each entry of \a it with the given type \a k.
   * This variant accepts a functor (\a senseLookup) which is invoked to determine the sense
@@ -1568,7 +1568,7 @@ bool Session::addTessellation(
     }
 
     smtk::mesh::CollectionPtr collection =
-      this->manager()->meshes()->collection(cellOut.owningModel().entity());
+      this->resource()->meshes()->collection(cellOut.owningModel().entity());
     if (collection && collection->isValid())
     {
       smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(cellOut);
@@ -1643,24 +1643,24 @@ bool Session::addProperties(
   return hasProps;
 }
 
-/// Given a CMB \a body tagged with \a uid, create a record in \a manager for it.
-smtk::model::Model Session::addBodyToManager(
-  const smtk::common::UUID& uid, vtkModel* body, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a body tagged with \a uid, create a record in \a resource for it.
+smtk::model::Model Session::addBodyToResource(
+  const smtk::common::UUID& uid, vtkModel* body, smtk::model::ResourcePtr resource, int relDepth)
 {
   if (body)
   {
     smtk::model::Model model;
     smtk::model::SessionInfoBits translated;
     bool already;
-    if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = resource->findEntity(uid, false) ? true : false) || relDepth < 0)
     {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
-      model = smtk::model::Model(mgr, uid);
+      model = smtk::model::Model(resource, uid);
     }
     else
     {
       translated = smtk::model::SESSION_ENTITY_RECORD;
-      model = mgr->insertModel(uid, body->GetModelDimension(), 3,
+      model = resource->insertModel(uid, body->GetModelDimension(), 3,
         "Discrete Model"); // TODO: Model name???
     }
     if (relDepth >= 0)
@@ -1709,24 +1709,24 @@ smtk::model::Model Session::addBodyToManager(
   return smtk::model::Model();
 }
 
-/// Given a CMB \a group tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Group Session::addGroupToManager(const smtk::common::UUID& uid,
-  vtkDiscreteModelEntityGroup* group, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a group tagged with \a uid, create a record in \a resource for it.
+smtk::model::Group Session::addGroupToResource(const smtk::common::UUID& uid,
+  vtkDiscreteModelEntityGroup* group, smtk::model::ResourcePtr resource, int relDepth)
 {
   if (group)
   {
     smtk::model::Group result;
     smtk::model::SessionInfoBits translated;
     bool already;
-    if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = resource->findEntity(uid, false) ? true : false) || relDepth < 0)
     {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
-      result = smtk::model::Group(mgr, uid);
+      result = smtk::model::Group(resource, uid);
     }
     else
     {
       translated = smtk::model::SESSION_ENTITY_ARRANGED;
-      result = mgr->insertGroup(uid);
+      result = resource->insertGroup(uid);
     }
     if (relDepth >= 0)
     {
@@ -1743,24 +1743,24 @@ smtk::model::Group Session::addGroupToManager(const smtk::common::UUID& uid,
   return smtk::model::Group();
 }
 
-/// Given a CMB \a material tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Group Session::addMaterialToManager(const smtk::common::UUID& uid,
-  vtkModelMaterial* material, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a material tagged with \a uid, create a record in \a resource for it.
+smtk::model::Group Session::addMaterialToResource(const smtk::common::UUID& uid,
+  vtkModelMaterial* material, smtk::model::ResourcePtr resource, int relDepth)
 {
   if (material)
   {
     smtk::model::SessionInfoBits translated;
     smtk::model::Group result;
     bool already;
-    if ((already = mgr->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = resource->findEntity(uid, false) ? true : false) || relDepth < 0)
     {
       translated = already ? smtk::model::SESSION_EVERYTHING : smtk::model::SESSION_NOTHING;
-      result = smtk::model::Group(mgr, uid);
+      result = smtk::model::Group(resource, uid);
     }
     else
     {
       translated = smtk::model::SESSION_ENTITY_ARRANGED;
-      result = mgr->insertGroup(uid);
+      result = resource->insertGroup(uid);
     }
     if (relDepth >= 0)
     {
@@ -1788,27 +1788,27 @@ smtk::model::Group Session::addMaterialToManager(const smtk::common::UUID& uid,
   return smtk::model::Group();
 }
 
-/// Given a CMB \a coFace tagged with \a uid, create a record in \a mgr for it.
-smtk::model::FaceUse Session::addFaceUseToManager(
-  const smtk::common::UUID& uid, vtkModelFaceUse* coFace, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a coFace tagged with \a uid, create a record in \a resource for it.
+smtk::model::FaceUse Session::addFaceUseToResource(const smtk::common::UUID& uid,
+  vtkModelFaceUse* coFace, smtk::model::ResourcePtr resource, int relDepth)
 {
   if (coFace)
   {
     smtk::model::FaceUse result;
     smtk::model::SessionInfoBits translated;
     bool already;
-    smtk::model::Face matchingFace(mgr, this->findOrSetEntityUUID(coFace->GetModelFace()));
-    if ((already = mgr->findEntity(uid, false) ? true : false))
+    smtk::model::Face matchingFace(resource, this->findOrSetEntityUUID(coFace->GetModelFace()));
+    if ((already = resource->findEntity(uid, false) ? true : false))
     {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
-      result = smtk::model::FaceUse(mgr, uid);
+      result = smtk::model::FaceUse(resource, uid);
     }
     else
     {
       translated = smtk::model::SESSION_ENTITY_ARRANGED;
       // vtkModelFaceUse does not provide any orientation/sense info,
       // so we check the face to find its orientation. Blech.
-      result = mgr->setFaceUse(uid, matchingFace, 0,
+      result = resource->setFaceUse(uid, matchingFace, 0,
         coFace->GetModelFace()->GetModelFaceUse(1) == coFace ? smtk::model::POSITIVE
                                                              : smtk::model::NEGATIVE);
     }
@@ -1821,22 +1821,22 @@ smtk::model::FaceUse Session::addFaceUseToManager(
       {
         smtk::common::UUID shellId = this->findOrSetEntityUUID(shellUse);
 
-        this->addCMBEntityToManager(
-          matchingFace.entity(), coFace->GetModelFace(), mgr, relDepth - 1);
-        this->addCMBEntityToManager(shellId, shellUse, mgr, relDepth - 1);
+        this->addCMBEntityToResource(
+          matchingFace.entity(), coFace->GetModelFace(), resource, relDepth - 1);
+        this->addCMBEntityToResource(shellId, shellUse, resource, relDepth - 1);
         vtkModelItemIterator* loopIt = coFace->NewLoopUseIterator();
         smtk::model::Loops loops;
         for (loopIt->Begin(); !loopIt->IsAtEnd(); loopIt->Next())
         {
           vtkModelItem* loop = loopIt->GetCurrentItem();
           smtk::common::UUID loopId = this->findOrSetEntityUUID(loop);
-          this->addCMBEntityToManager(loopId, loop, mgr, relDepth - 1);
-          loops.push_back(smtk::model::Loop(mgr, loopId));
+          this->addCMBEntityToResource(loopId, loop, resource, relDepth - 1);
+          loops.push_back(smtk::model::Loop(resource, loopId));
         }
         loopIt->Delete();
-        smtk::model::FaceUse faceUse(mgr, uid);
+        smtk::model::FaceUse faceUse(resource, uid);
         faceUse.addShellEntities(loops);
-        faceUse.setBoundingShellEntity(smtk::model::ShellEntity(mgr, shellId));
+        faceUse.setBoundingShellEntity(smtk::model::ShellEntity(resource, shellId));
       }
     }
 
@@ -1849,37 +1849,37 @@ smtk::model::FaceUse Session::addFaceUseToManager(
   return smtk::model::FaceUse();
 }
 
-/// Given a CMB \a coEdge tagged with \a uid, create a record in \a mgr for it.
-smtk::model::EdgeUse Session::addEdgeUseToManager(
-  const smtk::common::UUID& uid, vtkModelEdgeUse* coEdge, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a coEdge tagged with \a uid, create a record in \a resource for it.
+smtk::model::EdgeUse Session::addEdgeUseToResource(const smtk::common::UUID& uid,
+  vtkModelEdgeUse* coEdge, smtk::model::ResourcePtr resource, int relDepth)
 {
   if (!coEdge)
     return smtk::model::EdgeUse();
 
   smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
   bool already;
-  smtk::model::EdgeUse result(mgr, uid);
-  if ((already = mgr->findEntity(uid, false) ? true : false))
+  smtk::model::EdgeUse result(resource, uid);
+  if ((already = resource->findEntity(uid, false) ? true : false))
   {
     translated = already ? smtk::model::SESSION_ENTITY_TYPE : smtk::model::SESSION_NOTHING;
   }
 
   if (relDepth >= 0)
   {
-    smtk::model::Edge matchingEdge(mgr, this->findOrSetEntityUUID(coEdge->GetModelEdge()));
-    if (mgr->findEntity(matchingEdge.entity(), false) == NULL)
+    smtk::model::Edge matchingEdge(resource, this->findOrSetEntityUUID(coEdge->GetModelEdge()));
+    if (resource->findEntity(matchingEdge.entity(), false) == NULL)
     { // Force the addition of the parent edge to the model.
-      this->addEdgeToManager(matchingEdge.entity(), coEdge->GetModelEdge(), mgr, 0);
+      this->addEdgeToResource(matchingEdge.entity(), coEdge->GetModelEdge(), resource, 0);
     }
     // Now create the edge use with the proper relation:
-    mgr->setEdgeUse(uid, matchingEdge, senseOfEdgeUse(coEdge),
+    resource->setEdgeUse(uid, matchingEdge, senseOfEdgeUse(coEdge),
       coEdge->GetDirection() ? smtk::model::POSITIVE : smtk::model::NEGATIVE);
     // Finally, create its loop.
     vtkModelLoopUse* loopUse = coEdge->GetModelLoopUse();
     if (loopUse)
     {
       smtk::common::UUID luid = this->findOrSetEntityUUID(loopUse);
-      smtk::model::Loop lpu = this->addLoopToManager(luid, loopUse, mgr, relDepth - 1);
+      smtk::model::Loop lpu = this->addLoopToResource(luid, loopUse, resource, relDepth - 1);
     }
 
     translated |= smtk::model::SESSION_ENTITY_RELATIONS;
@@ -1891,13 +1891,13 @@ smtk::model::EdgeUse Session::addEdgeUseToManager(
   return result;
 }
 
-/// Given a CMB \a coVertex tagged with \a uid, create a record in \a mgr for it.
-smtk::model::VertexUse Session::addVertexUseToManager(const smtk::common::UUID& uid,
-  vtkModelVertexUse* coVertex, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a coVertex tagged with \a uid, create a record in \a resource for it.
+smtk::model::VertexUse Session::addVertexUseToResource(const smtk::common::UUID& uid,
+  vtkModelVertexUse* coVertex, smtk::model::ResourcePtr resource, int relDepth)
 {
-  if (coVertex && !mgr->findEntity(uid, false))
+  if (coVertex && !resource->findEntity(uid, false))
   {
-    smtk::model::VertexUse result(mgr, uid);
+    smtk::model::VertexUse result(resource, uid);
     smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
     {
@@ -1912,13 +1912,13 @@ smtk::model::VertexUse Session::addVertexUseToManager(const smtk::common::UUID& 
   return smtk::model::VertexUse();
 }
 
-/// Given a CMB \a shell tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Shell Session::addShellToManager(
-  const smtk::common::UUID& uid, vtkModelShellUse* shell, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a shell tagged with \a uid, create a record in \a resource for it.
+smtk::model::Shell Session::addShellToResource(const smtk::common::UUID& uid,
+  vtkModelShellUse* shell, smtk::model::ResourcePtr resource, int relDepth)
 {
-  if (shell && !mgr->findEntity(uid, false))
+  if (shell && !resource->findEntity(uid, false))
   {
-    smtk::model::Shell result(mgr, uid);
+    smtk::model::Shell result(resource, uid);
     smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
     {
@@ -1964,18 +1964,18 @@ static vtkModelFaceUse* locateLoopInFace(
   return NULL;
 }
 
-/// Given a CMB \a loop tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Loop Session::addLoopToManager(const smtk::common::UUID& uid, vtkModelLoopUse* refLoop,
-  smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a loop tagged with \a uid, create a record in \a resource for it.
+smtk::model::Loop Session::addLoopToResource(const smtk::common::UUID& uid,
+  vtkModelLoopUse* refLoop, smtk::model::ResourcePtr resource, int relDepth)
 {
   vtkModelFace* refFace;
-  if (refLoop && (refFace = refLoop->GetModelFace()) && !mgr->findEntity(uid, false))
+  if (refLoop && (refFace = refLoop->GetModelFace()) && !resource->findEntity(uid, false))
   {
     smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     // Insert the loop, which means inserting the face use and face regardless of relDepth,
     // because the loop's orientation and nesting must be arranged relative to them.
     smtk::common::UUID fid = this->findOrSetEntityUUID(refFace);
-    this->addFaceToManager(fid, refFace, mgr, relDepth - 1);
+    this->addFaceToResource(fid, refFace, resource, relDepth - 1);
     // Find the face *use* this loop belongs to and transcribe it.
     // Note that loop may be the child of a face use OR another loop (which we must then transcribe).
     vtkModelLoopUse* refLoopParent = NULL;
@@ -1984,17 +1984,17 @@ smtk::model::Loop Session::addLoopToManager(const smtk::common::UUID& uid, vtkMo
     if (!refFaceUse || faceUseOrientation < 0)
       return smtk::model::Loop();
     //smtk::common::UUID fuid = this->findOrSetEntityUUID(refFaceUse);
-    smtk::model::FaceUse faceUse = this->addFaceUseToManager(fid, refFaceUse, mgr, 0);
+    smtk::model::FaceUse faceUse = this->addFaceUseToResource(fid, refFaceUse, resource, 0);
     smtk::model::Loop loop;
     if (refLoopParent)
     {
       smtk::common::UUID pluid = this->findOrSetEntityUUID(refLoopParent);
-      smtk::model::Loop parentLoop = this->addLoopToManager(pluid, refLoopParent, mgr, 0);
-      loop = mgr->setLoop(uid, parentLoop);
+      smtk::model::Loop parentLoop = this->addLoopToResource(pluid, refLoopParent, resource, 0);
+      loop = resource->setLoop(uid, parentLoop);
     }
     else
     {
-      loop = mgr->setLoop(uid, faceUse);
+      loop = resource->setLoop(uid, faceUse);
     }
     if (relDepth >= 0)
     {
@@ -2005,7 +2005,7 @@ smtk::model::Loop Session::addLoopToManager(const smtk::common::UUID& uid, vtkMo
       {
         vtkModelEdgeUse* eu = refLoop->GetModelEdgeUse(i);
         smtk::common::UUID euid = this->findOrSetEntityUUID(eu);
-        this->addEdgeUseToManager(euid, eu, mgr, relDepth - 1);
+        this->addEdgeUseToResource(euid, eu, resource, relDepth - 1);
       }
     }
 
@@ -2017,19 +2017,19 @@ smtk::model::Loop Session::addLoopToManager(const smtk::common::UUID& uid, vtkMo
   return smtk::model::Loop();
 }
 
-/// Given a CMB \a refVolume tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Volume Session::addVolumeToManager(const smtk::common::UUID& uid,
-  vtkModelRegion* refVolume, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a refVolume tagged with \a uid, create a record in \a resource for it.
+smtk::model::Volume Session::addVolumeToResource(const smtk::common::UUID& uid,
+  vtkModelRegion* refVolume, smtk::model::ResourcePtr resource, int relDepth)
 {
   if (refVolume)
   {
     smtk::model::Volume result;
     // if there is a Volume already for refVolume, return it; otherwise, create one
-    if (mgr->findEntity(uid, false))
-      result = smtk::model::Volume(mgr, uid);
+    if (resource->findEntity(uid, false))
+      result = smtk::model::Volume(resource, uid);
     else
     {
-      result = mgr->insertVolume(uid);
+      result = resource->insertVolume(uid);
       if (relDepth >= 0)
       {
         // Add refVolume relations and arrangements
@@ -2046,17 +2046,17 @@ smtk::model::Volume Session::addVolumeToManager(const smtk::common::UUID& uid,
   return smtk::model::Volume();
 }
 
-/// Given a CMB \a refFace tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Face Session::addFaceToManager(
-  const smtk::common::UUID& uid, vtkModelFace* refFace, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a refFace tagged with \a uid, create a record in \a resource for it.
+smtk::model::Face Session::addFaceToResource(const smtk::common::UUID& uid, vtkModelFace* refFace,
+  smtk::model::ResourcePtr resource, int relDepth)
 {
   if (!refFace)
     return smtk::model::Face();
 
   smtk::model::SessionInfoBits actual = smtk::model::SESSION_NOTHING;
-  smtk::model::Face mutableEntityRef(mgr, uid);
+  smtk::model::Face mutableEntityRef(resource, uid);
   if (!mutableEntityRef.isValid())
-    mutableEntityRef.manager()->insertFace(uid);
+    mutableEntityRef.resource()->insertFace(uid);
   actual |= smtk::model::SESSION_ENTITY_TYPE;
 
   if (relDepth >= 0)
@@ -2069,10 +2069,10 @@ smtk::model::Face Session::addFaceToManager(
       if (fu)
       {
         smtk::common::UUID fuid = this->findOrSetEntityUUID(fu);
-        this->addFaceUseToManager(fuid, fu, mgr, relDepth - 1);
+        this->addFaceUseToResource(fuid, fu, resource, relDepth - 1);
         // Now, since we are the "higher" end of the relationship,
         // arrange the use wrt ourself:
-        mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
+        resource->findCreateOrReplaceCellUseOfSenseAndOrientation(
           uid, 0, i ? smtk::model::POSITIVE : smtk::model::NEGATIVE, fuid);
       }
     }
@@ -2084,7 +2084,7 @@ smtk::model::Face Session::addFaceToManager(
       vtkModelRegion* vol = refFace->GetModelRegion(i);
       if (vol)
       {
-        Volume v(mgr, this->findOrSetEntityUUID(vol));
+        Volume v(resource, this->findOrSetEntityUUID(vol));
         mutableEntityRef.addRawRelation(v);
       }
     }
@@ -2106,17 +2106,17 @@ smtk::model::Face Session::addFaceToManager(
   return mutableEntityRef;
 }
 
-/// Given a CMB \a refEdge tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Edge Session::addEdgeToManager(
-  const smtk::common::UUID& uid, vtkModelEdge* refEdge, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a refEdge tagged with \a uid, create a record in \a resource for it.
+smtk::model::Edge Session::addEdgeToResource(const smtk::common::UUID& uid, vtkModelEdge* refEdge,
+  smtk::model::ResourcePtr resource, int relDepth)
 {
   if (!refEdge)
     return smtk::model::Edge();
 
   smtk::model::SessionInfoBits actual = smtk::model::SESSION_NOTHING;
-  smtk::model::Edge mutableEntityRef(mgr, uid);
+  smtk::model::Edge mutableEntityRef(resource, uid);
   if (!mutableEntityRef.isValid())
-    mutableEntityRef.manager()->insertEdge(uid);
+    mutableEntityRef.resource()->insertEdge(uid);
   actual |= smtk::model::SESSION_ENTITY_TYPE;
 
   if (relDepth >= 0)
@@ -2129,10 +2129,10 @@ smtk::model::Edge Session::addEdgeToManager(
       if (eu)
       {
         smtk::common::UUID euid = this->findOrSetEntityUUID(eu);
-        this->addEdgeUseToManager(euid, eu, mgr, relDepth - 1);
+        this->addEdgeUseToResource(euid, eu, resource, relDepth - 1);
         // Now, since we are the "higher" end of the relationship,
         // arrange the use wrt ourself:
-        mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(
+        resource->findCreateOrReplaceCellUseOfSenseAndOrientation(
           uid, 0, i ? smtk::model::POSITIVE : smtk::model::NEGATIVE, euid);
       }
     }
@@ -2145,7 +2145,7 @@ smtk::model::Edge Session::addEdgeToManager(
       if (!refFace)
         continue;
 
-      smtk::model::Face f(mgr, this->findOrSetEntityUUID(refFace));
+      smtk::model::Face f(resource, this->findOrSetEntityUUID(refFace));
       mutableEntityRef.addRawRelation(f);
     }
 
@@ -2157,8 +2157,8 @@ smtk::model::Edge Session::addEdgeToManager(
       if (!refVert)
         continue;
 
-      smtk::model::Vertex v(mgr, this->findOrSetEntityUUID(refVert));
-      this->addVertexToManager(v.entity(), refVert, mgr, relDepth - 1);
+      smtk::model::Vertex v(resource, this->findOrSetEntityUUID(refVert));
+      this->addVertexToResource(v.entity(), refVert, resource, relDepth - 1);
       mutableEntityRef.addRawRelation(v);
     }
 
@@ -2176,13 +2176,13 @@ smtk::model::Edge Session::addEdgeToManager(
   return mutableEntityRef;
 }
 
-/// Given a CMB \a refVertex tagged with \a uid, create a record in \a mgr for it.
-smtk::model::Vertex Session::addVertexToManager(const smtk::common::UUID& uid,
-  vtkModelVertex* refVertex, smtk::model::ManagerPtr mgr, int relDepth)
+/// Given a CMB \a refVertex tagged with \a uid, create a record in \a resource for it.
+smtk::model::Vertex Session::addVertexToResource(const smtk::common::UUID& uid,
+  vtkModelVertex* refVertex, smtk::model::ResourcePtr resource, int relDepth)
 {
-  if (refVertex && !mgr->findEntity(uid, false))
+  if (refVertex && !resource->findEntity(uid, false))
   {
-    smtk::model::Vertex result(mgr->insertVertex(uid));
+    smtk::model::Vertex result(resource->insertVertex(uid));
     smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
     if (relDepth >= 0)
     {
@@ -2195,7 +2195,7 @@ smtk::model::Vertex Session::addVertexToManager(const smtk::common::UUID& uid,
           continue;
 
         smtk::common::UUID vuid = this->findOrSetEntityUUID(vu);
-        this->addVertexUseToManager(vuid, vu, mgr, relDepth - 1);
+        this->addVertexUseToResource(vuid, vu, resource, relDepth - 1);
       }
       vuit->Delete();
 
@@ -2205,7 +2205,7 @@ smtk::model::Vertex Session::addVertexToManager(const smtk::common::UUID& uid,
       {
         vtkModelItem* ee = eit->GetCurrentItem();
         smtk::common::UUID eid = this->findOrSetEntityUUID(ee);
-        result.addRawRelation(smtk::model::Edge(mgr, eid));
+        result.addRawRelation(smtk::model::Edge(resource, eid));
       }
       eit->Delete();
 
@@ -2221,7 +2221,7 @@ smtk::model::Vertex Session::addVertexToManager(const smtk::common::UUID& uid,
   return smtk::model::Vertex();
 }
 
-// This will remove Model from smtk manager and vtkDiscreteModelWrapper form kernel
+// This will remove Model from smtk resource and vtkDiscreteModelWrapper form kernel
 bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
 {
   vtkDiscreteModelWrapper* modelWrap = this->findModelEntity(modRef.entity());
@@ -2254,7 +2254,7 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
     }
   }
 
-  return this->manager()->eraseModel(modRef) != 0;
+  return this->resource()->eraseModel(modRef) != 0;
 }
 
 void Session::retranscribeModel(const smtk::model::Model& inModel)
@@ -2275,11 +2275,11 @@ void Session::retranscribeModel(const smtk::model::Model& inModel)
   for (Groups::const_iterator it = groups.begin(); it != groups.end(); ++it)
     grpids.insert(it->entity());
 
-  this->manager()->eraseModel(inModel);
+  this->resource()->eraseModel(inModel);
   this->transcribe(inModel, smtk::model::SESSION_EVERYTHING, false);
 
-  smtk::model::Model smtkModel(this->manager(), mid);
-  smtk::model::SessionRef sess(this->manager(), this->sessionId());
+  smtk::model::Model smtkModel(this->resource(), mid);
+  smtk::model::SessionRef sess(this->resource(), this->sessionId());
   smtkModel.setSession(sess);
 
   // See above FIXME comments
@@ -2288,7 +2288,7 @@ void Session::retranscribeModel(const smtk::model::Model& inModel)
     vtkModelItem* cmbgroup = this->entityForUUID(*it);
     if (cmbgroup)
     {
-      smtk::model::Group smtkgroup = this->addCMBEntityToManager(*it, cmbgroup, this->manager());
+      smtk::model::Group smtkgroup = this->addCMBEntityToResource(*it, cmbgroup, this->resource());
       if (smtkgroup.isValid())
         smtkModel.addGroup(smtkgroup);
     }

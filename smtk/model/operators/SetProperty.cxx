@@ -10,8 +10,8 @@
 #include "smtk/model/operators/SetProperty.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/mesh/core/Collection.h"
@@ -111,8 +111,8 @@ SetProperty::Result SetProperty::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  smtk::model::Manager::Ptr resource =
-    std::static_pointer_cast<smtk::model::Manager>(entities[0].component()->resource());
+  smtk::model::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::model::Resource>(entities[0].component()->resource());
 
   SetPropertyValue<String, StringList, StringData, StringItem>(
     nameItem->value(0), stringItem, entities);

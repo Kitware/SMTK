@@ -21,8 +21,8 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Instance.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
@@ -48,8 +48,8 @@ EntityRef::EntityRef()
 }
 
 /// Construct a entityref referencing a given \a entity residing in the given \a mgr.
-EntityRef::EntityRef(ManagerPtr mgr, const smtk::common::UUID& inEntity)
-  : m_manager(mgr)
+EntityRef::EntityRef(ResourcePtr mgr, const smtk::common::UUID& inEntity)
+  : m_resource(mgr)
   , m_entity(inEntity)
 {
 }
@@ -59,32 +59,32 @@ EntityRef::EntityRef(EntityPtr src)
 {
   if (src)
   {
-    m_manager = src->modelResource();
+    m_resource = src->modelResource();
     m_entity = src->id();
   }
 }
 
-/// Change the underlying manager the entityref references.
-bool EntityRef::setManager(ManagerPtr mgr)
+/// Change the underlying resource the entityref references.
+bool EntityRef::setResource(ResourcePtr mgr)
 {
-  if (mgr == m_manager.lock())
+  if (mgr == m_resource.lock())
   {
     return false;
   }
-  m_manager = mgr;
+  m_resource = mgr;
   return true;
 }
 
-/// Return the underlying manager the entityref references.
-ManagerPtr EntityRef::manager()
+/// Return the underlying resource the entityref references.
+ResourcePtr EntityRef::resource()
 {
-  return m_manager.lock();
+  return m_resource.lock();
 }
 
-/// Return the underlying manager the entityref references.
-const ManagerPtr EntityRef::manager() const
+/// Return the underlying resource the entityref references.
+const ResourcePtr EntityRef::resource() const
 {
-  return m_manager.lock();
+  return m_resource.lock();
 }
 
 /// Change the UUID of the entity the entityref references.
@@ -106,7 +106,7 @@ const smtk::common::UUID& EntityRef::entity() const
 /// Return the smtk::model::Entity record for this model entity.
 smtk::model::EntityPtr EntityRef::entityRecord() const
 {
-  auto mgr = this->manager();
+  auto mgr = this->resource();
   if (!mgr)
   {
     return nullptr;
@@ -117,7 +117,7 @@ smtk::model::EntityPtr EntityRef::entityRecord() const
 /// Return the resource component for this model entity.
 smtk::resource::ComponentPtr EntityRef::component() const
 {
-  auto mgr = this->manager();
+  auto mgr = this->resource();
   if (!mgr)
   {
     return nullptr;
@@ -133,7 +133,7 @@ smtk::resource::ComponentPtr EntityRef::component() const
   */
 int EntityRef::dimension() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     EntityPtr entRec = mgr->findEntity(m_entity);
@@ -153,7 +153,7 @@ int EntityRef::dimension() const
   */
 int EntityRef::dimensionBits() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     EntityPtr entRec = mgr->findEntity(m_entity);
@@ -172,7 +172,7 @@ int EntityRef::dimensionBits() const
   */
 void EntityRef::setDimensionBits(BitFlags dimBits)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     EntityPtr entRec = mgr->findEntity(m_entity);
@@ -234,7 +234,7 @@ int EntityRef::embeddingDimension() const
 /// Return the bit vector describing the entity's type. \sa isVector, isEdge, ...
 BitFlags EntityRef::entityFlags() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     EntityPtr entRec = mgr->findEntity(m_entity);
@@ -252,7 +252,7 @@ BitFlags EntityRef::entityFlags() const
   */
 std::string EntityRef::flagSummary(int form) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr)
   {
     EntityPtr ent = mgr->findEntity(m_entity);
@@ -299,7 +299,7 @@ std::string EntityRef::flagSummary(int form) const
   */
 std::string EntityRef::name() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->name(m_entity) : "(null model)";
 }
 
@@ -315,11 +315,11 @@ void EntityRef::setName(const std::string& n)
 /**\brief Assign a default name to the entity.
   *
   * This uses counters associated with the owning
-  * model or model manager to name the entity.
+  * model or model resource to name the entity.
   */
 std::string EntityRef::assignDefaultName(bool overwrite)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (!mgr || !m_entity)
     return std::string();
 
@@ -418,7 +418,7 @@ void EntityRef::setColor(double red, double green, double blue, double alpha)
   this->setColor(rgba);
 }
 
-/**\brief Return whether the entityref is pointing to valid manager that contains the UUID of the entity.
+/**\brief Return whether the entityref is pointing to valid resource that contains the UUID of the entity.
   *
   * Subclasses should not override this method.
   */
@@ -427,7 +427,7 @@ bool EntityRef::isValid() const
   return this->isValid(NULL);
 }
 
-/**\brief Return whether the entityref is pointing to valid manager that contains the UUID of the entity.
+/**\brief Return whether the entityref is pointing to valid resource that contains the UUID of the entity.
   *
   * Subclasses override this and additionally return whether the entity is of
   * a type that matches the EntityRef subclass. For example, it is possible to
@@ -439,7 +439,7 @@ bool EntityRef::isValid() const
   */
 bool EntityRef::isValid(EntityPtr* entityRecord) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   bool status = mgr && !m_entity.isNull();
   if (status)
   {
@@ -458,7 +458,7 @@ bool EntityRef::isValid(EntityPtr* entityRecord) const
   */
 bool EntityRef::checkForArrangements(ArrangementKind k, EntityPtr& entRec, Arrangements*& arr) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (this->isValid(&entRec))
   {
     arr = NULL;
@@ -473,7 +473,7 @@ bool EntityRef::checkForArrangements(ArrangementKind k, EntityPtr& entRec, Arran
 EntityRefs EntityRef::bordantEntities(int ofDimension) const
 {
   EntityRefs result;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     smtk::common::UUIDs uids = mgr->bordantEntities(m_entity, ofDimension);
@@ -485,7 +485,7 @@ EntityRefs EntityRef::bordantEntities(int ofDimension) const
 EntityRefs EntityRef::boundaryEntities(int ofDimension) const
 {
   EntityRefs result;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     smtk::common::UUIDs uids = mgr->boundaryEntities(m_entity, ofDimension);
@@ -608,7 +608,7 @@ std::vector<double> EntityRef::unionBoundingBox(
 EntityRefs EntityRef::lowerDimensionalBoundaries(int lowerDimension)
 {
   EntityRefs result;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     smtk::common::UUIDs uids = mgr->lowerDimensionalBoundaries(m_entity, lowerDimension);
@@ -620,7 +620,7 @@ EntityRefs EntityRef::lowerDimensionalBoundaries(int lowerDimension)
 EntityRefs EntityRef::higherDimensionalBordants(int higherDimension)
 {
   EntityRefs result;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     smtk::common::UUIDs uids = mgr->higherDimensionalBordants(m_entity, higherDimension);
@@ -632,7 +632,7 @@ EntityRefs EntityRef::higherDimensionalBordants(int higherDimension)
 EntityRefs EntityRef::adjacentEntities(int ofDimension)
 {
   EntityRefs result;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     smtk::common::UUIDs uids = mgr->adjacentEntities(m_entity, ofDimension);
@@ -657,8 +657,8 @@ EntityRefs EntityRef::relations() const
   */
 EntityRef& EntityRef::addRawRelation(const EntityRef& ent)
 {
-  ManagerPtr mgr = m_manager.lock();
-  if (mgr && !m_entity.isNull() && mgr == ent.manager() && !ent.entity().isNull() &&
+  ResourcePtr mgr = m_resource.lock();
+  if (mgr && !m_entity.isNull() && mgr == ent.resource() && !ent.entity().isNull() &&
     ent.entity() != m_entity)
   {
     EntityPtr entRec = mgr->findEntity(m_entity);
@@ -677,8 +677,8 @@ EntityRef& EntityRef::addRawRelation(const EntityRef& ent)
   */
 EntityRef& EntityRef::findOrAddRawRelation(const EntityRef& ent)
 {
-  ManagerPtr mgr = m_manager.lock();
-  if (mgr && !m_entity.isNull() && mgr == ent.manager() && !ent.entity().isNull() &&
+  ResourcePtr mgr = m_resource.lock();
+  if (mgr && !m_entity.isNull() && mgr == ent.resource() && !ent.entity().isNull() &&
     ent.entity() != m_entity)
   {
     EntityPtr entRec = mgr->findEntity(m_entity);
@@ -705,8 +705,8 @@ EntityRef& EntityRef::findOrAddRawRelation(const EntityRef& ent)
   */
 EntityRef& EntityRef::elideRawRelation(const EntityRef& ent)
 {
-  ManagerPtr mgr = m_manager.lock();
-  if (mgr && !m_entity.isNull() && mgr == ent.manager() && !ent.entity().isNull() &&
+  ResourcePtr mgr = m_resource.lock();
+  if (mgr && !m_entity.isNull() && mgr == ent.resource() && !ent.entity().isNull() &&
     ent.entity() != m_entity)
   {
     UUIDWithEntityPtr entRec = mgr->topology().find(m_entity);
@@ -724,7 +724,7 @@ EntityRef& EntityRef::elideRawRelation(const EntityRef& ent)
   */
 Tessellation* EntityRef::resetTessellation()
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     UUIDsToTessellations::iterator it = mgr->tessellations().find(m_entity);
@@ -749,7 +749,7 @@ Tessellation* EntityRef::resetTessellation()
   */
 smtk::mesh::MeshSet EntityRef::meshTessellation() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     smtk::mesh::CollectionPtr collection = mgr->meshes()->collection(this->owningModel().entity());
@@ -767,7 +767,7 @@ smtk::mesh::MeshSet EntityRef::meshTessellation() const
   */
 const Tessellation* EntityRef::hasTessellation() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     UUIDsToTessellations::const_iterator it = mgr->tessellations().find(m_entity);
@@ -790,7 +790,7 @@ const Tessellation* EntityRef::hasTessellation() const
   */
 const Tessellation* EntityRef::hasAnalysisMesh() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     UUIDsToTessellations::const_iterator it = mgr->analysisMesh().find(m_entity);
@@ -807,7 +807,7 @@ const Tessellation* EntityRef::hasAnalysisMesh() const
   */
 const Tessellation* EntityRef::gotMesh() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     UUIDsToTessellations::const_iterator am = mgr->analysisMesh().find(m_entity);
@@ -832,7 +832,7 @@ const Tessellation* EntityRef::gotMesh() const
   */
 int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh, bool updateBBox)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     int gen;
@@ -868,7 +868,7 @@ int EntityRef::setTessellation(const Tessellation* tess, int analysisMesh, bool 
   */
 bool EntityRef::removeTessellation(bool removeGen)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
     return mgr->removeTessellation(m_entity, removeGen);
   return false;
@@ -895,7 +895,7 @@ int EntityRef::tessellationGeneration() const
 void EntityRef::setBoundingBox(const double bbox[6])
 {
   std::vector<double> coords(bbox, bbox + 6);
-  m_manager.lock()->setBoundingBox(m_entity, coords, 1);
+  m_resource.lock()->setBoundingBox(m_entity, coords, 1);
 }
 
 /** @name Attribute associations
@@ -906,7 +906,7 @@ void EntityRef::setBoundingBox(const double bbox[6])
   */
 bool EntityRef::hasAttributes() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   UUIDsToAttributeAssignments::const_iterator it = mgr->attributeAssignments().find(m_entity);
   if (it != mgr->attributeAssignments().end())
   {
@@ -919,7 +919,7 @@ bool EntityRef::hasAttributes() const
  */
 bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->hasAttribute(attribId, m_entity);
 }
 
@@ -928,7 +928,7 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
 bool EntityRef::associateAttribute(
   smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->associateAttribute(attResource, attribId, m_entity);
 }
 
@@ -937,7 +937,7 @@ bool EntityRef::associateAttribute(
 bool EntityRef::disassociateAttribute(
   smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool reverse)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->disassociateAttribute(attResource, attribId, m_entity, reverse);
 }
 
@@ -960,7 +960,7 @@ bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResour
   */
 smtk::common::UUIDs EntityRef::attributeIds() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   UUIDsToAttributeAssignments::const_iterator entry = mgr->attributeAssignments().find(m_entity);
   if (entry == mgr->attributeAssignments().end())
   {
@@ -987,7 +987,7 @@ smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::DefinitionPtr
   }
 
   // First lets find all attribute IDs that are assoicated with the entity
-  ManagerPtr mgr = this->m_manager.lock();
+  ResourcePtr mgr = this->m_resource.lock();
   UUIDsToAttributeAssignments::const_iterator entry =
     mgr->attributeAssignments().find(this->m_entity);
   // No attributes then just return an emoty list
@@ -1017,7 +1017,7 @@ smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::DefinitionPtr
 
 void EntityRef::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     mgr->setFloatProperty(m_entity, propName, propValue);
@@ -1027,7 +1027,7 @@ void EntityRef::setFloatProperty(const std::string& propName, smtk::model::Float
 void EntityRef::setFloatProperty(
   const std::string& propName, const smtk::model::FloatList& propValue)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     mgr->setFloatProperty(m_entity, propName, propValue);
@@ -1037,20 +1037,20 @@ void EntityRef::setFloatProperty(
 smtk::model::FloatList const& EntityRef::floatProperty(const std::string& propName) const
 {
   static smtk::model::FloatList dummy;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->floatProperty(m_entity, propName) : dummy;
 }
 
 smtk::model::FloatList& EntityRef::floatProperty(const std::string& propName)
 {
   static smtk::model::FloatList dummy;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->floatProperty(m_entity, propName) : dummy;
 }
 
 bool EntityRef::hasFloatProperty(const std::string& propName) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     return mgr->hasFloatProperty(m_entity, propName);
@@ -1060,7 +1060,7 @@ bool EntityRef::hasFloatProperty(const std::string& propName) const
 
 bool EntityRef::removeFloatProperty(const std::string& propName)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     return mgr->removeFloatProperty(m_entity, propName);
@@ -1075,7 +1075,7 @@ bool EntityRef::removeFloatProperty(const std::string& propName)
   */
 bool EntityRef::hasFloatProperties() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->floatProperties().find(m_entity) == mgr->floatProperties().end() ? false : true;
 }
 
@@ -1096,7 +1096,7 @@ std::set<std::string> EntityRef::floatPropertyNames() const
 
 FloatData& EntityRef::floatProperties()
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   auto pit = mgr->floatProperties().find(m_entity);
   if (pit == mgr->floatProperties().end())
   {
@@ -1108,7 +1108,7 @@ FloatData& EntityRef::floatProperties()
 
 FloatData const& EntityRef::floatProperties() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   auto pit = mgr->floatProperties().find(m_entity);
   if (pit == mgr->floatProperties().end())
   {
@@ -1120,7 +1120,7 @@ FloatData const& EntityRef::floatProperties() const
 
 void EntityRef::setStringProperty(const std::string& propName, const smtk::model::String& propValue)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     mgr->setStringProperty(m_entity, propName, propValue);
@@ -1130,7 +1130,7 @@ void EntityRef::setStringProperty(const std::string& propName, const smtk::model
 void EntityRef::setStringProperty(
   const std::string& propName, const smtk::model::StringList& propValue)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     mgr->setStringProperty(m_entity, propName, propValue);
@@ -1140,20 +1140,20 @@ void EntityRef::setStringProperty(
 smtk::model::StringList const& EntityRef::stringProperty(const std::string& propName) const
 {
   static smtk::model::StringList dummy;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->stringProperty(m_entity, propName) : dummy;
 }
 
 smtk::model::StringList& EntityRef::stringProperty(const std::string& propName)
 {
   static smtk::model::StringList dummy;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->stringProperty(m_entity, propName) : dummy;
 }
 
 bool EntityRef::hasStringProperty(const std::string& propName) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     return mgr->hasStringProperty(m_entity, propName);
@@ -1163,7 +1163,7 @@ bool EntityRef::hasStringProperty(const std::string& propName) const
 
 bool EntityRef::removeStringProperty(const std::string& propName)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     return mgr->removeStringProperty(m_entity, propName);
@@ -1178,7 +1178,7 @@ bool EntityRef::removeStringProperty(const std::string& propName)
   */
 bool EntityRef::hasStringProperties() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->stringProperties().find(m_entity) == mgr->stringProperties().end() ? false : true;
 }
 
@@ -1199,7 +1199,7 @@ std::set<std::string> EntityRef::stringPropertyNames() const
 
 StringData& EntityRef::stringProperties()
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   auto pit = mgr->stringProperties().find(m_entity);
   if (pit == mgr->stringProperties().end())
   {
@@ -1211,7 +1211,7 @@ StringData& EntityRef::stringProperties()
 
 StringData const& EntityRef::stringProperties() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   auto pit = mgr->stringProperties().find(m_entity);
   if (pit == mgr->stringProperties().end())
   {
@@ -1223,7 +1223,7 @@ StringData const& EntityRef::stringProperties() const
 
 void EntityRef::setIntegerProperty(const std::string& propName, smtk::model::Integer propValue)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     mgr->setIntegerProperty(m_entity, propName, propValue);
@@ -1233,7 +1233,7 @@ void EntityRef::setIntegerProperty(const std::string& propName, smtk::model::Int
 void EntityRef::setIntegerProperty(
   const std::string& propName, const smtk::model::IntegerList& propValue)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     mgr->setIntegerProperty(m_entity, propName, propValue);
@@ -1243,20 +1243,20 @@ void EntityRef::setIntegerProperty(
 smtk::model::IntegerList const& EntityRef::integerProperty(const std::string& propName) const
 {
   static smtk::model::IntegerList dummy;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->integerProperty(m_entity, propName) : dummy;
 }
 
 smtk::model::IntegerList& EntityRef::integerProperty(const std::string& propName)
 {
   static smtk::model::IntegerList dummy;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->integerProperty(m_entity, propName) : dummy;
 }
 
 bool EntityRef::hasIntegerProperty(const std::string& propName) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     return mgr->hasIntegerProperty(m_entity, propName);
@@ -1266,7 +1266,7 @@ bool EntityRef::hasIntegerProperty(const std::string& propName) const
 
 bool EntityRef::removeIntegerProperty(const std::string& propName)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
     return mgr->removeIntegerProperty(m_entity, propName);
@@ -1281,7 +1281,7 @@ bool EntityRef::removeIntegerProperty(const std::string& propName)
   */
 bool EntityRef::hasIntegerProperties() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->integerProperties().find(m_entity) == mgr->integerProperties().end() ? false : true;
 }
 
@@ -1302,7 +1302,7 @@ std::set<std::string> EntityRef::integerPropertyNames() const
 
 IntegerData& EntityRef::integerProperties()
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   auto pit = mgr->integerProperties().find(m_entity);
   if (pit == mgr->integerProperties().end())
   {
@@ -1314,7 +1314,7 @@ IntegerData& EntityRef::integerProperties()
 
 IntegerData const& EntityRef::integerProperties() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   auto pit = mgr->integerProperties().find(m_entity);
   if (pit == mgr->integerProperties().end())
   {
@@ -1327,7 +1327,7 @@ IntegerData const& EntityRef::integerProperties() const
 /// Return the number of arrangements of the given kind \a k.
 int EntityRef::numberOfArrangementsOfKind(ArrangementKind k) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   const Arrangements* arr = mgr->hasArrangementsOfKindForEntity(m_entity, k);
   return arr ? static_cast<int>(arr->size()) : 0;
 }
@@ -1335,21 +1335,21 @@ int EntityRef::numberOfArrangementsOfKind(ArrangementKind k) const
 /// Return the \a i-th arrangement of kind \a k (or NULL).
 Arrangement* EntityRef::findArrangement(ArrangementKind k, int i)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->findArrangement(m_entity, k, i);
 }
 
 /// Return the \a i-th arrangement of kind \a k (or NULL).
 const Arrangement* EntityRef::findArrangement(ArrangementKind k, int i) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->findArrangement(m_entity, k, i);
 }
 
 /// Delete all arrangements of this entity with prejudice.
 bool EntityRef::clearArrangements()
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr->clearArrangements(m_entity);
 }
 
@@ -1359,7 +1359,7 @@ bool EntityRef::clearArrangements()
 EntityRef EntityRef::relationFromArrangement(
   ArrangementKind k, int arrangementIndex, int offset) const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   EntityPtr ent = mgr->findEntity(m_entity);
   if (ent)
   {
@@ -1386,7 +1386,7 @@ EntityRef EntityRef::relationFromArrangement(
   */
 bool EntityRef::removeArrangement(ArrangementKind k, int index)
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? mgr->unarrangeEntity(m_entity, k, index < 0 ? 0 : index) != 0 : false;
 }
 
@@ -1397,9 +1397,9 @@ bool EntityRef::removeArrangement(ArrangementKind k, int index)
   */
 EntityRef& EntityRef::embedEntity(const EntityRef& thingToEmbed)
 {
-  ManagerPtr mgr = m_manager.lock();
-  //ManagerEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
-  ManagerEventType event = std::make_pair(ADD_EVENT, this->embeddingRelationType(thingToEmbed));
+  ResourcePtr mgr = m_resource.lock();
+  //ResourceEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
+  ResourceEventType event = std::make_pair(ADD_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
   {
     EntityRefArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
@@ -1416,8 +1416,8 @@ EntityRef& EntityRef::embedEntity(const EntityRef& thingToEmbed)
   */
 bool EntityRef::unembedEntity(const EntityRef& thingToEmbed)
 {
-  ManagerPtr mgr = m_manager.lock();
-  ManagerEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(thingToEmbed));
+  ResourcePtr mgr = m_resource.lock();
+  ResourceEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
   {
     int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, INCLUDES, thingToEmbed);
@@ -1461,7 +1461,7 @@ EntityRef EntityRef::embeddedIn() const
   */
 Model EntityRef::owningModel() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? Model(mgr, mgr->modelOwningEntity(m_entity)) : Model();
 }
 
@@ -1473,7 +1473,7 @@ Model EntityRef::owningModel() const
   */
 SessionRef EntityRef::owningSession() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   return mgr ? SessionRef(mgr, mgr->sessionOwningEntity(m_entity)) : SessionRef();
 }
 
@@ -1490,8 +1490,8 @@ Groups EntityRef::containingGroups() const
 /// A comparator provided so that entityrefs may be included in ordered sets.
 bool EntityRef::operator==(const EntityRef& other) const
 {
-  ManagerPtr mgr = m_manager.lock();
-  return ((mgr == other.manager()) && (m_entity == other.m_entity)) ? true : false;
+  ResourcePtr mgr = m_resource.lock();
+  return ((mgr == other.resource()) && (m_entity == other.m_entity)) ? true : false;
 }
 
 /// A comparator provided for convenience.
@@ -1503,8 +1503,8 @@ bool EntityRef::operator!=(const EntityRef& other) const
 /// A comparator provided so that entityrefs may be included in ordered sets.
 bool EntityRef::operator<(const EntityRef& other) const
 {
-  ManagerPtr mgr = m_manager.lock();
-  ManagerPtr otherMgr = other.m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
+  ResourcePtr otherMgr = other.m_resource.lock();
   if (mgr < otherMgr)
   {
     return true;
@@ -1522,7 +1522,7 @@ bool EntityRef::operator<(const EntityRef& other) const
   */
 std::size_t EntityRef::hash() const
 {
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   std::size_t result = m_entity.hash();
   boost::hash_combine(result, reinterpret_cast<std::size_t>(mgr.get()));
   return result;
@@ -1549,12 +1549,12 @@ std::size_t entityrefHash(const EntityRef& c)
  * desired type.
  */
 
-/*! \fn template<typename S, typename T> void EntityRef::EntityRefsFromUUIDs(S& result, ManagerPtr mgr, const T& uids)
+/*! \fn template<typename S, typename T> void EntityRef::EntityRefsFromUUIDs(S& result, ResourcePtr mgr, const T& uids)
  *\brief Convert a set of UUIDs into a set of entityrefs referencing the same \a mgr.
  *
  * Only valid entities are inserted into \a result.
  * This means that the UUID must be non-NULL **and** have a corresponding
- * entry in the model manager, \a mgr, that matches the output container type
+ * entry in the model resource, \a mgr, that matches the output container type
  * in order to appear in \a result.
  */
 
@@ -1563,7 +1563,7 @@ std::size_t entityrefHash(const EntityRef& c)
  *
  * EntityRef entities in \a entRefs are **not** checked for validity before insertion;
  * however, only non-NULL UUIDs are inserted into \a result.
- * (This means that cursors that do not have entries in the model manager will
+ * (This means that cursors that do not have entries in the model resource will
  * still have their UUIDs added to the result.)
  */
 
@@ -1579,7 +1579,7 @@ std::size_t entityrefHash(const EntityRef& c)
  *  \brief Return a pointer to the properties of the entity, creating an entry as required.
  *
  * Unlike the hasProperties() method, this will return a valid pointer as long as the
- * manager and entity of the entityref are valid.
+ * resource and entity of the entityref are valid.
  * If the entity does not already have any properties of the given type, a new
  * StringData, FloatData, or IntegerData instance is created and added to the
  * appropriate map.
@@ -1592,10 +1592,10 @@ SMTKCORE_EXPORT StringData* EntityRef::properties<StringData>()
 {
   if (!this->hasStringProperties())
   {
-    if (!this->manager() || !this->entity())
+    if (!this->resource() || !this->entity())
       return NULL;
     StringData blank;
-    this->manager()->stringProperties().insert(std::pair<UUID, StringData>(this->entity(), blank));
+    this->resource()->stringProperties().insert(std::pair<UUID, StringData>(this->entity(), blank));
   }
   return &(this->stringProperties());
 }
@@ -1605,10 +1605,10 @@ SMTKCORE_EXPORT FloatData* EntityRef::properties<FloatData>()
 {
   if (!this->hasFloatProperties())
   {
-    if (!this->manager() || !this->entity())
+    if (!this->resource() || !this->entity())
       return NULL;
     FloatData blank;
-    this->manager()->floatProperties().insert(std::pair<UUID, FloatData>(this->entity(), blank));
+    this->resource()->floatProperties().insert(std::pair<UUID, FloatData>(this->entity(), blank));
   }
   return &(this->floatProperties());
 }
@@ -1618,10 +1618,10 @@ SMTKCORE_EXPORT IntegerData* EntityRef::properties<IntegerData>()
 {
   if (!this->hasIntegerProperties())
   {
-    if (!this->manager() || !this->entity())
+    if (!this->resource() || !this->entity())
       return NULL;
     IntegerData blank;
-    this->manager()->integerProperties().insert(
+    this->resource()->integerProperties().insert(
       std::pair<UUID, IntegerData>(this->entity(), blank));
   }
   return &(this->integerProperties());
@@ -1722,8 +1722,8 @@ SMTKCORE_EXPORT bool EntityRef::removeProperty<IntegerData>(const std::string& p
   */
 EntityRef& EntityRef::addMemberEntity(const EntityRef& memberToAdd)
 {
-  ManagerPtr mgr = m_manager.lock();
-  ManagerEventType event = std::make_pair(ADD_EVENT, this->subsetRelationType(memberToAdd));
+  ResourcePtr mgr = m_resource.lock();
+  ResourceEventType event = std::make_pair(ADD_EVENT, this->subsetRelationType(memberToAdd));
   if (event.second != INVALID_RELATIONSHIP)
   {
     EntityRefArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, memberToAdd);
@@ -1769,10 +1769,10 @@ EntityRef& EntityRef::removeMemberEntity(int indexOfArrangementToRemove)
   if (indexOfArrangementToRemove < 0)
     return *this;
 
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   EntityRef memberToRemove =
     this->relationFromArrangement(SUPERSET_OF, indexOfArrangementToRemove, 0);
-  ManagerEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(memberToRemove));
+  ResourceEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(memberToRemove));
   if (event.second != INVALID_RELATIONSHIP)
   {
     mgr->unarrangeEntity(m_entity, SUPERSET_OF, indexOfArrangementToRemove);
@@ -1788,9 +1788,9 @@ EntityRef& EntityRef::removeMemberEntity(int indexOfArrangementToRemove)
   * This is used by the event framework so that observers can watch
   * for particular types of events.
   */
-ManagerEventRelationType EntityRef::subsetRelationType(const EntityRef& member) const
+ResourceEventRelationType EntityRef::subsetRelationType(const EntityRef& member) const
 {
-  ManagerEventRelationType reln = INVALID_RELATIONSHIP;
+  ResourceEventRelationType reln = INVALID_RELATIONSHIP;
 
   switch (this->entityFlags() & ENTITY_MASK)
   {
@@ -1833,9 +1833,9 @@ ManagerEventRelationType EntityRef::subsetRelationType(const EntityRef& member) 
   * This is used by the event framework so that observers can watch
   * for particular types of events.
   */
-ManagerEventRelationType EntityRef::embeddingRelationType(const EntityRef& embedded) const
+ResourceEventRelationType EntityRef::embeddingRelationType(const EntityRef& embedded) const
 {
-  ManagerEventRelationType reln = INVALID_RELATIONSHIP;
+  ResourceEventRelationType reln = INVALID_RELATIONSHIP;
 
   switch (this->entityFlags() & ENTITY_MASK)
   {

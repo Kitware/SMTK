@@ -20,7 +20,7 @@
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/AttributeAssignments.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <QBrush>
 #include <QCheckBox>
@@ -355,7 +355,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   if (atts.size() == 0)
     return;
 
-  if (!attResource->refModelManager())
+  if (!attResource->refModelResource())
     return;
 
   std::vector<smtk::attribute::AttributePtr>::const_iterator it;

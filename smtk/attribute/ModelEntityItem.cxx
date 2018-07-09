@@ -13,7 +13,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 using namespace smtk::attribute;
 
@@ -145,12 +145,12 @@ smtk::model::EntityRef ModelEntityItem::value(std::size_t i) const
   if (i >= static_cast<std::size_t>(m_values.size()))
     return smtk::model::EntityRef();
   auto result = m_values[i];
-  if (!result.manager())
+  if (!result.resource())
   {
-    smtk::model::Manager::Ptr mgr = this->attribute()->attributeResource()->refModelManager();
+    smtk::model::Resource::Ptr mgr = this->attribute()->attributeResource()->refModelResource();
     if (mgr)
     {
-      result.setManager(mgr);
+      result.setResource(mgr);
     }
   }
   return result;

@@ -10,8 +10,8 @@
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -76,7 +76,7 @@ GroupAuxiliaryGeometry::Result GroupAuxiliaryGeometry::operateInternal()
   }
 
   AuxiliaryGeometry auxGeom;
-  auxGeom = parent.manager()->addAuxiliaryGeometry(parent, dim);
+  auxGeom = parent.resource()->addAuxiliaryGeometry(parent, dim);
   for (auto child : entities)
   {
     child.reparent(auxGeom);

@@ -4,46 +4,44 @@ Key Concepts
 Like the attribute collection, the model system is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
-:smtk:`Manager <smtk::model::Manager>`
+:smtk:`Resource <smtk::model::Resource>`
   instances contain model topology and geometry.
   All of the model entities such as faces, edges, and vertices are
   assigned a UUID by SMTK.
-  You can think of the manager as a key-value store from UUID values to
+  You can think of the resource as a key-value store from UUID values to
   model entities, their properties, their arrangement with other entities,
   their ties to the attribute collection, and their tessellations.
 
 :smtk:`Session <smtk::model::Session>`
-  instances relate entries in a model Manager to a solid modeling kernel.
-  You can think of the entities in a model Manager as being "backed" by
+  instances relate entries in a model Resource to a solid modeling kernel.
+  You can think of the entities in a model Resource as being "backed" by
   a solid modeling kernel; the session provides a way to synchronize
-  the representations in the Manager and the modeling kernel.
-  A manager may contain entity records from multiple sessions
-  (e.g., a single Manager may contain some models back by an OpenCascade
-  modeling kernel session and some backed by a FACET session).
+  the representations in the Resource and the modeling kernel.
+
 
 :smtk:`Operator <smtk::model::Operator>`
   instances represent modeling operations that a modeling kernel
   provides for marking up, modifying, or even generating modeling entities
   from scratch.
-  Operators usually require the entries in the model Manager to be
+  Operators usually require the entries in the model Resource to be
   updated after they are executed (in the solid modeling kernel).
   Each operator implements a method to invoke its operation in the modeling kernel
   and owns an attribute collection Attribute instance (its *specification*) to store
   the parameters required by the operation.
   SMTK expects the primary operand of an operator (e.g., a set of edge entities
-  in the model manager to be swept into a face) to be model entities
+  in the model resource to be swept into a face) to be model entities
   **associated** with the operator's specification.
   Other operands (e.g., the geometric path along which to sweep a set of edges)
   are stored as key-value Items in the specification.
 
 :smtk:`EntityRef <smtk::model::EntityRef>`
-  instances are lightweight references into a model Manager's storage
+  instances are lightweight references into a model Resource's storage
   that represent a single entity (e.g., a vertex, edge, face, or volume)
   and provide methods for easily accessing related entities, properties,
   tessellation data, and attributes associated with that entity.
-  They also provide methods for manipulating the model Manager's storage
+  They also provide methods for manipulating the model Resource's storage
   but *these methods should not be used directly*; instead use an Operator
-  instance to modify the model so that the modeling kernel and model manager
+  instance to modify the model so that the modeling kernel and model resource
   stay in sync.
   EntityRef subclasses include Vertex, Edge, Face, Volume, Model,
   Group, UseEntity, Loop, Shell, and so on. These are discussed
@@ -71,7 +69,7 @@ also accessible in Python, whose instances perform the following functions:
 Model Entities
 ==============
 
-As mentioned above, the model :smtk:`Manager <smtk::model::Manager>` class
+As mentioned above, the model :smtk:`Resource <smtk::model::Resource>` class
 is the only place where model topology and geometry are stored in SMTK.
 However, there are EntityRef-like classes, all derived from :smtk:`smtk::model::EntityRef`,
 that provide easier access to model traversal.

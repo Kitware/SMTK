@@ -28,8 +28,8 @@
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Volume.h"
@@ -140,7 +140,7 @@ int EdgeOperation::convertToGlobalPointId(
   int globalPid = -1;
   SessionPtr opsession = resource->discreteSession();
   smtk::common::UUID edgeid = opsession->findOrSetEntityUUID(cmbModelEdge);
-  smtk::model::Edge edge(opsession->manager(), edgeid);
+  smtk::model::Edge edge(opsession->resource(), edgeid);
 
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(cmbModelEdge->GetGeometry());
   const smtk::model::Tessellation* tess;
@@ -408,7 +408,7 @@ bool EdgeOperation::splitSelectedEdgeNodes(
 
       // for the modifed edge, add it to "modified" item in op result;
       smtk::common::UUID srcEid = opsession->findOrSetEntityUUID(cmbModelEdge);
-      smtk::model::Edge srced(opsession->manager(), srcEid);
+      smtk::model::Edge srced(opsession->resource(), srcEid);
       srcsModified.push_back(srced);
 
       // update associated meshes
@@ -423,7 +423,7 @@ bool EdgeOperation::splitSelectedEdgeNodes(
       {
         vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
         smtk::common::UUID faceuuid = opsession->findOrSetEntityUUID(face);
-        smtk::model::Face faceErf(opsession->manager(), faceuuid);
+        smtk::model::Face faceErf(opsession->resource(), faceuuid);
         srcsModified.push_back(faceErf);
       }
       faces->Delete();
@@ -494,40 +494,40 @@ bool EdgeOperation::convertSelectedEndNodes(
     if (success)
     {
       // add the removed vertex to the list
-      smtk::model::Vertex remVert(opsession->manager(), it->first);
+      smtk::model::Vertex remVert(opsession->resource(), it->first);
       srcsRemoved.push_back(remVert);
       // update the removed and modified edge list
-      smtk::model::Edge toRemove(opsession->manager(), fromEid);
+      smtk::model::Edge toRemove(opsession->resource(), fromEid);
       srcsRemoved.push_back(toRemove);
 
       // update associated mesh first before removing the edge
       if (!internal_mergeAssociatedMeshes(remVert, toRemove,
-            smtk::model::Edge(opsession->manager(), toEid), opsession->manager()->meshes(),
+            smtk::model::Edge(opsession->resource(), toEid), opsession->resource()->meshes(),
             modifiedMeshes))
       {
         std::cout << "ERROR: Associated edge meshes failed to merge properly." << std::endl;
       }
 
-      opsession->manager()->erase(it->first);
-      opsession->manager()->erase(fromEid);
+      opsession->resource()->erase(it->first);
+      opsession->resource()->erase(fromEid);
 
       smtk::common::UUID modelid = opsession->findOrSetEntityUUID(modelWrapper->GetModel());
-      smtk::model::Model inModel(opsession->manager(), modelid);
+      smtk::model::Model inModel(opsession->resource(), modelid);
 
       opsession->retranscribeModel(inModel);
 
       vtkModelEdge* tgtEdge = targetSwitched ? selEdges[1] : selEdges[0];
       toEid = opsession->findOrSetEntityUUID(tgtEdge);
-      srcsModified.push_back(smtk::model::EntityRef(opsession->manager(), toEid));
+      srcsModified.push_back(smtk::model::EntityRef(opsession->resource(), toEid));
       vtkModelItemIterator* faces = tgtEdge->NewAdjacentModelFaceIterator();
       for (faces->Begin(); !faces->IsAtEnd(); faces->Next())
       {
         vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
         smtk::common::UUID faceuuid = opsession->findOrSetEntityUUID(face);
-        //        opsession->manager()->erase(faceuuid);
+        //        opsession->resource()->erase(faceuuid);
         //        faceuuid = opsession->findOrSetEntityUUID(face);
         // Now re-add it (it will have new edges)
-        smtk::model::Face faceErf(opsession->manager(), faceuuid);
+        smtk::model::Face faceErf(opsession->resource(), faceuuid);
         //        opsession->transcribe(faceErf, smtk::model::SESSION_EVERYTHING, false);
 
         srcsModified.push_back(faceErf);

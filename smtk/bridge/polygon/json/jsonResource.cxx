@@ -33,7 +33,7 @@ namespace polygon
 using json = nlohmann::json;
 void to_json(json& j, const smtk::bridge::polygon::Resource::Ptr& resource)
 {
-  smtk::model::to_json(j, std::static_pointer_cast<smtk::model::Manager>(resource));
+  smtk::model::to_json(j, std::static_pointer_cast<smtk::model::Resource>(resource));
 
   smtk::bridge::polygon::Session::Ptr psession = resource->polygonSession();
 
@@ -93,7 +93,7 @@ void from_json(const json& j, smtk::bridge::polygon::Resource::Ptr& resource)
   {
     resource = smtk::bridge::polygon::Resource::create();
   }
-  auto temp = std::static_pointer_cast<smtk::model::Manager>(resource);
+  auto temp = std::static_pointer_cast<smtk::model::Resource>(resource);
   smtk::model::from_json(j, temp);
 
   // For now, we always create a new session when a new polygon resource is created

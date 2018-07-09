@@ -66,8 +66,8 @@ if __name__ == '__main__':
     if json_string is None:
         logging.error('Unable to load input file %s' % model_path)
         sys.exit(-3)
-    model_manager = smtk.model.Manager.create()
-    ok = smtk.io.LoadJSON.intoModelManager(json_string, model_manager)
+    model_resource = smtk.model.Resource.create()
+    ok = smtk.io.LoadJSON.intoModelResource(json_string, model_resource)
     if not ok:
         logging.error("Unable to create model from contents of %s" %
                       model_path)
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     att_path = os.path.join(att_folder, INPUT_FILENAME)
     logging.info('Reading %s' % att_path)
     input_resource = smtk.attribute.Resource.create()
-    input_resource.setRefModelManager(model_manager)
+    input_resource.setRefModelResource(model_resource)
 
     reader = smtk.io.AttributeReader()
     logger = smtk.io.Logger()
@@ -124,14 +124,14 @@ if __name__ == '__main__':
 
 #    face26 = '0bbc9685-e506-4fe7-b52f-ae52888d744b'
 #    face_id = uuid.UUID(face26)
-#    entityref = smtk.model.EntityRef(model_manager, face_id)
+#    entityref = smtk.model.EntityRef(model_resource, face_id)
 #    model_entity_item.setValue(0, entityref)
 
     #
     # Instantiate 2nd/test resource
     #
     test_resource = smtk.attribute.Resource.create()
-    test_resource.setRefModelManager(model_manager)
+    test_resource.setRefModelResource(model_resource)
     # Copy SecondConcrete attribute
     options = smtk.attribute.Item.AssignmentOptions.COPY_MODEL_ASSOCIATIONS
     test_resource.copyAttribute(second_concrete, True, int(options))

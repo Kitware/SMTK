@@ -26,12 +26,10 @@
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/ComponentLinks.h"
 #include "smtk/resource/Lock.h"
-#include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 #include "smtk/resource/ResourceLinks.h"
 

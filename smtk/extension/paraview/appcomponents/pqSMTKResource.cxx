@@ -18,8 +18,6 @@
 
 #include "smtk/attribute/Resource.h"
 
-#include "smtk/model/Manager.h"
-
 #include <iostream>
 
 pqSMTKResource::pqSMTKResource(

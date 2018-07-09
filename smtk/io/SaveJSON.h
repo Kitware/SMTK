@@ -16,7 +16,7 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/model/EntityIterator.h" // For IteratorStyle
-#include "smtk/model/Manager.h"        // For UUIDWithEntity
+#include "smtk/model/Resource.h"       // For UUIDWithEntity
 
 #include "cJSON.h"
 
@@ -33,15 +33,15 @@ class Logger;
 enum JSONFlags
 {
   JSON_NOTHING = 0x00,    //!< Export nothing.
-  JSON_ENTITIES = 0x01,   //!< Export model-entity entries in Manager
+  JSON_ENTITIES = 0x01,   //!< Export model-entity entries in Resource
                           //!< (not including tessellations or properties).
   JSON_SESSIONS = 0x02,   //!< Export sessions (i.e., session IDs, the session type, operators).
   JSON_PROPERTIES = 0x04, //!< Export string/float/integer properties of
-                          //!< model-entity entries in the Manager.
+                          //!< model-entity entries in the Resource.
 
-  JSON_TESSELLATIONS = 0x10, //!< Export tessellations of model-entity entries in the Manager.
-  JSON_ANALYSISMESH = 0x20,  //!< Export tessellations of model-entity entries in the Manager.
-  JSON_MESHES = 0x40,        //!< Export smtk::mesh of model-entity entries in the Manager.
+  JSON_TESSELLATIONS = 0x10, //!< Export tessellations of model-entity entries in the Resource.
+  JSON_ANALYSISMESH = 0x20,  //!< Export tessellations of model-entity entries in the Resource.
+  JSON_MESHES = 0x40,        //!< Export smtk::mesh of model-entity entries in the Resource.
 
   JSON_CLIENT_DATA = 0x07, //!< Export everything but tessellation data to clients.
   JSON_DEFAULT = 0xff      //!< By default, export everything.
@@ -51,7 +51,7 @@ enum JSONFlags
   *
   * Methods are also provided for creating cJSON nodes representing
   * individual records and groups of records from SMTK storage (a model
-  * manager).
+  * resource).
   * These may be used to provide concise answers to specific queries
   * and avoid storing or transmitting a potentially-large string.
   */
@@ -60,11 +60,11 @@ class SMTKCORE_EXPORT SaveJSON
 public:
   static cJSON* fromUUIDs(const smtk::common::UUIDs& uids);
 
-  static int fromModelManager(
-    cJSON* json, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
-  static std::string fromModelManager(
-    smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
-  static bool fromModelManagerToFile(smtk::model::ManagerPtr modelMgr, const char* filename);
+  static int fromModelResource(
+    cJSON* json, smtk::model::ResourcePtr modelResource, JSONFlags sections = JSON_DEFAULT);
+  static std::string fromModelResource(
+    smtk::model::ResourcePtr modelResource, JSONFlags sections = JSON_DEFAULT);
+  static bool fromModelResourceToFile(smtk::model::ResourcePtr modelResource, const char* filename);
 
   // Serialize a Set (for now, only smtk::model::StoredModel entries are handled). For debug use only.
   static int fromSet(cJSON* pnode, smtk::resource::SetPtr& rset);
@@ -96,40 +96,40 @@ public:
     smtk::model::IteratorStyle relatedEntities = smtk::model::ITERATE_MODELS,
     JSONFlags sections = JSON_DEFAULT);
 
-  static int forManager(cJSON* body, cJSON* sess, cJSON* mesh, smtk::model::ManagerPtr modelMgr,
-    JSONFlags sections = JSON_DEFAULT);
-  static int forManagerEntity(
-    smtk::model::UUIDWithEntityPtr& entry, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerTessellation(
-    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerAnalysis(
-    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerFloatProperties(
-    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerStringProperties(
-    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerIntegerProperties(
-    const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerMeshes(
-    smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ManagerPtr modelMgr);
-  static int forManagerSession(const smtk::common::UUID& sessionId, cJSON*,
-    smtk::model::ManagerPtr modelMgr, bool writeNativeModels = false,
+  static int forResource(cJSON* body, cJSON* sess, cJSON* mesh,
+    smtk::model::ResourcePtr modelResource, JSONFlags sections = JSON_DEFAULT);
+  static int forResourceEntity(
+    smtk::model::UUIDWithEntityPtr& entry, cJSON*, smtk::model::ResourcePtr modelResource);
+  static int forResourceTessellation(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ResourcePtr modelResource);
+  static int forResourceAnalysis(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ResourcePtr modelResource);
+  static int forResourceFloatProperties(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ResourcePtr modelResource);
+  static int forResourceStringProperties(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ResourcePtr modelResource);
+  static int forResourceIntegerProperties(
+    const smtk::common::UUID& uid, cJSON*, smtk::model::ResourcePtr modelResource);
+  static int forResourceMeshes(
+    smtk::mesh::ManagerPtr meshes, cJSON*, smtk::model::ResourcePtr modelResource);
+  static int forResourceSession(const smtk::common::UUID& sessionId, cJSON*,
+    smtk::model::ResourcePtr modelResource, bool writeNativeModels = false,
     const std::string& referencePath = std::string());
-  static int forManagerSessionPartial(const smtk::common::UUID& sessionId,
-    const common::UUIDs& modelIds, cJSON*, smtk::model::ManagerPtr modelMgrId,
+  static int forResourceSessionPartial(const smtk::common::UUID& sessionId,
+    const common::UUIDs& modelIds, cJSON*, smtk::model::ResourcePtr modelResourceId,
     bool writeNativeModels = false, const std::string& referencePath = std::string());
   static int forDanglingEntities(
-    const smtk::common::UUID& sessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
+    const smtk::common::UUID& sessionId, cJSON* node, smtk::model::ResourcePtr modelResource);
 
   // Utilities used by above:
-  static int addModelsRecord(
-    const smtk::model::ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec);
-  static int addModelsRecord(
-    const smtk::model::ManagerPtr modelMgr, const smtk::model::Models& models, cJSON* sessionRec);
-  static int addMeshesRecord(
-    const smtk::model::ManagerPtr modelMgr, const smtk::common::UUIDs& modelIds, cJSON* sessionRec);
-  static int addMeshesRecord(
-    const smtk::model::ManagerPtr modelMgr, const smtk::model::Models& inModels, cJSON* sessionRec);
+  static int addModelsRecord(const smtk::model::ResourcePtr modelResource,
+    const smtk::common::UUIDs& modelIds, cJSON* sessionRec);
+  static int addModelsRecord(const smtk::model::ResourcePtr modelResource,
+    const smtk::model::Models& models, cJSON* sessionRec);
+  static int addMeshesRecord(const smtk::model::ResourcePtr modelResource,
+    const smtk::common::UUIDs& modelIds, cJSON* sessionRec);
+  static int addMeshesRecord(const smtk::model::ResourcePtr modelResource,
+    const smtk::model::Models& inModels, cJSON* sessionRec);
 
   static int forModelWorker(cJSON* workerDescription, const std::string& meshTypeIn,
     const std::string& meshTypeOut, smtk::model::SessionPtr session, const std::string& engine,
@@ -146,7 +146,7 @@ public:
 
   // Serialize all the smtk::mesh collections associated with given \a modelid.
   static int forModelMeshes(
-    const smtk::common::UUID& modelid, cJSON* pnode, smtk::model::ManagerPtr modelMgr);
+    const smtk::common::UUID& modelid, cJSON* pnode, smtk::model::ResourcePtr modelResource);
 
   static int forLog(cJSON* logrecordarray, const smtk::io::Logger& log, std::size_t start = 0,
     std::size_t end = static_cast<std::size_t>(-1));

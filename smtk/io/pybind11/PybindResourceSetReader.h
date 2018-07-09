@@ -23,7 +23,7 @@ PySharedPtrClass< smtk::io::ResourceSetReader > pybind11_init_smtk_io_ResourceSe
   PySharedPtrClass< smtk::io::ResourceSetReader > instance(m, "ResourceSetReader");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::model::ManagerPtr>())
+    .def(py::init<::smtk::model::ResourcePtr>())
     .def(py::init<::smtk::io::ResourceSetReader const &>())
     .def("deepcopy", (smtk::io::ResourceSetReader & (smtk::io::ResourceSetReader::*)(::smtk::io::ResourceSetReader const &)) &smtk::io::ResourceSetReader::operator=)
     .def("readFile", &smtk::io::ResourceSetReader::readFile, py::arg("filename"), py::arg("resources"), py::arg("logger"), py::arg("loadLinkedFiles") = true)

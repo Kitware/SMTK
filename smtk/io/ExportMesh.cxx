@@ -71,7 +71,7 @@ bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionP
 }
 
 bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-  smtk::model::ManagerPtr manager, const std::string& modelPropertyName) const
+  smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -87,7 +87,7 @@ bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionP
           format.Extensions.end())
       {
         // export the collection
-        return exporter->exportMesh(filePath, collection, manager, modelPropertyName);
+        return exporter->exportMesh(filePath, collection, resource, modelPropertyName);
       }
     }
   }
@@ -101,10 +101,10 @@ bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collectio
 }
 
 bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-  smtk::model::ManagerPtr manager, const std::string& modelPropertyName)
+  smtk::model::ResourcePtr resource, const std::string& modelPropertyName)
 {
   ExportMesh exportM;
-  return exportM(filePath, collection, manager, modelPropertyName);
+  return exportM(filePath, collection, resource, modelPropertyName);
 }
 }
 }

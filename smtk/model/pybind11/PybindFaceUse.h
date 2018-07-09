@@ -20,7 +20,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Volume.h"
@@ -34,7 +34,7 @@ py::class_< smtk::model::FaceUse, smtk::model::UseEntity > pybind11_init_smtk_mo
     .def(py::init<::smtk::model::FaceUse const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::FaceUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::FaceUse::operator!=)
     .def("deepcopy", (smtk::model::FaceUse & (smtk::model::FaceUse::*)(::smtk::model::FaceUse const &)) &smtk::model::FaceUse::operator=)
     .def("__eq__", (bool (smtk::model::FaceUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::FaceUse::operator==)

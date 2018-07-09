@@ -24,14 +24,14 @@ if __name__ == '__main__':
     status = 0
 
     # Create smtk model with 1 group item
-    mmgr = smtk.model.Manager.create()
+    mmgr = smtk.model.Resource.create()
     mask = smtk.model.FACE | smtk.model.GROUP_ENTITY
     group_item = mmgr.addGroup(mask, 'TopFaceBCS')
 
     # Create attribute resource with 1 def
     resource = smtk.attribute.Resource.create()
     defn = resource.createDefinition('testdef')
-    resource.setRefModelManager(mmgr)
+    resource.setRefModelResource(mmgr)
     defn.setLocalAssociationMask(int(mask))
 
     # Create attribute and associate to group item

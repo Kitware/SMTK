@@ -24,7 +24,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/SessionRef.h"
 

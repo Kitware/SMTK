@@ -21,7 +21,6 @@
 
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Volume.h"
 

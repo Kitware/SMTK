@@ -12,7 +12,7 @@
 /*! \file */
 
 #include "smtk/CoreExports.h"       // For EXPORT macro.
-#include "smtk/PublicPointerDefs.h" // For WeakManagerPtr
+#include "smtk/PublicPointerDefs.h" // For WeakResourcePtr
 #include "smtk/SystemConfig.h"      // For type macros.
 
 #include "smtk/common/UUID.h"
@@ -21,7 +21,7 @@
 #include "smtk/model/AttributeAssignments.h" // for BitFlags type
 #include "smtk/model/Entity.h"               // for isValid() method
 #include "smtk/model/EntityTypeBits.h"       // for BitFlags type
-#include "smtk/model/Events.h"               // for ManagerEventRelationType type
+#include "smtk/model/Events.h"               // for ResourceEventRelationType type
 #include "smtk/model/FloatData.h"            // for Float, FloatData, ...
 #include "smtk/model/IntegerData.h"          // for Integer, IntegerData, ...
 #include "smtk/model/StringData.h"           // for String, StringData, ...
@@ -46,15 +46,15 @@ class MeshSet;
     : superclass(other)                                                                            \
   {                                                                                                \
   }                                                                                                \
-  thisclass(ManagerPtr inManager, const smtk::common::UUID& entityId)                              \
-    : superclass(inManager, entityId)                                                              \
+  thisclass(smtk::model::ResourcePtr inResource, const smtk::common::UUID& entityId)               \
+    : superclass(inResource, entityId)                                                             \
   {                                                                                                \
   }                                                                                                \
   thisclass(EntityPtr src)                                                                         \
   {                                                                                                \
     if (src)                                                                                       \
     {                                                                                              \
-      m_manager = src->modelResource();                                                            \
+      m_resource = src->modelResource();                                                           \
       m_entity = src->id();                                                                        \
     }                                                                                              \
   }                                                                                                \
@@ -85,27 +85,27 @@ typedef std::set<EntityRef> EntityRefs;
 typedef std::vector<EntityRef> EntityRefArray;
 typedef std::vector<Group> Groups;
 
-/**\brief A lightweight entityref pointing to a model entity's manager.
+/**\brief A lightweight entityref pointing to a model entity's resource.
   *
   * This class exposes methods from multiple members of the model
-  * manager that are all associated with a given entity.
-  * See Manager, Manager, Entity, EntityTypeBits, and other
+  * resource that are all associated with a given entity.
+  * See Resource, Resource, Entity, EntityTypeBits, and other
   * headers for documentation on the methods in this class.
   *
   * It is a convenience class only and new functionality added to
-  * Manager and other smtk::model classes should not rely on it.
+  * Resource and other smtk::model classes should not rely on it.
   */
 class SMTKCORE_EXPORT EntityRef
 {
 public:
   SMTK_BASE_TYPE(EntityRef);
   EntityRef();
-  EntityRef(ManagerPtr manager, const smtk::common::UUID& entityId);
+  EntityRef(ResourcePtr resource, const smtk::common::UUID& entityId);
   EntityRef(EntityPtr src);
 
-  bool setManager(ManagerPtr manager);
-  ManagerPtr manager();
-  const ManagerPtr manager() const;
+  bool setResource(ResourcePtr resource);
+  ResourcePtr resource();
+  const ResourcePtr resource() const;
 
   bool setEntity(const smtk::common::UUID& entityId);
   const smtk::common::UUID& entity() const;
@@ -175,7 +175,7 @@ public:
   }
 
   template <typename S, typename T>
-  static void EntityRefsFromUUIDs(S& result, ManagerPtr, const T& uids);
+  static void EntityRefsFromUUIDs(S& result, ResourcePtr, const T& uids);
 
   template <typename S, typename T>
   static void EntityRefsToUUIDs(S& uids, const T& entRefs);
@@ -323,7 +323,7 @@ protected:
   friend class Model;
   friend class SessionRef;
 
-  WeakManagerPtr m_manager;
+  smtk::model::WeakResourcePtr m_resource;
   smtk::common::UUID m_entity;
 
   // Manage subset_of/superset_of relationships
@@ -337,8 +337,8 @@ protected:
   template <typename T>
   EntityRef& removeMemberEntities(T begin, T end);
 
-  ManagerEventRelationType subsetRelationType(const EntityRef& member) const;
-  ManagerEventRelationType embeddingRelationType(const EntityRef& embedded) const;
+  ResourceEventRelationType subsetRelationType(const EntityRef& member) const;
+  ResourceEventRelationType embeddingRelationType(const EntityRef& embedded) const;
 };
 
 SMTKCORE_EXPORT std::ostream& operator<<(std::ostream& os, const EntityRef& c);
@@ -349,7 +349,7 @@ template <typename T>
 T EntityRef::relationsAs() const
 {
   T result;
-  ManagerPtr mgr = m_manager.lock();
+  ResourcePtr mgr = m_resource.lock();
   smtk::model::EntityPtr entRec;
   if (!this->isValid(&entRec))
     return result;
@@ -367,7 +367,7 @@ T EntityRef::relationsAs() const
 }
 
 template <typename S, typename T>
-void EntityRef::EntityRefsFromUUIDs(S& result, ManagerPtr mgr, const T& uids)
+void EntityRef::EntityRefsFromUUIDs(S& result, ResourcePtr mgr, const T& uids)
 {
   for (typename T::const_iterator it = uids.begin(); it != uids.end(); ++it)
   {

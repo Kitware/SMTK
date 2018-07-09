@@ -16,8 +16,8 @@
 #include "smtk/model/FloatData.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/IntegerData.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/StringData.h"
 
 #include <QPointer>
@@ -81,7 +81,7 @@ void qtModelPanel::onViewTypeChanged()
   (void)enType;
 }
 
-void qtModelPanel::resetView(qtModelPanel::enumTreeView, smtk::model::ManagerPtr)
+void qtModelPanel::resetView(qtModelPanel::enumTreeView, smtk::model::ResourcePtr)
 {
 }
 

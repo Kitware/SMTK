@@ -38,8 +38,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput, vtkMultiBlockDataSet);
 
-  smtk::model::ManagerPtr GetModelManager();
-  void SetModelManager(smtk::model::ManagerPtr);
+  smtk::model::ResourcePtr GetModelResource();
+  void SetModelResource(smtk::model::ResourcePtr);
 
   // Description:
   // Auxiliary entity ID that this source will be building upon.
@@ -64,7 +64,7 @@ protected:
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
-  smtk::model::ManagerPtr ModelMgr;
+  smtk::model::ResourcePtr ModelResource;
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
   char* AuxiliaryEntityID; // Auxiliary Entity UUID

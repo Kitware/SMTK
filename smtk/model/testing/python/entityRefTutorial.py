@@ -21,7 +21,7 @@ import smtk.io
 import smtk.model
 from uuid import *
 
-sm = smtk.model.Manager.create()
+sm = smtk.model.Resource.create()
 airfoil = sm.addGroup(smtk.model.MODEL_DOMAIN |
                       smtk.model.DIMENSION_3, 'airfoil')
 environment = sm.addGroup(smtk.model.MODEL_DOMAIN |
@@ -48,7 +48,7 @@ print(sm.entitiesOfDimension(3))
 try:
     # If the file isn't present, just skip loading geometry.
     jsonData = file(airFoilFile, 'r').read()
-    ok = smtk.io.LoadJSON.intoModelManager(jsonData, sm)
+    ok = smtk.io.LoadJSON.intoModelResource(jsonData, sm)
 except:
     pass
 
@@ -79,4 +79,4 @@ sm.addToGroup(skin.entity(), set([
     UUID('bcf0ed16-3f05-4043-9313-a6a3617121fb'),
 ]))
 
-json = smtk.io.SaveJSON.fromModelManager(sm)
+json = smtk.io.SaveJSON.fromModelResource(sm)

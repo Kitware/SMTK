@@ -25,7 +25,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/StringData.h"
 #include "smtk/view/View.h"

@@ -11,7 +11,7 @@
 
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
@@ -55,10 +55,11 @@ smtk::model::Faces Volume::faces() const
 
 Volume& Volume::setVolumeUse(const VolumeUse& volUse)
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   if (volUse.isValid() && this->isValid())
   {
-    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, 0, POSITIVE, volUse.entity());
+    resource->findCreateOrReplaceCellUseOfSenseAndOrientation(
+      m_entity, 0, POSITIVE, volUse.entity());
   }
   return *this;
 }

@@ -50,7 +50,7 @@
       <ItemDefinitions>
         <!-- The modified entities are stored in the base result's "modified" item. -->
         <Component Name="tess_changed" NumberOfRequiredValues="1">
-          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+          <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
         </Component>
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>

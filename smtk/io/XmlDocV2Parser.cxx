@@ -29,7 +29,7 @@
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/view/View.h"
 #include <algorithm>
 #include <iostream>
@@ -342,7 +342,8 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
   xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = m_resource->refModelManager(); // FIXME: Use resource manager!
+  smtk::model::ResourcePtr mresource =
+    m_resource->refModelResource(); // FIXME: Use resource manager!
   xml_node val;
   std::size_t numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
@@ -385,7 +386,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
         continue;
       }
       uid = smtk::common::UUID(val.text().get());
-      item->setObjectValue(static_cast<int>(i), mmgr->findEntity(uid));
+      item->setObjectValue(static_cast<int>(i), mresource->findEntity(uid));
     }
   }
   else if (numRequiredVals == 1)
@@ -394,7 +395,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
     if (val)
     {
       uid = smtk::common::UUID(val.text().get());
-      item->setObjectValue(mmgr->findEntity(uid));
+      item->setObjectValue(mresource->findEntity(uid));
     }
   }
   else
@@ -468,7 +469,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
   }
 
   smtk::common::UUID cid;
-  smtk::model::ManagerPtr modelmgr = m_resource->refModelManager();
+  smtk::model::ResourcePtr modelresource = m_resource->refModelResource();
   xml_node valsNode, val;
 
   std::size_t i = 0;
@@ -496,7 +497,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
       cJSON* jshandle = cJSON_Parse(val.text().get());
       smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
       cJSON_Delete(jshandle);
-      smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
+      smtk::mesh::CollectionPtr c = modelresource->meshes()->collection(cid);
       if (!c)
       {
         std::cerr << "Expecting a valid collection for mesh item: " << item->name() << std::endl;

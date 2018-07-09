@@ -30,7 +30,7 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -274,19 +274,19 @@ const smtk::resource::ResourcePtr Attribute::resource() const
   return this->attributeResource();
 }
 
-/**\brief Return the model Manager instance whose entities may have attributes.
+/**\brief Return the model Resource instance whose entities may have attributes.
   *
-  * This returns a shared pointer to smtk::model::Manager, which may be
-  * null if no manager is referenced by the attribute resource (or if the
+  * This returns a shared pointer to smtk::model::Resource, which may be
+  * null if no resource is referenced by the attribute resource (or if the
   * attribute definition does not reference a valid resource).
   */
-smtk::model::ManagerPtr Attribute::modelManager() const
+smtk::model::ResourcePtr Attribute::modelResource() const
 {
-  smtk::model::ManagerPtr result;
-  smtk::attribute::ResourcePtr attSys = this->attributeResource();
-  if (attSys)
+  smtk::model::ResourcePtr result;
+  smtk::attribute::ResourcePtr attResource = this->attributeResource();
+  if (attResource)
   {
-    result = attSys->refModelManager();
+    result = attResource->refModelResource();
   }
   return result;
 }
@@ -495,7 +495,7 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
   if (!res)
     return res;
 
-  smtk::model::ManagerPtr modelMgr = entityRef.manager();
+  smtk::model::ResourcePtr modelMgr = entityRef.resource();
   if (modelMgr)
   {
     res = modelMgr->associateAttribute(nullptr, this->id(), entityRef.entity());
@@ -505,7 +505,7 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
 
 /**\brief Disassociate a new-style model ID (a UUID) from this attribute.
   *
-  * If \a reverse is true (the default), then the model manager is notified
+  * If \a reverse is true (the default), then the model resource is notified
   * of the item's disassociation immediately after its removal from this
   * attribute, allowing the model and attribute to stay in sync.
   */
@@ -522,7 +522,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
     m_associatedObjects->removeValue(idx);
     if (reverse)
     {
-      smtk::model::ManagerPtr modelMgr = this->modelManager();
+      smtk::model::ResourcePtr modelMgr = this->modelResource();
       if (modelMgr)
       {
         modelMgr->disassociateAttribute(this->attributeResource(), this->id(), entity, false);

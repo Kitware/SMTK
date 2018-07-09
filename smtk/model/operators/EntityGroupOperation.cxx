@@ -14,8 +14,8 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -65,14 +65,14 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
   // pre processing the data
   auto modelItem = this->parameters()->associations();
   smtk::model::Model model = modelItem->valueAs<smtk::model::Entity>();
-  smtk::model::Manager::Ptr resource = model.manager();
+  smtk::model::Resource::Ptr resource = model.resource();
   smtk::attribute::StringItem::Ptr optypeItem = this->parameters()->findString("Operation");
   std::string optype = optypeItem->value();
 
   smtk::model::Group bGroup;
   smtk::model::EntityRefArray modGroups;
   smtk::model::EntityRefArray remGroups;
-  bGroup.setManager(resource);
+  bGroup.setResource(resource);
   bool ok = false;
   BitFlags mask(0);
 

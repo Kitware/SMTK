@@ -41,7 +41,7 @@ class SMTKCORE_EXPORT ResourceSetReader
 
 public:
   ResourceSetReader();
-  ResourceSetReader(smtk::model::ManagerPtr mgr);
+  ResourceSetReader(smtk::model::ResourcePtr modelResource);
 
   bool readFile(std::string filename, smtk::resource::Set& resources, smtk::io::Logger& logger,
     bool loadLinkedFiles = true);
@@ -55,7 +55,7 @@ protected:
     std::string& path, smtk::io::Logger& logger);
   std::string buildIncludePath(const smtk::resource::Set& resources, const std::string link) const;
 
-  smtk::model::ManagerPtr m_modelManager;
+  smtk::model::ResourcePtr m_modelResource;
 };
 
 } // namespace io

@@ -29,8 +29,8 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
@@ -116,17 +116,17 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
-  smtk::mesh::ManagerPtr meshManager = manager->meshes();
+  smtk::model::ResourcePtr resource = smtk::model::Resource::create();
+  smtk::mesh::ManagerPtr meshManager = resource->meshes();
 
   std::cout << "Available sessions\n";
-  smtk::model::StringList sessions = manager->sessionTypeNames();
+  smtk::model::StringList sessions = resource->sessionTypeNames();
   for (smtk::model::StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
   smtk::bridge::polygon::Session::Ptr session = smtk::bridge::polygon::Session::create();
-  manager->registerSession(session);
+  resource->registerSession(session);
 
   std::cout << "Available operators\n";
   smtk::model::StringList opnames = session->operatorNames();
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr collection;
   {
     smtk::model::EntityRefs currentEnts =
-      manager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::FACE);
+      resource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::FACE);
     removeRefsWithoutTess(currentEnts);
     // We only extract the first face
     smtk::model::EntityRef eRef = *currentEnts.begin();

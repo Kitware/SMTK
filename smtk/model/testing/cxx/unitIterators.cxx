@@ -23,16 +23,16 @@ using namespace smtk::model::testing;
 
 void testExplicitTraversal(IteratorStyle style, int correctCount)
 {
-  Manager::Ptr mgr = Manager::create();
-  SessionRef sess = mgr->createSession("native");
+  Resource::Ptr resource = Resource::create();
+  SessionRef sess = resource->createSession("native");
 
-  UUIDArray uids = createTet(mgr);
-  Model model = mgr->addModel();
-  model.addCell(Volume(mgr, uids[21]));
+  UUIDArray uids = createTet(resource);
+  Model model = resource->addModel();
+  model.addCell(Volume(resource, uids[21]));
   model.setSession(sess);
-  mgr->assignDefaultNames();
+  resource->assignDefaultNames();
 
-  EntityRefs justVerts = mgr->entitiesMatchingFlagsAs<EntityRefs>(VERTEX);
+  EntityRefs justVerts = resource->entitiesMatchingFlagsAs<EntityRefs>(VERTEX);
   EntityIterator it;
   it.traverse(justVerts.begin(), justVerts.end(), style);
   int count1 = 0;
@@ -53,14 +53,14 @@ void testExplicitTraversal(IteratorStyle style, int correctCount)
 
 void testModelTraversal()
 {
-  Manager::Ptr mgr = Manager::create();
-  SessionRef sess = mgr->createSession("native");
+  Resource::Ptr resource = Resource::create();
+  SessionRef sess = resource->createSession("native");
 
-  UUIDArray uids = createTet(mgr);
-  Model model = mgr->addModel();
-  model.addCell(Volume(mgr, uids[21]));
+  UUIDArray uids = createTet(resource);
+  Model model = resource->addModel();
+  model.addCell(Volume(resource, uids[21]));
   model.setSession(sess);
-  mgr->assignDefaultNames();
+  resource->assignDefaultNames();
 
   EntityIterator it;
   it.traverse(model);

@@ -66,8 +66,8 @@ smtk::common::UUID qtSMTKUtilities::QVariantToUUID(QVariant variant)
 }
 
 smtk::model::EntityRef qtSMTKUtilities::QVariantToEntityRef(
-  QVariant variant, smtk::model::ManagerPtr mgr)
+  QVariant variant, smtk::model::ResourcePtr mResource)
 {
   smtk::common::UUID uuid = qtSMTKUtilities::QVariantToUUID(variant);
-  return smtk::model::EntityRef(mgr, uuid);
+  return smtk::model::EntityRef(mResource, uuid);
 }

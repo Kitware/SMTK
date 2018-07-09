@@ -16,8 +16,8 @@
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/common/UUID.h"
 
@@ -46,11 +46,11 @@ namespace bridge
 namespace cgm
 {
 
-smtk::common::UUIDArray ImportSolid::fromFilenameIntoManager(
-  const std::string& filename, const std::string& filetype, smtk::model::ManagerPtr manager)
+smtk::common::UUIDArray ImportSolid::fromFilenameIntoResource(
+  const std::string& filename, const std::string& filetype, smtk::model::ResourcePtr resource)
 {
   smtk::common::UUIDArray result;
-  smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
+  smtk::bridge::cgm::CAUUID::registerWithAttributeResource();
   std::string engine = "OCC";
   if (filetype == "FACET_TYPE")
     engine = "FACET";
@@ -91,12 +91,12 @@ smtk::common::UUIDArray ImportSolid::fromFilenameIntoManager(
     RefEntity* entry = imported.get_and_step();
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
     smtk::common::UUID entId = refId->entityId();
-    EntityRef smtkEntry(manager, entId);
+    EntityRef smtkEntry(resource, entId);
     if (session->transcribe(smtkEntry, SESSION_EVERYTHING, false))
       result.push_back(smtkEntry.entity());
   }
   // FIXME: Until this is implemented, Session will be deleted upon exit:
-  //manager->addSession(session);
+  //resource->addSession(session);
   imported.reset();
 
   return result;

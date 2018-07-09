@@ -18,7 +18,6 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include "vtkAppendPoints.h"

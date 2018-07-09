@@ -29,7 +29,7 @@ class TestEntityInstances(smtk.testing.TestCase):
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise ImportError
-        self.mgr = smtk.model.Manager.CastTo(res.find('resource').value())
+        self.mgr = smtk.model.Resource.CastTo(res.find('resource').value())
         self.model = self.mgr.findEntitiesOfType(
             int(smtk.model.MODEL_ENTITY))[0]
         self.faces = self.model.cells()

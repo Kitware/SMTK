@@ -20,7 +20,7 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace py = pybind11;
 
@@ -31,7 +31,7 @@ py::class_< smtk::model::Group, smtk::model::EntityRef > pybind11_init_smtk_mode
     .def(py::init<::smtk::model::Group const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::Group::*)(::smtk::model::EntityRef const &) const) &smtk::model::Group::operator!=)
     .def("deepcopy", (smtk::model::Group & (smtk::model::Group::*)(::smtk::model::Group const &)) &smtk::model::Group::operator=)
     .def("__eq__", (bool (smtk::model::Group::*)(::smtk::model::EntityRef const &) const) &smtk::model::Group::operator==)

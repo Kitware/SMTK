@@ -32,7 +32,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"

@@ -12,8 +12,8 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/mesh/core/Collection.h"
@@ -50,7 +50,7 @@ CloseModel::Result CloseModel::operateInternal()
   // ableToOperate should have verified that model(s) are set
   smtk::attribute::ReferenceItem::Ptr modelItem = this->parameters()->associations();
 
-  smtk::model::Manager::Ptr resource = std::static_pointer_cast<smtk::model::Manager>(
+  smtk::model::Resource::Ptr resource = std::static_pointer_cast<smtk::model::Resource>(
     std::static_pointer_cast<smtk::resource::Component>(modelItem->objectValue())->resource());
 
   EntityRefArray expunged;

@@ -12,7 +12,7 @@
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
 
@@ -31,7 +31,7 @@ using smtk::shared_ptr;
 smtk::model::BitFlags maskOrder[] = { MODEL_ENTITY, INSTANCE_ENTITY, GROUP_ENTITY, CELL_3D, CELL_2D,
   CELL_1D, CELL_0D, SHELL_2D, USE_2D, SHELL_1D, USE_1D, SHELL_0D, USE_0D };
 
-void ReportEntity(ManagerPtr sm, UUIDWithEntityPtr& eit)
+void ReportEntity(ResourcePtr sm, UUIDWithEntityPtr& eit)
 {
   const KindsToArrangements& kwa(eit->second->arrangementMap());
   UUIDWithFloatProperties fpit;
@@ -111,10 +111,10 @@ int main(int argc, char* argv[])
     static_cast<smtk::model::BitFlags>(strtol(argc > 2 ? argv[2] : "0xffffffff", &endMask, 16));
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
 
   int status = 0;
-  status |= LoadJSON::intoModelManager(data.c_str(), sm);
+  status |= LoadJSON::intoModelResource(data.c_str(), sm);
   if (status)
   {
     if (argc > 3)

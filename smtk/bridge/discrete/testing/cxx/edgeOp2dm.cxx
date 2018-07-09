@@ -32,7 +32,7 @@
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Edge.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
 
 #include "vtkActor.h"
@@ -103,8 +103,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::model::Manager::Ptr resource =
-    std::static_pointer_cast<smtk::model::Manager>(model->resource());
+  smtk::model::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::model::Resource>(model->resource());
   smtk::model::Model model2dm = model->referenceAs<smtk::model::Model>();
 
   if (model2dm.isValid())

@@ -21,7 +21,7 @@
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace py = pybind11;
 
@@ -32,7 +32,7 @@ py::class_< smtk::model::Edge, smtk::model::CellEntity > pybind11_init_smtk_mode
     .def(py::init<::smtk::model::Edge const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::Edge::*)(::smtk::model::EntityRef const &) const) &smtk::model::Edge::operator!=)
     .def("deepcopy", (smtk::model::Edge & (smtk::model::Edge::*)(::smtk::model::Edge const &)) &smtk::model::Edge::operator=)
     .def("__eq__", (bool (smtk::model::Edge::*)(::smtk::model::EntityRef const &) const) &smtk::model::Edge::operator==)

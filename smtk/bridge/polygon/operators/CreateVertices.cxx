@@ -54,7 +54,8 @@ CreateVertices::Result CreateVertices::operateInternal()
   Result result;
   if (resource)
   {
-    smtk::model::Manager::Ptr mgr = std::static_pointer_cast<smtk::model::Manager>(resource);
+    smtk::model::Resource::Ptr modelResource =
+      std::static_pointer_cast<smtk::model::Resource>(resource);
     internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
     std::vector<double> pcoords;
     int npnts = static_cast<int>(pointsInfo->numberOfGroups());
@@ -71,7 +72,8 @@ CreateVertices::Result CreateVertices::operateInternal()
       }
     }
 
-    smtk::model::Vertices verts = storage->findOrAddModelVertices(mgr, pcoords, numCoordsPerPt);
+    smtk::model::Vertices verts =
+      storage->findOrAddModelVertices(modelResource, pcoords, numCoordsPerPt);
     result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");

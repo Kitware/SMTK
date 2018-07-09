@@ -29,7 +29,7 @@ class SMTKCORE_EXPORT SessionRef : public EntityRef
 {
 public:
   SMTK_ENTITYREF_CLASS(SessionRef, EntityRef, isSessionRef);
-  SessionRef(ManagerPtr manager, SessionPtr brdg);
+  SessionRef(ResourcePtr resource, SessionPtr brdg);
 
   SessionPtr session() const;
 

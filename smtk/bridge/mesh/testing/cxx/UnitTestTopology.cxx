@@ -25,7 +25,7 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
@@ -142,7 +142,7 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     vtkNew<vtkCompositePolyDataMapper> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetModelManager(model.manager());
+    src->SetModelResource(model.resource());
     src->SetModelEntityID(model.entity().toString().c_str());
     src->SetDefaultColor(1., 1., 0., 1.);
     map->SetInputConnection(src->GetOutputPort());

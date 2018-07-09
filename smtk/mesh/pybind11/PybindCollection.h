@@ -26,7 +26,7 @@ PySharedPtrClass< smtk::mesh::Collection > pybind11_init_smtk_mesh_Collection(py
 {
   PySharedPtrClass< smtk::mesh::Collection > instance(m, "Collection");
   instance
-    .def_property("modelManager", &smtk::mesh::Collection::modelManager, &smtk::mesh::Collection::setModelManager)
+    .def_property("modelResource", &smtk::mesh::Collection::modelResource, &smtk::mesh::Collection::setModelResource)
     .def("assignUniqueNameIfNotAlready", &smtk::mesh::Collection::assignUniqueNameIfNotAlready)
     .def("associateToModel", &smtk::mesh::Collection::associateToModel, py::arg("uuid"))
     .def("associatedModel", &smtk::mesh::Collection::associatedModel)

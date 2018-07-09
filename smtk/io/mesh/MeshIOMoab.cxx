@@ -64,7 +64,7 @@ bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::CollectionP
 //TODO:
 // bool MeshIOMoab::exportMesh( const std::string& filePath,
 //                              smtk::mesh::CollectionPtr collection,
-//                              smtk::model::ManagerPtr manager,
+//                              smtk::model::ResourcePtr resource,
 //                              const std::string& modelPropertyName ) const
 // {
 

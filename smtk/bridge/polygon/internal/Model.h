@@ -51,47 +51,47 @@ public:
     std::vector<double>& j_axis, double featureSize, long long modelScale);
 
   smtk::model::Vertices findOrAddModelVertices(
-    smtk::model::ManagerPtr mgr, const std::vector<double>& points, int numCoordsPerPt);
+    smtk::model::ResourcePtr resource, const std::vector<double>& points, int numCoordsPerPt);
 
   smtk::model::Vertex findOrAddModelVertex(
-    smtk::model::ManagerPtr mgr, const Point& pt, bool addToModel = true);
+    smtk::model::ResourcePtr resource, const Point& pt, bool addToModel = true);
 
   smtk::model::Vertex addModelVertex(
-    smtk::model::ManagerPtr mgr, const Point& pt, bool addToModel = true);
+    smtk::model::ResourcePtr resource, const Point& pt, bool addToModel = true);
 
-  bool demoteModelVertex(smtk::model::ManagerPtr mgr, internal::VertexPtr vert,
+  bool demoteModelVertex(smtk::model::ResourcePtr resource, internal::VertexPtr vert,
     smtk::model::EntityRefs& created, smtk::model::EntityRefs& modified,
     smtk::model::EntityRefs& expunged, int debugLevel = 0);
 
   model::Edge createModelEdgeFromVertices(
-    smtk::model::ManagerPtr mgr, internal::VertexPtr v0, internal::VertexPtr v1);
+    smtk::model::ResourcePtr resource, internal::VertexPtr v0, internal::VertexPtr v1);
 
   template <typename T, typename U>
-  model::Edge createModelEdgeFromSegments(smtk::model::ManagerPtr mgr, T begin, T end,
+  model::Edge createModelEdgeFromSegments(smtk::model::ResourcePtr resource, T begin, T end,
     bool addToModel, const U& splitEdgeFaces, bool headIsNewVertex,
     smtk::model::VertexSet& newVerts);
 
   template <typename T>
   model::Edge createModelEdgeFromPoints(
-    smtk::model::ManagerPtr mgr, T begin, T end, bool isFreeCell);
+    smtk::model::ResourcePtr resource, T begin, T end, bool isFreeCell);
 
   template <typename T>
   std::set<Id> createModelEdgesFromPoints(T begin, T end);
 
-  bool splitModelEdgeAtPoint(smtk::model::ManagerPtr mgr, const Id& edgeId,
+  bool splitModelEdgeAtPoint(smtk::model::ResourcePtr resource, const Id& edgeId,
     const std::vector<double>& point, smtk::model::EntityRefArray& created, int debugLevel = 0);
-  bool splitModelEdgeAtIndex(smtk::model::ManagerPtr mgr, const Id& edgeId, int splitPointIndex,
-    smtk::model::EntityRefArray& created, int debugLevel = 0);
-  bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, const Id& edgeId,
+  bool splitModelEdgeAtIndex(smtk::model::ResourcePtr resource, const Id& edgeId,
+    int splitPointIndex, smtk::model::EntityRefArray& created, int debugLevel = 0);
+  bool splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, const Id& edgeId,
     const Id& vertexId, smtk::model::EntityRefArray& created, int debugLevel = 0);
-  bool splitModelEdgeAtModelVertex(smtk::model::ManagerPtr mgr, EdgePtr edgeToSplit,
+  bool splitModelEdgeAtModelVertex(smtk::model::ResourcePtr resource, EdgePtr edgeToSplit,
     VertexPtr splitPoint, PointSeq::const_iterator location, smtk::model::EntityRefArray& created,
     int debugLevel = 0);
-  bool splitModelEdgeAtModelVertices(smtk::model::ManagerPtr mgr, EdgePtr edgeToSplit,
+  bool splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, EdgePtr edgeToSplit,
     std::vector<VertexPtr>& splitPoints, std::vector<PointSeq::const_iterator>& locations,
     smtk::model::EntityRefArray& created, int debugLevel = 0);
 
-  std::pair<Id, Id> removeModelEdgeFromEndpoints(smtk::model::ManagerPtr mgr, EdgePtr edg);
+  std::pair<Id, Id> removeModelEdgeFromEndpoints(smtk::model::ResourcePtr resource, EdgePtr edg);
   bool removeVertexLookup(const internal::Point& location, const Id& vid);
 
   Point edgeTestPoint(const Id& edgeId, bool edgeEndPt) const;
@@ -138,9 +138,9 @@ public:
     * This method will never create a model vertex; if one is not
     * present at \a p, an invalid model::Vertex will be returned.
     */
-  smtk::model::Vertex vertexAtPoint(smtk::model::ManagerPtr mgr, const Point& p) const
+  smtk::model::Vertex vertexAtPoint(smtk::model::ResourcePtr resource, const Point& p) const
   {
-    return smtk::model::Vertex(mgr, this->pointId(p));
+    return smtk::model::Vertex(resource, this->pointId(p));
   }
 
   template <typename T>

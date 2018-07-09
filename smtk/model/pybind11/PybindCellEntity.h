@@ -19,7 +19,7 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
@@ -33,7 +33,7 @@ py::class_< smtk::model::CellEntity, smtk::model::EntityRef > pybind11_init_smtk
     .def(py::init<::smtk::model::CellEntity const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::CellEntity::*)(::smtk::model::EntityRef const &) const) &smtk::model::CellEntity::operator!=)
     .def("deepcopy", (smtk::model::CellEntity & (smtk::model::CellEntity::*)(::smtk::model::CellEntity const &)) &smtk::model::CellEntity::operator=)
     .def("__eq__", (bool (smtk::model::CellEntity::*)(::smtk::model::EntityRef const &) const) &smtk::model::CellEntity::operator==)

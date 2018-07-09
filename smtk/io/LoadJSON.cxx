@@ -12,7 +12,7 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 // #include "smtk/model/RemoteOperation.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
@@ -321,15 +321,15 @@ namespace smtk
 namespace io
 {
 
-/**\brief Create records in the \a manager given a string containing \a json data.
+/**\brief Create records in the \a resource given a string containing \a json data.
   *
   * The top level JSON object must be a dictionary with key "type" set to "Manager"
   * and key "topo" set to a dictionary of UUIDs with matching entries.
   */
-int LoadJSON::intoModelManager(const char* json, ManagerPtr manager)
+int LoadJSON::intoModelResource(const char* json, ResourcePtr resource)
 {
   int status = 0;
-  if (!json || !json[0] || !manager)
+  if (!json || !json[0] || !resource)
   {
     std::cerr << "Invalid arguments.\n";
     return status;
@@ -364,35 +364,35 @@ int LoadJSON::intoModelManager(const char* json, ManagerPtr manager)
     !strcmp(mtyp->valuestring, "Manager"))
   {
     cJSON* body = cJSON_GetObjectItem(root, "topo");
-    status = LoadJSON::ofManager(body, manager);
+    status = LoadJSON::ofResource(body, resource);
   }
 
   cJSON_Delete(root);
   return status;
 }
 
-/**\brief Create records in the \a manager from a JSON dictionary, \a dict.
+/**\brief Create records in the \a resource from a JSON dictionary, \a dict.
   *
   * The dictionary must have keys that are valid UUID strings and
   * values that describe entity, tessellation, arrangement, and/or
   * properties associated with the UUID.
   */
-int LoadJSON::ofManager(cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofResource(cJSON* dict, ResourcePtr resource)
 {
   smtk::model::BitFlags whatToImport = smtk::model::SESSION_EVERYTHING;
-  return LoadJSON::ofManagerEntityData(dict, manager, whatToImport);
+  return LoadJSON::ofResourceEntityData(dict, resource, whatToImport);
 }
 
-/**\brief Create records in the \a manager from a JSON dictionary, \a dict.
+/**\brief Create records in the \a resource from a JSON dictionary, \a dict.
   *
   * The dictionary must have keys that are valid UUID strings and
   * values that describe entity, tessellation, arrangement, and/or
   * properties associated with the UUID.
   */
-int LoadJSON::ofManagerEntityData(
-  cJSON* dict, ManagerPtr manager, smtk::model::BitFlags whatToImport)
+int LoadJSON::ofResourceEntityData(
+  cJSON* dict, ResourcePtr resource, smtk::model::BitFlags whatToImport)
 {
-  if (!dict || !manager || !whatToImport)
+  if (!dict || !resource || !whatToImport)
   {
     return 0;
   }
@@ -413,28 +413,28 @@ int LoadJSON::ofManagerEntityData(
     }
     if (whatToImport & SESSION_ENTITY_RECORD)
     {
-      status &= LoadJSON::ofManagerEntity(uid, curChild, manager);
+      status &= LoadJSON::ofResourceEntity(uid, curChild, resource);
     }
     if (whatToImport & SESSION_ARRANGEMENTS)
     {
-      status &= LoadJSON::ofManagerArrangement(uid, curChild, manager);
+      status &= LoadJSON::ofResourceArrangement(uid, curChild, resource);
     }
     if (whatToImport & SESSION_TESSELLATION)
     {
-      status &= LoadJSON::ofManagerTessellation(uid, curChild, manager);
-      status &= LoadJSON::ofManagerAnalysis(uid, curChild, manager);
+      status &= LoadJSON::ofResourceTessellation(uid, curChild, resource);
+      status &= LoadJSON::ofResourceAnalysis(uid, curChild, resource);
     }
     if (whatToImport & SESSION_FLOAT_PROPERTIES)
     {
-      status &= LoadJSON::ofManagerFloatProperties(uid, curChild, manager);
+      status &= LoadJSON::ofResourceFloatProperties(uid, curChild, resource);
     }
     if (whatToImport & SESSION_STRING_PROPERTIES)
     {
-      status &= LoadJSON::ofManagerStringProperties(uid, curChild, manager);
+      status &= LoadJSON::ofResourceStringProperties(uid, curChild, resource);
     }
     if (whatToImport & SESSION_INTEGER_PROPERTIES)
     {
-      status &= LoadJSON::ofManagerIntegerProperties(uid, curChild, manager);
+      status &= LoadJSON::ofResourceIntegerProperties(uid, curChild, resource);
     }
   }
   return status;
@@ -443,9 +443,9 @@ int LoadJSON::ofManagerEntityData(
 /**\brief Create an entity record from a JSON \a cellRec.
   *
   * The \a uid is the UUID corresponding to \a cellRec and
-  * the resulting record will be inserted into \a manager.
+  * the resulting record will be inserted into \a resource.
   */
-int LoadJSON::ofManagerEntity(const UUID& uid, cJSON* cellRec, ManagerPtr manager)
+int LoadJSON::ofResourceEntity(const UUID& uid, cJSON* cellRec, ResourcePtr resource)
 {
   long dim = 0;
   long entityFlags = 0;
@@ -454,7 +454,7 @@ int LoadJSON::ofManagerEntity(const UUID& uid, cJSON* cellRec, ManagerPtr manage
   status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);
   if (status == 0)
   {
-    UUIDWithEntityPtr iter = manager->setEntityOfTypeAndDimension(uid, entityFlags, dim);
+    UUIDWithEntityPtr iter = resource->setEntityOfTypeAndDimension(uid, entityFlags, dim);
     // Ignore status from these as they need not be present:
     cJSON_GetObjectUUIDArray(cellRec, "r", iter->second->relations());
   }
@@ -464,9 +464,9 @@ int LoadJSON::ofManagerEntity(const UUID& uid, cJSON* cellRec, ManagerPtr manage
 /**\brief Create entity arrangement records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a manager.
+  * the resulting record will be inserted into \a resource.
   */
-int LoadJSON::ofManagerArrangement(const UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofResourceArrangement(const UUID& uid, cJSON* dict, ResourcePtr resource)
 {
   cJSON* arrNode = cJSON_GetObjectItem(dict, "a");
   if (!arrNode)
@@ -486,7 +486,7 @@ int LoadJSON::ofManagerArrangement(const UUID& uid, cJSON* dict, ManagerPtr mana
     if (arrangements && arrangements->type == cJSON_Array)
     {
       // First, erase any pre-existing arrangements to avoid duplicates.
-      manager->arrangementsOfKindForEntity(uid, k).clear();
+      resource->arrangementsOfKindForEntity(uid, k).clear();
       // Now insert arrangements from the JSON object
       for (cJSON* arr = arrangements->child; arr; arr = arr->next)
       {
@@ -495,7 +495,7 @@ int LoadJSON::ofManagerArrangement(const UUID& uid, cJSON* dict, ManagerPtr mana
           Arrangement a;
           if (cJSON_GetArrangement(arr, a) > 0)
           {
-            manager->arrangeEntity(uid, k, a);
+            resource->arrangeEntity(uid, k, a);
           }
         }
       }
@@ -507,9 +507,9 @@ int LoadJSON::ofManagerArrangement(const UUID& uid, cJSON* dict, ManagerPtr mana
 /**\brief Create an entity tessellation record from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a manager.
+  * the resulting record will be inserted into \a resource.
   */
-int LoadJSON::ofManagerTessellation(const UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofResourceTessellation(const UUID& uid, cJSON* dict, ResourcePtr resource)
 {
   cJSON* tessNode = cJSON_GetObjectItem(dict, "t");
   if (!tessNode)
@@ -524,11 +524,11 @@ int LoadJSON::ofManagerTessellation(const UUID& uid, cJSON* dict, ManagerPtr man
   // We should fetch the metadata->formatVersion and verify it,
   // but I don't think it makes any difference to the fields
   // we rely on... yet.
-  UUIDsToTessellations::iterator tessIt = manager->tessellations().find(uid);
-  if (tessIt == manager->tessellations().end())
+  UUIDsToTessellations::iterator tessIt = resource->tessellations().find(uid);
+  if (tessIt == resource->tessellations().end())
   {
     Tessellation blank;
-    tessIt = manager->tessellations().insert(std::pair<UUID, Tessellation>(uid, blank)).first;
+    tessIt = resource->tessellations().insert(std::pair<UUID, Tessellation>(uid, blank)).first;
   }
   int numVerts =
     cJSON_GetTessellationCoords(cJSON_GetObjectItem(tessNode, "vertices"), tessIt->second);
@@ -542,9 +542,9 @@ int LoadJSON::ofManagerTessellation(const UUID& uid, cJSON* dict, ManagerPtr man
 /**\brief Create an entity analysis mesh record from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a manager.
+  * the resulting record will be inserted into \a resource.
   */
-int LoadJSON::ofManagerAnalysis(const UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofResourceAnalysis(const UUID& uid, cJSON* dict, ResourcePtr resource)
 {
   cJSON* meshNode = cJSON_GetObjectItem(dict, "m");
   if (!meshNode)
@@ -559,11 +559,11 @@ int LoadJSON::ofManagerAnalysis(const UUID& uid, cJSON* dict, ManagerPtr manager
   // We should fetch the metadata->formatVersion and verify it,
   // but I don't think it makes any difference to the fields
   // we rely on... yet.
-  UUIDsToTessellations::iterator meshIt = manager->analysisMesh().find(uid);
-  if (meshIt == manager->analysisMesh().end())
+  UUIDsToTessellations::iterator meshIt = resource->analysisMesh().find(uid);
+  if (meshIt == resource->analysisMesh().end())
   {
     Tessellation blank;
-    meshIt = manager->analysisMesh().insert(std::pair<UUID, Tessellation>(uid, blank)).first;
+    meshIt = resource->analysisMesh().insert(std::pair<UUID, Tessellation>(uid, blank)).first;
   }
   int numVerts =
     cJSON_GetTessellationCoords(cJSON_GetObjectItem(meshNode, "vertices"), meshIt->second);
@@ -576,10 +576,10 @@ int LoadJSON::ofManagerAnalysis(const UUID& uid, cJSON* dict, ManagerPtr manager
 /**\brief Create entity floating-point-property records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a manager.
+  * the resulting record will be inserted into \a resource.
   */
-int LoadJSON::ofManagerFloatProperties(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofResourceFloatProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ResourcePtr resource)
 {
   int status = 0;
   cJSON* floatNode = cJSON_GetObjectItem(dict, "f");
@@ -596,7 +596,7 @@ int LoadJSON::ofManagerFloatProperties(
     }
     FloatList propVal;
     cJSON_GetRealArray(floatProp, propVal);
-    manager->setFloatProperty(uid, floatProp->string, propVal);
+    resource->setFloatProperty(uid, floatProp->string, propVal);
   }
   return status ? 0 : 1;
 }
@@ -604,10 +604,10 @@ int LoadJSON::ofManagerFloatProperties(
 /**\brief Create entity string-property records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a manager.
+  * the resulting record will be inserted into \a resource.
   */
-int LoadJSON::ofManagerStringProperties(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofResourceStringProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ResourcePtr resource)
 {
   int status = 0;
   cJSON* stringNode = cJSON_GetObjectItem(dict, "s");
@@ -623,7 +623,7 @@ int LoadJSON::ofManagerStringProperties(
     }
     StringList propVal;
     cJSON_GetStringArray(stringProp, propVal);
-    manager->setStringProperty(uid, stringProp->string, propVal);
+    resource->setStringProperty(uid, stringProp->string, propVal);
   }
   return status ? 0 : 1;
 }
@@ -631,10 +631,10 @@ int LoadJSON::ofManagerStringProperties(
 /**\brief Create entity integer-property records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a manager.
+  * the resulting record will be inserted into \a resource.
   */
-int LoadJSON::ofManagerIntegerProperties(
-  const smtk::common::UUID& uid, cJSON* dict, ManagerPtr manager)
+int LoadJSON::ofResourceIntegerProperties(
+  const smtk::common::UUID& uid, cJSON* dict, ResourcePtr resource)
 {
   int status = 0;
   cJSON* integerNode = cJSON_GetObjectItem(dict, "i");
@@ -650,7 +650,7 @@ int LoadJSON::ofManagerIntegerProperties(
     }
     IntegerList propVal;
     cJSON_GetIntegerArray(integerProp, propVal);
-    manager->setIntegerProperty(uid, integerProp->string, propVal);
+    resource->setIntegerProperty(uid, integerProp->string, propVal);
   }
   return status ? 0 : 1;
 }
@@ -662,14 +662,14 @@ int LoadJSON::ofManagerIntegerProperties(
   *
   * You are responsible for providing the \a destSession instance
   * into which the \a node's session will be placed.
-  * You must also provide a valid model manager, and \a destSession
+  * You must also provide a valid model resource, and \a destSession
   * will be registered with \a context after its session ID has
   * been assigned.
   * The \a destSession must be of a proper type for your application
   * (i.e., be able to forward requests for data and operations).
   */
 int LoadJSON::ofRemoteSession(
-  cJSON* node, DefaultSessionPtr destSession, ManagerPtr context, const std::string& refPath)
+  cJSON* node, DefaultSessionPtr destSession, ResourcePtr context, const std::string& refPath)
 {
   int status = 0;
   cJSON* opsObj;
@@ -686,7 +686,7 @@ int LoadJSON::ofRemoteSession(
 
   destSession->backsRemoteSession(nameObj->valuestring, smtk::common::UUID(node->string));
 
-  // Register the session with the model manager:
+  // Register the session with the model resource:
   context->registerSession(destSession);
 
   // Import additional state if the session can accept it.
@@ -710,9 +710,9 @@ int LoadJSON::ofRemoteSession(
   *
   * The session described by \a node will be mirrored by a newly-created
   * session (whose type is specified by \a node) and attached to the
-  * model manager \a context you specify.
+  * model resource \a context you specify.
   *
-  * You must provide a valid model manager, \a context, to which the
+  * You must provide a valid model resource, \a context, to which the
   * restored session will be registered.
   * Note that \a context must *already* contain the SMTK entity records
   * for the session!
@@ -740,7 +740,7 @@ int LoadJSON::ofRemoteSession(
   * a session.
   */
 int LoadJSON::ofLocalSession(
-  cJSON* node, ManagerPtr context, bool /*loadNativeModels*/, const std::string& refPath)
+  cJSON* node, ResourcePtr context, bool /*loadNativeModels*/, const std::string& refPath)
 {
   int status = 0;
   cJSON* opsObj;
@@ -842,7 +842,7 @@ int LoadJSON::ofLocalSession(
   return status;
 }
 
-int LoadJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
+int LoadJSON::ofDanglingEntities(cJSON* node, ResourcePtr context)
 {
   if (!node || !context)
     return 0;
@@ -941,13 +941,13 @@ int LoadJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
 /**\brief Import all the smtk::mesh::Collections associated with a given smtk::model.
   *
   * All collections listed in \a node are imported in, and added to the mesh
-  * manager that is owned by the model \a meshMgr.
+  * resource that is owned by the model \a meshMgr.
   *
   * Returns a status value of 1 when everything has been loading in properly
   *
   */
 int LoadJSON::ofMeshesOfModel(
-  cJSON* node, smtk::model::ManagerPtr modelMgr, const std::string& refPath)
+  cJSON* node, smtk::model::ResourcePtr modelMgr, const std::string& refPath)
 {
   int status = 1;
   if (!node || !modelMgr)
@@ -1079,16 +1079,16 @@ int LoadJSON::ofMeshesOfModel(
       cJSON_GetStringValue(collecNameNode, collectionName);
       collection->name(collectionName);
 
-      //ask the manager to generate a unique name for the collection, this
+      //ask the resource to generate a unique name for the collection, this
       //occurs when meshes have no name.
       if (collection->name().empty())
       {
         collection->assignUniqueNameIfNotAlready();
       }
 
-      //set the collections model manager so that we can do model based
+      //set the collections model resource so that we can do model based
       //queries properly
-      collection->setModelManager(modelMgr);
+      collection->setModelResource(modelMgr);
 
       if (!associatedModelId.isNull())
       {

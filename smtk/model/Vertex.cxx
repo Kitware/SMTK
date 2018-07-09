@@ -10,7 +10,7 @@
 #include "smtk/model/Vertex.h"
 
 #include "smtk/model/Edge.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk
@@ -32,11 +32,11 @@ smtk::model::Edges Vertex::edges() const
 
 double* Vertex::coordinates() const
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   if (this->isValid())
   {
-    UUIDWithTessellation tessRec = mgr->tessellations().find(m_entity);
-    if (tessRec != mgr->tessellations().end())
+    UUIDWithTessellation tessRec = resource->tessellations().find(m_entity);
+    if (tessRec != resource->tessellations().end())
     {
       if (!tessRec->second.coords().empty())
       {
@@ -50,12 +50,12 @@ double* Vertex::coordinates() const
 /*
 smtk::common::Vector3d Vertex::coordinates() const
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   if (this->isValid())
     {
     UUIDWithTessellation tessRec =
-      mgr->tessellations().find(m_entity);
-    if (tessRec != mgr->tessellations().end())
+      resource->tessellations().find(m_entity);
+    if (tessRec != resource->tessellations().end())
       {
       if (!tessRec->second.coords().empty())
         {

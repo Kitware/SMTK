@@ -20,8 +20,8 @@ class TestPolygonImport(smtk.testing.TestCase):
 
     def setUp(self):
         self.writeJSON = False
-        self.mgr = smtk.model.Manager.create()
-        sess = self.mgr.createSession('polygon')
+        self.resource = smtk.model.Resource.create()
+        sess = self.resource.createSession('polygon')
         brg = sess.session()
         print(sess)
         print(brg)
@@ -66,8 +66,8 @@ class TestPolygonImport(smtk.testing.TestCase):
                          'Import failed to create a single model')
         mod = smtk.model.Model(cre.value(0))
         if self.writeJSON:
-            smtk.io.SaveJSON.fromModelManagerToFile(
-                self.mgr, '/tmp/shapefile.json')
+            smtk.io.SaveJSON.fromModelResourceToFile(
+                self.resource, '/tmp/shapefile.json')
             print('Wrote /tmp/shapefile.json')
 
         if self.haveVTK() and self.haveVTKExtension():

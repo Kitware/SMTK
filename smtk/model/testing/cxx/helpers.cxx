@@ -14,7 +14,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
@@ -43,7 +43,7 @@ namespace model
 namespace testing
 {
 
-UUIDArray createTet(smtk::model::ManagerPtr sm)
+UUIDArray createTet(smtk::model::ResourcePtr sm)
 {
   static const double x[][3] = {
     { 0., 0., 0. }, { 4., 0., 0. }, { 2., 4., 0. }, { 1., 1., 0. }, { 2., 3., 0. }, { 3., 1., 0. },

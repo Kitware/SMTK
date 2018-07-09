@@ -23,7 +23,6 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include "vtkContourFilter.h"
@@ -321,7 +320,7 @@ Import::Result Import::importExodus(const smtk::bridge::vtk::Resource::Ptr& reso
   AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
 
   // Now that the datasets we wish to present are marked,
-  // have the Session create entries in the model manager for us:
+  // have the Session create entries in the model resource for us:
   smtk::model::Model smtkModelOut = bridge->addModel(modelOut);
 
   smtkModelOut.setStringProperty("url", filename);

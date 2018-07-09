@@ -21,7 +21,6 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/StringData.h"
 #include "smtk/model/operators/EntityGroupOperation.h"

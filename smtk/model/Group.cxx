@@ -11,8 +11,8 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 namespace smtk
 {
@@ -45,12 +45,12 @@ EntityRef Group::parent() const
   */
 Group& Group::addEntity(const EntityRef& thing)
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   if (this->meetsMembershipConstraints(thing))
   {
-    mgr->findOrAddEntityToGroup(this->entity(), thing.entity());
-    mgr->trigger(
-      std::make_pair(ADD_EVENT, GROUP_SUPERSET_OF_ENTITY), *this, EntityRef(mgr, thing.entity()));
+    resource->findOrAddEntityToGroup(this->entity(), thing.entity());
+    resource->trigger(std::make_pair(ADD_EVENT, GROUP_SUPERSET_OF_ENTITY), *this,
+      EntityRef(resource, thing.entity()));
   }
 
   return *this;
@@ -64,17 +64,17 @@ Group& Group::addEntity(const EntityRef& thing)
   */
 bool Group::removeEntity(const EntityRef& thing)
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   if (this->isValid() && !thing.entity().isNull())
   {
-    int aidx = mgr->findArrangementInvolvingEntity(m_entity, SUPERSET_OF, thing.entity());
+    int aidx = resource->findArrangementInvolvingEntity(m_entity, SUPERSET_OF, thing.entity());
 
     // FIXME: This really belongs inside unarrangeEntity().
     // But there we have no access to thing.entity() until too late.
-    if (mgr->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
+    if (resource->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
     {
-      mgr->trigger(
-        std::make_pair(DEL_EVENT, GROUP_SUPERSET_OF_ENTITY), *this, EntityRef(mgr, thing.entity()));
+      resource->trigger(std::make_pair(DEL_EVENT, GROUP_SUPERSET_OF_ENTITY), *this,
+        EntityRef(resource, thing.entity()));
 
       return true;
     }
