@@ -21,7 +21,7 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Edge.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -185,8 +185,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::model::Manager::Ptr resource =
-    std::static_pointer_cast<smtk::model::Manager>(model->resource());
+  smtk::model::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::model::Resource>(model->resource());
   smtk::model::Model model2dm = model->referenceAs<smtk::model::Model>();
 
   if (!model2dm.isValid())
@@ -262,13 +262,13 @@ int main(int argc, char* argv[])
 
   smtk::mesh::CollectionPtr c2;
 
-  smtk::model::Manager::Ptr smtkresource2dm;
+  smtk::model::Resource::Ptr smtkresource2dm;
   Model smtkmodel2dm;
   {
     smtk::attribute::ResourceItemPtr resItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(result->findResource("resource"));
 
-    smtkresource2dm = std::dynamic_pointer_cast<smtk::model::Manager>(resItem->value());
+    smtkresource2dm = std::dynamic_pointer_cast<smtk::model::Resource>(resItem->value());
 
     smtk::attribute::ComponentItemPtr compItem =
       std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(result->findComponent("created"));

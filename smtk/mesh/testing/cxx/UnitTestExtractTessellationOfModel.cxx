@@ -128,7 +128,7 @@ public:
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-void create_simple_mesh_model(smtk::model::ManagerPtr mgr)
+void create_simple_mesh_model(smtk::model::ResourcePtr resource)
 {
   std::string file_path(data_root);
   file_path += "/model/2d/smtk/test2D.json";
@@ -138,8 +138,8 @@ void create_simple_mesh_model(smtk::model::ManagerPtr mgr)
   std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
-  mgr->assignDefaultNames();
+  smtk::io::LoadJSON::intoModelResource(json.c_str(), resource);
+  resource->assignDefaultNames();
 
   file.close();
 }
@@ -247,13 +247,13 @@ int UnitTestExtractTessellationOfModel(int, char** const)
   // Somehow grab an EntityRef with an associated tessellation
   smtk::model::EntityRef eRef;
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_mesh_model(modelManager);
+  create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
 
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
@@ -265,7 +265,7 @@ int UnitTestExtractTessellationOfModel(int, char** const)
     //extract all the coordinates from every tessellation and make a single
     //big pool
     EntityTypeBits entType = etypes[i];
-    EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
+    EntityRefs currentEnts = modelResource->entitiesMatchingFlagsAs<EntityRefs>(entType);
     removeOnesWithoutTess(currentEnts);
     if (!currentEnts.empty())
     {

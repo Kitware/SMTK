@@ -12,7 +12,6 @@
 #include "smtk/bridge/discrete/Resource.h"
 #include "smtk/bridge/discrete/Session.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include "smtk/attribute/Attribute.h"

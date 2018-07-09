@@ -31,12 +31,12 @@ struct Resources
 {
   Resources() {}
 
-  Resources(smtk::model::ManagerPtr m, smtk::attribute::ResourcePtr s,
+  Resources(smtk::model::ResourcePtr m, smtk::attribute::ResourcePtr s,
     const std::vector<FacesOfModel>& fom);
 
   bool valid() const { return ((!!m_model) && (!!m_attributes)); }
 
-  smtk::model::ManagerPtr m_model;
+  smtk::model::ResourcePtr m_model;
   smtk::mesh::ManagerPtr m_mesh;
   smtk::attribute::ResourcePtr m_attributes;
   std::vector<FacesOfModel> m_modelsToMesh;
@@ -45,7 +45,7 @@ struct Resources
 //converts all the remus job content into a smtk model instance with an
 //associated smtk attribute resource that represents the meshing controls.
 //
-//We support meshing a subset of all the models inside the manager through
+//We support meshing a subset of all the models inside the resource through
 //the smtkModelIdsToMesh data
 //
 detail::Resources deserialize_smtk_model(const remus::proto::JobContent& jsonModelData,

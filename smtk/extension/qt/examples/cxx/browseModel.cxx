@@ -21,7 +21,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
   }
 
   auto rsrc = readOpResult->findResource("resource")->value(0);
-  auto model = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+  auto model = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   if (!model)
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Did not read a model.");

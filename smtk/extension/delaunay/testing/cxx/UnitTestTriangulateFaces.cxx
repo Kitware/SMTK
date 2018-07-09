@@ -32,6 +32,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Loop.h"
+#include "smtk/model/Resource.h"
 
 #include <fstream>
 
@@ -152,7 +153,7 @@ int UnitTestTriangulateFaces(int, char** const)
       return 1;
     }
 
-    auto associatedCollections = face.manager()->meshes()->associatedCollections(face);
+    auto associatedCollections = face.resource()->meshes()->associatedCollections(face);
     smtk::mesh::CollectionPtr triangulatedFace = associatedCollections[0];
 
     if (triangulatedFace->points().size() != 8 || triangulatedFace->cells().size() != 8)

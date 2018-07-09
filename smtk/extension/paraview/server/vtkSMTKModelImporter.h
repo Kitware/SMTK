@@ -47,7 +47,7 @@ public:
   smtk::resource::ResourcePtr GetResource() const override;
 
   /// Return the SMTK model resource that holds data imported from \a FileName.
-  smtk::model::ManagerPtr GetSMTKResource() const;
+  smtk::model::ResourcePtr GetSMTKResource() const;
 
 protected:
   vtkSMTKModelImporter();

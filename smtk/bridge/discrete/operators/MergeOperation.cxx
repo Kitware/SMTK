@@ -21,8 +21,8 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 #include "vtkDiscreteModel.h"
@@ -112,7 +112,7 @@ MergeOperation::Result MergeOperation::operateInternal()
 
   int tgtid = this->fetchCMBCellId(resource, "target cell");
   m_op->SetTargetId(tgtid);
-  smtk::model::ManagerPtr store = std::static_pointer_cast<smtk::model::Manager>(resource);
+  smtk::model::ResourcePtr store = std::static_pointer_cast<smtk::model::Resource>(resource);
   smtk::model::EntityRefs srcsRemoved;
 
   bool ok = false;

@@ -30,7 +30,7 @@ class vtkPolyDataNormals;
 /**\brief A VTK source for exposing mesh geometry in SMTK Mesh Manager as multiblock data.
   *
   * This filter generates a single block per UUID, for every UUID
-  * in model manager with an mesh collection in mesh manager.
+  * in model resource with an mesh collection in mesh manager.
   */
 class VTKSMTKSOURCEEXT_EXPORT vtkMeshMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
@@ -42,8 +42,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput, vtkMultiBlockDataSet);
 
-  smtk::model::ManagerPtr GetModelManager();
-  void SetModelManager(smtk::model::ManagerPtr);
+  smtk::model::ResourcePtr GetModelResource();
+  void SetModelResource(smtk::model::ResourcePtr);
 
   // Description:
   // Model entity ID that this source will be built upon.
@@ -86,7 +86,7 @@ protected:
 
   void GenerateNormals(vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals);
 
-  smtk::model::ManagerPtr m_modelMgr;
+  smtk::model::ResourcePtr m_modelResource;
   smtk::mesh::ManagerPtr m_meshMgr;
   std::map<smtk::mesh::MeshSet, vtkIdType> m_Meshset2BlockIdMap; // MeshSets to block index map
   vtkNew<vtkPolyDataNormals> m_normalGenerator;

@@ -50,7 +50,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace py = pybind11;
 

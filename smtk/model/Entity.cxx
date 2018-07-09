@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -71,7 +71,7 @@ Entity::~Entity()
 }
 
 /// Create and set up an entity object in a single call. This version sets the Entity's UUID.
-EntityPtr Entity::create(const UUID& uid, BitFlags entityFlags, ManagerPtr resource)
+EntityPtr Entity::create(const UUID& uid, BitFlags entityFlags, ResourcePtr resource)
 {
   EntityPtr result = Entity::create();
   int dim = Entity::dimensionBitsToDimension(entityFlags & EntityTypeBits::ANY_DIMENSION);
@@ -81,7 +81,7 @@ EntityPtr Entity::create(const UUID& uid, BitFlags entityFlags, ManagerPtr resou
 }
 
 /// Create and set up an entity object in a single call. This version does not set the UUID.
-EntityPtr Entity::create(BitFlags entityFlags, int dimension, ManagerPtr resource)
+EntityPtr Entity::create(BitFlags entityFlags, int dimension, ResourcePtr resource)
 {
   EntityPtr result = Entity::create();
   result->setup(entityFlags, dimension, resource);
@@ -95,7 +95,7 @@ EntityPtr Entity::create(BitFlags entityFlags, int dimension, ManagerPtr resourc
   * invalidate relations; if it does not, you should
   * pass \a resetRelations = false.
   */
-EntityPtr Entity::setup(BitFlags entFlags, int dim, Manager::Ptr resource, bool resetRelations)
+EntityPtr Entity::setup(BitFlags entFlags, int dim, Resource::Ptr resource, bool resetRelations)
 {
   m_entityFlags = entFlags;
   m_resource = resource;
@@ -115,19 +115,19 @@ EntityPtr Entity::setup(BitFlags entFlags, int dim, Manager::Ptr resource, bool 
   return shared_from_this();
 }
 
-const ResourcePtr Entity::resource() const
+const smtk::resource::ResourcePtr Entity::resource() const
 {
   return std::dynamic_pointer_cast<smtk::resource::Resource>(m_resource.lock());
 }
 
-ManagerPtr Entity::modelResource() const
+ResourcePtr Entity::modelResource() const
 {
-  return std::dynamic_pointer_cast<smtk::model::Manager>(m_resource.lock());
+  return std::dynamic_pointer_cast<smtk::model::Resource>(m_resource.lock());
 }
 
-bool Entity::reparent(ManagerPtr newParent)
+bool Entity::reparent(ResourcePtr newParent)
 {
-  ManagerPtr oldParent = m_resource.lock();
+  ResourcePtr oldParent = m_resource.lock();
   if (oldParent == newParent)
   {
     return false;
@@ -1519,10 +1519,10 @@ smtk::attribute::Attributes Entity::attributes(smtk::attribute::DefinitionPtr de
   }
 
   // First lets find all attribute IDs that are assoicated with the entity
-  ManagerPtr mgr = this->modelResource();
-  UUIDsToAttributeAssignments::const_iterator entry = mgr->attributeAssignments().find(m_id);
+  ResourcePtr resource = this->modelResource();
+  UUIDsToAttributeAssignments::const_iterator entry = resource->attributeAssignments().find(m_id);
   // No attributes then just return an emoty list
-  if (entry == mgr->attributeAssignments().end())
+  if (entry == resource->attributeAssignments().end())
   {
     return atts;
   }

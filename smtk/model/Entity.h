@@ -33,7 +33,7 @@ namespace model
 
 /**\brief A solid model entity, defined by a type and relations to other entities.
   *
-  * A solid model is an smtk::model::Manager instance that maps UUIDs to
+  * A solid model is an smtk::model::Resource instance that maps UUIDs to
   * to records of various types. Every entity (topological cell, geometric,
   * group, submodel, or scene-graph instance) must have an Entity record
   * describing the type of the entity and relating it to other entities.
@@ -45,24 +45,24 @@ namespace model
   */
 class SMTKCORE_EXPORT Entity : public smtk::resource::Component
 {
-  friend class smtk::model::Manager;
+  friend class smtk::model::Resource;
 
 public:
   using UUID = smtk::common::UUID;
-  using ResourcePtr = smtk::resource::ResourcePtr;
+  //using ResourcePtr = smtk::resource::ResourcePtr;
 
   smtkTypeMacro(Entity);
   smtkSharedPtrCreateMacro(smtk::resource::Component);
   virtual ~Entity();
 
-  static EntityPtr create(
-    const UUID& uid, BitFlags entityFlags = EntityTypeBits::INVALID, ManagerPtr resource = nullptr);
-  static EntityPtr create(BitFlags entityFlags, int dimension, ManagerPtr resource = nullptr);
-  EntityPtr setup(
-    BitFlags entityFlags, int dimension, ManagerPtr resource = nullptr, bool resetRelations = true);
+  static EntityPtr create(const UUID& uid, BitFlags entityFlags = EntityTypeBits::INVALID,
+    ResourcePtr resource = nullptr);
+  static EntityPtr create(BitFlags entityFlags, int dimension, ResourcePtr resource = nullptr);
+  EntityPtr setup(BitFlags entityFlags, int dimension, ResourcePtr resource = nullptr,
+    bool resetRelations = true);
 
-  const ResourcePtr resource() const override;
-  ManagerPtr modelResource() const;
+  const smtk::resource::ResourcePtr resource() const override;
+  ResourcePtr modelResource() const;
 
   /// Return the templated object (usually EntityRef or a subclass) that points to this component.
   template <typename T>
@@ -71,7 +71,7 @@ public:
     return T(this->modelResource(), this->id());
   }
 
-  bool reparent(ManagerPtr newParent);
+  bool reparent(ResourcePtr newParent);
 
   std::string name() const override;
 
@@ -168,7 +168,7 @@ protected:
 
   BitFlags m_entityFlags;
   smtk::common::UUIDArray m_relations;
-  smtk::model::WeakManagerPtr m_resource;
+  smtk::model::WeakResourcePtr m_resource;
   KindsToArrangements m_arrangements;
   int m_firstInvalid;
   smtk::common::UUID m_id;

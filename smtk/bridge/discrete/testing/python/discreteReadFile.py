@@ -29,8 +29,9 @@ class TestDiscreteSession(smtk.testing.TestCase):
             'discrete read operation failed')
 
         # store the resource so it doesn't go out of scope
-        self.mgr = smtk.model.Manager.CastTo(result.find('resource').value(0))
-        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
+        self.resource = smtk.model.Resource.CastTo(
+            result.find('resource').value(0))
+        return self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
     def setEntityProperty(self, ents, propName, **kwargs):
         """Set a property value (or vector of values) on an entity (or vector of entities).
@@ -226,7 +227,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
         print('\nGroups:\n  %s\n' %
               '\n  '.join([x.name() for x in mod.groups()]))
         if (numCells >= 0 and len(mod.cells()) != numCells) or (numGroups >= 0 and len(mod.groups()) != numGroups):
-            print(smtk.io.SaveJSON.fromModelManager(self.mgr))
+            print(smtk.io.SaveJSON.fromModelResource(self.resource))
 
         self.assertEqual(
             mod.geometryStyle(), smtk.model.DISCRETE,
@@ -249,7 +250,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
 
         if self.shouldSave:
             out = file('test.json', 'w')
-            print(smtk.io.SaveJSON.fromModelManager(self.mgr), file=out)
+            print(smtk.io.SaveJSON.fromModelResource(self.resource), file=out)
             out.close()
 
 

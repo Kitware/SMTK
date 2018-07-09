@@ -14,9 +14,9 @@ Creating a session subclass
 Sessions exist to link foreign modeling entities to SMTK
 modeling entities, in a bidirectional way:
 
-* we *transcribe* foreign modeling entities into an SMTK model manager, and
+* we *transcribe* foreign modeling entities into an SMTK model resource, and
 * we perform *operations* in SMTK that make changes in the foreign modeling
-  kernel (and then result in more transcriptions to update SMTK's model manager).
+  kernel (and then result in more transcriptions to update SMTK's model resource).
 
 Only the first of these is needed for read-only access so we will cover it
 first and then describe the interactions between sessions and operators.
@@ -149,5 +149,5 @@ This macro takes 6 parameters:
 Now that we have defined a mapping between UUIDs
 and model entities, the next step is to have the
 session transcribe information about foreign model
-entities into a :smtk:`model manager <smtk::model::Manager>`
+entities into a :smtk:`model resource <smtk::model::Resource>`
 instance.

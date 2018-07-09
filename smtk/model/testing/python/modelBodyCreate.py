@@ -21,8 +21,8 @@ if __name__ == '__main__':
     import sys
     status = 0
     try:
-        store = smtk.model.Manager.create()
-        # Add some models to the model manager:
+        store = smtk.model.Resource.create()
+        # Add some models to the model resource:
         model = store.addModel(3, 3, 'Test Model')
         model2 = store.addModel(3, 3, 'Submodel A')
         model3 = store.addModel(3, 3, 'Submodel B')

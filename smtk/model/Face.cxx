@@ -11,7 +11,7 @@
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/FaceUse.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
@@ -50,8 +50,8 @@ smtk::model::Volumes Face::volumes() const
   */
 FaceUse Face::negativeUse() const
 {
-  ManagerPtr mgr = this->manager();
-  std::set<int> arr = mgr->findCellHasUsesWithOrientation(m_entity, NEGATIVE);
+  ResourcePtr resource = this->resource();
+  std::set<int> arr = resource->findCellHasUsesWithOrientation(m_entity, NEGATIVE);
   return arr.empty() ? FaceUse() : relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
 }
 
@@ -61,8 +61,8 @@ FaceUse Face::negativeUse() const
   */
 FaceUse Face::positiveUse() const
 {
-  ManagerPtr mgr = this->manager();
-  std::set<int> arr = mgr->findCellHasUsesWithOrientation(m_entity, POSITIVE);
+  ResourcePtr resource = this->resource();
+  std::set<int> arr = resource->findCellHasUsesWithOrientation(m_entity, POSITIVE);
   return arr.empty() ? FaceUse() : relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
 }
 
@@ -71,10 +71,10 @@ FaceUse Face::positiveUse() const
   */
 void Face::setFaceUse(Orientation orientation, const FaceUse& u)
 {
-  smtk::model::Manager::Ptr mgr = this->manager();
+  smtk::model::Resource::Ptr resource = this->resource();
   if (this->isValid())
   {
-    mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, 0, orientation, u.entity());
+    resource->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, 0, orientation, u.entity());
   }
 }
 

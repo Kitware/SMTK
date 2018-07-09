@@ -19,7 +19,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -40,8 +40,8 @@ ResourceSetReader::ResourceSetReader()
 {
 }
 
-ResourceSetReader::ResourceSetReader(smtk::model::ManagerPtr mgr)
-  : m_modelManager(mgr)
+ResourceSetReader::ResourceSetReader(smtk::model::ResourcePtr mgr)
+  : m_modelResource(mgr)
 {
 }
 
@@ -221,7 +221,7 @@ bool ResourceSetReader::readEmbeddedAttResource(pugi::xml_node& element,
 {
   // Initialize attribute resource
   smtk::attribute::ResourcePtr attResource;
-  // If input resource is empty, create attribute manager
+  // If input resource is empty, create attribute resource
   if (resource)
   {
     attResource = smtk::dynamic_pointer_cast<smtk::attribute::Resource>(resource);
@@ -238,9 +238,9 @@ bool ResourceSetReader::readEmbeddedAttResource(pugi::xml_node& element,
     return false;
   }
 
-  if (m_modelManager && !attResource->refModelManager())
+  if (m_modelResource && !attResource->refModelResource())
   {
-    attResource->setRefModelManager(m_modelManager);
+    attResource->setRefModelResource(m_modelResource);
   }
 
   // Instantiate AttributeReader and load contents
@@ -270,7 +270,7 @@ bool ResourceSetReader::readIncludedManager(const pugi::xml_node& element,
 
   // Initialize attribute resource
   smtk::attribute::ResourcePtr attResource;
-  // If input resource is empty, create attribute manager
+  // If input resource is empty, create attribute resource
   if (resource)
   {
     attResource = smtk::dynamic_pointer_cast<smtk::attribute::Resource>(resource);

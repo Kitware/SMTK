@@ -19,7 +19,7 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Volume.h"
 
@@ -32,7 +32,7 @@ py::class_< smtk::model::VolumeUse, smtk::model::UseEntity > pybind11_init_smtk_
     .def(py::init<::smtk::model::VolumeUse const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::VolumeUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VolumeUse::operator!=)
     .def("deepcopy", (smtk::model::VolumeUse & (smtk::model::VolumeUse::*)(::smtk::model::VolumeUse const &)) &smtk::model::VolumeUse::operator=)
     .def("__eq__", (bool (smtk::model::VolumeUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VolumeUse::operator==)

@@ -29,7 +29,7 @@
 
 #include "smtk/mesh/utility/ApplyToMesh.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 #include <array>

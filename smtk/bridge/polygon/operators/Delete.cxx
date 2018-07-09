@@ -20,7 +20,6 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/ShellEntity.txx"
 #include "smtk/model/UseEntity.h"
@@ -32,7 +31,7 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/model/Manager.txx"
+#include "smtk/model/Resource.txx"
 
 #include "smtk/bridge/polygon/Delete_xml.h"
 

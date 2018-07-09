@@ -217,7 +217,7 @@ smtk::model::BitFlags Definition::associationMask() const
     for (auto entry : entries)
     {
       // FIXME: Handle "derived" types like smtk::bridge::polygon::Resource
-      if (entry.first == "smtk::model::Manager")
+      if (entry.first == "smtk::model::Resource")
       {
         smtk::model::BitFlags tmp = smtk::model::Entity::specifierStringToFlag(entry.second);
         result |= tmp;
@@ -237,7 +237,7 @@ void Definition::setLocalAssociationMask(smtk::model::BitFlags mask)
   // FIXME: Restrict mask to be narrowing of base definition's rule?
   auto localRule = this->createLocalAssociationRule();
   localRule->setAcceptsEntries(
-    "smtk::model::Manager", smtk::model::Entity::flagToSpecifierString(mask), true);
+    "smtk::model::Resource", smtk::model::Entity::flagToSpecifierString(mask), true);
 }
 
 /**\brief Reoved the local assocaition rule on the definition.

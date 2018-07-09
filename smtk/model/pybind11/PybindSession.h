@@ -21,7 +21,7 @@
 #include "smtk/io/Logger.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace py = pybind11;
 
@@ -56,7 +56,7 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("danglingEntities", &smtk::model::Session::danglingEntities)
     .def("declareDanglingEntity", &smtk::model::Session::declareDanglingEntity, py::arg("ent"), py::arg("present") = 0)
     .def("log", &smtk::model::Session::log)
-    .def("manager", &smtk::model::Session::manager)
+    .def("resource", &smtk::model::Session::resource)
     .def("meshManager", &smtk::model::Session::meshManager)
     .def("name", &smtk::model::Session::name)
     .def("sessionId", &smtk::model::Session::sessionId)

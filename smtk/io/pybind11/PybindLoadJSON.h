@@ -18,7 +18,7 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionIOJSON.h"
 #include "smtk/model/SessionRegistrar.h"
 #include "smtk/model/StringData.h"
@@ -48,21 +48,21 @@ PySharedPtrClass< smtk::io::LoadJSON > pybind11_init_smtk_io_LoadJSON(py::module
     .def(py::init<>())
     .def(py::init<::smtk::io::LoadJSON const &>())
     .def("deepcopy", (smtk::io::LoadJSON & (smtk::io::LoadJSON::*)(::smtk::io::LoadJSON const &)) &smtk::io::LoadJSON::operator=)
-    .def_static("intoModelManager", &smtk::io::LoadJSON::intoModelManager, py::arg("json"), py::arg("manager"))
-    .def_static("ofManager", &smtk::io::LoadJSON::ofManager, py::arg("body"), py::arg("manager"))
-    .def_static("ofManagerEntity", &smtk::io::LoadJSON::ofManagerEntity, py::arg("uid"), py::arg("arg1"), py::arg("manager"))
-    .def_static("ofManagerArrangement", &smtk::io::LoadJSON::ofManagerArrangement, py::arg("uid"), py::arg("arg1"), py::arg("manager"))
-    .def_static("ofManagerTessellation", &smtk::io::LoadJSON::ofManagerTessellation, py::arg("uid"), py::arg("arg1"), py::arg("manager"))
-    .def_static("ofManagerAnalysis", &smtk::io::LoadJSON::ofManagerAnalysis, py::arg("uid"), py::arg("arg1"), py::arg("manager"))
-    .def_static("ofManagerFloatProperties", &smtk::io::LoadJSON::ofManagerFloatProperties, py::arg("uid"), py::arg("arg1"), py::arg("manager"))
-    .def_static("ofManagerStringProperties", &smtk::io::LoadJSON::ofManagerStringProperties, py::arg("uid"), py::arg("arg1"), py::arg("manager"))
-    .def_static("ofManagerIntegerProperties", &smtk::io::LoadJSON::ofManagerIntegerProperties, py::arg("uid"), py::arg("arg1"), py::arg("manager"))
+    .def_static("intoModelResource", &smtk::io::LoadJSON::intoModelResource, py::arg("json"), py::arg("resource"))
+    .def_static("ofResource", &smtk::io::LoadJSON::ofResource, py::arg("body"), py::arg("resource"))
+    .def_static("ofResourceEntity", &smtk::io::LoadJSON::ofResourceEntity, py::arg("uid"), py::arg("arg1"), py::arg("resource"))
+    .def_static("ofResourceArrangement", &smtk::io::LoadJSON::ofResourceArrangement, py::arg("uid"), py::arg("arg1"), py::arg("resource"))
+    .def_static("ofResourceTessellation", &smtk::io::LoadJSON::ofResourceTessellation, py::arg("uid"), py::arg("arg1"), py::arg("resource"))
+    .def_static("ofResourceAnalysis", &smtk::io::LoadJSON::ofResourceAnalysis, py::arg("uid"), py::arg("arg1"), py::arg("resource"))
+    .def_static("ofResourceFloatProperties", &smtk::io::LoadJSON::ofResourceFloatProperties, py::arg("uid"), py::arg("arg1"), py::arg("resource"))
+    .def_static("ofResourceStringProperties", &smtk::io::LoadJSON::ofResourceStringProperties, py::arg("uid"), py::arg("arg1"), py::arg("resource"))
+    .def_static("ofResourceIntegerProperties", &smtk::io::LoadJSON::ofResourceIntegerProperties, py::arg("uid"), py::arg("arg1"), py::arg("resource"))
     .def_static("ofRemoteSession", &smtk::io::LoadJSON::ofRemoteSession, py::arg("arg0"), py::arg("destSession"), py::arg("context"), py::arg("refPath") = std::string())
     .def_static("ofLocalSession", &smtk::io::LoadJSON::ofLocalSession, py::arg("arg0"), py::arg("context"), py::arg("loadNativeModels") = false, py::arg("referencePath") = std::string())
     .def_static("ofDanglingEntities", &smtk::io::LoadJSON::ofDanglingEntities, py::arg("node"), py::arg("context"))
     .def_static("ofLog", (int (*)(char const *, ::smtk::io::Logger &)) &smtk::io::LoadJSON::ofLog, py::arg("jsonStr"), py::arg("log"))
     .def_static("ofLog", (int (*)(::cJSON *, ::smtk::io::Logger &)) &smtk::io::LoadJSON::ofLog, py::arg("logrecordarray"), py::arg("log"))
-    .def_static("ofMeshesOfModel", &smtk::io::LoadJSON::ofMeshesOfModel, py::arg("node"), py::arg("modelMgr"), py::arg("refPath") = std::string())
+    .def_static("ofMeshesOfModel", &smtk::io::LoadJSON::ofMeshesOfModel, py::arg("node"), py::arg("modelResource"), py::arg("refPath") = std::string())
     .def_static("ofMeshProperties", &smtk::io::LoadJSON::ofMeshProperties, py::arg("node"), py::arg("collection"))
     .def_static("sessionNameFromTagData", &smtk::io::LoadJSON::sessionNameFromTagData, py::arg("tagData"))
     .def_static("sessionFileTypesFromTagData", &smtk::io::LoadJSON::sessionFileTypesFromTagData, py::arg("tagData"))

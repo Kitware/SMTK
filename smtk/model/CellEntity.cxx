@@ -11,8 +11,8 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/EntityRefArrangementOps.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 
@@ -28,7 +28,7 @@ namespace model
   */
 Model CellEntity::model() const
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr mgr = this->resource();
   return Model(mgr, mgr->modelOwningEntity(this->entity()));
 }
 

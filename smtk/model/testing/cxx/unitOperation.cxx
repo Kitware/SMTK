@@ -17,8 +17,8 @@
 #include "smtk/attribute/IntItem.h"
 
 #include "smtk/model/DefaultSession.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 
@@ -74,10 +74,10 @@ int DidOperateWatcher(
   return 0;
 }
 
-void testSessionList(smtk::model::Manager::Ptr manager)
+void testSessionList(smtk::model::Resource::Ptr resource)
 {
   std::cout << "Available sessions\n";
-  smtk::model::StringList sessions = manager->sessionTypeNames();
+  smtk::model::StringList sessions = resource->sessionTypeNames();
   for (smtk::model::StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
@@ -141,13 +141,13 @@ std::string TestOutcomeOperation::className() const
   return "TestOutcomeOperation";
 }
 
-void testExPostFactoOperationRegistration(smtk::model::Manager::Ptr manager)
+void testExPostFactoOperationRegistration(smtk::model::Resource::Ptr resource)
 {
   // Add a default session.
-  smtk::model::SessionRef defSess = manager->createSession("native");
+  smtk::model::SessionRef defSess = resource->createSession("native");
 
   typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
-  // Add operator descriptions to the default session of our manager.
+  // Add operator descriptions to the default session of our resource.
   smtk::model::SessionPtr session = defSess.session();
   smtk::attribute::DefinitionPtr opBase = session->operatorCollection()->findDefinition("operator");
   OpListType origOpList;
@@ -177,10 +177,10 @@ void testExPostFactoOperationRegistration(smtk::model::Manager::Ptr manager)
   }
 }
 
-void testOperationOutcomes(smtk::model::Manager::Ptr manager)
+void testOperationOutcomes(smtk::model::Resource::Ptr resource)
 {
   TestOutcomeOperation::Ptr op = smtk::dynamic_pointer_cast<TestOutcomeOperation>(
-    manager->sessions().begin()->op("outcome test"));
+    resource->sessions().begin()->op("outcome test"));
 
   int shouldCancel = 1;
   int numberOfFailedOperations = 0;
@@ -228,11 +228,11 @@ void testOperationOutcomes(smtk::model::Manager::Ptr manager)
     smtk::operation::Operation::DID_OPERATE, DidOperateWatcher, &numberOfFailedOperations);
 }
 
-void testSessionAssociation(smtk::model::Manager::Ptr manager)
+void testSessionAssociation(smtk::model::Resource::Ptr resource)
 {
   // Test that operators added by previous tests still exist
-  smtk::model::Model model = manager->addModel(3, 3, "Model Airplane");
-  model.setSession(*manager->sessions().begin());
+  smtk::model::Model model = resource->addModel(3, 3, "Model Airplane");
+  model.setSession(*resource->sessions().begin());
   smtk::model::StringList modelOpNames = model.operatorNames();
   test(std::find(modelOpNames.begin(), modelOpNames.end(), "outcome test") != modelOpNames.end(),
     "Expected \"outcome test\" operator defined for the test model.");
@@ -243,10 +243,10 @@ void testSessionAssociation(smtk::model::Manager::Ptr manager)
 
   // Test Operation->Session association
   test(
-    op->session() == manager->sessions().begin()->session(), "Bad session reported by operator.");
+    op->session() == resource->sessions().begin()->session(), "Bad session reported by operator.");
 
-  // Test Operation->Manager association
-  test(op->manager() == manager, "Bad manager reported by operator.");
+  // Test Operation->Resource association
+  test(op->resource() == resource, "Bad resource reported by operator.");
 
   // Test operatorNames()
   smtk::model::StringList opNames = model.session().operatorNames();
@@ -259,15 +259,15 @@ int main()
 {
   int status = 0;
 
-  smtk::model::Manager::Ptr manager = smtk::model::Manager::create();
+  smtk::model::Resource::Ptr resource = smtk::model::Resource::create();
 
   try
   {
 
-    testSessionList(manager);
-    testExPostFactoOperationRegistration(manager);
-    testOperationOutcomes(manager);
-    testSessionAssociation(manager);
+    testSessionList(resource);
+    testExPostFactoOperationRegistration(resource);
+    testOperationOutcomes(resource);
+    testSessionAssociation(resource);
   }
   catch (const std::string& msg)
   {

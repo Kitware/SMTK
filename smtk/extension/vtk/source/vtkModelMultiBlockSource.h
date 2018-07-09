@@ -31,10 +31,10 @@ class vtkPolyData;
 class vtkPolyDataNormals;
 class vtkInformationStringKey;
 
-/**\brief A VTK source for exposing model geometry in SMTK Manager as multiblock data.
+/**\brief A VTK source for exposing model geometry in SMTK Resource as multiblock data.
   *
   * This filter generates a single block per UUID, for every UUID
-  * in model manager with a tessellation entry.
+  * in model resource with a tessellation entry.
   */
 class VTKSMTKSOURCEEXT_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
@@ -70,8 +70,8 @@ public:
   vtkGetObjectMacro(CachedOutputMBDS, vtkMultiBlockDataSet);
   vtkGetObjectMacro(CachedOutputInst, vtkMultiBlockDataSet);
 
-  smtk::model::ManagerPtr GetModelManager();
-  void SetModelManager(smtk::model::ManagerPtr);
+  smtk::model::ResourcePtr GetModelResource();
+  void SetModelResource(smtk::model::ResourcePtr);
 
   // Description:
   // Model entity ID that this source will be built upon.
@@ -112,9 +112,9 @@ public:
     */
   static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
   template <typename T>
-  static T GetDataObjectEntityAs(smtk::model::ManagerPtr mgr, vtkInformation* info)
+  static T GetDataObjectEntityAs(smtk::model::ResourcePtr resource, vtkInformation* info)
   {
-    return T(mgr, vtkModelMultiBlockSource::GetDataObjectUUID(info));
+    return T(resource, vtkModelMultiBlockSource::GetDataObjectUUID(info));
   }
 
   static void AddPointsAsAttribute(vtkPolyData* data);
@@ -143,17 +143,17 @@ protected:
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
   void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds,
     vtkMultiBlockDataSet* instancePoly, vtkMultiBlockDataSet* protoBlocks,
-    smtk::model::ManagerPtr model);
+    smtk::model::ResourcePtr model);
   void GenerateRepresentationFromMeshTessellation(
     vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
-  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
+  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, smtk::model::ResourcePtr model);
 
   int RequestData(
     vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*, vtkMultiBlockDataSet*, vtkMultiBlockDataSet*);
 
-  smtk::model::ManagerPtr ModelMgr;
+  smtk::model::ResourcePtr ModelResource;
   vtkMultiBlockDataSet* CachedOutputMBDS;
   vtkMultiBlockDataSet* CachedOutputInst;
   vtkMultiBlockDataSet* CachedOutputProto;

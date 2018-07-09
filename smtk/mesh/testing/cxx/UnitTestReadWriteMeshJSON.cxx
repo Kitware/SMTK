@@ -21,7 +21,7 @@
 #include "smtk/mesh/json/Readers.h"
 
 #include "smtk/model/EntityIterator.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -49,21 +49,21 @@ void cleanup(const std::string& file_path)
   }
 }
 
-void create_simple_model(smtk::model::ManagerPtr mgr)
+void create_simple_model(smtk::model::ResourcePtr resource)
 {
   std::size_t numTetsInModel = 4;
   using namespace smtk::model::testing;
 
-  smtk::model::SessionRef sess = mgr->createSession("native");
-  smtk::model::Model model = mgr->addModel();
+  smtk::model::SessionRef sess = resource->createSession("native");
+  smtk::model::Model model = resource->addModel();
 
   for (std::size_t i = 0; i < numTetsInModel; ++i)
   {
-    smtk::common::UUIDArray uids = createTet(mgr);
-    model.addCell(smtk::model::Volume(mgr, uids[21]));
+    smtk::common::UUIDArray uids = createTet(resource);
+    model.addCell(smtk::model::Volume(resource, uids[21]));
   }
   model.setSession(sess);
-  mgr->assignDefaultNames();
+  resource->assignDefaultNames();
 }
 
 void verify_writing_and_loading_collection()
@@ -71,13 +71,13 @@ void verify_writing_and_loading_collection()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
-  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
+  smtk::mesh::ManagerPtr meshManager = modelResource->meshes();
 
-  create_simple_model(modelManager);
+  create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   smtk::common::UUID cUUID = c->entity();
   smtk::common::UUIDArray associations = c->meshes().modelEntityIds();
 
@@ -85,7 +85,7 @@ void verify_writing_and_loading_collection()
 
   cJSON* top = cJSON_CreateObject();
   c->writeLocation(write_path);
-  const bool exportGood = smtk::io::SaveJSON::fromModelManager(top, modelManager) != 0;
+  const bool exportGood = smtk::io::SaveJSON::fromModelResource(top, modelResource) != 0;
 
   test(exportGood == 1, "Failed to export the mesh collections related to the model");
 
@@ -95,7 +95,7 @@ void verify_writing_and_loading_collection()
   c.reset(); //actually remove the collection from memory
 
   //now import collection from json stream
-  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelManager) != 0;
+  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelResource) != 0;
   test(importGood == 1, "Failed to import the mesh collections related to the model");
 
   //before we verify if the write was good, first remove the output file(s)
@@ -105,8 +105,8 @@ void verify_writing_and_loading_collection()
   smtk::mesh::CollectionPtr c2 = meshManager->collection(cUUID);
   test(!!c2, "Collection UUID can't change when being loaded from JSON");
 
-  test(c2->modelManager() == modelManager,
-    "Collection loaded from JSON should be related to the model Manager");
+  test(c2->modelResource() == modelResource,
+    "Collection loaded from JSON should be related to the model Resource");
 
   smtk::common::UUIDArray associations2 = c2->meshes().modelEntityIds();
   //most likely failing as we are not saving out custom tags?
@@ -128,19 +128,19 @@ void verify_writing_and_loading_multiple_collections()
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
   write_path2 += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
-  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
+  smtk::mesh::ManagerPtr meshManager = modelResource->meshes();
 
-  create_simple_model(modelManager);
+  create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
-  smtk::mesh::CollectionPtr c2 = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c2 = convert(meshManager, modelResource);
 
   cJSON* top = cJSON_CreateObject();
   c->writeLocation(write_path);
   c2->writeLocation(write_path2);
-  const bool exportGood = smtk::io::SaveJSON::fromModelManager(top, modelManager) != 0;
+  const bool exportGood = smtk::io::SaveJSON::fromModelResource(top, modelResource) != 0;
 
   test(exportGood == 1, "Failed to export the mesh collections related to the model");
 
@@ -151,7 +151,7 @@ void verify_writing_and_loading_multiple_collections()
   c2.reset();
 
   //now import collection from json stream
-  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelManager) != 0;
+  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelResource) != 0;
 
   //before we verify if the write was good, first remove the output file(s)
   cleanup(write_path);
@@ -170,14 +170,14 @@ void verify_writing_and_loading_collections_without_file_path()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
-  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
+  smtk::mesh::ManagerPtr meshManager = modelResource->meshes();
 
-  create_simple_model(modelManager);
+  create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
-  smtk::mesh::CollectionPtr c2 = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c2 = convert(meshManager, modelResource);
 
   c->name("fileBased");
   c->writeLocation(write_path);
@@ -190,7 +190,7 @@ void verify_writing_and_loading_collections_without_file_path()
 
   cJSON* top = cJSON_CreateObject();
 
-  const bool exportGood = smtk::io::SaveJSON::fromModelManager(top, modelManager) != 0;
+  const bool exportGood = smtk::io::SaveJSON::fromModelResource(top, modelResource) != 0;
   test(exportGood == 1, "Failed to export the mesh collections related to the model");
 
   //Now that we have export the meshes, what are the states?
@@ -209,7 +209,7 @@ void verify_writing_and_loading_collections_without_file_path()
   test(meshManager->numberOfCollections() == 0, "number of collections incorrect");
 
   //now import collection from json stream
-  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelManager) != 0;
+  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelResource) != 0;
 
   //before we verify if the write was good, first remove the output file(s)
   cleanup(write_path);
@@ -376,24 +376,24 @@ void verify_loading_existing_collection_fails()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
-  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
+  smtk::mesh::ManagerPtr meshManager = modelResource->meshes();
 
-  create_simple_model(modelManager);
+  create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
 
   cJSON* top = cJSON_CreateObject();
   c->writeLocation(write_path);
-  const bool exportGood = smtk::io::SaveJSON::fromModelManager(top, modelManager) != 0;
+  const bool exportGood = smtk::io::SaveJSON::fromModelResource(top, modelResource) != 0;
 
   test(exportGood == 1, "Failed to export the mesh collections related to the model");
 
   const std::size_t numberOfCollections = meshManager->numberOfCollections();
   //now import collection from json stream, should fail as the collection
   //hasn't been removed
-  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelManager) != 0;
+  const bool importGood = smtk::io::LoadJSON::ofMeshesOfModel(top, modelResource) != 0;
 
   //before we verify if the write was good, first remove the output file(s)
   cleanup(write_path);

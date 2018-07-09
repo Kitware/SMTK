@@ -47,7 +47,7 @@ class SessionRef;
 typedef std::map<smtk::common::UUID, smtk::shared_ptr<Session> > UUIDsToSessions;
 typedef std::map<smtk::model::EntityRef, SessionInfoBits> DanglingEntities;
 
-/**\brief Bit flags describing types of information bridged to Manager.
+/**\brief Bit flags describing types of information bridged to Resource.
   *
   * Session classes should provide individual translation for
   * each piece of information, but are allowed to transcribe
@@ -60,7 +60,7 @@ typedef std::map<smtk::model::EntityRef, SessionInfoBits> DanglingEntities;
   */
 enum SessionInformation
 {
-  // Basic types of information in smtk::model::Manager
+  // Basic types of information in smtk::model::Resource
   SESSION_ENTITY_TYPE = 0x00000001,            //!< Transcribe the Entity type.
   SESSION_ENTITY_RELATIONS = 0x00000002,       //!< Transcribe the Entity relationship vector.
   SESSION_ARRANGEMENTS = 0x00000004,           //!< Arrangement information for the relationships.
@@ -70,7 +70,7 @@ enum SessionInformation
   SESSION_INTEGER_PROPERTIES = 0x00000040,     //!< Integer properties.
   SESSION_ATTRIBUTE_ASSOCIATIONS = 0x00000080, //!< Attribute associations.
 
-  // Extended options specific to Manager::erase():
+  // Extended options specific to Resource::erase():
   SESSION_USER_DEFINED_PROPERTIES =
     0x00000100, /**< Remove user-defined as well as machine-generated properties.
                                                  *
@@ -156,21 +156,21 @@ enum SessionInformation
   * The session must provide techniques for attaching UUIDs to foreign model
   * entities (on its own or by using facilities provided by the foreign modeler)
   * and for obtaining notification when foreign model entities are modified or
-  * destroyed. In extreme cases, the SMTK model manager must be reset after
+  * destroyed. In extreme cases, the SMTK model resource must be reset after
   * each modeling operation to guarantee a consistent model.
   *
   * Instances of Session subclasses should be registered with a
-  * model using Manager::sessionModel(). Then, when an
+  * model using Resource::sessionModel(). Then, when an
   * entity cannot be resolved from a UUID created by
   * the session, the \a transcribe method will be invoked
   * to request that the session add an entry.
   *
   * This class is not intended for external use.
   * Public methods are intended for invocation by the
-  * Manager instance which owns the session.
+  * Resource instance which owns the session.
   * Protected methods are either called internally or
   * by subclasses in order to track UUIDs for which there
-  * is only partial information in Manager.
+  * is only partial information in Resource.
   *
   * \sa smtk::model::SessionInformation
   * \sa smtkDeclareModelingKernel smtkImplementsModelingKernel
@@ -196,7 +196,7 @@ public:
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
-  ManagerPtr manager() const;
+  ResourcePtr resource() const;
   smtk::mesh::ManagerPtr meshManager() const;
   smtk::io::Logger& log();
 
@@ -227,7 +227,7 @@ public:
 protected:
   friend class io::SaveJSON;
   friend class io::LoadJSON;
-  friend class Manager;
+  friend class Resource;
 
   Session();
 
@@ -235,7 +235,7 @@ protected:
     const EntityRef& entity, SessionInfoBits flags, int depth = -1);
 
   void setSessionId(const smtk::common::UUID& sessId);
-  void setManager(Manager* mgr);
+  void setResource(Resource* resource);
 
   virtual EntityPtr addEntityRecord(const EntityRef& entRef);
   virtual ArrangementHelper* createArrangementHelper();
@@ -276,7 +276,7 @@ protected:
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  Manager* m_manager;
+  Resource* m_resource;
 };
 
 } // namespace model

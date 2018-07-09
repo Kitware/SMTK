@@ -26,7 +26,7 @@
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -278,9 +278,9 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
   }
 
   // Add currently-associated items to the list displaying associations.
-  smtk::model::ManagerPtr modelManager = attDef->resource()->refModelManager();
+  smtk::model::ResourcePtr modelResource = attDef->resource()->refModelResource();
 
-  if (!modelManager)
+  if (!modelResource)
   {
     return;
   }
@@ -302,7 +302,7 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
   // We use the "no-exact match required" flag to catch any entity that could possibly match
   // the association mask. This gets pruned below.
   smtk::model::EntityRefs entityrefs =
-    modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
+    modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
       attDef->associationMask(), false);
 
   EntityRefs avail;
@@ -317,8 +317,8 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
   // We create a temporary group and use Group::meetsMembershipConstraints()
   // to test whether the mask allows association.
   smtk::model::Model activeModel = qtActiveObjects::instance().activeModel();
-  smtk::model::Manager::Ptr tmpMgr = smtk::model::Manager::create();
-  Group tmpGrp = tmpMgr->addGroup();
+  smtk::model::Resource::Ptr tmpResource = smtk::model::Resource::create();
+  Group tmpGrp = tmpResource->addGroup();
   tmpGrp.setMembershipMask(attDef->associationMask());
 
   for (EntityRefs::iterator i = avail.begin(); i != avail.end(); ++i)
@@ -342,7 +342,7 @@ std::set<smtk::model::EntityRef> qtAssociationWidget::processAttUniqueness(
     // we need to exclude any entities that are already assigned another att
     // Get the most "basic" definition that is unique
     ResourcePtr attResource = attDef->resource();
-    smtk::model::ManagerPtr modelManager = attResource->refModelManager();
+    smtk::model::ResourcePtr modelResource = attResource->refModelResource();
 
     smtk::attribute::ConstDefinitionPtr baseDef = attResource->findIsUniqueBaseClass(attDef);
     smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
@@ -358,7 +358,7 @@ std::set<smtk::model::EntityRef> qtAssociationWidget::processAttUniqueness(
       {
         smtk::model::EntityRefs modelEnts;
         smtk::model::EntityRef::EntityRefsFromUUIDs(
-          modelEnts, modelManager, (*itAtt)->associatedModelEntityIds());
+          modelEnts, modelResource, (*itAtt)->associatedModelEntityIds());
 
         typedef smtk::model::EntityRefs::const_iterator cit;
         for (cit i = modelEnts.begin(); i != modelEnts.end(); ++i)
@@ -453,8 +453,8 @@ smtk::model::EntityRef qtAssociationWidget::getModelEntityItem(QListWidgetItem* 
     smtk::attribute::ResourcePtr attResource = this->Internals->View->uiManager()->attResource();
     if (attResource)
     {
-      smtk::model::ManagerPtr modelManager = attResource->refModelManager();
-      return smtk::model::EntityRef(modelManager, uid);
+      smtk::model::ResourcePtr modelResource = attResource->refModelResource();
+      return smtk::model::EntityRef(modelResource, uid);
     }
   }
   return smtk::model::EntityRef();
@@ -797,7 +797,7 @@ void qtAssociationWidget::onNodalOptionChanged(int idx)
 void qtAssociationWidget::onDomainAssociationChanged()
 {
   smtk::attribute::ResourcePtr attResource = this->Internals->View->uiManager()->attResource();
-  smtk::model::ManagerPtr modelManager = attResource->refModelManager();
+  smtk::model::ResourcePtr modelResource = attResource->refModelResource();
 
   QComboBox* const combo = qobject_cast<QComboBox*>(QObject::sender());
   if (!combo)
@@ -806,7 +806,7 @@ void qtAssociationWidget::onDomainAssociationChanged()
   }
   QString domainStr = combo->property("DomainEntityObj").toString();
   smtk::common::UUID uid(domainStr.toStdString());
-  smtk::model::Group domainItem(modelManager, uid);
+  smtk::model::Group domainItem(modelResource, uid);
   if (!domainItem.isValid())
   {
     return;

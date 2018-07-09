@@ -12,7 +12,7 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRefArrangementOps.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace smtk
 {
@@ -40,27 +40,27 @@ Orientation UseEntity::orientation() const
   // that arrangement's orientation.
 
   // Find the cell for this use record.
-  ManagerPtr mgr = this->manager();
-  if (!mgr)
+  ResourcePtr resource = this->resource();
+  if (!resource)
     return UNDEFINED;
 
-  EntityPtr ent = mgr->findEntity(m_entity);
+  EntityPtr ent = resource->findEntity(m_entity);
   if (!ent)
     return UNDEFINED;
 
-  const Arrangement* arr = mgr->findArrangement(m_entity, HAS_CELL, 0);
+  const Arrangement* arr = resource->findArrangement(m_entity, HAS_CELL, 0);
   if (ent && arr)
   {
     int idx, esense;
     arr->IndexAndSenseFromUseHasCell(idx, esense);
     smtk::common::UUID cellId = ent->relations()[idx];
     // Now find the cell's HAS_USE record with the same sense as us:
-    int arrIdx = mgr->findCellHasUseWithSense(cellId, m_entity, esense);
+    int arrIdx = resource->findCellHasUseWithSense(cellId, m_entity, esense);
     if (arrIdx >= 0)
     {
       // Now find the orientation of that use of the cell:
       Orientation orient;
-      mgr->findArrangement(cellId, HAS_USE, arrIdx)
+      resource->findArrangement(cellId, HAS_USE, arrIdx)
         ->IndexSenseAndOrientationFromCellHasUse(idx, esense, orient);
       return orient;
     }
@@ -71,10 +71,10 @@ Orientation UseEntity::orientation() const
 /// Return the sense of the given use with respect to its parent cell.
 int UseEntity::sense() const
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   // Find the cell for this use record.
-  EntityPtr ent = mgr->findEntity(m_entity);
-  const Arrangement* arr = mgr->findArrangement(m_entity, HAS_CELL, 0);
+  EntityPtr ent = resource->findEntity(m_entity);
+  const Arrangement* arr = resource->findArrangement(m_entity, HAS_CELL, 0);
   if (ent && arr)
   {
     int idx, esense;
@@ -89,9 +89,9 @@ int UseEntity::sense() const
   */
 UseEntity& UseEntity::setBoundingShellEntity(const ShellEntity& shell)
 {
-  ManagerPtr mgr = this->manager();
-  if (mgr)
-    mgr->findOrAddIncludedShell(m_entity, shell.entity());
+  ResourcePtr resource = this->resource();
+  if (resource)
+    resource->findOrAddIncludedShell(m_entity, shell.entity());
   return *this;
 }
 
@@ -104,9 +104,9 @@ UseEntity& UseEntity::setBoundingShellEntity(const ShellEntity& shell)
   */
 UseEntity& UseEntity::addShellEntity(const ShellEntity& shell)
 {
-  ManagerPtr mgr = this->manager();
-  if (mgr)
-    mgr->findOrAddIncludedShell(m_entity, shell.entity());
+  ResourcePtr resource = this->resource();
+  if (resource)
+    resource->findOrAddIncludedShell(m_entity, shell.entity());
   return *this;
 }
 

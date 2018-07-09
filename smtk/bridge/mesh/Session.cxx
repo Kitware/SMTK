@@ -78,29 +78,29 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
     // identical to that of the collection that represents the model.
     if (mutableEntityRef.entity() == topology->m_collection->entity())
     {
-      // We have a model. We insert the model using the manager API. It takes
+      // We have a model. We insert the model using the resource API. It takes
       // the UUID of the model, its parametric dimension and its embedded
       // dimension. Additionally, we denote that this model is discrete.
-      this->manager()->insertModel(mutableEntityRef.entity(), dimension, dimension);
+      this->resource()->insertModel(mutableEntityRef.entity(), dimension, dimension);
       mutableEntityRef.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
     }
     else
     {
       // We have a component of the model. We insert the component using the
-      // manager API.
+      // resource API.
       switch (dimension)
       {
         case 0:
-          this->manager()->insertVertex(mutableEntityRef.entity());
+          this->resource()->insertVertex(mutableEntityRef.entity());
           break;
         case 1:
-          this->manager()->insertEdge(mutableEntityRef.entity());
+          this->resource()->insertEdge(mutableEntityRef.entity());
           break;
         case 2:
-          this->manager()->insertFace(mutableEntityRef.entity());
+          this->resource()->insertFace(mutableEntityRef.entity());
           break;
         case 3:
-          this->manager()->insertVolume(mutableEntityRef.entity());
+          this->resource()->insertVolume(mutableEntityRef.entity());
           break;
         default:
           return actual;
@@ -125,7 +125,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
   {
     for (auto&& childId : topologyElement.m_children)
     {
-      smtk::model::EntityRef childEntityRef(this->manager(), childId);
+      smtk::model::EntityRef childEntityRef(this->resource(), childId);
       if (!childEntityRef.isValid())
       {
         // Remove this child from the list of dangling entities

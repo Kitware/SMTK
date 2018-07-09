@@ -18,7 +18,6 @@
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/attribute/json/jsonReferenceItem.h"
 #include "smtk/io/Logger.h"
-#include "smtk/model/Manager.h"
 
 #include "smtk/PublicPointerDefs.h"
 

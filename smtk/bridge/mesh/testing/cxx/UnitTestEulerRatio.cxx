@@ -22,8 +22,6 @@
 
 #include "smtk/mesh/core/Manager.h"
 
-#include "smtk/model/Manager.h"
-
 #include <cmath>
 
 #include "smtk/operation/Manager.h"

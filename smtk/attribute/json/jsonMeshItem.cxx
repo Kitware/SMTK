@@ -73,7 +73,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& item
 
   std::size_t i(0), n = itemPtr->numberOfValues();
   smtk::common::UUID cid;
-  smtk::model::ManagerPtr modelmgr = itemPtr->attribute()->attributeResource()->refModelManager();
+  smtk::model::ResourcePtr modelmgr = itemPtr->attribute()->attributeResource()->refModelResource();
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
   if (!numRequiredVals || itemPtr->isExtensible())
   {

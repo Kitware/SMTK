@@ -40,14 +40,14 @@ public:
 
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection) const;
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-    smtk::model::ManagerPtr manager, const std::string& modelPropertyName) const;
+    smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const;
 };
 
 SMTKCORE_EXPORT
 bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT
 bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-  smtk::model::ManagerPtr manager, const std::string& modelPropertyName);
+  smtk::model::ResourcePtr resource, const std::string& modelPropertyName);
 }
 }
 

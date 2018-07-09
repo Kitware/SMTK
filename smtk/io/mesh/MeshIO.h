@@ -60,7 +60,7 @@ public:
   }
 
   virtual bool exportMesh(const std::string&, smtk::mesh::CollectionPtr) const { return false; }
-  virtual bool exportMesh(const std::string&, smtk::mesh::CollectionPtr, smtk::model::ManagerPtr,
+  virtual bool exportMesh(const std::string&, smtk::mesh::CollectionPtr, smtk::model::ResourcePtr,
     const std::string&) const
   {
     return false;

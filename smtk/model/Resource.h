@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Manager_h
-#define __smtk_model_Manager_h
+#ifndef __smtk_model_Resource_h
+#define __smtk_model_Resource_h
 /*!\file */
 
 #include "smtk/PublicPointerDefs.h"
@@ -88,27 +88,28 @@ typedef UUIDsToEntities::const_iterator UUIDWithConstEntityPtr;
 /**\brief Store information about solid models.
   *
   */
-class SMTKCORE_EXPORT Manager
-  : public smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>
+class SMTKCORE_EXPORT Resource
+  : public smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>
 {
 public:
   typedef UUIDsToEntities storage_type;
   typedef storage_type::iterator iter_type;
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
-  smtkTypeMacro(smtk::model::Manager);
+  smtkTypeMacro(smtk::model::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
   // typedef referring to the parent resource.
   typedef smtk::resource::Resource ParentResource;
 
-  Manager(smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
-  Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
-  Manager(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
+  Resource(smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
+  Resource(
+    const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
+  Resource(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
     shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
     shared_ptr<UUIDsToAttributeAssignments> attribs, const smtk::common::UUID& uid,
     smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
-  virtual ~Manager();
+  virtual ~Resource();
 
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;
@@ -436,16 +437,16 @@ public:
   template <typename T, typename U, typename V>
   bool deleteEntities(T& entities, U& modified, V& expunged, bool debugLog);
 
-  void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
-  void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
-  void observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
-  void unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData);
-  void unobserve(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
-  void unobserve(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
-  void trigger(ManagerEventType event, const smtk::model::EntityRef& src);
-  void trigger(ManagerEventType event, const smtk::model::EntityRef& src,
+  void observe(ResourceEventType event, ConditionCallback functionHandle, void* callData);
+  void observe(ResourceEventType event, OneToOneCallback functionHandle, void* callData);
+  void observe(ResourceEventType event, OneToManyCallback functionHandle, void* callData);
+  void unobserve(ResourceEventType event, ConditionCallback functionHandle, void* callData);
+  void unobserve(ResourceEventType event, OneToOneCallback functionHandle, void* callData);
+  void unobserve(ResourceEventType event, OneToManyCallback functionHandle, void* callData);
+  void trigger(ResourceEventType event, const smtk::model::EntityRef& src);
+  void trigger(ResourceEventType event, const smtk::model::EntityRef& src,
     const smtk::model::EntityRef& related);
-  void trigger(ManagerEventType event, const smtk::model::EntityRef& src,
+  void trigger(ResourceEventType event, const smtk::model::EntityRef& src,
     const smtk::model::EntityRefArray& related);
 
   smtk::io::Logger& log() { return smtk::io::Logger::instance(); }
@@ -489,7 +490,7 @@ protected:
 };
 
 template <typename Collection>
-Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
+Collection Resource::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
 {
   Collection collection;
   UUIDWithIntegerProperties pit;
@@ -510,7 +511,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Integer p
 }
 
 template <typename Collection>
-Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval)
+Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval)
 {
   Collection collection;
   UUIDWithIntegerProperties pit;
@@ -531,7 +532,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const Int
 }
 
 template <typename Collection>
-Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Float pval)
+Collection Resource::findEntitiesByPropertyAs(const std::string& pname, Float pval)
 {
   Collection collection;
   UUIDWithFloatProperties pit;
@@ -552,7 +553,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Float pva
 }
 
 template <typename Collection>
-Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
+Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
 {
   Collection collection;
   UUIDWithFloatProperties pit;
@@ -573,7 +574,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const Flo
 }
 
 template <typename Collection>
-Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
+Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
 {
   Collection collection;
   UUIDWithStringProperties pit;
@@ -594,7 +595,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const std
 }
 
 template <typename Collection>
-Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
+Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
 {
   Collection collection;
   UUIDWithStringProperties pit;
@@ -615,7 +616,7 @@ Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const Str
 }
 
 template <typename Collection>
-Collection Manager::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)
+Collection Resource::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)
 {
   smtk::common::UUIDs matches = this->entitiesMatchingFlags(mask, exactMatch);
   Collection collection;
@@ -631,4 +632,4 @@ Collection Manager::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)
 } // model namespace
 } // smtk namespace
 
-#endif // __smtk_model_Manager_h
+#endif // __smtk_model_Resource_h

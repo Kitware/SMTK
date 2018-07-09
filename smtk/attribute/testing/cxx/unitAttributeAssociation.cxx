@@ -14,7 +14,7 @@
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -29,7 +29,7 @@ int unitAttributeAssociation(int, char* [])
   // I. First see how things work when Resource is not yet set.
   attribute::ResourcePtr resptr = attribute::Resource::create();
   attribute::Resource& res(*resptr.get());
-  smtkTest(!res.refModelManager(), "Resource should not have model storage by default.");
+  smtkTest(!res.refModelResource(), "Resource should not have model storage by default.");
 
   DefinitionPtr def = res.createDefinition("testDef");
   auto arule = def->createLocalAssociationRule();
@@ -49,11 +49,12 @@ int unitAttributeAssociation(int, char* [])
   // ----
   // II. Now see how things work when the attribute resource has
   //     a valid model modelMgr pointer.
-  model::Manager::Ptr modelMgr = model::Manager::create();
-  res.setRefModelManager(modelMgr);
-  smtkTest(res.refModelManager() == modelMgr, "Could not set attribute resource's model-manager.");
+  model::Resource::Ptr modelMgr = model::Resource::create();
+  res.setRefModelResource(modelMgr);
+  smtkTest(
+    res.refModelResource() == modelMgr, "Could not set attribute resource's model-resource.");
 
-  smtkTest(att->modelManager() == modelMgr, "Attribute's idea of model manager incorrect.");
+  smtkTest(att->modelResource() == modelMgr, "Attribute's idea of model resource incorrect.");
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
@@ -84,10 +85,11 @@ int unitAttributeAssociation(int, char* [])
     "Should not have been able to associate entity of wrong type.");
 
   // ----
-  // III. Test corner cases when switch model managers on the attribute resource.
-  model::Manager::Ptr auxModelManager = model::Manager::create();
-  res.setRefModelManager(auxModelManager);
-  smtkTest(res.refModelManager() == auxModelManager, "Attribute resource's modelMgr not changed.");
+  // III. Test corner cases when switch model resources on the attribute resource.
+  model::Resource::Ptr auxModelResource = model::Resource::create();
+  res.setRefModelResource(auxModelResource);
+  smtkTest(
+    res.refModelResource() == auxModelResource, "Attribute resource's modelMgr not changed.");
 
   return 0;
 }

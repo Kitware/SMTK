@@ -31,7 +31,7 @@
     <AttDef Type="result(triangulate faces)" BaseType="result">
       <ItemDefinitions>
         <Component Name="mesh_created" NumberOfRequiredValues="1" Extensible="true">
-          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+          <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
         </Component>
       </ItemDefinitions>
     </AttDef>

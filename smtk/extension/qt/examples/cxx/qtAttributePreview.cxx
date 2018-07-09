@@ -24,7 +24,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <QApplication>
 #include <QFrame>
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  smtk::model::ManagerPtr modelManager = resource->refModelManager();
+  smtk::model::ResourcePtr modelResource = resource->refModelResource();
 
   // Instantiate Qt application
   QApplication* app = new QApplication(argc, argv);

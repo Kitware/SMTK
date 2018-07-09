@@ -35,7 +35,6 @@
 #include "smtk/io/Logger.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 
 namespace py = pybind11;

@@ -15,7 +15,6 @@
 
 #include "smtk/model/SessionIOJSON.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionIO.h"
 

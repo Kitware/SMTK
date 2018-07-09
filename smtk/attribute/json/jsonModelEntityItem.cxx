@@ -76,7 +76,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemPt
 
   std::size_t n = itemPtr->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = itemPtr->attribute()->attributeResource()->refModelManager();
+  smtk::model::ResourcePtr mmgr = itemPtr->attribute()->attributeResource()->refModelResource();
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
   json values;
   try

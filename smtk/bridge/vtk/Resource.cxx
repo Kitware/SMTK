@@ -19,12 +19,12 @@ namespace vtk
 {
 
 Resource::Resource(const smtk::common::UUID& id, resource::Manager::Ptr manager)
-  : smtk::resource::DerivedFrom<Resource, smtk::model::Manager>(id, manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::model::Resource>(id, manager)
 {
 }
 
 Resource::Resource(resource::Manager::Ptr manager)
-  : smtk::resource::DerivedFrom<Resource, smtk::model::Manager>(manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::model::Resource>(manager)
 {
 }
 

@@ -101,8 +101,8 @@ public:
 
   SessionInfoBits allSupportedInformation() const override;
 
-  smtk::model::EntityRef addCMBEntityToManager(
-    const smtk::common::UUID& entity, smtk::model::ManagerPtr storage, int relDepth = 1);
+  smtk::model::EntityRef addCMBEntityToResource(
+    const smtk::common::UUID& entity, smtk::model::ResourcePtr storage, int relDepth = 1);
 
   void assignUUIDs(const std::vector<vtkModelItem*>& ents, vtkAbstractArray* uuidArray);
 
@@ -170,7 +170,7 @@ protected:
     smtk::model::ArrangementHelper* helper) override;
 
   smtk::common::UUID trackModel(
-    vtkDiscreteModelWrapper* mod, const std::string& url, smtk::model::ManagerPtr storage);
+    vtkDiscreteModelWrapper* mod, const std::string& url, smtk::model::ResourcePtr storage);
   bool assignUUIDToEntity(const smtk::common::UUID& itemId, vtkModelItem* item);
   smtk::common::UUID findOrSetEntityUUID(vtkModelItem* item);
   smtk::common::UUID findOrSetEntityUUID(vtkInformation* itemProperties);
@@ -179,33 +179,33 @@ protected:
   //static vtkDiscreteModel* owningModel(vtkModelItem* e);
   vtkModelItem* entityForUUID(const smtk::common::UUID& uid);
 
-  smtk::model::EntityRef addCMBEntityToManager(const smtk::common::UUID& entity,
-    vtkModelItem* refEnt, smtk::model::ManagerPtr storage, int relDepth = 1);
+  smtk::model::EntityRef addCMBEntityToResource(const smtk::common::UUID& entity,
+    vtkModelItem* refEnt, smtk::model::ResourcePtr storage, int relDepth = 1);
 
-  smtk::model::Model addBodyToManager(
-    const smtk::common::UUID&, vtkModel*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Group addGroupToManager(const smtk::common::UUID&, vtkDiscreteModelEntityGroup*,
-    smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Group addMaterialToManager(
-    const smtk::common::UUID&, vtkModelMaterial*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::FaceUse addFaceUseToManager(
-    const smtk::common::UUID&, vtkModelFaceUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::EdgeUse addEdgeUseToManager(
-    const smtk::common::UUID&, vtkModelEdgeUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::VertexUse addVertexUseToManager(
-    const smtk::common::UUID&, vtkModelVertexUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Shell addShellToManager(
-    const smtk::common::UUID&, vtkModelShellUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Loop addLoopToManager(
-    const smtk::common::UUID&, vtkModelLoopUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Volume addVolumeToManager(
-    const smtk::common::UUID&, vtkModelRegion*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Face addFaceToManager(
-    const smtk::common::UUID&, vtkModelFace*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Edge addEdgeToManager(
-    const smtk::common::UUID&, vtkModelEdge*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Vertex addVertexToManager(
-    const smtk::common::UUID&, vtkModelVertex*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Model addBodyToResource(
+    const smtk::common::UUID&, vtkModel*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Group addGroupToResource(const smtk::common::UUID&, vtkDiscreteModelEntityGroup*,
+    smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Group addMaterialToResource(
+    const smtk::common::UUID&, vtkModelMaterial*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::FaceUse addFaceUseToResource(
+    const smtk::common::UUID&, vtkModelFaceUse*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::EdgeUse addEdgeUseToResource(
+    const smtk::common::UUID&, vtkModelEdgeUse*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::VertexUse addVertexUseToResource(
+    const smtk::common::UUID&, vtkModelVertexUse*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Shell addShellToResource(
+    const smtk::common::UUID&, vtkModelShellUse*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Loop addLoopToResource(
+    const smtk::common::UUID&, vtkModelLoopUse*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Volume addVolumeToResource(
+    const smtk::common::UUID&, vtkModelRegion*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Face addFaceToResource(
+    const smtk::common::UUID&, vtkModelFace*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Edge addEdgeToResource(
+    const smtk::common::UUID&, vtkModelEdge*, smtk::model::ResourcePtr, int relDepth = 1);
+  smtk::model::Vertex addVertexToResource(
+    const smtk::common::UUID&, vtkModelVertex*, smtk::model::ResourcePtr, int relDepth = 1);
 
   template <class P, typename H>
   void addEntities(P& parent, vtkModelItemIterator* it, const H& method, int relDepth);
@@ -238,7 +238,7 @@ protected:
   bool addProperties(
     smtk::model::EntityRef& cellOut, vtkModelItem* cellIn, smtk::model::BitFlags props = 0xff);
 
-  // This will remove Model from smtk manager and vtkDiscreteModelWrapper form kernel
+  // This will remove Model from smtk resource and vtkDiscreteModelWrapper form kernel
   bool removeModelEntity(const smtk::model::EntityRef& entity);
 
   void retranscribeModel(const smtk::model::Model& inModel);

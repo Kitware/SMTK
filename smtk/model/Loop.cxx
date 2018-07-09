@@ -13,7 +13,7 @@
 #include "smtk/model/EntityRefArrangementOps.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/common/RangeDetector.h"
 
@@ -75,8 +75,8 @@ Loops Loop::containedLoops() const
   */
 bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& replacements)
 {
-  Manager::Ptr mgr = this->manager(); // Lock mgr
-  EntityPtr entRec = mgr->findEntity(this->entity());
+  Resource::Ptr resource = this->resource(); // Lock resource
+  EntityPtr entRec = resource->findEntity(this->entity());
   if (!entRec)
   {
     return false;
@@ -87,7 +87,7 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   { // original was not in the loop!
     return false;
   }
-  Arrangements* arr = mgr->hasArrangementsOfKindForEntity(this->entity(), HAS_USE);
+  Arrangements* arr = resource->hasArrangementsOfKindForEntity(this->entity(), HAS_USE);
   if (!arr)
   { // no HAS_USE arrangements means \a original is not present as an arrangement...
     return false;
@@ -96,15 +96,15 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   smtk::common::RangeDetector<int> rd;
   // Get all of the existing uses of this shell. At the same time, this will wipe away
   // all HAS_USE arrangements **and** invalidate the relations of the loop:
-  EntityRefArrangementOps::popAllShellHasUseRelations(mgr, entRec, arr, uses, rd);
+  EntityRefArrangementOps::popAllShellHasUseRelations(resource, entRec, arr, uses, rd);
 
   std::list<EdgeUse>::iterator uit = std::find(uses.begin(), uses.end(), original);
   bool didFind;
   if (uit == uses.end())
   {
     didFind = false;
-    smtkErrorMacro(
-      mgr->log(), "Found use-record " << original.name() << " in loop but could not replace it.");
+    smtkErrorMacro(resource->log(), "Found use-record " << original.name()
+                                                        << " in loop but could not replace it.");
   }
   else
   { // Insert the replacements and remove the original:
@@ -139,26 +139,26 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
   // The above created a new arrangement for the Loop... now we need to
   // (1) remove the original's reference to the loop and
   // (2) add new references from the replacements to the loop.
-  int aidx = mgr->findArrangementInvolvingEntity(original.entity(), HAS_SHELL, m_entity);
+  int aidx = resource->findArrangementInvolvingEntity(original.entity(), HAS_SHELL, m_entity);
   //std::cout << "Original idx " << aidx << "\n";
-  int didRemove = mgr->unarrangeEntity(original.entity(), HAS_SHELL, aidx, false);
+  int didRemove = resource->unarrangeEntity(original.entity(), HAS_SHELL, aidx, false);
   (void)didRemove;
   //std::cout << "Did remove original " << didRemove << "\n";
   for (EdgeUses::const_iterator rit = replacements.begin(); rit != replacements.end(); ++rit)
   {
-    EntityPtr useRec = mgr->findEntity(rit->entity());
+    EntityPtr useRec = resource->findEntity(rit->entity());
     if (!useRec)
     {
       continue;
     }
     // An edge-use may only belong to a single shell-use... obliterate pre-existing shells:
-    Arrangements* ua = mgr->hasArrangementsOfKindForEntity(rit->entity(), HAS_SHELL);
+    Arrangements* ua = resource->hasArrangementsOfKindForEntity(rit->entity(), HAS_SHELL);
     if (ua && !ua->empty())
     {
       ua->clear();
     }
     // Now add the shell arrangement:
-    mgr->arrangeEntity(rit->entity(), HAS_SHELL,
+    resource->arrangeEntity(rit->entity(), HAS_SHELL,
       Arrangement::UseHasShellWithIndex(useRec->appendRelation(m_entity)), -1);
   }
 

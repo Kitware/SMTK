@@ -213,7 +213,7 @@ std::string PhraseListContent::generateTitle(
       rsrcType = rsrc->typeName();
       auto comp = phr->relatedComponent();
       auto modelComp = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
-      //auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+      //auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
       if (modelComp)
       {
         entry = modelComp->entityFlags();

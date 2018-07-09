@@ -38,7 +38,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/view/Selection.h"
@@ -50,8 +50,8 @@ void ColorBlockAsEntity(vtkCompositePolyDataMapper2* mapper, vtkDataObject* bloc
   const std::string& uuid, const smtk::resource::ResourcePtr& res)
 {
   using namespace smtk::model;
-  auto modelMan = std::static_pointer_cast<Manager>(res);
-  EntityRef entity(modelMan, smtk::common::UUID(uuid));
+  auto modelResource = std::static_pointer_cast<Resource>(res);
+  EntityRef entity(modelResource, smtk::common::UUID(uuid));
   FloatList color = entity.color();
   color = color[3] < 0 ? FloatList({ 1., 1., 1., 1. }) : color;
 

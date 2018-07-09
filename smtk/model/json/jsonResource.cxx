@@ -18,8 +18,8 @@
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/json/jsonResource.h"
 
@@ -40,20 +40,20 @@ using Group = smtk::model::Group;
 using KindsToArrangements = smtk::model::KindsToArrangements;
 using Models = smtk::model::Models;
 using Model = smtk::model::Model;
-using ManagerPtr = smtk::model::ManagerPtr;
+using ResourcePtr = smtk::model::ResourcePtr;
 using EntityIterator = smtk::model::EntityIterator;
 using EntityTypeBits = smtk::model::EntityTypeBits;
 using IteratorStyle = smtk::model::IteratorStyle;
 using Tessellation = smtk::model::Tessellation;
 
-void to_json(json& j, const ManagerPtr& mmgr)
+void to_json(json& j, const ResourcePtr& mresource)
 {
-  smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(mmgr));
+  smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(mresource));
 
   using smtk::model::AbbreviationForArrangementKind;
   json jmodels = json::object();
 
-  Models models = mmgr->entitiesMatchingFlagsAs<Models>(EntityTypeBits::MODEL_ENTITY, false);
+  Models models = mresource->entitiesMatchingFlagsAs<Models>(EntityTypeBits::MODEL_ENTITY, false);
   for (auto model : models)
   {
     json jmodel = json::object();
@@ -107,15 +107,15 @@ void to_json(json& j, const ManagerPtr& mmgr)
   j["models"] = jmodels;
 }
 
-void from_json(const json& j, ManagerPtr& mmgr)
+void from_json(const json& j, ResourcePtr& mresource)
 {
-  if (!mmgr)
+  if (!mresource)
   {
-    // It's derived class's responsibility to create a valid mmgr
+    // It's derived class's responsibility to create a valid mresource
     return;
   }
 
-  auto temp = std::static_pointer_cast<smtk::resource::Resource>(mmgr);
+  auto temp = std::static_pointer_cast<smtk::resource::Resource>(mresource);
   smtk::resource::from_json(j, temp);
 
   json jmodels;
@@ -134,8 +134,8 @@ void from_json(const json& j, ManagerPtr& mmgr)
     json jModel = jmodelIt.value();
     auto jModelInfo = jModel.find(jmodelIt.key());
     BitFlags modelBitFlags = jModelInfo->at("e");
-    EntityPtr currentModelPtr = Entity::create(mid, modelBitFlags, mmgr);
-    mmgr->addEntity(currentModelPtr);
+    EntityPtr currentModelPtr = Entity::create(mid, modelBitFlags, mresource);
+    mresource->addEntity(currentModelPtr);
     Model currentModel = currentModelPtr->referenceAs<Model>();
     for (auto jentIt = jModel.begin(); jentIt != jModel.end(); jentIt++)
     { // Entities in the currentModel
@@ -152,9 +152,9 @@ void from_json(const json& j, ManagerPtr& mmgr)
         std::cerr << "Failed to add entityFlags to entity " << eid.toString() << std::endl;
         continue;
       }
-      EntityPtr entity = Entity::create(eid, bitflags, mmgr);
-      mmgr->addEntity(entity);
-      EntityRef entRef = EntityRef(mmgr, eid);
+      EntityPtr entity = Entity::create(eid, bitflags, mresource);
+      mresource->addEntity(entity);
+      EntityRef entRef = EntityRef(mresource, eid);
 
       try
       {
@@ -194,7 +194,7 @@ void from_json(const json& j, ManagerPtr& mmgr)
         {
           stringData[sdIt.key()] = sdIt.value().get<StringList>();
         }
-        mmgr->stringProperties()[eid] = stringData;
+        mresource->stringProperties()[eid] = stringData;
       }
       catch (std::exception&)
       {
@@ -209,7 +209,7 @@ void from_json(const json& j, ManagerPtr& mmgr)
         {
           floatData[sdIt.key()] = sdIt.value().get<FloatList>();
         }
-        mmgr->floatProperties()[eid] = floatData;
+        mresource->floatProperties()[eid] = floatData;
       }
       catch (std::exception&)
       {
@@ -224,7 +224,7 @@ void from_json(const json& j, ManagerPtr& mmgr)
         {
           intData[sdIt.key()] = sdIt.value().get<IntegerList>();
         }
-        mmgr->integerProperties()[eid] = intData;
+        mresource->integerProperties()[eid] = intData;
       }
       catch (std::exception&)
       {

@@ -67,7 +67,7 @@ public:
 
   SessionInfoBits allSupportedInformation() const override;
 
-  static bool addManagerEntityToCGM(const smtk::model::EntityRef& ent);
+  static bool addResourceEntityToCGM(const smtk::model::EntityRef& ent);
 
   static int staticSetup(const std::string& optName, const smtk::model::StringList& optVal);
   int setup(const std::string& optName, const smtk::model::StringList& optVal) override;
@@ -86,37 +86,38 @@ protected:
   SessionInfoBits transcribeInternal(
     const smtk::model::EntityRef& entity, SessionInfoBits requestedInfo, int depth = -1) override;
 
-  SessionInfoBits addCGMEntityToManager(
+  SessionInfoBits addCGMEntityToResource(
     const smtk::model::EntityRef& entity, RefEntity* refEnt, SessionInfoBits requestedInfo);
-  SessionInfoBits addCGMEntityToManager(
+  SessionInfoBits addCGMEntityToResource(
     const smtk::model::EntityRef& entity, GroupingEntity* refEnt, SessionInfoBits requestedInfo);
-  SessionInfoBits addCGMEntityToManager(
+  SessionInfoBits addCGMEntityToResource(
     const smtk::model::EntityRef& entity, SenseEntity* refEnt, SessionInfoBits requestedInfo);
 
-  SessionInfoBits addBodyToManager(const smtk::model::Model&, Body*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVolumeUseToManager(
+  SessionInfoBits addBodyToResource(
+    const smtk::model::Model&, Body*, SessionInfoBits requestedInfo);
+  SessionInfoBits addVolumeUseToResource(
     const smtk::model::VolumeUse&, CoVolume*, SessionInfoBits requestedInfo);
-  SessionInfoBits addFaceUseToManager(
+  SessionInfoBits addFaceUseToResource(
     const smtk::model::FaceUse&, CoFace*, SessionInfoBits requestedInfo);
-  SessionInfoBits addEdgeUseToManager(
+  SessionInfoBits addEdgeUseToResource(
     const smtk::model::EdgeUse&, CoEdge*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVertexUseToManager(
+  SessionInfoBits addVertexUseToResource(
     const smtk::model::VertexUse&, CoVertex*, SessionInfoBits requestedInfo);
-  SessionInfoBits addShellToManager(
+  SessionInfoBits addShellToResource(
     const smtk::model::Shell&, ::Shell*, SessionInfoBits requestedInfo);
-  SessionInfoBits addLoopToManager(
+  SessionInfoBits addLoopToResource(
     const smtk::model::Loop&, ::Loop*, SessionInfoBits requestedInfo);
-  SessionInfoBits addChainToManager(
+  SessionInfoBits addChainToResource(
     const smtk::model::Chain&, ::Chain*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVolumeToManager(
+  SessionInfoBits addVolumeToResource(
     const smtk::model::Volume&, RefVolume*, SessionInfoBits requestedInfo);
-  SessionInfoBits addFaceToManager(
+  SessionInfoBits addFaceToResource(
     const smtk::model::Face&, RefFace*, SessionInfoBits requestedInfo);
-  SessionInfoBits addEdgeToManager(
+  SessionInfoBits addEdgeToResource(
     const smtk::model::Edge&, RefEdge*, SessionInfoBits requestedInfo);
-  SessionInfoBits addVertexToManager(
+  SessionInfoBits addVertexToResource(
     const smtk::model::Vertex&, RefVertex*, SessionInfoBits requestedInfo);
-  SessionInfoBits addGroupToManager(
+  SessionInfoBits addGroupToResource(
     const smtk::model::Group&, RefGroup*, SessionInfoBits requestedInfo);
 
   void addRelations(smtk::model::EntityRef& entityref, DLIList<RefEntity*>& rels,

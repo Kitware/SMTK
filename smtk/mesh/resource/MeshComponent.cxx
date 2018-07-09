@@ -52,7 +52,7 @@ smtk::common::UUIDArray MeshComponent::modelEntityIds() const
 /**\brief Return the model entities associated with meshset members.
   *
   * warning Note that the parent collection of the meshset must have
-  *         its model manager set to a valid value or the result will
+  *         its model resource set to a valid value or the result will
   *         be an array of invalid entries.
   */
 bool MeshComponent::modelEntities(smtk::model::EntityRefArray& array) const
@@ -62,13 +62,13 @@ bool MeshComponent::modelEntities(smtk::model::EntityRefArray& array) const
     return false;
   }
 
-  smtk::model::ManagerPtr mgr = m_meshset.collection()->modelManager();
+  smtk::model::ResourcePtr resource = m_meshset.collection()->modelResource();
   smtk::common::UUIDArray uids = this->modelEntityIds();
   for (smtk::common::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
   {
-    array.push_back(smtk::model::EntityRef(mgr, *it));
+    array.push_back(smtk::model::EntityRef(resource, *it));
   }
-  return (mgr != nullptr);
+  return (resource != nullptr);
 }
 
 /**\brief Set the model entity for each meshset member to \a ent.

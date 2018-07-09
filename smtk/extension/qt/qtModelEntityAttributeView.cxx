@@ -21,7 +21,7 @@
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -168,7 +168,7 @@ public:
   std::string m_selectionSourceName;
   std::string m_unSetVal;
   int m_selectionObserverId;
-  smtk::model::ManagerPtr m_modelResource;
+  smtk::model::ResourcePtr m_modelResource;
 };
 
 qtBaseView* qtModelEntityAttributeView::createViewWidget(const ViewInfo& info)
@@ -364,7 +364,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   if (!this->Internals->m_modelResource)
   {
     auto resManager = this->uiManager()->resourceManager();
-    auto modelResources = resManager->find<smtk::model::Manager>();
+    auto modelResources = resManager->find<smtk::model::Resource>();
     if (modelResources.empty())
     {
       this->Internals->ListTable->blockSignals(false);

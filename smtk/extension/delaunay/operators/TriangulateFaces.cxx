@@ -77,11 +77,11 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
   bool validatePolygons = this->parameters()->findVoid("validate polygons")->isEnabled();
 
   // construct a collection and associate it with the face's model
-  smtk::model::Manager::Ptr resource =
-    std::dynamic_pointer_cast<smtk::model::Manager>(faces[0].component()->resource());
+  smtk::model::Resource::Ptr resource =
+    std::dynamic_pointer_cast<smtk::model::Resource>(faces[0].component()->resource());
   smtk::mesh::CollectionPtr collection = resource->meshes()->makeCollection();
   collection->assignUniqueNameIfNotAlready();
-  collection->setModelManager(faces[0].manager());
+  collection->setModelResource(faces[0].resource());
   collection->associateToModel(faces[0].model().entity());
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

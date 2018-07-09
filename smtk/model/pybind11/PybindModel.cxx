@@ -46,7 +46,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindInstance.h"
 #include "PybindIntegerData.h"
 #include "PybindLoop.h"
-#include "PybindManager.h"
+#include "PybindResource.h"
 #include "PybindModel.h"
 #include "PybindSession.h"
 #include "PybindSessionIO.h"
@@ -84,7 +84,7 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   py::class_< smtk::model::EntityIterator > smtk_model_EntityIterator = pybind11_init_smtk_model_EntityIterator(model);
   py::class_< smtk::model::EntityRef > smtk_model_EntityRef = pybind11_init_smtk_model_EntityRef(model);
   py::class_< smtk::model::EntityRefArrangementOps > smtk_model_EntityRefArrangementOps = pybind11_init_smtk_model_EntityRefArrangementOps(model);
-  PySharedPtrClass< smtk::model::Manager > smtk_model_Manager = pybind11_init_smtk_model_Manager(model);
+  PySharedPtrClass< smtk::model::Resource > smtk_model_Resource = pybind11_init_smtk_model_Resource(model);
   PySharedPtrClass< smtk::model::Session > smtk_model_Session = pybind11_init_smtk_model_Session(model);
   py::class_< smtk::model::SessionIO > smtk_model_SessionIO = pybind11_init_smtk_model_SessionIO(model);
   py::class_< smtk::model::SessionRegistrar > smtk_model_SessionRegistrar = pybind11_init_smtk_model_SessionRegistrar(model);
@@ -93,8 +93,8 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   pybind11_init_smtk_model_ArrangementKind(model);
   pybind11_init_smtk_model_EntityTypeBits(model);
   pybind11_init_smtk_model_IteratorStyle(model);
-  pybind11_init_smtk_model_ManagerEventChangeType(model);
-  pybind11_init_smtk_model_ManagerEventRelationType(model);
+  pybind11_init_smtk_model_ResourceEventChangeType(model);
+  pybind11_init_smtk_model_ResourceEventRelationType(model);
   pybind11_init_smtk_model_ModelGeometryStyle(model);
   pybind11_init_smtk_model_Orientation(model);
   pybind11_init_smtk_model_SessionInformation(model);

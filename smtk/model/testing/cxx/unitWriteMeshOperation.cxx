@@ -22,7 +22,7 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <fstream>
 
@@ -36,14 +36,14 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string write_root = SMTK_SCRATCH_DIR;
 
-void create_simple_mesh_model(smtk::model::ManagerPtr mgr, std::string file_path)
+void create_simple_mesh_model(smtk::model::ResourcePtr mgr, std::string file_path)
 {
   std::ifstream file(file_path.c_str());
 
   std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
+  smtk::io::LoadJSON::intoModelResource(json.c_str(), mgr);
   mgr->assignDefaultNames();
 
   file.close();
@@ -75,20 +75,20 @@ int main(int argc, char* argv[])
 
     std::vector<std::string> files_to_delete;
 
-    // Create a model manager
-    smtk::model::ManagerPtr manager = smtk::model::Manager::create();
+    // Create a model resource
+    smtk::model::ResourcePtr resource = smtk::model::Resource::create();
 
     // Identify available sessions
     std::cout << "Available sessions\n";
     typedef smtk::model::StringList StringList;
-    StringList sessions = manager->sessionTypeNames();
-    smtk::mesh::ManagerPtr meshManager = manager->meshes();
+    StringList sessions = resource->sessionTypeNames();
+    smtk::mesh::ManagerPtr meshManager = resource->meshes();
     for (StringList::iterator it = sessions.begin(); it != sessions.end(); ++it)
       std::cout << "  " << *it << "\n";
     std::cout << "\n";
 
     // Create a new default session
-    smtk::model::SessionRef sessRef = manager->createSession("native");
+    smtk::model::SessionRef sessRef = resource->createSession("native");
 
     // Identify available operators
     std::cout << "Available cmb operators\n";
@@ -99,9 +99,9 @@ int main(int argc, char* argv[])
     }
     std::cout << "\n";
 
-    create_simple_mesh_model(manager, std::string(argv[1]));
+    create_simple_mesh_model(resource, std::string(argv[1]));
     smtk::io::ModelToMesh convert;
-    smtk::mesh::CollectionPtr c = convert(meshManager, manager);
+    smtk::mesh::CollectionPtr c = convert(meshManager, resource);
 
     // Test all three mesh file types
     std::string extension[2] = { ".exo", ".h5m" };
@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
       // the input mesh
       //
       // NB: a new mesh manager must be used here. If the original mesh manager
-      //     is used instead, a corrupt collection is added to our manager and
+      //     is used instead, a corrupt collection is added to our resource and
       //     our little trick of grabbing the first collection above will result
       //     in test failures.
       smtk::mesh::ManagerPtr m2 = smtk::mesh::Manager::create();

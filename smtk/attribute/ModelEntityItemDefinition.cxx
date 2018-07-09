@@ -14,7 +14,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <cassert>
 
@@ -64,8 +64,8 @@ void ModelEntityItemDefinition::setMembershipMask(smtk::model::BitFlags entMask)
   * This returns false when the definition has an item bitmask
   * that does not include entities of the matching type.
   * However, if the model entity's type cannot be determined
-  * because the model manager is NULL or it is not in the model
-  * manager's storage, we silently assume that the value is valid.
+  * because the model resource is NULL or it is not in the model
+  * resource's storage, we silently assume that the value is valid.
   * Note that only UUIDs are stored
   */
 bool ModelEntityItemDefinition::isValueValid(const smtk::model::EntityRef& c) const

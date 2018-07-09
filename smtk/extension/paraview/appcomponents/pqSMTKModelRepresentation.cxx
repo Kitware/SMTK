@@ -16,8 +16,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
-#include "smtk/model/Manager.h"
-
+#include "smtk/model/Entity.h"
 #include "smtk/view/Selection.h"
 
 #include "vtkPVCompositeRepresentation.h"

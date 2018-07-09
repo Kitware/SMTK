@@ -65,7 +65,7 @@ Serialization
 :smtk:`SaveJSON <smtk::io::SaveJSON>`
   Export all the :smtk:`Collection <smtk::mesh::Collection>` that have
   associations with the any model that is part of the passed in
-  :smtk:`Manager <smtk::model::Manager>`. The exporter will save each
+  :smtk:`Resource <smtk::model::Resource>`. The exporter will save each
   Collection using :smtk:`WriteMesh <smtk::io::WriteMesh>` with the file
   type MOAB and extension h5m.
 
@@ -148,4 +148,4 @@ Serialization
 :smtk:`LoadJSON <smtk::io::LoadJSON>`
   Imports all the :smtk:`Collection <smtk::mesh::Collection>` that are listed
   in the provided JSON string. Each Collection will be marked as being associated
-  with the provided model :smtk:`Manager <smtk::model::Manager>`.
+  with the provided model :smtk:`Resource <smtk::model::Resource>`.

@@ -13,8 +13,8 @@
 #include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/model/AuxiliaryGeometry.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "vtkImageData.h"
 #include "vtkInformation.h"
@@ -69,20 +69,20 @@ void vtkModelAuxiliaryGeometry::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Set the SMTK model to be displayed.
-void vtkModelAuxiliaryGeometry::SetModelManager(smtk::model::ManagerPtr model)
+void vtkModelAuxiliaryGeometry::SetModelResource(smtk::model::ResourcePtr model)
 {
-  if (this->ModelMgr == model)
+  if (this->ModelResource == model)
   {
     return;
   }
-  this->ModelMgr = model;
+  this->ModelResource = model;
   this->Modified();
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::ManagerPtr vtkModelAuxiliaryGeometry::GetModelManager()
+smtk::model::ResourcePtr vtkModelAuxiliaryGeometry::GetModelResource()
 {
-  return this->ModelMgr;
+  return this->ModelResource;
 }
 
 /// Indicate that the model has changed and should have its VTK representation updated.
@@ -98,14 +98,14 @@ void vtkModelAuxiliaryGeometry::Dirty()
 int vtkModelAuxiliaryGeometry::RequestInformation(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
-  if (!this->ModelMgr || !this->AuxiliaryEntityID || !this->AuxiliaryEntityID[0])
+  if (!this->ModelResource || !this->AuxiliaryEntityID || !this->AuxiliaryEntityID[0])
   {
     // the filter is not properly set up yet
     return 1;
   }
 
   smtk::common::UUID uid(this->AuxiliaryEntityID);
-  smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelMgr, uid);
+  smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelResource, uid);
   if (auxGeoEntity.isValid() && auxGeoEntity.hasURL())
   {
     std::string fileType = vtkAuxiliaryGeometryExtension::getAuxiliaryFileType(auxGeoEntity);
@@ -133,7 +133,7 @@ int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* vtkNotUsed(request),
     return 0;
   }
 
-  if (!this->ModelMgr)
+  if (!this->ModelResource)
   {
     vtkErrorMacro("No input model");
     return 0;
@@ -145,7 +145,7 @@ int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* vtkNotUsed(request),
   }
 
   smtk::common::UUID uid(this->AuxiliaryEntityID);
-  smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelMgr, uid);
+  smtk::model::AuxiliaryGeometry auxGeoEntity(this->ModelResource, uid);
   if (!auxGeoEntity.isValid() || !auxGeoEntity.hasURL())
   {
     vtkErrorMacro("No valid AuxiliaryEntity");

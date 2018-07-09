@@ -150,9 +150,9 @@ if __name__ == '__main__':
 
     # ======
     # Now test setting entity-valued attribute-items
-    # I. Create a model manager and add some entities to it:
-    mmgr = smtk.model.Manager.create()
-    resource.setRefModelManager(mmgr)
+    # I. Create a model resource and add some entities to it:
+    mmgr = smtk.model.Resource.create()
+    resource.setRefModelResource(mmgr)
     mdl = mmgr.addModel(3, 3, 'TestModel')
     edg = mmgr.addEdge()
     fac = mmgr.addFace()

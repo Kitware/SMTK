@@ -16,7 +16,6 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/Vertex.h"

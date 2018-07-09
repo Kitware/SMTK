@@ -25,8 +25,8 @@
 
 #include "smtk/mesh/core/Collection.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
@@ -363,7 +363,7 @@ ImportOperation::Result ImportOperation::operateInternal()
   resultModels->setValue(modelEntity.component());
 
   modelEntity.as<smtk::model::Model>().setSession(
-    smtk::model::SessionRef(modelEntity.manager(), session->sessionId()));
+    smtk::model::SessionRef(modelEntity.resource(), session->sessionId()));
 
   return result;
 }

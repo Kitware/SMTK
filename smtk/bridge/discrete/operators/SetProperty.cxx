@@ -14,8 +14,8 @@
 #include "smtk/bridge/discrete/SetProperty_xml.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -183,8 +183,8 @@ SetProperty::Result SetProperty::operateInternal()
   smtk::model::EntityRefs extraModifiedModels;
   if (meshItem)
   {
-    smtk::model::ManagerPtr modelMgr = meshItem->value().collection()->modelManager();
-    smtk::mesh::ManagerPtr meshMgr = modelMgr->meshes();
+    smtk::model::ResourcePtr modelResource = meshItem->value().collection()->modelResource();
+    smtk::mesh::ManagerPtr meshMgr = modelResource->meshes();
     smtk::attribute::MeshItem::const_mesh_it it;
     for (it = meshItem->begin(); it != meshItem->end(); ++it)
     {
@@ -202,7 +202,7 @@ SetProperty::Result SetProperty::operateInternal()
       // label the associated model as modified
       smtk::common::UUID modid = c->associatedModel();
       if (!modid.isNull())
-        extraModifiedModels.insert(smtk::model::Model(modelMgr, modid));
+        extraModifiedModels.insert(smtk::model::Model(modelResource, modid));
     }
   }
 

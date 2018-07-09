@@ -19,7 +19,7 @@ namespace smtk
 namespace model
 {
 
-/**\brief Enumerate the types of changes a model manager undergoes.
+/**\brief Enumerate the types of changes a model resource undergoes.
   *
   * The change type serves as a modifier to the relationship.
   * Not all relationships support all of the modifiers.
@@ -30,7 +30,7 @@ namespace model
   * an smtk::model::Entity record can be modified).
   *
   * Events that affect arrangements but do not otherwise
-  * affect a model manager are typically reported with
+  * affect a model resource are typically reported with
   * ADD_EVENT notifications generated before addition
   * and DEL_EVENT notifications after removal.
   * The rationale is that (1) observers should have
@@ -38,7 +38,7 @@ namespace model
   * configuration while the event type specifies enough
   * information to infer the simpler configuration and
   * (2) observers may wish to perform other operations
-  * after removal to maintain the consistency of Manager.
+  * after removal to maintain the consistency of Resource.
   *
   * Events that add new smtk::model::Entity, smtk::model::Tessellation,
   * smtk::model::FloatData, smtk::model::StringData, or
@@ -49,21 +49,21 @@ namespace model
   * access the objects being affected (after they are added
   * or before they are removed).
   *
-  * @sa ManagerEventRelationType
+  * @sa ResourceEventRelationType
   */
-enum ManagerEventChangeType
+enum ResourceEventChangeType
 {
   ADD_EVENT, //!< The event is a relationship being added.
   MOD_EVENT, //!< The event is a relationship being modified.
   DEL_EVENT, //!< The event is a relationship being removed.
 
-  ANY_EVENT //!< All change types (used when calling Manager::observe).
+  ANY_EVENT //!< All change types (used when calling Resource::observe).
 };
 
-/**\brief Enumerate the types of relationships which may cause model manager events.
+/**\brief Enumerate the types of relationships which may cause model resource events.
   *
   * This enumerates relationships that may be observed changing,
-  * along with the ManagerEventChangeType.
+  * along with the ResourceEventChangeType.
   *
   * For events involving multiple entities,
   * the name of the relationship specifies the order in which
@@ -72,15 +72,15 @@ enum ManagerEventChangeType
   * Likewise CELL_INCLUDES_CELL will always provide the higher-dimensional
   * parent cell before the lower-dimensional, embedded child cell.
   *
-  * @sa ManagerEventChangeType
+  * @sa ResourceEventChangeType
   */
-enum ManagerEventRelationType
+enum ResourceEventRelationType
 {
   // smtk::model::Entity record existential changes (additions, removals, but not modifications):
-  ENTITY_ENTRY, //!< An entity entry has been added to (ADD_EVENT) or removed from (DEL_EVENT) the manager.
+  ENTITY_ENTRY, //!< An entity entry has been added to (ADD_EVENT) or removed from (DEL_EVENT) the resource.
 
   // smtk::model::Tessellation record changes (added, removed, modified).
-  TESSELLATION_ENTRY, //!< An entity is being provided or stripped of a tessellation in the manager.
+  TESSELLATION_ENTRY, //!< An entity is being provided or stripped of a tessellation in the resource.
 
   // smtk::model::{Float,String,Integer}Data changes (added, removed, modified)
   ENTITY_HAS_PROPERTY, //!< The entity has a property entry being added, modified, or removed.
@@ -116,34 +116,34 @@ enum ManagerEventRelationType
   INVALID_RELATIONSHIP //!< The event is invalid. Used internally. This must be the last enum.
 };
 
-/**\brief A notification of a model manager event.
+/**\brief A notification of a model resource event.
   *
   * All events have both a change type and a relationship type.
   */
-typedef std::pair<ManagerEventChangeType, ManagerEventRelationType> ManagerEventType;
+typedef std::pair<ResourceEventChangeType, ResourceEventRelationType> ResourceEventType;
 
 /// Callbacks for changes in the condition of an entity. WARNING: Likely to change in future releases.
-typedef int (*ConditionCallback)(ManagerEventType, const smtk::model::EntityRef&, void*);
+typedef int (*ConditionCallback)(ResourceEventType, const smtk::model::EntityRef&, void*);
 /// An observer of an entity-condition-change (i.e., addition, update or removal) event.
 typedef std::pair<ConditionCallback, void*> ConditionObserver;
 /// A trigger entry for an event-observer pair.
-typedef std::pair<ManagerEventType, ConditionObserver> ConditionTrigger;
+typedef std::pair<ResourceEventType, ConditionObserver> ConditionTrigger;
 
 /// Callbacks for one-to-one relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToOneCallback)(
-  ManagerEventType, const smtk::model::EntityRef&, const smtk::model::EntityRef&, void*);
+  ResourceEventType, const smtk::model::EntityRef&, const smtk::model::EntityRef&, void*);
 /// An observer of a one-to-one relationship-event.
 typedef std::pair<OneToOneCallback, void*> OneToOneObserver;
 /// A trigger entry for an event-observer pair.
-typedef std::pair<ManagerEventType, OneToOneObserver> OneToOneTrigger;
+typedef std::pair<ResourceEventType, OneToOneObserver> OneToOneTrigger;
 
 /// Callbacks for one-to-many relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToManyCallback)(
-  ManagerEventType, const smtk::model::EntityRef&, const smtk::model::EntityRefArray&, void*);
+  ResourceEventType, const smtk::model::EntityRef&, const smtk::model::EntityRefArray&, void*);
 /// An observer of a one-to-many relationship-event.
 typedef std::pair<OneToManyCallback, void*> OneToManyObserver;
 /// A trigger entry for an event-observer pair.
-typedef std::pair<ManagerEventType, OneToManyObserver> OneToManyTrigger;
+typedef std::pair<ResourceEventType, OneToManyObserver> OneToManyTrigger;
 
 } // namespace model
 } // namespace smtk

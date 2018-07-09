@@ -55,7 +55,7 @@ public:
     smtk::common::UUID id;
     if (ids.empty())
     {
-      id = (m_topology->m_collection->modelManager()->unusedUUID());
+      id = (m_topology->m_collection->modelResource()->unusedUUID());
       // Assign the unique id to the mesh
       singleMesh.setModelEntityId(id);
     }
@@ -164,7 +164,7 @@ struct AddBoundElements
           smtk::common::UUID id;
           if (ids.empty())
           {
-            id = (m_topology->m_collection->modelManager()->unusedUUID());
+            id = (m_topology->m_collection->modelResource()->unusedUUID());
             // Assign the unique id to the mesh
             m.setModelEntityId(id);
           }

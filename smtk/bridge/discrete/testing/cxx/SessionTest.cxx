@@ -25,8 +25,8 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/operation/Manager.h"
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
     std::cout << "  done\n";
   }
 
-  std::string json = smtk::io::SaveJSON::fromModelManager(resource);
+  std::string json = smtk::io::SaveJSON::fromModelResource(resource);
   if (!json.empty())
   {
     std::ofstream jsonFile("sessionTest.json");

@@ -21,7 +21,6 @@
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Vertex.h"
 
 #include <cmath>

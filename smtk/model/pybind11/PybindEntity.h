@@ -18,7 +18,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/resource/Component.h"
 
 namespace py = pybind11;
@@ -33,7 +33,7 @@ PySharedPtrClass< smtk::model::Entity, smtk::resource::Component > pybind11_init
     .def("shared_from_this", (std::shared_ptr<const smtk::model::Entity> (smtk::model::Entity::*)() const) &smtk::model::Entity::shared_from_this)
     .def_static("create", (std::shared_ptr<smtk::model::Entity> (*)()) &smtk::model::Entity::create)
     .def_static("create", (std::shared_ptr<smtk::model::Entity> (*)(::std::shared_ptr<smtk::model::Entity> &)) &smtk::model::Entity::create, py::arg("ref"))
-    .def_static("create", (smtk::model::EntityPtr (*)(::smtk::model::BitFlags, int, ::smtk::model::ManagerPtr)) &smtk::model::Entity::create, py::arg("entityFlags"), py::arg("dimension"), py::arg("resource") = nullptr)
+    .def_static("create", (smtk::model::EntityPtr (*)(::smtk::model::BitFlags, int, ::smtk::model::ResourcePtr)) &smtk::model::Entity::create, py::arg("entityFlags"), py::arg("dimension"), py::arg("resource") = nullptr)
     .def("setup", &smtk::model::Entity::setup, py::arg("entityFlags"), py::arg("dimension"), py::arg("resource") = nullptr, py::arg("resetRelations") = true)
     .def("resource", &smtk::model::Entity::resource)
     .def("dimension", &smtk::model::Entity::dimension)

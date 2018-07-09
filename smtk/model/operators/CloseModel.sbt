@@ -14,7 +14,7 @@
         Save the models first if you want to keep any changes.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="true">
-        <Accepts><Resource Name="smtk::model::Manager" Filter="model"/></Accepts>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <Void Name="show non-active models" AdvanceLevel= "11">

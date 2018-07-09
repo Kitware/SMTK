@@ -55,15 +55,15 @@ public:
   bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const override;
 
   bool exportMesh(std::ostream& stream, smtk::mesh::CollectionPtr collection,
-    smtk::model::ManagerPtr manager, const std::string& modelPropertyName,
+    smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
     smtk::mesh::DimensionType dim) const;
 
   bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-    smtk::model::ManagerPtr manager, const std::string& modelPropertyName,
+    smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
     smtk::mesh::DimensionType dim) const;
 
   bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-    smtk::model::ManagerPtr manager, const std::string& modelPropertyName) const override;
+    smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const override;
 };
 }
 }

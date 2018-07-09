@@ -12,7 +12,7 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace smtk
 {
@@ -46,11 +46,11 @@ int EntityRefArrangementOps::findOrAddSimpleRelationship(
   int relidx = EntityRefArrangementOps::findSimpleRelationship(a, k, b);
   if (relidx < 0)
   {
-    EntityPtr ent = a.manager()->findEntity(a.entity());
+    EntityPtr ent = a.resource()->findEntity(a.entity());
     if (ent)
     {
       int offset = ent->findOrAppendRelation(b.entity());
-      relidx = a.manager()->arrangeEntity(a.entity(), k, Arrangement::SimpleIndex(offset));
+      relidx = a.resource()->arrangeEntity(a.entity(), k, Arrangement::SimpleIndex(offset));
     }
     else
     {

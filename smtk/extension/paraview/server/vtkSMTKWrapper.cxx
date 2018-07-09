@@ -20,7 +20,7 @@
 #include "smtk/io/json/jsonComponentSet.h"
 #include "smtk/io/json/jsonSelectionMap.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -224,8 +224,8 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
           alg = alg->GetInputAlgorithm(0, 0);
         }
         // Now we have a resource:
-        smtk::model::ManagerPtr mgr = alg
-          ? dynamic_cast<vtkSMTKModelReader*>(alg)->GetModelSource()->GetModelManager()
+        smtk::model::ResourcePtr mResource = alg
+          ? dynamic_cast<vtkSMTKModelReader*>(alg)->GetModelSource()->GetModelResource()
           : nullptr;
         auto mit = mbdsThing->NewIterator();
         for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
@@ -233,7 +233,7 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
           if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
           {
             auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
-              mgr, mit->GetCurrentMetaData());
+              mResource, mit->GetCurrentMetaData());
             auto cmp = ent.component();
             if (cmp)
             {

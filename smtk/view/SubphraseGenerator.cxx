@@ -17,8 +17,8 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Instance.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -150,7 +150,7 @@ void SubphraseGenerator::setSkipAttributes(bool val)
 void SubphraseGenerator::componentsOfResource(
   DescriptivePhrase::Ptr src, smtk::resource::ResourcePtr rsrc, DescriptivePhrases& result)
 {
-  auto modelRsrc = dynamic_pointer_cast<smtk::model::Manager>(rsrc);
+  auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
   //auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
   if (modelRsrc)
@@ -424,7 +424,7 @@ void SubphraseGenerator::meshesOfModelModel(
   DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
 {
   std::vector<smtk::mesh::CollectionPtr> meshCollections =
-    mod.manager()->meshes()->associatedCollections(mod);
+    mod.resource()->meshes()->associatedCollections(mod);
   // We need to sort the meshes before we add them to the result since if
   // we sort the result itself we could be intermixing the mesh and model
   // information

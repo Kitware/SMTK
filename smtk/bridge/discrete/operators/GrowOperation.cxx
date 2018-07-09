@@ -24,8 +24,8 @@
 
 #include "smtk/model/Events.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 #include "vtkDiscreteModel.h"
@@ -120,7 +120,7 @@ void GrowOperation::writeSplitResult(vtkSelectionSplitOperation* splitOp,
     splitFaces[origId].insert(splitPairArray->GetValue(2 * i + 1));
   }
 
-  smtk::model::ManagerPtr store = std::static_pointer_cast<smtk::model::Manager>(resource);
+  smtk::model::ResourcePtr store = std::static_pointer_cast<smtk::model::Resource>(resource);
   // Adding "created" to the "created" item, as a convenient method
   // to get newly created faces from result.
   // The faces have been split will be in the "modified" item.

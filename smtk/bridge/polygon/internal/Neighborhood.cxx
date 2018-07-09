@@ -15,7 +15,7 @@
 #include "smtk/bridge/polygon/internal/SweepEvent.h"
 #include "smtk/bridge/polygon/internal/Util.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
 
 namespace smtk
@@ -31,7 +31,7 @@ Neighborhood::Neighborhood(SweeplinePosition& x, FragmentArray& fragments,
   , m_fragments(&fragments)
   , m_eventQueue(&eventQueue)
   , m_activeEdges(&active)
-  , m_mgr(sess->manager())
+  , m_resource(sess->resource())
   , m_session(sess)
   , m_debugLevel(0)
 {
@@ -242,7 +242,7 @@ void Neighborhood::relateNeighborhoods(FragmentId fA, EdgeFragment& fragA, bool 
       if (oaXob == 0 && (fA != fB || m_ring.size() > 1))
       {
         smtkWarningMacro(
-          m_mgr->log(), "Neighborhood of edge fragment is invalid. Expect invalid results.");
+          m_resource->log(), "Neighborhood of edge fragment is invalid. Expect invalid results.");
       }
       RegionId above = this->lowerRegionJustAbove(origin);
       RegionId below = this->upperRegionJustBelow(origin);

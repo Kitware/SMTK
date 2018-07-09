@@ -42,7 +42,7 @@
 #include "smtk/extension/paraview/widgets/qtArcWidget.h"
 #include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
 #include "smtk/model/Edge.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/operation/Operation.h"
 #include <QtDebug>
 

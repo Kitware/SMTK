@@ -19,7 +19,6 @@
 #include "smtk/view/PhraseModel.h"
 
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include <QPushButton>

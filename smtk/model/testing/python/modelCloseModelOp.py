@@ -28,7 +28,7 @@ import unittest
 class TestModelCloseModelOp(unittest.TestCase):
 
     def loadThenCloseSessionModel(self, sessionname, filename):
-        actMgr = smtk.model.Manager.create()
+        actMgr = smtk.model.Resource.create()
         actSession = actMgr.createSession(sessionname, smtk.model.SessionRef())
 
         models = None
@@ -41,7 +41,7 @@ class TestModelCloseModelOp(unittest.TestCase):
                 json = f.read()
 
             self.assertTrue(not json == None, 'Unable to load input file')
-            self.assertTrue(smtk.io.LoadJSON.intoModelManager(
+            self.assertTrue(smtk.io.LoadJSON.intoModelResource(
                 json, actMgr), 'Unable to parse JSON input file')
 
             actMgr.assignDefaultNames()
@@ -57,7 +57,7 @@ class TestModelCloseModelOp(unittest.TestCase):
                 result.find('outcome').value(0),
                 int(smtk.operation.Operation.SUCCEEDED),
                 'discrete read operation failed')
-            models = smtk.model.Manager.CastTo(
+            models = smtk.model.Resource.CastTo(
                 result.find('resource').value(0)).findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
         print('Closing %d models.' % len(models))

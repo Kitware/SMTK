@@ -29,8 +29,8 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
@@ -101,7 +101,7 @@ int Import::taggedPolyData2PolygonModelEntities(smtk::bridge::polygon::Resource:
   vtkIdTypeArray* tagInfo, vtkPolyData* pdata, smtk::model::Model& model)
 {
   smtk::bridge::polygon::SessionPtr sess = resource->polygonSession();
-  smtk::model::Manager::Ptr mgr = sess->manager();
+  smtk::model::Resource::Ptr modelResource = sess->resource();
   internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
   vtkPoints* points = pdata->GetPoints();
   vtkCellArray* verts = pdata->GetVerts();
@@ -128,7 +128,7 @@ int Import::taggedPolyData2PolygonModelEntities(smtk::bridge::polygon::Resource:
       pcoords[i++] = pnt[1];
       pcoords[i++] = pnt[2];
     }
-    smtk::model::Vertices gVerts = storage->findOrAddModelVertices(mgr, pcoords, 3);
+    smtk::model::Vertices gVerts = storage->findOrAddModelVertices(modelResource, pcoords, 3);
     numEnts += static_cast<int>(gVerts.size());
     i = 0;
     for (auto gVert : gVerts)
@@ -211,7 +211,7 @@ int Import::basicPolyData2PolygonModelEntities(
   stripper->SetInputData(polyLines);
   stripper->Update();
   pdata->ShallowCopy(stripper->GetOutput());
-  smtk::model::Manager::Ptr mgr = sess->manager();
+  smtk::model::Resource::Ptr modelResource = sess->resource();
   internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
   vtkPoints* points = pdata->GetPoints();
   std::vector<double> pcoords;

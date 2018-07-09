@@ -11,8 +11,8 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/EntityRefArrangementOps.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/PointLocatorExtension.h"
+#include "smtk/model/Resource.h"
 
 #include <random>
 
@@ -85,7 +85,7 @@ static void SnapPlacementsTo(const Instance& inst, const EntityRefs& snaps, Tess
   }
   else if (snaps.size() > 1)
   {
-    smtkWarningMacro(inst.manager()->log(), "Expected a single model entity to snap to, got "
+    smtkWarningMacro(inst.resource()->log(), "Expected a single model entity to snap to, got "
         << snaps.size() << ". "
         << "Ignoring all but first (" << snaps.begin()->name() << ")");
   }
@@ -97,14 +97,14 @@ static void SnapPlacementsTo(const Instance& inst, const EntityRefs& snaps, Tess
   }
   if (snapRule.empty())
   {
-    smtkWarningMacro(inst.manager()->log(), "No rule for how to perform snap.");
+    smtkWarningMacro(inst.resource()->log(), "No rule for how to perform snap.");
     return;
   }
   auto snapper = smtk::common::Extension::findAs<PointLocatorExtension>(snapRule);
   if (!snapper)
   {
-    smtkErrorMacro(inst.manager()->log(), "Could not create object (" << snapRule << ")"
-                                                                      << " to perform snapping.");
+    smtkErrorMacro(inst.resource()->log(), "Could not create object (" << snapRule << ")"
+                                                                       << " to perform snapping.");
     return;
   }
   snapper->closestPointOn(*snaps.begin(), tess->coords(), tess->coords());
@@ -198,7 +198,7 @@ EntityRefs Instance::snapEntities() const
   {
     return result;
   }
-  smtk::model::Manager::Ptr mgr = this->manager();
+  smtk::model::Resource::Ptr resource = this->resource();
   int numEnts = static_cast<int>(iprop->second.size() / 8);
   IntegerList::const_iterator pit = iprop->second.begin();
   for (int ii = 0; ii < numEnts; ++ii)
@@ -209,7 +209,7 @@ EntityRefs Instance::snapEntities() const
       data[2 * jj] = *pit % 256;
       data[2 * jj + 1] = (*pit / 256) % 256;
     }
-    result.insert(EntityRef(mgr, smtk::common::UUID(data, data + smtk::common::UUID::SIZE)));
+    result.insert(EntityRef(resource, smtk::common::UUID(data, data + smtk::common::UUID::SIZE)));
   }
   return result;
 }

@@ -386,19 +386,19 @@ ModelToMesh::ModelToMesh()
 }
 
 smtk::mesh::CollectionPtr ModelToMesh::operator()(
-  const smtk::mesh::ManagerPtr& meshManager, const smtk::model::ManagerPtr& modelManager) const
+  const smtk::mesh::ManagerPtr& meshManager, const smtk::model::ResourcePtr& modelResource) const
 {
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
   typedef std::map<smtk::model::EntityRef, std::size_t> CoordinateOffsetMap;
 
   smtk::mesh::CollectionPtr nullCollectionPtr;
-  if (!meshManager || !modelManager)
+  if (!meshManager || !modelResource)
   {
     return nullCollectionPtr;
   }
 
-  if (modelManager->tessellations().empty())
+  if (modelResource->tessellations().empty())
   {
     //we have zero tesselations, we can't continue. This is an invalid model
     return nullCollectionPtr;
@@ -408,7 +408,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(
   smtk::mesh::CollectionPtr collection = meshManager->makeCollection();
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
-  collection->setModelManager(modelManager);
+  collection->setModelResource(modelResource);
 
   //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
   //the MODEL_ENTITY will be associated with the meshset that contains all
@@ -422,7 +422,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(
     //extract all the coordinates from every tessellation and make a single
     //big pool
     EntityTypeBits entType = etypes[i];
-    EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
+    EntityRefs currentEnts = modelResource->entitiesMatchingFlagsAs<EntityRefs>(entType);
     detail::removeOnesWithoutTess(currentEnts);
     detail::convert_vertices(currentEnts, coordinateLocationMapping, ialloc);
   }
@@ -432,7 +432,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(
   for (int i = 0; i != 4; ++i)
   {
     EntityTypeBits entType = etypes[i];
-    EntityRefs currentEnts = modelManager->entitiesMatchingFlagsAs<EntityRefs>(entType);
+    EntityRefs currentEnts = modelResource->entitiesMatchingFlagsAs<EntityRefs>(entType);
     detail::removeOnesWithoutTess(currentEnts);
     if (!currentEnts.empty())
     {
@@ -451,7 +451,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(
       }
 
       EntityRefs currentModels =
-        modelManager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::MODEL_ENTITY);
+        modelResource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::MODEL_ENTITY);
       if (currentModels.size() > 0)
       {
         collection->associateToModel(currentModels.begin()->entity());
@@ -479,25 +479,25 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& mode
 {
   typedef smtk::model::EntityRefs EntityRefs;
   typedef std::map<smtk::model::EntityRef, std::size_t> CoordinateOffsetMap;
-  smtk::model::ManagerPtr modelManager = model.manager();
+  smtk::model::ResourcePtr modelResource = model.resource();
   smtk::mesh::CollectionPtr nullCollectionPtr;
-  if (!modelManager || !modelManager->meshes())
+  if (!modelResource || !modelResource->meshes())
   {
     return nullCollectionPtr;
   }
 
-  if (modelManager->tessellations().empty())
+  if (modelResource->tessellations().empty())
   {
     //we have zero tesselations, we can't continue. This is an invalid model
     return nullCollectionPtr;
   }
 
-  smtk::mesh::ManagerPtr meshManager = modelManager->meshes();
+  smtk::mesh::ManagerPtr meshManager = modelResource->meshes();
   //Create the collection and extract the allocation interface from it
   smtk::mesh::CollectionPtr collection = meshManager->makeCollection();
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
-  collection->setModelManager(modelManager);
+  collection->setModelResource(modelResource);
 
   //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
   //the MODEL_ENTITY will be associated with the meshset that contains all

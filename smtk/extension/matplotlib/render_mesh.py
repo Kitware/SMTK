@@ -89,7 +89,7 @@ class RenderMesh(smtk.operation.Operation):
         return result
 
     def createSpecification(self):
-        spec = smtk.attribute.Collection.create()
+        spec = smtk.attribute.Resource.create()
         reader = smtk.io.AttributeReader()
         reader.readContents(spec, render_mesh_xml.description, self.log())
         return spec

@@ -21,7 +21,6 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include "smtk/bridge/mesh/Export_xml.h"

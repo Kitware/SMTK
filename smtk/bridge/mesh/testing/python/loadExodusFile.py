@@ -54,7 +54,6 @@ class LoadExodusFile(smtk.testing.TestCase):
         # Create an ImportResource operation (alternatively, we could have just
         # created a smtk.bridge.mesh.Import operation directly, avoiding the
         # need for all of the setup registration. This is a test, though, so
-        # let's ensure the circuitous way works).
         loadOp = self.operationManager.createOperation(
             'smtk::operation::ImportResource')
         loadOp.parameters().find('filename').setValue(modelFile)
@@ -64,7 +63,7 @@ class LoadExodusFile(smtk.testing.TestCase):
             raise ImportError
 
         # Access the resource
-        resource = smtk.model.Manager.CastTo(loadRes.find('resource').value())
+        resource = smtk.model.Resource.CastTo(loadRes.find('resource').value())
 
 
 if __name__ == '__main__':

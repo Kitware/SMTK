@@ -10,7 +10,7 @@
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/io/LoadJSON.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "vtkActor.h"
 #include "vtkCommand.h"
@@ -61,9 +61,9 @@ int main(int argc, char* argv[])
   }
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
 
-  int status = !LoadJSON::intoModelManager(data.c_str(), sm);
+  int status = !LoadJSON::intoModelResource(data.c_str(), sm);
   if (!status)
   {
     vtkNew<vtkActor> act;
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
     vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetModelManager(sm);
+    src->SetModelResource(sm);
     // TODO: Accept a model name or UUID and tell the src to use it:
     // src->SetModelEntityID(
     //   sm->entitiesMatchingFlagsAs<Models>(MODEL_ENTITY)[0].entity().toString().c_str());

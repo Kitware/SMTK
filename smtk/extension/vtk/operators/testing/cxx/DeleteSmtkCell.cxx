@@ -23,9 +23,9 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Registrar.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
@@ -98,12 +98,12 @@ int main(int argc, char* argv[])
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Read operator failed");
 
-  smtk::bridge::polygon::Resource::Ptr manager =
+  smtk::bridge::polygon::Resource::Ptr modelresource =
     smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
       readOpResult->findResource("resource")->value(0));
 
   smtk::model::Models models =
-    manager->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
+    modelresource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
 
   if (models.size() < 1)
     return 1;
@@ -117,13 +117,13 @@ int main(int argc, char* argv[])
   }
 
   // get face and edge info
-  EntityRefs faces = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::FACE);
+  EntityRefs faces = modelresource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::FACE);
   std::cout << "Faces inside model are:\n";
   for (auto face : faces)
   {
     std::cout << " " << face.name() << "\n";
   }
-  EntityRefs edges = manager->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
+  EntityRefs edges = modelresource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside model are:\n";
   for (auto edge : edges)
   {
@@ -140,9 +140,9 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::model::Face face1 = manager->findEntitiesByPropertyAs<Faces>("name", "face 1")[0];
+  smtk::model::Face face1 = modelresource->findEntitiesByPropertyAs<Faces>("name", "face 1")[0];
   test(face1.isValid());
-  smtk::model::Edge edge1 = manager->findEntitiesByPropertyAs<Edges>("name", "edge 1")[0];
+  smtk::model::Edge edge1 = modelresource->findEntitiesByPropertyAs<Edges>("name", "edge 1")[0];
   test(edge1.isValid());
 
   bool result(0);
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
   vtkNew<vtkCamera> camera;
   camera->SetPosition(20, 0, 20);
   camera->SetFocalPoint(10, 10, -10);
-  src->SetModelManager(manager);
+  src->SetModelResource(modelresource);
   win->SetMultiSamples(0);
   src->AllowNormalGenerationOn();
   map->SetInputConnection(src->GetOutputPort());

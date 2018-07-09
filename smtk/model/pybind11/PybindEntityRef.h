@@ -23,7 +23,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/StringData.h"
@@ -37,7 +37,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
   instance
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def(py::init<::smtk::model::EntityPtr>())
     .def("__ne__", (bool (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &) const) &smtk::model::EntityRef::operator!=)
     .def("__lt__", (bool (smtk::model::EntityRef::*)(::smtk::model::EntityRef const &) const) &smtk::model::EntityRef::operator<)
@@ -124,8 +124,8 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("isVolume", &smtk::model::EntityRef::isVolume)
     .def("isVolumeUse", &smtk::model::EntityRef::isVolumeUse)
     .def("lowerDimensionalBoundaries", &smtk::model::EntityRef::lowerDimensionalBoundaries, py::arg("lowerDimension"))
-    .def("manager", (smtk::model::ManagerPtr (smtk::model::EntityRef::*)()) &smtk::model::EntityRef::manager)
-    .def("manager", (smtk::model::ManagerPtr const (smtk::model::EntityRef::*)() const) &smtk::model::EntityRef::manager)
+    .def("resource", (smtk::model::ResourcePtr (smtk::model::EntityRef::*)()) &smtk::model::EntityRef::resource)
+    .def("resource", (smtk::model::ResourcePtr const (smtk::model::EntityRef::*)() const) &smtk::model::EntityRef::resource)
     .def("maxParametricDimension", &smtk::model::EntityRef::maxParametricDimension)
     .def("name", &smtk::model::EntityRef::name)
     .def("numberOfArrangementsOfKind", &smtk::model::EntityRef::numberOfArrangementsOfKind, py::arg("k"))
@@ -148,7 +148,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("setFloatProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::FloatList const &)) &smtk::model::EntityRef::setFloatProperty, py::arg("propName"), py::arg("propValue"))
     .def("setIntegerProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::Integer)) &smtk::model::EntityRef::setIntegerProperty, py::arg("propName"), py::arg("propValue"))
     .def("setIntegerProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::IntegerList const &)) &smtk::model::EntityRef::setIntegerProperty, py::arg("propName"), py::arg("propValue"))
-    .def("setManager", &smtk::model::EntityRef::setManager, py::arg("manager"))
+    .def("setResource", &smtk::model::EntityRef::setResource, py::arg("resource"))
     .def("setName", &smtk::model::EntityRef::setName, py::arg("n"))
     .def("setStringProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::String const &)) &smtk::model::EntityRef::setStringProperty, py::arg("propName"), py::arg("propValue"))
     .def("setStringProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::StringList const &)) &smtk::model::EntityRef::setStringProperty, py::arg("propName"), py::arg("propValue"))

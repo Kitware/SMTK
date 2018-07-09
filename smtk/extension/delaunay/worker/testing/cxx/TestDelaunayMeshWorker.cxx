@@ -23,7 +23,7 @@
 #include "smtk/bridge/polygon/operators/Read.h"
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/SaveJSON.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <fstream>
 #include <iostream>
@@ -96,16 +96,16 @@ namespace
 {
 
 //------------------------------------------------------------------------------
-//construct a smtk::model::Manager and load all the model from a file
-//into the manager
-smtk::model::ManagerPtr create_polygon_model(const std::string file_path)
+//construct a smtk::model::Resource and load all the model from a file
+//into the resource
+smtk::model::ResourcePtr create_polygon_model(const std::string file_path)
 {
   // Create an import operator
   smtk::bridge::polygon::Read::Ptr readOp = smtk::bridge::polygon::Read::create();
   if (!readOp)
   {
     std::cerr << "No read operator\n";
-    return smtk::model::ManagerPtr();
+    return smtk::model::ResourcePtr();
   }
 
   readOp->parameters()->findFile("filename")->setValue(file_path.c_str());
@@ -114,10 +114,11 @@ smtk::model::ManagerPtr create_polygon_model(const std::string file_path)
     static_cast<int>(smtk::bridge::polygon::Read::Outcome::SUCCEEDED))
   {
     std::cerr << "Could not read smtk model!\n";
-    return smtk::model::ManagerPtr();
+    return smtk::model::ResourcePtr();
   }
 
-  return std::dynamic_pointer_cast<smtk::model::Manager>(result->findResource("resource")->value());
+  return std::dynamic_pointer_cast<smtk::model::Resource>(
+    result->findResource("resource")->value());
 }
 
 //------------------------------------------------------------------------------
@@ -238,15 +239,15 @@ int main(int argc, char* argv[])
   remus::proto::JobSubmission submission(delaunayReqs);
 
   //Now we need to load up a smtk::model from file
-  smtk::model::ManagerPtr manager = create_polygon_model(input_file);
-  if (!manager)
+  smtk::model::ResourcePtr resource = create_polygon_model(input_file);
+  if (!resource)
   {
     std::cerr << "Unable to load the model file from disk." << std::endl;
     return 1;
   }
 
-  //Second step it serialize this manager
-  std::string serializedModel = smtk::io::SaveJSON::fromModelManager(manager);
+  //Second step it serialize this resource
+  std::string serializedModel = smtk::io::SaveJSON::fromModelResource(resource);
 
   //construct a zero copy job content of the serializedModel labelling it as
   //JSON encoded data

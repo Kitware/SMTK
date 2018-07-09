@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
@@ -67,13 +67,13 @@ namespace model
 {
 
 /**@name Constructors and destructors.
-  *\brief Model manager instances should always be created using the static create() method.
+  *\brief Model resource instances should always be created using the static create() method.
   *
   */
 //@{
-/// Create a default, empty model manager.
-Manager::Manager(smtk::resource::ManagerPtr mgr)
-  : smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>(mgr)
+/// Create a default, empty model resource.
+Resource::Resource(smtk::resource::ManagerPtr mgr)
+  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(mgr)
   , m_topology(new UUIDsToEntities)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -90,8 +90,8 @@ Manager::Manager(smtk::resource::ManagerPtr mgr)
   this->log().setFlushToStdout(false);
 }
 
-Manager::Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
-  : smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>(uid, mgr)
+Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
+  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(uid, mgr)
   , m_topology(new UUIDsToEntities)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -108,12 +108,12 @@ Manager::Manager(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
   this->log().setFlushToStdout(false);
 }
 
-/// Create a model manager using the given storage instances.
-Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
+/// Create a model resource using the given storage instances.
+Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
   shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
   shared_ptr<UUIDsToAttributeAssignments> attribs, const smtk::common::UUID& uid,
   smtk::resource::ManagerPtr mgr)
-  : smtk::resource::DerivedFrom<Manager, smtk::resource::Resource>(uid, mgr)
+  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(uid, mgr)
   , m_topology(inTopology)
   , m_floatData(new UUIDsToFloatData)
   , m_stringData(new UUIDsToStringData)
@@ -129,13 +129,13 @@ Manager::Manager(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTesse
   this->log().setFlushToStdout(false);
 }
 
-/// Destroying a model manager requires us to release the default attribute manager..
-Manager::~Manager()
+/// Destroying a model resource requires us to release the default attribute resource..
+Resource::~Resource()
 {
   if (m_defaultSession)
   {
     // NB: We must pass "false" for the expungeSession argument because
-    // the manager may have 0 shared-pointer references at this point
+    // the resource may have 0 shared-pointer references at this point
     // and thus cannot construct trigger callback cursors to notify
     // listeners that deletions are occurring.
     this->unregisterSession(m_defaultSession, false);
@@ -149,42 +149,42 @@ Manager::~Manager()
   *
   */
 //@{
-UUIDsToEntities& Manager::topology()
+UUIDsToEntities& Resource::topology()
 {
   return *m_topology.get();
 }
 
-const UUIDsToEntities& Manager::topology() const
+const UUIDsToEntities& Resource::topology() const
 {
   return *m_topology.get();
 }
 
-UUIDsToTessellations& Manager::tessellations()
+UUIDsToTessellations& Resource::tessellations()
 {
   return *m_tessellations.get();
 }
 
-const UUIDsToTessellations& Manager::tessellations() const
+const UUIDsToTessellations& Resource::tessellations() const
 {
   return *m_tessellations.get();
 }
 
-UUIDsToTessellations& Manager::analysisMesh()
+UUIDsToTessellations& Resource::analysisMesh()
 {
   return *m_analysisMesh.get();
 }
 
-const UUIDsToTessellations& Manager::analysisMesh() const
+const UUIDsToTessellations& Resource::analysisMesh() const
 {
   return *m_analysisMesh.get();
 }
 
-smtk::mesh::ManagerPtr Manager::meshes() const
+smtk::mesh::ManagerPtr Resource::meshes() const
 {
   return m_meshes;
 }
 
-void Manager::clear()
+void Resource::clear()
 {
   m_topology->clear();
   m_floatData->clear();
@@ -202,7 +202,7 @@ void Manager::clear()
   // TODO: remove triggers?
 }
 
-const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
+const UUIDsToAttributeAssignments& Resource::attributeAssignments() const
 {
   return *m_attributeAssignments;
 }
@@ -212,8 +212,8 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
   *
   * Returns true upon success, false when the entity did not exist.
   *
-  * Note that the implementation is aware of when the Manager
-  * is actually a Manager and removes storage from the Manager as
+  * Note that the implementation is aware of when the Resource
+  * is actually a Resource and removes storage from the Resource as
   * well (including tessellation data).
   *
   * **Warning**: Invoking this method naively will likely result
@@ -224,7 +224,7 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
   * boundary). The application is expected to perform further
   * operations to keep the model valid.
   */
-SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
+SessionInfoBits Resource::erase(const UUID& uid, SessionInfoBits flags)
 {
   SessionInfoBits actual = flags;
   if (flags & SESSION_ENTITY_RELATIONS)
@@ -314,7 +314,7 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
     // TODO: Notify model of entity removal?
     //       Note this can be complicated because removal
     //       of entities in the class destructor prevent us
-    //       from obtaining a shared pointer to the manager
+    //       from obtaining a shared pointer to the resource
     //       to pass to any observers...
     m_topology->erase(uid);
   }
@@ -325,17 +325,17 @@ SessionInfoBits Manager::erase(const UUID& uid, SessionInfoBits flags)
 /**\brief A convenience method for erasing an entity from storage.
   *
   */
-SessionInfoBits Manager::erase(const EntityRef& entityref, SessionInfoBits flags)
+SessionInfoBits Resource::erase(const EntityRef& entityref, SessionInfoBits flags)
 {
-  return this->Manager::erase(entityref.entity(), flags);
+  return this->Resource::erase(entityref.entity(), flags);
 }
 
 /**\brief A convenience method for erasing an entity from storage.
   *
   */
-SessionInfoBits Manager::erase(const EntityPtr& entityref, SessionInfoBits flags)
+SessionInfoBits Resource::erase(const EntityPtr& entityref, SessionInfoBits flags)
 {
-  return this->Manager::erase(entityref->id(), flags);
+  return this->Resource::erase(entityref->id(), flags);
 }
 
 /**\brief Erase records related to the entity with no clean or safety checks.
@@ -346,7 +346,7 @@ SessionInfoBits Manager::erase(const EntityPtr& entityref, SessionInfoBits flags
   * then \a eref will be queried for its owning model and the model for its owning session.
   * This can lead to problems if relationships have been erased by previous calls to hardErase.
   */
-SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
+SessionInfoBits Resource::hardErase(const EntityRef& eref, SessionInfoBits flags)
 {
   smtk::common::UUID uid(eref.entity());
   if (!uid)
@@ -429,7 +429,7 @@ SessionInfoBits Manager::hardErase(const EntityRef& eref, SessionInfoBits flags)
   * submodels from storage.
   * This method will have no effect given an invalid model entity.
   */
-SessionInfoBits Manager::eraseModel(const Model& model, SessionInfoBits flags)
+SessionInfoBits Resource::eraseModel(const Model& model, SessionInfoBits flags)
 {
   if (!model.isValid())
     return SESSION_NOTHING;
@@ -469,7 +469,7 @@ SessionInfoBits Manager::eraseModel(const Model& model, SessionInfoBits flags)
 /// Entity construction
 //@{
 /// Return a currently-unused UUID (guaranteed not to collide if inserted immediately).
-UUID Manager::unusedUUID()
+UUID Resource::unusedUUID()
 {
   UUID actual;
   do
@@ -480,7 +480,7 @@ UUID Manager::unusedUUID()
 }
 
 /// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-Manager::iter_type Manager::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
+Resource::iter_type Resource::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
 {
   UUID actual = this->unusedUUID();
   return this->setEntityOfTypeAndDimension(actual, entityFlags, dim);
@@ -492,7 +492,7 @@ Manager::iter_type Manager::insertEntityOfTypeAndDimension(BitFlags entityFlags,
   * otherwise the existing UUID will be used when inserting
   * into this class's map.
   */
-Manager::iter_type Manager::insertEntity(EntityPtr c)
+Resource::iter_type Resource::insertEntity(EntityPtr c)
 {
   if (!c->id())
   {
@@ -508,14 +508,14 @@ Manager::iter_type Manager::insertEntity(EntityPtr c)
   * Some checking and initialization is performed based on \a entityFlags and \a dim,
   * as described below.
   *
-  * If the Manager may be cast to a Manager instance and an entity
+  * If the Resource may be cast to a Resource instance and an entity
   * is expected to have a known, fixed number of arrangements of some sort,
   * those are created here so that entityrefs may always rely on their existence
   * even in the absence of the related UUIDs appearing in the entity's relations.
   * For face cells (CELL_2D) entites, two HAS_USE Arrangements are created to
   * reference FaceUse instances.
   */
-Manager::iter_type Manager::setEntityOfTypeAndDimension(
+Resource::iter_type Resource::setEntityOfTypeAndDimension(
   const UUID& uid, BitFlags entityFlags, int dim)
 {
   UUIDWithEntityPtr it;
@@ -537,7 +537,7 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(
   entrec->setId(uid);
   std::pair<UUID, EntityPtr> entry(uid, entrec);
   this->prepareForEntity(entry);
-  std::pair<Manager::iter_type, bool> result = m_topology->insert(entry);
+  std::pair<Resource::iter_type, bool> result = m_topology->insert(entry);
 
   if (result.second)
   {
@@ -552,7 +552,7 @@ Manager::iter_type Manager::setEntityOfTypeAndDimension(
   *
   * Passing a nil or non-unique \a uid is an error here and will throw an exception.
   */
-Manager::iter_type Manager::setEntity(EntityPtr c)
+Resource::iter_type Resource::setEntity(EntityPtr c)
 {
   UUIDWithEntityPtr it;
   c->reparent(shared_from_this());
@@ -585,25 +585,25 @@ Manager::iter_type Manager::setEntity(EntityPtr c)
 }
 
 /// A wrappable version of InsertEntityOfTypeAndDimension
-UUID Manager::addEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
+UUID Resource::addEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
 {
   return this->insertEntityOfTypeAndDimension(entityFlags, dim)->first;
 }
 
 /// A wrappable version of InsertEntity
-UUID Manager::addEntity(EntityPtr cell)
+UUID Resource::addEntity(EntityPtr cell)
 {
   return this->insertEntity(cell)->first;
 }
 
 /// A wrappable version of SetEntityOfTypeAndDimension
-UUID Manager::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, BitFlags entityFlags, int dim)
+UUID Resource::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, BitFlags entityFlags, int dim)
 {
   return this->setEntityOfTypeAndDimension(uid, entityFlags, dim)->first;
 }
 
 /// A wrappable version of setEntity. This will override the UUID in \a cell.
-UUID Manager::addEntityWithUUID(const UUID& uid, EntityPtr cell)
+UUID Resource::addEntityWithUUID(const UUID& uid, EntityPtr cell)
 {
   cell->setId(uid);
   return this->setEntity(cell)->first;
@@ -612,22 +612,22 @@ UUID Manager::addEntityWithUUID(const UUID& uid, EntityPtr cell)
 
 /// Shortcuts for inserting cells with default entity flags.
 //@{
-Manager::iter_type Manager::insertCellOfDimension(int dim)
+Resource::iter_type Resource::insertCellOfDimension(int dim)
 {
   return this->insertEntityOfTypeAndDimension(CELL_ENTITY, dim);
 }
 
-Manager::iter_type Manager::setCellOfDimension(const UUID& uid, int dim)
+Resource::iter_type Resource::setCellOfDimension(const UUID& uid, int dim)
 {
   return this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, dim);
 }
 
-UUID Manager::addCellOfDimension(int dim)
+UUID Resource::addCellOfDimension(int dim)
 {
   return this->addEntityOfTypeAndDimension(CELL_ENTITY, dim);
 }
 
-UUID Manager::addCellOfDimensionWithUUID(const UUID& uid, int dim)
+UUID Resource::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 {
   return this->addEntityOfTypeAndDimensionWithUUID(uid, CELL_ENTITY, dim);
 }
@@ -636,14 +636,14 @@ UUID Manager::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 /// Queries on entities belonging to the solid.
 //@{
 /// Return the type of entity that the link represents.
-BitFlags Manager::type(const UUID& ofEntity) const
+BitFlags Resource::type(const UUID& ofEntity) const
 {
   UUIDWithEntityPtr it = m_topology->find(ofEntity);
   return (it == m_topology->end() ? INVALID : it->second->entityFlags());
 }
 
 /// Return the dimension of the manifold that the passed entity represents.
-int Manager::dimension(const UUID& ofEntity) const
+int Resource::dimension(const UUID& ofEntity) const
 {
   UUIDWithEntityPtr it = m_topology->find(ofEntity);
   return (it == m_topology->end() ? -1 : it->second->dimension());
@@ -655,7 +655,7 @@ int Manager::dimension(const UUID& ofEntity) const
   * of the entity. It will not assign a name to the entity using the model
   * counters because the method is const.
   */
-std::string Manager::name(const UUID& ofEntity) const
+std::string Resource::name(const UUID& ofEntity) const
 {
   if (this->hasStringProperty(ofEntity, "name"))
   {
@@ -670,14 +670,14 @@ std::string Manager::name(const UUID& ofEntity) const
   {
     return "invalid id " + ofEntity.toString();
   }
-  return Manager::shortUUIDName(it->first, it->second->entityFlags());
+  return Resource::shortUUIDName(it->first, it->second->entityFlags());
 }
 
 /**\brief Return the (Dimension+1 or higher)-entities that are the immediate bordants of the passed entity.
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
+UUIDs Resource::bordantEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
   UUIDWithConstEntityPtr it = m_topology->find(ofEntity);
@@ -707,7 +707,7 @@ UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
     else if ((it->second->entityFlags() & CELL_ENTITY) &&
       (other->second->entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use upwards.
-      ShellEntities bshells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai)
+      ShellEntities bshells = UseEntity(smtk::const_pointer_cast<Resource>(shared_from_this()), *ai)
                                 .boundingShellEntities<ShellEntities>();
       for (ShellEntities::iterator shellIt = bshells.begin(); shellIt != bshells.end(); ++shellIt)
       {
@@ -726,7 +726,7 @@ UUIDs Manager::bordantEntities(const UUID& ofEntity, int ofDimension) const
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs Manager::bordantEntities(const UUIDs& ofEntities, int ofDimension) const
+UUIDs Resource::bordantEntities(const UUIDs& ofEntities, int ofDimension) const
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -742,7 +742,7 @@ UUIDs Manager::bordantEntities(const UUIDs& ofEntities, int ofDimension) const
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
+UUIDs Resource::boundaryEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
   UUIDWithConstEntityPtr it = m_topology->find(ofEntity);
@@ -772,7 +772,7 @@ UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
     else if ((it->second->entityFlags() & CELL_ENTITY) &&
       (other->second->entityFlags() & USE_ENTITY))
     { // ... or it is a use: follow the use downwards.
-      ShellEntities shells = UseEntity(smtk::const_pointer_cast<Manager>(shared_from_this()), *ai)
+      ShellEntities shells = UseEntity(smtk::const_pointer_cast<Resource>(shared_from_this()), *ai)
                                .shellEntities<ShellEntities>();
       for (ShellEntities::iterator shellIt = shells.begin(); shellIt != shells.end(); ++shellIt)
       {
@@ -801,7 +801,7 @@ UUIDs Manager::boundaryEntities(const UUID& ofEntity, int ofDimension) const
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs Manager::boundaryEntities(const UUIDs& ofEntities, int ofDimension) const
+UUIDs Resource::boundaryEntities(const UUIDs& ofEntities, int ofDimension) const
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -816,7 +816,7 @@ UUIDs Manager::boundaryEntities(const UUIDs& ofEntities, int ofDimension) const
 /**\brief Return lower-dimensional boundaries of the passed d-dimensional entity.
   *
   * \a lowerDimension may be any dimension < d.
-  * Unlike Manager::boundaryEntities(), this method will search the boundaries
+  * Unlike Resource::boundaryEntities(), this method will search the boundaries
   * of the entity's boundaries.
   * For example, a 2-dimensional face normally stores 1-dimensional edges
   * as its immediate boundaries, so if BoundaryEntities() is asked for 0-dimensional
@@ -828,7 +828,7 @@ UUIDs Manager::boundaryEntities(const UUIDs& ofEntities, int ofDimension) const
   * Passing -1 will return all boundary entities of the specified entity,
   * regardless of their dimension.
   */
-UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimension)
+UUIDs Resource::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimension)
 {
   UUIDs result;
   UUIDWithEntityPtr it = m_topology->find(ofEntity);
@@ -863,7 +863,7 @@ UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimensi
 /**\brief Return higher-dimensional bordants of the passed d-dimensional entity.
   *
   * \a higherDimension may be any dimension > d.
-  * Unlike Manager::bordantEntities(), this method will search the bordants
+  * Unlike Resource::bordantEntities(), this method will search the bordants
   * of the entity's immediate bordants.
   * For example, a 1-dimensional edge normally stores 2-dimensional faces
   * as its immediate bordants, so if BoundaryEntities() is asked for 3-dimensional
@@ -875,7 +875,7 @@ UUIDs Manager::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimensi
   * Passing -1 will return all bordant entities of the specified entity,
   * regardless of their dimension.
   */
-UUIDs Manager::higherDimensionalBordants(const UUID& ofEntity, int higherDimension)
+UUIDs Resource::higherDimensionalBordants(const UUID& ofEntity, int higherDimension)
 {
   UUIDs result;
   UUIDWithEntityPtr it = m_topology->find(ofEntity);
@@ -904,7 +904,7 @@ UUIDs Manager::higherDimensionalBordants(const UUID& ofEntity, int higherDimensi
 }
 
 /// Return entities of the requested dimension that share a boundary relationship with the passed entity.
-UUIDs Manager::adjacentEntities(const UUID& ofEntity, int ofDimension)
+UUIDs Resource::adjacentEntities(const UUID& ofEntity, int ofDimension)
 {
   // FIXME: Implement adjacency
   (void)ofEntity;
@@ -914,7 +914,7 @@ UUIDs Manager::adjacentEntities(const UUID& ofEntity, int ofDimension)
 }
 
 /// Return all entities of the requested dimension that are present in the solid.
-UUIDs Manager::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
+UUIDs Resource::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 {
   UUIDs result;
   for (UUIDWithEntityPtr it = m_topology->begin(); it != m_topology->end(); ++it)
@@ -929,7 +929,7 @@ UUIDs Manager::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 }
 
 /// Return all entities of the requested dimension that are present in the solid.
-UUIDs Manager::entitiesOfDimension(int dim)
+UUIDs Resource::entitiesOfDimension(int dim)
 {
   UUIDs result;
   for (UUIDWithEntityPtr it = m_topology->begin(); it != m_topology->end(); ++it)
@@ -950,10 +950,10 @@ UUIDs Manager::entitiesOfDimension(int dim)
   * existing entities to insert newly-transcribed relationships)
   * since it may ask a Session instance to fetch a dangling UUID (one
   * marked as existing but un-transcribed) and insert the Entity into
-  * Manager. If it is important that entities remain unchanged,
+  * Resource. If it is important that entities remain unchanged,
   * call with the second argument (\a trySessions) set to false.
   */
-EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
+EntityPtr Resource::findEntity(const UUID& uid, bool trySessions) const
 {
   UUIDWithEntityPtr it = m_topology->find(uid);
   if (it == m_topology->end())
@@ -962,7 +962,7 @@ EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
     // We use an evil const-cast here because we are working under the fiction
     // that fetching an entity that exists (even if it hasn't been transcribed
     // yet) does not affect storage.
-    ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+    ResourcePtr self = const_cast<Resource*>(this)->shared_from_this();
     if (trySessions)
     {
       UUIDsToSessions::iterator bit;
@@ -981,7 +981,7 @@ EntityPtr Manager::findEntity(const UUID& uid, bool trySessions) const
   return it->second;
 }
 
-smtk::resource::ComponentPtr Manager::find(const smtk::common::UUID& uid) const
+smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& uid) const
 {
   return std::dynamic_pointer_cast<smtk::resource::Component>(this->findEntity(uid));
 }
@@ -1043,7 +1043,7 @@ bool IsValueValid(const smtk::resource::ComponentPtr& comp, smtk::model::BitFlag
 
 /// Given a query string, return a functor that determines if a component is
 /// accepted by the query.
-std::function<bool(const ComponentPtr&)> Manager::queryOperation(
+std::function<bool(const ComponentPtr&)> Resource::queryOperation(
   const std::string& queryString) const
 {
   smtk::model::BitFlags bitflags = queryString.empty()
@@ -1053,7 +1053,7 @@ std::function<bool(const ComponentPtr&)> Manager::queryOperation(
 }
 
 // visit all components in the resource.
-void Manager::visit(smtk::resource::Component::Visitor& visitor) const
+void Resource::visit(smtk::resource::Component::Visitor& visitor) const
 {
   auto convertedVisitor = [&](
     const std::pair<const smtk::common::UUID, const smtk::model::EntityPtr>& entityPair) {
@@ -1065,7 +1065,7 @@ void Manager::visit(smtk::resource::Component::Visitor& visitor) const
 }
 
 /// Given an entity \a c, ensure that all of its references contain a reference to it.
-void Manager::insertEntityReferences(const UUIDWithEntityPtr& c)
+void Resource::insertEntityReferences(const UUIDWithEntityPtr& c)
 {
   UUIDArray::const_iterator bit;
   EntityPtr ref;
@@ -1087,7 +1087,7 @@ void Manager::insertEntityReferences(const UUIDWithEntityPtr& c)
   * array of relations held by \a c and potentially other entities related
   * to \a c.
   */
-bool Manager::elideOneEntityReference(const UUIDWithEntityPtr& c, const UUID& r)
+bool Resource::elideOneEntityReference(const UUIDWithEntityPtr& c, const UUID& r)
 {
   UUIDArray::const_iterator bit;
   return c->second->invalidateRelation(r) < 0 ? false : true;
@@ -1102,7 +1102,7 @@ bool Manager::elideOneEntityReference(const UUIDWithEntityPtr& c, const UUID& r)
   * relations are used by arrangements and we do not want to
   * rewrite arrangements.
   */
-void Manager::elideEntityReferences(const UUIDWithEntityPtr& c)
+void Resource::elideEntityReferences(const UUIDWithEntityPtr& c)
 {
   UUIDArray::const_iterator bit;
   EntityPtr ref;
@@ -1124,7 +1124,7 @@ void Manager::elideEntityReferences(const UUIDWithEntityPtr& c)
 }
 
 /// Given an entity \a c, ensure that all of its references contain <b>no</b> reference to it.
-void Manager::removeEntityReferences(const UUIDWithEntityPtr& c)
+void Resource::removeEntityReferences(const UUIDWithEntityPtr& c)
 {
   UUIDArray::const_iterator bit;
   EntityPtr ref;
@@ -1142,10 +1142,10 @@ void Manager::removeEntityReferences(const UUIDWithEntityPtr& c)
   *
   * This will append \a groupId to each entity in \a uids.
   * Note that this does **not** add the proper Arrangement information
-  * that Manager::findOrAddEntityToGroup() does, since Manager
+  * that Resource::findOrAddEntityToGroup() does, since Resource
   * does not store Arrangement information.
   */
-void Manager::addToGroup(const UUID& groupId, const UUIDs& uids)
+void Resource::addToGroup(const UUID& groupId, const UUIDs& uids)
 {
   UUIDWithEntityPtr result = m_topology->find(groupId);
   if (result == m_topology->end())
@@ -1164,7 +1164,7 @@ void Manager::addToGroup(const UUID& groupId, const UUIDs& uids)
   *
   */
 ///@{
-void Manager::setFloatProperty(
+void Resource::setFloatProperty(
   const UUID& entity, const std::string& propName, smtk::model::Float propValue)
 {
   smtk::model::FloatList tmp;
@@ -1172,7 +1172,7 @@ void Manager::setFloatProperty(
   this->setFloatProperty(entity, propName, tmp);
 }
 
-void Manager::setFloatProperty(
+void Resource::setFloatProperty(
   const UUID& entity, const std::string& propName, const smtk::model::FloatList& propValue)
 {
   if (!entity.isNull())
@@ -1181,7 +1181,7 @@ void Manager::setFloatProperty(
   }
 }
 
-smtk::model::FloatList const& Manager::floatProperty(
+smtk::model::FloatList const& Resource::floatProperty(
   const UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
@@ -1193,7 +1193,7 @@ smtk::model::FloatList const& Manager::floatProperty(
   return dummy;
 }
 
-smtk::model::FloatList& Manager::floatProperty(const UUID& entity, const std::string& propName)
+smtk::model::FloatList& Resource::floatProperty(const UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
   {
@@ -1204,7 +1204,7 @@ smtk::model::FloatList& Manager::floatProperty(const UUID& entity, const std::st
   return dummy;
 }
 
-bool Manager::hasFloatProperty(const UUID& entity, const std::string& propName) const
+bool Resource::hasFloatProperty(const UUID& entity, const std::string& propName) const
 {
   UUIDsToFloatData::const_iterator uit = m_floatData->find(entity);
   if (uit == m_floatData->end())
@@ -1216,7 +1216,7 @@ bool Manager::hasFloatProperty(const UUID& entity, const std::string& propName) 
   return sit == uit->second.end() ? false : true;
 }
 
-bool Manager::removeFloatProperty(const UUID& entity, const std::string& propName)
+bool Resource::removeFloatProperty(const UUID& entity, const std::string& propName)
 {
   UUIDsToFloatData::iterator uit = m_floatData->find(entity);
   if (uit == m_floatData->end())
@@ -1234,17 +1234,17 @@ bool Manager::removeFloatProperty(const UUID& entity, const std::string& propNam
   return true;
 }
 
-const UUIDWithFloatProperties Manager::floatPropertiesForEntity(const UUID& entity) const
+const UUIDWithFloatProperties Resource::floatPropertiesForEntity(const UUID& entity) const
 {
   return m_floatData->find(entity);
 }
 
-UUIDWithFloatProperties Manager::floatPropertiesForEntity(const UUID& entity)
+UUIDWithFloatProperties Resource::floatPropertiesForEntity(const UUID& entity)
 {
   return m_floatData->find(entity);
 }
 
-void Manager::setStringProperty(
+void Resource::setStringProperty(
   const UUID& entity, const std::string& propName, const smtk::model::String& propValue)
 {
   smtk::model::StringList tmp;
@@ -1252,7 +1252,7 @@ void Manager::setStringProperty(
   this->setStringProperty(entity, propName, tmp);
 }
 
-void Manager::setStringProperty(
+void Resource::setStringProperty(
   const UUID& entity, const std::string& propName, const smtk::model::StringList& propValue)
 {
   if (!entity.isNull())
@@ -1261,7 +1261,7 @@ void Manager::setStringProperty(
   }
 }
 
-smtk::model::StringList const& Manager::stringProperty(
+smtk::model::StringList const& Resource::stringProperty(
   const UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
@@ -1273,7 +1273,7 @@ smtk::model::StringList const& Manager::stringProperty(
   return dummy;
 }
 
-smtk::model::StringList& Manager::stringProperty(const UUID& entity, const std::string& propName)
+smtk::model::StringList& Resource::stringProperty(const UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
   {
@@ -1284,7 +1284,7 @@ smtk::model::StringList& Manager::stringProperty(const UUID& entity, const std::
   return dummy;
 }
 
-bool Manager::hasStringProperty(const UUID& entity, const std::string& propName) const
+bool Resource::hasStringProperty(const UUID& entity, const std::string& propName) const
 {
   UUIDsToStringData::const_iterator uit = m_stringData->find(entity);
   if (uit == m_stringData->end())
@@ -1296,7 +1296,7 @@ bool Manager::hasStringProperty(const UUID& entity, const std::string& propName)
   return sit == uit->second.end() ? false : true;
 }
 
-bool Manager::removeStringProperty(const UUID& entity, const std::string& propName)
+bool Resource::removeStringProperty(const UUID& entity, const std::string& propName)
 {
   UUIDsToStringData::iterator uit = m_stringData->find(entity);
   if (uit == m_stringData->end())
@@ -1314,17 +1314,17 @@ bool Manager::removeStringProperty(const UUID& entity, const std::string& propNa
   return true;
 }
 
-const UUIDWithStringProperties Manager::stringPropertiesForEntity(const UUID& entity) const
+const UUIDWithStringProperties Resource::stringPropertiesForEntity(const UUID& entity) const
 {
   return m_stringData->find(entity);
 }
 
-UUIDWithStringProperties Manager::stringPropertiesForEntity(const UUID& entity)
+UUIDWithStringProperties Resource::stringPropertiesForEntity(const UUID& entity)
 {
   return m_stringData->find(entity);
 }
 
-void Manager::setIntegerProperty(
+void Resource::setIntegerProperty(
   const UUID& entity, const std::string& propName, smtk::model::Integer propValue)
 {
   smtk::model::IntegerList tmp;
@@ -1332,7 +1332,7 @@ void Manager::setIntegerProperty(
   this->setIntegerProperty(entity, propName, tmp);
 }
 
-void Manager::setIntegerProperty(
+void Resource::setIntegerProperty(
   const UUID& entity, const std::string& propName, const smtk::model::IntegerList& propValue)
 {
   if (!entity.isNull())
@@ -1341,7 +1341,7 @@ void Manager::setIntegerProperty(
   }
 }
 
-smtk::model::IntegerList const& Manager::integerProperty(
+smtk::model::IntegerList const& Resource::integerProperty(
   const UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
@@ -1353,7 +1353,7 @@ smtk::model::IntegerList const& Manager::integerProperty(
   return dummy;
 }
 
-smtk::model::IntegerList& Manager::integerProperty(const UUID& entity, const std::string& propName)
+smtk::model::IntegerList& Resource::integerProperty(const UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
   {
@@ -1364,7 +1364,7 @@ smtk::model::IntegerList& Manager::integerProperty(const UUID& entity, const std
   return dummy;
 }
 
-bool Manager::hasIntegerProperty(const UUID& entity, const std::string& propName) const
+bool Resource::hasIntegerProperty(const UUID& entity, const std::string& propName) const
 {
   UUIDsToIntegerData::const_iterator uit = m_integerData->find(entity);
   if (uit == m_integerData->end())
@@ -1376,7 +1376,7 @@ bool Manager::hasIntegerProperty(const UUID& entity, const std::string& propName
   return sit == uit->second.end() ? false : true;
 }
 
-bool Manager::removeIntegerProperty(const UUID& entity, const std::string& propName)
+bool Resource::removeIntegerProperty(const UUID& entity, const std::string& propName)
 {
   UUIDsToIntegerData::iterator uit = m_integerData->find(entity);
   if (uit == m_integerData->end())
@@ -1394,19 +1394,19 @@ bool Manager::removeIntegerProperty(const UUID& entity, const std::string& propN
   return true;
 }
 
-const UUIDWithIntegerProperties Manager::integerPropertiesForEntity(const UUID& entity) const
+const UUIDWithIntegerProperties Resource::integerPropertiesForEntity(const UUID& entity) const
 {
   return m_integerData->find(entity);
 }
 
-UUIDWithIntegerProperties Manager::integerPropertiesForEntity(const UUID& entity)
+UUIDWithIntegerProperties Resource::integerPropertiesForEntity(const UUID& entity)
 {
   return m_integerData->find(entity);
 }
 ///@}
 
 /// Attempt to find a model owning the given entity.
-UUID Manager::modelOwningEntity(const UUID& ent) const
+UUID Resource::modelOwningEntity(const UUID& ent) const
 {
   std::set<UUID> visited;
   UUID result = this->modelOwningEntityRecursive(ent, visited);
@@ -1414,7 +1414,7 @@ UUID Manager::modelOwningEntity(const UUID& ent) const
 }
 
 /// Attempt to find a session owning the given entity.
-UUID Manager::sessionOwningEntity(const UUID& ent) const
+UUID Resource::sessionOwningEntity(const UUID& ent) const
 {
   std::set<UUID> visited;
   UUID result = this->sessionOwningEntityRecursive(ent, visited);
@@ -1427,7 +1427,7 @@ UUID Manager::sessionOwningEntity(const UUID& ent) const
   * blindly iterating over UUIDs; it is thus much faster than calling
   * assignDefaultName() on each entity UUID.
   */
-void Manager::assignDefaultNames()
+void Resource::assignDefaultNames()
 {
   // I. Put every UUID into a bin for processing
   UUIDWithEntityPtr it;
@@ -1474,7 +1474,7 @@ void Manager::assignDefaultNames()
   * This descends models rather than blindly iterating over UUIDs;
   * it is thus much faster than calling assignDefaultName() on each entity UUID.
   */
-void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId)
+void Resource::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelId)
 {
   bool oops = true;
   UUIDWithEntityPtr it = m_topology->find(modelId);
@@ -1516,7 +1516,7 @@ void Manager::assignDefaultNamesToModelChildren(const smtk::common::UUID& modelI
   * Orphan entities (those without owning models) are given names
   * that end with the trailing digits of their UUIDs.
   */
-std::string Manager::assignDefaultName(const UUID& uid)
+std::string Resource::assignDefaultName(const UUID& uid)
 {
   UUIDWithEntityPtr it = m_topology->find(uid);
   if (it != m_topology->end())
@@ -1531,7 +1531,7 @@ std::string Manager::assignDefaultName(const UUID& uid)
   * This method is like assignDefaultName() but will not replace any
   * pre-existing name.
   */
-std::string Manager::assignDefaultNameIfMissing(const UUID& uid)
+std::string Resource::assignDefaultNameIfMissing(const UUID& uid)
 {
   UUIDWithEntityPtr it = m_topology->find(uid);
   if (it != m_topology->end())
@@ -1543,7 +1543,7 @@ std::string Manager::assignDefaultNameIfMissing(const UUID& uid)
   return std::string();
 }
 
-void Manager::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const UUID& owner,
+void Resource::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const UUID& owner,
   const std::string& ownersName, std::set<smtk::common::UUID>& remaining, bool nokids)
 {
   remaining.erase(irec->first);
@@ -1587,7 +1587,7 @@ void Manager::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const U
   }
 }
 
-std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
+std::string Resource::assignDefaultName(const UUID& uid, BitFlags entityFlags)
 {
   // If this entity is a model, give it a top-level name
   // (even if it is a submodel of some other model -- for brevity).
@@ -1665,7 +1665,7 @@ std::string Manager::assignDefaultName(const UUID& uid, BitFlags entityFlags)
   return defaultName;
 }
 
-std::string Manager::shortUUIDName(const UUID& uid, BitFlags entityFlags)
+std::string Resource::shortUUIDName(const UUID& uid, BitFlags entityFlags)
 {
   std::string name = Entity::flagSummaryHelper(entityFlags);
   name += "..";
@@ -1675,13 +1675,13 @@ std::string Manager::shortUUIDName(const UUID& uid, BitFlags entityFlags)
 }
 
 /// Return a list of the names of each session subclass whose constructor has been registered with SMTK.
-StringList Manager::sessionTypeNames()
+StringList Resource::sessionTypeNames()
 {
   return SessionRegistrar::sessionTypeNames();
 }
 
 /// Return the list of file types this session can read (currently: a list of file extensions).
-StringData Manager::sessionFileTypes(const std::string& bname, const std::string& engine)
+StringData Resource::sessionFileTypes(const std::string& bname, const std::string& engine)
 {
   return SessionRegistrar::sessionFileTypes(bname, engine);
 }
@@ -1692,7 +1692,7 @@ StringData Manager::sessionFileTypes(const std::string& bname, const std::string
   *          use this method with care; you most probably want createSession
   *          instead.
   */
-SessionPtr Manager::createSessionOfType(const std::string& bname)
+SessionPtr Resource::createSessionOfType(const std::string& bname)
 {
   return SessionRegistrar::createSession(bname);
 }
@@ -1700,27 +1700,27 @@ SessionPtr Manager::createSessionOfType(const std::string& bname)
 /**\brief Convenience method to create a session without specifying a session ID.
   *
   */
-SessionRef Manager::createSession(const std::string& bname)
+SessionRef Resource::createSession(const std::string& bname)
 {
   return this->createSession(bname, SessionRef());
 }
 
 /**\brief Create a session, optionally forcing a session ID and/or
-  *       registering it with this manager instance.
+  *       registering it with this resource instance.
   *
   */
-SessionRef Manager::createSession(
+SessionRef Resource::createSession(
   const std::string& bname, const smtk::model::SessionRef& sessionIdSpec)
 {
   if (sessionIdSpec.isValid() && this->sessionData(sessionIdSpec))
     return sessionIdSpec; // Hrm, the specified session already exists...
 
-  SessionPtr result = Manager::createSessionOfType(bname);
+  SessionPtr result = Resource::createSessionOfType(bname);
   if (result)
   {
     if (!sessionIdSpec.entity().isNull())
       result->setSessionId(sessionIdSpec.entity());
-    return this->registerSession(result); // will call result->setManager(this);
+    return this->registerSession(result); // will call result->setResource(this);
   }
 
   smtkInfoMacro(this->log(), "Could not create \"" << bname << "\" session.");
@@ -1728,7 +1728,7 @@ SessionRef Manager::createSession(
 }
 
 /// Mark the start of a modeling session by registering the \a session with SMTK backing storage.
-SessionRef Manager::registerSession(SessionPtr session)
+SessionRef Resource::registerSession(SessionPtr session)
 {
   if (!session)
     return SessionRef();
@@ -1738,9 +1738,9 @@ SessionRef Manager::registerSession(SessionPtr session)
     return SessionRef();
 
   (*m_sessions)[sessId] = session;
-  Manager::iter_type brec = this->setEntityOfTypeAndDimension(sessId, SESSION, -1);
+  Resource::iter_type brec = this->setEntityOfTypeAndDimension(sessId, SESSION, -1);
 
-  session->setManager(this);
+  session->setResource(this);
   return SessionRef(shared_from_this(), brec->first);
 }
 
@@ -1748,7 +1748,7 @@ SessionRef Manager::registerSession(SessionPtr session)
   *
   * This will remove session-member entities if \a expungeSession is true.
   */
-bool Manager::unregisterSession(SessionPtr session, bool expungeSession)
+bool Resource::unregisterSession(SessionPtr session, bool expungeSession)
 {
   if (!session)
     return false;
@@ -1776,7 +1776,7 @@ bool Manager::unregisterSession(SessionPtr session, bool expungeSession)
 }
 
 /// Find a session given its session UUID (or NULL).
-SessionPtr Manager::sessionData(const smtk::model::SessionRef& sessId) const
+SessionPtr Resource::sessionData(const smtk::model::SessionRef& sessId) const
 {
   if (sessId.entity().isNull())
     return m_defaultSession;
@@ -1788,7 +1788,7 @@ SessionPtr Manager::sessionData(const smtk::model::SessionRef& sessId) const
 }
 
 /// Return a reference to the \a modelId's counter array associated with the given \a entityFlags.
-IntegerList& Manager::entityCounts(const UUID& modelId, BitFlags entityFlags)
+IntegerList& Resource::entityCounts(const UUID& modelId, BitFlags entityFlags)
 {
   switch (entityFlags & ENTITY_MASK)
   {
@@ -1814,7 +1814,7 @@ IntegerList& Manager::entityCounts(const UUID& modelId, BitFlags entityFlags)
   *
   * This is an internal method invoked by setEntity and SetEntityOfTypeAndDimension.
   */
-void Manager::prepareForEntity(std::pair<UUID, EntityPtr>& entry)
+void Resource::prepareForEntity(std::pair<UUID, EntityPtr>& entry)
 {
   if ((entry.second->entityFlags() & CELL_2D) == CELL_2D)
   {
@@ -1865,62 +1865,62 @@ void Manager::prepareForEntity(std::pair<UUID, EntityPtr>& entry)
   */
 //@{
 /// Find entities with an integer property named \a pname whose value is the single value \a pval.
-EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, Integer pval)
+EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, Integer pval)
 {
   return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a floating-point property named \a pname whose value is the single value \a pval.
-EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, Float pval)
+EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, Float pval)
 {
   return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a string property named \a pname whose value is the single value \a pval.
-EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const std::string& pval)
+EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, const std::string& pval)
 {
   return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with an integer property named \a pname whose every value matches the array \a pval.
-EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const IntegerList& pval)
+EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, const IntegerList& pval)
 {
   return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a floating-point property named \a pname whose every value matches the array \a pval.
-EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const FloatList& pval)
+EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, const FloatList& pval)
 {
   return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
 /// Find entities with a string property named \a pname whose every value matches the array \a pval.
-EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const StringList& pval)
+EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, const StringList& pval)
 {
   return this->findEntitiesByPropertyAs<EntityRefArray>(pname, pval);
 }
 
-/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
-/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
-/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Float pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, Float pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
-/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
-/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
-/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 //@}
@@ -1930,10 +1930,10 @@ EntityRefArray Manager::findEntitiesByProperty(const std::string& pname, const S
   * This version can be wrapped and used in Python.
   * It is not named entitiesMatchingFlags (to mirror the
   * templated entitiesMatchingFlagsAs<T>) because our base
-  * class, Manager, provides another method of the same
+  * class, Resource, provides another method of the same
   * name that returns UUIDs rather than EntityRefArray.
   */
-EntityRefArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
+EntityRefArray Resource::findEntitiesOfType(BitFlags flags, bool exactMatch)
 {
   return this->entitiesMatchingFlagsAs<EntityRefArray>(flags, exactMatch);
 }
@@ -1952,7 +1952,7 @@ EntityRefArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
   * then the new generation number of the Tessellation is stored at
   * the address provided.
   */
-Manager::tess_iter_type Manager::setTessellation(
+Resource::tess_iter_type Resource::setTessellation(
   const UUID& cellId, const Tessellation& geom, int analysis, int* generation)
 {
   if (cellId.isNull())
@@ -2006,7 +2006,7 @@ Manager::tess_iter_type Manager::setTessellation(
   * then the new generation number of the Tessellation is stored at
   * the address provided.
   */
-Manager::tess_iter_type Manager::setTessellationAndBoundingBox(
+Resource::tess_iter_type Resource::setTessellationAndBoundingBox(
   const UUID& cellId, const Tessellation& geom, int analysis, int* generation)
 {
   if (cellId.isNull())
@@ -2054,7 +2054,7 @@ Manager::tess_iter_type Manager::setTessellationAndBoundingBox(
   *
   * Returns true when a real bBox is set and false otherwise.
   */
-bool Manager::setBoundingBox(
+bool Resource::setBoundingBox(
   const UUID& cellId, const std::vector<double>& coords, int providedbBox)
 {
   smtk::model::FloatList bBox;
@@ -2097,7 +2097,7 @@ bool Manager::setBoundingBox(
   *
   * Returns true when a tessellation was actually removed and false otherwise.
   */
-bool Manager::removeTessellation(const smtk::common::UUID& entityId, bool removeGen)
+bool Resource::removeTessellation(const smtk::common::UUID& entityId, bool removeGen)
 {
   bool didRemove;
   UUIDWithTessellation tref = m_tessellations->find(entityId);
@@ -2117,7 +2117,7 @@ bool Manager::removeTessellation(const smtk::common::UUID& entityId, bool remove
   * Otherwise, it should be positive and refer to a pre-existing arrangement to be replaced.
   * The actual \a index location used is returned.
   */
-int Manager::arrangeEntity(
+int Resource::arrangeEntity(
   const UUID& entityId, ArrangementKind kind, const Arrangement& arr, int index)
 {
   UUIDsToEntities::iterator eit = m_topology->find(entityId);
@@ -2142,7 +2142,7 @@ int Manager::arrangeEntity(
   * The caller is expected to perform further operations to keep
   * the model valid.
   */
-int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
+int Resource::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
 {
   auto eit = m_topology->find(entityId);
   if (eit == m_topology->end())
@@ -2176,7 +2176,7 @@ int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index,
   * to arrangements, but rather clears the arrangement dictionary
   * for the given UUID.
   */
-bool Manager::clearArrangements(const smtk::common::UUID& entityId)
+bool Resource::clearArrangements(const smtk::common::UUID& entityId)
 {
   auto eit = m_topology->find(entityId);
   if (eit == m_topology->end())
@@ -2192,7 +2192,7 @@ bool Manager::clearArrangements(const smtk::common::UUID& entityId)
   * Since this actually requires a lookup, you may pass in a pointer \a arr to an array of arrangements;
   * if true is returned, the pointer will be aimed at the existing array. Otherwise, \a arr will be unchanged.
   */
-Arrangements* Manager::hasArrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
+Arrangements* Resource::hasArrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
 {
   auto eit = m_topology->find(entity);
   if (eit == m_topology->end())
@@ -2204,7 +2204,7 @@ Arrangements* Manager::hasArrangementsOfKindForEntity(const UUID& entity, Arrang
 
 /**\brief This is a const version of hasArrangementsOfKindForEntity().
   */
-const Arrangements* Manager::hasArrangementsOfKindForEntity(
+const Arrangements* Resource::hasArrangementsOfKindForEntity(
   const UUID& entity, ArrangementKind kind) const
 {
   auto eit = m_topology->find(entity);
@@ -2222,7 +2222,7 @@ const Arrangements* Manager::hasArrangementsOfKindForEntity(
   * new relationships, you should not use this method without first calling
   * hasArrangementsOfKindForEntity() to determine whether the array already exists.
   */
-Arrangements& Manager::arrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
+Arrangements& Resource::arrangementsOfKindForEntity(const UUID& entity, ArrangementKind kind)
 {
   auto eit = m_topology->find(entity);
   return eit->second->arrangementsOfKind(kind);
@@ -2232,7 +2232,7 @@ Arrangements& Manager::arrangementsOfKindForEntity(const UUID& entity, Arrangeme
   *
   * This version does not allow the arrangement to be altered.
   */
-const Arrangement* Manager::findArrangement(
+const Arrangement* Resource::findArrangement(
   const UUID& entityId, ArrangementKind kind, int index) const
 {
   if (!entityId || index < 0)
@@ -2253,7 +2253,7 @@ const Arrangement* Manager::findArrangement(
   *
   * This version allows the arrangement to be altered.
   */
-Arrangement* Manager::findArrangement(const UUID& entityId, ArrangementKind kind, int index)
+Arrangement* Resource::findArrangement(const UUID& entityId, ArrangementKind kind, int index)
 {
   if (!entityId || index < 0)
   {
@@ -2273,7 +2273,7 @@ Arrangement* Manager::findArrangement(const UUID& entityId, ArrangementKind kind
   *
   * This method returns the index upon success and a negative number upon failure.
   */
-int Manager::findArrangementInvolvingEntity(
+int Resource::findArrangementInvolvingEntity(
   const UUID& entityId, ArrangementKind kind, const UUID& involvedEntity) const
 {
   const EntityPtr src = this->findEntity(entityId);
@@ -2307,7 +2307,7 @@ int Manager::findArrangementInvolvingEntity(
   * context. (Other methods create and interpret arrangements in
   * specific circumstances where the context is known.)
   */
-bool Manager::findDualArrangements(
+bool Resource::findDualArrangements(
   const UUID& entityId, ArrangementKind kind, int index, ArrangementReferences& duals) const
 {
   if (index < 0)
@@ -2323,7 +2323,7 @@ bool Manager::findDualArrangements(
 /**\brief A method to add bidirectional arrangements between a parent and child.
   *
   */
-bool Manager::addDualArrangement(const smtk::common::UUID& parent, const smtk::common::UUID& child,
+bool Resource::addDualArrangement(const smtk::common::UUID& parent, const smtk::common::UUID& child,
   ArrangementKind kind, int sense, Orientation orientation)
 {
   EntityPtr prec;
@@ -2380,7 +2380,7 @@ bool Manager::addDualArrangement(const smtk::common::UUID& parent, const smtk::c
   * convention should be followed so that it is possible to compute deflection vectors
   * that will remove the degeneracy of the vertex.)
   */
-int Manager::findCellHasUseWithSense(const UUID& cellId, const UUID& use, int sense) const
+int Resource::findCellHasUseWithSense(const UUID& cellId, const UUID& use, int sense) const
 {
   EntityPtr erec = this->findEntity(cellId);
   const Arrangements* arrs = this->hasArrangementsOfKindForEntity(cellId, HAS_USE);
@@ -2405,7 +2405,7 @@ int Manager::findCellHasUseWithSense(const UUID& cellId, const UUID& use, int se
   *
   * The indices of the matching arrangements are returned.
   */
-std::set<int> Manager::findCellHasUsesWithOrientation(const UUID& cellId, Orientation orient) const
+std::set<int> Resource::findCellHasUsesWithOrientation(const UUID& cellId, Orientation orient) const
 {
   std::set<int> result;
   const Arrangements* arrs = this->hasArrangementsOfKindForEntity(cellId, HAS_USE);
@@ -2429,7 +2429,8 @@ std::set<int> Manager::findCellHasUsesWithOrientation(const UUID& cellId, Orient
 /**\brief Return the UUID of a use record for the
   * given \a cell and \a sense, or NULL if it does not exist.
   */
-UUID Manager::cellHasUseOfSenseAndOrientation(const UUID& cell, int sense, Orientation orient) const
+UUID Resource::cellHasUseOfSenseAndOrientation(
+  const UUID& cell, int sense, Orientation orient) const
 {
   const smtk::model::Arrangements* arr;
   if ((arr = this->hasArrangementsOfKindForEntity(cell, HAS_USE)) && !arr->empty())
@@ -2453,7 +2454,7 @@ UUID Manager::cellHasUseOfSenseAndOrientation(const UUID& cell, int sense, Orien
   * creating one if it does not exist or replacing it if \a replacement is non-NULL.
   *
   */
-UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
+UUID Resource::findCreateOrReplaceCellUseOfSenseAndOrientation(
   const UUID& cell, int sense, Orientation orient, const UUID& replacement)
 {
   EntityPtr entity = this->findEntity(cell);
@@ -2560,7 +2561,7 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
   * These relationships define a hierarchy that enumerate the oriented boundary of
   * the top-level cell-use.
   */
-UUIDs Manager::useOrShellIncludesShells(const UUID& cellUseOrShell) const
+UUIDs Resource::useOrShellIncludesShells(const UUID& cellUseOrShell) const
 {
   UUIDs shells;
   EntityPtr ent = this->findEntity(cellUseOrShell);
@@ -2593,7 +2594,7 @@ UUIDs Manager::useOrShellIncludesShells(const UUID& cellUseOrShell) const
   * Shells may also include other shells of the same dimensionality representing voids
   * or material within voids for odd or even depths from the parent cell-use, respectively.
   */
-UUID Manager::createIncludedShell(const UUID& useOrShell)
+UUID Resource::createIncludedShell(const UUID& useOrShell)
 {
   EntityPtr entity = this->findEntity(useOrShell);
   if (!entity)
@@ -2626,7 +2627,7 @@ UUID Manager::createIncludedShell(const UUID& useOrShell)
   * Returns true when adding the shell was necessary.
   * Returns false if either entity does not exist or the shell was already owned by the parent.
   */
-bool Manager::findOrAddIncludedShell(const UUID& parentUseOrShell, const UUID& shellToInclude)
+bool Resource::findOrAddIncludedShell(const UUID& parentUseOrShell, const UUID& shellToInclude)
 {
   EntityPtr parEnt = this->findEntity(parentUseOrShell);
   EntityPtr shlEnt = this->findEntity(shellToInclude);
@@ -2665,7 +2666,7 @@ bool Manager::findOrAddIncludedShell(const UUID& parentUseOrShell, const UUID& s
   * is employed depending on the dimension so that the distinction can be made
   * easily.
   */
-bool Manager::findOrAddUseToShell(const UUID& shell, const UUID& use)
+bool Resource::findOrAddUseToShell(const UUID& shell, const UUID& use)
 {
   EntityPtr shellEnt;
   EntityPtr useEnt;
@@ -2766,7 +2767,7 @@ bool Manager::findOrAddUseToShell(const UUID& shell, const UUID& use)
   * Thus, the \a inclusion must have a dimension less-than
   * or equal to the \a cell.
   */
-bool Manager::findOrAddInclusionToCellOrModel(const UUID& cell, const UUID& inclusion)
+bool Resource::findOrAddInclusionToCellOrModel(const UUID& cell, const UUID& inclusion)
 {
   EntityPtr cellEnt;
   EntityPtr incEnt;
@@ -2817,7 +2818,7 @@ bool Manager::findOrAddInclusionToCellOrModel(const UUID& cell, const UUID& incl
   * Returns true when the entity was successfully added (or already existed)
   * and false upon failure (such as when \a grp or \a ent are invalid).
   */
-bool Manager::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
+bool Resource::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
 {
   Group group(shared_from_this(), grp);
   EntityRef member(shared_from_this(), ent);
@@ -2842,7 +2843,7 @@ bool Manager::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
 /**\brief Report whether an entity has been assigned an attribute.
   *
   */
-bool Manager::hasAttribute(const UUID& attribId, const UUID& toEntity)
+bool Resource::hasAttribute(const UUID& attribId, const UUID& toEntity)
 {
   UUIDWithAttributeAssignments it = m_attributeAssignments->find(toEntity);
   if (it == m_attributeAssignments->end())
@@ -2858,7 +2859,7 @@ bool Manager::hasAttribute(const UUID& attribId, const UUID& toEntity)
   * valid (whether it was previously associated or not)
   * and false otherwise.
   */
-bool Manager::associateAttribute(
+bool Resource::associateAttribute(
   smtk::attribute::ResourcePtr attResource, const UUID& attribId, const UUID& toEntity)
 {
   bool allowed = true;
@@ -2879,7 +2880,7 @@ bool Manager::associateAttribute(
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Manager::disassociateAttribute(smtk::attribute::ResourcePtr attResource, const UUID& attribId,
+bool Resource::disassociateAttribute(smtk::attribute::ResourcePtr attResource, const UUID& attribId,
   const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
@@ -2899,8 +2900,8 @@ bool Manager::disassociateAttribute(smtk::attribute::ResourcePtr attResource, co
     if (reverse && attResource)
     {
       smtk::attribute::AttributePtr attrib = attResource->findAttribute(attribId);
-      // FIXME: Should we check that the manager's refManager
-      //        is this Manager instance?
+      // FIXME: Should we check that the resource's refResource
+      //        is this Resource instance?
       if (attrib)
       {
         attrib->disassociateEntity(fromEntity, false);
@@ -2921,7 +2922,7 @@ bool Manager::disassociateAttribute(smtk::attribute::ResourcePtr attResource, co
   * stored on the model entity.
   * This way, a return value of true ensures that the set contains at least one entry.
   */
-bool Manager::insertEntityAssociations(
+bool Resource::insertEntityAssociations(
   const EntityRef& modelEntity, std::set<smtk::attribute::AttributePtr>& associations)
 {
   bool didFind = false;
@@ -2948,7 +2949,7 @@ bool Manager::insertEntityAssociations(
 }
 
 // A convenience method that calls insertEntityAssociations and returns a newly-constructed set.
-std::set<smtk::attribute::AttributePtr> Manager::associations(const EntityRef& modelEntity)
+std::set<smtk::attribute::AttributePtr> Resource::associations(const EntityRef& modelEntity)
 {
   std::set<smtk::attribute::AttributePtr> result;
   this->insertEntityAssociations(modelEntity, result);
@@ -2972,69 +2973,69 @@ std::set<smtk::attribute::AttributePtr> Manager::associations(const EntityRef& m
   * replace any existing use records with the one you specify).
   */
 //@{
-/// Add a vertex to the manager (without any relationships) at the given \a uid.
-Vertex Manager::insertVertex(const UUID& uid)
+/// Add a vertex to the resource (without any relationships) at the given \a uid.
+Vertex Resource::insertVertex(const UUID& uid)
 {
   return Vertex(shared_from_this(), this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 0)->first);
 }
 
-/// Add an edge to the manager (without any relationships) at the given \a uid.
-Edge Manager::insertEdge(const UUID& uid)
+/// Add an edge to the resource (without any relationships) at the given \a uid.
+Edge Resource::insertEdge(const UUID& uid)
 {
   return Edge(shared_from_this(), this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 1)->first);
 }
 
-/// Add a face to the manager (without any relationships) at the given \a uid.
-Face Manager::insertFace(const UUID& uid)
+/// Add a face to the resource (without any relationships) at the given \a uid.
+Face Resource::insertFace(const UUID& uid)
 {
   return Face(shared_from_this(), this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 2)->first);
 }
 
-/// Add a volume to the manager (without any relationships) at the given \a uid.
-Volume Manager::insertVolume(const UUID& uid)
+/// Add a volume to the resource (without any relationships) at the given \a uid.
+Volume Resource::insertVolume(const UUID& uid)
 {
   return Volume(shared_from_this(), this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 3)->first);
 }
 
-/// Add an edge to the manager (without any relationships)
-Vertex Manager::addVertex()
+/// Add an edge to the resource (without any relationships)
+Vertex Resource::addVertex()
 {
   return Vertex(shared_from_this(), this->addEntityOfTypeAndDimension(CELL_ENTITY, 0));
 }
 
-/// Add an edge to the manager (without any relationships)
-Edge Manager::addEdge()
+/// Add an edge to the resource (without any relationships)
+Edge Resource::addEdge()
 {
   return Edge(shared_from_this(), this->addEntityOfTypeAndDimension(CELL_ENTITY, 1));
 }
 
-/**\brief Add a face to the manager (without any relationships)
+/**\brief Add a face to the resource (without any relationships)
   *
   * While this method does not add any relations, it
   * does create two HAS_USE arrangements to hold
-  * FaceUse instances (assuming the Manager may be
-  * downcast to a Manager instance).
+  * FaceUse instances (assuming the Resource may be
+  * downcast to a Resource instance).
   */
-Face Manager::addFace()
+Face Resource::addFace()
 {
   return Face(shared_from_this(), this->addEntityOfTypeAndDimension(CELL_ENTITY, 2));
 }
 
-/// Add a volume to the manager (without any relationships)
-Volume Manager::addVolume()
+/// Add a volume to the resource (without any relationships)
+Volume Resource::addVolume()
 {
   return Volume(shared_from_this(), this->addEntityOfTypeAndDimension(CELL_ENTITY, 3));
 }
 
 /// Insert a VertexUse at the specified \a uid.
-VertexUse Manager::insertVertexUse(const UUID& uid)
+VertexUse Resource::insertVertexUse(const UUID& uid)
 {
   return VertexUse(
     shared_from_this(), this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 0)->first);
 }
 
 /// Create a VertexUse with the specified \a uid and replace \a src's VertexUse.
-VertexUse Manager::setVertexUse(const UUID& uid, const Vertex& src, int sense)
+VertexUse Resource::setVertexUse(const UUID& uid, const Vertex& src, int sense)
 {
   VertexUse vertUse = this->insertVertexUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, POSITIVE, uid);
@@ -3042,13 +3043,13 @@ VertexUse Manager::setVertexUse(const UUID& uid, const Vertex& src, int sense)
 }
 
 /// Insert a EdgeUse at the specified \a uid.
-EdgeUse Manager::insertEdgeUse(const UUID& uid)
+EdgeUse Resource::insertEdgeUse(const UUID& uid)
 {
   return EdgeUse(shared_from_this(), this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 1)->first);
 }
 
 /// Create a EdgeUse with the specified \a uid and replace \a src's EdgeUse.
-EdgeUse Manager::setEdgeUse(const UUID& uid, const Edge& src, int sense, Orientation o)
+EdgeUse Resource::setEdgeUse(const UUID& uid, const Edge& src, int sense, Orientation o)
 {
   EdgeUse edgeUse = this->insertEdgeUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, o, uid);
@@ -3056,13 +3057,13 @@ EdgeUse Manager::setEdgeUse(const UUID& uid, const Edge& src, int sense, Orienta
 }
 
 /// Insert a FaceUse at the specified \a uid.
-FaceUse Manager::insertFaceUse(const UUID& uid)
+FaceUse Resource::insertFaceUse(const UUID& uid)
 {
   return FaceUse(shared_from_this(), this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 2)->first);
 }
 
 /// Create a FaceUse with the specified \a uid and replace \a src's FaceUse.
-FaceUse Manager::setFaceUse(const UUID& uid, const Face& src, int sense, Orientation o)
+FaceUse Resource::setFaceUse(const UUID& uid, const Face& src, int sense, Orientation o)
 {
   FaceUse faceUse = this->insertFaceUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, o, uid);
@@ -3070,105 +3071,105 @@ FaceUse Manager::setFaceUse(const UUID& uid, const Face& src, int sense, Orienta
 }
 
 /// Insert a VolumeUse at the specified \a uid.
-VolumeUse Manager::insertVolumeUse(const UUID& uid)
+VolumeUse Resource::insertVolumeUse(const UUID& uid)
 {
   return VolumeUse(
     shared_from_this(), this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 3)->first);
 }
 
 /// Create a VolumeUse with the specified \a uid and replace \a src's VolumeUse.
-VolumeUse Manager::setVolumeUse(const UUID& uid, const Volume& src)
+VolumeUse Resource::setVolumeUse(const UUID& uid, const Volume& src)
 {
   VolumeUse volUse = this->insertVolumeUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE, uid);
   return volUse;
 }
 
-/// Add a vertex-use to the manager (without any relationships)
-VertexUse Manager::addVertexUse()
+/// Add a vertex-use to the resource (without any relationships)
+VertexUse Resource::addVertexUse()
 {
   return VertexUse(shared_from_this(), this->addEntityOfTypeAndDimension(USE_ENTITY, 0));
 }
 
-/// Find or add a vertex-use to the manager with a relationship back to a vertex.
-VertexUse Manager::addVertexUse(const Vertex& src, int sense)
+/// Find or add a vertex-use to the resource with a relationship back to a vertex.
+VertexUse Resource::addVertexUse(const Vertex& src, int sense)
 {
-  if (src.isValid() && src.manager().get() == this)
+  if (src.isValid() && src.resource().get() == this)
   {
-    return VertexUse(src.manager(),
+    return VertexUse(src.resource(),
       this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, POSITIVE));
   }
-  return VertexUse(); // invalid vertex use if source vertex was invalid or from a different manager.
+  return VertexUse(); // invalid vertex use if source vertex was invalid or from a different resource.
 }
 
-/// Add an edge-use to the manager (without any relationships)
-EdgeUse Manager::addEdgeUse()
+/// Add an edge-use to the resource (without any relationships)
+EdgeUse Resource::addEdgeUse()
 {
   return EdgeUse(shared_from_this(), this->addEntityOfTypeAndDimension(USE_ENTITY, 1));
 }
 
-/// Find or add a edge-use to the manager with a relationship back to a edge.
-EdgeUse Manager::addEdgeUse(const Edge& src, int sense, Orientation orient)
+/// Find or add a edge-use to the resource with a relationship back to a edge.
+EdgeUse Resource::addEdgeUse(const Edge& src, int sense, Orientation orient)
 {
-  if (src.isValid() && src.manager().get() == this)
+  if (src.isValid() && src.resource().get() == this)
   {
-    return EdgeUse(src.manager(),
+    return EdgeUse(src.resource(),
       this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
   }
-  return EdgeUse(); // invalid edge use if source edge was invalid or from a different manager.
+  return EdgeUse(); // invalid edge use if source edge was invalid or from a different resource.
 }
 
-/// Add a face-use to the manager (without any relationships)
-FaceUse Manager::addFaceUse()
+/// Add a face-use to the resource (without any relationships)
+FaceUse Resource::addFaceUse()
 {
   return FaceUse(shared_from_this(), this->addEntityOfTypeAndDimension(USE_ENTITY, 2));
 }
 
-/// Find or add a face-use to the manager with a relationship back to a face.
-FaceUse Manager::addFaceUse(const Face& src, int sense, Orientation orient)
+/// Find or add a face-use to the resource with a relationship back to a face.
+FaceUse Resource::addFaceUse(const Face& src, int sense, Orientation orient)
 {
-  if (src.isValid() && src.manager().get() == this)
+  if (src.isValid() && src.resource().get() == this)
   {
-    return FaceUse(src.manager(),
-      src.manager()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
+    return FaceUse(src.resource(),
+      src.resource()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
   }
-  return FaceUse(); // invalid face use if source face was invalid or from a different manager.
+  return FaceUse(); // invalid face use if source face was invalid or from a different resource.
 }
 
-/// Add a volume-use to the manager (without any relationships)
-VolumeUse Manager::addVolumeUse()
+/// Add a volume-use to the resource (without any relationships)
+VolumeUse Resource::addVolumeUse()
 {
   return VolumeUse(shared_from_this(), this->addEntityOfTypeAndDimension(USE_ENTITY, 3));
 }
 
-/// Find or add a volume-use to the manager with a relationship back to a volume.
-VolumeUse Manager::addVolumeUse(const Volume& src)
+/// Find or add a volume-use to the resource with a relationship back to a volume.
+VolumeUse Resource::addVolumeUse(const Volume& src)
 {
-  if (src.isValid() && src.manager().get() == this)
+  if (src.isValid() && src.resource().get() == this)
   {
-    return VolumeUse(src.manager(),
-      src.manager()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE));
+    return VolumeUse(src.resource(),
+      src.resource()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE));
   }
-  return VolumeUse(); // invalid volume use if source volume was invalid or from a different manager.
+  return VolumeUse(); // invalid volume use if source volume was invalid or from a different resource.
 }
 
 /// Insert a Chain at the specified \a uid.
-Chain Manager::insertChain(const UUID& uid)
+Chain Resource::insertChain(const UUID& uid)
 {
   return Chain(shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1)->first);
 }
 
-/// Find or add a chain to the manager with a relationship back to its owning edge-use.
-Chain Manager::setChain(const UUID& uid, const EdgeUse& use)
+/// Find or add a chain to the resource with a relationship back to its owning edge-use.
+Chain Resource::setChain(const UUID& uid, const EdgeUse& use)
 {
   Chain chain = this->insertChain(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
   return chain;
 }
 
-/// Find or add a chain to the manager with a relationship back to its owning chain.
-Chain Manager::setChain(const UUID& uid, const Chain& parent)
+/// Find or add a chain to the resource with a relationship back to its owning chain.
+Chain Resource::setChain(const UUID& uid, const Chain& parent)
 {
   Chain chain = this->insertChain(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -3176,22 +3177,22 @@ Chain Manager::setChain(const UUID& uid, const Chain& parent)
 }
 
 /// Insert a Loop at the specified \a uid.
-Loop Manager::insertLoop(const UUID& uid)
+Loop Resource::insertLoop(const UUID& uid)
 {
   return Loop(shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1)->first);
 }
 
-/// Find or add a chain to the manager with a relationship back to its owning face-use.
-Loop Manager::setLoop(const UUID& uid, const FaceUse& use)
+/// Find or add a chain to the resource with a relationship back to its owning face-use.
+Loop Resource::setLoop(const UUID& uid, const FaceUse& use)
 {
   Loop loop = this->insertLoop(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
   return loop;
 }
 
-/// Find or add a chain to the manager with a relationship back to its owning loop.
-Loop Manager::setLoop(const UUID& uid, const Loop& parent)
+/// Find or add a chain to the resource with a relationship back to its owning loop.
+Loop Resource::setLoop(const UUID& uid, const Loop& parent)
 {
   Loop loop = this->insertLoop(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -3199,91 +3200,91 @@ Loop Manager::setLoop(const UUID& uid, const Loop& parent)
 }
 
 /// Insert a Shell at the specified \a uid.
-Shell Manager::insertShell(const UUID& uid)
+Shell Resource::insertShell(const UUID& uid)
 {
   return Shell(shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1)->first);
 }
 
-/// Find or add a chain to the manager with a relationship back to its owning volume-use.
-Shell Manager::setShell(const UUID& uid, const VolumeUse& use)
+/// Find or add a chain to the resource with a relationship back to its owning volume-use.
+Shell Resource::setShell(const UUID& uid, const VolumeUse& use)
 {
   Shell shell = this->insertShell(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
   return shell;
 }
 
-/// Find or add a chain to the manager with a relationship back to its owning shell.
-Shell Manager::setShell(const UUID& uid, const Shell& parent)
+/// Find or add a chain to the resource with a relationship back to its owning shell.
+Shell Resource::setShell(const UUID& uid, const Shell& parent)
 {
   Shell shell = this->insertShell(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
   return shell;
 }
 
-/// Add a 0/1-d shell (a vertex chain) to the manager (without any relationships)
-Chain Manager::addChain()
+/// Add a 0/1-d shell (a vertex chain) to the resource (without any relationships)
+Chain Resource::addChain()
 {
   return Chain(shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1));
 }
 
-/// Add a 0/1-d shell (a vertex chain) to the manager with a relation to its edge use
-Chain Manager::addChain(const EdgeUse& eu)
+/// Add a 0/1-d shell (a vertex chain) to the resource with a relation to its edge use
+Chain Resource::addChain(const EdgeUse& eu)
 {
-  if (eu.isValid() && eu.manager().get() == this)
+  if (eu.isValid() && eu.resource().get() == this)
   {
-    return Chain(eu.manager(), eu.manager()->createIncludedShell(eu.entity()));
+    return Chain(eu.resource(), eu.resource()->createIncludedShell(eu.entity()));
   }
   return Chain();
 }
 
-/// Add a 0/1-d shell (a vertex chain) to the manager with a relation to its edge use
-Chain Manager::addChain(const Chain& c)
+/// Add a 0/1-d shell (a vertex chain) to the resource with a relation to its edge use
+Chain Resource::addChain(const Chain& c)
 {
-  if (c.isValid() && c.manager().get() == this)
+  if (c.isValid() && c.resource().get() == this)
   {
-    return Chain(c.manager(), c.manager()->createIncludedShell(c.entity()));
+    return Chain(c.resource(), c.resource()->createIncludedShell(c.entity()));
   }
   return Chain();
 }
 
-/// Add a 1/2-d shell (an edge loop) to the manager (without any relationships)
-Loop Manager::addLoop()
+/// Add a 1/2-d shell (an edge loop) to the resource (without any relationships)
+Loop Resource::addLoop()
 {
   return Loop(shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1));
 }
 
-/// Add a 1/2-d shell (an edge loop) to the manager with a relation to its parent face use
-Loop Manager::addLoop(const FaceUse& fu)
+/// Add a 1/2-d shell (an edge loop) to the resource with a relation to its parent face use
+Loop Resource::addLoop(const FaceUse& fu)
 {
-  if (fu.isValid() && fu.manager().get() == this)
+  if (fu.isValid() && fu.resource().get() == this)
   {
-    return Loop(fu.manager(), fu.manager()->createIncludedShell(fu.entity()));
+    return Loop(fu.resource(), fu.resource()->createIncludedShell(fu.entity()));
   }
   return Loop();
 }
 
-/// Add a 1/2-d shell (an edge loop) to the manager with a relation to its parent loop
-Loop Manager::addLoop(const Loop& lp)
+/// Add a 1/2-d shell (an edge loop) to the resource with a relation to its parent loop
+Loop Resource::addLoop(const Loop& lp)
 {
-  if (lp.isValid() && lp.manager().get() == this)
+  if (lp.isValid() && lp.resource().get() == this)
   {
-    return Loop(lp.manager(), lp.manager()->createIncludedShell(lp.entity()));
+    return Loop(lp.resource(), lp.resource()->createIncludedShell(lp.entity()));
   }
   return Loop();
 }
 
-/// Add a 2/3-d shell (a face-shell) to the manager (without any relationships)
-Shell Manager::addShell()
+/// Add a 2/3-d shell (a face-shell) to the resource (without any relationships)
+Shell Resource::addShell()
 {
   return Shell(shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1));
 }
 
 /// A convenience method to find or create a volume use for the volume plus a shell.
-Shell Manager::addShell(const Volume& v)
+Shell Resource::addShell(const Volume& v)
 {
   VolumeUse vu;
   if (!v.uses<VolumeUses>().empty())
@@ -3297,17 +3298,17 @@ Shell Manager::addShell(const Volume& v)
   return this->addShell(vu);
 }
 
-/// Add a 2/3-d shell (an face shell) to the manager with a relation to its volume
-Shell Manager::addShell(const VolumeUse& v)
+/// Add a 2/3-d shell (an face shell) to the resource with a relation to its volume
+Shell Resource::addShell(const VolumeUse& v)
 {
-  if (v.isValid() && v.manager().get() == this)
+  if (v.isValid() && v.resource().get() == this)
   {
-    return Shell(v.manager(), v.manager()->createIncludedShell(v.entity()));
+    return Shell(v.resource(), v.resource()->createIncludedShell(v.entity()));
   }
   return Shell();
 }
 
-/**\brief Add an entity group to the manager (without any relationships).
+/**\brief Add an entity group to the resource (without any relationships).
   *
   * Any non-zero bits set in \a extraFlags are OR'd with entityFlags() of the group.
   * This is an easy way to constrain the entities allowed to be members
@@ -3316,7 +3317,7 @@ Shell Manager::addShell(const VolumeUse& v)
   * You may also specify a \a name for the group. If \a name is empty, then no
   * name is assigned.
   */
-Group Manager::insertGroup(const UUID& uid, int extraFlags, const std::string& groupName)
+Group Resource::insertGroup(const UUID& uid, int extraFlags, const std::string& groupName)
 {
   UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, GROUP_ENTITY | extraFlags, -1);
   if (result == m_topology->end())
@@ -3329,14 +3330,14 @@ Group Manager::insertGroup(const UUID& uid, int extraFlags, const std::string& g
 }
 
 /// Add a group, creating a new UUID in the process. \sa insertGroup().
-Group Manager::addGroup(int extraFlags, const std::string& groupName)
+Group Resource::addGroup(int extraFlags, const std::string& groupName)
 {
   UUID uid = this->unusedUUID();
   return this->insertGroup(uid, extraFlags, groupName);
 }
 
-/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager with the specified \a uid.
-AuxiliaryGeometry Manager::insertAuxiliaryGeometry(const smtk::common::UUID& uid, int dim)
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the resource with the specified \a uid.
+AuxiliaryGeometry Resource::insertAuxiliaryGeometry(const smtk::common::UUID& uid, int dim)
 {
   UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, AUX_GEOM_ENTITY, dim);
   if (result == m_topology->end())
@@ -3346,15 +3347,15 @@ AuxiliaryGeometry Manager::insertAuxiliaryGeometry(const smtk::common::UUID& uid
   return AuxiliaryGeometry(shared_from_this(), uid);
 }
 
-/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager.
-AuxiliaryGeometry Manager::addAuxiliaryGeometry(int dim)
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the resource.
+AuxiliaryGeometry Resource::addAuxiliaryGeometry(int dim)
 {
   UUID uid = this->unusedUUID();
   return this->insertAuxiliaryGeometry(uid, dim);
 }
 
-/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager, embedded in its \a parent.
-AuxiliaryGeometry Manager::addAuxiliaryGeometry(const Model& parent, int dim)
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the resource, embedded in its \a parent.
+AuxiliaryGeometry Resource::addAuxiliaryGeometry(const Model& parent, int dim)
 {
   Model mutableParent(parent);
   AuxiliaryGeometry auxGeom = this->addAuxiliaryGeometry(dim);
@@ -3362,8 +3363,8 @@ AuxiliaryGeometry Manager::addAuxiliaryGeometry(const Model& parent, int dim)
   return auxGeom;
 }
 
-/// Add auxiliary geometry (of the given \a dim, which may be -1) to the manager, embedded in its \a parent.
-AuxiliaryGeometry Manager::addAuxiliaryGeometry(const AuxiliaryGeometry& parent, int dim)
+/// Add auxiliary geometry (of the given \a dim, which may be -1) to the resource, embedded in its \a parent.
+AuxiliaryGeometry Resource::addAuxiliaryGeometry(const AuxiliaryGeometry& parent, int dim)
 {
   AuxiliaryGeometry mutableParent(parent);
   AuxiliaryGeometry auxGeom = this->addAuxiliaryGeometry(dim);
@@ -3371,7 +3372,7 @@ AuxiliaryGeometry Manager::addAuxiliaryGeometry(const AuxiliaryGeometry& parent,
   return auxGeom;
 }
 
-/**\brief Add a model to the manager.
+/**\brief Add a model to the resource.
   *
   * The model will have the specified \a embeddingDim set as an integer property
   * named "embedding dimension." This is the dimension of the space in which
@@ -3389,7 +3390,7 @@ AuxiliaryGeometry Manager::addAuxiliaryGeometry(const AuxiliaryGeometry& parent,
   * model). Any entities related to the model (directly or indirectly via topological
   * relationships) may have these numbers assigned as names by calling assignDefaultNames().
   */
-Model Manager::insertModel(
+Model Resource::insertModel(
   const UUID& uid, int parametricDim, int embeddingDim, const std::string& modelName)
 {
   UUIDWithEntityPtr result = this->setEntityOfTypeAndDimension(uid, MODEL_ENTITY, parametricDim);
@@ -3410,32 +3411,32 @@ Model Manager::insertModel(
 }
 
 /// Add a model, creating a new UUID at the time. \sa insertModel().
-Model Manager::addModel(int parametricDim, int embeddingDim, const std::string& modelName)
+Model Resource::addModel(int parametricDim, int embeddingDim, const std::string& modelName)
 {
   UUID uid = this->unusedUUID();
   return this->insertModel(uid, parametricDim, embeddingDim, modelName);
 }
 
-/**\brief Add an instance of some model entity to the manager.
+/**\brief Add an instance of some model entity to the resource.
   *
-  * An instance is a reference to some other item in the manager.
+  * An instance is a reference to some other item in the resource.
   * Any entity may be instanced, but generally models are instanced
   * as part of a scene graph.
   */
-Instance Manager::addInstance()
+Instance Resource::addInstance()
 {
   UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
   return Instance(shared_from_this(), uid);
 }
 
-/**\brief Add an instance with the given prototype to the manager.
+/**\brief Add an instance with the given prototype to the resource.
   *
   * The prototype \a object (the parent of the instance)
-  * is a reference to some other item in the manager.
+  * is a reference to some other item in the resource.
   * Any entity may be instanced, but generally models are instanced
   * as part of a scene graph.
   */
-Instance Manager::addInstance(const EntityRef& object)
+Instance Resource::addInstance(const EntityRef& object)
 {
   if (object.isValid())
   {
@@ -3451,12 +3452,12 @@ Instance Manager::addInstance(const EntityRef& object)
 }
 //@}
 
-/**\brief Unregister a session from the model manager.
+/**\brief Unregister a session from the model resource.
   *
   */
-bool Manager::closeSession(const SessionRef& sref)
+bool Resource::closeSession(const SessionRef& sref)
 {
-  if (sref.manager().get() == this)
+  if (sref.resource().get() == this)
   {
     UUIDsToSessions::iterator us = m_sessions->find(sref.entity());
     if (us != m_sessions->end())
@@ -3484,20 +3485,21 @@ bool Manager::closeSession(const SessionRef& sref)
   {
     smtkErrorMacro(this->log(), "Asked to close session ("
         << sref.name() << ") "
-        << "owned by a different manager (" << sref.manager().get() << " vs " << this << ")!");
+        << "owned by a different model resource (" << sref.resource().get() << " vs " << this
+        << ")!");
   }
   return false;
 }
 
-/**\brief Return an array of all the sessions this manager owns.
+/**\brief Return an array of all the sessions this resource owns.
   *
   */
-SessionRefs Manager::sessions() const
+SessionRefs Resource::sessions() const
 {
   SessionRefs result;
   UUIDsToSessions::const_iterator it;
   for (it = m_sessions->begin(); it != m_sessions->end(); ++it)
-    result.push_back(SessionRef(smtk::const_pointer_cast<Manager>(shared_from_this()), it->first));
+    result.push_back(SessionRef(smtk::const_pointer_cast<Resource>(shared_from_this()), it->first));
   return result;
 }
 
@@ -3515,8 +3517,8 @@ SessionRefs Manager::sessions() const
   *   is affected, a OneToManyCallback is invoked.
   */
 //@{
-/// Request notification from this manager instance when \a event occurs.
-void Manager::observe(ManagerEventType event, ConditionCallback functionHandle, void* callData)
+/// Request notification from this resource instance when \a event occurs.
+void Resource::observe(ResourceEventType event, ConditionCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
   {
@@ -3524,7 +3526,7 @@ void Manager::observe(ManagerEventType event, ConditionCallback functionHandle, 
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
     {
-      event.first = static_cast<ManagerEventChangeType>(i);
+      event.first = static_cast<ResourceEventChangeType>(i);
       this->observe(event, functionHandle, callData);
     }
 
@@ -3534,8 +3536,8 @@ void Manager::observe(ManagerEventType event, ConditionCallback functionHandle, 
   m_conditionTriggers.insert(ConditionTrigger(event, ConditionObserver(functionHandle, callData)));
 }
 
-/// Request notification from this manager instance when \a event occurs.
-void Manager::observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData)
+/// Request notification from this resource instance when \a event occurs.
+void Resource::observe(ResourceEventType event, OneToOneCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
   {
@@ -3543,7 +3545,7 @@ void Manager::observe(ManagerEventType event, OneToOneCallback functionHandle, v
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
     {
-      event.first = static_cast<ManagerEventChangeType>(i);
+      event.first = static_cast<ResourceEventChangeType>(i);
       this->observe(event, functionHandle, callData);
     }
 
@@ -3553,8 +3555,8 @@ void Manager::observe(ManagerEventType event, OneToOneCallback functionHandle, v
   m_oneToOneTriggers.insert(OneToOneTrigger(event, OneToOneObserver(functionHandle, callData)));
 }
 
-/// Request notification from this manager instance when \a event occurs.
-void Manager::observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData)
+/// Request notification from this resource instance when \a event occurs.
+void Resource::observe(ResourceEventType event, OneToManyCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
   {
@@ -3562,7 +3564,7 @@ void Manager::observe(ManagerEventType event, OneToManyCallback functionHandle, 
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
     {
-      event.first = static_cast<ManagerEventChangeType>(i);
+      event.first = static_cast<ResourceEventChangeType>(i);
       this->observe(event, functionHandle, callData);
     }
 
@@ -3572,8 +3574,8 @@ void Manager::observe(ManagerEventType event, OneToManyCallback functionHandle, 
   m_oneToManyTriggers.insert(OneToManyTrigger(event, OneToManyObserver(functionHandle, callData)));
 }
 
-/// Decline further notification from this manager instance when \a event occurs.
-void Manager::unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData)
+/// Decline further notification from this resource instance when \a event occurs.
+void Resource::unobserve(ResourceEventType event, ConditionCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
   {
@@ -3581,7 +3583,7 @@ void Manager::unobserve(ManagerEventType event, ConditionCallback functionHandle
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
     {
-      event.first = static_cast<ManagerEventChangeType>(i);
+      event.first = static_cast<ResourceEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
     }
 
@@ -3591,8 +3593,8 @@ void Manager::unobserve(ManagerEventType event, ConditionCallback functionHandle
   m_conditionTriggers.erase(ConditionTrigger(event, ConditionObserver(functionHandle, callData)));
 }
 
-/// Decline further notification from this manager instance when \a event occurs.
-void Manager::unobserve(ManagerEventType event, OneToOneCallback functionHandle, void* callData)
+/// Decline further notification from this resource instance when \a event occurs.
+void Resource::unobserve(ResourceEventType event, OneToOneCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
   {
@@ -3600,7 +3602,7 @@ void Manager::unobserve(ManagerEventType event, OneToOneCallback functionHandle,
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
     {
-      event.first = static_cast<ManagerEventChangeType>(i);
+      event.first = static_cast<ResourceEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
     }
 
@@ -3610,8 +3612,8 @@ void Manager::unobserve(ManagerEventType event, OneToOneCallback functionHandle,
   m_oneToOneTriggers.erase(OneToOneTrigger(event, OneToOneObserver(functionHandle, callData)));
 }
 
-/// Decline further notification from this manager instance when \a event occurs.
-void Manager::unobserve(ManagerEventType event, OneToManyCallback functionHandle, void* callData)
+/// Decline further notification from this resource instance when \a event occurs.
+void Resource::unobserve(ResourceEventType event, OneToManyCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
   {
@@ -3619,7 +3621,7 @@ void Manager::unobserve(ManagerEventType event, OneToManyCallback functionHandle
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
     {
-      event.first = static_cast<ManagerEventChangeType>(i);
+      event.first = static_cast<ResourceEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
     }
 
@@ -3629,39 +3631,39 @@ void Manager::unobserve(ManagerEventType event, OneToManyCallback functionHandle
   m_oneToManyTriggers.erase(OneToManyTrigger(event, OneToManyObserver(functionHandle, callData)));
 }
 
-/// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
-void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src)
+/// Called by this Resource instance or EntityRef instances referencing it when \a event occurs.
+void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& src)
 {
   std::set<ConditionTrigger>::const_iterator begin = m_conditionTriggers.lower_bound(
     ConditionTrigger(event, ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
   std::set<ConditionTrigger>::const_iterator end = m_conditionTriggers.upper_bound(ConditionTrigger(
-    std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
+    std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
     ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
   for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, it->second.second);
 }
 
-/// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
-void Manager::trigger(
-  ManagerEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related)
+/// Called by this Resource instance or EntityRef instances referencing it when \a event occurs.
+void Resource::trigger(
+  ResourceEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related)
 {
   std::set<OneToOneTrigger>::const_iterator begin = m_oneToOneTriggers.lower_bound(
     OneToOneTrigger(event, OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
   std::set<OneToOneTrigger>::const_iterator end = m_oneToOneTriggers.upper_bound(OneToOneTrigger(
-    std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
+    std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
     OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
   for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
 
-/// Called by this Manager instance or EntityRef instances referencing it when \a event occurs.
-void Manager::trigger(ManagerEventType event, const smtk::model::EntityRef& src,
+/// Called by this Resource instance or EntityRef instances referencing it when \a event occurs.
+void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& src,
   const smtk::model::EntityRefArray& related)
 {
   std::set<OneToManyTrigger>::const_iterator begin = m_oneToManyTriggers.lower_bound(
     OneToManyTrigger(event, OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
   std::set<OneToManyTrigger>::const_iterator end = m_oneToManyTriggers.upper_bound(OneToManyTrigger(
-    std::make_pair(event.first, static_cast<ManagerEventRelationType>(event.second + 1)),
+    std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
     OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
@@ -3682,7 +3684,7 @@ std::string uniqueResourceName(EntityRef ent, const T& preexisting, int& counter
 }
 
 /// Internal method used by modelOwningEntity to prevent infinite recursion
-UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visited) const
+UUID Resource::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visited) const
 {
   if (visited.find(ent) != visited.end())
   {
@@ -3700,7 +3702,7 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
     {
       case AUX_GEOM_ENTITY:
       {
-        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+        ResourcePtr self = const_cast<Resource*>(this)->shared_from_this();
         EntityRef aux(self, ent);
         for (aux = aux.embeddedIn(); aux.isValid(); aux = aux.embeddedIn())
         {
@@ -3715,7 +3717,7 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
       case GROUP_ENTITY:
       {
         // If we have a superset arrangement, ask for supersets and traverse upwards.
-        ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+        ResourcePtr self = const_cast<Resource*>(this)->shared_from_this();
         EntityRefArray supersets;
         EntityRefArrangementOps::appendAllRelations(
           EntityRef(self->shared_from_this(), ent), SUBSET_OF, supersets);
@@ -3809,11 +3811,11 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
         // For models, life is tricky. Without arrangement information, we cannot
         // know whether a related model is a child or a parent. Two models might
         // point to each other, which could throw us into an infinite loop. So,
-        // we attempt to cast ourselves to Manager and identify a parent model.
+        // we attempt to cast ourselves to Resource and identify a parent model.
         {
           // Although const_pointer_cast is evil, changing the entityref classes
           // to accept any type of shared_ptr<X/X const> is more evil.
-          ManagerPtr self = smtk::const_pointer_cast<Manager>(shared_from_this());
+          ResourcePtr self = smtk::const_pointer_cast<Resource>(shared_from_this());
           return Model(self, ent).parent().entity();
         }
         break;
@@ -3853,7 +3855,7 @@ UUID Manager::modelOwningEntityRecursive(const UUID& ent, std::set<UUID>& visite
 }
 
 /// Attempt to find a session owning the given entity.
-UUID Manager::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visited) const
+UUID Resource::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visited) const
 {
   if (visited.find(ent) != visited.end())
   {
@@ -3869,7 +3871,7 @@ UUID Manager::sessionOwningEntityRecursive(const UUID& ent, std::set<UUID>& visi
     // The parent of a model should be another model or session.
 
     // If we have a superset arrangement, ask for supersets and traverse upwards.
-    ManagerPtr self = const_cast<Manager*>(this)->shared_from_this();
+    ResourcePtr self = const_cast<Resource*>(this)->shared_from_this();
     EntityRefArray supersets;
     EntityRefArrangementOps::appendAllRelations(
       EntityRef(self->shared_from_this(), uid), SUBSET_OF, supersets);

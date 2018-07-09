@@ -18,7 +18,7 @@
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -38,7 +38,7 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-void create_simple_2d_model(smtk::model::ManagerPtr mgr)
+void create_simple_2d_model(smtk::model::ResourcePtr resource)
 {
   std::string file_path(data_root);
   file_path += "/model/2d/smtk/test2D.json";
@@ -48,19 +48,19 @@ void create_simple_2d_model(smtk::model::ManagerPtr mgr)
   std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
-  mgr->assignDefaultNames();
+  smtk::io::LoadJSON::intoModelResource(json.c_str(), resource);
+  resource->assignDefaultNames();
 
   file.close();
 }
 
-void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager, smtk::model::Edge& oe,
+void add_model_edge_and_vert(smtk::model::ResourcePtr modelResource, smtk::model::Edge& oe,
   smtk::model::Edge& ne, smtk::model::Vertex& nv)
 {
   //verify that we only have a single model, that allows the subsequent logic
   //to be valid
   smtk::model::Models models =
-    modelManager->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY);
+    modelResource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY);
   test(models.size() == 1, "should only have a single model");
   smtk::model::Model& model = models[0];
 
@@ -74,12 +74,12 @@ void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager, smtk::model::
   // and create a new edge
   //
   smtk::model::EntityRefs edges =
-    modelManager->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::EDGE);
+    modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::EDGE);
   smtk::model::EntityIterator it;
   it.traverse(edges.begin(), edges.end());
   for (it.begin(); !it.isAtEnd(); ++it)
   {
-    smtk::model::Edge edge(modelManager, it->entity());
+    smtk::model::Edge edge(modelResource, it->entity());
     smtk::model::Vertices verts = edge.vertices();
 
     if (verts.size() != 2)
@@ -87,8 +87,8 @@ void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager, smtk::model::
       continue;
     }
 
-    smtk::model::Vertex v1(modelManager, verts[0].entity());
-    smtk::model::Vertex v2(modelManager, verts[1].entity());
+    smtk::model::Vertex v1(modelResource, verts[0].entity());
+    smtk::model::Vertex v2(modelResource, verts[1].entity());
 
     double* cv1 = v1.coordinates();
     double* cv2 = v2.coordinates();
@@ -101,16 +101,16 @@ void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager, smtk::model::
       oe = edge;
 
       //create the new vertex
-      nv = modelManager->addVertex();
+      nv = modelResource->addVertex();
       model.addCell(nv);
 
       //vertex tess
       smtk::model::Tessellation vertTess;
       vertTess.addCoords(0, 2, 0);
       vertTess.addPoint(0);
-      modelManager->setTessellationAndBoundingBox(nv.entity(), vertTess);
+      modelResource->setTessellationAndBoundingBox(nv.entity(), vertTess);
 
-      ne = modelManager->addEdge();
+      ne = modelResource->addEdge();
       model.addCell(ne);
 
       //edge tess
@@ -120,7 +120,7 @@ void add_model_edge_and_vert(smtk::model::ManagerPtr modelManager, smtk::model::
       edgeTess.addCoords(3, 0, 0);
       edgeTess.addLine(0, 1);
       edgeTess.addLine(1, 2);
-      modelManager->setTessellationAndBoundingBox(ne.entity(), edgeTess);
+      modelResource->setTessellationAndBoundingBox(ne.entity(), edgeTess);
 
       break;
     }
@@ -167,12 +167,12 @@ void all_points_are_valid(smtk::mesh::CollectionPtr collection)
 void verify_split()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_2d_model(modelManager);
+  create_simple_2d_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
 
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 21, "collection should have 21 mesh elements");
@@ -187,7 +187,7 @@ void verify_split()
   smtk::model::Edge originalEdge;
   smtk::model::Edge newEdge;
   smtk::model::Vertex promotedVertex;
-  add_model_edge_and_vert(modelManager, originalEdge, newEdge, promotedVertex);
+  add_model_edge_and_vert(modelResource, originalEdge, newEdge, promotedVertex);
 
   bool valid = smtk::mesh::utility::split(c, originalEdge, newEdge, promotedVertex);
   test(valid, "split should pass");
@@ -202,12 +202,12 @@ void verify_split()
 void verify_merge()
 {
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::model::ManagerPtr modelManager = smtk::model::Manager::create();
+  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-  create_simple_2d_model(modelManager);
+  create_simple_2d_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelManager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 21, "collection should have 21 mesh elements");
   test(c->points().size() == 32, "should have 32 points before split and merge");
@@ -219,7 +219,7 @@ void verify_merge()
   smtk::model::Edge originalEdge;
   smtk::model::Edge newEdge;
   smtk::model::Vertex promotedVertex;
-  add_model_edge_and_vert(modelManager, originalEdge, newEdge, promotedVertex);
+  add_model_edge_and_vert(modelResource, originalEdge, newEdge, promotedVertex);
 
   bool svalid = smtk::mesh::utility::split(c, originalEdge, newEdge, promotedVertex);
   test(svalid, "split should pass");

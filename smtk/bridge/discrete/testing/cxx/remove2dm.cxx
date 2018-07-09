@@ -20,8 +20,6 @@
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-#include "smtk/model/Manager.h"
-
 using namespace smtk::model;
 using namespace smtk::io;
 

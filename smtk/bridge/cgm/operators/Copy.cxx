@@ -17,7 +17,6 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include "smtk/attribute/Attribute.h"

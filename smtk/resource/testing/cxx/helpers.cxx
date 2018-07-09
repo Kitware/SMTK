@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/resource/testing/cxx/helpers.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/Registrar.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"

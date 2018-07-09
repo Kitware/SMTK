@@ -28,7 +28,7 @@ class TestSelection(smtk.testing.TestCase):
 
     def loadTestData(self):
         import os
-        self.mgr = smtk.model.Manager.create()
+        self.mgr = smtk.model.Resource.create()
         fpath = [smtk.testing.DATA_DIR, 'model',
                  '2d', 'smtk', 'epic-trex-drummer.smtk']
         op = smtk.bridge.polygon.LegacyRead.create()
@@ -36,7 +36,8 @@ class TestSelection(smtk.testing.TestCase):
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise ImportError
-        self.resource = smtk.model.Manager.CastTo(res.find('resource').value())
+        self.resource = smtk.model.Resource.CastTo(
+            res.find('resource').value())
         self.model = self.resource.findEntitiesOfType(
             int(smtk.model.MODEL_ENTITY))[0]
 

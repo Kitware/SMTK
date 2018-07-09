@@ -24,7 +24,7 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/operators/ExportMesh.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include <fstream>
 
@@ -38,14 +38,14 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string write_root = SMTK_SCRATCH_DIR;
 
-void create_simple_mesh_model(smtk::model::ManagerPtr mgr, std::string file_path)
+void create_simple_mesh_model(smtk::model::ResourcePtr mgr, std::string file_path)
 {
   std::ifstream file(file_path.c_str());
 
   std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelManager(json.c_str(), mgr);
+  smtk::io::LoadJSON::intoModelResource(json.c_str(), mgr);
   mgr->assignDefaultNames();
 
   file.close();
@@ -79,18 +79,18 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  // Create a model manager
-  smtk::model::ManagerPtr manager = smtk::model::Manager::create();
+  // Create a model resource
+  smtk::model::ResourcePtr resource = smtk::model::Resource::create();
 
   // Access the mesh manager
-  smtk::mesh::ManagerPtr meshManager = manager->meshes();
+  smtk::mesh::ManagerPtr meshManager = resource->meshes();
 
   // Load in the model
-  create_simple_mesh_model(manager, std::string(argv[1]));
+  create_simple_mesh_model(resource, std::string(argv[1]));
 
   // Convert it to a mesh
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, manager);
+  smtk::mesh::CollectionPtr c = convert(meshManager, resource);
 
   // Create a new "export mesh" operator
   smtk::operation::Operation::Ptr exportMeshOp = smtk::mesh::ExportMesh::create();

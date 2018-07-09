@@ -11,7 +11,7 @@
 #include "vtkSMTKJsonModelReader.h"
 
 #include "smtk/model/LoadJSON.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "vtkModelMultiBlockSource.h"
 
 #include "vtkInformation.h"
@@ -74,16 +74,16 @@ int vtkSMTKJsonModelReader::RequestData(vtkInformation* vtkNotUsed(request),
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //vtkErrorMacro( << "json model (data): " << data.c_str());
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
 
-  int status = !LoadJSON::intoModelManager(data.c_str(), sm);
+  int status = !LoadJSON::intoModelResource(data.c_str(), sm);
   if (status)
   {
     vtkErrorMacro(<< "Error status from LoadJSON: " << status);
     return 0;
   }
 
-  this->Internal->ReaderSource->SetModelManager(sm);
+  this->Internal->ReaderSource->SetModelResource(sm);
   this->Internal->ReaderSource->Update();
   output->ShallowCopy(this->Internal->ReaderSource->GetOutput());
 

@@ -29,7 +29,7 @@
 
           <ChildrenDefinitions>
             <Component Name="auxiliary geometry" Label = "Auxiliary Geometry" NumberOfRequiredValues="1">
-              <Accepts><Resource Name="smtk::model::Manager" Filter="aux_geom"/></Accepts>
+              <Accepts><Resource Name="smtk::model::Resource" Filter="aux_geom"/></Accepts>
               <BriefDescription>
                 An external data set whose values determine the mesh nodes' elevations.
               </BriefDescription>
@@ -263,7 +263,7 @@
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <Component Name="tess_changed" NumberOfRequiredValues="0"
                      Extensible="true" AdvanceLevel="11">
-          <Accepts><Resource Name="smtk::model::Manager" Filter=""/></Accepts>
+          <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
         </Component>
       </ItemDefinitions>
     </AttDef>

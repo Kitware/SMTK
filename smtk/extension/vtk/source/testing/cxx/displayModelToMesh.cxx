@@ -15,7 +15,7 @@
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "vtkActor.h"
 #include "vtkColorTransferFunction.h"
@@ -55,12 +55,12 @@ int main(int argc, char* argv[])
 
     std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
-    ManagerPtr sm = Manager::create();
+    ResourcePtr sm = Resource::create();
 
-    int status = LoadJSON::intoModelManager(data.c_str(), sm);
+    int status = LoadJSON::intoModelResource(data.c_str(), sm);
     int numModels =
       static_cast<int>(sm->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size());
-    std::cout << "Imported models into manager: " << numModels << std::endl;
+    std::cout << "Imported models into resource: " << numModels << std::endl;
     if (numModels > 0)
     {
       smtk::mesh::ManagerPtr meshmgr = sm->meshes();

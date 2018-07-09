@@ -121,7 +121,7 @@ Vertices EdgeUse::vertices() const
 /// The next edge use around this edge.
 EdgeUse EdgeUse::ccwUse() const
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr mgr = this->resource();
   // Find the offset into HAS_USE arrangements for this edge-use:
   //int curUse = mgr->findCellHasUseWithSense(m_entity, this->sense());
   // Now ask for the next valid, cyclic HAS_USE arrangement.

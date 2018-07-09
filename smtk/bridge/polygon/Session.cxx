@@ -20,8 +20,8 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Vertex.h"
@@ -98,8 +98,8 @@ bool Session::removeStorage(const smtk::common::UUID& uid)
 
 /**\brief Remove all references to \a face from the polygon-session internal storage.
   *
-  * Note that this must be called **before** \a face is removed from the SMTK model manager
-  * since it uses information in the model manager to obtain the list of vertices bounding
+  * Note that this must be called **before** \a face is removed from the SMTK model resource
+  * since it uses information in the model resource to obtain the list of vertices bounding
   * the face.
   */
 bool Session::removeFaceReferences(const smtk::model::Face& face)
@@ -132,8 +132,8 @@ bool Session::removeFaceReferences(const smtk::model::Face& face)
 
 /**\brief Remove all references to \a edge from the polygon-session internal storage.
   *
-  * Note that this must be called **before** \a edge is removed from the SMTK model manager
-  * since it uses information in the model manager to obtain the list of vertices bounding
+  * Note that this must be called **before** \a edge is removed from the SMTK model resource
+  * since it uses information in the model resource to obtain the list of vertices bounding
   * the edge.
   */
 bool Session::removeEdgeReferences(const smtk::model::Edge& edge)

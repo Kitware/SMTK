@@ -20,7 +20,7 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/ShellEntity.h"
 
 namespace py = pybind11;
@@ -32,7 +32,7 @@ py::class_< smtk::model::Chain, smtk::model::ShellEntity > pybind11_init_smtk_mo
     .def(py::init<::smtk::model::Chain const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::Chain::*)(::smtk::model::EntityRef const &) const) &smtk::model::Chain::operator!=)
     .def("deepcopy", (smtk::model::Chain & (smtk::model::Chain::*)(::smtk::model::Chain const &)) &smtk::model::Chain::operator=)
     .def("__eq__", (bool (smtk::model::Chain::*)(::smtk::model::EntityRef const &) const) &smtk::model::Chain::operator==)

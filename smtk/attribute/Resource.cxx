@@ -19,7 +19,7 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
@@ -492,9 +492,9 @@ smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
   return smtk::attribute::ConstDefinitionPtr();
 }
 
-void Resource::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
+void Resource::setRefModelResource(smtk::model::ResourcePtr refModelResource)
 {
-  m_refModelMgr = refModelMgr;
+  m_refModelResource = refModelResource;
 }
 
 void Resource::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)

@@ -20,8 +20,8 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntityGroup.h"
@@ -62,7 +62,7 @@ bool EntityGroupOperation::ableToOperate()
   }
 
   smtk::bridge::discrete::Resource::Ptr resource =
-    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.manager());
+    std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.resource());
 
   if (!resource->discreteSession()->findModelEntity(model.entity()))
   {
@@ -124,7 +124,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
   smtk::bridge::discrete::Resource::Ptr resource =
     std::static_pointer_cast<smtk::bridge::discrete::Resource>(model.component()->resource());
 
-  smtk::model::ManagerPtr pstore = std::static_pointer_cast<smtk::model::Manager>(resource);
+  smtk::model::ResourcePtr pstore = std::static_pointer_cast<smtk::model::Resource>(resource);
   SessionPtr opsession = resource->discreteSession();
 
   vtkDiscreteModelWrapper* modelWrapper = opsession->findModelEntity(model.entity());
@@ -171,7 +171,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
         smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grp);
 
         // The group itself should be added too
-        smtk::model::EntityRef grpRef = opsession->addCMBEntityToManager(grpUUID, grp, pstore, 0);
+        smtk::model::EntityRef grpRef = opsession->addCMBEntityToResource(grpUUID, grp, pstore, 0);
         bgroup = grpRef.as<smtk::model::Group>();
         bgroup.setMembershipMask(mask);
         bgroup.setName(gName);
@@ -205,7 +205,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
       }
       if (ok)
       {
-        // get rid of the group from manager
+        // get rid of the group from resource
         smtk::model::EntityRef grpRem = remgrpItem->valueAs<smtk::model::Entity>(idx);
         model.removeGroup(grpRem.as<smtk::model::Group>());
         pstore->erase(grpRem);
@@ -221,7 +221,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
 
     if (ok)
     {
-      // get rid of the group from manager
+      // get rid of the group from resource
       smtk::model::EntityRef grpC =
         this->parameters()->findComponent("modify cell group")->valueAs<smtk::model::Entity>();
       smtk::model::Group tmpGrp = grpC.as<smtk::model::Group>();
@@ -233,7 +233,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
 
       smtk::common::UUID grpUUID = opsession->findOrSetEntityUUID(grpEntity);
       // The group itself should be added too
-      grpC = opsession->addCMBEntityToManager(grpUUID, grpEntity, pstore, 1);
+      grpC = opsession->addCMBEntityToResource(grpUUID, grpEntity, pstore, 1);
       bgroup = grpC.as<smtk::model::Group>();
       bgroup.setMembershipMask(mask);
       bgroup.setName(gName);
@@ -391,7 +391,7 @@ bool EntityGroupOperation::modifyGroup(smtk::bridge::discrete::Resource::Ptr& re
           prevGrpId = opsession->findOrSetEntityUUID(matEntity);
           // The group itself should be added too
           smtk::model::EntityRef grpPrev =
-            opsession->addCMBEntityToManager(prevGrpId, matEntity, resource, 1);
+            opsession->addCMBEntityToResource(prevGrpId, matEntity, resource, 1);
           smtk::model::Group tmpgroup = grpPrev.as<smtk::model::Group>();
           tmpgroup.setMembershipMask(prevMask);
           tmpgroup.setName(prevName);

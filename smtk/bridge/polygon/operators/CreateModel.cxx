@@ -188,7 +188,7 @@ CreateModel::Result CreateModel::operateInternal()
 
       if (result)
       {
-        session->manager()
+        session->resource()
           ->meshes()
           ->makeCollection(model.entity())
           ->name(model.name() + "_tessellation");

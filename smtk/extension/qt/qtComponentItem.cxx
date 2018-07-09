@@ -20,7 +20,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace smtk
 {
@@ -164,51 +164,52 @@ std::string qtComponentItem::synopsis(bool& ok) const
 
 int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr)
 {
-  smtk::view::VisibilityContent::decoratePhrase(phr, [this](smtk::view::VisibilityContent::Query qq,
-                                                       int val,
-                                                       smtk::view::ConstPhraseContentPtr data) {
-    smtk::model::EntityPtr ent =
-      data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
-    smtk::model::ManagerPtr mmgr = ent
-      ? ent->modelResource()
-      : (data ? std::dynamic_pointer_cast<smtk::model::Manager>(data->relatedResource()) : nullptr);
+  smtk::view::VisibilityContent::decoratePhrase(
+    phr, [this](smtk::view::VisibilityContent::Query qq, int val,
+           smtk::view::ConstPhraseContentPtr data) {
+      smtk::model::EntityPtr ent =
+        data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
+      smtk::model::ResourcePtr mResource = ent
+        ? ent->modelResource()
+        : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(data->relatedResource())
+                : nullptr);
 
-    switch (qq)
-    {
-      case smtk::view::VisibilityContent::DISPLAYABLE:
-        return (ent || (!ent && mmgr)) ? 1 : 0;
-      case smtk::view::VisibilityContent::EDITABLE:
-        return (ent || (!ent && mmgr)) ? 1 : 0;
-      case smtk::view::VisibilityContent::GET_VALUE:
-        if (ent)
-        {
-          auto valIt = m_p->m_members.find(ent);
-          if (valIt != m_p->m_members.end())
+      switch (qq)
+      {
+        case smtk::view::VisibilityContent::DISPLAYABLE:
+          return (ent || (!ent && mResource)) ? 1 : 0;
+        case smtk::view::VisibilityContent::EDITABLE:
+          return (ent || (!ent && mResource)) ? 1 : 0;
+        case smtk::view::VisibilityContent::GET_VALUE:
+          if (ent)
           {
-            return valIt->second;
-          }
-          return 0; // visibility is assumed if there is no entry.
-        }
-        return 0; // visibility is false if the component is not a model entity or NULL.
-      case smtk::view::VisibilityContent::SET_VALUE:
-        if (ent)
-        {
-          if (val && !m_p->m_members.empty())
-          {
-            auto item = this->componentItem();
-            if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
-            { // Clear all other members since only 1 is allowed and the user just chose it.
-              m_p->m_members.clear();
-              m_p->m_phraseModel->triggerDataChanged();
+            auto valIt = m_p->m_members.find(ent);
+            if (valIt != m_p->m_members.end())
+            {
+              return valIt->second;
             }
+            return 0; // visibility is assumed if there is no entry.
           }
-          m_p->m_members[ent] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
-          this->updateSynopsisLabels();
-          return 1;
-        }
-    }
-    return 0;
-  });
+          return 0; // visibility is false if the component is not a model entity or NULL.
+        case smtk::view::VisibilityContent::SET_VALUE:
+          if (ent)
+          {
+            if (val && !m_p->m_members.empty())
+            {
+              auto item = this->componentItem();
+              if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
+              { // Clear all other members since only 1 is allowed and the user just chose it.
+                m_p->m_members.clear();
+                m_p->m_phraseModel->triggerDataChanged();
+              }
+            }
+            m_p->m_members[ent] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            this->updateSynopsisLabels();
+            return 1;
+          }
+      }
+      return 0;
+    });
   return 0;
 }
 

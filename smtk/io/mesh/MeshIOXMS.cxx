@@ -21,7 +21,7 @@
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #define BOOST_FILESYSTEM_VERSION 3
@@ -332,7 +332,7 @@ std::vector<MeshByRegion> subsetByRegion(
 }
 
 std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collection,
-  smtk::model::ManagerPtr manager, const std::string& modelPropertyName,
+  smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
   smtk::mesh::DimensionType type)
 {
   std::vector<MeshByRegion> meshesByModelRef;
@@ -349,7 +349,7 @@ std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collec
   for (it i = modelIds.begin(); i != modelIds.end(); ++i)
   {
     const smtk::model::IntegerList& values =
-      manager->integerProperty(i->entity(), modelPropertyName);
+      resource->integerProperty(i->entity(), modelPropertyName);
     smtk::mesh::MeshSet subset = collection->findAssociatedMeshes(*i, type);
     if (values.size() == 1 && !subset.is_empty())
     { //only accept model properties that have single values
@@ -471,7 +471,7 @@ bool write_dm(
   return write_dm(meshes, stream, type);
 }
 
-bool write_dm(smtk::mesh::CollectionPtr collection, smtk::model::ManagerPtr manager,
+bool write_dm(smtk::mesh::CollectionPtr collection, smtk::model::ResourcePtr resource,
   const std::string& modelPropertyName, std::ostream& stream, smtk::mesh::DimensionType type)
 {
   if (!collection)
@@ -480,7 +480,7 @@ bool write_dm(smtk::mesh::CollectionPtr collection, smtk::model::ManagerPtr mana
   }
 
   std::vector<MeshByRegion> meshes =
-    subsetByModelProperty(collection, manager, modelPropertyName, type);
+    subsetByModelProperty(collection, resource, modelPropertyName, type);
   if (meshes.size() == 0)
   { //nothing to write out
     return false;
@@ -848,28 +848,28 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPt
 }
 
 bool MeshIOXMS::exportMesh(std::ostream& stream, smtk::mesh::CollectionPtr collection,
-  smtk::model::ManagerPtr manager, const std::string& modelPropertyName,
+  smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
   smtk::mesh::DimensionType dim) const
 {
-  return write_dm(collection, manager, modelPropertyName, stream, dim);
+  return write_dm(collection, resource, modelPropertyName, stream, dim);
 }
 
 bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-  smtk::model::ManagerPtr manager, const std::string& modelPropertyName,
+  smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
   smtk::mesh::DimensionType dim) const
 {
   bool result = false;
   OpenFile of(filePath);
   if (of.m_canWrite)
   {
-    result = this->exportMesh(of.m_stream, collection, manager, modelPropertyName, dim);
+    result = this->exportMesh(of.m_stream, collection, resource, modelPropertyName, dim);
     of.fileWritten(result);
   }
   return result;
 }
 
 bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
-  smtk::model::ManagerPtr manager, const std::string& modelPropertyName) const
+  smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -877,11 +877,11 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPt
 
   if (ext == ".2dm")
   {
-    return this->exportMesh(filePath, collection, manager, modelPropertyName, smtk::mesh::Dims2);
+    return this->exportMesh(filePath, collection, resource, modelPropertyName, smtk::mesh::Dims2);
   }
   else
   {
-    return this->exportMesh(filePath, collection, manager, modelPropertyName, smtk::mesh::Dims3);
+    return this->exportMesh(filePath, collection, resource, modelPropertyName, smtk::mesh::Dims3);
   }
 }
 }

@@ -16,7 +16,7 @@
 #include "smtk/model/json/jsonArrangement.h"
 #include "smtk/model/json/jsonTessellation.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "nlohmann/json.hpp"
 
@@ -27,9 +27,9 @@ namespace model
 {
 using json = nlohmann::json;
 
-SMTKCORE_EXPORT void to_json(json& j, const ManagerPtr& mmgr);
+SMTKCORE_EXPORT void to_json(json& j, const ResourcePtr& mresource);
 
-SMTKCORE_EXPORT void from_json(const json& j, ManagerPtr& mmgr);
+SMTKCORE_EXPORT void from_json(const json& j, ResourcePtr& mresource);
 }
 }
 

@@ -15,7 +15,7 @@
 #include "smtk/common/json/jsonUUID.h"
 
 #include "smtk/model/Entity.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "nlohmann/json.hpp"
 

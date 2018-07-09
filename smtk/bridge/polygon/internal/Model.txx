@@ -16,8 +16,8 @@
 #include "smtk/bridge/polygon/internal/Vertex.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
 
 namespace smtk
@@ -61,10 +61,10 @@ namespace internal
   * Finally \a newVerts will be populated with any vertices created when creating the edge.
   */
 template <typename T, typename U>
-model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, T end,
+model::Edge pmodel::createModelEdgeFromSegments(model::ResourcePtr resource, T begin, T end,
   bool addToModel, const U& splitEdgeFaces, bool headIsNewVertex, smtk::model::VertexSet& newVerts)
 {
-  if (!mgr || begin == end)
+  if (!resource || begin == end)
     return smtk::model::Edge();
 
   Id vInit = this->pointId(begin->second.low());
@@ -101,7 +101,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     if (!vInitStorage->canInsertEdge(begin->second.high(), &whereBegin))
     {
       smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
-          << smtk::model::Vertex(mgr, vInit).name() << ")E.");
+          << smtk::model::Vertex(resource, vInit).name() << ")E.");
       return smtk::model::Edge();
     }
   }
@@ -115,13 +115,13 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
     if (!vFiniStorage->canInsertEdge((begin + (end - begin - 1))->second.low(), &whereEnd))
     {
       smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
-          << smtk::model::Vertex(mgr, vFini).name() << ")F.");
+          << smtk::model::Vertex(resource, vFini).name() << ")F.");
       return smtk::model::Edge();
     }
   }
 
   // We can safely create the edge now
-  smtk::model::Edge created = mgr->addEdge();
+  smtk::model::Edge created = resource->addEdge();
   internal::edge::Ptr storage = internal::edge::create();
   storage->setParent(this);
   storage->setId(created.entity());
@@ -131,7 +131,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
   for (T segIt = begin; segIt != end; ++segIt)
     storage->m_points.insert(storage->m_points.end(), segIt->second.high());
 
-  smtk::model::Model parentModel(mgr, this->id());
+  smtk::model::Model parentModel(resource, this->id());
   // Insert edge at proper place in model vertex edge-lists
   vertex::incident_edges::iterator inserted;
   if (vInitStorage)
@@ -143,7 +143,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
       (inserted == vInitStorage->edgesBegin() ? vInitStorage->edgesBack() : *(--inserted))
         .m_adjacentFace = splitEdgeFaces.first;
     }
-    smtk::model::Vertex vert(mgr, vInit);
+    smtk::model::Vertex vert(resource, vInit);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
@@ -160,7 +160,7 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
       (inserted == vFiniStorage->edgesBegin() ? vFiniStorage->edgesBack() : *(--inserted))
         .m_adjacentFace = splitEdgeFaces.second;
     }
-    smtk::model::Vertex vert(mgr, vFini);
+    smtk::model::Vertex vert(resource, vFini);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
@@ -197,9 +197,9 @@ model::Edge pmodel::createModelEdgeFromSegments(model::ManagerPtr mgr, T begin, 
   */
 template <typename T>
 model::Edge pmodel::createModelEdgeFromPoints(
-  model::ManagerPtr mgr, T begin, T end, bool isFreeCell)
+  model::ResourcePtr resource, T begin, T end, bool isFreeCell)
 {
-  if (!mgr || begin == end)
+  if (!resource || begin == end)
     return smtk::model::Edge();
 
   Id vInit = this->pointId(*begin);
@@ -222,7 +222,7 @@ model::Edge pmodel::createModelEdgeFromPoints(
     if (!vInitStorage->canInsertEdge(*begin, &whereBegin))
     {
       smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of first vertex ("
-          << smtk::model::Vertex(mgr, vInit).name() << ")C.");
+          << smtk::model::Vertex(resource, vInit).name() << ")C.");
       return smtk::model::Edge();
     }
   }
@@ -232,13 +232,13 @@ model::Edge pmodel::createModelEdgeFromPoints(
     if (!vFiniStorage->canInsertEdge(*(end - 1), &whereEnd))
     {
       smtkErrorMacro(m_session->log(), "Edge would overlap face in neighborhood of last vertex ("
-          << smtk::model::Vertex(mgr, vFini).name() << ")D.");
+          << smtk::model::Vertex(resource, vFini).name() << ")D.");
       return smtk::model::Edge();
     }
   }
 
   // We can safely create the edge now
-  smtk::model::Edge created = mgr->addEdge();
+  smtk::model::Edge created = resource->addEdge();
   internal::edge::Ptr storage = internal::edge::create();
   storage->setParent(this);
   storage->setId(created.entity());
@@ -246,12 +246,12 @@ model::Edge pmodel::createModelEdgeFromPoints(
   storage->m_points.clear();
   storage->m_points.insert(storage->m_points.end(), begin, end);
 
-  smtk::model::Model parentModel(mgr, this->id());
+  smtk::model::Model parentModel(resource, this->id());
   // Insert edge at proper place in model vertex edge-lists
   if (vInitStorage)
   {
     vInitStorage->insertEdgeAt(whereBegin, created.entity(), /* edge is outwards: */ true);
-    smtk::model::Vertex vert(mgr, vInit);
+    smtk::model::Vertex vert(resource, vInit);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);
@@ -260,7 +260,7 @@ model::Edge pmodel::createModelEdgeFromPoints(
   if (vFiniStorage)
   {
     vFiniStorage->insertEdgeAt(whereEnd, created.entity(), /* edge is outwards: */ false);
-    smtk::model::Vertex vert(mgr, vFini);
+    smtk::model::Vertex vert(resource, vFini);
     if (parentModel.isEmbedded(vert))
       parentModel.unembedEntity(vert);
     created.findOrAddRawRelation(vert);

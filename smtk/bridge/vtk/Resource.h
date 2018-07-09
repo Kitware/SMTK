@@ -13,7 +13,7 @@
 #include "smtk/bridge/vtk/Exports.h"
 #include "smtk/bridge/vtk/Session.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
@@ -26,7 +26,7 @@ namespace vtk
 {
 
 class SMTKVTKSESSION_EXPORT Resource
-  : public smtk::resource::DerivedFrom<Resource, smtk::model::Manager>
+  : public smtk::resource::DerivedFrom<Resource, smtk::model::Resource>
 {
 public:
   smtkTypeMacro(smtk::bridge::vtk::Resource);

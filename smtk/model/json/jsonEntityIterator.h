@@ -20,8 +20,8 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include "nlohmann/json.hpp"
 

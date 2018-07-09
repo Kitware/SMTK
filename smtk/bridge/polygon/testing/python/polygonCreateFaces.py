@@ -72,9 +72,9 @@ class TestPolygonCreation(smtk.testing.TestCase):
         if featureSize is not None:
             cm.parameters().find('feature size').setValue(featureSize)
         self.res = cm.operate()
-        self.mgr = smtk.model.Manager.CastTo(
+        self.resource = smtk.model.Resource.CastTo(
             self.res.find('resource').value(0))
-        return self.mgr.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
+        return self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
 
     def createVertices(self, pt, model, **kwargs):
         """Create one or more vertices given point coordinates.
@@ -218,7 +218,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         self.assertEqual(mod.floatProperty('feature size'), [feature_size, ], 'Bad feature size {:1} vs {:2}'.format(
             mod.floatProperty('feature size')[0], feature_size))
 
-        # print(smtk.io.SaveJSON.fromModelManager(self.mgr,
+        # print(smtk.io.SaveJSON.fromModelResource(self.resource,
         # smtk.io.JSON_DEFAULT))
 
         # Print a summary of the model:
@@ -426,7 +426,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             self.startRenderTest()
 
             # mod = smtk.model.Model(mod)
-            #[mod.addCell(x) for x in self.mgr.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
+            #[mod.addCell(x) for x in self.resource.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
 
             # Color faces but not edges or vertices
             flist = [created.value(i) for i in range(created.numberOfValues())]
@@ -439,9 +439,9 @@ class TestPolygonCreation(smtk.testing.TestCase):
                 smtk.model.EntityRef(flist[fi]).setFloatProperty(
                     'color', faceColors[fi % len(faceColors)])
             [v.setFloatProperty('color', [0, 0, 0, 1])
-             for v in self.mgr.findEntitiesOfType(smtk.model.VERTEX, True)]
+             for v in self.resource.findEntitiesOfType(smtk.model.VERTEX, True)]
             [e.setFloatProperty('color', [0, 0, 0, 1])
-             for e in self.mgr.findEntitiesOfType(smtk.model.EDGE, True)]
+             for e in self.resource.findEntitiesOfType(smtk.model.EDGE, True)]
 
             ms, vs, mp, ac = self.addModelToScene(mod)
             ac.GetProperty().SetLineWidth(2)

@@ -16,7 +16,6 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/FloatData.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/bridge/polygon/Resource.h"

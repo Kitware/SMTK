@@ -13,8 +13,8 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionRegistrar.h"
 
 namespace smtk
@@ -28,13 +28,13 @@ namespace model
   * \a brdg object.
   *
   * This variant also ensures that the session is registered
-  * with the \a manager.
+  * with the \a resource.
   */
-SessionRef::SessionRef(ManagerPtr mgr, SessionPtr brdg)
-  : EntityRef(mgr, brdg->sessionId())
+SessionRef::SessionRef(ResourcePtr resource, SessionPtr brdg)
+  : EntityRef(resource, brdg->sessionId())
 {
-  if (!!mgr && !mgr->sessionData(*this))
-    mgr->registerSession(brdg);
+  if (!!resource && !resource->sessionData(*this))
+    resource->registerSession(brdg);
 }
 
 /**\brief Return the actual session this entityref references (or null).
@@ -42,10 +42,10 @@ SessionRef::SessionRef(ManagerPtr mgr, SessionPtr brdg)
   */
 Session::Ptr SessionRef::session() const
 {
-  ManagerPtr mgr = m_manager.lock();
-  if (!mgr || !m_entity)
+  ResourcePtr resource = m_resource.lock();
+  if (!resource || !m_entity)
     return Session::Ptr();
-  return mgr->sessionData(*this);
+  return resource->sessionData(*this);
 }
 
 /**\brief Add a model to the session.
@@ -107,15 +107,15 @@ std::string SessionRef::defaultFileExtension(const Model& model) const
 
 void SessionRef::close()
 {
-  ManagerPtr mgr = this->manager();
-  if (mgr)
-    mgr->closeSession(*this);
+  ResourcePtr resource = this->resource();
+  if (resource)
+    resource->closeSession(*this);
 }
 
 /*! \fn template<typename T> T SessionRef::models() const;
   * \brief Return the list of models associated with this session.
   *
-  * This returns all of the models for which Manager::setSessionForModel()
+  * This returns all of the models for which Resource::setSessionForModel()
   * has been called with this entityref's session.
   */
 

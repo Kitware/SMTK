@@ -16,7 +16,7 @@
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/model/json/jsonResource.h"
 
@@ -27,7 +27,7 @@ namespace smtk
 namespace model
 {
 
-json SessionIOJSON::saveJSON(const smtk::model::ManagerPtr& rsrc)
+json SessionIOJSON::saveJSON(const smtk::model::ResourcePtr& rsrc)
 {
   json result = rsrc;
   return rsrc;
@@ -73,7 +73,7 @@ json SessionIOJSON::loadJSON(const std::string& filename)
   return result;
 }
 
-bool SessionIOJSON::loadModelRecords(const json& j, smtk::model::ManagerPtr rsrc)
+bool SessionIOJSON::loadModelRecords(const json& j, smtk::model::ResourcePtr rsrc)
 {
   if (j.is_null())
   {

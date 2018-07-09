@@ -19,7 +19,7 @@
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 namespace py = pybind11;
 
@@ -30,7 +30,7 @@ py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > pybind11_in
     .def(py::init<::smtk::model::AuxiliaryGeometry const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::EntityRef const &) const) &smtk::model::AuxiliaryGeometry::operator!=)
     .def("deepcopy", (smtk::model::AuxiliaryGeometry & (smtk::model::AuxiliaryGeometry::*)(::smtk::model::AuxiliaryGeometry const &)) &smtk::model::AuxiliaryGeometry::operator=)
     .def("__eq__", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::EntityRef const &) const) &smtk::model::AuxiliaryGeometry::operator==)

@@ -11,9 +11,9 @@
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/AuxiliaryGeometryExtension.h"
-#include "smtk/model/Manager.h"
-#include "smtk/model/Manager.txx"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
+#include "smtk/model/Resource.txx"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"

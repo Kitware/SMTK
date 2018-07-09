@@ -14,7 +14,7 @@
 #include "smtk/bridge/cgm/Session.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 
@@ -80,9 +80,9 @@ T Operation::cgmEntityAs(const smtk::resource::PersistentObjectPointer& obj)
   * This method returns true when it is able to convert each and every entry in
   * \a smtkContainer into a non-NULL entry in \a cgmContainer.
   * If \a keepInputs is 0, then each SMTK entry in \a smtkContainer is erased
-  * from the model manager and added to \a expunged.
+  * from the model resource and added to \a expunged.
   * If \a keepInputs is positive, then no entries of \a smtkContainer have their
-  * storage in the model manager affected nor are they added to \a expunged.
+  * storage in the model resource affected nor are they added to \a expunged.
   * If \a keepInputs is negative, then all but the first entry are removed and
   * added to \a expunged.
   */
@@ -109,7 +109,7 @@ bool Operation::cgmEntities(const T& smtkContainer, DLIList<U>& cgmContainer, in
 
     if (!keepInputs || (keepInputs < 0 && it != smtkContainer.begin()))
     {
-      this->manager()->eraseModel(*it);
+      this->resource()->eraseModel(*it);
       expunged.push_back(*it);
     }
   }
@@ -137,8 +137,8 @@ void Operation::addEntitiesToResult(
     bool isNew = (origin == CREATED
         ? true
         : (origin == MODIFIED ? false
-                              : (this->manager()->findEntity(entId, false) ? false : true)));
-    smtk::model::EntityRef smtkEntry(this->manager(), entId);
+                              : (this->resource()->findEntity(entId, false) ? false : true)));
+    smtk::model::EntityRef smtkEntry(this->resource(), entId);
     if (session->transcribe(smtkEntry, smtk::model::SESSION_EVERYTHING, false))
     {
       if (isNew)

@@ -10,8 +10,8 @@
 
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/Volume.h"
 
@@ -78,7 +78,7 @@ smtkImplementsModelOperation(
 
 void testOperation(Model model)
 {
-  // Get the default session for our model manager:
+  // Get the default session for our model resource:
   smtk::model::SessionPtr session = model.session().session();
 
   // Ask the session to create an operator:
@@ -102,12 +102,12 @@ int main()
 {
   int status = 0;
 
-  Manager::Ptr manager = Manager::create();
-  SessionRef session = manager->createSession("native");
-  UUIDArray uids = smtk::model::testing::createTet(manager);
+  Resource::Ptr resource = Resource::create();
+  SessionRef session = resource->createSession("native");
+  UUIDArray uids = smtk::model::testing::createTet(resource);
 
-  Model model = manager->addModel(3, 3, "TestModel");
-  Volume tet = Volume(manager, uids[21]);
+  Model model = resource->addModel(3, 3, "TestModel");
+  Volume tet = Volume(resource, uids[21]);
   model.setSession(session);
   model.addCell(tet);
 

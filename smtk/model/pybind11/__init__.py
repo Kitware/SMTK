@@ -15,7 +15,7 @@ import smtk.operation
 from _smtkPybindModel import *
 
 """
-smtk.model.Manager.findEntitiesOfType: a method that returns a list of queried
+smtk.model.Resource.findEntitiesOfType: a method that returns a list of queried
 entity types. This method is composed in python (rather than in the bindings)
 to exploit python's ability to return different objects, depending on the query.
 """
@@ -46,6 +46,6 @@ def _findEntitiesOfType(self, flags, exactMatch=True):
     return [ent(x) for x in array]
 
 
-Manager.findEntitiesOfType = _findEntitiesOfType
+Resource.findEntitiesOfType = _findEntitiesOfType
 
 del _findEntitiesOfType

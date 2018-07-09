@@ -13,7 +13,7 @@
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
 namespace smtk
@@ -89,8 +89,8 @@ void Model::setSession(const SessionRef& sess)
 
 bool Model::isModified() const
 {
-  smtk::model::Manager::Ptr mgr = this->manager();
-  if (!mgr || !this->hasIntegerProperty("clean"))
+  smtk::model::Resource::Ptr resource = this->resource();
+  if (!resource || !this->hasIntegerProperty("clean"))
   {
     return false;
   }
@@ -101,8 +101,8 @@ bool Model::isModified() const
 
 void Model::setIsModified(bool isModified)
 {
-  smtk::model::Manager::Ptr mgr = this->manager();
-  if (!mgr)
+  smtk::model::Resource::Ptr resource = this->resource();
+  if (!resource)
   {
     return;
   }
@@ -114,21 +114,21 @@ void Model::setIsModified(bool isModified)
 CellEntities Model::cells() const
 {
   CellEntities result;
-  ManagerPtr mgr = this->manager();
-  if (!mgr)
+  ResourcePtr resource = this->resource();
+  if (!resource)
   {
     return result;
   }
   EntityRefArrangementOps::appendAllRelations(*this, INCLUDES, result);
   if (result.empty())
   { // We may have a "simple" model that has no arrangements but does have relations.
-    EntityPtr erec = mgr->findEntity(m_entity);
+    EntityPtr erec = resource->findEntity(m_entity);
     if (erec)
     {
       smtk::common::UUIDArray::const_iterator rit;
       for (rit = erec->relations().begin(); rit != erec->relations().end(); ++rit)
       {
-        CellEntity cell(mgr, *rit);
+        CellEntity cell(resource, *rit);
         if (cell.isValid())
           result.push_back(cell);
       }
@@ -169,7 +169,7 @@ Model& Model::addCell(const CellEntity& c)
 
 Model& Model::removeCell(const CellEntity& c)
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   bool ok = this->unembedEntity(c);
   (void)ok;
   /*
@@ -179,40 +179,40 @@ Model& Model::removeCell(const CellEntity& c)
     }
     */
   UUIDWithEntityPtr ent;
-  ent = mgr->topology().find(m_entity);
-  if (ent != mgr->topology().end())
+  ent = resource->topology().find(m_entity);
+  if (ent != resource->topology().end())
   {
-    mgr->elideOneEntityReference(ent, c.entity());
+    resource->elideOneEntityReference(ent, c.entity());
   }
-  ent = mgr->topology().find(c.entity());
-  if (ent != mgr->topology().end())
+  ent = resource->topology().find(c.entity());
+  if (ent != resource->topology().end())
   {
-    mgr->elideOneEntityReference(ent, m_entity);
+    resource->elideOneEntityReference(ent, m_entity);
   }
   return *this;
 }
 
 Model& Model::addGroup(const Group& g)
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   if (this->isValid() && g.isValid())
   {
     EntityRefArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
     EntityRefArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
-    mgr->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+    resource->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
   }
   return *this;
 }
 
 Model& Model::removeGroup(const Group& g)
 {
-  ManagerPtr mgr = this->manager();
+  ResourcePtr resource = this->resource();
   if (this->isValid() && g.isValid())
   {
     int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, g);
-    if (aidx >= 0 && mgr->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && resource->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
     {
-      mgr->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+      resource->trigger(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
     }
   }
   return *this;
@@ -223,12 +223,12 @@ Model& Model::addSubmodel(const Model& m)
   this->addMemberEntity(m);
   return *this;
   /*
-  ManagerPtr mgr = this->manager();
-  if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
+  ResourcePtr resource = this->resource();
+  if (this->isValid() && m.isValid() && m.resource() == this->resource() && m.entity() != this->entity())
     {
     EntityRefArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
     EntityRefArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
-    mgr->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+    resource->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
     }
   return *this;
   */
@@ -239,13 +239,13 @@ Model& Model::removeSubmodel(const Model& m)
   this->removeMemberEntity(m);
   return *this;
   /*
-  ManagerPtr mgr = this->manager();
-  if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
+  ResourcePtr resource = this->resource();
+  if (this->isValid() && m.isValid() && m.resource() == this->resource() && m.entity() != this->entity())
     {
     int aidx = EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, m);
-    if (aidx >= 0 && mgr->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && resource->unarrangeEntity(m_entity, SUPERSET_OF, aidx) > 0)
       {
-      mgr->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+      resource->trigger(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
       }
     }
   return *this;
@@ -272,7 +272,7 @@ Model& Model::removeAuxiliaryGeometry(const AuxiliaryGeometry& ag)
 /// An efficient method for assigning default names to all of the model's entities.
 void Model::assignDefaultNames()
 {
-  this->manager()->assignDefaultNamesToModelChildren(this->entity());
+  this->resource()->assignDefaultNamesToModelChildren(this->entity());
 }
 
 /**\brief A convenient method for finding all entities with tessellations owned by this model.

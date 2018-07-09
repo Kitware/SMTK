@@ -21,7 +21,7 @@ namespace smtk
 namespace extension
 {
 
-/**\brief Allow user edits to an smtk::model::Manager instance via qtDescriptivePhraseModel.
+/**\brief Allow user edits to an smtk::model::Resource instance via qtDescriptivePhraseModel.
   *
   */
 class SMTKQTEXT_EXPORT qtDescriptivePhraseEditor : public QWidget

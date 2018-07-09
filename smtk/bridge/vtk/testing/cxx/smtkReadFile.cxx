@@ -16,7 +16,6 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/EntityTypeBits.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 
 #include "smtk/bridge/vtk/Resource.h"

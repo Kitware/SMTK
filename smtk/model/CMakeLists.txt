@@ -45,7 +45,7 @@ set(modelSrcs
   Registrar.cxx
   Shell.cxx
   ShellEntity.cxx
-  Manager.cxx
+  Resource.cxx
   Tessellation.cxx
   UseEntity.cxx
   Vertex.cxx
@@ -95,7 +95,7 @@ set(modelHeaders
   Registrar.h
   Shell.h
   ShellEntity.h
-  Manager.h
+  Resource.h
   StringData.h
   Tessellation.h
   UseEntity.h

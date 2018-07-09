@@ -19,8 +19,8 @@
 #include "smtk/model/FloatData.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/IntegerData.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/StringData.h"
 
@@ -324,7 +324,7 @@ void qtModelView::initOperationsDock(const std::string& opName, smtk::model::Ses
   // make sure the operator widget is created.
   this->operatorsDock()->raise();
   this->operatorsDock()->show();
-  SessionRef bs(session->manager(), session->sessionId());
+  SessionRef bs(session->resource(), session->sessionId());
 
   m_OperationsWidget->setCurrentOperation(opName, session);
   m_OperationsDock->setWindowTitle(bs.flagSummary().c_str());
@@ -440,7 +440,7 @@ bool qtModelView::requestOperation(const std::string&, const smtk::common::UUID&
 //     return OperationPtr();
 //   }
 
-//   attrib->collection()->setRefModelManager(brSession->manager());
+//   attrib->collection()->setRefModelResource(brSession->resource());
 
 //   return brOp;
 // }

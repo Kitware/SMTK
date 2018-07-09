@@ -23,7 +23,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "smtk/mesh/core/Manager.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
@@ -37,11 +37,11 @@ PYBIND11_MODULE(_smtkPybindVTKSourceFns, source)
 {
   source.doc() = "<description>";
 
-  source.def("_vtkModelMultiBlockSource_GetModelManager",[&](vtkModelMultiBlockSource* obj){ return obj->GetModelManager(); });
-  source.def("_vtkModelMultiBlockSource_SetModelManager",[&](vtkModelMultiBlockSource* obj, smtk::model::ManagerPtr manager){ return obj->SetModelManager(manager); });
+  source.def("_vtkModelMultiBlockSource_GetModelResource",[&](vtkModelMultiBlockSource* obj){ return obj->GetModelResource(); });
+  source.def("_vtkModelMultiBlockSource_SetModelResource",[&](vtkModelMultiBlockSource* obj, smtk::model::ResourcePtr resource){ return obj->SetModelResource(resource); });
 
-  source.def("_vtkMeshMultiBlockSource_GetModelManager",[&](vtkMeshMultiBlockSource* obj){ obj->GetModelManager(); });
-  source.def("_vtkMeshMultiBlockSource_SetModelManager",[&](vtkMeshMultiBlockSource* obj, smtk::model::ManagerPtr manager){ return obj->SetModelManager(manager); });
+  source.def("_vtkMeshMultiBlockSource_GetModelResource",[&](vtkMeshMultiBlockSource* obj){ obj->GetModelResource(); });
+  source.def("_vtkMeshMultiBlockSource_SetModelResource",[&](vtkMeshMultiBlockSource* obj, smtk::model::ResourcePtr resource){ return obj->SetModelResource(resource); });
   source.def("_vtkMeshMultiBlockSource_GetMeshManager",[&](vtkMeshMultiBlockSource* obj){ obj->GetMeshManager(); });
   source.def("_vtkMeshMultiBlockSource_SetMeshManager",[&](vtkMeshMultiBlockSource* obj, smtk::mesh::ManagerPtr manager){ return obj->SetMeshManager(manager); });
 

@@ -34,7 +34,8 @@ public:
   static QVariant UUIDToQVariant(const smtk::common::UUID& uuid);
   static QVariant entityRefToQVariant(const smtk::model::EntityRef& ent);
   static smtk::common::UUID QVariantToUUID(QVariant variant);
-  static smtk::model::EntityRef QVariantToEntityRef(QVariant variant, smtk::model::ManagerPtr mgr);
+  static smtk::model::EntityRef QVariantToEntityRef(
+    QVariant variant, smtk::model::ResourcePtr mresource);
 
 private:
   static SMTKViewConstructorMap m_viewConstructors;

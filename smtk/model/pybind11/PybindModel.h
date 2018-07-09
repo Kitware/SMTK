@@ -22,7 +22,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 
 namespace py = pybind11;
@@ -34,7 +34,7 @@ py::class_< smtk::model::Model, smtk::model::EntityRef > pybind11_init_smtk_mode
     .def(py::init<::smtk::model::Model const &>())
     .def(py::init<>())
     .def(py::init<::smtk::model::EntityRef const &>())
-    .def(py::init<::smtk::model::ManagerPtr, ::smtk::common::UUID const &>())
+    .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::Model::*)(::smtk::model::EntityRef const &) const) &smtk::model::Model::operator!=)
     .def("deepcopy", (smtk::model::Model & (smtk::model::Model::*)(::smtk::model::Model const &)) &smtk::model::Model::operator=)
     .def("__eq__", (bool (smtk::model::Model::*)(::smtk::model::EntityRef const &) const) &smtk::model::Model::operator==)

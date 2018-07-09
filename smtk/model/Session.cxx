@@ -10,7 +10,7 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/model/ArrangementHelper.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/SessionIOJSON.h"
 
 #include "smtk/model/CellEntity.h"
@@ -48,7 +48,7 @@ namespace model
 /// Default constructor. This assigns a random session ID to each Session instance.
 Session::Session()
   : m_sessionId(smtk::common::UUID::random())
-  , m_manager(nullptr)
+  , m_resource(nullptr)
 {
 }
 
@@ -77,16 +77,16 @@ smtk::common::UUID Session::sessionId() const
   return m_sessionId;
 }
 
-/**\brief Transcribe an entity from a foreign modeler into an SMTK storage Manager.
+/**\brief Transcribe an entity from a foreign modeler into an SMTK storage Resource.
   *
   * On input, the \a entity will not be valid but if transcription is
-  * successful, the \a requested records in the \a entity's Manager will
+  * successful, the \a requested records in the \a entity's Resource will
   * be valid. If \a requested includes SESSION_ENTITY_TYPE, then
   * \a entity.isValid() should return true after this call.
   *
   * Only honor requests for entity IDs listed as dangling unless
   * \a onlyDangling is false (default is true).
-  * This prevents expensive requests by Manager instances over many Sessions.
+  * This prevents expensive requests by Resource instances over many Sessions.
   *
   * The return value is 0 upon failure and non-zero upon success.
   * Failure occurs when any \a requested bits of information that
@@ -140,15 +140,15 @@ const DanglingEntities& Session::danglingEntities() const
 /**\brief Mark an entity, \a ent, as partially transcribed.
   *
   * Subclasses should call this method when a UUID has been assigned
-  * to a model entity but ent.manager() has not yet been populated with
+  * to a model entity but ent.resource() has not yet been populated with
   * all of the information about the entity. The information which *is*
-  * \a present in ent.manager() should be passed but will default to
+  * \a present in ent.resource() should be passed but will default to
   * zero (i.e., the UUID exists in some other entity's relations but
-  * has no records in manager itself).
+  * has no records in resource itself).
   *
   * The entity is added to the list of dangling entities and will be
   * removed from the list when a call to \a transcribeInternal indicates
-  * that Session::allSupportedInformation() is now present in manager.
+  * that Session::allSupportedInformation() is now present in resource.
   */
 void Session::declareDanglingEntity(const EntityRef& ent, SessionInfoBits present)
 {
@@ -172,18 +172,18 @@ int Session::setup(const std::string& optName, const StringList& optVal)
   return 0;
 }
 
-/// Return a reference to the manager that owns this Session.
-Manager::Ptr Session::manager() const
+/// Return a reference to the resource that owns this Session.
+Resource::Ptr Session::resource() const
 {
-  return m_manager ? m_manager->shared_from_this() : Manager::Ptr();
+  return m_resource ? m_resource->shared_from_this() : Resource::Ptr();
 }
 
-/// Return a reference to the mesh manager for this Session.
+/// Return a reference to the mesh resource for this Session.
 smtk::mesh::ManagerPtr Session::meshManager() const
 {
-  if (m_manager)
+  if (m_resource)
   {
-    return m_manager->meshes();
+    return m_resource->meshes();
   }
   else
   {
@@ -191,10 +191,10 @@ smtk::mesh::ManagerPtr Session::meshManager() const
   }
 }
 
-/// Return the log (obtained from the model manager).
+/// Return the log (obtained from the model resource).
 smtk::io::Logger& Session::log()
 {
-  return this->manager()->log();
+  return this->resource()->log();
 }
 
 /**\brief Transcribe information requested by \a flags into \a entity from foreign modeler.
@@ -217,7 +217,7 @@ SessionInfoBits Session::transcribeInternal(
 {
   (void)depth;
   SessionInfoBits actual = SESSION_NOTHING;
-  EntityPtr entRec = m_manager->findEntity(entRef.entity(), false);
+  EntityPtr entRec = m_resource->findEntity(entRef.entity(), false);
   if (!entRec)
     entRec = this->addEntityRecord(entRef);
 
@@ -235,7 +235,7 @@ SessionInfoBits Session::transcribeInternal(
 
   // We must re-find entRec because the addition of other entities may
   // have caused a reallocation (in hash-based storage):
-  entRec = m_manager->findEntity(entRef.entity(), false);
+  entRec = m_resource->findEntity(entRef.entity(), false);
 
   actual |= this->findOrAddArrangements(entRef, entRec, flags, helper);
   actual |= this->updateProperties(entRef, entRec, flags, helper);
@@ -258,10 +258,10 @@ void Session::setSessionId(const smtk::common::UUID& sessId)
   m_sessionId = sessId;
 }
 
-/// Inform this instance of the session that it is owned by \a mgr.
-void Session::setManager(Manager* mgr)
+/// Inform this instance of the session that it is owned by \a resource.
+void Session::setResource(Resource* resource)
 {
-  m_manager = mgr;
+  m_resource = resource;
 }
 
 /**\brief Called when an entity is being split so that attribute assignments can be updated.
@@ -272,8 +272,8 @@ void Session::setManager(Manager* mgr)
 bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
 {
   bool ok = true;
-  smtk::model::Manager::Ptr mgr = from.manager();
-  if (!mgr)
+  smtk::model::Resource::Ptr resource = from.resource();
+  if (!resource)
   {
     return ok;
   }
@@ -281,7 +281,7 @@ bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
   // Fetch the attributes of the source entity.
   // If there are none, then return with success.
   std::set<smtk::attribute::AttributePtr> attrs;
-  if (!mgr->insertEntityAssociations(from, attrs))
+  if (!resource->insertEntityAssociations(from, attrs))
   {
     return ok;
   }
@@ -322,13 +322,13 @@ bool Session::mergeAttributes(const EntityRefs& from, EntityRef& to) const
     return ok;
   }
 
-  smtk::model::Manager::Ptr mgr = from.begin()->manager();
-  if (!mgr)
+  smtk::model::Resource::Ptr resource = from.begin()->resource();
+  if (!resource)
   {
-    mgr = this->manager();
-    if (!mgr)
+    resource = this->resource();
+    if (!resource)
     {
-      std::cerr << "Warning: No model manager when trying to merge attributes.\n";
+      std::cerr << "Warning: No model resource when trying to merge attributes.\n";
       return ok;
     }
   }
@@ -344,7 +344,7 @@ bool Session::mergeAttributes(const EntityRefs& from, EntityRef& to) const
     {
       continue; // Leave the target entity's attributes alone. Ignore invalid entities.
     }
-    mgr->insertEntityAssociations(ent, attrs);
+    resource->insertEntityAssociations(ent, attrs);
     ok &= ent.disassociateAttributes(attrs);
   }
   if (attrs.empty())
@@ -360,13 +360,13 @@ bool Session::mergeAttributes(const EntityRefs& from, EntityRef& to) const
   return ok;
 }
 
-/**\brief This is used by the manager when erasing a model entity.
+/**\brief This is used by the resource when erasing a model entity.
   *
   * Subclasses should implement this and erase all of the string, integer,
   * and floating-point properties (as specified by \a propFlags) that
   * their modeling kernel allows them to reproduce when transcribe() is
   * called.
-  * The properties should only be erased from \a ent's model manager, not
+  * The properties should only be erased from \a ent's model resource, not
   * from the underlying modeling kernel.
   *
   * Do *not* erase properties like name, color, and visibility unless
@@ -587,7 +587,7 @@ std::string Session::defaultFileExtension(const Model& model) const
   return ".native";
 }
 
-/// Subclasses implement this; it should add a record for \a entRef to the manager.
+/// Subclasses implement this; it should add a record for \a entRef to the resource.
 EntityPtr Session::addEntityRecord(const EntityRef& entRef)
 {
   (void)entRef;

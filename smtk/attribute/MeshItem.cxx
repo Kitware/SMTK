@@ -12,7 +12,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/MeshItemDefinition.h"
 
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"

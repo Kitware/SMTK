@@ -72,7 +72,7 @@ int unitJsonItemDefinitions(int, char** const)
   smtkTest(!!riDef, "Failed to instantiate ReferenceItemDefinition");
   smtkTest(riDef->type() == Item::ReferenceType,
     "Failed to return ReferenceItemDefinition as definition type");
-  riDef->setAcceptsEntries("smtk::model::Manager", "model", true);
+  riDef->setAcceptsEntries("smtk::model::Resource", "model", true);
   riDef->setNumberOfRequiredValues(2);
   riDef->setIsOptional(true);
   riDef->setIsExtensible(true);

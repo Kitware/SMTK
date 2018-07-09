@@ -11,7 +11,7 @@
 #include "smtk/model/EdgeUse.h"
 
 #include "smtk/model/Face.h"
-#include "smtk/model/Manager.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Vertex.h"
 
@@ -24,7 +24,7 @@ namespace model
 
 /**\brief Return all the uses of this edge.
   *
-  * Note that while creating an edge in a Manager instance will
+  * Note that while creating an edge in a Resource instance will
   * create 2 "empty" arrangements to reference EdgeUse relations,
   * those arrangements will not by default point to valid
   * edge uses (i.e., creating an edge does not create a pair
@@ -50,11 +50,11 @@ smtk::model::EdgeUses Edge::edgeUses() const
   */
 EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
 {
-  smtk::model::Manager::Ptr mgr(m_manager.lock());
+  smtk::model::Resource::Ptr resource(m_resource.lock());
   if (this->isValid())
   {
-    return EdgeUse(
-      mgr, mgr->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, sense, orientation));
+    return EdgeUse(resource,
+      resource->findCreateOrReplaceCellUseOfSenseAndOrientation(m_entity, sense, orientation));
   }
   return EdgeUse();
 }
@@ -136,10 +136,10 @@ smtk::common::Vector3d Edge::coordinates() const
 {
   if (this->isValid())
     {
-    ManagerPtr mgr = this->manager();
+    ResourcePtr resource = this->resource();
     UUIDWithTessellation tessRec =
-      mgr->tessellations().find(m_entity);
-    if (tessRec != mgr->tessellations().end())
+      resource->tessellations().find(m_entity);
+    if (tessRec != resource->tessellations().end())
       {
       if (!tessRec->second.coords().empty())
         {

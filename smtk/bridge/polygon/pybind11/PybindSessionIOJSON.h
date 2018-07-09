@@ -15,7 +15,6 @@
 
 #include "smtk/bridge/polygon/SessionIOJSON.h"
 
-#include "smtk/model/Manager.h"
 #include "smtk/model/SessionIOJSON.h"
 
 #include "cJSON.h"

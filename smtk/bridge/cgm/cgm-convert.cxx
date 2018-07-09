@@ -53,8 +53,8 @@
 #include "smtk/bridge/cgm/TDUUID.h"
 #include "smtk/common/UUID.h"
 #include "smtk/io/SaveJSON.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 #include <map>
 #include <vector>
@@ -72,7 +72,7 @@
 
 GeometryQueryTool* gqt = NULL;
 
-int AddEntityToBody(RefEntity* ent, smtk::model::ManagerPtr manager)
+int AddEntityToBody(RefEntity* ent, smtk::model::ResourcePtr resource)
 {
   DLIList<RefEntity*> children;
   ent->get_child_ref_entities(children);
@@ -82,7 +82,7 @@ int AddEntityToBody(RefEntity* ent, smtk::model::ManagerPtr manager)
   {
     RefEntity* child = children.get_and_step();
     //std::cout << "        ++" << child->class_name() << "\n";
-    AddEntityToBody(child, manager);
+    AddEntityToBody(child, resource);
     //std::cout << "        --" << child->class_name() << "\n";
   }
 
@@ -90,7 +90,7 @@ int AddEntityToBody(RefEntity* ent, smtk::model::ManagerPtr manager)
 }
 
 template <typename E>
-void AddEntitiesToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
+void AddEntitiesToBody(DLIList<E*>& entities, smtk::model::ResourcePtr resource,
   const smtk::common::UUID& owningBodyId, std::map<int, smtk::common::UUID>& translation)
 {
   int ne = entities.size();
@@ -101,7 +101,7 @@ void AddEntitiesToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
     E* entry = entities.get_and_step();
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
     smtk::model::UUIDWithEntityPtr cell =
-      manager->setCellOfDimension(refId->entityId(), entry->dimension());
+      resource->setCellOfDimension(refId->entityId(), entry->dimension());
     int cgmId = TDUniqueId::get_unique_id(entry);
     // Now, if owningBodyId is non-NULL (because the entity is a "free" member
     // of the body (i.e., not attached to some higher-dimensional entity), then
@@ -109,16 +109,16 @@ void AddEntitiesToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
     if (owningBodyId)
     {
       cell->second->relations().push_back(owningBodyId);
-      manager->arrangeEntity(cell->first, smtk::model::EMBEDDED_IN,
+      resource->arrangeEntity(cell->first, smtk::model::EMBEDDED_IN,
         smtk::model::Arrangement::CellEmbeddedInEntityWithIndex(0));
       smtk::model::Arrangements& bodyInclusions(
-        manager->arrangementsOfKindForEntity(owningBodyId, smtk::model::INCLUDES));
+        resource->arrangementsOfKindForEntity(owningBodyId, smtk::model::INCLUDES));
       if (bodyInclusions.empty())
       {
         bodyInclusions.push_back(smtk::model::Arrangement());
       }
       bodyInclusions[0].details().push_back(
-        manager->findEntity(owningBodyId)->findOrAppendRelation(cell->first));
+        resource->findEntity(owningBodyId)->findOrAppendRelation(cell->first));
       //std::cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
     }
     //std::cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
@@ -135,13 +135,13 @@ void AddEntitiesToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
       RefEntity* child = children.get_and_step();
       smtk::common::UUID smtkChildId = translation[TDUniqueId::get_unique_id(child)];
       cell->second->relations().push_back(smtkChildId);
-      manager->findEntity(smtkChildId)->relations().push_back(cell->first);
+      resource->findEntity(smtkChildId)->relations().push_back(cell->first);
     }
   }
 }
 
 template <typename E>
-void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
+void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ResourcePtr resource,
   std::map<int, smtk::common::UUID>& translation)
 {
   int ne = entities.size();
@@ -151,14 +151,14 @@ void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manage
     E* shell = entities.get_and_step();
     // First, create a new entity representing the shell.
     smtk::common::UUID shellSMTKId =
-      manager->addEntityOfTypeAndDimension(smtk::model::SHELL_ENTITY |
+      resource->addEntityOfTypeAndDimension(smtk::model::SHELL_ENTITY |
           (1 << shell->dag_type().dimension()) | (1 << (shell->dag_type().dimension() + 1)),
         -1);
     // Now, find the SMTK cell bounded by the current shell:
     RefEntity* vol = shell->get_basic_topology_entity_ptr();
     int cgmId = TDUniqueId::get_unique_id(vol);
     smtk::common::UUID smtkId = translation[cgmId];
-    smtk::model::EntityPtr vcell = manager->findEntity(smtkId);
+    smtk::model::EntityPtr vcell = resource->findEntity(smtkId);
     if (!vcell)
     {
       std::cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId
@@ -180,7 +180,7 @@ void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manage
       int shellOffset = static_cast<int>(vcell->relations().size());
       offsets[shellSMTKId] = shellOffset;
       vcell->relations().push_back(shellSMTKId);
-      manager->arrangeEntity(smtkId, smtk::model::HAS_SHELL,
+      resource->arrangeEntity(smtkId, smtk::model::HAS_SHELL,
         smtk::model::Arrangement::CellHasShellWithIndex(shellOffset));
     }
 
@@ -196,7 +196,7 @@ void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manage
     smtk::model::Arrangement shellArrOfUses; // the face-uses that compose the shell
     shellRelations.resize(ns + 1);
     shellRelations[ns] = smtkId;
-    manager->arrangeEntity(
+    resource->arrangeEntity(
       shellSMTKId, smtk::model::HAS_CELL, smtk::model::Arrangement::ShellHasCellWithIndex(ns));
     //smtk::model::Arrangement a;
     //a.details().push_back(-1); // FIXME: Does not deal with multiple shells at the moment.
@@ -214,7 +214,7 @@ void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manage
       // one of its uses has the same sense as our SenseEntity.
       // If not, then we need to create a new SMTK use entity.
       smtk::common::UUID smtkFaceUseId =
-        manager->findCreateOrReplaceCellUseOfSenseAndOrientation(smtkFaceId, se->get_sense(),
+        resource->findCreateOrReplaceCellUseOfSenseAndOrientation(smtkFaceId, se->get_sense(),
           se->get_sense() == CUBIT_REVERSED ? smtk::model::NEGATIVE : smtk::model::POSITIVE);
       shellRelations[j] = smtkFaceUseId;
       /*
@@ -235,10 +235,10 @@ void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manage
       //a.details().push_back(se->get_sense() == CUBIT_FORWARD ? +1 : 0);
     }
     // Now add the arrangement to the cell's list of arrangements:
-    int aid = manager->arrangeEntity(
+    int aid = resource->arrangeEntity(
       smtkId, smtk::model::HAS_SHELL, smtk::model::Arrangement::CellHasShellWithIndex(0));
-    manager->findEntity(shellSMTKId)->relations() = shellRelations;
-    aid = manager->arrangeEntity(shellSMTKId, smtk::model::HAS_USE,
+    resource->findEntity(shellSMTKId)->relations() = shellRelations;
+    aid = resource->arrangeEntity(shellSMTKId, smtk::model::HAS_USE,
       smtk::model::Arrangement::ShellHasUseWithIndexRange(0, ns));
     (void)aid; // keep aid around for debugging
     //std::cout << "           +++ as shell " << aid << " of cell " << smtkId << "\n";
@@ -246,7 +246,7 @@ void AddArrangementsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manage
 }
 
 template <typename E>
-void AddTessellationsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
+void AddTessellationsToBody(DLIList<E*>& entities, smtk::model::ResourcePtr resource,
   std::map<int, smtk::common::UUID>& translation)
 {
   int ne = entities.size();
@@ -278,7 +278,7 @@ void AddTessellationsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manag
       continue;
     }
     smtk::model::Tessellation blank;
-    smtk::model::UUIDsToTessellations& tess(manager->tessellations());
+    smtk::model::UUIDsToTessellations& tess(resource->tessellations());
     smtk::model::UUIDsToTessellations::iterator it =
       tess.insert(std::pair<smtk::common::UUID, smtk::model::Tessellation>(uid, blank)).first;
     // Now add data to the Tessellation "in situ" to avoid a copy.
@@ -334,7 +334,7 @@ void AddTessellationsToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manag
 
 // Vertices don't support get_graphics (yet), so specialize the function.
 template <>
-void AddTessellationsToBody(DLIList<RefVertex*>& entities, smtk::model::ManagerPtr manager,
+void AddTessellationsToBody(DLIList<RefVertex*>& entities, smtk::model::ResourcePtr resource,
   std::map<int, smtk::common::UUID>& translation)
 {
   int ne = entities.size();
@@ -359,7 +359,7 @@ void AddTessellationsToBody(DLIList<RefVertex*>& entities, smtk::model::ManagerP
     }
     CubitVector coords = entry->coordinates();
     smtk::model::Tessellation blank;
-    smtk::model::UUIDsToTessellations& tess(manager->tessellations());
+    smtk::model::UUIDsToTessellations& tess(resource->tessellations());
     smtk::model::UUIDsToTessellations::iterator it =
       tess.insert(std::pair<smtk::common::UUID, smtk::model::Tessellation>(uid, blank)).first;
     // Now add data to the Tessellation "in situ" to avoid a copy.
@@ -371,16 +371,16 @@ void AddTessellationsToBody(DLIList<RefVertex*>& entities, smtk::model::ManagerP
 }
 
 template <typename E>
-void AddUseToBody(DLIList<E*>& entities, smtk::model::ManagerPtr manager,
+void AddUseToBody(DLIList<E*>& entities, smtk::model::ResourcePtr resource,
   std::map<int, smtk::common::UUID>& translation)
 {
   (void)entities;
-  (void)manager;
+  (void)resource;
   (void)translation;
 }
 
 int ImportBody(
-  Body* cgmBody, smtk::model::ManagerPtr manager, std::map<int, smtk::common::UUID>& translation)
+  Body* cgmBody, smtk::model::ResourcePtr resource, std::map<int, smtk::common::UUID>& translation)
 {
   DLIList<RefEntity*> children;
   BodySM* cgmBodySM = cgmBody->get_body_sm_ptr();
@@ -403,77 +403,77 @@ int ImportBody(
     {
       DLIList<RefVertex*> ref_vertex_list;
       status = cgmBodyTopo->ref_vertices(ref_vertex_list);
-      AddEntitiesToBody(ref_vertex_list, manager, smtkNullId, translation);
-      AddTessellationsToBody(ref_vertex_list, manager, translation);
+      AddEntitiesToBody(ref_vertex_list, resource, smtkNullId, translation);
+      AddTessellationsToBody(ref_vertex_list, resource, translation);
     }
     {
       DLIList<RefEdge*> ref_edge_list;
       status = cgmBodyTopo->ref_edges(ref_edge_list);
-      AddEntitiesToBody(ref_edge_list, manager, smtkNullId, translation);
-      AddTessellationsToBody(ref_edge_list, manager, translation);
+      AddEntitiesToBody(ref_edge_list, resource, smtkNullId, translation);
+      AddTessellationsToBody(ref_edge_list, resource, translation);
     }
     {
       DLIList<RefFace*> ref_face_list;
       status = cgmBodyTopo->ref_faces(ref_face_list);
-      AddEntitiesToBody(ref_face_list, manager, smtkNullId, translation);
-      AddTessellationsToBody(ref_face_list, manager, translation);
+      AddEntitiesToBody(ref_face_list, resource, smtkNullId, translation);
+      AddTessellationsToBody(ref_face_list, resource, translation);
     }
     {
       DLIList<RefVolume*> ref_volume_list;
       status = cgmBodyTopo->ref_volumes(ref_volume_list);
-      AddEntitiesToBody(ref_volume_list, manager, smtkBodyId, translation);
+      AddEntitiesToBody(ref_volume_list, resource, smtkBodyId, translation);
       // AddTessellationsToBody() does not make sense here.
     }
     {
       DLIList<CoVertex*> co_vertex_list;
       status = cgmBodyTopo->co_vertices(co_vertex_list);
       std::cout << co_vertex_list.size() << " co-vertices\n";
-      AddUseToBody(co_vertex_list, manager, translation);
-      //AddArrangementsToBody(co_vertex_list, manager, translation);
+      AddUseToBody(co_vertex_list, resource, translation);
+      //AddArrangementsToBody(co_vertex_list, resource, translation);
     }
     {
       DLIList<CoEdge*> co_edge_list;
       status = cgmBodyTopo->co_edges(co_edge_list);
       std::cout << co_edge_list.size() << " co-edges\n";
-      AddUseToBody(co_edge_list, manager, translation);
-      //AddArrangementsToBody(co_edge_list, manager, translation);
+      AddUseToBody(co_edge_list, resource, translation);
+      //AddArrangementsToBody(co_edge_list, resource, translation);
     }
     {
       DLIList<CoFace*> co_face_list;
       status = cgmBodyTopo->co_faces(co_face_list);
       std::cout << co_face_list.size() << " co-faces\n";
-      AddUseToBody(co_face_list, manager, translation);
-      //AddArrangementsToBody(co_face_list, manager, translation);
+      AddUseToBody(co_face_list, resource, translation);
+      //AddArrangementsToBody(co_face_list, resource, translation);
     }
     /* {
       DLIList<CoVolume*> co_volume_list;
       status = cgmBodyTopo->co_volumes(co_volume_list);
-      AddArrangementsToBody(co_volume_list, manager, translation);
+      AddArrangementsToBody(co_volume_list, resource, translation);
       } */
     {
       DLIList<Shell*> shell_list;
       status = cgmBodyTopo->shells(shell_list);
-      AddArrangementsToBody(shell_list, manager, translation);
+      AddArrangementsToBody(shell_list, resource, translation);
     }
     {
       DLIList<Loop*> loop_list;
       status = cgmBodyTopo->loops(loop_list);
-      AddArrangementsToBody(loop_list, manager, translation);
+      AddArrangementsToBody(loop_list, resource, translation);
     }
     {
       DLIList<Chain*> chain_list;
       status = cgmBodyTopo->chains(chain_list);
-      AddArrangementsToBody(chain_list, manager, translation);
+      AddArrangementsToBody(chain_list, resource, translation);
     }
   }
 
   return 0;
 }
 
-void ExportBodyToJSONFile(smtk::model::ManagerPtr manager, const std::string& filename)
+void ExportBodyToJSONFile(smtk::model::ResourcePtr resource, const std::string& filename)
 {
   cJSON* json = cJSON_CreateObject();
-  smtk::io::SaveJSON::fromModelManager(json, manager);
+  smtk::io::SaveJSON::fromModelResource(json, resource);
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   FILE* fid = fopen(filename.c_str(), "w");
@@ -483,7 +483,7 @@ void ExportBodyToJSONFile(smtk::model::ManagerPtr manager, const std::string& fi
 }
 
 CubitStatus ConvertModel(DLIList<RefEntity*>& imported,
-  std::vector<smtk::model::ManagerPtr>& bodies, std::map<int, smtk::common::UUID>& translation,
+  std::vector<smtk::model::ResourcePtr>& bodies, std::map<int, smtk::common::UUID>& translation,
   bool singleModel)
 {
   int ni = imported.size();
@@ -495,7 +495,7 @@ CubitStatus ConvertModel(DLIList<RefEntity*>& imported,
     {
       if ((singleModel && i == 0) || (!singleModel))
       {
-        smtk::model::ManagerPtr blank = smtk::model::Manager::create();
+        smtk::model::ResourcePtr blank = smtk::model::Resource::create();
         bodies.push_back(blank);
       }
       // Add an entity corresponding to the Body:
@@ -600,7 +600,7 @@ int main(int argc, char** argv)
   }
 
   // Convert to an SMTK model.
-  std::vector<smtk::model::ManagerPtr> bodies;
+  std::vector<smtk::model::ResourcePtr> bodies;
   std::map<int, smtk::common::UUID> translation;
   bool singleModel = argc > 3 ? true : false;
   stat = ConvertModel(imported, bodies, translation, singleModel);
@@ -618,7 +618,7 @@ int main(int argc, char** argv)
   else
   {
     int bnum = 0;
-    std::vector<smtk::model::ManagerPtr>::iterator it;
+    std::vector<smtk::model::ResourcePtr>::iterator it;
     for (it = bodies.begin(); it != bodies.end(); ++it, ++bnum)
     {
       std::ostringstream filename;

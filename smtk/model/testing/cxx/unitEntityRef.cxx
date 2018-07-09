@@ -19,8 +19,8 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Instance.h"
 #include "smtk/model/Loop.h"
-#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
@@ -44,7 +44,7 @@ static int numberOfFreeCellsRemoved = 0;
 static int numberOfSubmodelsRemoved = 0;
 static int numberOfGroupsRemoved = 0;
 
-int didRemove(ManagerEventType event, const EntityRef&, const EntityRef&, void*)
+int didRemove(ResourceEventType event, const EntityRef&, const EntityRef&, void*)
 {
   switch (event.second)
   {
@@ -68,7 +68,7 @@ int didRemove(ManagerEventType event, const EntityRef&, const EntityRef&, void*)
 
 void testComplexVertexChain()
 {
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
   Vertices verts;
   VertexUses vu;
   for (int i = 0; i < 6; ++i)
@@ -129,7 +129,7 @@ void templatedPropertyTest(smtk::model::EntityRef entity, T*& data, const std::s
 
 void testTemplatedPropertyMethods()
 {
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
   Vertex vert = sm->addVertex();
 
   StringData* sd;
@@ -143,7 +143,7 @@ void testTemplatedPropertyMethods()
 
 void testMiscConstructionMethods()
 {
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
   Vertices verts;
   Edges edges;
   for (int i = 0; i < 6; ++i)
@@ -181,7 +181,7 @@ void testMiscConstructionMethods()
 
 void testVolumeEntityRef()
 {
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
   createTet(sm);
   Volumes vols = sm->entitiesMatchingFlagsAs<Volumes>(VOLUME, true);
   test(vols.size() == 1, "Expected a single volume in the test model.");
@@ -196,7 +196,7 @@ void testVolumeEntityRef()
 void testModelMethods()
 {
   // Test methods specific to the Model subclass of EntityRef
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
   SessionRef sess = sm->createSession("native");
   Model m0 = sm->addModel();
   test(!m0.session().isValid(), "Expected invalid session for new, \"blank\" model.");
@@ -212,7 +212,7 @@ void testModelMethods()
 
 void testResourceComponentConversion()
 {
-  ManagerPtr sm = Manager::create();
+  ResourcePtr sm = Resource::create();
   SessionRef sess = sm->createSession("native");
   Model m0 = sm->addModel();
   smtk::model::EntityPtr mep = m0.entityRecord();
@@ -231,11 +231,11 @@ int main(int argc, char* argv[])
 
   try
   {
-    ManagerPtr sm = Manager::create();
-    sm->observe(ManagerEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, NULL);
-    sm->observe(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, NULL);
-    sm->observe(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), didRemove, NULL);
-    sm->observe(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), didRemove, NULL);
+    ResourcePtr sm = Resource::create();
+    sm->observe(ResourceEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, NULL);
+    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, NULL);
+    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), didRemove, NULL);
+    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), didRemove, NULL);
 
     UUIDArray uids = createTet(sm);
 
