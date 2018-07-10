@@ -192,6 +192,8 @@ static pqSMTKSaveResourceBehavior* g_instance = nullptr;
 pqSMTKSaveResourceBehavior::pqSMTKSaveResourceBehavior(QObject* parent)
   : Superclass(parent)
 {
+  initSaveResourceBehaviorResources();
+
   // Blech: pqApplicationCore doesn't have the selection manager yet,
   // so wait until we hear that the server is ready to make the connection.
   // We can't have a selection before the first connection, anyway.

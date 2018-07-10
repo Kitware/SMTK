@@ -26,6 +26,7 @@ set(PQComponentsSrcs
   pqSMTKBehavior.cxx
   pqSMTKColorByToolBar.cxx
   pqSMTKColorByWidget.cxx
+  pqSMTKImportOperationBehavior.cxx
   pqSMTKModelRepresentation.cxx
   pqSMTKSaveResourceBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
@@ -40,6 +41,7 @@ set(PQComponentsHeaders
   pqSMTKBehavior.h
   pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.h
+  pqSMTKImportOperationBehavior.h
   pqSMTKModelRepresentation.h
   pqSMTKSaveResourceBehavior.h
   pqSMTKSelectionFilterBehavior.h
@@ -55,6 +57,7 @@ set(PQComponentsUIs
 )
 
 set(PQComponentsResources
+  resources/pqSMTKImportOperationBehavior.qrc
   resources/pqSMTKSaveResourceBehavior.qrc
   resources/pqSMTKSelectionFilterBehavior.qrc
 )

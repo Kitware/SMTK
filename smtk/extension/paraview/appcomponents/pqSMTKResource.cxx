@@ -25,7 +25,9 @@ pqSMTKResource::pqSMTKResource(
   : pqPipelineSource(name, proxy, server, parent)
 {
   (void)grp;
-  std::cout << "SMTKResource is born! " << this << "\n";
+#ifndef NDEBUG
+  std::cout << "Creating SMTKResource ( " << this << " )\n";
+#endif
   auto behavior = pqSMTKBehavior::instance();
   auto rsrcMgr = behavior->resourceManagerForServer(server);
   auto rsrc = this->getResource();
@@ -52,12 +54,16 @@ pqSMTKResource::~pqSMTKResource()
       auto rsrcMgr = rsrcMgrPxy->smtkResourceManager();
       if (rsrcMgr)
       {
+#ifndef NDEBUG
         std::cout << "  Removing " << lastRsrc << " from mgr " << rsrcMgr << "\n";
+#endif
         rsrcMgr->remove(lastRsrc);
       }
     }
   }
-  std::cout << "Killing a resource and frowning at a small kitten\n";
+#ifndef NDEBUG
+  std::cout << "Destroying SMTKResource " << this << " )\n";
+#endif
 }
 
 smtk::resource::ResourcePtr pqSMTKResource::getResource() const

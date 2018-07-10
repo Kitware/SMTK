@@ -12,6 +12,7 @@
 #include "smtk/view/Selection.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
@@ -32,11 +33,13 @@ pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()
 void pqSMTKAppComponentsAutoStart::startup()
 {
   auto rsrcMgr = pqSMTKBehavior::instance(this);
+  auto rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
   auto rsrcSaveMgr = pqSMTKSaveResourceBehavior::instance(this);
   auto pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->registerManager("smtk resource", rsrcMgr);
+    pqCore->registerManager("smtk import operation", rsrcImportOpMgr);
     pqCore->registerManager("smtk save resource", rsrcSaveMgr);
   }
   (void)rsrcMgr;
@@ -48,6 +51,7 @@ void pqSMTKAppComponentsAutoStart::shutdown()
   if (pqCore)
   {
     pqCore->unRegisterManager("smtk resource");
+    pqCore->unRegisterManager("smtk import operation");
     pqCore->unRegisterManager("smtk save resource");
   }
 }
