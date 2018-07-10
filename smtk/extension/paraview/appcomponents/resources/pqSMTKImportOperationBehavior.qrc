@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource prefix="/ImportOperationBehavior">
+    <file>python-28x28.png</file>
+  </qresource>
+</RCC>
