@@ -68,8 +68,6 @@ smtk::view::PhraseModelPtr qtComponentItem::createPhraseModel() const
   std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
     ->setComponentFilters(def->acceptableEntries());
 
-  // ToDo: need to be aware of resource links!
-  phraseModel->addSource(this->uiManager()->resourceManager(), nullptr);
   return phraseModel;
 }
 

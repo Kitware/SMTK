@@ -142,7 +142,7 @@ void qtReferenceItem::updateUI()
   }
 
   // TODO: this need to connect to the right managers
-  auto rsrcMgr = smtk::resource::Manager::create();
+  auto rsrcMgr = this->uiManager()->resourceManager();
   auto operMgr = smtk::operation::Manager::create();
 
   auto phraseModel = this->createPhraseModel();
