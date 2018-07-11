@@ -14,6 +14,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
+#include "smtk/extension/qt/RedirectOutput.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/operation/groups/ImporterGroup.h"
@@ -195,6 +197,10 @@ pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
       SLOT(removeManagerFromServer(pqServer*)));
     // TODO: Do we need to call serverReady manually if pqActiveObjects says there's already an active server?
   }
+
+  // Redirect the singleton smtk::io::Logger::instance() to Qt's I/O stream,
+  // which in turn is picked up by ParaView's output widget.
+  smtk::extension::qt::RedirectOutputToQt(smtk::io::Logger::instance());
 }
 
 pqSMTKBehavior* pqSMTKBehavior::instance(QObject* parent)

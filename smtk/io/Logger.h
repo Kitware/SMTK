@@ -131,6 +131,7 @@ public:
   const std::vector<Record>& records() const { return m_records; }
   const Record& record(std::size_t i) const { return m_records[i]; }
 
+  static std::string toString(const Record& record, bool includeSourceLoc = false);
   std::string toString(std::size_t i, bool includeSourceLoc = false) const;
   std::string toString(std::size_t i, std::size_t j, bool includeSourceLoc = false) const;
 

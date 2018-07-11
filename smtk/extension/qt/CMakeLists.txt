@@ -49,6 +49,7 @@ set(QAttrLibSrcs
   qtViewInterface.cxx
   qtSMTKUtilities.cxx
   qtDateTimeItem.cxx
+  RedirectOutput.cxx
   )
 
 set(QAttrLibUIs
@@ -115,6 +116,7 @@ set(QAttrLibHeaders
   qtAttributeItemWidgetFactory.h
   qtViewInterface.h
   qtSMTKUtilities.h
+  RedirectOutput.h
 )
 
 #install the headers
