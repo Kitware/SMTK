@@ -26,6 +26,7 @@ set(PQComponentsSrcs
   pqSMTKBehavior.cxx
   pqSMTKColorByToolBar.cxx
   pqSMTKColorByWidget.cxx
+  pqSMTKExportSimulationBehavior.cxx
   pqSMTKImportOperationBehavior.cxx
   pqSMTKModelRepresentation.cxx
   pqSMTKSaveResourceBehavior.cxx
@@ -42,6 +43,7 @@ set(PQComponentsHeaders
   pqSMTKBehavior.h
   pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.h
+  pqSMTKExportSimulationBehavior.h
   pqSMTKImportOperationBehavior.h
   pqSMTKModelRepresentation.h
   pqSMTKSaveResourceBehavior.h

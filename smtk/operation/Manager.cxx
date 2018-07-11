@@ -54,8 +54,8 @@ bool Manager::unregisterOperation(const std::string& typeName)
   auto metadata = m_metadata.get<NameTag>().find(typeName);
   if (metadata != m_metadata.get<NameTag>().end())
   {
-    m_metadataObservers(*metadata, false);
     m_metadata.get<NameTag>().erase(metadata);
+    m_metadataObservers(*metadata, false);
     return true;
   }
 

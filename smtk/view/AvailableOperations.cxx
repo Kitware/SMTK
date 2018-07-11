@@ -27,7 +27,8 @@ AvailableOperations::AvailableOperations()
   , m_workflowFilter(nullptr)
   , m_workflowFilterObserverId(-1)
 {
-  // For debugging:
+// For debugging:
+#ifndef NDEBUG
   this->observe(
     [](AvailableOperations::Ptr self) {
       std::cout << "Available ops changed:\n";
@@ -44,6 +45,7 @@ AvailableOperations::AvailableOperations()
     },
     false // do not immediately invoke.
     );
+#endif
 }
 
 AvailableOperations::~AvailableOperations()
