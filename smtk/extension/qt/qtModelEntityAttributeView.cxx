@@ -98,10 +98,7 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
   {
     if (cb->currentIndex() > -1)
     {
-      // Block signals on first setData, so that only 1 cellChanged signal is emitted
-      model->blockSignals(true);
       model->setData(index, cb->currentText(), Qt::EditRole);
-      model->blockSignals(false);
       model->setData(index, QColor(Qt::white), Qt::BackgroundRole);
     }
     //QApplication::postEvent(model, new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
