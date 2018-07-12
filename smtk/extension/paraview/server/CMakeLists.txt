@@ -38,6 +38,19 @@ set(serverWrappedHdrs
   vtkSMTKModelRepresentation.h
 )
 
+# the server plugin adds vtkCMBGeometryReader as a source, so we need the
+# vtk module that contains it (vtkSMTKReaderExt) listed as add_paraview_plugin's
+# CS_KITS parameter. We also must link against the client-server wrapping
+# library for this module (vtkSMTKReaderExtCS).
+set(serverModules
+  vtkSMTKReaderExt
+  )
+
+set(serverModuleCSLibs)
+foreach (cslib IN LISTS serverModules)
+  list(APPEND serverModuleCSLibs ${cslib}CS)
+endforeach ()
+
 set(hdrs ${serverUnwrappedHdrs} ${serverWrappedHdrs})
 
 add_library(smtkPVServerExt
@@ -53,6 +66,7 @@ target_link_libraries(smtkPVServerExt
     vtkSMTKSourceExt
     vtkSMTKReaderExt # vtkLIDARReader
     vtkSMTKFilterExt # vtkTerrainExtractionFilter, vtkLIDARElevationFilter
+    ${serverModuleCSLibs}
 )
 target_include_directories(smtkPVServerExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -63,6 +77,7 @@ add_paraview_plugin(
   REQUIRED_ON_CLIENT
   SERVER_MANAGER_SOURCES ${serverWrappedHdrs}
   SERVER_MANAGER_XML ${serverXMLSrcs}
+  CS_KITS ${serverModules}
 )
 set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPVServerExtPlugin" CACHE INTERNAL "")
 target_link_libraries(smtkPVServerExtPlugin
