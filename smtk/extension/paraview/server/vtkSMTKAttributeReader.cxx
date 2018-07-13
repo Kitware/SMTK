@@ -35,8 +35,8 @@ vtkStandardNewMacro(vtkSMTKAttributeReader);
 
 vtkSMTKAttributeReader::vtkSMTKAttributeReader()
 {
+  this->FileName = nullptr;
   this->IncludePathToFile = true;
-  //std::cout << "Create reader " << this << "\n";
   this->Defs = vtkSmartPointer<vtkTable>::New();
   this->SetNumberOfOutputPorts(1);
 
@@ -47,21 +47,20 @@ vtkSMTKAttributeReader::vtkSMTKAttributeReader()
 
 vtkSMTKAttributeReader::~vtkSMTKAttributeReader()
 {
-  //std::cout << "Delete reader " << this << "\n";
   this->SetFileName(nullptr);
-  this->SetWrapper(nullptr);
 }
 
 void vtkSMTKAttributeReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
+  os << indent << "FileName: " << this->FileName << "\n";
   os << indent << "AttributeResource: " << this->AttributeResource << "\n";
   os << indent << "IncludePathToFile: " << this->IncludePathToFile << "\n";
 }
 
 smtk::resource::ResourcePtr vtkSMTKAttributeReader::GetResource() const
 {
-  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->AttributeResource);
+  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->GetSMTKResource());
 }
 
 smtk::attribute::ResourcePtr vtkSMTKAttributeReader::GetSMTKResource() const
@@ -75,11 +74,6 @@ int vtkSMTKAttributeReader::RequestData(vtkInformation* vtkNotUsed(request),
 {
   vtkMultiBlockDataSet* entitySource = vtkMultiBlockDataSet::GetData(outInfo, 0);
 
-  /*
-   std::cout
-     << "    Reader    " << this
-     << " has file " << (this->FileName && this->FileName[0] ? "Y" : "N") << "\n";
-   */
   if (!this->FileName || !this->FileName[0])
   {
     // No filename is not really an error... we should just have an empty output.

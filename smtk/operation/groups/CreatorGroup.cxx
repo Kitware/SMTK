@@ -24,6 +24,12 @@ std::string CreatorGroup::resourceForOperation(const Operation::Index& index) co
   return !vals.empty() ? *vals.begin() : "";
 }
 
+std::string CreatorGroup::resourceForOperation(const std::string& operationName) const
+{
+  auto vals = values(operationName);
+  return !vals.empty() ? *vals.begin() : "";
+}
+
 std::set<Operation::Index> CreatorGroup::operationsForResource(
   const std::string& resourceName) const
 {

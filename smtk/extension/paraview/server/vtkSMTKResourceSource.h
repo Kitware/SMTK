@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_server_vtkSMTKResourceReader_h
-#define smtk_extension_paraview_server_vtkSMTKResourceReader_h
+#ifndef smtk_extension_paraview_server_vtkSMTKResourceSource_h
+#define smtk_extension_paraview_server_vtkSMTKResourceSource_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 
@@ -20,21 +20,13 @@
 
 class vtkSMTKWrapper;
 
-/**\brief A base class for SMTK-based readers exposed in ParaView.
-  *
-  * If the SMTK wrapper object is set, then the wrapper's resource and operation
-  * manager are used to load the file (or perhaps in the future to create a new resource).
-  * Otherwise SMTK's default environment is used.
+/**\brief A base class for SMTK-based sources exposed in ParaView.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceReader : public vtkMultiBlockDataSetAlgorithm
+class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkSMTKResourceReader, vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkSMTKResourceSource, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-
-  /// Set/get the URL of the SMTK model resource.
-  vtkGetStringMacro(FileName);
-  vtkSetStringMacro(FileName);
 
   /// Return the SMTK resource that holds data read from \a FileName.
   virtual smtk::resource::ResourcePtr GetResource() const;
@@ -47,15 +39,14 @@ public:
   virtual void DropResource();
 
 protected:
-  vtkSMTKResourceReader();
-  ~vtkSMTKResourceReader() override;
+  vtkSMTKResourceSource();
+  ~vtkSMTKResourceSource() override;
 
-  char* FileName;
   vtkSMTKWrapper* Wrapper;
 
 private:
-  vtkSMTKResourceReader(const vtkSMTKResourceReader&) = delete;
-  void operator=(const vtkSMTKResourceReader&) = delete;
+  vtkSMTKResourceSource(const vtkSMTKResourceSource&) = delete;
+  void operator=(const vtkSMTKResourceSource&) = delete;
 };
 
 #endif

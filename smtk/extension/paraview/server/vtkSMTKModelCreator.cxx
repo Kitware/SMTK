@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKModelCreator.h"
 
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
@@ -32,6 +32,7 @@
 #include "smtk/resource/Manager.h"
 
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/json/jsonResource.h"
 
 #include "vtkCompositeDataIterator.h"
 #include "vtkInformation.h"
@@ -40,44 +41,45 @@
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 
-using namespace smtk;
+#include "nlohmann/json.hpp"
 
-vtkStandardNewMacro(vtkSMTKModelReader);
+using json = nlohmann::json;
 
-vtkSMTKModelReader::vtkSMTKModelReader()
+vtkStandardNewMacro(vtkSMTKModelCreator);
+
+vtkSMTKModelCreator::vtkSMTKModelCreator()
 {
-  this->FileName = nullptr;
+  this->TypeName = nullptr;
+  this->Specification = nullptr;
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
-
-  // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
-  // results in the filter being updated:
-  this->Modified();
 }
 
-vtkSMTKModelReader::~vtkSMTKModelReader()
+vtkSMTKModelCreator::~vtkSMTKModelCreator()
 {
-  this->SetFileName(nullptr);
+  this->SetTypeName(nullptr);
+  this->SetSpecification(nullptr);
 }
 
-void vtkSMTKModelReader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKModelCreator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileName: " << this->FileName << "\n";
+  os << indent << "TypeName: " << this->TypeName << "\n";
+  os << indent << "Specification: " << this->Specification << "\n";
   os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKModelReader::GetResource() const
+smtk::resource::ResourcePtr vtkSMTKModelCreator::GetResource() const
 {
   return std::dynamic_pointer_cast<smtk::resource::Resource>(this->GetSMTKResource());
 }
 
-smtk::model::ResourcePtr vtkSMTKModelReader::GetSMTKResource() const
+smtk::model::ResourcePtr vtkSMTKModelCreator::GetSMTKResource() const
 {
   return this->ModelSource->GetModelResource();
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkSMTKModelCreator::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
   vtkMultiBlockDataSet* entitySource = vtkMultiBlockDataSet::GetData(
@@ -101,27 +103,21 @@ int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
     return 0;
   }
 
-  /*
-   std::cout
-     << "    Reader    " << this
-     << " has file " << (this->FileName && this->FileName[0] ? "Y" : "N") << "\n";
-   */
-  if (!this->FileName || !this->FileName[0])
+  if (!this->TypeName)
   {
-    // No filename is not really an error... we should just have an empty output.
-    static bool once = false;
-    if (!once)
-    {
-      once = true;
-      //vtkWarningMacro("No filename specified. This is your only warning.");
-    }
+    vtkErrorMacro("No type name specified.");
+    return 1;
+  }
+
+  if (!this->Specification)
+  {
+    vtkErrorMacro("No specification specified.");
     return 1;
   }
 
   if (this->GetMTime() > this->ModelSource->GetMTime())
   {
-    // Something changed. Probably the FileName.
-    if (this->LoadFile())
+    if (this->CreateModel())
     {
       this->ModelSource->Update();
     }
@@ -133,13 +129,12 @@ int vtkSMTKModelReader::RequestData(vtkInformation* vtkNotUsed(request),
     static_cast<int>(vtkModelMultiBlockSource::INSTANCE_PORT)));
   instanceSource->ShallowCopy(this->ModelSource->GetOutputDataObject(
     static_cast<int>(vtkModelMultiBlockSource::PROTOTYPE_PORT)));
-
   return 1;
 }
 
-bool vtkSMTKModelReader::LoadFile()
+bool vtkSMTKModelCreator::CreateModel()
 {
-  if (!this->FileName)
+  if (!this->TypeName || !this->Specification)
   {
     return false;
   }
@@ -161,13 +156,25 @@ bool vtkSMTKModelReader::LoadFile()
     return false;
   }
 
-  auto oper = operMgr->create<smtk::operation::ReadResource>();
+  auto oper = operMgr->create(std::string(this->TypeName));
   if (!oper)
   {
     return false;
   }
 
-  oper->parameters()->findFile("filename")->setValue(this->FileName);
+  json j;
+
+  try
+  {
+    j = json::parse(this->Specification);
+  }
+  catch (std::exception&)
+  {
+    return false;
+  }
+
+  auto specification = oper->specification();
+  smtk::attribute::from_json(j, specification);
 
   auto result = oper->operate();
   if (result->findInt("outcome")->value() !=

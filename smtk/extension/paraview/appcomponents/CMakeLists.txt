@@ -29,8 +29,9 @@ set(PQComponentsSrcs
   pqSMTKExportSimulationBehavior.cxx
   pqSMTKImportOperationBehavior.cxx
   pqSMTKModelRepresentation.cxx
-  pqSMTKSaveResourceBehavior.cxx
+  pqSMTKNewResourceBehavior.cxx
   pqSMTKOperationPanel.cxx
+  pqSMTKSaveResourceBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKResource.cxx
   pqSMTKWrapper.cxx
@@ -46,8 +47,9 @@ set(PQComponentsHeaders
   pqSMTKExportSimulationBehavior.h
   pqSMTKImportOperationBehavior.h
   pqSMTKModelRepresentation.h
-  pqSMTKSaveResourceBehavior.h
+  pqSMTKNewResourceBehavior.h
   pqSMTKOperationPanel.h
+  pqSMTKSaveResourceBehavior.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKResource.h
   pqSMTKWrapper.h
@@ -239,6 +241,10 @@ add_pqproxy_custom(proxyIfaces proxyIfaceSrcs
   TYPE pqSMTKResource
   XML_GROUP sources
   XML_NAME SMTKModelReader
+
+  TYPE pqSMTKResource
+  XML_GROUP sources
+  XML_NAME SMTKModelCreator
 
   TYPE pqSMTKResource
   XML_GROUP sources

@@ -18,7 +18,10 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
 
+#include <QPointer>
+
 class qtOperationViewInternals;
+class QPushButton;
 
 namespace smtk
 {
@@ -54,6 +57,9 @@ public:
 
   qtOperationView(const OperationViewInfo& info);
   virtual ~qtOperationView();
+
+  QPointer<QPushButton> applyButton() const;
+  smtk::operation::OperationPtr operation() const;
 
 public slots:
   void showAdvanceLevelOverlay(bool show) override;

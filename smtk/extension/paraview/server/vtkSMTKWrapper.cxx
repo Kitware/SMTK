@@ -73,6 +73,7 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->ResourceManager);
 
   this->OperationManager = smtk::operation::Manager::create();
+  this->OperationManager->registerResourceManager(this->ResourceManager);
   smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->OperationManager);
 
   this->Selection = smtk::view::Selection::create();
@@ -260,11 +261,11 @@ void vtkSMTKWrapper::AddResourceFilter(json& response)
   if (rsrcThing)
   {
     vtkAlgorithm* alg = rsrcThing;
-    vtkSMTKResourceReader* resourceSrc = nullptr;
+    vtkSMTKResourceSource* resourceSrc = nullptr;
 
     // Recursively walk up ParaView's pipeline until we encounter one of our
-    // creation filters (marked by inheritence from vtkSMTKResourceReader).
-    while (alg && !(resourceSrc = vtkSMTKResourceReader::SafeDownCast(alg)))
+    // creation filters (marked by inheritence from vtkSMTKResourceSource).
+    while (alg && !(resourceSrc = vtkSMTKResourceSource::SafeDownCast(alg)))
     {
       alg = alg->GetInputAlgorithm(0, 0);
     }

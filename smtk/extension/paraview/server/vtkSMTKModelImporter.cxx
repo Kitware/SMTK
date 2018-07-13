@@ -48,6 +48,7 @@ vtkStandardNewMacro(vtkSMTKModelImporter);
 
 vtkSMTKModelImporter::vtkSMTKModelImporter()
 {
+  this->FileName = nullptr;
   this->ResourceName = nullptr;
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
@@ -58,12 +59,14 @@ vtkSMTKModelImporter::vtkSMTKModelImporter()
 
 vtkSMTKModelImporter::~vtkSMTKModelImporter()
 {
+  this->SetFileName(nullptr);
   this->SetResourceName(nullptr);
 }
 
 void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
+  os << indent << "FileName: " << this->FileName << "\n";
   os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 

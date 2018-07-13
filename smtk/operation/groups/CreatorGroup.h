@@ -67,6 +67,9 @@ public:
   /// with the resource during registration.
   std::set<Operation::Index> operationsForResource(const std::string& resourceName) const;
 
+  /// Given an operation name, return the resource associated with the operation.
+  std::string resourceForOperation(const std::string&) const;
+
   /// Given an operation index, return the resource associated with the operation.
   std::string resourceForOperation(const Operation::Index&) const;
 

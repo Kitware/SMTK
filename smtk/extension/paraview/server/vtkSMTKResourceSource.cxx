@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/resource/Manager.h"
@@ -21,38 +21,35 @@
 
 using namespace smtk;
 
-vtkCxxSetObjectMacro(vtkSMTKResourceReader, Wrapper, vtkSMTKWrapper);
+vtkCxxSetObjectMacro(vtkSMTKResourceSource, Wrapper, vtkSMTKWrapper);
 
-vtkSMTKResourceReader::vtkSMTKResourceReader()
+vtkSMTKResourceSource::vtkSMTKResourceSource()
 {
-  this->FileName = nullptr;
   this->Wrapper = nullptr;
   this->SetNumberOfInputPorts(0);
 }
 
-vtkSMTKResourceReader::~vtkSMTKResourceReader()
+vtkSMTKResourceSource::~vtkSMTKResourceSource()
 {
   if (this->Wrapper)
   {
     this->DropResource();
   }
   this->SetWrapper(nullptr);
-  this->SetFileName(nullptr);
 }
 
-void vtkSMTKResourceReader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKResourceSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileName: " << this->FileName << "\n";
   os << indent << "Wrapper: " << this->Wrapper << "\n";
 }
 
-smtk::resource::Resource::Ptr vtkSMTKResourceReader::GetResource() const
+smtk::resource::Resource::Ptr vtkSMTKResourceSource::GetResource() const
 {
   return smtk::resource::Resource::Ptr();
 }
 
-void vtkSMTKResourceReader::DropResource()
+void vtkSMTKResourceSource::DropResource()
 {
   auto rsrc = this->GetResource();
   if (!rsrc)
