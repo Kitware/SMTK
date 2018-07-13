@@ -32,6 +32,7 @@
 
 #include "smtk/bridge/polygon/Resource.h"
 
+#include "smtk/operation/groups/CreatorGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
@@ -60,6 +61,9 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 {
   // Register operations
   operationManager->registerOperations<OperationList>();
+
+  smtk::operation::CreatorGroup(operationManager)
+    .registerOperation<smtk::bridge::polygon::Resource, smtk::bridge::polygon::CreateModel>();
 
   smtk::operation::ImporterGroup(operationManager)
     .registerOperation<smtk::bridge::polygon::Resource, smtk::bridge::polygon::Import>();
