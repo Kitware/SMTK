@@ -232,7 +232,7 @@ int main(int argc, char* argv[])
     operationManager->create<smtk::operation::WriteResource>();
 
   writeOp->parameters()->findFile("filename")->setValue(write_path);
-  writeOp->parameters()->findResource("resource")->setValue(resource);
+  writeOp->parameters()->associate(resource);
 
   //write out the smtk model.
   auto result = writeOp->operate();

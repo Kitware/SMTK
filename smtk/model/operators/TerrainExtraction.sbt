@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="terrain extraction" Label="Model - Terrain Extraction" BaseType="operation">
       <AssociationsDef Name="Point Cloud" NumberOfRequiredValues="1" AdvanceLevel="0">
-        <MembershipMask>aux_geom</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="aux_geom"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Extract a terrain from a point cloud.

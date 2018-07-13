@@ -33,12 +33,27 @@ namespace bridge
 namespace discrete
 {
 
+bool WriteResource::ableToOperate()
+{
+  if (!this->smtk::operation::XMLOperation::ableToOperate())
+  {
+    return false;
+  }
+
+  if (this->parameters()->associations()->numberOfValues() < 1)
+  {
+    return false;
+  }
+
+  return true;
+}
+
 WriteResource::Result WriteResource::operateInternal()
 {
-  smtk::attribute::ResourceItem::Ptr resourceItem = this->parameters()->findResource("resource");
+  auto resourceItem = this->parameters()->associations();
 
   smtk::bridge::discrete::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::bridge::discrete::Resource>(resourceItem->value());
+    std::dynamic_pointer_cast<smtk::bridge::discrete::Resource>(resourceItem->objectValue());
 
   // Serialize resource into a set of JSON records:
   smtk::model::SessionIOJSON::json j = smtk::model::SessionIOJSON::saveJSON(resource);
@@ -100,7 +115,7 @@ const char* WriteResource::xmlDescription() const
 bool writeResource(const smtk::resource::ResourcePtr& resource)
 {
   WriteResource::Ptr write = WriteResource::create();
-  write->parameters()->findResource("resource")->setValue(resource);
+  write->parameters()->associate(resource);
   WriteResource::Result result = write->operate();
   return (
     result->findInt("outcome")->value() == static_cast<int>(WriteResource::Outcome::SUCCEEDED));

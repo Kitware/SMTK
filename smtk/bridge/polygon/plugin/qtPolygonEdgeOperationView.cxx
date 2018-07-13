@@ -18,10 +18,10 @@
 #include "smtk/bridge/polygon/qt/pqSplitEdgeWidget.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/CellEntity.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
@@ -210,8 +210,8 @@ void qtPolygonEdgeOperationView::updateAttributeData()
     return;
   }
 
-  smtk::operation::OperationPtr edgeOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
+  // FIXME: This used to fetch a pre-existing operation, which assumed there was only one.
+  smtk::operation::OperationPtr edgeOp = this->uiManager()->operationManager()->create(defName);
   this->Internals->CurrentOp = edgeOp;
   // expecting only 1 instance of the op?
   smtk::attribute::AttributePtr att = edgeOp->parameters();
@@ -250,9 +250,11 @@ void qtPolygonEdgeOperationView::updateAttributeData()
     this->Internals->ArcManager->setActiveArc(objArc);
     QObject::connect(objArc, SIGNAL(operationRequested(const smtk::operation::OperationPtr&)), this,
       SLOT(requestOperation(const smtk::operation::OperationPtr&)));
+    /* FIXME: When the arc editor is active, keep UI synced.
     QObject::connect(objArc, SIGNAL(activateModel(const smtk::common::UUID&)),
       this->uiManager()->activeModelView()->operatorsWidget(),
       SLOT(setOperationTargetActive(const smtk::common::UUID&)));
+      */
   }
 
   this->operationSelected(edgeOp);

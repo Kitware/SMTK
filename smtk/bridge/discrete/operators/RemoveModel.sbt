@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="remove model" BaseType="operation" AdvanceLevel="11">
       <AssociationsDef Name="model(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::discrete::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
     </AttDef>
 

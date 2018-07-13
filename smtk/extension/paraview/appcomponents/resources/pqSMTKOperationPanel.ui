@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>pqSMTKOperationPanel</class>
+ <widget class="QWidget" name="pqSMTKOperationPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>388</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCheckBox" name="UseSelection">
+     <property name="text">
+      <string>Limit by selection</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSplitter" name="DocSplitter">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QSplitter" name="ListEditorSplitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="smtk::extension::qtAvailableOperations" name="OperationList" native="true"/>
+      <widget class="QGroupBox" name="OperationEditor">
+       <property name="title">
+        <string>Operation editor</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="OperationDocs">
+      <property name="title">
+       <string>Operation documentation</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>smtk::extension::qtAvailableOperations</class>
+   <extends>QWidget</extends>
+   <header>smtk/extension/qt/qtAvailableOperations.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

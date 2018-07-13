@@ -19,6 +19,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/operation/Manager.h"
+
 #include "smtk/view/View.h"
 
 #include "smtk/io/SaveJSON.h"
@@ -27,7 +29,6 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtFileItem.h"
-#include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -282,8 +283,9 @@ void smtkSaveModelView::updateAttributeData()
     return;
   }
 
+  // FIXME: This used to fetch a pre-existing operation, which assumed there was only one.
   smtk::operation::OperationPtr saveModelOp =
-    this->uiManager()->activeModelView()->operatorsWidget()->existingOperation(defName);
+    this->uiManager()->operationManager()->create(defName);
   this->Internals->CurrentOp = saveModelOp;
 
   // expecting only 1 instance of the op?

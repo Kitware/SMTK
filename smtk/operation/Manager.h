@@ -112,6 +112,12 @@ public:
   Metadata::Observers& metadataObservers() { return m_metadataObservers; }
   const Metadata::Observers& metadataObservers() const { return m_metadataObservers; }
 
+  /// Add a metadata observer, optionally invoking it as needed to bring it up to date.
+  Metadata::Observers::Key observeMetadata(MetadataObserver fn, bool invokeImmediately = true);
+
+  /// Remove a metadata observer.
+  bool unobserveMetadata(Metadata::Observers::Key);
+
   /// Assign a resource manager to manage resources created by operations.
   ///
   /// This method constructs an observer that registers created resources to the

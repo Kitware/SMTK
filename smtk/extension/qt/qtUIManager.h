@@ -7,11 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-
-// .NAME qtUIManager - The user interface manager for smtk
-// .SECTION Description
-// .SECTION See Also
-
 #ifndef __smtk_extension_qtUIManager_h
 #define __smtk_extension_qtUIManager_h
 
@@ -43,6 +38,11 @@ class qtModelView;
 
 typedef qtBaseView* (*widgetConstructor)(const ViewInfo& info);
 
+/**\brief Container for managers whose content is presented via Qt widgets.
+  *
+  * This class serves as a clearing-house where Qt widgets that present
+  * SMTK attributes can fetch content such as operations and resources.
+  */
 class SMTKQTEXT_EXPORT qtUIManager : public QObject
 {
 
@@ -50,19 +50,32 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
 
 public:
   qtUIManager(smtk::attribute::ResourcePtr resource);
+  qtUIManager(smtk::operation::OperationPtr operation);
   virtual ~qtUIManager();
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
   void initializeUI(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
+
+  /// If this instance was constructed with an operation, return an appropriate view for it.
+  smtk::view::ViewPtr findOrCreateOperationView() const;
+
+  /// If this instance was constructed with an operation, return it.
+  smtk::operation::OperationPtr operation() const { return m_operation; }
+
+  /// Use the given smtk::view::View to construct widgets matching the specification.
   qtBaseView* setSMTKView(smtk::view::ViewPtr v);
   qtBaseView* setSMTKView(
     smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = false);
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
   smtk::view::ViewPtr smtkView() const { return m_smtkView; }
 
-  smtk::attribute::ResourcePtr attResource() const { return m_AttResource; }
+  smtk::resource::ManagerPtr resourceManager() const { return m_resourceManager; }
+  void setResourceManager(smtk::resource::ManagerPtr mgr) { m_resourceManager = mgr; }
 
-  smtk::resource::ManagerPtr resourceManager() const { return m_AttResource->manager(); }
+  smtk::operation::ManagerPtr operationManager() const { return m_operationManager; }
+  void setOperationManager(smtk::operation::ManagerPtr mgr) { m_operationManager = mgr; }
+
+  smtk::attribute::ResourcePtr attResource() const { return m_attResource; }
 
   void setActiveModelView(smtk::extension::qtModelView*);
   smtk::extension::qtModelView* activeModelView();
@@ -98,7 +111,7 @@ public:
   void registerViewConstructor(const std::string& vtype, widgetConstructor f);
   //Description:
   // Check if view type string has a registered view construction function
-  bool hasViewConstructor(const std::string& vtype)
+  bool hasViewConstructor(const std::string& vtype) const
   {
     return m_constructors.find(vtype) != m_constructors.end();
   }
@@ -174,6 +187,7 @@ signals:
   friend class qtAssociationWidget;
 
 protected:
+  void commonConstructor();
   virtual void internalInitialize();
 
 private:
@@ -188,7 +202,10 @@ private:
   bool AdvancedBold;   // true by default
   bool AdvancedItalic; // false by default
 
-  smtk::attribute::ResourcePtr m_AttResource;
+  smtk::attribute::ResourcePtr m_attResource;
+  smtk::resource::ManagerPtr m_resourceManager;
+  smtk::operation::ManagerPtr m_operationManager;
+  smtk::operation::OperationPtr m_operation;
   bool m_useInternalFileBrowser;
 
   int m_maxValueLabelLength;

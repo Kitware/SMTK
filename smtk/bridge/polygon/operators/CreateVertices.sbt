@@ -9,7 +9,7 @@
         Create one or more vertices in the associated model.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="model"/></Accepts>
         <BriefDescription>The model to which vertices should be added.</BriefDescription>
         <DetailedDescription>
           The model to which vertices should be added.

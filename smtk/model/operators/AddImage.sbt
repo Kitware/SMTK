@@ -7,7 +7,7 @@
     <AttDef Type="add image" BaseType="operation" Label="Model - Add Image">
       <!-- In the future Label shoud be removed when SMTK supports compound auxiliary geometry -->
       <AssociationsDef Name="entities" Label="model" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Add an image as  auxiliary geometry (scene geometry not part of the model domain)

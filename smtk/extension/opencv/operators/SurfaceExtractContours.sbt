@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="extract surface contours" Label="Edge - Create from Image Surfaces" BaseType="operation">
       <AssociationsDef Name="Image" NumberOfRequiredValues="1" AdvanceLevel="0">
-        <MembershipMask>aux_geom</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="aux_geom"/></Accepts>
         <BriefDescription>The image auxiliary geometry to which this op will operate on.</BriefDescription>
         <DetailedDescription>
           The image auxiliary geometry to which the edge extraction will operate on. This auxiliary geometry should have an "url" string property.

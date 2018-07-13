@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="set property" Label="Entities - Set Property" BaseType="operation" AdvanceLevel="10">
       <AssociationsDef Name="Entities" NumberOfRequiredValues="0" Extensible="true">
-        <MembershipMask>any</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::discrete::Resource"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Set (or remove) a property value on a set of entities. Because this op can also

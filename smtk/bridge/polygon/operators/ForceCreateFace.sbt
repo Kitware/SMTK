@@ -12,7 +12,7 @@
       </DetailedDescription>
 
       <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>model|cell</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="model|cell"/></Accepts>
         <BriefDescription>The model to which faces should be added or an ordered list of edges.</BriefDescription>
         <DetailedDescription>
           When the construction method is set to "points" (index 0), then the association must be a

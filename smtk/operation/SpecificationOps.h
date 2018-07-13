@@ -36,7 +36,12 @@ namespace operation
 typedef std::map<smtk::resource::Resource::Ptr, smtk::resource::LockType> ResourceAccessMap;
 typedef std::vector<smtk::attribute::ComponentItemDefinition::Ptr> ComponentDefinitionVector;
 
-/// Return the parameters for the operation.
+/// Return a new set of parameters for an operation.
+SMTKCORE_EXPORT
+Operation::Parameters createParameters(
+  Operation::Specification specification, const std::string& operatorName);
+
+/// Return parameters for an operation if they already exist or a new parameters object otherwise.
 SMTKCORE_EXPORT
 Operation::Parameters extractParameters(
   Operation::Specification specification, const std::string& operatorName);

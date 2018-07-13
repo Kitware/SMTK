@@ -13,7 +13,7 @@
         and used in place of those specifying the face.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="model"/></Accepts>
         <BriefDescription>The model to which faces should be added.</BriefDescription>
         <DetailedDescription>
           The model to which faces should be added.

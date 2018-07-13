@@ -14,10 +14,10 @@
         Resources are written to their existing location unless
         the "filename" item is enabled and set to a valid value.
       </DetailedDecscription>
+      <AssociationsDef>
+        <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <Resource Name="resource" NumberOfRequiredValues="1" Extensible="true">
-          <BriefDescription>The resource(s) to write.</BriefDescription>
-        </Resource>
         <File Name="filename" NumberOfRequiredValues="1" Extensible="true" Optional="true"
           FileFilters="SMTK Resource (*.smtk)" Label="SMTK Resource File Name " ShouldExist="false">
           <BriefDescription>The destination filename.</BriefDescription>

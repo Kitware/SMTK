@@ -4,7 +4,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="revolve" Label="Model - Revolve" BaseType="operation">
       <AssociationsDef Name="Model" NumberOfRequiredValues="1" Extensible="false">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::multiscale::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <Double Name="sweep-angle" NumberOfRequiredValues="1">

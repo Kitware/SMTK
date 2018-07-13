@@ -14,7 +14,7 @@
         composed only of the boundary points.
       </DetailedDescription>
       <AssociationsDef Name="faces" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>face</MembershipMask>
+        <Accepts><Resource Name="smtk::model::Resource" Filter="face"/></Accepts>
         <BriefDescription>The faces to tessellate.</BriefDescription>
       </AssociationsDef>
       <ItemDefinitions>

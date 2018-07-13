@@ -176,11 +176,9 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
 
     test(writeOp != nullptr, "No write operator");
 
-    writeOp->parameters()->findResource("resource")->setValue(polygonResource);
+    writeOp->parameters()->associate(polygonResource);
 
-    std::cout << "executing write op" << std::endl;
     smtk::operation::Operation::Result writeOpResult = writeOp->operate();
-    std::cout << "done" << std::endl;
     test(writeOpResult->findInt("outcome")->value() ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Write operator failed");

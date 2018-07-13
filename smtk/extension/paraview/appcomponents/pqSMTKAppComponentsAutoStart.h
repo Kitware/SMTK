@@ -15,6 +15,7 @@
 #include <QObject>
 
 class vtkSMProxy;
+class pqPluginSMTKViewBehavior;
 
 class SMTKPQCOMPONENTSPLUGIN_EXPORT pqSMTKAppComponentsAutoStart : public QObject
 {
@@ -32,6 +33,7 @@ public:
 
 protected:
   static vtkSMProxy* s_resourceManager;
+  pqPluginSMTKViewBehavior* m_viewTracker;
 
 private:
   Q_DISABLE_COPY(pqSMTKAppComponentsAutoStart);

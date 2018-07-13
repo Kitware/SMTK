@@ -33,8 +33,9 @@ namespace operation
 class SMTKCORE_EXPORT Metadata
 {
 public:
-  typedef MetadataObserver Observer;
-  typedef MetadataObservers Observers;
+  using Observer = MetadataObserver;
+  using Observers = MetadataObservers;
+  using Association = smtk::attribute::ConstReferenceItemDefinitionPtr;
 
   Metadata(const std::string& typeName, Operation::Index index,
     Operation::Specification specification,
@@ -47,6 +48,21 @@ public:
   {
     return m_acceptsComponent(c);
   }
+  /**\brief Return the ReferenceItemDefinition to use when finding available operations.
+    *
+    * While an operation is associated with an entire attribute resource, and
+    * that resource may define multiple attribute types, applications should
+    * be able to identify whether an operation is suitable for a selection
+    * using a single reference item. This method will return that item or,
+    * if the operation takes no persistent objects, a null pointer.
+    *
+    * For now, the item is inferred; it is assumed to be the associationRule()
+    * entry of the operator's parameters() definition.
+    * A null pointer is returned if there is no association rule.
+    * In the future, this may change so that operations can
+    * specify how selections should be used to determine suitability.
+    */
+  Association primaryAssociation() const { return m_primaryAssociation; }
 
   std::set<std::string> groups() const;
 
@@ -57,6 +73,7 @@ private:
   Operation::Index m_index;
   Operation::Specification m_specification;
   std::function<bool(const smtk::resource::ComponentPtr&)> m_acceptsComponent;
+  Association m_primaryAssociation;
 };
 }
 }

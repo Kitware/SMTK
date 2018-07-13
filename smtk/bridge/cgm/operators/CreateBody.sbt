@@ -6,7 +6,7 @@
     <AttDef Type="create body" BaseType="operation">
       <AssociationsDef Name="free cells" NumberOfRequiredValues="1" Extensible="true">
         <BriefDescription>One or more pre-existing model cells that are not bounding higher-dimensional cells.</BriefDescription>
-        <MembershipMask>cell</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="cell"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <Int Name="keep inputs" NumberOfRequiredValues="1">

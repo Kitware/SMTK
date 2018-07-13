@@ -21,7 +21,7 @@
         Any intersections between different edges are handled when faces are created.
       </DetailedDescription>
       <AssociationsDef Name="model" NumberOfRequiredValues="1">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="model"/></Accepts>
         <BriefDescription>Vertices to join into an edge or the model to which edges should be added.</BriefDescription>
         <DetailedDescription>
           You must either (a) associate 2 or more model vertices to this

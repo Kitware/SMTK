@@ -162,7 +162,11 @@ ImportResource::Specification ImportResource::createSpecification()
       std::weak_ptr<smtk::attribute::FileItemDefinition> weakFileItemDefPtr;
       // Define a metadata observer that appends the file filters of an import
       // operation to the file definition.
-      auto observer = [&, weakFileItemDefPtr](const smtk::operation::Metadata& md) {
+      auto observer = [&, weakFileItemDefPtr](const smtk::operation::Metadata& md, bool adding) {
+        if (!adding)
+        {
+          return;
+        }
 
         auto fileItemDef = weakFileItemDefPtr.lock();
 
@@ -195,14 +199,9 @@ ImportResource::Specification ImportResource::createSpecification()
         fileFilters.append(localFileItemDef->getFileFilters());
       };
 
-      // Apply the metadata observer to extant operation metadata.
-      for (auto& md : manager->metadata())
-      {
-        observer(md);
-      }
-
-      // Add this metadata observer to the set of metadata observers.
-      manager->metadataObservers().insert(observer);
+      // Add this metadata observer to the set of metadata observers,
+      // invoking it immediately on all extant metadata.
+      manager->observeMetadata(observer, true);
     }
   }
 

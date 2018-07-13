@@ -15,7 +15,7 @@
         passing the indices of those points you wish to promote into model vertices.
       </DetailedDescription>
       <AssociationsDef Name="edge" NumberOfRequiredValues="1" AdvanceLevel="1">
-        <MembershipMask>edge</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="edge"/></Accepts>
         <BriefDescription>An edge to be reshaped.</BriefDescription>
         <DetailedDescription>
           This edge will have its sequence of points replaced with

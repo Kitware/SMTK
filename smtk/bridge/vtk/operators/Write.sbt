@@ -4,13 +4,9 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="write" Label="Model - Write Resource" BaseType="operation">
-      <ItemDefinitions>
-        <Resource Name="resource">
-          <Accepts>
-            <Resource Name="smtk::bridge::vtk::Resource"/>
-          </Accepts>
-        </Resource>
-      </ItemDefinitions>
+      <AssociationsDef>
+          <Accepts><Resource Name="smtk::bridge::vtk::Resource"/></Accepts>
+      </AssociationsDef>
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>

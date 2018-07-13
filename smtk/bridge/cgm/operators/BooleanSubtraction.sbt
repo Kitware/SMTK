@@ -13,7 +13,7 @@
         not by default).
       </DetailedDescription>
       <AssociationsDef Name="workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::cgm::Resource" Filter="model"/></Accepts>
         <BriefDescription>The set of workpieces the tool should be removed from.</BriefDescription>
         <DetailedDescription>
           Models from which the tool bodies should be subtracted.

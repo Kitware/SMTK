@@ -8,7 +8,7 @@
         boundary to its volume.
       </BriefDescription>
       <AssociationsDef Name="Model" NumberOfRequiredValues="1" Extensible="false">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::multiscale::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <Double Name="radius" NumberOfRequiredValues="1">

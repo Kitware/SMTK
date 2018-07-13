@@ -249,8 +249,8 @@ void pqSMTKSelectionFilterBehavior::installFilter()
   bool acceptMeshes = m_acceptMeshes;
   smtk::model::BitFlags modelFlags = m_modelFilterMask;
 
-  m_selection->setFilter([acceptMeshes, modelFlags](smtk::resource::ComponentPtr comp, int value,
-    smtk::view::Selection::SelectionMap& suggestions) {
+  m_selection->setFilter([acceptMeshes, modelFlags](smtk::resource::PersistentObjectPtr comp,
+    int value, smtk::view::Selection::SelectionMap& suggestions) {
     (void)acceptMeshes; // meshes are not yet resource components.
     if (modelFlags)
     {

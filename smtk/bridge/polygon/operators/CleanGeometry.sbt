@@ -17,7 +17,7 @@
 
       </DetailedDescription>
       <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="yes">
-        <MembershipMask>cell</MembershipMask>
+        <Accepts><Resource Name="smtk::bridge::polygon::Resource" Filter="cell"/></Accepts>
         <BriefDescription>The cells to clean.</BriefDescription>
         <DetailedDescription>
           Select a set of cells you want to form a self-consistent model after processing.

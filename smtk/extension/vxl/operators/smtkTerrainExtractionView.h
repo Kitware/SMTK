@@ -11,7 +11,7 @@
 // .SECTION Description
 // .SECTION See Also
 // qtSection
-// smtkTerrainExtractionView owns pqTerrainExtractionMananger to avoid cyclic dendency
+// smtkTerrainExtractionView owns pqTerrainExtractionManager to avoid cyclic dendency
 
 #ifndef smtkTerrainExtractionView_h
 #define smtkTerrainExtractionView_h
