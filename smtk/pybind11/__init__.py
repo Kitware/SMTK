@@ -16,7 +16,7 @@
 # effect when another python implementation imports smtk.
 import site
 
-__all__ = ('common', 'attribute', 'model',
+__all__ = ('common', 'attribute', 'extension', 'model',
            'mesh', 'io', 'bridge', 'simulation')
 
 

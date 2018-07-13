@@ -126,7 +126,7 @@ option(SMTK_ENABLE_MESH_SESSION
 cmake_dependent_option(SMTK_ENABLE_MULTISCALE_SESSION "Build a session to Multiscale data" OFF
   "SMTK_ENABLE_VTK_SUPPORT;SMTK_ENABLE_MESH_SESSION;SMTK_ENABLE_PYTHON_WRAPPING" OFF)
 if (SMTK_ENABLE_MULTISCALE_SESSION)
-  set(AFRL_DIR "" CACHE PATH "Path to a directory of AFRL data.")
+  set(AFRL_DIR "/path/to/afrl/data" CACHE PATH "Path to a directory of AFRL data.")
 endif()
 
 option(SMTK_ENABLE_DOCUMENTATION

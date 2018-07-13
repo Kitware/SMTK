@@ -10,6 +10,7 @@
 #include "smtk/bridge/multiscale/operators/PartitionBoundaries.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 
@@ -152,14 +153,14 @@ bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
       collection->setDirichletOnMeshes(contactD, smtk::mesh::Dirichlet(created.size()));
 
       // construct a new uuid
-      smtk::common::UUID id = collection->modelManager()->unusedUUID();
+      smtk::common::UUID id = collection->modelResource()->unusedUUID();
       // construct a topology element for the vertex set (dimension 0)
       Topology::Element element(domainMeshes, 0);
       // insert the element into the topology under the parent level
       // (designating it as a "free" element)
       topology.m_elements.insert(std::make_pair(id, element));
       // store an entity ref associated with the vertex set id
-      created.push_back(smtk::model::Vertex(collection->modelManager(), id));
+      created.push_back(smtk::model::Vertex(collection->modelResource(), id));
     }
   }
 
@@ -262,8 +263,8 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
     session->declareDanglingEntity(entity);
   }
 
-  smtk::attribute::ModelEntityItem::Ptr modelItem = this->parameters()->associations();
-  smtk::model::Model model = modelItem->value(0);
+  smtk::attribute::ReferenceItem::Ptr modelItem = this->parameters()->associations();
+  smtk::model::Model model = modelItem->valueAs<smtk::model::Entity>();
   model.addCells(created);
 
   smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");

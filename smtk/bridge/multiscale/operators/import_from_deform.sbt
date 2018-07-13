@@ -87,6 +87,11 @@
         <Component Name="mesh_created" NumberOfRequiredValues="1">
           <Accepts><Resource Name="smtk::bridge::multiscale::Session" Filter=""/></Accepts>
         </Component>
+        <Resource Name="resource">
+          <Accepts>
+            <Resource Name="smtk::bridge::multiscale::Resource"/>
+          </Accepts>
+        </Resource>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

@@ -11,19 +11,33 @@ set(matplotlibPySrcs
 
 set(matplotlib_pymodulefiles)
 
-smtk_pyoperation_xml("${CMAKE_CURRENT_SOURCE_DIR}/render_mesh.sbt" matplotlib_pymodulefiles)
+set(matplotlib_pyxmlfiles)
+smtk_pyoperation_xml("${CMAKE_CURRENT_SOURCE_DIR}/render_mesh.sbt" matplotlib_pyxmlfiles)
 
 foreach(pyfile ${matplotlibPySrcs})
   get_filename_component(filename ${pyfile} NAME)
+  file(RELATIVE_PATH relativefile ${PROJECT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/${pyfile}")
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/${pyfile}"
-    "${CMAKE_CURRENT_BINARY_DIR}/${filename}" @ONLY
+    "${CMAKE_BINARY_DIR}/${relativefile}" @ONLY
     )
-  list(APPEND matplotlib_pymodulefiles "${CMAKE_CURRENT_BINARY_DIR}/${filename}")
+  list(APPEND matplotlib_pymodulefiles "${CMAKE_BINARY_DIR}/${relativefile}")
 endforeach()
+
+foreach(pyfile ${matplotlib_pyxmlfiles})
+  get_filename_component(filename ${pyfile} NAME)
+  file(RELATIVE_PATH relativefile ${PROJECT_BINARY_DIR} ${pyfile})
+  configure_file(
+    "${pyfile}"
+    "${CMAKE_BINARY_DIR}/${relativefile}" @ONLY
+    )
+  list(APPEND matplotlib_pymodulefiles "${CMAKE_BINARY_DIR}/${relativefile}")
+endforeach()
+
+file(RELATIVE_PATH relativedir ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 install(
   FILES ${matplotlib_pymodulefiles}
-  DESTINATION "${SMTK_PYTHON_MODULEDIR}/smtk/extension/matplotlib"
+  DESTINATION "${SMTK_PYTHON_MODULEDIR}/${relativedir}"
   )
 
 add_library(smtkMatplotlibExt ${source})

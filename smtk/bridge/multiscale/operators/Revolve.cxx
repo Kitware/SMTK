@@ -154,7 +154,7 @@ Revolve::Result Revolve::operateInternal()
   }
 
   // Assign its model manager to the one associated with this session
-  collection->setModelManager(session->manager());
+  collection->setModelResource(session->resource());
   collection->name("Revolved mesh");
 
   // Construct the topology
@@ -171,7 +171,7 @@ Revolve::Result Revolve::operateInternal()
   collection->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
-  model.setSession(smtk::model::SessionRef(session->manager(), session->sessionId()));
+  model.setSession(smtk::model::SessionRef(session->resource(), session->sessionId()));
 
   // If we don't call "transcribe" ourselves, it never gets called.
   session->transcribe(model, smtk::model::SESSION_EVERYTHING, false);

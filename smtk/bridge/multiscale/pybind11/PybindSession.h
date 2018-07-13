@@ -29,7 +29,6 @@ PySharedPtrClass< smtk::bridge::multiscale::Session, smtk::bridge::mesh::Session
     .def_static("create", (std::shared_ptr<smtk::bridge::multiscale::Session> (*)()) &smtk::bridge::multiscale::Session::create)
     .def_static("create", (std::shared_ptr<smtk::bridge::multiscale::Session> (*)(::std::shared_ptr<smtk::bridge::multiscale::Session> &)) &smtk::bridge::multiscale::Session::create, py::arg("ref"))
     .def("name", &smtk::bridge::multiscale::Session::name)
-    .def_readwrite_static("sessionName", &smtk::bridge::multiscale::Session::sessionName)
     .def_static("CastTo", [](const std::shared_ptr<smtk::model::Session> i) {
         return std::dynamic_pointer_cast<smtk::bridge::multiscale::Session>(i);
       })

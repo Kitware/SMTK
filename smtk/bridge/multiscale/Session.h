@@ -38,7 +38,6 @@ public:
   smtkSuperclassMacro(smtk::bridge::mesh::Session);
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkCreateMacro(smtk::bridge::multiscale::Session);
-  smtkDeclareModelingKernel();
 
   virtual ~Session();
 
@@ -49,10 +48,6 @@ protected:
   typedef smtk::model::SessionInfoBits SessionInfoBits;
 
   Session();
-
-private:
-  Session(const Session&);        // Not implemented.
-  void operator=(const Session&); // Not implemented.
 };
 
 } // namespace multiscale
