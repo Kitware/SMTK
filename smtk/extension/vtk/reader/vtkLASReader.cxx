@@ -10,6 +10,8 @@
 
 #include "vtkLASReader.h"
 
+#include "smtk/extension/vtk/reader/vtkGeoSphereTransformLegacy.h"
+
 #include "vtkByteSwap.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkUnsignedCharArray.h"
@@ -17,7 +19,6 @@
 
 #include "vtkAppendPolyData.h"
 #include "vtkCellArray.h"
-#include "vtkGeoSphereTransform.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMath.h"
@@ -62,7 +63,7 @@ vtkLASReader::vtkLASReader()
 
   this->ScanMode = false;
   this->ConvertFromLatLongToXYZ = false;
-  this->LatLongTransform1 = vtkSmartPointer<vtkGeoSphereTransform>::New();
+  this->LatLongTransform1 = vtkSmartPointer<vtkGeoSphereTransformLegacy>::New();
   this->LatLongTransform2 = vtkSmartPointer<vtkTransform>::New();
   this->LatLongTransform2Initialized = false;
 

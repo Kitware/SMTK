@@ -158,8 +158,8 @@ int vtkRayIntersectionLocator::AllIntersectionsAlongSegment(const vtkVector3d& p
   return static_cast<int>(cellIds.size());
 }
 
-int vtkRayIntersectionLocator::IntersectWithLine(double p1[3], double p2[3], double tol, double& t,
-  double x[3], double pcoords[3], int& subId, vtkIdType& cellId, vtkGenericCell* cell)
+int vtkRayIntersectionLocator::IntersectWithLine(const double p1[3], const double p2[3], double tol,
+  double& t, double x[3], double pcoords[3], int& subId, vtkIdType& cellId, vtkGenericCell* cell)
 {
   int hit = this->IntersectWithLine(p1, p2, tol, t, x, pcoords, subId, cellId);
   if (hit)

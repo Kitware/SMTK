@@ -41,12 +41,12 @@ public:
 
   // Description:
   // Reimplemented to support bad compilers
-  int IntersectWithLine(double a0[3], double a1[3], double tol, double& t, double x[3],
+  int IntersectWithLine(const double a0[3], const double a1[3], double tol, double& t, double x[3],
     double pcoords[3], int& subId, vtkIdType& cellId, vtkGenericCell* cell) override;
 
   // Description:
   // Reimplemented to support bad compilers
-  int IntersectWithLine(double p1[3], double p2[3], double tol, double& t, double x[3],
+  int IntersectWithLine(const double p1[3], const double p2[3], double tol, double& t, double x[3],
     double pcoords[3], int& subId) override
   {
     return this->Superclass::IntersectWithLine(p1, p2, tol, t, x, pcoords, subId);
@@ -54,7 +54,7 @@ public:
 
   // Description:
   // Reimplemented to support bad compilers
-  int IntersectWithLine(double p1[3], double p2[3], double tol, double& t, double x[3],
+  int IntersectWithLine(const double p1[3], const double p2[3], double tol, double& t, double x[3],
     double pcoords[3], int& subId, vtkIdType& cellId) override
   {
     return this->Superclass::IntersectWithLine(p1, p2, tol, t, x, pcoords, subId, cellId);

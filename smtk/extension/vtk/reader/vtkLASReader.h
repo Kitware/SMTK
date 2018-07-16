@@ -30,7 +30,7 @@
 
 class vtkPolyData;
 class vtkTransform;
-class vtkGeoSphereTransform;
+class vtkGeoSphereTransformLegacy;
 
 #define VTK_ASCII 1
 #define VTK_BINARY 2
@@ -179,7 +179,7 @@ private:
   bool ScanMode;
   bool ConvertFromLatLongToXYZ;
   bool LatLongTransform2Initialized;
-  vtkSmartPointer<vtkGeoSphereTransform> LatLongTransform1;
+  vtkSmartPointer<vtkGeoSphereTransformLegacy> LatLongTransform1;
   vtkSmartPointer<vtkTransform> LatLongTransform2;
 
   bool TransformOutputData;
