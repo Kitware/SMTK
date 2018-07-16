@@ -15,7 +15,7 @@ int UnitTestRead3dm(int argc, char* argv[])
   (void)argc;
   (void)argv;
   std::string file = SMTK_DATA_DIR;
-  file = file + "/simulation_export/SimBuilderADH2DExportTest/test2D.3dm";
+  file = file + "/mesh/2d/test2D.3dm";
   if (runCMBGeometryReaderTest(file) != vtkTesting::PASSED)
   {
     return 1;
