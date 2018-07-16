@@ -8,17 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/PythonAutoInit.h"
+#include "smtk/bridge/mesh/operators/Import.h"
 
-#include "smtk/bridge/mesh/RegisterSession.h"
-#include "smtk/bridge/mesh/operators/ImportOperation.h"
-
-#include "smtk/bridge/multiscale/RegisterSession.h"
+#include "smtk/bridge/multiscale/Registrar.h"
 #include "smtk/bridge/multiscale/Session.h"
 #include "smtk/bridge/multiscale/operators/PartitionBoundaries.h"
 #include "smtk/bridge/multiscale/operators/Revolve.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -28,12 +26,10 @@
 #include "smtk/mesh/core/Manager.h"
 
 #include "smtk/io/SaveJSON.h"
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Vertex.h"
 
@@ -82,7 +78,7 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
   // Register multiscale resources to the resource manager
   {
-    smtk::bridge::multiscale::registerResources(resourceManager);
+    smtk::bridge::multiscale::Registrar::registerTo(resourceManager);
   }
 
   // Create an operation manager
@@ -90,8 +86,7 @@ int PartitionBoundariesOp(int argc, char* argv[])
 
   // Register mesh and multiscale operators to the operation manager
   {
-    smtk::bridge::mesh::registerOperations(operationManager);
-    smtk::bridge::multiscale::registerOperations(operationManager);
+    smtk::bridge::multiscale::Registrar::registerTo(operationManager);
   }
 
   // Register the resource manager to the operation manager (newly created
@@ -99,8 +94,7 @@ int PartitionBoundariesOp(int argc, char* argv[])
   operationManager->registerResourceManager(resourceManager);
 
   // Create an import operator
-  smtk::operation::Operation::Ptr importOp =
-    operationManager->create<smtk::bridge::mesh::ImportOperation>();
+  smtk::operation::Operation::Ptr importOp = smtk::bridge::mesh::Import::create();
   if (!importOp)
   {
     std::cerr << "No import operator\n";

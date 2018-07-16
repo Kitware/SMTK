@@ -37,6 +37,7 @@ import Dream3DPipeline
 import import_from_deform_xml
 
 import os
+import os.path
 import smtk
 import smtk.attribute
 import smtk.bridge.mesh
@@ -79,6 +80,12 @@ class import_from_deform(smtk.operation.Operation):
         # Access the Dream3D ouptut file
         output_file = self.parameters().find('output-file').value(0)
 
+        # Create a resource and session
+        resource = smtk.bridge.multiscale.Resource.create()
+        session = smtk.bridge.multiscale.Session.create()
+        resource.setLocation(point_file + '.smtk')
+        resource.setSession(session)
+
         # The location of the template pipeline is hard-coded w.r.t. the AFRL
         # directory
         template_pipeline_file = AFRLDir.description.replace('\n', '') + \
@@ -114,10 +121,17 @@ class import_from_deform(smtk.operation.Operation):
                                               output_file)
         # Execute the Dream3D pipeline
         pipelineargs = [pipeline, '-p', '%s' % os.path.abspath(pipeline_file)]
-        subprocess.call(pipelineargs)
+        f = open('/Users/tjcorona/Desktop/out.txt', 'w')
+        subprocess.call(pipelineargs, shell=True)
 
         # Remove the pipeline file
 #        os.remove(pipeline_file)
+
+        # Check for the resulting xdmf file
+        if not os.path.isfile(output_file):
+            smtk.ErrorMessage(
+                smtk.io.Logger.instance(), "No DREAM3D pipeline output")
+            return self.createResult(smtk.operation.Operation.Outcome.FAILED)
 
         # Read DREAM3D Xdmf file as a VTK data object
         xdmfReader = vtk.vtkXdmfReader()
@@ -133,47 +147,45 @@ class import_from_deform(smtk.operation.Operation):
 
         # Import the vtk data object as an SMTK mesh
         cnvrt = smtk.io.vtk.ImportVTKData()
-        collection = cnvrt(
-            volumeDataContainer, self.meshManager(), 'ZoneIds')
+        collection = cnvrt(volumeDataContainer, resource.meshes(), 'ZoneIds')
 
         # Ensure that the import succeeded
         if not collection or not collection.isValid():
             return self.createResult(smtk.operation.Operation.Outcome.FAILED)
 
         # Assign its model manager to the one associated with this session
-        collection.modelManager = self.manager()
+        collection.modelResource = resource
         collection.name("DEFORM mesh")
 
         # Construct the topology
-        activeSession = smtk.bridge.multiscale.Session.CastTo(self.session())
-        activeSession.addTopology(smtk.bridge.mesh.Topology(collection))
+        session.addTopology(smtk.bridge.mesh.Topology(collection))
 
         # Our collections will already have a UUID, so here we create a model
         # given the model manager and UUID
-        model = self.manager().insertModel(
-            collection.entity(), 2, 2, "DEFORM model")
+        model = resource.insertModel(collection.entity(), 2, 2, "DEFORM model")
 
         # Declare the model as "dangling" so it will be transcribed
-        self.session().declareDanglingEntity(model)
+        session.declareDanglingEntity(model)
 
         # Set the model's session to point to the current session
-        model.setSession(
-            smtk.model.SessionRef(self.manager(), self.session().sessionId()))
+        model.setSession(smtk.model.SessionRef(resource, session.sessionId()))
 
         collection.associateToModel(model.entity())
 
         # If we don't call "transcribe" ourselves, it never gets called.
-        self.activeSession().transcribe(
-            model, smtk.model.SESSION_EVERYTHING, False)
+        session.transcribe(model, smtk.model.SESSION_EVERYTHING, False)
 
         result = self.createResult(smtk.operation.Operation.Outcome.SUCCEEDED)
+
+        created = result.findResource("resource")
+        created.setValue(resource)
 
         resultModels = result.findComponent("model")
         resultModels.setValue(model.component())
 
         created = result.findComponent("created")
         created.setNumberOfValues(1)
-        created.setValue(model)
+        created.setValue(model.component())
         created.setIsEnabled(True)
 
         result.findComponent("mesh_created").setValue(model.component())
@@ -182,7 +194,7 @@ class import_from_deform(smtk.operation.Operation):
         return result
 
     def createSpecification(self):
-        spec = smtk.attribute.Collection.create()
+        spec = smtk.attribute.Resource.create()
         reader = smtk.io.AttributeReader()
         reader.readContents(
             spec, import_from_deform_xml.description, self.log())

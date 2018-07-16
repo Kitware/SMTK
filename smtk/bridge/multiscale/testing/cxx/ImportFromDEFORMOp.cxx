@@ -9,26 +9,24 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/bridge/multiscale/RegisterSession.h"
+#include "smtk/bridge/multiscale/Registrar.h"
 #include "smtk/bridge/multiscale/Session.h"
 
 #include "smtk/io/ExportMesh.h"
-#include "smtk/io/SaveJSON.h"
 
 #include "smtk/mesh/core/Manager.h"
 
-#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
-#include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/resource/Manager.h"
@@ -56,7 +54,7 @@ int ImportFromDEFORMOp(int argc, char* argv[])
 
   // Register multiscale resources to the resource manager
   {
-    smtk::bridge::multiscale::registerResources(resourceManager);
+    smtk::bridge::multiscale::Registrar::registerTo(resourceManager);
   }
 
   // Create an operation manager
@@ -64,7 +62,7 @@ int ImportFromDEFORMOp(int argc, char* argv[])
 
   // Register multiscale operators to the operation manager
   {
-    smtk::bridge::multiscale::registerOperations(operationManager);
+    smtk::bridge::multiscale::Registrar::registerTo(operationManager);
   }
 
   // Register the resource manager to the operation manager (newly created
