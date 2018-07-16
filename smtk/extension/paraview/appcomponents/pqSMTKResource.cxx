@@ -14,7 +14,7 @@
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 
 #include "smtk/attribute/Resource.h"
 
@@ -73,7 +73,7 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   smtk::resource::ResourcePtr rsrc;
   auto pxy = this->getProxy()->GetClientSideObject();
   // std::cout << "get resource from " << pxy->GetClassName() << "\n";
-  auto smtkRsrcRdr = vtkSMTKResourceReader::SafeDownCast(pxy);
+  auto smtkRsrcRdr = vtkSMTKResourceSource::SafeDownCast(pxy);
   rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetResource() : nullptr;
   if (rsrc)
   {

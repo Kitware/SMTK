@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKModelImporter_h
 #define smtk_extension_paraview_server_vtkSMTKModelImporter_h
 
-#include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -29,12 +29,16 @@ class vtkSMTKWrapper;
   * manager are used to import the file (or perhaps in the future to create a
   * new resource). Otherwise SMTK's default environment is used.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelImporter : public vtkSMTKResourceReader
+class SMTKPVSERVEREXT_EXPORT vtkSMTKModelImporter : public vtkSMTKResourceSource
 {
 public:
-  vtkTypeMacro(vtkSMTKModelImporter, vtkSMTKResourceReader);
+  vtkTypeMacro(vtkSMTKModelImporter, vtkSMTKResourceSource);
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKModelImporter* New();
+
+  /// Set/get the URL of the SMTK model resource.
+  vtkGetStringMacro(FileName);
+  vtkSetStringMacro(FileName);
 
   /// Set/get the unique name of the SMTK resource.
   vtkGetStringMacro(ResourceName);
@@ -60,6 +64,7 @@ protected:
 
   vtkNew<vtkModelMultiBlockSource> ModelSource;
 
+  char* FileName;
   char* ResourceName;
 
 private:

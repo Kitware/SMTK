@@ -106,6 +106,33 @@
       </Hints>
     </SourceProxy>
 
+    <SourceProxy name="SMTKModelCreator" class="vtkSMTKModelCreator" label="SMTK Model Creator">
+      <Documentation
+        short_help="Create a new SMTK model."
+        long_help="Create a new SMTK model and represent it as a set of multiblock datasets.">
+      </Documentation>
+
+      <StringVectorProperty
+        name="TypeName"
+        command="SetTypeName"
+        animateable="0"
+        number_of_elements="1"
+        panel_visibility="never">
+      </StringVectorProperty>
+
+      <StringVectorProperty
+        name="Specification"
+        command="SetSpecification"
+        animateable="0"
+        number_of_elements="1"
+        panel_visibility="never">
+      </StringVectorProperty>
+
+      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
+    </SourceProxy>
+
     <SourceProxy name="SMTKModelImporter" class="vtkSMTKModelImporter" label="SMTK Model Importer">
       <Documentation
         short_help="Import a file into SMTK."

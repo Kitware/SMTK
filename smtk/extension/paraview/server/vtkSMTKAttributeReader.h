@@ -10,29 +10,33 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKAttributeReader_h
 #define smtk_extension_paraview_server_vtkSMTKAttributeReader_h
 
-#include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 
 #include "smtk/PublicPointerDefs.h"
 
+#include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"
 #include "vtkSmartPointer.h"
 
 class vtkSMTKWrapper;
-
 class vtkTable;
 
 /**\brief Use SMTK to provide a ParaView-friendly attribute source.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKAttributeReader : public vtkSMTKResourceReader
+class SMTKPVSERVEREXT_EXPORT vtkSMTKAttributeReader : public vtkSMTKResourceSource
 {
 public:
-  vtkTypeMacro(vtkSMTKAttributeReader, vtkSMTKResourceReader);
+  vtkTypeMacro(vtkSMTKAttributeReader, vtkSMTKResourceSource);
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKAttributeReader* New();
 
+  /// Set/get the URL of the SMTK attribute resource.
+  vtkGetStringMacro(FileName);
+  vtkSetStringMacro(FileName);
+
   /// Set/get whether to include the parent directory of \a FileName in the include path.
-  vtkGetMacro(IncludePathToFile, bool);
   vtkSetMacro(IncludePathToFile, bool);
+  vtkGetMacro(IncludePathToFile, bool);
 
   /// Return the SMTK resource that holds data read from \a FileName.
   smtk::resource::ResourcePtr GetResource() const override;
@@ -49,6 +53,7 @@ protected:
 
   bool LoadFile();
 
+  char* FileName;
   bool IncludePathToFile;
   smtk::attribute::ResourcePtr AttributeResource;
   vtkSmartPointer<vtkTable> Defs;

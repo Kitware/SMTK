@@ -22,6 +22,7 @@
 
 #include "smtk/operation/RegisterPythonOperations.h"
 
+#include "smtk/operation/groups/CreatorGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
@@ -49,6 +50,10 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   operationManager->registerOperations<OperationList>();
   smtk::operation::registerPythonOperations(
     operationManager, "smtk.bridge.multiscale.import_from_deform");
+
+  smtk::operation::CreatorGroup(operationManager)
+    .registerOperation<smtk::bridge::multiscale::Resource>(
+      "smtk.bridge.multiscale.import_from_deform.import_from_deform");
 
   smtk::operation::ImporterGroup(operationManager)
     .registerOperation<smtk::bridge::multiscale::Resource, smtk::bridge::mesh::Import>();

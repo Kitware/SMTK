@@ -15,6 +15,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKExportSimulationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKNewResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 //#include "smtk/extension/paraview/appcomponents/pqSMTKSelectionFilterBehavior.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
@@ -39,7 +40,15 @@ void pqSMTKAppComponentsAutoStart::startup()
   auto rsrcMgr = pqSMTKBehavior::instance(this);
   auto rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
   auto rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
+
+  // The "New Resource" menu item keys off of the "Save Resource" menu item,
+  // so the order of initialization for the following two global statics is
+  // important!
+  //
+  // TODO: There must be a better way to do this.
   auto rsrcSaveMgr = pqSMTKSaveResourceBehavior::instance(this);
+  auto rsrcNewMgr = pqSMTKNewResourceBehavior::instance(this);
+
   auto pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
@@ -47,6 +56,7 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk import operation", rsrcImportOpMgr);
     pqCore->registerManager("smtk export simulation", rsrcExportSimMgr);
     pqCore->registerManager("smtk save resource", rsrcSaveMgr);
+    pqCore->registerManager("smtk new resource", rsrcSaveMgr);
   }
   (void)rsrcMgr;
 }
@@ -60,5 +70,6 @@ void pqSMTKAppComponentsAutoStart::shutdown()
     pqCore->unRegisterManager("smtk import operation");
     pqCore->unRegisterManager("smtk export simulation");
     pqCore->unRegisterManager("smtk save resource");
+    pqCore->unRegisterManager("smtk new resource");
   }
 }

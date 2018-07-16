@@ -7,36 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_server_vtkSMTKModelReader_h
-#define smtk_extension_paraview_server_vtkSMTKModelReader_h
+#ifndef smtk_extension_paraview_server_vtkSMTKModelCreator_h
+#define smtk_extension_paraview_server_vtkSMTKModelCreator_h
 
-#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
+#include "smtk/extension/paraview/server/Exports.h"
 
-#include "smtk/PublicPointerDefs.h"
-
-#include "vtkMultiBlockDataSetAlgorithm.h"
-#include "vtkNew.h"
-#include "vtkSmartPointer.h"
+#include "vtkSMTKResourceSource.h"
 
 class vtkModelMultiBlockSource;
 class vtkSMTKWrapper;
 
-/**\brief Use SMTK to provide a ParaView-friendly model source.
-  *
-  * If the SMTK wrapper object is set, then the wrapper's resource and operation
-  * manager are used to load the file (or perhaps in the future to create a new resource).
-  * Otherwise SMTK's default environment is used.
+/**\brief A class for SMTK-based model sources.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelReader : public vtkSMTKResourceSource
+class SMTKPVSERVEREXT_EXPORT vtkSMTKModelCreator : public vtkSMTKResourceSource
 {
 public:
-  vtkTypeMacro(vtkSMTKModelReader, vtkSMTKResourceSource);
+  vtkTypeMacro(vtkSMTKModelCreator, vtkSMTKResourceSource);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkSMTKModelReader* New();
+  static vtkSMTKModelCreator* New();
 
-  /// Set/get the URL of the SMTK model resource.
-  vtkGetStringMacro(FileName);
-  vtkSetStringMacro(FileName);
+  /// Set/get the create operation type name.
+  vtkGetStringMacro(TypeName);
+  vtkSetStringMacro(TypeName);
+
+  /// Set/get the json-formatted input specification for the create operation.
+  vtkGetStringMacro(Specification);
+  vtkSetStringMacro(Specification);
 
   /// Return the VTK algorithm used to read the SMTK file.
   vtkModelMultiBlockSource* GetModelSource() { return this->ModelSource.GetPointer(); }
@@ -48,20 +44,21 @@ public:
   smtk::model::ResourcePtr GetSMTKResource() const;
 
 protected:
-  vtkSMTKModelReader();
-  ~vtkSMTKModelReader() override;
+  vtkSMTKModelCreator();
+  ~vtkSMTKModelCreator() override;
 
   int RequestData(
     vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
-  bool LoadFile();
+  bool CreateModel();
 
-  char* FileName;
+  char* TypeName;
+  char* Specification;
   vtkNew<vtkModelMultiBlockSource> ModelSource;
 
 private:
-  vtkSMTKModelReader(const vtkSMTKModelReader&) = delete;
-  void operator=(const vtkSMTKModelReader&) = delete;
+  vtkSMTKModelCreator(const vtkSMTKModelCreator&) = delete;
+  void operator=(const vtkSMTKModelCreator&) = delete;
 };
 
 #endif

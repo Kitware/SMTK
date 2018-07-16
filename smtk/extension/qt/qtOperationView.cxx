@@ -12,6 +12,7 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Operation.h"
@@ -87,6 +88,16 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
 qtOperationView::~qtOperationView()
 {
   delete this->Internals;
+}
+
+QPointer<QPushButton> qtOperationView::applyButton() const
+{
+  return this->Internals->m_applyButton;
+}
+
+smtk::operation::OperationPtr qtOperationView::operation() const
+{
+  return this->Internals->m_operator;
 }
 
 void qtOperationView::createWidget()
