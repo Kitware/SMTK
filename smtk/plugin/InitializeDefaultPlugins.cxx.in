@@ -42,7 +42,7 @@ namespace paraview
 {
 void initializeDefaultPlugins()
 {
-  vtkPVPluginLoader::SetStaticPluginLoadFunction(loadPlugins);
+  vtkPVPluginLoader::RegisterLoadPluginCallback(loadPlugins);
   vtkPVPluginTracker::SetStaticPluginSearchFunction(searchPlugins);
 }
 

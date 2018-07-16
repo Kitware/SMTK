@@ -9,6 +9,8 @@ set(srcs
     vtkCMBMeshReader.cxx
     vtkExtractRegionEdges.cxx
     vtkGDALRasterPolydataWrapper.cxx
+    vtkGeoSphereTransformLegacy.cxx
+    vtkGlobeSourceLegacy.cxx
     vtkGMSSolidReader.cxx
     vtkGMSTINReader.cxx
     vtkLIDARReader.cxx
@@ -23,6 +25,8 @@ set(headers
   vtkCMBMeshReader.h
   vtkExtractRegionEdges.h
   vtkGDALRasterPolydataWrapper.h
+  vtkGeoSphereTransformLegacy.h
+  vtkGlobeSourceLegacy.h
   vtkGMSSolidReader.h
   vtkGMSTINReader.h
   vtkLIDARReader.h

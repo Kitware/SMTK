@@ -28,7 +28,7 @@
 #include <vector>
 
 class vtkTransform;
-class vtkGeoSphereTransform;
+class vtkGeoSphereTransformLegacy;
 class vtkFloatArray;
 
 class VTKSMTKREADEREXT_EXPORT vtkLIDARReader : public vtkPolyDataAlgorithm
@@ -211,7 +211,7 @@ protected:
 
   bool ConvertFromLatLongToXYZ;
   bool LatLongTransform2Initialized;
-  vtkSmartPointer<vtkGeoSphereTransform> LatLongTransform1;
+  vtkSmartPointer<vtkGeoSphereTransformLegacy> LatLongTransform1;
   vtkSmartPointer<vtkTransform> LatLongTransform2;
 
   bool TransformOutputData;
