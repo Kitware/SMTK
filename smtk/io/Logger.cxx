@@ -90,16 +90,24 @@ std::string Logger::severityAsString(Severity s)
 /**\brief Convert the given log entry to a string.
   *
   */
-std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
+std::string Logger::toString(const Logger::Record& record, bool includeSourceLoc)
 {
   std::stringstream ss;
-  ss << severityAsString(m_records[i].severity) << ": ";
-  if (includeSourceLoc && m_records[i].fileName != "")
+  ss << severityAsString(record.severity) << ": ";
+  if (includeSourceLoc && record.fileName != "")
   {
-    ss << "In " << m_records[i].fileName << ", line " << m_records[i].lineNumber << ": ";
+    ss << "In " << record.fileName << ", line " << record.lineNumber << ": ";
   }
-  ss << m_records[i].message << std::endl;
+  ss << record.message << std::endl;
   return ss.str();
+}
+
+/**\brief Convert the given log entry to a string.
+  *
+  */
+std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
+{
+  return this->toString(m_records[i], includeSourceLoc);
 }
 
 /**\brief Convert the given log entry range to a string.

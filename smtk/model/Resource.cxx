@@ -87,7 +87,6 @@ Resource::Resource(smtk::resource::ManagerPtr mgr)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
-  this->log().setFlushToStdout(false);
 }
 
 Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
@@ -105,7 +104,6 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
-  this->log().setFlushToStdout(false);
 }
 
 /// Create a model resource using the given storage instances.
@@ -126,7 +124,6 @@ Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTes
   , m_resources(new Set)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
-  this->log().setFlushToStdout(false);
 }
 
 /// Destroying a model resource requires us to release the default attribute resource..
