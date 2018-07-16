@@ -20,7 +20,6 @@
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
-#include "smtk/io/SaveJSON.h"
 
 #include "smtk/operation/Operation_xml.h"
 
