@@ -115,7 +115,7 @@ qtUIManager::qtUIManager(smtk::operation::OperationPtr op)
 void qtUIManager::commonConstructor()
 {
   m_resourceManager = m_attResource ? m_attResource->manager() : nullptr;
-  m_useInternalFileBrowser = false;
+  m_useInternalFileBrowser = true;
   m_topView = nullptr;
   m_activeModelView = nullptr;
   m_maxValueLabelLength = 200;

@@ -65,8 +65,8 @@ public:
   /// Use the given smtk::view::View to construct widgets matching the specification.
   qtBaseView* setSMTKView(smtk::view::ViewPtr v);
   qtBaseView* setSMTKView(
-    smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = false);
-  qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
+    smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
+  qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = true);
   smtk::view::ViewPtr smtkView() const { return m_smtkView; }
 
   smtk::resource::ManagerPtr resourceManager() const { return m_resourceManager; }
