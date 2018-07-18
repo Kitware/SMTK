@@ -50,21 +50,21 @@ vtkStandardNewMacro(vtkSMTKModelCreator);
 vtkSMTKModelCreator::vtkSMTKModelCreator()
 {
   this->TypeName = nullptr;
-  this->Specification = nullptr;
+  this->Parameters = nullptr;
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 }
 
 vtkSMTKModelCreator::~vtkSMTKModelCreator()
 {
   this->SetTypeName(nullptr);
-  this->SetSpecification(nullptr);
+  this->SetParameters(nullptr);
 }
 
 void vtkSMTKModelCreator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "TypeName: " << this->TypeName << "\n";
-  os << indent << "Specification: " << this->Specification << "\n";
+  os << indent << "Parameters: " << this->Parameters << "\n";
   os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 
@@ -109,9 +109,9 @@ int vtkSMTKModelCreator::RequestData(vtkInformation* vtkNotUsed(request),
     return 1;
   }
 
-  if (!this->Specification)
+  if (!this->Parameters)
   {
-    vtkErrorMacro("No specification specified.");
+    vtkErrorMacro("No parameters specified.");
     return 1;
   }
 
@@ -134,7 +134,7 @@ int vtkSMTKModelCreator::RequestData(vtkInformation* vtkNotUsed(request),
 
 bool vtkSMTKModelCreator::CreateModel()
 {
-  if (!this->TypeName || !this->Specification)
+  if (!this->TypeName || !this->Parameters)
   {
     return false;
   }
@@ -166,15 +166,16 @@ bool vtkSMTKModelCreator::CreateModel()
 
   try
   {
-    j = json::parse(this->Specification);
+    j = json::parse(this->Parameters);
   }
   catch (std::exception&)
   {
     return false;
   }
-
-  auto specification = oper->specification();
-  smtk::attribute::from_json(j, specification);
+  auto parameters = oper->parameters();
+  std::vector<smtk::attribute::ItemExpressionInfo> itemExpressionInfo;
+  std::vector<smtk::attribute::AttRefInfo> attRefInfo;
+  smtk::attribute::from_json(j, parameters, itemExpressionInfo, attRefInfo);
 
   auto result = oper->operate();
   if (result->findInt("outcome")->value() !=
