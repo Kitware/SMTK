@@ -287,7 +287,15 @@ bool qtComponentItem::synchronize(UpdateSource src)
       m_p->m_phraseModel->triggerDataChanged();
       for (auto vit = item->begin(); vit != item->end(); ++vit)
       {
-        m_p->m_members[*vit] = 1; // FIXME: Use a bit specified by the application.
+        // Only allow non-null pointers into the set of selected items;
+        // null pointers indicate that the item's entry is invalid and
+        // the size of m_members is used to determine whether the
+        // association's rules are met, so an extra entry can prevent
+        // the association from being edited by the user.
+        if (*vit)
+        {
+          m_p->m_members[*vit] = 1; // FIXME: Use a bit specified by the application.
+        }
       }
       break;
   }
