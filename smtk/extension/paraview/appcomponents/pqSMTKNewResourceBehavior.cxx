@@ -82,15 +82,15 @@ void pqNewResourceReaction::newResource()
   // server.
   opView->applyButton()->disconnect();
 
-  // Retrieve the operation specification and close the modal dialog when the
+  // Retrieve the operation parameters and close the modal dialog when the
   // apply button is clicked.
   std::string typeName;
-  std::string specification;
+  std::string parameters;
   QObject::connect(opView->applyButton(), &QPushButton::clicked, [&]() {
     typeName = opView->operation()->typeName();
     json j;
-    smtk::attribute::to_json(j, opView->operation()->parameters()->attributeResource());
-    specification = j.dump();
+    smtk::attribute::to_json(j, opView->operation()->parameters());
+    parameters = j.dump();
     createDialog->done(QDialog::Accepted);
   });
 
@@ -102,7 +102,7 @@ void pqNewResourceReaction::newResource()
 
   pqPipelineSource* src = builder->createSource("sources", "SMTKModelCreator", server);
   vtkSMPropertyHelper(src->getProxy(), "TypeName").Set(typeName.c_str());
-  vtkSMPropertyHelper(src->getProxy(), "Specification").Set(specification.c_str());
+  vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
   src->getProxy()->UpdateVTKObjects();
   src->updatePipeline();
 }

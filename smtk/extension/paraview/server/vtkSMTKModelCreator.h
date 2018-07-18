@@ -31,8 +31,8 @@ public:
   vtkSetStringMacro(TypeName);
 
   /// Set/get the json-formatted input specification for the create operation.
-  vtkGetStringMacro(Specification);
-  vtkSetStringMacro(Specification);
+  vtkGetStringMacro(Parameters);
+  vtkSetStringMacro(Parameters);
 
   /// Return the VTK algorithm used to read the SMTK file.
   vtkModelMultiBlockSource* GetModelSource() { return this->ModelSource.GetPointer(); }
@@ -53,7 +53,7 @@ protected:
   bool CreateModel();
 
   char* TypeName;
-  char* Specification;
+  char* Parameters;
   vtkNew<vtkModelMultiBlockSource> ModelSource;
 
 private:

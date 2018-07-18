@@ -121,8 +121,8 @@
       </StringVectorProperty>
 
       <StringVectorProperty
-        name="Specification"
-        command="SetSpecification"
+        name="Parameters"
+        command="SetParameters"
         animateable="0"
         number_of_elements="1"
         panel_visibility="never">
