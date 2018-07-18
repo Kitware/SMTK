@@ -61,6 +61,11 @@ public:
         // though, so we need to manually set a python operation's index.
         op->setIndex(index);
 
+        // The precedent for python operation names is estabilished in
+        // ImportPythonOperation to be the modulename.className
+        // We follow that convention here.
+        op->setTypeName(modulename + "." + className);
+
         return std::static_pointer_cast<smtk::operation::Operation>(op);
       }
       else
@@ -74,6 +79,11 @@ public:
         // though, so we need to manually set a python operation's index.
         obj.cast<std::shared_ptr<smtk::operation::PyOperation> >()->setIndex(index);
 
+        // The precedent for python operation names is estabilished in
+        // ImportPythonOperation to be the modulename.className
+        // We follow that convention here.
+        obj.cast<std::shared_ptr<smtk::operation::PyOperation> >()->setTypeName(modulename + "." + className);
+
         // If we are running in a native python instance (i.e. not our embedded
         // instance), then memory management is handled by python. We need only
         // to cast our python object into a shared_ptr so the SMTK operation
@@ -85,6 +95,8 @@ public:
   Index index() const override { return m_index; }
 
   bool ableToOperate() override { PYBIND11_OVERLOAD(bool, Operation, ableToOperate, ); }
+
+  std::string typeName() const override { return m_typeName; }
 
   smtk::io::Logger& log() const override { PYBIND11_OVERLOAD(smtk::io::Logger&, Operation, log, ); }
 
@@ -105,9 +117,11 @@ private:
 
   void setObject(pybind11::object obj) { m_object = obj; }
   void setIndex(Index index) { m_index = index; }
+  void setTypeName(const std::string& typeName) { m_typeName = typeName; }
 
   pybind11::object m_object;
   Index m_index;
+  std::string m_typeName;
 };
 }
 }
