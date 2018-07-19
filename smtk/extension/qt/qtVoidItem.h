@@ -29,7 +29,8 @@ class SMTKQTEXT_EXPORT qtVoidItem : public qtItem
   Q_OBJECT
 
 public:
-  qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  qtVoidItem(const AttributeItemInfo& info);
   virtual ~qtVoidItem();
   void setLabelVisible(bool) override;
 

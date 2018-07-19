@@ -33,8 +33,8 @@ class SMTKQTEXT_EXPORT qtAttributeRefItem : public qtItem
   Q_OBJECT
 
 public:
-  qtAttributeRefItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* view,
-    Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  qtAttributeRefItem(const AttributeItemInfo& info);
   virtual ~qtAttributeRefItem();
 
   void setLabelVisible(bool) override;

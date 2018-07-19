@@ -115,6 +115,7 @@ public:
   std::vector<smtk::attribute::DefinitionPtr> m_attDefinitions;
   bool m_okToCreateModelEntities;
   smtk::model::BitFlags m_modelEntityMask;
+  std::map<std::string, smtk::view::View::Component> m_attCompMap;
 };
 
 qtBaseView* qtAttributeView::createViewWidget(const ViewInfo& info)
@@ -887,8 +888,16 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
   int tmpLen = this->uiManager()->getWidthOfAttributeMaxLabel(
     att->definition(), this->uiManager()->advancedFont());
   this->setFixedLabelWidth(tmpLen);
-
-  this->Internals->CurrentAtt = new qtAttribute(att, this->Internals->AttFrame, this);
+  auto it = this->Internals->m_attCompMap.find(att->definition()->type());
+  if (it != this->Internals->m_attCompMap.end())
+  {
+    this->Internals->CurrentAtt = new qtAttribute(att, it->second, this->Internals->AttFrame, this);
+  }
+  else
+  {
+    smtk::view::View::Component comp;
+    this->Internals->CurrentAtt = new qtAttribute(att, comp, this->Internals->AttFrame, this);
+  }
   // By default use the basic layout with no model associations since this class
   // takes care of it
   this->Internals->CurrentAtt->createBasicLayout(false);
@@ -1134,6 +1143,7 @@ void qtAttributeView::addComparativeAttribute(smtk::attribute::AttributePtr att)
 
   int col = vtWidget->columnCount() - 1;
   std::size_t i, n = att->numberOfItems();
+  auto ui_manager = this->uiManager();
   for (int row = 0; row < vtWidget->rowCount(); ++row)
   {
     for (i = 0; i < n; i++) // for each property
@@ -1142,7 +1152,10 @@ void qtAttributeView::addComparativeAttribute(smtk::attribute::AttributePtr att)
       std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
       if (vtWidget->item(row, 0)->text() == strItemLabel.c_str())
       {
-        qtItem* qItem = qtAttribute::createItem(attItem, NULL, this, Qt::Vertical);
+        smtk::view::View::Component comp;
+        comp.setAttribute("Orientation", "Vertical");
+        AttributeItemInfo info(attItem, comp, NULL, this);
+        auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
         qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);
         if (arItem)
@@ -1271,13 +1284,17 @@ void qtAttributeView::addComparativeProperty(
       continue;
     }
     std::size_t i, n = (*it)->numberOfItems();
+    auto ui_manager = this->uiManager();
     for (i = 0; i < n; i++) // for each property
     {
       smtk::attribute::ItemPtr attItem = (*it)->item(static_cast<int>(i));
       std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
       if (current->text() == strItemLabel.c_str())
       {
-        qtItem* qItem = qtAttribute::createItem(attItem, NULL, this, Qt::Vertical);
+        smtk::view::View::Component comp;
+        comp.setAttribute("Orientation", "Vertical");
+        AttributeItemInfo info(attItem, comp, NULL, this);
+        auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
         qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);
         if (arItem)
@@ -1355,6 +1372,12 @@ void qtAttributeView::getAllDefinitions()
     }
 
     attDef = resource->findDefinition(defName);
+    if (attDef == nullptr)
+    {
+      continue;
+    }
+
+    this->Internals->m_attCompMap[defName] = attsComp.child(i);
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);
   }

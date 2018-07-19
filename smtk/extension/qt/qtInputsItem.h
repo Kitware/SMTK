@@ -37,11 +37,10 @@ class SMTKQTEXT_EXPORT qtInputsItem : public qtItem
   friend class qtDiscreteValueEditor;
 
 public:
-  qtInputsItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview,
-    Qt::Orientation enumOrient = Qt::Horizontal);
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  qtInputsItem(const AttributeItemInfo& info);
   virtual ~qtInputsItem();
   void setLabelVisible(bool) override;
-  smtk::attribute::ValueItemPtr valueItem();
   void unsetValue(int elementIndex);
   bool setDiscreteValue(int elementIndex, int discreteValIndex);
 
@@ -52,6 +51,8 @@ public slots:
   void onLineEditChanged();
   void onLineEditFinished();
   void onInputValueChanged(QObject*);
+  void doubleValueChanged(double newVal);
+  void intValueChanged(int newVal);
   // void setUseSelectionManager(bool mode) override;
 
 protected slots:
@@ -68,6 +69,10 @@ protected:
   virtual void addInputEditor(int i);
   virtual void updateExtensibleState();
   virtual void clearChildWidgets();
+  QWidget* createDoubleWidget(
+    int elementIdx, smtk::attribute::ValueItemPtr vitem, QWidget* pWidget, QString& tooltip);
+  QWidget* createIntWidget(
+    int elementIdx, smtk::attribute::ValueItemPtr vitem, QWidget* pWidget, QString& tooltip);
   virtual QWidget* createInputWidget(int elementIdx, QLayout* childLayout);
   virtual QWidget* createEditBox(int elementIdx, QWidget* pWidget);
   virtual QWidget* createExpressionRefWidget(int elementIdx);

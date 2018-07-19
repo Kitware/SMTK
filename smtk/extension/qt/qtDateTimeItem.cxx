@@ -74,9 +74,18 @@ public:
   QPointer<QToolButton> AddItemButton;
 };
 
-qtDateTimeItem::qtDateTimeItem(smtk::attribute::DateTimeItemPtr item, QWidget* p, qtBaseView* bview,
-  Qt::Orientation enVectorItemOrient)
-  : qtItem(item, p, bview)
+qtItem* qtDateTimeItem::createItemWidget(const AttributeItemInfo& info)
+{
+  // So we support this type of item?
+  if (info.itemAs<smtk::attribute::DateTimeItem>() == nullptr)
+  {
+    return nullptr;
+  }
+  return new qtDateTimeItem(info);
+}
+
+qtDateTimeItem::qtDateTimeItem(const AttributeItemInfo& info)
+  : qtItem(info)
 {
   this->Internals = new qtDateTimeItemInternals;
 
@@ -85,7 +94,7 @@ qtDateTimeItem::qtDateTimeItem(smtk::attribute::DateTimeItemPtr item, QWidget* p
   this->Internals->TimeZoneWidget = NULL;
   this->Internals->TimeZoneButton = NULL;
   this->Internals->TimeZoneMenu = NULL;
-
+  auto item = m_itemInfo.item();
   smtk::attribute::ConstDateTimeItemDefinitionPtr def =
     smtk::dynamic_pointer_cast<const smtk::attribute::DateTimeItemDefinition>(item->definition());
   if (def->useTimeZone())
@@ -116,7 +125,7 @@ qtDateTimeItem::qtDateTimeItem(smtk::attribute::DateTimeItemPtr item, QWidget* p
     this->Internals->TimeZoneDialog->resize(800, 480);
   }
 
-  this->Internals->VectorItemOrient = enVectorItemOrient;
+  this->Internals->VectorItemOrient = Qt::Horizontal;
   this->createWidget();
 }
 
@@ -132,7 +141,7 @@ void qtDateTimeItem::setLabelVisible(bool visible)
 
 QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  auto item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   smtk::attribute::ConstDateTimeItemDefinitionPtr def =
     dynamic_pointer_cast<const attribute::DateTimeItemDefinition>(item->definition());
 
@@ -172,7 +181,7 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
     }   // if (timezone set)
   }
 
-  QFrame* frame = new QFrame(this->parentWidget());
+  QFrame* frame = new QFrame(m_itemInfo.parentWidget());
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
 
   QDateTimeEdit* dtEdit = new QDateTimeEdit(qdatetime, frame);
@@ -186,34 +195,6 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
   dtEdit->setCalendarPopup(def->useCalendarPopup());
   QObject::connect(dtEdit, SIGNAL(dateTimeChanged(const QDateTime&)), this,
     SLOT(onDateTimeChanged(const QDateTime&)));
-
-  // Use tooltip for min/max values
-  // For now use unformatted json
-  // Todo consider using display format
-  // QString tooltip;
-  // if (def->hasMinRange())
-  //   {
-  //   ::smtk::common::DateTimeZonePair minDtz = def->minRange();
-  //   QString inclusive = def->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
-  //   QString minString = QString::fromStdString(minDtz.serialize());
-  //   tooltip.append("Min (").append(inclusive).append("): ").append(minString);
-  //   }
-  // if (def->hasMaxRange())
-  //   {
-  //   ::smtk::common::DateTimeZonePair maxDtz = def->maxRange();
-  //   QString inclusive = def->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
-  //   QString maxString = QString::fromStdString(maxDtz.serialize());
-  //   if (!tooltip.isEmpty())
-  //     {
-  //     tooltip.append("\n");
-  //     }
-  //   tooltip.append("Max (").append(inclusive).append("): ").append(maxString);
-  //   }
-
-  // if (!tooltip.isEmpty())
-  //   {
-  //   dtEdit->setToolTip(tooltip);
-  //   }
 
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QHBoxLayout* layout = new QHBoxLayout(frame);
@@ -252,24 +233,12 @@ QWidget* qtDateTimeItem::createDateTimeWidget(int elementIdx)
 
 void qtDateTimeItem::setOutputOptional(int state)
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  auto item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   if (!item)
   {
     return;
   }
   bool enable = state ? true : false;
-  // if(item->isExtensible())
-  //   {
-  //   if(this->Internals->AddItemButton)
-  //     {
-  //     this->Internals->AddItemButton->setVisible(enable);
-  //     }
-  //   foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-  //     {
-  //     tButton->setVisible(enable);
-  //     }
-  //  }
-
   foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
   {
     QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);
@@ -281,12 +250,12 @@ void qtDateTimeItem::setOutputOptional(int state)
     cwidget->setVisible(enable);
   }
 
-  if (enable != this->getObject()->isEnabled())
+  if (enable != item->isEnabled())
   {
-    this->getObject()->setIsEnabled(enable);
-    if (this->baseView())
+    item->setIsEnabled(enable);
+    if (m_itemInfo.baseView())
     {
-      this->baseView()->valueChanged(this->getObject());
+      m_itemInfo.baseView()->valueChanged(item);
     }
     emit this->modified();
   }
@@ -302,64 +271,9 @@ void qtDateTimeItem::onChildWidgetSizeChanged()
 {
 }
 
-// void qtDateTimeItem::onAddNewValue()
-// {
-//   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
-//   if(!item)
-//     {
-//     return;
-//     }
-//   if(item->setNumberOfValues(item->numberOfValues() + 1))
-//     {
-// //    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
-// //      this->Internals->EntryFrame->layout());
-//     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
-//     emit this->modified();
-//     }
-// }
-
-// void qtDateTimeItem::onRemoveValue()
-// {
-//   QToolButton* const minusButton = qobject_cast<QToolButton*>(
-//     QObject::sender());
-//   if(!minusButton || !this->Internals->ExtensibleMap.contains(minusButton))
-//     {
-//     return;
-//     }
-
-//   int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);//minusButton->property("SubgroupIndex").toInt();
-//   smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
-//   if(!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
-//     {
-//     return;
-//     }
-
-//   QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
-//   QLayout* childLayout = this->Internals->ChildrenMap.value(childwidget);
-//   if(childLayout)
-//     {
-//     QLayoutItem *child;
-//     while ((child = childLayout->takeAt(0)) != 0)
-//       {
-//       delete child;
-//       }
-//     delete childLayout;
-//     }
-//   delete childwidget;
-//   delete this->Internals->ExtensibleMap.value(minusButton).first;
-//   this->Internals->ExtensibleMap.remove(minusButton);
-//   this->Internals->MinusButtonIndices.removeOne(minusButton);
-//   delete minusButton;
-
-//   item->removeValue(gIdx);
-//   emit this->modified();
-
-//   this->updateExtensibleState();
-// }
-
 void qtDateTimeItem::onDateTimeChanged(const QDateTime& qdatetime)
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  auto item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   QDateTimeEdit* dtEdit = dynamic_cast<QDateTimeEdit*>(this->sender());
   std::size_t element = this->Internals->ElementIndexMap.value(dtEdit);
   qDebug() << "onDateTimeChanged()" << qdatetime << element;
@@ -427,17 +341,12 @@ void qtDateTimeItem::onTimeZoneRegion()
   this->updateTimeZoneMenu(action);
 }
 
-smtk::attribute::DateTimeItemPtr qtDateTimeItem::datetimeItem()
-{
-  return dynamic_pointer_cast<smtk::attribute::DateTimeItem>(this->getObject());
-}
-
 void qtDateTimeItem::createWidget()
 {
-  smtk::attribute::ItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
   if (!dataObj || !this->passAdvancedCheck() ||
-    (this->baseView() &&
-      !this->baseView()->uiManager()->passItemCategoryCheck(dataObj->definition())))
+    (m_itemInfo.uiManager() &&
+      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
   {
     return;
   }
@@ -448,31 +357,13 @@ void qtDateTimeItem::createWidget()
 
 void qtDateTimeItem::loadInputValues()
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  smtk::attribute::DateTimeItemPtr item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   if (!item)
   {
     return;
   }
 
   int n = static_cast<int>(item->numberOfValues());
-  //   if(item->isExtensible())
-  //     {
-  //     if(!this->Internals->AddItemButton)
-  //       {
-  //       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  //       this->Internals->AddItemButton = new QToolButton(this->Widget);
-  //       QString iconName(":/icons/attribute/plus.png");
-  //       this->Internals->AddItemButton->setText("Add New Value");
-  //       this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-  // //      this->Internals->AddItemButton->setFixedSize(QSize(12, 12));
-  //       this->Internals->AddItemButton->setIcon(QIcon(iconName));
-  //       this->Internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
-  //       connect(this->Internals->AddItemButton, SIGNAL(clicked()),
-  //         this, SLOT(onAddNewValue()));
-  //       this->Internals->EntryLayout->addWidget(this->Internals->AddItemButton, 0, 1);
-  //       }
-  //     }
 
   for (int i = 0; i < n; i++)
   {
@@ -482,16 +373,16 @@ void qtDateTimeItem::loadInputValues()
 
 void qtDateTimeItem::updateUI()
 {
-  smtk::attribute::DateTimeItemPtr dataObj = this->datetimeItem();
+  auto dataObj = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   if (!dataObj || !this->passAdvancedCheck() ||
-    (this->baseView() &&
-      !this->baseView()->uiManager()->passItemCategoryCheck(dataObj->definition())))
+    (m_itemInfo.uiManager() &&
+      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
   {
     return;
   }
 
-  this->Widget = new QFrame(this->parentWidget());
-  this->Internals->EntryLayout = new QGridLayout(this->Widget);
+  m_widget = new QFrame(m_itemInfo.parentWidget());
+  this->Internals->EntryLayout = new QGridLayout(m_widget);
   this->Internals->EntryLayout->setMargin(0);
   this->Internals->EntryLayout->setSpacing(0);
   this->Internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -505,7 +396,7 @@ void qtDateTimeItem::updateUI()
   int padding = 0;
   if (dataObj->isOptional())
   {
-    QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
+    QCheckBox* optionalCheck = new QCheckBox(m_itemInfo.parentWidget());
     optionalCheck->setChecked(dataObj->isEnabled());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -525,11 +416,11 @@ void qtDateTimeItem::updateUI()
   {
     labelText = dataObj->name().c_str();
   }
-  QLabel* label = new QLabel(labelText, this->Widget);
+  QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  if (this->baseView())
+  if (m_itemInfo.baseView())
   {
-    label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
+    label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -544,9 +435,9 @@ void qtDateTimeItem::updateUI()
     label->setToolTip(strBriefDescription.c_str());
   }
 
-  if (itemDef->advanceLevel() && this->baseView())
+  if (itemDef->advanceLevel() && m_itemInfo.uiManager())
   {
-    label->setFont(this->baseView()->uiManager()->advancedFont());
+    label->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   labelLayout->addWidget(label);
   this->Internals->theLabel = label;
@@ -562,9 +453,9 @@ void qtDateTimeItem::updateUI()
   //  vTLlayout->addLayout(labelLayout);
   this->Internals->EntryLayout->addLayout(labelLayout, 0, 0);
   //  layout->addWidget(this->Internals->EntryFrame, 0, 1);
-  if (this->parentWidget() && this->parentWidget()->layout())
+  if (m_itemInfo.parentWidget() && m_itemInfo.parentWidget()->layout())
   {
-    this->parentWidget()->layout()->addWidget(this->Widget);
+    m_itemInfo.parentWidget()->layout()->addWidget(m_widget);
   }
   if (dataObj->isOptional())
   {
@@ -574,7 +465,7 @@ void qtDateTimeItem::updateUI()
 
 void qtDateTimeItem::addInputEditor(int i)
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  smtk::attribute::DateTimeItemPtr item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   if (!item)
   {
     return;
@@ -601,38 +492,6 @@ void qtDateTimeItem::addInputEditor(int i)
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
-  // if(item->isExtensible())
-  //   {
-  //   QToolButton* minusButton = new QToolButton(this->Widget);
-  //   QString iconName(":/icons/attribute/minus.png");
-  //   minusButton->setFixedSize(QSize(12, 12));
-  //   minusButton->setIcon(QIcon(iconName));
-  //   minusButton->setSizePolicy(sizeFixedPolicy);
-  //   minusButton->setToolTip("Remove value");
-  //   editorLayout->addWidget(minusButton);
-  //   connect(minusButton, SIGNAL(clicked()),
-  //     this, SLOT(onRemoveValue()));
-  //   QPair<QPointer<QLayout>, QPointer<QWidget> > pair;
-  //   pair.first = editorLayout;
-  //   pair.second = editBox;
-  //   this->Internals->ExtensibleMap[minusButton] = pair;
-  //   this->Internals->MinusButtonIndices.push_back(minusButton);
-  //   }
-
-  // const DateTimeItemDefinition *itemDef =
-  //   dynamic_cast<const DateTimeItemDefinition*>(item->definition().get());
-  // if(n!=1 && itemDef->hasValueLabels())
-  //   {
-  //   std::string componentLabel = itemDef->valueLabel(i);
-  //   if(!componentLabel.empty())
-  //     {
-  //     // acbauer -- this should probably be improved to look nicer
-  //     QString labelText = componentLabel.c_str();
-  //     QLabel* label = new QLabel(labelText, editBox);
-  //     label->setSizePolicy(sizeFixedPolicy);
-  //     editorLayout->addWidget(label);
-  //     }
-  //   }
   editorLayout->addWidget(editBox);
 
   // always going vertical for discrete and extensible items
@@ -661,47 +520,13 @@ void qtDateTimeItem::addInputEditor(int i)
   //this->updateExtensibleState();
 }
 
-// void qtDateTimeItem::updateExtensibleState()
-// {
-//   smtk::attribute::DateTimeItemPtr item =
-//     dynamic_pointer_cast<DateTimeItem>(this->getObject());
-//   if(!item || !item->isExtensible())
-//     {
-//     return;
-//     }
-//   bool maxReached = (item->maxNumberOfValues() > 0) &&
-//     (item->maxNumberOfValues() == item->numberOfValues());
-//   this->Internals->AddItemButton->setEnabled(!maxReached);
-
-//   bool minReached = (item->numberOfRequiredValues() > 0) &&
-//     (item->numberOfRequiredValues() == item->numberOfValues());
-//   foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-//     {
-//     tButton->setEnabled(!minReached);
-//     }
-// }
-
 void qtDateTimeItem::clearChildWidgets()
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  smtk::attribute::DateTimeItemPtr item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   if (!item)
   {
     return;
   }
-
-  //   if(item->isExtensible())
-  //     {
-  //     //clear mapping
-  //     foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-  //       {
-  // // will delete later from this->Internals->ChildrenMap
-  // //      delete this->Internals->ExtensibleMap.value(tButton).second;
-  //       delete this->Internals->ExtensibleMap.value(tButton).first;
-  //       delete tButton;
-  //       }
-  //     this->Internals->ExtensibleMap.clear();
-  //     this->Internals->MinusButtonIndices.clear();
-  //     }
 
   foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
   {
@@ -722,7 +547,7 @@ void qtDateTimeItem::clearChildWidgets()
 
 void qtDateTimeItem::updateBackground(QDateTimeEdit* dtEdit, bool valid)
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  smtk::attribute::DateTimeItemPtr item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
   std::size_t element = this->Internals->ElementIndexMap.value(dtEdit);
   smtk::common::DateTimeZonePair dtz = item->value(element);
 
@@ -730,12 +555,12 @@ void qtDateTimeItem::updateBackground(QDateTimeEdit* dtEdit, bool valid)
   QColor color;
   if (!valid)
   {
-    color = this->uiManager()->invalidValueColor();
+    color = m_itemInfo.uiManager()->invalidValueColor();
   }
   else if (item->isUsingDefault(element))
   {
     //qDebug() << element <<  " -- Default DateTimeZonePair" << def->hasDefault();
-    color = this->uiManager()->defaultValueColor();
+    color = m_itemInfo.uiManager()->defaultValueColor();
   }
   else
   {
@@ -760,7 +585,7 @@ void qtDateTimeItem::updateTimeZoneMenu(QAction* selectedAction)
 
 void qtDateTimeItem::setTimeZone(std::size_t element, const QString& region)
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  smtk::attribute::DateTimeItemPtr item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
 
   ::smtk::common::DateTimeZonePair tzPair = item->value(element);
   ::smtk::common::TimeZone tz = tzPair.timeZone();
@@ -771,7 +596,7 @@ void qtDateTimeItem::setTimeZone(std::size_t element, const QString& region)
 
 void qtDateTimeItem::setTimeZoneToUTC(std::size_t element)
 {
-  smtk::attribute::DateTimeItemPtr item = this->datetimeItem();
+  smtk::attribute::DateTimeItemPtr item = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
 
   smtk::common::DateTimeZonePair tzPair = item->value(element);
   smtk::common::TimeZone tz = tzPair.timeZone();

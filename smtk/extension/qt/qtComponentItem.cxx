@@ -27,11 +27,19 @@ namespace smtk
 namespace extension
 {
 
-qtComponentItem::qtComponentItem(
-  smtk::attribute::ComponentItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation enumOrient)
-  : Superclass(std::static_pointer_cast<smtk::attribute::Item>(item), p, bview)
+qtItem* qtComponentItem::createItemWidget(const AttributeItemInfo& info)
 {
-  (void)enumOrient;
+  // So we support this type of item?
+  if (info.itemAs<smtk::attribute::ComponentItem>() == nullptr)
+  {
+    return nullptr;
+  }
+  return new qtComponentItem(info);
+}
+
+qtComponentItem::qtComponentItem(const AttributeItemInfo& info)
+  : qtReferenceItem(info)
+{
   this->createWidget();
 }
 
@@ -42,11 +50,6 @@ qtComponentItem::~qtComponentItem()
 void qtComponentItem::setLabelVisible(bool visible)
 {
   m_p->m_label->setVisible(visible);
-}
-
-smtk::attribute::ComponentItemPtr qtComponentItem::componentItem() const
-{
-  return std::static_pointer_cast<smtk::attribute::ComponentItem>(this->getObject());
 }
 
 void qtComponentItem::updateItemData()
@@ -62,7 +65,7 @@ smtk::view::PhraseModelPtr qtComponentItem::createPhraseModel() const
   auto phraseModel = smtk::view::ComponentPhraseModel::create(view);
   phraseModel->root()->findDelegate()->setModel(phraseModel);
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ComponentItemDefinition>(
-    this->getObject()->definition());
+    m_itemInfo.item()->definition());
   std::cerr << "Address of " << def->name() << "( " << def << ") \n";
 
   std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
@@ -77,10 +80,10 @@ void qtComponentItem::createWidget()
   this->Superclass::createWidget();
 
   // Now add in ComponentItem specifics.
-  smtk::attribute::ItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
   if (!dataObj || !this->passAdvancedCheck() ||
-    (this->baseView() &&
-      !this->baseView()->uiManager()->passItemCategoryCheck(dataObj->definition())))
+    (m_itemInfo.uiManager() &&
+      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
   {
     return;
   }
@@ -90,7 +93,7 @@ void qtComponentItem::createWidget()
 
 std::string qtComponentItem::synopsis(bool& ok) const
 {
-  auto item = this->componentItem();
+  auto item = m_itemInfo.itemAs<smtk::attribute::ComponentItem>();
   if (!item)
   {
     ok = false;
@@ -194,7 +197,7 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
           {
             if (val && !m_p->m_members.empty())
             {
-              auto item = this->componentItem();
+              auto item = m_itemInfo.itemAs<attribute::ComponentItem>();
               if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
               { // Clear all other members since only 1 is allowed and the user just chose it.
                 m_p->m_members.clear();
@@ -220,7 +223,7 @@ void qtComponentItem::toggleCurrentItem()
     // Selecting a new item when only 1 is allowed should reset all other membership.
     if (!currentMembership && !m_p->m_members.empty())
     {
-      auto item = this->componentItem();
+      auto item = m_itemInfo.itemAs<attribute::ComponentItem>();
       if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
       {
         m_p->m_members.clear();
@@ -234,7 +237,7 @@ void qtComponentItem::toggleCurrentItem()
 
 bool qtComponentItem::synchronize(UpdateSource src)
 {
-  auto item = this->componentItem();
+  auto item = m_itemInfo.itemAs<attribute::ComponentItem>();
   if (!item)
   {
     return false;

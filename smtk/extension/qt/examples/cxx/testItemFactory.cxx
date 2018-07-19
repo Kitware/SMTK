@@ -55,11 +55,10 @@ class testItemWidgetFactory : public qtAttributeItemWidgetFactory
 public:
   virtual ~testItemWidgetFactory() { ++numDeleted; }
 
-  virtual qtItem* createValueItemWidget(
-    ValueItemPtr item, QWidget* p, qtBaseView* bview, Qt::Orientation orient)
+  virtual qtItem* createValueItemWidget(const AttributeItemInfo& info)
   {
     // TODO: Need to create an attribute view and see that this gets called.
-    return new qtInputsItem(smtk::dynamic_pointer_cast<ValueItem>(item), p, bview, orient);
+    return new qtInputsItem(info);
   }
 };
 

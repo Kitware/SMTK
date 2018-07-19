@@ -112,17 +112,24 @@ public:
   //  QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
   QPointer<QToolButton> CollapseButton;
-  Qt::Orientation VectorItemOrient;
   bool UserSetAttVisibility;
 };
 
-qtAttributeRefItem::qtAttributeRefItem(smtk::attribute::ItemPtr dataObj, QWidget* p,
-  qtBaseView* view, Qt::Orientation enVectorItemOrient)
-  : qtItem(dataObj, p, view)
+qtItem* qtAttributeRefItem::createItemWidget(const AttributeItemInfo& info)
+{
+  // So we support this type of item?
+  if (info.itemAs<smtk::attribute::ReferenceItem>() == nullptr)
+  {
+    return nullptr;
+  }
+  return new qtAttributeRefItem(info);
+}
+
+qtAttributeRefItem::qtAttributeRefItem(const AttributeItemInfo& info)
+  : qtItem(info)
 {
   this->Internals = new qtAttributeRefItemInternals;
-  this->IsLeafItem = true;
-  this->Internals->VectorItemOrient = enVectorItemOrient;
+  m_isLeafItem = true;
   this->Internals->UserSetAttVisibility = true;
   this->createWidget();
 }
@@ -147,11 +154,11 @@ void qtAttributeRefItem::setLabelVisible(bool visible)
     this->Internals->theLabel->setVisible(visible);
     if (visible)
     {
-      this->Widget->setMinimumWidth(250);
+      m_widget->setMinimumWidth(250);
     }
     else
     {
-      this->Widget->setMinimumWidth(150);
+      m_widget->setMinimumWidth(150);
     }
   }
 }
@@ -193,18 +200,18 @@ void qtAttributeRefItem::setAttributesVisible(bool visible)
   }
   if (this->Internals->UserSetAttVisibility)
   {
-    this->baseView()->childrenResized();
+    m_itemInfo.baseView()->childrenResized();
   }
 }
 
 void qtAttributeRefItem::onLaunchAttributeView()
 {
-  if (!this->getObject())
+  auto item = m_itemInfo.itemAs<smtk::attribute::ReferenceItem>();
+  if (item == nullptr)
   {
     return;
   }
   smtk::view::ViewPtr newAttView(new smtk::view::View("Attribute", "Attribute View"));
-  smtk::attribute::RefItemPtr item = smtk::dynamic_pointer_cast<RefItem>(this->getObject());
   const RefItemDefinition* itemDef =
     dynamic_cast<const RefItemDefinition*>(item->definition().get());
   attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
@@ -214,7 +221,7 @@ void qtAttributeRefItem::onLaunchAttributeView()
   attViewDlg.setWindowTitle(
     attDef->label().empty() ? attDef->type().c_str() : attDef->label().c_str());
   QVBoxLayout* layout = new QVBoxLayout(&attViewDlg);
-  smtk::extension::ViewInfo vinfo(newAttView, &attViewDlg, this->baseView()->uiManager());
+  smtk::extension::ViewInfo vinfo(newAttView, &attViewDlg, m_itemInfo.uiManager());
   qtAttributeView attView(vinfo);
   //layout->addWidget(attView.widget())
   QDialogButtonBox* buttonBox = new QDialogButtonBox(&attViewDlg);
@@ -233,19 +240,15 @@ void qtAttributeRefItem::onLaunchAttributeView()
 
 void qtAttributeRefItem::createWidget()
 {
-  if (!this->getObject())
+  auto item = m_itemInfo.itemAs<smtk::attribute::ReferenceItem>();
+  if (item == nullptr)
   {
     return;
   }
   this->clearChildItems();
   this->Internals->comboBoxes.clear();
-  this->Widget = new QFrame(this->parentWidget());
-  this->Widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-  smtk::attribute::RefItemPtr item = dynamic_pointer_cast<RefItem>(this->getObject());
-  if (!item)
-  {
-    return;
-  }
+  m_widget = new QFrame(m_itemInfo.parentWidget());
+  m_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
   std::size_t i, n = item->numberOfValues();
   if (!n)
@@ -253,32 +256,12 @@ void qtAttributeRefItem::createWidget()
     return;
   }
 
-  QGridLayout* thisLayout = new QGridLayout(this->Widget);
+  QGridLayout* thisLayout = new QGridLayout(m_widget);
   thisLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   thisLayout->setContentsMargins(0, 0, 0, 0);
-  /*
-  // NOTE:: because the widget for the referenced attribute could be
-  // big and embed other reference attributes, so a horizontal layout
-  // of these attribute widget become prohibitive. So we always use
-  // a vertical layout for NumberOfRequiredValues > 1.
-
-  // Setup combo layout
-  QBoxLayout* comboLayout;
-  if(this->Internals->VectorItemOrient == Qt::Vertical)
-    {
-    comboLayout = new QVBoxLayout();
-    }
-  else
-    {
-    comboLayout = new QHBoxLayout();
-    }
-  comboLayout->setMargin(0);
-  comboLayout->setSpacing(6);
-  comboLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-*/
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  this->Internals->CollapseButton = new QToolButton(this->Widget);
+  this->Internals->CollapseButton = new QToolButton(m_widget);
   //QString exapndDownName(":/icons/attribute/expand-down.png");
   this->Internals->CollapseButton->setFixedSize(QSize(16, 16));
   this->Internals->CollapseButton->setArrowType(Qt::DownArrow);
@@ -288,18 +271,16 @@ void qtAttributeRefItem::createWidget()
   connect(this->Internals->CollapseButton, SIGNAL(clicked()), this,
     SLOT(onToggleAttributeWidgetVisibility()));
 
-  this->Internals->EditButton = new QToolButton(this->Widget);
+  this->Internals->EditButton = new QToolButton(m_widget);
   QString resourceName(":/icons/attribute/edit.png");
   this->Internals->EditButton->setFixedSize(QSize(16, 16));
   this->Internals->EditButton->setIcon(QIcon(resourceName));
   this->Internals->EditButton->setSizePolicy(sizeFixedPolicy);
   this->Internals->EditButton->setToolTip("Manage referenced attributes");
 
-  this->Widget->setMinimumWidth(250); //combobox width, edit button, collapse button, spacing.
+  m_widget->setMinimumWidth(250); //combobox width, edit button, collapse button, spacing.
 
   connect(this->Internals->EditButton, SIGNAL(clicked()), this, SLOT(onLaunchAttributeView()));
-
-  smtk::attribute::ItemPtr dataObj = this->getObject();
 
   QBoxLayout* labellayout = new QHBoxLayout();
   labellayout->setMargin(0);
@@ -307,16 +288,16 @@ void qtAttributeRefItem::createWidget()
 
   int padding = 0;
   //  int gridCol = 0;
-  if (dataObj->isOptional())
+  if (item->isOptional())
   {
-    this->Internals->optionalCheck = new QCheckBox(this->Widget);
-    this->Internals->optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
+    this->Internals->optionalCheck = new QCheckBox(m_widget);
+    this->Internals->optionalCheck->setChecked(item->definition()->isEnabledByDefault());
     this->Internals->optionalCheck->setText(" "); // some space
     this->Internals->optionalCheck->setSizePolicy(sizeFixedPolicy);
 
-    if (dataObj->definition()->briefDescription().length())
+    if (item->definition()->briefDescription().length())
     {
-      this->Internals->optionalCheck->setToolTip(dataObj->definition()->briefDescription().c_str());
+      this->Internals->optionalCheck->setToolTip(item->definition()->briefDescription().c_str());
     }
     padding = this->Internals->optionalCheck->iconSize().width() + 3; // 3 is for layout spacing
 
@@ -325,16 +306,16 @@ void qtAttributeRefItem::createWidget()
     labellayout->addWidget(this->Internals->optionalCheck); //, 0, gridCol++);
   }
 
-  QString lText = dataObj->label().empty() ? dataObj->name().c_str() : dataObj->label().c_str();
-  this->Internals->theLabel = new QLabel(lText, this->Widget);
+  QString lText = item->label().c_str();
+  this->Internals->theLabel = new QLabel(lText, m_widget);
 
-  this->Internals->theLabel->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
+  this->Internals->theLabel->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
   this->Internals->theLabel->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel->setWordWrap(true);
   this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  if (dataObj->advanceLevel() > 0)
+  if (item->advanceLevel() > 0)
   {
-    this->Internals->theLabel->setFont(this->baseView()->uiManager()->advancedFont());
+    this->Internals->theLabel->setFont(m_itemInfo.uiManager()->advancedFont());
   }
 
   labellayout->addWidget(this->Internals->theLabel);
@@ -345,7 +326,7 @@ void qtAttributeRefItem::createWidget()
   //  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
   for (i = 0; i < n; i++)
   {
-    qtAttRefCombo* combo = new qtAttRefCombo(item, this->Widget);
+    qtAttRefCombo* combo = new qtAttRefCombo(item, m_widget);
     QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
     QVBoxLayout* childLayout = new QVBoxLayout;
@@ -375,14 +356,14 @@ void qtAttributeRefItem::updateAttWidgetState(qtAttribute* qa)
     qa->widget()->setVisible(bVisible);
     if (this->Internals->UserSetAttVisibility)
     {
-      this->baseView()->childrenResized();
+      m_itemInfo.baseView()->childrenResized();
     }
   }
 }
 
 void qtAttributeRefItem::updateItemData()
 {
-  smtk::attribute::RefItemPtr item = dynamic_pointer_cast<RefItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<RefItem>();
   if (!item)
   {
     return;
@@ -438,7 +419,7 @@ void qtAttributeRefItem::updateItemData()
 void qtAttributeRefItem::setOutputOptional(int state)
 {
   bool enable = state ? true : false;
-
+  auto item = m_itemInfo.item();
   this->Internals->EditButton->setVisible(enable);
   this->Internals->CollapseButton->setVisible(enable);
   foreach (QComboBox* combo, this->Internals->comboBoxes)
@@ -452,11 +433,11 @@ void qtAttributeRefItem::setOutputOptional(int state)
       qa->widget()->setVisible(enable);
     }
   }
-  if (enable != this->getObject()->isEnabled())
+  if (enable != item->isEnabled())
   {
-    this->getObject()->setIsEnabled(enable);
+    item->setIsEnabled(enable);
     emit this->modified();
-    this->baseView()->valueChanged(this->getObject());
+    m_itemInfo.baseView()->valueChanged(item);
   }
 }
 
@@ -475,7 +456,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
 
-  smtk::attribute::RefItemPtr item = dynamic_pointer_cast<RefItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<RefItem>();
   AttributePtr attPtr;
   bool valChanged = true;
   if (curIdx > 0) // index 0 is None
@@ -487,7 +468,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     if (curIdx == comboBox->count() - 1) // create New attribute
     {
       QList<smtk::attribute::DefinitionPtr> AllDefs;
-      this->baseView()->getDefinitions(attDef, AllDefs);
+      m_itemInfo.baseView()->getDefinitions(attDef, AllDefs);
       QList<QString> defTypes;
       QList<QString> defLabels;
       foreach (smtk::attribute::DefinitionPtr aDef, AllDefs)
@@ -531,7 +512,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
       }
       else
       {
-        QMessageBox::warning(this->Widget, tr("Create Attribute"),
+        QMessageBox::warning(m_widget, tr("Create Attribute"),
           tr("No attribute definition, or all definitions are abstract!"));
       }
     }
@@ -583,12 +564,13 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 
     if (!currentAtt)
     {
-      int currentLen = this->baseView()->fixedLabelWidth();
-      int tmpLen = this->baseView()->uiManager()->getWidthOfAttributeMaxLabel(
-        attPtr->definition(), this->baseView()->uiManager()->advancedFont());
-      this->baseView()->setFixedLabelWidth(tmpLen);
-      currentAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
-      this->baseView()->setFixedLabelWidth(currentLen);
+      int currentLen = m_itemInfo.baseView()->fixedLabelWidth();
+      int tmpLen = m_itemInfo.uiManager()->getWidthOfAttributeMaxLabel(
+        attPtr->definition(), m_itemInfo.uiManager()->advancedFont());
+      m_itemInfo.baseView()->setFixedLabelWidth(tmpLen);
+      smtk::view::View::Component comp; // currently not used
+      currentAtt = new qtAttribute(attPtr, comp, m_widget, m_itemInfo.baseView());
+      m_itemInfo.baseView()->setFixedLabelWidth(currentLen);
       if (currentAtt->widget())
       {
         QBoxLayout* mylayout =
@@ -620,6 +602,6 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
   if (valChanged)
   {
     emit this->modified();
-    this->baseView()->valueChanged(this->getObject());
+    m_itemInfo.baseView()->valueChanged(item);
   }
 }

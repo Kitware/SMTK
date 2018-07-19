@@ -65,7 +65,8 @@ public:
   {
     if (att && att->numberOfItems() > 0)
     {
-      qtAttribute* attInstance = new qtAttribute(att, pw, view);
+      smtk::view::View::Component comp; // currently not used
+      qtAttribute* attInstance = new qtAttribute(att, comp, pw, view);
       //attInstance->setUseSelectionManager(view->useSelectionManager());
       if (attInstance && attInstance->widget())
       {

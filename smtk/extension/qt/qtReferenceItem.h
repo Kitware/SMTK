@@ -32,7 +32,7 @@ class SMTKQTEXT_EXPORT qtReferenceItem : public qtItem
   using Superclass = qtItem;
 
 public:
-  qtReferenceItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
+  qtReferenceItem(const AttributeItemInfo& info);
   virtual ~qtReferenceItem();
 
 protected slots:

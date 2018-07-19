@@ -138,8 +138,9 @@ bool qtSelectorView::createSelector()
     this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
 
   this->setFixedLabelWidth(labelWidth);
+  smtk::view::View::Component comp; // Right now not being used
   qtAttribute* attInstance =
-    new qtAttribute(this->Internals->m_selectorAttribute, this->widget(), this);
+    new qtAttribute(this->Internals->m_selectorAttribute, comp, this->widget(), this);
   attInstance->createBasicLayout(true);
   layout->addWidget(attInstance->widget());
   QObject::connect(attInstance, SIGNAL(modified()), this, SLOT(selectionChanged()));

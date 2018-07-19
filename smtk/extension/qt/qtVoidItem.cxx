@@ -28,11 +28,16 @@ public:
   QPointer<QCheckBox> optionalCheck;
 };
 
-qtVoidItem::qtVoidItem(smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview)
-  : qtItem(dataObj, p, bview)
+qtItem* qtVoidItem::createItemWidget(const AttributeItemInfo& info)
+{
+  return new qtVoidItem(info);
+}
+
+qtVoidItem::qtVoidItem(const AttributeItemInfo& info)
+  : qtItem(info)
 {
   this->Internals = new qtVoidItemInternals;
-  this->IsLeafItem = true;
+  m_isLeafItem = true;
   this->createWidget();
 }
 
@@ -43,7 +48,7 @@ qtVoidItem::~qtVoidItem()
 
 void qtVoidItem::setLabelVisible(bool visible)
 {
-  smtk::attribute::ItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
   if (!dataObj)
   {
     return;
@@ -56,21 +61,21 @@ void qtVoidItem::setLabelVisible(bool visible)
 
 void qtVoidItem::createWidget()
 {
-  smtk::attribute::ItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
   if (!dataObj || !this->passAdvancedCheck() ||
-    (this->baseView() &&
-      !this->baseView()->uiManager()->passItemCategoryCheck(dataObj->definition())))
+    (m_itemInfo.uiManager() &&
+      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
   {
     return;
   }
 
   this->clearChildItems();
-  this->Widget = new QFrame(this->parentWidget());
-  new QVBoxLayout(this->Widget);
-  this->Widget->layout()->setMargin(0);
-  this->Widget->layout()->setSpacing(0);
+  m_widget = new QFrame(this->parentWidget());
+  new QVBoxLayout(m_widget);
+  m_widget->layout()->setMargin(0);
+  m_widget->layout()->setSpacing(0);
 
-  QCheckBox* optionalCheck = new QCheckBox(this->Widget);
+  QCheckBox* optionalCheck = new QCheckBox(m_widget);
   optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   optionalCheck->setSizePolicy(sizeFixedPolicy);
@@ -78,7 +83,7 @@ void qtVoidItem::createWidget()
 
   if (dataObj->advanceLevel() > 0)
   {
-    optionalCheck->setFont(this->baseView()->uiManager()->advancedFont());
+    optionalCheck->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   if (dataObj->definition()->briefDescription().length())
   {
@@ -88,13 +93,13 @@ void qtVoidItem::createWidget()
   optionalCheck->setText(txtLabel);
   QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
   this->Internals->optionalCheck = optionalCheck;
-  this->Widget->layout()->addWidget(this->Internals->optionalCheck);
+  m_widget->layout()->addWidget(this->Internals->optionalCheck);
   this->updateItemData();
 }
 
 void qtVoidItem::updateItemData()
 {
-  smtk::attribute::ItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
   if (!dataObj || !this->Internals->optionalCheck)
   {
     return;
@@ -106,10 +111,11 @@ void qtVoidItem::updateItemData()
 void qtVoidItem::setOutputOptional(int state)
 {
   bool enable = state ? true : false;
-  if (enable != this->getObject()->isEnabled())
+  auto item = m_itemInfo.item();
+  if (enable != item->isEnabled())
   {
-    this->getObject()->setIsEnabled(enable);
-    this->baseView()->valueChanged(this->getObject());
+    item->setIsEnabled(enable);
+    m_itemInfo.baseView()->valueChanged(item);
     emit this->modified();
   }
 }

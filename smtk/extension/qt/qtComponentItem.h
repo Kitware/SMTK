@@ -27,12 +27,11 @@ class SMTKQTEXT_EXPORT qtComponentItem : public qtReferenceItem
   using Superclass = qtReferenceItem;
 
 public:
-  qtComponentItem(smtk::attribute::ComponentItemPtr, QWidget* p, qtBaseView* bview,
-    Qt::Orientation enumOrient = Qt::Horizontal);
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  qtComponentItem(const AttributeItemInfo& info);
   virtual ~qtComponentItem();
 
   void setLabelVisible(bool) override;
-  smtk::attribute::ComponentItemPtr componentItem() const;
 
 protected slots:
   void updateItemData() override;

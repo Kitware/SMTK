@@ -98,6 +98,7 @@ void qtInstancedView::updateAttributeData()
   this->Internals->AttInstances.clear();
 
   std::vector<smtk::attribute::AttributePtr> atts;
+  std::vector<std::reference_wrapper<smtk::view::View::Component> > comps;
   int longLabelWidth = 0;
   // Lets find the InstancedAttributes Infomation
   int index = view->details().findChild("InstancedAttributes");
@@ -147,6 +148,7 @@ void qtInstancedView::updateAttributeData()
     }
 
     atts.push_back(att);
+    comps.push_back(attComp);
     int labelWidth =
       this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
     longLabelWidth = std::max(labelWidth, longLabelWidth);
@@ -160,7 +162,7 @@ void qtInstancedView::updateAttributeData()
   {
     if (atts[i]->numberOfItems() > 0)
     {
-      qtAttribute* attInstance = new qtAttribute(atts[i], this->widget(), this);
+      qtAttribute* attInstance = new qtAttribute(atts[i], comps[i], this->widget(), this);
       if (attInstance)
       {
         //Without any additional info lets use a basic layout with model associations

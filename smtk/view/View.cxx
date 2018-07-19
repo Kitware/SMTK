@@ -49,6 +49,30 @@ bool View::Component::attributeAsBool(const std::string& attname, bool& val) con
   return false;
 }
 
+bool View::Component::attributeAsInt(const std::string& attname, int& val) const
+{
+  std::string s;
+  if (!this->attribute(attname, s))
+  {
+    return false; // name doesn't exist
+  }
+
+  val = std::stoi(s);
+  return true;
+}
+
+bool View::Component::attributeAsDouble(const std::string& attname, double& val) const
+{
+  std::string s;
+  if (!this->attribute(attname, s))
+  {
+    return false; // name doesn't exist
+  }
+
+  val = std::stod(s);
+  return true;
+}
+
 bool View::Component::attributeAsBool(const std::string& attname) const
 {
   bool v;

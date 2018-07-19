@@ -18,6 +18,7 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QDoubleValidator>
 #include <QFrame>
 #include <QHBoxLayout>
@@ -26,6 +27,7 @@
 #include <QLineEdit>
 #include <QPointer>
 #include <QSizePolicy>
+#include <QSpinBox>
 #include <QTextEdit>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -69,7 +71,7 @@ qtDoubleValidator::qtDoubleValidator(
 
 void qtDoubleValidator::fixup(QString& input) const
 {
-  auto item = m_item->valueItem();
+  auto item = m_item->itemAs<ValueItem>();
   if (!item)
   {
     return;
@@ -108,7 +110,7 @@ qtIntValidator::qtIntValidator(
 
 void qtIntValidator::fixup(QString& input) const
 {
-  auto item = m_item->valueItem();
+  auto item = m_item->itemAs<ValueItem>();
   if (!item)
   {
     return;
@@ -153,13 +155,22 @@ public:
   QList<QPointer<qtDiscreteValueEditor> > DiscreteEditors;
 };
 
-qtInputsItem::qtInputsItem(smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
-  Qt::Orientation enVectorItemOrient)
-  : qtItem(dataObj, p, bview)
+qtItem* qtInputsItem::createItemWidget(const AttributeItemInfo& info)
+{
+  // So we support this type of item?
+  if (info.itemAs<smtk::attribute::ValueItem>() == nullptr)
+  {
+    return nullptr;
+  }
+  return new qtInputsItem(info);
+}
+
+qtInputsItem::qtInputsItem(const AttributeItemInfo& info)
+  : qtItem(info)
 {
   this->Internals = new qtInputsItemInternals;
-  this->IsLeafItem = true;
-  this->Internals->VectorItemOrient = enVectorItemOrient;
+  m_isLeafItem = true;
+  this->Internals->VectorItemOrient = Qt::Horizontal;
   this->createWidget();
 }
 
@@ -170,22 +181,22 @@ qtInputsItem::~qtInputsItem()
 
 void qtInputsItem::unsetValue(int elementIndex)
 {
-  auto item = this->valueItem();
+  auto item = m_itemInfo.itemAs<ValueItem>();
   if (item->isSet(elementIndex))
   {
     item->unset(elementIndex);
     emit modified();
-    this->baseView()->valueChanged(item);
+    m_itemInfo.baseView()->valueChanged(item);
   }
 }
 
 bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
 {
-  auto item = this->valueItem();
+  auto item = m_itemInfo.itemAs<ValueItem>();
   if (item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
     emit this->modified();
-    this->baseView()->valueChanged(item);
+    m_itemInfo.baseView()->valueChanged(item);
     return true;
   }
   return false;
@@ -196,19 +207,14 @@ void qtInputsItem::setLabelVisible(bool visible)
   this->Internals->theLabel->setVisible(visible);
 }
 
-smtk::attribute::ValueItemPtr qtInputsItem::valueItem()
-{
-  return dynamic_pointer_cast<ValueItem>(this->getObject());
-}
-
 void qtInputsItem::createWidget()
 {
   //pqApplicationCore* paraViewApp = pqApplicationCore::instance();
   //std::cout << "PV app: " << paraViewApp << "\n";
-  smtk::attribute::ItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
   if (!dataObj || !this->passAdvancedCheck() ||
-    (this->baseView() &&
-      !this->baseView()->uiManager()->passItemCategoryCheck(dataObj->definition())))
+    (m_itemInfo.uiManager() &&
+      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
   {
     return;
   }
@@ -225,7 +231,7 @@ void qtInputsItem::updateItemData()
 
 void qtInputsItem::addInputEditor(int i)
 {
-  auto item = this->valueItem();
+  auto item = m_itemInfo.itemAs<ValueItem>();
   if (!item)
   {
     return;
@@ -250,15 +256,14 @@ void qtInputsItem::addInputEditor(int i)
     return;
   }
 
-  const ValueItemDefinition* itemDef =
-    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+  auto itemDef = item->definitionAs<ValueItemDefinition>();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
   if (item->isExtensible())
   {
-    QToolButton* minusButton = new QToolButton(this->Widget);
+    QToolButton* minusButton = new QToolButton(m_widget);
     QString iconName(":/icons/attribute/minus.png");
     minusButton->setFixedSize(QSize(12, 12));
     minusButton->setIcon(QIcon(iconName));
@@ -315,7 +320,7 @@ void qtInputsItem::addInputEditor(int i)
 
 void qtInputsItem::loadInputValues()
 {
-  smtk::attribute::ValueItemPtr item = this->valueItem();
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item)
   {
     return;
@@ -332,7 +337,7 @@ void qtInputsItem::loadInputValues()
     if (!this->Internals->AddItemButton)
     {
       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-      this->Internals->AddItemButton = new QToolButton(this->Widget);
+      this->Internals->AddItemButton = new QToolButton(m_widget);
       QString iconName(":/icons/attribute/plus.png");
       this->Internals->AddItemButton->setText("Add New Value");
       this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -353,17 +358,16 @@ void qtInputsItem::loadInputValues()
 
 void qtInputsItem::updateUI()
 {
-  //smtk::attribute::ItemPtr dataObj = this->getObject();
-  smtk::attribute::ValueItemPtr dataObj = this->valueItem();
+  smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
   if (!dataObj || !this->passAdvancedCheck() ||
-    (this->baseView() &&
-      !this->baseView()->uiManager()->passItemCategoryCheck(dataObj->definition())))
+    (m_itemInfo.uiManager() &&
+      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
   {
     return;
   }
 
-  this->Widget = new QFrame(this->parentWidget());
-  this->Internals->EntryLayout = new QGridLayout(this->Widget);
+  m_widget = new QFrame(this->parentWidget());
+  this->Internals->EntryLayout = new QGridLayout(m_widget);
   this->Internals->EntryLayout->setMargin(0);
   this->Internals->EntryLayout->setSpacing(0);
   this->Internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -397,11 +401,11 @@ void qtInputsItem::updateUI()
   {
     labelText = dataObj->name().c_str();
   }
-  QLabel* label = new QLabel(labelText, this->Widget);
+  QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  if (this->baseView())
+  if (m_itemInfo.baseView())
   {
-    label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
+    label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -418,13 +422,20 @@ void qtInputsItem::updateUI()
 
   if (!itemDef->units().empty())
   {
-    QString unitText = label->text();
-    unitText.append(" (").append(itemDef->units().c_str()).append(")");
-    label->setText(unitText);
+    // Are we using a spin box?  If so we don't need to add units
+    std::string option = "LineEdit"; // defualt behavior
+    m_itemInfo.component().attribute("Option", option);
+
+    if (option == "LineEdit")
+    {
+      QString unitText = label->text();
+      unitText.append(" (").append(itemDef->units().c_str()).append(")");
+      label->setText(unitText);
+    }
   }
-  if (itemDef->advanceLevel() && this->baseView())
+  if (itemDef->advanceLevel() && m_itemInfo.baseView())
   {
-    label->setFont(this->baseView()->uiManager()->advancedFont());
+    label->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   labelLayout->addWidget(label);
   this->Internals->theLabel = label;
@@ -442,7 +453,7 @@ void qtInputsItem::updateUI()
   //  layout->addWidget(this->Internals->EntryFrame, 0, 1);
   if (this->parentWidget() && this->parentWidget()->layout())
   {
-    this->parentWidget()->layout()->addWidget(this->Widget);
+    this->parentWidget()->layout()->addWidget(m_widget);
   }
   if (dataObj->isOptional())
   {
@@ -452,7 +463,7 @@ void qtInputsItem::updateUI()
 
 void qtInputsItem::setOutputOptional(int state)
 {
-  smtk::attribute::ValueItemPtr item = this->valueItem();
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item)
   {
     return;
@@ -482,12 +493,12 @@ void qtInputsItem::setOutputOptional(int state)
   }
 
   //  this->Internals->EntryFrame->setEnabled(enable);
-  if (enable != this->getObject()->isEnabled())
+  if (enable != item->isEnabled())
   {
-    this->getObject()->setIsEnabled(enable);
-    if (this->baseView())
+    item->setIsEnabled(enable);
+    if (m_itemInfo.baseView())
     {
-      this->baseView()->valueChanged(this->getObject());
+      m_itemInfo.baseView()->valueChanged(item);
     }
     emit this->modified();
   }
@@ -495,7 +506,7 @@ void qtInputsItem::setOutputOptional(int state)
 
 void qtInputsItem::onAddNewValue()
 {
-  smtk::attribute::ValueItemPtr item = this->valueItem();
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item)
   {
     return;
@@ -519,7 +530,7 @@ void qtInputsItem::onRemoveValue()
 
   int gIdx = this->Internals->MinusButtonIndices.indexOf(
     minusButton); //minusButton->property("SubgroupIndex").toInt();
-  smtk::attribute::ValueItemPtr item = this->valueItem();
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
   {
     return;
@@ -570,7 +581,7 @@ void qtInputsItem::onRemoveValue()
 
 void qtInputsItem::updateExtensibleState()
 {
-  smtk::attribute::ValueItemPtr item = this->valueItem();
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item || !item->isExtensible())
   {
     return;
@@ -589,7 +600,7 @@ void qtInputsItem::updateExtensibleState()
 
 void qtInputsItem::clearChildWidgets()
 {
-  smtk::attribute::ValueItemPtr item = this->valueItem();
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item)
   {
     return;
@@ -629,7 +640,7 @@ void qtInputsItem::clearChildWidgets()
 
 QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
 {
-  smtk::attribute::ValueItemPtr item = this->valueItem();
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item)
   {
     return NULL;
@@ -647,18 +658,18 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
     this->Internals->DiscreteEditors.append(editor);
     return editor;
   }
-  return this->createEditBox(elementIdx, this->Widget);
+  return this->createEditBox(elementIdx, m_widget);
 }
 
 QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
 {
-  smtk::attribute::ValueItemPtr inputitem = this->valueItem();
+  smtk::attribute::ValueItemPtr inputitem = m_itemInfo.itemAs<ValueItem>();
   if (!inputitem)
   {
     return NULL;
   }
 
-  QFrame* checkFrame = new QFrame(this->Widget);
+  QFrame* checkFrame = new QFrame(m_widget);
   QHBoxLayout* mainlayout = new QHBoxLayout(checkFrame);
 
   QToolButton* funCheck = new QToolButton(checkFrame);
@@ -720,7 +731,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
   }
 
   int elementIdx = funCheck->property("ElementIndex").toInt();
-  auto inputitem = this->valueItem();
+  auto inputitem = m_itemInfo.itemAs<ValueItem>();
   ResourcePtr lAttResource = inputitem->attribute()->attributeResource();
   if (!inputitem)
   {
@@ -828,7 +839,7 @@ void qtInputsItem::onExpressionReferenceChanged()
   }
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
-  auto inputitem = this->valueItem();
+  auto inputitem = m_itemInfo.itemAs<ValueItem>();
   if (!inputitem)
   {
     return;
@@ -865,7 +876,7 @@ void qtInputsItem::onExpressionReferenceChanged()
     inputitem->unset(elementIdx);
   }
 
-  qtBaseView* bview = this->baseView();
+  qtBaseView* bview = m_itemInfo.baseView();
   if (bview)
   {
     bview->valueChanged(inputitem->shared_from_this());
@@ -873,10 +884,205 @@ void qtInputsItem::onExpressionReferenceChanged()
   emit this->modified();
 }
 
+QWidget* qtInputsItem::createDoubleWidget(
+  int elementIdx, ValueItemPtr vitem, QWidget* pWidget, QString& tooltip)
+{
+  auto dDef = vitem->definitionAs<DoubleItemDefinition>();
+  double minVal, maxVal, defVal;
+
+  // Let get the range of the item
+  minVal = smtk_DOUBLE_MIN;
+  if (dDef->hasMinRange())
+  {
+    minVal = dDef->minRange();
+    if (!dDef->minRangeInclusive())
+    {
+      double multiplier = minVal >= 0 ? 1. : -1.;
+      double to = multiplier * minVal * 1.001 + 1;
+      minVal = nextafter(minVal, to);
+    }
+    QString inclusive = dDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
+    tooltip.append("Min(").append(inclusive).append("): ").append(
+      QString::number(dDef->minRange()));
+  }
+
+  maxVal = smtk_DOUBLE_MAX;
+  if (dDef->hasMaxRange())
+  {
+    maxVal = dDef->maxRange();
+    if (!dDef->maxRangeInclusive())
+    {
+      double multiplier = maxVal >= 0 ? -1. : 1.;
+      double to = multiplier * maxVal * 1.001 - 1;
+      maxVal = nextafter(maxVal, to);
+    }
+    if (!tooltip.isEmpty())
+    {
+      tooltip.append("; ");
+    }
+    QString inclusive = dDef->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
+    tooltip.append("Max(").append(inclusive).append("): ").append(
+      QString::number(dDef->maxRange()));
+  }
+
+  // Lets get default info
+  if (dDef->hasDefault())
+  {
+    defVal = dDef->defaultValue(elementIdx);
+    if (!tooltip.isEmpty())
+    {
+      tooltip.append("; ");
+    }
+    tooltip.append("Default: ").append(QString::number(defVal));
+  }
+
+  // What type of option are we suppose to use
+  std::string option = "LineEdit";
+  // By default we should be using a line edit, lets see if
+  // we were told what to use
+  m_itemInfo.component().attribute("Option", option);
+
+  if (option == "LineEdit")
+  {
+    QLineEdit* editBox = new QLineEdit(pWidget);
+    qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
+
+    editBox->setValidator(validator);
+    editBox->setFixedWidth(100);
+    validator->setBottom(minVal);
+    validator->setTop(maxVal);
+    if (vitem->isSet(elementIdx))
+    {
+      editBox->setText(vitem->valueAsString(elementIdx).c_str());
+    }
+    return editBox;
+  }
+
+  if (option == "SpinBox")
+  {
+    QDoubleSpinBox* spinbox = new QDoubleSpinBox(pWidget);
+    auto ditem = dynamic_pointer_cast<DoubleItem>(vitem);
+    spinbox->setMaximum(maxVal);
+    spinbox->setMinimum(minVal);
+    double step;
+    int decimals;
+    if (!dDef->units().empty())
+    {
+      QString ustring = " ";
+      ustring.append(dDef->units().c_str());
+      spinbox->setSuffix(ustring);
+    }
+    if (m_itemInfo.component().attributeAsDouble("StepSize", step))
+    {
+      spinbox->setSingleStep(step);
+    }
+    if (m_itemInfo.component().attributeAsInt("Decimals", decimals))
+    {
+      spinbox->setDecimals(decimals);
+    }
+    if (ditem->isSet(elementIdx))
+    {
+      spinbox->setValue(ditem->value(elementIdx));
+    }
+    connect(spinbox, SIGNAL(valueChanged(double)), this, SLOT(doubleValueChanged(double)));
+    return spinbox;
+  }
+  return nullptr;
+}
+
+QWidget* qtInputsItem::createIntWidget(
+  int elementIdx, ValueItemPtr vitem, QWidget* pWidget, QString& tooltip)
+{
+  auto iDef = vitem->definitionAs<IntItemDefinition>();
+  int minVal, maxVal, defVal;
+
+  // Let get the range of the item
+  minVal = smtk_INT_MIN;
+  if (iDef->hasMinRange())
+  {
+    minVal = iDef->minRangeInclusive() ? iDef->minRange() : iDef->minRange() + 1;
+    QString inclusive = iDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
+    tooltip.append("Min(").append(inclusive).append("): ").append(
+      QString::number(iDef->minRange()));
+  }
+
+  maxVal = smtk_INT_MAX;
+  if (iDef->hasMaxRange())
+  {
+    maxVal = iDef->maxRangeInclusive() ? iDef->maxRange() : iDef->maxRange() - 1;
+    if (!tooltip.isEmpty())
+    {
+      tooltip.append("; ");
+    }
+    QString inclusive = iDef->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
+    tooltip.append("Max(").append(inclusive).append("): ").append(
+      QString::number(iDef->maxRange()));
+  }
+
+  // Lets get default info
+  if (iDef->hasDefault())
+  {
+    defVal = iDef->defaultValue(elementIdx);
+    if (!tooltip.isEmpty())
+    {
+      tooltip.append("; ");
+    }
+    tooltip.append("Default: ").append(QString::number(defVal));
+  }
+
+  // What type of option are we suppose to use
+  std::string option = "LineEdit";
+  // By default we should be using a line edit, lets see if
+  // we were told what to use
+  m_itemInfo.component().attribute("Option", option);
+
+  if (option == "LineEdit")
+  {
+    QLineEdit* editBox = new QLineEdit(pWidget);
+    qtIntValidator* validator = new qtIntValidator(this, elementIdx, editBox, pWidget);
+
+    editBox->setValidator(validator);
+    editBox->setFixedWidth(100);
+    validator->setBottom(minVal);
+    validator->setTop(maxVal);
+    if (vitem->isSet(elementIdx))
+    {
+      editBox->setText(vitem->valueAsString(elementIdx).c_str());
+    }
+    return editBox;
+  }
+
+  if (option == "SpinBox")
+  {
+    QSpinBox* spinbox = new QSpinBox(pWidget);
+    auto iitem = dynamic_pointer_cast<IntItem>(vitem);
+    spinbox->setMaximum(maxVal);
+    spinbox->setMinimum(minVal);
+    int step;
+    if (!iDef->units().empty())
+    {
+      QString ustring = " ";
+      ustring.append(iDef->units().c_str());
+      spinbox->setSuffix(ustring);
+    }
+    if (m_itemInfo.component().attributeAsInt("StepSize", step))
+    {
+      spinbox->setSingleStep(step);
+    }
+    if (iitem->isSet(elementIdx))
+    {
+      spinbox->setValue(iitem->value(elementIdx));
+    }
+    connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(intValueChanged(int)));
+    return spinbox;
+  }
+  return nullptr;
+}
+
 QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
 {
-  auto item = this->valueItem();
-  qtUIManager* uimanager = this->uiManager();
+  auto item = m_itemInfo.itemAs<ValueItem>();
+  qtUIManager* uimanager = m_itemInfo.uiManager();
   if (!item)
   {
     return NULL;
@@ -897,108 +1103,12 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   {
     case smtk::attribute::Item::DoubleType:
     {
-      QLineEdit* editBox = new QLineEdit(pWidget);
-      const DoubleItemDefinition* dDef =
-        dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
-      qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
-
-      editBox->setValidator(validator);
-      editBox->setFixedWidth(100);
-      double value = smtk_DOUBLE_MIN;
-      if (dDef->hasMinRange())
-      {
-        value = dDef->minRange();
-        if (!dDef->minRangeInclusive())
-        {
-          double multiplier = value >= 0 ? 1. : -1.;
-          double to = multiplier * value * 1.001 + 1;
-          value = nextafter(value, to);
-        }
-        validator->setBottom(value);
-        QString inclusive = dDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
-        tooltip.append("Min(").append(inclusive).append("): ").append(
-          QString::number(dDef->minRange()));
-      }
-      value = smtk_DOUBLE_MAX;
-      if (dDef->hasMaxRange())
-      {
-        value = dDef->maxRange();
-        if (!dDef->maxRangeInclusive())
-        {
-          double multiplier = value >= 0 ? -1. : 1.;
-          double to = multiplier * value * 1.001 - 1;
-          value = nextafter(value, to);
-        }
-        validator->setTop(value);
-        if (!tooltip.isEmpty())
-        {
-          tooltip.append("; ");
-        }
-        QString inclusive = dDef->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
-        tooltip.append("Max(").append(inclusive).append("): ").append(
-          QString::number(dDef->maxRange()));
-      }
-      if (dDef->hasDefault())
-      {
-        value = dDef->defaultValue(elementIdx);
-        if (!tooltip.isEmpty())
-        {
-          tooltip.append("; ");
-        }
-        tooltip.append("Default: ").append(QString::number(value));
-      }
-
-      if (item->isSet(elementIdx))
-      {
-        editBox->setText(item->valueAsString(elementIdx).c_str());
-      }
-
-      inputWidget = editBox;
+      inputWidget = this->createDoubleWidget(elementIdx, item, pWidget, tooltip);
       break;
     }
     case smtk::attribute::Item::IntType:
     {
-      QLineEdit* editBox = new QLineEdit(pWidget);
-      const IntItemDefinition* iDef =
-        dynamic_cast<const IntItemDefinition*>(item->definition().get());
-      qtIntValidator* validator = new qtIntValidator(this, elementIdx, editBox, pWidget);
-      editBox->setValidator(validator);
-      editBox->setFixedWidth(100);
-
-      int value = smtk_INT_MIN;
-      if (iDef->hasMinRange())
-      {
-        value = iDef->minRangeInclusive() ? iDef->minRange() : iDef->minRange() + 1;
-        validator->setBottom(value);
-        QString inclusive = iDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
-        tooltip.append("Min(").append(inclusive).append("): ").append(
-          QString::number(iDef->minRange()));
-      }
-      value = smtk_INT_MAX;
-      if (iDef->hasMaxRange())
-      {
-        value = iDef->maxRangeInclusive() ? iDef->maxRange() : iDef->maxRange() - 1;
-        validator->setTop(value);
-        if (!tooltip.isEmpty())
-        {
-          tooltip.append("; ");
-        }
-        QString inclusive = iDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
-        tooltip.append("Max(").append(inclusive).append("): ").append(
-          QString::number(iDef->maxRange()));
-      }
-      if (iDef->hasDefault())
-      {
-        value = iDef->defaultValue(elementIdx);
-        tooltip.append("Default: ").append(QString::number(value));
-      }
-
-      smtk::attribute::IntItemPtr iItem = dynamic_pointer_cast<IntItem>(item);
-      if (item->isSet(elementIdx))
-      {
-        editBox->setText(item->valueAsString(elementIdx).c_str());
-      }
-      inputWidget = editBox;
+      inputWidget = this->createIntWidget(elementIdx, item, pWidget, tooltip);
       break;
     }
     case smtk::attribute::Item::StringType:
@@ -1110,6 +1220,90 @@ void qtInputsItem::onLineEditFinished()
   this->onInputValueChanged(QObject::sender());
 }
 
+void qtInputsItem::doubleValueChanged(double newVal)
+{
+  auto obj = QObject::sender();
+  auto senderWidget = qobject_cast<QWidget*>(obj);
+  auto ditem = m_itemInfo.itemAs<DoubleItem>();
+  if (!ditem)
+  {
+    return;
+  }
+
+  int elementIdx = obj->property("ElementIndex").toInt();
+  bool isDefault = false;
+  bool valChanged = false;
+  bool isInvalid = false;
+
+  double val = ditem->value(elementIdx);
+  if ((ditem->isExpression(elementIdx) || !ditem->isSet(elementIdx)) || val != newVal)
+  {
+    ditem->setValue(elementIdx, newVal);
+    valChanged = true;
+  }
+  // Lets determine if the item is set to the default value -
+  isDefault = ditem->isUsingDefault(elementIdx);
+  isInvalid = !ditem->isSet(elementIdx);
+  qtBaseView* bview = m_itemInfo.baseView();
+  if (valChanged)
+  {
+    if (bview != NULL)
+    {
+      bview->valueChanged(ditem);
+    }
+    emit this->modified();
+  }
+  if (bview != NULL)
+  {
+    qtUIManager* uimanager = bview->uiManager();
+    isDefault ? uimanager->setWidgetColorToDefault(senderWidget)
+              : (isInvalid ? uimanager->setWidgetColorToInvalid(senderWidget)
+                           : uimanager->setWidgetColorToNormal(senderWidget));
+  }
+}
+
+void qtInputsItem::intValueChanged(int newVal)
+{
+  auto obj = QObject::sender();
+  auto senderWidget = qobject_cast<QWidget*>(obj);
+  auto iitem = m_itemInfo.itemAs<IntItem>();
+  if (!iitem)
+  {
+    return;
+  }
+
+  int elementIdx = obj->property("ElementIndex").toInt();
+  bool isDefault = false;
+  bool valChanged = false;
+  bool isInvalid = false;
+
+  int val = iitem->value(elementIdx);
+  if ((iitem->isExpression(elementIdx) || !iitem->isSet(elementIdx)) || val != newVal)
+  {
+    iitem->setValue(elementIdx, newVal);
+    valChanged = true;
+  }
+  // Lets determine if the item is set to the default value -
+  isDefault = iitem->isUsingDefault(elementIdx);
+  isInvalid = !iitem->isSet(elementIdx);
+  qtBaseView* bview = m_itemInfo.baseView();
+  if (valChanged)
+  {
+    if (bview != NULL)
+    {
+      bview->valueChanged(iitem);
+    }
+    emit this->modified();
+  }
+  if (bview != NULL)
+  {
+    qtUIManager* uimanager = bview->uiManager();
+    isDefault ? uimanager->setWidgetColorToDefault(senderWidget)
+              : (isInvalid ? uimanager->setWidgetColorToInvalid(senderWidget)
+                           : uimanager->setWidgetColorToNormal(senderWidget));
+  }
+}
+
 void qtInputsItem::onInputValueChanged(QObject* obj)
 {
   QLineEdit* const editBox = qobject_cast<QLineEdit*>(obj);
@@ -1127,7 +1321,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   {
     inputBox = textBox;
   }
-  auto rawitem = this->valueItem();
+  auto rawitem = m_itemInfo.itemAs<ValueItem>();
   if (!rawitem)
   {
     return;
@@ -1204,7 +1398,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   // Lets determine if the item is set to the default value -
   isDefault = rawitem->isUsingDefault(elementIdx);
   isInvalid = !rawitem->isSet(elementIdx);
-  qtBaseView* bview = this->baseView();
+  qtBaseView* bview = m_itemInfo.baseView();
   if (valChanged)
   {
     if (bview != NULL)

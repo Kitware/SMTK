@@ -32,8 +32,8 @@ class SMTKQTEXT_EXPORT qtDateTimeItem : public qtItem
   Q_OBJECT
 
 public:
-  qtDateTimeItem(smtk::attribute::DateTimeItemPtr, QWidget* p, qtBaseView* bview,
-    Qt::Orientation enumOrient = Qt::Horizontal);
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  qtDateTimeItem(const AttributeItemInfo& info);
   virtual ~qtDateTimeItem();
   void setLabelVisible(bool) override;
 
@@ -59,7 +59,6 @@ protected slots:
   void onRegionSelected();
 
 protected:
-  smtk::attribute::DateTimeItemPtr datetimeItem();
   void createWidget() override;
   QWidget* createDateTimeWidget(int elementIdx);
   virtual void loadInputValues();

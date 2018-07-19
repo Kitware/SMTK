@@ -166,6 +166,7 @@ public:
   std::string m_unSetVal;
   int m_selectionObserverId;
   smtk::model::ResourcePtr m_modelResource;
+  std::map<std::string, smtk::view::View::Component> m_attCompMap;
 };
 
 qtBaseView* qtModelEntityAttributeView::createViewWidget(const ViewInfo& info)
@@ -553,8 +554,16 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
   int tmpLen = this->uiManager()->getWidthOfAttributeMaxLabel(
     att->definition(), this->uiManager()->advancedFont());
   this->setFixedLabelWidth(tmpLen);
-
-  this->Internals->CurrentAtt = new qtAttribute(att, this->Internals->AttFrame, this);
+  auto it = this->Internals->m_attCompMap.find(att->definition()->type());
+  if (it != this->Internals->m_attCompMap.end())
+  {
+    this->Internals->CurrentAtt = new qtAttribute(att, it->second, this->Internals->AttFrame, this);
+  }
+  else
+  {
+    smtk::view::View::Component comp;
+    this->Internals->CurrentAtt = new qtAttribute(att, comp, this->Internals->AttFrame, this);
+  }
   // By default use the basic layout with no model associations since this class
   // takes care of it
   this->Internals->CurrentAtt->createBasicLayout(false);
@@ -616,6 +625,11 @@ void qtModelEntityAttributeView::getAllDefinitions()
     }
 
     attDef = resource->findDefinition(defName);
+    if (attDef == nullptr)
+    {
+      continue;
+    }
+    this->Internals->m_attCompMap[defName] = attsComp.child(i);
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);
   }

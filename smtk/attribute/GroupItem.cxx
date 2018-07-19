@@ -99,7 +99,7 @@ bool GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
 
 void GroupItem::reset()
 {
-  const GroupItemDefinition* def = dynamic_cast<const GroupItemDefinition*>(m_definition.get());
+  const GroupItemDefinition* def = static_cast<const GroupItemDefinition*>(m_definition.get());
   std::size_t i, n = def->numberOfRequiredGroups();
   if (this->numberOfGroups() != n)
   {
