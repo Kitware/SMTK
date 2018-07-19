@@ -1,6 +1,6 @@
 <AttDef Type="operation" Label="operation" Abstract="True">
 <ItemDefinitions>
-  <Int Name="debug level" Optional="True">
+  <Int Name="debug level" Optional="True" AdvanceLevel="11">
     <DefaultValue>0</DefaultValue>
   </Int>
 </ItemDefinitions>
