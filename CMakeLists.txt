@@ -27,7 +27,7 @@ project(SMTK)
 
 # Remove SMTKTargets.cmake at the beginning of each CMake run; each time
 # a library is declared below, the file is appended and we do not want
-# to keep appending over multiple runs.
+# to keep appending over multiple runs
 file(REMOVE ${PROJECT_BINARY_DIR}/SMTKTargets.cmake)
 
 #Add our Cmake directory to the module search path
