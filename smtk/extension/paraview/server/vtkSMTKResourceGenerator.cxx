@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/resource/Manager.h"
@@ -21,15 +21,15 @@
 
 using namespace smtk;
 
-vtkCxxSetObjectMacro(vtkSMTKResourceSource, Wrapper, vtkSMTKWrapper);
+vtkCxxSetObjectMacro(vtkSMTKResourceGenerator, Wrapper, vtkSMTKWrapper);
 
-vtkSMTKResourceSource::vtkSMTKResourceSource()
+vtkSMTKResourceGenerator::vtkSMTKResourceGenerator()
 {
   this->Wrapper = nullptr;
   this->SetNumberOfInputPorts(0);
 }
 
-vtkSMTKResourceSource::~vtkSMTKResourceSource()
+vtkSMTKResourceGenerator::~vtkSMTKResourceGenerator()
 {
   if (this->Wrapper)
   {
@@ -38,18 +38,18 @@ vtkSMTKResourceSource::~vtkSMTKResourceSource()
   this->SetWrapper(nullptr);
 }
 
-void vtkSMTKResourceSource::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKResourceGenerator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "Wrapper: " << this->Wrapper << "\n";
 }
 
-smtk::resource::Resource::Ptr vtkSMTKResourceSource::GetResource() const
+smtk::resource::Resource::Ptr vtkSMTKResourceGenerator::GetResource() const
 {
   return smtk::resource::Resource::Ptr();
 }
 
-void vtkSMTKResourceSource::DropResource()
+void vtkSMTKResourceGenerator::DropResource()
 {
   auto rsrc = this->GetResource();
   if (!rsrc)

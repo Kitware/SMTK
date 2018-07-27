@@ -102,36 +102,26 @@ std::string xmlForSMTKImporter(
   std::stringstream s;
   s << "<ServerManagerConfiguration>\n";
   s << "  <ProxyGroup name=\"sources\">\n";
-  s << "    <SourceProxy name=\"SMTKModelImporter_" << i++ << " \" class=\"vtkSMTKModelImporter\" ";
+  s << "    <SourceProxy name=\"SMTKModelImporter_" << i++ << " \" class=\"vtkSMTKSource\" ";
   s << "label=\"SMTK importer for " << description << " into " << resource << "\">\n";
   s << "      <Documentation>\n";
   s << "        short_help=\"Import a " << description << " as an SMTK " << resource << ".\"\n";
   s << "      </Documentation>\n";
 
   s << R"(
-      <StringVectorProperty
-        name="FileName"
-        command="SetFileName"
-        animateable="0"
-        number_of_elements="1">
-        <FileListDomain name="files"/>
-        <Documentation>
-          The path of a file to read.
-        </Documentation>
-      </StringVectorProperty>)";
-  s << "\n";
+      <SubProxy command="SetResourceGenerator">
+        <Proxy name="ResourceGenerator"
+               proxygroup="smtk_internal_sources"
+               proxyname="SMTKModelImporter">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="FileName" />)";
+  s << "\n          <Property name=\"ResourceName\" default_values=\"" << resource << "\" "
+    << "panel_visibility=\"never\"/>\n";
   s << R"(
-      <StringVectorProperty
-        name="ResourceName"
-        command="SetResourceName"
-        number_of_elements="1")";
-  s << "\n        default_values=\"" <<  resource << "\"\n";
-  s << R"(
-       panel_visibility="never">
-        <Documentation>
-          The resource type into which the file is imported.
-        </Documentation>
-      </StringVectorProperty>
+        </ExposedProperties>
+      </SubProxy>
+
       <OutputPort index="0" name="model entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>

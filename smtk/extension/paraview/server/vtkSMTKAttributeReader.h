@@ -10,23 +10,23 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKAttributeReader_h
 #define smtk_extension_paraview_server_vtkSMTKAttributeReader_h
 
-#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
 
 #include "smtk/PublicPointerDefs.h"
 
-#include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"
 #include "vtkSmartPointer.h"
+#include "vtkTrivialProducer.h"
 
 class vtkSMTKWrapper;
 class vtkTable;
 
 /**\brief Use SMTK to provide a ParaView-friendly attribute source.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKAttributeReader : public vtkSMTKResourceSource
+class SMTKPVSERVEREXT_EXPORT vtkSMTKAttributeReader : public vtkSMTKResourceGenerator
 {
 public:
-  vtkTypeMacro(vtkSMTKAttributeReader, vtkSMTKResourceSource);
+  vtkTypeMacro(vtkSMTKAttributeReader, vtkSMTKResourceGenerator);
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKAttributeReader* New();
 
@@ -38,11 +38,11 @@ public:
   vtkSetMacro(IncludePathToFile, bool);
   vtkGetMacro(IncludePathToFile, bool);
 
+  /// Return the VTK algorithm used to convert the SMTK attribute into a multiblock.
+  vtkTrivialProducer* GetConverter() const override;
+
   /// Return the SMTK resource that holds data read from \a FileName.
   smtk::resource::ResourcePtr GetResource() const override;
-
-  /// Return the SMTK attribute resource that holds data read from \a FileName.
-  smtk::attribute::ResourcePtr GetSMTKResource() const;
 
 protected:
   vtkSMTKAttributeReader();
@@ -57,6 +57,7 @@ protected:
   bool IncludePathToFile;
   smtk::attribute::ResourcePtr AttributeResource;
   vtkSmartPointer<vtkTable> Defs;
+  vtkNew<vtkTrivialProducer> AttributeSource;
 
 private:
   vtkSMTKAttributeReader(const vtkSMTKAttributeReader&) = delete;

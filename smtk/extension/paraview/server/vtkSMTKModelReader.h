@@ -10,7 +10,9 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKModelReader_h
 #define smtk_extension_paraview_server_vtkSMTKModelReader_h
 
-#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
+
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -18,7 +20,6 @@
 #include "vtkNew.h"
 #include "vtkSmartPointer.h"
 
-class vtkModelMultiBlockSource;
 class vtkSMTKWrapper;
 
 /**\brief Use SMTK to provide a ParaView-friendly model source.
@@ -27,10 +28,10 @@ class vtkSMTKWrapper;
   * manager are used to load the file (or perhaps in the future to create a new resource).
   * Otherwise SMTK's default environment is used.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelReader : public vtkSMTKResourceSource
+class SMTKPVSERVEREXT_EXPORT vtkSMTKModelReader : public vtkSMTKResourceGenerator
 {
 public:
-  vtkTypeMacro(vtkSMTKModelReader, vtkSMTKResourceSource);
+  vtkTypeMacro(vtkSMTKModelReader, vtkSMTKResourceGenerator);
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKModelReader* New();
 
@@ -38,14 +39,11 @@ public:
   vtkGetStringMacro(FileName);
   vtkSetStringMacro(FileName);
 
-  /// Return the VTK algorithm used to read the SMTK file.
-  vtkModelMultiBlockSource* GetModelSource() { return this->ModelSource.GetPointer(); }
+  /// Return the VTK algorithm used to convert the SMTK model into a multiblock.
+  vtkModelMultiBlockSource* GetConverter() const override;
 
   /// Return the SMTK resource that holds data read from \a FileName.
   smtk::resource::ResourcePtr GetResource() const override;
-
-  /// Return the SMTK model resource that holds data read from \a FileName.
-  smtk::model::ResourcePtr GetSMTKResource() const;
 
 protected:
   vtkSMTKModelReader();

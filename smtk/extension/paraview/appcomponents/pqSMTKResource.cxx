@@ -14,11 +14,18 @@
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
-#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
+#include "smtk/extension/paraview/server/vtkSMTKSource.h"
 
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/operation/Manager.h"
+
+#include "vtkSMSourceProxy.h"
+
+#ifndef NDEBUG
 #include <iostream>
+#endif
 
 pqSMTKResource::pqSMTKResource(
   const QString& grp, const QString& name, vtkSMProxy* proxy, pqServer* server, QObject* parent)
@@ -37,6 +44,22 @@ pqSMTKResource::pqSMTKResource(
     m_lastResource = rsrc;
   }
   QObject::connect(this, SIGNAL(dataUpdated(pqPipelineSource*)), this, SLOT(synchronizeResource()));
+
+  // Define an observer that adds all created resources to the resource manager.
+  m_key = rsrcMgr->smtkOperationManager()->observers().insert(
+    [=](std::shared_ptr<smtk::operation::Operation>, smtk::operation::EventType event,
+      smtk::operation::Operation::Result result) {
+      if (event == smtk::operation::EventType::DID_OPERATE)
+      {
+        this->getSourceProxy()->MarkDirty(proxy);
+        this->setModifiedState(pqProxy::MODIFIED);
+        proxy->MarkAllPropertiesAsModified();
+        vtkObject::SafeDownCast(proxy->GetClientSideObject())->Modified();
+        proxy->UpdateVTKObjects();
+        this->renderAllViews();
+      }
+      return 0;
+    });
 }
 
 pqSMTKResource::~pqSMTKResource()
@@ -59,6 +82,12 @@ pqSMTKResource::~pqSMTKResource()
 #endif
         rsrcMgr->remove(lastRsrc);
       }
+
+      auto opMgr = rsrcMgrPxy->smtkOperationManager();
+      if (opMgr)
+      {
+        opMgr->observers().erase(m_key);
+      }
     }
   }
 #ifndef NDEBUG
@@ -73,14 +102,14 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   smtk::resource::ResourcePtr rsrc;
   auto pxy = this->getProxy()->GetClientSideObject();
   // std::cout << "get resource from " << pxy->GetClassName() << "\n";
-  auto smtkRsrcRdr = vtkSMTKResourceSource::SafeDownCast(pxy);
-  rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetResource() : nullptr;
+  auto smtkRsrcRdr = vtkSMTKSource::SafeDownCast(pxy);
+  rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetResourceGenerator()->GetResource() : nullptr;
   if (rsrc)
   {
     return rsrc;
   }
   auto smtkAttributeRdr = vtkSMTKAttributeReader::SafeDownCast(pxy);
-  rsrc = smtkAttributeRdr ? smtkAttributeRdr->GetSMTKResource() : nullptr;
+  rsrc = smtkAttributeRdr ? smtkAttributeRdr->GetResource() : nullptr;
   if (rsrc)
   {
     return rsrc;
