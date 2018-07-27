@@ -20,7 +20,8 @@ set(serverWrappedSrcs
   vtkSMTKModelImporter.cxx
   vtkSMTKModelCreator.cxx
   vtkSMTKModelReader.cxx
-  vtkSMTKResourceSource.cxx
+  vtkSMTKResourceGenerator.cxx
+  vtkSMTKSource.cxx
   vtkSMSMTKWrapperProxy.cxx
   vtkSMTKWrapper.cxx
   vtkSMSMTKModelRepresentationProxy.cxx
@@ -33,7 +34,8 @@ set(serverWrappedHdrs
   vtkSMTKModelImporter.h
   vtkSMTKModelCreator.h
   vtkSMTKModelReader.h
-  vtkSMTKResourceSource.h
+  vtkSMTKResourceGenerator.h
+  vtkSMTKSource.h
   vtkSMSMTKWrapperProxy.h
   vtkSMTKWrapper.h
   vtkSMSMTKModelRepresentationProxy.h

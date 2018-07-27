@@ -12,17 +12,18 @@
 
 #include "smtk/extension/paraview/server/Exports.h"
 
-#include "vtkSMTKResourceSource.h"
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
-class vtkModelMultiBlockSource;
+#include "vtkSMTKResourceGenerator.h"
+
 class vtkSMTKWrapper;
 
 /**\brief A class for SMTK-based model sources.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelCreator : public vtkSMTKResourceSource
+class SMTKPVSERVEREXT_EXPORT vtkSMTKModelCreator : public vtkSMTKResourceGenerator
 {
 public:
-  vtkTypeMacro(vtkSMTKModelCreator, vtkSMTKResourceSource);
+  vtkTypeMacro(vtkSMTKModelCreator, vtkSMTKResourceGenerator);
   void PrintSelf(ostream& os, vtkIndent indent) override;
   static vtkSMTKModelCreator* New();
 
@@ -34,14 +35,11 @@ public:
   vtkGetStringMacro(Parameters);
   vtkSetStringMacro(Parameters);
 
-  /// Return the VTK algorithm used to read the SMTK file.
-  vtkModelMultiBlockSource* GetModelSource() { return this->ModelSource.GetPointer(); }
+  /// Return the VTK algorithm used to convert the SMTK model into a multiblock.
+  vtkModelMultiBlockSource* GetConverter() const override;
 
   /// Return the SMTK resource that holds data read from \a FileName.
   smtk::resource::ResourcePtr GetResource() const override;
-
-  /// Return the SMTK model resource that holds data read from \a FileName.
-  smtk::model::ResourcePtr GetSMTKResource() const;
 
 protected:
   vtkSMTKModelCreator();

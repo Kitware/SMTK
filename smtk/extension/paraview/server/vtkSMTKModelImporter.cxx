@@ -11,7 +11,6 @@
 
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
@@ -70,14 +69,14 @@ void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKModelImporter::GetResource() const
+vtkModelMultiBlockSource* vtkSMTKModelImporter::GetConverter() const
 {
-  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->GetSMTKResource());
+  return this->ModelSource.GetPointer();
 }
 
-smtk::model::ResourcePtr vtkSMTKModelImporter::GetSMTKResource() const
+smtk::resource::ResourcePtr vtkSMTKModelImporter::GetResource() const
 {
-  return this->ModelSource->GetModelResource();
+  return std::static_pointer_cast<smtk::resource::Resource>(this->ModelSource->GetModelResource());
 }
 
 /// Generate polydata from an smtk::model with tessellation information.

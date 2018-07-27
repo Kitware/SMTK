@@ -78,7 +78,18 @@
     </SMTKWrapperProxy>
   </ProxyGroup>
 
-  <ProxyGroup name="sources">
+  <!--
+       smtk_internal_sources are the sources that generate SMTK resources and
+       their corresponding vtkMultiBlockDataSets. They are not exposed as
+       readers or sources because they are used as subproxies to vtkSMTKSource,
+       which facilitates the modification of the resource in situ without
+       triggering a regeneration of the resource.
+
+       NB: when adding a source proxy to this group, you must also add a source
+       proxy that instances vtkSMTKSource and has the new source proxy as its
+       subproxy in the "sources" section below.
+  -->
+  <ProxyGroup name="smtk_internal_sources">
     <SourceProxy name="SMTKModelReader" class="vtkSMTKModelReader" label="SMTK Model Reader">
       <Documentation
         short_help="Read an SMTK Geometry file."
@@ -240,7 +251,97 @@
                        file_description="CMB Point, Edge and Surface Geometry Files" />
       </Hints>
     </SourceProxy>
-    <!-- ==================================================================== -->
+  </ProxyGroup>
+
+  <ProxyGroup name="sources">
+    <!--
+        We describe an instance of vtkSMTKSource with a subproxy for each of the
+        internal sources described in smtk_internal_sources. This pattern
+        facilitates the modification of the resource in situ without triggering
+        a regeneration of the resource.
+    -->
+    <SourceProxy class="vtkSMTKSource" name="SMTKModelReader">
+      <Documentation
+        short_help="Read an SMTK Resource file."
+        long_help="Read an SMTK Resource file as a set of multiblock datasets.">
+      </Documentation>
+      <SubProxy command="SetResourceGenerator">
+        <Proxy name="ResourceGenerator"
+               proxygroup="smtk_internal_sources"
+               proxyname="SMTKModelReader">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="FileName" />
+        </ExposedProperties>
+      </SubProxy>
+      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
+      <Hints>
+        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
+    </SourceProxy>
+
+    <SourceProxy class="vtkSMTKSource" name="SMTKModelCreator">
+      <Documentation
+        short_help="Create an SMTK resource.">
+      </Documentation>
+      <SubProxy command="SetResourceGenerator">
+        <Proxy name="ResourceGenerator"
+               proxygroup="smtk_internal_sources"
+               proxyname="SMTKModelCreator">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="TypeName" />
+          <Property name="Parameters" />
+        </ExposedProperties>
+      </SubProxy>
+      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
+    </SourceProxy>
+
+    <SourceProxy class="vtkSMTKSource" name="SMTKModelImporter">
+      <Documentation
+        short_help="Import an SMTK resource."
+        long_help="Import a file as an SMTK Resource.">
+      </Documentation>
+      <SubProxy command="SetResourceGenerator">
+        <Proxy name="ResourceGenerator"
+               proxygroup="smtk_internal_sources"
+               proxyname="SMTKModelImporter">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="FileName" />
+          <Property name="ResourceName" />
+        </ExposedProperties>
+      </SubProxy>
+      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
+    </SourceProxy>
+
+    <SourceProxy class="vtkSMTKSource" name="SMTKAttributeReader">
+      <Documentation
+        short_help="Read an SMTK attribute file."
+        long_help="Read an SMTK attribute file as a set of multiblock datasets.">
+      </Documentation>
+      <SubProxy command="SetResourceGenerator">
+        <Proxy name="ResourceGenerator"
+               proxygroup="smtk_internal_sources"
+               proxyname="SMTKAttributeReader">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="FileName" />
+        </ExposedProperties>
+      </SubProxy>
+      <OutputPort index="0" name="attributes"/>
+      <Hints>
+        <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
+      </Hints>
+    </SourceProxy>
+
     <SourceProxy name="LIDARReader"
       class="vtkLIDARReader"
       label="LIDAR reader">

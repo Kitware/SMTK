@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
-#include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
+#include "smtk/extension/paraview/server/vtkSMTKSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/view/Selection.h"
@@ -192,7 +192,6 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
   // in between each "actual" algorithm on the client and what we get passed as
   // the port on the server side.
   std::set<smtk::resource::ComponentPtr> seln;
-  //auto smtkThing = dynamic_cast<vtkSMTKModelReader*>(this->SelectedPort->GetProducer());
   auto smtkThing = this->SelectedPort->GetProducer();
   auto mbdsThing =
     smtkThing ? dynamic_cast<vtkMultiBlockDataSet*>(smtkThing->GetOutputDataObject(0)) : nullptr;
@@ -220,13 +219,14 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
       {
         // Go up the pipeline until we get to something that has an smtk resource:
         vtkAlgorithm* alg = smtkThing;
-        while (alg && !vtkSMTKModelReader::SafeDownCast(alg))
+        while (alg && !vtkSMTKSource::SafeDownCast(alg))
         { // TODO: Also stop when we get to a mesh source...
           alg = alg->GetInputAlgorithm(0, 0);
         }
         // Now we have a resource:
         smtk::model::ResourcePtr mResource = alg
-          ? dynamic_cast<vtkSMTKModelReader*>(alg)->GetModelSource()->GetModelResource()
+          ? std::dynamic_pointer_cast<smtk::model::Resource>(
+              dynamic_cast<vtkSMTKSource*>(alg)->GetResourceGenerator()->GetResource())
           : nullptr;
         auto mit = mbdsThing->NewIterator();
         for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
@@ -261,17 +261,21 @@ void vtkSMTKWrapper::AddResourceFilter(json& response)
   if (rsrcThing)
   {
     vtkAlgorithm* alg = rsrcThing;
-    vtkSMTKResourceSource* resourceSrc = nullptr;
+    vtkSMTKSource* resourceSrc = nullptr;
 
     // Recursively walk up ParaView's pipeline until we encounter one of our
-    // creation filters (marked by inheritence from vtkSMTKResourceSource).
-    while (alg && !(resourceSrc = vtkSMTKResourceSource::SafeDownCast(alg)))
+    // creation filters (marked by inheritence from vtkSMTKSource).
+    while (alg && !(resourceSrc = vtkSMTKSource::SafeDownCast(alg)))
     {
       alg = alg->GetInputAlgorithm(0, 0);
     }
     if (resourceSrc)
     {
-      resourceSrc->SetWrapper(this);
+      auto resourceGen = resourceSrc->GetResourceGenerator();
+      if (resourceGen)
+      {
+        resourceGen->SetWrapper(this);
+      }
       found = true;
       response["result"] = {
         { "success", true },
@@ -293,15 +297,20 @@ void vtkSMTKWrapper::RemoveResourceFilter(json& response)
   if (rsrcThing)
   {
     vtkAlgorithm* alg = rsrcThing;
-    while (alg && !vtkSMTKModelReader::SafeDownCast(alg))
-    { // TODO: Also stop when we get to a mesh/attrib/etc source...
+    while (alg && !vtkSMTKSource::SafeDownCast(alg))
+    {
       alg = alg->GetInputAlgorithm(0, 0);
     }
-    auto src = vtkSMTKModelReader::SafeDownCast(alg);
+    auto src = vtkSMTKSource::SafeDownCast(alg);
     if (src)
     {
-      src->DropResource(); // Remove any resource src holds from the resource manager it uses.
-      src->SetWrapper(nullptr);
+      auto resourceGen = src->GetResourceGenerator();
+      if (resourceGen)
+      {
+        // Remove any resource src holds from the resource manager it uses.
+        resourceGen->DropResource();
+        resourceGen->SetWrapper(nullptr);
+      }
       response["result"] = {
         { "success", true },
       };

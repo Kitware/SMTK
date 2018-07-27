@@ -58,14 +58,14 @@ void vtkSMTKAttributeReader::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "IncludePathToFile: " << this->IncludePathToFile << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKAttributeReader::GetResource() const
+vtkTrivialProducer* vtkSMTKAttributeReader::GetConverter() const
 {
-  return std::dynamic_pointer_cast<smtk::resource::Resource>(this->GetSMTKResource());
+  return this->AttributeSource.GetPointer();
 }
 
-smtk::attribute::ResourcePtr vtkSMTKAttributeReader::GetSMTKResource() const
+smtk::resource::ResourcePtr vtkSMTKAttributeReader::GetResource() const
 {
-  return this->AttributeResource;
+  return std::static_pointer_cast<smtk::resource::Resource>(this->AttributeResource);
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
@@ -91,6 +91,8 @@ int vtkSMTKAttributeReader::RequestData(vtkInformation* vtkNotUsed(request),
     // Something changed. Probably the FileName.
     this->LoadFile();
   }
+
+  this->AttributeSource->SetOutput(entitySource);
 
   entitySource->SetNumberOfBlocks(1);
   // entitySource->SetBlock(0, this->Defs);

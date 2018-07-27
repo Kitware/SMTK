@@ -14,6 +14,8 @@
 
 #include "smtk/extension/paraview/appcomponents/Exports.h"
 
+#include "smtk/operation/Observer.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 /**\brief A pqPipelineSource subclass for VTK algorithms that own SMTK resources.
@@ -50,8 +52,8 @@ signals:
 protected slots:
   /**\brief Keep the pqSMTKResource and smtk::resource::Resource in sync.
     *
-    * This is called when the ParaView pipeline source (vtkSMTKModelReader or such)
-    * has had its data modified. This can be the result of a filename change that
+    * This is called when the ParaView pipeline source (vtkSMTKSource) has had
+    * its data modified. This can be the result of a filename change that
     * means the old SMTK resource should be removed from the manager and a new one
     * added. It may also be an unrelated change resulting in a modified resource, but
     * these changes should be tracked by the operation manager, not ParaView signals/slots.
@@ -60,5 +62,7 @@ protected slots:
 
 protected:
   smtk::resource::WeakResourcePtr m_lastResource;
+
+  smtk::operation::Observers::Key m_key;
 };
 #endif // smtk_extension_paraview_appcomponents_pqSMTKResource_h
