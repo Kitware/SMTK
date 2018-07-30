@@ -36,6 +36,8 @@ public:
 
   static PhraseModelPtr create(const ViewPtr& view);
 
+  bool setResourceFilters(const std::multimap<std::string, std::string>& src);
+
 protected:
   ResourcePhraseModel();
 
@@ -53,6 +55,7 @@ protected:
 
   smtk::view::DescriptivePhrasePtr m_root;
   std::set<smtk::resource::ResourcePtr> m_resources;
+  std::multimap<std::string, std::string> m_resourceFilters;
 };
 }
 }

@@ -109,7 +109,8 @@ void pqExportSimulationReaction::exportSimulation()
 
     // Create a new UI for the dialog.
     QSharedPointer<smtk::extension::qtUIManager> uiManager =
-      QSharedPointer<smtk::extension::qtUIManager>(new smtk::extension::qtUIManager(exportOp));
+      QSharedPointer<smtk::extension::qtUIManager>(
+        new smtk::extension::qtUIManager(exportOp, wrapper->smtkResourceManager()));
 
     // Create an operation view for the operation.
     smtk::view::ViewPtr view = uiManager->findOrCreateOperationView();
