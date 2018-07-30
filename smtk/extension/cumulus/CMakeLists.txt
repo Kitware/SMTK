@@ -23,6 +23,7 @@ set(src
   utils.cxx
   cumuluswidget.cxx
   mainwindow.cxx
+  pqCumulusJobsPanel.cxx
 )
 
 #add moc files
@@ -36,6 +37,7 @@ set(mochdrs
   jobview.h
   logindialog.h
   mainwindow.h
+  pqCumulusJobsPanel.h
 )
 qt5_wrap_cpp(moc_srcs ${mochdrs})
 
@@ -80,6 +82,39 @@ target_link_libraries(cumulus
   smtkCumulusExt
   cJSON
 )
+
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  add_paraview_dock_window(cumulusJobsPanelIfaces cumulusJobsPanelIfaceSrcs
+    CLASS_NAME pqCumulusJobsPanel
+    )
+  list(APPEND PLUGIN_DOCK_IFACES ${cumulusJobsPanelIfaces})
+  list(APPEND PLUGIN_DOCK_IFACES_SRCS ${cumulusJobsPanelIfaceSrcs})
+
+  add_paraview_plugin(
+    smtkPQCumulusJobsPlugin "1.0"
+    GUI_INTERFACES
+    ${PLUGIN_ACTION_IFACES}
+    ${PLUGIN_AUTOSTART_IFACES}
+    ${PLUGIN_PROXY_IFACES}
+    ${PLUGIN_DOCK_IFACES}
+    GUI_SOURCES
+    ${Headers}
+    ${Sources}
+    ${PLUGIN_MOC_SRCS}
+    ${PLUGIN_ACTION_IFACE_SRCS}
+    ${PLUGIN_AUTOSTART_IFACE_SRCS}
+    ${PLUGIN_PROXY_IFACE_SRCS}
+    ${PLUGIN_DOCK_IFACES_SRCS}
+    )
+  set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPQCumulusJobsPlugin" CACHE INTERNAL "")
+
+  target_link_libraries(smtkPQCumulusJobsPlugin
+    LINK_PUBLIC
+    smtkCumulusExt
+    )
+
+  smtk_install_library(smtkPQCumulusJobsPlugin)
+endif()
 
 if (SMTK_ENABLE_TESTING)
   # Make header compilation tests link properly:
