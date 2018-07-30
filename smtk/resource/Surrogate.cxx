@@ -75,6 +75,12 @@ bool Surrogate::fetch(const ManagerPtr& manager) const
 
 bool Surrogate::resolve(const ResourcePtr& resource) const
 {
+  // If the resource is invalid, there's not much we can do.
+  if (resource == nullptr)
+  {
+    return false;
+  }
+
   // For now, let's only check that the type name and id are equivalent. The
   // type index check should be equivalent to the type name check, and resource
   // locations may yet be allowed to change.
