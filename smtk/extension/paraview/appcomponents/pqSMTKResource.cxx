@@ -48,7 +48,7 @@ pqSMTKResource::pqSMTKResource(
   // Define an observer that adds all created resources to the resource manager.
   m_key = rsrcMgr->smtkOperationManager()->observers().insert(
     [=](std::shared_ptr<smtk::operation::Operation>, smtk::operation::EventType event,
-      smtk::operation::Operation::Result result) {
+      smtk::operation::Operation::Result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
         this->getSourceProxy()->MarkDirty(proxy);
