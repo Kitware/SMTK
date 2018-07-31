@@ -28,6 +28,8 @@ public:
   smtkTypeMacro(smtk::attribute::ResourceItemDefinition);
   smtkSuperclassMacro(ReferenceItemDefinition);
 
+  using ReferenceItemDefinition::setAcceptsEntries;
+
   static smtk::attribute::ResourceItemDefinitionPtr New(const std::string& sname)
   {
     return smtk::attribute::ResourceItemDefinitionPtr(new ResourceItemDefinition(sname));
@@ -47,6 +49,11 @@ public:
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
+
+  bool setAcceptsEntries(const std::string& typeName, bool accept)
+  {
+    return ReferenceItemDefinition::setAcceptsEntries(typeName, "", accept);
+  }
 
 protected:
   ResourceItemDefinition(const std::string& myName);

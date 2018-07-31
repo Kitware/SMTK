@@ -51,7 +51,8 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
 
 public:
   qtUIManager(smtk::attribute::ResourcePtr resource);
-  qtUIManager(smtk::operation::OperationPtr operation);
+  qtUIManager(
+    smtk::operation::OperationPtr operation, smtk::resource::ManagerPtr resourceManager = nullptr);
   virtual ~qtUIManager();
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);

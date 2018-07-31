@@ -51,6 +51,36 @@ DescriptivePhrasePtr ResourcePhraseModel::root() const
   return m_root;
 }
 
+bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, std::string>& src)
+{
+  if (src == m_resourceFilters)
+  {
+    return false;
+  }
+
+  m_resourceFilters = src;
+
+  // Filter out current entries that do not pass the filter
+  DescriptivePhrases children(m_root->subphrases());
+  children.erase(std::remove_if(children.begin(), children.end(),
+                   [this](const DescriptivePhrase::Ptr& phr) -> bool {
+                     bool acceptable = false;
+                     for (auto& filter : m_resourceFilters)
+                     {
+                       if (phr->relatedResource()->isOfType(filter.first))
+                       {
+                         acceptable = true;
+                         break;
+                       }
+                     }
+                     return acceptable == false;
+                   }),
+    children.end());
+  this->updateChildren(m_root, children, std::vector<int>());
+
+  return true;
+}
+
 void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event)
 {
   this->processResource(rsrc, event == smtk::resource::Event::RESOURCE_ADDED);
@@ -122,6 +152,22 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
   {
     if (m_resources.find(rsrc) == m_resources.end())
     {
+      // Only attempt to filter resource out if there are filters defined.
+      bool acceptable = m_resourceFilters.empty() ? true : false;
+      for (auto filter : m_resourceFilters)
+      {
+        if (rsrc->isOfType(filter.first))
+        {
+          acceptable = true;
+          break;
+        }
+      }
+
+      if (!acceptable)
+      {
+        return;
+      }
+
       m_resources.insert(rsrc);
       DescriptivePhrases children(m_root->subphrases());
       children.push_back(smtk::view::ResourcePhraseContent::createPhrase(rsrc, 0, m_root));

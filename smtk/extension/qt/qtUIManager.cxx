@@ -26,6 +26,7 @@
 #include "smtk/extension/qt/qtModelEntityAttributeView.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperationView.h"
+#include "smtk/extension/qt/qtResourceItem.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
@@ -68,6 +69,8 @@
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -95,11 +98,14 @@ qtUIManager::qtUIManager(smtk::attribute::ResourcePtr resource)
   , m_attResource(resource)
   , m_useInternalFileBrowser(false)
 {
+  m_resourceManager = m_attResource ? m_attResource->manager() : nullptr;
   this->commonConstructor();
 }
 
-qtUIManager::qtUIManager(smtk::operation::OperationPtr op)
+qtUIManager::qtUIManager(
+  smtk::operation::OperationPtr op, smtk::resource::ManagerPtr resourceManager)
   : m_parentWidget(nullptr)
+  , m_resourceManager(resourceManager)
   , m_operation(op)
 {
   if (!op)
@@ -122,7 +128,6 @@ qtUIManager::qtUIManager(smtk::operation::OperationPtr op)
 
 void qtUIManager::commonConstructor()
 {
-  m_resourceManager = m_attResource ? m_attResource->manager() : nullptr;
   m_useInternalFileBrowser = true;
   m_topView = nullptr;
   m_activeModelView = nullptr;
@@ -157,6 +162,7 @@ void qtUIManager::commonConstructor()
   this->registerItemConstructor("qtFileItem", qtFileItem::createItemWidget);
   this->registerItemConstructor("qtGroupItem", qtGroupItem::createItemWidget);
   this->registerItemConstructor("qtIntItem", qtIntItem::createItemWidget);
+  this->registerItemConstructor("qtResourceItem", qtResourceItem::createItemWidget);
   this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
   this->registerItemConstructor("qtVoidItem", qtVoidItem::createItemWidget);
 
@@ -935,6 +941,8 @@ qtItem* qtUIManager::defaultItemConstructor(const AttributeItemInfo& info)
       return qtGroupItem::createItemWidget(info);
     case smtk::attribute::Item::IntType:
       return qtIntItem::createItemWidget(info);
+    case smtk::attribute::Item::ResourceType:
+      return qtResourceItem::createItemWidget(info);
     case smtk::attribute::Item::StringType:
       return qtStringItem::createItemWidget(info);
     case smtk::attribute::Item::VoidType:

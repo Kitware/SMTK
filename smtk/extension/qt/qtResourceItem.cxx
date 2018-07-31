@@ -7,18 +7,20 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/qt/qtComponentItem.h"
+#include "smtk/extension/qt/qtResourceItem.h"
 #include "smtk/extension/qt/qtReferenceItemData.h"
+
+#include "smtk/common/Paths.h"
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/view/ComponentPhraseModel.h"
+#include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/VisibilityContent.h"
 
-#include "smtk/attribute/ComponentItem.h"
-#include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/ResourceItemDefinition.h"
 
 #include "smtk/model/Resource.h"
 
@@ -27,57 +29,57 @@ namespace smtk
 namespace extension
 {
 
-qtItem* qtComponentItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtResourceItem::createItemWidget(const AttributeItemInfo& info)
 {
   // So we support this type of item?
-  if (info.itemAs<smtk::attribute::ComponentItem>() == nullptr)
+  if (info.itemAs<smtk::attribute::ResourceItem>() == nullptr)
   {
     return nullptr;
   }
-  return new qtComponentItem(info);
+  return new qtResourceItem(info);
 }
 
-qtComponentItem::qtComponentItem(const AttributeItemInfo& info)
+qtResourceItem::qtResourceItem(const AttributeItemInfo& info)
   : qtReferenceItem(info)
 {
   this->createWidget();
 }
 
-qtComponentItem::~qtComponentItem()
+qtResourceItem::~qtResourceItem()
 {
 }
 
-void qtComponentItem::setLabelVisible(bool visible)
+void qtResourceItem::setLabelVisible(bool visible)
 {
   m_p->m_label->setVisible(visible);
 }
 
-void qtComponentItem::updateItemData()
+void qtResourceItem::updateItemData()
 {
 }
 
-smtk::view::PhraseModelPtr qtComponentItem::createPhraseModel() const
+smtk::view::PhraseModelPtr qtResourceItem::createPhraseModel() const
 {
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
   // to point back to the model (thus ensuring subphrases are decorated). This is required
   // since we need to decorate phrases to show+edit "visibility" as set membership:
-  auto view = smtk::view::View::New("ComponentItem", "stuff");
-  auto phraseModel = smtk::view::ComponentPhraseModel::create(view);
+  auto view = smtk::view::View::New("ResourceItem", "stuff");
+  auto phraseModel = smtk::view::ResourcePhraseModel::create(view);
   phraseModel->root()->findDelegate()->setModel(phraseModel);
-  auto def = std::dynamic_pointer_cast<const smtk::attribute::ComponentItemDefinition>(
+  auto def = std::dynamic_pointer_cast<const smtk::attribute::ResourceItemDefinition>(
     m_itemInfo.item()->definition());
-  std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
-    ->setComponentFilters(def->acceptableEntries());
+  std::static_pointer_cast<smtk::view::ResourcePhraseModel>(phraseModel)
+    ->setResourceFilters(def->acceptableEntries());
 
   return phraseModel;
 }
 
-void qtComponentItem::createWidget()
+void qtResourceItem::createWidget()
 {
   // Let our subclass do the UI work.
   this->Superclass::createWidget();
 
-  // Now add in ComponentItem specifics.
+  // Now add in ResourceItem specifics.
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
   if (!dataObj || !this->passAdvancedCheck() ||
     (m_itemInfo.uiManager() &&
@@ -89,9 +91,9 @@ void qtComponentItem::createWidget()
   this->updateItemData();
 }
 
-std::string qtComponentItem::synopsis(bool& ok) const
+std::string qtResourceItem::synopsis(bool& ok) const
 {
-  auto item = m_itemInfo.itemAs<smtk::attribute::ComponentItem>();
+  auto item = m_itemInfo.itemAs<smtk::attribute::ResourceItem>();
   if (!item)
   {
     ok = false;
@@ -116,10 +118,24 @@ std::string qtComponentItem::synopsis(bool& ok) const
   ok = true;
   if (numRequired < 2 && maxAllowed == 1)
   {
-    auto ment = (m_p->m_members.empty() ? smtk::resource::PersistentObjectPtr()
-                                        : m_p->m_members.begin()->first);
-    label << (numSel == 1 ? (ment ? ment->name() : "NULL!!")
-                          : (numSel > 0 ? "too many" : "(none)"));
+    auto resource = (m_p->m_members.empty()
+        ? smtk::resource::ResourcePtr()
+        : std::static_pointer_cast<smtk::resource::Resource>(m_p->m_members.begin()->first));
+
+    if (resource != nullptr)
+    {
+      // TODO: this routine was lifted from ResourcePhraseContent. It should not
+      // be duplicated here.
+      std::string locn = resource->location();
+      std::string file = smtk::common::Paths::filename(locn);
+      std::string dir = smtk::common::Paths::directory(locn);
+      std::string name = dir.empty() ? "New Resource" : (file + " (" + dir + ")");
+      label << (numSel == 1 ? (resource ? name : "NULL!!") : (numSel > 0 ? "too many" : "(none)"));
+    }
+    else
+    {
+      label << (numSel == 1 ? "(none)" : (numSel > 0 ? "too many" : "(none)"));
+    }
     ok = numSel >= numRequired && numSel <= maxAllowed;
   }
   else
@@ -158,48 +174,42 @@ std::string qtComponentItem::synopsis(bool& ok) const
   return label.str();
 }
 
-int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr)
+int qtResourceItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr)
 {
   smtk::view::VisibilityContent::decoratePhrase(
     phr, [this](smtk::view::VisibilityContent::Query qq, int val,
            smtk::view::ConstPhraseContentPtr data) {
-      smtk::model::EntityPtr ent =
-        data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
-      smtk::model::ResourcePtr mResource = ent
-        ? ent->modelResource()
-        : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(data->relatedResource())
-                : nullptr);
-
+      auto resource = data->relatedResource();
       switch (qq)
       {
         case smtk::view::VisibilityContent::DISPLAYABLE:
-          return (ent || (!ent && mResource)) ? 1 : 0;
+          return resource == nullptr ? 1 : 0;
         case smtk::view::VisibilityContent::EDITABLE:
-          return (ent || (!ent && mResource)) ? 1 : 0;
+          return resource == nullptr ? 1 : 0;
         case smtk::view::VisibilityContent::GET_VALUE:
-          if (ent)
+          if (resource)
           {
-            auto valIt = m_p->m_members.find(ent);
+            auto valIt = m_p->m_members.find(resource);
             if (valIt != m_p->m_members.end())
             {
               return valIt->second;
             }
             return 0; // visibility is assumed if there is no entry.
           }
-          return 0; // visibility is false if the component is not a model entity or NULL.
+          return 0; // visibility is false if the resource is not a model entity or NULL.
         case smtk::view::VisibilityContent::SET_VALUE:
-          if (ent)
+          if (resource)
           {
             if (val && !m_p->m_members.empty())
             {
-              auto item = m_itemInfo.itemAs<attribute::ComponentItem>();
+              auto item = m_itemInfo.itemAs<attribute::ResourceItem>();
               if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
               { // Clear all other members since only 1 is allowed and the user just chose it.
                 m_p->m_members.clear();
                 m_p->m_phraseModel->triggerDataChanged();
               }
             }
-            m_p->m_members[ent] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            m_p->m_members[resource] = val ? 1 : 0;
             this->updateSynopsisLabels();
             return 1;
           }
@@ -209,7 +219,7 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
   return 0;
 }
 
-void qtComponentItem::toggleCurrentItem()
+void qtResourceItem::toggleCurrentItem()
 {
   auto cphr = m_p->m_qtModel->getItem(m_p->m_popupList->currentIndex());
   if (cphr)
@@ -218,7 +228,7 @@ void qtComponentItem::toggleCurrentItem()
     // Selecting a new item when only 1 is allowed should reset all other membership.
     if (!currentMembership && !m_p->m_members.empty())
     {
-      auto item = m_itemInfo.itemAs<attribute::ComponentItem>();
+      auto item = m_itemInfo.itemAs<attribute::ResourceItem>();
       if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
       {
         m_p->m_members.clear();
@@ -230,9 +240,9 @@ void qtComponentItem::toggleCurrentItem()
   }
 }
 
-bool qtComponentItem::synchronize(UpdateSource src)
+bool qtResourceItem::synchronize(UpdateSource src)
 {
-  auto item = m_itemInfo.itemAs<attribute::ComponentItem>();
+  auto item = m_itemInfo.itemAs<attribute::ResourceItem>();
   if (!item)
   {
     return false;
@@ -270,7 +280,7 @@ bool qtComponentItem::synchronize(UpdateSource src)
         if (member.second)
         {
           if (!item->setValue(
-                idx, std::dynamic_pointer_cast<smtk::resource::Component>(member.first)))
+                idx, std::dynamic_pointer_cast<smtk::resource::Resource>(member.first)))
           {
             return false; // Huh!?!
           }
