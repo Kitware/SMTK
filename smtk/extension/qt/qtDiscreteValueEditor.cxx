@@ -77,7 +77,7 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
 
 void qtDiscreteValueEditor::createWidget()
 {
-  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->valueItem();
+  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   if (!item)
   {
     return;
@@ -129,7 +129,7 @@ void qtDiscreteValueEditor::createWidget()
 
 void qtDiscreteValueEditor::updateItemData()
 {
-  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->valueItem();
+  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   if (!item || !item->isDiscrete())
   {
     return;
@@ -162,8 +162,10 @@ void qtDiscreteValueEditor::updateItemData()
 
 void qtDiscreteValueEditor::onInputValueChanged()
 {
-  if (!this->Internals->m_inputItem->baseView()->uiManager())
+  auto uiManager = this->Internals->m_inputItem->uiManager();
+  if (uiManager == nullptr)
     return;
+
   QComboBox* const comboBox = this->Internals->m_combo;
   if (!comboBox)
   {
@@ -172,7 +174,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
   this->Internals->clearChildItems();
 
   int curIdx = comboBox->currentIndex();
-  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->valueItem();
+  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   bool refresh = false;
   const attribute::ValueItemDefinition* itemDef =
     dynamic_cast<const attribute::ValueItemDefinition*>(item->definition().get());
@@ -234,18 +236,20 @@ void qtDiscreteValueEditor::onInputValueChanged()
       }
     }
 
-    int currentLen = this->Internals->m_inputItem->baseView()->fixedLabelWidth();
-    if (this->Internals->m_inputItem->baseView()->uiManager())
+    int currentLen = this->Internals->m_inputItem->m_itemInfo.baseView()->fixedLabelWidth();
+    if (this->Internals->m_inputItem->uiManager())
     {
-      int tmpLen = this->Internals->m_inputItem->baseView()->uiManager()->getWidthOfItemsMaxLabel(
-        activeChildDefs, this->Internals->m_inputItem->baseView()->uiManager()->advancedFont());
-      this->Internals->m_inputItem->baseView()->setFixedLabelWidth(tmpLen);
+      int tmpLen = this->Internals->m_inputItem->uiManager()->getWidthOfItemsMaxLabel(
+        activeChildDefs, this->Internals->m_inputItem->uiManager()->advancedFont());
+      this->Internals->m_inputItem->m_itemInfo.baseView()->setFixedLabelWidth(tmpLen);
     }
 
     for (i = 0; i < m; i++)
     {
-      qtItem* childItem = qtAttribute::createItem(item->activeChildItem(static_cast<int>(i)),
-        this->Internals->m_childrenFrame, this->Internals->m_inputItem->baseView());
+      smtk::view::View::Component comp; // not current used but will be
+      AttributeItemInfo info(item->activeChildItem(static_cast<int>(i)), comp,
+        this->Internals->m_childrenFrame, this->Internals->m_inputItem->m_itemInfo.baseView());
+      qtItem* childItem = uiManager->createItem(info);
       if (childItem)
       {
         clayout->addWidget(childItem->widget());
@@ -255,7 +259,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
       }
     }
 
-    this->Internals->m_inputItem->baseView()->setFixedLabelWidth(currentLen);
+    this->Internals->m_inputItem->m_itemInfo.baseView()->setFixedLabelWidth(currentLen);
     this->Internals->m_hintChildWidth = this->Internals->m_childrenFrame->width();
     this->Internals->m_hintChildHeight = this->Internals->m_childrenFrame->height();
     if (this->Internals->m_childrenLayout)
@@ -267,7 +271,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
       this->layout()->addWidget(this->Internals->m_childrenFrame);
     }
   }
-  this->Internals->m_inputItem->baseView()->childrenResized();
+  this->Internals->m_inputItem->m_itemInfo.baseView()->childrenResized();
 }
 
 QSize qtDiscreteValueEditor::sizeHint() const

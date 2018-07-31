@@ -68,6 +68,10 @@ public:
     // either t or true (ignoring case).  Else it returns false.
 
     bool attributeAsBool(const std::string& attname) const;
+
+    bool attributeAsInt(const std::string& attname, int& val) const;
+    bool attributeAsDouble(const std::string& attname, double& val) const;
+
     const std::map<std::string, std::string>& attributes() const { return m_attributes; }
 
     Component& addChild(const std::string& childName);
@@ -80,6 +84,7 @@ public:
 
     Component& child(std::size_t i) { return m_children[i]; }
 
+    // Returns -1 if there is no child by that name
     int findChild(const std::string& compName) const;
 
     bool operator==(const Component& other) const

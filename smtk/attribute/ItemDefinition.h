@@ -59,6 +59,8 @@ public:
   };
 
   virtual ~ItemDefinition();
+  // The name used to access the item - this name is unique w/r to the attribute
+  // or parent item
   const std::string& name() const { return m_name; }
 
   virtual Item::Type type() const = 0;

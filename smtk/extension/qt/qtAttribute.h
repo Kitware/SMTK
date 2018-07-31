@@ -15,6 +15,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtItem.h"
 #include <QObject>
 #include <QPointer>
 #include <QWidget>
@@ -27,7 +28,6 @@ namespace smtk
 namespace extension
 {
 
-class qtAttributeItemWidgetFactory;
 class qtBaseView;
 class qtItem;
 
@@ -36,7 +36,8 @@ class SMTKQTEXT_EXPORT qtAttribute : public QObject
   Q_OBJECT
 
 public:
-  qtAttribute(smtk::attribute::AttributePtr, QWidget* parent, qtBaseView* view);
+  qtAttribute(smtk::attribute::AttributePtr, const smtk::view::View::Component& comp,
+    QWidget* parent, qtBaseView* view);
   virtual ~qtAttribute();
 
   smtk::attribute::AttributePtr attribute();
@@ -54,13 +55,6 @@ public:
   //Returns true if it does not display any of its items
   bool isEmpty() const;
 
-  // create all the items
-  static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,
-    Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-
-  static void setItemWidgetFactory(qtAttributeItemWidgetFactory* f);
-  static qtAttributeItemWidgetFactory* itemWidgetFactory();
-
 signals:
   // Signal indicates that the underlying item has been modified
   void modified();
@@ -70,7 +64,6 @@ protected:
   virtual void createWidget();
 
   QPointer<QWidget> m_widget;
-  static qtAttributeItemWidgetFactory* s_factory;
 
 protected slots:
   void onItemModified();

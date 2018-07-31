@@ -29,8 +29,8 @@ class SMTKQTEXT_EXPORT qtGroupItem : public qtItem
   Q_OBJECT
 
 public:
-  qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
-    Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  qtGroupItem(const AttributeItemInfo& info);
   virtual ~qtGroupItem();
   void setLabelVisible(bool) override;
 

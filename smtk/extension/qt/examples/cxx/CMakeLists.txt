@@ -27,16 +27,6 @@ target_link_libraries(qtAttributePreview
 )
 
 ##
-## Test attribute item-widget factory
-
-add_executable(testItemFactory MACOSX_BUNDLE testItemFactory.cxx)
-target_link_libraries(testItemFactory PUBLIC smtkQtExt)
-add_test(
-  NAME testItemFactory
-  COMMAND $<TARGET_FILE:testItemFactory>
-)
-
-##
 ## Test model browsing (for crashes only, not behavior)
 
 if (NOT WIN32 AND SMTK_DATA_DIR)

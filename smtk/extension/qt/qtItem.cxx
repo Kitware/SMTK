@@ -26,119 +26,88 @@ using namespace smtk::extension;
 class qtItemInternals
 {
 public:
-  qtItemInternals(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bview)
-  {
-    this->ParentWidget = p;
-    this->DataObject = dataObject;
-    this->BaseView = bview;
-  }
+  qtItemInternals() {}
   ~qtItemInternals() {}
-  smtk::attribute::WeakItemPtr DataObject;
-  QPointer<QWidget> ParentWidget;
-  QList<smtk::extension::qtItem*> ChildItems;
-  QPointer<qtBaseView> BaseView;
   QPointer<qtOverlayFilter> advOverlay;
   QPointer<QComboBox> AdvLevelCombo;
 };
 
-qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bview)
+qtUIManager* AttributeItemInfo::uiManager() const
 {
-  this->Internals = new qtItemInternals(dataObject, p, bview);
-  this->Widget = NULL;
-  this->IsLeafItem = false;
+  if (m_baseView)
+  {
+    return m_baseView->uiManager();
+  }
+  return nullptr;
+}
+qtItem::qtItem(const AttributeItemInfo& info)
+  : m_itemInfo(info)
+{
+  this->Internals = new qtItemInternals();
+  this->m_widget = NULL;
+  this->m_isLeafItem = false;
   m_useSelectionManager = false;
-
-  //this->Internals->DataConnect = NULL;
-  //this->createWidget();
 }
 
 qtItem::~qtItem()
 {
   this->clearChildItems();
+  if (m_itemInfo.parentWidget() && m_widget && m_itemInfo.parentWidget()->layout())
+  {
+    this->m_itemInfo.parentWidget()->layout()->removeWidget(m_widget);
+  }
   if (this->Internals)
   {
-    if (this->Internals->ParentWidget && this->Widget && this->Internals->ParentWidget->layout())
-    {
-      this->Internals->ParentWidget->layout()->removeWidget(this->Widget);
-    }
     delete this->Internals;
   }
 }
 
-qtBaseView* qtItem::baseView()
-{
-  return this->Internals->BaseView;
-}
-
-qtUIManager* qtItem::uiManager() const
-{
-  if (this->Internals->BaseView)
-  {
-    return this->Internals->BaseView->uiManager();
-  }
-  return NULL;
-}
-
 void qtItem::updateItemData()
 {
-  //  if(this->widget() && this->baseView()->advanceLevelVisible())
-  //    {
-  //    this->showAdvanceLevelOverlay(true);
-  //    }
 }
 
 void qtItem::addChildItem(qtItem* child)
 {
-  if (!this->Internals->ChildItems.contains(child))
+  if (!m_childItems.contains(child))
   {
-    this->Internals->ChildItems.append(child);
+    m_childItems.append(child);
   }
 }
 
-QList<qtItem*>& qtItem::childItems() const
+QList<qtItem*>& qtItem::childItems()
 {
-  return this->Internals->ChildItems;
+  return m_childItems;
 }
 
 void qtItem::clearChildItems()
 {
-  for (int i = 0; i < this->Internals->ChildItems.count(); i++)
+  for (int i = 0; i < m_childItems.count(); i++)
   {
-    delete this->Internals->ChildItems.value(i);
+    delete m_childItems.value(i);
   }
-  this->Internals->ChildItems.clear();
-}
-
-smtk::attribute::ItemPtr qtItem::getObject() const
-{
-  return this->Internals->DataObject.lock();
-}
-
-QWidget* qtItem::parentWidget()
-{
-  return this->Internals->ParentWidget;
+  m_childItems.clear();
 }
 
 bool qtItem::passAdvancedCheck()
 {
-  smtk::attribute::ItemPtr dataObj = this->getObject();
-  return !this->baseView() ||
-    this->baseView()->uiManager()->passAdvancedCheck(dataObj->advanceLevel());
+  smtk::attribute::ItemPtr dataObj = this->item();
+  return !m_itemInfo.uiManager() ||
+    m_itemInfo.uiManager()->passAdvancedCheck(dataObj->advanceLevel());
 }
 
 void qtItem::showAdvanceLevelOverlay(bool show)
 {
-  if (!this->widget())
+  if (!m_widget)
   {
     return;
   }
   if (show && !this->Internals->advOverlay)
   {
-    this->Internals->advOverlay = new qtOverlayFilter(this->widget(), this);
+    this->Internals->advOverlay = new qtOverlayFilter(m_widget, this);
     this->Internals->AdvLevelCombo = new QComboBox(this->Internals->advOverlay->overlay());
     this->Internals->advOverlay->overlay()->addOverlayWidget(this->Internals->AdvLevelCombo);
-    this->baseView()->uiManager()->initAdvanceLevels(this->Internals->AdvLevelCombo);
-    int mylevel = this->getObject()->advanceLevel(0);
+    m_itemInfo.uiManager()->initAdvanceLevels(this->Internals->AdvLevelCombo);
+    int mylevel = this->item()->advanceLevel(0);
     bool foundLevel = false;
     std::set<int> levels;
     for (int i = 0; i < this->Internals->AdvLevelCombo->count(); i++)
@@ -167,7 +136,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
       int idx = std::distance(levels.begin(), it) - 1;
       this->Internals->AdvLevelCombo->setCurrentIndex(idx);
     }
-    const double* rgba = this->baseView()->uiManager()->attResource()->advanceLevelColor(mylevel);
+    const double* rgba = m_itemInfo.uiManager()->attResource()->advanceLevelColor(mylevel);
     if (rgba)
     {
       this->Internals->advOverlay->overlay()->setColor(
@@ -184,7 +153,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
   }
   if (show)
   {
-    this->widget()->repaint();
+    m_widget->repaint();
   }
 }
 
@@ -196,11 +165,12 @@ void qtItem::onAdvanceLevelChanged(int levelIdx)
 
 void qtItem::setAdvanceLevel(int l)
 {
-  this->getObject()->setAdvanceLevel(0, l);
-  this->getObject()->setAdvanceLevel(1, l);
+  auto item = m_itemInfo.item();
+  item->setAdvanceLevel(0, l);
+  item->setAdvanceLevel(1, l);
   if (this->Internals->advOverlay)
   {
-    const double* rgba = this->baseView()->uiManager()->attResource()->advanceLevelColor(l);
+    const double* rgba = m_itemInfo.uiManager()->attResource()->advanceLevelColor(l);
     if (rgba)
     {
       this->Internals->advOverlay->overlay()->setColor(

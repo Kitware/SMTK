@@ -88,6 +88,12 @@ public:
   }
   smtk::attribute::ConstItemDefinitionPtr definition() const { return m_definition; }
 
+  template <typename DefType>
+  std::shared_ptr<const DefType> definitionAs() const
+  {
+    return std::dynamic_pointer_cast<const DefType>(this->definition());
+  }
+
   // Return the attribute that owns this item
   smtk::attribute::AttributePtr attribute() const;
   smtk::attribute::ItemPtr owningItem() const

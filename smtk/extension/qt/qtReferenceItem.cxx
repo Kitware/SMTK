@@ -49,8 +49,8 @@ qtReferenceItemData::~qtReferenceItemData()
 {
 }
 
-qtReferenceItem::qtReferenceItem(smtk::attribute::ItemPtr item, QWidget* parent, qtBaseView* bview)
-  : Superclass(item, parent, bview)
+qtReferenceItem::qtReferenceItem(const AttributeItemInfo& info)
+  : Superclass(info)
   , m_p(new qtReferenceItemData)
 {
 }
@@ -69,7 +69,7 @@ void qtReferenceItem::selectionLinkToggled(bool linked)
 
 void qtReferenceItem::setOutputOptional(int state)
 {
-  auto itm = this->getObject();
+  auto itm = m_itemInfo.item();
   if (itm)
   {
     itm->setIsEnabled(state ? true : false);
@@ -81,7 +81,7 @@ void qtReferenceItem::setOutputOptional(int state)
 void qtReferenceItem::linkHover(bool link)
 {
   (void)link;
-  // TODO: traverse entries of this->getObject() and ensure their "hover" bit is set
+  // TODO: traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
   //       in the application selection.
 }
 
@@ -134,15 +134,15 @@ void qtReferenceItem::clearWidgets()
 
 void qtReferenceItem::updateUI()
 {
-  smtk::attribute::ItemPtr itm = this->getObject();
+  smtk::attribute::ItemPtr itm = m_itemInfo.item();
   if (!itm || !this->passAdvancedCheck() ||
-    (this->baseView() && !this->baseView()->uiManager()->passItemCategoryCheck(itm->definition())))
+    (m_itemInfo.uiManager() && !m_itemInfo.uiManager()->passItemCategoryCheck(itm->definition())))
   {
     return;
   }
 
   // TODO: this need to connect to the right managers
-  auto rsrcMgr = this->uiManager()->resourceManager();
+  auto rsrcMgr = m_itemInfo.uiManager()->resourceManager();
   auto operMgr = smtk::operation::Manager::create();
 
   auto phraseModel = this->createPhraseModel();
@@ -161,9 +161,9 @@ void qtReferenceItem::updateUI()
   m_p->m_phraseModel->addSource(rsrcMgr, operMgr);
 
   // Create a container for the item:
-  this->Widget = new QFrame(this->parentWidget());
-  this->Widget->installEventFilter(this);
-  m_p->m_grid = new QGridLayout(this->Widget);
+  m_widget = new QFrame(m_itemInfo.parentWidget());
+  m_widget->installEventFilter(this);
+  m_p->m_grid = new QGridLayout(m_widget);
   m_p->m_grid->setMargin(0);
   m_p->m_grid->setSpacing(0);
   m_p->m_grid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -181,7 +181,7 @@ void qtReferenceItem::updateUI()
   int padding = 0;
   if (itm->isOptional())
   {
-    m_p->m_optional = new QCheckBox(this->parentWidget());
+    m_p->m_optional = new QCheckBox(m_itemInfo.parentWidget());
     m_p->m_optional->setChecked(itm->isEnabled());
     m_p->m_optional->setText(" ");
     m_p->m_optional->setSizePolicy(sizeFixedPolicy);
@@ -198,11 +198,11 @@ void qtReferenceItem::updateUI()
 
   // Add a label for the item.
   QString labelText = !itm->label().empty() ? itm->label().c_str() : itm->name().c_str();
-  m_p->m_label = new QLabel(labelText, this->Widget);
+  m_p->m_label = new QLabel(labelText, m_widget);
   m_p->m_label->setSizePolicy(sizeFixedPolicy);
-  if (this->baseView())
+  if (m_itemInfo.baseView())
   {
-    m_p->m_label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
+    m_p->m_label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
   }
   m_p->m_label->setWordWrap(true);
   m_p->m_label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -214,9 +214,9 @@ void qtReferenceItem::updateUI()
     m_p->m_label->setToolTip(strBriefDescription.c_str());
   }
 
-  if (itemDef->advanceLevel() && this->baseView())
+  if (itemDef->advanceLevel() && m_itemInfo.uiManager())
   {
-    m_p->m_label->setFont(this->baseView()->uiManager()->advancedFont());
+    m_p->m_label->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   labelLayout->addWidget(m_p->m_label);
 
@@ -231,14 +231,14 @@ void qtReferenceItem::updateUI()
   // ... a synopsis (label).
   bool ok;
   QString synText = QString::fromStdString(this->synopsis(ok));
-  m_p->m_synopsis = new QLabel(synText, this->Widget);
+  m_p->m_synopsis = new QLabel(synText, m_widget);
   // m_p->m_synopsis->setSizePolicy(sizeFixedPolicy);
   m_p->m_synopsis->setSizePolicy(sizeStretchyXPolicy);
   m_p->m_synopsis->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   entryLayout->addWidget(m_p->m_synopsis);
 
   // ... a button to pop up an editor for the item contents.
-  m_p->m_editBtn = new QPushButton("…", this->Widget);
+  m_p->m_editBtn = new QPushButton("…", m_widget);
   m_p->m_editBtn->setAutoDefault(true);
   m_p->m_editBtn->setDefault(true);
   entryLayout->addWidget(m_p->m_editBtn);
@@ -272,11 +272,11 @@ void qtReferenceItem::updateUI()
   m_p->m_grid->addLayout(labelLayout, 0, 0);
   m_p->m_grid->addLayout(entryLayout, 0, 1);
 
-  // layout->addWidget(this->Widget???, 0, 1);
+  // layout->addWidget(m_widget???, 0, 1);
 
-  if (this->parentWidget() && this->parentWidget()->layout())
+  if (m_itemInfo.parentWidget() && m_itemInfo.parentWidget()->layout())
   {
-    this->parentWidget()->layout()->addWidget(this->Widget);
+    m_itemInfo.parentWidget()->layout()->addWidget(m_widget);
   }
   if (itm->isOptional())
   {
@@ -305,11 +305,11 @@ void qtReferenceItem::updateSynopsisLabels() const
 bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
 {
   // We serve as an event filter on 2 widgets:
-  // 1. the inherited frame holding the item (this->Widget),
+  // 1. the inherited frame holding the item (m_widget),
   //    which we monitor for the enter/exit events that enable hovering
   // 2. the popup dialog (m_p->m_popup)
   //    which we monitor for keyboard navigation events
-  if (src == this->Widget)
+  if (src == m_widget)
   {
     switch (event->type())
     {

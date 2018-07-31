@@ -31,8 +31,8 @@ class SMTKQTEXT_EXPORT qtFileItem : public qtItem
   Q_OBJECT
 
 public:
-  qtFileItem(smtk::attribute::FileSystemItemPtr, QWidget* p, qtBaseView* bview,
-    Qt::Orientation enumOrient = Qt::Horizontal);
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  qtFileItem(const AttributeItemInfo& info);
   virtual ~qtFileItem();
   void setLabelVisible(bool) override;
 

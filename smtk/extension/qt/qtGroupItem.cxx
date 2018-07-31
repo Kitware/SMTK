@@ -37,20 +37,27 @@ class qtGroupItemInternals
 {
 public:
   QPointer<QFrame> ChildrensFrame;
-  Qt::Orientation VectorItemOrient;
   QMap<QToolButton*, QList<qtItem*> > ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QPointer<QTableWidget> ItemsTable;
 };
 
-qtGroupItem::qtGroupItem(smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
-  Qt::Orientation enVectorItemOrient)
-  : qtItem(dataObj, p, bview)
+qtItem* qtGroupItem::createItemWidget(const AttributeItemInfo& info)
+{
+  // So we support this type of item?
+  if (info.itemAs<smtk::attribute::GroupItem>() == nullptr)
+  {
+    return nullptr;
+  }
+  return new qtGroupItem(info);
+}
+
+qtGroupItem::qtGroupItem(const AttributeItemInfo& info)
+  : qtItem(info)
 {
   this->Internals = new qtGroupItemInternals;
-  this->IsLeafItem = true;
-  this->Internals->VectorItemOrient = enVectorItemOrient;
+  m_isLeafItem = true;
   this->createWidget();
 }
 
@@ -61,53 +68,51 @@ qtGroupItem::~qtGroupItem()
 
 void qtGroupItem::setLabelVisible(bool visible)
 {
-  if (!this->getObject())
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+  if (item == nullptr)
   {
     return;
   }
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
   if (!item || !item->numberOfGroups())
   {
     return;
   }
 
-  QGroupBox* groupBox = qobject_cast<QGroupBox*>(this->Widget);
+  QGroupBox* groupBox = qobject_cast<QGroupBox*>(m_widget);
   groupBox->setTitle(visible ? item->label().c_str() : "");
 }
 
 void qtGroupItem::createWidget()
 {
-  if (!this->getObject())
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+  if (item == nullptr)
   {
     return;
   }
   this->clearChildItems();
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
-  if (!item || (!item->numberOfGroups() && !item->isExtensible()))
+  if ((!item->numberOfGroups() && !item->isExtensible()))
   {
     return;
   }
 
   QString title = item->label().empty() ? item->name().c_str() : item->label().c_str();
-  QGroupBox* groupBox = new QGroupBox(title, this->parentWidget());
-  this->Widget = groupBox;
+  QGroupBox* groupBox = new QGroupBox(title, m_itemInfo.parentWidget());
+  m_widget = groupBox;
   // Instantiate a layout for the widget, but do *not* assign it to a variable.
   // because that would cause a compiler warning, since the layout is not
   // explicitly referenced anywhere in this scope. (There is no memory
   // leak because the layout instance is parented by the widget.)
-  new QVBoxLayout(this->Widget);
-  this->Widget->layout()->setMargin(0);
+  new QVBoxLayout(m_widget);
+  m_widget->layout()->setMargin(0);
   this->Internals->ChildrensFrame = new QFrame(groupBox);
   new QVBoxLayout(this->Internals->ChildrensFrame);
 
-  this->Widget->layout()->addWidget(this->Internals->ChildrensFrame);
+  m_widget->layout()->addWidget(this->Internals->ChildrensFrame);
 
-  if (this->parentWidget())
+  if (m_itemInfo.parentWidget())
   {
-    this->parentWidget()->layout()->setAlignment(Qt::AlignTop);
-    this->parentWidget()->layout()->addWidget(this->Widget);
+    m_itemInfo.parentWidget()->layout()->setAlignment(Qt::AlignTop);
+    m_itemInfo.parentWidget()->layout()->addWidget(m_widget);
   }
   this->updateItemData();
 
@@ -124,23 +129,23 @@ void qtGroupItem::createWidget()
 void qtGroupItem::setEnabledState(bool checked)
 {
   this->Internals->ChildrensFrame->setVisible(checked);
-  if (!this->getObject())
+  auto item = m_itemInfo.item();
+  if (item == nullptr)
   {
     return;
   }
 
-  if (checked != this->getObject()->isEnabled())
+  if (checked != item->isEnabled())
   {
-    this->getObject()->setIsEnabled(checked);
+    item->setIsEnabled(checked);
     emit this->modified();
-    this->baseView()->valueChanged(this->getObject());
+    m_itemInfo.baseView()->valueChanged(item);
   }
 }
 
 void qtGroupItem::updateItemData()
 {
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
     return;
@@ -186,7 +191,7 @@ void qtGroupItem::updateItemData()
       connect(this->Internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddSubGroup()));
       this->Internals->ChildrensFrame->layout()->addWidget(this->Internals->AddItemButton);
     }
-    this->Widget->layout()->setSpacing(3);
+    m_widget->layout()->setSpacing(3);
   }
 
   for (i = 0; i < n; i++)
@@ -206,8 +211,7 @@ void qtGroupItem::updateItemData()
 
 void qtGroupItem::onAddSubGroup()
 {
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
     return;
@@ -230,8 +234,8 @@ void qtGroupItem::onAddSubGroup()
 
 void qtGroupItem::addSubGroup(int i)
 {
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+  auto ui_manager = this->uiManager();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
     return;
@@ -271,15 +275,17 @@ void qtGroupItem::addSubGroup(int i)
       item->item(i, static_cast<int>(j))->definition();
     childDefs.push_back(smtk::const_pointer_cast<attribute::ItemDefinition>(itDef));
   }
-  const int tmpLen = this->baseView()->uiManager()->getWidthOfItemsMaxLabel(
-    childDefs, this->baseView()->uiManager()->advancedFont());
-  const int currentLen = this->baseView()->fixedLabelWidth();
-  this->baseView()->setFixedLabelWidth(tmpLen);
+  const int tmpLen = m_itemInfo.uiManager()->getWidthOfItemsMaxLabel(
+    childDefs, m_itemInfo.uiManager()->advancedFont());
+  const int currentLen = m_itemInfo.baseView()->fixedLabelWidth();
+  m_itemInfo.baseView()->setFixedLabelWidth(tmpLen);
 
   for (std::size_t j = 0; j < numItems; j++)
   {
-    qtItem* childItem = qtAttribute::createItem(item->item(i, static_cast<int>(j)), this->Widget,
-      this->baseView(), this->Internals->VectorItemOrient);
+    smtk::view::View::Component comp; // not current used but will be
+    AttributeItemInfo info(
+      item->item(i, static_cast<int>(j)), comp, m_widget, m_itemInfo.baseView());
+    qtItem* childItem = ui_manager->createItem(info);
     if (childItem)
     {
       subGroupLayout->addWidget(childItem->widget());
@@ -287,7 +293,7 @@ void qtGroupItem::addSubGroup(int i)
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
     }
   }
-  this->baseView()->setFixedLabelWidth(currentLen);
+  m_itemInfo.baseView()->setFixedLabelWidth(currentLen);
   frameLayout->addWidget(subGroupFrame);
   this->onChildWidgetSizeChanged();
 }
@@ -302,8 +308,7 @@ void qtGroupItem::onRemoveSubGroup()
 
   int gIdx = this->Internals->MinusButtonIndices.indexOf(
     minusButton); //minusButton->property("SubgroupIndex").toInt();
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfGroups()))
   {
     return;
@@ -342,8 +347,7 @@ void qtGroupItem::onRemoveSubGroup()
 
 void qtGroupItem::updateExtensibleState()
 {
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || !item->isExtensible())
   {
     return;
@@ -362,8 +366,8 @@ void qtGroupItem::updateExtensibleState()
 
 void qtGroupItem::addItemsToTable(int i)
 {
-  smtk::attribute::GroupItemPtr item =
-    dynamic_pointer_cast<attribute::GroupItem>(this->getObject());
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+  auto ui_manager = this->uiManager();
   if (!item || !item->isExtensible())
   {
     return;
@@ -388,8 +392,9 @@ void qtGroupItem::addItemsToTable(int i)
   for (j = 0; j < m; j++)
   {
     smtk::attribute::ItemPtr attItem = item->item(i, static_cast<int>(j));
-    qtItem* childItem =
-      qtAttribute::createItem(attItem, this->Widget, this->baseView(), Qt::Horizontal);
+    smtk::view::View::Component comp; // not currently used but will be
+    AttributeItemInfo info(attItem, comp, m_widget, m_itemInfo.baseView());
+    qtItem* childItem = ui_manager->createItem(info);
     if (childItem)
     {
       if (added == 0)

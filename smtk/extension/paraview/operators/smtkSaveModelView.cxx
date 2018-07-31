@@ -333,10 +333,12 @@ void smtkSaveModelView::createWidget()
   layout->addWidget(this->Internals->AssocModels->widget());
   */
 
-  this->Internals->FileItem = new qtFileItem(
+  smtk::view::View::Component comp; // not current used but will be
+  AttributeItemInfo info(
     this->Internals->CurrentOp.lock()->parameters()->findAs<smtk::attribute::FileSystemItem>(
       "filename", smtk::attribute::ACTIVE_CHILDREN),
-    nullptr, this, Qt::Horizontal);
+    comp, nullptr, this);
+  this->Internals->FileItem = new qtFileItem(info);
   layout->addWidget(this->Internals->FileItem->widget());
 
   QWidget* wtmp = new QWidget;
@@ -693,8 +695,7 @@ void smtkSaveModelView::updateActions()
     models.push_back(active);
   }
   std::string filename;
-  auto fileItem =
-    smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(this->Internals->FileItem->getObject());
+  auto fileItem = this->Internals->FileItem->itemAs<smtk::attribute::FileItem>();
   if (fileItem->isSet(0))
   {
     filename = fileItem->value(0);

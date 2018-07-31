@@ -37,6 +37,7 @@ class qtBaseView;
 class qtModelView;
 
 typedef qtBaseView* (*widgetConstructor)(const ViewInfo& info);
+typedef qtItem* (*qtItemConstructor)(const AttributeItemInfo& info);
 
 /**\brief Container for managers whose content is presented via Qt widgets.
   *
@@ -116,6 +117,15 @@ public:
     return m_constructors.find(vtype) != m_constructors.end();
   }
 
+  // Registers a qtItem construction function with a qtItem type string
+  void registerItemConstructor(const std::string& vtype, qtItemConstructor f);
+  //Description:
+  // Check if view type string has a registered view construction function
+  bool hasItemConstructor(const std::string& vtype) const
+  {
+    return m_itemConstructors.find(vtype) != m_itemConstructors.end();
+  }
+
   qtBaseView* topView() { return m_topView; }
   static QString clipBoardText();
   static void setClipBoardText(QString& text);
@@ -155,6 +165,9 @@ public:
   //Mechanism for creating new GUI view based on registered factory functions
   qtBaseView* createView(const ViewInfo& info);
 
+  //Mechanism for creating new GUI item based on registered factory functions
+  qtItem* createItem(const AttributeItemInfo& info);
+
   // Methods for dealing with selection process
   smtk::view::SelectionPtr selection() const { return m_selection; }
 
@@ -162,6 +175,8 @@ public:
 
   int selectionBit() const { return m_selectionBit; }
   void setSelectionBit(int val) { m_selectionBit = val; }
+
+  static qtItem* defaultItemConstructor(const AttributeItemInfo& info);
 
 #ifdef _WIN32
 #define LINE_BREAKER_STRING "\n";
@@ -222,6 +237,7 @@ private:
   void getItemsLongLabel(
     const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, std::string& labelText);
   std::map<std::string, widgetConstructor> m_constructors;
+  std::map<std::string, qtItemConstructor> m_itemConstructors;
 
   smtk::view::SelectionPtr m_selection;
   int m_selectionBit;

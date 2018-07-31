@@ -282,6 +282,7 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
 
   if (!modelResource)
   {
+    std::cerr << "No Model Resource for attribute def: " << attDef->type() << "\n";
     return;
   }
 

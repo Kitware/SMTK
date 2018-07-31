@@ -10,12 +10,18 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtCategorySelectorView.h"
+#include "smtk/extension/qt/qtComponentItem.h"
+#include "smtk/extension/qt/qtDateTimeItem.h"
+#include "smtk/extension/qt/qtDirectoryItem.h"
+#include "smtk/extension/qt/qtDoubleItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
+#include "smtk/extension/qt/qtGroupItem.h"
 #include "smtk/extension/qt/qtGroupView.h"
-#include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtInstancedView.h"
+#include "smtk/extension/qt/qtIntItem.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtModelEntityAttributeView.h"
 #include "smtk/extension/qt/qtModelView.h"
@@ -23,6 +29,8 @@
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtSelectorView.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
+#include "smtk/extension/qt/qtStringItem.h"
+#include "smtk/extension/qt/qtVoidItem.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
@@ -138,6 +146,19 @@ void qtUIManager::commonConstructor()
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
   this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
   this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
+
+  // Lets register some basic item constructors
+  this->registerItemConstructor("Default", qtUIManager::defaultItemConstructor);
+  this->registerItemConstructor("qtAttributeRefItem", qtAttributeRefItem::createItemWidget);
+  this->registerItemConstructor("qtComponentItem", qtComponentItem::createItemWidget);
+  this->registerItemConstructor("qtDateTimeItem", qtDateTimeItem::createItemWidget);
+  this->registerItemConstructor("qtDirectoryItem", qtDirectoryItem::createItemWidget);
+  this->registerItemConstructor("qtDoubleItem", qtDoubleItem::createItemWidget);
+  this->registerItemConstructor("qtFileItem", qtFileItem::createItemWidget);
+  this->registerItemConstructor("qtGroupItem", qtGroupItem::createItemWidget);
+  this->registerItemConstructor("qtIntItem", qtIntItem::createItemWidget);
+  this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
+  this->registerItemConstructor("qtVoidItem", qtVoidItem::createItemWidget);
 
   // register view constructors coming from plugins.
   qtSMTKUtilities::updateViewConstructors(this);
@@ -726,12 +747,17 @@ void qtUIManager::registerViewConstructor(const std::string& vtype, widgetConstr
   m_constructors[vtype] = f;
 }
 
+void qtUIManager::registerItemConstructor(const std::string& itype, qtItemConstructor f)
+{
+  m_itemConstructors[itype] = f;
+}
+
 qtBaseView* qtUIManager::createView(const ViewInfo& info)
 {
   if (info.m_UIManager != this)
   {
     // The view being constructed is not refering to this manager!
-    return NULL;
+    return nullptr;
   }
 
   std::map<std::string, widgetConstructor>::const_iterator it;
@@ -739,11 +765,53 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
   if (it == m_constructors.end())
   {
     // Constructor for that type could not be found)
-    return NULL;
+    return nullptr;
   }
 
   qtBaseView* qtView = (it->second)(info);
   return qtView;
+}
+
+qtItem* qtUIManager::createItem(const AttributeItemInfo& info)
+{
+  if (info.uiManager() != this)
+  {
+    // The view being constructed is not refering to this manager!
+    return nullptr;
+  }
+
+  // If there is a View associated with the item - does it want it
+  // displayed?
+  auto item = info.item();
+  if (info.baseView() && (!info.baseView()->displayItem(item)))
+  {
+    return nullptr;
+  }
+
+  std::map<std::string, qtItemConstructor>::const_iterator it;
+  std::string qtItemViewType;
+  if (!info.component().attribute("Type", qtItemViewType))
+  {
+    // There is no type info assume its the default
+    qtItemViewType = "Default";
+  }
+
+  it = m_itemConstructors.find(qtItemViewType);
+  if (it == m_itemConstructors.end())
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Could not create an ItemView of type: " << qtItemViewType << "- Using a Default Item View.");
+    // OK - lets create a default view for the item
+
+    it = m_itemConstructors.find("Default");
+    if (it == m_itemConstructors.end())
+    {
+      return nullptr;
+    }
+  }
+
+  qtItem* qitem = (it->second)(info);
+  return qitem;
 }
 
 void qtUIManager::onViewUIModified(
@@ -843,4 +911,37 @@ void qtUIManager::findDefinitionsLongLabels()
     this->findDefinitionLongLabel(*defIter, text);
     this->Def2LongLabel[*defIter] = text;
   }
+}
+
+qtItem* qtUIManager::defaultItemConstructor(const AttributeItemInfo& info)
+{
+  auto item = info.item();
+  qtItem* aItem = nullptr;
+  switch (item->type())
+  {
+    case smtk::attribute::Item::AttributeRefType: // This is always inside valueItem ???
+      return qtAttributeRefItem::createItemWidget(info);
+    case smtk::attribute::Item::ComponentType:
+      return qtComponentItem::createItemWidget(info);
+    case smtk::attribute::Item::DateTimeType:
+      return qtDateTimeItem::createItemWidget(info);
+    case smtk::attribute::Item::DirectoryType:
+      return qtDirectoryItem::createItemWidget(info);
+    case smtk::attribute::Item::DoubleType:
+      return qtDoubleItem::createItemWidget(info);
+    case smtk::attribute::Item::FileType:
+      return qtFileItem::createItemWidget(info);
+    case smtk::attribute::Item::GroupType:
+      return qtGroupItem::createItemWidget(info);
+    case smtk::attribute::Item::IntType:
+      return qtIntItem::createItemWidget(info);
+    case smtk::attribute::Item::StringType:
+      return qtStringItem::createItemWidget(info);
+    case smtk::attribute::Item::VoidType:
+      return qtVoidItem::createItemWidget(info);
+    default:
+      smtkErrorMacro(smtk::io::Logger::instance(),
+        "Error: Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
+  }
+  return aItem;
 }
