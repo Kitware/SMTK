@@ -120,35 +120,6 @@ QAction* findSaveResourceAction(QMenu* menu)
   }
   return NULL;
 }
-
-QAction* findExitAction(QMenu* menu)
-{
-  foreach (QAction* action, menu->actions())
-  {
-    QString name = action->text().toLower();
-    name.remove('&');
-    if (name == "exit" || name == "quit")
-    {
-      return action;
-    }
-  }
-  return NULL;
-}
-
-QAction* findHelpMenuAction(QMenuBar* menubar)
-{
-  QList<QAction*> menuBarActions = menubar->actions();
-  foreach (QAction* existingMenuAction, menuBarActions)
-  {
-    QString menuName = existingMenuAction->text().toLower();
-    menuName.remove('&');
-    if (menuName == "help")
-    {
-      return existingMenuAction;
-    }
-  }
-  return NULL;
-}
 }
 
 static pqSMTKNewResourceBehavior* g_instance = nullptr;

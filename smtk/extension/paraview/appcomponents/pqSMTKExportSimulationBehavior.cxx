@@ -121,7 +121,7 @@ void pqExportSimulationReaction::exportSimulation()
       [=]() { exportDialog->done(QDialog::Accepted); });
 
     // Launch the modal dialog and wait for the operation to succeed.
-    int status = exportDialog->exec();
+    exportDialog->exec();
 
     // Remove the export operation from the operation manager.
     wrapper->smtkOperationManager()->unregisterOperation(

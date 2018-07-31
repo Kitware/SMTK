@@ -56,7 +56,7 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk import operation", rsrcImportOpMgr);
     pqCore->registerManager("smtk export simulation", rsrcExportSimMgr);
     pqCore->registerManager("smtk save resource", rsrcSaveMgr);
-    pqCore->registerManager("smtk new resource", rsrcSaveMgr);
+    pqCore->registerManager("smtk new resource", rsrcNewMgr);
   }
   (void)rsrcMgr;
 }
