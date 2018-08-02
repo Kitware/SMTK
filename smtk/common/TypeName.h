@@ -12,6 +12,7 @@
 #define smtk_common_TypeName_h
 
 #include <string>
+#include <typeinfo>
 
 namespace smtk
 {
