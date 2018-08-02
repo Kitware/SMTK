@@ -258,8 +258,7 @@ void qtGroupItem::addSubGroup(int i)
   subGroupLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   QList<qtItem*> itemList;
 
-  const smtk::attribute::GroupItemDefinition* groupDef =
-    dynamic_cast<const smtk::attribute::GroupItemDefinition*>(item->definition().get());
+  auto groupDef = item->definitionAs<attribute::GroupItemDefinition>();
   QString subGroupString;
   if (groupDef->hasSubGroupLabels())
   {

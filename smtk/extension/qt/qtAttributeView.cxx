@@ -964,7 +964,6 @@ void qtAttributeView::initSelectPropCombo(smtk::attribute::DefinitionPtr attDef)
     this->Internals->SelectPropCombo->blockSignals(false);
     return;
   }
-  std::cerr << "Found " << result.size() << " attributes\n";
   smtk::attribute::AttributePtr childData = result[0];
   // Now lets process its items
   std::size_t i, n = childData->numberOfItems();
@@ -972,7 +971,6 @@ void qtAttributeView::initSelectPropCombo(smtk::attribute::DefinitionPtr attDef)
   for (i = 0; i < n; i++)
   {
     smtk::attribute::ItemPtr attItem = childData->item(static_cast<int>(i));
-    std::cerr << "Processing Item: " << attItem->name() << "\n";
     if (this->uiManager()->passItemCategoryCheck(attItem->definition()) &&
       this->uiManager()->passAdvancedCheck(attItem->advanceLevel()))
     {

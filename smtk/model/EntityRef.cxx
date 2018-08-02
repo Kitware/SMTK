@@ -971,7 +971,7 @@ smtk::common::UUIDs EntityRef::attributeIds() const
 /**\brief Return the attributes associated with the entity
 that are of type (or derived type) def.
   */
-smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::DefinitionPtr def) const
+smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::ConstDefinitionPtr def) const
 {
   smtk::attribute::Attributes atts;
   // If there was no definition return empty list

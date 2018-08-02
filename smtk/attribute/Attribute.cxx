@@ -553,6 +553,29 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
   }
 }
 
+void Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse)
+{
+  if (!m_associatedObjects)
+  {
+    return;
+  }
+
+  std::ptrdiff_t idx = m_associatedObjects->find(obj);
+  if (idx >= 0)
+  {
+    bool v = m_associatedObjects->removeValue(idx);
+    if (reverse)
+    {
+      auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
+      if (modelEnt)
+      {
+        modelEnt->modelResource()->disassociateAttribute(
+          this->attributeResource(), this->id(), modelEnt->id(), false);
+      }
+    }
+  }
+}
+
 /**\brief Return the item with the given \a inName, searching in the given \a style.
   *
   * The search style dictates whether children of conditional items are included

@@ -48,8 +48,6 @@ public:
 
 public slots:
   virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt);
-  virtual void showAttributeAssociation(
-    smtk::model::EntityRef theEntiy, std::vector<smtk::attribute::DefinitionPtr>& attDefs);
   virtual void showDomainsAssociation(std::vector<smtk::model::Group>& theDomains,
     std::vector<smtk::attribute::DefinitionPtr>& attDefs);
 
@@ -71,14 +69,15 @@ protected:
   smtk::attribute::AttributePtr getAttribute(QListWidgetItem* item);
   smtk::attribute::AttributePtr getSelectedAttribute(QListWidgetItem*);
 
-  smtk::model::EntityRef getModelEntityItem(QListWidgetItem* item);
-  smtk::model::EntityRef getSelectedModelEntityItem(QListWidgetItem*);
+  smtk::model::EntityPtr getModelEntityItem(QListWidgetItem* item);
+  smtk::model::EntityPtr getSelectedModelEntityItem(QListWidgetItem*);
+  smtk::model::ResourcePtr getModelResource();
 
   //returns the Item it has added to the widget
   //ownership of the item is handled by the widget so no need to delete
   //for now we append model name to currentList
   virtual QListWidgetItem* addModelAssociationListItem(QListWidget* theList,
-    smtk::model::EntityRef modelItem, bool sort = true, bool appendModelName = false);
+    smtk::model::EntityPtr modelItem, bool sort = true, bool appendModelName = false);
 
   //returns the Item it has added to the widget
   //ownership of the item is handled by the widget so no need to delete
@@ -87,12 +86,6 @@ protected:
 
   virtual void addDomainListItem(
     const smtk::model::Group& domainItem, QList<smtk::attribute::AttributePtr>& allAtts);
-
-  std::set<smtk::model::EntityRef> processAttUniqueness(
-    smtk::attribute::DefinitionPtr attDef, const smtk::model::EntityRefs& assignedIds);
-
-  QList<smtk::attribute::DefinitionPtr> processDefUniqueness(
-    const smtk::model::EntityRef& theEntity, smtk::attribute::ResourcePtr attResource);
 
   // helper function to update available/current list after selection
   void updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list);

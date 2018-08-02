@@ -64,6 +64,9 @@ public:
   const smtk::resource::ResourcePtr resource() const override;
   ResourcePtr modelResource() const;
 
+  /// Return the model (if any) that owns the entity
+  EntityPtr owningModel() const;
+
   /// Return the templated object (usually EntityRef or a subclass) that points to this component.
   template <typename T>
   T referenceAs() const
@@ -160,7 +163,7 @@ public:
 
   // Attribute Stuff
   /// Return a list of attributes on the entity based on an attribute definition
-  smtk::attribute::Attributes attributes(smtk::attribute::DefinitionPtr def) const;
+  smtk::attribute::Attributes attributes(smtk::attribute::ConstDefinitionPtr def) const;
 
 protected:
   Entity();

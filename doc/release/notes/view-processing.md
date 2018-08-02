@@ -46,3 +46,6 @@ It is now possible to control how attribute items get presented in the Qt interf
 + All qtItem classes now take in a smtk::extension::AttributeItemInfo object that is used to define the instance
 + Added qtDoubleItem, qtIntItem, qtStringItem classes that use the qtInputsItem class
 + Added qtFileItem and qtDirectory classes that use the qtFileSystemItem class.
++ qtAssociationWidget has been modified to work with SMTK 3.0 version of model resources but NOT using Resource Links
+ + Widget now uses model::Entity instead of model::EntityRef
++ Replaced code that was grabbing the raw pointer from a shared pointer so that this was not necessary

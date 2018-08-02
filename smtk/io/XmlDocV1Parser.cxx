@@ -779,21 +779,7 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
   node = defNode.child("AssociationsDef");
   if (node)
   {
-    std::string assocName = node.attribute("Name").value();
-    if (assocName.empty())
-      assocName = def->type() + "Associations";
-    smtk::attribute::ReferenceItemDefinitionPtr assocDef =
-      smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(
-        smtk::attribute::ReferenceItemDefinition::New(assocName));
-    this->processReferenceDef(node, assocDef);
-    // We don't want reference items to handle "MembershipMask" but we do need
-    // to support AssociationsDef entries with a MembershipMask. So add that here:
-    xml_node mmask = node.child("MembershipMask");
-    if (mmask)
-    {
-      assocDef->setAcceptsEntries("smtk::model::Resource", mmask.text().as_string(), true);
-    }
-    def->setLocalAssociationRule(assocDef);
+    this->processAssociationDef(node, def);
   }
 
   // Now lets process its items
@@ -887,6 +873,22 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
             << node.name() << " needed to create Definition: " << def->type());
     }
   }
+}
+
+void XmlDocV1Parser::processAssociationDef(xml_node& node, smtk::attribute::DefinitionPtr def)
+{
+  // In V1 and V2 files the association information was based on
+  // model entities only
+  std::string assocName = node.attribute("Name").value();
+  if (assocName.empty())
+  {
+    assocName = def->type() + "Associations";
+  }
+  smtk::attribute::ReferenceItemDefinitionPtr assocDef =
+    smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(
+      smtk::attribute::ReferenceItemDefinition::New(assocName));
+  this->processModelEntityDef(node, assocDef);
+  def->setLocalAssociationRule(assocDef);
 }
 
 void XmlDocV1Parser::processItemDef(xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
@@ -985,7 +987,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node& node, attribute::StringIte
 }
 
 void XmlDocV1Parser::processModelEntityDef(
-  pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
+  pugi::xml_node& node, attribute::ReferenceItemDefinitionPtr idef)
 {
   xml_node labels, mmask, child;
   xml_attribute xatt;

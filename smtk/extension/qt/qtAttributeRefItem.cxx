@@ -36,7 +36,7 @@ using namespace smtk::extension;
 
 namespace qtAttRefComboInternal
 {
-void init_Att_Names_and_NEW(QList<QString>& attNames, const RefItemDefinition* itemDef)
+void init_Att_Names_and_NEW(QList<QString>& attNames, ConstRefItemDefinitionPtr itemDef)
 {
   smtk::attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
   if (!attDef)
@@ -79,12 +79,11 @@ void qtAttRefCombo::showPopup()
     return;
   }
   // need to update the list, since it may be changed
-  const RefItemDefinition* itemDef =
-    dynamic_cast<const RefItemDefinition*>(m_RefItem.lock()->definition().get());
+  RefItemPtr refitem = smtk::dynamic_pointer_cast<RefItem>(m_RefItem.lock());
+  auto itemDef = refitem->definitionAs<RefItemDefinition>();
   qtAttRefComboInternal::init_Att_Names_and_NEW(attNames, itemDef);
   this->blockSignals(true);
 
-  RefItemPtr refitem = smtk::dynamic_pointer_cast<RefItem>(m_RefItem.lock());
   int elementIdx = this->property("ElementIndex").toInt();
   int setIndex = 0; // None
   if (refitem->isSet(elementIdx))
@@ -212,8 +211,8 @@ void qtAttributeRefItem::onLaunchAttributeView()
     return;
   }
   smtk::view::ViewPtr newAttView(new smtk::view::View("Attribute", "Attribute View"));
-  const RefItemDefinition* itemDef =
-    dynamic_cast<const RefItemDefinition*>(item->definition().get());
+  auto itemDef = item->definitionAs<RefItemDefinition>();
+
   attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
   newAttView->details().addChild("AttributeTypes").addChild("Type").setContents(attDef->type());
 
@@ -375,8 +374,7 @@ void qtAttributeRefItem::updateItemData()
     return;
   }
 
-  const RefItemDefinition* itemDef =
-    dynamic_cast<const RefItemDefinition*>(item->definition().get());
+  auto itemDef = item->definitionAs<RefItemDefinition>();
   attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
   if (!attDef)
   {
@@ -461,8 +459,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
   bool valChanged = true;
   if (curIdx > 0) // index 0 is None
   {
-    const RefItemDefinition* itemDef =
-      dynamic_cast<const RefItemDefinition*>(item->definition().get());
+    auto itemDef = item->definitionAs<RefItemDefinition>();
     attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
     ResourcePtr attResource = attDef->resource();
     if (curIdx == comboBox->count() - 1) // create New attribute

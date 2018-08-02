@@ -189,12 +189,17 @@ public:
   template <typename T>
   T associatedModelEntities() const;
 
+  template <typename T>
+  T associatedObjects() const;
+
   bool associate(smtk::resource::PersistentObjectPtr obj);
   bool associateEntity(const smtk::common::UUID& entity);
   bool associateEntity(const smtk::model::EntityRef& entity);
 
   void disassociateEntity(const smtk::common::UUID& entity, bool reverse = true);
   void disassociateEntity(const smtk::model::EntityRef& entity, bool reverse = true);
+  void disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse = true);
+
   void removeAllAssociations();
 
   /**
@@ -307,6 +312,26 @@ T Attribute::entityRefsAs(const std::string& iname) const
   {
     typename T::value_type entry = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
     if (entry.isValid())
+    {
+      result.insert(result.end(), entry);
+    }
+  }
+  return result;
+}
+
+template <typename T>
+T Attribute::associatedObjects() const
+{
+  T result;
+  if (!m_associatedObjects)
+  {
+    return result;
+  }
+
+  for (auto it = m_associatedObjects->begin(); it != m_associatedObjects->end(); ++it)
+  {
+    auto entry = std::dynamic_pointer_cast<typename T::value_type>(*it);
+    if (entry)
     {
       result.insert(result.end(), entry);
     }

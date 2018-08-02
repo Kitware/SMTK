@@ -192,7 +192,7 @@ ReferenceItem::Key ReferenceItem::linkTo(PersistentObjectPtr val)
 bool ReferenceItem::setObjectValue(std::size_t i, PersistentObjectPtr val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
-  if (i < m_values.size() && def->isValueValid(val))
+  if (i < m_values.size() && (val == nullptr || def->isValueValid(val)))
   {
     this->attribute()->links().removeLink(m_keys[i]);
     m_keys[i] = this->linkTo(val);
@@ -247,13 +247,16 @@ bool ReferenceItem::appendObjectValue(PersistentObjectPtr val)
 
 bool ReferenceItem::removeValue(std::size_t i)
 {
-  //First - are we allowed to change the number of values?
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (!def->isExtensible())
   {
-    return this->setObjectValue(i, nullptr); // The number of values is fixed
+    return false; // The number of values is fixed
   }
-
+  if (this->numberOfValues() <= def->numberOfRequiredValues())
+  {
+    return false; // min number of values reached
+  }
+  this->attribute()->links().removeLink(m_keys[i]);
   m_keys.erase(m_keys.begin() + i);
   m_values.erase(m_values.begin() + i);
   return true;
