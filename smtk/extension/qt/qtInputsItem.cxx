@@ -83,8 +83,7 @@ void qtDoubleValidator::fixup(QString& input) const
     return;
   }
 
-  const DoubleItemDefinition* dDef =
-    dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
+  auto dDef = item->definitionAs<DoubleItemDefinition>();
   if (item->isSet(m_elementIndex))
   {
     input = item->valueAsString(m_elementIndex).c_str();
@@ -122,7 +121,7 @@ void qtIntValidator::fixup(QString& input) const
     return;
   }
 
-  const IntItemDefinition* dDef = dynamic_cast<const IntItemDefinition*>(item->definition().get());
+  auto dDef = item->definitionAs<IntItemDefinition>();
   if (item->isSet(m_elementIndex))
   {
     input = item->valueAsString(m_elementIndex).c_str();
@@ -389,8 +388,7 @@ void qtInputsItem::updateUI()
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(optionalCheck);
   }
-  const ValueItemDefinition* itemDef =
-    dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
+  auto itemDef = dataObj->definitionAs<ValueItemDefinition>();
 
   QString labelText;
   if (!dataObj->label().empty())
@@ -690,8 +688,7 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
 
   // check if there are attributes already created, if not
   // disable the function checkbox
-  const ValueItemDefinition* valItemDef =
-    dynamic_cast<const ValueItemDefinition*>(inputitem->definition().get());
+  auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
   smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
   std::vector<smtk::attribute::AttributePtr> result;
   if (attDef)
@@ -749,8 +746,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
   {
     combo->blockSignals(true);
     combo->clear();
-    const ValueItemDefinition* valItemDef =
-      dynamic_cast<const ValueItemDefinition*>(inputitem->definition().get());
+    auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
     smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
     QStringList attNames;
     if (attDef)
@@ -773,7 +769,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     if (inputitem->isExpression(elementIdx))
     {
       smtk::attribute::RefItemPtr item = inputitem->expressionReference(elementIdx);
-      if (item && item->definition().get())
+      if (item && (item->definition() != nullptr))
       {
         setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
       }
@@ -1113,9 +1109,8 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
     }
     case smtk::attribute::Item::StringType:
     {
-      const StringItemDefinition* sDef =
-        dynamic_cast<const StringItemDefinition*>(item->definition().get());
-      smtk::attribute::StringItemPtr sitem = dynamic_pointer_cast<StringItem>(item);
+      auto sDef = item->definitionAs<StringItemDefinition>();
+      auto sitem = dynamic_pointer_cast<StringItem>(item);
       QString valText;
       if (item->isSet(elementIdx))
       {

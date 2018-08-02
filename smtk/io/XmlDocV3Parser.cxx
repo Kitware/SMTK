@@ -150,6 +150,27 @@ void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
   }
 }
 
+void XmlDocV3Parser::processAssociationDef(xml_node& node, smtk::attribute::DefinitionPtr def)
+{
+  std::string assocName = node.attribute("Name").value();
+  if (assocName.empty())
+  {
+    assocName = def->type() + "Associations";
+  }
+  smtk::attribute::ReferenceItemDefinitionPtr assocDef =
+    smtk::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(
+      smtk::attribute::ReferenceItemDefinition::New(assocName));
+  this->processReferenceDef(node, assocDef);
+  // We don't want reference items to handle "MembershipMask" but we do need
+  // to support AssociationsDef entries with a MembershipMask. So add that here:
+  xml_node mmask = node.child("MembershipMask");
+  if (mmask)
+  {
+    assocDef->setAcceptsEntries("smtk::model::Resource", mmask.text().as_string(), true);
+  }
+  def->setLocalAssociationRule(assocDef);
+}
+
 void XmlDocV3Parser::processDateTimeDef(
   pugi::xml_node& node, attribute::DateTimeItemDefinitionPtr idef)
 {

@@ -97,8 +97,7 @@ void qtDiscreteValueEditor::createWidget()
     return;
   }
 
-  const attribute::ValueItemDefinition* itemDef =
-    dynamic_cast<const attribute::ValueItemDefinition*>(item->definition().get());
+  auto itemDef = item->definitionAs<attribute::ValueItemDefinition>();
   QList<QString> discreteVals;
   QString tooltip;
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
@@ -145,8 +144,7 @@ void qtDiscreteValueEditor::updateItemData()
   {
     return;
   }
-  const attribute::ValueItemDefinition* itemDef =
-    dynamic_cast<const attribute::ValueItemDefinition*>(item->definition().get());
+  auto itemDef = item->definitionAs<attribute::ValueItemDefinition>();
 
   int setIndex = -1, elementIdx = this->Internals->m_elementIndex;
   if (item->isSet(elementIdx))
@@ -176,8 +174,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
   int curIdx = comboBox->currentIndex();
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   bool refresh = false;
-  const attribute::ValueItemDefinition* itemDef =
-    dynamic_cast<const attribute::ValueItemDefinition*>(item->definition().get());
+  auto itemDef = item->definitionAs<attribute::ValueItemDefinition>();
   if (!item->isDiscreteIndexValid(curIdx))
   {
     if (item->isSet(this->Internals->m_elementIndex))

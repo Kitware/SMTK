@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -27,6 +28,8 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Resource.h"
+
+#include "smtk/resource/Manager.h"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -173,71 +176,6 @@ bool qtAssociationWidget::hasSelectedItem()
   return this->Internals->AvailableList->selectedItems().isEmpty() ? false : true;
 }
 
-void qtAssociationWidget::showAttributeAssociation(
-  smtk::model::EntityRef theEntiy, std::vector<smtk::attribute::DefinitionPtr>& attDefs)
-{
-  this->Internals->domainGroup->setVisible(false);
-  this->Internals->boundaryGroup->setVisible(true);
-
-  this->Internals->CurrentAtt = smtk::attribute::AttributePtr();
-  this->Internals->CurrentModelGroup = theEntiy.entity();
-
-  this->Internals->CurrentList->blockSignals(true);
-  this->Internals->AvailableList->blockSignals(true);
-  this->Internals->CurrentList->clear();
-  this->Internals->AvailableList->clear();
-
-  if (!theEntiy.isValid() || attDefs.size() == 0)
-  {
-    this->Internals->CurrentList->blockSignals(false);
-    this->Internals->AvailableList->blockSignals(false);
-    return;
-  }
-
-  std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef = attDefs.begin();
-  ResourcePtr attResource = (*itAttDef)->resource();
-
-  // figure out how many unique definitions this model item has
-  QList<smtk::attribute::DefinitionPtr> uniqueDefs =
-    this->processDefUniqueness(theEntiy, attResource);
-
-  std::set<smtk::attribute::AttributePtr> doneAtts;
-  for (; itAttDef != attDefs.end(); ++itAttDef)
-  {
-    if ((*itAttDef)->isAbstract())
-    {
-      continue;
-    }
-    std::vector<smtk::attribute::AttributePtr> result;
-    attResource->findAttributes(*itAttDef, result);
-    std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
-    for (itAtt = result.begin(); itAtt != result.end(); ++itAtt)
-    {
-      if (doneAtts.find(*itAtt) != doneAtts.end())
-      {
-        continue;
-      }
-      doneAtts.insert(*itAtt);
-
-      if (theEntiy.hasAttribute((*itAtt)->id()))
-      {
-        this->addAttributeAssociationItem(this->Internals->CurrentList, *itAtt, false);
-      }
-      else if (!uniqueDefs.contains(*itAttDef))
-      {
-        // we need to make sure this att is not associated with other
-        // same type model entities.
-        this->addAttributeAssociationItem(this->Internals->AvailableList, *itAtt, false);
-      }
-    }
-  }
-
-  this->Internals->CurrentList->sortItems();
-  this->Internals->AvailableList->sortItems();
-  this->Internals->CurrentList->blockSignals(false);
-  this->Internals->AvailableList->blockSignals(false);
-}
-
 void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)
 {
   this->Internals->domainGroup->setVisible(false);
@@ -278,134 +216,45 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
   }
 
   // Add currently-associated items to the list displaying associations.
-  smtk::model::ResourcePtr modelResource = attDef->resource()->refModelResource();
+  smtk::model::ResourcePtr modelResource = this->getModelResource();
 
   if (!modelResource)
   {
-    std::cerr << "No Model Resource for attribute def: " << attDef->type() << "\n";
     return;
   }
 
-  smtk::model::EntityRefs modelEnts = theAtt->associatedModelEntities<smtk::model::EntityRefs>();
+  // Let get all of the entities that could be possibly associated to the attrbute
+  auto entities = modelResource->findAs<smtk::model::EntityArray>(
+    smtk::model::Entity::flagSummary(attDef->associationMask()));
 
-  typedef smtk::model::EntityRefs::const_iterator cit;
-  for (cit i = modelEnts.begin(); i != modelEnts.end(); ++i)
+  // Lets also find the base definition of the attribute that forces the unique condition
+  ResourcePtr attResource = attDef->resource();
+  smtk::attribute::ConstDefinitionPtr baseDef = attResource->findIsUniqueBaseClass(attDef);
+
+  // Now go through the list of entities and for each see if it has attributes related to
+  // the base type.  If it doesn't then it can be added to the available list else
+  // if it has this attribute associated with it then it is added to the current list
+  // else it already has a different attribute of a related type associated with it and
+  // can be skipped.
+
+  for (auto entity : entities)
   {
-    this->addModelAssociationListItem(this->Internals->CurrentList, *i, false, true);
-  }
-  this->Internals->CurrentList->sortItems();
-  // The returned usedModelEnts should include all of the input modelEnts AND, if attDef is unique,
-  // entities that have been associated with the attributes with same definition.
-  std::set<smtk::model::EntityRef> usedModelEnts = this->processAttUniqueness(attDef, modelEnts);
-
-  // Now that we have added all the used model entities, we need to move on to all model
-  // entities that are not associated with the attribute, but could be associated.
-  // We use the "no-exact match required" flag to catch any entity that could possibly match
-  // the association mask. This gets pruned below.
-  smtk::model::EntityRefs entityrefs =
-    modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(
-      attDef->associationMask(), false);
-
-  EntityRefs avail;
-  // So the available list should be the difference between all "entityrefs" satisfying the mask
-  // and the usedModelEnts that have been associated.
-  // Subtract the set of already-associated entities.
-  std::set_difference(entityrefs.begin(), entityrefs.end(), usedModelEnts.begin(),
-    usedModelEnts.end(), std::inserter(avail, avail.end()));
-
-  // Add a subset of the remainder which also belongs to current active model
-  // to the list of available entities.
-  // We create a temporary group and use Group::meetsMembershipConstraints()
-  // to test whether the mask allows association.
-  smtk::model::Model activeModel = qtActiveObjects::instance().activeModel();
-  smtk::model::Resource::Ptr tmpResource = smtk::model::Resource::create();
-  Group tmpGrp = tmpResource->addGroup();
-  tmpGrp.setMembershipMask(attDef->associationMask());
-
-  for (EntityRefs::iterator i = avail.begin(); i != avail.end(); ++i)
-  {
-    if (tmpGrp.meetsMembershipConstraints(*i) && i->owningModel().entity() == activeModel.entity())
+    auto atts = entity->attributes(baseDef);
+    if (atts.size() == 0)
     {
-      this->addModelAssociationListItem(this->Internals->AvailableList, *i, false);
+      // Entity doesn't have any appropriate attribute associated with it
+      this->addModelAssociationListItem(this->Internals->AvailableList, entity, false);
+    }
+    else if (atts.at(0) == theAtt)
+    {
+      // Entity is associated with the attribute already
+      this->addModelAssociationListItem(this->Internals->CurrentList, entity, false, true);
     }
   }
+  this->Internals->CurrentList->sortItems();
   this->Internals->AvailableList->sortItems();
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
-}
-
-std::set<smtk::model::EntityRef> qtAssociationWidget::processAttUniqueness(
-  smtk::attribute::DefinitionPtr attDef, const smtk::model::EntityRefs& assignedIds)
-{
-  std::set<smtk::model::EntityRef> allUsedModelIds(assignedIds.begin(), assignedIds.end());
-  if (attDef->isUnique())
-  {
-    // we need to exclude any entities that are already assigned another att
-    // Get the most "basic" definition that is unique
-    ResourcePtr attResource = attDef->resource();
-    smtk::model::ResourcePtr modelResource = attResource->refModelResource();
-
-    smtk::attribute::ConstDefinitionPtr baseDef = attResource->findIsUniqueBaseClass(attDef);
-    smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
-    std::vector<smtk::attribute::DefinitionPtr> newdefs;
-    attResource->findAllDerivedDefinitions(bdef, true, newdefs);
-    std::vector<smtk::attribute::DefinitionPtr>::iterator itDef;
-    for (itDef = newdefs.begin(); itDef != newdefs.end(); ++itDef)
-    {
-      std::vector<smtk::attribute::AttributePtr> result;
-      attResource->findAttributes(*itDef, result);
-      std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
-      for (itAtt = result.begin(); itAtt != result.end(); ++itAtt)
-      {
-        smtk::model::EntityRefs modelEnts;
-        smtk::model::EntityRef::EntityRefsFromUUIDs(
-          modelEnts, modelResource, (*itAtt)->associatedModelEntityIds());
-
-        typedef smtk::model::EntityRefs::const_iterator cit;
-        for (cit i = modelEnts.begin(); i != modelEnts.end(); ++i)
-        { //add them all, and let the set sort it out
-          allUsedModelIds.insert(*i);
-        }
-      }
-    }
-  }
-  return allUsedModelIds;
-}
-
-QList<smtk::attribute::DefinitionPtr> qtAssociationWidget::processDefUniqueness(
-  const smtk::model::EntityRef& theEntity, smtk::attribute::ResourcePtr attResource)
-{
-  QList<smtk::attribute::DefinitionPtr> uniqueDefs;
-
-  smtk::common::UUIDs associatedAtts = theEntity.attributeIds();
-  if (associatedAtts.size() == 0)
-  {
-    return uniqueDefs;
-  }
-
-  typedef smtk::common::UUIDs::const_iterator cit;
-  for (cit i = associatedAtts.begin(); i != associatedAtts.end(); ++i)
-  {
-    smtk::attribute::AttributePtr attPtr = attResource->findAttribute((*i));
-    if (attPtr)
-    {
-      smtk::attribute::DefinitionPtr attDef = attPtr->definition();
-      if (attDef->isUnique())
-      {
-        smtk::attribute::ConstDefinitionPtr baseDef = attResource->findIsUniqueBaseClass(attDef);
-        smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
-        std::vector<smtk::attribute::DefinitionPtr> newdefs;
-        attResource->findAllDerivedDefinitions(bdef, true, newdefs);
-        std::vector<smtk::attribute::DefinitionPtr>::iterator itDef;
-        for (itDef = newdefs.begin(); itDef != newdefs.end(); ++itDef)
-        {
-          uniqueDefs.append(*itDef);
-        }
-      }
-    }
-  }
-
-  return uniqueDefs;
 }
 
 void qtAssociationWidget::onEntitySelected()
@@ -416,14 +265,14 @@ void qtAssociationWidget::onEntitySelected()
     return;
   }
 
-  smtk::model::EntityRefs selents;
+  smtk::model::EntityArray selents;
   QList<QListWidgetItem*> selItems = listW->selectedItems();
   foreach (QListWidgetItem* currentItem, selItems)
   {
-    smtk::model::EntityRef entref = this->getModelEntityItem(currentItem);
-    if (entref.isValid())
+    auto entity = this->getModelEntityItem(currentItem);
+    if (entity)
     {
-      selents.insert(entref);
+      selents.push_back(entity);
     }
   }
 }
@@ -440,25 +289,41 @@ smtk::attribute::AttributePtr qtAssociationWidget::getAttribute(QListWidgetItem*
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
 }
 
-smtk::model::EntityRef qtAssociationWidget::getSelectedModelEntityItem(QListWidgetItem* item)
+smtk::model::EntityPtr qtAssociationWidget::getSelectedModelEntityItem(QListWidgetItem* item)
 {
   return this->getModelEntityItem(item);
 }
 
-smtk::model::EntityRef qtAssociationWidget::getModelEntityItem(QListWidgetItem* item)
+smtk::model::ResourcePtr qtAssociationWidget::getModelResource()
 {
+  auto resManager = this->Internals->View->uiManager()->resourceManager();
+  auto modelResources = resManager->find<smtk::model::Resource>();
+  smtk::model::ResourcePtr mresource;
+  // Grab the first model resource (if any)
+  // ToDo This should be using Resource Links
+  if (!modelResources.empty())
+  {
+    mresource = *modelResources.begin();
+  }
+  return mresource;
+}
+
+smtk::model::EntityPtr qtAssociationWidget::getModelEntityItem(QListWidgetItem* item)
+{
+  smtk::model::EntityPtr entity;
   if (item)
   {
     QVariant var = item->data(Qt::UserRole);
-    smtk::common::UUID uid(var.toString().toStdString());
+    smtk::common::UUID uid = qtSMTKUtilities::QVariantToUUID(var);
+    ;
     smtk::attribute::ResourcePtr attResource = this->Internals->View->uiManager()->attResource();
     if (attResource)
     {
-      smtk::model::ResourcePtr modelResource = attResource->refModelResource();
-      return smtk::model::EntityRef(modelResource, uid);
+      smtk::model::ResourcePtr modelResource = this->getModelResource();
+      entity = modelResource->findEntity(uid);
     }
   }
-  return smtk::model::EntityRef();
+  return entity;
 }
 
 QList<QListWidgetItem*> qtAssociationWidget::getSelectedItems(QListWidget* theList) const
@@ -484,14 +349,14 @@ void qtAssociationWidget::removeItem(QListWidget* theList, QListWidgetItem* selI
 }
 
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
-  QListWidget* theList, smtk::model::EntityRef modelItem, bool sort, bool appendModelName)
+  QListWidget* theList, smtk::model::EntityPtr entity, bool sort, bool appendModelName)
 {
-  std::string name = appendModelName ? (modelItem.name() + " - " + modelItem.owningModel().name())
-                                     : modelItem.name();
+  std::string name =
+    appendModelName ? (entity->name() + " - " + entity->owningModel()->name()) : entity->name();
   QListWidgetItem* item =
     new QListWidgetItem(QString::fromStdString(name), theList, smtk_USER_DATA_TYPE);
   //save the entity as a uuid string
-  QVariant vdata(QString::fromStdString(modelItem.entity().toString()));
+  QVariant vdata = qtSMTKUtilities::UUIDToQVariant(entity->id());
   item->setData(Qt::UserRole, vdata);
   theList->addItem(item);
   if (sort)
@@ -576,18 +441,12 @@ void qtAssociationWidget::onRemoveAssigned()
   {
     if (this->Internals->CurrentAtt.lock())
     {
-      smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(item);
-      if (currentItem.isValid())
+      smtk::model::EntityPtr currentItem = this->getSelectedModelEntityItem(item);
+      if (currentItem)
       {
-        this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
+        this->Internals->CurrentAtt.lock()->disassociate(currentItem);
         this->removeItem(theList, item);
-        // only add entityRef back to availableList when it belongs to
-        // the current active model
-        if (currentItem.owningModel().entity() ==
-          qtActiveObjects::instance().activeModel().entity())
-        {
-          selItem = this->addModelAssociationListItem(this->Internals->AvailableList, currentItem);
-        }
+        selItem = this->addModelAssociationListItem(this->Internals->AvailableList, currentItem);
       }
     }
     else if (!this->Internals->CurrentModelGroup.isNull())
@@ -625,10 +484,10 @@ void qtAssociationWidget::onAddAvailable()
   {
     if (this->Internals->CurrentAtt.lock())
     {
-      smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(item);
-      if (currentItem.isValid())
+      smtk::model::EntityPtr currentItem = this->getSelectedModelEntityItem(item);
+      if (currentItem)
       {
-        if (this->Internals->CurrentAtt.lock()->associateEntity(currentItem))
+        if (this->Internals->CurrentAtt.lock()->associate(currentItem))
         {
           this->removeItem(theList, item);
           selItem = this->addModelAssociationListItem(
@@ -696,32 +555,27 @@ void qtAssociationWidget::onExchange()
   {
     if (this->Internals->CurrentAtt.lock())
     {
-      smtk::model::EntityRef currentItem = this->getSelectedModelEntityItem(selCurrentItems[i]);
-      smtk::model::EntityRef availableItem = this->getSelectedModelEntityItem(selAvailItems[i]);
-      if (currentItem.isValid() && availableItem.isValid())
+      smtk::model::EntityPtr currentItem = this->getSelectedModelEntityItem(selCurrentItems[i]);
+      smtk::model::EntityPtr availableItem = this->getSelectedModelEntityItem(selAvailItems[i]);
+      if (currentItem && availableItem)
       {
-        this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
+        this->Internals->CurrentAtt.lock()->disassociate(currentItem);
 
-        if (this->Internals->CurrentAtt.lock()->associateEntity(availableItem))
+        if (this->Internals->CurrentAtt.lock()->associate(availableItem))
         {
           this->removeItem(this->Internals->CurrentList, selCurrentItems[i]);
           selCurrentItem = this->addModelAssociationListItem(
             this->Internals->CurrentList, availableItem, true, true);
 
           this->removeItem(this->Internals->AvailableList, selAvailItems[i]);
-          // only add it back to available list when it's part of active model
-          if (currentItem.owningModel().entity() ==
-            qtActiveObjects::instance().activeModel().entity())
-          {
-            selAvailItem =
-              this->addModelAssociationListItem(this->Internals->AvailableList, currentItem);
-          }
+          selAvailItem =
+            this->addModelAssociationListItem(this->Internals->AvailableList, currentItem);
         }
         else // faied to exchange, add back association
         {
           QMessageBox::warning(
             this, tr("Exchange Attributes"), tr("Failed to associate with new entity!"));
-          this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
+          this->Internals->CurrentAtt.lock()->associate(currentItem);
         }
       }
     }
@@ -798,7 +652,7 @@ void qtAssociationWidget::onNodalOptionChanged(int idx)
 void qtAssociationWidget::onDomainAssociationChanged()
 {
   smtk::attribute::ResourcePtr attResource = this->Internals->View->uiManager()->attResource();
-  smtk::model::ResourcePtr modelResource = attResource->refModelResource();
+  smtk::model::ResourcePtr modelResource = this->getModelResource();
 
   QComboBox* const combo = qobject_cast<QComboBox*>(QObject::sender());
   if (!combo)

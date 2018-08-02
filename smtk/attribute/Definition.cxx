@@ -170,6 +170,7 @@ ConstReferenceItemDefinitionPtr Definition::associationRule() const
   *
   * A Definition's local asscoation rule overrides the rule it inherits from its Base Definition.
   * This creates a local association rule (if one does not already exist) and returns it.
+  * The default is to create an empty association rule (nothing can be associated).
   */
 ReferenceItemDefinitionPtr Definition::createLocalAssociationRule()
 {
@@ -178,6 +179,8 @@ ReferenceItemDefinitionPtr Definition::createLocalAssociationRule()
     std::ostringstream assocName;
     assocName << this->type() << "Associations";
     m_acceptsRules = ReferenceItemDefinition::New(assocName.str());
+    m_acceptsRules->setIsExtensible(false);
+    m_acceptsRules->setNumberOfRequiredValues(0);
   }
   return m_acceptsRules;
 }

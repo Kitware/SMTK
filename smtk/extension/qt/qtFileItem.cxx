@@ -195,8 +195,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   QString defaultText;
   if (item->type() == smtk::attribute::Item::FileType)
   {
-    const smtk::attribute::FileItemDefinition* fDef =
-      dynamic_cast<const attribute::FileItemDefinition*>(item->definition().get());
+    auto fDef = item->definitionAs<attribute::FileItemDefinition>();
     if (fDef->hasDefault())
       defaultText = fDef->defaultValue().c_str();
     // For open Files, we use a combobox to show the recent file list
@@ -308,8 +307,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
       lineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onInputValueChanged()));
     this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
 
-    const smtk::attribute::FileSystemItemDefinition* fSystemItemDef =
-      dynamic_cast<const smtk::attribute::FileSystemItemDefinition*>(item->definition().get());
+    auto fSystemItemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
     if (fSystemItemDef->isValueValid(lineEdit->text().toStdString()))
     {
       if (item->isUsingDefault(elementIdx))
@@ -391,10 +389,8 @@ void qtFileItem::onInputValueChanged()
   {
     smtk::attribute::FileItemPtr fItem =
       smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
-    const smtk::attribute::FileSystemItemDefinition* fSystemItemDef =
-      dynamic_cast<const smtk::attribute::FileSystemItemDefinition*>(item->definition().get());
-    const smtk::attribute::FileItemDefinition* fItemDef =
-      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fSystemItemDef);
+    auto fSystemItemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
+    auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
     if (fItemDef && this->Internals->fileExtCombo)
     {
       int filterId = fItemDef->filterId(value);
@@ -470,16 +466,14 @@ bool qtFileItem::onLaunchFileBrowser()
   if (this->Internals->IsDirectory)
   {
     dItem = smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(item);
-    const smtk::attribute::DirectoryItemDefinition* dItemDef =
-      dynamic_cast<const smtk::attribute::DirectoryItemDefinition*>(dItem->definition().get());
+    auto dItemDef = dItem->definitionAs<attribute::DirectoryItemDefinition>();
     mode = QFileDialog::Directory;
     this->Internals->FileBrowser->setOption(QFileDialog::ShowDirsOnly, dItemDef->shouldExist());
   }
   else
   {
     fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
-    const smtk::attribute::FileItemDefinition* fItemDef =
-      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fItem->definition().get());
+    auto fItemDef = fItem->definitionAs<attribute::FileItemDefinition>();
     filters = fItemDef->getFileFilters().c_str();
     mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile : QFileDialog::AnyFile;
   }
@@ -542,8 +536,7 @@ void qtFileItem::setInputValue(const QString& val)
     smtk::attribute::ItemPtr item = m_itemInfo.item();
 
     fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
-    const smtk::attribute::FileItemDefinition* fItemDef =
-      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fItem->definition().get());
+    auto fItemDef = fItem->definitionAs<attribute::FileItemDefinition>();
     if (fItemDef->isValueValid(val.toStdString()) == false)
     {
       QFileInfo fi(val);
@@ -606,8 +599,7 @@ void qtFileItem::addInputEditor(int i)
     return;
   }
 
-  const FileSystemItemDefinition* itemDef =
-    dynamic_cast<const FileSystemItemDefinition*>(item->definition().get());
+  auto itemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
@@ -739,8 +731,7 @@ void qtFileItem::updateUI()
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(optionalCheck);
   }
-  const FileSystemItemDefinition* itemDef =
-    dynamic_cast<const FileSystemItemDefinition*>(dataObj->definition().get());
+  auto itemDef = dataObj->definitionAs<attribute::FileSystemItemDefinition>();
 
   QString labelText;
   if (!dataObj->label().empty())

@@ -82,6 +82,7 @@ protected:
 
   void createDefinition(pugi::xml_node& defNode);
   virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def);
+  virtual void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def);
   void processAttribute(pugi::xml_node& attNode);
   void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item);
   virtual void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
@@ -103,7 +104,7 @@ protected:
     pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef);
   virtual void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
   void processModelEntityDef(
-    pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
+    pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef);
   virtual void processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item);
   virtual void processMeshEntityDef(
     pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef);

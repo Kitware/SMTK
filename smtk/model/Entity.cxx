@@ -1503,7 +1503,7 @@ int Entity::consumeInvalidIndex(const smtk::common::UUID& uid)
 /**\brief Return the attributes associated with the entity
 that are of type (or derived type) def.
   */
-smtk::attribute::Attributes Entity::attributes(smtk::attribute::DefinitionPtr def) const
+smtk::attribute::Attributes Entity::attributes(smtk::attribute::ConstDefinitionPtr def) const
 {
   smtk::attribute::Attributes atts;
   // If there was no definition return empty list
@@ -1542,6 +1542,13 @@ smtk::attribute::Attributes Entity::attributes(smtk::attribute::DefinitionPtr de
     }
   }
   return atts;
+}
+
+EntityPtr Entity::owningModel() const
+{
+  auto myResource = this->modelResource();
+  UUID modelId = myResource->modelOwningEntity(m_id);
+  return myResource->findEntity(modelId);
 }
 
 } // namespace model

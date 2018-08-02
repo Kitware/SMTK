@@ -671,7 +671,6 @@ void qtModelEntityAttributeView::selectionMade()
 {
   if (this->Internals->ListTable)
   {
-    std::cerr << "Selection Made!\n";
     QApplication::postEvent(this->Internals->ListTable,
       new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
   }

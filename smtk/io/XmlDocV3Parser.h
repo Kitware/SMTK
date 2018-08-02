@@ -36,6 +36,7 @@ public:
 
 protected:
   void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def) override;
+  void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def) override;
 
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item) override;
   void processDateTimeDef(

@@ -411,8 +411,8 @@ int qtSimpleExpressionView::getNumberOfComponents()
     return -1;
   }
 
-  const GroupItemDefinition* itemDefinition = dynamic_cast<const GroupItemDefinition*>(
-    this->Internals->m_attDefinition->itemDefinition(0).get());
+  auto itemDefinition = dynamic_pointer_cast<const GroupItemDefinition>(
+    this->Internals->m_attDefinition->itemDefinition(0));
 
   if (!itemDefinition)
   {

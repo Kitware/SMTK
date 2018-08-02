@@ -404,8 +404,7 @@ void qtDateTimeItem::updateUI()
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(optionalCheck);
   }
-  const DateTimeItemDefinition* itemDef =
-    dynamic_cast<const DateTimeItemDefinition*>(dataObj->definition().get());
+  auto itemDef = dataObj->definitionAs<DateTimeItemDefinition>();
 
   QString labelText;
   if (!dataObj->label().empty())
