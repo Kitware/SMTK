@@ -287,6 +287,7 @@ bool qtResourceItem::synchronize(UpdateSource src)
           ++idx;
         }
       }
+      emit modified();
     }
     break;
 
