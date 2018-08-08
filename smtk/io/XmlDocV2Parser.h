@@ -40,7 +40,6 @@ protected:
     pugi::xml_node& node, smtk::attribute::DirectoryItemDefinitionPtr idef) override;
   void processFileItem(pugi::xml_node& node, smtk::attribute::FileItemPtr item) override;
   void processFileDef(pugi::xml_node& node, smtk::attribute::FileItemDefinitionPtr idef) override;
-  void processModelInfo(pugi::xml_node& root) override;
   void processModelEntityItem(
     pugi::xml_node& node, smtk::attribute::ComponentItemPtr item) override;
   void processMeshSelectionItem(

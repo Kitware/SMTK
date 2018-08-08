@@ -74,11 +74,13 @@ public:
   static bool canParse(pugi::xml_document& doc);
   static bool canParse(pugi::xml_node& node);
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
+  static void getCategories(
+    pugi::xml_node& rootNode, std::set<std::string>& categories, std::string& defaultCategory);
+  void setIncludeFileIndex(std::size_t index) { m_includeIndex = index; }
 
 protected:
   void processAttributeInformation(pugi::xml_node& root);
   virtual void processViews(pugi::xml_node& root);
-  virtual void processModelInfo(pugi::xml_node& root);
 
   void createDefinition(pugi::xml_node& defNode);
   virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def);
@@ -153,6 +155,7 @@ protected:
   std::vector<AttRefInfo> m_attRefInfo;
   std::string m_defaultCategory;
   smtk::io::Logger m_logger;
+  std::size_t m_includeIndex;
 
 private:
 };

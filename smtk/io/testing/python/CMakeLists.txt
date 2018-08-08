@@ -2,10 +2,6 @@ set(smtkIOPythonTests
   logMessage
 )
 
-# do not add ResourceSetTest if we are running on windows
-if (NOT WIN32)
-  list(APPEND smtkIOPythonTests ResourceSetTest)
-endif()
 
 # Additional tests that require SMTK_DATA_DIR
 set(smtkIOPythonDataTests
@@ -28,14 +24,5 @@ if (SMTK_DATA_DIR)
     29
     19
     )
-
-  # do not add ResourceSetReaderTest if we are running on windows
-  if (NOT WIN32)
-    set(reader_test ResourceSetReaderTest)
-    smtk_add_test_python(${reader_test}Py ${reader_test}.py
-      ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/resources.xml
-      2
-      )
-  endif()
 
 endif()

@@ -129,11 +129,19 @@ public:
       m_details == other.m_details;
   }
 
+  // These methods are use primarily by I/O operations.  The include ID corresponds to
+  // the include directory information store in the attribute reosurce and is used
+  // when writing out the resource to use include files
+  void setIncludeIndex(std::size_t index) { m_includeIndex = index; }
+
+  std::size_t includeIndex() const { return m_includeIndex; }
+
 protected:
   std::string m_name;
   std::string m_type;
   std::string m_iconName;
   Component m_details;
+  std::size_t m_includeIndex;
 };
 }
 }

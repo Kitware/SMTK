@@ -43,6 +43,8 @@ Definition::Definition(
   m_isNotApplicableColorSet = false;
   m_isDefaultColorSet = false;
   m_rootName = m_type;
+  m_includeIndex = 0;
+
   if (myBaseDef)
   {
     m_baseItemOffset = myBaseDef->numberOfItemDefinitions();

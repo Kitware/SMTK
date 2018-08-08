@@ -9,8 +9,6 @@ set(ioSrcs
   LoadJSON.cxx
   Logger.cxx
   ModelToMesh.cxx
-  ResourceSetReader.cxx
-  ResourceSetWriter.cxx
   XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
   XmlDocV3Parser.cxx
@@ -28,8 +26,6 @@ set(ioHeaders
   LoadJSON.h
   Logger.h
   ModelToMesh.h
-  ResourceSetReader.h
-  ResourceSetWriter.h
   #XmlDocV1Parser.h
   XmlDocV2Parser.h
   XmlStringWriter.h

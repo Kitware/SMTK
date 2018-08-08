@@ -18,6 +18,10 @@
 
 #define DEFAULT_FILE_VERSION 3
 #define MAX_FILE_VERSION 3
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
 
 namespace smtk
 {
@@ -28,8 +32,8 @@ AttributeWriter::AttributeWriter()
   : m_fileVersion(DEFAULT_FILE_VERSION)
   , m_includeDefinitions(true)
   , m_includeInstances(true)
-  , m_includeModelInformation(true)
   , m_includeViews(true)
+  , m_useDirectoryInfo(false)
 {
 }
 
@@ -63,11 +67,47 @@ bool AttributeWriter::write(
   XmlStringWriter* theWriter = this->newXmlStringWriter(resource);
   theWriter->includeDefinitions(m_includeDefinitions);
   theWriter->includeInstances(m_includeInstances);
-  theWriter->includeModelInformation(m_includeModelInformation);
   theWriter->includeViews(m_includeViews);
+  theWriter->useDirectoryInfo(m_useDirectoryInfo);
 
   std::string result = theWriter->convertToString(logger);
-  if (!logger.hasErrors())
+  if (m_useDirectoryInfo && (!logger.hasErrors()))
+  {
+    path p(filename);
+    path searchPath = p.parent_path();
+    create_directories(searchPath);
+    std::size_t i, num = resource->directoryInfo().size();
+    for (i = 0; i < num; i++)
+    {
+      // The first entry refers to the new filename specified in the write
+      // the rest should be the required include files that use relative paths
+      path fpath((i == 0) ? filename : resource->directoryInfo().at(i).filename());
+      if (i && fpath.is_relative())
+      {
+        path newFPath = searchPath / fpath;
+        fpath = newFPath;
+        create_directories(fpath.parent_path());
+      }
+      else if (i != 0)
+      {
+        smtkErrorMacro(logger,
+          "Error - Will not over-write include file using absolute path: " << fpath.string());
+        continue;
+      }
+      std::ofstream outfile;
+      outfile.open(fpath.string().c_str(), std::ofstream::out | std::ofstream::trunc);
+      if (!outfile)
+      {
+        smtkErrorMacro(logger, "Error opening file for writing: " << fpath.string());
+      }
+      else
+      {
+        outfile << theWriter->getString(i);
+      }
+      outfile.close();
+    }
+  }
+  else if (!logger.hasErrors())
   {
     std::ofstream outfile;
     outfile.open(filename.c_str(), std::ofstream::out | std::ofstream::trunc);
@@ -92,8 +132,8 @@ bool AttributeWriter::writeContents(const smtk::attribute::ResourcePtr resource,
   XmlStringWriter* theWriter = this->newXmlStringWriter(resource);
   theWriter->includeDefinitions(m_includeDefinitions);
   theWriter->includeInstances(m_includeInstances);
-  theWriter->includeModelInformation(m_includeModelInformation);
   theWriter->includeViews(m_includeViews);
+  theWriter->useDirectoryInfo(false);
   filecontents = theWriter->convertToString(logger, no_declaration);
   delete theWriter;
   return logger.hasErrors();

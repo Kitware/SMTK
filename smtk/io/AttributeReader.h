@@ -29,14 +29,14 @@ namespace smtk
 {
 namespace io
 {
+class AttributeReaderInternals;
 class Logger;
+
 class SMTKCORE_EXPORT AttributeReader
 {
 public:
-  AttributeReader()
-    : m_reportAsError(true)
-  {
-  }
+  AttributeReader();
+  ~AttributeReader();
 
   // Returns true if there was a problem with reading the file
   bool read(smtk::attribute::ResourcePtr resource, const std::string& filename, bool includePath,
@@ -64,6 +64,7 @@ protected:
 private:
   bool m_reportAsError;
   std::vector<std::string> m_searchPaths;
+  AttributeReaderInternals* m_internals;
 };
 }
 }

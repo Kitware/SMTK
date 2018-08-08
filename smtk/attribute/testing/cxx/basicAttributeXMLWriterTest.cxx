@@ -209,7 +209,6 @@ int main(int argc, char* argv[])
   }
 
   // Now repeat but only save the instance section
-  writer.includeModelInformation(false);
   writer.includeDefinitions(false);
   writer.includeViews(false);
   if (writer.write(resptr, argv[2], logger))

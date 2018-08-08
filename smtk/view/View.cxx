@@ -183,6 +183,7 @@ View::View(const std::string& myType, const std::string& myName)
   : m_name(myName)
   , m_type(myType)
   , m_details("Details")
+  , m_includeIndex(0)
 {
 }
 

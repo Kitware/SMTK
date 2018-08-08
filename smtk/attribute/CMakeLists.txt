@@ -85,6 +85,7 @@ set(attributeHeaders
   Definition.h
   DateTimeItem.h
   DateTimeItemDefinition.h
+  DirectoryInfo.h
   DirectoryItem.h
   DirectoryItemDefinition.h
   DoubleItem.h
@@ -132,6 +133,7 @@ set(attributeSrcs
   DateTimeItem.cxx
   DateTimeItemDefinition.cxx
   Definition.cxx
+  DirectoryInfo.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
   DoubleItem.cxx

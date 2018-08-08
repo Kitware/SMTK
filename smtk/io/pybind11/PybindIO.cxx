@@ -37,8 +37,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindLogger.h"
 #include "PybindModelToMesh.h"
 #include "PybindReadMesh.h"
-#include "PybindResourceSetReader.h"
-#include "PybindResourceSetWriter.h"
 #include "PybindWriteMesh.h"
 #include "PybindXmlDocV1Parser.h"
 #include "PybindXmlDocV2Parser.h"
@@ -73,8 +71,6 @@ PYBIND11_MODULE(_smtkPybindIO, io)
   PySharedPtrClass< smtk::io::Logger > smtk_io_Logger = pybind11_init_smtk_io_Logger(io);
   PySharedPtrClass< smtk::io::ModelToMesh > smtk_io_ModelToMesh = pybind11_init_smtk_io_ModelToMesh(io);
   PySharedPtrClass< smtk::io::ReadMesh > smtk_io_ReadMesh = pybind11_init_smtk_io_ReadMesh(io);
-  PySharedPtrClass< smtk::io::ResourceSetReader > smtk_io_ResourceSetReader = pybind11_init_smtk_io_ResourceSetReader(io);
-  PySharedPtrClass< smtk::io::ResourceSetWriter > smtk_io_ResourceSetWriter = pybind11_init_smtk_io_ResourceSetWriter(io);
   PySharedPtrClass< smtk::io::WriteMesh > smtk_io_WriteMesh = pybind11_init_smtk_io_WriteMesh(io);
   PySharedPtrClass< smtk::io::XmlDocV1Parser > smtk_io_XmlDocV1Parser = pybind11_init_smtk_io_XmlDocV1Parser(io);
   PySharedPtrClass< smtk::io::XmlStringWriter > smtk_io_XmlStringWriter = pybind11_init_smtk_io_XmlStringWriter(io);
