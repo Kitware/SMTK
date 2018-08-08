@@ -15,28 +15,49 @@
 #include "smtk/io/Logger.h"
 
 #include <iostream>
+#include <string>
 
 int main(int argc, char* argv[])
 {
-  if (argc != 3)
+  std::string arg1, infile, outfile;
+  bool useDirectoryInfo = false;
+  if (argc == 4)
   {
-    std::cerr << "Usage: " << argv[0] << " inputAttributeFile outputAttributeFile\n";
+    arg1 = argv[1];
+  }
+  if ((argc < 3) || (argc > 4) || ((argc == 4) && (arg1 != "-I")))
+  {
+    std::cerr << "Usage: " << argv[0] << " -I inputAttributeFile outputAttributeFile\n"
+              << "-I (optional) indicates the writer should use include files instead of writing\n"
+              << "out a single file\n";
     return -1;
   }
   {
+    if (argc == 4)
+    {
+      useDirectoryInfo = true;
+      infile = argv[2];
+      outfile = argv[3];
+    }
+    else
+    {
+      infile = argv[1];
+      outfile = argv[2];
+    }
     smtk::attribute::ResourcePtr resource = smtk::attribute::Resource::create();
     smtk::io::Logger logger;
     smtk::io::AttributeReader reader;
     smtk::io::AttributeWriter writer;
-    if (reader.read(resource, argv[1], logger))
+    writer.useDirectoryInfo(useDirectoryInfo);
+    if (reader.read(resource, infile, true, logger))
     {
-      std::cerr << "Encountered Errors while reading " << argv[1] << "\n";
+      std::cerr << "Encountered Errors while reading " << infile << "\n";
       std::cerr << logger.convertToString();
       return -2;
     }
-    if (writer.write(resource, argv[2], logger))
+    if (writer.write(resource, outfile, logger))
     {
-      std::cerr << "Encountered Errors while writing " << argv[2] << "\n";
+      std::cerr << "Encountered Errors while writing " << outfile << "\n";
       std::cerr << logger.convertToString();
       return -2;
     }

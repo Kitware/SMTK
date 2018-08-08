@@ -37,7 +37,6 @@ public:
     : m_resource(resource)
     , m_includeDefinitions(true)
     , m_includeInstances(true)
-    , m_includeModelInformation(true)
     , m_includeViews(true)
   {
   }
@@ -50,30 +49,33 @@ public:
   virtual unsigned int fileVersion() const = 0;
 
   virtual std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) = 0;
+  // If using the resource's DirectoryInfo - return the ith string (NOTE - make use you have called
+  // convertToString first!)
+  virtual std::string getString(std::size_t ith, bool no_declaration = false) = 0;
 
-  virtual void generateXml(
-    pugi::xml_node& parent_node, smtk::io::Logger& logger, bool createRoot = true) = 0;
+  virtual void generateXml(smtk::io::Logger& logger) = 0;
 
   //Control which sections of the attribute resource should be writtern out
   // By Default all sections are processed.  These are advance options!!
-  // If val is false then defintions will not be saved
+  // If val is false then defintions will not be saved (default is true)
   void includeDefinitions(bool val) { m_includeDefinitions = val; }
 
-  // If val is false then instances will not be saved
+  // If val is false then instances will not be saved (default is true)
   void includeInstances(bool val) { m_includeInstances = val; }
 
-  // If val is false then model information will not be saved
-  void includeModelInformation(bool val) { m_includeModelInformation = val; }
-
-  // If val is false then views will not be saved
+  // If val is false then views will not be saved (default is true)
   void includeViews(bool val) { m_includeViews = val; }
+
+  // If val is true then the resource's DirectoryInfo is used to construct several
+  // XML representations
+  void useDirectoryInfo(bool val) { m_useDirectoryInfo = val; }
 
 protected:
   smtk::attribute::ResourcePtr m_resource;
   bool m_includeDefinitions;
   bool m_includeInstances;
-  bool m_includeModelInformation;
   bool m_includeViews;
+  bool m_useDirectoryInfo;
 
   smtk::io::Logger m_logger;
 };

@@ -71,6 +71,7 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
   , m_isColorSet(false)
   , m_aboutToBeDeleted(false)
   , m_id(smtk::common::UUIDGenerator::instance().random())
+  , m_includeIndex(0)
 {
   m_definition->buildAttribute(this);
 }

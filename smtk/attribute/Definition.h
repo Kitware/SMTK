@@ -277,6 +277,13 @@ public:
   void resetItemOffset();
   std::size_t itemOffset() const { return m_baseItemOffset; }
 
+  // These methods are use primarily by I/O operations.  The include ID corresponds to
+  // the include directory information store in the attribute reosurce and is used
+  // when writing out the resource to use include files
+  void setIncludeIndex(std::size_t index) { m_includeIndex = index; }
+
+  std::size_t includeIndex() const { return m_includeIndex; }
+
 protected:
   friend class smtk::attribute::Resource;
   // AttributeDefinitions can only be created by an attribute resource
@@ -318,6 +325,7 @@ protected:
   std::size_t m_baseItemOffset;
   std::string m_rootName;
   Tags m_tags;
+  std::size_t m_includeIndex;
 
 private:
   // These colors are returned for base definitions w/o set colors

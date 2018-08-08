@@ -6,24 +6,6 @@ set(ioTests
   unitSaveLoadJSON
 )
 
-set(ioDataTests
-  ResourceSetWriterTest
-  ResourceSetReaderTest
-)
-
-set(ResourceSetWriterTest_ARGUMENTS
-  ${SMTK_DATA_DIR}/attribute/attribute_collection/Basic2DFluid.sbt
-  ${SMTK_DATA_DIR}/attribute/attribute_collection/copyAttributeTest.sbi
-  writer_output.crf
-)
-set(ResourceSetWriterTest_EXTRA_LIBRARIES
-)
-
-set(ResourceSetReaderTest_ARGUMENTS
-  ${SMTK_DATA_DIR}/attribute/attribute_collection/resourceTest/resources.xml
-  2
-)
-
 foreach (test ${ioTests})
   add_executable(${test}  ${test}.cxx)
   target_link_libraries(${test} smtkCore smtkCoreModelTesting ${Boost_LIBRARIES})

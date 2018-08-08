@@ -404,12 +404,6 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
   }
 }
 
-void XmlDocV2Parser::processModelInfo(xml_node&)
-{
-  /** This seems to be outdated with ModelEntityItem already being processed
-   **/
-}
-
 void XmlDocV2Parser::processMeshSelectionItem(
   pugi::xml_node& node, attribute::MeshSelectionItemPtr item)
 {
@@ -626,6 +620,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
       view->setIconName(icon);
     }
     this->processViewComponent(view->details(), child, true);
+    view->setIncludeIndex(m_includeIndex);
     m_resource->addView(view);
   }
 }

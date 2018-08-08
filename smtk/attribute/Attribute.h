@@ -245,6 +245,13 @@ public:
     return true;
   }
 
+  // These methods are use primarily by I/O operations.  The include ID corresponds to
+  // the include directory information store in the attribute reosurce and is used
+  // when writing out the resource to use include files
+  void setIncludeIndex(std::size_t index) { m_includeIndex = index; }
+
+  std::size_t includeIndex() const { return m_includeIndex; }
+
 protected:
   Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
     const smtk::common::UUID& myId);
@@ -281,6 +288,7 @@ protected:
   bool m_aboutToBeDeleted;
   double m_color[4];
   smtk::common::UUID m_id;
+  std::size_t m_includeIndex;
 };
 
 inline smtk::simulation::UserDataPtr Attribute::userData(const std::string& key) const

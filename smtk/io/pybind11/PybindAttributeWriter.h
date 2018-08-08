@@ -36,7 +36,6 @@ PySharedPtrClass< smtk::io::AttributeWriter > pybind11_init_smtk_io_AttributeWri
     .def("writeContents", [](smtk::io::AttributeWriter& writer, const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger, bool no_declaration){ std::string filecontents; writer.writeContents(resource, filecontents, logger, no_declaration); return filecontents; }, py::arg("resource"), py::arg("logger"), py::arg("no_declaration") = false)
     .def("includeDefinitions", &smtk::io::AttributeWriter::includeDefinitions, py::arg("val"))
     .def("includeInstances", &smtk::io::AttributeWriter::includeInstances, py::arg("val"))
-    .def("includeModelInformation", &smtk::io::AttributeWriter::includeModelInformation, py::arg("val"))
     .def("includeViews", &smtk::io::AttributeWriter::includeViews, py::arg("val"))
     ;
   return instance;

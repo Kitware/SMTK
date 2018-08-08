@@ -10,9 +10,6 @@
 
 #include "smtk/io/XmlV2StringWriter.h"
 
-#define PUGIXML_HEADER_ONLY
-#include "pugixml/src/pugixml.cpp"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -53,6 +50,9 @@
 
 #include "cJSON.h"
 #include <sstream>
+
+#define PUGIXML_HEADER_ONLY
+#include "pugixml/src/pugixml.cpp"
 
 using namespace pugi;
 using namespace smtk;
@@ -220,23 +220,21 @@ namespace smtk
 namespace io
 {
 
-struct XmlV2StringWriter::PugiPrivate
+struct XmlV2StringWriter::Internals
 {
-  xml_node& root;
-  PugiPrivate(xml_node& parent_node)
-    : root(parent_node)
-  {
-  }
+  std::vector<xml_document*> m_docs;
+  std::vector<xml_node> m_roots, m_defs, m_atts, m_views;
 };
 
 XmlV2StringWriter::XmlV2StringWriter(const attribute::ResourcePtr myResource)
   : XmlStringWriter(myResource)
 {
+  m_internals = new Internals();
 }
 
 XmlV2StringWriter::~XmlV2StringWriter()
 {
-  delete m_pugi;
+  delete m_internals;
 }
 
 std::string XmlV2StringWriter::className() const
@@ -256,16 +254,47 @@ unsigned int XmlV2StringWriter::fileVersion() const
 
 std::string XmlV2StringWriter::convertToString(Logger& logger, bool no_declaration)
 {
-  // Initialize the xml document
-  xml_document doc;
+  // Initialize the xml document(s)
+  std::size_t i, num = 1;
+  if (m_useDirectoryInfo)
+  {
+    num = m_resource->directoryInfo().size();
+  }
+
+  // Get things in the proper size
+  m_internals->m_docs.resize(num);
+  m_internals->m_roots.resize(num);
+  m_internals->m_defs.resize(num);
+  m_internals->m_atts.resize(num);
+  m_internals->m_views.resize(num);
+
   std::stringstream oss;
   oss << "Created by " << this->className();
-  doc.append_child(node_comment).set_value(oss.str().c_str());
-  xml_node root = doc.append_child(this->rootNodeName().c_str());
-  root.append_attribute("Version").set_value(this->fileVersion());
+  for (i = 0; i < num; i++)
+  {
+    m_internals->m_docs.at(i) = new xml_document();
+    xml_document& doc(*(m_internals->m_docs.at(i)));
+    xml_node& root(m_internals->m_roots.at(i));
+    doc.append_child(node_comment).set_value(oss.str().c_str());
+    root = doc.append_child(this->rootNodeName().c_str());
+    root.append_attribute("Version").set_value(this->fileVersion());
+    // Are there includes to save?
+    if (m_useDirectoryInfo)
+    {
+      auto incs = m_resource->directoryInfo().at(i).includeFiles();
+      if (incs.size())
+      {
+        auto inodes = root.append_child("Includes");
+        for (auto inc : incs)
+        {
+          inodes.append_child("File").text().set(inc.c_str());
+        }
+      }
+    }
+  }
 
   // Generate the element tree
-  this->generateXml(root, logger, false);
+  this->generateXml(logger);
 
   // Serialize the result
   oss.clear();
@@ -275,60 +304,55 @@ std::string XmlV2StringWriter::convertToString(Logger& logger, bool no_declarati
   {
     flags |= pugi::format_no_declaration;
   }
-  doc.save(oss, "  ", flags);
+  m_internals->m_docs.at(0)->save(oss, "  ", flags);
   std::string result = oss.str();
   return result;
 }
 
-void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger, bool createRoot)
+std::string XmlV2StringWriter::getString(std::size_t i, bool no_declaration)
+{
+  std::stringstream oss;
+  unsigned int flags = pugi::format_indent;
+  if (no_declaration)
+  {
+    flags |= pugi::format_no_declaration;
+  }
+  m_internals->m_docs.at(i)->save(oss, "  ", flags);
+  std::string result = oss.str();
+  return result;
+}
+
+void XmlV2StringWriter::generateXml(Logger& logger)
 {
   // Reset the message log
   m_logger.reset();
 
-  xml_node root;
-  if (createRoot)
+  if (m_resource->numberOfCategories() || m_resource->numberOfAnalyses())
   {
-    // This option is used to insert an attribute resource
-    // into an existing xml document (for writing resource files).
-    root = parent_node.append_child(this->rootNodeName().c_str());
-    root.append_attribute("Version").set_value(2);
-    m_pugi = new PugiPrivate(root);
-  }
-  else
-  {
-    // This option is used when writing a single attribute resource,
-    // and the root node has already been created by the caller.
-    m_pugi = new PugiPrivate(parent_node);
-  }
-
-  m_pugi->root.append_child(node_comment)
-    .set_value("**********  Category and Analysis Information ***********");
-
-  // Write out the category and analysis information
-  if (m_resource->numberOfCategories())
-  {
-    xml_node cnode, catNodes = m_pugi->root.append_child("Categories");
-    std::set<std::string>::const_iterator it;
-    const std::set<std::string>& cats = m_resource->categories();
-    for (it = cats.begin(); it != cats.end(); it++)
+    xml_node& root(m_internals->m_roots.at(0));
+    root.append_child(node_comment)
+      .set_value("**********  Category and Analysis Information ***********");
+    if (m_resource->numberOfCategories())
     {
-      catNodes.append_child("Cat").text().set(it->c_str());
-    }
-  }
-
-  if (m_resource->numberOfAnalyses())
-  {
-    xml_node cnode, catNodes = m_pugi->root.append_child("Analyses");
-    std::map<std::string, std::set<std::string> >::const_iterator it;
-    const std::map<std::string, std::set<std::string> >& analyses = m_resource->analyses();
-    for (it = analyses.begin(); it != analyses.end(); it++)
-    {
-      xml_node anode = catNodes.append_child("Analysis");
-      anode.append_attribute("Type").set_value(it->first.c_str());
-      std::set<std::string>::const_iterator cit;
-      for (cit = it->second.begin(); cit != it->second.end(); cit++)
+      auto catNodes = root.append_child("Categories");
+      auto cats = m_resource->categories();
+      for (auto cat : cats)
       {
-        anode.append_child("Cat").text().set(cit->c_str());
+        catNodes.append_child("Cat").text().set(cat.c_str());
+      }
+    }
+    if (m_resource->numberOfAnalyses())
+    {
+      auto aNodes = root.append_child("Analyses");
+      auto analyses = m_resource->analyses();
+      for (auto it = analyses.begin(); it != analyses.end(); it++)
+      {
+        auto anode = aNodes.append_child("Analysis");
+        anode.append_attribute("Type").set_value(it->first.c_str());
+        for (auto cit = it->second.begin(); cit != it->second.end(); cit++)
+        {
+          anode.append_child("Cat").text().set(cit->c_str());
+        }
       }
     }
   }
@@ -336,7 +360,7 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
   // Write out the advance levels information
   if (m_resource->numberOfAdvanceLevels())
   {
-    xml_node cnode, catNodes = m_pugi->root.append_child("AdvanceLevels");
+    xml_node cnode, catNodes = m_internals->m_roots.at(0).append_child("AdvanceLevels");
     std::map<int, std::string>::const_iterator it;
     const std::map<int, std::string>& levels = m_resource->advanceLevels();
     for (it = levels.begin(); it != levels.end(); it++)
@@ -352,6 +376,23 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
     }
   }
 
+  // Are we saving included files?
+  auto num = m_internals->m_docs.size();
+  for (std::size_t i = 1; i < num; i++)
+  {
+    auto cats = m_resource->directoryInfo().at(i).catagories();
+    if (cats.size())
+    {
+      xml_node& root(m_internals->m_roots.at(i));
+      root.append_child(node_comment).set_value("**********  Category Information ***********");
+      auto catNodes = root.append_child("Categories");
+      for (auto cat : cats)
+      {
+        catNodes.append_child("Cat").text().set(cat.c_str());
+      }
+    }
+  }
+
   if (m_includeDefinitions || m_includeInstances)
   {
     this->processAttributeInformation();
@@ -359,10 +400,6 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node, Logger& logger,
   if (m_includeViews)
   {
     this->processViews();
-  }
-  if (m_includeModelInformation)
-  {
-    this->processModelInfo();
   }
   logger = m_logger;
 }
@@ -373,34 +410,35 @@ void XmlV2StringWriter::processAttributeInformation()
   m_resource->findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   xml_node definitions, attributes;
-
-  if (m_includeDefinitions)
-  {
-    m_pugi->root.append_child(node_comment)
-      .set_value("**********  Attribute Definitions ***********");
-    definitions = m_pugi->root.append_child("Definitions");
-  }
-  if (m_includeInstances)
-  {
-    m_pugi->root.append_child(node_comment)
-      .set_value("**********  Attribute Instances ***********");
-    attributes = m_pugi->root.append_child("Attributes");
-  }
   for (i = 0; i < n; i++)
   {
-    this->processDefinition(definitions, attributes, baseDefs[i]);
+    this->processDefinition(baseDefs[i]);
   }
 }
 
-void XmlV2StringWriter::processDefinition(
-  xml_node& definitions, xml_node& attributes, smtk::attribute::DefinitionPtr def)
+void XmlV2StringWriter::processDefinition(smtk::attribute::DefinitionPtr def)
 {
   if (m_includeDefinitions)
   {
-    xml_node node = definitions.append_child();
+    std::size_t index = 0;
+    if (m_useDirectoryInfo)
+    {
+      index = def->includeIndex();
+    }
+    // Is this node properly prepped?
+    xml_node& defsNode = m_internals->m_defs.at(index);
+    if (!defsNode)
+    {
+      m_internals->m_roots.at(index)
+        .append_child(node_comment)
+        .set_value("**********  Attribute Definitions ***********");
+      defsNode = m_internals->m_roots.at(index).append_child("Definitions");
+    }
+    xml_node node = defsNode.append_child();
     node.set_name("AttDef");
     this->processDefinitionInternal(node, def);
   }
+
   if (m_includeInstances)
   {
     // Process all attributes based on this class
@@ -409,7 +447,22 @@ void XmlV2StringWriter::processDefinition(
     std::size_t n = atts.size();
     for (std::size_t i = 0; i < n; i++)
     {
-      this->processAttribute(attributes, atts[i]);
+      // Find the proper doc to include the attribute
+      std::size_t index = 0;
+      if (m_useDirectoryInfo)
+      {
+        index = atts.at(i)->includeIndex();
+      }
+      // Is this node properly prepped?
+      xml_node& attsNode = m_internals->m_atts.at(index);
+      if (!attsNode)
+      {
+        m_internals->m_roots.at(index)
+          .append_child(node_comment)
+          .set_value("**********  Attribute Instances ***********");
+        attsNode = m_internals->m_roots.at(index).append_child("Attributes");
+      }
+      this->processAttribute(attsNode, atts[i]);
     }
   }
   // Now process all of its derived classes
@@ -418,7 +471,7 @@ void XmlV2StringWriter::processDefinition(
   std::size_t n = defs.size();
   for (std::size_t i = 0; i < n; i++)
   {
-    this->processDefinition(definitions, attributes, defs[i]);
+    this->processDefinition(defs[i]);
   }
 }
 
@@ -1374,49 +1427,54 @@ void XmlV2StringWriter::processGroupItem(pugi::xml_node& node, attribute::GroupI
 
 void XmlV2StringWriter::processViews()
 {
-  m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
-
   // First write toplevel views and then write out the non-toplevel - note that the
-  // attribute or view collection do care about this - the assumption is that the designer would
+  // attribute or view collection do not care about this - the assumption is that the designer would
   // probably like all the toplevel views clustered together
-
-  xml_node views = m_pugi->root.append_child("Views");
   std::map<std::string, smtk::view::ViewPtr>::const_iterator iter;
   bool isTop;
   for (iter = m_resource->views().begin(); iter != m_resource->views().end(); iter++)
   {
-    if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
+    if (iter->second->details().attributeAsBool("TopLevel", isTop) && isTop)
     {
-      continue;
+      this->processView(iter->second);
     }
-    xml_node node;
-    node = views.append_child("View");
-
-    node.append_attribute("Type").set_value(iter->second->type().c_str());
-    node.append_attribute("Name").set_value(iter->second->name().c_str());
-    if (iter->second->iconName() != "")
-    {
-      node.append_attribute("Icon").set_value(iter->second->iconName().c_str());
-    }
-    this->processViewComponent(iter->second->details(), node);
   }
   for (iter = m_resource->views().begin(); iter != m_resource->views().end(); iter++)
   {
-    if (iter->second->details().attributeAsBool("TopLevel", isTop) && isTop)
+    if (!(iter->second->details().attributeAsBool("TopLevel", isTop) && isTop))
     {
-      continue;
+      this->processView(iter->second);
     }
-    xml_node node;
-    node = views.append_child("View");
-
-    node.append_attribute("Type").set_value(iter->second->type().c_str());
-    node.append_attribute("Name").set_value(iter->second->name().c_str());
-    if (iter->second->iconName() != "")
-    {
-      node.append_attribute("Icon").set_value(iter->second->iconName().c_str());
-    }
-    this->processViewComponent(iter->second->details(), node);
   }
+}
+
+void XmlV2StringWriter::processView(smtk::view::ViewPtr view)
+{
+  std::size_t index = 0;
+  // Are we using Directory Info?
+  if (m_useDirectoryInfo)
+  {
+    index = view->includeIndex();
+  }
+
+  xml_node& viewsNode = m_internals->m_views.at(index);
+  // Is the Views node properly prepped?
+  if (!viewsNode)
+  {
+    m_internals->m_roots.at(index)
+      .append_child(node_comment)
+      .set_value("********** Workflow Views ***********");
+    viewsNode = m_internals->m_roots.at(index).append_child("Views");
+  }
+  xml_node node;
+  node = viewsNode.append_child("View");
+  node.append_attribute("Type").set_value(view->type().c_str());
+  node.append_attribute("Name").set_value(view->name().c_str());
+  if (view->iconName() != "")
+  {
+    node.append_attribute("Icon").set_value(view->iconName().c_str());
+  }
+  this->processViewComponent(view->details(), node);
 }
 
 void XmlV2StringWriter::processViewComponent(smtk::view::View::Component& comp, xml_node& node)
@@ -1443,12 +1501,6 @@ void XmlV2StringWriter::processViewComponent(smtk::view::View::Component& comp, 
       this->processViewComponent(comp.child(i), child);
     }
   }
-}
-
-void XmlV2StringWriter::processModelInfo()
-{
-  /** This seems to be outdated with ModelEntityItem already being processed
-  **/
 }
 
 std::string XmlV2StringWriter::encodeColor(const double* c)

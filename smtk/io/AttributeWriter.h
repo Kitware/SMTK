@@ -53,12 +53,13 @@ public:
   // If val is false then instances will not be saved
   void includeInstances(bool val) { m_includeInstances = val; }
 
-  // If val is false then model information will not be saved
-  void includeModelInformation(bool val) { m_includeModelInformation = val; }
-
   // If val is false then views will not be saved
   void includeViews(bool val) { m_includeViews = val; }
 
+  // If val is true then when write(...) will use include file sections in the produced XML
+  // and will write out included files (based on the resource's Directory Info) as well
+  // This is ignored when calling writeContents(...).  The default is false
+  void useDirectoryInfo(bool val) { m_useDirectoryInfo = val; }
 protected:
   // Instantiates internal writer
   // Caller is responsible for deleting the instance
@@ -68,8 +69,8 @@ private:
   unsigned int m_fileVersion;
   bool m_includeDefinitions;
   bool m_includeInstances;
-  bool m_includeModelInformation;
   bool m_includeViews;
+  bool m_useDirectoryInfo;
 };
 }
 }

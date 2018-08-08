@@ -28,7 +28,7 @@ PySharedPtrClass< smtk::io::XmlV2StringWriter, smtk::io::XmlStringWriter > pybin
     .def(py::init<::smtk::io::XmlV2StringWriter const &>())
     .def(py::init<::smtk::attribute::ResourcePtr>())
     .def("convertToString", &smtk::io::XmlV2StringWriter::convertToString, py::arg("logger"), py::arg("no_declaration") = false)
-    .def("generateXml", &smtk::io::XmlV2StringWriter::generateXml, py::arg("parent_node"), py::arg("logger"), py::arg("createRoot") = true)
+    .def("generateXml", &smtk::io::XmlV2StringWriter::generateXml, py::arg("logger"))
     .def("messageLog", &smtk::io::XmlV2StringWriter::messageLog)
     ;
   return instance;

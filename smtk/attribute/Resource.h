@@ -21,6 +21,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/DirectoryInfo.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 
@@ -166,6 +167,10 @@ public:
   //Get a list of all attributes in the Resource
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 
+  // Set/Get the directory structure of the resource on disk
+  void setDirectoryInfo(const DirectoryInfo& dinfo) { m_directoryInfo = dinfo; }
+  const DirectoryInfo& directoryInfo() const { return m_directoryInfo; }
+
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);
   Resource(smtk::resource::ManagerPtr manager = nullptr);
@@ -190,6 +195,7 @@ protected:
   // higher level means more advanced.
   std::map<int, std::string> m_advLevels;
   std::map<int, std::vector<double> > m_advLevelColors;
+  DirectoryInfo m_directoryInfo;
 
 private:
 };

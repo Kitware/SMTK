@@ -49,3 +49,4 @@ It is now possible to control how attribute items get presented in the Qt interf
 + qtAssociationWidget has been modified to work with SMTK 3.0 version of model resources but NOT using Resource Links
  + Widget now uses model::Entity instead of model::EntityRef
 + Replaced code that was grabbing the raw pointer from a shared pointer so that this was not necessary
++ Added a IncludeIndex property to Views.  This is used by I/O classes to represent the directory structure

@@ -43,8 +43,9 @@ public:
   XmlV2StringWriter(const smtk::attribute::ResourcePtr resource);
   virtual ~XmlV2StringWriter();
   std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) override;
-  void generateXml(
-    pugi::xml_node& parent_node, smtk::io::Logger& logger, bool createRoot = true) override;
+  virtual std::string getString(std::size_t ith, bool no_declaration = false) override;
+
+  void generateXml(smtk::io::Logger& logger) override;
   const smtk::io::Logger& messageLog() const { return m_logger; }
 
   template <typename Container>
@@ -61,8 +62,7 @@ protected:
   void processViews();
   void processModelInfo();
 
-  void processDefinition(
-    pugi::xml_node& definitions, pugi::xml_node& attributes, smtk::attribute::DefinitionPtr def);
+  void processDefinition(smtk::attribute::DefinitionPtr def);
   virtual void processDefinitionInternal(
     pugi::xml_node& definition, smtk::attribute::DefinitionPtr def);
   void processAttribute(pugi::xml_node& attributes, smtk::attribute::AttributePtr att);
@@ -107,13 +107,14 @@ protected:
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
   void processValueDef(pugi::xml_node& node, smtk::attribute::ValueItemDefinitionPtr idef);
 
+  virtual void processView(smtk::view::ViewPtr view);
   virtual void processViewComponent(smtk::view::View::Component& comp, pugi::xml_node& node);
   static std::string encodeModelEntityMask(smtk::model::BitFlags m);
   static std::string encodeColor(const double* color);
 
   // Keep pugi headers out of public headers:
-  struct PugiPrivate;
-  PugiPrivate* m_pugi;
+  struct Internals;
+  Internals* m_internals;
 
 private:
 };

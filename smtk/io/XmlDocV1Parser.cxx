@@ -381,6 +381,7 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Resourc
 XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::ResourcePtr myResource)
   : m_reportAsError(true)
   , m_resource(myResource)
+  , m_includeIndex(0)
 {
 }
 
@@ -392,6 +393,30 @@ xml_node XmlDocV1Parser::getRootNode(xml_document& doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeManager");
   return amnode;
+}
+
+void XmlDocV1Parser::getCategories(
+  xml_node& rootNode, std::set<std::string>& cats, std::string& defCat)
+{
+  xml_node cnode, node = rootNode.child("Categories");
+
+  if (node)
+  {
+    // Get the default category if one is specified
+    defCat = node.attribute("Default").value();
+    if (defCat != "")
+    {
+      cats.insert(defCat);
+    }
+    for (cnode = node.first_child(); cnode; cnode = cnode.next_sibling())
+    {
+      if (cnode.text().empty())
+      {
+        continue;
+      }
+      cats.insert(cnode.text().get());
+    }
+  }
 }
 
 bool XmlDocV1Parser::canParse(xml_document& doc)
@@ -470,27 +495,15 @@ void XmlDocV1Parser::process(xml_node& amnode)
   xml_node node, cnode;
 
   // Get the category information, starting with current set
-  std::set<std::string> secCatagories = m_resource->categories();
-  std::string s;
-  node = amnode.child("Categories");
-  if (node)
+  std::set<std::string> newCats, secCatagories = m_resource->categories();
+  std::string defCat, s;
+  this->getCategories(amnode, newCats, defCat);
+  if (defCat != "")
   {
-    // Get the default category if one is specified
-    s = node.attribute("Default").value();
-    if (s != "")
-    {
-      m_defaultCategory = s;
-      secCatagories.insert(s.c_str());
-    }
-    for (cnode = node.first_child(); cnode; cnode = cnode.next_sibling())
-    {
-      if (cnode.text().empty())
-      {
-        continue;
-      }
-      secCatagories.insert(cnode.text().get());
-    }
+    m_defaultCategory = defCat;
   }
+  // Add the new Categories
+  secCatagories.insert(newCats.begin(), newCats.end());
 
   // Process Analysis Info
   std::set<std::string> catagories;
@@ -546,7 +559,6 @@ void XmlDocV1Parser::process(xml_node& amnode)
 
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
-  this->processModelInfo(amnode);
 
   // Now we need to check to see if there are any catagories in the resource
   // that were not explicitly listed in the catagories section - first update catagories
@@ -704,6 +716,8 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
 {
   xml_attribute xatt;
   xml_node node;
+  // First set the include file index
+  def->setIncludeIndex(m_includeIndex);
   xatt = defNode.attribute("Label");
   if (xatt)
   {
@@ -1785,6 +1799,9 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
                                            << "  - could not be created - is the name in use");
     return;
   }
+
+  // Set the attribute include index
+  att->setIncludeIndex(m_includeIndex);
   xatt = attNode.attribute("OnInteriorNodes");
   if (xatt)
   {
@@ -2694,17 +2711,10 @@ smtk::view::ViewPtr XmlDocV1Parser::createView(xml_node& node, const std::string
     val = xatt.value();
     view->details().setAttribute("Icon", val);
   }
+  //set the include index
+  view->setIncludeIndex(m_includeIndex);
   m_resource->addView(view);
   return view;
-}
-
-void XmlDocV1Parser::processModelInfo(xml_node& root)
-{
-  xml_node modelInfo = root.child("ModelInfo");
-  if (modelInfo)
-  {
-    smtkWarningMacro(m_logger, "Model Information is not supported in this version");
-  }
 }
 
 int XmlDocV1Parser::decodeColorInfo(const std::string& s, double* color)
