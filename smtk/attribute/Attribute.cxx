@@ -564,7 +564,7 @@ void Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool rever
   std::ptrdiff_t idx = m_associatedObjects->find(obj);
   if (idx >= 0)
   {
-    bool v = m_associatedObjects->removeValue(idx);
+    m_associatedObjects->removeValue(idx);
     if (reverse)
     {
       auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(obj);

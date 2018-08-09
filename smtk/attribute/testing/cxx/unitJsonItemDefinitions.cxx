@@ -34,10 +34,6 @@ using json = nlohmann::json;
 
 int unitJsonItemDefinitions(int, char** const)
 {
-  using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-  using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
   smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
   smtk::attribute::Resource& resource(*resptr.get());
 

@@ -157,8 +157,6 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
 
     edgeOp->parameters()->associations()->setObjectValue(model2dm.component());
 
-    typedef std::vector<Edge> Edges;
-
     Edges edgelist = resource->findEntitiesByPropertyAs<Edges>("name", "Edge1");
     test(!edgelist.empty() && edgelist.begin()->name() == "Edge1");
     smtk::common::UUID edge1(edgelist.begin()->entity());

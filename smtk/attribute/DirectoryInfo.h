@@ -33,6 +33,7 @@
 #define __smtk_attribute_DirectoryInfo_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SystemConfig.h"
 
 #include <set>
 #include <string>
