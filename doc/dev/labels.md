@@ -12,7 +12,7 @@ has the same color.
 ------------
 
 Labels in this category identify an aspect of SMTK affected by the issue.
-Current list includes `area:build`, `area:doc`, `area:installing`, 
+Current list includes `area:build`, `area:doc`, `area:installing`,
 and `area:testing`.
 
 Reporters and developers can assign these labels to an issue to help organize.
@@ -27,7 +27,8 @@ this issue for that milestone.
 
 | label | issues | merge requests | description |
 | ----- | -------| -------------- | ----------- |
-| `priority:required` | x | | issue is **required** for a milestone (highest priority) |
+| `priority:critical` | x | | issue is a **critical regression** and may require a patch release (highest priority) |
+| `priority:required` | x | | issue is **required** for a milestone (very high priority) |
 | `priority:important` | x | | issue is **important** for a milestone but may be okay if missed |
 | `priority:nice-to-have` | x | | issue is **nice-to-have**, but not critical or important |
 | `priority:low` | x | | low priority issues for a particular milestone |
