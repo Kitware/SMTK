@@ -10,4 +10,4 @@
 #
 #=============================================================================
 
-from _smtkPybindExtensionDelaunay import *
+from ._smtkPybindExtensionDelaunay import *

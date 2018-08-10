@@ -40,7 +40,7 @@ class CellVisitor(smtk.mesh.CellForEach):
 
         # show how to access the point ids of the cell
         pts = []
-        for i in xrange(0, numPoints):
+        for i in range(0, numPoints):
             pts.append(self.pointId(i))
 
         # verify we have the correct number

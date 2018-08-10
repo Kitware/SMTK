@@ -29,7 +29,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
     def setVectorValue(self, item, vals):
         item.setNumberOfValues(len(vals))
-        for i in xrange(len(vals)):
+        for i in range(len(vals)):
             item.setValue(i, vals[i])
 
     def createModel(self, **args):
@@ -132,7 +132,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
                 ptflat = list(itertools.chain(*verts))
             if x:
                 x.setNumberOfValues(len(ptflat))
-                for i in xrange(len(ptflat)):
+                for i in range(len(ptflat)):
                     x.setValue(i, ptflat[i])
         else:
             [cre.parameters().associate(x.component()) for x in verts]
@@ -143,19 +143,19 @@ class TestPolygonCreation(smtk.testing.TestCase):
             o = cre.parameters().find('offsets')
             if o:
                 o.setNumberOfValues(len(kwargs['offsets']))
-                for i in xrange(len(kwargs['offsets'])):
+                for i in range(len(kwargs['offsets'])):
                     o.setValue(i, kwargs['offsets'][i])
         if 'midpoint' in kwargs:
             x = cre.parameters().find('point')
             if x:
                 x.setNumberOfValues(len(kwargs['midpoint']))
-                for i in xrange(len(kwargs['midpoint'])):
+                for i in range(len(kwargs['midpoint'])):
                     x.setValue(i, kwargs['midpoint'][i])
         if 'color' in kwargs:
             c = cre.parameters().find('color')
             if c:
                 c.setNumberOfValues(len(kwargs['color']))
-                for i in xrange(len(kwargs['color'])):
+                for i in range(len(kwargs['color'])):
                     c.setValue(i, kwargs['color'][i])
                 c.setValue(0, kwargs['color'])
         self.res = cre.operate()
@@ -163,7 +163,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         numNewEnts = entList.numberOfValues()
 
         eList = [smtk.model.EntityRef(entList.value(i))
-                 for i in xrange(entList.numberOfValues())]
+                 for i in range(entList.numberOfValues())]
 
         edgeList = []
         for i in range(numNewEnts):
@@ -179,7 +179,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
         spl.parameters().associateEntity(edge)
         x = spl.parameters().find('point')
         x.setNumberOfValues(len(point))
-        for i in xrange(len(point)):
+        for i in range(len(point)):
             x.setValue(i, point[i])
         self.res = spl.operate()
         edgeList = self.res.find('created')

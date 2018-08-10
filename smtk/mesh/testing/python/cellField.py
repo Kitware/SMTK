@@ -29,7 +29,7 @@ def test_create_cell_field():
         raise RuntimeError("Failed to read valid mesh")
 
     mesh = c.meshes()
-    field = [i for i in xrange(c.meshes().cells().size())]
+    field = [i for i in range(c.meshes().cells().size())]
     mesh.createCellField('cell field', 1, field)
 
     write_path = ''
@@ -57,7 +57,7 @@ def test_read_cell_field(mesh_path):
     cellfield = next(iter(cellfields))
     data = cellfield.get()
 
-    for i in xrange(cellfield.size()):
+    for i in range(cellfield.size()):
         if i != data[i]:
             raise RuntimeError(
                 "cell field was not correctly saved and retrieved")

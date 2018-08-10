@@ -12,7 +12,7 @@
 
 from smtk.attribute import SearchStyle, get_wrapped_func
 import smtk.operation
-from _smtkPybindModel import *
+from ._smtkPybindModel import *
 
 """
 smtk.model.Resource.findEntitiesOfType: a method that returns a list of queried

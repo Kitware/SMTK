@@ -10,4 +10,4 @@
 #
 #=============================================================================
 
-from _smtkPybindModelRemus import *
+from ._smtkPybindModelRemus import *

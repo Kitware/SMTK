@@ -10,4 +10,4 @@
 #
 #=============================================================================
 
-from _smtkPybindIOVTK import *
+from ._smtkPybindIOVTK import *

@@ -11,6 +11,7 @@
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+#include <pybind11/cast.h>
 #include <pybind11/pybind11.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 

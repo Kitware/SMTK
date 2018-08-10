@@ -58,7 +58,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
                 vlist = [vlist, ]
             intVal = spr.parameters().find('integer value')
             intVal.setNumberOfValues(len(vlist))
-            for i in xrange(len(vlist)):
+            for i in range(len(vlist)):
                 intVal.setValue(i, vlist[i])
         if 'as_float' in kwargs:
             vlist = kwargs['as_float']
@@ -66,7 +66,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
                 vlist = [vlist, ]
             floatVal = spr.parameters().find('float value')
             floatVal.setNumberOfValues(len(vlist))
-            for i in xrange(len(vlist)):
+            for i in range(len(vlist)):
                 floatVal.setValue(i, vlist[i])
         if 'as_string' in kwargs:
             vlist = kwargs['as_string']
@@ -74,7 +74,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
                 vlist = [vlist, ]
             stringVal = spr.parameters().find('string value')
             stringVal.setNumberOfValues(len(vlist))
-            for i in xrange(len(vlist)):
+            for i in range(len(vlist)):
                 stringVal.setValue(i, vlist[i])
         res = spr.operate()
         self.assertEqual(

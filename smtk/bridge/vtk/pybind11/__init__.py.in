@@ -12,4 +12,4 @@
 
 if @SMTK_VTK_SESSION_ENABLED@:
   import smtk.model
-  from _smtkPybindVTKSession import *
+  from ._smtkPybindVTKSession import *

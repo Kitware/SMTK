@@ -10,10 +10,9 @@
 #
 #=============================================================================
 
-from _smtkPybindIO import *
-import _smtkPybindIO as _io
+from ._smtkPybindIO import *
 
-_tmp = [x for x in dir(_io) if not x.startswith('_')]
+_tmp = [x for x in dir() if not x.startswith('_')]
 if "@SMTK_ENABLE_VTK_SUPPORT@" is "ON":
     _tmp.append('vtk')
 

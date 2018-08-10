@@ -78,7 +78,7 @@ set(smtkCore_private_link_libraries
   )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)
-  list(APPEND smtkCore_public_link_libraries
+  list(APPEND smtkCore_private_link_libraries
     pybind11::embed
     )
   add_subdirectory(pybind11)

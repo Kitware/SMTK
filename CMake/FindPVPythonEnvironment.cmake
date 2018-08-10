@@ -45,8 +45,8 @@ if (NOT rv EQUAL 0)
 endif()
 
 # ParaView may have a verbose input. We search from the end of the output stream
-# for the keyword "PARAVIEW_PYTHONPATH=" and take the rest of the output as
-# ParaView's python path.
+# for the keyword "PARAVIEW_PYTHONPATH=" and take the rest of the output up to a
+# newline character as ParaView's python path.
 set(marker "PARAVIEW_PYTHONPATH=")
 string(LENGTH ${marker} markerlen)
 string(FIND ${out} ${marker} start REVERSE)
@@ -54,3 +54,5 @@ math(EXPR start "${start} + ${markerlen}")
 string(LENGTH ${out} len)
 math(EXPR len "${len} - ${start}")
 string(SUBSTRING ${out} ${start} ${len} PARAVIEW_PYTHONPATH)
+string(FIND ${PARAVIEW_PYTHONPATH} "\n" end)
+string(SUBSTRING ${PARAVIEW_PYTHONPATH} 0 ${end} PARAVIEW_PYTHONPATH)

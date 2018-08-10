@@ -359,7 +359,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       set(PYTHON_MODULE_EXTENSION ".so")
     endif()
     set(PYTHON_MODULE_PREFIX "")
-    find_package(pybind11 REQUIRED)
+    find_package(pybind11 2.3 REQUIRED)
 
     set(SMTK_PYBIND11_FLAGS " ")
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR

@@ -10,4 +10,4 @@
 #
 #=============================================================================
 
-from _smtkPybindResource import *
+from ._smtkPybindResource import *

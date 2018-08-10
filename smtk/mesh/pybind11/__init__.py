@@ -11,7 +11,7 @@
 #=============================================================================
 
 import smtk.model
-from _smtkPybindMesh import *
+from ._smtkPybindMesh import *
 
 
 def _get(self, handleRange=None):

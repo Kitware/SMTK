@@ -140,7 +140,7 @@ class import_from_deform(smtk.operation.Operation):
 
         dataNames = [xdmfReader.GetOutputDataObject(0).GetMetaData(i)
                      .Get(vtk.vtkCompositeDataSet.NAME()) for i in
-                     xrange(xdmfReader.GetNumberOfGrids())]
+                     range(xdmfReader.GetNumberOfGrids())]
 
         volumeDataContainer = xdmfReader.GetOutputDataObject(0).GetBlock(
             dataNames.index("VolumeDataContainer"))
