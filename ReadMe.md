@@ -32,7 +32,7 @@ Learning Resources
 
 [CMB Homepage]: http://www.ComputationalModelBuilder.org
 [Documentation]: http://www.computationalmodelbuilder.org/documentation/
-[SMTK Mailing Lists]: http://www.computationalmodelbuilder.org/mailinglist/
+[SMTK Mailing Lists]: https://discourse.kitware.com/c/smtk
 [Kitware]: http://www.kitware.com/
 [Kitware Support]: http://www.kitware.com/products/support.html
 [Kitware Training]: http://www.kitware.com/products/protraining.php
