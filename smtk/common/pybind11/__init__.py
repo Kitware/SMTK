@@ -10,7 +10,7 @@
 #
 #=============================================================================
 
-from _smtkPybindCommon import *
+from ._smtkPybindCommon import *
 
 import datetime
 

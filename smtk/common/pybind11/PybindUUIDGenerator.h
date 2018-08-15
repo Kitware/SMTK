@@ -17,6 +17,8 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+
 namespace py = pybind11;
 
 py::class_< smtk::common::UUIDGenerator > pybind11_init_smtk_common_UUIDGenerator(py::module &m)

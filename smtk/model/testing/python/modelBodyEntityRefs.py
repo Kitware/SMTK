@@ -121,7 +121,7 @@ if __name__ == '__main__':
             loop1.face().entity() != face1.entity() or \
             loop2.face().entity() != face2.entity()
 
-    except Exception, ex:
+    except (Exception, ex):
         print('Exception:')
 
         exc_type, exc_obj, exc_tb = sys.exc_info()

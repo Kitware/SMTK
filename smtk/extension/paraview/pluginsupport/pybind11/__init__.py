@@ -13,4 +13,4 @@
 import smtk.resource
 import smtk.operation
 
-from _smtkPybindParaviewPluginSupport import *
+from ._smtkPybindParaviewPluginSupport import *

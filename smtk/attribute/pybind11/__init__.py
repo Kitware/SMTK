@@ -12,7 +12,7 @@
 
 import smtk.common
 import smtk.resource
-from _smtkPybindAttribute import *
+from ._smtkPybindAttribute import *
 
 """
 Several methods in smtk.attribute return a base item when queried. We wrap these

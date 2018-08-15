@@ -10,5 +10,5 @@
 #
 #=============================================================================
 
-from _smtkPybindView import *
+from ._smtkPybindView import *
 __doc__ = _smtkPybindView.__doc__

@@ -13,4 +13,4 @@
 import smtk.model
 import smtk.mesh.delaunay
 
-from _smtkPybindMeshWorkerDelaunay import *
+from ._smtkPybindMeshWorkerDelaunay import *

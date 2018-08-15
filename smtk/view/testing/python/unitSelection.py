@@ -64,7 +64,7 @@ class TestSelection(smtk.testing.TestCase):
             'selection'), 2, 'Registered values do not match.')
         self.assertEqual(mgr.selectionValueFromLabel(
             'naughty'), 2, 'Registered values do not match.')
-        svl = {u'selection': 2L, u'naughty': 2L, u'hover': 1L, u'barfo': 1L}
+        svl = {u'selection': 2, u'naughty': 2, u'hover': 1, u'barfo': 1}
         self.assertEqual(mgr.selectionValueLabels(),
                          svl, 'Unexpected selection value labels.')
         self.assertEqual(mgr.findOrCreateLabeledValue(
@@ -198,22 +198,22 @@ class TestSelection(smtk.testing.TestCase):
         print(
             ''.join(['  ', '\n  '.join(['%s: %d' % (str(kk), vv) for kk, vv in dd.items()])]))
         ddExpected = {
-            uuid.UUID('e2af5e59-6c2f-4cfe-bdd5-8e806906de44'): 1L,
-            uuid.UUID('6382323f-e8e4-455e-b889-fd1c0dc40be5'): 1L,
-            uuid.UUID('3894f798-75a9-4b74-9d53-d93ddbb513d1'): 1L,
-            uuid.UUID('77b2dbdd-0a70-47a9-a132-1af51353769c'): 1L,
-            uuid.UUID('12e0f395-8c51-4ee3-aafe-7fc108e8f48a'): 1L,
-            uuid.UUID('12706f3a-a528-440e-ad02-0eb907d0079a'): 1L,
-            uuid.UUID('36ccbcf5-240a-4f99-88ba-c5418fcfef10'): 1L,
-            uuid.UUID('3885d08e-c9bb-4d29-aa80-0143e50bea81'): 1L,
-            uuid.UUID('44c34ccc-284f-49f4-afd0-8efa59e115f9'): 1L,
-            uuid.UUID('e996d852-1b9a-43a5-a98a-e58bad72c207'): 1L,
-            uuid.UUID('04fa7479-5d03-4b7c-8fbd-1a3e2341baf6'): 1L,
-            uuid.UUID('5ee2ab86-3d5c-4350-82ca-83afdeb425a4'): 1L,
-            uuid.UUID('977e9cb5-a657-4b66-bf76-9cfeb9409171'): 1L,
-            uuid.UUID('8946acb8-7ad5-4a13-981d-b04881ff9248'): 1L,
-            uuid.UUID('fc2b03b4-8591-4796-9968-881d9461e1e6'): 1L,
-            uuid.UUID('69504b3f-35a3-41ca-a50d-78c31216f134'): 1L
+            uuid.UUID('e2af5e59-6c2f-4cfe-bdd5-8e806906de44'): 1,
+            uuid.UUID('6382323f-e8e4-455e-b889-fd1c0dc40be5'): 1,
+            uuid.UUID('3894f798-75a9-4b74-9d53-d93ddbb513d1'): 1,
+            uuid.UUID('77b2dbdd-0a70-47a9-a132-1af51353769c'): 1,
+            uuid.UUID('12e0f395-8c51-4ee3-aafe-7fc108e8f48a'): 1,
+            uuid.UUID('12706f3a-a528-440e-ad02-0eb907d0079a'): 1,
+            uuid.UUID('36ccbcf5-240a-4f99-88ba-c5418fcfef10'): 1,
+            uuid.UUID('3885d08e-c9bb-4d29-aa80-0143e50bea81'): 1,
+            uuid.UUID('44c34ccc-284f-49f4-afd0-8efa59e115f9'): 1,
+            uuid.UUID('e996d852-1b9a-43a5-a98a-e58bad72c207'): 1,
+            uuid.UUID('04fa7479-5d03-4b7c-8fbd-1a3e2341baf6'): 1,
+            uuid.UUID('5ee2ab86-3d5c-4350-82ca-83afdeb425a4'): 1,
+            uuid.UUID('977e9cb5-a657-4b66-bf76-9cfeb9409171'): 1,
+            uuid.UUID('8946acb8-7ad5-4a13-981d-b04881ff9248'): 1,
+            uuid.UUID('fc2b03b4-8591-4796-9968-881d9461e1e6'): 1,
+            uuid.UUID('69504b3f-35a3-41ca-a50d-78c31216f134'): 1
         }
         self.assertEqual(dd, ddExpected, 'Unexpected selection.')
         global visitSeln

@@ -10,7 +10,7 @@
 #
 #=============================================================================
 
-import _smtkPybindVTKSourceFns as _srcfns
+from . import _smtkPybindVTKSourceFns as _srcfns
 import vtkSMTKSourceExtPython
 
 

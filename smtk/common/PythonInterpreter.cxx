@@ -356,11 +356,12 @@ bool PythonInterpreter::loadPythonSourceFile(
   testCmd << "loaded = True\n"
           << "try:\n"
 #if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 5
-          << "    import importlib.util\n"
-          << "    spec = importlib.util.spec_from_file_location('" << moduleName << "', '"
+          << "    import sys, types, importlib.machinery\n"
+          << "    loader = importlib.machinery.SourceFileLoader('" << moduleName << "', '"
           << fileName << "')\n"
-          << "    tmp = importlib.util.module_from_spec(spec)\n"
-          << "    spec.loader.exec_module(tmp)\n"
+          << "    mod = types.ModuleType(loader.name)\n"
+          << "    loader.exec_module(mod)\n"
+          << "    sys.modules['" << moduleName << "'] = mod\n"
 #elif PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3 && PY_MINOR_VERSION <= 4
           << "    from importlib.machinery import SourceFileLoader\n"
           << "    tmp = SourceFileLoader('" << moduleName << "', '" << fileName

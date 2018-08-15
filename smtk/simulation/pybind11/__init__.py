@@ -12,4 +12,4 @@
 
 import smtk.attribute
 import smtk.io
-from _smtkPybindSimulation import *
+from ._smtkPybindSimulation import *

@@ -49,8 +49,8 @@ class RenderMesh(smtk.operation.Operation):
                 smtk.mesh.PointForEach.__init__(self)
 
             def forPoints(self, pointIds, xyz, doModify):
-                for pId in xrange(pointIds.size()):
-                    coords.insert(pId, [xyz[3 * pId + i] for i in xrange(3)])
+                for pId in range(pointIds.size()):
+                    coords.insert(pId, [xyz[3 * pId + i] for i in range(3)])
 
         getPoints = GetPoints()
         smtk.mesh.for_each(mesh.points(), getPoints)
@@ -66,7 +66,7 @@ class RenderMesh(smtk.operation.Operation):
             def forCell(self, cellId, cellType, numPoints):
                 if numPoints == 3:
                     tris.append(
-                        [mesh.points().find(self.pointId(i)) for i in xrange(numPoints)])
+                        [mesh.points().find(self.pointId(i)) for i in range(numPoints)])
 
         getTriangles = GetTriangles()
         smtk.mesh.for_each(mesh.cells(), getTriangles)

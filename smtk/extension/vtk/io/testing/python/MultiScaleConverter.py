@@ -43,7 +43,7 @@ class CoolingPlateFilter(smtk.mesh.CellForEach):
         self.origin = o
 
     def forCell(self, meshHandle, cellType, numPoints):
-        for i in xrange(0, numPoints):
+        for i in range(0, numPoints):
             r = math.sqrt((self.coordinates()[i * 3] - self.origin[0]) *
                           (self.coordinates()[i * 3] - self.origin[0]) +
                           (self.coordinates()[i * 3 + 2] - self.origin[2]) *
@@ -85,11 +85,11 @@ class OuterEdgeFilter(smtk.mesh.CellForEach):
             v2[i] = self.coordinates()[6 + i] - self.coordinates()[i]
             length[2] += v2[i] * v2[i]
 
-        length = map(math.sqrt, length)
+        length = list(map(math.sqrt, length))
 
-        v0 = map(lambda x: x / length[0], v0)
-        v1 = map(lambda x: x / length[1], v1)
-        v2 = map(lambda x: x / length[2], v2)
+        v0 = list(map(lambda x: x / length[0], v0))
+        v1 = list(map(lambda x: x / length[1], v1))
+        v2 = list(map(lambda x: x / length[2], v2))
 
         # compute normal
         for i in range(0, 3):
@@ -101,7 +101,7 @@ class OuterEdgeFilter(smtk.mesh.CellForEach):
                         normal[1] * normal[1] +
                         normal[2] * normal[2])
 
-        normal = map(lambda x: x / mag, normal)
+        normal = list(map(lambda x: x / mag, normal))
 
         # reject any cells whose normal is facing up or down
         if abs(normal[1]) > .995:
@@ -113,7 +113,7 @@ class OuterEdgeFilter(smtk.mesh.CellForEach):
 
         # reject any cells whose first coordinate is less than a distance <rmin>
         # from the axis of rotation
-        for i in xrange(0, numPoints):
+        for i in range(0, numPoints):
             r = math.sqrt(self.coordinates()[3 * i] * self.coordinates()[3 * i] +
                           self.coordinates()[3 * i + 2] * self.coordinates()[3 * i + 2])
             if r > self.rmin:
@@ -155,7 +155,7 @@ def breakMaterialsByCellType(c):
     for dom in domains:
         domainMeshes = c.meshes(dom)
 
-        for ct in xrange(smtk.mesh.Line, smtk.mesh.CellType_MAX):
+        for ct in range(int(smtk.mesh.Line), int(smtk.mesh.CellType_MAX)):
             cells = domainMeshes.cells(smtk.mesh.CellType(ct))
             if not cells.is_empty():
                 ms = c.createMesh(cells)

@@ -60,20 +60,9 @@ public:
   {
     // Get the uuid module object
     PyObject* module = PyImport_ImportModule("uuid");
+
     // Call the class inside the module to create an instance
-    unsigned char* data = const_cast<unsigned char*>(src.begin());
-    PyObject* byteStr =
-      Py_BuildValue("s#", data, src.size());
-    PyObject* none = Py_None;
-    char v_uuid[]="UUID";
-    char v_00[]="OO";
-    PyObject* out = PyObject_CallMethod(module, v_uuid, v_00, none, byteStr);
-    // FIXME: This hardly seems wise, but
-    // http://docs.python.org/2/c-api/none.html
-    // says Py_None is reference-counted:
-    Py_DECREF(none);
-    Py_DECREF(byteStr);
-    return out;
+    return PyObject_CallMethod(module, "UUID", "(s)", src.toString().c_str());
   }
 };
 }

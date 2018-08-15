@@ -68,7 +68,7 @@ if __name__ == '__main__':
         # Does the model contain the submodels we added?
         status = status or len(model.submodels()) != 2 or \
             sorted([x.name() for x in model.submodels()])[0] != 'Submodel A'
-    except Exception, ex:
+    except (Exception, ex):
         print('Exception:')
 
         exc_type, exc_obj, exc_tb = sys.exc_info()
