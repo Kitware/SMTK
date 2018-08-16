@@ -106,6 +106,7 @@ endfunction(smtk_private_headers)
 #  smtk_install_library(target [DEPENDS <targets>])
 # which allows you to export a target that has dependencies
 function(smtk_install_library target)
+  set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET hidden)
   install(TARGETS ${target}
     EXPORT SMTK
     RUNTIME DESTINATION bin

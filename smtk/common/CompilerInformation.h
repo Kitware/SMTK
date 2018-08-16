@@ -103,6 +103,8 @@
     __pragma(warning(disable : 4305)) /*truncation from 'double' to 'float'*/                      \
     __pragma(                                                                                      \
       warning(disable : 4373)) /*override when parameters differ by const/volatile qualifiers*/    \
+    __pragma(warning(disable : 4522)) /*multiple assignment operators specified*/                  \
+    __pragma(warning(disable : 4800)) /*'int': forcing value to bool 'true' or 'false'*/           \
     __pragma(warning(disable : 4996)) /*using non checked iterators*/
 #define SMTK_THIRDPARTY_POST_INCLUDE __pragma(warning(pop))
 
