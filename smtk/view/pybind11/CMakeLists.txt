@@ -10,9 +10,10 @@ target_include_directories(${library_name} PUBLIC
 target_link_libraries(${library_name} LINK_PUBLIC smtkCore)
 set_target_properties(${library_name}
   PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
+    CXX_VISIBILITY_PRESET hidden
     COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
-)
+    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
+  )
 
 # Install library
 install(TARGETS ${library_name} DESTINATION "${install_path}")

@@ -22,8 +22,9 @@ set(import_vtk_depends
 target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkVTKSession vtkCommonDataModel LINK_PRIVATE ${iport_vtk_depends})
 set_target_properties(${library_name}
   PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
+    CXX_VISIBILITY_PRESET hidden
     COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
+    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
   )
 
 # Install library
