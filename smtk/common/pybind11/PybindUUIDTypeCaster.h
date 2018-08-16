@@ -62,7 +62,8 @@ public:
     PyObject* module = PyImport_ImportModule("uuid");
 
     // Call the class inside the module to create an instance
-    return PyObject_CallMethod(module, "UUID", "(s)", src.toString().c_str());
+    return PyObject_CallMethod(module, const_cast<char*>("UUID"), const_cast<char*>("(s)"),
+                               const_cast<char*>(src.toString().c_str()));
   }
 };
 }
