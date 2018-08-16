@@ -87,96 +87,59 @@ NuclideTableView::NuclideTableView(const QString& name, QWidget* parent)
   // Nuclide selector layout
   QHBoxLayout* labelLayout = new QHBoxLayout;
   label = new QLabel(tr("Nuclide:"));
-  symbol = new QComboBox();
-  massNumber = new QComboBox();
 
-  // When the available symbols are retrieved, they are unsorted. We put them in
-  // a QList to sort them before inserting them in the combo box.
+  // Create the nuclide line edit autocompletion list
+  QStringList nuclideLineEditAutoCompleteList;
+  for (const auto& symbol : nuclideTable->symbols())
   {
-    auto symbols = nuclideTable->symbols();
-    QList<QString> symbolList;
-    for (auto& smbl : symbols)
-    {
-      symbolList.append(smbl);
-    }
-    symbolList.sort();
-    for (auto smbl = symbolList.begin(); smbl != symbolList.end(); ++smbl)
-    {
-      symbol->addItem(*smbl);
-    }
+    for (const auto& massNumber : nuclideTable->massNumbers(symbol))
+      nuclideLineEditAutoCompleteList.append(symbol + QString::number(massNumber));
   }
 
-  // When a nuclide is selected from the visual display, update the combo box to
-  // reflect the selection.
-  auto setSymbol = [=](Nuclide* nuclide) {
-    int filterId = symbol->findText(nuclide->symbol());
-    if (filterId != -1)
-    {
-      // We must first block the signals of the mass number combo box.
-      // Otherwise, the change of symbol triggers a reset of the available
-      // mass numbers. Since the mass number combo box is also listening to this
-      // signal, it doesn't need to update as a result of the symbol change.
-      bool oldState = massNumber->blockSignals(true);
-      symbol->setCurrentIndex(filterId);
-      massNumber->blockSignals(oldState);
-    }
-  };
-  connect(static_cast<NuclideTableScene*>(nuclideTable->scene()),
-    &NuclideTableScene::nuclideSelected, setSymbol);
+  // This will sort the auto complete entries in the order we want
+  nuclideLineEditAutoCompleteList.sort();
 
-  // When a nuclide symbol is selected from the combo box, update the mass
-  // number combo box to show the available mass numbers for this isotope
-  // family.
-  auto setMassNumberList = [=](const QString& smbl) {
-    massNumber->clear();
-    auto massNumbers = nuclideTable->massNumbers(smbl);
-    std::set<unsigned int> massNumbersSet;
-    for (auto& mn : massNumbers)
-    {
-      massNumbersSet.insert(mn);
-    }
-    for (auto& mn : massNumbersSet)
-    {
-      massNumber->addItem(QString::number(mn));
-    }
-  };
-  connect(symbol, (void (QComboBox::*)(const QString&)) & QComboBox::currentIndexChanged,
-    setMassNumberList);
+  QLineEdit* nuclideLineEdit = new QLineEdit(this);
+  QCompleter* nuclideLineEditCompleter =
+    new QCompleter(nuclideLineEditAutoCompleteList, nuclideLineEdit);
+  nuclideLineEditCompleter->setModelSorting(QCompleter::UnsortedModel);
+  nuclideLineEditCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+  nuclideLineEdit->setCompleter(nuclideLineEditCompleter);
 
-  // When a nuclide is selected from the visual display, update the combo box to
-  // reflect the selection.
-  auto setMassNumber = [=](Nuclide* nuclide) {
-    int filterId = massNumber->findText(QString::number(nuclide->A()));
-    if (filterId != -1)
-    {
-      bool oldState = massNumber->blockSignals(true);
-      massNumber->setCurrentIndex(filterId);
-      massNumber->blockSignals(oldState);
-    }
-  };
-  connect(static_cast<NuclideTableScene*>(nuclideTable->scene()),
-    &NuclideTableScene::nuclideSelected, setMassNumber);
+  // Let's add a tooltip
+  const QString& toolTip("Begin typing the symbol of a nuclide, and auto-"
+                         "complete entries will appear.\nWhen a valid nuclide "
+                         "symbol and mass have been entered, that nuclide will "
+                         "be selected automatically.");
+  nuclideLineEdit->setToolTip(toolTip);
 
-  // When a nuclide is selected from the combo box, update the visual display to
-  // reflect the selection.
-  auto highlightNuclide = [=](const QString& massNumberValue) {
-    Nuclide* nuclide = nuclideTable->nuclide(symbol->currentText().toLower() + massNumberValue);
+  // Set some fixed width
+  nuclideLineEdit->setFixedWidth(nuclideLineEdit->fontMetrics().width("12345") * 1.75);
+
+  // When the nuclide line edit is modified, check to see if it is a valid
+  // nuclide. If so, change it.
+  auto nuclideLineEditHighlightNuclide = [nuclideTable, this](const QString& lineEditText) {
+    Nuclide* nuclide = nuclideTable->nuclide(lineEditText.toLower());
     if (nuclide)
     {
       this->view()->centerOn(nuclide->pos());
       nuclide->setSelected(true);
-      emit static_cast<NuclideTableScene*>(nuclideTable->scene())->nuclideSelected(nuclide);
+      emit qobject_cast<NuclideTableScene*>(nuclideTable->scene())->nuclideSelected(nuclide);
     }
   };
+  connect(nuclideLineEdit, &QLineEdit::textChanged, this, nuclideLineEditHighlightNuclide);
 
-  connect(massNumber, (void (QComboBox::*)(const QString&)) & QComboBox::currentIndexChanged,
-    highlightNuclide);
-
-  int filterId = symbol->findText("H");
-  if (filterId != -1)
-  {
-    symbol->setCurrentIndex(filterId);
-  }
+  // If a nuclide is selected elsewhere, update the line edit text
+  auto nuclideLineEditUpdateNuclide = [nuclideLineEdit](Nuclide* nuclide) {
+    if (nuclide)
+    {
+      bool prevBlockSignals = nuclideLineEdit->blockSignals(true);
+      nuclideLineEdit->setText(nuclide->symbol() + QString::number(nuclide->A()));
+      nuclideLineEdit->blockSignals(prevBlockSignals);
+    }
+  };
+  connect(qobject_cast<NuclideTableScene*>(nuclideTable->scene()),
+    &NuclideTableScene::nuclideSelected, this, nuclideLineEditUpdateNuclide);
 
   label2 = new QLabel(tr("Pointer Mode"));
   selectModeButton = new QToolButton;
@@ -194,8 +157,7 @@ NuclideTableView::NuclideTableView(const QString& name, QWidget* parent)
   pointerModeGroup->addButton(dragModeButton);
 
   labelLayout->addWidget(label);
-  labelLayout->addWidget(symbol);
-  labelLayout->addWidget(massNumber);
+  labelLayout->addWidget(nuclideLineEdit);
   labelLayout->addStretch();
   labelLayout->addWidget(label2);
   labelLayout->addWidget(selectModeButton);
