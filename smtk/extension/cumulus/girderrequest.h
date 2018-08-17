@@ -20,6 +20,7 @@
 #include <QMap>
 #include <QNetworkReply>
 #include <QObject>
+#include <QPair>
 
 class QNetworkAccessManager;
 class QNetworkCookieJar;
@@ -62,7 +63,7 @@ public:
   void send();
 
 signals:
-  void items(const QList<QString>& itemIds);
+  void items(const QMap<QString, QString>& itemMap);
 
 private slots:
   void finished();
@@ -78,7 +79,8 @@ class ListFoldersRequest : public GirderRequest
 
 public:
   ListFoldersRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
-    const QString& girderToken, const QString folderId, QObject* parent = 0);
+    const QString& girderToken, const QString parentId, const QString parentType = "folder",
+    QObject* parent = 0);
   ~ListFoldersRequest();
 
   void send();
@@ -90,7 +92,8 @@ private slots:
   void finished();
 
 private:
-  QString m_folderId;
+  QString m_parentId;
+  QString m_parentType;
 };
 
 class ListFilesRequest : public GirderRequest
@@ -193,6 +196,115 @@ private:
   QString m_downloadPath;
   // <fileId => fileName>
   QMap<QString, QString> m_filesToDownload;
+};
+
+class GetFolderParentRequest : public GirderRequest
+{
+  Q_OBJECT
+
+public:
+  GetFolderParentRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, const QString& folderId, QObject* parent = 0);
+  ~GetFolderParentRequest();
+
+  void send();
+
+signals:
+  // This map should contain "id", "type", and "name"
+  void parent(const QMap<QString, QString>& parentInfo);
+
+private slots:
+  void finished();
+
+private:
+  QString m_folderId;
+};
+
+class GetRootPathRequest : public GirderRequest
+{
+  Q_OBJECT
+
+public:
+  GetRootPathRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, const QString& parentId, const QString& parentType = "folder",
+    QObject* parent = 0);
+  ~GetRootPathRequest();
+
+  void send();
+
+signals:
+  // A hierarchy of folders to the root folder. The first item in the
+  // QList should be the user. The rest are folders.
+  // The keys "type", "id", and "name" should be present for each entry.
+  void rootPath(const QList<QMap<QString, QString> >& rootPathList);
+
+private slots:
+  void finished();
+
+private:
+  QString m_parentId;
+  QString m_parentType;
+};
+
+class GetUsersRequest : public GirderRequest
+{
+  Q_OBJECT
+
+public:
+  GetUsersRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, QObject* parent = 0);
+  ~GetUsersRequest();
+
+  void send();
+
+signals:
+
+  // <userId => loginName>
+  void users(const QMap<QString, QString>& usersMap);
+
+private slots:
+  void finished();
+};
+
+class GetCollectionsRequest : public GirderRequest
+{
+  Q_OBJECT
+
+public:
+  GetCollectionsRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, QObject* parent = 0);
+  ~GetCollectionsRequest();
+
+  void send();
+
+signals:
+
+  // <collectionId => collectionName>
+  void collections(const QMap<QString, QString>& collectionsMap);
+
+private slots:
+  void finished();
+};
+
+class GetMyUserRequest : public GirderRequest
+{
+  Q_OBJECT
+
+public:
+  GetMyUserRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+    const QString& girderToken, QObject* parent = 0);
+  ~GetMyUserRequest();
+
+  void send();
+
+signals:
+  // Should contain some information about my user. Includes these keys:
+  // - id
+  // - login
+  void myUser(const QMap<QString, QString>& userInfo);
+
+private slots:
+  void finished();
 };
 }
 
