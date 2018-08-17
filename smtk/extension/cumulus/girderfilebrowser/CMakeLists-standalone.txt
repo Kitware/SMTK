@@ -1,0 +1,38 @@
+# This is the CMakeLists.txt file for making a standalone girder file
+# browser. It requires girderrequest.* and utils.* to be moved or linked
+# from the cumulus directory into this one.
+cmake_minimum_required(VERSION 3.0)
+
+project(GirderFileBrowser)
+
+# Use this definition to indicate a stand alone browser
+add_definitions("-DGIRDERFILEBROWSER_BUILD_STANDALONE")
+
+# Automoc, AutoUIC, and AutoRCC
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt5 COMPONENTS Core Network Widgets REQUIRED)
+
+set(SRCS
+  girderfilebrowser.cxx
+  girderrequest.cxx
+  girderauthenticator.cxx
+  girderfilebrowserfetcher.cxx
+  ui/girderlogindialog.cxx
+  ui/girderfilebrowserdialog.cxx
+  utils.cxx
+)
+
+#resource files
+set(resources
+ resources.qrc
+)
+qt5_add_resources(res_srcs ${resources})
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+
+add_executable(girderfilebrowser MACOSX_BUNDLE WIN32 ${SRCS} ${res_srcs})
+
+qt5_use_modules(girderfilebrowser Core Network Widgets)

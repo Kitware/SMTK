@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GirderFileBrowserDialog</class>
+ <widget class="QDialog" name="GirderFileBrowserDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>388</width>
+    <height>346</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Girder File Browser</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
+   <property name="horizontalSpacing">
+    <number>9</number>
+   </property>
+   <item row="1" column="0" colspan="5">
+    <widget class="cumulus::GirderFileBrowserListView" name="list_fileBrowser">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QComboBox" name="combo_itemMode">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>170</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Treat items as files, or as folders?&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&amp;quot;Treat Items as Files&amp;quot; will not allow the user to see the contents of the items - only the items themselves. They appear as files in the user's dialog.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&amp;quot;Treat Items as Folders&amp;quot; will allow one to browse files within items.&lt;/p&gt;&lt;p&gt;&amp;quot;Treat Items as Folders with File Bumping&amp;quot; has the same behavior as &amp;quot;Treat Items as Folders&amp;quot; with one exception:&lt;/p&gt;&lt;p&gt;&amp;quot;Treat Items as Folders with File Bumping&amp;quot; will also check the contents of every item in the current folder. If there is one file in the item and it has the same name as the folder, the file will be moved up one level and the item ignored.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>Treat Items as Files</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Treat Items as Folders</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Treat Items as Folders with File Bumping</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="3">
+    <layout class="QHBoxLayout" name="layout_rootPath">
+     <property name="spacing">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>15</number>
+     </property>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Filter:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="edit_matchesExpression">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only shows rows that contain the text in this box.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3" colspan="2">
+    <widget class="QPushButton" name="push_goHome">
+     <property name="text">
+      <string>Home</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3" colspan="2">
+    <widget class="QPushButton" name="push_chooseObject">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Choose</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3" colspan="2">
+    <widget class="QPushButton" name="push_goUpDir">
+     <property name="text">
+      <string>Up</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>list_fileBrowser</tabstop>
+  <tabstop>edit_matchesExpression</tabstop>
+  <tabstop>push_goUpDir</tabstop>
+  <tabstop>push_goHome</tabstop>
+  <tabstop>push_chooseObject</tabstop>
+  <tabstop>combo_itemMode</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
