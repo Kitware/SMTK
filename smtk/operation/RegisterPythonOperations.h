@@ -10,6 +10,8 @@
 #ifndef __smtk_model_RegisterPythonOperations_h
 #define __smtk_model_RegisterPythonOperations_h
 
+#include "smtk/CoreExports.h"
+
 #include "smtk/operation/Manager.h"
 
 namespace smtk
@@ -17,7 +19,7 @@ namespace smtk
 namespace operation
 {
 
-bool registerPythonOperations(
+SMTKCORE_EXPORT bool registerPythonOperations(
   const smtk::operation::Manager::Ptr& operationManager, const std::string& moduleName);
 }
 }
