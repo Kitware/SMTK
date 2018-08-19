@@ -826,7 +826,7 @@ bool Interface::computeShell(
   else
   { //remove any cell created by computing the adjacencies that isn't part
     //of the skin. This is done to keep the memory utilization low
-    smtk::mesh::HandleRange unusedCells = ::moab::intersect(allAdj, shell);
+    smtk::mesh::HandleRange unusedCells = ::moab::subtract(allAdj, shell);
     this->moabInterface()->delete_entities(unusedCells);
   }
 
