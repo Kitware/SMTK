@@ -15,6 +15,7 @@
 #define __smtk_attribute_Tag_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SystemConfig.h"
 
 #include <algorithm>
 #include <set>
