@@ -116,6 +116,7 @@ set(attributeHeaders
   SearchStyle.h
   StringItem.h
   StringItemDefinition.h
+  Tag.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
