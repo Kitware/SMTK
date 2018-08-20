@@ -18,10 +18,6 @@
 
 #include <QObject>
 
-class pqPipelineSource;
-class pqServer;
-class vtkSMReaderFactory;
-
 class QMenu;
 
 /// A reaction for creating a new SMTK Resource.

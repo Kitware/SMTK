@@ -15,7 +15,9 @@
 #include "pqCoreUtilities.h"
 #include "pqFileDialog.h"
 #include "pqObjectBuilder.h"
+#include "pqPropertiesPanel.h"
 #include "pqServer.h"
+#include "vtkSMPVRepresentationProxy.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
 
@@ -104,7 +106,14 @@ void pqNewResourceReaction::newResource()
   vtkSMPropertyHelper(src->getProxy(), "TypeName").Set(typeName.c_str());
   vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
   src->getProxy()->UpdateVTKObjects();
-  src->updatePipeline();
+  src->setModifiedState(pqProxy::UNINITIALIZED);
+
+  QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
+
+  foreach (pqPropertiesPanel* ppanel, mainWindow->findChildren<pqPropertiesPanel*>())
+  {
+    ppanel->setOutputPort(src->getOutputPort(0));
+  }
 }
 
 namespace

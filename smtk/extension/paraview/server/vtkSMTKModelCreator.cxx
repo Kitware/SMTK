@@ -51,6 +51,10 @@ vtkSMTKModelCreator::vtkSMTKModelCreator()
   this->TypeName = nullptr;
   this->Parameters = nullptr;
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
+
+  // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
+  // results in the filter being updated:
+  this->Modified();
 }
 
 vtkSMTKModelCreator::~vtkSMTKModelCreator()
@@ -187,6 +191,7 @@ bool vtkSMTKModelCreator::CreateModel()
   auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   if (!modelRsrc)
   {
+    vtkWarningMacro("Cannot access resource from succesful create.");
     return false;
   }
 
