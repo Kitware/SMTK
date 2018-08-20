@@ -32,6 +32,7 @@ set(operationHeaders
   Operation.h
   Registrar.h
   ResourceManagerOperation.h
+  SpecificationOps.h
   XMLOperation.h
 
   groups/CreatorGroup.h

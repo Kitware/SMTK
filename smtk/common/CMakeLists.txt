@@ -31,6 +31,7 @@ set(commonHeaders
   Paths.h
   RangeDetector.h
   Registry.h
+  Singleton.h
   StringUtil.h
   TimeZone.h
   TypeName.h
