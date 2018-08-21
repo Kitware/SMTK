@@ -106,6 +106,12 @@ void pqNewResourceReaction::newResource()
   vtkSMPropertyHelper(src->getProxy(), "TypeName").Set(typeName.c_str());
   vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
   src->getProxy()->UpdateVTKObjects();
+
+  // Instead of triggering the pipeline, connect the pipeline to the properties
+  // panel and flag it as uninitialized. That way, the properties panel will
+  // allow you to "Apply" the create operation (much like the read operation
+  // currently works).
+
   src->setModifiedState(pqProxy::UNINITIALIZED);
 
   QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
