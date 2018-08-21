@@ -142,6 +142,11 @@
       <OutputPort index="0" name="model entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
+
+      <Hints>
+        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
     </SourceProxy>
 
     <SourceProxy name="SMTKModelImporter" class="vtkSMTKModelImporter" label="SMTK Model Importer">
@@ -173,6 +178,11 @@
       <OutputPort index="0" name="model entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
+
+      <Hints>
+        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
     </SourceProxy>
 
     <SourceProxy name="SMTKAttributeReader" class="vtkSMTKAttributeReader" label="SMTK Attribute Reader">
@@ -300,6 +310,10 @@
       <OutputPort index="0" name="model entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
+      <Hints>
+        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
     </SourceProxy>
 
     <SourceProxy class="vtkSMTKSource" name="SMTKModelImporter">
@@ -320,6 +334,10 @@
       <OutputPort index="0" name="model entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
+      <Hints>
+        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
     </SourceProxy>
 
     <SourceProxy class="vtkSMTKSource" name="SMTKAttributeReader">
