@@ -947,6 +947,10 @@ qtItem* qtUIManager::defaultItemConstructor(const AttributeItemInfo& info)
       return qtStringItem::createItemWidget(info);
     case smtk::attribute::Item::VoidType:
       return qtVoidItem::createItemWidget(info);
+    case smtk::attribute::Item::ReferenceType:
+      // ReferenceItems are currently only used for associations. We can safely
+      // ignore them here without signaling an error.
+      return nullptr;
     default:
       smtkErrorMacro(smtk::io::Logger::instance(),
         "Error: Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
