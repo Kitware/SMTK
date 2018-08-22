@@ -49,6 +49,7 @@ set(meshSrcs
   resource/Registrar.cxx
 
   utility/ApplyToMesh.cxx
+  utility/Create.cxx
   utility/ExtractMeshConstants.cxx
   utility/ExtractTessellation.cxx
   utility/Metrics.cxx
@@ -104,6 +105,7 @@ set(meshHeaders
   resource/Registrar.h
 
   utility/ApplyToMesh.h
+  utility/Create.h
   utility/ExtractMeshConstants.h
   utility/ExtractTessellation.h
   utility/Metrics.h
