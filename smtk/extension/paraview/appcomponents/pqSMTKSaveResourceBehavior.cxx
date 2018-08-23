@@ -163,7 +163,7 @@ QAction* findSaveAction(QMenu* menu)
 {
   foreach (QAction* action, menu->actions())
   {
-    if (action->text().contains("save", Qt::CaseInsensitive))
+    if (action->text().contains("save data", Qt::CaseInsensitive))
     {
       return action;
     }
