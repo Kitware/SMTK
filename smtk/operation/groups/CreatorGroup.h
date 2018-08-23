@@ -40,6 +40,8 @@ public:
   using Group::has;
   using Group::operations;
   using Group::operationNames;
+  using Group::operationName;
+  using Group::operationLabel;
 
   static constexpr const char* const type_name = "creator";
 

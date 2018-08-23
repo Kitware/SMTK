@@ -211,5 +211,59 @@ std::set<std::string> Group::operationNames() const
   }
   return operationNames;
 }
+
+std::string Group::operationName(const Operation::Index& index) const
+{
+  static const std::string nullString = "";
+  auto manager = m_manager.lock();
+  if (manager == nullptr)
+  {
+    return nullString;
+  }
+
+  auto metadata = manager->metadata().get<IndexTag>().find(index);
+  if (metadata == manager->metadata().get<IndexTag>().end())
+  {
+    return nullString;
+  }
+
+  return metadata->typeName();
+}
+
+std::string Group::operationLabel(const Operation::Index& index) const
+{
+  static const std::string nullString = "";
+
+  auto manager = m_manager.lock();
+  if (manager == nullptr)
+  {
+    return nullString;
+  }
+
+  auto metadata = manager->metadata().get<IndexTag>().find(index);
+  if (metadata == manager->metadata().get<IndexTag>().end())
+  {
+    return nullString;
+  }
+
+  // Access the operation's specification.
+  Operation::Specification spec = metadata->specification();
+
+  // If there is no specification, there's not much we can do.
+  if (spec == nullptr)
+  {
+    return nullString;
+  }
+
+  Operation::Definition parameterDefinition =
+    extractParameterDefinition(spec, metadata->typeName());
+
+  if (parameterDefinition == nullptr)
+  {
+    return nullString;
+  }
+
+  return parameterDefinition->label();
+}
 }
 }

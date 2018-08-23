@@ -67,7 +67,8 @@ void pqNewResourceReaction::newResource()
   // Construct a modal dialog for the operation.
   QSharedPointer<QDialog> createDialog = QSharedPointer<QDialog>(new QDialog());
   createDialog->setObjectName("CreateResourceDialog");
-  createDialog->setWindowTitle("Create Resource Dialog");
+  createDialog->setWindowTitle(
+    QString::fromStdString(createOp->parameters()->definition()->label()));
   createDialog->setLayout(new QVBoxLayout(createDialog.data()));
 
   // Create a new UI for the dialog.
@@ -217,27 +218,64 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
     pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
     if (wrapper != nullptr)
     {
+      // Access the creator group.
       auto creatorGroup = smtk::operation::CreatorGroup(wrapper->smtkOperationManager());
-      auto operationNames = creatorGroup.operationNames();
-      visible = !operationNames.empty();
 
-      for (auto& operationName : operationNames)
+      // Access all resources that can be created by operations in the creator
+      // group.
+      auto resourceNames = creatorGroup.supportedResources();
+      visible = !resourceNames.empty();
+
+      for (auto& resourceName : resourceNames)
       {
-        // We start with the unique operation name. We use it as a key to
-        // acquire the unique resource name. We then split on the c++
+        // To acquire a human-readable resource name, we split on the c++
         // double-colon separator and select the penultimate token as the
-        // short-form for the resource name. Finally, we capitalize the name.
+        // short-form for the resource name. We then capitalize the name.
         // This is hack-ish, but it should serve as a stopgap until a
         // standardized convention for assigning human-readable labels to
         // resources is in place.
-        QString label = QString::fromStdString(creatorGroup.resourceForOperation(operationName));
+        QString label = QString::fromStdString(resourceName);
         QStringList splitLabel = label.split("::");
         label = *(++splitLabel.rbegin());
         label[0] = label[0].toUpper();
-        QAction* newResourceAction = new QAction(label, m_newMenu);
-        m_newMenu->addAction(newResourceAction);
 
-        new pqNewResourceReaction(operationName, newResourceAction);
+        auto operationIndices = creatorGroup.operationsForResource(resourceName);
+
+        // If there is only one Create operation associated with this resource,
+        // then there is no need to display the Create operation's label.
+        if (operationIndices.size() == 1)
+        {
+          QAction* newResourceAction = new QAction(label, m_newMenu);
+          m_newMenu->addAction(newResourceAction);
+
+          std::string operationName = creatorGroup.operationName(*operationIndices.begin());
+          new pqNewResourceReaction(operationName, newResourceAction);
+        }
+        else
+        {
+          // If there is more than one Create operation associated with this
+          // resource, then we promote the resource from an action to a menu and
+          // populate the menu with the operations that can create the resource.
+          QMenu* resourceMenu = new QMenu(label, m_newMenu);
+          m_newMenu->addMenu(resourceMenu);
+          resourceMenu->setObjectName(label);
+
+          for (auto& index : operationIndices)
+          {
+            std::string operationName = creatorGroup.operationName(index);
+
+            QString opLabel = QString::fromStdString(creatorGroup.operationLabel(index));
+            // The pattern for the labels of create operations is "Model - XXX".
+            // That seems superfluous, so let's strip out the first part.
+            QStringList splitOpLabel = opLabel.split(" - ");
+            opLabel = *splitOpLabel.rbegin();
+
+            QAction* newResourceAction = new QAction(opLabel, resourceMenu);
+            resourceMenu->addAction(newResourceAction);
+
+            new pqNewResourceReaction(operationName, newResourceAction);
+          }
+        }
       }
     }
     m_newMenu->menuAction()->setVisible(visible);
