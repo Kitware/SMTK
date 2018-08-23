@@ -71,17 +71,6 @@ typedef boost::multi_index_container<
     ordered_non_unique<tag<LocationTag>,
                global_fun<const ResourcePtr&, const std::string&, &detail::location> > > >
   Container;
-
-/// A multi-index container for accessing resource metadata. This class is
-/// primarily intended to be used in the implementation of
-/// smtk::resource::Manager only.
-typedef boost::multi_index_container<
-  Metadata,
-  indexed_by<
-    ordered_unique<tag<NameTag>, const_mem_fun<Metadata, const std::string&, &Metadata::typeName> >,
-    ordered_unique<tag<IndexTag>,
-      const_mem_fun<Metadata, const smtk::resource::Resource::Index&, &Metadata::index> > > >
-  MetadataContainer;
 }
 }
 

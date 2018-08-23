@@ -61,9 +61,22 @@ protected:
   }
 };
 
+class ResourceC : public smtk::resource::DerivedFrom<ResourceC, ResourceB>
+{
+public:
+  smtkTypeMacro(ResourceC);
+  smtkCreateMacro(ResourceA);
+  smtkSharedFromThisMacro(smtk::resource::Resource);
+
+protected:
+  ResourceC()
+    : smtk::resource::DerivedFrom<ResourceC, ResourceB>()
+  {
+  }
+};
+
 int TestResourceManager(int, char** const)
 {
-  int numResources = 0;
   // Create a resource manager
   smtk::resource::ManagerPtr resourceManager = smtk::resource::Manager::create();
 
@@ -81,13 +94,23 @@ int TestResourceManager(int, char** const)
   smtkTest(resourceManager->resources().size() == 1, "Resource A1 not added to manager.");
 
   // Observe resources being added
+  int numResources = 0;
   int handle;
-  handle = resourceManager->observe(
-    [&numResources](smtk::resource::Event event, const smtk::resource::Resource::Ptr& rsrc) {
-      (void)rsrc;
-      numResources += (event == smtk::resource::Event::RESOURCE_ADDED ? +1 : -1);
-      std::cout << "Resource count now " << numResources << " rsrc " << rsrc << "\n";
+  auto countingObserver = [&numResources](
+    const smtk::resource::Resource::Ptr& rsrc, smtk::resource::EventType event) {
+    (void)rsrc;
+    numResources += (event == smtk::resource::EventType::ADDED ? +1 : -1);
+    std::cout << "Resource count now " << numResources << " rsrc " << rsrc << "\n";
+  };
+  handle = resourceManager->observers().insert(countingObserver);
+
+  // If a developer wants an observer to be called immediately upon insertion,
+  // the observer can be iterate the available resources with one command.
+  std::for_each(resourceManager->resources().begin(), resourceManager->resources().end(),
+    [&](const smtk::resource::Resource::Ptr& rsrc) {
+      countingObserver(rsrc, smtk::resource::EventType::ADDED);
     });
+
   smtkTest(numResources == 1, "Did not observe new resource being added.");
 
   // Change its location field (nontrivial due to weak location indexing)
@@ -101,15 +124,32 @@ int TestResourceManager(int, char** const)
   smtkTest(numResources == 2, "Did not observe resource A2 being added.");
 
   // Unregister the observer
-  smtkTest(resourceManager->unobserve(handle), "Could not unregister observer.");
+  smtkTest(resourceManager->observers().erase(handle) == 1, "Could not unregister observer.");
+
+  // Register ResourceC
+  resourceManager->registerResource<ResourceC>();
+  smtkTest(
+    resourceManager->metadata().size() == 2, "Resource manager should have registered a type.");
 
   // Test that the observer can unregister itself while the observer is being called.
-  handle = resourceManager->observe(
-    [&handle, &resourceManager](smtk::resource::Event, const smtk::resource::Resource::Ptr&) {
-      resourceManager->unobserve(handle);
-      std::cout << "Observer " << handle << " removing self\n";
-    });
-  smtkTest(!resourceManager->unobserve(handle), "Observer did not remove itself.");
+  auto removingObserver = [&handle, &resourceManager](
+    const smtk::resource::Resource::Ptr&, smtk::resource::EventType) {
+    resourceManager->observers().erase(handle);
+    std::cout << "Observer " << handle << " removing self\n";
+  };
+
+  handle = resourceManager->observers().insert(removingObserver);
+
+  // Create a ResourceC type
+  auto resourceC = resourceManager->create<ResourceC>();
+  std::cout << "resourceC? " << resourceC << std::endl;
+  smtkTest(!resourceManager->observers().erase(handle), "Observer did not remove itself.");
+  resourceManager->remove(resourceC);
+
+  // Unegister ResourceC
+  resourceManager->unregisterResource<ResourceC>();
+  smtkTest(
+    resourceManager->metadata().size() == 1, "Resource manager should have unregistered a type.");
 
   // Attempt to set its UUID to that of the first ResourceA type (should fail)
   smtk::common::UUID originalUUID = resourceA2->id();

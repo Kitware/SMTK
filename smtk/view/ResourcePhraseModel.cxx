@@ -81,9 +81,9 @@ bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, st
   return true;
 }
 
-void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event)
+void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event)
 {
-  this->processResource(rsrc, event == smtk::resource::Event::RESOURCE_ADDED);
+  this->processResource(rsrc, event == smtk::resource::EventType::ADDED);
 }
 
 void ResourcePhraseModel::handleCreated(

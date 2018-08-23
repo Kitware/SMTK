@@ -108,14 +108,15 @@ void AvailableOperations::setOperationManager(smtk::operation::ManagerPtr mgr)
 
   if (m_operationManager)
   {
-    m_operationManager->unobserveMetadata(m_operationManagerObserverId);
+    m_operationManager->metadataObservers().erase(m_operationManagerObserverId);
   }
   m_operationManager = mgr;
   if (m_operationManager)
   {
-    m_operationManagerObserverId =
-      m_operationManager->observeMetadata([this](const smtk::operation::Metadata& operMeta,
-        bool adding) { this->operationMetadataChanged(operMeta, adding); });
+    m_operationManagerObserverId = m_operationManager->metadataObservers().insert(
+      [this](const smtk::operation::Metadata& operMeta, bool adding) {
+        this->operationMetadataChanged(operMeta, adding);
+      });
   }
   else
   {

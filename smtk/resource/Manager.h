@@ -20,8 +20,9 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Container.h"
-#include "smtk/resource/Event.h"
 #include "smtk/resource/Metadata.h"
+#include "smtk/resource/MetadataContainer.h"
+#include "smtk/resource/Observer.h"
 #include "smtk/resource/Resource.h"
 
 #include <functional>
@@ -42,9 +43,6 @@ class Manager;
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
-  /// Resource manager events result in function calls of this type.
-  using Observer = std::function<void(Event, const Resource::Ptr&)>;
-
   smtkTypedefs(smtk::resource::Manager);
   smtkCreateMacro(Manager);
 
@@ -167,9 +165,6 @@ public:
   /// only refer to a single resource type.
   bool addLegacyReader(const std::string&, const std::function<ResourcePtr(const std::string&)>&);
 
-  /// Visit each managed resource.
-  void visit(const Resource::Visitor&) const;
-
   // We expose the underlying containers for both resources and metadata; this
   // means of access should not be necessary for most use cases.
 
@@ -180,22 +175,9 @@ public:
   /// Return the map of metadata.
   MetadataContainer& metadata() { return m_metadata; }
 
-  /**\brief Observe events related to this resource manager.
-    *
-    * Returns a handle that can be used to stop observations.
-    *
-    * If \a notifyOfCurrentState is true, then \a fn will be
-    * immediately invoked with each registered resource type
-    * and each registered resource.
-    */
-  int observe(const Observer& fn, bool notifyOfCurrentState = true);
-
-  /// Stop observing events related to this resource manager.
-  bool unobserve(int handle);
-
-protected:
-  /// Trigger an event (call all registered observers)
-  void trigger(Event evt, const ResourcePtr& rsrc);
+  /// Return the observers associated with this manager.
+  Observers& observers() { return m_observers; }
+  const Observers& observers() const { return m_observers; }
 
 private:
   Manager();
@@ -207,10 +189,11 @@ private:
   /// shared pointer to the resource itself.
   Container m_resources;
 
-  std::map<int, Observer> m_observers;
-
   /// A container for all registered resource metadata.
   MetadataContainer m_metadata;
+
+  /// A container for all resource observers.
+  Observers m_observers;
 
   /// A map connecting legacy resource names to legacy readers.
   std::map<std::string, std::function<ResourcePtr(const std::string&)> > m_legacyReaders;

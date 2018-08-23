@@ -81,7 +81,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
     }
   }
   int rsrcHandle = rsrcMgr
-    ? rsrcMgr->observe([this](smtk::resource::Event event, Resource::Ptr rsrc) {
+    ? rsrcMgr->observers().insert([this](Resource::Ptr rsrc, resource::EventType event) {
         this->handleResourceEvent(rsrc, event);
         return 0;
       })
@@ -106,7 +106,7 @@ bool PhraseModel::removeSource(
     {
       if (it->m_rsrcHandle >= 0)
       {
-        it->m_rsrcMgr->unobserve(it->m_rsrcHandle);
+        it->m_rsrcMgr->observers().erase(it->m_rsrcHandle);
       }
       if (it->m_operHandle >= 0)
       {
@@ -191,9 +191,9 @@ void PhraseModel::handleSelectionEvent(const std::string& src, Selection::Ptr se
   (void)seln;
 }
 
-void PhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event)
+void PhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event)
 {
-  std::cout << "      phrase " << (event == smtk::resource::Event::RESOURCE_ADDED ? "add" : "del")
+  std::cout << "      phrase " << (event == smtk::resource::EventType::ADDED ? "add" : "del")
             << " rsrc " << rsrc << " " << rsrc->location() << "\n";
 }
 

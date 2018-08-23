@@ -180,7 +180,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
     auto rsrcMgr = m_rsrc->manager();
     if (rsrcMgr && m_observer >= 0)
     {
-      rsrcMgr->unobserve(m_observer);
+      rsrcMgr->observers().erase(m_observer);
     }
     m_editing = nullptr;
   }
@@ -215,13 +215,13 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   {
     // If the operation's specification is destroyed, then
     // get rid of the UI.
-    m_observer = rsrcMgr->observe(
-      [this, rsrcMgr](smtk::resource::Event evnt, smtk::resource::Resource::Ptr attrRsrc) {
-        if (evnt == smtk::resource::Event::RESOURCE_REMOVED && attrRsrc == m_rsrc)
+    m_observer = rsrcMgr->observers().insert(
+      [this, rsrcMgr](smtk::resource::Resource::Ptr attrRsrc, smtk::resource::EventType evnt) {
+        if (evnt == smtk::resource::EventType::REMOVED && attrRsrc == m_rsrc)
         {
           // The application is removing the attribute resource we are viewing.
           // Clear out the panel and unobserve the manager.
-          rsrcMgr->unobserve(m_observer);
+          rsrcMgr->observers().erase(m_observer);
           delete m_attrUIMgr;
           while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
           {

@@ -46,7 +46,7 @@ protected:
   virtual void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event);
   virtual int handleOperationEvent(Operation::Ptr op, Operator::EventType event, Operator::Result res);
   */
-  void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event) override;
+  void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event) override;
   void handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data) override;
   void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data) override;
   void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data) override;

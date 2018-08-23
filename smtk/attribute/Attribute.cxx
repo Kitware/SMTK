@@ -460,7 +460,8 @@ bool Attribute::associateEntity(const smtk::common::UUID& objId)
   auto rsrcMgr = this->attributeResource()->manager();
   if (rsrcMgr)
   {
-    rsrcMgr->visit([&rsrcs](smtk::resource::Resource::Ptr rsrc) { rsrcs.insert(rsrc); });
+    std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),
+      [&rsrcs](smtk::resource::Resource::Ptr rsrc) { rsrcs.insert(rsrc); });
   }
 
   // Look for anything with the given UUID:
