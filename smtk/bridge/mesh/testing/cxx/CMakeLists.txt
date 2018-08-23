@@ -10,7 +10,9 @@
 #
 #=============================================================================
 
-set (unit_tests)
+set (unit_tests
+  TestCreateUniformGridOp.cxx
+)
 
 set (unit_tests_which_require_data
   UnitTestEulerRatio.cxx

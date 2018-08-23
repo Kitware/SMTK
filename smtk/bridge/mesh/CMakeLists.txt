@@ -4,6 +4,7 @@ set(meshSrcs
   Resource.cxx
   Session.cxx
   Topology.cxx
+  operators/CreateUniformGrid.cxx
   operators/EulerCharacteristicRatio.cxx
   operators/Import.cxx
   operators/Export.cxx
@@ -17,6 +18,7 @@ set(meshHeaders
   Resource.h
   Session.h
   Topology.h
+  operators/CreateUniformGrid.h
   operators/EulerCharacteristicRatio.h
   operators/Import.h
   operators/Export.h
@@ -43,6 +45,7 @@ smtk_install_library(smtkMeshSession)
 # We do not need the path to the generated header (appended
 # to meshOperationXML) since the operators themselves include
 # the header in their implementations.
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateUniformGrid.sbt" meshOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristicRatio.sbt" meshOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" meshOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" meshOperationXML)
