@@ -100,7 +100,6 @@ int main(int argc, char* argv[])
   std::cout << std::endl;
   test(edges.size() == 10, "Expecting 10 edges");
 
-  typedef std::vector<Edge> Edges;
   Edges edgelist = resource->findEntitiesByPropertyAs<Edges>("name", "Edge1");
   test(!edgelist.empty() && edgelist.begin()->name() == "Edge1");
   Edge edge1 = edgelist[0];
