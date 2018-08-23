@@ -108,24 +108,6 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
   return op;
 }
 
-Metadata::Observers::Key Manager::observeMetadata(MetadataObserver fn, bool invokeImmediately)
-{
-  auto key = this->metadataObservers().insert(fn);
-  if (invokeImmediately)
-  {
-    for (auto& md : this->metadata())
-    {
-      fn(md, true);
-    }
-  }
-  return key;
-}
-
-bool Manager::unobserveMetadata(Metadata::Observers::Key key)
-{
-  return this->metadataObservers().erase(key) != 0;
-}
-
 bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManager)
 {
   // Only allow one resource manager to manage created resources.
@@ -180,7 +162,9 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
 
   // Add this metadata observer to the set of metadata observers, invoking it
   // immediately on all extant metadata.
-  m_resourceMetadataObserver = this->observeMetadata(resourceMetadataObserver);
+  m_resourceMetadataObserver = this->metadataObservers().insert(resourceMetadataObserver);
+  std::for_each(m_metadata.begin(), m_metadata.end(),
+    [&](const smtk::operation::Metadata& md) { resourceMetadataObserver(md, true); });
 
   // Define an observer that adds all created resources to the resource manager.
   m_resourceObserver =

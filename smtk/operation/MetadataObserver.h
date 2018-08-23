@@ -36,9 +36,9 @@ public:
 
   /// Ask to receive notification when operations are added. The return value is
   /// a handle that can be used to unregister the observer.
-  /// This does **not** immediately invoke the observer with a list of
-  /// operation metadata already available. Call the observe() method on the
-  /// operation manager if that is needed.
+  /// This does **not** immediately invoke the observer with a list of operation
+  /// metadata already available. Call std::for_each on the set of metadata if
+  /// that is needed.
   Key insert(MetadataObserver);
 
   /// Indicate that an observer should no longer be called. Returns the number

@@ -4,6 +4,7 @@ set(resourceSrcs
   ComponentLinks.cxx
   Lock.cxx
   Manager.cxx
+  Observer.cxx
   PersistentObject.cxx
   Resource.cxx
   ResourceLinks.cxx
@@ -18,10 +19,11 @@ set(resourceHeaders
   Component.h
   ComponentLinks.h
   DerivedFrom.h
-  Event.h
   Lock.h
   Manager.h
   Metadata.h
+  MetadataContainer.h
+  Observer.h
   PersistentObject.h
   PropertyType.h
   Registrar.h

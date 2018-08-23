@@ -201,7 +201,9 @@ ImportResource::Specification ImportResource::createSpecification()
 
       // Add this metadata observer to the set of metadata observers,
       // invoking it immediately on all extant metadata.
-      manager->observeMetadata(observer, true);
+      manager->metadataObservers().insert(observer);
+      std::for_each(manager->metadata().begin(), manager->metadata().end(),
+        [&](const Metadata& metadata) { observer(metadata, true); });
     }
   }
 

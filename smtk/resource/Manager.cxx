@@ -374,7 +374,10 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   // resources
   resource->m_manager = this->shared_from_this();
   m_resources.insert(resource);
-  this->trigger(Event::RESOURCE_ADDED, resource);
+
+  // Tell observers we just added a resource:
+  m_observers(resource, smtk::resource::EventType::ADDED);
+
   return true;
 }
 
@@ -389,7 +392,7 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
     Resource::Ptr rsrc = *resourceIt;
 
     // Tell observers we're about to yoink it:
-    this->trigger(Event::RESOURCE_REMOVED, rsrc);
+    m_observers(rsrc, smtk::resource::EventType::REMOVED);
 
     // Remove it from the manager's set of resources
     m_resources.erase(resourceIt);
@@ -414,47 +417,6 @@ bool Manager::addLegacyReader(
 
   m_legacyReaders[alias] = read;
   return true;
-}
-
-void Manager::visit(const smtk::resource::Resource::Visitor& visitor) const
-{
-  std::for_each(m_resources.begin(), m_resources.end(), visitor);
-}
-
-int Manager::observe(const Observer& fn, bool notifyOfCurrentState)
-{
-  int handle = m_observers.empty() ? 0 : m_observers.rbegin()->first + 1;
-  m_observers[handle] = fn;
-  if (notifyOfCurrentState)
-  {
-    for (auto rsrc : m_resources)
-    {
-      fn(Event::RESOURCE_ADDED, rsrc);
-      // Terminate if the observe removes itself.
-      if (m_observers.find(handle) == m_observers.end())
-      {
-        break;
-      }
-    }
-  }
-  return handle;
-}
-
-bool Manager::unobserve(int handle)
-{
-  return m_observers.erase(handle) > 0;
-}
-
-void Manager::trigger(Event evt, const ResourcePtr& rsrc)
-{
-  // This careful loop allows an observer to unregister itself.
-  std::map<int, Observer>::iterator observer = m_observers.begin();
-  std::map<int, Observer>::iterator next;
-  for (next = observer; observer != m_observers.end(); observer = next)
-  {
-    ++next;
-    observer->second(evt, rsrc);
-  }
 }
 }
 }
