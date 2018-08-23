@@ -14,6 +14,7 @@
 #include "smtk/CoreExports.h"
 
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/Definition.h"
 
 #include "smtk/operation/Metadata.h"
 #include "smtk/operation/Operation.h"

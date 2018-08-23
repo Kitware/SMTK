@@ -117,6 +117,12 @@ public:
   /// Return a set of operation unique names that belong to this group.
   std::set<std::string> operationNames() const;
 
+  /// Given an operation index, return the operation's name.
+  std::string operationName(const Operation::Index&) const;
+
+  /// Given an operation index, return the operation's label.
+  std::string operationLabel(const Operation::Index&) const;
+
 protected:
   std::weak_ptr<smtk::operation::Manager> m_manager;
 
