@@ -10,7 +10,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
-#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
+#include "smtk/extension/paraview/server/vtkSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMTKSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
@@ -226,7 +226,7 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
         // Now we have a resource:
         smtk::model::ResourcePtr mResource = alg
           ? std::dynamic_pointer_cast<smtk::model::Resource>(
-              dynamic_cast<vtkSMTKSource*>(alg)->GetResourceGenerator()->GetResource())
+              dynamic_cast<vtkSMTKSource*>(alg)->GetVTKResource()->GetResource())
           : nullptr;
         auto mit = mbdsThing->NewIterator();
         for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
@@ -256,33 +256,18 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
 void vtkSMTKWrapper::AddResourceFilter(json& response)
 {
   // this->ActiveResource has been set. Add it to our resource manager.
-  bool found = false;
   auto rsrcThing = this->ActiveResource->GetProducer();
-  if (rsrcThing)
-  {
-    vtkAlgorithm* alg = rsrcThing;
-    vtkSMTKSource* resourceSrc = nullptr;
 
-    // Recursively walk up ParaView's pipeline until we encounter one of our
-    // creation filters (marked by inheritence from vtkSMTKSource).
-    while (alg && !(resourceSrc = vtkSMTKSource::SafeDownCast(alg)))
-    {
-      alg = alg->GetInputAlgorithm(0, 0);
-    }
-    if (resourceSrc)
-    {
-      auto resourceGen = resourceSrc->GetResourceGenerator();
-      if (resourceGen)
-      {
-        resourceGen->SetWrapper(this);
-      }
-      found = true;
-      response["result"] = {
-        { "success", true },
-      };
-    }
+  auto vtkresource = this->GetVTKResource(rsrcThing);
+
+  if (vtkresource)
+  {
+    vtkresource->SetWrapper(this);
+    response["result"] = {
+      { "success", true },
+    };
   }
-  if (!found)
+  else
   {
     response["error"] = { { "code", JSONRPC_INVALID_RESOURCE_CODE },
       { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
@@ -292,36 +277,61 @@ void vtkSMTKWrapper::AddResourceFilter(json& response)
 void vtkSMTKWrapper::RemoveResourceFilter(json& response)
 {
   // this->ActiveResource has been set. Add it to our resource manager.
-  bool found = false;
   auto rsrcThing = this->ActiveResource->GetProducer();
-  if (rsrcThing)
+
+  auto vtkresource = this->GetVTKResource(rsrcThing);
+
+  if (vtkresource)
   {
-    vtkAlgorithm* alg = rsrcThing;
-    while (alg && !vtkSMTKSource::SafeDownCast(alg))
-    {
-      alg = alg->GetInputAlgorithm(0, 0);
-    }
-    auto src = vtkSMTKSource::SafeDownCast(alg);
-    if (src)
-    {
-      auto resourceGen = src->GetResourceGenerator();
-      if (resourceGen)
-      {
-        // Remove any resource src holds from the resource manager it uses.
-        resourceGen->DropResource();
-        resourceGen->SetWrapper(nullptr);
-      }
-      response["result"] = {
-        { "success", true },
-      };
-      found = true;
-    }
+    // Remove any resource src holds from the resource manager it uses.
+    vtkresource->DropResource();
+    vtkresource->SetWrapper(nullptr);
+    response["result"] = {
+      { "success", true },
+    };
   }
-  if (!found)
+  else
   {
     response["error"] = { { "code", JSONRPC_INVALID_RESOURCE_CODE },
       { "message", JSONRPC_INVALID_RESOURCE_MESSAGE } };
   }
+}
+
+vtkSMTKResource* vtkSMTKWrapper::GetVTKResource(vtkAlgorithm* algorithm)
+{
+  vtkSMTKResource* vtkresource = nullptr;
+
+  if (algorithm == nullptr)
+  {
+    return vtkresource;
+  }
+
+  // Recursively walk up ParaView's pipeline until we encounter one of our
+  // creation filters (marked by inheritence from vtkSMTKSource).
+  vtkAlgorithm* alg = algorithm;
+  vtkSMTKSource* source = nullptr;
+  while (alg && !(source = vtkSMTKSource::SafeDownCast(alg)))
+  {
+    alg = (alg->GetNumberOfInputPorts() > 0 ? alg->GetInputAlgorithm(0, 0) : nullptr);
+  }
+  if (source)
+  {
+    vtkresource = source->GetVTKResource();
+  }
+
+  // If we didn't find it, that's ok. It may be exposed within the pipeline
+  // directly (as opposed to being a subfilter of vtkSMTKSource).
+  if (vtkresource == nullptr)
+  {
+    alg = algorithm;
+
+    while (alg && !(vtkresource = vtkSMTKResource::SafeDownCast(alg)))
+    {
+      alg = (alg->GetNumberOfInputPorts() > 0 ? alg->GetInputAlgorithm(0, 0) : nullptr);
+    }
+  }
+
+  return vtkresource;
 }
 
 vtkCxxSetObjectMacro(vtkSMTKWrapper, Representation, vtkPVDataRepresentation)

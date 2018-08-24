@@ -13,7 +13,7 @@
 #include "smtk/extension/paraview/server/Exports.h"
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
+#include "smtk/extension/paraview/server/vtkSMTKResource.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 
@@ -38,13 +38,13 @@ public:
   static vtkSMTKSource* New();
 
   /**
-   * Set/get the internal resource generator.
+   * Set/get the internal resource.
    */
-  vtkSetObjectMacro(ResourceGenerator, vtkSMTKResourceGenerator);
-  vtkGetObjectMacro(ResourceGenerator, vtkSMTKResourceGenerator);
+  vtkSetObjectMacro(VTKResource, vtkSMTKResource);
+  vtkGetObjectMacro(VTKResource, vtkSMTKResource);
 
   /**
-   * Return the MTime when also considering the internal source generator.
+   * Return the MTime when also considering the internal resource.
    */
   vtkMTimeType GetMTime() override;
 
@@ -56,7 +56,7 @@ protected:
   vtkSMTKSource();
   ~vtkSMTKSource() override;
 
-  vtkSMTKResourceGenerator* ResourceGenerator;
+  vtkSMTKResource* VTKResource;
 
 private:
   vtkSMTKSource(const vtkSMTKSource&) = delete;

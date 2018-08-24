@@ -100,26 +100,15 @@ void pqNewResourceReaction::newResource()
   // Launch the modal dialog and wait for the operation to succeed.
   createDialog->exec();
 
-  auto pqCore = pqApplicationCore::instance();
-  auto builder = pqCore->getObjectBuilder();
-
-  pqPipelineSource* src = builder->createSource("sources", "SMTKModelCreator", server);
-  vtkSMPropertyHelper(src->getProxy(), "TypeName").Set(typeName.c_str());
-  vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
-  src->getProxy()->UpdateVTKObjects();
-
-  // Instead of triggering the pipeline, connect the pipeline to the properties
-  // panel and flag it as uninitialized. That way, the properties panel will
-  // allow you to "Apply" the create operation (much like the read operation
-  // currently works).
-
-  src->setModifiedState(pqProxy::UNINITIALIZED);
-
-  QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
-
-  foreach (pqPropertiesPanel* ppanel, mainWindow->findChildren<pqPropertiesPanel*>())
+  if (!typeName.empty())
   {
-    ppanel->setOutputPort(src->getOutputPort(0));
+    auto pqCore = pqApplicationCore::instance();
+    auto builder = pqCore->getObjectBuilder();
+
+    pqPipelineSource* src = builder->createSource("sources", "SMTKModelCreator", server);
+    vtkSMPropertyHelper(src->getProxy(), "TypeName").Set(typeName.c_str());
+    vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
+    src->getProxy()->UpdateVTKObjects();
   }
 }
 

@@ -264,6 +264,29 @@
   </ProxyGroup>
 
   <ProxyGroup name="sources">
+    <SourceProxy class="vtkSMTKResource" name="SMTKResource">
+      <Documentation
+        short_help="Construct a vtk source from an SMTK resource."
+        long_help="Read an SMTK Resource file as a set of multiblock datasets.">
+      </Documentation>
+
+      <StringVectorProperty
+        name="Resource"
+        command="SetResource"
+        animateable="0"
+        number_of_elements="1"
+        panel_visibility="never">
+      </StringVectorProperty>
+
+      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
+
+      <Hints>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
+    </SourceProxy>
+
     <!--
         We describe an instance of vtkSMTKSource with a subproxy for each of the
         internal sources described in smtk_internal_sources. This pattern
@@ -275,8 +298,8 @@
         short_help="Read an SMTK Resource file."
         long_help="Read an SMTK Resource file as a set of multiblock datasets.">
       </Documentation>
-      <SubProxy command="SetResourceGenerator">
-        <Proxy name="ResourceGenerator"
+      <SubProxy command="SetVTKResource">
+        <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
                proxyname="SMTKModelReader">
         </Proxy>
@@ -297,8 +320,8 @@
       <Documentation
         short_help="Create an SMTK resource.">
       </Documentation>
-      <SubProxy command="SetResourceGenerator">
-        <Proxy name="ResourceGenerator"
+      <SubProxy command="SetVTKResource">
+        <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
                proxyname="SMTKModelCreator">
         </Proxy>
@@ -321,8 +344,8 @@
         short_help="Import an SMTK resource."
         long_help="Import a file as an SMTK Resource.">
       </Documentation>
-      <SubProxy command="SetResourceGenerator">
-        <Proxy name="ResourceGenerator"
+      <SubProxy command="SetVTKResource">
+        <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
                proxyname="SMTKModelImporter">
         </Proxy>
@@ -345,8 +368,8 @@
         short_help="Read an SMTK attribute file."
         long_help="Read an SMTK attribute file as a set of multiblock datasets.">
       </Documentation>
-      <SubProxy command="SetResourceGenerator">
-        <Proxy name="ResourceGenerator"
+      <SubProxy command="SetVTKResource">
+        <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
                proxyname="SMTKAttributeReader">
         </Proxy>

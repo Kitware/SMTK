@@ -25,7 +25,7 @@ using namespace smtk;
 vtkStandardNewMacro(vtkSMTKSource);
 
 vtkSMTKSource::vtkSMTKSource()
-  : ResourceGenerator(nullptr)
+  : VTKResource(nullptr)
 {
   this->SetNumberOfInputPorts(0);
 }
@@ -37,35 +37,34 @@ vtkSMTKSource::~vtkSMTKSource()
 void vtkSMTKSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "Generator: " << this->ResourceGenerator << "\n";
+  os << indent << "VTKResource: " << this->VTKResource << "\n";
 }
 
 vtkMTimeType vtkSMTKSource::GetMTime()
 {
-  // Access the modification time of this class ignoring the resource generator.
+  // Access the modification time of this class ignoring the resource.
   vtkMTimeType mTime = this->vtkObject::GetMTime();
 
-  // Access the modification time of the resource generator.
-  vtkMTimeType resourceGenerator_mTime =
-    (this->ResourceGenerator ? this->ResourceGenerator->GetMTime() : mTime);
+  // Access the modification time of the resource.
+  vtkMTimeType resource_mTime = (this->VTKResource ? this->VTKResource->GetMTime() : mTime);
 
   // The outward-facing modification time of this class is the latest of these
   // two times.
-  return std::max({ mTime, resourceGenerator_mTime });
+  return std::max({ mTime, resource_mTime });
 }
 
 int vtkSMTKSource::FillOutputPortInformation(int port, vtkInformation* info)
 {
-  // We must have a resource generator to query for output port information.
-  if (this->ResourceGenerator == nullptr)
+  // We must have a resource to query for output port information.
+  if (this->VTKResource == nullptr)
   {
-    vtkDebugMacro("Resource generator is not set.");
+    vtkDebugMacro("Resource is not set.");
     return 0;
   }
 
-  this->SetNumberOfOutputPorts(this->ResourceGenerator->GetNumberOfOutputPorts());
+  this->SetNumberOfOutputPorts(this->VTKResource->GetNumberOfOutputPorts());
 
-  vtkInformation* rinfo = this->ResourceGenerator->GetOutputPortInformation(port);
+  vtkInformation* rinfo = this->VTKResource->GetOutputPortInformation(port);
   info->CopyEntry(rinfo, vtkDataObject::DATA_TYPE_NAME());
   return 1;
 }
@@ -73,29 +72,28 @@ int vtkSMTKSource::FillOutputPortInformation(int port, vtkInformation* info)
 int vtkSMTKSource::RequestData(
   vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
 {
-  // We must have a resource generator to operate
-  if (this->ResourceGenerator == nullptr)
+  // We must have a resource to operate
+  if (this->VTKResource == nullptr)
   {
-    vtkDebugMacro("Resource generator is not set.");
+    vtkDebugMacro("Resource is not set.");
     return 0;
   }
 
-  // If the resource generator has been updated after this class has, execute
-  // the resource generator.
-  if (this->ResourceGenerator->GetMTime() > this->vtkObject::GetMTime())
+  // If the resource has been updated after this class has, execute the resource.
+  if (this->VTKResource->GetMTime() > this->vtkObject::GetMTime())
   {
-    return this->ResourceGenerator->ProcessRequest(request, inInfo, outInfo);
+    return this->VTKResource->ProcessRequest(request, inInfo, outInfo);
   }
 
   // Otherwise, access the resource generator's smtk -> vtkMultiBlockDataSet
   // converter and trigger it to rerender the resource.
-  vtkAlgorithm* converter = this->ResourceGenerator->GetConverter();
+  vtkAlgorithm* converter = this->VTKResource->GetConverter();
   converter->Modified();
   converter->Update();
 
   // Grab the output from the converter and assign it as the output for this
   // method.
-  for (int i = 0; i < this->ResourceGenerator->GetNumberOfOutputPorts(); i++)
+  for (int i = 0; i < this->VTKResource->GetNumberOfOutputPorts(); i++)
   {
     vtkMultiBlockDataSet::GetData(outInfo, i)->ShallowCopy(converter->GetOutputDataObject(i));
   }
