@@ -9,37 +9,34 @@
 //=========================================================================
 
 #include "utils.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QtCore/QByteArray>
 #include <QtNetwork/QNetworkReply>
-
-#include "cJSON.h"
 
 namespace cumulus
 {
 
 QString handleGirderError(QNetworkReply* reply, const QByteArray& bytes)
 {
-  cJSON* jsonReply = cJSON_Parse(bytes.constData());
+  QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
+
   QString errorMessage;
 
-  if (!jsonReply)
+  if (!jsonResponse.isObject())
   {
     errorMessage = reply->errorString();
   }
   else
   {
-    cJSON* msgItem = cJSON_GetObjectItem(jsonReply, "message");
-    if (msgItem)
-    {
-      errorMessage = QString("Girder error: %1").arg(QString(msgItem->valuestring));
-    }
+    const QJsonObject& object = jsonResponse.object();
+    QString message = object.value("message").toString();
+    if (!message.isEmpty())
+      errorMessage = QString("Girder error: %1").arg(message);
     else
-    {
       errorMessage = QString(bytes);
-    }
   }
-
-  cJSON_Delete(jsonReply);
 
   return errorMessage;
 }

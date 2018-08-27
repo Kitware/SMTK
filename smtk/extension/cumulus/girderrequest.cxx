@@ -9,10 +9,13 @@
 //=========================================================================
 
 #include "girderrequest.h"
-#include "cJSON.h"
 #include "utils.h"
 
 #include <QDebug>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QPair>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QList>
@@ -22,6 +25,8 @@
 #include <QtNetwork/QNetworkCookieJar>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
+
+#include <memory>
 
 namespace cumulus
 {
@@ -38,6 +43,14 @@ GirderRequest::GirderRequest(QNetworkAccessManager* networkManager, const QStrin
 GirderRequest::~GirderRequest()
 {
 }
+
+// We will use this for our unique_ptrs
+struct QObjectLaterDeleter
+{
+  void operator()(QObject* obj) { obj->deleteLater(); }
+};
+template <typename T>
+using unique_ptr_delete_later = std::unique_ptr<T, QObjectLaterDeleter>;
 
 ListItemsRequest::ListItemsRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
   const QString& girderToken, const QString folderId, QObject* parent)
@@ -68,42 +81,52 @@ void ListItemsRequest::send()
 
 void ListItemsRequest::finished()
 {
-  auto reply = qobject_cast<QNetworkReply*>(this->sender());
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
-    emit error(handleGirderError(reply, bytes), reply);
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
   }
   else
   {
-    cJSON* jsonResponse = cJSON_Parse(bytes.constData());
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
 
-    if (!jsonResponse || jsonResponse->type != cJSON_Array)
+    if (!jsonResponse.isArray())
     {
       emit error(QString("Invalid response to listItems."));
-      cJSON_Delete(jsonResponse);
       return;
     }
 
-    QList<QString> itemList;
-    for (cJSON* jsonItem = jsonResponse->child; jsonItem; jsonItem = jsonItem->next)
+    const QJsonArray& array = jsonResponse.array();
+    QMap<QString, QString> itemMap;
+    for (const auto& item : array)
     {
-
-      cJSON* idItem = cJSON_GetObjectItem(jsonItem, "_id");
-      if (!idItem || idItem->type != cJSON_String)
+      if (!item.isObject())
       {
-        emit error(QString("Unable to extract item id."));
+        emit error(QString("Invalid entry in QJsonArray"));
         break;
       }
-      itemList.append(QString((idItem->valuestring)));
+
+      const QJsonObject& object = item.toObject();
+      if (!object.contains("_id"))
+      {
+        emit error(QString("Unable to extract id."));
+        break;
+      }
+      QString id = object.value("_id").toString();
+
+      if (!object.contains("name"))
+      {
+        emit error(QString("Unable to extract name."));
+        break;
+      }
+      QString name = object.value("name").toString();
+
+      itemMap[id] = name;
     }
 
-    emit items(itemList);
-
-    cJSON_Delete(jsonResponse);
+    emit items(itemMap);
   }
-
-  reply->deleteLater();
 }
 
 ListFilesRequest::ListFilesRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
@@ -133,57 +156,60 @@ void ListFilesRequest::send()
 
 void ListFilesRequest::finished()
 {
-  auto reply = qobject_cast<QNetworkReply*>(this->sender());
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
-    emit error(handleGirderError(reply, bytes), reply);
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
   }
   else
   {
-    cJSON* jsonResponse = cJSON_Parse(bytes.constData());
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
 
-    if (!jsonResponse || jsonResponse->type != cJSON_Array)
+    if (!jsonResponse.isArray())
     {
       emit error(QString("Invalid response to listFiles."));
-      cJSON_Delete(jsonResponse);
       return;
     }
 
+    const QJsonArray& array = jsonResponse.array();
     QMap<QString, QString> fileMap;
-    for (cJSON* jsonFile = jsonResponse->child; jsonFile; jsonFile = jsonFile->next)
+    for (const auto& item : array)
     {
-
-      cJSON* idItem = cJSON_GetObjectItem(jsonFile, "_id");
-      if (!idItem || idItem->type != cJSON_String)
+      if (!item.isObject())
       {
-        emit error(QString("Unable to extract file id."));
+        emit error(QString("Invalid entry in QJsonArray"));
         break;
       }
-      QString id(idItem->valuestring);
 
-      cJSON* nameItem = cJSON_GetObjectItem(jsonFile, "name");
-      if (!nameItem || nameItem->type != cJSON_String)
+      const QJsonObject& object = item.toObject();
+      if (!object.contains("_id"))
       {
-        emit error(QString("Unable to extract file id."));
+        emit error(QString("Unable to extract id."));
         break;
       }
-      QString name(nameItem->valuestring);
+      QString id = object.value("_id").toString();
+
+      if (!object.contains("name"))
+      {
+        emit error(QString("Unable to extract name."));
+        break;
+      }
+      QString name = object.value("name").toString();
 
       fileMap[id] = name;
     }
 
     emit files(fileMap);
-
-    cJSON_Delete(jsonResponse);
   }
-  reply->deleteLater();
 }
 
 ListFoldersRequest::ListFoldersRequest(QNetworkAccessManager* networkManager,
-  const QString& girderUrl, const QString& girderToken, const QString folderId, QObject* parent)
+  const QString& girderUrl, const QString& girderToken, const QString parentId,
+  const QString parentType, QObject* parent)
   : GirderRequest(networkManager, girderUrl, girderToken, parent)
-  , m_folderId(folderId)
+  , m_parentId(parentId)
+  , m_parentType(parentType)
 {
 }
 
@@ -194,8 +220,8 @@ ListFoldersRequest::~ListFoldersRequest()
 void ListFoldersRequest::send()
 {
   QUrlQuery urlQuery;
-  urlQuery.addQueryItem("parentId", m_folderId);
-  urlQuery.addQueryItem("parentType", "folder");
+  urlQuery.addQueryItem("parentId", m_parentId);
+  urlQuery.addQueryItem("parentType", m_parentType);
   urlQuery.addQueryItem("limit", "0");
 
   QUrl url(QString("%1/folder").arg(m_girderUrl));
@@ -210,51 +236,52 @@ void ListFoldersRequest::send()
 
 void ListFoldersRequest::finished()
 {
-  auto reply = qobject_cast<QNetworkReply*>(this->sender());
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
   QByteArray bytes = reply->readAll();
   if (reply->error())
   {
-    emit error(handleGirderError(reply, bytes), reply);
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
   }
   else
   {
-    cJSON* jsonResponse = cJSON_Parse(bytes.constData());
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
 
-    if (!jsonResponse || jsonResponse->type != cJSON_Array)
+    if (!jsonResponse.isArray())
     {
       emit error(QString("Invalid response to listFolders."));
-      cJSON_Delete(jsonResponse);
       return;
     }
 
+    const QJsonArray& array = jsonResponse.array();
     QMap<QString, QString> folderMap;
-    for (cJSON* jsonFolder = jsonResponse->child; jsonFolder; jsonFolder = jsonFolder->next)
+    for (const auto& item : array)
     {
-
-      cJSON* idItem = cJSON_GetObjectItem(jsonFolder, "_id");
-      if (!idItem || idItem->type != cJSON_String)
+      if (!item.isObject())
       {
-        emit error(QString("Unable to extract file id."));
+        emit error(QString("Invalid entry in QJsonArray"));
         break;
       }
-      QString id(idItem->valuestring);
 
-      cJSON* nameItem = cJSON_GetObjectItem(jsonFolder, "name");
-      if (!nameItem || nameItem->type != cJSON_String)
+      const QJsonObject& object = item.toObject();
+      if (!object.contains("_id"))
       {
-        emit error(QString("Unable to extract file id."));
+        emit error(QString("Unable to extract id."));
         break;
       }
-      QString name(nameItem->valuestring);
+      QString id = object.value("_id").toString();
+
+      if (!object.contains("name"))
+      {
+        emit error(QString("Unable to extract name."));
+        break;
+      }
+      QString name = object.value("name").toString();
 
       folderMap[id] = name;
     }
 
     emit folders(folderMap);
-
-    cJSON_Delete(jsonResponse);
   }
-  reply->deleteLater();
 }
 
 DownloadFolderRequest::DownloadFolderRequest(QNetworkAccessManager* networkManager,
@@ -287,8 +314,8 @@ void DownloadFolderRequest::send()
 
   itemsRequest->send();
 
-  ListFoldersRequest* foldersRequest =
-    new ListFoldersRequest(m_networkManager, m_girderUrl, m_girderToken, m_folderId, this);
+  ListFoldersRequest* foldersRequest = new ListFoldersRequest(
+    m_networkManager, m_girderUrl, m_girderToken, m_folderId, "folder", this);
 
   connect(foldersRequest, SIGNAL(folders(const QMap<QString, QString>)), this,
     SLOT(folders(const QMap<QString, QString>)));
@@ -513,4 +540,367 @@ void DownloadFileRequest::finished()
   reply->deleteLater();
   emit complete();
 }
+
+GetFolderParentRequest::GetFolderParentRequest(QNetworkAccessManager* networkManager,
+  const QString& girderUrl, const QString& girderToken, const QString& folderId, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
+  , m_folderId(folderId)
+{
 }
+
+GetFolderParentRequest::~GetFolderParentRequest()
+{
+}
+
+void GetFolderParentRequest::send()
+{
+  QUrl url(QString("%1/folder/%2").arg(m_girderUrl).arg(m_folderId));
+
+  QNetworkRequest request(url);
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
+
+  auto reply = m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
+}
+
+void GetFolderParentRequest::finished()
+{
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
+  QByteArray bytes = reply->readAll();
+  if (reply->error())
+  {
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
+  }
+  else
+  {
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
+
+    // There should only be one response
+    if (!jsonResponse.isObject())
+    {
+      emit error(QString("Invalid response to GetFolderParentRequest."));
+      return;
+    }
+
+    const QJsonObject& jsonObject = jsonResponse.object();
+
+    QMap<QString, QString> parentInfo;
+    if (!jsonObject.contains("parentCollection"))
+    {
+      emit error("Unable to extract parent collection.");
+      return;
+    }
+    parentInfo["type"] = jsonObject.value("parentCollection").toString();
+
+    if (!jsonObject.contains("parentId"))
+    {
+      emit error("Unable to extract parent id.");
+      return;
+    }
+    parentInfo["id"] = jsonObject.value("parentId").toString();
+
+    emit parent(parentInfo);
+  }
+}
+
+GetRootPathRequest::GetRootPathRequest(QNetworkAccessManager* networkManager,
+  const QString& girderUrl, const QString& girderToken, const QString& parentId,
+  const QString& parentType, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
+  , m_parentId(parentId)
+  , m_parentType(parentType)
+{
+}
+
+GetRootPathRequest::~GetRootPathRequest()
+{
+}
+
+void GetRootPathRequest::send()
+{
+  QUrl url(QString("%1/%2/%3/rootpath").arg(m_girderUrl).arg(m_parentType).arg(m_parentId));
+
+  QNetworkRequest request(url);
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
+
+  auto reply = m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
+}
+
+void GetRootPathRequest::finished()
+{
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
+  QByteArray bytes = reply->readAll();
+  if (reply->error())
+  {
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
+  }
+  else
+  {
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
+
+    if (!jsonResponse.isArray())
+    {
+      emit error(QString("Invalid response to GetRootPathRequest."));
+      return;
+    }
+
+    const QJsonArray& array = jsonResponse.array();
+    QList<QMap<QString, QString> > rootPathList;
+    for (const auto& folder : array)
+    {
+      if (!folder.isObject())
+      {
+        emit error("Error: root path folder is not a json object.");
+        break;
+      }
+      const QJsonObject& _tmpObject = folder.toObject();
+
+      // For some reason, everything is under an "object" key...
+      if (!_tmpObject.contains("object") && _tmpObject.value("object").isObject())
+      {
+        emit error("Object key is missing.");
+        break;
+      }
+
+      const QJsonObject& object = _tmpObject.value("object").toObject();
+
+      QMap<QString, QString> entryMap;
+      if (!object.contains("_modelType"))
+      {
+        emit error("Unable to extract model type.");
+        break;
+      }
+      entryMap["type"] = object.value("_modelType").toString();
+
+      if (!object.contains("_id"))
+      {
+        emit error("Unable to extract id.");
+        break;
+      }
+      entryMap["id"] = object.value("_id").toString();
+
+      QString nameField;
+      if (entryMap["type"] == "user")
+        nameField = "login";
+      else
+        nameField = "name";
+
+      if (!object.contains(nameField))
+      {
+        emit error("Unable to extract name.");
+        break;
+      }
+      entryMap["name"] = object.value(nameField).toString();
+
+      rootPathList.append(entryMap);
+    }
+    emit rootPath(rootPathList);
+  }
+}
+
+GetUsersRequest::GetUsersRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
+{
+}
+
+GetUsersRequest::~GetUsersRequest() = default;
+
+void GetUsersRequest::send()
+{
+  QUrlQuery urlQuery;
+  urlQuery.addQueryItem("limit", "0");
+
+  QUrl url(QString("%1/user").arg(m_girderUrl));
+  url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
+
+  QNetworkRequest request(url);
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
+
+  auto reply = m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
+}
+
+void GetUsersRequest::finished()
+{
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
+  QByteArray bytes = reply->readAll();
+  if (reply->error())
+  {
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
+  }
+  else
+  {
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
+
+    if (!jsonResponse.isArray())
+    {
+      emit error("Invalid response to GetUsersRequest.");
+      return;
+    }
+
+    const QJsonArray& array = jsonResponse.array();
+    QMap<QString, QString> usersMap;
+    for (const auto& item : array)
+    {
+      if (!item.isObject())
+      {
+        emit error(QString("Invalid entry in QJsonArray"));
+        break;
+      }
+
+      const QJsonObject& object = item.toObject();
+      if (!object.contains("_id"))
+      {
+        emit error(QString("Unable to extract id."));
+        break;
+      }
+      QString id = object.value("_id").toString();
+
+      if (!object.contains("login"))
+      {
+        emit error(QString("Unable to extract user login."));
+        break;
+      }
+      QString login = object.value("login").toString();
+
+      usersMap[id] = login;
+    }
+
+    emit users(usersMap);
+  }
+}
+
+GetCollectionsRequest::GetCollectionsRequest(QNetworkAccessManager* networkManager,
+  const QString& girderUrl, const QString& girderToken, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
+{
+}
+
+GetCollectionsRequest::~GetCollectionsRequest() = default;
+
+void GetCollectionsRequest::send()
+{
+  QUrlQuery urlQuery;
+  urlQuery.addQueryItem("limit", "0");
+
+  QUrl url(QString("%1/collection").arg(m_girderUrl));
+  url.setQuery(urlQuery); // reconstructs the query string from the QUrlQuery
+
+  QNetworkRequest request(url);
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
+
+  auto reply = m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
+}
+
+void GetCollectionsRequest::finished()
+{
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
+  QByteArray bytes = reply->readAll();
+  if (reply->error())
+  {
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
+  }
+  else
+  {
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
+
+    if (!jsonResponse.isArray())
+    {
+      emit error("Invalid response to GetCollectionsRequest.");
+      return;
+    }
+
+    const QJsonArray& array = jsonResponse.array();
+    QMap<QString, QString> collectionsMap;
+    for (const auto& item : array)
+    {
+      if (!item.isObject())
+      {
+        emit error(QString("Invalid entry in QJsonArray"));
+        break;
+      }
+
+      const QJsonObject& object = item.toObject();
+      if (!object.contains("_id"))
+      {
+        emit error(QString("Unable to extract id."));
+        break;
+      }
+      QString id = object.value("_id").toString();
+
+      if (!object.contains("name"))
+      {
+        emit error(QString("Unable to extract name."));
+        break;
+      }
+      QString name = object.value("name").toString();
+
+      collectionsMap[id] = name;
+    }
+    emit collections(collectionsMap);
+  }
+}
+
+GetMyUserRequest::GetMyUserRequest(QNetworkAccessManager* networkManager, const QString& girderUrl,
+  const QString& girderToken, QObject* parent)
+  : GirderRequest(networkManager, girderUrl, girderToken, parent)
+{
+}
+
+GetMyUserRequest::~GetMyUserRequest() = default;
+
+void GetMyUserRequest::send()
+{
+  QUrl url(QString("%1/user/me").arg(m_girderUrl));
+
+  QNetworkRequest request(url);
+  request.setRawHeader(QByteArray("Girder-Token"), m_girderToken.toUtf8());
+
+  auto reply = m_networkManager->get(request);
+  QObject::connect(reply, SIGNAL(finished()), this, SLOT(finished()));
+}
+
+void GetMyUserRequest::finished()
+{
+  unique_ptr_delete_later<QNetworkReply> reply(qobject_cast<QNetworkReply*>(this->sender()));
+  QByteArray bytes = reply->readAll();
+  if (reply->error())
+  {
+    emit error(handleGirderError(reply.get(), bytes), reply.get());
+  }
+  else
+  {
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(bytes.constData());
+
+    // There should only be one response
+    if (!jsonResponse.isObject())
+    {
+      emit error(QString("Invalid response to GetMyUserRequest."));
+      return;
+    }
+
+    const QJsonObject& jsonObject = jsonResponse.object();
+
+    QMap<QString, QString> myInfo;
+    if (!jsonObject.contains("login"))
+    {
+      emit error("Unable to extract login.");
+      return;
+    }
+    myInfo["login"] = jsonObject.value("login").toString();
+
+    if (!jsonObject.contains("_id"))
+    {
+      emit error("Unable to extract id.");
+      return;
+    }
+    myInfo["id"] = jsonObject.value("_id").toString();
+
+    emit myUser(myInfo);
+  }
+}
+
+} // end namespace
