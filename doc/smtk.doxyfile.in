@@ -686,6 +686,10 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk/operation" \
   "@SMTK_SOURCE_DIR@/smtk/resource" \
   "@SMTK_SOURCE_DIR@/smtk/extension/paraview" \
+  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/server" \
+  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/appcomponents" \
+  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/operators" \
+  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
   "@SMTK_SOURCE_DIR@/smtk/extension/qt" \
   "@SMTK_SOURCE_DIR@/smtk/extension/vtk" \
   "@SMTK_SOURCE_DIR@/smtk/io" \
@@ -699,6 +703,10 @@ INPUT                  = \
   "@SMTK_BINARY_DIR@/smtk/model" \
   "@SMTK_BINARY_DIR@/smtk/model/testing" \
   "@SMTK_BINARY_DIR@/smtk/extension/paraview" \
+  "@SMTK_BINARY_DIR@/smtk/extension/paraview/server" \
+  "@SMTK_BINARY_DIR@/smtk/extension/paraview/appcomponents" \
+  "@SMTK_BINARY_DIR@/smtk/extension/paraview/operators" \
+  "@SMTK_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
   "@SMTK_BINARY_DIR@/smtk/extension/qt" \
   "@SMTK_BINARY_DIR@/smtk/extension/vtk" \
   "@SMTK_BINARY_DIR@/smtk/remote" \

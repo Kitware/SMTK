@@ -4,7 +4,9 @@
     <!-- +1+ -->
     <AttDef Type="counter" BaseType="operator">
       <ItemDefinitions>
-        <ModelEntity Name="model" NumberOfRequiredValues="1"/>
+        <Component Name="model" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::model::Resource" Filter="model|anydim"/></Accepts>
+        </Component>
         <Int Name="count groups" NumberOfRequiredValues="1">
           <DefaultValue>0</DefaultValue>
         </Int>

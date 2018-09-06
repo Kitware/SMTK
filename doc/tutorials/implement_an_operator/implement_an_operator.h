@@ -1,7 +1,7 @@
 #ifndef __smtk_ex_CounterOperation_h
 #define __smtk_ex_CounterOperation_h
 
-#include "smtk/model/Operation.h"
+#include "smtk/operation/XMLOperation.h"
 
 #include <string>
 
@@ -9,21 +9,20 @@
 namespace ex
 {
 
-class CounterOperation : public smtk::model::Operator
+class CounterOperation : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(CounterOperation);
+  smtkTypeMacro(ex::CounterOperation);
   smtkCreateMacro(CounterOperation);
-  smtkSharedFromThisMacro(Operation);
-  smtkDeclareModelOperation();
+  smtkSharedFromThisMacro(smtk::operation::XMLOperation);
+  smtkSuperclassMacro(Operation);
   // ...
   // -- 1 --
 
   // ++ 2 ++
-  bool ableToOperate() override { return this->ensureSpecification(); }
-
 protected:
-  smtk::model::OperationResult operateInternal() override;
+  Result operateInternal() override;
+  const char* xmlDescription() const override;
   // -- 2 --
 };
 
