@@ -41,6 +41,7 @@
   */
 
 class vtkPVDataRepresentation;
+class vtkSMTKResource;
 
 class SMTKPVSERVEREXT_EXPORT vtkSMTKWrapper : public vtkObject
 {
@@ -103,6 +104,8 @@ protected:
   void FetchHardwareSelection(json& response);
   void AddResourceFilter(json& response);
   void RemoveResourceFilter(json& response);
+
+  vtkSMTKResource* GetVTKResource(vtkAlgorithm*);
 
   vtkPVDataRepresentation* Representation = nullptr;
   vtkAlgorithmOutput* ActiveResource;

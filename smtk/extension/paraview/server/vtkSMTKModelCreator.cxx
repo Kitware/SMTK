@@ -68,78 +68,18 @@ void vtkSMTKModelCreator::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os, indent);
   os << indent << "TypeName: " << this->TypeName << "\n";
   os << indent << "Parameters: " << this->Parameters << "\n";
-  os << indent << "ModelSource: " << this->ModelSource << "\n";
 }
 
-vtkModelMultiBlockSource* vtkSMTKModelCreator::GetConverter() const
+smtk::resource::ResourcePtr vtkSMTKModelCreator::GenerateResource() const
 {
-  return this->ModelSource.GetPointer();
-}
-
-smtk::resource::ResourcePtr vtkSMTKModelCreator::GetResource() const
-{
-  return std::static_pointer_cast<smtk::resource::Resource>(this->ModelSource->GetModelResource());
-}
-
-/// Generate polydata from an smtk::model with tessellation information.
-int vtkSMTKModelCreator::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
-{
-  vtkMultiBlockDataSet* entitySource = vtkMultiBlockDataSet::GetData(
-    outInfo, static_cast<int>(vtkModelMultiBlockSource::MODEL_ENTITY_PORT));
-
-  vtkMultiBlockDataSet* instanceSource = vtkMultiBlockDataSet::GetData(
-    outInfo, static_cast<int>(vtkModelMultiBlockSource::PROTOTYPE_PORT));
-
-  if (!entitySource || !instanceSource)
+  if (this->Resource && this->Wrapper)
   {
-    vtkErrorMacro("No output dataset");
-    return 0;
+    this->Wrapper->GetResourceManager()->remove(this->Resource);
   }
 
-  vtkMultiBlockDataSet* instancePlacement = vtkMultiBlockDataSet::GetData(
-    outInfo, static_cast<int>(vtkModelMultiBlockSource::INSTANCE_PORT));
-
-  if (!instancePlacement)
-  {
-    vtkErrorMacro("No output instance-placement dataset");
-    return 0;
-  }
-
-  if (!this->TypeName)
-  {
-    vtkErrorMacro("No type name specified.");
-    return 1;
-  }
-
-  if (!this->Parameters)
-  {
-    vtkErrorMacro("No parameters specified.");
-    return 1;
-  }
-
-  if (this->GetMTime() > this->ModelSource->GetMTime())
-  {
-    if (this->CreateModel())
-    {
-      this->ModelSource->Update();
-    }
-  }
-
-  entitySource->ShallowCopy(this->ModelSource->GetOutputDataObject(
-    static_cast<int>(vtkModelMultiBlockSource::MODEL_ENTITY_PORT)));
-  instancePlacement->ShallowCopy(this->ModelSource->GetOutputDataObject(
-    static_cast<int>(vtkModelMultiBlockSource::INSTANCE_PORT)));
-  instanceSource->ShallowCopy(this->ModelSource->GetOutputDataObject(
-    static_cast<int>(vtkModelMultiBlockSource::PROTOTYPE_PORT)));
-  return 1;
-}
-
-bool vtkSMTKModelCreator::CreateModel()
-{
   if (!this->TypeName || !this->Parameters)
   {
-    return false;
+    return smtk::resource::ResourcePtr();
   }
 
   smtk::resource::Manager::Ptr rsrcMgr;
@@ -156,13 +96,13 @@ bool vtkSMTKModelCreator::CreateModel()
 
   if (!operMgr)
   {
-    return false;
+    return smtk::resource::ResourcePtr();
   }
 
   auto oper = operMgr->create(std::string(this->TypeName));
   if (!oper)
   {
-    return false;
+    return smtk::resource::ResourcePtr();
   }
 
   json j;
@@ -173,7 +113,7 @@ bool vtkSMTKModelCreator::CreateModel()
   }
   catch (std::exception&)
   {
-    return false;
+    return smtk::resource::ResourcePtr();
   }
   auto parameters = oper->parameters();
   std::vector<smtk::attribute::ItemExpressionInfo> itemExpressionInfo;
@@ -184,44 +124,8 @@ bool vtkSMTKModelCreator::CreateModel()
   if (result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
-    return false;
+    return smtk::resource::ResourcePtr();
   }
 
-  auto rsrc = result->findResource("resource")->value(0);
-  auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
-  if (!modelRsrc)
-  {
-    vtkWarningMacro("Cannot access resource from succesful create.");
-    return false;
-  }
-
-  // If we have a resouce manager...
-  if (rsrcMgr)
-  {
-    // ... remove the previous resource if we had one.
-    auto oldRsrc = this->ModelSource->GetModelResource();
-    if (oldRsrc)
-    {
-      rsrcMgr->remove(oldRsrc);
-    }
-    // Add the resource we just read.
-    rsrcMgr->add(rsrc);
-  }
-
-  // Tell our multiblock source to generate VTK polydata for model/mesh entities.
-  this->ModelSource->SetModelResource(modelRsrc);
-
-  // Also, find the first model and tell the multiblock source to render only it.
-  // TODO: Either we need a separate representation for each model (which is
-  //       IMNSHO a bad idea) or we need to change the multiblock source to work
-  //       without a model. It currently generates tessellations but not all the
-  //       metadata required for color-by modes.
-  auto models =
-    modelRsrc->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
-  if (!models.empty())
-  {
-    this->ModelSource->SetModelEntityID(models.begin()->entity().toString().c_str());
-  }
-
-  return true;
+  return result->findResource("resource")->value(0);
 }

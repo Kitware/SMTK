@@ -38,26 +38,15 @@ public:
   vtkSetMacro(IncludePathToFile, bool);
   vtkGetMacro(IncludePathToFile, bool);
 
-  /// Return the VTK algorithm used to convert the SMTK attribute into a multiblock.
-  vtkTrivialProducer* GetConverter() const override;
-
   /// Return the SMTK resource that holds data read from \a FileName.
-  smtk::resource::ResourcePtr GetResource() const override;
+  smtk::resource::ResourcePtr GenerateResource() const override;
 
 protected:
   vtkSMTKAttributeReader();
   ~vtkSMTKAttributeReader() override;
 
-  int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
-
-  bool LoadFile();
-
   char* FileName;
   bool IncludePathToFile;
-  smtk::attribute::ResourcePtr AttributeResource;
-  vtkSmartPointer<vtkTable> Defs;
-  vtkNew<vtkTrivialProducer> AttributeSource;
 
 private:
   vtkSMTKAttributeReader(const vtkSMTKAttributeReader&) = delete;

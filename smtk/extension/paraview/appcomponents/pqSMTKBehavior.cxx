@@ -32,6 +32,7 @@
 #include "pqView.h"
 #include "vtkNew.h"
 #include "vtkSMParaViewPipelineControllerWithRendering.h"
+#include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyDefinitionManager.h"
 #include "vtkSMSessionProxyManager.h"
 #include "vtkSMSourceProxy.h"
@@ -109,8 +110,8 @@ std::string xmlForSMTKImporter(
   s << "      </Documentation>\n";
 
   s << R"(
-      <SubProxy command="SetResourceGenerator">
-        <Proxy name="ResourceGenerator"
+      <SubProxy command="SetVTKResource">
+        <Proxy name="Resource"
                proxygroup="smtk_internal_sources"
                proxyname="SMTKModelImporter">
         </Proxy>
@@ -289,18 +290,31 @@ pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr m
   return result;
 }
 
-pqSMTKResource* pqSMTKBehavior::getPVResource(smtk::resource::ResourcePtr mgr)
+pqSMTKResource* pqSMTKBehavior::getPVResource(smtk::resource::ResourcePtr resource)
 {
   pqSMTKResource* result = nullptr;
-  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKWrapper* mos, pqServer*) {
+  this->visitResourceManagersOnServers([&result, &resource](pqSMTKWrapper* mos, pqServer*) {
     pqSMTKResource* pvr;
-    if (mos && (pvr = mos->getPVResource(mgr)))
+    if (mos && (pvr = mos->getPVResource(resource)))
     {
       result = pvr;
       return true;
     }
     return false;
   });
+
+  // If no pipeline source is associated with the resource, we create one.
+  if (result == nullptr)
+  {
+    pqApplicationCore* pqCore = pqApplicationCore::instance();
+    pqServer* server = pqActiveObjects::instance().activeServer();
+    pqObjectBuilder* builder = pqCore->getObjectBuilder();
+
+    result = static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKResource", server));
+    vtkSMPropertyHelper(result->getProxy(), "Resource").Set(resource->id().toString().c_str());
+    result->getProxy()->UpdateVTKObjects();
+  }
+
   return result;
 }
 
@@ -321,7 +335,9 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
   auto app = pqApplicationCore::instance();
   if (!app)
   {
+#ifndef NDEBUG
     std::cout << "No PV application for SMTK!\n";
+#endif
     return;
   }
   pqObjectBuilder* builder = app->getObjectBuilder();
@@ -345,7 +361,9 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
 
 void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
 {
+#ifndef NDEBUG
   std::cout << "Removing rsrc mgr from server: " << remote << "\n\n";
+#endif
   auto entry = m_p->Remotes.find(remote);
   if (entry == m_p->Remotes.end())
   {

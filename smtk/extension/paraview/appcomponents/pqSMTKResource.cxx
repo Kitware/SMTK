@@ -14,7 +14,7 @@
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
-#include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
+#include "smtk/extension/paraview/server/vtkSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMTKSource.h"
 
 #include "smtk/attribute/Resource.h"
@@ -101,20 +101,19 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   //       works in built-in mode.
   smtk::resource::ResourcePtr rsrc;
   auto pxy = this->getProxy()->GetClientSideObject();
-  // std::cout << "get resource from " << pxy->GetClassName() << "\n";
   auto smtkRsrcRdr = vtkSMTKSource::SafeDownCast(pxy);
-  rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetResourceGenerator()->GetResource() : nullptr;
+  rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetVTKResource()->GetResource() : nullptr;
   if (rsrc)
   {
     return rsrc;
   }
-  auto smtkAttributeRdr = vtkSMTKAttributeReader::SafeDownCast(pxy);
-  rsrc = smtkAttributeRdr ? smtkAttributeRdr->GetResource() : nullptr;
+  auto smtkRsrc = vtkSMTKResource::SafeDownCast(pxy);
+  rsrc = smtkRsrc ? smtkRsrc->GetResource() : nullptr;
   if (rsrc)
   {
     return rsrc;
   }
-  // TODO: Handle meshes here.
+
   return rsrc;
 }
 

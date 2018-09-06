@@ -45,22 +45,12 @@ public:
   vtkGetStringMacro(ResourceName);
   vtkSetStringMacro(ResourceName);
 
-  /// Return the VTK algorithm used to convert the SMTK model into a multiblock.
-  vtkModelMultiBlockSource* GetConverter() const override;
-
   /// Return the SMTK resource that holds data imported from \a FileName.
-  smtk::resource::ResourcePtr GetResource() const override;
+  smtk::resource::ResourcePtr GenerateResource() const override;
 
 protected:
   vtkSMTKModelImporter();
   ~vtkSMTKModelImporter() override;
-
-  int RequestData(
-    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
-
-  bool LoadFile();
-
-  vtkNew<vtkModelMultiBlockSource> ModelSource;
 
   char* FileName;
   char* ResourceName;

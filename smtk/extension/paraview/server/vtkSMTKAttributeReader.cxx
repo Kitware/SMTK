@@ -37,7 +37,6 @@ vtkSMTKAttributeReader::vtkSMTKAttributeReader()
 {
   this->FileName = nullptr;
   this->IncludePathToFile = true;
-  this->Defs = vtkSmartPointer<vtkTable>::New();
   this->SetNumberOfOutputPorts(1);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
@@ -54,74 +53,29 @@ void vtkSMTKAttributeReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << "\n";
-  os << indent << "AttributeResource: " << this->AttributeResource << "\n";
   os << indent << "IncludePathToFile: " << this->IncludePathToFile << "\n";
 }
 
-vtkTrivialProducer* vtkSMTKAttributeReader::GetConverter() const
+smtk::resource::ResourcePtr vtkSMTKAttributeReader::GenerateResource() const
 {
-  return this->AttributeSource.GetPointer();
-}
-
-smtk::resource::ResourcePtr vtkSMTKAttributeReader::GetResource() const
-{
-  return std::static_pointer_cast<smtk::resource::Resource>(this->AttributeResource);
-}
-
-/// Generate polydata from an smtk::model with tessellation information.
-int vtkSMTKAttributeReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
-{
-  vtkMultiBlockDataSet* entitySource = vtkMultiBlockDataSet::GetData(outInfo, 0);
-
-  if (!this->FileName || !this->FileName[0])
+  if (this->Resource && this->Wrapper)
   {
-    // No filename is not really an error... we should just have an empty output.
-    static bool once = false;
-    if (!once)
-    {
-      once = true;
-      //vtkWarningMacro("No filename specified. This is your only warning.");
-    }
-    return 1;
+    this->Wrapper->GetResourceManager()->remove(this->Resource);
   }
+  auto resource = smtk::attribute::Resource::create();
+  resource->setLocation(this->FileName);
 
-  // if (this->GetMTime() > this->ModelSource->GetMTime())
+  smtk::io::AttributeReader rdr;
+  if (rdr.read(resource, this->FileName, this->IncludePathToFile, smtk::io::Logger::instance()))
   {
-    // Something changed. Probably the FileName.
-    this->LoadFile();
+    vtkErrorMacro("Errors encountered: " << smtk::io::Logger::instance().convertToString() << "\n");
+    vtkErrorMacro("Could not read \"" << this->FileName << "\"");
   }
-
-  this->AttributeSource->SetOutput(entitySource);
-
-  entitySource->SetNumberOfBlocks(1);
-  // entitySource->SetBlock(0, this->Defs);
-  return 1;
-}
-
-bool vtkSMTKAttributeReader::LoadFile()
-{
-  if (this->AttributeResource && this->Wrapper)
-  {
-    this->Wrapper->GetResourceManager()->remove(this->AttributeResource);
-  }
-  auto rsrc = smtk::attribute::Resource::create();
-  this->AttributeResource = rsrc;
-  rsrc->setLocation(this->FileName);
 
   if (this->Wrapper)
   {
-    this->Wrapper->GetResourceManager()->add(this->AttributeResource);
+    this->Wrapper->GetResourceManager()->add(resource);
   }
 
-  smtk::io::AttributeReader rdr;
-  if (rdr.read(rsrc, this->FileName, this->IncludePathToFile, smtk::io::Logger::instance()))
-  {
-    vtkErrorMacro("Errors encountered: " << smtk::io::Logger::instance().convertToString() << "\n");
-    this->AttributeResource = nullptr;
-    vtkErrorMacro("Could not read \"" << this->FileName << "\"");
-    return false;
-  }
-
-  return true;
+  return resource;
 }

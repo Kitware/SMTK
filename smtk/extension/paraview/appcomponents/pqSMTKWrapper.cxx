@@ -293,7 +293,7 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
         if (mbdsThing)
         {
           smtk::model::ResourcePtr mResource = std::dynamic_pointer_cast<smtk::model::Resource>(
-            smtkThing->GetResourceGenerator()->GetResource());
+            smtkThing->GetVTKResource()->GetResource());
           if (mResource)
           {
             //std::cout << "  selected model entities:";

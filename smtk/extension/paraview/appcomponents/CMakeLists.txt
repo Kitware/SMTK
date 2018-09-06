@@ -254,6 +254,10 @@ add_pqproxy_custom(proxyIfaces proxyIfaceSrcs
   XML_GROUP sources
   XML_NAME SMTKAttributeReader
 
+  TYPE pqSMTKResource
+  XML_GROUP sources
+  XML_NAME SMTKResource
+
   TYPE pqSMTKWrapper
   XML_GROUP smtk
   XML_NAME SMTKWrapper
