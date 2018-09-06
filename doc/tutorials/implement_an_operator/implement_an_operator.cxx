@@ -5,8 +5,10 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/Group.h"
@@ -34,13 +36,13 @@ namespace ex
 {
 
 // ++ 2 ++
-OperationResult CounterOperator::operateInternal()
+smtk::operation::XMLOperation::Result CounterOperation::operateInternal()
 {
   // Get the attribute holding parameter values:
-  OperationSpecification params = this->specification();
+  auto params = this->parameters();
 
   // Get the input model to be processed:
-  Model model = params->findReference("model")->valueAs<smtk::model::Entity>();
+  Model model = params->findComponent("model")->valueAs<smtk::model::Entity>();
 
   // Decide whether we should count cells or groups
   // of the model:
@@ -50,7 +52,7 @@ OperationResult CounterOperator::operateInternal()
   // our operation using a convenience method
   // provided by the Operation base class.
   // Our operation is simple; we always succeed.
-  OperationResult result = this->createResult(OPERATION_SUCCEEDED);
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   // Fetch the item to store our output:
   smtk::attribute::IntItemPtr cellCount = result->findInt("count");
@@ -61,39 +63,29 @@ OperationResult CounterOperator::operateInternal()
 }
 // -- 2 --
 
-} // namespace ex
-
 // ++ 3 ++
-// Implement methods from smtkDeclareModelOperation()
-// and provide an auto-init object for registering the
-// operator with the session.
-smtkImplementsModelOperation(
-  /* no export symbol */,       // Export symbol (none here)
-  ex::CounterOperation,         // The class name (include all namespaces)
-  ex_counter,                   // The "component" name (for auto-init)
-  "counter",                    // The user-printable operator name.
-  implement_an_operator_xml,    // An XML description (or NULL).
-  smtk::model::DefaultSession); // The modeling kernel this operator uses.
+// Implement virtual overrides from base class to handle registration.
+const char* CounterOperation::xmlDescription() const
+{
+  return implement_an_operator_xml;
+}
 // -- 3 --
+
+} // namespace ex
 
 void testOperation(Model model)
 {
-  // Get the default session for our model resource:
-  smtk::model::SessionPtr session = model.session().session();
-
-  // Ask the session to create an operator:
-  ex::CounterOperation::Ptr op =
-    smtk::dynamic_pointer_cast<ex::CounterOperation>(session->op("counter"));
+  auto op = ex::CounterOperation::create();
 
   op->ensureSpecification();
-  smtk::attribute::ReferenceItemPtr input = op->specification()->findReference("model");
-  input->setValue(model.component());
+  smtk::attribute::ReferenceItemPtr input = op->parameters()->findComponent("model");
+  input->setObjectValue(model.component());
 
   test(!!op, "Could not create operator.");
   test(op->operate()->findInt("count")->value() == 1,
     "Did not return the proper number of top-level cells.");
 
-  op->specification()->findInt("count groups")->setValue(1);
+  op->parameters()->findInt("count groups")->setValue(1);
   test(op->operate()->findInt("count")->value() == 0,
     "Did not return the proper number of top-level group.");
 }
