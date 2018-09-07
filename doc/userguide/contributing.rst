@@ -40,7 +40,7 @@ With that in mind:
   * simulation — aids to exporting simulation input decks in the smtkCore library
   * io — file and string I/O in the smtkCore library, a mix of XML and JSON
   * view — source for providing views of attributes and models in the smtkCore library
-  * bridge — source for additional libraries that bridge solid modeling kernels into SMTK
+  * session — source for additional libraries that session solid modeling kernels into SMTK
   * extensions — source for additional libraries that expose SMTK to other software
 
     * qt — widgets that allow presentation and editing of SMTK models and attributes

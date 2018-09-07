@@ -21,7 +21,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/polygon/Registrar.h"
+#include "smtk/session/polygon/Registrar.h"
 
 #include "smtk/common/Registry.h"
 
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     char* filename = argv[2];
     auto rsrcMgr = smtk::resource::Manager::create();
     auto operMgr = smtk::operation::Manager::create();
-    auto polygonRegistry = smtk::common::Registry<smtk::bridge::polygon::Registrar,
+    auto polygonRegistry = smtk::common::Registry<smtk::session::polygon::Registrar,
       smtk::resource::Manager, smtk::operation::Manager>(rsrcMgr, operMgr);
 
     auto rdr = operMgr->create<smtk::operation::ReadResource>();

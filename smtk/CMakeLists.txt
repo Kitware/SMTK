@@ -180,11 +180,11 @@ endif()
 add_subdirectory(extension)
 
 ################################################################################
-# Build model bridges
+# Build model sessions
 # Now that the main components of smtk have been built we can build
-# any custom model bridge sessions that the user has enabled.
+# any custom model session sessions that the user has enabled.
 ################################################################################
-add_subdirectory(bridge)
+add_subdirectory(session)
 
 ################################################################################
 # Build smtk default plugin initialization

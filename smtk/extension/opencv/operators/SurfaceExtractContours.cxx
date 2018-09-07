@@ -10,10 +10,10 @@
 
 #include "smtk/extension/opencv/operators/SurfaceExtractContours.h"
 
-#include "smtk/bridge/polygon/Resource.h"
-#include "smtk/bridge/polygon/Session.h"
-#include "smtk/bridge/polygon/internal/Model.h"
-#include "smtk/bridge/polygon/operators/CreateEdge.h"
+#include "smtk/session/polygon/Resource.h"
+#include "smtk/session/polygon/Session.h"
+#include "smtk/session/polygon/internal/Model.h"
+#include "smtk/session/polygon/operators/CreateEdge.h"
 
 #include "smtk/io/Logger.h"
 
@@ -38,7 +38,7 @@ using namespace smtk::model;
 
 namespace smtk
 {
-namespace bridge
+namespace session
 {
 
 namespace polygon
@@ -69,7 +69,7 @@ bool SurfaceExtractContours::ableToOperate()
 namespace
 {
 
-int internal_createEdge(smtk::bridge::polygon::CreateEdge::Ptr edgeOp,
+int internal_createEdge(smtk::session::polygon::CreateEdge::Ptr edgeOp,
   smtk::attribute::AttributePtr opParams, smtk::model::EntityRefArray& createdEds,
   const smtk::model::Model& model, smtk::io::Logger& logger)
 {
@@ -112,8 +112,8 @@ SurfaceExtractContours::Result SurfaceExtractContours::operateInternal()
     this->parameters()->associations()->valueAs<smtk::model::Entity>();
   smtk::model::Model model = aux.owningModel();
 
-  smtk::bridge::polygon::Resource::Ptr resource =
-    std::static_pointer_cast<smtk::bridge::polygon::Resource>(model.component()->resource());
+  smtk::session::polygon::Resource::Ptr resource =
+    std::static_pointer_cast<smtk::session::polygon::Resource>(model.component()->resource());
 
   SessionPtr opsession = resource->polygonSession();
 
@@ -152,6 +152,6 @@ const char* SurfaceExtractContours::xmlDescription() const
 }
 
 } // namespace polygon
-} // namespace bridge
+} // namespace session
 
 } // namespace smtk

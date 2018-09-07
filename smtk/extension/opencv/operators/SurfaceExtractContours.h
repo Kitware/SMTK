@@ -11,12 +11,12 @@
 #ifndef __smtk_extension_opencv_SurfaceExtractContours_h
 #define __smtk_extension_opencv_SurfaceExtractContours_h
 
-#include "smtk/bridge/polygon/Operation.h"
 #include "smtk/extension/opencv/Exports.h"
+#include "smtk/session/polygon/Operation.h"
 
 namespace smtk
 {
-namespace bridge
+namespace session
 {
 namespace polygon
 {
@@ -45,7 +45,7 @@ protected:
 };
 
 } // namespace polygon
-} // namespace bridge
+} // namespace session
 } // namespace smtk
 
 #endif

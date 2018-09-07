@@ -137,7 +137,7 @@ namespace io
 /**\brief Sessions to solid modeling kernels.
   *
   */
-namespace bridge
+namespace session
 {
 /**\brief A session using the Common Geometry Module (Argonne).
   *

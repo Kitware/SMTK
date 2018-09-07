@@ -27,7 +27,7 @@ import smtk
 import smtk.attribute
 import smtk.model
 import smtk.model.remus
-import smtk.bridge.polygon
+import smtk.session.polygon
 import smtk.testing
 
 

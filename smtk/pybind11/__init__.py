@@ -17,7 +17,7 @@
 import site
 
 __all__ = ('common', 'attribute', 'extension', 'model',
-           'mesh', 'io', 'bridge', 'simulation')
+           'mesh', 'io', 'session', 'simulation')
 
 
 def wrappingProtocol():

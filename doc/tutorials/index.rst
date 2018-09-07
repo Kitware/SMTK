@@ -13,6 +13,6 @@ requiring much theory.
 
    cxx_first_steps/index.rst
    python_first_steps/index.rst
-   add_a_bridge/index.rst
+   add_a_session/index.rst
    implement_an_operator/index.rst
    debugging_python_tests/index.rst

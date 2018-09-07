@@ -1,7 +1,7 @@
 Session: Discrete
 -----------------
 
-SMTK has a session type named *discrete* that bridges a VTK-based discrete modeling kernel.
+SMTK has a session type named *discrete* that sessions a VTK-based discrete modeling kernel.
 This kernel provides access to 2-D and 3-D polygonal and polyhedral models,
 with operators that allow model edges and faces to be split or merged.
 

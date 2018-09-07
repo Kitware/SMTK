@@ -221,7 +221,7 @@ smtk::model::BitFlags Definition::associationMask() const
     const auto entries = accepts->acceptableEntries();
     for (auto entry : entries)
     {
-      // FIXME: Handle "derived" types like smtk::bridge::polygon::Resource
+      // FIXME: Handle "derived" types like smtk::session::polygon::Resource
       if (entry.first == "smtk::model::Resource")
       {
         smtk::model::BitFlags tmp = smtk::model::Entity::specifierStringToFlag(entry.second);

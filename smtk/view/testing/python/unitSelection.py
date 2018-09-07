@@ -11,7 +11,7 @@
 #=============================================================================
 import smtk
 import smtk.attribute
-import smtk.bridge.polygon
+import smtk.session.polygon
 import smtk.testing
 import smtk.view
 
@@ -31,7 +31,7 @@ class TestSelection(smtk.testing.TestCase):
         self.mgr = smtk.model.Resource.create()
         fpath = [smtk.testing.DATA_DIR, 'model',
                  '2d', 'smtk', 'epic-trex-drummer.smtk']
-        op = smtk.bridge.polygon.LegacyRead.create()
+        op = smtk.session.polygon.LegacyRead.create()
         op.parameters().find('filename').setValue(os.path.join(*fpath))
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):

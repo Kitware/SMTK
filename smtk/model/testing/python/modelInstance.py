@@ -11,7 +11,7 @@
 #=============================================================================
 import smtk
 import smtk.attribute
-import smtk.bridge.polygon
+import smtk.session.polygon
 import smtk.model
 import smtk.testing
 import sys
@@ -24,7 +24,7 @@ class TestEntityInstances(smtk.testing.TestCase):
         import os
         fpath = [smtk.testing.DATA_DIR, 'model',
                  '2d', 'smtk', 'epic-trex-drummer.smtk']
-        op = smtk.bridge.polygon.LegacyRead.create()
+        op = smtk.session.polygon.LegacyRead.create()
         op.parameters().find('filename').setValue(os.path.join(*fpath))
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):

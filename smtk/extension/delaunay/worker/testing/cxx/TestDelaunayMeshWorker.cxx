@@ -19,11 +19,11 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
-#include "smtk/bridge/polygon/Session.h"
-#include "smtk/bridge/polygon/operators/Read.h"
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/SaveJSON.h"
 #include "smtk/model/Resource.h"
+#include "smtk/session/polygon/Session.h"
+#include "smtk/session/polygon/operators/Read.h"
 
 #include <fstream>
 #include <iostream>
@@ -101,7 +101,7 @@ namespace
 smtk::model::ResourcePtr create_polygon_model(const std::string file_path)
 {
   // Create an import operator
-  smtk::bridge::polygon::Read::Ptr readOp = smtk::bridge::polygon::Read::create();
+  smtk::session::polygon::Read::Ptr readOp = smtk::session::polygon::Read::create();
   if (!readOp)
   {
     std::cerr << "No read operator\n";
@@ -109,9 +109,9 @@ smtk::model::ResourcePtr create_polygon_model(const std::string file_path)
   }
 
   readOp->parameters()->findFile("filename")->setValue(file_path.c_str());
-  smtk::bridge::polygon::Read::Result result = readOp->operate();
+  smtk::session::polygon::Read::Result result = readOp->operate();
   if (result->findInt("outcome")->value() !=
-    static_cast<int>(smtk::bridge::polygon::Read::Outcome::SUCCEEDED))
+    static_cast<int>(smtk::session::polygon::Read::Outcome::SUCCEEDED))
   {
     std::cerr << "Could not read smtk model!\n";
     return smtk::model::ResourcePtr();

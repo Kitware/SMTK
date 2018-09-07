@@ -1,7 +1,7 @@
 Session: Polygon
 ----------------
 
-SMTK has a session type named *polygon* that bridges Boost.polygon_'s modeling kernel.
+SMTK has a session type named *polygon* that sessions Boost.polygon_'s modeling kernel.
 This kernel provides access to 2-D polygonal models,
 with operators that allow model edges and faces to be split or merged
 as well as boolean operations and Voronoi diagram computation.

@@ -13,9 +13,9 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/discrete/Resource.h"
-#include "smtk/bridge/discrete/Session.h"
-#include "smtk/bridge/discrete/operators/ImportOperation.h"
+#include "smtk/session/discrete/Resource.h"
+#include "smtk/session/discrete/Session.h"
+#include "smtk/session/discrete/operators/ImportOperation.h"
 
 #include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
@@ -40,7 +40,7 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::bridge::discrete::Resource::Ptr create_discrete_mesh_model()
+smtk::session::discrete::Resource::Ptr create_discrete_mesh_model()
 {
   std::string file_path(data_root);
   file_path += "/mesh/2d/test2D.2dm";
@@ -49,23 +49,23 @@ smtk::bridge::discrete::Resource::Ptr create_discrete_mesh_model()
   std::ifstream file(file_path.c_str());
   if (!file.good())
   {
-    return smtk::bridge::discrete::Resource::Ptr();
+    return smtk::session::discrete::Resource::Ptr();
   }
 
   file.close();
 
-  smtk::bridge::discrete::ImportOperation::Ptr op =
-    smtk::bridge::discrete::ImportOperation::create();
+  smtk::session::discrete::ImportOperation::Ptr op =
+    smtk::session::discrete::ImportOperation::create();
 
   op->parameters()->findFile("filename")->setValue(file_path.c_str());
-  smtk::bridge::discrete::ImportOperation::Result result = op->operate();
+  smtk::session::discrete::ImportOperation::Result result = op->operate();
   if (result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
     std::cout << "Import 2dm Failed!" << std::endl;
   }
 
-  return std::dynamic_pointer_cast<smtk::bridge::discrete::Resource>(
+  return std::dynamic_pointer_cast<smtk::session::discrete::Resource>(
     result->findResource("resource")->value());
 }
 
@@ -94,7 +94,7 @@ int UnitTestExtractOrderedTessellation(int, char** const)
 {
   smtk::model::EntityRef eRef;
   smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-  smtk::bridge::discrete::Resource::Ptr resource = create_discrete_mesh_model();
+  smtk::session::discrete::Resource::Ptr resource = create_discrete_mesh_model();
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);

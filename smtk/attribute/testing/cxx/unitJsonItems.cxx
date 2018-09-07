@@ -34,7 +34,7 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
-#include "smtk/bridge/polygon/Registrar.h"
+#include "smtk/session/polygon/Registrar.h"
 
 #include "smtk/common/Registry.h"
 
@@ -79,7 +79,7 @@ int unitJsonItems(int argc, char* argv[])
     smtk::operation::Manager>(rsrcMgr, operMgr);
   auto opRegistry = smtk::common::Registry<smtk::operation::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
-  auto polyRegistry = smtk::common::Registry<smtk::bridge::polygon::Registrar,
+  auto polyRegistry = smtk::common::Registry<smtk::session::polygon::Registrar,
     smtk::resource::Manager, smtk::operation::Manager>(rsrcMgr, operMgr);
 
   smtk::resource::ResourceArray rsrcs;

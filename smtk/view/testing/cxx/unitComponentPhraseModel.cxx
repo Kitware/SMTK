@@ -11,7 +11,7 @@
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/SubphraseGenerator.h"
 
-#include "smtk/bridge/polygon/Registrar.h"
+#include "smtk/session/polygon/Registrar.h"
 
 #include "smtk/common/Registry.h"
 
@@ -95,15 +95,15 @@ int unitComponentPhraseModel(int argc, char* argv[])
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::common::Registry<smtk::bridge::polygon::Registrar, smtk::resource::Manager,
+  auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
 
   auto phraseModel = smtk::view::ComponentPhraseModel::create();
   std::multimap<std::string, std::string> filters;
   filters.insert(
-    std::make_pair(std::string("smtk::bridge::polygon::Resource"), std::string("edge")));
+    std::make_pair(std::string("smtk::session::polygon::Resource"), std::string("edge")));
   filters.insert(
-    std::make_pair(std::string("smtk::bridge::polygon::Resource"), std::string("face")));
+    std::make_pair(std::string("smtk::session::polygon::Resource"), std::string("face")));
   phraseModel->setComponentFilters(filters);
   phraseModel->addSource(rsrcMgr, operMgr);
   smtk::resource::ResourceArray rsrcs;
@@ -112,7 +112,7 @@ int unitComponentPhraseModel(int argc, char* argv[])
     auto rdr = operMgr->create<smtk::operation::ReadResource>();
     rdr->parameters()->findFile("filename")->setValue(argv[i]);
     rdr->operate();
-    // rsrcs.push_back(rsrcMgr->read<smtk::bridge::polygon::Resource>(argv[1]));
+    // rsrcs.push_back(rsrcMgr->read<smtk::session::polygon::Resource>(argv[1]));
   }
   smtk::resource::ResourcePtr rsrc = nullptr;
   std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),

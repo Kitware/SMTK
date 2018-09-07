@@ -26,7 +26,7 @@ of a separate tutorial.
 The first thing you must do when creating your own session is
 to implement a subclass of :smtk:`smtk::model::Session`:
 
-.. literalinclude:: ../../../smtk/bridge/exodus/Session.h
+.. literalinclude:: ../../../smtk/session/exodus/Session.h
    :start-after: // ++ 1 ++
    :end-before: // -- 1 --
 
@@ -87,7 +87,7 @@ In the :file:`Session.cxx` file, you will see that the :smtk:`smtkDeclareModelin
 has a partner macro named :smtk:`smtkImplementsModelingKernel`, placed at the bottom
 of the file **outside of any namespaces**:
 
-.. literalinclude:: ../../../smtk/bridge/exodus/Session.cxx
+.. literalinclude:: ../../../smtk/session/exodus/Session.cxx
    :start-after: // ++ 1 ++
    :end-before: // -- 1 --
 
@@ -111,7 +111,7 @@ This macro takes 6 parameters:
    which simply encodes the contents of a JSON file as a C string for your convenience.
    The Exodus session has the following description:
 
-   .. literalinclude:: ../../../smtk/bridge/exodus/Session.json
+   .. literalinclude:: ../../../smtk/session/exodus/Session.json
 
    At a minimum, the JSON dictionary must include
 
