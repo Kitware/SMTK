@@ -28,6 +28,10 @@ vtkSMTKSource::vtkSMTKSource()
   : VTKResource(nullptr)
 {
   this->SetNumberOfInputPorts(0);
+
+  // Set the number of output ports to be the maximum of the number of output
+  // ports for the available converters (in this case, vtkModelMultiBlockSource).
+  this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 }
 
 vtkSMTKSource::~vtkSMTKSource()
@@ -61,8 +65,6 @@ int vtkSMTKSource::FillOutputPortInformation(int port, vtkInformation* info)
     vtkDebugMacro("Resource is not set.");
     return 0;
   }
-
-  this->SetNumberOfOutputPorts(this->VTKResource->GetNumberOfOutputPorts());
 
   vtkInformation* rinfo = this->VTKResource->GetOutputPortInformation(port);
   info->CopyEntry(rinfo, vtkDataObject::DATA_TYPE_NAME());
