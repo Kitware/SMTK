@@ -620,8 +620,8 @@ void vtkSMTKModelRepresentation::UpdateDisplayAttributesFromSelection(
     {
       continue;
     }
-    nrme->SetBlockVisibility(rit->second, entry.second.m_visibility);
-    nrmg->SetBlockVisibility(rit->second, entry.second.m_visibility);
+    nrme->SetBlockVisibility(rit->second, !!entry.second.m_visibility);
+    nrmg->SetBlockVisibility(rit->second, !!entry.second.m_visibility);
     // We don't need to set visibility on seda/sgda here since
     // it will always be false (no selection being processed yet).
   }
