@@ -76,6 +76,9 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   this->OperationManager->registerResourceManager(this->ResourceManager);
   smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->OperationManager);
 
+  // NB: this->Selection may never be overwritten with a different instance
+  //     of smtk::view::Selection once a wrapper is created; consumers of the
+  //     wrapper assume it is constant, will add observers, etc..
   this->Selection = smtk::view::Selection::create();
   this->Selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
   this->SelectedValue = this->Selection->findOrCreateLabeledValue("selected");

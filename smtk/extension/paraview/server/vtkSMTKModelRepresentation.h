@@ -46,10 +46,11 @@ class vtkTexture;
  *
  *  Input data arrives through 3 ports:
  *
- *          Input                      Mapper        Actor
- *    - Port 0: Model entities    |  EntityMapper | Entities
- *    - Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities
- *    - Port 2: Glyph points      |  GlyphMapper  | GlyphEntities
+ *  |       Input                 |    Mapper     |  Actor         |
+ *  | :-------------------------- | :------------ | :------------- |
+ *  |   Port 0: Model entities    |  EntityMapper | Entities       |
+ *  |   Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities  |
+ *  |   Port 2: Glyph points      |  GlyphMapper  | GlyphEntities  |
  *
  *  vtkSMSMTKModelRepresentationProxy sets certain properties used as mapper
  *  inputs (GlyphPrototypes and GlyphPoints).
@@ -99,8 +100,15 @@ public:
   struct State
   {
     int m_visibility;
-    vtkSmartPointer<vtkDataObject> m_data;
   };
+
+  /// A map from component UUIDs to user-provided state
+  using ComponentStateMap = std::map<smtk::common::UUID, State>;
+  /// A map from UUIDs to vtkDataObjects rendered by this representation (across all its actors)
+  using RenderableDataMap = std::map<smtk::common::UUID, vtkDataObject*>;
+  /// The type of a function used to update display attributes based on selections.
+  using StyleFromSelectionFunction =
+    std::function<bool(smtk::view::SelectionPtr, RenderableDataMap&, vtkSMTKModelRepresentation*)>;
 
   //@{
   /**
@@ -169,10 +177,25 @@ public:
   void RemoveBlockOpacities();
   //@}
 
+  /*!\brief Selection/highlighting appearance.
+   */
   //@{
+  /// Apply the \a selectionValue to the given \a data.
+  ///
+  /// A \a selectionValue of -1 indicates that both the unselected and selected
+  /// blocks corresponding to \a data should be hidden.
+  //
+  /// A \a selectionValue of 0 indicates the unselected block should be shown.
+  //
+  /// A \a selectionValue larger than 0 indicates the selected block should be
+  /// shown and colored according to \a selectionValue.
+  void SetSelectedState(vtkDataObject* data, int selectionValue, bool isGlyph);
+  //@}
+
   /**
    * Block properties for instance placements (Port 2: Glyph Points).
    */
+  //@{
   void SetInstanceVisibility(unsigned int index, bool visible);
   bool GetInstanceVisibility(unsigned int index) const;
   void RemoveInstanceVisibility(unsigned int index, bool);
@@ -225,6 +248,11 @@ public:
    */
   void SetColorBy(const char* type);
 
+  /// This method is used internally to notify the representation
+  /// to rebbuild display properties in response to a change in the
+  /// SMTK selection. You should never call it yourself.
+  void SelectionModified();
+
   /**
    * Internal attributes are set through color block proxy properties.
    */
@@ -237,7 +265,32 @@ public:
   void SetResource(smtk::resource::ResourcePtr res);
 
   void GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata);
-  bool SetEntityVisibility(smtk::model::EntityPtr ent, bool visible);
+  bool SetEntityVisibility(smtk::resource::PersistentObjectPtr ent, bool visible);
+
+  /**\brief Provide a function that alters a representation's appearance based on a selection.
+    *
+    * This is used to update block display attributes (per-block color, visibility,
+    * and opacity) on all of the representation's actors based on the active selection.
+    * This function is not called from within a selection's observer callback;
+    * instead it is called the next time the representation is about to be rendered.
+    * (This way, representations which are not visible do no work maintaining visual properties.)
+    *
+    * This function is never null; if SetSelectionStyle() is passed a null pointer,
+    * then the default handler is used.
+    *
+    * The default value of this function is vtkSMTKModelRepresentation::ApplyDefaultStyle().
+    */
+  void SetSelectionStyle(StyleFromSelectionFunction);
+
+  /// The default selection-style function (i.e., the default value of ApplyStyle).
+  static bool ApplyDefaultStyle(
+    smtk::view::SelectionPtr seln, RenderableDataMap& renderables, vtkSMTKModelRepresentation* rep);
+
+  /// Return the map from persistent-object UUID to user-specified state.
+  ///
+  /// This is read only. If you want to modify component state,
+  /// call SetEntityVisibility().
+  const ComponentStateMap& GetComponentState() const { return this->ComponentState; }
 
 protected:
   vtkSMTKModelRepresentation();
@@ -248,6 +301,9 @@ protected:
   void SetOutputExtent(vtkAlgorithmOutput* output, vtkInformation* inInfo);
   void ConfigureGlyphMapper(vtkGlyph3DMapper* mapper);
 
+  void UpdateRenderableData(vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData);
+  void UpdateDisplayAttributesFromSelection(
+    vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData);
   void UpdateSelection(
     vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor);
   vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
@@ -305,9 +361,6 @@ protected:
     vtkDataObject* dataObject, double bounds[6], vtkCompositeDataDisplayAttributes* cdAttributes);
   //@}
 
-  /// Update ComponentState from the mapper per-block properties.
-  void UpdateState();
-
   /**\brief Provides access to the SMTK selection and to resource components.
     *
     * The selection is used to change the visual style of entities.
@@ -316,6 +369,8 @@ protected:
     * + in certain coloring modes, such as when coloring by volume.
     */
   vtkSMTKWrapper* Wrapper;
+  /// If Wrapper is non-null, SelectionObserver is the handle of an observer of Wrapper->GetSelection().
+  int SelectionObserver;
   /**
    * Provides access to entities in the model. This is useful when coloring by
    * certain modes (e.g. in order to query the color of a volume with a given UUID).
@@ -323,7 +378,7 @@ protected:
   smtk::resource::ResourcePtr Resource;
 
   /// Map from component ids to their state (which is currently only visibility, but may be expanded)
-  std::map<smtk::common::UUID, State> ComponentState;
+  ComponentStateMap ComponentState;
 
   double DataBounds[6];
   int Representation = SURFACE;
@@ -374,6 +429,20 @@ protected:
   std::unordered_map<unsigned int, bool> InstanceVisibilities;
   std::unordered_map<unsigned int, std::array<double, 3> > InstanceColors;
   //@}
+
+  /// Hold a map of renderable objects whose style is altered by an SMTK selection.
+  RenderableDataMap RenderableData;
+  /// Timestamp for when RenderableData was last updated
+  vtkTimeStamp RenderableTime;
+  /// Timestamp for when the SMTK application Selection was last modified.
+  vtkTimeStamp SelectionTime;
+  /// Timestamp for when highlighting styles related to the selection were last applied.
+  vtkTimeStamp ApplyStyleTime;
+
+  /// A function that, given (1) a selected resource or component,
+  /// and (2) the selection value; updates the display attributes
+  /// for associated RenderableData.
+  StyleFromSelectionFunction ApplyStyle;
 
 private:
   vtkSMTKModelRepresentation(const vtkSMTKModelRepresentation&) = delete;
