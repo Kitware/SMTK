@@ -24,6 +24,8 @@
 #include "vtkSMProxyDefinitionManager.h"
 #include "vtkSMSessionProxyManager.h"
 
+#include <functional>
+
 // We use either STL regex or Boost regex, depending on support. These flags
 // correspond to the equivalent logic used to determine the inclusion of Boost's
 // regex library.
@@ -84,11 +86,11 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
 std::string xmlForSMTKImporter(
   const std::string& resource, const std::string& extensions, const std::string& description)
 {
-  static int i = 0;
+  std::size_t hash = std::hash<std::string>{}(resource + description);
   std::stringstream s;
   s << "<ServerManagerConfiguration>\n";
   s << "  <ProxyGroup name=\"sources\">\n";
-  s << "    <SourceProxy name=\"SMTKModelImporter_" << i++ << " \" class=\"vtkSMTKSource\" ";
+  s << "    <SourceProxy name=\"SMTKModelImporter_" << hash << " \" class=\"vtkSMTKSource\" ";
   s << "label=\"SMTK importer for " << description << " into " << resource << "\">\n";
   s << "      <Documentation>\n";
   s << "        short_help=\"Import a " << description << " as an SMTK " << resource << ".\"\n";
