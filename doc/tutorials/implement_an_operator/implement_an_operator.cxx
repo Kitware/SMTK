@@ -77,7 +77,6 @@ void testOperation(Model model)
 {
   auto op = ex::CounterOperation::create();
 
-  op->ensureSpecification();
   smtk::attribute::ReferenceItemPtr input = op->parameters()->findComponent("model");
   input->setObjectValue(model.component());
 

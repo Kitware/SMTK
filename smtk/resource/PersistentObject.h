@@ -47,6 +47,19 @@ public:
   /// Return the name of the object - by default it will return the UUID but that can be overriden
   virtual std::string name() const;
 
+  /// Attempt to cast this object to a subclass.
+  template <typename T>
+  typename T::Ptr as()
+  {
+    return std::dynamic_pointer_cast<T>(shared_from_this());
+  }
+  /// Attempt to cast this object to a subclass.
+  template <typename T>
+  typename T::ConstPtr as() const
+  {
+    return std::dynamic_pointer_cast<const T>(shared_from_this());
+  }
+
 protected:
   PersistentObject();
 };

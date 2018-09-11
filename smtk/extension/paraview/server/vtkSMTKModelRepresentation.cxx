@@ -61,46 +61,37 @@ void ColorBlockAsEntity(vtkCompositePolyDataMapper2* mapper, vtkDataObject* bloc
   atts->SetBlockColor(block, color.data());
 }
 
-static void AddEntityVisibilities(vtkCompositeDataDisplayAttributes* attr,
-  std::map<smtk::common::UUID, vtkSMTKModelRepresentation::State>& visdata)
+void AddRenderables(
+  vtkMultiBlockDataSet* data, vtkSMTKModelRepresentation::RenderableDataMap& renderables)
 {
-  if (!attr)
+  if (!data)
   {
     return;
   }
-
-  attr->VisitVisibilities([&visdata](vtkDataObject* obj, bool vis) {
-    if (!obj)
-      return true;
-
-    auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(obj->GetInformation());
-    if (uid)
+  auto mbit = data->NewTreeIterator();
+  mbit->VisitOnlyLeavesOn();
+  for (mbit->GoToFirstItem(); !mbit->IsDoneWithTraversal(); mbit->GoToNextItem())
+  {
+    auto obj = mbit->GetCurrentDataObject();
+    auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(mbit->GetCurrentMetaData());
+    if (!obj || !uid)
     {
-      auto it = visdata.find(uid);
-      if (it == visdata.end())
-      {
-        vtkSMTKModelRepresentation::State value;
-        value.m_data = obj;
-        value.m_visibility = (vis ? 1 : 0);
-        visdata[uid] = value;
-      }
-      else
-      {
-        it->second.m_visibility |= vis ? 1 : 0; // visibility in any mapper is visibility.
-      }
+      continue;
     }
-    return true;
-  });
+    renderables[uid] = obj;
+  }
+  mbit->Delete();
 }
-}
+
+} // anonymous namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 vtkStandardNewMacro(vtkSMTKModelRepresentation);
-vtkCxxSetObjectMacro(vtkSMTKModelRepresentation, Wrapper, vtkSMTKWrapper);
 
 vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   : Superclass()
   , Wrapper(nullptr)
+  , SelectionObserver(-1)
   , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , EntityCacheKeeper(vtkSmartPointer<vtkPVCacheKeeper>::New())
@@ -110,12 +101,16 @@ vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   , SelectedEntities(vtkSmartPointer<vtkActor>::New())
   , GlyphEntities(vtkSmartPointer<vtkActor>::New())
   , SelectedGlyphEntities(vtkSmartPointer<vtkActor>::New())
+  , ApplyStyle(ApplyDefaultStyle)
 {
   this->SetupDefaults();
   this->SetNumberOfInputPorts(3);
 }
 
-vtkSMTKModelRepresentation::~vtkSMTKModelRepresentation() = default;
+vtkSMTKModelRepresentation::~vtkSMTKModelRepresentation()
+{
+  this->SetWrapper(nullptr);
+}
 
 void vtkSMTKModelRepresentation::SetupDefaults()
 {
@@ -133,10 +128,8 @@ void vtkSMTKModelRepresentation::SetupDefaults()
 
   this->Entities->SetMapper(this->EntityMapper);
   this->SelectedEntities->SetMapper(this->SelectedEntityMapper);
-  this->SelectedEntities->GetProperty()->SetOpacity(0.6);
   this->GlyphEntities->SetMapper(this->GlyphMapper);
   this->SelectedGlyphEntities->SetMapper(this->SelectedGlyphMapper);
-  this->SelectedGlyphEntities->GetProperty()->SetOpacity(0.6);
 
   // Share vtkProperty between model mappers
   this->Property = this->Entities->GetProperty();
@@ -202,17 +195,6 @@ bool vtkSMTKModelRepresentation::GetEntityBounds(
     }
   }
   return false;
-}
-
-void vtkSMTKModelRepresentation::UpdateState()
-{
-  this->ComponentState.clear();
-  AddEntityVisibilities(
-    this->EntityMapper->GetCompositeDataDisplayAttributes(), this->ComponentState);
-  AddEntityVisibilities(
-    this->SelectedEntityMapper->GetCompositeDataDisplayAttributes(), this->ComponentState);
-  AddEntityVisibilities(this->GlyphMapper->GetBlockAttributes(), this->ComponentState);
-  AddEntityVisibilities(this->SelectedGlyphMapper->GetBlockAttributes(), this->ComponentState);
 }
 
 int vtkSMTKModelRepresentation::RequestData(
@@ -300,53 +282,24 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     // this class.
     auto producerPort = vtkPVRenderView::GetPieceProducer(inInfo, this, 0);
     this->EntityMapper->SetInputConnection(0, producerPort);
+    this->SelectedEntityMapper->SetInputConnection(0, producerPort);
     auto producer = producerPort->GetProducer();
     auto data = producer->GetOutputDataObject(vtkModelMultiBlockSource::MODEL_ENTITY_PORT);
     this->UpdateColoringParameters(data);
     this->UpdateRepresentationSubtype();
 
-    // Update selected entities
-    // FIXME Selection should only update if it has changed
-    auto multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
-    if (multiBlock)
-    {
-      // TODO: Ugly and expensive. We hold on to tessellations after our input is gone.
-      auto mbit = multiBlock->NewTreeIterator();
-      mbit->VisitOnlyLeavesOn();
-      for (mbit->GoToFirstItem(); !mbit->IsDoneWithTraversal(); mbit->GoToNextItem())
-      {
-        auto obj = mbit->GetCurrentDataObject();
-        auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(mbit->GetCurrentMetaData());
-        if (!obj || !uid)
-        {
-          continue;
-        }
-        auto stit = this->ComponentState.find(uid);
-        if (stit == this->ComponentState.end())
-        {
-          stit = this->ComponentState.insert(std::make_pair(uid, State())).first;
-          stit->second.m_visibility = 1;
-        }
-        stit->second.m_data = obj;
-      }
-      mbit->Delete();
-
-      this->SelectedEntityMapper->SetInputConnection(0, producerPort);
-      auto attr = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
-      this->UpdateSelection(multiBlock, attr, this->SelectedEntities);
-    }
-
-    // Update selected glyphs
-    // FIXME Selection should only update if it has changed
+    // Entities
+    auto multiblockModel = vtkMultiBlockDataSet::SafeDownCast(data);
+    // Glyphs
     data = producer->GetNumberOfOutputPorts() > 1
       ? producer->GetOutputDataObject(vtkModelMultiBlockSource::INSTANCE_PORT)
       : nullptr;
-    multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
-    if (multiBlock)
-    {
-      auto attr = this->SelectedGlyphMapper->GetBlockAttributes();
-      this->UpdateSelection(multiBlock, attr, this->SelectedGlyphEntities);
-    }
+    auto multiblockInstance = vtkMultiBlockDataSet::SafeDownCast(data);
+
+    // If the input has changed, update the map of polydata pointers in RenderableData:
+    this->UpdateRenderableData(multiblockModel, multiblockInstance);
+    // If the selection has changed, update the visual properties of blocks:
+    this->UpdateDisplayAttributesFromSelection(multiblockModel, multiblockInstance);
   }
 
   return 1;
@@ -440,7 +393,8 @@ void vtkSMTKModelRepresentation::GetEntityVisibilities(std::map<smtk::common::UU
   }
 }
 
-bool vtkSMTKModelRepresentation::SetEntityVisibility(smtk::model::EntityPtr ent, bool visible)
+bool vtkSMTKModelRepresentation::SetEntityVisibility(
+  smtk::resource::PersistentObjectPtr ent, bool visible)
 {
   bool didChange = false;
   if (!ent || !ent->id())
@@ -461,22 +415,68 @@ bool vtkSMTKModelRepresentation::SetEntityVisibility(smtk::model::EntityPtr ent,
   if (!!csit->second.m_visibility != visible || didChange)
   {
     csit->second.m_visibility = (visible ? 1 : 0);
-    if (csit->second.m_data)
+    didChange = true;
+    auto dataIt = this->RenderableData.find(csit->first);
+    if (dataIt != this->RenderableData.end())
     {
       // Tell both the entity and glyph mappers that, should they encounter the data object,
-      // use the provided visibility. We don't tell the "selected-data" mappers this because
-      // we always want to render selections.
+      // use the provided visibility.
       this->EntityMapper->GetCompositeDataDisplayAttributes()->SetBlockVisibility(
-        csit->second.m_data, !!csit->second.m_visibility);
+        dataIt->second, !!csit->second.m_visibility);
+      this->SelectedEntityMapper->GetCompositeDataDisplayAttributes()->SetBlockVisibility(
+        dataIt->second, !csit->second.m_visibility);
       this->GlyphMapper->GetBlockAttributes()->SetBlockVisibility(
-        csit->second.m_data, !!csit->second.m_visibility);
+        dataIt->second, !!csit->second.m_visibility);
+      this->SelectedGlyphMapper->GetBlockAttributes()->SetBlockVisibility(
+        dataIt->second, !csit->second.m_visibility);
       // Mark the mappers as modified or the new visibility info will not be updated:
       this->EntityMapper->Modified();
       this->GlyphMapper->Modified();
-      didChange = true;
     }
   }
   return didChange;
+}
+
+bool vtkSMTKModelRepresentation::ApplyDefaultStyle(
+  smtk::view::SelectionPtr seln, RenderableDataMap& renderables, vtkSMTKModelRepresentation* self)
+{
+  bool atLeastOneSelected = false;
+  for (auto& item : seln->currentSelection())
+  {
+    if (item.second <= 0)
+    {
+      // Should never happen.
+      continue;
+    }
+
+    // Determine the actor-pair we are dealing with (normal or instanced):
+    auto entity = item.first->as<smtk::model::Entity>();
+    bool isGlyphed = entity && entity->isInstance();
+
+    // Determine if the user has hidden the entity
+    auto& smap = self->GetComponentState();
+    auto cstate = smap.find(item.first->id());
+    bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
+
+    // TODO: A single persistent object may have a "footprint"
+    // (i.e., a set<vtkDataObject*>) that represents it.
+    // In this case, we should set the selected state for all
+    // of the footprint. However, this is complicated by the fact
+    // that some of the footprint entries might correspond to
+    // children (boundary) objects that might be controlled
+    // independently.
+    //
+    // For now, assume each persistent object has at most 1
+    // vtkDataObject associated with it.
+    auto dataIt = renderables.find(item.first->id());
+    if (dataIt != renderables.end())
+    {
+      self->SetSelectedState(dataIt->second, hidden ? -1 : item.second, isGlyphed);
+      atLeastOneSelected = true;
+    }
+  }
+
+  return atLeastOneSelected;
 }
 
 int vtkSMTKModelRepresentation::FillInputPortInformation(int port, vtkInformation* info)
@@ -547,6 +547,98 @@ void vtkSMTKModelRepresentation::SetInterpolateScalarsBeforeMapping(int val)
 {
   this->EntityMapper->SetInterpolateScalarsBeforeMapping(val);
   this->GlyphMapper->SetInterpolateScalarsBeforeMapping(val);
+}
+
+void vtkSMTKModelRepresentation::UpdateRenderableData(
+  vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData)
+{
+  if ((modelData && modelData->GetMTime() > this->RenderableTime) ||
+    (instanceData && instanceData->GetMTime() > this->RenderableTime) ||
+    (this->SelectionTime > this->RenderableTime))
+  {
+    this->RenderableData.clear();
+    AddRenderables(instanceData, this->RenderableData);
+    AddRenderables(modelData, this->RenderableData);
+    this->RenderableTime.Modified();
+  }
+}
+
+void vtkSMTKModelRepresentation::UpdateDisplayAttributesFromSelection(
+  vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData)
+{
+  auto rm = this->GetWrapper();
+  auto sm = rm ? rm->GetSelection() : nullptr;
+  if (!sm)
+  {
+    this->Entities->SetVisibility(1);
+    this->GlyphEntities->SetVisibility(1);
+    this->SelectedEntities->SetVisibility(0);
+    this->SelectedGlyphEntities->SetVisibility(0);
+    return;
+  }
+  else
+  {
+    this->SelectedEntities->SetVisibility(1);
+    this->SelectedGlyphEntities->SetVisibility(1);
+  }
+
+  if (!modelData)
+  {
+    return;
+  }
+
+  if (modelData->GetMTime() < this->ApplyStyleTime &&
+    (!instanceData || instanceData->GetMTime() < this->ApplyStyleTime) &&
+    this->RenderableTime < this->ApplyStyleTime && this->SelectionTime < this->ApplyStyleTime)
+  {
+    return;
+  }
+
+  // We are about to manually set block visibilities for the selection,
+  // so reset what's there now to reflect nothing being selected (i.e.,
+  // only blocks hidden by user should have visibility entries and those
+  // should be false).
+  auto nrme = this->EntityMapper->GetCompositeDataDisplayAttributes();
+  auto nrmg = this->GlyphMapper->GetBlockAttributes();
+  nrme->RemoveBlockVisibilities();
+  nrmg->RemoveBlockVisibilities();
+  // Similarly, the selected-entity and selected-glyph block visibilities
+  // should *all* be present but set to false.
+  auto seda = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
+  auto sgda = this->SelectedGlyphMapper->GetBlockAttributes();
+  for (auto entry : this->RenderableData)
+  {
+    seda->SetBlockVisibility(entry.second, false);
+    sgda->SetBlockVisibility(entry.second, false);
+  }
+
+  // Add user-specified visibility
+  for (auto entry : this->ComponentState)
+  {
+    auto rit = this->RenderableData.find(entry.first);
+    if (rit == this->RenderableData.end())
+    {
+      continue;
+    }
+    nrme->SetBlockVisibility(rit->second, !!entry.second.m_visibility);
+    nrmg->SetBlockVisibility(rit->second, !!entry.second.m_visibility);
+    // We don't need to set visibility on seda/sgda here since
+    // it will always be false (no selection being processed yet).
+  }
+
+  // Finally, ask our "style" functor to update selection visibility/color info
+  // on the mappers by calling SetSelectedState() on entries in this->RenderableData.
+  bool needUpdate = this->ApplyStyle(sm, this->RenderableData, this);
+  if (needUpdate)
+  {
+    // This is necessary to force an update in the mapper
+    this->Entities->GetMapper()->Modified();
+    this->GlyphEntities->GetMapper()->Modified();
+    this->SelectedEntities->GetMapper()->Modified();
+    this->SelectedGlyphEntities->GetMapper()->Modified();
+  }
+
+  this->ApplyStyleTime.Modified();
 }
 
 void vtkSMTKModelRepresentation::UpdateSelection(
@@ -703,6 +795,42 @@ void vtkSMTKModelRepresentation::SetColorBy(const char* type)
   // Force update of internal attributes
   this->BlockAttrChanged = true;
   this->InstanceAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SelectionModified()
+{
+  this->SelectionTime.Modified();
+}
+
+void vtkSMTKModelRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
+{
+  if (wrapper == this->Wrapper)
+  {
+    return;
+  }
+  if (this->Wrapper)
+  {
+    auto oldSeln = this->Wrapper->GetSelection();
+    if (oldSeln)
+    {
+      oldSeln->unobserve(this->SelectionObserver);
+    }
+    this->SelectionObserver = -1;
+    this->Wrapper->UnRegister(this);
+  }
+  this->Wrapper = wrapper;
+  if (this->Wrapper)
+  {
+    this->Wrapper->Register(this);
+    // Observe the Wrapper's selection and mark when we need
+    // to rebuild visual properties (due to selection changes).
+    auto newSeln = this->Wrapper->GetSelection();
+    this->SelectionObserver = newSeln
+      ? newSeln->observe(
+          [this](const std::string&, smtk::view::Selection::Ptr) { this->SelectionModified(); })
+      : -1;
+  }
+  this->Modified();
 }
 
 void vtkSMTKModelRepresentation::SetRepresentation(const char* type)
@@ -1202,6 +1330,21 @@ void vtkSMTKModelRepresentation::RemoveBlockOpacities()
 {
   this->BlockOpacities.clear();
   this->BlockAttrChanged = true;
+}
+
+void vtkSMTKModelRepresentation::SetSelectedState(
+  vtkDataObject* data, int selectionValue, bool isGlyph)
+{
+  auto nrm = isGlyph ? this->GlyphMapper->GetBlockAttributes()
+                     : this->EntityMapper->GetCompositeDataDisplayAttributes();
+  auto sel = isGlyph ? this->SelectedGlyphMapper->GetBlockAttributes()
+                     : this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
+  if (selectionValue > 0)
+  {
+    sel->SetBlockColor(data, selectionValue > 1 ? this->HoverColor : this->SelectionColor);
+  }
+  sel->SetBlockVisibility(data, selectionValue > 0);
+  nrm->SetBlockVisibility(data, selectionValue == 0);
 }
 
 void vtkSMTKModelRepresentation::SetInstanceVisibility(unsigned int index, bool visible)

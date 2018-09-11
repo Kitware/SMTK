@@ -25,7 +25,7 @@ namespace smtk
 namespace view
 {
 
-/// Descriptors for how lists passed to the manager should modify the selection.
+/// Descriptors for how lists passed to the selection should modify the selection-map.
 enum class SelectionAction
 {
   /**\brief Replace all the current selection and filter it.
@@ -66,7 +66,7 @@ enum class SelectionAction
     *
     * An example is when a user presses a modifier key while in a selection mode
     * to switch between addition, subtraction, or replacement. In this case,
-    * the key presses will change the default action on the selection manager
+    * the key presses will change the default action on the selection
     * while the mouse clicks that identify entities signal their intent
     * to use the updated default with this enum.
     */
@@ -81,8 +81,10 @@ enum class SelectionAction
   *
   * The major use case is to support a single, application-wide
   * selection but it is possible to create multiple instances
-  * of the manager. The instance() method supports application-wide
-  * selections by returning the first selection manager which has
+  * of this class if your application wishes to manage different
+  * selections depending upon some context.
+  * The instance() method supports application-wide
+  * selections by returning the first selection instance which has
   * been created (or creates a new instance if its weak pointer is
   * null).
   *
@@ -107,14 +109,14 @@ enum class SelectionAction
   *
   * ## Lifecycle
   *
-  * First, your application should create a selection manager for
+  * First, your application should create a selection instance for
   * each separate context in which a separate selection is allowed.
   * If your application will be making changes to resources by
-  * invoking operators, you should register the selection manager with
-  * the operation manager so that as resource components are
+  * invoking operators, you should register the operation manager with
+  * the selection so that as resource components are created and
   * destroyed the selection can be updated.
   *
-  * After creating a selection manager, each UI element of your
+  * After creating a selection, each UI element of your
   * application that will (a) share the selection and (b) modify
   * the selection should register itself as a source of selections
   * by providing a unique string name to registerSelectionSource().
@@ -128,19 +130,19 @@ enum class SelectionAction
   *
   * When the selection changes, listener functions subscribed to
   * updates will be called with the name of the UI elements that
-  * caused the event (or "selection manager" if a change to the
-  * manager itself caused the event). A pointer to the selection
-  * manager is also provided so you can query the selection
+  * caused the event (or "selection" if a change inside the
+  * selection itself caused the event). A pointer to the selection
+  * is also provided so you can query the selection
   * inside the listener function. You should **not** modify
   * the selection inside a listener as that can cause infinite
   * recursion.
   *
   * The listener may be called under a variety of circumstances:
   *
-  * + upon initial registration with the selection manager (if
+  * + upon initial registration with the selection (if
   *   \a immediatelyNotify is passed as true),
   * + upon modification by a selection source
-  * + upon a change to the selection manager's filter that
+  * + upon a change to the selection's filter that
   *   results in a change to the selection.
   *
   * While listeners are not usually informed when attempted
@@ -187,8 +189,8 @@ public:
   /**\brief Selection sources.
     *
     * Selections are modified by UI elements, each of which is considered a _source_
-    * of the selection. The selection manager provides a way for these UI elements
-    * to register in order to verify that their name is unique to the manager.
+    * of the selection. The selection provides a way for these UI elements
+    * to register in order to verify that their name is unique (within the selection).
     */
   //@{
   /**\brief Register a selection source.
@@ -255,9 +257,9 @@ public:
     *
     * Some applications need to separate the choice of which SelectionAction
     * to use from the choice of components in the selection.
-    * The selection manager keeps a default SelectionAction value as state so that
+    * The selection keeps a default SelectionAction value as state so that
     * when modifySelection is called with the \a action set to SelectionAction::DEFAULT, the
-    * manager's state is used in its stead.
+    * selection's state is used in its stead.
     *
     * The methods in this section provide a way to set and query the action
     * used when SelectionAction::DEFAULT is passed to modifySelection.
