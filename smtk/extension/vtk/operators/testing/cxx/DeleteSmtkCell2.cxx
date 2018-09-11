@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/session/polygon/Session.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -32,10 +32,10 @@
 #include "smtk/operation/Registrar.h"
 #include "smtk/operation/operators/ReadResource.h"
 
-#include "smtk/bridge/polygon/Registrar.h"
-#include "smtk/bridge/polygon/Resource.h"
-#include "smtk/bridge/polygon/operators/Delete.h"
-#include "smtk/bridge/polygon/operators/Import.h"
+#include "smtk/session/polygon/Registrar.h"
+#include "smtk/session/polygon/Resource.h"
+#include "smtk/session/polygon/operators/Delete.h"
+#include "smtk/session/polygon/operators/Import.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
   {
-    smtk::bridge::polygon::Registrar::registerTo(resourceManager);
+    smtk::session::polygon::Registrar::registerTo(resourceManager);
   }
 
   // Create an operation manager
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
   {
     smtk::operation::Registrar::registerTo(operationManager);
     smtk::model::Registrar::registerTo(operationManager);
-    smtk::bridge::polygon::Registrar::registerTo(operationManager);
+    smtk::session::polygon::Registrar::registerTo(operationManager);
   }
 
   // Register the resource manager to the operation manager (newly created
@@ -97,8 +97,8 @@ int main(int argc, char* argv[])
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
     "Read operator failed");
 
-  smtk::bridge::polygon::Resource::Ptr modelresource =
-    smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
+  smtk::session::polygon::Resource::Ptr modelresource =
+    smtk::dynamic_pointer_cast<smtk::session::polygon::Resource>(
       readOpResult->findResource("resource")->value(0));
 
   smtk::model::Models models =
@@ -125,8 +125,8 @@ int main(int argc, char* argv[])
 
   // start delete operator
   std::cout << "Create the delete operator\n";
-  smtk::bridge::polygon::Delete::Ptr deleteOp =
-    operationManager->create<smtk::bridge::polygon::Delete>();
+  smtk::session::polygon::Delete::Ptr deleteOp =
+    operationManager->create<smtk::session::polygon::Delete>();
   if (!deleteOp)
   {
     std::cout << "No delete operator\n";
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
   test(result == 1);
 
   // it's designed to fail.
-  smtk::bridge::polygon::Delete::Result deleteOpResult = deleteOp->operate();
+  smtk::session::polygon::Delete::Result deleteOpResult = deleteOp->operate();
   if (deleteOpResult->findInt("outcome")->value() ==
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {

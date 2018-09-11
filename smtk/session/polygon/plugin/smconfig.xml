@@ -1,0 +1,555 @@
+<ServerManagerConfiguration>
+
+  <ProxyGroup name="smtk_point_placers">
+    <NullProxy name="None"></NullProxy>
+    <Proxy class="vtkFocalPlanePointPlacer" name="FocalPlanePointPlacer" />
+    <Proxy class="vtkBoundedPlanePointPlacer" name="BoundedPlanePointPlacer">
+      <IntVectorProperty command="SetProjectionNormal"
+        default_values="2"
+        name="ProjectionNormal"
+        number_of_elements="1">
+        <EnumerationDomain name="enum">
+          <Entry text="XAxis" value="0" />
+          <Entry text="YAxis" value="1" />
+          <Entry text="ZAxis" value="2" />
+          <Entry text="Oblique" value="3" />
+        </EnumerationDomain>
+      </IntVectorProperty>
+      <DoubleVectorProperty command="SetProjectionPosition"
+        default_values="0.0"
+        name="ProjectionPosition"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+
+      <ProxyProperty clean_command="RemoveAllBoundingPlanes"
+        command="AddBoundingPlane"
+        name="BoundingPlanes"
+        number_of_elements_per_command="1"
+        repeat_command="1">
+        <ProxyGroupDomain name="groups">
+          <Group name="implicit_functions" />
+        </ProxyGroupDomain>
+      </ProxyProperty>
+    </Proxy>
+
+    <Proxy class="vtkPolygonalSurfacePointPlacer" name="PolygonalSurfacePointPlacer" />
+  </ProxyGroup>
+
+  <ProxyGroup name="smtk_contour_line_interpolators">
+    <NullProxy name="None"></NullProxy>
+    <Proxy class="vtkBezierContourLineInterpolator"
+           name="BezierContourLineInterpolator"></Proxy>
+    <Proxy class="vtkPolyDataContourLineInterpolator"
+           name="PolyDataContourLineInterpolator"></Proxy>
+    <Proxy class="vtkPolygonalSurfaceContourLineInterpolator"
+           name="PolygonalSurfaceContourLineInterpolator"></Proxy>
+  </ProxyGroup>
+
+  <ProxyGroup name="props">
+
+    <SourceProxy name="ImageSpacingFlip"
+      class="vtkImageSpacingFlip"
+      label="Flip image based on spacing">
+      <Documentation
+        short_help="Flip image based on spacing."
+        long_help="Flip image based on spacing.">
+      </Documentation>
+      <InputProperty
+        name="Input"
+        command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkImageData"/>
+        </DataTypeDomain>
+      </InputProperty>
+    </SourceProxy>
+
+    <Proxy name="polygonContourRepresentationBase" class="not-used">
+      <Documentation>
+        Defines interface defined by vtkContourRepresentation. Don't instantiate directly.
+      </Documentation>
+
+      <IntVectorProperty name="Visibility"
+        command="SetVisibility"
+        number_of_elements="1"
+        default_values="1"
+        animateable="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <DoubleVectorProperty name="PlaceWidget"
+        command="PlaceWidget"
+        number_of_elements="6"
+        argument_is_array="1"
+        default_values="none">
+        <DoubleRangeDomain name="range"/>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty name="PlaceFactor"
+        command="SetPlaceFactor"
+        number_of_elements="1"
+        default_values="1.0">
+        <DoubleRangeDomain name="range" min="0.01" />
+      </DoubleVectorProperty>
+
+      <IntVectorProperty name="ClosedLoop"
+        command="SetClosedLoop"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+         name="ClosedLoopInfo"
+         command="GetClosedLoop"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0">
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
+
+      <ProxyProperty
+        name="PointPlacer"
+        command="SetPointPlacer">
+        <ProxyListDomain name="proxy_list">
+          <Proxy group="smtk_point_placers" name="BoundedPlanePointPlacer" />
+          <Proxy group="smtk_point_placers" name="None" />
+        </ProxyListDomain>
+      </ProxyProperty>
+
+      <ProxyProperty
+        name="LineInterpolator"
+        command="SetLineInterpolator">
+        <ProxyListDomain name="proxy_list">
+          <Proxy group="smtk_contour_line_interpolators" name="None" />
+        </ProxyListDomain>
+      </ProxyProperty>
+
+      <DoubleVectorProperty
+        name="NodePositions"
+        command="AddNodeAtWorldPosition"
+        repeat_command="1"
+        number_of_elements_per_command="3">
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+        name="SelectNodes"
+        command="SetNthNodeSelected"
+        repeat_command="1"
+        number_of_elements_per_command="1">
+      </IntVectorProperty>
+
+      <IntVectorProperty name="ShowSelectedNodes"
+        command="SetShowSelectedNodes"
+        number_of_elements="1"
+        default_values="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <Property name="ClearAllNodes" command="ClearAllNodes" />
+
+      <!-- End of polygonContourRepresentationBase -->
+    </Proxy>
+
+    <Proxy name="smtkArcRepresentation" class="vtkSMTKArcRepresentation"
+           base_proxygroup="props" base_proxyname="polygonContourRepresentationBase">
+      <Documentation>
+        Proxy for vtkSMTKArcRepresentation. Don't use directly since it's not
+        coupled with the widget. Use "smtkArcWidgetRepresentation" instead which
+        include this representation as well as the widget to modify the
+        representation.
+      </Documentation>
+
+      <DoubleVectorProperty name="LineColor"
+        command="SetLineColor"
+        number_of_elements="3"
+        default_values="1.0 1.0 1.0">
+        <DoubleRangeDomain name="range" min="0 0 0" max="1 1 1" />
+      </DoubleVectorProperty>
+
+      <IntVectorProperty name="AlwaysOnTop"
+        command="SetAlwaysOnTop"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+       <IntVectorProperty name="EnableLogging"
+        command="SetLoggingEnabled"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+       <IntVectorProperty name="CanEditInfo"
+        command="GetCanEdit"
+        number_of_elements="1"
+        information_only="1"
+        default_values="1">
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
+
+      <IntVectorProperty name="CanEdit"
+        command="SetCanEdit"
+        number_of_elements="1"
+        default_values="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <Hints>
+        <!-- View can be used to specify the way to get the poly data for the representation -->
+        <Output />
+      </Hints>
+      <!-- End of smtkArcRepresentation -->
+    </Proxy>
+
+  </ProxyGroup>
+
+  <ProxyGroup name="representations">
+    <!-- ================================================================== -->
+    <NewWidgetRepresentationProxy name="smtkArcWidgetRepresentation"
+    class="vtk3DWidgetRepresentation">
+      <Documentation>
+        Representation proxy for the the Contour widget. This includes the
+        widget/representation proxies for the contour 3D widget.
+      </Documentation>
+
+      <IntVectorProperty name="Enabled"
+        command="SetEnabled"
+        number_of_elements="1"
+        default_values="0">
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          Enable/Disable widget interaction.
+        </Documentation>
+      </IntVectorProperty>
+
+      <SubProxy>
+        <Proxy name="Prop"
+          proxygroup="props" proxyname="smtkArcRepresentation">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="EnableLogging" />
+          <Property name="PlaceWidget" />
+          <Property name="Visibility" />
+          <Property name="PointPlacer" />
+          <Property name="LineInterpolator" />
+          <Property name="ClearAllNodes" />
+          <Property name="LineColor" />
+          <Property name="AlwaysOnTop" />
+          <Property name="NodePositions" />
+          <Property name="ShowSelectedNodes" />
+          <Property name="SelectNodes" />
+          <Property name="ClosedLoop" />
+          <Property name="CanEdit" />
+          <Property name="CanEditInfo" />
+        </ExposedProperties>
+      </SubProxy>
+
+      <SubProxy>
+        <Proxy name="Widget"
+          proxygroup="3d_widgets" proxyname="ContourWidget">
+        </Proxy>
+        <ExposedProperties>
+  <!--        <Property name="Enabled" />  -->
+          <Property name="CloseLoop" />
+          <Property name="WidgetState" />
+          <Property name="WidgetStateInfo" />
+          <Property name="AllowNodePicking" />
+          <Property name="Initialize" />
+          <Property name="ProcessEvents"/>
+        </ExposedProperties>
+      </SubProxy>
+
+      <!-- End of smtkArcWidgetRepresentation -->
+    </NewWidgetRepresentationProxy>
+  </ProxyGroup>
+
+  <ProxyGroup name="polygon_operators">
+
+    <Proxy name="PolygonArcOperator" class="vtkPolygonArcOperator">
+      <Documentation>
+        Operator to convert the line cells in the input polygon to multiple edge(s) in a polygon model
+      </Documentation>
+
+      <ProxyProperty
+        name="ArcRepresentation"
+        command="SetArcRepresentation">
+        <ProxyGroupDomain name="groups">
+          <Group name="props"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Set the ArcRepresentation for the operation.
+        </Documentation>
+      </ProxyProperty>
+
+      <!-- End of PolygonArcOperator -->
+    </Proxy>
+
+    <SourceProxy name="PolygonArcProvider" class="vtkPolygonArcProvider">
+      <InputProperty name="Input" command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkMultiBlockDataSet"/>
+        </DataTypeDomain>
+      </InputProperty>
+
+      <IdTypeVectorProperty
+        name="BlockIndex"
+        command="SetBlockIndex"
+        number_of_elements="1"
+        default_values="none" >
+        <Documentation>
+          Set the BlockIndex of the input multiblock to be used for creating a polyline.
+        </Documentation>
+      </IdTypeVectorProperty>
+    </SourceProxy>
+
+    <Proxy name="PolygonContourOperator" class="vtkPolygonContourOperator">
+      <Documentation>
+        Operator to convert the line cells in the input polygon to multiple edge(s) in a polygon model
+      </Documentation>
+
+      <ProxyProperty
+        name="ContourInput"
+        command="SetContourInput">
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          Set the ArcRepresentation for the operation.
+        </Documentation>
+      </ProxyProperty>
+
+      <DoubleVectorProperty
+        name="ImageBounds"
+        command="SetImageBounds"
+        number_of_elements="6"
+        default_values="0.0 -1.0 0.0 -1.0 0.0 -1.0" >
+      </DoubleVectorProperty>
+
+      <!-- End of PolygonContourOperator -->
+    </Proxy>
+
+  </ProxyGroup>
+  <ProxyGroup name="polygon_filters">
+      <SourceProxy name="StructedToMesh"
+                 class="vtkDEMToMesh"
+                 label="Takes a structured image data and creates polydata">
+      <Documentation
+        short_help="creates Polydata from image data."
+        long_help="creates Polydata from image data.">
+      </Documentation>
+      <InputProperty
+          name="Input"
+          command="SetInputConnection">
+          <ProxyGroupDomain name="groups">
+            <Group name="sources"/>
+            <Group name="filters"/>
+          </ProxyGroupDomain>
+          <DataTypeDomain name="input_type">
+            <DataType value="vtkDataSet"/>
+          </DataTypeDomain>
+          <Documentation>
+            Set the input to the vtkDEMToMesh filter.
+          </Documentation>
+      </InputProperty>
+      <IntVectorProperty
+        name="UseScalerForZ"
+        label="Cache Refine Results To Disk"
+        command="SetUseScalerForZ"
+        number_of_elements="1"
+        default_values="0" >
+        <Documentation>
+          controls coping elevation to z value.
+        </Documentation>
+      </IntVectorProperty>
+    </SourceProxy>
+
+    <SourceProxy name="CleanPolylines" class="vtkCleanPolylines"
+      label="Clean Polylines">
+      <Documentation
+        long_help="Remove any lines (polylines) below a threshold length."
+        short_help="Remove short polylines.">
+        Remove any lines (polylines) below a threshold length.  Input is cleaned and stripped
+        before remove shour polylines.
+      </Documentation>
+      <InputProperty
+         name="Input"
+         command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          Set the input to the CleanPolylines filter.
+        </Documentation>
+      </InputProperty>
+
+      <DoubleVectorProperty name="MinimumLineLength"
+        command="SetMinimumLineLength"
+        repeat_command="0"
+        number_of_elements="1"
+        default_values="5">
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          Sets the minimum line length for the filter
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <IntVectorProperty
+        name="UseRelativeLineLength"
+        command="SetUseRelativeLineLength"
+        number_of_elements="1"
+        default_values="1">
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          Set whether or not the test line length is a factor of the average line length
+        </Documentation>
+      </IntVectorProperty>
+
+    </SourceProxy>
+
+    <SourceProxy name="PolyDataStatsFilter" class="vtkPolyDataStatsFilter" label="PolyDataStats">
+     <Documentation
+        long_help="Calculate the statistics of a PolyDataSet."
+        short_help="Get PolyDataSet Statistics.">
+     </Documentation>
+     <InputProperty
+        name="Input"
+        command="SetInputConnection">
+           <ProxyGroupDomain name="groups">
+             <Group name="sources"/>
+             <Group name="filters"/>
+           </ProxyGroupDomain>
+           <DataTypeDomain name="input_type">
+             <DataType value="vtkPolyData"/>
+           </DataTypeDomain>
+      </InputProperty>
+
+      <DoubleVectorProperty
+         name="AreaStats"
+         label="Area Statistics"
+         command="GetAreaStats"
+         number_of_elements="3"
+         information_only="1"
+         default_values="0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Area Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="GeometryBounds"
+         label="Geometry Bounds"
+         command="GetGeometryBounds"
+         number_of_elements="6"
+         information_only="1"
+         default_values="0.0 0.0 0.0 0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Geometric Bounds Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="PolygonalSideStats"
+         label="Polygonal Side Statistics"
+         command="GetPolygonalSideStats"
+         number_of_elements="3"
+         information_only="1"
+         default_values="0.0 0.0 0.0" >
+        <SimpleDoubleInformationHelper/>
+        <Documentation>
+          Polygonal Side Result of the PolyDataSet Statistic calculation.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfPoints"
+        label="Number of Points"
+        command="GetNumberOfPoints"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfLines"
+        label="Number of Lines"
+        command="GetNumberOfLines"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="NumberOfPolygons"
+        label="Number of Polygons"
+        command="GetNumberOfPolygons"
+        information_only="1"
+        number_of_elements="1"
+        default_values="0">
+        <SimpleIdTypeInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <DoubleVectorProperty
+        name="TotalSurfaceArea"
+        label="Total Surface Area"
+        command="GetTotalSurfaceArea"
+        information_only="1"
+        number_of_elements="1"
+        default_values="0.0">
+        <SimpleDoubleInformationHelper/>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Translation"
+         label="Translation"
+         command="SetTranslation"
+         number_of_elements="3"
+         default_values="0.0 0.0 0.0" >
+          <Documentation>
+           Defines the translation from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Orientation"
+         label="Orientation"
+         command="SetOrientation"
+         number_of_elements="3"
+         default_values="0.0 0.0 0.0" >
+          <Documentation>
+           Defines the orientation from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="Scale"
+         label="Scale"
+         command="SetScale"
+         number_of_elements="3"
+         default_values="1.0 1.0 1.0" >
+          <Documentation>
+           Defines the scale from data space to world space.
+         </Documentation>
+      </DoubleVectorProperty>
+      <!-- End PolyDataStatsFilter -->
+   </SourceProxy>
+
+  </ProxyGroup>
+</ServerManagerConfiguration>

@@ -1,0 +1,114 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#include "smtk/session/cgm/operators/Scale.h"
+
+#include "smtk/session/cgm/CAUUID.h"
+#include "smtk/session/cgm/Engines.h"
+#include "smtk/session/cgm/Session.h"
+#include "smtk/session/cgm/TDUUID.h"
+
+#include "smtk/io/Logger.h"
+
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/Model.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
+
+#include "CGMApp.hpp"
+#include "CubitAttribManager.hpp"
+#include "CubitCompat.hpp"
+#include "CubitDefines.h"
+#include "DLIList.hpp"
+#include "DagType.hpp"
+#include "GeometryModifyTool.hpp"
+#include "GeometryQueryEngine.hpp"
+#include "GeometryQueryTool.hpp"
+#include "InitCGMA.hpp"
+#include "RefEntity.hpp"
+#include "RefEntityFactory.hpp"
+
+#include "smtk/session/cgm/Scale_xml.h"
+
+using namespace smtk::model;
+
+namespace smtk
+{
+namespace session
+{
+namespace cgm
+{
+
+smtk::operation::OperationResult Scale::operateInternal()
+{
+  smtk::attribute::DoubleItemPtr originItem = this->findDouble("origin");
+  smtk::attribute::IntItemPtr typeItem = this->findInt("scale factor type");
+  smtk::attribute::DoubleItemPtr factorItem = this->findDouble("scale factor");
+  smtk::attribute::DoubleItemPtr factorsItem = this->findDouble("scale factors");
+
+  Models bodiesIn = this->associatedEntitiesAs<Models>();
+
+  Models::iterator it;
+  DLIList<RefEntity*> cgmEntitiesIn;
+  DLIList<RefEntity*> cgmEntitiesOut;
+  RefEntity* refEntity;
+  for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
+  {
+    refEntity = this->cgmEntity(*it);
+    if (refEntity)
+    {
+      cgmEntitiesIn.append(refEntity);
+      this->manager()->erase(
+        *it); // We will re-transcribe momentarily. TODO: This could be more efficient.
+    }
+  }
+
+  int nb = cgmEntitiesIn.size();
+  CubitVector origin(originItem->value(0), originItem->value(1), originItem->value(2));
+  double sx, sy, sz;
+  if (typeItem->value(0) == 0)
+  {
+    sx = sy = sz = factorItem->value(0);
+  }
+  else
+  {
+    sx = factorsItem->value(0);
+    sy = factorsItem->value(1);
+    sz = factorsItem->value(2);
+  }
+  GeometryQueryTool::instance()->scale(cgmEntitiesIn, origin, sx, sy, sz,
+    true, // (check to transform)
+    cgmEntitiesOut);
+  if (cgmEntitiesOut.size() != nb)
+  {
+    smtkInfoMacro(log(), "Failed to scale bodies or wrong number"
+        << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
+        << " of resulting bodies.");
+    return this->createResult(smtk::operation::Operation::OPERATION_FAILED);
+  }
+
+  smtk::operation::OperationResult result =
+    this->createResult(smtk::operation::Operation::OPERATION_SUCCEEDED);
+
+  this->addEntitiesToResult(cgmEntitiesOut, result, MODIFIED);
+  // Nothing expunged.
+
+  return result;
+}
+
+} // namespace cgm
+} //namespace session
+} // namespace smtk
+
+smtkImplementsModelOperation(SMTKCGMSESSION_EXPORT, smtk::session::cgm::Scale, cgm_scale, "scale",
+  Scale_xml, smtk::session::cgm::Session);

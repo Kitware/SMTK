@@ -19,8 +19,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/bridge/discrete/Resource.h"
-#include "smtk/bridge/discrete/operators/ImportOperation.h"
+#include "smtk/session/discrete/Resource.h"
+#include "smtk/session/discrete/operators/ImportOperation.h"
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
@@ -109,7 +109,7 @@ int TestElevateMesh(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  smtk::operation::Operation::Ptr importOp = smtk::bridge::discrete::ImportOperation::create();
+  smtk::operation::Operation::Ptr importOp = smtk::session::discrete::ImportOperation::create();
 
   if (!importOp)
   {
@@ -138,8 +138,8 @@ int TestElevateMesh(int argc, char* argv[])
       importOpResult->findResource("resource"));
 
   // Access the generated resource
-  smtk::bridge::discrete::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::bridge::discrete::Resource>(resourceItem->value());
+  smtk::session::discrete::Resource::Ptr resource =
+    std::dynamic_pointer_cast<smtk::session::discrete::Resource>(resourceItem->value());
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =

@@ -47,7 +47,7 @@ To accelerate lookups of UUIDs,
 the Exodus session stores the UUID as a string value
 on each :cxx:`vtkDataObject`'s information object using the :cxx:`SMTK_UUID_KEY` key.
 
-.. literalinclude:: ../../../smtk/bridge/exodus/ReadOperator.cxx
+.. literalinclude:: ../../../smtk/session/exodus/ReadOperator.cxx
    :start-after: // ++ 1 ++
    :end-before: // -- 1 --
 
@@ -69,7 +69,7 @@ as will the input parameter of the inverse method that
 returns a UUID given a foreign entity;
 for our example, we've created a new type named :cxx:`EntityHandle`.
 
-.. literalinclude:: ../../../smtk/bridge/exodus/Session.h
+.. literalinclude:: ../../../smtk/session/exodus/Session.h
    :start-after: // ++ 2 ++
    :end-before: // -- 2 --
 
@@ -134,18 +134,18 @@ traversal order, then you should
 
    The Exodus session class provides a method to create an IO delegate:
 
-   .. literalinclude:: ../../../smtk/bridge/exodus/Session.cxx
+   .. literalinclude:: ../../../smtk/session/exodus/Session.cxx
       :start-after: // ++ 12 ++
       :end-before: // -- 12 --
 
    The IO delegate class is then implemented to provide methods for
    importing and exporting session-specific information:
 
-   .. literalinclude:: ../../../smtk/bridge/exodus/SessionExodusIOJSON.h
+   .. literalinclude:: ../../../smtk/session/exodus/SessionExodusIOJSON.h
       :start-after: // ++ 1 ++
       :end-before: // -- 1 --
 
-Note that you can use the :smtk:`smtk::bridge::exodus::SessionIOJSON` class
+Note that you can use the :smtk:`smtk::session::exodus::SessionIOJSON` class
 to import and export information other than UUID arrays, should the session
 store some other state that should be preserved across processes.
 

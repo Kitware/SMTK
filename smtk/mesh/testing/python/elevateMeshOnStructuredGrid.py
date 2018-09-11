@@ -16,7 +16,7 @@ import smtk
 import smtk.extension.vtk.source
 import smtk.mesh
 import smtk.model
-import smtk.bridge.mesh
+import smtk.session.mesh
 import smtk.testing
 import smtk.io.vtk
 
@@ -54,7 +54,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
     def setUp(self):
 
         # Construct an import operator
-        op = smtk.bridge.mesh.Import.create()
+        op = smtk.session.mesh.Import.create()
 
         # Set the import operators parameters
         fname = op.parameters().find('filename')

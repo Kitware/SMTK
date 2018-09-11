@@ -672,12 +672,12 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk" \
   "@SMTK_SOURCE_DIR@/smtk/attribute" \
   "@SMTK_SOURCE_DIR@/smtk/session" \
-  "@SMTK_SOURCE_DIR@/smtk/bridge/exodus" \
-  "@SMTK_SOURCE_DIR@/smtk/bridge/remote" \
-  "@SMTK_SOURCE_DIR@/smtk/bridge/cgm" \
-  "@SMTK_SOURCE_DIR@/smtk/bridge/discrete" \
-  "@SMTK_SOURCE_DIR@/smtk/bridge/discrete/operation" \
-  "@SMTK_SOURCE_DIR@/smtk/bridge/discrete/kernel" \
+  "@SMTK_SOURCE_DIR@/smtk/session/exodus" \
+  "@SMTK_SOURCE_DIR@/smtk/session/remote" \
+  "@SMTK_SOURCE_DIR@/smtk/session/cgm" \
+  "@SMTK_SOURCE_DIR@/smtk/session/discrete" \
+  "@SMTK_SOURCE_DIR@/smtk/session/discrete/operation" \
+  "@SMTK_SOURCE_DIR@/smtk/session/discrete/kernel" \
   "@SMTK_SOURCE_DIR@/smtk/common" \
   "@SMTK_SOURCE_DIR@/smtk/common/testing/cxx" \
   "@SMTK_SOURCE_DIR@/smtk/mesh" \

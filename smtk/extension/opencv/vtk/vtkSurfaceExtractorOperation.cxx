@@ -33,7 +33,7 @@ vtkSurfaceExtractorOperation::~vtkSurfaceExtractorOperation()
 bool vtkSurfaceExtractorOperation::AbleToOperate()
 {
   bool able2Op = m_smtkOp.lock() &&
-    m_smtkOp.lock()->typeName() == "smtk::bridge::polygon::SurfaceExtractContours" &&
+    m_smtkOp.lock()->typeName() == "smtk::session::polygon::SurfaceExtractContours" &&
     m_smtkOp.lock()->ableToOperate();
 
   return able2Op;

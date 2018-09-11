@@ -17,8 +17,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/bridge/polygon/Operation.h"
-#include "smtk/bridge/polygon/Session.h"
+#include "smtk/session/polygon/Operation.h"
+#include "smtk/session/polygon/Session.h"
 
 #include "smtk/common/PythonInterpreter.h"
 
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
-  smtk::bridge::polygon::Session::Ptr session = smtk::bridge::polygon::Session::create();
+  smtk::session::polygon::Session::Ptr session = smtk::session::polygon::Session::create();
   resource->registerSession(session);
 
   std::cout << "Available operators\n";

@@ -17,7 +17,7 @@ import smtk.mesh
 import smtk.model
 import smtk.extension.delaunay
 import smtk.operation
-import smtk.bridge.polygon
+import smtk.session.polygon
 import smtk.testing
 
 
@@ -29,7 +29,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
             smtk.testing.DATA_DIR, 'mesh', '2d', 'boxWithHole.smtk')
 
         # Load the input file
-        loadOp = smtk.bridge.polygon.LegacyRead.create()
+        loadOp = smtk.session.polygon.LegacyRead.create()
         loadOp.parameters().find('filename').setValue(modelFile)
         loadRes = loadOp.operate()
 

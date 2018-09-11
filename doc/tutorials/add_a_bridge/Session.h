@@ -21,7 +21,7 @@ class vtkUnstructuredGrid;
 
 namespace smtk
 {
-namespace bridge
+namespace session
 {
 namespace tutorial
 {
@@ -89,7 +89,7 @@ private:
 };
 
 } // namespace tutorial
-} // namespace bridge
+} // namespace session
 } // namespace smtk
 
 #endif //  __smtk_ex_session_h

@@ -19,8 +19,8 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/bridge/mesh/Resource.h"
-#include "smtk/bridge/mesh/operators/Import.h"
+#include "smtk/session/mesh/Resource.h"
+#include "smtk/session/mesh/operators/Import.h"
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
@@ -116,7 +116,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  auto importOp = smtk::bridge::mesh::Import::create();
+  auto importOp = smtk::session::mesh::Import::create();
 
   if (!importOp)
   {
@@ -145,8 +145,8 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
       importOpResult->findResource("resource"));
 
   // Access the generated resource
-  smtk::bridge::mesh::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::bridge::mesh::Resource>(resourceItem->value());
+  smtk::session::mesh::Resource::Ptr resource =
+    std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->value());
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =

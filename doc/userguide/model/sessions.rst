@@ -77,7 +77,7 @@ By placing the :smtk:`smtkComponentInitMacro` in your application's
 main source file:
 
 .. highlight:: c++
-.. literalinclude:: ../../../smtk/bridge/remote/smtk-model-worker.cxx
+.. literalinclude:: ../../../smtk/session/remote/smtk-model-worker.cxx
   :start-after: // ++ UserGuide/Model/1 ++
   :end-before: // -- UserGuide/Model/1 --
   :linenos:

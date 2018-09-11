@@ -11,7 +11,7 @@
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 
-#include "smtk/bridge/polygon/Registrar.h"
+#include "smtk/session/polygon/Registrar.h"
 
 #include "smtk/common/Registry.h"
 
@@ -102,7 +102,7 @@ int unitDescriptivePhrase(int argc, char* argv[])
   auto operMgr = smtk::operation::Manager::create();
   operMgr->registerResourceManager(rsrcMgr);
 
-  auto registry = smtk::common::Registry<smtk::bridge::polygon::Registrar, smtk::resource::Manager,
+  auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
   auto phraseModel = smtk::view::ResourcePhraseModel::create();
   phraseModel->addSource(rsrcMgr, operMgr);
@@ -112,7 +112,7 @@ int unitDescriptivePhrase(int argc, char* argv[])
     auto rdr = operMgr->create<smtk::operation::ReadResource>();
     rdr->parameters()->findFile("filename")->setValue(argv[i]);
     rdr->operate();
-    // rsrcs.push_back(rsrcMgr->read<smtk::bridge::polygon::Resource>(argv[1]));
+    // rsrcs.push_back(rsrcMgr->read<smtk::session::polygon::Resource>(argv[1]));
   }
 
   test(phraseModel->root()->root() == phraseModel->root(),

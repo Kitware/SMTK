@@ -1,6 +1,6 @@
 # Now add tutorial directories
 add_subdirectory(cxx_first_steps)
-add_subdirectory(add_a_bridge)
+add_subdirectory(add_a_session)
 add_subdirectory(implement_an_operator)
 add_subdirectory(python_first_steps)
 add_subdirectory(debugging_python_tests)

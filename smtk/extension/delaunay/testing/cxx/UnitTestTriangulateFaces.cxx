@@ -14,8 +14,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/bridge/polygon/Resource.h"
-#include "smtk/bridge/polygon/operators/LegacyRead.h"
+#include "smtk/session/polygon/Resource.h"
+#include "smtk/session/polygon/operators/LegacyRead.h"
 
 #include "smtk/extension/delaunay/operators/TriangulateFaces.h"
 
@@ -66,11 +66,11 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 
 int UnitTestTriangulateFaces(int, char** const)
 {
-  smtk::bridge::polygon::Resource::Ptr resource;
+  smtk::session::polygon::Resource::Ptr resource;
 
   {
     // Create an import operator
-    smtk::bridge::polygon::LegacyRead::Ptr readOp = smtk::bridge::polygon::LegacyRead::create();
+    smtk::session::polygon::LegacyRead::Ptr readOp = smtk::session::polygon::LegacyRead::create();
     if (!readOp)
     {
       std::cerr << "No read operator\n";
@@ -86,7 +86,7 @@ int UnitTestTriangulateFaces(int, char** const)
       file.close();
 
       readOp->parameters()->findFile("filename")->setValue(file_path.c_str());
-      smtk::bridge::polygon::LegacyRead::Result result = readOp->operate();
+      smtk::session::polygon::LegacyRead::Result result = readOp->operate();
       if (result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
@@ -94,7 +94,7 @@ int UnitTestTriangulateFaces(int, char** const)
         return 1;
       }
 
-      resource = smtk::dynamic_pointer_cast<smtk::bridge::polygon::Resource>(
+      resource = smtk::dynamic_pointer_cast<smtk::session::polygon::Resource>(
         result->findResource("resource")->value(0));
     }
   }

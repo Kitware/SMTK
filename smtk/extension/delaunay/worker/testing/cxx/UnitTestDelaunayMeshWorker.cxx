@@ -22,8 +22,8 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/bridge/polygon/Operation.h"
-#include "smtk/bridge/polygon/Resource.h"
+#include "smtk/session/polygon/Operation.h"
+#include "smtk/session/polygon/Resource.h"
 
 #include "smtk/common/Paths.h"
 
@@ -100,7 +100,7 @@ int main(int argc, char** const argv)
   // Register the resources to the resource manager
   {
     resourceManager->registerResource<smtk::model::Resource>();
-    resourceManager->registerResource<smtk::bridge::polygon::Resource>();
+    resourceManager->registerResource<smtk::session::polygon::Resource>();
   }
 
   // Create an operation manager

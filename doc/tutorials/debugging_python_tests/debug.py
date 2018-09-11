@@ -19,7 +19,7 @@ class DebugAPythonTest(smtk.testing.TestCase):
         # srcdir = '/src'
         sys.path.append(
             os.path.join(
-                srcdir, 'smtk', 'bridge', 'discrete', 'testing', 'python'))
+                srcdir, 'smtk', 'session', 'discrete', 'testing', 'python'))
         # Import the test case class:
         from discreteReadFile import TestDiscreteSession
 

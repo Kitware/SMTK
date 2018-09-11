@@ -47,7 +47,7 @@ class SessionRef;
 typedef std::map<smtk::common::UUID, smtk::shared_ptr<Session> > UUIDsToSessions;
 typedef std::map<smtk::model::EntityRef, SessionInfoBits> DanglingEntities;
 
-/**\brief Bit flags describing types of information bridged to Resource.
+/**\brief Bit flags describing types of information sessiond to Resource.
   *
   * Session classes should provide individual translation for
   * each piece of information, but are allowed to transcribe
@@ -151,7 +151,7 @@ enum SessionInformation
 
 /**\brief A base class for bridging modelers into SMTK.
   *
-  * SMTK can act as a bridge between other (foreign) solid modelers
+  * SMTK can act as a session between other (foreign) solid modelers
   * and client applications.
   * The session must provide techniques for attaching UUIDs to foreign model
   * entities (on its own or by using facilities provided by the foreign modeler)

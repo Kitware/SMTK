@@ -603,7 +603,7 @@ install(
 
 # Add the current directory so we can include files like: <smtk/internal/Test.h>
 # Save the include directories in a variable so that VTK modules
-# (inside the extension/vtk and bridge/discrete directories) can reuse them.
+# (inside the extension/vtk and session/discrete directories) can reuse them.
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"

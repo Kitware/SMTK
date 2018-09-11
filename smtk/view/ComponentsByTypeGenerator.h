@@ -35,7 +35,7 @@ protected:
   virtual void childrenOfComponent(EntityPhrase::Ptr, DescriptivePhrases&);
   virtual void childrenOfComponentList(EntityListPhrase::Ptr, DescriptivePhrases&);
 
-  bool m_abridgeUses;
+  bool m_asessionUses;
 };
 }
 }

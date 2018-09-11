@@ -216,7 +216,7 @@ namespace workflow
 class OperationFilterSort;
 }
 
-namespace bridge
+namespace session
 {
 // These classes are in the SMTKRemote library, which
 // is only built when SMTK_ENABLE_REMUS_SUPPORT is ON.
@@ -473,7 +473,7 @@ typedef smtk::shared_ptr<smtk::workflow::OperationFilterSort> OperationFilterSor
 typedef smtk::weak_ptr<smtk::workflow::OperationFilterSort> WeakOperationFilterSortPtr;
 }
 
-namespace bridge
+namespace session
 {
 namespace remote
 {

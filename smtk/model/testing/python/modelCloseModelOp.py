@@ -16,8 +16,8 @@ Try running a "universal" operator (close model) on imported models.
 import os
 import sys
 import smtk
-import smtk.bridge
-import smtk.bridge.discrete
+import smtk.session
+import smtk.session.discrete
 import smtk.io
 import smtk.model
 import smtk.testing
@@ -50,7 +50,7 @@ class TestModelCloseModelOp(unittest.TestCase):
             # Assign imported models to current session so they have operators
             [smtk.model.Model(x).setSession(actSession) for x in models]
         elif sessionname == 'discrete':
-            readOp = smtk.bridge.discrete.ReadOperation.create()
+            readOp = smtk.session.discrete.ReadOperation.create()
             readOp.parameters().find('filename').setValue(filename)
             result = readOp.operate()
             self.assertEqual(
@@ -83,7 +83,7 @@ class TestModelCloseModelOp(unittest.TestCase):
             }
 
             for (session_type, path) in session_files.items():
-                if session_type == 'native' or session_type in dir(smtk.bridge):
+                if session_type == 'native' or session_type in dir(smtk.session):
                     filename = os.path.join(
                         *([smtk.testing.DATA_DIR, ] + path))
                     print('Testing load and close of %s' % filename)
