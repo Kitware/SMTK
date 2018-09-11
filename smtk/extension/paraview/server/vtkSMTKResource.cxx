@@ -103,7 +103,7 @@ vtkAlgorithm* vtkSMTKResource::GetConverter()
 }
 
 int vtkSMTKResource::RequestData(
-  vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
+  vtkInformation*, vtkInformationVector**, vtkInformationVector* outInfo)
 {
   // Access the converter, constructing and initializing it if necessary.
   auto converter = this->GetConverter();
