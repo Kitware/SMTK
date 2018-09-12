@@ -14,7 +14,13 @@
 #ifndef __smtk_extension_cumulus_girderrequest_h
 #define __smtk_extension_cumulus_girderrequest_h
 
+// Are we building a stand alone girder file browser?
+#ifdef GIRDERFILEBROWSER_BUILD_STANDALONE
+// Empty definition to prevent compilation error
+#define SMTKCUMULUSEXT_EXPORT
+#else
 #include "smtk/extension/cumulus/Exports.h"
+#endif
 
 #include <QList>
 #include <QMap>

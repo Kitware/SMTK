@@ -1,12 +1,18 @@
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Network Widgets)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/girderfilebrowser")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/girderfilebrowser/ui")
 
 set(ui_files
   ui/jobtablewidget.ui
   ui/mainwindow.ui
   ui/logindialog.ui
   ui/cumuluswidget.ui
+  # Mandatory girder file browser files
+  girderfilebrowser/ui/girderfilebrowserdialog.ui
+  # Optional girder file browser files (for stand-alone executable)
+  girderfilebrowser/ui/girderlogindialog.ui
 )
 
 qt5_wrap_ui(ui_srcs ${ui_files})
@@ -24,6 +30,13 @@ set(src
   cumuluswidget.cxx
   mainwindow.cxx
   pqCumulusJobsPanel.cxx
+  # Mandatory girder file browser files
+  girderfilebrowser/girderfilebrowserfetcher.cxx
+  girderfilebrowser/ui/girderfilebrowserdialog.cxx
+  girderfilebrowser/ui/girderfilebrowserlistview.cxx
+  # Optional girder file browser files (for stand-alone executable)
+  girderfilebrowser/girderauthenticator.cxx
+  girderfilebrowser/ui/girderlogindialog.cxx
 )
 
 #add moc files
@@ -38,14 +51,28 @@ set(mochdrs
   logindialog.h
   mainwindow.h
   pqCumulusJobsPanel.h
+  # Mandatory girder file browser files
+  girderfilebrowser/girderfilebrowserfetcher.h
+  girderfilebrowser/ui/girderfilebrowserdialog.h
+  girderfilebrowser/ui/girderfilebrowserlistview.h
+  # Optional girder file browser files (for stand-alone executable)
+  girderfilebrowser/girderauthenticator.h
+  girderfilebrowser/ui/girderlogindialog.h
 )
 qt5_wrap_cpp(moc_srcs ${mochdrs})
+
+#resource files
+set(resources
+ girderfilebrowser/resources.qrc
+)
+qt5_add_resources(res_srcs ${resources})
 
 #extension library
 add_library(smtkCumulusExt
  ${src}
  ${moc_srcs}
  ${ui_srcs}
+ ${res_srcs}
 )
 #install headers
 set(hdrs
@@ -75,12 +102,20 @@ smtk_install_library(smtkCumulusExt)
 add_executable(cumulus MACOSX_BUNDLE
   main.cxx
 )
+#standalone girder file browser executable for debugging
+add_executable(girderfilebrowser MACOSX_BUNDLE WIN32
+  girderfilebrowser/girderfilebrowser.cxx
+)
 
 set_target_properties(cumulus PROPERTIES AUTOMOC TRUE)
+set_target_properties(girderfilebrowser PROPERTIES AUTOMOC TRUE)
 
 target_link_libraries(cumulus
   smtkCumulusExt
   cJSON
+)
+target_link_libraries(girderfilebrowser
+  smtkCumulusExt
 )
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
