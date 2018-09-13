@@ -66,8 +66,15 @@ int vtkSMTKSource::FillOutputPortInformation(int port, vtkInformation* info)
     return 0;
   }
 
-  vtkInformation* rinfo = this->VTKResource->GetOutputPortInformation(port);
-  info->CopyEntry(rinfo, vtkDataObject::DATA_TYPE_NAME());
+  if (this->VTKResource->GetNumberOfOutputPorts() > port)
+  {
+    vtkInformation* rinfo = this->VTKResource->GetOutputPortInformation(port);
+    info->CopyEntry(rinfo, vtkDataObject::DATA_TYPE_NAME());
+  }
+  else
+  {
+    info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkMultiBlockDataSet");
+  }
   return 1;
 }
 
@@ -97,7 +104,10 @@ int vtkSMTKSource::RequestData(
   // method.
   for (int i = 0; i < this->VTKResource->GetNumberOfOutputPorts(); i++)
   {
-    vtkMultiBlockDataSet::GetData(outInfo, i)->ShallowCopy(converter->GetOutputDataObject(i));
+    if (this->VTKResource->GetNumberOfOutputPorts() > i)
+    {
+      vtkMultiBlockDataSet::GetData(outInfo, i)->ShallowCopy(converter->GetOutputDataObject(i));
+    }
   }
 
   return 1;
