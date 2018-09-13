@@ -98,7 +98,7 @@ GirderFileBrowserDialog::GirderFileBrowserDialog(QNetworkAccessManager* networkM
 
   // Only enable the choose button if the type it is on is choosable
   connect(m_ui->list_fileBrowser->selectionModel(), &QItemSelectionModel::currentChanged, this,
-    [this](const QModelIndex& current, const QModelIndex& previous) {
+    [this](const QModelIndex& current, const QModelIndex&) {
       m_ui->push_chooseObject->setEnabled(false);
       if (current.isValid())
       {
@@ -295,7 +295,6 @@ void GirderFileBrowserDialog::rowActivated(const QModelIndex& index)
     QStringList folderTypes{ "root", "Users", "Collections", "user", "collection", "folder" };
 
     // If we are to treat items as folders, add items to this list
-    using ItemMode = GirderFileBrowserFetcher::ItemMode;
     if (m_girderFileBrowserFetcher->treatItemsAsFolders())
       folderTypes.append("item");
 
@@ -380,7 +379,8 @@ void GirderFileBrowserDialog::changeVisibleRows(const QString& expression)
 void GirderFileBrowserDialog::updateVisibleRows()
 {
   // First, make all rows visible
-  for (size_t i = 0; i < m_cachedRowInfo.size(); ++i)
+  auto crisz = static_cast<size_t>(m_cachedRowInfo.size());
+  for (size_t i = 0; i < crisz; ++i)
     m_ui->list_fileBrowser->setRowHidden(i, false);
 
   // First, hide any rows that do not match the type the user is choosing
@@ -388,7 +388,7 @@ void GirderFileBrowserDialog::updateVisibleRows()
   QStringList showTypes = { "Users", "Collections", "user", "collection", "folder" };
   // Add the choosable types
   showTypes += m_choosableTypes;
-  for (size_t i = 0; i < m_cachedRowInfo.size(); ++i)
+  for (size_t i = 0; i < crisz; ++i)
   {
     if (!showTypes.contains(m_cachedRowInfo[i]["type"]))
     {
@@ -403,7 +403,7 @@ void GirderFileBrowserDialog::updateVisibleRows()
   QRegularExpression regExp(
     ".*" + m_rowsMatchExpression + ".*", QRegularExpression::CaseInsensitiveOption);
 
-  for (size_t i = 0; i < m_cachedRowInfo.size(); ++i)
+  for (size_t i = 0; i < crisz; ++i)
   {
     // If the row is already hidden, skip it
     if (m_ui->list_fileBrowser->isRowHidden(i))

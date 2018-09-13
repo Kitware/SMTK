@@ -64,6 +64,7 @@ void MainWindow::createMainMenu()
 
 void MainWindow::closeEvent(QCloseEvent* theEvent)
 {
+  (void)theEvent;
   qApp->quit();
 }
 

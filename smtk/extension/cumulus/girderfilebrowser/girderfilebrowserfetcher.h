@@ -80,9 +80,9 @@ public slots:
   // Convenience function for signals
   void setApiUrlAndGirderToken(const QString& apiUrl, const QString& girderToken);
 
-private slots:
   void errorReceived(const QString& message);
 
+private slots:
   void finishGettingContainingItems(const QMap<QString, QString>& items);
   // Only called if m_itemMode is ItemMode::treatItemsAsFoldersWithFileBumping
   void finishGettingFilesForContainingItems(
