@@ -168,6 +168,7 @@ void qtUIManager::commonConstructor()
 
   // register view constructors coming from plugins.
   qtSMTKUtilities::updateViewConstructors(this);
+  qtSMTKUtilities::updateItemConstructors(this);
 }
 
 qtUIManager::~qtUIManager()

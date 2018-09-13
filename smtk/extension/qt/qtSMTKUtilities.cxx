@@ -13,18 +13,32 @@
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/EntityRef.h"
 
-SMTKViewConstructorMap qtSMTKUtilities::m_viewConstructors;
+using qtItemConstructor = smtk::extension::qtItemConstructor;
+
+SMTKViewConstructorMap qtSMTKUtilities::s_viewConstructors;
+SMTKItemConstructorMap qtSMTKUtilities::s_itemConstructors;
 
 const SMTKViewConstructorMap& qtSMTKUtilities::viewConstructors()
 {
-  return qtSMTKUtilities::m_viewConstructors;
+  return qtSMTKUtilities::s_viewConstructors;
+}
+
+const SMTKItemConstructorMap& qtSMTKUtilities::itemConstructors()
+{
+  return qtSMTKUtilities::s_itemConstructors;
 }
 
 void qtSMTKUtilities::registerViewConstructor(
-  const std::string& viewname, qtSMTKViewConstructor viewc)
+  const std::string& viewName, qtSMTKViewConstructor viewc)
 {
   // this will overwrite the existing constructor if the viewname exists in the map
-  qtSMTKUtilities::m_viewConstructors[viewname] = viewc;
+  qtSMTKUtilities::s_viewConstructors[viewName] = viewc;
+}
+
+void qtSMTKUtilities::registerItemConstructor(const std::string& itemName, qtItemConstructor itemc)
+{
+  // this will overwrite the existing constructor if the itemName exists in the map
+  qtSMTKUtilities::s_itemConstructors[itemName] = itemc;
 }
 
 void qtSMTKUtilities::updateViewConstructors(smtk::extension::qtUIManager* uiMan)
@@ -37,6 +51,19 @@ void qtSMTKUtilities::updateViewConstructors(smtk::extension::qtUIManager* uiMan
        it != qtSMTKUtilities::viewConstructors().end(); ++it)
   {
     uiMan->registerViewConstructor(it->first, it->second);
+  }
+}
+
+void qtSMTKUtilities::updateItemConstructors(smtk::extension::qtUIManager* uiMan)
+{
+  if (!uiMan || qtSMTKUtilities::itemConstructors().size() == 0)
+    return;
+
+  SMTKItemConstructorMap::const_iterator it;
+  for (it = qtSMTKUtilities::itemConstructors().begin();
+       it != qtSMTKUtilities::itemConstructors().end(); ++it)
+  {
+    uiMan->registerItemConstructor(it->first, it->second);
   }
 }
 

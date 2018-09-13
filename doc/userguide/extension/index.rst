@@ -16,4 +16,4 @@ additional functionality.
 
    qt.rst
    vtk.rst
-   paraview.rst
+   paraview/index.rst
