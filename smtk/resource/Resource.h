@@ -122,9 +122,10 @@ public:
   /// given a a std::string describing a query, return a set of components that
   /// satisfy the query criteria.
   ComponentSet find(const std::string& queryString) const;
-  /// given a a std::string describing a query and a type of container, return a set of components that
-  /// satisfy both.  Note that since this uses a dynamic_pointer cast this can be slower than other
-  /// find methods
+
+  /// given a a std::string describing a query and a type of container, return a
+  /// set of components that satisfy both.  Note that since this uses a dynamic
+  /// pointer cast this can be slower than other find methods.
   template <typename Collection>
   Collection findAs(const std::string& queryString) const;
 
