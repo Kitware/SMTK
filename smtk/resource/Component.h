@@ -33,7 +33,7 @@ class SMTKCORE_EXPORT Component : public PersistentObject
 
 public:
   typedef std::function<void(const ComponentPtr&)> Visitor;
-  typedef ComponentLinks Links;
+  typedef detail::ComponentLinks Links;
 
   smtkTypeMacro(Component);
   smtkSuperclassMacro(smtk::resource::PersistentObject);

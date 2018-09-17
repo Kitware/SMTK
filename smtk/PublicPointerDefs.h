@@ -255,7 +255,6 @@ typedef std::set<smtk::resource::PersistentObjectPtr> PersistentObjectSet;
 typedef smtk::shared_ptr<smtk::resource::PersistentObject> PersistentObjectPtr;
 typedef smtk::shared_ptr<smtk::resource::Resource> ResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Component> ComponentPtr;
-typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
 typedef smtk::weak_ptr<smtk::resource::Resource> WeakResourcePtr;
 typedef smtk::shared_ptr<smtk::resource::Set> SetPtr;
 typedef smtk::shared_ptr<const smtk::resource::Component> ConstComponentPtr;
@@ -264,6 +263,8 @@ typedef smtk::shared_ptr<const smtk::resource::Set> ConstSetPtr;
 typedef std::vector<PersistentObjectPtr> PersistentObjectArray;
 typedef std::vector<ResourcePtr> ResourceArray;
 typedef std::vector<ComponentPtr> ComponentArray;
+typedef std::set<PersistentObjectPtr> PersistentObjectSet;
+typedef std::set<ResourcePtr> ResourceSet;
 typedef std::set<ComponentPtr> ComponentSet;
 }
 

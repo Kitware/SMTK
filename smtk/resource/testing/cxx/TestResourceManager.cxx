@@ -15,6 +15,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+namespace
+{
 class ResourceA : public smtk::resource::DerivedFrom<ResourceA, smtk::resource::Resource>
 {
 public:
@@ -74,6 +76,7 @@ protected:
   {
   }
 };
+}
 
 int TestResourceManager(int, char** const)
 {

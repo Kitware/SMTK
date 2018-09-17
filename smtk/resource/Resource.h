@@ -53,7 +53,7 @@ class SMTKCORE_EXPORT Resource : public PersistentObject
 public:
   typedef std::size_t Index;
   typedef smtk::resource::Metadata Metadata;
-  typedef ResourceLinks Links;
+  typedef detail::ResourceLinks Links;
 
   friend class Manager;
 
