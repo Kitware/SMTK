@@ -16,7 +16,16 @@ function(expandXMLString rawString expandedString includedFiles)
     math(EXPR newlen "${len} - 7")
     string(SUBSTRING ${tmp} 6 ${newlen} incFileName)
 
-    string(CONCAT incFileName ${PROJECT_SOURCE_DIR} "/" ${incFileName})
+    # We need to differentiate betwen the build and install trees here. Just now
+    # we fake it by assuming that projects that depend on SMTK have
+    # SMTK_INCLUDE_DIR set.
+    #
+    # TODO: do this correctly
+    if (NOT DEFINED SMTK_INCLUDE_DIR)
+      string(CONCAT incFileName ${SMTK_SOURCE_DIR} "/" ${incFileName})
+    else ()
+      string(CONCAT incFileName ${SMTK_INCLUDE_DIR} "/" ${incFileName})
+    endif ()
 
     list(FIND includedFiles ${incFileName} index)
 

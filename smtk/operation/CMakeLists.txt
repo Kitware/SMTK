@@ -47,6 +47,11 @@ set(operationHeaders
   operators/WriteResource.h
 )
 
+set(operationXML
+  Operation.xml
+  Result.xml
+  )
+
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" defOpXML)
@@ -66,6 +71,12 @@ endif()
 
 #install the headers
 smtk_public_headers(${operationHeaders})
+
+#also install the xml files
+install(
+  FILES ${operationXML}
+  DESTINATION include/smtk/${SMTK_VERSION}/smtk/operation
+  )
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
