@@ -31,6 +31,7 @@ py::class_< smtk::model::Edge, smtk::model::CellEntity > pybind11_init_smtk_mode
   instance
     .def(py::init<::smtk::model::Edge const &>())
     .def(py::init<>())
+    .def(py::init<::smtk::model::EntityPtr>())
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::Edge::*)(::smtk::model::EntityRef const &) const) &smtk::model::Edge::operator!=)

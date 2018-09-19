@@ -29,6 +29,7 @@ py::class_< smtk::model::AuxiliaryGeometry, smtk::model::EntityRef > pybind11_in
   instance
     .def(py::init<::smtk::model::AuxiliaryGeometry const &>())
     .def(py::init<>())
+    .def(py::init<::smtk::model::EntityPtr>())
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::AuxiliaryGeometry::*)(::smtk::model::EntityRef const &) const) &smtk::model::AuxiliaryGeometry::operator!=)

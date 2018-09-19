@@ -30,6 +30,7 @@ py::class_< smtk::model::Group, smtk::model::EntityRef > pybind11_init_smtk_mode
   instance
     .def(py::init<::smtk::model::Group const &>())
     .def(py::init<>())
+    .def(py::init<::smtk::model::EntityPtr>())
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::Group::*)(::smtk::model::EntityRef const &) const) &smtk::model::Group::operator!=)
