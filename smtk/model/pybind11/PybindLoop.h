@@ -33,6 +33,7 @@ py::class_< smtk::model::Loop, smtk::model::ShellEntity > pybind11_init_smtk_mod
   instance
     .def(py::init<::smtk::model::Loop const &>())
     .def(py::init<>())
+    .def(py::init<::smtk::model::EntityPtr>())
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::Loop::*)(::smtk::model::EntityRef const &) const) &smtk::model::Loop::operator!=)

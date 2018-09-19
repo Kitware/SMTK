@@ -60,6 +60,9 @@ PySharedPtrClass< smtk::model::Entity, smtk::resource::Component > pybind11_init
     .def("resource", &smtk::model::Entity::resource)
     .def_static("specifierStringToFlag", &smtk::model::Entity::specifierStringToFlag, py::arg("spec"))
     .def_static("dimensionToDimensionBits", &smtk::model::Entity::dimensionToDimensionBits, py::arg("dim"))
+    .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Component> i) {
+        return std::dynamic_pointer_cast<smtk::model::Entity>(i);
+      })
     ;
   return instance;
 }

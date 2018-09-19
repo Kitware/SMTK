@@ -31,6 +31,7 @@ py::class_< smtk::model::VolumeUse, smtk::model::UseEntity > pybind11_init_smtk_
   instance
     .def(py::init<::smtk::model::VolumeUse const &>())
     .def(py::init<>())
+    .def(py::init<::smtk::model::EntityPtr>())
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::VolumeUse::*)(::smtk::model::EntityRef const &) const) &smtk::model::VolumeUse::operator!=)

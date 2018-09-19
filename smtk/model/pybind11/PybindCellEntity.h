@@ -32,6 +32,7 @@ py::class_< smtk::model::CellEntity, smtk::model::EntityRef > pybind11_init_smtk
   instance
     .def(py::init<::smtk::model::CellEntity const &>())
     .def(py::init<>())
+    .def(py::init<::smtk::model::EntityPtr>())
     .def(py::init<::smtk::model::EntityRef const &>())
     .def(py::init<::smtk::model::ResourcePtr, ::smtk::common::UUID const &>())
     .def("__ne__", (bool (smtk::model::CellEntity::*)(::smtk::model::EntityRef const &) const) &smtk::model::CellEntity::operator!=)
