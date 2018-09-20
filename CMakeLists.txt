@@ -590,6 +590,7 @@ install (FILES ${PROJECT_BINARY_DIR}/smtk/Options.h
 # Install rules for SMTK macros usable by external packages:
 install(
   FILES
+    ${PROJECT_SOURCE_DIR}/CMake/SMTKMacros.cmake
     ${PROJECT_SOURCE_DIR}/CMake/EncodeStringFunctions.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperationXML.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKSessionJSON.cmake

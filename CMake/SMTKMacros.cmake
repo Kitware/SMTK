@@ -6,6 +6,8 @@
 #
 #=========================================================================
 
+include(GenerateExportHeader)
+
 # Utility to build a kit name from the current directory.
 function(smtk_get_kit_name kitvar)
   string(REPLACE "${SMTK_SOURCE_DIR}/" "" dir_prefix ${CMAKE_CURRENT_SOURCE_DIR})
