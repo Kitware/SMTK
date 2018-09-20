@@ -593,9 +593,19 @@ install(
     ${PROJECT_SOURCE_DIR}/CMake/SMTKMacros.cmake
     ${PROJECT_SOURCE_DIR}/CMake/EncodeStringFunctions.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperationXML.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/SMTKPluginMacros.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKSessionJSON.cmake
   DESTINATION
     ${CMAKE_INSTALL_LIBDIR}/cmake/SMTK
+)
+
+# This file needs to be installed, but I'm not quite sure where to put it. For
+# now, let's put it in SMTK's include directory.
+install(
+  FILES
+    ${PROJECT_SOURCE_DIR}/CMake/serverSource.cxx.in
+  DESTINATION
+    include/smtk/${SMTK_VERSION}/smtk
 )
 
 ################################################################################
