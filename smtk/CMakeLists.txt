@@ -70,9 +70,14 @@ set(smtkCore_private_include_directories
 
 set(smtkCore_public_link_libraries
   cJSON
-  MOAB
-  nlohmann_json
+  ${MOAB_LIBRARIES}
   )
+if (NOT APPLE AND NOT $ENV{CONDA_PREFIX})
+  set(smtkCore_public_link_libraries
+    ${smtkCore_public_link_libraries}
+    nlohmann_json
+  )
+endif()
 
 set(smtkCore_private_link_libraries
   ${Boost_LIBRARIES}

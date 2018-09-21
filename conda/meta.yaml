@@ -1,0 +1,69 @@
+package:
+  name:    smtk
+  version: "3.0.0conda"
+
+build:
+  number: 1
+
+source:
+  # git_rev: conda-py2
+  # git_url: https://gitlab.kitware.com/john.tourtellott/smtk.git
+  - git_rev: '6425a480ffe8e08b96453618fc5530e08e68ae8a'
+    git_url: https://bitbucket.org/fathomteam/moab.git
+    folder: moab
+  - path: {{RECIPE_DIR}}/..
+    folder: smtk
+
+requirements:
+  host:
+    - python
+    - boost=1.67.0
+    - eigen
+    - hdf5
+    - libcurl
+    - libnetcdf
+    - nlohmann_json
+  build:
+    - python
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - cmake
+    - git
+    - make
+    - pybind11
+  run:
+    - boost=1.67.0
+    - eigen
+    - hdf5
+    - netcdf4
+    - nlohmann_json
+    - python
+
+outputs:
+  - name: smtk
+    files:
+      - lib/libMOAB.*
+      - lib/cmake/Delaunay
+      - lib/cmake/SMTK
+      - lib/libsmtk*
+      - lib/python{{PY_VER}}/site-packages/smtk
+
+test:
+  imports:
+    - smtk
+    - smtk.attribute
+    - smtk.common
+    - smtk.io
+    - smtk.mesh
+    - smtk.model
+    - smtk.operation
+    - smtk.resource
+    - smtk.session.mesh
+    - smtk.session.polygon
+    - smtk.simulation
+    - smtk.view
+
+about:
+  home:          https://gitlab.kitware.com/cmb/smtk
+  license:       BSD
+  license_file:  smtk/LICENSE.txt

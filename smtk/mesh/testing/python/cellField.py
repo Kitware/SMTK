@@ -37,6 +37,7 @@ def test_create_cell_field():
                               str(smtk.common.UUID.random()) + ".h5m")
 
     smtk.io.exportMesh(write_path, c)
+    print 'Wrote write_path', os.path.abspath(write_path)
     return write_path
 
 
@@ -49,6 +50,9 @@ def test_read_cell_field(mesh_path):
         raise RuntimeError("Failed to read back valid mesh")
 
     mesh = c.meshes()
+    print 'points.size():', mesh.points().size()
+    print 'cells.size():', mesh.cells().size()
+    # Next line crashes
     cellfields = mesh.cellFields()
 
     if not cellfields:
