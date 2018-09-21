@@ -16,6 +16,12 @@ namespace smtk
 namespace resource
 {
 
+Observers::Observers(Manager* rsrcMgr, ObserverInitializer initializer)
+  : m_parent(rsrcMgr)
+  , m_initializer(initializer)
+{
+}
+
 void Observers::operator()(std::shared_ptr<Resource> resource, EventType event)
 {
   if (!resource)
@@ -34,10 +40,15 @@ void Observers::operator()(std::shared_ptr<Resource> resource, EventType event)
   }
 }
 
-Observers::Key Observers::insert(Observer fn)
+Observers::Key Observers::insert(Observer fn, bool immediatelyNotify)
 {
   Key handle = m_observers.empty() ? 0 : m_observers.rbegin()->first + 1;
-  return m_observers.insert(std::make_pair(handle, fn)).second ? handle : -1;
+  handle = m_observers.insert(std::make_pair(handle, fn)).second ? handle : -1;
+  if (immediatelyNotify && m_initializer)
+  {
+    m_initializer(m_parent, fn);
+  }
+  return handle;
 }
 
 std::size_t Observers::erase(Observers::Key handle)

@@ -42,6 +42,7 @@ static void updateLabel(QLabel* lbl, const QString& txt, bool ok)
 
 qtReferenceItemData::qtReferenceItemData()
   : m_optional(nullptr)
+  , m_modelObserverId(-1)
 {
 }
 
@@ -57,6 +58,10 @@ qtReferenceItem::qtReferenceItem(const AttributeItemInfo& info)
 
 qtReferenceItem::~qtReferenceItem()
 {
+  if (m_p->m_phraseModel && m_p->m_modelObserverId >= 0)
+  {
+    m_p->m_phraseModel->unobserve(m_p->m_modelObserverId);
+  }
   m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
   delete m_p;
   m_p = nullptr;
@@ -159,6 +164,9 @@ void qtReferenceItem::updateUI()
   m_p->m_qtModel->setVisibleIconURL(":/icons/display/selected.png");
   m_p->m_qtModel->setInvisibleIconURL(":/icons/display/unselected.png");
   m_p->m_phraseModel->addSource(rsrcMgr, operMgr);
+  m_p->m_modelObserverId = m_p->m_phraseModel->observe([this](smtk::view::DescriptivePhrasePtr phr,
+    smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
+    const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); });
 
   // Create a container for the item:
   m_widget = new QFrame(m_itemInfo.parentWidget());
@@ -365,4 +373,41 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     }
   }
   return false;
+}
+
+void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr phr,
+  smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
+  const std::vector<int>& refs)
+{
+  (void)phr;
+  (void)dst;
+  if (evt == smtk::view::PhraseModelEvent::ABOUT_TO_REMOVE)
+  {
+    bool didChange = false;
+    auto itm = this->itemAs<smtk::attribute::ReferenceItem>();
+    auto qidx = m_p->m_qtModel->indexFromPath(src);
+    for (auto ref : refs)
+    {
+      auto ridx = m_p->m_qtModel->index(ref, 0, qidx);
+      auto rphr = m_p->m_qtModel->getItem(ridx);
+      auto comp = rphr ? rphr->relatedComponent() : nullptr;
+      auto rsrc = rphr ? rphr->relatedResource() : nullptr;
+      if (comp && m_p->m_members.find(comp) != m_p->m_members.end())
+      {
+        m_p->m_members.erase(comp);
+        itm->removeValue(itm->find(comp));
+        didChange = true;
+      }
+      else if (rsrc && m_p->m_members.find(rsrc) != m_p->m_members.end())
+      {
+        m_p->m_members.erase(rsrc);
+        itm->removeValue(itm->find(rsrc));
+        didChange = true;
+      }
+    }
+    if (didChange)
+    {
+      this->updateSynopsisLabels();
+    }
+  }
 }

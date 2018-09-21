@@ -18,8 +18,25 @@ namespace smtk
 {
 namespace resource
 {
+namespace
+{
+
+void InitializeObserver(Manager* mgr, Observer fn)
+{
+  if (!mgr || !fn)
+  {
+    return;
+  }
+
+  for (auto rsrc : mgr->resources())
+  {
+    fn(rsrc, smtk::resource::EventType::ADDED);
+  }
+}
+}
 
 Manager::Manager()
+  : m_observers(this, InitializeObserver)
 {
 }
 

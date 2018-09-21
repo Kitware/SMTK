@@ -81,10 +81,12 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
     }
   }
   int rsrcHandle = rsrcMgr
-    ? rsrcMgr->observers().insert([this](Resource::Ptr rsrc, resource::EventType event) {
-        this->handleResourceEvent(rsrc, event);
-        return 0;
-      })
+    ? rsrcMgr->observers().insert(
+        [this](Resource::Ptr rsrc, resource::EventType event) {
+          this->handleResourceEvent(rsrc, event);
+          return 0;
+        },
+        /*observeImmediately*/ true)
     : -1;
   int operHandle = operMgr
     ? operMgr->observers().insert(

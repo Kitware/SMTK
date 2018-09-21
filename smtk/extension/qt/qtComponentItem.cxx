@@ -189,7 +189,8 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
             if (val && !m_p->m_members.empty())
             {
               auto item = m_itemInfo.itemAs<attribute::ComponentItem>();
-              if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
+              if (item->numberOfRequiredValues() <= 1 &&
+                (!item->isExtensible() || item->maxNumberOfValues() == 1))
               { // Clear all other members since only 1 is allowed and the user just chose it.
                 m_p->m_members.clear();
                 m_p->m_phraseModel->triggerDataChanged();
