@@ -50,3 +50,4 @@ add_smtk_plugin(
     vtkPolygonOperationsExtCS
     vtkSMTKFilterExtCS
   )
+smtk_install_library(smtkPolygonSessionPlugin)

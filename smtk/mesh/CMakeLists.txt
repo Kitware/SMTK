@@ -130,6 +130,7 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
     REGISTRAR_HEADER smtk/mesh/resource/Registrar.h
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore)
+  smtk_install_library(smtkMeshPlugin)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

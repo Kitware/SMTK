@@ -104,6 +104,7 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     REGISTRAR smtk::session::vtk::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore smtkVTKSession)
+smtk_install_library(smtkVTKSessionPlugin)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

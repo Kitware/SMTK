@@ -68,6 +68,7 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
     REGISTRAR smtk::session::multiscale::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore smtkMultiscaleSession)
+  smtk_install_library(smtkMultiscaleSessionPlugin)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

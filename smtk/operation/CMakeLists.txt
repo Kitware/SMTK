@@ -84,6 +84,7 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
     REGISTRAR smtk::operation::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore)
+  smtk_install_library(smtkOperationPlugin)
 endif()
 
 if (SMTK_ENABLE_TESTING)

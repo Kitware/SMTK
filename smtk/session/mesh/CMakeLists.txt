@@ -61,6 +61,7 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
     REGISTRAR smtk::session::mesh::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore smtkMeshSession)
+  smtk_install_library(smtkMeshSessionPlugin)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
