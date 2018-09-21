@@ -11,6 +11,7 @@
 #define smtk_view_ComponentPhraseModel_h
 
 #include "smtk/view/PhraseModel.h"
+#include "smtk/view/View.h"
 
 #include <functional>
 #include <map>
@@ -19,7 +20,6 @@ namespace smtk
 {
 namespace view
 {
-
 /**\brief Present phrases describing a set of acceptable components held by a single resource.
   *
   * This model maintains the list of acceptable components by
@@ -49,7 +49,7 @@ public:
     * properly initializes its subphrase generator with a reference to
     * the created model so that subphrases are properly decorated.
     */
-  static PhraseModelPtr create(const ViewPtr& view);
+  static PhraseModelPtr create(const View::Component& viewComp);
 
   /// Return the active resource (i.e., the one resource whose components should be displayed).
   smtk::resource::ResourcePtr activeResource() const { return m_activeResource; }

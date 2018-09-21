@@ -61,8 +61,7 @@ smtk::view::PhraseModelPtr qtComponentItem::createPhraseModel() const
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
   // to point back to the model (thus ensuring subphrases are decorated). This is required
   // since we need to decorate phrases to show+edit "visibility" as set membership:
-  auto view = smtk::view::View::New("ComponentItem", "stuff");
-  auto phraseModel = smtk::view::ComponentPhraseModel::create(view);
+  auto phraseModel = smtk::view::ComponentPhraseModel::create(m_itemInfo.component());
   phraseModel->root()->findDelegate()->setModel(phraseModel);
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ComponentItemDefinition>(
     m_itemInfo.item()->definition());
