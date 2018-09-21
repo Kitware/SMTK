@@ -260,6 +260,7 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
     REGISTRAR smtk::session::discrete::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore smtkDiscreteSession)
+  smtk_install_library(smtkDiscreteSessionPlugin)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

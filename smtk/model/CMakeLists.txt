@@ -126,6 +126,7 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
     REGISTRAR smtk::model::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore)
+  smtk_install_library(smtkModelPlugin)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

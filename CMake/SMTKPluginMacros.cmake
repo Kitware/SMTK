@@ -76,6 +76,5 @@ function(add_smtk_plugin SMTK_PLUGIN_NAME SMTK_PLUGIN_VERSION)
       vtkPVServerManagerApplicationCS
       ${SMTK_PLUGIN_LIBRARIES_PRIVATE}
 )
-smtk_install_library(${SMTK_PLUGIN_NAME})
 
 endfunction(add_smtk_plugin)
