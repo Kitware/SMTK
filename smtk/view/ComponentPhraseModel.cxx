@@ -26,9 +26,11 @@
 
 using namespace smtk::view;
 
-PhraseModelPtr ComponentPhraseModel::create(const smtk::view::ViewPtr& viewSpec)
+PhraseModelPtr ComponentPhraseModel::create(const smtk::view::View::Component& itemViewSpec)
 {
-  (void)viewSpec;
+  // Currently the itemViewSpec is not used but in the future it wll contain information to
+  // customize how the model should behave
+  (void)itemViewSpec;
   auto model = PhraseModel::Ptr(new ComponentPhraseModel);
   model->root()->findDelegate()->setModel(model);
   return model;
@@ -208,6 +210,3 @@ void ComponentPhraseModel::populateRoot()
   this->root()->findDelegate()->decoratePhrases(children);
   this->updateChildren(m_root, children, std::vector<int>());
 }
-
-smtkImplementsPhraseModel(
-  SMTKCORE_EXPORT, smtk::view::ComponentPhraseModel, component, ComponentPhrase);

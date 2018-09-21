@@ -192,6 +192,3 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
     }
   }
 }
-
-smtkImplementsPhraseModel(
-  SMTKCORE_EXPORT, smtk::view::ResourcePhraseModel, resource, ResourcePhrase);

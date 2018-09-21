@@ -25,18 +25,6 @@
 #include <functional>
 #include <list>
 
-#define smtkImplementsPhraseModel(exportMacro, className, compName, viewName)                      \
-  /* Implement autoinit methods */                                                                 \
-  void exportMacro smtk_##compName##_phrase_model_AutoInit_Construct()                             \
-  {                                                                                                \
-    smtk::view::PhraseModel::registerModelType(                                                    \
-      #viewName, [](const smtk::view::ViewPtr& view) { return className::create(view); });         \
-  }                                                                                                \
-  void exportMacro smtk_##compName##_phrase_model_AutoInit_Destruct()                              \
-  {                                                                                                \
-    smtk::view::PhraseModel::unregisterModelType(#viewName);                                       \
-  }
-
 namespace smtk
 {
 namespace view

@@ -16,7 +16,7 @@
 #define smtkAssignColorsView_h
 
 #include "smtk/extension/paraview/operators/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtOperationView.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
 class QColor;
@@ -28,7 +28,7 @@ class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkAssignColorsView : public smtk::extensi
   Q_OBJECT
 
 public:
-  smtkAssignColorsView(const smtk::extension::ViewInfo& info);
+  smtkAssignColorsView(const smtk::extension::OperationViewInfo& info);
   virtual ~smtkAssignColorsView();
 
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
@@ -49,8 +49,6 @@ public slots:
 
 protected slots:
   virtual void requestOperation(const smtk::operation::OperationPtr& op);
-  virtual void cancelOperation(const smtk::operation::OperationPtr&);
-  virtual void clearSelection();
 
   virtual void chooseDefaultColorAndApply();
   virtual void applyDefaultColor();

@@ -129,13 +129,14 @@ public:
   QPointer<QHBoxLayout> EditorLayout;
 
   QPointer<pqPresetDialog> PaletteChooser;
-  smtk::weak_ptr<smtk::operation::Operation> CurrentOp;
+  smtk::shared_ptr<smtk::operation::Operation> CurrentOp;
 };
 
-smtkAssignColorsView::smtkAssignColorsView(const ViewInfo& info)
+smtkAssignColorsView::smtkAssignColorsView(const OperationViewInfo& info)
   : qtBaseView(info)
 {
   this->Internals = new smtkAssignColorsViewInternals;
+  this->Internals->CurrentOp = info.m_operator;
 }
 
 smtkAssignColorsView::~smtkAssignColorsView()
@@ -154,7 +155,13 @@ bool smtkAssignColorsView::displayItem(smtk::attribute::ItemPtr item)
 
 qtBaseView* smtkAssignColorsView::createViewWidget(const ViewInfo& info)
 {
-  smtkAssignColorsView* view = new smtkAssignColorsView(info);
+  const OperationViewInfo* opinfo = dynamic_cast<const OperationViewInfo*>(&info);
+  smtkAssignColorsView* view;
+  if (!opinfo)
+  {
+    return nullptr;
+  }
+  view = new smtkAssignColorsView(*opinfo);
   view->buildUI();
   return view;
 }
@@ -310,11 +317,6 @@ void smtkAssignColorsView::createWidget()
   QObject::connect( // When asked, invalidate colors on the associated entities.
     this->Internals->RemoveColorBtn, SIGNAL(released()), this, SLOT(removeColors()));
 
-  QObject::disconnect(this->uiManager()->activeModelView());
-  QObject::connect(this->uiManager()->activeModelView(),
-    SIGNAL(operationCancelled(const smtk::operation::OperationPtr&)), this,
-    SLOT(cancelOperation(const smtk::operation::OperationPtr&)));
-
   // Show help when the info button is clicked.
   QObject::connect(this->Internals->InfoBtn, SIGNAL(released()), this, SLOT(onInfo()));
 }
@@ -364,13 +366,8 @@ void smtkAssignColorsView::updateAttributeData()
     return;
   }
 
-  // FIXME: This used to fetch a pre-existing operation, which assumed there was only one.
-  smtk::operation::OperationPtr assignColorsOp =
-    this->uiManager()->operationManager()->create(defName);
-  this->Internals->CurrentOp = assignColorsOp;
-
   // expecting only 1 instance of the op?
-  smtk::attribute::AttributePtr att = assignColorsOp->parameters();
+  smtk::attribute::AttributePtr att = this->Internals->CurrentOp->parameters();
   this->Internals->CurrentAtt = this->Internals->createAttUI(att, this->Widget, this);
 }
 
@@ -380,23 +377,14 @@ void smtkAssignColorsView::requestOperation(const smtk::operation::OperationPtr&
   {
     return;
   }
-  this->uiManager()->activeModelView()->requestOperation(op, false);
-}
-
-void smtkAssignColorsView::cancelOperation(const smtk::operation::OperationPtr& op)
-{
-  if (!op || !this->Widget || !this->Internals->CurrentAtt)
-  {
-    return;
-  }
-  // Reset widgets here
+  op->operate();
 }
 
 void smtkAssignColorsView::valueChanged(smtk::attribute::ItemPtr valItem)
 {
   (void)valItem;
   //std::cout << "Item " << valItem->name() << " type " << valItem->type() << " changed\n";
-  this->requestOperation(this->Internals->CurrentOp.lock());
+  this->requestOperation(this->Internals->CurrentOp);
 }
 
 void smtkAssignColorsView::chooseDefaultColorAndApply()
@@ -415,8 +403,7 @@ void smtkAssignColorsView::chooseDefaultColorAndApply()
 
 void smtkAssignColorsView::applyDefaultColor()
 {
-  auto op = this->Internals->CurrentOp.lock();
-  if (!this->Internals->CurrentAtt || !this->Widget || !op)
+  if (!this->Internals->CurrentAtt || !this->Widget || !this->Internals->CurrentOp)
   {
     return;
   }
@@ -433,7 +420,7 @@ void smtkAssignColorsView::applyDefaultColor()
   colorsItem->setNumberOfValues(1);
   colorsItem->setValue(0, color.name().toUtf8().constData());
 
-  this->requestOperation(op);
+  this->requestOperation(this->Internals->CurrentOp);
 }
 
 void smtkAssignColorsView::setDefaultPaletteAndApply()
@@ -452,8 +439,7 @@ void smtkAssignColorsView::setDefaultPaletteAndApply()
 
 void smtkAssignColorsView::applyDefaultPalette()
 {
-  auto op = this->Internals->CurrentOp.lock();
-  if (!this->Internals->CurrentAtt || !this->Widget || !op)
+  if (!this->Internals->CurrentAtt || !this->Widget || !this->Internals->CurrentOp)
   {
     return;
   }
@@ -479,13 +465,12 @@ void smtkAssignColorsView::applyDefaultPalette()
     colorsItem->setValue(pp, palette.at(pp).name().toUtf8().constData());
   }
 
-  this->requestOperation(op);
+  this->requestOperation(this->Internals->CurrentOp);
 }
 
 void smtkAssignColorsView::removeColors()
 {
-  auto op = this->Internals->CurrentOp.lock();
-  if (!this->Internals->CurrentAtt || !op)
+  if (!this->Internals->CurrentAtt || !this->Internals->CurrentOp)
   {
     return;
   }
@@ -493,12 +478,7 @@ void smtkAssignColorsView::removeColors()
   smtk::attribute::StringItem::Ptr colorsItem =
     this->Internals->CurrentAtt->attribute()->findString("colors");
   colorsItem->setNumberOfValues(0);
-  this->requestOperation(op);
-}
-
-void smtkAssignColorsView::clearSelection()
-{
-  this->uiManager()->activeModelView()->clearSelection();
+  this->requestOperation(this->Internals->CurrentOp);
 }
 
 void smtkAssignColorsView::showAdvanceLevelOverlay(bool show)
