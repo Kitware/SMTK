@@ -69,7 +69,7 @@ set(smtkCore_private_include_directories
 
 set(smtkCore_public_link_libraries
   cJSON
-  MOAB
+  ${MOAB_LIBRARIES}
   nlohmann_json
   )
 

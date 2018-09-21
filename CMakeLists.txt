@@ -84,6 +84,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ################################################################################
 # Options that the user controls
 ################################################################################
+
+option(CONDA_BUILD "Building using conda environment instead of system" ON)
+if (CONDA_BUILD)
+  include(CMake/Conda.cmake)
+endif()
+
 include(CMakeDependentOption)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
@@ -117,8 +123,9 @@ cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model sessio
   SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" OFF
   "SMTK_ENABLE_DISCRETE_SESSION" OFF)
-cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
-  SMTK_ENABLE_VTK_SUPPORT OFF)
+# cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
+#   SMTK_ENABLE_VTK_SUPPORT OFF)
+option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
 cmake_dependent_option(SMTK_ENABLE_VTK_SESSION "Build a session that uses VTK multiblock datasets" ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
 option(SMTK_ENABLE_MESH_SESSION
@@ -262,6 +269,9 @@ find_package(nlohmann_json REQUIRED)
 
 # Moab is required for building smtk::mesh, as it is the default storage
 # format for meshes.
+if (CONDA_BUILD)
+  set(MOAB_ROOT_DIR "${conda_root}/lib/cmake/MOAB")
+endif()
 find_package(MOAB REQUIRED)
 
 
@@ -359,7 +369,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
       set(PYTHON_MODULE_EXTENSION ".so")
     endif()
     set(PYTHON_MODULE_PREFIX "")
-    find_package(pybind11 2.3 REQUIRED)
+    if (CONDA_BUILD)
+      # pybind11 version 2.3 not currently available from conda-forge
+      find_package(pybind11 REQUIRED)
+    else()
+      find_package(pybind11 2.3 REQUIRED)
+    endif()
 
     set(SMTK_PYBIND11_FLAGS " ")
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR

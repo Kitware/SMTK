@@ -60,7 +60,7 @@ function(smtk_add_header_test name dir_prefix)
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
   #also link against moab so we build properly
   target_link_libraries(TestBuild_${name}
-    PRIVATE MOAB)
+    PRIVATE ${MOAB_LIBRARIES})
 
 
 endfunction(smtk_add_header_test)
