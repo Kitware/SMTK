@@ -23,7 +23,7 @@
 #include "smtk/session/polygon/operators/DemoteVertex.h"
 #include "smtk/session/polygon/operators/ExtractContours.h"
 #include "smtk/session/polygon/operators/ForceCreateFace.h"
-#include "smtk/session/polygon/operators/Import.h"
+//#include "smtk/session/polygon/operators/Import.h"
 #include "smtk/session/polygon/operators/LegacyRead.h"
 #include "smtk/session/polygon/operators/Read.h"
 #include "smtk/session/polygon/operators/SplitEdge.h"
@@ -33,7 +33,7 @@
 #include "smtk/session/polygon/Resource.h"
 
 #include "smtk/operation/groups/CreatorGroup.h"
-#include "smtk/operation/groups/ImporterGroup.h"
+//#include "smtk/operation/groups/ImporterGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -48,7 +48,7 @@ namespace
 {
 typedef std::tuple<CleanGeometry, CreateEdge, CreateEdgeFromPoints, CreateEdgeFromVertices,
   CreateFaces, CreateFacesFromEdges, CreateModel, CreateVertices, Delete, DemoteVertex,
-  ExtractContours, ForceCreateFace, Import, LegacyRead, Read, SplitEdge, TweakEdge, Write>
+  ExtractContours, ForceCreateFace, LegacyRead, Read, SplitEdge, TweakEdge, Write>
   OperationList;
 }
 
@@ -65,8 +65,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   smtk::operation::CreatorGroup(operationManager)
     .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::CreateModel>();
 
-  smtk::operation::ImporterGroup(operationManager)
-    .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::Import>();
+  // smtk::operation::ImporterGroup(operationManager)
+  //   .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::Import>();
 
   smtk::operation::ReaderGroup(operationManager)
     .registerOperation<smtk::session::polygon::Resource, smtk::session::polygon::Read>();
