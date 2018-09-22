@@ -12,7 +12,7 @@ set(BOOST_INCLUDEDIR "${conda_root}/include" CACHE PATH "Initial cache")
 set(BOOST_LIBRARYDIR "${conda_root}/lib" CACHE PATH "Initial cache")
 
 set(SMTK_ENABLE_EXODUS_SESSION OFF CACHE BOOL "Initial cache")
-set(SMTK_ENABLE_MESH_SESSION OFF CACHE BOOL "Initial cache")
+set(SMTK_ENABLE_MESH_SESSION ON CACHE BOOL "Initial cache")
 set(SMTK_ENABLE_POLYGON_SESSION ON CACHE BOOL "Initial cache")
 #set(SMTK_ENABLE_TESTING OFF CACHE BOOL "Initial cache")
 set(SMTK_ENABLE_VTK_SUPPORT OFF CACHE BOOL "Initial cache")

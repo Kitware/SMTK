@@ -337,8 +337,30 @@ add_subdirectory(thirdparty)
 # Wrapping Related Settings
 ################################################################################
 if(SMTK_ENABLE_PYTHON_WRAPPING)
-  find_package(PythonLibs REQUIRED)
-  find_package(PythonInterp 2.7 REQUIRED)
+  if(WIN32)
+    set(PYTHON_MODULE_EXTENSION ".pyd")
+  else()
+    set(PYTHON_MODULE_EXTENSION ".so")
+  endif()
+
+  if (CONDA_BUILD)
+    # Todo get python version from conda ("conda list python")
+    set(py_version "2.7")
+
+    set(PYTHONLIBS_VERSION_STRING "${py_version}")
+    set(PYTHON_LIBRARIES "${conda_root}/lib/libpython${py_version}${PYTHON_MODULE_EXTENSION}")
+    set(PYTHON_INCLUDE_DIRS "${conda_root}/include/python${py_version}")
+    set(PYTHONLIBS_FOUND true)
+
+    set(PYTHON_EXECUTABLE "${conda_root}/bin/python${py_version}")
+    set(PYTHONINTERP_FOUND true)
+  else()
+    find_package(PythonLibs REQUIRED)
+    find_package(PythonInterp 2.7 REQUIRED)
+  endif()
+  message("PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE}")
+  message("PYTHON_INCLUDE_DIRS  ${PYTHON_INCLUDE_DIRS}")
+  message("PYTHON_LIBRARIES ${PYTHON_LIBRARIES}")
 
   # Initialize SMTK_PYTHON_MODULEDIR.
   # This stores the location where we'll install SMTK's Python modules.
@@ -362,27 +384,21 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   endif()
 
 
-  if(SMTK_ENABLE_PYTHON_WRAPPING)
-    if(WIN32)
-      set(PYTHON_MODULE_EXTENSION ".pyd")
-    else()
-      set(PYTHON_MODULE_EXTENSION ".so")
-    endif()
-    set(PYTHON_MODULE_PREFIX "")
-    if (CONDA_BUILD)
-      # pybind11 version 2.3 not currently available from conda-forge
-      find_package(pybind11 REQUIRED)
-    else()
-      find_package(pybind11 2.3 REQUIRED)
-    endif()
-
-    set(SMTK_PYBIND11_FLAGS " ")
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
-       CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
-       CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-      set(SMTK_PYBIND11_FLAGS "${SMTK_PYBIND11_FLAGS} -Wno-shadow")
-    endif()
+  set(PYTHON_MODULE_PREFIX "")
+  if (CONDA_BUILD)
+    # pybind11 version 2.3 not currently available from conda-forge
+    find_package(pybind11 REQUIRED)
+  else()
+    find_package(pybind11 2.3 REQUIRED)
   endif()
+
+  set(SMTK_PYBIND11_FLAGS " ")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
+     CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
+     CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    set(SMTK_PYBIND11_FLAGS "${SMTK_PYBIND11_FLAGS} -Wno-shadow")
+  endif()
+  message("SMTK_PYTHON_MODULEDIR ${SMTK_PYTHON_MODULEDIR}")
 
 
   # Set up environment variables needed to import the python modules for tests.
