@@ -254,7 +254,7 @@ endif()
 # build machine without any issues. If this not desired, simply specify
 # CMAKE_INSTALL_RPATH_USE_LINK_PATH when configuring and "make install" will
 # strip all rpaths, which is default behavior.
-if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH)
+if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH AND NOT CONDA_BUILD)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif ()
 
@@ -354,6 +354,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
     set(PYTHON_EXECUTABLE "${conda_root}/bin/python${py_version}")
     set(PYTHONINTERP_FOUND true)
+
+    set(SMTK_PYTHON_MODULEDIR "${conda_root}/lib/python${py_version}/site-packages")
   else()
     find_package(PythonLibs REQUIRED)
     find_package(PythonInterp 2.7 REQUIRED)

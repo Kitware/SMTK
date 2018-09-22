@@ -27,7 +27,7 @@ These packages are needed in the conda environment:
 The moab and nlohmann_json packages were obtained from conda-forge; the rest from the
 default anaconda repository.
 
-For linux builds, there is a spec file in the root directory: conda-spec-file-linux64.txt.
+For linux builds, there is a spec file in the "conda" directory: conda-spec-file-linux64.txt.
 
 **Use the conda environment for all cmake and build steps.**
 

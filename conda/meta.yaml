@@ -1,0 +1,28 @@
+package:
+  name:    smtk
+  version: "3.0.0conda"
+
+source:
+  git_rev: conda-py2
+  git_url: https://gitlab.kitware.com/john.tourtellott/smtk.git
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - boost
+    - cmake
+    - git
+    - moab
+    - nlohmann_json
+    - pybind11
+    - python=2.7
+  run:
+    - boost
+    - moab
+    - nlohmann_json
+    - python=2.7
+
+about:
+  home:          https://gitlab.kitware.com/cmb/smtk
+  license:       BSD
+  license_file:  LICENSE.txt
