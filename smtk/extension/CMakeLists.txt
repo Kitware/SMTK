@@ -50,12 +50,10 @@ elseif(SMTK_ENABLE_VTK_SUPPORT)
   if (SMTK_ENABLE_TESTING)
     list(APPEND __required_vtk_modules vtkTestingRendering)
   endif()
-  message("__required_vtk_modules = ${__required_vtk_modules}")
   find_package( VTK REQUIRED COMPONENTS ${__required_vtk_modules} )
 
   include("${VTK_USE_FILE}")
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-  # message("VTK_MODULES_DIR=${VTK_MODULES_DIR}")
 endif()
 
 set(SMTK_VTK_SUPPORT_ENABLED "False")
@@ -66,7 +64,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   # The pv_process_modules() macro finds all subdirectories
   # containing a module.cmake file automatically.
   include (smtkVTKModules)
-  vtk_smtk_setup_module_environment("SMTK")
+  vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
   vtk_smtk_process_modules()
 
   set(SMTK_VTK_SUPPORT_ENABLED "True")

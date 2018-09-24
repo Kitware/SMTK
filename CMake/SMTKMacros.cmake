@@ -10,7 +10,7 @@ include(GenerateExportHeader)
 
 # Utility to build a kit name from the current directory.
 function(smtk_get_kit_name kitvar)
-  string(REPLACE "${SMTK_SOURCE_DIR}/" "" dir_prefix ${CMAKE_CURRENT_SOURCE_DIR})
+  string(REPLACE "${${CMAKE_PROJECT_NAME}_SOURCE_DIR}/" "" dir_prefix ${CMAKE_CURRENT_SOURCE_DIR})
   string(REPLACE "/" "_" kit "${dir_prefix}")
   set(${kitvar} "${kit}" PARENT_SCOPE)
   # Optional second argument to get dir_prefix.
@@ -47,7 +47,7 @@ function(smtk_add_header_test name dir_prefix)
     get_filename_component(headername ${header} NAME_WE)
     smtk_header_test_cxx_name(${name} ${headername} src)
 #    set(src ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername}${suffix})
-    configure_file(${SMTK_SOURCE_DIR}/CMake/TestBuild.cxx.in ${src} @ONLY)
+    configure_file(${${CMAKE_PROJECT_NAME}_SOURCE_DIR}/CMake/TestBuild.cxx.in ${src} @ONLY)
     set(cxxfiles ${cxxfiles} ${src})
   endforeach (header)
 
@@ -87,9 +87,9 @@ function(smtk_public_headers)
     else ()
       set(suffix "")
     endif ()
-    install (FILES ${header} DESTINATION include/smtk/${SMTK_VERSION}/${dir_prefix}${suffix})
+    install (FILES ${header} DESTINATION include/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix}${suffix})
   endforeach ()
-  if (SMTK_ENABLE_TESTING)
+  if (BUILD_TESTING)
     smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
   endif()
 endfunction(smtk_public_headers)
@@ -98,7 +98,7 @@ endfunction(smtk_public_headers)
 # compiled and show up in an IDE.
 function(smtk_private_headers)
   smtk_get_kit_name(name dir_prefix)
-  if (SMTK_ENABLE_TESTING)
+  if (BUILD_TESTING)
     smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
   endif()
 endfunction(smtk_private_headers)
@@ -110,19 +110,19 @@ endfunction(smtk_private_headers)
 function(smtk_install_library target)
   set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET hidden)
   install(TARGETS ${target}
-    EXPORT SMTK
+    EXPORT ${CMAKE_PROJECT_NAME}
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-  export(TARGETS ${target} APPEND FILE ${SMTK_BINARY_DIR}/SMTKTargets.cmake)
+  export(TARGETS ${target} APPEND FILE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Targets.cmake)
 endfunction(smtk_install_library)
 
 #generate an export header and create an install target for it
 function(smtk_export_header target file)
   smtk_get_kit_name(name dir_prefix)
   generate_export_header(${target} EXPORT_FILE_NAME ${file})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/smtk/${SMTK_VERSION}/${dir_prefix})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix})
 endfunction(smtk_export_header)
 
 # Builds a source file and an executable that does nothing other than
@@ -142,7 +142,6 @@ function(smtk_prepend_string prefix result)
 endfunction(smtk_prepend_string)
 
 include(SMTKOperationXML)
-include(SMTKSessionJSON)
 
 # Builds source groups for the smtk files so that they show up nicely in
 # Visual Studio.
@@ -189,9 +188,9 @@ MACRO(ADD_SMTK_UI_VIEW OUTIFACES OUTSRCS)
   ENDIF()
   SET(${OUTIFACES} ${ARG_CLASS_NAME})
 
-  CONFIGURE_FILE(${SMTK_SOURCE_DIR}/CMake/qtSMTKViewImplementation.h.in
+  CONFIGURE_FILE(${smtk_cmake_dir}/qtSMTKViewImplementation.h.in
                  ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h @ONLY)
-  CONFIGURE_FILE(${SMTK_SOURCE_DIR}/CMake/qtSMTKViewImplementation.cxx.in
+  CONFIGURE_FILE(${smtk_cmake_dir}/qtSMTKViewImplementation.cxx.in
                  ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.cxx @ONLY)
 
   qt5_wrap_cpp(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h)

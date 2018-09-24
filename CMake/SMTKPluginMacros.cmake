@@ -50,18 +50,8 @@ function(add_smtk_plugin SMTK_PLUGIN_NAME SMTK_PLUGIN_VERSION)
     set (SMTK_PLUGIN_REGISTRAR_HEADER "#include \"${SMTK_PLUGIN_REGISTRAR_HEADER}\"")
   endif ()
 
-  # We need to differentiate betwen the build and install trees here. Just now
-  # we fake it by assuming that projects that depend on SMTK have
-  # SMTK_INCLUDE_DIR set.
-  #
-  # TODO: do this correctly
-  if (NOT DEFINED SMTK_INCLUDE_DIR)
-    configure_file(${SMTK_SOURCE_DIR}/CMake/serverSource.cxx.in
-      ${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx @ONLY)
-  else ()
-    configure_file(${SMTK_INCLUDE_DIR}/smtk/serverSource.cxx.in
-      ${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx @ONLY)
-  endif ()
+  configure_file(${smtk_cmake_dir}/serverSource.cxx.in
+    ${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx @ONLY)
 
   find_package(ParaView)
   include(${PARAVIEW_USE_FILE})
