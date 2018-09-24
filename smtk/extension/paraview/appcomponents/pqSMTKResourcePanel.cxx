@@ -15,6 +15,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h" // FIXME: Remove the need for me
 
@@ -36,6 +37,8 @@
 #include "ui_pqSMTKResourcePanel.h"
 
 #include "pqActiveObjects.h"
+#include "pqCoreUtilities.h"
+#include "vtkCommand.h"
 #include "vtkCompositeRepresentation.h"
 
 #include <QItemSelection>
@@ -160,8 +163,12 @@ public:
     QObject::connect(m_view->selectionModel(),
       SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), parent,
       SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
-    QObject::connect(
-      m_view, SIGNAL(entered(const QModelIndex&)), parent, SLOT(hoverRow(const QModelIndex&)));
+
+    auto smtkSettings = vtkSMTKSettings::GetInstance();
+    pqCoreUtilities::connect(
+      smtkSettings, vtkCommand::ModifiedEvent, parent, SLOT(updateSettings()));
+    // Now initialize the highlight state and signal-connections:
+    parent->updateSettings();
   }
 
   QPointer<smtk::extension::qtDescriptivePhraseModel> m_model;
@@ -229,6 +236,13 @@ void pqSMTKResourcePanel::setPhraseGenerator(smtk::view::SubphraseGeneratorPtr s
   }
   root->setDelegate(spg);
   m_p->m_model->rebuildSubphrases(QModelIndex());
+}
+
+void pqSMTKResourcePanel::leaveEvent(QEvent* evt)
+{
+  this->resetHover();
+  // Now let the superclass do what it wants:
+  Superclass::leaveEvent(evt);
 }
 
 void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)
@@ -440,13 +454,53 @@ void pqSMTKResourcePanel::componentVisibilityChanged(
 
 void pqSMTKResourcePanel::hoverRow(const QModelIndex& idx)
 {
+  if (!m_p->m_seln)
+  {
+    return;
+  }
+  // Erase the current hover state.
+  smtk::resource::ComponentSet csetAdd;
+  smtk::resource::ComponentSet csetDel;
+  this->resetHover(csetAdd, csetDel);
+
+  // Discover what is currently hovered
+  auto phr = m_p->m_model->getItem(idx);
+  if (!phr)
+  {
+    return;
+  }
+
+  auto comp = phr->relatedComponent();
+  if (!comp)
+  {
+    return;
+  }
+
+  // Add new hover state
+  const auto& selnMap = m_p->m_seln->currentSelection();
+  auto cvit = selnMap.find(comp);
+  int sv = (cvit == selnMap.end() ? 0 : cvit->second) | m_p->m_hoverValue;
+  csetAdd.clear();
+  csetAdd.insert(comp);
+  m_p->m_seln->modifySelection(
+    csetAdd, m_p->m_selnSource, sv, smtk::view::SelectionAction::UNFILTERED_ADD);
+}
+
+void pqSMTKResourcePanel::resetHover()
+{
+  smtk::resource::ComponentSet csetAdd;
+  smtk::resource::ComponentSet csetDel;
+  this->resetHover(csetAdd, csetDel);
+}
+
+void pqSMTKResourcePanel::resetHover(
+  smtk::resource::ComponentSet& csetAdd, smtk::resource::ComponentSet& csetDel)
+{
   // Erase the current hover state.
   if (!m_p->m_seln)
   {
     return;
   }
-  smtk::resource::ComponentSet csetAdd;
-  smtk::resource::ComponentSet csetDel;
   m_p->m_seln->visitSelection(
     [this, &csetAdd, &csetDel](smtk::resource::Component::Ptr cp, int sv) {
       sv = sv & (~m_p->m_hoverValue);
@@ -469,25 +523,22 @@ void pqSMTKResourcePanel::hoverRow(const QModelIndex& idx)
     m_p->m_seln->modifySelection(
       csetDel, m_p->m_selnSource, 0, smtk::view::SelectionAction::UNFILTERED_SUBTRACT);
   }
+}
 
-  auto phr = m_p->m_model->getItem(idx);
-  if (!phr)
+void pqSMTKResourcePanel::updateSettings()
+{
+  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  if (smtkSettings->GetHighlightOnHover())
   {
-    return;
+    m_p->m_delegate->setHighlightOnHover(true);
+    QObject::connect(
+      m_p->m_view, SIGNAL(entered(const QModelIndex&)), this, SLOT(hoverRow(const QModelIndex&)));
   }
-
-  auto comp = phr->relatedComponent();
-  if (!comp)
+  else
   {
-    return;
+    m_p->m_delegate->setHighlightOnHover(false);
+    QObject::disconnect(
+      m_p->m_view, SIGNAL(entered(const QModelIndex&)), this, SLOT(hoverRow(const QModelIndex&)));
+    this->resetHover();
   }
-
-  // Add new hover state
-  const auto& selnMap = m_p->m_seln->currentSelection();
-  auto cvit = selnMap.find(comp);
-  int sv = (cvit == selnMap.end() ? 0 : cvit->second) | m_p->m_hoverValue;
-  csetAdd.clear();
-  csetAdd.insert(comp);
-  m_p->m_seln->modifySelection(
-    csetAdd, m_p->m_selnSource, sv, smtk::view::SelectionAction::UNFILTERED_ADD);
 }

@@ -56,6 +56,7 @@ public slots:
   void setTextVerticalPad(int tvp);
   void setDrawSubtitle(bool includeSubtitle);
   void setVisibilityMode(bool allEditsChangeVisibility);
+  void setHighlightOnHover(bool highlightOnMouseover);
 
 signals:
   void requestVisibilityChange(const QModelIndex&);
@@ -95,6 +96,7 @@ protected:
   int m_textVerticalPad;
   bool m_drawSubtitle;
   bool m_visibilityMode;
+  bool m_highlightOnHover;
 };
 
 } // namespace extension

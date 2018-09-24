@@ -10,6 +10,7 @@
 
 #ifndef __smtk_extensions_vtk_source_PointCloudFromVTK_h
 #define __smtk_extensions_vtk_source_PointCloudFromVTK_h
+#ifndef __VTK_WRAP__
 
 #include "smtk/AutoInit.h"
 
@@ -47,4 +48,5 @@ public:
 }
 }
 
+#endif // __VTK_WRAP__
 #endif

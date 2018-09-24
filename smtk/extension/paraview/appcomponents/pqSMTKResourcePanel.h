@@ -39,6 +39,8 @@ public:
   smtk::view::SubphraseGeneratorPtr phraseGenerator() const;
   void setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg);
 
+  void leaveEvent(QEvent*) override;
+
 public slots:
   virtual void sendPanelSelectionToSMTK(
     const QItemSelection& selected, const QItemSelection& deselected);
@@ -61,8 +63,14 @@ protected slots:
   virtual void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
 
   virtual void hoverRow(const QModelIndex& idx);
+  virtual void resetHover();
+
+  /// Called when vtkSMTKSettings is modified, indicating highlight-on-hover behavior may change.
+  virtual void updateSettings();
 
 protected:
+  virtual void resetHover(smtk::resource::ComponentSet& add, smtk::resource::ComponentSet& del);
+
   class Internal;
   Internal* m_p;
 };

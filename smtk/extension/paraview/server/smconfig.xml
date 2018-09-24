@@ -1307,14 +1307,53 @@
                            min="0"
                            name="range" />
       </DoubleVectorProperty>
-      <DoubleVectorProperty command="SetSelectionColor"
+      <DoubleVectorProperty command="SetDefaultEdgeColor"
                             default_values="1.0 1.0 0.0"
-                            name="Color"
+                            name="DefaultEdgeColor"
                             number_of_elements="3"
                             panel_visibility="never">
         <DoubleRangeDomain max="1 1 1"
                            min="0 0 0"
                            name="range" />
+        <Hints>
+          <GlobalPropertyLink type="ColorPalette" property="EdgeColor"/>
+        </Hints>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="SetDefaultFaceColor"
+                            default_values="1.0 1.0 0.0"
+                            name="DefaultFaceColor"
+                            number_of_elements="3"
+                            panel_visibility="never">
+        <DoubleRangeDomain max="1 1 1"
+                           min="0 0 0"
+                           name="range" />
+        <Hints>
+          <GlobalPropertyLink type="ColorPalette" property="DefaultFaceColor"/>
+        </Hints>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="SetSelectionColor"
+                            default_values="1.0 1.0 0.0"
+                            name="SelectionColor"
+                            number_of_elements="3"
+                            panel_visibility="never">
+        <DoubleRangeDomain max="1 1 1"
+                           min="0 0 0"
+                           name="range" />
+        <Hints>
+          <GlobalPropertyLink type="ColorPalette" property="SelectionColor"/>
+        </Hints>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="SetHoverColor"
+                            default_values="0.0 1.0 1.0"
+                            name="HoverColor"
+                            number_of_elements="3"
+                            panel_visibility="never">
+        <DoubleRangeDomain max="1 1 1"
+                           min="0 0 0"
+                           name="range" />
+        <Hints>
+          <GlobalPropertyLink type="ColorPalette" property="SMTKHighlightColor"/>
+        </Hints>
       </DoubleVectorProperty>
       <IntVectorProperty command="SetPickable"
                          default_values="1"
@@ -1605,6 +1644,14 @@
                       panel_visibility="never" />
             <Property name="BlockOpacity"
                       panel_visibility="never" />
+            <Property name="HoverColor"
+                      panel_visibility="never" />
+            <Property name="SelectionColor"
+                      panel_visibility="never" />
+            <Property name="DefaultFaceColor"
+                      panel_visibility="never" />
+            <Property name="DefaultEdgeColor"
+                      panel_visibility="never" />
           </PropertyGroup>
         </ExposedProperties>
       </SubProxy>
@@ -1619,4 +1666,98 @@
       </SubProxy>
     </SMTKModelRepresentationProxy>
   </ProxyGroup>
+
+  <!-- Expose user preferences -->
+  <ProxyGroup name="misc">
+
+    <Extension name="ColorPalette">
+
+      <DoubleVectorProperty
+        default_values="0.92549 0.43922 0.43922"
+        label="SMTK Highlight Color"
+        name="SMTKHighlightColor"
+        number_of_elements="3"
+        panel_widget="color_selector">
+        <DoubleRangeDomain max="1 1 1"
+          min="0 0 0"
+          name="range" />
+        <Documentation>Color used to highlight model or mesh components.</Documentation>
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+        default_values="1.0 1.0 1.0"
+        label="Default Face Color"
+        name="DefaultFaceColor"
+        number_of_elements="3"
+        panel_widget="color_selector">
+        <DoubleRangeDomain max="1 1 1"
+          min="0 0 0"
+          name="range" />
+        <Documentation>Default color for model or mesh faces.</Documentation>
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
+      </DoubleVectorProperty>
+
+      <PropertyGroup label="SMTK Colors">
+        <Documentation>
+          Colors used when displaying SMTK model and mesh components.
+        </Documentation>
+        <Property name="DefaultFaceColor"/>
+        <Property name="SMTKHighlightColor"/>
+      </PropertyGroup>
+
+    </Extension>
+
+  </ProxyGroup>
+
+  <ProxyGroup name="settings">
+
+    <SettingsProxy name="SMTKSettings" label="Sim Pre-processing"
+      processes="client|dataserver|renderserver"
+      class="vtkSMTKSettings">
+      <Documentation>
+        Settings related to simulation modeling (pre-processing) with SMTK.
+      </Documentation>
+
+      <IntVectorProperty
+        name="HighlightOnHover"
+        number_of_elements="1"
+        default_values="0"
+        command="SetHighlightOnHover"
+        information_property="HighlightOnHoverInfo"
+        panel_visibility="default">
+        <Documentation>
+          Highlight rendered entities as the mouse hovers over widgets listing them.
+        </Documentation>
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="HighlightOnHoverInfo"
+        command="GetHighlightOnHover"
+        information_only="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+
+      <Hints>
+        <UseDocumentationForLabels />
+      </Hints>
+
+    </SettingsProxy>
+
+      <PropertyGroup label="Display Options">
+        <Documentation>
+          Options for how SMTK models are displayed in text
+          widgets as well as 3-D render windows.
+        </Documentation>
+
+        <Property name="HighlightOnHover" />
+      </PropertyGroup>
+
+	</ProxyGroup>
+
 </ServerManagerConfiguration>
