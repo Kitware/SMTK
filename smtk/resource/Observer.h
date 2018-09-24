@@ -35,16 +35,18 @@ typedef std::function<void(std::shared_ptr<Resource>, EventType)> Observer;
 class SMTKCORE_EXPORT Observers
 {
 public:
-  typedef int Key;
+  using Key = int;
+  using ObserverInitializer = std::function<void(Manager*, Observer)>;
+
+  Observers(Manager* rsrcMgr, ObserverInitializer initializer = nullptr);
 
   /// Iterate over the collection of observers and execute the observer functor.
   void operator()(std::shared_ptr<Resource>, EventType);
 
   /// Ask to receive notification events on all resources. The return value is a
-  /// handle that can be used to unregister the observer. This does **not**
-  /// immediately invoke the observer with a list of resources already
-  /// available. Call std::for_each on the set of resources if that is needed.
-  Key insert(Observer);
+  /// handle that can be used to unregister the observer. By default, this will
+  /// immediately invoke the observer with a list of resources already available.
+  Key insert(Observer observer, bool immediatelyUpdate = true);
 
   /// Indicate that an observer should no longer be called. Returns the number
   /// of remaining observers.
@@ -57,6 +59,8 @@ private:
   // A map of observers. The observers are held in a map so that they can be
   // referenced (and therefore removed) at a later time using the observer's
   // associated key.
+  Manager* m_parent;
+  ObserverInitializer m_initializer;
   std::map<Key, Observer> m_observers;
 };
 }

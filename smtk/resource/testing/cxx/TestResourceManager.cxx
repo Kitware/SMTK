@@ -103,14 +103,6 @@ int TestResourceManager(int, char** const)
     std::cout << "Resource count now " << numResources << " rsrc " << rsrc << "\n";
   };
   handle = resourceManager->observers().insert(countingObserver);
-
-  // If a developer wants an observer to be called immediately upon insertion,
-  // the observer can be iterate the available resources with one command.
-  std::for_each(resourceManager->resources().begin(), resourceManager->resources().end(),
-    [&](const smtk::resource::Resource::Ptr& rsrc) {
-      countingObserver(rsrc, smtk::resource::EventType::ADDED);
-    });
-
   smtkTest(numResources == 1, "Did not observe new resource being added.");
 
   // Change its location field (nontrivial due to weak location indexing)

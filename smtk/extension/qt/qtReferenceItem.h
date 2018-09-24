@@ -12,6 +12,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/view/PhraseModel.h"
 
 namespace smtk
 {
@@ -100,6 +101,9 @@ protected:
 
   /// Children must implement this.
   virtual bool synchronize(UpdateSource src) = 0;
+
+  void checkRemovedComponents(smtk::view::DescriptivePhrasePtr, smtk::view::PhraseModelEvent,
+    const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
 
   qtReferenceItemData* m_p;
 };

@@ -79,6 +79,8 @@ public:
   // Link between Qt and SMTK
   smtk::extension::qtDescriptivePhraseModel* m_qtModel;
   smtk::extension::qtDescriptivePhraseDelegate* m_qtDelegate;
+
+  int m_modelObserverId;
 };
 }
 }
