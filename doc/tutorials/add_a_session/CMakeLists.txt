@@ -1,23 +1,8 @@
 project(ex_add_a_session)
 cmake_minimum_required(VERSION 3.5)
 
-# ++ 1 ++
-include(SMTKSessionJSON) # defines smtk_session_json()
-
-# The smtk_session_json() function writes a file to the current
-# binary directory sharing the same name as the input file
-# but with "_json.h" replacing the file extension. For this
-# example, that filename is "Session_json.h".
-# smtk_session_json() appends the exact filename to the
-# "sessionJSON" variable.
-smtk_session_json(
-  "${CMAKE_CURRENT_SOURCE_DIR}/Session.json"
-  sessionJSON
-)
-
 # Make sure we can include the resulting file:
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-# -- 1 --
 
 # Testing must be enabled to build this tutorial
 # because it depends on smtkCoreModelTesting.

@@ -212,7 +212,3 @@ internal::EntityIdToPtr::const_iterator Session::endStorage() const
 } // namespace polygon
 } //namespace session
 } // namespace smtk
-
-#include "smtk/session/polygon/Session_json.h" // For Session_json
-smtkImplementsModelingKernel(SMTKPOLYGONSESSION_EXPORT, polygon, Session_json,
-  smtk::model::SessionHasNoStaticSetup, smtk::session::polygon::Session);

@@ -1202,9 +1202,3 @@ void Session::colorPropFromIndex(smtk::model::EntityRef& entityref, int colorInd
 } // namespace cgm
 } //namespace session
 } // namespace smtk
-
-#include "smtk/session/cgm/Session_json.h" // For Session_json
-smtkImplementsModelingKernel(
-  SMTKCGMSESSION_EXPORT, cgm, Session_json, smtk::session::cgm::Session::staticSetup,
-  smtk::session::cgm::Session, true /* inherit "universal" operators */
-  );

@@ -53,7 +53,6 @@ public:
   smtkSuperclassMacro(smtk::model::Session);
   smtkSharedFromThisMacro(smtk::model::Session);
   smtkCreateMacro(smtk::model::Session);
-  smtkDeclareModelingKernel();
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   virtual ~Session();
 

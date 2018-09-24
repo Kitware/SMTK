@@ -81,7 +81,6 @@ set(polygonHeaders
   json/jsonVertex.h
 )
 
-smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CleanGeometry.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/NewCreateModel.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygonOperationXML)

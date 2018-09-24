@@ -110,7 +110,6 @@ set(modelHeaders
   json/jsonTessellation.h
 )
 
-smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultSession.json" defSessionJSON)
 foreach (operator ${modelOps})
   smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt" defOpXML)
   list(APPEND modelSrcs operators/${operator}.cxx)

@@ -35,7 +35,6 @@ PySharedPtrClass< smtk::model::DefaultSession, smtk::model::Session > pybind11_i
     .def("shared_from_this", (std::shared_ptr<const smtk::model::DefaultSession> (smtk::model::DefaultSession::*)() const) &smtk::model::DefaultSession::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<smtk::model::DefaultSession> (smtk::model::DefaultSession::*)()) &smtk::model::DefaultSession::shared_from_this)
     .def_static("staticClassName", &smtk::model::DefaultSession::staticClassName)
-    .def_readwrite_static("sessionName", &smtk::model::DefaultSession::sessionName)
     ;
   return instance;
 }

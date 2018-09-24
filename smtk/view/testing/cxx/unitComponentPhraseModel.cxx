@@ -152,5 +152,3 @@ int unitComponentPhraseModel(int argc, char* argv[])
 
   return 0;
 }
-
-smtkComponentInitMacro(smtk_polygon_session);

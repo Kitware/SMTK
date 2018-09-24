@@ -82,7 +82,3 @@ std::string DefaultSession::remoteName() const
 
 } // namespace model
 } // namespace smtk
-
-#include "smtk/model/DefaultSession_json.h" // For DefaultSession_json
-smtkImplementsModelingKernel(SMTKCORE_EXPORT, native, DefaultSession_json,
-  smtk::model::SessionHasNoStaticSetup, smtk::model::DefaultSession);

@@ -177,14 +177,6 @@ set(discreteSessionHeaders
   operators/SetProperty.h
 )
 
-# Normally this would be machine-generated from Session.json
-# using the smtk_session_json CMake macro, but this version
-# has been hand-edited to include preprocessor macros that
-# add and remove engines and filetypes as support for them
-# is known at compile time.
-# include(SMTKSessionJSON)
-# smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" discreteSessionJSON)
-
 include(SMTKOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperation.sbt" unitOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperation.sbt" unitOperationXML)

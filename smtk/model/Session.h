@@ -90,65 +90,6 @@ enum SessionInformation
     0x000001ff //!< Erase **all** information about the entity, including user-specified.
 };
 
-/**\brief Boilerplate for classes that session to a solid modeling kernel.
- *
- * Invoke this macro inside every class definition inheriting smtk::model::Session.
- * Both smtk/model/DefaultSession.{h,cxx} and smtk/cgm/Session.{h,cxx} are examples.
- * Note that you must invoke this macro in a public section of your class declaration!
- *
- * You must also use the smtkImplementsModelingKernel macro in your session's implementation.
- */
-#define smtkDeclareModelingKernel()                                                                \
-  static std::string sessionName;                                                                  \
-  static std::string staticClassName();                                                            \
-  std::string name() const override { return sessionName; }                                        \
-  std::string className() const override;
-
-/**\brief Declare that a class implements a session to a solid modeling kernel.
-  *
-  * Invoke this macro inside every class definition inheriting smtk::model::Session.
-  * Both smtk/model/DefaultSession.{h,cxx} and smtk/cgm/Session.{h,cxx} are examples.
-  *
-  * Note that you must invoke this macro in the global namespace!
-  *
-  * You must also use the smtkDeclareModelingKernel macro in your session's header.
-  *
-  * This macro takes 6 arguments:
-  *
-  * \a ExportSym - The symbol used to export the AutoInit functions.
-  * \a Comp      - A "short" name for the session. This is used as part of several function
-  *                names, so it must be a valid variable name and should *not* be in quotes.
-  * \a Tags      - A pointer to a NULL-terminated string containing a JSON description of
-  *                the session's capabilities, including file types that the session supports.
-  *                The format of the JSON structure is documented in the SMTK User's Guide.
-  * \a Setup     - A function to provide configuration before session construction.
-  *                See the documentation for SessionStaticSetup and SessionHasNoStaticSetup.
-  * \a Cls       - The name of the session class. The class must have a static method named
-  *                "create" that constructs and instance and returns a shared pointer to it.
-  */
-#define smtkImplementsModelingKernel(ExportSym, Comp, Tags, Setup, Cls)                            \
-  /* Adapt create() to return a base-class pointer */                                              \
-  static smtk::model::SessionPtr baseCreate() { return Cls::create(); }                            \
-  /* Implement autoinit methods */                                                                 \
-  void ExportSym smtk_##Comp##_session_AutoInit_Construct()                                        \
-  {                                                                                                \
-    smtk::model::SessionRegistrar::registerSession(                                                \
-      #Comp, /* Can't rely on sessionName to be initialized yet */                                 \
-      Tags, Setup, baseCreate);                                                                    \
-  }                                                                                                \
-  void ExportSym smtk_##Comp##_session_AutoInit_Destruct()                                         \
-  {                                                                                                \
-    smtk::model::SessionRegistrar::registerSession(                                                \
-      Cls::sessionName, std::string(), SMTK_FUNCTION_INIT, SMTK_FUNCTION_INIT);                    \
-  }                                                                                                \
-  /**\brief Declare the component name */                                                          \
-  std::string Cls::sessionName(#Comp);                                                             \
-  /**\brief Return the name of this class. */                                                      \
-  std::string Cls::staticClassName() { return #Cls; }                                              \
-  /**\brief Declare the class name */                                                              \
-  std::string Cls::className() const { return Cls::staticClassName(); }                            \
-  smtkComponentInitMacro(smtk_##Comp##_session);
-
 /**\brief A base class for bridging modelers into SMTK.
   *
   * SMTK can act as a session between other (foreign) solid modelers
