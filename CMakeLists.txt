@@ -85,7 +85,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Options that the user controls
 ################################################################################
 
-option(CONDA_BUILD "Building using conda environment instead of system" ON)
+option(CONDA_BUILD "Building using conda environment instead of system" OFF)
 if (CONDA_BUILD)
   include(conda/Conda.cmake)
 endif()

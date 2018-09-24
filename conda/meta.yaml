@@ -7,13 +7,16 @@ source:
   git_url: https://gitlab.kitware.com/john.tourtellott/smtk.git
 
 requirements:
+  host:
+    - python=2.7
   build:
     - {{ compiler('cxx') }}
-    - boost
-    - cmake
     - git
-    - moab
+    - cmake
+    - make
+    - boost
     - nlohmann_json
+    - moab
     - pybind11
     - python=2.7
   run:

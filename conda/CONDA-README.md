@@ -12,20 +12,27 @@ A set of smtk modules can be built from a conda environment:
     smtk.resource
     smtk.session.mesh
     smtk.session.polygon
+    smtk.simulation
 
 
 Conda Setup
 -----------
-These packages are needed in the conda environment:
+These packages are needed in the conda environment.
 
-    python 2.7
+    cmake (install this first?)
+    make  (install second?)
+    python=2.7
+    gcc_linux-64
+    gxx_linux-64
     boost
-    moab
-    nlohmann_json
+    moab           (conda-forge)  (install this *AFTER* nlohmann_json)
+    nlohmann_json  (conda-forge)
     pybind11
 
-The moab and nlohmann_json packages were obtained from conda-forge; the rest from the
-default anaconda repository.
+Note about moab: Strange as this seems, it appears that installing nlohmann_json blows
+away the cmake config file for moab in the conda environment
+(/lib/cmake/MOAB/MOABConfig.cmake). When that happens, the only known workaround is to
+uninstall moab then install it a second time.
 
 For linux builds, there is a spec file in the "conda" directory: conda-spec-file-linux64.txt.
 
@@ -36,7 +43,7 @@ CMake
 -----
 When you run CMake the first time, set the CONDA_BUILD option, for example:
 
-    cmake  -DCONDA_BUILD=ON  path-to-smtk-source/
+    cmake  -DCONDA_BUILD=ON  -DCMAKE_TOOLCHAIN_FILE=${path-to-smtk-source}/conda/CondaToolchain.cmake  ${path-to-smtk-source}
 
 
 When cmake is run, the output messages include a line starting with the text
@@ -49,7 +56,6 @@ The cmake scripts also write out out a number of python variables:
     PYTHON_EXECUTABLE
     PYTHON_INCLUDE_DIRS
     PYTHON_LIBRARIES
-    PYTHONLIBS_VERSION_STRING
 
 Check the cmake output to make sure these variables point to the correct place in your
 conda environment.
