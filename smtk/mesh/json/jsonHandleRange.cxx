@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/mesh/json/jsonHandleRange.h"
 
+#include <sstream>
+
 // Define how resources are serialized.
 namespace
 {
