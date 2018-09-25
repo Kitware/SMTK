@@ -15,12 +15,11 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 
+#include "smtk/model/json/jsonResource.h"
 #include "smtk/session/discrete/Resource.h"
 #include "smtk/session/discrete/Session.h"
 #include "smtk/session/discrete/operators/ReadOperation.h"
 #include "smtk/session/discrete/operators/SplitFaceOperation.h"
-
-#include "smtk/io/SaveJSON.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
@@ -156,7 +155,7 @@ int main(int argc, char* argv[])
     std::cout << "  done\n";
   }
 
-  std::string json = smtk::io::SaveJSON::fromModelResource(resource);
+  nlohmann::json json = resource;
   if (!json.empty())
   {
     std::ofstream jsonFile("sessionTest.json");

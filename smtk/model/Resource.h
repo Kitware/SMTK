@@ -255,13 +255,6 @@ public:
   std::string assignDefaultNameIfMissing(const smtk::common::UUID& uid);
   static std::string shortUUIDName(const smtk::common::UUID& uid, BitFlags entityFlags);
 
-  static StringList sessionTypeNames();
-  static StringData sessionFileTypes(
-    const std::string& sname, const std::string& engine = std::string());
-  static SessionPtr createSessionOfType(const std::string& sname);
-  SessionRef createSession(const std::string& sname);
-  SessionRef createSession(
-    const std::string& sname, const smtk::model::SessionRef& sessionIdSpecifier);
   bool closeSession(const SessionRef& sess);
 
   SessionRef registerSession(SessionPtr session);

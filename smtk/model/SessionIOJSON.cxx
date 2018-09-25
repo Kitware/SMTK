@@ -13,12 +13,11 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUID.h"
-#include "smtk/io/LoadJSON.h"
-#include "smtk/io/SaveJSON.h"
-#include "smtk/io/SaveJSON.txx"
 #include "smtk/model/Resource.h"
 
 #include "smtk/model/json/jsonResource.h"
+
+#include <fstream>
 
 using json = nlohmann::json;
 

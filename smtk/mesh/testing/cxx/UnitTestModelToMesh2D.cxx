@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/WriteMesh.h"
 
@@ -18,6 +17,8 @@
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
+#include "smtk/model/json/jsonResource.h"
+#include "smtk/model/json/jsonTessellation.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -36,18 +37,25 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-void create_simple_mesh_model(smtk::model::ResourcePtr mgr)
+void create_simple_mesh_model(smtk::model::ResourcePtr resource)
 {
   std::string file_path(data_root);
   file_path += "/model/2d/smtk/test2D.json";
 
   std::ifstream file(file_path.c_str());
 
-  std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  std::string json_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  nlohmann::json json = nlohmann::json::parse(json_str);
 
-  //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelResource(json.c_str(), mgr);
-  mgr->assignDefaultNames();
+  smtk::model::from_json(json, resource);
+  for (auto& tessPair : json["tessellations"])
+  {
+    smtk::common::UUID id = tessPair[0];
+    smtk::model::Tessellation tess = tessPair[1];
+    resource->setTessellation(id, tess);
+  }
+
+  resource->assignDefaultNames();
 
   file.close();
 }

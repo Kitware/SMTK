@@ -3,10 +3,8 @@ set(ioSrcs
   AttributeReader.cxx
   AttributeWriter.cxx
   Helpers.cxx
-  SaveJSON.cxx
   json/jsonComponentSet.cxx
   json/jsonSelectionMap.cxx
-  LoadJSON.cxx
   Logger.cxx
   ModelToMesh.cxx
   XmlDocV1Parser.cxx
@@ -22,8 +20,6 @@ set(ioHeaders
   Helpers.h
   json/jsonComponentSet.h
   json/jsonSelectionMap.h
-  SaveJSON.h
-  LoadJSON.h
   Logger.h
   ModelToMesh.h
   #XmlDocV1Parser.h

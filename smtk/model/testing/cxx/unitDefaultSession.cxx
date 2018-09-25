@@ -10,7 +10,6 @@
 #include "smtk/AutoInit.h"
 #include "smtk/Options.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/SaveJSON.h"
 
 #include "smtk/attribute/Attribute.h"

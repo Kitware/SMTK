@@ -29,8 +29,6 @@
 
 #include "smtk/extension/opencv/SurfaceExtractContours_xml.h"
 
-#include "cJSON.h"
-#include "smtk/io/SaveJSON.h"
 #include <limits>
 #include <sstream>
 

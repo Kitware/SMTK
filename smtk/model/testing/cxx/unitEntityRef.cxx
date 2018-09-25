@@ -7,8 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/SaveJSON.h"
-
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/Edge.h"
@@ -197,7 +195,9 @@ void testModelMethods()
 {
   // Test methods specific to the Model subclass of EntityRef
   ResourcePtr sm = Resource::create();
-  SessionRef sess = sm->createSession("native");
+  Session::Ptr session = Session::create();
+  sm->registerSession(session);
+  SessionRef sess(sm, session);
   Model m0 = sm->addModel();
   test(!m0.session().isValid(), "Expected invalid session for new, \"blank\" model.");
   m0.setSession(sess);
@@ -213,7 +213,9 @@ void testModelMethods()
 void testResourceComponentConversion()
 {
   ResourcePtr sm = Resource::create();
-  SessionRef sess = sm->createSession("native");
+  Session::Ptr session = Session::create();
+  sm->registerSession(session);
+  SessionRef sess(sm, session);
   Model m0 = sm->addModel();
   smtk::model::EntityPtr mep = m0.entityRecord();
   test(!!mep, "No component for Model entity-ref.");

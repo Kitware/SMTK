@@ -15,7 +15,6 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
-#include "smtk/model/SessionRegistrar.h"
 
 namespace smtk
 {
@@ -63,7 +62,10 @@ SessionRef& SessionRef::addModel(const Model& mod)
   */
 std::string SessionRef::tag() const
 {
-  return SessionRegistrar::sessionTags(this->session()->name());
+  // TODO: Session-specific information needs to be accessible without using
+  // global statics.
+  // return SessionRegistrar::sessionTags(this->session()->name());
+  return std::string();
 }
 
 /**\brief Return the session-class's site name.
@@ -72,7 +74,10 @@ std::string SessionRef::tag() const
   */
 std::string SessionRef::site() const
 {
-  return SessionRegistrar::sessionSite(this->session()->name());
+  // TODO: Session-specific information needs to be accessible without using
+  // global statics.
+  // return SessionRegistrar::sessionSite(this->session()->name());
+  return std::string();
 }
 
 /**\brief Return the session-class's list of engines.
@@ -83,7 +88,10 @@ std::string SessionRef::site() const
   */
 StringList SessionRef::engines() const
 {
-  return SessionRegistrar::sessionEngines(this->session()->name());
+  // TODO: Session-specific information needs to be accessible without using
+  // global statics.
+  // return SessionRegistrar::sessionEngines(this->session()->name());
+  return StringList();
 }
 
 /**\brief Return the list of file types supported by this session.
@@ -96,13 +104,19 @@ StringList SessionRef::engines() const
   */
 StringData SessionRef::fileTypes(const std::string& engine) const
 {
-  return SessionRegistrar::sessionFileTypes(this->session()->name(), engine);
+  // TODO: Session-specific information needs to be accessible without using
+  // global statics.
+  // return SessionRegistrar::sessionFileTypes(this->session()->name(), engine);
+  return StringData();
 }
 
 /// Return a filename extension (including ".") appropriate for saving \a model.
 std::string SessionRef::defaultFileExtension(const Model& model) const
 {
-  return this->session()->defaultFileExtension(model);
+  // TODO: Session-specific information needs to be accessible without using
+  // global statics.
+  // return this->session()->defaultFileExtension(model);
+  return std::string();
 }
 
 void SessionRef::close()

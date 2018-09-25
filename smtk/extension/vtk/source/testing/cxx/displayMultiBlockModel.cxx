@@ -8,9 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/Resource.h"
+#include "smtk/model/json/jsonResource.h"
 
 #include "vtkActor.h"
 #include "vtkCommand.h"
@@ -61,20 +61,32 @@ int main(int argc, char* argv[])
   }
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
-  ResourcePtr sm = Resource::create();
+  ResourcePtr resource = Resource::create();
 
-  int status = !LoadJSON::intoModelResource(data.c_str(), sm);
-  if (!status)
+  nlohmann::json json = nlohmann::json::parse(data);
+
+  smtk::model::from_json(json, resource);
+  for (auto& tessPair : json["tessellations"])
+  {
+    smtk::common::UUID id = tessPair[0];
+    smtk::model::Tessellation tess = tessPair[1];
+    resource->setTessellation(id, tess);
+  }
+
+  resource->assignDefaultNames();
+
+  bool status = true;
+
   {
     vtkNew<vtkActor> act;
     vtkNew<vtkModelMultiBlockSource> src;
     vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetModelResource(sm);
+    src->SetModelResource(resource);
     // TODO: Accept a model name or UUID and tell the src to use it:
     // src->SetModelEntityID(
-    //   sm->entitiesMatchingFlagsAs<Models>(MODEL_ENTITY)[0].entity().toString().c_str());
+    //   resource->entitiesMatchingFlagsAs<Models>(MODEL_ENTITY)[0].entity().toString().c_str());
     if (debug)
     {
       win->SetMultiSamples(16);

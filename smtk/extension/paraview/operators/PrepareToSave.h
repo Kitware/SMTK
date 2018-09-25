@@ -1,7 +1,14 @@
-#ifndef __smtk_io_SaveJSON_txx
-#define __smtk_io_SaveJSON_txx
-
-#include "smtk/io/SaveJSON.h"
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#ifndef __PrepareToSave_h
+#define __PrepareToSave_h
 
 #include "smtk/common/FileLocation.h"
 
@@ -14,15 +21,8 @@
 
 #include "boost/filesystem.hpp"
 
-#include "cJSON.h"
-
-namespace smtk
-{
-namespace io
-{
-
 template <typename T>
-bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
+bool prepareToSave(const smtk::model::Models& modelsToSave,
   const std::string& mode,     // "save", "save as", or "save a copy"
   const std::string& filename, // only used when mode == "save as" or "save a copy"
   const std::string& renamePolicy, bool embedData,
@@ -104,8 +104,8 @@ bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
       {
         url = prevEmbedDir / url;
       }
-      bool alreadyEmbedded =
-        Helpers::isDirectoryASubdirectory(embedDir.string(), url.parent_path().string(), relPath);
+      bool alreadyEmbedded = smtk::io::Helpers::isDirectoryASubdirectory(
+        embedDir.string(), url.parent_path().string(), relPath);
       if (embedData)
       {
         std::string embeddedURL;
@@ -182,15 +182,15 @@ bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
         {
           url = embedDir / url;
         }
-        bool alreadyEmbedded =
-          Helpers::isDirectoryASubdirectory(embedDir.string(), url.parent_path().string(), relPath);
+        bool alreadyEmbedded = smtk::io::Helpers::isDirectoryASubdirectory(
+          embedDir.string(), url.parent_path().string(), relPath);
         std::cout << "Is URL <" << url.parent_path().string() << "> inside EmbedDir <" << embedDir
                   << ">? " << (alreadyEmbedded ? "Y" : "N") << "   --- " << relPath << "\n";
         /*
           */
         if (!alreadyEmbedded)
         {
-          std::string embedRel = Helpers::uniqueFilename(url.filename().string(),
+          std::string embedRel = smtk::io::Helpers::uniqueFilename(url.filename().string(),
             preExistingFilenames, "aux", url.extension().string(), embedDir.string());
           obj.m_modelChanges[aux] = smtk::model::StringData();
           obj.m_modelChanges[aux]["url"] = smtk::model::StringList(1, embedRel);
@@ -274,7 +274,7 @@ bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
         {
           std::string relPath;
           ::boost::filesystem::path url = ::boost::filesystem::weakly_canonical(meshURL);
-          alreadyEmbedded = Helpers::isDirectoryASubdirectory(
+          alreadyEmbedded = smtk::io::Helpers::isDirectoryASubdirectory(
             embedDir.string(), url.parent_path().string(), relPath);
           meshURL = (::boost::filesystem::path(relPath) / url.filename()).string();
         }
@@ -303,73 +303,4 @@ bool SaveJSON::prepareToSave(const smtk::model::Models& modelsToSave,
   return ok;
 }
 
-/**\brief Populate the \a json node with the record(s) related to given \a entities.
-  *
-  */
-template <typename T>
-int SaveJSON::forEntities(
-  cJSON* json, const T& entities, smtk::model::IteratorStyle relatedEntities, JSONFlags sections)
-{
-  using namespace smtk::model;
-
-  if (!json || sections == JSON_NOTHING)
-    return 1;
-
-  EntityIterator iter;
-  iter.traverse(entities.begin(), entities.end(), relatedEntities);
-  int status = 1;
-  for (iter.begin(); !iter.isAtEnd(); ++iter)
-  {
-    // Pull the first entry off the queue.
-    EntityRef ent = *iter;
-
-    // Generate JSON for the queued entity
-    ResourcePtr modelResource = ent.resource();
-    UUIDWithEntityPtr it = modelResource->topology().find(ent.entity());
-    if ((it == ent.resource()->topology().end()) ||
-      ((it->second->entityFlags() & SESSION) && !(sections & JSON_SESSIONS)))
-      continue;
-
-    cJSON* curChild = cJSON_CreateObject();
-    {
-      std::string suid = it->first.toString();
-      cJSON_AddItemToObject(json, suid.c_str(), curChild);
-    }
-    if (sections & JSON_ENTITIES)
-    {
-      status &= SaveJSON::forResourceEntity(it, curChild, modelResource);
-    }
-    if (sections & JSON_TESSELLATIONS)
-      status &= SaveJSON::forResourceTessellation(it->first, curChild, modelResource);
-    if (sections & JSON_PROPERTIES)
-    {
-      status &= SaveJSON::forResourceFloatProperties(it->first, curChild, modelResource);
-      status &= SaveJSON::forResourceStringProperties(it->first, curChild, modelResource);
-      status &= SaveJSON::forResourceIntegerProperties(it->first, curChild, modelResource);
-    }
-  }
-  return status;
-}
-
-/**\brief Populate the \a json node with the record(s) related to given \a entities.
-  *
-  */
-template <typename T>
-std::string SaveJSON::forEntities(
-  const T& entities, smtk::model::IteratorStyle relatedEntities, JSONFlags sections)
-{
-  using namespace smtk::model;
-
-  cJSON* top = cJSON_CreateObject();
-  SaveJSON::forEntities(top, entities, relatedEntities, sections);
-  char* json = cJSON_Print(top);
-  std::string result(json);
-  free(json);
-  cJSON_Delete(top);
-  return result;
-}
-
-} // namespace io
-} // namespace smtk
-
-#endif // __smtk_io_SaveJSON_txx
+#endif // __PrepareToSave_h

@@ -240,8 +240,6 @@ class UserData;
 
 namespace io
 {
-class SaveJSON;
-class LoadJSON;
 class Logger;
 typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 }

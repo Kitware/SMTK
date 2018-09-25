@@ -7,9 +7,9 @@ endif()
 #this needs to be above vtk_smtk_setup_module_environment as that
 #pollutes the link libraries, and causes the remus plugin to depend
 #on libraries it doesn't require
-if (SMTK_ENABLE_REMUS_SUPPORT)
-  add_subdirectory(remus)
-endif()
+#if (SMTK_ENABLE_REMUS_SUPPORT)
+#  add_subdirectory(remus)
+#endif()
 
 # Add operators that use Delaunay 2d meshing
 add_subdirectory(delaunay)

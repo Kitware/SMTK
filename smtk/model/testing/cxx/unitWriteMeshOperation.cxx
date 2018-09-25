@@ -12,7 +12,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"

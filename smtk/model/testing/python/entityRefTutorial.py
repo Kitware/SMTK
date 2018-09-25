@@ -48,7 +48,7 @@ print(sm.entitiesOfDimension(3))
 try:
     # If the file isn't present, just skip loading geometry.
     jsonData = file(airFoilFile, 'r').read()
-    ok = smtk.io.LoadJSON.intoModelResource(jsonData, sm)
+    ok = smtk.model.SessionIOJSON.loadModelRecords(jsonData, sm)
 except:
     pass
 
@@ -79,4 +79,4 @@ sm.addToGroup(skin.entity(), set([
     UUID('bcf0ed16-3f05-4043-9313-a6a3617121fb'),
 ]))
 
-json = smtk.io.SaveJSON.fromModelResource(sm)
+json = smtk.model.SessionIOJSON.saveJSON(sm)

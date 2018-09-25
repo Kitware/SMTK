@@ -18,7 +18,6 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ReadMesh.h"
 
@@ -30,6 +29,8 @@
 #include "smtk/mesh/operators/GenerateHotStartData.h"
 
 #include "smtk/model/Resource.h"
+#include "smtk/model/json/jsonResource.h"
+#include "smtk/model/json/jsonTessellation.h"
 
 #include <algorithm>
 #include <array>
@@ -48,9 +49,17 @@ void create_simple_mesh_model(smtk::model::ResourcePtr resource, std::string fil
 {
   std::ifstream file(file_path.c_str());
 
-  std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  std::string json_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  nlohmann::json json = nlohmann::json::parse(json_str);
 
-  smtk::io::LoadJSON::intoModelResource(json.c_str(), resource);
+  smtk::model::from_json(json, resource);
+  for (auto& tessPair : json["tessellations"])
+  {
+    smtk::common::UUID id = tessPair[0];
+    smtk::model::Tessellation tess = tessPair[1];
+    resource->setTessellation(id, tess);
+  }
+
   resource->assignDefaultNames();
 
   file.close();
@@ -164,7 +173,8 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's input mesh
-  smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
+  // smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
+  smtk::mesh::MeshSet mesh = c->meshes();
   valueSet = generateHotStartDataOp->parameters()->findMesh("mesh")->setValue(mesh);
 
   if (!valueSet)

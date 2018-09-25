@@ -22,8 +22,6 @@
 
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/io/LoadJSON.h"
-
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
 

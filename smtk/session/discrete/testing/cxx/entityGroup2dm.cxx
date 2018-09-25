@@ -22,7 +22,6 @@
 #include "smtk/session/discrete/operators/EntityGroupOperation.h"
 #include "smtk/session/discrete/operators/ImportOperation.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/core/Collection.h"

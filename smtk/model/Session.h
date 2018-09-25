@@ -20,7 +20,6 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/SessionRegistrar.h"
 
 namespace smtk
 {
@@ -121,6 +120,7 @@ class SMTKCORE_EXPORT Session : smtkEnableSharedPtr(Session)
 public:
   smtkTypeMacroBase(smtk::model::Session);
   smtkSuperclassMacro(smtk::model::Session);
+  smtkCreateMacro(smtk::model::Session);
 
   static std::string staticClassName() { return "smtk::model::Session"; }
   virtual std::string name() const;
@@ -166,8 +166,6 @@ public:
   virtual std::string defaultFileExtension(const Model& model) const;
 
 protected:
-  friend class io::SaveJSON;
-  friend class io::LoadJSON;
   friend class Resource;
 
   Session();

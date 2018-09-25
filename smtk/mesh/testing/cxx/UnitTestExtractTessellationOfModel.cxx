@@ -15,8 +15,8 @@
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/json/jsonResource.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -138,7 +138,7 @@ void create_simple_mesh_model(smtk::model::ResourcePtr resource)
   std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
   //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelResource(json.c_str(), resource);
+  smtk::model::from_json(json, resource);
   resource->assignDefaultNames();
 
   file.close();

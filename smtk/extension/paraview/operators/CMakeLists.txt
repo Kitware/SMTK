@@ -17,6 +17,10 @@ set(hdrs
   smtkExportModelView.h
 )
 
+set(unwrappedHdrs
+  PrepareToSave.h
+)
+
 set(qtui
   smtkAssignColorsParameters.ui
   smtkSaveModelParameters.ui
@@ -24,7 +28,7 @@ set(qtui
 )
 
 #install the headers
-smtk_public_headers(${hdrs})
+smtk_public_headers(${hdrs} ${unwrappedHdrs})
 
 qt5_wrap_cpp(mocs ${hdrs})
 qt5_wrap_ui(uisrc ${qtui})

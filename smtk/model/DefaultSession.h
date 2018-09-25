@@ -69,7 +69,6 @@ public:
 
 protected:
   friend class RemoteOperation;
-  friend class io::LoadJSON;
 
   DefaultSession();
 

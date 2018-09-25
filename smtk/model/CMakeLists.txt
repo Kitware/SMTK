@@ -24,7 +24,6 @@ set(modelSrcs
   SessionRef.cxx
   SessionIO.cxx
   SessionIOJSON.cxx
-  SessionRegistrar.cxx
   CellEntity.cxx
   Chain.cxx
   EntityRef.cxx
@@ -70,7 +69,6 @@ set(modelHeaders
   SessionRef.h
   SessionIO.h
   SessionIOJSON.h
-  SessionRegistrar.h
   CellEntity.h
   Chain.h
   EntityRef.h

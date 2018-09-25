@@ -13,6 +13,8 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtOperationView.h"
 
+#include "smtk/extension/paraview/operators/PrepareToSave.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -25,9 +27,6 @@
 #include "smtk/operation/Manager.h"
 
 #include "smtk/view/View.h"
-
-#include "smtk/io/SaveJSON.h"
-#include "smtk/io/SaveJSON.txx"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
@@ -698,18 +697,17 @@ void smtkExportModelView::updateActions()
     filename = fileItem->value(0);
   }
   this->Internals->SaveActions.reset();
-  this->Internals->SaveActions.m_enabled = smtk::io::SaveJSON::prepareToSave(models, "save",
-    filename, this->Internals->RenameModelsBtn->isChecked() ? "only default" : "none",
+  this->Internals->SaveActions.m_enabled = prepareToSave(models, "save", filename,
+    this->Internals->RenameModelsBtn->isChecked() ? "only default" : "none",
     this->Internals->EmbedDataBtn->isChecked(), this->Internals->SaveActions);
   this->Internals->SaveAsActions.reset();
-  this->Internals->SaveAsActions.m_enabled = smtk::io::SaveJSON::prepareToSave(models, "save as",
-    filename, this->Internals->RenameModelsBtn->isChecked() ? "only default" : "none",
+  this->Internals->SaveAsActions.m_enabled = prepareToSave(models, "save as", filename,
+    this->Internals->RenameModelsBtn->isChecked() ? "only default" : "none",
     this->Internals->EmbedDataBtn->isChecked(), this->Internals->SaveAsActions);
   this->Internals->ExportActions.reset();
-  this->Internals->ExportActions.m_enabled =
-    smtk::io::SaveJSON::prepareToSave(models, "save a copy", filename,
-      this->Internals->RenameModelsBtn->isChecked() ? "only default" : "none",
-      this->Internals->EmbedDataBtn->isChecked(), this->Internals->ExportActions);
+  this->Internals->ExportActions.m_enabled = prepareToSave(models, "save a copy", filename,
+    this->Internals->RenameModelsBtn->isChecked() ? "only default" : "none",
+    this->Internals->EmbedDataBtn->isChecked(), this->Internals->ExportActions);
 }
 
 void smtkExportModelView::setInfoToBeDisplayed()

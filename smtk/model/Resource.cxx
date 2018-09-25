@@ -1671,59 +1671,6 @@ std::string Resource::shortUUIDName(const UUID& uid, BitFlags entityFlags)
   return name;
 }
 
-/// Return a list of the names of each session subclass whose constructor has been registered with SMTK.
-StringList Resource::sessionTypeNames()
-{
-  return SessionRegistrar::sessionTypeNames();
-}
-
-/// Return the list of file types this session can read (currently: a list of file extensions).
-StringData Resource::sessionFileTypes(const std::string& bname, const std::string& engine)
-{
-  return SessionRegistrar::sessionFileTypes(bname, engine);
-}
-
-/**\brief Create a session given the type of session to construct.
-  *
-  * \warning This creates a Session instance without a matching Entity record!
-  *          use this method with care; you most probably want createSession
-  *          instead.
-  */
-SessionPtr Resource::createSessionOfType(const std::string& bname)
-{
-  return SessionRegistrar::createSession(bname);
-}
-
-/**\brief Convenience method to create a session without specifying a session ID.
-  *
-  */
-SessionRef Resource::createSession(const std::string& bname)
-{
-  return this->createSession(bname, SessionRef());
-}
-
-/**\brief Create a session, optionally forcing a session ID and/or
-  *       registering it with this resource instance.
-  *
-  */
-SessionRef Resource::createSession(
-  const std::string& bname, const smtk::model::SessionRef& sessionIdSpec)
-{
-  if (sessionIdSpec.isValid() && this->sessionData(sessionIdSpec))
-    return sessionIdSpec; // Hrm, the specified session already exists...
-
-  SessionPtr result = Resource::createSessionOfType(bname);
-  if (result)
-  {
-    if (!sessionIdSpec.entity().isNull())
-      result->setSessionId(sessionIdSpec.entity());
-    return this->registerSession(result); // will call result->setResource(this);
-  }
-
-  smtkInfoMacro(this->log(), "Could not create \"" << bname << "\" session.");
-  return SessionRef();
-}
-
 /// Mark the start of a modeling session by registering the \a session with SMTK backing storage.
 SessionRef Resource::registerSession(SessionPtr session)
 {

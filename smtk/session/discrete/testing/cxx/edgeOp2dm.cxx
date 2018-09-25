@@ -24,7 +24,6 @@
 
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/core/Collection.h"

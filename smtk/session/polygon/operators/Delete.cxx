@@ -15,7 +15,6 @@
 #include "smtk/session/polygon/internal/Model.h"
 
 #include "smtk/io/Logger.h"
-#include "smtk/io/SaveJSON.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Edge.h"

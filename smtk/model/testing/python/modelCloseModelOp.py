@@ -18,6 +18,7 @@ import sys
 import smtk
 import smtk.session
 import smtk.session.discrete
+import smtk.session.vtk
 import smtk.io
 import smtk.model
 import smtk.testing
@@ -29,7 +30,6 @@ class TestModelCloseModelOp(unittest.TestCase):
 
     def loadThenCloseSessionModel(self, sessionname, filename):
         actMgr = smtk.model.Resource.create()
-        actSession = actMgr.createSession(sessionname, smtk.model.SessionRef())
 
         models = None
         print('Reading {fname} into {sname}'.format(
@@ -41,13 +41,15 @@ class TestModelCloseModelOp(unittest.TestCase):
                 json = f.read()
 
             self.assertTrue(not json == None, 'Unable to load input file')
-            self.assertTrue(smtk.io.LoadJSON.intoModelResource(
+            self.assertTrue(smtk.model.SessionIOJSON.loadModelRecords(
                 json, actMgr), 'Unable to parse JSON input file')
 
             actMgr.assignDefaultNames()
             models = actMgr.findEntitiesOfType(
                 int(smtk.model.MODEL_ENTITY), True)
             # Assign imported models to current session so they have operators
+            session = smtk.model.Session.create()
+            actSession = smtk.model.SessionRef(actMgr, session)
             [smtk.model.Model(x).setSession(actSession) for x in models]
         elif sessionname == 'discrete':
             readOp = smtk.session.discrete.ReadOperation.create()
@@ -57,6 +59,16 @@ class TestModelCloseModelOp(unittest.TestCase):
                 result.find('outcome').value(0),
                 int(smtk.operation.Operation.SUCCEEDED),
                 'discrete read operation failed')
+            models = smtk.model.Resource.CastTo(
+                result.find('resource').value(0)).findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
+        elif sessionname == 'vtk':
+            readOp = smtk.session.vtk.Import.create()
+            readOp.parameters().find('filename').setValue(filename)
+            result = readOp.operate()
+            self.assertEqual(
+                result.find('outcome').value(0),
+                int(smtk.operation.Operation.SUCCEEDED),
+                'vtk read operation failed')
             models = smtk.model.Resource.CastTo(
                 result.find('resource').value(0)).findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
@@ -78,7 +90,7 @@ class TestModelCloseModelOp(unittest.TestCase):
             session_files = {
                 'native': ['model', '2d', 'smtk', 'pyramid.json'],
                 'discrete': ['model', '2d', 'cmb', 'test2D.cmb'],
-                #                'exodus': ['model', '3d', 'exodus', 'disk_out_ref.ex2'],
+                'vtk': ['model', '3d', 'exodus', 'disk_out_ref.ex2'],
                 #                'cgm': ['model', '3d', 'solidmodel', 'occ', 'pyramid.brep']
             }
 

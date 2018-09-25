@@ -70,7 +70,8 @@ void create_simple_model(smtk::model::ResourcePtr resource)
 {
   using namespace smtk::model::testing;
 
-  smtk::model::SessionRef sess = resource->createSession("native");
+  smtk::model::SessionPtr session = smtk::model::Session::create();
+  smtk::model::SessionRef sess(resource, session);
   smtk::model::Model model = resource->addModel();
 
   for (std::size_t i = 0; i < numTetsInModel; ++i)

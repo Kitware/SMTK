@@ -31,9 +31,9 @@ const std::size_t num_models = 1;
 void create_simple_model(smtk::model::ResourcePtr modelResource)
 {
   using namespace smtk::model::testing;
+  smtk::model::Session::Ptr session = smtk::model::Session::create();
 
-  // smtk::model::SessionRef sess = modelResource->createSession("native");
-  smtk::model::SessionRef sess = modelResource->createSession("smtk::model::Session");
+  smtk::model::SessionRef sess(modelResource, session);
   smtk::model::Model model = modelResource->addModel();
   smtk::common::UUIDArray uids = createTet(modelResource);
   model.addCell(smtk::model::Volume(modelResource, uids[21]));

@@ -50,6 +50,7 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
 {
   PySharedPtrClass< smtk::model::Session > instance(m, "Session");
   instance
+    .def_static("create", (std::shared_ptr<smtk::model::Session> (*)()) &smtk::model::Session::create)
     .def(py::init<::smtk::model::Session const &>())
     .def("deepcopy", (smtk::model::Session & (smtk::model::Session::*)(::smtk::model::Session const &)) &smtk::model::Session::operator=)
     .def("allSupportedInformation", &smtk::model::Session::allSupportedInformation)

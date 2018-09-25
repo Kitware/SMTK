@@ -27,7 +27,6 @@
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/SaveJSON.h"
 #include "smtk/io/SaveJSON.txx"
 
