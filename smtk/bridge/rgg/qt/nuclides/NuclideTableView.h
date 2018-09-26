@@ -76,8 +76,6 @@ private slots:
 
 private:
   NuclideTableGraphicsView* graphicsView;
-  QComboBox* symbol;
-  QComboBox* massNumber;
   QLabel* label;
   QLabel* label2;
   QToolButton* selectModeButton;
