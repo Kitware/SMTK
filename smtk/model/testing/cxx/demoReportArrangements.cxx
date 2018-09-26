@@ -7,14 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/LoadJSON.h"
-#include "smtk/io/SaveJSON.h"
-
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
+#include "smtk/model/json/jsonResource.h"
 
 #include "smtk/model/testing/cxx/helpers.h"
 
@@ -114,7 +112,7 @@ int main(int argc, char* argv[])
   ResourcePtr sm = Resource::create();
 
   int status = 0;
-  status |= LoadJSON::intoModelResource(data.c_str(), sm);
+  smtk::model::from_json(data, sm);
   if (status)
   {
     if (argc > 3)

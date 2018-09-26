@@ -2303,7 +2303,3 @@ void Session::retranscribeModel(const smtk::model::Model& inModel)
 } // namespace discrete
 } // namespace session
 } // namespace smtk
-
-#include "smtk/session/discrete/Session_json.h"
-smtkImplementsModelingKernel(SMTKDISCRETESESSION_EXPORT, discrete, Session_json,
-  SessionHasNoStaticSetup, smtk::session::discrete::Session);

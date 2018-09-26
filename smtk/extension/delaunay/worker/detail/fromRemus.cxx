@@ -18,7 +18,6 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/io/AttributeReader.h"
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/Logger.h"
 #include "smtk/io/SaveJSON.h"
 

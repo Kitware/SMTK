@@ -8,7 +8,6 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
@@ -16,6 +15,7 @@
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Resource.h"
+#include "smtk/model/json/jsonResource.h"
 
 #include "vtkActor.h"
 #include "vtkColorTransferFunction.h"
@@ -55,17 +55,30 @@ int main(int argc, char* argv[])
 
     std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
 
-    ResourcePtr sm = Resource::create();
+    ResourcePtr resource = Resource::create();
 
-    int status = LoadJSON::intoModelResource(data.c_str(), sm);
+    nlohmann::json json = nlohmann::json::parse(data);
+
+    smtk::model::from_json(json, resource);
+    for (auto& tessPair : json["tessellations"])
+    {
+      smtk::common::UUID id = tessPair[0];
+      smtk::model::Tessellation tess = tessPair[1];
+      resource->setTessellation(id, tess);
+    }
+
+    resource->assignDefaultNames();
+
+    bool status = true;
+
     int numModels =
-      static_cast<int>(sm->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size());
+      static_cast<int>(resource->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).size());
     std::cout << "Imported models into resource: " << numModels << std::endl;
     if (numModels > 0)
     {
-      smtk::mesh::ManagerPtr meshmgr = sm->meshes();
+      smtk::mesh::ManagerPtr meshmgr = resource->meshes();
       smtk::io::ModelToMesh convert;
-      smtk::mesh::CollectionPtr c = convert(meshmgr, sm);
+      smtk::mesh::CollectionPtr c = convert(meshmgr, resource);
       test(c->isValid(), "collection should be valid");
 
       std::size_t numMeshes = c->numberOfMeshes();

@@ -15,10 +15,10 @@
 
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/model/DefaultSession.h"
+#include "smtk/model/json/jsonResource.h"
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
@@ -38,15 +38,22 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string write_root = SMTK_SCRATCH_DIR;
 
-void create_simple_mesh_model(smtk::model::ResourcePtr mgr, std::string file_path)
+void create_simple_mesh_model(smtk::model::ResourcePtr resource, std::string file_path)
 {
   std::ifstream file(file_path.c_str());
 
-  std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  std::string json_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  nlohmann::json json = nlohmann::json::parse(json_str);
 
-  //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelResource(json.c_str(), mgr);
-  mgr->assignDefaultNames();
+  smtk::model::from_json(json, resource);
+  for (auto& tessPair : json["tessellations"])
+  {
+    smtk::common::UUID id = tessPair[0];
+    smtk::model::Tessellation tess = tessPair[1];
+    resource->setTessellation(id, tess);
+  }
+
+  resource->assignDefaultNames();
 
   file.close();
 }

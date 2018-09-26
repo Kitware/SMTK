@@ -1,4 +1,4 @@
-PROJECT(SMTKDiscreteModel)
+PROJECT(SMTKDiscreteModel VERSION ${SMTK_VERSION})
 
 # The configured header file used to pass CMake settings to the source code.
 configure_file(
@@ -235,7 +235,7 @@ target_include_directories(${vtk-module}
   PUBLIC
     $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
     $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
+    $<INSTALL_INTERFACE:include/smtk/${PROJECT_VERSION}>)
 
 target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
 

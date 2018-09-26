@@ -1,4 +1,4 @@
-PROJECT(SMTKVTKExtensionMeshing)
+PROJECT(SMTKVTKExtensionMeshing VERSION ${SMTK_VERSION})
 
 set(srcs
   cmbUniquePointSet.cxx

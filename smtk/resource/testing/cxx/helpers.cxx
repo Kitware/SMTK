@@ -13,8 +13,6 @@
 #include "smtk/model/Session.h"
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/io/LoadJSON.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/ResourceItem.h"

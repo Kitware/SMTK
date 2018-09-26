@@ -41,8 +41,6 @@
 
 #include "smtk/session/polygon/Import_xml.h"
 
-#include "smtk/io/SaveJSON.h"
-
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkDataSetSurfaceFilter.h"
@@ -54,8 +52,6 @@
 #include "vtkStripper.h"
 #include "vtkXMLPolyDataWriter.h"
 #include <vtksys/SystemTools.hxx>
-
-#include "cJSON.h"
 
 using namespace smtk::model;
 

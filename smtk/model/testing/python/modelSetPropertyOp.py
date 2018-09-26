@@ -32,13 +32,13 @@ class TestModelSetPropertyOp(unittest.TestCase):
 
         status = 0
         mgr = smtk.model.Resource.create()
-        session = mgr.createSession('native', smtk.model.SessionRef())
+        session = smtk.model.SessionRef(mgr, smtk.model.Session.create())
         json = None
         with open(model_path, 'r') as f:
             json = f.read()
 
         self.assertTrue(not json == None, 'Unable to load input file')
-        self.assertTrue(smtk.io.LoadJSON.intoModelResource(
+        self.assertTrue(smtk.model.SessionIOJSON.loadModelRecords(
             json, mgr), 'Unable to parse JSON input file')
 
         mgr.assignDefaultNames()

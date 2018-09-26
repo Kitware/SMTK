@@ -24,7 +24,9 @@ using namespace smtk::model::testing;
 void testExplicitTraversal(IteratorStyle style, int correctCount)
 {
   Resource::Ptr resource = Resource::create();
-  SessionRef sess = resource->createSession("native");
+  Session::Ptr session = Session::create();
+  resource->registerSession(session);
+  SessionRef sess(resource, session);
 
   UUIDArray uids = createTet(resource);
   Model model = resource->addModel();
@@ -54,7 +56,9 @@ void testExplicitTraversal(IteratorStyle style, int correctCount)
 void testModelTraversal()
 {
   Resource::Ptr resource = Resource::create();
-  SessionRef sess = resource->createSession("native");
+  Session::Ptr session = Session::create();
+  resource->registerSession(session);
+  SessionRef sess(resource, session);
 
   UUIDArray uids = createTet(resource);
   Model model = resource->addModel();

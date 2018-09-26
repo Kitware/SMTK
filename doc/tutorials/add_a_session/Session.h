@@ -52,8 +52,6 @@ struct EntityHandle
 class Session : public smtk::model::Session
 {
 public:
-  // This is required of every session:
-  smtkDeclareModelingKernel();
   typedef smtk::shared_ptr<Session> Ptr;
   typedef smtk::model::SessionInfoBits SessionInfoBits;
   static SessionPtr create();

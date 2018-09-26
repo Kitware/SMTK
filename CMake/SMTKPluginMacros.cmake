@@ -50,9 +50,10 @@ function(add_smtk_plugin SMTK_PLUGIN_NAME SMTK_PLUGIN_VERSION)
     set (SMTK_PLUGIN_REGISTRAR_HEADER "#include \"${SMTK_PLUGIN_REGISTRAR_HEADER}\"")
   endif ()
 
-  configure_file(${SMTK_SOURCE_DIR}/CMake/serverSource.cxx.in
+  configure_file(${smtk_cmake_dir}/serverSource.cxx.in
     ${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx @ONLY)
 
+  find_package(ParaView)
   include(${PARAVIEW_USE_FILE})
   include (ParaViewPlugins)
 

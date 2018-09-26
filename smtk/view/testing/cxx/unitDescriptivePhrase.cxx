@@ -22,8 +22,6 @@
 
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/io/LoadJSON.h"
-
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
 
@@ -154,5 +152,3 @@ int unitDescriptivePhrase(int argc, char* argv[])
 
   return 0;
 }
-
-smtkComponentInitMacro(smtk_polygon_session);

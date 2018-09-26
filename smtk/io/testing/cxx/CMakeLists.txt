@@ -3,7 +3,6 @@ set(ioTests
   fileItemTest
   loggerTest
   ResourceSetTest
-  unitSaveLoadJSON
 )
 
 foreach (test ${ioTests})

@@ -229,7 +229,8 @@ class TestModelAttributes(unittest.TestCase):
             logging.error('Unable to load input file')
             sys.exit(2)
         scope.store = smtk.model.Resource.create()
-        ok = smtk.io.LoadJSON.intoModelResource(json_string, scope.store)
+        ok = smtk.model.SessionIOJSON.loadModelRecords(
+            json_string, scope.store)
 
         # Load cross-reference file
         self.load_xref(scope, self.model_folder)
@@ -252,7 +253,7 @@ class TestModelAttributes(unittest.TestCase):
 
         # Re-import model
         test_store = smtk.model.Resource.create()
-        ok = smtk.io.LoadJSON.intoModelResource(json_string, test_store)
+        ok = smtk.model.SessionIOJSON.loadModelRecords(json_string, test_store)
         scope.store = test_store
 
         # Re-read attribute file

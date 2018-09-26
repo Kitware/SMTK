@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/model/DefaultSession.h"
 
-#include "smtk/model/SessionRegistrar.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 
@@ -82,7 +80,3 @@ std::string DefaultSession::remoteName() const
 
 } // namespace model
 } // namespace smtk
-
-#include "smtk/model/DefaultSession_json.h" // For DefaultSession_json
-smtkImplementsModelingKernel(SMTKCORE_EXPORT, native, DefaultSession_json,
-  smtk::model::SessionHasNoStaticSetup, smtk::model::DefaultSession);

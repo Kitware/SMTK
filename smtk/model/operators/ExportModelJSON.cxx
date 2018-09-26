@@ -9,13 +9,11 @@
 //=========================================================================
 #include "smtk/model/operators/ExportModelJSON.h"
 
-#include "smtk/io/SaveJSON.h"
-#include "smtk/io/SaveJSON.txx"
-
 #include "smtk/model/Session.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/json/jsonEntity.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -29,7 +27,6 @@
 using namespace smtk::model;
 using smtk::attribute::FileItem;
 using smtk::attribute::IntItem;
-using smtk::io::JSONFlags;
 
 namespace smtk
 {
@@ -42,9 +39,10 @@ ExportModelJSON::Result ExportModelJSON::operateInternal()
   smtk::attribute::IntItemPtr flagsItem = this->parameters()->findInt("flags");
 
   auto associations = this->parameters()->associations();
-  auto entities = associations->as<EntityRefArray>([](smtk::resource::PersistentObjectPtr obj) {
-    return smtk::model::EntityRef(std::dynamic_pointer_cast<smtk::model::Entity>(obj));
-  });
+  auto entities = associations->as<std::vector<smtk::model::Entity::Ptr> >(
+    [](smtk::resource::PersistentObjectPtr obj) {
+      return std::dynamic_pointer_cast<smtk::model::Entity>(obj);
+    });
   if (entities.empty())
   {
     smtkErrorMacro(this->log(), "No valid models selected for export.");
@@ -65,11 +63,15 @@ ExportModelJSON::Result ExportModelJSON::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  JSONFlags flags = static_cast<JSONFlags>(flagsItem->value(0));
-  std::string jsonStr =
-    smtk::io::SaveJSON::forEntities(entities, smtk::model::ITERATE_MODELS, flags);
+  // TODO: incorporate JSON flags into nlohmann::json bindings
+  // JSONFlags flags = static_cast<JSONFlags>(flagsItem->value(0));
 
-  jsonFile << jsonStr;
+  // std::string jsonStr =
+  //   smtk::io::SaveJSON::forEntities(entities, smtk::model::ITERATE_MODELS, flags);
+
+  nlohmann::json json = entities;
+
+  jsonFile << json;
   jsonFile.close();
 
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

@@ -27,8 +27,8 @@ py::class_< smtk::model::SessionIOJSON, smtk::model::SessionIO > pybind11_init_s
     .def(py::init<>())
     .def(py::init<::smtk::model::SessionIOJSON const &>())
     .def("deepcopy", (smtk::model::SessionIOJSON & (smtk::model::SessionIOJSON::*)(::smtk::model::SessionIOJSON const &)) &smtk::model::SessionIOJSON::operator=)
-    .def_static("create", (std::shared_ptr<smtk::model::SessionIOJSON> (*)()) &smtk::model::SessionIOJSON::create)
-    .def_static("create", (std::shared_ptr<smtk::model::SessionIOJSON> (*)(::std::shared_ptr<smtk::model::SessionIOJSON> &)) &smtk::model::SessionIOJSON::create, py::arg("ref"))
+    .def_static("loadModelRecords", [](const std::string& j_str, smtk::model::ResourcePtr rsrc){ nlohmann::json j = nlohmann::json::parse(j_str); return smtk::model::SessionIOJSON::loadModelRecords(j, rsrc); })
+    .def_static("saveJSON", [](const smtk::model::ResourcePtr& rsrc){ nlohmann::json j = smtk::model::SessionIOJSON::saveJSON(rsrc); return j.dump(4); })
     ;
   return instance;
 }

@@ -10,7 +10,6 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/WriteMesh.h"
 
@@ -21,6 +20,8 @@
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
+#include "smtk/model/json/jsonResource.h"
+#include "smtk/model/json/jsonTessellation.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -58,10 +59,17 @@ void create_simple_mesh_model(smtk::model::ResourcePtr resource)
 
   std::ifstream file(file_path.c_str());
 
-  std::string json((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  std::string json_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  nlohmann::json json = nlohmann::json::parse(json_str);
 
-  //we should load in the test2D.json file as an smtk to model
-  smtk::io::LoadJSON::intoModelResource(json.c_str(), resource);
+  smtk::model::from_json(json, resource);
+  for (auto& tessPair : json["tessellations"])
+  {
+    smtk::common::UUID id = tessPair[0];
+    smtk::model::Tessellation tess = tessPair[1];
+    resource->setTessellation(id, tess);
+  }
+
   resource->assignDefaultNames();
 
   file.close();

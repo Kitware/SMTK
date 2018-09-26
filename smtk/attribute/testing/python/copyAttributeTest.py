@@ -67,7 +67,8 @@ if __name__ == '__main__':
         logging.error('Unable to load input file %s' % model_path)
         sys.exit(-3)
     model_resource = smtk.model.Resource.create()
-    ok = smtk.io.LoadJSON.intoModelResource(json_string, model_resource)
+    sessionIOJson = smtk.model.SessionIOJSON()
+    ok = sessionIOJson.loadModelRecords(json_string, model_resource)
     if not ok:
         logging.error("Unable to create model from contents of %s" %
                       model_path)

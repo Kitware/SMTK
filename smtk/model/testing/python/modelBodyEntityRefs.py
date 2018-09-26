@@ -32,6 +32,8 @@ if __name__ == '__main__':
     status = 0
     try:
         store = smtk.model.Resource.create()
+#        session = smtk.model.Session.create()
+#        store.setSession(smtk.model.SessionRef(store, session))
         # Add some models to the model resource:
         model = store.addModel(3, 3, 'Test Model')
         # Create a model as if we were importing it (i.e., UUIDs already assigned).
@@ -109,7 +111,6 @@ if __name__ == '__main__':
             uids[4]).pushRelation(uids[3])
 
         store.assignDefaultNames()
-        print(smtk.io.SaveJSON.fromModelResource(store))
 
         status = \
             len(vert1.edges()) != 2 or \
@@ -121,7 +122,7 @@ if __name__ == '__main__':
             loop1.face().entity() != face1.entity() or \
             loop2.face().entity() != face2.entity()
 
-    except (Exception, ex):
+    except Exception as ex:
         print('Exception:')
 
         exc_type, exc_obj, exc_tb = sys.exc_info()

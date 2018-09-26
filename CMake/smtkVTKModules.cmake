@@ -66,7 +66,7 @@ macro(vtk_smtk_process_modules)
 endmacro()
 
 # this macro is used to setup the environment for loading/building VTK modules
-macro(vtk_smtk_setup_module_environment _name)
+macro(vtk_smtk_setup_module_environment _name _ver)
   # Setup enviroment to build VTK modules outside of VTK source tree.
   set (BUILD_SHARED_LIBS ${VTK_BUILD_SHARED_LIBS})
 
@@ -83,8 +83,8 @@ macro(vtk_smtk_setup_module_environment _name)
   set (VTK_INSTALL_RUNTIME_DIR "bin")
   set (VTK_INSTALL_LIBRARY_DIR "lib")
   set (VTK_INSTALL_ARCHIVE_DIR "lib")
-  set (VTK_INSTALL_INCLUDE_DIR "include")
-  set (VTK_INSTALL_PACKAGE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${_name}")
+  set (VTK_INSTALL_INCLUDE_DIR "include/${_ver}")
+  set (VTK_INSTALL_PACKAGE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${_name}/${_ver}")
 
   if (NOT VTK_FOUND)
     set (VTK_FOUND ${ParaView_FOUND})

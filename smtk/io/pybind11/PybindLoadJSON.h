@@ -8,12 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef pybind_smtk_io_LoadJSON_h
-#define pybind_smtk_io_LoadJSON_h
 
 #include <pybind11/pybind11.h>
 
-#include "smtk/io/LoadJSON.h"
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/DefaultSession.h"

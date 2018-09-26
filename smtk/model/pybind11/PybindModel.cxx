@@ -52,7 +52,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSessionIO.h"
 #include "PybindSessionIOJSON.h"
 #include "PybindSessionRef.h"
-#include "PybindSessionRegistrar.h"
 #include "PybindShell.h"
 #include "PybindShellEntity.h"
 #include "PybindStringData.h"
@@ -87,8 +86,6 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   PySharedPtrClass< smtk::model::Resource > smtk_model_Resource = pybind11_init_smtk_model_Resource(model);
   PySharedPtrClass< smtk::model::Session > smtk_model_Session = pybind11_init_smtk_model_Session(model);
   py::class_< smtk::model::SessionIO > smtk_model_SessionIO = pybind11_init_smtk_model_SessionIO(model);
-  py::class_< smtk::model::SessionRegistrar > smtk_model_SessionRegistrar = pybind11_init_smtk_model_SessionRegistrar(model);
-  py::class_< smtk::model::StaticSessionInfo > smtk_model_StaticSessionInfo = pybind11_init_smtk_model_StaticSessionInfo(model);
   py::class_< smtk::model::Tessellation > smtk_model_Tessellation = pybind11_init_smtk_model_Tessellation(model);
   pybind11_init_smtk_model_ArrangementKind(model);
   pybind11_init_smtk_model_EntityTypeBits(model);
@@ -106,7 +103,6 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   pybind11_init_smtk_model_ModelGeometryStyleName(model);
   pybind11_init_smtk_model_NameForArrangementKind(model);
   pybind11_init_smtk_model_NamedModelGeometryStyle(model);
-  pybind11_init_smtk_model_SessionHasNoStaticSetup(model);
   pybind11_init_smtk_model_entityrefHash(model);
   pybind11_init_smtk_model_isAuxiliaryGeometry(model);
   pybind11_init_smtk_model_isCellEntity(model);

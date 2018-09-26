@@ -19,7 +19,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
-#include "smtk/io/LoadJSON.h"
 #include "smtk/io/SaveJSON.h"
 #include "smtk/model/Resource.h"
 #include "smtk/session/polygon/Session.h"

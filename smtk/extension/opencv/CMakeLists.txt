@@ -21,7 +21,7 @@ if(SMTK_ENABLE_POLYGON_SESSION)
     # The vtk_smtk_process_modules() macro finds all subdirectories
     # containing a module.cmake file automatically.
     include (smtkVTKModules)
-    vtk_smtk_setup_module_environment("SMTK")
+    vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
 
     list(APPEND import_vtk_depends
       vtkCommonCore

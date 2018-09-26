@@ -81,7 +81,6 @@ set(polygonHeaders
   json/jsonVertex.h
 )
 
-smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" polygonSessionJSON)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CleanGeometry.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/NewCreateModel.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygonOperationXML)
@@ -113,7 +112,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   # The vtk_smtk_process_modules() macro finds all subdirectories
   # containing a module.cmake file automatically.
   include (smtkVTKModules)
-  vtk_smtk_setup_module_environment("SMTK")
+  vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
   vtk_smtk_process_modules()
 
   set(polygonSrcs ${polygonSrcs}

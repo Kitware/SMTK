@@ -27,7 +27,7 @@ include_directories(
 # The pv_process_modules() macro finds all subdirectories
 # containing a module.cmake file automatically.
 include (smtkVTKModules)
-vtk_smtk_setup_module_environment("SMTK")
+vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
 vtk_smtk_process_modules()
 
 # Build vtk moab reader before session
@@ -176,14 +176,6 @@ set(discreteSessionHeaders
   operators/EdgeOperation.h
   operators/SetProperty.h
 )
-
-# Normally this would be machine-generated from Session.json
-# using the smtk_session_json CMake macro, but this version
-# has been hand-edited to include preprocessor macros that
-# add and remove engines and filetypes as support for them
-# is known at compile time.
-# include(SMTKSessionJSON)
-# smtk_session_json("${CMAKE_CURRENT_SOURCE_DIR}/Session.json" discreteSessionJSON)
 
 include(SMTKOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperation.sbt" unitOperationXML)

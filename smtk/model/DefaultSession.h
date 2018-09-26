@@ -58,7 +58,6 @@ public:
   smtkSuperclassMacro(Session);
   smtkSharedFromThisMacro(Session);
   smtkCreateMacro(DefaultSession);
-  smtkDeclareModelingKernel();
 
   void backsRemoteSession(
     const std::string& remoteSessionName, const smtk::common::UUID& sessionId);
@@ -70,7 +69,6 @@ public:
 
 protected:
   friend class RemoteOperation;
-  friend class io::LoadJSON;
 
   DefaultSession();
 

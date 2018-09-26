@@ -23,8 +23,9 @@ set(meshSrcs
 
   json/Interface.cxx
   json/MeshInfo.cxx
-  json/Readers.cxx
   json/jsonHandleRange.cxx
+  json/jsonMeshInfo.cxx
+  json/jsonCollection.cxx
 
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
@@ -88,6 +89,8 @@ set(meshHeaders
   json/Interface.h
   json/MeshInfo.h
   json/jsonHandleRange.h
+  json/jsonMeshInfo.h
+  json/jsonCollection.h
 
   moab/Interface.h
   moab/HandleRange.h

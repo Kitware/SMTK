@@ -7,9 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/io/LoadJSON.h"
-#include "smtk/io/SaveJSON.h"
 #include "smtk/model/Resource.h"
+#include "smtk/model/json/jsonResource.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include "cJSON.h"
@@ -83,7 +82,7 @@ int main(int argc, char* argv[])
 
   // ### Benchmark JSON export ###
   t.mark();
-  std::string json = SaveJSON::fromModelResource(sm);
+  nlohmann::json json = sm;
   deltaT = t.elapsed();
   std::cout << deltaT << " seconds to export " << sm->topology().size() << " entity records, "
             << sm->tessellations().size() << " tessellations, and "
@@ -96,7 +95,7 @@ int main(int argc, char* argv[])
   {
     ResourcePtr sm2 = Resource::create();
     t.mark();
-    LoadJSON::intoModelResource(json.c_str(), sm2);
+    smtk::model::from_json(json, sm2);
     deltaT = t.elapsed();
   }
   std::cout << deltaT << " seconds to ingest JSON.\n";

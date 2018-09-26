@@ -26,6 +26,8 @@ namespace mesh
 class ContainsFunctor
 {
 public:
+  virtual ~ContainsFunctor() {}
+
   virtual bool operator()(const smtk::mesh::HandleRange& points,
     const smtk::mesh::Handle* connectivity, const std::size_t num_nodes) const = 0;
 };
@@ -33,6 +35,8 @@ public:
 class PartiallyContainedFunctor : public ContainsFunctor
 {
 public:
+  virtual ~PartiallyContainedFunctor() {}
+
   bool operator()(const smtk::mesh::HandleRange& points, const smtk::mesh::Handle* connectivity,
     const std::size_t num_nodes) const override
   {
@@ -48,6 +52,8 @@ public:
 class FullyContainedFunctor : public ContainsFunctor
 {
 public:
+  virtual ~FullyContainedFunctor() {}
+
   bool operator()(const smtk::mesh::HandleRange& points, const smtk::mesh::Handle* connectivity,
     const std::size_t num_nodes) const override
   {

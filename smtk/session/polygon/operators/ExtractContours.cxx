@@ -30,8 +30,6 @@
 
 #include "smtk/session/polygon/ExtractContours_xml.h"
 
-#include "cJSON.h"
-#include "smtk/io/SaveJSON.h"
 #include <limits>
 #include <sstream>
 

@@ -1,6 +1,6 @@
 # Given a string representing an XML file, extract all of the include items and
 # replace them with the contents of the file being included.
-function(expandXMLString rawString expandedString includedFiles)
+function(expandXMLString rawString expandedString includedFiles includeDirectories)
 
   # First, grab all of the xml elements describing included files
   string(REGEX MATCHALL "<include[^/]* href=\"[^\"]+\"[^/]*/>" includes ${${rawString}})
@@ -16,16 +16,16 @@ function(expandXMLString rawString expandedString includedFiles)
     math(EXPR newlen "${len} - 7")
     string(SUBSTRING ${tmp} 6 ${newlen} incFileName)
 
-    # We need to differentiate betwen the build and install trees here. Just now
-    # we fake it by assuming that projects that depend on SMTK have
-    # SMTK_INCLUDE_DIR set.
-    #
-    # TODO: do this correctly
-    if (NOT DEFINED SMTK_INCLUDE_DIR)
-      string(CONCAT incFileName ${SMTK_SOURCE_DIR} "/" ${incFileName})
-    else ()
-      string(CONCAT incFileName ${SMTK_INCLUDE_DIR} "/" ${incFileName})
-    endif ()
+    # Locate the included file so we can expand it. Check the list of include
+    # directories, but do not use find_file() as that caches results.
+    foreach (includeDir IN LISTS includeDirectories)
+      string(CONCAT absoluteIncFileName ${includeDir} "/" ${incFileName})
+      if (EXISTS ${absoluteIncFileName})
+        set(incFileName ${absoluteIncFileName})
+        break()
+      endif()
+    endforeach()
+    find_file(incFileName NAMES ${incFileName} PATHS ${includeDirectories} NO_DEFAULT_PATH)
 
     list(FIND includedFiles ${incFileName} index)
 
@@ -48,7 +48,7 @@ function(expandXMLString rawString expandedString includedFiles)
     list(APPEND includedFiles ${incFileName})
 
     # Recursively expand the dependency xml string
-    expandXMLString(incFileContents expandedIncFileContents includedFiles)
+    expandXMLString(incFileContents expandedIncFileContents includedFiles includeDirectories)
 
     # Pop the file name
     list(REMOVE_ITEM includedFiles ${incFileName})
@@ -61,10 +61,10 @@ function(expandXMLString rawString expandedString includedFiles)
 
 endfunction()
 
-function(encodeStringAsCVariable rawString encodedVarName stringOut)
+function(encodeStringAsCVariable rawString encodedVarName stringOut includeDirectories)
 
   set(includedFiles)
-  expandXMLString(${rawString} expandedString includedFiles)
+  expandXMLString(${rawString} expandedString includedFiles "${includeDirectories}")
 
   string(REPLACE "\\" "\\\\" str1 "${expandedString}")
   string(REPLACE "\"" "\\\"" str2 "${str1}")
@@ -76,9 +76,9 @@ function(encodeStringAsCVariable rawString encodedVarName stringOut)
 
 endfunction()
 
-function(configureStringAsCVariable rawString dstFileName encodedVarName)
+function(configureStringAsCVariable rawString dstFileName encodedVarName includeDirectories)
 
-  encodeStringAsCVariable(${rawString} ${encodedVarName} encodedContents)
+  encodeStringAsCVariable(${rawString} ${encodedVarName} encodedContents "${includeDirectories}")
   if (EXISTS ${dstFileName})
     file(READ ${dstFileName} already)
   endif()
@@ -88,11 +88,11 @@ function(configureStringAsCVariable rawString dstFileName encodedVarName)
 
 endfunction()
 
-function(configureFileAsCVariable srcFileName dstFileName encodedVarName)
+function(configureFileAsCVariable srcFileName dstFileName encodedVarName includeDirectories)
 
   if (EXISTS ${srcFileName})
     file(READ ${srcFileName} fileContents)
-    configureStringAsCVariable(fileContents ${dstFileName} ${encodedVarName})
+    configureStringAsCVariable(fileContents ${dstFileName} ${encodedVarName} "${includeDirectories}")
   else()
     file(REMOVE ${dstFileName})
   endif()
@@ -115,19 +115,19 @@ endfunction()
 # string or variable name differs, in order to avoid recompiling
 # dependent files unneccessarily.
 
-function(encodeStringAsPyVariable rawString encodedVarName stringOut)
+function(encodeStringAsPyVariable rawString encodedVarName stringOut includeDirectories)
 
   set(includedFiles)
-  expandXMLString(${rawString} expandedString includedFiles)
+  expandXMLString(${rawString} expandedString includedFiles "${includeDirectories}")
 
   string(CONFIGURE "\ndescription = '''\n${expandedString}\n'''\n" pyString)
   set(${stringOut} "${pyString}" PARENT_SCOPE)
 
 endfunction()
 
-function(configureStringAsPyVariable rawString dstFileName encodedVarName)
+function(configureStringAsPyVariable rawString dstFileName encodedVarName includeDirectories)
 
-    encodeStringAsPyVariable(${rawString} ${encodedVarName} encodedContents)
+    encodeStringAsPyVariable(${rawString} ${encodedVarName} encodedContents "${includeDirectories}")
     if (EXISTS ${dstFileName})
       file(READ ${dstFileName} already)
     endif()
@@ -137,11 +137,11 @@ function(configureStringAsPyVariable rawString dstFileName encodedVarName)
 
 endfunction()
 
-function(configureFileAsPyVariable srcFileName dstFileName encodedVarName)
+function(configureFileAsPyVariable srcFileName dstFileName encodedVarName includeDirectories)
 
   if (EXISTS ${srcFileName})
     file(READ ${srcFileName} fileContents)
-    configureStringAsPyVariable(fileContents ${dstFileName} ${encodedVarName})
+    configureStringAsPyVariable(fileContents ${dstFileName} ${encodedVarName} "${includeDirectories}")
   else()
     file(REMOVE ${dstFileName})
   endif()

@@ -53,9 +53,6 @@
 #include "ModelParserHelper.h"
 #include <vtksys/SystemTools.hxx>
 
-#include "cJSON.h"
-#include "smtk/io/SaveJSON.h"
-
 using namespace smtk::model;
 
 namespace smtk
