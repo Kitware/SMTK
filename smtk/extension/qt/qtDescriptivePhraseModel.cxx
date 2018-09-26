@@ -28,6 +28,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/Resource.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
@@ -489,6 +490,7 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   // REFERENCE: https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
   double lightness = 0.2126 * color.redF() + 0.7152 * color.greenF() + 0.0722 * color.blueF();
   auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
+  auto attComp = dynamic_pointer_cast<smtk::attribute::Attribute>(item->relatedComponent());
   std::ostringstream resourceName;
   resourceName << ":/icons/entityTypes/";
   if (modelComp)
@@ -541,6 +543,26 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
     else if (lightness < 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
     {
       resourceName << "_w";
+    }
+  }
+  else if (attComp)
+  {
+    resourceName << "attribute";
+  }
+  else if (item->relatedComponent() == nullptr)
+  {
+    // Lets check the resource
+    if (dynamic_pointer_cast<smtk::model::Resource>(item->relatedResource()) != nullptr)
+    {
+      resourceName << "modelResource";
+    }
+    else if (dynamic_pointer_cast<smtk::attribute::Resource>(item->relatedResource()) != nullptr)
+    {
+      resourceName << "attributeResource";
+    }
+    else
+    {
+      resourceName << "invalid";
     }
   }
   else
