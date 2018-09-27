@@ -10,7 +10,7 @@ set(simulationHeaders
 )
 
 #install the headers
-smtk_public_headers(${simulationHeaders})
+smtk_public_headers(smtkCore ${simulationHeaders})
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

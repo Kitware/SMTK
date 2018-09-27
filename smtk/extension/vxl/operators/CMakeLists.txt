@@ -16,7 +16,7 @@ set(qtui
 )
 
 #install the headers
-smtk_public_headers(${hdrs})
+smtk_public_headers(smtkVXLOperationViewsExt ${hdrs})
 
 qt5_wrap_cpp(MOC_BUILT_SOURCES ${hdrs})
 qt5_wrap_ui(UI_BUILT_SOURCES ${qtui})
@@ -47,13 +47,6 @@ target_link_libraries(smtkVXLOperationViewsExt
     smtkVXLWidgetsExt
     smtkPQWidgetsExt
 )
-
-if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_extension_vxl_operators
-    LINK_PUBLIC
-    smtkVXLOperationViewsExt
-    )
-endif()
 
 smtk_export_header(smtkVXLOperationViewsExt Exports.h)
 

@@ -27,7 +27,7 @@ include_directories(
 # The pv_process_modules() macro finds all subdirectories
 # containing a module.cmake file automatically.
 include (smtkVTKModules)
-vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
+vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
 vtk_smtk_process_modules()
 
 # Build vtk moab reader before session
@@ -241,7 +241,7 @@ endif ()
 smtk_export_header(smtkDiscreteSession Exports.h)
 
 # Install the headers.
-smtk_public_headers(${discreteSessionHeaders} ${DiscreteModelHeaders})
+smtk_public_headers(smtkDiscreteSession ${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkDiscreteSession)
@@ -260,9 +260,6 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_session_discrete LINK_PRIVATE vtkCommonCore)
-
   add_subdirectory(testing)
   add_subdirectory(operation/testing)
 endif()

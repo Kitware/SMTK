@@ -124,7 +124,7 @@ set(QAttrLibHeaders
 )
 
 #install the headers
-smtk_public_headers(${QAttrLibHeaders})
+smtk_public_headers(smtkQtExt ${QAttrLibHeaders})
 
 qt5_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
 qt5_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
@@ -157,11 +157,6 @@ smtk_export_header(smtkQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkQtExt)
-
-if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_extension_qt LINK_PRIVATE smtkQtExt)
-endif()
 
 if (SMTK_ENABLE_EXAMPLES)
   add_subdirectory(examples)

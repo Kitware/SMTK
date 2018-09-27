@@ -40,15 +40,10 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   smtk_install_library(${vtk-module}CS)
 endif ()
 
-smtk_public_headers(${headers})
+smtk_public_headers(${vtk-module} ${headers})
 
 # Potentially wrap in Python using VTK's wrapping methods.
 # This makes the filters available for use with other VTK-wrapped filters.
 #if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
 #  vtk_smtk_wrap_module_python3(${vtk-module} "${headers}")
 #endif()
-
-if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_session_polygon_vtk LINK_PRIVATE vtkCommonCore)
-endif()

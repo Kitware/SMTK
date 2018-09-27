@@ -118,7 +118,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Translate.sbt" cgmOper
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" cgmOperationXML)
 
 # Install the headers
-smtk_public_headers(${cgmHeaders})
+smtk_public_headers(smtkCGMSession ${cgmHeaders})
 
 # Utility programs using CGM:
 add_executable(cgm-convert cgm-convert.cxx)

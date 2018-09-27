@@ -28,7 +28,7 @@ set(qtui
 )
 
 #install the headers
-smtk_public_headers(${hdrs} ${unwrappedHdrs})
+smtk_public_headers(smtkPQOperationViewsExt ${hdrs} ${unwrappedHdrs})
 
 qt5_wrap_cpp(mocs ${hdrs})
 qt5_wrap_ui(uisrc ${qtui})
@@ -57,13 +57,6 @@ target_link_libraries(smtkPQOperationViewsExt
     ${Boost_LIBRARIES}
     vtkjsoncpp
 )
-
-if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_extension_paraview_operators
-    LINK_PUBLIC
-    smtkPQOperationViewsExt
-    )
-endif()
 
 smtk_export_header(smtkPQOperationViewsExt Exports.h)
 

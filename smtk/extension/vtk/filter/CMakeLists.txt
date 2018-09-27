@@ -65,9 +65,4 @@ endif ()
 if(SMTK_ENABLE_OPENCV)
   target_link_libraries(${vtk-module} LINK_PRIVATE vtkIOImage ${OpenCV_LIBS})
 endif()
-smtk_public_headers(${headers})
-
-if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_extension_vtk_filter LINK_PRIVATE vtkCommonCore)
-endif()
+smtk_public_headers(${vtk-module} ${headers})

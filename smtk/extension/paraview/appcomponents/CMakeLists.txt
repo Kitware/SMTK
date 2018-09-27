@@ -73,6 +73,7 @@ set(PQComponentsResources
 
 #install the headers
 smtk_public_headers(
+  smtkPQComponentsExt
   ${PQComponentsHeaders}
   ${PQComponentsUnwrappedHdrs}
 )
@@ -109,13 +110,6 @@ target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
   smtkQtExt
   Qt5::Core
 )
-
-if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_extension_paraview_appcomponents
-    LINK_PUBLIC
-    smtkPQComponentsExt
-    )
-endif()
 
 smtk_export_header(smtkPQComponentsExt Exports.h)
 

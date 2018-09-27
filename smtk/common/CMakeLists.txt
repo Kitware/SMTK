@@ -75,11 +75,8 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 #install the headers
-smtk_public_headers(${commonHeaders})
+smtk_public_headers(smtkCore ${commonHeaders})
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
-  target_link_libraries(TestBuild_smtk_common
-    PUBLIC
-    nlohmann_json)
 endif()

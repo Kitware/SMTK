@@ -1,5 +1,3 @@
-project(cJSON)
-
 add_library(cJSON STATIC cJSON.c)
 target_include_directories(cJSON
   PUBLIC

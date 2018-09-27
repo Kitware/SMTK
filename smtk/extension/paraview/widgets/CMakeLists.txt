@@ -26,7 +26,7 @@ set(PQWidgetsHeaders
 )
 
 #install the headers
-smtk_public_headers(${PQWidgetsHeaders})
+smtk_public_headers(smtkPQWidgetsExt ${PQWidgetsHeaders})
 
 qt5_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
 qt5_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
@@ -54,12 +54,6 @@ target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
   Qt5::Core
   Qt5::Widgets
   )
-
-if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_extension_paraview_widgets LINK_PUBLIC
-    smtkPQWidgetsExt
-    )
-endif()
 
 smtk_export_header(smtkPQWidgetsExt Exports.h)
 

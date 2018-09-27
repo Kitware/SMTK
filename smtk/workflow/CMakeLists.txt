@@ -16,10 +16,8 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 # Install the headers
-smtk_public_headers(${workflowHdrs})
+smtk_public_headers(smtkCore ${workflowHdrs})
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
-  target_link_libraries(TestBuild_smtk_workflow
-    PUBLIC nlohmann_json)
 endif()

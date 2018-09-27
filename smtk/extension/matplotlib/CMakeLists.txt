@@ -47,7 +47,7 @@ target_link_libraries(smtkMatplotlibExt
 )
 
 smtk_export_header(smtkMatplotlibExt Exports.h)
-smtk_public_headers(${headers})
+smtk_public_headers(smtkMatplotlibExt ${headers})
 smtk_install_library(smtkMatplotlibExt)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)

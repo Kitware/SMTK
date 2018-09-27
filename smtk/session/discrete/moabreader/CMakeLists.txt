@@ -42,7 +42,7 @@ target_link_libraries(vtkDiscreteMoabReader
 smtk_export_header(vtkDiscreteMoabReader discreteMoabExports.h)
 
 # Install the headers.
-smtk_public_headers(vtkCmbMoabReader.h)
+smtk_public_headers(vtkDiscreteMoabReader vtkCmbMoabReader.h)
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(vtkDiscreteMoabReader DEPENDS vtkSMTKDiscreteModel)

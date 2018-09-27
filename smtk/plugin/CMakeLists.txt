@@ -32,5 +32,5 @@ target_link_libraries(smtkDefaultPlugins
 
 smtk_export_header(smtkDefaultPlugins Exports.h)
 
-smtk_public_headers(InitializeDefaultPlugins.h)
+smtk_public_headers(smtkDefaultPlugins InitializeDefaultPlugins.h)
 smtk_install_library(smtkDefaultPlugins)

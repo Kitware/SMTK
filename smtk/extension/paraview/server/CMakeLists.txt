@@ -96,16 +96,6 @@ smtk_export_header(smtkPVServerExt Exports.h)
 smtk_install_library(smtkPVServerExt)
 smtk_install_library(smtkPVServerExtPlugin)
 # Install the headers
-smtk_public_headers(${hdrs})
-
-if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_extension_paraview_server
-    PUBLIC
-      smtkPVServerExt
-      smtkPVServerExtPlugin
-    INTERFACE
-      nlohmann_json
-  )
-endif()
+smtk_public_headers(smtkPVServerExt ${hdrs})
 
 add_subdirectory(testing)

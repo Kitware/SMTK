@@ -45,10 +45,8 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 #install the headers
-smtk_public_headers(${viewHeaders})
+smtk_public_headers(smtkCore ${viewHeaders})
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
-  target_link_libraries(TestBuild_smtk_view
-    PUBLIC nlohmann_json)
 endif()

@@ -36,9 +36,4 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   smtk_install_library(${vtk-module}CS)
 endif ()
 
-smtk_public_headers(${headers})
-
-if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_extension_opencv_vtk LINK_PRIVATE vtkCommonCore)
-endif()
+smtk_public_headers(${vtk-module} ${headers})

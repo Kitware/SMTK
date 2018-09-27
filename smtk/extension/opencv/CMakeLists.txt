@@ -21,7 +21,7 @@ if(SMTK_ENABLE_POLYGON_SESSION)
     # The vtk_smtk_process_modules() macro finds all subdirectories
     # containing a module.cmake file automatically.
     include (smtkVTKModules)
-    vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
+    vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
 
     list(APPEND import_vtk_depends
       vtkCommonCore
@@ -64,7 +64,7 @@ if(SMTK_ENABLE_POLYGON_SESSION)
   # Install the library and exports the library when used from a build tree
   smtk_install_library(smtkOpenCVExt)
   # Install the headers
-  smtk_public_headers(${opencvHeaders})
+  smtk_public_headers(smtkOpenCVExt ${opencvHeaders})
 
   if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     add_subdirectory(qt)

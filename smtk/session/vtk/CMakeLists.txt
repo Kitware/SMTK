@@ -96,7 +96,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" vtkOperation
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" vtkOperationXML)
 
 # Install the headers
-smtk_public_headers(${vtkHeaders})
+smtk_public_headers(smtkVTKSession ${vtkHeaders})
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
@@ -112,13 +112,5 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_session_vtk
-    LINK_PRIVATE
-      vtkIOExodus
-      vtkIOParallelExodus
-      vtkFiltersGeometry
-      vtkCommonDataModel
-  )
   add_subdirectory(testing)
 endif()

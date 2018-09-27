@@ -1,8 +1,6 @@
-PROJECT(SMTKDiscreteModel VERSION ${SMTK_VERSION})
-
 # The configured header file used to pass CMake settings to the source code.
 configure_file(
-  "${PROJECT_SOURCE_DIR}/Model/VTKUUIDConfigure.h.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Model/VTKUUIDConfigure.h.in"
   "${PROJECT_BINARY_DIR}/VTKUUIDConfigure.h"
   )
 
@@ -240,7 +238,7 @@ target_include_directories(${vtk-module}
 target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
 
 # install the headers
-smtk_public_headers(${DiscreteModelHeaders})
+smtk_public_headers(vtkSMTKDiscreteModel ${DiscreteModelHeaders})
 
 # ... and make header compilation tests link properly:
 smtk_install_library(vtkSMTKDiscreteModel)
@@ -252,8 +250,3 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   # vtk_add_cs_wrapping(${vtk-module})
   # smtk_install_library(${vtk-module}CS)
 endif ()
-
-if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_session_discrete_kernel LINK_PRIVATE vtkCommonCore)
-endif()

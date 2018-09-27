@@ -64,7 +64,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   # The pv_process_modules() macro finds all subdirectories
   # containing a module.cmake file automatically.
   include (smtkVTKModules)
-  vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
+  vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
   vtk_smtk_process_modules()
 
   set(SMTK_VTK_SUPPORT_ENABLED "True")

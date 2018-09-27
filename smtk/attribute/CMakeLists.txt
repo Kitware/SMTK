@@ -171,7 +171,7 @@ set(attributeSrcs
 )
 
 #install the headers
-smtk_public_headers(${attributeHeaders})
+smtk_public_headers(smtkCore ${attributeHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
@@ -188,6 +188,4 @@ endif()
 
 if(SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
-  target_link_libraries(TestBuild_smtk_attribute
-    PUBLIC nlohmann_json)
 endif(SMTK_ENABLE_TESTING)

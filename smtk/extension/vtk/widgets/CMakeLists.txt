@@ -34,6 +34,11 @@ target_include_directories(${vtk-module}
     $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
 
+target_link_libraries(${vtk-module}
+  LINK_PUBLIC
+  ${__dependencies}
+  )
+
 #has to be after the vtk_module_library
 smtk_export_header(${vtk-module} Exports.h)
 
@@ -43,7 +48,7 @@ target_include_directories(${vtk-module}
 )
 
 #install the headers
-smtk_public_headers(${VTKLibHeaders})
+smtk_public_headers(${vtk-module} ${VTKLibHeaders})
 # ... and make header compilation tests link properly:
 smtk_install_library(${vtk-module})
 
@@ -57,8 +62,3 @@ endif ()
 #if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
 #  vtk_smtk_wrap_module_python3(${vtk-module} "${VTKLibHeaders}")
 #endif()
-
-if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_extension_vtk_widgets PUBLIC ${__dependencies})
-#  add_subdirectory(testing)
-endif()

@@ -52,7 +52,7 @@ list(APPEND ioHeaders
 )
 
 #install the headers
-smtk_public_headers(${ioHeaders})
+smtk_public_headers(smtkCore ${ioHeaders})
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
@@ -60,7 +60,4 @@ endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
-  target_link_libraries(TestBuild_smtk_io
-    PUBLIC
-    nlohmann_json)
 endif()
