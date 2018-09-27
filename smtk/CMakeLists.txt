@@ -59,8 +59,8 @@ set(smtk_srcs
 )
 
 set(smtkCore_public_include_directories
-  $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+  $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
   $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
   )
 

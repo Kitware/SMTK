@@ -168,7 +168,7 @@ smtk_public_headers(${polygonHeaders})
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/session/polygon)
 target_include_directories(smtkPolygonSession
   PUBLIC
-    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}/smtk/extension/vtk/meshing>
+    $<BUILD_INTERFACE:${smtk_SOURCE_DIR}/smtk/extension/vtk/meshing>
 )
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)

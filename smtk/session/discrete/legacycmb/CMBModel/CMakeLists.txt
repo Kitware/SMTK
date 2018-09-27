@@ -115,8 +115,8 @@ set(VTK_INSTALL_NO_HEADERS 1)
 vtk_module_library(vtkCmbDiscreteModel ${_module_src})
 target_include_directories(${vtk-module}
   PUBLIC
-    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+    $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
 
 target_link_libraries(vtkCmbDiscreteModel

@@ -48,8 +48,8 @@ def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
     srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
     bindir = srcdir
     refdir = os.path.abspath(os.path.join(rtdblddir, 'doc', 'reference'))
-    cfg2 = re.sub('@SMTK_SOURCE_DIR@', srcdir,
-                  re.sub('@SMTK_BINARY_DIR@', os.path.abspath(rtdblddir), cfg))
+    cfg2 = re.sub('@smtk_SOURCE_DIR@', srcdir,
+                  re.sub('@smtk_BINARY_DIR@', os.path.abspath(rtdblddir), cfg))
     try:
         os.makedirs(refdir)
     except OSError as e:

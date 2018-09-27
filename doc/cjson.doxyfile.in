@@ -52,7 +52,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @SMTK_BINARY_DIR@/doc/reference/cjson
+OUTPUT_DIRECTORY       = @smtk_BINARY_DIR@/doc/reference/cjson
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -669,8 +669,8 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = \
-  "@SMTK_SOURCE_DIR@/thirdparty/cJSON" \
-  "@SMTK_BINARY_DIR@/thirdparty/cJSON"
+  "@smtk_SOURCE_DIR@/thirdparty/cJSON" \
+  "@smtk_BINARY_DIR@/thirdparty/cJSON"
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -1628,7 +1628,7 @@ TAGFILES               =
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = @SMTK_BINARY_DIR@/doc/reference/cjson.tags
+GENERATE_TAGFILE       = @smtk_BINARY_DIR@/doc/reference/cjson.tags
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes

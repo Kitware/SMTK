@@ -6,7 +6,7 @@ set(smtkResourcePythonDataTests
 )
 
 foreach (test ${smtkResourcePythonTests})
-  smtk_add_test_python(${test}Py ${test}.py --src-dir=${SMTK_SOURCE_DIR})
+  smtk_add_test_python(${test}Py ${test}.py --src-dir=${smtk_SOURCE_DIR})
 endforeach()
 
 if (SMTK_DATA_DIR)

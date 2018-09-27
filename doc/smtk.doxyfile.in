@@ -52,7 +52,7 @@ PROJECT_LOGO           =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @SMTK_BINARY_DIR@/doc/reference/smtk
+OUTPUT_DIRECTORY       = @smtk_BINARY_DIR@/doc/reference/smtk
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -669,54 +669,54 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = \
-  "@SMTK_SOURCE_DIR@/smtk" \
-  "@SMTK_SOURCE_DIR@/smtk/attribute" \
-  "@SMTK_SOURCE_DIR@/smtk/session" \
-  "@SMTK_SOURCE_DIR@/smtk/session/exodus" \
-  "@SMTK_SOURCE_DIR@/smtk/session/remote" \
-  "@SMTK_SOURCE_DIR@/smtk/session/cgm" \
-  "@SMTK_SOURCE_DIR@/smtk/session/discrete" \
-  "@SMTK_SOURCE_DIR@/smtk/session/discrete/operation" \
-  "@SMTK_SOURCE_DIR@/smtk/session/discrete/kernel" \
-  "@SMTK_SOURCE_DIR@/smtk/common" \
-  "@SMTK_SOURCE_DIR@/smtk/common/testing/cxx" \
-  "@SMTK_SOURCE_DIR@/smtk/mesh" \
-  "@SMTK_SOURCE_DIR@/smtk/model" \
-  "@SMTK_SOURCE_DIR@/smtk/model/testing/cxx" \
-  "@SMTK_SOURCE_DIR@/smtk/operation" \
-  "@SMTK_SOURCE_DIR@/smtk/resource" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/paraview" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/server" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/appcomponents" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/operators" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/qt" \
-  "@SMTK_SOURCE_DIR@/smtk/extension/vtk" \
-  "@SMTK_SOURCE_DIR@/smtk/io" \
-  "@SMTK_SOURCE_DIR@/smtk/io/mesh" \
-  "@SMTK_SOURCE_DIR@/smtk/simulation" \
-  "@SMTK_SOURCE_DIR@/smtk/view" \
-  "@SMTK_BINARY_DIR@/smtk" \
-  "@SMTK_BINARY_DIR@/smtk/attribute" \
-  "@SMTK_BINARY_DIR@/smtk/cgm" \
-  "@SMTK_BINARY_DIR@/smtk/mesh" \
-  "@SMTK_BINARY_DIR@/smtk/model" \
-  "@SMTK_BINARY_DIR@/smtk/model/testing" \
-  "@SMTK_BINARY_DIR@/smtk/extension/paraview" \
-  "@SMTK_BINARY_DIR@/smtk/extension/paraview/server" \
-  "@SMTK_BINARY_DIR@/smtk/extension/paraview/appcomponents" \
-  "@SMTK_BINARY_DIR@/smtk/extension/paraview/operators" \
-  "@SMTK_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
-  "@SMTK_BINARY_DIR@/smtk/extension/qt" \
-  "@SMTK_BINARY_DIR@/smtk/extension/vtk" \
-  "@SMTK_BINARY_DIR@/smtk/remote" \
-  "@SMTK_BINARY_DIR@/smtk/common" \
-  "@SMTK_BINARY_DIR@/smtk/io" \
-  "@SMTK_BINARY_DIR@/smtk/io/mesh" \
-  "@SMTK_BINARY_DIR@/smtk/operation" \
-  "@SMTK_BINARY_DIR@/smtk/resource" \
-  "@SMTK_BINARY_DIR@/smtk/simulation" \
-  "@SMTK_BINARY_DIR@/smtk/view" \
+  "@smtk_SOURCE_DIR@/smtk" \
+  "@smtk_SOURCE_DIR@/smtk/attribute" \
+  "@smtk_SOURCE_DIR@/smtk/session" \
+  "@smtk_SOURCE_DIR@/smtk/session/exodus" \
+  "@smtk_SOURCE_DIR@/smtk/session/remote" \
+  "@smtk_SOURCE_DIR@/smtk/session/cgm" \
+  "@smtk_SOURCE_DIR@/smtk/session/discrete" \
+  "@smtk_SOURCE_DIR@/smtk/session/discrete/operation" \
+  "@smtk_SOURCE_DIR@/smtk/session/discrete/kernel" \
+  "@smtk_SOURCE_DIR@/smtk/common" \
+  "@smtk_SOURCE_DIR@/smtk/common/testing/cxx" \
+  "@smtk_SOURCE_DIR@/smtk/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/model" \
+  "@smtk_SOURCE_DIR@/smtk/model/testing/cxx" \
+  "@smtk_SOURCE_DIR@/smtk/operation" \
+  "@smtk_SOURCE_DIR@/smtk/resource" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/server" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
+  "@smtk_SOURCE_DIR@/smtk/extension/qt" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk" \
+  "@smtk_SOURCE_DIR@/smtk/io" \
+  "@smtk_SOURCE_DIR@/smtk/io/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/simulation" \
+  "@smtk_SOURCE_DIR@/smtk/view" \
+  "@smtk_BINARY_DIR@/smtk" \
+  "@smtk_BINARY_DIR@/smtk/attribute" \
+  "@smtk_BINARY_DIR@/smtk/cgm" \
+  "@smtk_BINARY_DIR@/smtk/mesh" \
+  "@smtk_BINARY_DIR@/smtk/model" \
+  "@smtk_BINARY_DIR@/smtk/model/testing" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/server" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/operators" \
+  "@smtk_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
+  "@smtk_BINARY_DIR@/smtk/extension/qt" \
+  "@smtk_BINARY_DIR@/smtk/extension/vtk" \
+  "@smtk_BINARY_DIR@/smtk/remote" \
+  "@smtk_BINARY_DIR@/smtk/common" \
+  "@smtk_BINARY_DIR@/smtk/io" \
+  "@smtk_BINARY_DIR@/smtk/io/mesh" \
+  "@smtk_BINARY_DIR@/smtk/operation" \
+  "@smtk_BINARY_DIR@/smtk/resource" \
+  "@smtk_BINARY_DIR@/smtk/simulation" \
+  "@smtk_BINARY_DIR@/smtk/view" \
 
 
 # This tag can be used to specify the character encoding of the source files
@@ -1620,8 +1620,8 @@ SEARCH_INCLUDES        = YES
 # the preprocessor.
 
 INCLUDE_PATH           = \
-        "@SMTK_SOURCE_DIR@/thirdparty/cJSON" \
-        "@SMTK_BINARY_DIR@/thirdparty/cJSON"
+        "@smtk_SOURCE_DIR@/thirdparty/cJSON" \
+        "@smtk_BINARY_DIR@/thirdparty/cJSON"
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
@@ -1747,12 +1747,12 @@ SKIP_FUNCTION_MACROS   = YES
 # doxygen is run, you must also specify the path to the tagfile here.
 
 TAGFILES               = \
-  "@SMTK_BINARY_DIR@/doc/reference/cjson.tags = @SMTK_BINARY_DIR@/doc/reference/cjson/html"
+  "@smtk_BINARY_DIR@/doc/reference/cjson.tags = @SMTK_BINARY_DIR@/doc/reference/cjson/html"
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = "@SMTK_BINARY_DIR@/doc/reference/smtk.tags"
+GENERATE_TAGFILE       = "@smtk_BINARY_DIR@/doc/reference/smtk.tags"
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes
