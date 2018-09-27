@@ -20,7 +20,7 @@ target_link_libraries(smtkRemusExt
 
 target_include_directories(smtkRemusExt PRIVATE ${REMUS_INCLUDE_DIRS})
 smtk_export_header(smtkRemusExt smtkRemusExtExports.h)
-smtk_public_headers(${remusExtHeaders})
+smtk_public_headers(smtkRemusExt ${remusExtHeaders})
 smtk_install_library(smtkRemusExt)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

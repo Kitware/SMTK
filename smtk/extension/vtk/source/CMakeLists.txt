@@ -93,7 +93,7 @@ endforeach()
 target_link_libraries(${vtk-module} PUBLIC ${SMTK_VTK_TARGET_LIST})
 
 #install the headers
-smtk_public_headers(${VTKLibHeaders})
+smtk_public_headers(${vtk-module} ${VTKLibHeaders})
 # ... and make header compilation tests link properly:
 smtk_install_library(${vtk-module})
 
@@ -126,6 +126,5 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_extension_vtk_source PUBLIC ${SMTK_VTK_TARGET_LIST})
   add_subdirectory(testing)
 endif()

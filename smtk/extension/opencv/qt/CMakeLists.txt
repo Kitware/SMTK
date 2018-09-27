@@ -8,7 +8,7 @@ set(OpenCVOperationsSrcs imageFeatureExtractorWidget.cxx)
 set(OpenCVOperationsUI imageFeatureExtractor.ui)
 
 #install the headers
-smtk_public_headers(${OpenCVOperationsHeaders})
+smtk_public_headers(smtkOpenCVQtExt ${OpenCVOperationsHeaders})
 
 qt5_wrap_cpp(MOC_BUILT_SOURCES ${OpenCVOperationsHeaders})
 qt5_wrap_ui(UI_BUILT_SOURCES ${OpenCVOperationsUI})
@@ -64,7 +64,4 @@ if (SMTK_ENABLE_TESTING)
       list(APPEND SMTK_VTK_TARGET_LIST ${target})
     endif()
   endforeach()
-
-  target_link_libraries(TestBuild_smtk_extension_opencv_qt PUBLIC ${SMTK_VTK_TARGET_LIST}
-    smtkQtExt)
 endif()

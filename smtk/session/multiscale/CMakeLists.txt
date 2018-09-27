@@ -60,7 +60,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PartitionBoundaries.sb
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscaleOperationXML)
 
 # Install the headers
-smtk_public_headers(${multiscaleHeaders})
+smtk_public_headers(smtkMultiscaleSession ${multiscaleHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
@@ -118,11 +118,5 @@ install(
 endif()
 
 if (SMTK_ENABLE_TESTING)
-  # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_session_multiscale
-    LINK_PRIVATE
-      vtkFiltersGeometry
-      vtkCommonDataModel
-  )
   add_subdirectory(testing)
 endif()

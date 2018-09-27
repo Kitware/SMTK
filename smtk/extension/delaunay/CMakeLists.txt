@@ -25,7 +25,7 @@ target_link_libraries(smtkDelaunayExt
 )
 
 smtk_export_header(smtkDelaunayExt Exports.h)
-smtk_public_headers(${headers})
+smtk_public_headers(smtkDelaunayExt ${headers})
 smtk_install_library(smtkDelaunayExt)
 
 add_subdirectory(plugin)

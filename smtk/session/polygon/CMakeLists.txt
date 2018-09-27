@@ -112,7 +112,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   # The vtk_smtk_process_modules() macro finds all subdirectories
   # containing a module.cmake file automatically.
   include (smtkVTKModules)
-  vtk_smtk_setup_module_environment(${CMAKE_PROJECT_NAME} ${PROJECT_VERSION})
+  vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
   vtk_smtk_process_modules()
 
   set(polygonSrcs ${polygonSrcs}
@@ -162,7 +162,7 @@ smtk_export_header(smtkPolygonSession Exports.h)
 # Install the library and exports the library when used from a build tree
 smtk_install_library(smtkPolygonSession)
 # Install the headers
-smtk_public_headers(${polygonHeaders})
+smtk_public_headers(smtkPolygonSession ${polygonHeaders})
 
 
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/session/polygon)
@@ -181,10 +181,5 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_session_polygon
-    PUBLIC
-    nlohmann_json)
   add_subdirectory(testing)
-  target_link_libraries(TestBuild_smtk_session_polygon
-    PUBLIC nlohmann_json)
 endif()

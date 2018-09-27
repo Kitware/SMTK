@@ -41,7 +41,7 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
 endif ()
 
 add_subdirectory(plugin)
-smtk_public_headers(${headers})
+smtk_public_headers(${vtk-module} ${headers})
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)

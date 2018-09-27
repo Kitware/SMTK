@@ -13,7 +13,7 @@ set(VXLWidgetsUI
    )
 
 #install the headers
-smtk_public_headers(${VXLWidgetsHeaders})
+smtk_public_headers(smtkVXLWidgetsExt ${VXLWidgetsHeaders})
 
 qt5_wrap_cpp(MOC_BUILT_SOURCES ${VXLWidgetsHeaders})
 qt5_wrap_ui(UI_BUILT_SOURCES ${VXLWidgetsUI})
@@ -69,7 +69,4 @@ if (SMTK_ENABLE_TESTING)
       list(APPEND SMTK_VTK_TARGET_LIST ${target})
     endif()
   endforeach()
-
-  target_link_libraries(TestBuild_smtk_extension_vxl_widgets PUBLIC ${SMTK_VTK_TARGET_LIST}
-    smtkQtExt)
 endif()

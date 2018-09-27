@@ -124,7 +124,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoElevateMesh.sbt" d
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML)
 
 #install the headers
-smtk_public_headers(${meshHeaders})
+smtk_public_headers(smtkCore ${meshHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
@@ -141,8 +141,5 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 if(SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_mesh
-    PUBLIC
-    nlohmann_json)
   add_subdirectory(testing)
 endif()

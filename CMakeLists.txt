@@ -551,8 +551,8 @@ configure_file(
   ${PROJECT_BINARY_DIR}/smtk/Function.h
   @ONLY)
 
-install (FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/Function.h
-  DESTINATION include/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}/smtk)
+install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Function.h
+  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/smtk)
 
 ################################################################################
 # Determine hash<X> specialization
@@ -563,11 +563,11 @@ if (NOT SMTK_HASH_H)
 endif ()
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/HashFunctor.h.in
-  ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/HashFunctor.h
+  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/HashFunctor.h
   @ONLY)
 
-install (FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/HashFunctor.h
-  DESTINATION include/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}/smtk)
+install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/HashFunctor.h
+  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/smtk)
 
 find_file(CGM_HAVE_VERSION_H
   NAMES cgm_version.h
@@ -579,11 +579,11 @@ find_file(CGM_HAVE_VERSION_H
 ################################################################################
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/Options.h.in
-  ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/Options.h
+  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Options.h
   @ONLY)
 
-install (FILES ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}/Options.h
-  DESTINATION include/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}/smtk)
+install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/Options.h
+  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/smtk)
 
 
 ################################################################################
@@ -599,7 +599,7 @@ install(
     ${PROJECT_SOURCE_DIR}/CMake/SMTKPluginMacros.cmake
     ${PROJECT_SOURCE_DIR}/CMake/serverSource.cxx.in
   DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}
+    ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION}
 )
 
 ################################################################################
@@ -643,12 +643,12 @@ endif()
 #
 # Setup the exports for the library when used from an installed location
 install(
-  EXPORT ${CMAKE_PROJECT_NAME}
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}
-  FILE ${CMAKE_PROJECT_NAME}Targets.cmake
+  EXPORT ${PROJECT_NAME}
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION}
+  FILE ${PROJECT_NAME}Targets.cmake
 )
 
-export(EXPORT ${CMAKE_PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Targets.cmake")
+export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
 ################################################################################
 # Create a build directory package configuration file
@@ -659,18 +659,18 @@ export(EXPORT ${CMAKE_PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_
 #
 # Required to happen before we include the docs directory
 set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
-set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}")
+set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/${CMAKE_PROJECT_NAME}Config.cmake.in
-  ${PROJECT_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake
+  ${PROJECT_SOURCE_DIR}/CMake/${PROJECT_NAME}Config.cmake.in
+  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   @ONLY)
 
 install(
-  EXPORT ${CMAKE_PROJECT_NAME}
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}
-  FILE ${CMAKE_PROJECT_NAME}Targets.cmake
+  EXPORT ${PROJECT_NAME}
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION}
+  FILE ${PROJECT_NAME}Targets.cmake
 )
 
 ################################################################################
@@ -683,12 +683,12 @@ set(SMTK_VTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_CONFIG_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/${CMAKE_PROJECT_NAME}Config.cmake.in
-  ${PROJECT_BINARY_DIR}/CMakeFiles/${CMAKE_PROJECT_NAME}Config.cmake
+  ${PROJECT_SOURCE_DIR}/CMake/${PROJECT_NAME}Config.cmake.in
+  ${PROJECT_BINARY_DIR}/CMakeFiles/${PROJECT_NAME}Config.cmake
   @ONLY)
 
-install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/${CMAKE_PROJECT_NAME}Config.cmake
-         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION})
+install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/${PROJECT_NAME}Config.cmake
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION})
 
 ################################################################################
 # Build documentation

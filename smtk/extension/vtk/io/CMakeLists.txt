@@ -34,7 +34,7 @@ target_include_directories(smtkIOVTK
   PRIVATE ${MOAB_INCLUDE_DIRS})
 
 #install the headers
-smtk_public_headers(${headers})
+smtk_public_headers(smtkIOVTK ${headers})
 # ... and make header compilation tests link properly:
 smtk_install_library(smtkIOVTK)
 

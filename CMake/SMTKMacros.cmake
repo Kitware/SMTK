@@ -10,7 +10,7 @@ include(GenerateExportHeader)
 
 # Utility to build a kit name from the current directory.
 function(smtk_get_kit_name kitvar)
-  string(REPLACE "${${CMAKE_PROJECT_NAME}_SOURCE_DIR}/" "" dir_prefix ${CMAKE_CURRENT_SOURCE_DIR})
+  string(REPLACE "${${PROJECT_NAME}_SOURCE_DIR}/" "" dir_prefix ${CMAKE_CURRENT_SOURCE_DIR})
   string(REPLACE "/" "_" kit "${dir_prefix}")
   set(${kitvar} "${kit}" PARENT_SCOPE)
   # Optional second argument to get dir_prefix.
@@ -39,7 +39,7 @@ endfunction(smtk_header_test_cxx_name header_name)
 
 # Builds a source file and an executable that does nothing other than
 # compile the given header files.
-function(smtk_add_header_test name dir_prefix)
+function(smtk_add_header_test name dir_prefix lib)
   set(hfiles ${ARGN})
   set(cxxfiles)
   foreach (header ${ARGN})
@@ -47,7 +47,7 @@ function(smtk_add_header_test name dir_prefix)
     get_filename_component(headername ${header} NAME_WE)
     smtk_header_test_cxx_name(${name} ${headername} src)
 #    set(src ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername}${suffix})
-    configure_file(${${CMAKE_PROJECT_NAME}_SOURCE_DIR}/CMake/TestBuild.cxx.in ${src} @ONLY)
+    configure_file(${smtk_cmake_dir}/TestBuild.cxx.in ${src} @ONLY)
     set(cxxfiles ${cxxfiles} ${src})
   endforeach (header)
 
@@ -60,9 +60,9 @@ function(smtk_add_header_test name dir_prefix)
   #include the build directory for the export header
   target_include_directories(TestBuild_${name}
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-  #also link against moab so we build properly
+  #also link against the associated library so we build properly
   target_link_libraries(TestBuild_${name}
-    PRIVATE MOAB)
+    PRIVATE ${lib})
 
 
 endfunction(smtk_add_header_test)
@@ -70,7 +70,7 @@ endfunction(smtk_add_header_test)
 # Declare a list of header files.  Will make sure the header files get
 # compiled and show up in an IDE. Also makes sure we install the headers
 # into the include folder
-function(smtk_public_headers)
+function(smtk_public_headers lib)
   smtk_get_kit_name(name dir_prefix)
   foreach (header IN LISTS ARGN)
     if (IS_ABSOLUTE "${header}")
@@ -87,10 +87,10 @@ function(smtk_public_headers)
     else ()
       set(suffix "")
     endif ()
-    install (FILES ${header} DESTINATION include/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix}${suffix})
+    install (FILES ${header} DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix}${suffix})
   endforeach ()
   if (BUILD_TESTING)
-    smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
+    smtk_add_header_test("${name}" "${dir_prefix}" "${lib}" ${ARGN})
   endif()
 endfunction(smtk_public_headers)
 
@@ -110,19 +110,19 @@ endfunction(smtk_private_headers)
 function(smtk_install_library target)
   set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET hidden)
   install(TARGETS ${target}
-    EXPORT ${CMAKE_PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-  export(TARGETS ${target} APPEND FILE ${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Targets.cmake)
+  export(TARGETS ${target} APPEND FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
 endfunction(smtk_install_library)
 
 #generate an export header and create an install target for it
 function(smtk_export_header target file)
   smtk_get_kit_name(name dir_prefix)
   generate_export_header(${target} EXPORT_FILE_NAME ${file})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/${CMAKE_PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix})
 endfunction(smtk_export_header)
 
 # Builds a source file and an executable that does nothing other than

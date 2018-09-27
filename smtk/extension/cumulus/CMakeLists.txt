@@ -80,7 +80,7 @@ set(hdrs
   job.h
   logindialog.h
 )
-smtk_public_headers(${hdrs})
+smtk_public_headers(smtkCumulusExt ${hdrs})
 
 #we need to add the location of the moc files to the include dir
 target_include_directories(smtkCumulusExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -149,9 +149,4 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     )
 
   smtk_install_library(smtkPQCumulusJobsPlugin)
-endif()
-
-if (SMTK_ENABLE_TESTING)
-  # Make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_extension_cumulus LINK_PRIVATE smtkCumulusExt)
 endif()

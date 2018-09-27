@@ -1,4 +1,4 @@
-smtk_public_headers(helpers.h)
+smtk_public_headers(smtkCore helpers.h)
 
 set(commonTests
   unitExtension

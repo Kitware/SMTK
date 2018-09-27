@@ -115,7 +115,7 @@ foreach (operator ${modelOps})
 endforeach()
 
 #install the headers
-smtk_public_headers(${modelHeaders})
+smtk_public_headers(smtkCore ${modelHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
@@ -131,8 +131,5 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_model
-    PUBLIC
-    nlohmann_json)
   add_subdirectory(testing)
 endif()

@@ -53,7 +53,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" meshOperatio
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" meshOperationXML)
 
 # Install the headers
-smtk_public_headers(${meshHeaders})
+smtk_public_headers(smtkMeshSession ${meshHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
