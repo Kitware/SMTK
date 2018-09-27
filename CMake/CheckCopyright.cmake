@@ -12,7 +12,7 @@
 
 ## This CMake script checks source files for the appropriate copyright
 ## statement, which is stored in:
-## SMTK_SOURCE_DIR/CMake/CopyrightStatement.txt
+## smtk_SOURCE_DIR/CMake/CopyrightStatement.txt
 ## To run this script, execute CMake as follows:
 
 set(FILES_TO_CHECK
@@ -22,11 +22,11 @@ set(FILES_TO_CHECK
   *.py
   )
 
-if (NOT SMTK_SOURCE_DIR)
-  message(SEND_ERROR "SMTK_SOURCE_DIR not defined.")
+if (NOT smtk_SOURCE_DIR)
+  message(SEND_ERROR "smtk_SOURCE_DIR not defined.")
 endif()
 
-set(copyright_file ${SMTK_SOURCE_DIR}/CMake/CopyrightStatement.txt)
+set(copyright_file ${smtk_SOURCE_DIR}/CMake/CopyrightStatement.txt)
 
 if (NOT EXISTS ${copyright_file})
   message(SEND_ERROR "Cannot find CopyrightStatement.txt")
@@ -136,11 +136,11 @@ endfunction()
 
 foreach (glob_expression ${FILES_TO_CHECK})
   file(GLOB_RECURSE file_list
-    RELATIVE "${SMTK_SOURCE_DIR}/smtk"
-    "${SMTK_SOURCE_DIR}/smtk/${glob_expression}"
+    RELATIVE "${smtk_SOURCE_DIR}/smtk"
+    "${smtk_SOURCE_DIR}/smtk/${glob_expression}"
     )
   foreach (file ${file_list})
     message("Checking ${file}")
-    check_copyright("${SMTK_SOURCE_DIR}/smtk/${file}")
+    check_copyright("${smtk_SOURCE_DIR}/smtk/${file}")
   endforeach()
 endforeach()

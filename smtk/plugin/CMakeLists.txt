@@ -23,8 +23,8 @@ add_library(smtkDefaultPlugins
   ${CMAKE_CURRENT_BINARY_DIR}/InitializeDefaultPlugins.cxx)
 target_include_directories(smtkDefaultPlugins
   PUBLIC
-  $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
-  $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+  $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
   $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
   )
 target_link_libraries(smtkDefaultPlugins

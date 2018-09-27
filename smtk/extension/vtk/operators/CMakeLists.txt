@@ -24,8 +24,8 @@ target_link_libraries(${vtk-module}
 
 target_include_directories(${vtk-module}
   PUBLIC
-    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+    $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
 
 # ... and make header compilation tests link properly:

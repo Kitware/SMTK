@@ -58,7 +58,7 @@ endif()
 
 # Generate the version header using CMake variables.
 configure_file(
-  ${SMTK_SOURCE_DIR}/CMake/Version.h.in
+  ${smtk_SOURCE_DIR}/CMake/Version.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
   @ONLY
 )

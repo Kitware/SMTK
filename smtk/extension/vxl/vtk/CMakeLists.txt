@@ -17,8 +17,8 @@ vtk_module_library(${vtk-module} ${srcs})
 
 target_include_directories(${vtk-module}
   PRIVATE
-    $<BUILD_INTERFACE:${SMTK_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${SMTK_BINARY_DIR}>
+    $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
     $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
 
     ${VXL_RPL_INCLUDE_DIR}
