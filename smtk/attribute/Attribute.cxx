@@ -455,6 +455,7 @@ bool Attribute::associateEntity(const smtk::common::UUID& objId)
 {
   std::set<smtk::resource::Resource::Ptr> rsrcs;
   rsrcs.insert(this->attributeResource()); // We can always look for other attributes.
+  rsrcs.insert(this->modelResource());
 
   // If we have a resource manager, we can also look for components in other resources:
   auto rsrcMgr = this->attributeResource()->manager();
@@ -467,14 +468,17 @@ bool Attribute::associateEntity(const smtk::common::UUID& objId)
   // Look for anything with the given UUID:
   for (auto rsrc : rsrcs)
   {
-    if (rsrc->id() == objId)
+    if (rsrc != nullptr)
     {
-      return this->associate(rsrc);
-    }
-    auto comp = rsrc->find(objId);
-    if (comp)
-    {
-      return this->associate(comp);
+      if (rsrc->id() == objId)
+      {
+        return this->associate(rsrc);
+      }
+      auto comp = rsrc->find(objId);
+      if (comp)
+      {
+        return this->associate(comp);
+      }
     }
   }
   return false;
