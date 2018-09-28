@@ -63,7 +63,7 @@ if __name__ == '__main__':
         else:
             print "Model Entity does not have this attribute associated with it"
             status = -1
-        uuids = group_item.attributes()
+        uuids = group_item.attributeIds()
         print "the number of attributes associated with the ent is ", len(uuids)
         # There should be only 1 attribute on it
         if len(uuids) == 1:
