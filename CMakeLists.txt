@@ -179,7 +179,7 @@ if (SMTK_ENABLE_TESTING)
   # Add a test to check for the copyright statment in all source:
   add_test(NAME CopyrightStatement
     COMMAND ${CMAKE_COMMAND}
-        "-Dsmtk_SOURCE_DIR=${SMTK_SOURCE_DIR}"
+        "-Dsmtk_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
         -P "${smtk_SOURCE_DIR}/CMake/CheckCopyright.cmake")
 endif()
 
