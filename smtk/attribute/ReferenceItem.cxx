@@ -442,20 +442,13 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceItem::Key& key) const
 {
   // We first try to resolve the item as a component.
-  auto linkedComponent = this->attribute()->links().linkedComponent(key);
-  if (linkedComponent.first != nullptr)
+  auto linkedObject = this->attribute()->links().linkedObject(key);
+  if (linkedObject != nullptr)
   {
-    // We can resolve the linked component.
-    return linkedComponent.first;
+    // We can resolve the linked object.
+    return linkedObject;
   }
 
-  // We then try to resolve the item as a resource.
-  auto linkedResource = this->attribute()->links().linkedResource(key);
-  if (linkedResource.first != nullptr)
-  {
-    // We can resolve the linked resource.
-    return linkedResource.first;
-  }
   return PersistentObjectPtr();
 }
 

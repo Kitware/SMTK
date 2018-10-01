@@ -11,6 +11,7 @@
 #ifndef smtk_common_Links_h
 #define smtk_common_Links_h
 
+#include <boost/multi_index/composite_key.hpp>
 #include <boost/multi_index/global_fun.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
@@ -35,8 +36,7 @@ class Links;
 /// A Link is an object that associates (or "links") two pieces of information
 /// together. Since multiple links can exist between the same objects, links
 /// have an id for unique identification. Links also have a field to describe
-/// their role. Since roles are finite (and frequently few), Links store a
-/// reference to a string held in the containing Links class.
+/// their role.
 template <typename id_type, typename left_type, typename right_type, typename role_type,
   typename base_type>
 struct Link : base_type
@@ -99,18 +99,28 @@ template <typename id_type, typename left_type, typename right_type, typename ro
   typename base_type>
 using LinkContainer = boost::multi_index_container<
   Link<id_type, left_type, right_type, role_type, base_type>,
-  indexed_by<ordered_unique<tag<Id>,
-               member<Link<id_type, left_type, right_type, role_type, base_type>, id_type,
-                              &Link<id_type, left_type, right_type, role_type, base_type>::id> >,
-    ordered_non_unique<tag<Left>,
-               member<Link<id_type, left_type, right_type, role_type, base_type>, left_type,
-                         &Link<id_type, left_type, right_type, role_type, base_type>::left> >,
-    ordered_non_unique<tag<Right>,
-               member<Link<id_type, left_type, right_type, role_type, base_type>, right_type,
-                         &Link<id_type, left_type, right_type, role_type, base_type>::right> >,
+  indexed_by<
+    ordered_unique<tag<Id>,
+      member<Link<id_type, left_type, right_type, role_type, base_type>, id_type,
+                     &Link<id_type, left_type, right_type, role_type, base_type>::id> >,
     ordered_non_unique<tag<Role>,
-               member<Link<id_type, left_type, right_type, role_type, base_type>, role_type,
-                         &Link<id_type, left_type, right_type, role_type, base_type>::role> > > >;
+      member<Link<id_type, left_type, right_type, role_type, base_type>, role_type,
+                         &Link<id_type, left_type, right_type, role_type, base_type>::role> >,
+    ordered_non_unique<
+      tag<Left>, composite_key<Link<id_type, left_type, right_type, role_type, base_type>,
+                   member<Link<id_type, left_type, right_type, role_type, base_type>, left_type,
+                                 &Link<id_type, left_type, right_type, role_type, base_type>::left>,
+                   member<Link<id_type, left_type, right_type, role_type, base_type>, role_type,
+                                 &Link<id_type, left_type, right_type, role_type,
+                                   base_type>::role> > >,
+    ordered_non_unique<tag<Right>,
+      composite_key<Link<id_type, left_type, right_type, role_type, base_type>,
+                         member<Link<id_type, left_type, right_type, role_type, base_type>,
+                           right_type,
+                           &Link<id_type, left_type, right_type, role_type, base_type>::right>,
+                         member<Link<id_type, left_type, right_type, role_type, base_type>,
+                           role_type, &Link<id_type, left_type, right_type, role_type,
+                                        base_type>::role> > > > >;
 
 /// Traits classes for Links. We key off of the tags to return sane responses
 /// in the Links class.
@@ -196,24 +206,18 @@ public:
   using RoleType = role_type;
 
   /// Insertion into the container is performed by passing values for the
-  /// base_type object, link id, left value, right value, and role. Since there
-  /// are a lot fewer role types than links, we store the role values once in
-  /// this instance and pass references to the individual links.
+  /// base_type object, link id, left value, right value, and role.
   std::pair<iterator, bool> insert(const base_type&, const id_type&, const left_type&,
     const right_type&, const role_type& role = undefinedRole);
 
   /// Since the base type may be large, this method facilitates its insertion
-  /// using move semantics. Since there are a lot fewer role types than links,
-  /// we store the role values once in this instance and pass references to the
-  /// individual links.
+  /// using move semantics.
   std::pair<iterator, bool> insert(base_type&&, const id_type&, const left_type&, const right_type&,
     const role_type& role = undefinedRole);
 
   /// If the base_type is default-constructible, this insertion method allows
   /// you to omit the base_type instance. A new base_type will be used and the
   /// left and right types are passed to the new link using move semantics.
-  /// Since there are a lot fewer role types than links, we store the role
-  /// values once in this instance and pass references to the individual links.
   template <typename return_value = typename std::pair<iterator, bool> >
   typename std::enable_if<std::is_default_constructible<base_type>::value, return_value>::type
   insert(const id_type& id, const left_type& left, const right_type& right,
@@ -241,11 +245,6 @@ public:
 
   /// Access a link by its id and set its value associated with the tagged
   /// search criterion to a new value.
-  ///
-  /// NOTE: due to the indirection used for Roles to minimize storage space,
-  ///       roles cannot be modified this way (and any attempts to do so will
-  ///       result in a compiler error). To change a role, simply remove and
-  ///       add the link with the right Role value.
   template <typename tag>
   bool set(const id_type&, const typename LinkTraits<tag>::type&);
 
@@ -273,6 +272,13 @@ public:
   const std::set<std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
     std::less<const typename LinkTraits<tag>::other_type> >
   linked_to(const typename LinkTraits<tag>::type&) const;
+
+  /// Given a Left or Right tag, an associated value and a role, return a set of
+  /// the other type that links to the input value and has the role value.
+  template <typename tag>
+  const std::set<std::reference_wrapper<const typename LinkTraits<tag>::other_type>,
+    std::less<const typename LinkTraits<tag>::other_type> >
+  linked_to(const typename LinkTraits<tag>::type&, const role_type& role) const;
 };
 
 template <typename id_type, typename left_type, typename right_type, typename role_type,
@@ -474,7 +480,34 @@ Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
     values;
 
   auto& self = this->Parent::template get<tag>();
-  auto range = self.equal_range(value);
+  auto range = self.equal_range(std::make_tuple(value));
+  for (auto it = range.first; it != range.second; ++it)
+  {
+    values.insert(std::cref(LinkTraits<typename traits::OtherTag>::value(*it)));
+  }
+  return values;
+}
+
+template <typename id_type, typename left_type, typename right_type, typename role_type,
+  typename base_type>
+template <typename tag>
+const std::set<std::reference_wrapper<const typename detail::LinkTraits<id_type, left_type,
+                 right_type, role_type, base_type, tag>::other_type>,
+  std::less<const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
+    tag>::other_type> >
+Links<id_type, left_type, right_type, role_type, base_type>::linked_to(
+  const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
+    tag>::type& value,
+  const role_type& role) const
+{
+  typedef LinkTraits<tag> traits;
+
+  std::set<std::reference_wrapper<const typename traits::other_type>,
+    std::less<const typename traits::other_type> >
+    values;
+
+  auto& self = this->Parent::template get<tag>();
+  auto range = self.equal_range(std::make_tuple(value, role));
   for (auto it = range.first; it != range.second; ++it)
   {
     values.insert(std::cref(LinkTraits<typename traits::OtherTag>::value(*it)));

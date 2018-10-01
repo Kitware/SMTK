@@ -18,60 +18,29 @@ namespace smtk
 {
 namespace resource
 {
-ResourceLinks::ResourceLinks(const Resource* resource)
-  : lhs(resource)
+namespace detail
+{
+ResourceLinks::ResourceLinks(Resource* resource)
+  : m_resource(resource)
 {
   // NOTE: When modifying this constructor, do not use the resource parameter
-  // or lhs field! The parent Resouce is still in construction and is in an
-  // indeterminate state.
+  // or m_resource field! The parent Resouce is still in construction and is in
+  // an indeterminate state.
 }
 
 ResourceLinks::~ResourceLinks()
 {
 }
 
-const ResourceLinks::Link* ResourceLinks::link(const smtk::common::UUID& linkId)
+Resource* ResourceLinks::leftHandSideResource()
 {
-  auto search = m_data.find(linkId);
-  return search != m_data.end() ? &(*search) : nullptr;
+  return m_resource;
 }
 
-bool ResourceLinks::isLinkedTo(const ResourcePtr& resource)
+const Resource* ResourceLinks::leftHandSideResource() const
 {
-  return resource ? m_data.has<ResourceLinkData::Right>(resource->id()) : false;
+  return m_resource;
 }
-
-const ResourceLinks::Link* ResourceLinks::addLinkTo(const ResourcePtr& resource)
-{
-  if (resource == nullptr)
-  {
-    return nullptr;
-  }
-
-  smtk::common::UUID id = smtk::common::UUID::random();
-
-  // Keep spinning uuids until one is accepted.
-  while (m_data.has(id))
-  {
-    id = smtk::common::UUID::random();
-  }
-
-  auto inserted =
-    m_data.insert(ResourceLinkData::LinkBase(resource), id, lhs->id(), resource->id());
-
-  return &(*inserted.first);
 }
-
-bool ResourceLinks::removeLink(const smtk::common::UUID& linkId)
-{
-  return m_data.erase(linkId) > 0;
 }
-
-std::set<std::reference_wrapper<const smtk::common::UUID>, std::less<const smtk::common::UUID> >
-ResourceLinks::linkIds() const
-{
-  return m_data.linked_to<ResourceLinkData::Left>(lhs->id());
 }
-
-} // namespace resource
-} // namespace smtk

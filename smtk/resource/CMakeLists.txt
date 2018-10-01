@@ -2,6 +2,7 @@
 set(resourceSrcs
   Component.cxx
   ComponentLinks.cxx
+  Links.cxx
   Lock.cxx
   Manager.cxx
   Observer.cxx
@@ -19,6 +20,7 @@ set(resourceHeaders
   Component.h
   ComponentLinks.h
   DerivedFrom.h
+  Links.h
   Lock.h
   Manager.h
   Metadata.h

@@ -20,6 +20,8 @@
 #include "smtk/resource/ComponentLinks.h"
 #include "smtk/resource/Surrogate.h"
 
+#include "smtk/resource/Links.h"
+
 #include <set>
 
 namespace smtk
@@ -57,7 +59,6 @@ public:
 
   virtual ~LinkBase() {}
 };
-}
 
 /// The ResourceLinks class is a resource-specific API for manipulating
 /// unidirectional links from a Resource and its Components to other Resources
@@ -65,17 +66,13 @@ public:
 /// smtk::common::Links instance describing links between resources, and each
 /// link in this structure is an smtk::common::Links instance describing links
 /// between components.
-class SMTKCORE_EXPORT ResourceLinks
+class SMTKCORE_EXPORT ResourceLinks : public Links
 {
-  typedef ComponentLinks::Data ComponentLinkData;
+  typedef detail::ComponentLinks::Data ComponentLinkData;
   typedef detail::LinkBase LinkBase;
 
 public:
-  friend class Resource;
-
-  /// A Key is a pair of UUIDs. the First UUID is the id of the resource link,
-  /// and the second one is the id of the component link.
-  typedef std::pair<smtk::common::UUID, smtk::common::UUID> Key;
+  friend class smtk::resource::Resource;
 
   typedef smtk::common::Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int,
     LinkBase>
@@ -85,36 +82,21 @@ public:
 
   ~ResourceLinks();
 
-  /// Given the id to a resource link, return a pointer to the link (or nullptr
-  /// if no link is found).
-  const Link* link(const smtk::common::UUID&);
-
-  /// Given a resource, check if a link exists between m_lhs and the resource.
-  bool isLinkedTo(const ResourcePtr&);
-
-  /// Given a resource, create a link to the resource and return a pointer to
-  /// link.
-  const Link* addLinkTo(const ResourcePtr&);
-
-  /// Given a resource, remove the associated resource link. Return true if
-  /// successful.
-  bool removeLink(const smtk::common::UUID&);
-
-  /// Return a set of this resource's link ids.
-  std::set<std::reference_wrapper<const smtk::common::UUID>, std::less<const smtk::common::UUID> >
-  linkIds() const;
-
   /// Access the underlying link data.
   ResourceLinkData& data() { return m_data; }
   const ResourceLinkData& data() const { return m_data; }
 
 private:
-  ResourceLinks(const Resource*);
+  ResourceLinks(Resource*);
 
-  const Resource* lhs;
+  Resource* leftHandSideResource() override;
+  const Resource* leftHandSideResource() const override;
+
+  Resource* m_resource;
   ResourceLinkData m_data;
 };
 }
 }
+}
 
-#endif // smtk_resource_Links_h
+#endif // smtk_resource_ResourceLinks_h

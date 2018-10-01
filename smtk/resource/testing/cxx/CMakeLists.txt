@@ -11,6 +11,7 @@ smtk_install_library(smtkCoreResourceTesting)
 # Tests
 ################################################################################
 set(unit_tests
+  TestResourceLinks.cxx
   TestResourceManager.cxx
 )
 

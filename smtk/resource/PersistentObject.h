@@ -43,6 +43,9 @@ public:
   /// Return a unique identifier for the object which will be persistent across sessions.
   virtual const common::UUID& id() const = 0;
   /// Assign an ID to this object (used by readers; not for arbitrary reuse).
+  /// TODO: care must be taken to modify the recorded ID in all links that
+  ///       connect to this object (see Resource::setId and its treatment of
+  ///       manager registration for reference).
   virtual bool setId(const common::UUID& myID) = 0;
   /// Return the name of the object - by default it will return the UUID but that can be overriden
   virtual std::string name() const;
