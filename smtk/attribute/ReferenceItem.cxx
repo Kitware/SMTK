@@ -176,12 +176,12 @@ ReferenceItem::Key ReferenceItem::linkTo(PersistentObjectPtr val)
   // If the object is a component...
   if (auto component = std::dynamic_pointer_cast<smtk::resource::Component>(val))
   {
-    return this->attribute()->links().addLinkTo(component, -1);
+    return this->attribute()->links().addLinkTo(component, Resource::ReferenceRole);
   }
   // If the object is a resource...
   else if (auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(val))
   {
-    return this->attribute()->links().addLinkTo(resource, -1);
+    return this->attribute()->links().addLinkTo(resource, Resource::ReferenceRole);
   }
 
   // If the object cannot be cast to a resource or component, there's not much

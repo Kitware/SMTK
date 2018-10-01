@@ -226,7 +226,6 @@ public:
 
   smtk::attribute::ResourcePtr attributeResource() const;
   const smtk::resource::ResourcePtr resource() const override;
-  smtk::model::ResourcePtr modelResource() const;
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)
   {

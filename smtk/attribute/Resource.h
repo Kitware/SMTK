@@ -18,6 +18,7 @@
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/DerivedFrom.h"
+#include "smtk/resource/Links.h"
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -56,6 +57,14 @@ public:
     FORCE_COPY_ASSOCIATIONS =
       0x00000003 //!< Should associations and model-entity items *always* be copied?
   };
+
+  // Associations and references to other resources and components are managed
+  // internally using smtk::resource::Links. The concepts of association and
+  // reference are internally very similar, but to the outward-facing API they
+  // are treated separately and serve different functions. The storage for these
+  // values are therefore logically separated by different role values.
+  static constexpr smtk::resource::Links::RoleType AssociationRole = -1;
+  static constexpr smtk::resource::Links::RoleType ReferenceRole = -2;
 
   ~Resource() override;
 
@@ -143,8 +152,16 @@ public:
   std::vector<smtk::view::ViewPtr> findTopLevelViews() const;
   const std::map<std::string, smtk::view::ViewPtr>& views() const { return m_views; }
 
-  smtk::model::ResourcePtr refModelResource() const { return m_refModelResource.lock(); }
-  void setRefModelResource(smtk::model::ResourcePtr refModelResource);
+  // Return a set of resources associated to this attribute resource.
+  smtk::resource::ResourceSet associations() const;
+
+  // Add a resource to the set of associated resources, and return true if the
+  // association is successful.
+  bool associate(const smtk::resource::ResourcePtr& resource);
+
+  // Remove a resource from the set of associated resources, and return true if
+  // the disassociation is successful.
+  bool disassociate(const smtk::resource::ResourcePtr& resource);
 
   bool hasAttributes() { return m_attributes.size() > 0; }
 
@@ -190,7 +207,6 @@ protected:
   std::map<std::string, std::set<std::string> > m_analyses;
   std::map<std::string, smtk::view::ViewPtr> m_views;
 
-  smtk::model::WeakResourcePtr m_refModelResource;
   // Advance levels, <int-level, <string-label, color[4]>
   // higher level means more advanced.
   std::map<int, std::string> m_advLevels;

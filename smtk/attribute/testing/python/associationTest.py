@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # Create attribute resource with 1 def
     resource = smtk.attribute.Resource.create()
     defn = resource.createDefinition('testdef')
-    resource.setRefModelResource(mmgr)
+    resource.associate(mmgr)
     defn.setLocalAssociationMask(int(mask))
     defn.associationRule().setIsExtensible(True)
 

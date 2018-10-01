@@ -99,7 +99,6 @@ class TestModelAttributes(unittest.TestCase):
         att_path = os.path.join(att_folder, SBT_FILENAME)
         logging.info('Reading %s' % att_path)
         resource = smtk.attribute.Resource.create()
-        # resource.setRefModelResource(scope.store)
         reader = smtk.io.AttributeReader()
         logger = smtk.io.Logger()
         err = reader.read(resource, att_path, logger)
@@ -109,7 +108,6 @@ class TestModelAttributes(unittest.TestCase):
             sys.exit(4)
 
         # Create material attribute & associate to model face
-        resource.setRefModelResource(scope.store)
         defn = resource.findDefinition('Material')
         value = 1.01
         for i, face in enumerate(scope.face_list, start=1):
@@ -267,7 +265,6 @@ class TestModelAttributes(unittest.TestCase):
         self.assertTrue(not err, "Unable to read attribute file")
 
         # Set model and verify attributes
-        test_resource.setRefModelResource(scope.store)
         error_count = self.check_attributes(scope, test_resource)
         self.assertEqual(error_count, 0, "At least one error occurred.")
 

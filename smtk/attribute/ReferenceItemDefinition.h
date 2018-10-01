@@ -52,9 +52,10 @@ public:
 
   Item::Type type() const override { return Item::ReferenceType; }
 
-  std::multimap<std::string, std::string> acceptableEntries() const { return m_acceptable; }
+  const std::multimap<std::string, std::string>& acceptableEntries() const { return m_acceptable; }
 
-  bool setAcceptsEntries(const std::string& typeName, const std::string& queryString, bool accept);
+  virtual bool setAcceptsEntries(
+    const std::string& typeName, const std::string& queryString, bool accept);
 
   virtual bool isValueValid(PersistentObjectPtr entity) const;
 

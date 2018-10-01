@@ -64,87 +64,87 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::MeshItemPtr& itemPt
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& itemPtr)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
-  if (!itemPtr.get())
-  {
-    return;
-  }
-  auto temp = smtk::dynamic_pointer_cast<Item>(itemPtr);
-  smtk::attribute::from_json(j, temp);
+  // if (!itemPtr.get())
+  // {
+  //   return;
+  // }
+  // auto temp = smtk::dynamic_pointer_cast<Item>(itemPtr);
+  // smtk::attribute::from_json(j, temp);
 
-  std::size_t i(0), n = itemPtr->numberOfValues();
-  smtk::common::UUID cid;
-  smtk::model::ResourcePtr modelmgr = itemPtr->attribute()->attributeResource()->refModelResource();
-  std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
-  if (!numRequiredVals || itemPtr->isExtensible())
-  {
-    try
-    {
-      // The node should have an attribute indicating how many values are
-      // associated with the item
-      n = j.at("NumberOfValues");
-      itemPtr->setNumberOfValues(n);
-    }
-    catch (std::exception& /*e*/)
-    {
-    }
-  }
-  if (!n)
-  {
-    return;
-  }
-  json values;
-  try
-  {
-    values = j.at("Values");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!values.is_null())
-  {
-    for (auto iter = values.begin(); iter != values.end(); iter++, i++)
-    {
-      json value = *iter;
-      std::string resourceId;
-      try
-      {
-        resourceId = value.at("Resourceid");
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
-      if (resourceId.empty())
-      {
-        continue;
-      }
-      if (i >= n)
-      {
-        break;
-      }
-      cid = smtk::common::UUID(resourceId);
-      //convert back to a handle
-      std::string val = value.at("Val");
-      cJSON* jshandle = cJSON_Parse(val.c_str());
-      smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
-      cJSON_Delete(jshandle);
-      smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
-      if (!c)
-      {
-        std::cerr << "Expecting a valid collection for mesh item: " << itemPtr->name() << std::endl;
-        continue;
-      }
-      smtk::mesh::InterfacePtr interface = c->interface();
+  // std::size_t i(0), n = itemPtr->numberOfValues();
+  // smtk::common::UUID cid;
+  // smtk::model::ResourcePtr modelmgr = itemPtr->attribute()->attributeResource()->refModelResource();
+  // std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
+  // if (!numRequiredVals || itemPtr->isExtensible())
+  // {
+  //   try
+  //   {
+  //     // The node should have an attribute indicating how many values are
+  //     // associated with the item
+  //     n = j.at("NumberOfValues");
+  //     itemPtr->setNumberOfValues(n);
+  //   }
+  //   catch (std::exception& /*e*/)
+  //   {
+  //   }
+  // }
+  // if (!n)
+  // {
+  //   return;
+  // }
+  // json values;
+  // try
+  // {
+  //   values = j.at("Values");
+  // }
+  // catch (std::exception& /*e*/)
+  // {
+  // }
+  // if (!values.is_null())
+  // {
+  //   for (auto iter = values.begin(); iter != values.end(); iter++, i++)
+  //   {
+  //     json value = *iter;
+  //     std::string resourceId;
+  //     try
+  //     {
+  //       resourceId = value.at("Resourceid");
+  //     }
+  //     catch (std::exception& /*e*/)
+  //     {
+  //     }
+  //     if (resourceId.empty())
+  //     {
+  //       continue;
+  //     }
+  //     if (i >= n)
+  //     {
+  //       break;
+  //     }
+  //     cid = smtk::common::UUID(resourceId);
+  //     //convert back to a handle
+  //     std::string val = value.at("Val");
+  //     cJSON* jshandle = cJSON_Parse(val.c_str());
+  //     smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
+  //     cJSON_Delete(jshandle);
+  //     smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
+  //     if (!c)
+  //     {
+  //       std::cerr << "Expecting a valid collection for mesh item: " << itemPtr->name() << std::endl;
+  //       continue;
+  //     }
+  //     smtk::mesh::InterfacePtr interface = c->interface();
 
-      if (!interface)
-      {
-        std::cerr << "Expecting a valid mesh interface for mesh item: " << itemPtr->name()
-                  << std::endl;
-        continue;
-      }
+  //     if (!interface)
+  //     {
+  //       std::cerr << "Expecting a valid mesh interface for mesh item: " << itemPtr->name()
+  //                 << std::endl;
+  //       continue;
+  //     }
 
-      itemPtr->appendValue(smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
-    }
-  }
+  //     itemPtr->appendValue(smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
+  //   }
+  // }
 }
 }
 }

@@ -18,6 +18,7 @@
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/CellEntity.h"
+#include "smtk/model/Resource.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/session/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/session/polygon/qt/pqPolygonArc.h"
@@ -321,7 +322,7 @@ void qtPolygonEdgeOperationView::onHideAllFaces(bool status)
 
   if (setPropertyOp && setPropertyOp->parameters())
   {
-    setPropertyOp->parameters()->attributeResource()->setRefModelResource(activeSession.resource());
+    setPropertyOp->parameters()->attributeResource()->associate(activeSession.resource());
     if (status)
     { // cache faces' visiblity and set them all to invisible
       for (const auto& face : faces)

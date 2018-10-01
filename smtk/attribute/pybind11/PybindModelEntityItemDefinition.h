@@ -17,14 +17,14 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/model/EntityRef.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute_ModelEntityItemDefinition(py::module &m)
+PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ComponentItemDefinition > pybind11_init_smtk_attribute_ModelEntityItemDefinition(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ItemDefinition > instance(m, "ModelEntityItemDefinition");
+  PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ComponentItemDefinition > instance(m, "ModelEntityItemDefinition");
   instance
     .def(py::init<::smtk::attribute::ModelEntityItemDefinition const &>())
     .def_static("New", &smtk::attribute::ModelEntityItemDefinition::New, py::arg("sname"))

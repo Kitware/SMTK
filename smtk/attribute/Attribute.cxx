@@ -275,23 +275,6 @@ const smtk::resource::ResourcePtr Attribute::resource() const
   return this->attributeResource();
 }
 
-/**\brief Return the model Resource instance whose entities may have attributes.
-  *
-  * This returns a shared pointer to smtk::model::Resource, which may be
-  * null if no resource is referenced by the attribute resource (or if the
-  * attribute definition does not reference a valid resource).
-  */
-smtk::model::ResourcePtr Attribute::modelResource() const
-{
-  smtk::model::ResourcePtr result;
-  smtk::attribute::ResourcePtr attResource = this->attributeResource();
-  if (attResource)
-  {
-    result = attResource->refModelResource();
-  }
-  return result;
-}
-
 /**\brief Remove all associations of this attribute with model entities.
   *
   * Note that this actually resets the associations.
@@ -453,9 +436,8 @@ bool Attribute::associate(smtk::resource::PersistentObjectPtr obj)
   */
 bool Attribute::associateEntity(const smtk::common::UUID& objId)
 {
-  std::set<smtk::resource::Resource::Ptr> rsrcs;
+  std::set<smtk::resource::Resource::Ptr> rsrcs = this->attributeResource()->associations();
   rsrcs.insert(this->attributeResource()); // We can always look for other attributes.
-  rsrcs.insert(this->modelResource());
 
   // If we have a resource manager, we can also look for components in other resources:
   auto rsrcMgr = this->attributeResource()->manager();
@@ -522,16 +504,35 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
     return;
   }
 
-  std::ptrdiff_t idx = m_associatedObjects->find(entity);
-  if (idx >= 0)
+  std::set<smtk::resource::Resource::Ptr> rsrcs = this->attributeResource()->associations();
+  rsrcs.insert(this->attributeResource()); // We can always look for other attributes.
+
+  // If we have a resource manager, we can also look for components in other resources:
+  auto rsrcMgr = this->attributeResource()->manager();
+  if (rsrcMgr)
   {
-    m_associatedObjects->removeValue(idx);
-    if (reverse)
+    std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),
+      [&rsrcs](smtk::resource::Resource::Ptr rsrc) { rsrcs.insert(rsrc); });
+  }
+
+  // Look for anything with the given UUID:
+  for (auto rsrc : rsrcs)
+  {
+    if (rsrc != nullptr)
     {
-      smtk::model::ResourcePtr modelMgr = this->modelResource();
-      if (modelMgr)
+      auto comp = rsrc->find(entity);
+      if (comp)
       {
-        modelMgr->disassociateAttribute(this->attributeResource(), this->id(), entity, false);
+        this->disassociate(comp);
+
+        if (reverse)
+        {
+          smtk::model::ResourcePtr modelMgr = std::static_pointer_cast<smtk::model::Resource>(rsrc);
+          if (modelMgr)
+          {
+            modelMgr->disassociateAttribute(this->attributeResource(), this->id(), entity, false);
+          }
+        }
       }
     }
   }

@@ -15,20 +15,20 @@
 
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/model/EntityRef.h"
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::Item > pybind11_init_smtk_attribute_ModelEntityItem(py::module &m)
+PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::ComponentItem > pybind11_init_smtk_attribute_ModelEntityItem(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::Item > instance(m, "ModelEntityItem");
+  PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::ComponentItem > instance(m, "ModelEntityItem");
   instance
     .def(py::init<::smtk::attribute::ModelEntityItem const &>())
     .def("deepcopy", (smtk::attribute::ModelEntityItem & (smtk::attribute::ModelEntityItem::*)(::smtk::attribute::ModelEntityItem const &)) &smtk::attribute::ModelEntityItem::operator=)
-    .def("appendValue", &smtk::attribute::ModelEntityItem::appendValue, py::arg("val"))
+    .def("appendValue", (bool (smtk::attribute::ModelEntityItem::*)(const smtk::model::EntityRef&)) &smtk::attribute::ModelEntityItem::appendValue, py::arg("val"))
     .def("assign", &smtk::attribute::ModelEntityItem::assign, py::arg("sourceItem"), py::arg("options") = 0)
     .def("begin", &smtk::attribute::ModelEntityItem::begin)
     .def("end", &smtk::attribute::ModelEntityItem::end)

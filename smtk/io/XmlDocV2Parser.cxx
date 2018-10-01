@@ -342,8 +342,8 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
   xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ResourcePtr mresource =
-    m_resource->refModelResource(); // FIXME: Use resource manager!
+  // FIXME: Use resource manager!
+  // TODO: how do you want to use the resource manager here?
   xml_node val;
   std::size_t numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
@@ -386,7 +386,14 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
         continue;
       }
       uid = smtk::common::UUID(val.text().get());
-      item->setObjectValue(static_cast<int>(i), mresource->findEntity(uid));
+      for (auto& association : m_resource->associations())
+      {
+        if (auto entity = association->find(uid))
+        {
+          item->setObjectValue(static_cast<int>(i), entity);
+          break;
+        }
+      }
     }
   }
   else if (numRequiredVals == 1)
@@ -395,7 +402,14 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
     if (val)
     {
       uid = smtk::common::UUID(val.text().get());
-      item->setObjectValue(mresource->findEntity(uid));
+      for (auto& association : m_resource->associations())
+      {
+        if (auto entity = association->find(uid))
+        {
+          item->setObjectValue(0, entity);
+          break;
+        }
+      }
     }
   }
   else
@@ -439,80 +453,80 @@ void XmlDocV2Parser::processMeshSelectionItem(
 
 void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item)
 {
-  xml_attribute xatt;
-  std::size_t n = item->numberOfValues();
-  std::size_t numRequiredVals = item->numberOfRequiredValues();
-  if (!numRequiredVals || item->isExtensible())
-  {
-    // The node should have an attribute indicating how many values are
-    // associated with the item
-    xatt = node.attribute("NumberOfValues");
-    if (!xatt)
-    {
-      smtkErrorMacro(
-        m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
-      return;
-    }
-    n = xatt.as_uint();
-    // QUESTION: Should we set numberOfRequired value here?
-  }
+  // xml_attribute xatt;
+  // std::size_t n = item->numberOfValues();
+  // std::size_t numRequiredVals = item->numberOfRequiredValues();
+  // if (!numRequiredVals || item->isExtensible())
+  // {
+  //   // The node should have an attribute indicating how many values are
+  //   // associated with the item
+  //   xatt = node.attribute("NumberOfValues");
+  //   if (!xatt)
+  //   {
+  //     smtkErrorMacro(
+  //       m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
+  //     return;
+  //   }
+  //   n = xatt.as_uint();
+  //   // QUESTION: Should we set numberOfRequired value here?
+  // }
 
-  if (!n)
-  {
-    return;
-  }
+  // if (!n)
+  // {
+  //   return;
+  // }
 
-  smtk::common::UUID cid;
-  smtk::model::ResourcePtr modelresource = m_resource->refModelResource();
-  xml_node valsNode, val;
+  // smtk::common::UUID cid;
+  // smtk::model::ResourcePtr modelresource = m_resource->refModelResource();
+  // xml_node valsNode, val;
 
-  std::size_t i = 0;
-  valsNode = node.child("Values");
-  if (valsNode)
-  {
-    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"), ++i)
-    {
-      xatt = val.attribute("collectionid");
-      if (!xatt)
-      {
-        smtkErrorMacro(
-          m_logger, "XML Attribute collectionid is missing for Item: " << item->name());
-        continue;
-      }
-      if (i >= n)
-      {
-        smtkErrorMacro(
-          m_logger, "The number of values: " << i << " is out of range for Item: " << item->name());
-        break;
-      }
-      cid = smtk::common::UUID(xatt.value());
+  // std::size_t i = 0;
+  // valsNode = node.child("Values");
+  // if (valsNode)
+  // {
+  //   for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"), ++i)
+  //   {
+  //     xatt = val.attribute("collectionid");
+  //     if (!xatt)
+  //     {
+  //       smtkErrorMacro(
+  //         m_logger, "XML Attribute collectionid is missing for Item: " << item->name());
+  //       continue;
+  //     }
+  //     if (i >= n)
+  //     {
+  //       smtkErrorMacro(
+  //         m_logger, "The number of values: " << i << " is out of range for Item: " << item->name());
+  //       break;
+  //     }
+  //     cid = smtk::common::UUID(xatt.value());
 
-      //convert back to a handle
-      cJSON* jshandle = cJSON_Parse(val.text().get());
-      smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
-      cJSON_Delete(jshandle);
-      smtk::mesh::CollectionPtr c = modelresource->meshes()->collection(cid);
-      if (!c)
-      {
-        std::cerr << "Expecting a valid collection for mesh item: " << item->name() << std::endl;
-        continue;
-      }
-      smtk::mesh::InterfacePtr interface = c->interface();
+  //     //convert back to a handle
+  //     cJSON* jshandle = cJSON_Parse(val.text().get());
+  //     smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
+  //     cJSON_Delete(jshandle);
+  //     smtk::mesh::CollectionPtr c = modelresource->meshes()->collection(cid);
+  //     if (!c)
+  //     {
+  //       std::cerr << "Expecting a valid collection for mesh item: " << item->name() << std::endl;
+  //       continue;
+  //     }
+  //     smtk::mesh::InterfacePtr interface = c->interface();
 
-      if (!interface)
-      {
-        std::cerr << "Expecting a valid mesh interface for mesh item: " << item->name()
-                  << std::endl;
-        continue;
-      }
+  //     if (!interface)
+  //     {
+  //       std::cerr << "Expecting a valid mesh interface for mesh item: " << item->name()
+  //                 << std::endl;
+  //       continue;
+  //     }
 
-      item->appendValue(smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
-    }
-  }
-  else
-  {
-    smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
-  }
+  //     item->appendValue(smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
+  //   }
+  // }
+  // else
+  // {
+  //   smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
+  // }
 }
 
 void XmlDocV2Parser::processMeshSelectionDef(
