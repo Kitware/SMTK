@@ -1,4 +1,8 @@
-file(STRINGS version.txt version_string )
+# smtk uses the version number determined from this logic to set the project
+# command, so we cannot use ${PROJECT_SOURCE_DIR} to find version.txt. This file
+# is directly included by the top-level CMakeLists.txt, so
+# ${CMAKE_CURRENT_SOURCE_DIR} can be used in its place.
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/version.txt version_string )
 
 string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)[-]*(.*)"
       version_matches "${version_string}")
