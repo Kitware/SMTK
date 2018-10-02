@@ -94,7 +94,7 @@ int main()
   int status = 0;
 
   Resource::Ptr resource = Resource::create();
-  SessionRef session = resource->createSession("native");
+  SessionRef session; // = resource->createSession("native");
   UUIDArray uids = smtk::model::testing::createTet(resource);
 
   Model model = resource->addModel(3, 3, "TestModel");
