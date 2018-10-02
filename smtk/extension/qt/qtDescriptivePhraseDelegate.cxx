@@ -31,6 +31,7 @@ qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
   , m_textVerticalPad(2)
   , m_drawSubtitle(true)
   , m_visibilityMode(false)
+  , m_highlightOnHover(false)
 {
 }
 
@@ -114,6 +115,11 @@ void qtDescriptivePhraseDelegate::setVisibilityMode(bool allEditsChangeVisibilit
   m_visibilityMode = allEditsChangeVisibility;
 }
 
+void qtDescriptivePhraseDelegate::setHighlightOnHover(bool highlightOnHover)
+{
+  m_highlightOnHover = highlightOnHover;
+}
+
 QSize qtDescriptivePhraseDelegate::sizeHint(
   const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
@@ -143,11 +149,23 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
 void qtDescriptivePhraseDelegate::paint(
   QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
+  bool setBackground = false;
+  QColor background;
   // If selected, draw the highlight color over entire rectangle
-  if (option.state & QStyle::State_Selected)
+  if (option.state.testFlag(QStyle::State_MouseOver) && m_highlightOnHover)
+  {
+    background = option.palette.highlight().color().lighter(125);
+    setBackground = true;
+  }
+  else if (option.state.testFlag(QStyle::State_Selected))
+  {
+    background = option.palette.highlight().color();
+    setBackground = true;
+  }
+  if (setBackground)
   {
     painter->save();
-    painter->setBrush(QBrush(option.palette.highlight().color()));
+    painter->setBrush(QBrush(background));
     painter->setPen(Qt::NoPen);
     painter->drawRect(option.rect);
     painter->restore();
@@ -225,8 +243,10 @@ void qtDescriptivePhraseDelegate::paint(
     painter->drawPixmap(QPoint(option.rect.left(), colorRect.top()),
       visicon.pixmap(visiconsize.width(), visiconsize.height()));
 
-  if (option.state.testFlag(QStyle::State_Selected))
+  if (setBackground && background.lightness() < 128)
+  {
     painter->setPen(Qt::white);
+  }
   painter->setFont(titleFont);
   painter->drawText(titleRect, Qt::AlignVCenter, titleText);
 

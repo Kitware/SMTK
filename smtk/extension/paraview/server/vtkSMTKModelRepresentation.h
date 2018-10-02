@@ -137,6 +137,10 @@ public:
   /**
    * Selection properties. Forwarded to the relevant vtkProperty instances.
    */
+  vtkSetVector3Macro(DefaultEdgeColor, double);
+  vtkGetVector3Macro(DefaultEdgeColor, double);
+  vtkSetVector3Macro(DefaultFaceColor, double);
+  vtkGetVector3Macro(DefaultFaceColor, double);
   vtkSetVector3Macro(SelectionColor, double);
   vtkGetVector3Macro(SelectionColor, double);
   vtkSetVector3Macro(HoverColor, double);
@@ -406,6 +410,8 @@ protected:
   double Diffuse = 1.;
   double Specular = 0.;
 
+  double DefaultEdgeColor[3] = { 0., 0., 0. };
+  double DefaultFaceColor[3] = { 1., 1., 1. };
   double SelectionColor[3] = { 1., 0.48235, 0.0 }; // { 1., 0.6, 1. };
   double HoverColor[3] = { 0.7, 0.483, 0.5873 };
 

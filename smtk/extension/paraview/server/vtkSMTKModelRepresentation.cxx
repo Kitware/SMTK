@@ -628,15 +628,14 @@ void vtkSMTKModelRepresentation::UpdateDisplayAttributesFromSelection(
 
   // Finally, ask our "style" functor to update selection visibility/color info
   // on the mappers by calling SetSelectedState() on entries in this->RenderableData.
-  bool needUpdate = this->ApplyStyle(sm, this->RenderableData, this);
-  if (needUpdate)
-  {
-    // This is necessary to force an update in the mapper
-    this->Entities->GetMapper()->Modified();
-    this->GlyphEntities->GetMapper()->Modified();
-    this->SelectedEntities->GetMapper()->Modified();
-    this->SelectedGlyphEntities->GetMapper()->Modified();
-  }
+  bool atLeastOneSelected = this->ApplyStyle(sm, this->RenderableData, this);
+  (void)atLeastOneSelected;
+
+  // This is necessary to force an update in the mapper
+  this->Entities->GetMapper()->Modified();
+  this->GlyphEntities->GetMapper()->Modified();
+  this->SelectedEntities->GetMapper()->Modified();
+  this->SelectedGlyphEntities->GetMapper()->Modified();
 
   this->ApplyStyleTime.Modified();
 }
@@ -898,25 +897,33 @@ void vtkSMTKModelRepresentation::SetOpacity(double val)
 void vtkSMTKModelRepresentation::SetPosition(double x, double y, double z)
 {
   this->Entities->SetPosition(x, y, z);
+  this->SelectedEntities->SetPosition(x, y, z);
   this->GlyphEntities->SetPosition(x, y, z);
+  this->SelectedGlyphEntities->SetPosition(x, y, z);
 }
 
 void vtkSMTKModelRepresentation::SetScale(double x, double y, double z)
 {
   this->Entities->SetScale(x, y, z);
+  this->SelectedEntities->SetScale(x, y, z);
   this->GlyphEntities->SetScale(x, y, z);
+  this->SelectedGlyphEntities->SetScale(x, y, z);
 }
 
 void vtkSMTKModelRepresentation::SetOrientation(double x, double y, double z)
 {
   this->Entities->SetOrientation(x, y, z);
+  this->SelectedEntities->SetOrientation(x, y, z);
   this->GlyphEntities->SetOrientation(x, y, z);
+  this->SelectedGlyphEntities->SetOrientation(x, y, z);
 }
 
 void vtkSMTKModelRepresentation::SetOrigin(double x, double y, double z)
 {
   this->Entities->SetOrigin(x, y, z);
+  this->SelectedEntities->SetOrigin(x, y, z);
   this->GlyphEntities->SetOrigin(x, y, z);
+  this->SelectedGlyphEntities->SetOrigin(x, y, z);
 }
 
 void vtkSMTKModelRepresentation::SetUserTransform(const double matrix[16])
@@ -924,7 +931,9 @@ void vtkSMTKModelRepresentation::SetUserTransform(const double matrix[16])
   vtkNew<vtkTransform> transform;
   transform->SetMatrix(matrix);
   this->Entities->SetUserTransform(transform.GetPointer());
+  this->SelectedEntities->SetUserTransform(transform.GetPointer());
   this->GlyphEntities->SetUserTransform(transform.GetPointer());
+  this->SelectedGlyphEntities->SetUserTransform(transform.GetPointer());
 }
 
 void vtkSMTKModelRepresentation::SetPickable(int val)

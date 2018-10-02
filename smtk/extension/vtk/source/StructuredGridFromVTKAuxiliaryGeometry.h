@@ -10,6 +10,7 @@
 
 #ifndef __smtk_extensions_vtk_source_StructuredGridFromVTKAuxiliaryGeometry_h
 #define __smtk_extensions_vtk_source_StructuredGridFromVTKAuxiliaryGeometry_h
+#ifndef __VTK_WRAP__
 
 #include "smtk/AutoInit.h"
 
@@ -46,4 +47,5 @@ public:
 }
 }
 
+#endif // __VTK_WRAP__
 #endif
