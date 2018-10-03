@@ -170,8 +170,9 @@ void convert_vertex(std::vector<int>&, smtk::mesh::CellType cellType,
   //instead of changing the connectivity like a normal cell, instead
   //we modify the cell id list, as it is empty since no cells are allocated
   //for vertices
-  currentCellids.insert(global_coordinate_offset, //insert is inclusive on both ends
-    global_coordinate_offset + numVerts - 1);
+  //insert is inclusive on both ends
+  currentCellids.insert(
+    smtk::mesh::HandleInterval(global_coordinate_offset, global_coordinate_offset + numVerts - 1));
 }
 
 template <typename HandleData>
@@ -333,7 +334,7 @@ std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
 
       //we need to add these cells to the range that represents all
       //cells for this volume
-      cellsForThisEntity.insert(currentCellids.begin(), currentCellids.end());
+      cellsForThisEntity += currentCellids;
     }
 
     //save all the cells of this volume

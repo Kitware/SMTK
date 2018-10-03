@@ -44,10 +44,10 @@ public:
   void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
     std::size_t offset = 0;
     std::array<double, 3> x, f_x;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, offset += 3)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, offset += 3)
     {
       std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
       f_x = m_mapping(x);
@@ -73,10 +73,10 @@ public:
   void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
     bool& coordinatesModified) override
   {
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
     std::size_t offset = 0;
     std::array<double, 3> x, f_x;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, offset += 3)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, offset += 3)
     {
       std::copy(&xyz[offset], &xyz[offset] + 3, &x[0]);
 
@@ -167,8 +167,8 @@ public:
     // the points currently being iterated. The iterator <i> provides access to
     // the memory space of the points (we currently use it for iteration).
     std::size_t xyzCounter = 0;
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, xyzCounter += 3)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, xyzCounter += 3)
     {
       m_data[m_counter++] = m_mapping(
         std::array<double, 3>({ { xyz[xyzCounter], xyz[xyzCounter + 1], xyz[xyzCounter + 2] } }));
@@ -261,9 +261,9 @@ public:
     // the points currently being iterated. The iterator <i> provides access to
     // the memory space of the points (we currently use it for iteration).
     std::size_t xyzCounter = 0;
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
     std::array<double, 3> x, f_x;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, xyzCounter += 3)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, xyzCounter += 3)
     {
       std::copy(&xyz[xyzCounter], &xyz[xyzCounter] + 3, &x[0]);
       f_x = m_mapping(x);

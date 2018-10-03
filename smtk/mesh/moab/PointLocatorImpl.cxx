@@ -10,6 +10,7 @@
 
 #include "smtk/mesh/moab/PointLocatorImpl.h"
 #include "moab/FileOptions.hpp"
+#include "smtk/mesh/moab/HandleRangeToRange.h"
 #include "smtk/mesh/moab/Interface.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -23,8 +24,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 namespace
 {
 smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, std::size_t numPoints,
-  const std::function<std::array<double, 3>(std::size_t)>& coordinates,
-  smtk::mesh::HandleRange& points)
+  const std::function<std::array<double, 3>(std::size_t)>& coordinates, ::moab::Range& points)
 {
   ::moab::ReadUtilIface* alloc;
   iface->query_interface(alloc);
@@ -67,8 +67,7 @@ namespace mesh
 namespace moab
 {
 
-PointLocatorImpl::PointLocatorImpl(
-  ::moab::Interface* interface, const smtk::mesh::HandleRange& points)
+PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface, const ::moab::Range& points)
   : m_interface(interface)
   , m_meshOwningPoints()
   , m_deletePoints(false)
@@ -83,7 +82,7 @@ PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface, std::size_t num
   , m_deletePoints(true)
   , m_tree(interface)
 {
-  smtk::mesh::HandleRange points;
+  ::moab::Range points;
   m_meshOwningPoints =
     create_point_mesh(interface, static_cast<int>(numPoints), coordinates, points);
   // hacker solution to speed up the bathymetry Operation
@@ -104,9 +103,9 @@ PointLocatorImpl::~PointLocatorImpl()
 
 smtk::mesh::HandleRange PointLocatorImpl::range() const
 {
-  smtk::mesh::HandleRange entities;
+  ::moab::Range entities;
   m_interface->get_entities_by_handle(m_meshOwningPoints, entities);
-  return entities;
+  return moabToSMTKRange(entities);
 }
 
 namespace
@@ -136,14 +135,14 @@ void add_to<false>(std::vector<double>&, double)
 
 template <bool SaveSqDistances, bool SaveCoords>
 void find_valid_points(const double x, const double y, const double z, const double sqRadius,
-  const smtk::mesh::HandleRange& points, const std::vector<double>& x_locs,
-  const std::vector<double>& y_locs, const std::vector<double>& z_locs, std::size_t pointIdOffset,
+  const ::moab::Range& points, const std::vector<double>& x_locs, const std::vector<double>& y_locs,
+  const std::vector<double>& z_locs, std::size_t pointIdOffset,
   smtk::mesh::PointLocatorImpl::Results& results)
 {
 
   const std::size_t numPoints = points.size();
 
-  smtk::mesh::HandleRange::const_iterator ptIter = points.begin();
+  ::moab::Range::const_iterator ptIter = points.begin();
   std::vector<smtk::mesh::Handle> ptId_temp;
 
   //clear any existing data from the arrays
@@ -190,7 +189,7 @@ void PointLocatorImpl::locatePointsWithinRadius(
 
   //now we need to get all the points from the leaves, and do a finer
   //comparison on which ones are within distance of the input point
-  smtk::mesh::HandleRange points;
+  ::moab::Range points;
   for (std::size_t i = 0; i < leaves.size(); ++i)
   {
     m_interface->get_entities_by_dimension(leaves[i], 0, points);
@@ -207,25 +206,30 @@ void PointLocatorImpl::locatePointsWithinRadius(
   //don't have to take 2 extra branches inside the tight loop
   const bool wantDistance = results.want_sqDistances;
   const bool wantCoords = results.want_Coordinates;
+
+  ::moab::Range entities;
+  m_interface->get_entities_by_handle(m_meshOwningPoints, entities);
+  ::moab::EntityHandle firstCell = entities[0];
+
   if (wantDistance && wantCoords)
   {
     find_valid_points<true, true>(
-      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, firstCell, results);
   }
   else if (wantDistance)
   {
     find_valid_points<true, false>(
-      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, firstCell, results);
   }
   else if (wantCoords)
   {
     find_valid_points<false, true>(
-      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, firstCell, results);
   }
   else
   {
     find_valid_points<false, false>(
-      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, this->range()[0], results);
+      x, y, z, sqRadius, points, x_locs, y_locs, z_locs, firstCell, results);
   }
 }
 }

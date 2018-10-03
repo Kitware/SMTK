@@ -30,6 +30,7 @@ set(meshSrcs
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
   moab/BufferedCellAllocator.cxx
+  moab/HandleRangeToRange.cxx
   moab/IncrementalAllocator.cxx
   moab/Interface.cxx
   moab/ConnectivityStorage.cxx
@@ -93,7 +94,6 @@ set(meshHeaders
   json/jsonCollection.h
 
   moab/Interface.h
-  moab/HandleRange.h
 
   operators/DeleteMesh.h
   operators/ElevateMesh.h

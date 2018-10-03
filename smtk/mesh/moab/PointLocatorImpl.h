@@ -32,7 +32,7 @@ namespace moab
 class SMTKCORE_EXPORT PointLocatorImpl : public smtk::mesh::PointLocatorImpl
 {
 public:
-  PointLocatorImpl(::moab::Interface* interface, const smtk::mesh::HandleRange& points);
+  PointLocatorImpl(::moab::Interface* interface, const ::moab::Range& points);
 
   PointLocatorImpl(::moab::Interface* interface, std::size_t numPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates);

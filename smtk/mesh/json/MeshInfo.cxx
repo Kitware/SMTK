@@ -12,6 +12,7 @@
 #include "smtk/mesh/json/MeshInfo.h"
 
 #include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/HandleRangeToRange.h"
 
 namespace smtk
 {
@@ -56,7 +57,9 @@ smtk::mesh::HandleRange MeshInfo::cells() const
 smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::CellType cellType) const
 {
   const int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
-  return m_cells.subset_by_type(static_cast< ::moab::EntityType>(moabCellType));
+  return smtk::mesh::moab::moabToSMTKRange(
+    smtk::mesh::moab::smtkToMOABRange(m_cells).subset_by_type(
+      static_cast< ::moab::EntityType>(moabCellType)));
 }
 
 smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) const
@@ -73,14 +76,15 @@ smtk::mesh::HandleRange MeshInfo::cells(const smtk::mesh::CellTypes& cellTypes) 
     smtk::mesh::CellType currentCellType = static_cast<smtk::mesh::CellType>(i);
 
     smtk::mesh::HandleRange cellEnts = this->cells(currentCellType);
-    entitiesCells.insert(cellEnts.begin(), cellEnts.end());
+    entitiesCells += cellEnts;
   }
   return entitiesCells;
 }
 
 smtk::mesh::HandleRange MeshInfo::cells(smtk::mesh::DimensionType dim) const
 {
-  return m_cells.subset_by_dimension(static_cast<int>(dim));
+  return smtk::mesh::moab::moabToSMTKRange(
+    smtk::mesh::moab::smtkToMOABRange(m_cells).subset_by_dimension(static_cast<int>(dim)));
 }
 
 smtk::mesh::HandleRange MeshInfo::points() const

@@ -46,6 +46,10 @@ public:
   bool connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate, int numVertsPerCell,
     const smtk::mesh::Handle* connectivityArray) override;
 
+protected:
+  bool connectivityModified(smtk::mesh::Handle firstCellToUpdate, int numberOfCellsToUpdate,
+    int numVertsPerCell, const smtk::mesh::Handle* connectivityArray);
+
 private:
   Allocator(const Allocator& other);            //blank since we are used by shared_ptr
   Allocator& operator=(const Allocator& other); //blank since we are used by shared_ptr

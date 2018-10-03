@@ -74,19 +74,6 @@ void verify_create_mesh_with_cells_from_other_collection(
   mngr->removeCollection(otherc);
 }
 
-void verify_create_mesh_with_invalid_cell_ids(const smtk::mesh::CollectionPtr& c)
-{
-  const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
-
-  smtk::mesh::HandleRange invalidRange;
-  invalidRange.insert(0, 5); //insert values 0 to 5;
-  smtk::mesh::CellSet invalidCellIds = smtk::mesh::CellSet(c, invalidRange);
-  smtk::mesh::MeshSet result = c->createMesh(invalidCellIds);
-
-  test(result.is_empty(), "invalid cellset should create empty meshset");
-  test(numMeshesBeforeCreation == c->numberOfMeshes());
-}
-
 void verify_create_mesh(const smtk::mesh::CollectionPtr& c)
 {
   const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
@@ -167,10 +154,6 @@ void verify_create_mesh_marks_modified()
   smtk::mesh::CollectionPtr c = load_mesh(mngr);
   test(c->isModified() == false, "collection loaded from disk shouldn't be modified");
 
-  //verify a failure to create meshes doesn't mark as modify
-  verify_create_mesh_with_invalid_cell_ids(c);
-  test(c->isModified() == false, "collection loaded from disk shouldn't be modified");
-
   //verify that creating a mesh does mark update modify flag
   verify_create_mesh(c);
   test(c->isModified() == true, "collection should be marked as modified now");
@@ -184,7 +167,6 @@ int UnitTestCreateMesh(int, char** const)
 
   verify_create_empty_mesh(c);
   verify_create_mesh_with_cells_from_other_collection(mngr, c);
-  verify_create_mesh_with_invalid_cell_ids(c);
 
   verify_create_mesh(c);
 

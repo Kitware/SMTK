@@ -496,22 +496,13 @@ public:
   virtual bool deletePointField(
     const smtk::mesh::PointFieldTag& dsTag, const smtk::mesh::HandleRange& meshsets) = 0;
 
-  virtual smtk::mesh::HandleRange rangeIntersect(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const = 0;
-
-  virtual smtk::mesh::HandleRange rangeDifference(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const = 0;
-
-  virtual smtk::mesh::HandleRange rangeUnion(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const = 0;
-
   virtual smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
     const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-    const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
+    smtk::mesh::ContainmentType containmentType) const = 0;
 
   virtual smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
     const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-    const smtk::mesh::ContainsFunctor& containsFunctor) const = 0;
+    smtk::mesh::ContainmentType containmentType) const = 0;
 
   virtual void pointForEach(const HandleRange& points, smtk::mesh::PointForEach& filter) const = 0;
 

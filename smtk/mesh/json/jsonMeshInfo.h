@@ -22,11 +22,9 @@ namespace json
 {
 class MeshInfo;
 
-using json = nlohmann::json;
+void to_json(nlohmann::json&, const std::vector<MeshInfo>&);
 
-void to_json(json&, const std::vector<MeshInfo>&);
-
-void from_json(const json&, std::vector<MeshInfo>&);
+void from_json(const nlohmann::json&, std::vector<MeshInfo>&);
 }
 }
 }

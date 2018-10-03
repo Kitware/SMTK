@@ -229,18 +229,18 @@ void extractMeshConstants(
   {
     smtk::mesh::CellSet subcells = set_intersect(remainingCells, subset.second.cells());
     smtk::mesh::PointSet subpoints = set_intersect(remainingPoints, subset.second.points());
-    for (auto range = subcells.range().const_pair_begin();
-         range != subcells.range().const_pair_end(); ++range)
+    for (auto range = subcells.range().begin(); range != subcells.range().end(); ++range)
     {
-      cellRanges.push_back(TaggedRange(subset.first,
-        std::make_pair(cells.range().index(range->first), cells.range().index(range->second))));
+      cellRanges.push_back(
+        TaggedRange(subset.first, std::make_pair(rangeIndex(cells.range(), range->lower()),
+                                    rangeIndex(cells.range(), range->upper()))));
     }
 
-    for (auto range = subpoints.range().const_pair_begin();
-         range != subpoints.range().const_pair_end(); ++range)
+    for (auto range = subpoints.range().begin(); range != subpoints.range().end(); ++range)
     {
-      pointRanges.push_back(TaggedRange(subset.first,
-        std::make_pair(points.range().index(range->first), points.range().index(range->second))));
+      pointRanges.push_back(
+        TaggedRange(subset.first, std::make_pair(rangeIndex(points.range(), range->lower()),
+                                    rangeIndex(points.range(), range->upper()))));
     }
 
     remainingCells = set_difference(remainingCells, subcells);

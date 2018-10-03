@@ -102,7 +102,7 @@ public:
 
 private:
   smtk::mesh::CollectionPtr m_parent;
-  smtk::mesh::HandleRange m_range; //range of moab cell ids
+  smtk::mesh::HandleRange m_range; //range of cell ids
 };
 
 //Function that provide set operations on CellSets

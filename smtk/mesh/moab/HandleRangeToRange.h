@@ -10,13 +10,12 @@
 //
 //=============================================================================
 
-#ifndef __smtk_mesh_moab_Types_h
-#define __smtk_mesh_moab_Types_h
+#ifndef __smtk_mesh_moab_HandleRangeToRange_h
+#define __smtk_mesh_moab_HandleRangeToRange_h
 
-#include "smtk/common/CompilerInformation.h"
+#include "smtk/mesh/core/Handle.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
-//these require us to install moab headers, so lets fix that
 #include "moab/EntityHandle.hpp"
 #include "moab/Range.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -28,9 +27,12 @@ namespace mesh
 namespace moab
 {
 
-typedef ::moab::EntityHandle Handle;
-typedef ::moab::Range HandleRange;
-typedef ::moab::range_inserter HandleRangeInserter;
+//these aren't exported as they are private functions that only
+//smtk::mesh should call
+
+smtk::mesh::HandleRange moabToSMTKRange(const ::moab::Range&);
+
+::moab::Range smtkToMOABRange(const smtk::mesh::HandleRange&);
 }
 }
 }

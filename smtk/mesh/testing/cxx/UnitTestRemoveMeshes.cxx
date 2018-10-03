@@ -88,7 +88,7 @@ void verify_remove_invalid_meshes(const smtk::mesh::CollectionPtr& c)
   //for number of verts
   const std::size_t numHandlesUsed = (c->cells().size() * 9) + c->numberOfMeshes();
   smtk::mesh::HandleRange invalidRange;
-  invalidRange.insert(numHandlesUsed + 10, numHandlesUsed + 40);
+  invalidRange.insert(smtk::mesh::HandleInterval(numHandlesUsed + 10, numHandlesUsed + 40));
   smtk::mesh::MeshSet invalidMeshIds = smtk::mesh::MeshSet(c, 0, invalidRange);
 
   const bool result = c->removeMeshes(invalidMeshIds);

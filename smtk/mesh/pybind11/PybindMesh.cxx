@@ -27,14 +27,12 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindCellSet.h"
 #include "PybindCellTypes.h"
 #include "PybindCollection.h"
-#include "PybindContainsFunctors.h"
 #include "PybindDimensionTypes.h"
 #include "PybindExtractMeshConstants.h"
 #include "PybindExtractTessellation.h"
 #include "PybindFieldTypes.h"
 #include "PybindForEachTypes.h"
 #include "PybindHandle.h"
-#include "PybindHandleRange.h"
 #include "PybindInterface.h"
 #include "PybindManager.h"
 #include "PybindMeshSet.h"
@@ -67,16 +65,13 @@ PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 PYBIND11_MODULE(_smtkPybindMesh, mesh)
 {
   mesh.doc() = "<description>";
-  py::module moab = mesh.def_submodule("moab", "<description>");
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
-  pybind11_init_moab_EntityType(moab);
-  PySharedPtrClass< moab::Range > smtk_mesh_moab_Range = pybind11_init_moab_Range(moab);
-  pybind11_init_moab_range_base_iter(moab);
-  pybind11_init_moab_range_inserter(moab);
-  pybind11_init_moab_range_iter_tag(moab);
-  pybind11_init_std_bidirectional_iterator_tag(moab);
+  py::class_< smtk::mesh::HandleInterval > smtk_mesh_HandleInterval = pybind11_init_HandleInterval(mesh);
+  PySharedPtrClass< smtk::mesh::const_element_iterator > smtk_mesh_const_element_iterator = pybind11_init_const_element_iterator(mesh);
+  py::class_< smtk::mesh::HandleRange > smtk_mesh_HandleRange = pybind11_init_HandleRange(mesh);
+
   PySharedPtrClass< smtk::mesh::Allocator > smtk_mesh_Allocator = pybind11_init_smtk_mesh_Allocator(mesh);
   PySharedPtrClass< smtk::mesh::BufferedCellAllocator > smtk_mesh_BufferedCellAllocator = pybind11_init_smtk_mesh_BufferedCellAllocator(mesh);
   PySharedPtrClass< smtk::mesh::IncrementalAllocator > smtk_mesh_IncrementalAllocator = pybind11_init_smtk_mesh_IncrementalAllocator(mesh);
@@ -86,7 +81,6 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::CellSet > smtk_mesh_CellSet = pybind11_init_smtk_mesh_CellSet(mesh);
   PySharedPtrClass< smtk::mesh::Collection > smtk_mesh_Collection = pybind11_init_smtk_mesh_Collection(mesh);
   PySharedPtrClass< smtk::mesh::ConnectivityStorage > smtk_mesh_ConnectivityStorage = pybind11_init_smtk_mesh_ConnectivityStorage(mesh);
-  PySharedPtrClass< smtk::mesh::ContainsFunctor > smtk_mesh_ContainsFunctor = pybind11_init_smtk_mesh_ContainsFunctor(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_CellField = pybind11_init_smtk_mesh_CellField(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_PointField = pybind11_init_smtk_mesh_PointField(mesh);
   PySharedPtrClass< smtk::mesh::utility::MeshConstants > smtk_mesh_MeshConstants = pybind11_init_smtk_mesh_MeshConstants(mesh);
@@ -105,6 +99,14 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::utility::PreAllocatedTessellation > smtk_mesh_PreAllocatedTessellation = pybind11_init_smtk_mesh_PreAllocatedTessellation(mesh);
   PySharedPtrClass< smtk::mesh::utility::Tessellation > smtk_mesh_Tessellation = pybind11_init_smtk_mesh_Tessellation(mesh);
   PySharedPtrClass< smtk::mesh::TypeSet > smtk_mesh_TypeSet = pybind11_init_smtk_mesh_TypeSet(mesh);
+
+  pybind11_init_smtk_mesh_rangeElementsBegin(mesh);
+  pybind11_init_smtk_mesh_rangeElementsEnd(mesh);
+  pybind11_init_smtk_mesh_rangeElement(mesh);
+  pybind11_init_smtk_mesh_rangeContains(mesh);
+  pybind11_init_smtk_mesh_rangeIndex(mesh);
+  pybind11_init_smtk_mesh_rangeIntervalCount(mesh);
+  pybind11_init_smtk_mesh_rangesEqual(mesh);
   pybind11_init_smtk_mesh_CellType(mesh);
   pybind11_init_smtk_mesh_ContainmentType(mesh);
   pybind11_init_smtk_mesh_cellTypeSummary(mesh);
@@ -135,7 +137,6 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init_smtk_mesh_cell_for_each(mesh);
   pybind11_init_smtk_mesh_mesh_for_each(mesh);
   pybind11_init_smtk_mesh_point_for_each(mesh);
-  pybind11_init_smtk_mesh_from_json(mesh);
   pybind11_init_smtk_mesh_fuse(mesh);
   pybind11_init_smtk_mesh_make_disjoint(mesh);
   pybind11_init_smtk_mesh_merge(mesh);
@@ -151,13 +152,10 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init_smtk_mesh_mesh_set_union(mesh);
   pybind11_init_smtk_mesh_point_set_union(mesh);
   pybind11_init_smtk_mesh_split(mesh);
-  pybind11_init_smtk_mesh_to_json(mesh);
   pybind11_init_smtk_mesh_verticesPerCell(mesh);
   PySharedPtrClass< smtk::mesh::Dirichlet > smtk_mesh_Dirichlet = pybind11_init_smtk_mesh_Dirichlet(mesh, smtk_mesh_IntegerTag);
   PySharedPtrClass< smtk::mesh::Domain > smtk_mesh_Domain = pybind11_init_smtk_mesh_Domain(mesh, smtk_mesh_IntegerTag);
-  PySharedPtrClass< smtk::mesh::FullyContainedFunctor > smtk_mesh_FullyContainedFunctor = pybind11_init_smtk_mesh_FullyContainedFunctor(mesh, smtk_mesh_ContainsFunctor);
   PySharedPtrClass< smtk::mesh::Neumann > smtk_mesh_Neumann = pybind11_init_smtk_mesh_Neumann(mesh, smtk_mesh_IntegerTag);
-  PySharedPtrClass< smtk::mesh::PartiallyContainedFunctor > smtk_mesh_PartiallyContainedFunctor = pybind11_init_smtk_mesh_PartiallyContainedFunctor(mesh, smtk_mesh_ContainsFunctor);
   PySharedPtrClass< smtk::mesh::UUIDTag > smtk_mesh_UUIDTag = pybind11_init_smtk_mesh_UUIDTag(mesh, smtk_mesh_OpaqueTag_16_);
   PySharedPtrClass< smtk::mesh::Model > smtk_mesh_Model = pybind11_init_smtk_mesh_Model(mesh, smtk_mesh_UUIDTag);
 

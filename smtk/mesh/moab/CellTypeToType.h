@@ -15,8 +15,6 @@
 
 #include "smtk/mesh/core/CellTypes.h"
 
-#include "smtk/mesh/moab/HandleRange.h"
-
 namespace smtk
 {
 namespace mesh

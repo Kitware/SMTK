@@ -703,7 +703,7 @@ bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr&
 
           // construct a cell set containing only the cells of this material type
           smtk::mesh::CellSet cellsForMaterial(
-            collection, subtract(bcAllocator->cells(), cellsWithMaterials));
+            collection, (bcAllocator->cells() - cellsWithMaterials));
 
           // construct a mesh set from these cells
           smtk::mesh::MeshSet meshForMaterial = collection->createMesh(cellsForMaterial);
@@ -736,8 +736,7 @@ bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr&
   {
     // for the last material, construct a cell set containing only the cells of
     // this material type
-    smtk::mesh::CellSet cellsForMaterial(
-      collection, subtract(bcAllocator->cells(), cellsWithMaterials));
+    smtk::mesh::CellSet cellsForMaterial(collection, (bcAllocator->cells() - cellsWithMaterials));
 
     // construct a mesh set from these cells
     smtk::mesh::MeshSet meshForMaterial = collection->createMesh(cellsForMaterial);

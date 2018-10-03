@@ -293,22 +293,13 @@ public:
   bool deletePointField(
     const smtk::mesh::PointFieldTag& pfTag, const smtk::mesh::HandleRange& meshsets) override;
 
-  smtk::mesh::HandleRange rangeIntersect(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const override;
-
-  smtk::mesh::HandleRange rangeDifference(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const override;
-
-  smtk::mesh::HandleRange rangeUnion(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const override;
-
   smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
     const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-    const smtk::mesh::ContainsFunctor& containsFunctor) const override;
+    smtk::mesh::ContainmentType t) const override;
 
   smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
     const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-    const smtk::mesh::ContainsFunctor& containsFunctor) const override;
+    smtk::mesh::ContainmentType t) const override;
 
   void pointForEach(const HandleRange& points, smtk::mesh::PointForEach& filter) const override;
 

@@ -89,8 +89,8 @@ public:
   void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
   {
     std::size_t counter = 0;
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, counter += 3)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i, counter += 3)
     {
       std::size_t bin =
         static_cast<std::size_t>((xyz[counter + 2] - m_min) / (m_max - m_min) * m_hist.size());

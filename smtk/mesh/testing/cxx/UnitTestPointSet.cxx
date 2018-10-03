@@ -66,11 +66,11 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   std::set<smtk::mesh::Handle> set;
   std::vector<smtk::mesh::Handle> vec;
 
-  for (smtk::mesh::HandleRange::pair_iterator iter = ps.range().begin(); iter != ps.range().end();
+  for (smtk::mesh::HandleRange::iterator iter = ps.range().begin(); iter != ps.range().end();
        ++iter)
   {
-    range.insert(iter->first, iter->second - 1);
-    for (smtk::mesh::Handle i = iter->first; i < iter->second; ++i)
+    range.insert(smtk::mesh::HandleInterval(iter->lower(), iter->upper() - 1));
+    for (smtk::mesh::Handle i = iter->lower(); i < iter->upper(); ++i)
     {
       set.insert(i);
       vec.push_back(i);
@@ -82,10 +82,10 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::PointSet ps4(c, vec);
   smtk::mesh::PointSet ps5(std::const_pointer_cast<const smtk::mesh::Collection>(c), range);
 
-  test(ps != ps2);
-  test(ps2 == ps3);
-  test(ps3 == ps4);
-  test(ps4 == ps5);
+  test(ps != ps2, "point sets should not be equal");
+  test(ps2 == ps3, "point sets should be equal");
+  test(ps3 == ps4, "point sets should be equal");
+  test(ps4 == ps5, "point sets should be equal");
 }
 
 void verify_comparisons(const smtk::mesh::CollectionPtr& c)
@@ -373,8 +373,8 @@ public:
 
     coordinatesModified = false; //we are not modifying the coords
 
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
     { //we could just increment by size of pointIds, but I want
       //to have an example of how to do iteration over the point ids
       this->numPointsIteratedOver++;

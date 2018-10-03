@@ -10,7 +10,6 @@
 
 #include "smtk/io/XmlDocV2Parser.h"
 #define PUGIXML_HEADER_ONLY
-#include "cJSON.h"
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -27,6 +26,7 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/json/Interface.h"
+#include "smtk/mesh/json/jsonHandleRange.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Resource.h"
@@ -451,7 +451,8 @@ void XmlDocV2Parser::processMeshSelectionItem(
   }
 }
 
-void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item)
+void XmlDocV2Parser::processMeshEntityItem(
+  pugi::xml_node& /*node*/, attribute::MeshItemPtr /*item*/)
 {
   // xml_attribute xatt;
   // std::size_t n = item->numberOfValues();
@@ -502,9 +503,7 @@ void XmlDocV2Parser::processMeshEntityItem(pugi::xml_node& node, attribute::Mesh
   //     cid = smtk::common::UUID(xatt.value());
 
   //     //convert back to a handle
-  //     cJSON* jshandle = cJSON_Parse(val.text().get());
-  //     smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
-  //     cJSON_Delete(jshandle);
+  //     smtk::mesh::HandleRange hrange = nlohmann::json::parse(val.text().get());
   //     smtk::mesh::CollectionPtr c = modelresource->meshes()->collection(cid);
   //     if (!c)
   //     {

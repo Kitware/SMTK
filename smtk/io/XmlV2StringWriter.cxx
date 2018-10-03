@@ -41,6 +41,7 @@
 #include "smtk/view/View.h"
 
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/json/jsonHandleRange.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
@@ -48,7 +49,6 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/StringData.h"
 
-#include "cJSON.h"
 #include <sstream>
 
 #define PUGIXML_HEADER_ONLY
@@ -1235,11 +1235,8 @@ void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node& node, attribute::M
     {
       val = values.append_child("Val");
       val.append_attribute("collectionid").set_value(it->collection()->entity().toString().c_str());
-      cJSON* jrange = smtk::mesh::to_json(it->range());
-      char* json = cJSON_Print(jrange);
-      cJSON_Delete(jrange);
-      val.text().set(json);
-      free(json);
+      nlohmann::json jrange = it->range();
+      val.text().set(jrange.dump().c_str());
     }
   }
 }

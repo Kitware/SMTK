@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/mesh/moab/BufferedCellAllocator.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/HandleRangeToRange.h"
 
 #include "smtk/mesh/core/CellTypes.h"
 
@@ -114,7 +115,7 @@ bool BufferedCellAllocator::flush()
   }
 
   // only convert cells smtk mesh supports
-  ::moab::Range cellsCreatedForThisType;
+  smtk::mesh::HandleRange cellsCreatedForThisType;
 
   // need to convert from smtk cell type to moab cell type
   ::moab::EntityHandle* startOfConnectivityArray = 0;
@@ -133,15 +134,22 @@ bool BufferedCellAllocator::flush()
 
     // notify database that we have written to connectivity, that way
     // it can properly update adjacencies and other database info
-    this->connectivityModified(m_cells, m_nCoords, startOfConnectivityArray);
+    this->connectivityModified(
+      m_cells.front(), static_cast<int>(m_cells.size()), m_nCoords, startOfConnectivityArray);
 
     // insert these cells back into the range
-    m_cells.insert(cellsCreatedForThisType.begin(), cellsCreatedForThisType.end());
+    auto it = cellsCreatedForThisType.begin();
+    m_cells.insert(it->lower(), it->upper());
   }
 
   m_localConnectivity.clear();
 
   return m_validState;
+}
+
+smtk::mesh::HandleRange BufferedCellAllocator::cells()
+{
+  return moabToSMTKRange(m_cells);
 }
 }
 }

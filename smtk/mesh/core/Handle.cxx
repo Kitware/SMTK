@@ -9,144 +9,94 @@
 //=========================================================================
 
 #include "smtk/mesh/core/Handle.h"
-#include "cJSON.h"
-
-#include <cstdint>
-#include <iostream>
-#include <sstream>
 
 namespace smtk
 {
 namespace mesh
 {
 
-namespace detail
+const_element_iterator rangeElementsBegin(const HandleRange& range)
 {
-
-#define MOAB_TYPE_WIDTH 4
-#define MOAB_ID_WIDTH (8 * sizeof(smtk::mesh::Handle) - MOAB_TYPE_WIDTH)
-#define MOAB_TYPE_MASK ((smtk::mesh::Handle)0xF << MOAB_ID_WIDTH)
-#define MOAB_ID_MASK (~MOAB_TYPE_MASK)
-
-inline ::moab::EntityID to_id(smtk::mesh::Handle handle)
-{
-  return (handle & MOAB_ID_MASK);
+  return boost::icl::elements_begin(range);
 }
 
-inline smtk::mesh::Handle to_handle(::moab::EntityType type, ::moab::EntityID id)
+const_element_iterator rangeElementsEnd(const HandleRange& range)
 {
-  if (type > ::moab::MBMAXTYPE)
-  {
-    return smtk::mesh::Handle(); //<You've got to return something.  What do you return?
-  }
-  return (((smtk::mesh::Handle)type) << MOAB_ID_WIDTH) | id;
+  return boost::icl::elements_end(range);
 }
 
-#undef MOAB_TYPE_WIDTH
-#undef MOAB_ID_WIDTH
-#undef MOAB_TYPE_MASK
-#undef MOAB_ID_MASK
-
-//presumes that all values in the range are withing the same entity type
-cJSON* subset_to_json_array(const smtk::mesh::HandleRange& range)
+Handle rangeElement(const HandleRange& range, std::size_t i)
 {
-  cJSON* array = cJSON_CreateArray();
-  //iterate the range finding
-  typedef smtk::mesh::HandleRange::const_pair_iterator const_pair_iterator;
+  return *std::next(boost::icl::elements_begin(range), i);
+}
 
-  for (const_pair_iterator i = range.begin(); i != range.end(); ++i)
+bool rangeContains(const HandleRange& range, Handle i)
+{
+  return boost::icl::contains(range, i);
+}
+
+bool rangeContains(const HandleRange& range, const HandleInterval& i)
+{
+  return boost::icl::contains(range, i);
+}
+
+bool rangeContains(const HandleRange& super, const HandleRange& sub)
+{
+  return boost::icl::contains(super, sub);
+}
+
+std::size_t rangeIndex(const HandleRange& range, Handle i)
+{
+  std::size_t index = 0;
+
+  HandleRange::const_iterator interval = range.find(i);
+  for (HandleRange::const_iterator it = range.begin(); it != interval; ++it)
   {
-    ::moab::EntityID start = to_id(i->first);
-    ::moab::EntityID end = to_id(i->second);
-
-    cJSON_AddItemToArray(array, cJSON_CreateNumber(static_cast<double>(start)));
-    cJSON_AddItemToArray(array, cJSON_CreateNumber(static_cast<double>(end)));
+    index += (it->upper() - it->lower()) + 1;
   }
 
-  return array;
+  index += i - interval->lower();
+
+  return index;
 }
 
-//presumes that all values in the range are withing the same entity type
-smtk::mesh::HandleRange subset_from_json_array(int type, cJSON* array)
+std::size_t rangeIntervalCount(const HandleRange& range)
 {
-  smtk::mesh::HandleRange result;
-  ::moab::EntityType et = static_cast< ::moab::EntityType>(type);
-  cJSON* n = array->child;
-  while (n)
-  {
-    ::moab::EntityID start = to_handle(et, static_cast< ::moab::EntityID>(n->valuedouble));
-    ::moab::EntityID end = to_handle(et, static_cast< ::moab::EntityID>(n->next->valuedouble));
-    result.insert(start, end);
+  return boost::icl::interval_count(range);
+}
 
-    //since we are reading two nodes at a time
-    if (n->next)
+bool rangesEqual(const HandleRange& lhs, const HandleRange& rhs)
+{
+  if (smtk::mesh::rangeIntervalCount(lhs) != smtk::mesh::rangeIntervalCount(rhs))
+  {
+    return false;
+  }
+
+  auto i = lhs.begin();
+  auto j = rhs.begin();
+  for (; i != lhs.end(); ++i, ++j)
+  {
+    if (i->lower() != j->lower() || i->upper() != j->upper())
     {
-      n = n->next->next;
-    }
-    else
-    {
-      n = NULL;
+      return false;
     }
   }
-
-  return result;
+  return true;
 }
 }
+}
 
-//convert a handle range to a json formatted node
-cJSON* to_json(const smtk::mesh::HandleRange& range)
+std::ostream& operator<<(std::ostream& os, const smtk::mesh::HandleRange& range)
 {
-  cJSON* json_dict = cJSON_CreateObject();
-
-  //first we subset by type
-  std::stringstream buffer;
-  std::string typeAsString;
-  for (::moab::EntityType i = ::moab::MBVERTEX; i != ::moab::MBMAXTYPE; ++i)
+  os << "[";
+  for (auto interval : range)
   {
-    smtk::mesh::HandleRange subset = range.subset_by_type(i);
-    if (subset.empty())
-    {
-      continue;
-    }
-
-    //build the name
-    buffer << i;
-    buffer >> typeAsString;
-    buffer.clear();
-
-    cJSON* jarray = detail::subset_to_json_array(subset);
-    cJSON_AddItemToObject(json_dict, typeAsString.c_str(), jarray);
+    os << interval << ",";
   }
-
-  return json_dict;
-}
-
-//convert json formatted string to a handle range
-smtk::mesh::HandleRange from_json(cJSON* json)
-{
-  smtk::mesh::HandleRange result;
-  if (!json)
+  if (!range.empty())
   {
-    return result;
+    os << '\b';
   }
-
-  std::stringstream buffer;
-  //iterate the children
-  for (cJSON* arr = json->child; arr; arr = arr->next)
-  {
-    if (arr->type == cJSON_Array)
-    {
-      //extract the name
-      int type;
-      buffer << std::string(arr->string);
-      buffer >> type;
-      buffer.clear();
-
-      smtk::mesh::HandleRange subset = detail::subset_from_json_array(type, arr);
-      result.merge(subset);
-    }
-  }
-  return result;
-}
-}
+  os << "]";
+  return os;
 }

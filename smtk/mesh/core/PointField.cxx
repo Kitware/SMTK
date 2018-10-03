@@ -129,7 +129,7 @@ bool PointField::get(const smtk::mesh::HandleRange& pointIds, void* values) cons
     return false;
   }
 
-  if (!m_meshset.points().range().contains(pointIds))
+  if (!smtk::mesh::rangeContains(m_meshset.points().range(), pointIds))
   {
     return false;
   }
@@ -145,7 +145,7 @@ bool PointField::set(const smtk::mesh::HandleRange& pointIds, const void* const 
     return false;
   }
 
-  if (!m_meshset.points().range().contains(pointIds))
+  if (!smtk::mesh::rangeContains(m_meshset.points().range(), pointIds))
   {
     return false;
   }

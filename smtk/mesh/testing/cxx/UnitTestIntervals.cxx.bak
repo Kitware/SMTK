@@ -1,0 +1,128 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#include <iostream>
+#include <typeinfo>
+
+#include "smtk/mesh/core/Handle.h"
+
+#include "nlohmann/json.hpp"
+// #include "smtk/mesh/json/jsonHandleRange.h"
+
+using nlohmann::json;
+
+namespace smtk
+{
+namespace mesh
+{
+void to_json(nlohmann::json& j, const smtk::mesh::HandleRange& handleRange)
+{
+  for (auto& handleInterval : handleRange)
+  {
+    j.push_back(std::make_pair(handleInterval.lower(), handleInterval.upper()));
+  }
+}
+
+void from_json(const nlohmann::json& j, smtk::mesh::HandleRange& handleRange)
+{
+  if (j.is_null())
+  {
+    return;
+  }
+
+  std::pair<Handle,Handle> handlePair;
+
+  for (auto& jsonHandleInterval : j)
+  {
+    handlePair = jsonHandleInterval;
+    handleRange.insert(handleRange.end(), HandleInterval(handlePair.first, handlePair.second));
+  }
+}
+}
+}
+
+namespace smtk
+{
+namespace mesh
+{
+class MyClass
+{
+public:
+  MyClass() {}
+  int myVal() const { return m_myVal; }
+  void setMyVal(int i) { m_myVal = i; }
+
+private:
+  int m_myVal;
+};
+
+void to_json(nlohmann::json& j, const MyClass& myClass)
+{
+  j = json{{"myVal", myClass.myVal()}};
+}
+
+void from_json(const nlohmann::json& j, MyClass& myClass)
+{
+  myClass.setMyVal(j.at("myVal"));
+}
+}
+}
+
+int UnitTestIntervals(int, char** const)
+{
+  using namespace smtk::mesh;
+
+  HandleInterval interval(6, 8);
+
+  HandleRange range1;
+  range1.insert(2);
+  range1.insert(3);
+  range1.insert(interval);
+
+  HandleRange range2;
+  range2.insert(12);
+  range2.insert(5);
+
+  std::cout<<"range 1: "<<range1<<std::endl;
+  std::cout<<"range 2: "<<range2<<std::endl;
+  std::cout<<"range 1 - range 2: "<< (range1 - range2)<<std::endl;
+  std::cout<<"range 2 - range 1: "<< (range2 - range1)<<std::endl;
+  std::cout<<"union(range 1, range 2): "<<(range1 | range2)<<std::endl;
+  std::cout<<"intersection(range 1, range 2): "<<(range1 & range2)<<std::endl;
+  std::cout<<"range 1 size: "<<range1.size()<<std::endl;
+  std::cout<<"range 1 interval count: "<<rangeIntervalCount(range1)<<std::endl;
+  std::cout<<"range 1 empty: "<<range1.empty()<<std::endl;
+  std::cout<<"range 1 - 3: "<<(range1 - Handle(3))<<std::endl;
+  std::cout<<"range 1 - (3,4): "<<(range1 - HandleInterval(3, 4))<<std::endl;
+  std::cout<<"range 1 contains 3: "<<rangeContains(range1, Handle(3))<<std::endl;
+  std::cout<<"range 1 contains (2,4): "<<rangeContains(range1, HandleInterval(2, 4))<<std::endl;
+  std::cout<<"range 1 contains (0,4): "<<rangeContains(range1, HandleInterval(0, 4))<<std::endl;
+  std::cout<<"(range 1)[0]: "<<rangeElement(range1, 0)<<std::endl;
+  std::cout<<"(range 1)[3]: "<<rangeElement(range1, 4)<<std::endl;
+
+  // nlohmann::json jsonHandleRange = range1;
+  // std::cout<<jsonHandleRange.dump();
+
+  // nlohmann::json j = range1;
+  nlohmann::json j;
+  to_json(j, range1);
+  std::cout<<j.dump()<<std::endl;
+
+  // HandleRange range3 = j;
+  // HandleRange range3 = j.get<smtk::mesh::HandleRange>();
+
+  smtk::mesh::MyClass myClass;
+  myClass.setMyVal(3);
+
+  json jsonMyClass = myClass;
+  std::cout<<jsonMyClass.dump()<<std::endl;
+
+  return 0;
+}
