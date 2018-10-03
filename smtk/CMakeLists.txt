@@ -59,6 +59,7 @@ set(smtk_srcs
 )
 
 set(smtkCore_public_include_directories
+  ${MOAB_INCLUDE_DIRS}
   $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
   $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
   $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
