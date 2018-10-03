@@ -161,9 +161,6 @@ public:
   bool ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* parent, int idxInParent);
 
 protected:
-  friend class Operator;
-  friend class ReadOperator;
-  friend class SessionIOJSON;
   friend struct EntityHandle;
 
   Session();
