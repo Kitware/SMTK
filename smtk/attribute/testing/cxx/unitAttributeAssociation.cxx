@@ -29,7 +29,8 @@ int unitAttributeAssociation(int, char* [])
   // I. First see how things work when Resource is not yet set.
   attribute::ResourcePtr resptr = attribute::Resource::create();
   attribute::Resource& res(*resptr.get());
-  smtkTest(!res.refModelResource(), "Resource should not have model storage by default.");
+  smtkTest(
+    res.associations().empty() == true, "Resource should not have model storage by default.");
 
   DefinitionPtr def = res.createDefinition("testDef");
   auto arule = def->createLocalAssociationRule();
@@ -50,11 +51,9 @@ int unitAttributeAssociation(int, char* [])
   // II. Now see how things work when the attribute resource has
   //     a valid model modelMgr pointer.
   model::Resource::Ptr modelMgr = model::Resource::create();
-  res.setRefModelResource(modelMgr);
+  res.associate(modelMgr);
   smtkTest(
-    res.refModelResource() == modelMgr, "Could not set attribute resource's model-resource.");
-
-  smtkTest(att->modelResource() == modelMgr, "Attribute's idea of model resource incorrect.");
+    *res.associations().begin() == modelMgr, "Could not set attribute resource's model-resource.");
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
@@ -83,13 +82,6 @@ int unitAttributeAssociation(int, char* [])
   smtk::model::Edge e0 = modelMgr->addEdge();
   smtkTest(e0.associateAttribute(att->attributeResource(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
-
-  // ----
-  // III. Test corner cases when switch model resources on the attribute resource.
-  model::Resource::Ptr auxModelResource = model::Resource::create();
-  res.setRefModelResource(auxModelResource);
-  smtkTest(
-    res.refModelResource() == auxModelResource, "Attribute resource's modelMgr not changed.");
 
   return 0;
 }

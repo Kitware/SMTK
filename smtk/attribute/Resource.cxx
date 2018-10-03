@@ -33,6 +33,9 @@
 
 using namespace smtk::attribute;
 
+constexpr smtk::resource::Links::RoleType Resource::AssociationRole;
+constexpr smtk::resource::Links::RoleType Resource::ReferenceRole;
+
 Resource::Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(myID, manager)
 {
@@ -492,9 +495,37 @@ smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
   return smtk::attribute::ConstDefinitionPtr();
 }
 
-void Resource::setRefModelResource(smtk::model::ResourcePtr refModelResource)
+smtk::resource::ResourceSet Resource::associations() const
 {
-  m_refModelResource = refModelResource;
+  auto associatedObjects = this->links().linkedTo(AssociationRole);
+  smtk::resource::ResourceSet resources;
+  for (auto& object : associatedObjects)
+  {
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(object);
+    if (resource != nullptr)
+    {
+      resources.insert(resource);
+    }
+  }
+  return resources;
+}
+
+bool Resource::associate(const smtk::resource::ResourcePtr& resource)
+{
+  // Resource links allow for multiple links between the same objects. Since
+  // associations are unique, we must first check if an association between this
+  // resourse and the resource parameter exists.
+  return this->links().isLinkedTo(resource, AssociationRole)
+    ? true
+    : this->links().addLinkTo(resource, AssociationRole).first != smtk::common::UUID::null();
+}
+
+bool Resource::disassociate(const smtk::resource::ResourcePtr& resource)
+{
+  // Resource links allow for multiple links between the same objects. Since
+  // associations are unique, we can erase all links from this resource to the
+  // input resource that have an association role.
+  return this->links().removeLinksTo(resource, AssociationRole);
 }
 
 void Resource::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)

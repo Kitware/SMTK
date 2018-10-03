@@ -243,6 +243,11 @@ public:
   template <typename tag>
   bool erase_all(const typename LinkTraits<tag>::type&);
 
+  /// Erase all links matching the input value and role for the tagged search
+  /// criterion.
+  template <typename tag>
+  bool erase_all(const std::tuple<typename LinkTraits<tag>::type, role_type>&);
+
   /// Access a link by its id and set its value associated with the tagged
   /// search criterion to a new value.
   template <typename tag>
@@ -334,6 +339,19 @@ template <typename tag>
 bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(
   const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
     tag>::type& value)
+{
+  auto& self = this->Parent::template get<tag>();
+  auto to_erase = self.equal_range(value);
+  auto pos = self.erase(to_erase.first, to_erase.second);
+  return pos != self.end();
+}
+
+template <typename id_type, typename left_type, typename right_type, typename role_type,
+  typename base_type>
+template <typename tag>
+bool Links<id_type, left_type, right_type, role_type, base_type>::erase_all(const std::tuple<
+  typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type, tag>::type,
+  role_type>& value)
 {
   auto& self = this->Parent::template get<tag>();
   auto to_erase = self.equal_range(value);

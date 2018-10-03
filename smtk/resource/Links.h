@@ -60,6 +60,11 @@ public:
   /// Given a Link key, remove the associated link. Return true if successful.
   bool removeLink(const Key&);
 
+  /// Given a resource or component and a role, remove all links from this
+  /// object and the input object of this role type. Return true if successful.
+  bool removeLinksTo(const ResourcePtr&, const RoleType&);
+  bool removeLinksTo(const ComponentPtr&, const RoleType&);
+
   /// Given a Link key, return the object and role to which this object is
   /// linked, or return nullptr if no link exists with this link id.
   std::pair<PersistentObjectPtr, RoleType> linkedObjectAndRole(const Key&) const;
@@ -88,6 +93,9 @@ private:
     const Resource* rhs1, const smtk::common::UUID& rhs2, const RoleType& role) const;
 
   bool removeLink(Resource* lhs1, const Key& key);
+
+  bool removeLinksTo(Resource* lhs1, const smtk::common::UUID& lhs2, const smtk::common::UUID& rhs1,
+    const smtk::common::UUID& rhs2, const RoleType& role);
 
   std::pair<PersistentObjectPtr, Links::RoleType> linkedObjectAndRole(
     const Resource*, const Key&) const;

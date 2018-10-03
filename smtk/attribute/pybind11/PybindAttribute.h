@@ -106,7 +106,6 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("isValid", &smtk::attribute::Attribute::isValid)
     .def("_item", &smtk::attribute::Attribute::item, py::arg("ith"))
     .def("_itemAtPath", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::std::string const &)) &smtk::attribute::Attribute::itemAtPath, py::arg("path"), py::arg("seps") = "/")
-    .def("modelResource", &smtk::attribute::Attribute::modelResource)
     .def("name", &smtk::attribute::Attribute::name)
     .def("numberOfItems", &smtk::attribute::Attribute::numberOfItems)
     // .def("references", &smtk::attribute::Attribute::references, py::arg("list"))

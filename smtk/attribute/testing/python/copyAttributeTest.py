@@ -82,7 +82,6 @@ if __name__ == '__main__':
     att_path = os.path.join(att_folder, INPUT_FILENAME)
     logging.info('Reading %s' % att_path)
     input_resource = smtk.attribute.Resource.create()
-    input_resource.setRefModelResource(model_resource)
 
     reader = smtk.io.AttributeReader()
     logger = smtk.io.Logger()
@@ -132,7 +131,6 @@ if __name__ == '__main__':
     # Instantiate 2nd/test resource
     #
     test_resource = smtk.attribute.Resource.create()
-    test_resource.setRefModelResource(model_resource)
     # Copy SecondConcrete attribute
     options = smtk.attribute.Item.AssignmentOptions.COPY_MODEL_ASSOCIATIONS
     test_resource.copyAttribute(second_concrete, True, int(options))

@@ -161,21 +161,6 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
   {
     auto assocItem = att->associations();
     smtk::attribute::from_json(association, assocItem);
-    // Now the ReferenceItem is deserialized but we need
-    // to let any referenced model components (and perhaps
-    // others eventually) know about the associations:
-    smtk::model::Resource::Ptr mmgr = att->modelResource();
-    for (auto eit = assocItem->begin(); eit != assocItem->end(); ++eit)
-    {
-      auto modelEntity = std::dynamic_pointer_cast<smtk::model::Entity>(*eit);
-      if (modelEntity)
-      {
-        // Calling associateAttribute() with a null attribute collection
-        // prevents the model resource from attempting to add the association
-        // back to the attribute we are currently deserializing:
-        modelEntity->modelResource()->associateAttribute(nullptr, att->id(), modelEntity->id());
-      }
-    }
   }
 }
 }

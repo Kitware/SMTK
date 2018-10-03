@@ -63,6 +63,18 @@ bool Links::removeLink(const Key& key)
   return this->removeLink(this->leftHandSideResource(), key);
 }
 
+bool Links::removeLinksTo(const ResourcePtr& rhs1, const RoleType& role)
+{
+  return this->removeLinksTo(this->leftHandSideResource(), this->leftHandSideComponentId(),
+    rhs1->id(), linkToResource, role);
+}
+
+bool Links::removeLinksTo(const ComponentPtr& rhs2, const RoleType& role)
+{
+  return this->removeLinksTo(this->leftHandSideResource(), this->leftHandSideComponentId(),
+    rhs2->resource()->id(), rhs2->id(), role);
+}
+
 std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(const Key& key) const
 {
   return this->linkedObjectAndRole(this->leftHandSideResource(), key);
@@ -294,6 +306,38 @@ bool Links::removeLink(Resource* lhs1, const Links::Key& key)
     resourceLinkData.erase(key.first);
   }
   return returnValue;
+}
+
+bool Links::removeLinksTo(Resource* lhs1, const smtk::common::UUID& lhs2,
+  const smtk::common::UUID& rhs1, const smtk::common::UUID& rhs2, const RoleType& role)
+{
+  // Access the Resource Link data that connects this component's resource to
+  // the input resource. If it doesn't exist, then there is no link.
+  typedef Resource::Links::ResourceLinkData ResourceLinkData;
+  ResourceLinkData& resourceLinkData = lhs1->links().data();
+  auto& resourceLinks = resourceLinkData.get<ResourceLinkData::Right>();
+
+  // All resource links held by a resource have a lhs = the containing resource.
+  // We therefore only need to find the resource link with a rhs = the input
+  // parameter resource.
+  auto resourceRange = resourceLinks.equal_range(rhs1);
+
+  // If the range of resources is empty, then there is no link.
+  if (resourceRange.first == resourceRange.second)
+  {
+    return false;
+  }
+
+  // There should be only one link connecting two resources. If there is more
+  // than one link, then we are in a bad state.
+  assert(std::distance(resourceRange.first, resourceRange.second) == 1);
+
+  // Now that we have the resource link, access the component Link data that
+  // connects this component to the input resource. If it doesn't exist, then
+  // there is no link.
+  Component::Links::Data& componentLinkData = resourceLinkData.value(resourceRange.first->id);
+
+  return componentLinkData.erase_all<Component::Links::Data::Right>(std::make_tuple(rhs2, role));
 }
 
 std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(

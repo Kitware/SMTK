@@ -27,7 +27,7 @@
 #define __smtk_attribute_ModelEntityItem_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/attribute/Item.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/model/EntityRef.h"
 
 namespace smtk
@@ -41,23 +41,19 @@ namespace attribute
 
 class Attribute;
 class ModelEntityItemDefinition;
-class SMTKCORE_EXPORT ModelEntityItem : public Item
+class SMTKCORE_EXPORT ModelEntityItem : public ComponentItem
 {
   friend class ModelEntityItemDefinition;
 
 public:
-  typedef smtk::model::EntityRefArray::const_iterator const_iterator;
-
   smtkTypeMacro(smtk::attribute::ModelEntityItem);
   ~ModelEntityItem() override;
+
+  using ComponentItem::setValue;
+  using ComponentItem::appendValue;
+
   Item::Type type() const override;
-  bool isValid() const override;
 
-  std::size_t numberOfValues() const;
-  bool setNumberOfValues(std::size_t newSize);
-  virtual smtk::attribute::ConstModelEntityItemDefinitionPtr definition() const;
-
-  std::size_t numberOfRequiredValues() const;
   smtk::model::EntityRef value(std::size_t element = 0) const;
   bool setValue(const smtk::model::EntityRef& val);
   bool setValue(std::size_t element, const smtk::model::EntityRef& val);
@@ -68,26 +64,9 @@ public:
   bool appendValues(I vbegin, I vend);
 
   bool appendValue(const smtk::model::EntityRef& val);
-  bool removeValue(std::size_t element);
-  void reset() override;
-  virtual std::string valueAsString() const;
-  virtual std::string valueAsString(std::size_t element) const;
-  virtual bool isSet(std::size_t element = 0) const;
-  virtual void unset(std::size_t element = 0);
-  // Assigns this item to be equivalent to another.  Options are processed by derived item classes
-  // Returns true if success and false if a problem occured.  By default, the model enity is assigned.
-  // Use IGNORE_MODEL_ENTITIES option to prevent this (defined in Item.h).
-  bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
-  bool isExtensible() const;
-
-  bool has(const smtk::common::UUID& entity) const;
   bool has(const smtk::model::EntityRef& entity) const;
 
-  const_iterator begin() const;
-  const_iterator end() const;
-
-  std::ptrdiff_t find(const smtk::common::UUID& entity) const;
   std::ptrdiff_t find(const smtk::model::EntityRef& entity) const;
 
 protected:
@@ -95,10 +74,6 @@ protected:
 
   ModelEntityItem(Attribute* owningAttribute, int itemPosition);
   ModelEntityItem(Item* owningItem, int myPosition, int mySubGroupPosition);
-
-  bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
-
-  smtk::model::EntityRefArray m_values;
 };
 
 template <typename I>

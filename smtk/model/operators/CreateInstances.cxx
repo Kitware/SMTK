@@ -91,7 +91,12 @@ void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef
     // to handle multiple extensions with either the same name or a way to iterate over extensions
     // by type alone.
     instance.setStringProperty("snap rule", "model_entity_point_locator");
-    EntityRefs snapTo(snapItem->begin(), snapItem->end());
+    EntityRefs snapTo;
+    for (auto it = snapItem->begin(); it != snapItem->end(); ++it)
+    {
+      snapTo.insert(
+        std::static_pointer_cast<smtk::model::Entity>(*it)->referenceAs<smtk::model::EntityRef>());
+    }
     instance.setSnapEntities(snapTo);
   }
 }
