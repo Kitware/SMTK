@@ -2043,15 +2043,18 @@ bool Resource::setBoundingBox(
   */
 bool Resource::removeTessellation(const smtk::common::UUID& entityId, bool removeGen)
 {
-  bool didRemove;
   UUIDWithTessellation tref = m_tessellations->find(entityId);
-  didRemove = (tref == m_tessellations->end());
-  if (didRemove)
+  bool canRemove = (tref != m_tessellations->end());
+  if (canRemove)
+  {
     m_tessellations->erase(tref);
 
-  if (removeGen)
-    this->removeIntegerProperty(entityId, SMTK_TESS_GEN_PROP);
-  return didRemove;
+    if (removeGen)
+    {
+      this->removeIntegerProperty(entityId, SMTK_TESS_GEN_PROP);
+    }
+  }
+  return canRemove;
 }
 
 /**\brief Add or replace information about the arrangement of an entity.
