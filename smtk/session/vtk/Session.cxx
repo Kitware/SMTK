@@ -13,17 +13,12 @@
 
 #include "smtk/common/UUIDGenerator.h"
 
-#include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
-
-#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "vtkCellArray.h"
 #include "vtkGeometryFilter.h"
@@ -233,10 +228,6 @@ smtk::model::Model Session::addModel(vtkSmartPointer<vtkMultiBlockDataSet>& mode
   this->m_models.push_back(model);
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;
-  this->resource()
-    ->meshes()
-    ->makeCollection(result.entity())
-    ->name(result.name() + "_tessellation");
   this->transcribe(result, smtk::model::SESSION_EVERYTHING, false);
   result.setSession(smtk::model::SessionRef(this->resource(), this->sessionId()));
   return result;
@@ -652,24 +643,6 @@ bool Session::addTessellation(const smtk::model::EntityRef& entityref, const Ent
   {
     smtk::model::EntityRef mutableEnt(entityref);
     mutableEnt.setTessellationAndBoundingBox(&tess);
-  }
-
-  smtk::mesh::CollectionPtr collection =
-    this->resource()->meshes()->collection(this->uuidOfHandleObject(this->modelOfHandle(handle)));
-  if (collection && collection->isValid())
-  {
-    smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(entityref);
-    if (!modified.is_empty())
-    {
-      collection->removeMeshes(modified);
-    }
-
-    smtk::extension::vtk::io::mesh::ImportVTKData importVTKData;
-    smtk::mesh::MeshSet meshForEntity = importVTKData(bdy, collection);
-    if (!meshForEntity.is_empty())
-    {
-      meshForEntity.setModelEntity(entityref);
-    }
   }
 
   return true;
