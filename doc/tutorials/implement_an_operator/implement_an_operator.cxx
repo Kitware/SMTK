@@ -93,6 +93,7 @@ int main()
 {
   int status = 0;
 
+#if 0
   Resource::Ptr resource = Resource::create();
   SessionRef session; // = resource->createSession("native");
   UUIDArray uids = smtk::model::testing::createTet(resource);
@@ -113,6 +114,10 @@ int main()
     std::cerr << "Exiting...\n";
     status = -1;
   }
+#else
+  std::cerr << "Tutorials need to be updated.\nThis test has been disabled until they are.\n";
+  status = 125;
+#endif
 
   return status;
 }

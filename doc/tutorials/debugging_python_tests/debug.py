@@ -1,6 +1,7 @@
 """
 Verify that our documentation on running unit tests in the interpreter is correct.
 """
+import sys
 import smtk.testing
 
 
@@ -38,5 +39,8 @@ class DebugAPythonTest(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
+    print('This test has been disabled until tutorials are updated.\n')
+    sys.exit(125)
+
     smtk.testing.process_arguments()
     smtk.testing.main()
