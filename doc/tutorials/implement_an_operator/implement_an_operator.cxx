@@ -57,7 +57,8 @@ smtk::operation::XMLOperation::Result CounterOperation::operateInternal()
   // Fetch the item to store our output:
   smtk::attribute::IntItemPtr cellCount = result->findInt("count");
 
-  cellCount->setValue(countGroups ? model.groups().size() : model.cells().size());
+  cellCount->setValue(
+    countGroups ? static_cast<int>(model.groups().size()) : static_cast<int>(model.cells().size()));
 
   return result;
 }
