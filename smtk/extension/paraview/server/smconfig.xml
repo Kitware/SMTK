@@ -114,6 +114,7 @@
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
@@ -146,6 +147,7 @@
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
@@ -182,6 +184,7 @@
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
@@ -207,6 +210,7 @@
       <Hints>
         <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
         <!-- Representation view="RenderView" type="SMTKModelCompositeRepresentation" / -->
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
@@ -259,6 +263,7 @@
       <Hints>
         <ReaderFactory extensions="fac obj poly smesh pts sol stl tin xyz"
                        file_description="CMB Point, Edge and Surface Geometry Files" />
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
   </ProxyGroup>
@@ -313,6 +318,7 @@
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
@@ -334,7 +340,6 @@
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
       </Hints>
     </SourceProxy>
@@ -358,8 +363,8 @@
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
@@ -380,6 +385,7 @@
       <OutputPort index="0" name="attributes"/>
       <Hints>
         <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
+        <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
@@ -1093,7 +1099,7 @@
       <InputProperty command="SetInputConnection"
                      name="Input">
         <DataTypeDomain name="input_type">
-          <DataType value="vtkDataSet"/>
+          <DataType value="vtkMultiBlockDataSet"/>
         </DataTypeDomain>
           <Documentation>Model entity tessellations input. </Documentation>
       </InputProperty>
