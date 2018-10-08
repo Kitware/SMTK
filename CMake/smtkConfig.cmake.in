@@ -26,6 +26,9 @@ endif ()
 if(TARGET smtkCore)
 else()
 
+  set(nlohmann_json_DIR "@nlohmann_json_DIR@")
+  find_package(nlohmann_json REQUIRED)
+
   set(MOAB_ROOT_DIR "@MOAB_ROOT_DIR@")
   find_package(MOAB REQUIRED)
 
