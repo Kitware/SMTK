@@ -61,6 +61,16 @@ also accessible in Python, whose instances perform the following functions:
     hold definitions for each modeling operation that can be
     performed by each of its modeling kernels).
 
+.. findfigure:: attribute-system-2.*
+   :align: center
+   :width: 90%
+
+   At the top left is a UML diagram of the C++ classes in SMTK's attribute system.
+   At the bottom left is an example composed of instances of the C++ classes above,
+   with like colors indicating the class of the instantiated objects.
+   The right side of the figure shows how these components are presented in
+   the modelbuilder application and associated to a geometric model entity.
+
 Because it can be tedious to programmatically create a bunch of
 instances of the classes above to represent a particular simulation's
 input deck, SMTK provides an XML file format for serializing and
