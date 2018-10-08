@@ -104,9 +104,9 @@ public:
   {
     coordinatesModified = false; //we are not modifying the coords
 
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
     std::size_t offset = 0;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
     {
       //iterate the range of coords / point ids
       test(m_points[m_currentIndex] == static_cast<T>(xyz[offset]));

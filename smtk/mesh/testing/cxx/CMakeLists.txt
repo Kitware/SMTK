@@ -16,10 +16,11 @@ set(unit_tests
   UnitTestCollection.cxx
   UnitTestBufferedCellAllocator.cxx
   UnitTestIncrementalAllocator.cxx
+  UnitTestIntervals.cxx
   UnitTestManager.cxx
   UnitTestModelToMesh3D.cxx
   UnitTestQueryTypes.cxx
-  UnitTestReadWriteHandles.cxx
+#  UnitTestReadWriteHandles.cxx
   UnitTestTypeSet.cxx
 )
 

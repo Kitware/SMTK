@@ -136,7 +136,7 @@ public:
   smtk::mesh::MeshSet subset(const smtk::mesh::Dirichlet& d) const;
   smtk::mesh::MeshSet subset(const smtk::mesh::Neumann& n) const;
 
-  //subset this MeshSet given an index into moab entity sets (m_range)
+  //subset this MeshSet given an index into entity sets (m_range)
   smtk::mesh::MeshSet subset(std::size_t ith) const;
 
   //Extract the shell ( exterior (D-1)-dimensional elements ) of this set of
@@ -202,7 +202,7 @@ public:
 private:
   smtk::mesh::CollectionPtr m_parent;
   smtk::mesh::Handle m_handle;
-  smtk::mesh::HandleRange m_range; //range of moab entity sets
+  smtk::mesh::HandleRange m_range; //range of entity sets
   mutable smtk::common::UUID m_id;
 };
 

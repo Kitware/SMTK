@@ -20,11 +20,9 @@ namespace mesh
 {
 namespace json
 {
-using json = nlohmann::json;
+void to_json(nlohmann::json&, const CollectionPtr&);
 
-void to_json(json&, const CollectionPtr&);
-
-void from_json(const json&, CollectionPtr&);
+void from_json(const nlohmann::json&, CollectionPtr&);
 }
 }
 }

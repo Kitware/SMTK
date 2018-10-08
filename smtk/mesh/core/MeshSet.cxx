@@ -35,7 +35,7 @@ MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle han
   m_handle = handle;
 
   const smtk::mesh::InterfacePtr& iface = parent->interface();
-  //range of moab entity sets
+  //range of entity sets
   m_range = iface->getMeshsets(handle);
 }
 
@@ -45,7 +45,7 @@ MeshSet::MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handl
   m_handle = handle;
 
   const smtk::mesh::InterfacePtr& iface = parent->interface();
-  //range of moab entity sets
+  //range of entity sets
   m_range = iface->getMeshsets(handle);
 }
 
@@ -53,7 +53,7 @@ MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle han
   const smtk::mesh::HandleRange& range)
   : m_parent(parent)
   , m_handle(handle)
-  , m_range(range) //range of moab entity sets
+  , m_range(range) //range of entity sets
 {
 }
 
@@ -61,7 +61,7 @@ MeshSet::MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handl
   const smtk::mesh::HandleRange& range)
   : m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent))
   , m_handle(handle)
-  , m_range(range) //range of moab entity sets
+  , m_range(range) //range of entity sets
 {
 }
 
@@ -106,26 +106,25 @@ bool MeshSet::operator<(const MeshSet& other) const
   if (myLen == otherLen)
   {
     //next we look at psize which is the number of pairs inside the range
-    const std::size_t myPLen = m_range.psize();
-    const std::size_t otherPLen = other.m_range.psize();
+    const std::size_t myPLen = smtk::mesh::rangeIntervalCount(m_range);
+    const std::size_t otherPLen = smtk::mesh::rangeIntervalCount(other.m_range);
 
     if (myPLen == otherPLen)
     {
       //we now have two handle ranges with same number of values, and
       //the same number of pairs. Now we need
 
-      smtk::mesh::HandleRange::const_pair_iterator i, j;
-      i = m_range.const_pair_begin();
-      j = other.m_range.const_pair_begin();
-      for (; i != m_range.const_pair_end(); ++i, ++j)
+      auto i = m_range.begin();
+      auto j = other.m_range.begin();
+      for (; i != m_range.end(); ++i, ++j)
       {
-        if (i->first != j->first)
+        if (i->lower() != j->lower())
         {
-          return i->first < j->first;
+          return i->lower() < j->lower();
         }
-        else if (i->second != j->second)
+        else if (i->upper() != j->upper())
         {
-          return i->second < j->second;
+          return i->upper() < j->upper();
         }
       }
       //we looped over the entire set and everything was equal, so therefore
@@ -160,7 +159,7 @@ bool MeshSet::append(const MeshSet& other)
   const bool can_append = m_parent == other.m_parent;
   if (can_append)
   {
-    m_range.insert(other.m_range.begin(), other.m_range.end());
+    m_range += other.m_range;
   }
   return can_append;
 }
@@ -355,7 +354,7 @@ smtk::mesh::MeshSet MeshSet::subset(smtk::mesh::DimensionType dim) const
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
   smtk::mesh::HandleRange dimMeshes = iface->getMeshsets(m_handle, dim);
   //intersect our mesh id with those of a given dimension to find the subset
-  return smtk::mesh::MeshSet(m_parent, m_handle, iface->rangeIntersect(dimMeshes, m_range));
+  return smtk::mesh::MeshSet(m_parent, m_handle, (dimMeshes & m_range));
 }
 
 smtk::mesh::MeshSet MeshSet::subset(const smtk::mesh::Domain& d) const
@@ -363,7 +362,7 @@ smtk::mesh::MeshSet MeshSet::subset(const smtk::mesh::Domain& d) const
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
   smtk::mesh::HandleRange dMeshes = iface->getMeshsets(m_handle, d);
   //intersect our mesh id with those of a given dimension to find the subset
-  return smtk::mesh::MeshSet(m_parent, m_handle, iface->rangeIntersect(dMeshes, m_range));
+  return smtk::mesh::MeshSet(m_parent, m_handle, (dMeshes & m_range));
 }
 
 smtk::mesh::MeshSet MeshSet::subset(const smtk::mesh::Dirichlet& d) const
@@ -371,7 +370,7 @@ smtk::mesh::MeshSet MeshSet::subset(const smtk::mesh::Dirichlet& d) const
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
   smtk::mesh::HandleRange dMeshes = iface->getMeshsets(m_handle, d);
   //intersect our mesh id with those of a given dimension to find the subset
-  return smtk::mesh::MeshSet(m_parent, m_handle, iface->rangeIntersect(dMeshes, m_range));
+  return smtk::mesh::MeshSet(m_parent, m_handle, (dMeshes & m_range));
 }
 
 smtk::mesh::MeshSet MeshSet::subset(const smtk::mesh::Neumann& n) const
@@ -379,20 +378,17 @@ smtk::mesh::MeshSet MeshSet::subset(const smtk::mesh::Neumann& n) const
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
   smtk::mesh::HandleRange nMeshes = iface->getMeshsets(m_handle, n);
   //intersect our mesh id with those of a given dimension to find the subset
-  return smtk::mesh::MeshSet(m_parent, m_handle, iface->rangeIntersect(nMeshes, m_range));
+  return smtk::mesh::MeshSet(m_parent, m_handle, (nMeshes & m_range));
 }
 
 smtk::mesh::MeshSet MeshSet::subset(std::size_t ith) const
 {
-  smtk::mesh::HandleRange singlHandleRange;
+  smtk::mesh::HandleRange singleHandleRange;
   if (!m_range.empty() && ith < m_range.size())
   {
-    smtk::mesh::HandleRange::const_iterator cit = m_range.begin();
-    cit += ith;
-
-    singlHandleRange.insert(*cit);
+    singleHandleRange.insert(smtk::mesh::rangeElement(m_range, ith));
   }
-  smtk::mesh::MeshSet singleMesh(m_parent, m_handle, singlHandleRange);
+  smtk::mesh::MeshSet singleMesh(m_parent, m_handle, singleHandleRange);
   return singleMesh;
 }
 
@@ -588,8 +584,7 @@ MeshSet set_intersect(const MeshSet& a, const MeshSet& b)
     return smtk::mesh::MeshSet(a.m_parent, a.m_handle, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeIntersect(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = a.m_range & b.m_range;
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -601,8 +596,7 @@ MeshSet set_difference(const MeshSet& a, const MeshSet& b)
     return smtk::mesh::MeshSet(a.m_parent, a.m_handle, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeDifference(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = a.m_range - b.m_range;
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 
@@ -614,8 +608,7 @@ MeshSet set_union(const MeshSet& a, const MeshSet& b)
     return smtk::mesh::MeshSet(a.m_parent, a.m_handle, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeUnion(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = a.m_range | b.m_range;
   return smtk::mesh::MeshSet(a.m_parent, a.m_handle, result);
 }
 

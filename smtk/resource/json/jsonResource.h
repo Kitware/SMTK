@@ -10,6 +10,8 @@
 #ifndef smtk_resource_json_jsonResource_h
 #define smtk_resource_json_jsonResource_h
 
+#include "smtk/CoreExports.h"
+
 #include "smtk/resource/Resource.h"
 
 #include "nlohmann/json.hpp"
@@ -21,9 +23,9 @@ namespace resource
 {
 using json = nlohmann::json;
 
-void to_json(json&, const ResourcePtr&);
+SMTKCORE_EXPORT void to_json(json&, const ResourcePtr&);
 
-void from_json(const json&, ResourcePtr&);
+SMTKCORE_EXPORT void from_json(const json&, ResourcePtr&);
 }
 }
 

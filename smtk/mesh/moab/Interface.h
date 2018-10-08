@@ -302,22 +302,13 @@ public:
   bool deletePointField(
     const smtk::mesh::PointFieldTag& pfTag, const smtk::mesh::HandleRange& meshsets) override;
 
-  smtk::mesh::HandleRange rangeIntersect(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const override;
-
-  smtk::mesh::HandleRange rangeDifference(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const override;
-
-  smtk::mesh::HandleRange rangeUnion(
-    const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const override;
-
   smtk::mesh::HandleRange pointIntersect(const smtk::mesh::HandleRange& a,
     const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-    const smtk::mesh::ContainsFunctor& containsFunctor) const override;
+    smtk::mesh::ContainmentType containmentType) const override;
 
   smtk::mesh::HandleRange pointDifference(const smtk::mesh::HandleRange& a,
     const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-    const smtk::mesh::ContainsFunctor& containsFunctor) const override;
+    smtk::mesh::ContainmentType containmentType) const override;
 
   void pointForEach(const HandleRange& points, smtk::mesh::PointForEach& filter) const override;
 
@@ -333,6 +324,12 @@ public:
   void setModifiedState(bool state) override { m_modified = state; }
 
 private:
+  void callPointForEach(
+    const HandleRange& points, std::vector<double>& coords, smtk::mesh::PointForEach& filter) const;
+
+  void pointForEachRecursive(
+    HandleRange& points, std::vector<double>& coords, smtk::mesh::PointForEach& filter) const;
+
   //holds a reference to the real moab interface
   smtk::shared_ptr< ::moab::Interface> m_iface;
   smtk::mesh::AllocatorPtr m_alloc;

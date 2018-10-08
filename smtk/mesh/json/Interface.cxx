@@ -12,11 +12,11 @@
 #include "smtk/mesh/json/Interface.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/ContainsFunctors.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/QueryTypes.h"
 
 #include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/HandleRangeToRange.h"
 
 #include <algorithm>
 #include <cstring>
@@ -224,13 +224,13 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 smtk::mesh::HandleRange Interface::getCells(const HandleRange& meshsets) const
 {
   smtk::mesh::HandleRange cells;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
     {
-      cells.merge(m->cells());
+      cells += m->cells();
     }
   }
   return cells;
@@ -241,13 +241,13 @@ smtk::mesh::HandleRange Interface::getCells(
   const HandleRange& meshsets, smtk::mesh::CellType cellType) const
 {
   smtk::mesh::HandleRange cells;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
     {
-      cells.merge(m->cells(cellType));
+      cells += m->cells(cellType);
     }
   }
   return cells;
@@ -258,13 +258,13 @@ smtk::mesh::HandleRange Interface::getCells(
   const smtk::mesh::HandleRange& meshsets, const smtk::mesh::CellTypes& cellTypes) const
 {
   smtk::mesh::HandleRange cells;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
     {
-      cells.merge(m->cells(cellTypes));
+      cells += m->cells(cellTypes);
     }
   }
   return cells;
@@ -275,13 +275,13 @@ smtk::mesh::HandleRange Interface::getCells(
   const smtk::mesh::HandleRange& meshsets, smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::HandleRange cells;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m != m_meshInfo.end())
     {
-      cells.merge(m->cells(dim));
+      cells += m->cells(dim);
     }
   }
   return cells;
@@ -305,10 +305,10 @@ smtk::mesh::HandleRange Interface::getPoints(
   smtk::mesh::HandleRange cellsToVisit = cells;
   for (const auto& m : m_meshInfo)
   {
-    if (cellsToVisit.contains(m.cells()))
+    if (smtk::mesh::rangeContains(cellsToVisit, m.cells()))
     {
-      points.merge(m.points());
-      cellsToVisit = subtract(cellsToVisit, m.cells());
+      points += m.points();
+      cellsToVisit = cellsToVisit - m.cells();
     }
   }
   return cellsToVisit.empty() ? points : smtk::mesh::HandleRange();
@@ -343,8 +343,8 @@ std::vector<smtk::mesh::Domain> Interface::computeDomainValues(
   const smtk::mesh::HandleRange& meshsets) const
 {
   std::set<smtk::mesh::Domain> domains;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     const std::vector<smtk::mesh::Domain>& t = m->domains();
@@ -359,8 +359,8 @@ std::vector<smtk::mesh::Dirichlet> Interface::computeDirichletValues(
   const smtk::mesh::HandleRange& meshsets) const
 {
   std::set<smtk::mesh::Dirichlet> boundary;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     const std::vector<smtk::mesh::Dirichlet>& t = m->dirichlets();
@@ -375,8 +375,8 @@ std::vector<smtk::mesh::Neumann> Interface::computeNeumannValues(
   const smtk::mesh::HandleRange& meshsets) const
 {
   std::set<smtk::mesh::Neumann> boundary;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     const std::vector<smtk::mesh::Neumann>& t = m->neumanns();
@@ -394,8 +394,8 @@ smtk::common::UUIDArray Interface::computeModelEntities(
   const smtk::mesh::HandleRange& meshsets) const
 {
   smtk::common::UUIDArray uuids;
-  smtk::mesh::HandleRange::const_iterator i;
-  for (i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = smtk::mesh::rangeElementsBegin(meshsets);
+       i != smtk::mesh::rangeElementsEnd(meshsets); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     if (m == m_meshInfo.end())
@@ -413,11 +413,13 @@ smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range
 {
   typedef ::smtk::mesh::CellType CellEnum;
 
-  smtk::mesh::HandleRange meshes = range.subset_by_type(::moab::MBENTITYSET);
-  smtk::mesh::HandleRange cells = ::moab::subtract(range, meshes);
+  ::moab::Range moabRange = smtk::mesh::moab::smtkToMOABRange(range);
+
+  ::moab::Range meshes = moabRange.subset_by_type(::moab::MBENTITYSET);
+  ::moab::Range cells = ::moab::subtract(moabRange, meshes);
 
   smtk::mesh::TypeSet result;
-  for (smtk::mesh::HandleRange::const_iterator i = meshes.begin(); i != meshes.end(); ++i)
+  for (::moab::Range::const_iterator i = meshes.begin(); i != meshes.end(); ++i)
   {
     MeshInfoVecType::const_iterator m = this->find(*i);
     result += m->types();
@@ -687,34 +689,14 @@ bool Interface::deletePointField(const smtk::mesh::PointFieldTag&, const smtk::m
   return false;
 }
 
-smtk::mesh::HandleRange Interface::rangeIntersect(
-  const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const
-{
-  return ::moab::intersect(a, b);
-}
-
-smtk::mesh::HandleRange Interface::rangeDifference(
-  const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const
-{
-  return ::moab::subtract(a, b);
-}
-
-smtk::mesh::HandleRange Interface::rangeUnion(
-  const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const
-{
-  return ::moab::unite(a, b);
-}
-
 smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&,
-  const smtk::mesh::HandleRange&, smtk::mesh::PointConnectivity&,
-  const smtk::mesh::ContainsFunctor&) const
+  const smtk::mesh::HandleRange&, smtk::mesh::PointConnectivity&, smtk::mesh::ContainmentType) const
 {
   return smtk::mesh::HandleRange();
 }
 
 smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange&,
-  const smtk::mesh::HandleRange&, smtk::mesh::PointConnectivity&,
-  const smtk::mesh::ContainsFunctor&) const
+  const smtk::mesh::HandleRange&, smtk::mesh::PointConnectivity&, smtk::mesh::ContainmentType) const
 {
   return smtk::mesh::HandleRange();
 }

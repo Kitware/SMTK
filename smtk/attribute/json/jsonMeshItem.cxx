@@ -18,6 +18,8 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Manager.h"
 
+#include "smtk/mesh/json/jsonHandleRange.h"
+
 #include "nlohmann/json.hpp"
 
 #include <exception>
@@ -50,18 +52,14 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::MeshItemPtr& itemPt
     {
       json value;
       value["Resourceid"] = it->collection()->entity().toString();
-      cJSON* jrange = smtk::mesh::to_json(it->range());
-      char* cjson = cJSON_Print(jrange);
-      cJSON_Delete(jrange);
-      free(cjson);
-      value["Val"] = cjson;
+      value["Val"] = it->range();
       values.push_back(value);
     }
   }
   j["Values"] = values;
 }
 
-SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& itemPtr)
+SMTKCORE_EXPORT void from_json(const json& /*j*/, smtk::attribute::MeshItemPtr& /*itemPtr*/)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   // if (!itemPtr.get())
@@ -123,10 +121,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::MeshItemPtr& item
   //     }
   //     cid = smtk::common::UUID(resourceId);
   //     //convert back to a handle
-  //     std::string val = value.at("Val");
-  //     cJSON* jshandle = cJSON_Parse(val.c_str());
-  //     smtk::mesh::HandleRange hrange = smtk::mesh::from_json(jshandle);
-  //     cJSON_Delete(jshandle);
+  //     smtk::mesh::HandleRange hrange = value.at("Val");
   //     smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
   //     if (!c)
   //     {

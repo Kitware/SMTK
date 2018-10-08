@@ -228,11 +228,10 @@ public:
   void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
   {
     std::size_t counter = 0;
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
     {
-      double value =
-        m_dataGenerator(xyz[counter * 3 + 0], xyz[counter * 3 + 1], xyz[counter * 3 + 2]);
+      double value = m_dataGenerator(xyz[counter + 0], xyz[counter + 1], xyz[counter + 2]);
       counter += 3;
       smtk::mesh::HandleRange range;
       range.insert(*i);
@@ -260,11 +259,10 @@ public:
   void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
   {
     std::size_t counter = 0;
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
     {
-      double expectedValue =
-        m_dataGenerator(xyz[counter * 3 + 0], xyz[counter * 3 + 1], xyz[counter * 3 + 2]);
+      double expectedValue = m_dataGenerator(xyz[counter + 0], xyz[counter + 1], xyz[counter + 2]);
       counter += 3;
       smtk::mesh::HandleRange range;
       range.insert(*i);

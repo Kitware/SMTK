@@ -18,9 +18,13 @@
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/Interface.h"
 
-#include <cstdint>
+SMTK_THIRDPARTY_PRE_INCLUDE
+#include "moab/EntityHandle.hpp"
+#include "moab/Range.hpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <cassert>
+#include <cstdint>
 
 namespace moab
 {
@@ -62,7 +66,7 @@ public:
 
   bool flush() override;
 
-  smtk::mesh::HandleRange cells() override { return m_cells; }
+  smtk::mesh::HandleRange cells() override;
 
 protected:
   template <typename IntegerType>

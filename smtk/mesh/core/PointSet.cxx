@@ -36,7 +36,10 @@ PointSet::PointSet(
   : m_parent(parent)
   , m_points()
 {
-  std::copy(points.rbegin(), points.rend(), HandleRangeInserter(m_points));
+  for (auto& point : points)
+  {
+    m_points.insert(point);
+  }
 }
 
 PointSet::PointSet(
@@ -44,7 +47,10 @@ PointSet::PointSet(
   : m_parent(parent)
   , m_points()
 {
-  std::copy(points.rbegin(), points.rend(), HandleRangeInserter(m_points));
+  for (auto& point : points)
+  {
+    m_points.insert(point);
+  }
 }
 
 PointSet::PointSet(const smtk::mesh::PointSet& other)
@@ -96,13 +102,7 @@ bool PointSet::contains(const smtk::mesh::Handle& pointId) const
 
 std::size_t PointSet::find(const smtk::mesh::Handle& pointId) const
 {
-  //yes index() method returns an int
-  int index = m_points.index(pointId);
-  if (index >= 0)
-  {
-    return static_cast<std::size_t>(index);
-  }
-  return m_points.size();
+  return smtk::mesh::rangeIndex(m_points, pointId);
 }
 
 bool PointSet::get(double* xyz) const
@@ -184,8 +184,7 @@ PointSet set_intersect(const PointSet& a, const PointSet& b)
     return smtk::mesh::PointSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeIntersect(a.m_points, b.m_points);
+  smtk::mesh::HandleRange result = a.m_points & b.m_points;
   return smtk::mesh::PointSet(a.m_parent, result);
 }
 
@@ -196,8 +195,7 @@ PointSet set_difference(const PointSet& a, const PointSet& b)
     return smtk::mesh::PointSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeDifference(a.m_points, b.m_points);
+  smtk::mesh::HandleRange result = a.m_points - b.m_points;
   return smtk::mesh::PointSet(a.m_parent, result);
 }
 
@@ -208,8 +206,7 @@ PointSet set_union(const PointSet& a, const PointSet& b)
     return smtk::mesh::PointSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeUnion(a.m_points, b.m_points);
+  smtk::mesh::HandleRange result = a.m_points | b.m_points;
   return smtk::mesh::PointSet(a.m_parent, result);
 }
 

@@ -379,7 +379,7 @@ void extractTessellationInternal(
         //call find on the pointset to determine the proper index for the
         //point id. the point id value is based off the global point id, and
         //we need to transform it to a relative id based of the pointset
-        //that was past in
+        //that was passed in
         tess.m_connectivity[conn_index + i] = ps.find(pointIds[i]);
       }
 
@@ -397,7 +397,7 @@ void extractTessellationInternal(
         //call find on the pointset to determine the proper index for the
         //point id. the point id value is based off the global point id, and
         //we need to transform it to a relative id based of the pointset
-        //that was past in
+        //that was passed in
         tess.m_connectivity[conn_index + i] = ps.find(pointIds[i]);
       }
     }

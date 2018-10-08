@@ -42,10 +42,6 @@ namespace smtk
 namespace io
 {
 class ReadMesh;
-namespace mesh
-{
-class MeshIOMoab;
-}
 }
 namespace model
 {

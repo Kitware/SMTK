@@ -63,11 +63,11 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   std::set<smtk::mesh::Handle> set;
   std::vector<smtk::mesh::Handle> vec;
 
-  for (smtk::mesh::HandleRange::pair_iterator iter = ps.range().begin(); iter != ps.range().end();
+  for (smtk::mesh::HandleRange::iterator iter = ps.range().begin(); iter != ps.range().end();
        ++iter)
   {
-    range.insert(iter->first, iter->second - 1);
-    for (smtk::mesh::Handle i = iter->first; i < iter->second; ++i)
+    range.insert(smtk::mesh::HandleInterval(iter->lower(), iter->upper() - 1));
+    for (smtk::mesh::Handle i = iter->lower(); i < iter->upper(); ++i)
     {
       set.insert(i);
       vec.push_back(i);
@@ -565,7 +565,8 @@ public:
     this->cellsSeen.insert(cellId);
     this->numCellsVisited++;
     this->numPointsSeen += numPts;
-    this->pointsSeen.insert(this->pointIds(), this->pointIds() + numPts);
+    this->pointsSeen.insert(
+      smtk::mesh::HandleInterval(*this->pointIds(), *(this->pointIds() + numPts)));
     this->cellTypesSeen[static_cast<int>(cellType)] = true;
   }
 
@@ -598,7 +599,7 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
   while (pc.fetchNextCell(numPts, points))
   {
     numPointsSeen += numPts;
-    pointsFromConnectivity.insert(points, points + numPts);
+    pointsFromConnectivity.insert(smtk::mesh::HandleInterval(*points, *(points + numPts)));
   }
 
   //verify that point connectivity iteration and cell for_each visit

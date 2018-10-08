@@ -10,6 +10,7 @@
 
 #include "smtk/mesh/moab/ConnectivityStorage.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/HandleRangeToRange.h"
 #include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/common/CompilerInformation.h"
@@ -38,14 +39,16 @@ ConnectivityStorage::ConnectivityStorage(
   std::size_t cellCount = 0;
   std::size_t vertCount = 0;
 
-  smtk::mesh::HandleRange::const_iterator cells_current = cells.begin();
-  smtk::mesh::HandleRange::const_iterator cells_end = cells.end();
+  ::moab::Range moabCells = smtkToMOABRange(cells);
+
+  ::moab::Range::const_iterator cells_current = moabCells.begin();
+  ::moab::Range::const_iterator cells_end = moabCells.end();
 
   //We allocate VertConnectivityStorage once before we insert any vertices
   //this gaurentees that all of the ConnectivityStartPositions pointers
   //into our storage are valid. Otherwise the realloc's will cause
   //pointer invalidation
-  const std::size_t numVerts = cells.num_of_type(::moab::MBVERTEX);
+  const std::size_t numVerts = moabCells.num_of_type(::moab::MBVERTEX);
   this->VertConnectivityStorage.reserve(numVerts);
 
   //first find all vertices. Vertices are a special case
@@ -55,8 +58,8 @@ ConnectivityStorage::ConnectivityStorage(
   while (cells_current != cells_end && iface->type_from_handle(*cells_current) == ::moab::MBVERTEX)
   {
 
-    smtk::mesh::HandleRange::iterator verts_start = cells_current.start_of_block();
-    smtk::mesh::HandleRange::iterator verts_end = cells_current.end_of_block();
+    ::moab::Range::iterator verts_start = cells_current.start_of_block();
+    ::moab::Range::iterator verts_end = cells_current.end_of_block();
 
     const int numVertsPerCell = 1;
     const int numCellsInSubRange = static_cast<int>(std::distance(verts_start, verts_end + 1));
@@ -85,7 +88,7 @@ ConnectivityStorage::ConnectivityStorage(
     int numVertsPerCell = 0, numCellsInSubRange = 0;
 
     ::moab::ErrorCode result = iface->connect_iterate(
-      cells_current, cells.end(), connectivity, numVertsPerCell, numCellsInSubRange);
+      cells_current, moabCells.end(), connectivity, numVertsPerCell, numCellsInSubRange);
 
     if (result == ::moab::MB_SUCCESS)
     {

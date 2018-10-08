@@ -83,11 +83,11 @@ public:
     test((xyz.size() == (pointIds.size() * 3)));
     coordinatesModified = false; //we are not modifying the coords
 
-    typedef smtk::mesh::HandleRange::const_iterator c_it;
     std::size_t index = 0;
     smtk::mesh::PointLocator::LocatorResults results;
     results.want_Coordinates = true;
-    for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, ++index)
+    for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
+         i != smtk::mesh::rangeElementsEnd(pointIds); ++i)
     {
       m_locator.find(xyz[3 * index], xyz[3 * index + 1], xyz[3 * index + 2], 0.0, results);
 

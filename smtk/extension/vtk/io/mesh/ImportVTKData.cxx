@@ -155,7 +155,7 @@ smtk::mesh::HandleRange convertVTKDataSet(
     return smtk::mesh::HandleRange();
   }
 
-  return subtract(alloc->cells(), initRange);
+  return alloc->cells() - initRange;
 }
 
 smtk::mesh::HandleRange convertDomain(vtkCellData* cellData, const smtk::mesh::InterfacePtr& iface,
@@ -183,9 +183,9 @@ smtk::mesh::HandleRange convertDomain(vtkCellData* cellData, const smtk::mesh::I
   //move each cell from the entire pool, into a range
   //that represents that material mesh. This is slowish.
 
-  typedef smtk::mesh::HandleRange::const_iterator cit;
   vtkIdType index = 0;
-  for (cit i = cells.begin(); i != cells.end(); ++i, ++index)
+  for (auto i = smtk::mesh::rangeElementsBegin(cells); i != smtk::mesh::rangeElementsEnd(cells);
+       ++i, ++index)
   {
     const int currentMaterial = static_cast<int>(materialData->GetTuple1(index));
     meshes[currentMaterial].insert(*i);

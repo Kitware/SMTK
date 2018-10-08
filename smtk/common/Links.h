@@ -11,11 +11,15 @@
 #ifndef smtk_common_Links_h
 #define smtk_common_Links_h
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/multi_index/composite_key.hpp>
 #include <boost/multi_index/global_fun.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index_container.hpp>
+SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <functional>
 #include <limits>

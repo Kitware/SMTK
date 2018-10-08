@@ -37,8 +37,7 @@ public:
 
   ~MergeMeshVertices();
 
-  ::moab::ErrorCode merge_entities(
-    const smtk::mesh::HandleRange& meshsets, const double merge_tol = 1.0e-6);
+  ::moab::ErrorCode merge_entities(const ::moab::Range& meshsets, const double merge_tol = 1.0e-6);
 
 private:
   //- given a kdtree, set tag on vertices in leaf nodes with vertices
@@ -54,7 +53,7 @@ private:
 
   //- correct any occurrences of vertices inside a mesh being deleted and
   // the replacement vertex not already being an entity of that mesh
-  ::moab::ErrorCode correct_vertex_merge(const smtk::mesh::HandleRange& meshsets);
+  ::moab::ErrorCode correct_vertex_merge(const ::moab::Range& meshsets);
 
   //Update the connectivity of the cells that used one or more of the
   //soon to be dead points

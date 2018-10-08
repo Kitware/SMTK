@@ -128,7 +128,7 @@ bool CellField::get(const smtk::mesh::HandleRange& cellIds, void* values) const
     return false;
   }
 
-  if (!m_meshset.cells().range().contains(cellIds))
+  if (!smtk::mesh::rangeContains(m_meshset.cells().range(), cellIds))
   {
     return false;
   }
@@ -144,7 +144,7 @@ bool CellField::set(const smtk::mesh::HandleRange& cellIds, const void* const va
     return false;
   }
 
-  if (!m_meshset.cells().range().contains(cellIds))
+  if (!smtk::mesh::rangeContains(m_meshset.cells().range(), cellIds))
   {
     return false;
   }

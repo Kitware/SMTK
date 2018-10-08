@@ -11,7 +11,6 @@
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/Collection.h"
 
-#include "smtk/mesh/core/ContainsFunctors.h"
 #include "smtk/mesh/core/Interface.h"
 
 namespace smtk
@@ -21,13 +20,13 @@ namespace mesh
 
 CellSet::CellSet(const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& range)
   : m_parent(parent)
-  , m_range(range) //range of moab cell entity ids
+  , m_range(range)
 {
 }
 
 CellSet::CellSet(const smtk::mesh::ConstCollectionPtr& parent, const smtk::mesh::HandleRange& range)
   : m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent))
-  , m_range(range) //range of moab cell entity ids
+  , m_range(range)
 {
 }
 
@@ -36,7 +35,10 @@ CellSet::CellSet(
   : m_parent(parent)
   , m_range()
 {
-  std::copy(cellIds.rbegin(), cellIds.rend(), HandleRangeInserter(m_range));
+  for (auto& cellId : cellIds)
+  {
+    m_range.insert(cellId);
+  }
 }
 
 CellSet::CellSet(
@@ -44,7 +46,10 @@ CellSet::CellSet(
   : m_parent(parent)
   , m_range()
 {
-  std::copy(cellIds.rbegin(), cellIds.rend(), HandleRangeInserter(m_range));
+  for (auto& cellId : cellIds)
+  {
+    m_range.insert(cellId);
+  }
 }
 
 CellSet::CellSet(const smtk::mesh::CellSet& other)
@@ -81,7 +86,7 @@ bool CellSet::append(const CellSet& other)
   const bool can_append = m_parent == other.m_parent;
   if (can_append)
   {
-    m_range.insert(other.m_range.begin(), other.m_range.end());
+    m_range += other.m_range;
   }
   return can_append;
 }
@@ -112,7 +117,7 @@ smtk::mesh::PointSet CellSet::points(bool boundary_only) const
 smtk::mesh::PointSet CellSet::points(std::size_t position) const
 {
   smtk::mesh::HandleRange singleIndex;
-  singleIndex.insert(m_range[position]);
+  singleIndex.insert(smtk::mesh::rangeElement(m_range, position));
 
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
   smtk::mesh::HandleRange range = iface->getPoints(singleIndex);
@@ -127,7 +132,7 @@ smtk::mesh::PointConnectivity CellSet::pointConnectivity() const
 smtk::mesh::PointConnectivity CellSet::pointConnectivity(std::size_t position) const
 {
   smtk::mesh::HandleRange singleIndex;
-  singleIndex.insert(m_range[position]);
+  singleIndex.insert(smtk::mesh::rangeElement(m_range, position));
   return smtk::mesh::PointConnectivity(m_parent, singleIndex);
 }
 
@@ -147,8 +152,7 @@ CellSet set_intersect(const CellSet& a, const CellSet& b)
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeIntersect(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = a.m_range & b.m_range;
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -160,8 +164,7 @@ CellSet set_difference(const CellSet& a, const CellSet& b)
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeDifference(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = a.m_range - b.m_range;
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -173,8 +176,7 @@ CellSet set_union(const CellSet& a, const CellSet& b)
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
-  const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  smtk::mesh::HandleRange result = iface->rangeUnion(a.m_range, b.m_range);
+  smtk::mesh::HandleRange result = a.m_range | b.m_range;
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -190,18 +192,8 @@ CellSet point_intersect(const CellSet& a, const CellSet& b, ContainmentType t)
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
   smtk::mesh::PointConnectivity pc(b.m_parent, b.m_range);
 
-  //switch the algorithm based on the containment type
-  smtk::mesh::HandleRange result;
-  if (t == smtk::mesh::PartiallyContained)
-  {
-    smtk::mesh::PartiallyContainedFunctor f;
-    result = iface->pointIntersect(a.m_range, b.m_range, pc, f);
-  }
-  else
-  {
-    smtk::mesh::FullyContainedFunctor f;
-    result = iface->pointIntersect(a.m_range, b.m_range, pc, f);
-  }
+  smtk::mesh::HandleRange result = iface->pointIntersect(a.m_range, b.m_range, pc, t);
+
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
@@ -217,18 +209,7 @@ CellSet point_difference(const CellSet& a, const CellSet& b, ContainmentType t)
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
   smtk::mesh::PointConnectivity pc(b.m_parent, b.m_range);
 
-  //switch the algorithm based on the containment type
-  smtk::mesh::HandleRange result;
-  if (t == smtk::mesh::PartiallyContained)
-  {
-    smtk::mesh::PartiallyContainedFunctor f;
-    result = iface->pointDifference(a.m_range, b.m_range, pc, f);
-  }
-  else
-  {
-    smtk::mesh::FullyContainedFunctor f;
-    result = iface->pointDifference(a.m_range, b.m_range, pc, f);
-  }
+  smtk::mesh::HandleRange result = iface->pointDifference(a.m_range, b.m_range, pc, t);
 
   return smtk::mesh::CellSet(a.m_parent, result);
 }

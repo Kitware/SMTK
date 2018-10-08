@@ -36,7 +36,7 @@ MergeMeshVertices::~MergeMeshVertices()
 }
 
 ::moab::ErrorCode MergeMeshVertices::merge_entities(
-  const smtk::mesh::HandleRange& meshsets, const double merge_tol)
+  const ::moab::Range& meshsets, const double merge_tol)
 {
   using ::moab::AdaptiveKDTree;
   using ::moab::EntityHandle;
@@ -68,7 +68,7 @@ MergeMeshVertices::~MergeMeshVertices()
 
   // get all vertices for the meshsets
   Range entities;
-  for (smtk::mesh::HandleRange::const_iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (Range::const_iterator i = meshsets.begin(); i != meshsets.end(); ++i)
   {
     Range tmp;
     rval = mbImpl->get_entities_by_handle(*i, tmp, /*recursive*/ true);
@@ -316,7 +316,7 @@ MergeMeshVertices::~MergeMeshVertices()
 //we need to make sure that any mesh that is losing an explicit vertex
 //has it replaced with the merged vertex, this isn't handled by perform_merge
 //as it only does dim > 0
-::moab::ErrorCode MergeMeshVertices::correct_vertex_merge(const smtk::mesh::HandleRange& meshsets)
+::moab::ErrorCode MergeMeshVertices::correct_vertex_merge(const ::moab::Range& meshsets)
 {
   using ::moab::EntityHandle;
   using ::moab::ErrorCode;
@@ -325,7 +325,7 @@ MergeMeshVertices::~MergeMeshVertices()
   using ::moab::MB_SUCCESS;
   using ::moab::MB_FAILURE;
 
-  for (smtk::mesh::HandleRange::const_iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (Range::const_iterator i = meshsets.begin(); i != meshsets.end(); ++i)
   {
     Range entitiesVerts;
     mbImpl->get_entities_by_dimension(*i, 0 /*dimension*/, entitiesVerts, /*recursive*/ true);

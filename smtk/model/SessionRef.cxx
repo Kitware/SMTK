@@ -102,7 +102,7 @@ StringList SessionRef::engines() const
   * Valid context strings are "read", "import", "write", and "export".
   * The default is "read".
   */
-StringData SessionRef::fileTypes(const std::string& engine) const
+StringData SessionRef::fileTypes(const std::string& /*engine*/) const
 {
   // TODO: Session-specific information needs to be accessible without using
   // global statics.
@@ -111,7 +111,7 @@ StringData SessionRef::fileTypes(const std::string& engine) const
 }
 
 /// Return a filename extension (including ".") appropriate for saving \a model.
-std::string SessionRef::defaultFileExtension(const Model& model) const
+std::string SessionRef::defaultFileExtension(const Model& /*model*/) const
 {
   // TODO: Session-specific information needs to be accessible without using
   // global statics.

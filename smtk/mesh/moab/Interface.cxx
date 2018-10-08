@@ -12,7 +12,6 @@
 #include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/ContainsFunctors.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/QueryTypes.h"
 
@@ -20,6 +19,7 @@
 #include "smtk/mesh/moab/BufferedCellAllocator.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/ConnectivityStorage.h"
+#include "smtk/mesh/moab/HandleRangeToRange.h"
 #include "smtk/mesh/moab/IncrementalAllocator.h"
 #include "smtk/mesh/moab/MergeMeshVertices.h"
 #include "smtk/mesh/moab/PointLocatorImpl.h"
@@ -53,10 +53,9 @@ namespace moab
 
 namespace detail
 {
-smtk::mesh::HandleRange vectorToRange(std::vector< ::moab::EntityHandle>& vresult)
+smtk::mesh::HandleRange vectorToHandleRange(std::vector< ::moab::EntityHandle>& vresult)
 {
   smtk::mesh::HandleRange resulting_range;
-  smtk::mesh::HandleRange::iterator hint = resulting_range.begin();
   const std::size_t size = vresult.size();
   for (std::size_t i = 0; i < size;)
   {
@@ -64,7 +63,8 @@ smtk::mesh::HandleRange vectorToRange(std::vector< ::moab::EntityHandle>& vresul
     for (j = i + 1; j < size && vresult[j] == 1 + vresult[j - 1]; j++)
       ;
     //empty for loop
-    hint = resulting_range.insert(hint, vresult[i], vresult[i] + (j - i - 1));
+    resulting_range.insert(
+      resulting_range.end(), smtk::mesh::HandleInterval(vresult[i], vresult[i] + (j - i - 1)));
     i = j;
   }
   return resulting_range;
@@ -72,12 +72,12 @@ smtk::mesh::HandleRange vectorToRange(std::vector< ::moab::EntityHandle>& vresul
 
 template <typename T, typename U>
 std::vector<T> computeDenseIntTagValues(
-  U tag, const smtk::mesh::HandleRange& meshsets, ::moab::Interface* iface)
+  U tag, const ::moab::Range& meshsets, ::moab::Interface* iface)
 {
   std::vector<T> result;
 
   //fetch all entities with the given tag
-  smtk::mesh::HandleRange entitiesWithTag;
+  ::moab::Range entitiesWithTag;
   iface->get_entities_by_type_and_tag(
     iface->get_root_set(), ::moab::MBENTITYSET, tag.moabTagPtr(), NULL, 1, entitiesWithTag);
 
@@ -117,13 +117,12 @@ std::vector<T> computeDenseIntTagValues(
 }
 
 template <typename T, typename U>
-T computeDenseOpaqueTagValues(
-  U tag, const smtk::mesh::HandleRange& meshsets, ::moab::Interface* iface)
+T computeDenseOpaqueTagValues(U tag, const ::moab::Range& meshsets, ::moab::Interface* iface)
 {
   T result;
 
   // Fetch all entities with the given tag
-  smtk::mesh::HandleRange entitiesWithTag;
+  ::moab::Range entitiesWithTag;
   iface->get_entities_by_type_and_tag(
     iface->get_root_set(), ::moab::MBENTITYSET, tag.moabTagPtr(), NULL, 1, entitiesWithTag);
 
@@ -173,7 +172,7 @@ T computeDenseOpaqueTagValue(U tag, const smtk::mesh::Handle& handle, ::moab::In
 }
 
 template <typename T>
-bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles, ::moab::Interface* iface)
+bool setDenseTagValues(T tag, const ::moab::Range& handles, ::moab::Interface* iface)
 {
   //create a vector the same value so we can assign a tag
   std::vector<int> values;
@@ -185,8 +184,7 @@ bool setDenseTagValues(T tag, const smtk::mesh::HandleRange& handles, ::moab::In
 }
 
 template <typename T>
-bool setDenseOpaqueTagValues(
-  T tag, const smtk::mesh::HandleRange& handles, ::moab::Interface* iface)
+bool setDenseOpaqueTagValues(T tag, const ::moab::Range& handles, ::moab::Interface* iface)
 {
   //create a vector the same value so we can assign a tag
   std::vector<unsigned char> values;
@@ -289,7 +287,7 @@ smtk::mesh::ConnectivityStoragePtr Interface::connectivityStorage(
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(const smtk::mesh::HandleRange& points)
 {
   return smtk::mesh::PointLocatorImplPtr(
-    new smtk::mesh::moab::PointLocatorImpl(m_iface.get(), points));
+    new smtk::mesh::moab::PointLocatorImpl(m_iface.get(), smtkToMOABRange(points)));
 }
 
 smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
@@ -315,9 +313,11 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Han
     return false;
   }
 
+  ::moab::Range moabCells = smtkToMOABRange(cells);
+
   //make sure the cells are actually cells instead of meshsets.
   //we currently don't want this allow adding sub meshsets
-  if (cells.num_of_type(::moab::MBENTITYSET) != 0)
+  if (moabCells.num_of_type(::moab::MBENTITYSET) != 0)
   {
     return false;
   }
@@ -326,7 +326,7 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Han
   ::moab::ErrorCode rval = m_iface->create_meshset(options, meshHandle);
   if (rval == ::moab::MB_SUCCESS)
   {
-    m_iface->add_entities(meshHandle, cells);
+    m_iface->add_entities(meshHandle, moabCells);
     m_iface->add_parent_child(m_iface->get_root_set(), meshHandle);
 
     int dimension = 4;
@@ -340,7 +340,7 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Han
 
       //iterate the entities and find the higest dimension of cell.
       //once that is found add a geom sparse tag to the mesh
-      hasDim = (cells.num_of_dimension(dimension) > 0);
+      hasDim = (moabCells.num_of_dimension(dimension) > 0);
     }
 
     //add the dim tag
@@ -366,9 +366,9 @@ std::size_t Interface::numMeshes(smtk::mesh::Handle handle) const
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle) const
 
 {
-  smtk::mesh::HandleRange range;
+  ::moab::Range range;
   m_iface->get_entities_by_type(handle, ::moab::MBENTITYSET, range);
-  return range;
+  return moabToSMTKRange(range);
 }
 
 smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle, int dimension) const
@@ -385,14 +385,14 @@ smtk::mesh::HandleRange Interface::getMeshsets(smtk::mesh::Handle handle, int di
   //add all meshsets that have at least a single cell of the given dimension
   for (it i = all_ents.begin(); i != all_ents.end(); ++i)
   {
-    smtk::mesh::HandleRange cells_of_given_dim;
+    ::moab::Range cells_of_given_dim;
     m_iface->get_entities_by_dimension(*i, dimension, cells_of_given_dim);
     if (!cells_of_given_dim.empty())
     {
       matching_ents.push_back(*i);
     }
   }
-  return detail::vectorToRange(matching_ents);
+  return detail::vectorToHandleRange(matching_ents);
 }
 
 //find all entity sets that have this exact name tag
@@ -420,7 +420,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
       matching_ents.push_back(*i);
     }
   }
-  return detail::vectorToRange(matching_ents);
+  return detail::vectorToHandleRange(matching_ents);
 }
 
 //find all entity sets that have this exact name tag
@@ -430,7 +430,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 {
   tag::QueryMaterialTag mtag(domain.value(), this->moabInterface());
 
-  smtk::mesh::HandleRange result;
+  ::moab::Range result;
   ::moab::ErrorCode rval;
   rval = m_iface->get_entities_by_type_and_tag(
     handle, ::moab::MBENTITYSET, mtag.moabTagPtr(), mtag.moabTagValuePtr(), 1, result);
@@ -438,7 +438,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
   {
     result.clear();
   }
-  return result;
+  return moabToSMTKRange(result);
 }
 
 //find all entity sets that have this exact name tag
@@ -448,7 +448,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 {
   tag::QueryDirichletTag dtag(dirichlet.value(), this->moabInterface());
 
-  smtk::mesh::HandleRange result;
+  ::moab::Range result;
   ::moab::ErrorCode rval;
   rval = m_iface->get_entities_by_type_and_tag(
     handle, ::moab::MBENTITYSET, dtag.moabTagPtr(), dtag.moabTagValuePtr(), 1, result);
@@ -456,7 +456,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
   {
     result.clear();
   }
-  return result;
+  return moabToSMTKRange(result);
 }
 
 //find all entity sets that have this exact name tag
@@ -466,7 +466,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 {
   tag::QueryNeumannTag ntag(neumann.value(), this->moabInterface());
 
-  smtk::mesh::HandleRange result;
+  ::moab::Range result;
   ::moab::ErrorCode rval;
   rval = m_iface->get_entities_by_type_and_tag(
     handle, ::moab::MBENTITYSET, ntag.moabTagPtr(), ntag.moabTagValuePtr(), 1, result);
@@ -474,42 +474,40 @@ smtk::mesh::HandleRange Interface::getMeshsets(
   {
     result.clear();
   }
-  return result;
+  return moabToSMTKRange(result);
 }
 
 //get all cells held by this range
-smtk::mesh::HandleRange Interface::getCells(const HandleRange& meshsets) const
+smtk::mesh::HandleRange Interface::getCells(const smtk::mesh::HandleRange& meshsets) const
 
 {
   // get all non-meshset entities in meshset, including in contained meshsets
-  typedef smtk::mesh::HandleRange::const_iterator iterator;
-  smtk::mesh::HandleRange entitiesCells;
-  for (iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+  ::moab::Range entitiesCells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
   {
     //get_entities_by_handle appends to the range given
     m_iface->get_entities_by_handle(*i, entitiesCells, true);
   }
-  return entitiesCells;
+  return moabToSMTKRange(entitiesCells);
 }
 
 //get all cells held by this range handle of a given cell type
 smtk::mesh::HandleRange Interface::getCells(
-  const HandleRange& meshsets, smtk::mesh::CellType cellType) const
+  const smtk::mesh::HandleRange& meshsets, smtk::mesh::CellType cellType) const
 {
   int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
 
-  smtk::mesh::HandleRange entitiesCells;
+  ::moab::Range entitiesCells;
 
   // get all non-meshset entities in meshset of a given cell type
-  typedef smtk::mesh::HandleRange::const_iterator iterator;
-  for (iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
   {
     //get_entities_by_type appends to the range given
     m_iface->get_entities_by_type(
       *i, static_cast< ::moab::EntityType>(moabCellType), entitiesCells, true);
   }
 
-  return entitiesCells;
+  return moabToSMTKRange(entitiesCells);
 }
 
 //get all cells held by this range handle of a given cell type(s)
@@ -544,7 +542,7 @@ smtk::mesh::HandleRange Interface::getCells(
 
     smtk::mesh::HandleRange cellEnts = this->getCells(meshsets, currentCellType);
 
-    entitiesCells.insert(cellEnts.begin(), cellEnts.end());
+    entitiesCells += cellEnts;
   }
 
   return entitiesCells;
@@ -558,14 +556,13 @@ smtk::mesh::HandleRange Interface::getCells(
   const int dimension = static_cast<int>(dim);
 
   //get all non-meshset entities of a given dimension
-  typedef smtk::mesh::HandleRange::const_iterator iterator;
-  smtk::mesh::HandleRange entitiesCells;
-  for (iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+  ::moab::Range entitiesCells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
   {
     //get_entities_by_dimension appends to the range given
     m_iface->get_entities_by_dimension(*i, dimension, entitiesCells, true);
   }
-  return entitiesCells;
+  return moabToSMTKRange(entitiesCells);
 }
 
 //get all cells held by this range handle of a given dimension
@@ -573,9 +570,10 @@ smtk::mesh::HandleRange Interface::getPoints(
   const smtk::mesh::HandleRange& cells, bool boundary_only) const
 
 {
-  smtk::mesh::HandleRange pointIds;
-  m_iface->get_connectivity(cells, pointIds, boundary_only);
-  return pointIds;
+  ::moab::Range moabCells = smtkToMOABRange(cells);
+  ::moab::Range pointIds;
+  m_iface->get_connectivity(moabCells, pointIds, boundary_only);
+  return moabToSMTKRange(pointIds);
 }
 
 bool Interface::getCoordinates(const smtk::mesh::HandleRange& points, double* xyz) const
@@ -586,7 +584,7 @@ bool Interface::getCoordinates(const smtk::mesh::HandleRange& points, double* xy
     return false;
   }
 
-  m_iface->get_coords(points, xyz);
+  m_iface->get_coords(smtkToMOABRange(points), xyz);
   return true;
 }
 
@@ -638,7 +636,7 @@ bool Interface::setCoordinates(const smtk::mesh::HandleRange& points, const doub
     return false;
   }
 
-  m_iface->set_coords(points, xyz);
+  m_iface->set_coords(smtkToMOABRange(points), xyz);
   return true;
 }
 
@@ -684,9 +682,8 @@ std::vector<std::string> Interface::computeNames(const smtk::mesh::HandleRange& 
   //construct a name tag query helper class
   tag::QueryNameTag query_name(this->moabInterface());
 
-  typedef smtk::mesh::HandleRange::const_iterator it;
   std::set<std::string> unique_names;
-  for (it i = meshsets.begin(); i != meshsets.end(); ++i)
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
   {
     const bool has_name = query_name.fetch_name(*i);
     if (has_name)
@@ -703,7 +700,7 @@ std::vector<smtk::mesh::Domain> Interface::computeDomainValues(
 {
   tag::QueryMaterialTag mtag(0, this->moabInterface());
   return detail::computeDenseIntTagValues<smtk::mesh::Domain>(
-    mtag, meshsets, this->moabInterface());
+    mtag, smtkToMOABRange(meshsets), this->moabInterface());
 }
 
 std::vector<smtk::mesh::Dirichlet> Interface::computeDirichletValues(
@@ -711,7 +708,7 @@ std::vector<smtk::mesh::Dirichlet> Interface::computeDirichletValues(
 {
   tag::QueryDirichletTag dtag(0, this->moabInterface());
   return detail::computeDenseIntTagValues<smtk::mesh::Dirichlet>(
-    dtag, meshsets, this->moabInterface());
+    dtag, smtkToMOABRange(meshsets), this->moabInterface());
 }
 
 std::vector<smtk::mesh::Neumann> Interface::computeNeumannValues(
@@ -719,7 +716,7 @@ std::vector<smtk::mesh::Neumann> Interface::computeNeumannValues(
 {
   tag::QueryNeumannTag ntag(0, this->moabInterface());
   return detail::computeDenseIntTagValues<smtk::mesh::Neumann>(
-    ntag, meshsets, this->moabInterface());
+    ntag, smtkToMOABRange(meshsets), this->moabInterface());
 }
 
 /**\brief Return the set of all UUIDs set on all entities in the meshsets.
@@ -730,16 +727,17 @@ smtk::common::UUIDArray Interface::computeModelEntities(
 {
   tag::QueryEntRefTag mtag(this->moabInterface());
   return detail::computeDenseOpaqueTagValues<smtk::common::UUIDArray>(
-    mtag, meshsets, this->moabInterface());
+    mtag, smtkToMOABRange(meshsets), this->moabInterface());
 }
 
 smtk::mesh::TypeSet Interface::computeTypes(const smtk::mesh::HandleRange& range) const
 {
-  typedef smtk::mesh::HandleRange::const_iterator cit;
+  typedef ::moab::Range::const_iterator cit;
   typedef ::smtk::mesh::CellType CellEnum;
 
-  smtk::mesh::HandleRange meshes = range.subset_by_type(::moab::MBENTITYSET);
-  smtk::mesh::HandleRange cells = ::moab::subtract(range, meshes);
+  ::moab::Range moabRange = smtkToMOABRange(range);
+  ::moab::Range meshes = moabRange.subset_by_type(::moab::MBENTITYSET);
+  ::moab::Range cells = ::moab::subtract(moabRange, meshes);
 
   smtk::mesh::CellTypes ctypes;
 
@@ -793,13 +791,18 @@ bool Interface::computeShell(
   const smtk::mesh::HandleRange& meshes, smtk::mesh::HandleRange& shell) const
 {
   //step 1 get all the highest dimension cells for the meshes
-  smtk::mesh::HandleRange cells;
+  ::moab::Range cells;
   int dimension = 4;
   bool hasCells = false;
   while (hasCells == false && dimension >= 0)
   {
     --dimension;
-    cells = this->getCells(meshes, static_cast<smtk::mesh::DimensionType>(dimension));
+    // get all non-meshset entities in meshset of a given cell type
+    for (auto i = boost::icl::elements_begin(meshes); i != boost::icl::elements_end(meshes); ++i)
+    {
+      //get_entities_by_dimension appends to the range given
+      m_iface->get_entities_by_dimension(*i, dimension, cells, true);
+    }
     hasCells = !cells.empty();
   }
 
@@ -813,20 +816,24 @@ bool Interface::computeShell(
   //We need to first create the adjacencies from the requested dimension to the
   //dimension of the skin. The first step is create all the adjacencies from
   //the desired dimension to the skin dimension
-  smtk::mesh::HandleRange allAdj;
+  ::moab::Range allAdj;
   this->moabInterface()->get_adjacencies(cells, skinDim, true, allAdj);
 
   ::moab::Skinner skinner(this->moabInterface());
-  ::moab::ErrorCode rval = skinner.find_skin(this->getRoot(), cells, skinDim, shell);
+  ::moab::Range moabShell;
+  ::moab::ErrorCode rval = skinner.find_skin(this->getRoot(), cells, skinDim, moabShell);
 
   if (rval != ::moab::MB_SUCCESS)
-  { //if the skin extraction failed remove all cells we created
+  {
+    //if the skin extraction failed remove all cells we created
     this->moabInterface()->delete_entities(allAdj);
   }
   else
-  { //remove any cell created by computing the adjacencies that isn't part
+  {
+    shell = moabToSMTKRange(moabShell);
+    //remove any cell created by computing the adjacencies that isn't part
     //of the skin. This is done to keep the memory utilization low
-    smtk::mesh::HandleRange unusedCells = ::moab::subtract(allAdj, shell);
+    ::moab::Range unusedCells = ::moab::subtract(allAdj, moabShell);
     this->moabInterface()->delete_entities(unusedCells);
   }
 
@@ -840,8 +847,18 @@ bool Interface::computeAdjacenciesOfDimension(
   {
     return false;
   }
+
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshes); i != boost::icl::elements_end(meshes); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
+  ::moab::Range moabAdj;
   ::moab::ErrorCode rval = this->moabInterface()->get_adjacencies(
-    this->getCells(meshes), dimension, true, adj, ::moab::Interface::UNION);
+    cells, dimension, true, moabAdj, ::moab::Interface::UNION);
+  adj = moabToSMTKRange(moabAdj);
 
   return (rval == ::moab::MB_SUCCESS);
 }
@@ -859,7 +876,7 @@ bool Interface::mergeCoincidentContactPoints(
   //we want to merge the contact points for all dimensions
   //of the meshes, not just the highest dimension i expect
   smtk::mesh::moab::MergeMeshVertices meshmerger(this->moabInterface());
-  ::moab::ErrorCode rval = meshmerger.merge_entities(meshes, tolerance);
+  ::moab::ErrorCode rval = meshmerger.merge_entities(smtkToMOABRange(meshes), tolerance);
   if (rval == ::moab::MB_SUCCESS)
   {
     m_modified = true;
@@ -877,7 +894,7 @@ bool Interface::setDomain(
   }
 
   tag::QueryMaterialTag mtag(domain.value(), this->moabInterface());
-  bool tagged = detail::setDenseTagValues(mtag, meshsets, this->moabInterface());
+  bool tagged = detail::setDenseTagValues(mtag, smtkToMOABRange(meshsets), this->moabInterface());
   if (tagged)
   {
     m_modified = true;
@@ -895,9 +912,17 @@ bool Interface::setDirichlet(
 
   tag::QueryDirichletTag dtag(dirichlet.value(), this->moabInterface());
 
-  smtk::mesh::HandleRange cells = this->getCells(meshsets, smtk::mesh::Dims0);
+  //get all non-meshset entities of a given dimension
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_dimension appends to the range given
+    m_iface->get_entities_by_dimension(*i, static_cast<int>(smtk::mesh::Dims0), cells, true);
+  }
+
   bool cellsTagged = detail::setDenseTagValues(dtag, cells, this->moabInterface());
-  bool meshesTagged = detail::setDenseTagValues(dtag, meshsets, this->moabInterface());
+  bool meshesTagged =
+    detail::setDenseTagValues(dtag, smtkToMOABRange(meshsets), this->moabInterface());
 
   const bool tagged = cellsTagged && meshesTagged;
   if (tagged)
@@ -918,16 +943,20 @@ bool Interface::setNeumann(
   tag::QueryNeumannTag ntag(neumann.value(), this->moabInterface());
 
   //step 0 tag the meshsets
-  bool tagged = detail::setDenseTagValues(ntag, meshsets, this->moabInterface());
+  bool tagged = detail::setDenseTagValues(ntag, smtkToMOABRange(meshsets), this->moabInterface());
 
   //step 1 find the highest dimension cells for the meshes.
-  smtk::mesh::HandleRange cells;
   int dimension = 4;
   bool hasCells = false;
   while (hasCells == false && dimension >= 0)
   {
+    ::moab::Range cells;
     --dimension;
-    cells = this->getCells(meshsets, static_cast<smtk::mesh::DimensionType>(dimension));
+    for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets);
+         ++i)
+    {
+      m_iface->get_entities_by_dimension(*i, dimension, cells, true);
+    }
     hasCells = !cells.empty();
   }
 
@@ -935,8 +964,13 @@ bool Interface::setNeumann(
   //since that would be the boundary dimension
   if (hasCells && dimension > 0)
   {
+    ::moab::Range cells;
     --dimension;
-    cells = this->getCells(meshsets, static_cast<smtk::mesh::DimensionType>(dimension));
+    for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets);
+         ++i)
+    {
+      m_iface->get_entities_by_dimension(*i, dimension, cells, true);
+    }
     tagged = tagged && detail::setDenseTagValues(ntag, cells, this->moabInterface());
   }
 
@@ -987,7 +1021,7 @@ bool Interface::findById(
     return false;
   }
 
-  smtk::mesh::HandleRange result;
+  ::moab::Range result;
 
   tag::QueryIdTag mtag(id, this->moabInterface());
 
@@ -1015,7 +1049,8 @@ bool Interface::setAssociation(
   tag::QueryEntRefTag mtag(modelUUID, this->moabInterface());
 
   //Tag the meshsets
-  bool tagged = detail::setDenseOpaqueTagValues(mtag, range, this->moabInterface());
+  bool tagged =
+    detail::setDenseOpaqueTagValues(mtag, smtkToMOABRange(range), this->moabInterface());
   if (tagged)
   {
     m_modified = true;
@@ -1029,10 +1064,10 @@ bool Interface::setAssociation(
 smtk::mesh::HandleRange Interface::findAssociations(
   const smtk::mesh::Handle& root, const smtk::common::UUID& modelUUID) const
 {
-  smtk::mesh::HandleRange result;
+  ::moab::Range result;
   if (!modelUUID)
   {
-    return result;
+    return smtk::mesh::HandleRange();
   }
 
   tag::QueryEntRefTag mtag(modelUUID, this->moabInterface());
@@ -1044,7 +1079,7 @@ smtk::mesh::HandleRange Interface::findAssociations(
   {
     result.clear();
   }
-  return result;
+  return moabToSMTKRange(result);
 }
 
 // brief Set the model entity assigned to the root of this interface.
@@ -1098,7 +1133,13 @@ bool Interface::createCellField(const smtk::mesh::HandleRange& meshsets, const s
   }
 
   // We first construct the data set for the cells associated with the meshsets.
-  smtk::mesh::HandleRange cells = this->getCells(meshsets);
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
   if (cells.empty())
   {
     // If there are no cells, then there we return with failure.
@@ -1121,13 +1162,14 @@ bool Interface::createCellField(const smtk::mesh::HandleRange& meshsets, const s
     // We successfully constructed the data set associated with the cells. Now we mark the meshset
     // as having the associated dataset. For this, we use a bit tag to simply denote the dataset's
     // existence.
+    ::moab::Range moabMeshsets = smtkToMOABRange(meshsets);
     tag::QueryCellFieldTag btag(name.c_str(), this->moabInterface());
-    bool* boolean_tag_values = new bool[meshsets.size()];
-    memset(boolean_tag_values, true, meshsets.size());
-    rval = m_iface->tag_set_data(btag.moabTag(), meshsets, boolean_tag_values);
+    bool* boolean_tag_values = new bool[moabMeshsets.size()];
+    memset(boolean_tag_values, true, moabMeshsets.size());
+    rval = m_iface->tag_set_data(btag.moabTag(), moabMeshsets, boolean_tag_values);
     assert(rval == ::moab::MB_SUCCESS);
 
-    auto tags = this->computeCellFieldTags(*meshsets.begin());
+    auto tags = this->computeCellFieldTags(*moabMeshsets.begin());
 
     delete[] boolean_tag_values;
 
@@ -1192,14 +1234,14 @@ smtk::mesh::HandleRange Interface::getMeshsets(
     return smtk::mesh::HandleRange();
   }
 
-  smtk::mesh::HandleRange result;
+  ::moab::Range result;
 
   rval = m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, result);
   if (rval != ::moab::MB_SUCCESS)
   {
     result.clear();
   }
-  return result;
+  return moabToSMTKRange(result);
 }
 
 bool Interface::hasCellField(
@@ -1211,6 +1253,8 @@ bool Interface::hasCellField(
     return false;
   }
 
+  ::moab::Range moabMeshsets = smtkToMOABRange(meshsets);
+
   ::moab::Tag moab_tag;
   std::string name = std::string("c_") + cfTag.name();
   ::moab::ErrorCode rval = m_iface->tag_get_handle(name.c_str(), moab_tag);
@@ -1220,13 +1264,13 @@ bool Interface::hasCellField(
   }
 
   //fetch all entities with the given tag
-  smtk::mesh::HandleRange entitiesWithTag;
+  ::moab::Range entitiesWithTag;
   bool flagValue = true;
   void* flagPtr = &flagValue;
   m_iface->get_entities_by_type_and_tag(
     m_iface->get_root_set(), ::moab::MBENTITYSET, &moab_tag, &flagPtr, 1, entitiesWithTag);
 
-  return ::moab::intersect(entitiesWithTag, meshsets) == meshsets;
+  return ::moab::intersect(entitiesWithTag, moabMeshsets) == moabMeshsets;
 }
 
 bool Interface::getCellField(
@@ -1238,7 +1282,24 @@ bool Interface::getCellField(
     return false;
   }
 
-  return this->getField(this->getCells(meshsets), cfTag, field);
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
+  std::string dTagName = cfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_get_data(moab_tag, cells, field);
+  return (rval == ::moab::MB_SUCCESS);
 }
 
 bool Interface::setCellField(const smtk::mesh::HandleRange& meshsets,
@@ -1250,7 +1311,26 @@ bool Interface::setCellField(const smtk::mesh::HandleRange& meshsets,
     return false;
   }
 
-  return this->setField(this->getCells(meshsets), cfTag, field);
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
+  std::string dTagName = cfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_set_data(moab_tag, cells, field);
+
+  m_modified = (rval == ::moab::MB_SUCCESS);
+  return m_modified;
 }
 
 bool Interface::getField(
@@ -1271,7 +1351,7 @@ bool Interface::getField(
     return false;
   }
 
-  rval = m_iface->tag_get_data(moab_tag, cells, field);
+  rval = m_iface->tag_get_data(moab_tag, smtkToMOABRange(cells), field);
   return (rval == ::moab::MB_SUCCESS);
 }
 
@@ -1293,7 +1373,7 @@ bool Interface::setField(const smtk::mesh::HandleRange& cells,
     return false;
   }
 
-  rval = m_iface->tag_set_data(moab_tag, cells, field);
+  rval = m_iface->tag_set_data(moab_tag, smtkToMOABRange(cells), field);
 
   m_modified = (rval == ::moab::MB_SUCCESS);
   return m_modified;
@@ -1339,7 +1419,12 @@ bool Interface::deleteCellField(
     return true;
   }
 
-  smtk::mesh::HandleRange cells = this->getCells(meshsets);
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
   if (cells.empty())
   {
     // If there are no cells, then there we return with failure.
@@ -1372,7 +1457,7 @@ bool Interface::deleteCellField(
   }
 
   // Delete the data flag from the meshsets
-  rval = m_iface->tag_delete_data(tag, meshsets);
+  rval = m_iface->tag_delete_data(tag, smtkToMOABRange(meshsets));
   if (rval != ::moab::MB_SUCCESS)
   {
     return false;
@@ -1393,7 +1478,16 @@ bool Interface::createPointField(const smtk::mesh::HandleRange& meshsets, const 
   }
 
   // We first construct the data set for the points associated with the meshsets.
-  smtk::mesh::HandleRange points = this->getPoints(this->getCells(meshsets));
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
+  ::moab::Range points;
+  m_iface->get_connectivity(cells, points, false);
+
   if (points.empty())
   {
     // If there are no points, then there we return with failure.
@@ -1417,12 +1511,13 @@ bool Interface::createPointField(const smtk::mesh::HandleRange& meshsets, const 
     // as having the associated dataset. For this, we use a bit tag to simply denote the dataset's
     // existence.
     tag::QueryPointFieldTag btag(name.c_str(), this->moabInterface());
-    bool* boolean_tag_values = new bool[meshsets.size()];
-    memset(boolean_tag_values, true, meshsets.size());
-    rval = m_iface->tag_set_data(btag.moabTag(), meshsets, boolean_tag_values);
+    ::moab::Range moabMeshsets = smtkToMOABRange(meshsets);
+    bool* boolean_tag_values = new bool[moabMeshsets.size()];
+    memset(boolean_tag_values, true, moabMeshsets.size());
+    rval = m_iface->tag_set_data(btag.moabTag(), moabMeshsets, boolean_tag_values);
     assert(rval == ::moab::MB_SUCCESS);
 
-    auto tags = this->computePointFieldTags(*meshsets.begin());
+    auto tags = this->computePointFieldTags(*moabMeshsets.begin());
 
     delete[] boolean_tag_values;
 
@@ -1487,14 +1582,14 @@ smtk::mesh::HandleRange Interface::getMeshsets(
     return smtk::mesh::HandleRange();
   }
 
-  smtk::mesh::HandleRange result;
+  ::moab::Range result;
 
   rval = m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, result);
   if (rval != ::moab::MB_SUCCESS)
   {
     result.clear();
   }
-  return result;
+  return moabToSMTKRange(result);
 }
 
 bool Interface::hasPointField(
@@ -1515,13 +1610,14 @@ bool Interface::hasPointField(
   }
 
   //fetch all entities with the given tag
-  smtk::mesh::HandleRange entitiesWithTag;
+  ::moab::Range entitiesWithTag;
   bool flagValue = true;
   void* flagPtr = &flagValue;
   m_iface->get_entities_by_type_and_tag(
     m_iface->get_root_set(), ::moab::MBENTITYSET, &moab_tag, &flagPtr, 1, entitiesWithTag);
 
-  return ::moab::intersect(entitiesWithTag, meshsets) == meshsets;
+  ::moab::Range moabMeshsets = smtkToMOABRange(meshsets);
+  return ::moab::intersect(entitiesWithTag, moabMeshsets) == moabMeshsets;
 }
 
 bool Interface::getPointField(const smtk::mesh::HandleRange& meshsets,
@@ -1533,7 +1629,27 @@ bool Interface::getPointField(const smtk::mesh::HandleRange& meshsets,
     return false;
   }
 
-  return this->getField(this->getPoints(this->getCells(meshsets)), pfTag, field);
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
+  ::moab::Range points;
+  m_iface->get_connectivity(cells, points, false);
+
+  std::string dTagName = pfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_get_data(moab_tag, points, field);
+  return (rval == ::moab::MB_SUCCESS);
 }
 
 bool Interface::setPointField(const smtk::mesh::HandleRange& meshsets,
@@ -1545,7 +1661,29 @@ bool Interface::setPointField(const smtk::mesh::HandleRange& meshsets,
     return false;
   }
 
-  return this->setField(this->getPoints(this->getCells(meshsets)), pfTag, field);
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
+  ::moab::Range points;
+  m_iface->get_connectivity(cells, points, false);
+
+  std::string dTagName = pfTag.name() + std::string("_");
+
+  ::moab::Tag moab_tag;
+  ::moab::ErrorCode rval = m_iface->tag_get_handle(dTagName.c_str(), moab_tag);
+  if (rval != ::moab::MB_SUCCESS)
+  {
+    return false;
+  }
+
+  rval = m_iface->tag_set_data(moab_tag, points, field);
+
+  m_modified = (rval == ::moab::MB_SUCCESS);
+  return m_modified;
 }
 
 bool Interface::getField(
@@ -1566,7 +1704,7 @@ bool Interface::getField(
     return false;
   }
 
-  rval = m_iface->tag_get_data(moab_tag, points, field);
+  rval = m_iface->tag_get_data(moab_tag, smtkToMOABRange(points), field);
   return (rval == ::moab::MB_SUCCESS);
 }
 
@@ -1588,7 +1726,7 @@ bool Interface::setField(const smtk::mesh::HandleRange& points,
     return false;
   }
 
-  rval = m_iface->tag_set_data(moab_tag, points, field);
+  rval = m_iface->tag_set_data(moab_tag, smtkToMOABRange(points), field);
 
   m_modified = (rval == ::moab::MB_SUCCESS);
   return m_modified;
@@ -1634,7 +1772,16 @@ bool Interface::deletePointField(
     return true;
   }
 
-  smtk::mesh::HandleRange points = this->getPoints(this->getCells(meshsets));
+  ::moab::Range cells;
+  for (auto i = boost::icl::elements_begin(meshsets); i != boost::icl::elements_end(meshsets); ++i)
+  {
+    //get_entities_by_handle appends to the range given
+    m_iface->get_entities_by_handle(*i, cells, true);
+  }
+
+  ::moab::Range points;
+  m_iface->get_connectivity(cells, points, false);
+
   if (points.empty())
   {
     // If there are no points, then there we return with failure.
@@ -1667,7 +1814,7 @@ bool Interface::deletePointField(
   }
 
   // Delete the data flag from the meshsets
-  rval = m_iface->tag_delete_data(tag, meshsets);
+  rval = m_iface->tag_delete_data(tag, smtkToMOABRange(meshsets));
   if (rval != ::moab::MB_SUCCESS)
   {
     return false;
@@ -1676,35 +1823,19 @@ bool Interface::deletePointField(
   return true;
 }
 
-smtk::mesh::HandleRange Interface::rangeIntersect(
-  const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const
-{
-  return ::moab::intersect(a, b);
-}
-
-smtk::mesh::HandleRange Interface::rangeDifference(
-  const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const
-{
-  return ::moab::subtract(a, b);
-}
-
-smtk::mesh::HandleRange Interface::rangeUnion(
-  const smtk::mesh::HandleRange& a, const smtk::mesh::HandleRange& b) const
-{
-  return ::moab::unite(a, b);
-}
-
-smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& a,
+smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& a_,
   const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-  const smtk::mesh::ContainsFunctor& containsFunctor) const
+  smtk::mesh::ContainmentType containmentType) const
 {
-  if (a.empty() || b.empty())
+  if (a_.empty() || b.empty())
   { //the intersection with nothing is nothing
     return smtk::mesh::HandleRange();
   }
 
+  ::moab::Range a = smtkToMOABRange(a_);
+
   //first get all the points of a
-  smtk::mesh::HandleRange a_points = a.subset_by_type(::moab::MBVERTEX);
+  ::moab::Range a_points = a.subset_by_type(::moab::MBVERTEX);
   m_iface->get_connectivity(a, a_points);
 
   if (a_points.empty())
@@ -1712,19 +1843,24 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
     return smtk::mesh::HandleRange();
   }
 
-  typedef smtk::mesh::HandleRange::const_iterator cit;
   std::vector< ::moab::EntityHandle> vresult;
   if (!bpc.is_empty())
   {
     int size = 0;
     const smtk::mesh::Handle* connectivity;
     bpc.initCellTraversal();
-    for (cit i = b.begin(); i != b.end(); ++i)
+    for (auto i = boost::icl::elements_begin(b); i != boost::icl::elements_end(b); ++i)
     {
       const bool validCell = bpc.fetchNextCell(size, connectivity);
       if (validCell)
       {
-        const bool contains = containsFunctor(a_points, connectivity, size);
+        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained ? true : false);
+        bool contains = !exitCondition;
+        for (int j = 0; j < size && contains != exitCondition; ++j)
+        {
+          contains = (a_points.find(connectivity[j]) != a_points.end());
+        }
+
         if (contains)
         {
           vresult.push_back(*i);
@@ -1732,20 +1868,22 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
       }
     }
   }
-  return detail::vectorToRange(vresult);
+  return detail::vectorToHandleRange(vresult);
 }
 
-smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange& a,
+smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange& a_,
   const smtk::mesh::HandleRange& b, smtk::mesh::PointConnectivity& bpc,
-  const smtk::mesh::ContainsFunctor& containsFunctor) const
+  smtk::mesh::ContainmentType containmentType) const
 {
-  if (a.empty() || b.empty())
+  if (a_.empty() || b.empty())
   { //the intersection with nothing is nothing
     return smtk::mesh::HandleRange();
   }
 
+  ::moab::Range a = smtkToMOABRange(a_);
+
   //first get all the points of a
-  smtk::mesh::HandleRange a_points = a.subset_by_type(::moab::MBVERTEX);
+  ::moab::Range a_points = a.subset_by_type(::moab::MBVERTEX);
   m_iface->get_connectivity(a, a_points);
 
   if (a_points.empty())
@@ -1753,19 +1891,24 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
     return smtk::mesh::HandleRange();
   }
 
-  typedef smtk::mesh::HandleRange::const_iterator cit;
   std::vector< ::moab::EntityHandle> vresult;
   if (!bpc.is_empty())
   {
     int size = 0;
     const smtk::mesh::Handle* connectivity;
     bpc.initCellTraversal();
-    for (cit i = b.begin(); i != b.end(); ++i)
+    for (auto i = boost::icl::elements_begin(b); i != boost::icl::elements_end(b); ++i)
     {
       const bool validCell = bpc.fetchNextCell(size, connectivity);
       if (validCell)
       {
-        const bool contains = containsFunctor(a_points, connectivity, size);
+        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained ? true : false);
+        bool contains = !exitCondition;
+        for (int j = 0; j < size && contains != exitCondition; ++j)
+        {
+          contains = (a_points.find(connectivity[j]) != a_points.end());
+        }
+
         if (!contains)
         {
           vresult.push_back(*i);
@@ -1773,79 +1916,107 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
       }
     }
   }
-  return detail::vectorToRange(vresult);
+  return detail::vectorToHandleRange(vresult);
+}
+
+void Interface::callPointForEach(
+  const HandleRange& points, std::vector<double>& coords, smtk::mesh::PointForEach& filter) const
+{
+  ::moab::Range moabPoints = smtkToMOABRange(points);
+
+  //fetch all the coordinates
+  m_iface->get_coords(moabPoints, &coords[0]);
+
+  //call the filter for the rest of the points
+  bool shouldBeSaved = false;
+  filter.forPoints(points, coords, shouldBeSaved);
+  if (shouldBeSaved)
+  {
+    m_iface->set_coords(moabPoints, &coords[0]);
+  }
+  return;
+}
+
+namespace
+{
+const std::size_t numPointsPerCall = 65536; //selected so that buffer is ~1MB
 }
 
 void Interface::pointForEach(const HandleRange& points, smtk::mesh::PointForEach& filter) const
 {
-  if (!points.empty())
+  HandleRange pts = points;
+  std::vector<double> coords;
+  return pointForEachRecursive(pts, coords, filter);
+}
+
+void Interface::pointForEachRecursive(
+  HandleRange& points, std::vector<double>& coords, smtk::mesh::PointForEach& filter) const
+{
+  // If there are no points to call, return early
+  if (points.empty())
   {
-    //fetch a collection of points
-    std::vector<double> coords;
-
-    //determine the number of points. Break that into manageable chunks, we dont
-    //want to allocate an array for hundreds of millions of points, instead
-    //we would want to fetch a subset of points at a time.
-    const std::size_t numPoints = points.size();
-
-    const std::size_t numPointsPerLoop = 65536; //selected so that buffer is ~1MB
-    const std::size_t numLoops = numPoints / 65536;
-
-    //We explicitly reserve then resize to avoid the cost of resize behavior
-    //of setting the value of each element to T(). But at the same time we
-    //need to use resize to set the proper size of the vector ( reserve == capacity )
-    coords.reserve(numPointsPerLoop * 3);
-    coords.resize(numPointsPerLoop * 3);
-    smtk::mesh::HandleRange::const_iterator start = points.begin();
-
-    for (std::size_t i = 0; i < numLoops; ++i)
-    {
-      //determine where the end iterator should be
-      smtk::mesh::HandleRange::const_iterator end = start + numPointsPerLoop;
-
-      //needs to be insert so we use iterator insert, since we don't want
-      //all points between start and end values, but only those that are
-      //in the range. Think not 0 to N, but 0 - 10, 14 - N.
-      ::moab::Range subset;
-      subset.insert(start, end);
-
-      //fetch all the coordinates for the start, end range
-      m_iface->get_coords(subset, &coords[0]);
-
-      //call the filter for this chunk of points
-      bool shouldBeSaved = false;
-      filter.forPoints(subset, coords, shouldBeSaved);
-      if (shouldBeSaved)
-      {
-        //save t
-        m_iface->set_coords(subset, &coords[0]);
-      }
-      start += numPointsPerLoop;
-    }
-
-    std::size_t difference = numPoints - (numPointsPerLoop * numLoops);
-
-    //Update the size of the coords, will not cause a re-alloc since
-    //the capacity of coords > difference*3
-    coords.resize(difference * 3);
-
-    smtk::mesh::HandleRange::const_iterator end = start + difference;
-    ::moab::Range subset;
-    subset.insert(start, end);
-
-    //fetch all the coordinates for the start, end range
-    m_iface->get_coords(subset, &coords[0]);
-
-    //call the filter for the rest of the points
-    bool shouldBeSaved = false;
-    filter.forPoints(subset, coords, shouldBeSaved);
-    if (shouldBeSaved)
-    {
-      //save t
-      m_iface->set_coords(subset, &coords[0]);
-    }
+    return;
   }
-  return;
+
+  HandleRange::const_iterator it = points.begin();
+
+  Handle begin = it->lower();
+  std::size_t size = 0;
+
+  Handle lastLower;
+  HandleRange pts;
+
+  // Iterate the intervals in the range to find the interval that contains the
+  // <numPointsPerCall>-th point.
+  do
+  {
+    lastLower = it->lower();
+    Handle end = it->upper();
+    size += (end - lastLower + 1);
+    if (size < numPointsPerCall)
+    {
+      pts.insert(pts.end(), HandleInterval(lastLower, end));
+    }
+    else
+    {
+      break;
+    }
+  } while (++it != points.end());
+
+  // If the number of points is fewer than <numPointsPerCall>, then we operate
+  // on the entire points array. We do not perform this check earlier as it is
+  // an O[n] operation where n = number of intervals. We absorb that cost into
+  // the loop this algorithm uses to find the partitioning point.
+  if (it == points.end())
+  {
+    if (coords.empty())
+    {
+      coords.resize(3 * size);
+    }
+    callPointForEach(points, coords, filter);
+    return;
+  }
+
+  if (coords.empty())
+  {
+    coords.resize(3 * numPointsPerCall);
+  }
+
+  Handle partition = lastLower + size - numPointsPerCall;
+
+  pts.insert(pts.end(), HandleInterval(lastLower, partition));
+  callPointForEach(pts, coords, filter);
+
+  // Construct a range containing a single interval from the first Handle to
+  // the partitioning Handle. The proceeding set operations are O[m log(n)]
+  // where m is the number of intervals in this range, so it is more efficient
+  // to be less accurate here.
+  HandleRange toSubtract;
+  toSubtract.insert(HandleInterval(begin, partition));
+
+  points -= toSubtract;
+
+  return pointForEachRecursive(points, coords, filter);
 }
 
 void Interface::cellForEach(const HandleRange& cells, smtk::mesh::PointConnectivity& pc,
@@ -1857,11 +2028,11 @@ void Interface::cellForEach(const HandleRange& cells, smtk::mesh::PointConnectiv
     int size = 0;
     const smtk::mesh::Handle* points;
 
-    smtk::mesh::HandleRange::const_iterator currentCell = cells.begin();
+    auto currentCell = boost::icl::elements_begin(cells);
     if (filter.wantsCoordinates())
     {
       std::vector<double> coords;
-      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; currentCell++)
+      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; ++currentCell)
       {
         coords.resize(size * 3);
 
@@ -1875,7 +2046,7 @@ void Interface::cellForEach(const HandleRange& cells, smtk::mesh::PointConnectiv
     }
     else
     { //don't extract the coords
-      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; currentCell++)
+      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; ++currentCell)
       {
         filter.pointIds(points);
         //call the custom filter
@@ -1891,12 +2062,12 @@ void Interface::meshForEach(
 {
   if (!meshes.empty())
   {
-    typedef smtk::mesh::HandleRange::const_iterator cit;
-    for (cit i = meshes.begin(); i != meshes.end(); ++i)
+    for (auto i = boost::icl::elements_begin(meshes); i != boost::icl::elements_end(meshes); ++i)
     {
 
-      smtk::mesh::HandleRange singlHandle(*i, *i);
-      smtk::mesh::MeshSet singleMesh(filter.m_collection, *i, singlHandle);
+      smtk::mesh::HandleRange singleHandle;
+      singleHandle += *i;
+      smtk::mesh::MeshSet singleMesh(filter.m_collection, *i, singleHandle);
 
       //call the custom filter
       filter.forMesh(singleMesh);
@@ -1913,8 +2084,10 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
     return true;
   }
 
+  ::moab::Range moabToDel = smtkToMOABRange(toDel);
+
   //step 2. verify HandleRange doesn't contain root Handle
-  if (toDel.front() == this->getRoot())
+  if (moabToDel.front() == this->getRoot())
   {
     //Ranges are always sorted, and the root is always id 0
     return false;
@@ -1923,25 +2096,25 @@ bool Interface::deleteHandles(const smtk::mesh::HandleRange& toDel)
   //step 3. verify HandleRange is either all entity sets or cells/verts
   //this could be a performance bottleneck since we are using size
   bool isDeleted = false;
-  if (toDel.all_of_type(::moab::MBENTITYSET))
+  if (moabToDel.all_of_type(::moab::MBENTITYSET))
   {
     //first remove any model entity relation-ship these meshes have
     tag::QueryEntRefTag mtag(this->moabInterface());
-    m_iface->tag_delete_data(mtag.moabTag(), toDel);
+    m_iface->tag_delete_data(mtag.moabTag(), moabToDel);
 
     //we are all moab entity sets, fine to delete
-    const ::moab::ErrorCode rval = m_iface->delete_entities(toDel);
+    const ::moab::ErrorCode rval = m_iface->delete_entities(moabToDel);
     isDeleted = (rval == ::moab::MB_SUCCESS);
   }
-  else if (toDel.num_of_type(::moab::MBENTITYSET) == 0)
+  else if (moabToDel.num_of_type(::moab::MBENTITYSET) == 0)
   {
     //first remove any model entity relation-ship these cells have
     tag::QueryEntRefTag mtag(this->moabInterface());
-    m_iface->tag_delete_data(mtag.moabTag(), toDel);
+    m_iface->tag_delete_data(mtag.moabTag(), moabToDel);
 
     //for now we are going to avoid deleting any vertex
-    smtk::mesh::HandleRange vertCells = toDel.subset_by_dimension(0);
-    smtk::mesh::HandleRange otherCells = ::moab::subtract(toDel, vertCells);
+    ::moab::Range vertCells = moabToDel.subset_by_dimension(0);
+    ::moab::Range otherCells = ::moab::subtract(moabToDel, vertCells);
 
     //we have zero entity sets so we must be all cells/coords
     const ::moab::ErrorCode rval = m_iface->delete_entities(otherCells);

@@ -75,22 +75,29 @@ bool Allocator::allocateCells(smtk::mesh::CellType cellType, std::size_t numCell
     0, //preferred_start_id
     startHandle, connectivityArray);
 
-  createdCellIds = smtk::mesh::HandleRange(startHandle, startHandle + numCellsToAlloc - 1);
+  createdCellIds = smtk::mesh::HandleRange(
+    smtk::mesh::HandleInterval(startHandle, startHandle + numCellsToAlloc - 1));
   return err == ::moab::MB_SUCCESS;
 }
 
 bool Allocator::connectivityModified(const smtk::mesh::HandleRange& cellsToUpdate,
   int numVertsPerCell, const smtk::mesh::Handle* connectivityArray)
 {
+  return this->connectivityModified(smtk::mesh::rangeElement(cellsToUpdate, 0),
+    static_cast<int>(cellsToUpdate.size()), numVertsPerCell, connectivityArray);
+}
+
+bool Allocator::connectivityModified(smtk::mesh::Handle firstCellToUpdate,
+  int numberOfCellsToUpdate, int numVertsPerCell, const smtk::mesh::Handle* connectivityArray)
+{
   if (m_rface == NULL)
   {
     return false;
   }
 
-  const smtk::mesh::Handle& startHandle = cellsToUpdate.front();
   ::moab::ErrorCode err;
   err = m_rface->update_adjacencies(
-    startHandle, static_cast<int>(cellsToUpdate.size()), numVertsPerCell, connectivityArray);
+    firstCellToUpdate, numberOfCellsToUpdate, numVertsPerCell, connectivityArray);
   return err == ::moab::MB_SUCCESS;
 }
 }
