@@ -32,7 +32,7 @@ class DebugAPythonTest(smtk.testing.TestCase):
         x = TestDiscreteSession('testRead')
         x.setUp()
         # We can now inspect test members created by the setup:
-        print [y.name() for y in x.mgr.sessions()]
+        print([y.name() for y in x.mgr.sessions()])
         # ... or run the test:
         x.testRead()
         # -- 2 --
