@@ -37,5 +37,5 @@ else()
     find_package(Remus REQUIRED)
   endif()
 
-  include("@SMTK_CONFIG_DIR@/SMTKTargets.cmake")
+  include("@SMTK_CONFIG_DIR@/smtkTargets.cmake")
 endif()
