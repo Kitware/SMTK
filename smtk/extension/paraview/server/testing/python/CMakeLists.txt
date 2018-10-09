@@ -45,6 +45,6 @@ if (SMTK_DATA_DIR)
       smtk_add_test_python(${test}Py ${test}.py
         --data-dir=${SMTK_DATA_DIR} )
     endif()
-    set_tests_properties( ${test}Py PROPERTIES LABELS "PVServer" )
+    set_tests_properties( ${test}Py PROPERTIES LABELS "PVServer" SKIP_RETURN_CODE 125)
   endforeach()
 endif()
