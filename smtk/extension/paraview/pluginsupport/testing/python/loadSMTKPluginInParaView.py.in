@@ -41,7 +41,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
 
         # Record the number of available operations
         beforePlugin = len(operationManager.availableOperations())
-        print 'new operation manager:', beforePlugin, 'available operations'
+        print('new operation manager:', beforePlugin, 'available operations')
 
         # Load the polygon session plugin
         pvsimple.LoadPlugin("$<TARGET_FILE:smtkPolygonSessionPlugin>", True)
@@ -52,9 +52,9 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
         # Record the number of available operations
         availableOps = operationManager.availableOperations()
         afterPlugin = len(availableOps)
-        print 'after adding polygon session:', afterPlugin, 'available operations'
+        print('after adding polygon session:', afterPlugin, 'available operations')
         for op in availableOps:
-            print op
+            print(op)
 
         # Check that the number of operations has increased
         if not afterPlugin > beforePlugin:
@@ -65,7 +65,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
 
         # Record the number of available operations
         afterReload = len(operationManager.availableOperations())
-        print 'after reregistering plugins:', afterReload, 'available operations'
+        print('after reregistering plugins:', afterReload, 'available operations')
 
         # Check that the number of operations has increased
         if afterPlugin != afterReload:
@@ -76,7 +76,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
 
         # Record the number of available operations
         afterUnload = len(operationManager.availableOperations())
-        print 'after unloading plugins:', afterUnload, 'available operations'
+        print('after unloading plugins:', afterUnload, 'available operations')
 
         # Check that the number of operations is back to its start value
         if beforePlugin != afterUnload:
