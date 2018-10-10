@@ -1,21 +1,11 @@
 ################################################################################
 # Initialize flags for configuring Pybind11 session module
 ################################################################################
-set(SMTK_CGM_SESSION_ENABLED "False")
 set(SMTK_DISCRETE_SESSION_ENABLED "False")
 set(SMTK_POLYGON_SESSION_ENABLED "False")
 set(SMTK_MESH_SESSION_ENABLED "False")
 set(SMTK_MULTISCALE_SESSION_ENABLED "False")
 set(SMTK_VTK_SESSION_ENABLED "False")
-
-################################################################################
-# Build cgm session
-################################################################################
-# Temporarily disable CGM session until it is updated to the new operator system
-#if (SMTK_ENABLE_CGM_SESSION AND CGM_FOUND)
-#  set(SMTK_CGM_SESSION_ENABLED "True")
-#  add_subdirectory(cgm)
-#endif()
 
 ################################################################################
 # Build Discrete session

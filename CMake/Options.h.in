@@ -30,11 +30,6 @@
 // library will exist and smtkDiscreteSession library will link against it.
 #cmakedefine SMTK_ENABLE_MOAB_DISCRETE_READER
 
-// Was SMTK built with CGM? If true, cgm-convert will exist.
-#cmakedefine SMTK_ENABLE_CGM_SESSION
-// Does CGM provide cgm_version.h (true for v14+, false otherwise).
-#cmakedefine CGM_HAVE_VERSION_H
-
 // Was SMTK built with Remus? If true, smtkRemoteSession library will exist.
 #cmakedefine SMTK_ENABLE_REMUS_SUPPORT
 
