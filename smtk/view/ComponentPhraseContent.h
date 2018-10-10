@@ -35,10 +35,7 @@ public:
     int mutability = 0, DescriptivePhrasePtr parent = DescriptivePhrasePtr());
 
   bool displayable(ContentType attr) const override { return attr != VISIBILITY ? true : false; }
-  bool editable(ContentType attr) const override
-  {
-    return (m_mutability & static_cast<int>(attr)) ? true : false;
-  }
+  bool editable(ContentType attr) const override;
 
   std::string stringValue(ContentType attr) const override;
   int flagValue(ContentType attr) const override;

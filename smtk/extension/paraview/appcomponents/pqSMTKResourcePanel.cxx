@@ -41,9 +41,12 @@
 #include "vtkCommand.h"
 #include "vtkCompositeRepresentation.h"
 
+#include <QColorDialog>
 #include <QItemSelection>
 #include <QItemSelectionModel>
 #include <QPointer>
+
+using qtDescriptivePhraseModel = smtk::extension::qtDescriptivePhraseModel;
 
 class pqSMTKResourcePanel::Internal : public Ui::pqSMTKResourcePanel
 {
@@ -155,8 +158,8 @@ public:
 
     QObject::connect(m_delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), m_model,
       SLOT(toggleVisibility(const QModelIndex&)));
-    QObject::connect(m_delegate, SIGNAL(requestColorChange(const QModelIndex&)), m_model,
-      SLOT(editColor(const QModelIndex&)));
+    QObject::connect(m_delegate, SIGNAL(requestColorChange(const QModelIndex&)), parent,
+      SLOT(editObjectColor(const QModelIndex&)));
 
     QObject::connect(m_searchText, SIGNAL(textChanged(const QString&)), parent,
       SLOT(searchTextChanged(const QString&)));
@@ -540,5 +543,31 @@ void pqSMTKResourcePanel::updateSettings()
     QObject::disconnect(
       m_p->m_view, SIGNAL(entered(const QModelIndex&)), this, SLOT(hoverRow(const QModelIndex&)));
     this->resetHover();
+  }
+}
+
+void pqSMTKResourcePanel::editObjectColor(const QModelIndex& idx)
+{
+  auto phrase = m_p->m_model->getItem(idx);
+  if (phrase)
+  {
+    std::string dialogInstructions = "Choose Color for " +
+      idx.data(qtDescriptivePhraseModel::TitleTextRole).value<QString>().toStdString() +
+      " (click Cancel to remove color)";
+    QColor currentColor = idx.data(qtDescriptivePhraseModel::PhraseColorRole).value<QColor>();
+    QColor nextColor = QColorDialog::getColor(currentColor, this, dialogInstructions.c_str(),
+      QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+    bool removeColor = !nextColor.isValid();
+    if (removeColor)
+    {
+      smtk::model::FloatList rgba{ 0., 0., 0., -1. };
+      phrase->setRelatedColor(rgba);
+    }
+    else
+    {
+      smtk::model::FloatList rgba{ nextColor.red() / 255.0, nextColor.green() / 255.0,
+        nextColor.blue() / 255.0, nextColor.alpha() / 255.0 };
+      phrase->setRelatedColor(rgba);
+    }
   }
 }

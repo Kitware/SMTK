@@ -28,11 +28,13 @@ void SubphraseGenerator::addModelEntityPhrases(const T& ents, DescriptivePhrase:
   int limit, DescriptivePhrases& result, bool decorate,
   std::function<bool(const DescriptivePhrasePtr&, const DescriptivePhrasePtr&)> comparator)
 {
+  constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+    static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
   if (limit < 0 || static_cast<int>(ents.size()) < limit)
   {
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
-      result.push_back(ComponentPhraseContent::createPhrase(it->component(), 0, parent));
+      result.push_back(ComponentPhraseContent::createPhrase(it->component(), mutability, parent));
     }
     if (comparator)
     {

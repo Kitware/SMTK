@@ -12,9 +12,13 @@
 #include "smtk/view/DescriptivePhrase.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
+#include "smtk/model/operators/SetProperty.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -50,6 +54,19 @@ DescriptivePhrasePtr ComponentPhraseContent::createPhrase(
   result->setContent(content);
   content->setLocation(result);
   return result;
+}
+
+bool ComponentPhraseContent::editable(ContentType attr) const
+{
+  if (m_mutability & static_cast<int>(attr))
+  {
+    if (attr == TITLE || attr == COLOR)
+    {
+      auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
+      return !!modelComp;
+    }
+  }
+  return false;
 }
 
 std::string ComponentPhraseContent::stringValue(ContentType attr) const
@@ -161,10 +178,25 @@ resource::FloatList ComponentPhraseContent::colorValue(ContentType attr) const
 
 bool ComponentPhraseContent::editStringValue(ContentType attr, const std::string& val)
 {
-  // This should create and call a "set entity property" operator on the
-  // related component's name for attr == TITLE.
-  (void)attr;
-  (void)val;
+  if (attr == TITLE)
+  {
+    auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
+    if (modelComp)
+    {
+      auto op = smtk::model::SetProperty::create();
+      if (op->parameters()->associate(modelComp))
+      {
+        op->parameters()->findString("name")->setValue("name");
+        op->parameters()->findString("string value")->appendValue(val);
+        auto res = op->operate();
+        if (res->findInt("outcome")->value() ==
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        {
+          return true;
+        }
+      }
+    }
+  }
   return false;
 }
 
@@ -177,10 +209,25 @@ bool ComponentPhraseContent::editFlagValue(ContentType attr, int val)
 
 bool ComponentPhraseContent::editColorValue(ContentType attr, const resource::FloatList& val)
 {
-  // This should create and call a "set entity property" operator on the
-  // related component's color for attr == COLOR.
-  (void)attr;
-  (void)val;
+  if (attr == COLOR)
+  {
+    auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
+    if (modelComp)
+    {
+      auto op = smtk::model::SetProperty::create();
+      if (op->parameters()->associate(modelComp))
+      {
+        op->parameters()->findString("name")->setValue("color");
+        op->parameters()->findDouble("float value")->setValues(val.begin(), val.end());
+        auto res = op->operate();
+        if (res->findInt("outcome")->value() ==
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        {
+          return true;
+        }
+      }
+    }
+  }
   return false;
 }
 
