@@ -9,8 +9,12 @@
 //=========================================================================
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
+
+#include "smtk/attribute/operators/Associate.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
@@ -82,6 +86,27 @@ int unitAttributeAssociation(int, char* [])
   smtk::model::Edge e0 = modelMgr->addEdge();
   smtkTest(e0.associateAttribute(att->attributeResource(), att->id()) == false,
     "Should not have been able to associate entity of wrong type.");
+
+  {
+    auto associateOperation = smtk::attribute::Associate::create();
+
+    attribute::ResourcePtr resptr = attribute::Resource::create();
+    associateOperation->parameters()->associate(resptr);
+
+    model::Resource::Ptr modelMgr = model::Resource::create();
+    smtkTest(associateOperation->parameters()->findResource("associate to") != nullptr,
+      "Cannot access associate opration's input resource parameter.");
+    associateOperation->parameters()->findResource("associate to")->setValue(modelMgr);
+
+    auto result = associateOperation->operate();
+
+    smtkTest(result->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
+      "Associate operator failed");
+
+    smtkTest(*(resptr->associations().begin()) == modelMgr,
+      "Could not set attribute resource's model-resource.");
+  }
 
   return 0;
 }

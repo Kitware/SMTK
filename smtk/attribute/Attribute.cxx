@@ -254,12 +254,14 @@ bool Attribute::isValid() const
   {
     if (!(*it)->isValid())
     {
+      std::cout << (*it)->type() << " is invalid" << std::endl;
       return false;
     }
   }
   // also check associations
   if (m_associatedObjects && !m_associatedObjects->isValid())
   {
+    std::cout << "association is invalid" << std::endl;
     return false;
   }
   return true;
