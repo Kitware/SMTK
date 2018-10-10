@@ -12,8 +12,6 @@
 
 _sessions = []
 
-if @SMTK_CGM_SESSION_ENABLED@:
-  _sessions.append("cgm")
 if @SMTK_DISCRETE_SESSION_ENABLED@:
   _sessions.append("discrete")
 if @SMTK_MESH_SESSION_ENABLED@:

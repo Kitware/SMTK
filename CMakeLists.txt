@@ -115,7 +115,6 @@ option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)
 
-option(SMTK_ENABLE_CGM_SESSION "Build CGM component" OFF)
 cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" OFF
@@ -303,14 +302,6 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT)
       "SMTK requires that VTK be built with the OpenGL2 Rendering backend.")
   endif()
 endif()
-
-################################################################################
-# CGM Related Settings
-################################################################################
-
-if(SMTK_ENABLE_CGM_SESSION)
-  find_package(CGM REQUIRED)
-endif(SMTK_ENABLE_CGM_SESSION)
 
 ################################################################################
 # Remus related settings
@@ -568,11 +559,6 @@ configure_file(
 
 install (FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/HashFunctor.h
   DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/smtk)
-
-find_file(CGM_HAVE_VERSION_H
-  NAMES cgm_version.h
-  PATHS ${CGM_INCLUDE_DIRS}
-  DOC   "Location of CGM's cgm_version.h")
 
 ################################################################################
 # Save compile-time options for use by other packages
