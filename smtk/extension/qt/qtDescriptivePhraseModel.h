@@ -64,7 +64,9 @@ public:
     PhraseColorRole = Qt::UserRole + 103,      //!< Phrase-specific color (e.g., component color)
     PhraseVisibilityRole = Qt::UserRole + 104, //!< Visibility of phrase's subject
     PhraseCleanRole = Qt::UserRole + 105,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
-    ModelActiveRole = Qt::UserRole + 106       //!< Is resource the active resource?
+    ModelActiveRole = Qt::UserRole + 106,      //!< Is resource the active resource?
+    TitleTextMutableRole = Qt::UserRole + 107, //!< Is the title editable?
+    ColorMutableRole = Qt::UserRole + 108      //!< Is the subject's color editable?
   };
 
   void setPhraseModel(smtk::view::PhraseModelPtr model);

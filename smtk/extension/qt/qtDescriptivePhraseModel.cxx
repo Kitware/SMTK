@@ -397,6 +397,14 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
         // used to bold the active resource's title
         return QVariant(false);
       }
+      else if (role == TitleTextMutableRole)
+      {
+        return QVariant(item->isTitleMutable());
+      }
+      else if (role == ColorMutableRole)
+      {
+        return QVariant(item->isRelatedColorMutable());
+      }
     }
   }
   return QVariant();

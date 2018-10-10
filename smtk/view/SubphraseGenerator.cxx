@@ -155,11 +155,15 @@ void SubphraseGenerator::componentsOfResource(
   //auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
   if (modelRsrc)
   {
+    // By default, make model component names and colors editable but not visibility
+    // as that is handled by modelbuilder/paraview on a per-view basis.
+    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+      static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
     auto models =
       modelRsrc->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
     for (auto model : models)
     {
-      result.push_back(ComponentPhraseContent::createPhrase(model.component(), 0, src));
+      result.push_back(ComponentPhraseContent::createPhrase(model.component(), mutability, src));
     }
   }
   else if (attrRsrc)
@@ -262,7 +266,9 @@ void SubphraseGenerator::cellOfModelUse(
   auto parentCell = ent.cell();
   if (parentCell.isValid())
   {
-    result.push_back(ComponentPhraseContent::createPhrase(parentCell.component(), 0, src));
+    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+      static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
+    result.push_back(ComponentPhraseContent::createPhrase(parentCell.component(), mutability, src));
   }
 }
 

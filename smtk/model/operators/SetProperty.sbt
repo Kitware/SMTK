@@ -5,6 +5,7 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="set property" Label="Entities - Set Property" BaseType="operation" AdvanceLevel="10">
+      <!-- TODO: When Mesh work is done, set NumberOfRequiredValues="1" -->
       <AssociationsDef Name="Entities" NumberOfRequiredValues="0" Extensible="true">
         <Accepts><Resource Name="smtk::model::Resource"/></Accepts>
       </AssociationsDef>

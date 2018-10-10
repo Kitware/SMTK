@@ -262,14 +262,21 @@ void qtDescriptivePhraseDelegate::paint(
 QWidget* qtDescriptivePhraseDelegate::createEditor(
   QWidget* owner, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
+  (void)option;
+
+  // Visibility mode does not allow editing the title.
   if (m_visibilityMode)
   {
     return nullptr;
-  } // Visibility mode does not allow editing the title.
-  (void)option;
-  (void)idx;
-  smtk::extension::qtDescriptivePhraseEditor* editor = new qtDescriptivePhraseEditor(owner);
-  return editor;
+  }
+
+  // Otherwise, edit the title if the item says we can.
+  if (idx.data(qtDescriptivePhraseModel::TitleTextMutableRole).toBool())
+  {
+    smtk::extension::qtDescriptivePhraseEditor* editor = new qtDescriptivePhraseEditor(owner);
+    return editor;
+  }
+  return nullptr;
 }
 
 void qtDescriptivePhraseDelegate::updateEditorGeometry(
