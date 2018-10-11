@@ -316,11 +316,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
         forint = [+1, -1, +1, +1, +1, +1, +1]
         aelist = [elist[e] for e in floops]   # de-referenced version of floops
         fop.parameters().find('construction method').setDiscreteIndex(1)
-        # NB: Cannot use fop.associateEntity(X) here when the same edge is repeated with different orientations
-        #     because Attribute::associateEntity(X) checks that X is not already associated before appending X
-        #     to the list of entities. Instead, we get the ModelEntityItem used to hold associations and add to
-        #     it manually:
-        self.setVectorValue(fop.specification().associations(), aelist)
+        for i in aelist:
+            fop.parameters().associate(i.component())
         self.setVectorValue(fop.parameters().find('counts'), fcount)
         self.setVectorValue(fop.parameters().find('orientations'), forint)
         res = fop.operate()
@@ -336,13 +333,5 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until smtk::session::ForceCreateFace is fixed.\n'
-        'Currently, points, coordinates, counts and edge direction items are all\n'
-        'accessed and iterated, even though the items are only conditionally\n'
-        'created depending on the method of construction. I do not know how this\n'
-        'ever worked.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     smtk.testing.main()
