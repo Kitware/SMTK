@@ -14,14 +14,8 @@
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/View.h"
 
-#include "smtk/operation/operators/ReadResource.h"
-
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/ResourceItem.h"
-
 #include "smtk/model/Resource.h"
+#include "smtk/model/json/jsonResource.h"
 
 #include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
@@ -30,6 +24,7 @@
 
 #include <QApplication>
 #include <QHeaderView>
+#include <QTimer>
 #include <QTreeView>
 
 #include <fstream>
@@ -57,6 +52,24 @@ int main(int argc, char* argv[])
          << "  debug    is any character, indicating a debug session.\n\n";
     return 1;
   }
+
+  auto operationManager = smtk::operation::Manager::create();
+  auto resourceManager = smtk::resource::Manager::create();
+
+  std::string json_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+  nlohmann::json json = nlohmann::json::parse(json_str);
+  auto model = smtk::model::Resource::create();
+  smtk::model::from_json(json, model);
+
+  if (!model)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Did not read a model.");
+    return 1;
+  }
+  model->assignDefaultNames();
+  resourceManager->add(model);
+  std::cout << "Read a " << model->typeName() << "\n";
+
   auto qmodel = new smtk::extension::qtDescriptivePhraseModel;
   auto qdelegate = new smtk::extension::qtDescriptivePhraseDelegate;
   qdelegate->setTitleFontSize(12);
@@ -64,46 +77,23 @@ int main(int argc, char* argv[])
   qdelegate->setSubtitleFontSize(10);
   qdelegate->setSubtitleFontWeight(1);
   ModelBrowser* qview = new ModelBrowser;
-  auto operationManager = smtk::operation::Manager::create();
-  auto resourceManager = smtk::resource::Manager::create();
   auto view = smtk::view::View::New("ModelBrowser", "SMTK Model");
   auto phraseModel = smtk::view::ResourcePhraseModel::create(view);
   phraseModel->addSource(resourceManager, operationManager);
   qmodel->setPhraseModel(phraseModel);
   qview->setup(resourceManager, qmodel, qdelegate, nullptr);
 
-  auto readOp = operationManager->create<smtk::operation::ReadResource>();
-  if (!readOp)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "No read operator.");
-    return 1;
-  }
-
-  readOp->parameters()->findFile("filename")->setValue(filename);
-  smtk::operation::Operation::Result readOpResult = readOp->operate();
-  if (readOpResult->findInt("outcome")->value() !=
-    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Read operator failed for \"" << filename << "\"");
-    return 1;
-  }
-
-  auto rsrc = readOpResult->findResource("resource")->value(0);
-  auto model = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
-  if (!model)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Did not read a model.");
-    return 1;
-  }
-  model->assignDefaultNames();
-  std::cout << "Read a " << model->typeName() << "\n";
-
   // Enable user sorting.
   qview->tree()->setSortingEnabled(true);
   qview->show();
 
-  // FIXME: Actually test something when not in debug mode.
-  int status = debug ? app.exec() : 0;
+  // If we are in debug mode, we just want to ensure that the application
+  // successfully executes.
+  if (debug)
+  {
+    QTimer::singleShot(1000, &app, SLOT(quit()));
+  }
+  int status = app.exec();
 
   delete qview;
   delete qmodel;
