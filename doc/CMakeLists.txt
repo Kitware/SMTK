@@ -39,9 +39,15 @@ if(DOXYGEN_FOUND)
       "${smtk_BINARY_DIR}/doc/reference/cjson.tags"
     COMMENT "Generating SMTK API documentation with Doxygen" VERBATIM
   )
-  add_custom_target(doc
-    DEPENDS ${smtk_BINARY_DIR}/doc/reference/smtk.tags
-  )
+  if (SMTK_BUILD_DOCUMENTATION STREQUAL "always")
+    add_custom_target(doc ALL
+      DEPENDS ${smtk_BINARY_DIR}/doc/reference/smtk.tags
+    )
+  else()
+    add_custom_target(doc
+      DEPENDS ${smtk_BINARY_DIR}/doc/reference/smtk.tags
+    )
+  endif()
 endif(DOXYGEN_FOUND)
 
 ## End-user Documentation
@@ -79,7 +85,11 @@ if (SPHINX_FOUND)
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating HTML for ${sphinxTargetName}"
     )
-    add_custom_target(doc-${sphinxTargetName} DEPENDS "${sphinx_HTML_TOP}")
+    if (SMTK_BUILD_DOCUMENTATION STREQUAL "always")
+      add_custom_target(doc-${sphinxTargetName} ALL DEPENDS "${sphinx_HTML_TOP}")
+    else() # must be "manual"
+      add_custom_target(doc-${sphinxTargetName} DEPENDS "${sphinx_HTML_TOP}")
+    endif()
     if (sphinx_DESTINATION)
       install(
         DIRECTORY "${sphinx_BUILD_DIR}/html/"
