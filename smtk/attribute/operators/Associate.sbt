@@ -5,7 +5,7 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="associate to attribute"
-            Label="Attribute - Associate To" BaseType="operation">
+            Label="Attribute - Associate Resource" BaseType="operation">
       <BriefDescription>
         Associate a resource to an attribute resource.
       </BriefDescription>
