@@ -32,15 +32,12 @@ class DebugAPythonTest(smtk.testing.TestCase):
         x = TestDiscreteSession('testRead')
         x.setUp()
         # We can now inspect test members created by the setup:
-        print([y.name() for y in x.mgr.sessions()])
+        print([y for y in x.filesToTest])
         # ... or run the test:
         x.testRead()
         # -- 2 --
 
 
 if __name__ == '__main__':
-    print('This test has been disabled until tutorials are updated.\n')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     smtk.testing.main()

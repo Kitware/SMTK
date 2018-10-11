@@ -8,6 +8,4 @@ if (SMTK_ENABLE_TESTING AND SMTK_ENABLE_PYTHON_WRAPPING AND SMTK_DATA_DIR AND SM
       --temp-dir=${CMAKE_CURRENT_BINARY_DIR}
       --data-dir=${SMTK_DATA_DIR}
   )
-  set_tests_properties(tut-debug_python_test PROPERTIES SKIP_RETURN_CODE 125)
 endif()
-

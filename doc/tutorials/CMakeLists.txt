@@ -26,9 +26,21 @@ if(NOT WIN32)
   set_tests_properties(cxx_first_steps
     PROPERTIES
     ENVIRONMENT "${smtk_python_test_environment}")
-endif()
 
 add_subdirectory(add_a_session)
-add_subdirectory(implement_an_operator)
+
+add_test(NAME implement_an_operator
+    COMMAND ${CMAKE_CTEST_COMMAND} --build-and-test
+    ${CMAKE_CURRENT_SOURCE_DIR}/implement_an_operator
+    ${CMAKE_CURRENT_BINARY_DIR}/implement_an_operator
+    --build-generator ${CMAKE_GENERATOR}
+    --build-options ${build_options}
+    --test-command ${CMAKE_CTEST_COMMAND})
+  set_tests_properties(implement_an_operator
+    PROPERTIES
+    ENVIRONMENT "${smtk_python_test_environment}")
+
+endif()
+
 add_subdirectory(python_first_steps)
 add_subdirectory(debugging_python_tests)
