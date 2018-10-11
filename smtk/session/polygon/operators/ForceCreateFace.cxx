@@ -67,7 +67,7 @@ bool ForceCreateFace::ableToOperate()
   //       matches the number of points or edges provided:
   int method = this->parameters()->findInt("construction method")->discreteIndex();
   smtk::attribute::IntItem::Ptr edgeDirItem = this->parameters()->findInt("orientations");
-  int numOrient = static_cast<int>(edgeDirItem->numberOfValues());
+  int numOrient = edgeDirItem != nullptr ? static_cast<int>(edgeDirItem->numberOfValues()) : -1;
   return this->Superclass::ableToOperate() &&
     (method == ForceCreateFace::POINTS ||
            (method == ForceCreateFace::EDGES &&
@@ -136,7 +136,9 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
   // Initialize iterators over things we consume as we create faces:
   smtk::attribute::DoubleItem::value_type::const_iterator coordIt = pointsItem->begin();
   auto edgeIt = modelItem->begin();
-  smtk::attribute::IntItem::value_type::const_iterator edgeDirIt = edgeDirItem->begin();
+  smtk::attribute::IntItem::value_type::const_iterator edgeDirIt = edgeDirItem != nullptr
+    ? edgeDirItem->begin()
+    : smtk::attribute::IntItem::value_type::const_iterator();
 
   // Handle default value for "counts" item:
   std::vector<int> tmpCount;
