@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<SMTK_AttributeSystem Version="2">
+<SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- +1+ -->
-    <AttDef Type="counter" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="counter" BaseType="operation">
       <ItemDefinitions>
         <Component Name="model" NumberOfRequiredValues="1">
           <Accepts><Resource Name="smtk::model::Resource" Filter="model|anydim"/></Accepts>
@@ -15,6 +16,7 @@
     <!-- -1- -->
     <!-- +2+ -->
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(counter)" BaseType="result">
       <ItemDefinitions>
         <Int Name="count" NumberOfRequiredValues="1">
@@ -23,4 +25,4 @@
     </AttDef>
     <!-- -2- -->
   </Definitions>
-</SMTK_AttributeSystem>
+</SMTK_AttributeResource>

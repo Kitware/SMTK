@@ -1,6 +1,19 @@
 project(ex_implement_an_operator)
 cmake_minimum_required(VERSION 3.5)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS False)
+
+find_package(smtk)
+
+# this is probably not the right way to do this, but we need the path to SMTK's
+# include directory so EncodeStringFunctions.cmake finds things.
+get_target_property(SMTK_INCLUDE_DIR smtkCore INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(SMTK_LIB_DIR smtkCore LOCATION)
+get_filename_component(SMTK_LIB_DIR ${SMTK_LIB_DIR} DIRECTORY)
+
+include(SMTKMacros)
 # ++ 1 ++
 include(SMTKOperationXML) # defines smtk_operation_xml()
 
@@ -19,11 +32,9 @@ smtk_operation_xml(
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # -- 1 --
 
-# Testing must be enabled to build this tutorial
-# because it depends on smtkCoreModelTesting.
-if (SMTK_ENABLE_TESTING)
-  add_executable(implement_an_operator implement_an_operator.cxx)
-  target_link_libraries(implement_an_operator smtkCore smtkCoreModelTesting)
-  add_test(NAME tut-implement_an_operator COMMAND implement_an_operator)
-  set_tests_properties(tut-implement_an_operator PROPERTIES SKIP_RETURN_CODE 125)
-endif()
+enable_testing()
+
+add_executable(implement_an_operator implement_an_operator.cxx)
+target_link_libraries(implement_an_operator smtkCore smtkCoreModelTesting)
+add_test(NAME tut-implement_an_operator COMMAND implement_an_operator)
+set_tests_properties(tut-implement_an_operator PROPERTIES SKIP_RETURN_CODE 125)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-print('This test has been disabled until tutorials are updated.\n')
-sys.exit(125)
+# print('This test has been disabled until tutorials are updated.\n')
+# sys.exit(125)
 
 modelFileName = sys.argv[-1]
 
@@ -15,10 +15,7 @@ from smtk import io
 from smtk import model
 
 ares = smtk.attribute.Resource.create()
-mmgr = smtk.model.Manager.create()
-
-# Connect the managers:
-ares.setRefModelManager(mmgr)
+mmgr = smtk.model.Resource.create()
 
 # -- 1 --
 
@@ -97,7 +94,7 @@ matProp = ares.createAttribute('fluid', matDef)
 # TODO: Replace with resource.readModel()
 jsonFile = open(modelFileName, 'r')
 json = jsonFile.read()
-smtk.io.LoadJSON.intoModelManager(json, mmgr)
+smtk.model.SessionIOJSON.loadModelRecords(json, mmgr)
 
 # Now find groups corresponding to IC/BCs:
 models = mmgr.findEntitiesByProperty('name', 'Test Model')
