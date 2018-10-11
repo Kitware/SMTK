@@ -131,9 +131,18 @@ if (SMTK_ENABLE_MULTISCALE_SESSION)
   set(AFRL_DIR "/path/to/afrl/data" CACHE PATH "Path to a directory of AFRL data.")
 endif()
 
-option(SMTK_ENABLE_DOCUMENTATION
-  "Include targets for Doxygen- and Sphinx-generated documentation" OFF)
-if (SMTK_ENABLE_DOCUMENTATION)
+# SMTK_BUILD_DOCUMENTATION is an enumerated option:
+# never  == No documentation, and no documentation tools are required.
+# manual == Only build when requested; documentation tools (doxygen and
+#           sphinx) must be located during configuration.
+# always == Build documentation as part of the default target; documentation
+#           tools are required. This is useful for automated builds that
+#           need "make; make install" to work, since installation will fail
+#           if no documentation is built.
+set(SMTK_BUILD_DOCUMENTATION
+  "never" CACHE STRING "When to build Doxygen- and Sphinx-generated documentation.")
+set_property(CACHE SMTK_BUILD_DOCUMENTATION PROPERTY STRINGS never manual always)
+if (NOT SMTK_BUILD_DOCUMENTATION STREQUAL "never")
   find_package(Doxygen)
   find_package(Sphinx)
 endif()
@@ -683,6 +692,6 @@ install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/${PROJECT_NAME}Config.cmake
 # targets have been declared.
 ################################################################################
 
-if (SMTK_ENABLE_DOCUMENTATION)
+if (NOT SMTK_BUILD_DOCUMENTATION STREQUAL "never")
   add_subdirectory(doc)
 endif()
