@@ -65,16 +65,16 @@ smtk::resource::ResourcePtr vtkSMTKAttributeReader::GenerateResource() const
   auto resource = smtk::attribute::Resource::create();
   resource->setLocation(this->FileName);
 
+  if (this->Wrapper)
+  {
+    this->Wrapper->GetResourceManager()->add(resource);
+  }
+
   smtk::io::AttributeReader rdr;
   if (rdr.read(resource, this->FileName, this->IncludePathToFile, smtk::io::Logger::instance()))
   {
     vtkErrorMacro("Errors encountered: " << smtk::io::Logger::instance().convertToString() << "\n");
     vtkErrorMacro("Could not read \"" << this->FileName << "\"");
-  }
-
-  if (this->Wrapper)
-  {
-    this->Wrapper->GetResourceManager()->add(resource);
   }
 
   return resource;
