@@ -87,7 +87,6 @@ if readTheDocs or localReadTheDocs:
         '@SMTK_VERSION@': '1.1.0'})
     # Run doxygen ourselves on ReadTheDocs.org so that doxylinks will work.
     if not localSkipDoxygen:
-        runDoxygen(sourcedir, builddir, 'cjson.doxyfile.in', 'cjson.doxyfile')
         runDoxygen(sourcedir, builddir, 'smtk.doxyfile.in', 'smtk.doxyfile')
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -235,10 +234,7 @@ if readTheDocs:
 doxylink = {
     'smtk': (
         os.path.join(tagbase, 'smtk.tags'),
-        os.path.join(refbase, 'smtk', 'html')),
-    'cjson': (
-        os.path.join(tagbase, 'cjson.tags'),
-        os.path.join(refbase, 'cjson', 'html'))
+        os.path.join(refbase, 'smtk', 'html'))
 }
 
 # A boolean that decides whether parentheses are appended to

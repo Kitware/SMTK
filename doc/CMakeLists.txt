@@ -4,16 +4,8 @@
 #
 # If we have doxygen, create reference API documentation for SMTK.
 #
-# This also generates documentation for third-party libraries
-# (e.g., cJSON) which are referenced by SMTK's documentation.
-#
 if(DOXYGEN_FOUND)
   file(MAKE_DIRECTORY "${smtk_BINARY_DIR}/doc/reference")
-  configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cjson.doxyfile.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cjson.doxyfile
-    @ONLY
-  )
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/smtk.doxyfile.in
     ${CMAKE_CURRENT_BINARY_DIR}/smtk.doxyfile
@@ -21,22 +13,11 @@ if(DOXYGEN_FOUND)
   )
 
   add_custom_command(
-    OUTPUT ${smtk_BINARY_DIR}/doc/reference/cjson.tags
-    COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/cjson.doxyfile
-    DEPENDS
-      ${CMAKE_CURRENT_BINARY_DIR}/cjson.doxyfile
-      ${smtk_SOURCE_DIR}/thirdparty/cJSON/cJSON.h
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reference"
-    COMMENT "Generating cJSON API documentation with Doxygen" VERBATIM
-    )
-
-  add_custom_command(
     OUTPUT ${smtk_BINARY_DIR}/doc/reference/smtk.tags
     COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/smtk.doxyfile
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reference"
     DEPENDS
       "${CMAKE_CURRENT_BINARY_DIR}/smtk.doxyfile"
-      "${smtk_BINARY_DIR}/doc/reference/cjson.tags"
     COMMENT "Generating SMTK API documentation with Doxygen" VERBATIM
   )
   if (SMTK_BUILD_DOCUMENTATION STREQUAL "always")
