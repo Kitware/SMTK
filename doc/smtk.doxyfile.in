@@ -1619,9 +1619,7 @@ SEARCH_INCLUDES        = YES
 # contain include files that are not input files but should be processed by
 # the preprocessor.
 
-INCLUDE_PATH           = \
-        "@smtk_SOURCE_DIR@/thirdparty/cJSON" \
-        "@smtk_BINARY_DIR@/thirdparty/cJSON"
+INCLUDE_PATH           =
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
@@ -1746,8 +1744,7 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = \
-  "@smtk_BINARY_DIR@/doc/reference/cjson.tags = @SMTK_BINARY_DIR@/doc/reference/cjson/html"
+TAGFILES               =
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
