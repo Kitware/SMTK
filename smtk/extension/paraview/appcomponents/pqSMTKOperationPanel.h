@@ -97,6 +97,7 @@ protected:
 
   class Internal;
   Internal* m_p;
+  pqSMTKWrapper* m_wrapper; // TODO: Remove the need for me. This ties us to a single pqServer.
   smtk::operation::OperationPtr m_editing;
   smtk::extension::qtUIManager* m_attrUIMgr;
   smtk::resource::ResourcePtr m_rsrc;

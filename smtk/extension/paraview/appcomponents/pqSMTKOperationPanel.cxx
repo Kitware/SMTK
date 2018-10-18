@@ -79,6 +79,7 @@ public:
 pqSMTKOperationPanel::pqSMTKOperationPanel(QWidget* parent)
   : Superclass(parent)
   , m_p(nullptr)
+  , m_wrapper(nullptr)
   , m_editing(nullptr)
   , m_attrUIMgr(nullptr)
 {
@@ -131,15 +132,48 @@ void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer*)
     this->m_availableOperations->setSelection(nullptr);
     this->m_availableOperations->setOperationManager(nullptr);
   }
+
+  // If we have a new wrapper, we should not display an operation from
+  // the old wrapper's resources any longer:
+  if (m_attrUIMgr)
+  {
+    this->cancelEditing();
+    delete m_attrUIMgr;
+    while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
+    {
+      delete w;
+    }
+    m_attrUIMgr = nullptr;
+  }
+  m_wrapper = wrapper;
 }
 
 void pqSMTKOperationPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqServer*)
 {
-  if (wrapper) // TBD: compare wrapper's managers to what we're currently observing?
+  if (wrapper != m_wrapper)
+  {
+    return;
+  }
+
+  // If we no longer have a wrapper, we should not display an operation from
+  // the wrapper's resources any longer:
+  if (m_attrUIMgr)
+  {
+    this->cancelEditing();
+    delete m_attrUIMgr;
+    while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
+    {
+      delete w;
+    }
+    m_attrUIMgr = nullptr;
+  }
+
+  if (wrapper)
   {
     this->m_availableOperations->setSelection(nullptr);
     this->m_availableOperations->setOperationManager(nullptr);
   }
+  m_wrapper = nullptr;
 }
 
 bool pqSMTKOperationPanel::editOperation(smtk::operation::Operation::Index index)
@@ -200,7 +234,10 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   }
 
   // Create a new UI.
-  m_attrUIMgr = new smtk::extension::qtUIManager(m_editing);
+  m_attrUIMgr = new smtk::extension::qtUIManager(
+    m_editing, m_wrapper ? m_wrapper->smtkResourceManager() : nullptr);
+  // If the operation did not have its manager set, fall back to the
+  // operation manager we were told to use when listing available operations:
   if (!m_attrUIMgr->operationManager())
   {
     m_attrUIMgr->setOperationManager(m_availableOperations->operationManager());
