@@ -19,7 +19,6 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Face.h"

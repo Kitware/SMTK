@@ -15,7 +15,6 @@
 #include "smtk/io/Helpers.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityIterator.h"
 
@@ -247,11 +246,12 @@ bool prepareToSave(const smtk::model::Models& modelsToSave,
     }
 
     // V. Determine the disposition of each mesh of the model.
-    smtk::mesh::ManagerPtr meshMgr = model.resource()->meshes();
-    std::vector<smtk::mesh::CollectionPtr> collections = meshMgr->associatedCollections(model);
-    for (auto coll : collections)
+    auto collections =
+      model.resource()->links().linkedFrom(smtk::mesh::Collection::ClassificationRole);
+    for (auto collection : collections)
     {
-      if (meshCollections.find(coll) == meshCollections.end())
+      auto coll = std::dynamic_pointer_cast<smtk::mesh::Collection>(collection);
+      if (coll != nullptr && meshCollections.find(coll) == meshCollections.end())
       {
         meshCollections.insert(coll);
         std::string meshURL = coll->writeLocation().absolutePath();

@@ -19,7 +19,6 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Resource.h"
 
@@ -58,7 +57,6 @@ PySharedPtrClass< smtk::model::Session > pybind11_init_smtk_model_Session(py::mo
     .def("declareDanglingEntity", &smtk::model::Session::declareDanglingEntity, py::arg("ent"), py::arg("present") = 0)
     .def("log", &smtk::model::Session::log)
     .def("resource", &smtk::model::Session::resource)
-    .def("meshManager", &smtk::model::Session::meshManager)
     .def("name", &smtk::model::Session::name)
     .def("sessionId", &smtk::model::Session::sessionId)
     .def("setup", &smtk::model::Session::setup, py::arg("optName"), py::arg("optVal"))

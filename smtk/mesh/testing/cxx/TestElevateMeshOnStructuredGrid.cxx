@@ -30,7 +30,6 @@
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -165,8 +164,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     return 1;
   }
 
-  auto associatedCollections = resource->meshes()->associatedCollections(model);
-  smtk::mesh::CollectionPtr collection = associatedCollections[0];
+  smtk::mesh::CollectionPtr collection = resource->session()->topology(model)->m_collection;
   smtk::mesh::MeshSet mesh = collection->meshes();
 
   // add auxiliary geometry

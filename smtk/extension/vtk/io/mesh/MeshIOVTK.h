@@ -43,7 +43,8 @@ public:
   //Load a vtk XML data file as a new collection into the given manager
   //Returns an invalid collection that is NOT part of the manager if the
   //file can't be loaded
-  smtk::mesh::CollectionPtr importMesh(const std::string& filePath, smtk::mesh::ManagerPtr& manager,
+  smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+    const smtk::mesh::InterfacePtr& interface,
     const std::string& domainPropertyName) const override;
 
   //Merge a vtk data file into an existing valid collection.

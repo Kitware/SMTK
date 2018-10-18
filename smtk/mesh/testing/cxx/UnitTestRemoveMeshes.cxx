@@ -11,7 +11,6 @@
 
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityRef.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -22,12 +21,13 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, mngr);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   return c;
@@ -57,11 +57,10 @@ void verify_remove_empty_mesh(const smtk::mesh::CollectionPtr& c)
     "deleting no meshes shouldn't modify number of meshes");
 }
 
-void verify_remove_mesh_from_other_collection(
-  smtk::mesh::ManagerPtr mngr, const smtk::mesh::CollectionPtr& c)
+void verify_remove_mesh_from_other_collection(const smtk::mesh::CollectionPtr& c)
 {
-  //make another collection inside the manager
-  smtk::mesh::CollectionPtr otherc = load_mesh(mngr);
+  //make another collection
+  smtk::mesh::CollectionPtr otherc = load_mesh();
 
   const std::size_t numMeshesBeforeRemoval = c->numberOfMeshes();
   const std::size_t numCellsBeforeRemoval = c->cells().size();
@@ -73,9 +72,6 @@ void verify_remove_mesh_from_other_collection(
   test(!c->isModified(), "shouldn't be modified after an invalid removal");
   test(numMeshesBeforeRemoval == c->numberOfMeshes());
   test(numCellsBeforeRemoval == c->cells().size());
-
-  //unload the second collection from memory
-  mngr->removeCollection(otherc);
 }
 
 void verify_remove_invalid_meshes(const smtk::mesh::CollectionPtr& c)
@@ -257,11 +253,10 @@ void verify_remove_verts_with_model_association(const smtk::mesh::CollectionPtr&
 
 int UnitTestRemoveMeshes(int, char** const)
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh();
 
   verify_remove_empty_mesh(c);
-  verify_remove_mesh_from_other_collection(mngr, c);
+  verify_remove_mesh_from_other_collection(c);
   verify_remove_invalid_meshes(c);
   verify_remove_already_removed_meshes(c);
 

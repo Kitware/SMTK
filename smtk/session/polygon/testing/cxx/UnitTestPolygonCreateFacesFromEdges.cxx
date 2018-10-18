@@ -27,8 +27,6 @@
 #include "smtk/session/polygon/operators/CreateFacesFromEdges.h"
 #include "smtk/session/polygon/operators/CreateModel.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/operation/Manager.h"
 
 int UnitTestPolygonCreateFacesFromEdges(int argc, char* argv[])

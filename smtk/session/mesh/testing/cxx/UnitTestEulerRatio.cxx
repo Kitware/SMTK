@@ -20,8 +20,6 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include <cmath>
 
 #include "smtk/operation/Manager.h"

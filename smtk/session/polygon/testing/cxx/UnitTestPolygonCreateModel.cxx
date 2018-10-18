@@ -21,8 +21,6 @@
 #include "smtk/session/polygon/Resource.h"
 #include "smtk/session/polygon/operators/CreateModel.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/operation/Manager.h"
 
 #include <complex>

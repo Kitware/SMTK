@@ -19,8 +19,6 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/operation/Manager.h"
 
 //force to use filesystem version 3

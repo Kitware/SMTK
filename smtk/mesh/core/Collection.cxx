@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/resource/MeshComponent.h"
 
@@ -23,36 +22,19 @@ namespace smtk
 namespace mesh
 {
 
+constexpr smtk::resource::Links::RoleType Collection::ClassificationRole;
+
 class Collection::InternalImpl
 {
 public:
   InternalImpl()
-    : WeakManager()
-    , Interface(smtk::mesh::moab::make_interface())
+    : Interface(smtk::mesh::moab::make_interface())
   {
   }
 
-  InternalImpl(smtk::mesh::ManagerPtr mngr)
-    : WeakManager(mngr)
-    , Interface(smtk::mesh::moab::make_interface())
+  InternalImpl(smtk::mesh::InterfacePtr interface)
+    : Interface(interface)
   {
-  }
-
-  InternalImpl(smtk::mesh::ManagerPtr mngr, smtk::mesh::InterfacePtr interface)
-    : WeakManager(mngr)
-    , Interface(interface)
-  {
-  }
-
-  void resetManger() { this->WeakManager.reset(); }
-
-  smtk::shared_ptr<smtk::mesh::Manager> manager() { return this->WeakManager.lock(); }
-
-  bool reparent(smtk::mesh::ManagerPtr newMngr)
-  {
-    this->resetManger();
-    this->WeakManager = smtk::weak_ptr<smtk::mesh::Manager>(newMngr);
-    return true;
   }
 
   const smtk::mesh::InterfacePtr& mesh_iface() const { return this->Interface; }
@@ -60,7 +42,6 @@ public:
   smtk::mesh::Handle mesh_root_handle() const { return this->Interface->getRoot(); }
 
 private:
-  smtk::weak_ptr<smtk::mesh::Manager> WeakManager;
   smtk::mesh::InterfacePtr Interface;
 };
 
@@ -89,6 +70,19 @@ Collection::Collection(const smtk::common::UUID& collectionID)
 {
 }
 
+Collection::Collection(smtk::mesh::InterfacePtr interface)
+  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(
+      smtk::common::UUIDGenerator::instance().random())
+  , m_name()
+  , m_readLocation()
+  , m_writeLocation()
+  , m_floatData(new MeshFloatData)
+  , m_stringData(new MeshStringData)
+  , m_integerData(new MeshIntegerData)
+  , m_internals(new InternalImpl(interface))
+{
+}
+
 Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
   , m_name()
@@ -97,32 +91,7 @@ Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::Inter
   , m_floatData(new MeshFloatData)
   , m_stringData(new MeshStringData)
   , m_integerData(new MeshIntegerData)
-  , m_internals(new InternalImpl(nullptr, interface))
-{
-}
-
-Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr)
-  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
-  , m_name()
-  , m_readLocation()
-  , m_writeLocation()
-  , m_floatData(new MeshFloatData)
-  , m_stringData(new MeshStringData)
-  , m_integerData(new MeshIntegerData)
-  , m_internals(new InternalImpl(mngr))
-{
-}
-
-Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface,
-  smtk::mesh::ManagerPtr mngr)
-  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
-  , m_name()
-  , m_readLocation()
-  , m_writeLocation()
-  , m_floatData(new MeshFloatData)
-  , m_stringData(new MeshStringData)
-  , m_integerData(new MeshIntegerData)
-  , m_internals(new InternalImpl(mngr, interface))
+  , m_internals(new InternalImpl(interface))
 {
 }
 
@@ -173,11 +142,6 @@ void Collection::swapInterfaces(smtk::mesh::CollectionPtr& other)
   m_internals = temp;
 }
 
-void Collection::removeManagerConnection()
-{
-  m_internals->resetManger();
-}
-
 bool Collection::isValid() const
 {
   //make sure we have a valid uuid, and that our internals are valid
@@ -198,21 +162,6 @@ std::string Collection::name() const
 void Collection::name(const std::string& n)
 {
   m_name = n;
-}
-
-std::shared_ptr<smtk::mesh::Manager> Collection::manager() const
-{
-  return m_internals->manager();
-}
-
-bool Collection::assignUniqueNameIfNotAlready()
-{
-  smtk::mesh::ManagerPtr currentManager = m_internals->manager();
-  if (currentManager)
-  { //if we are associated with a valid manager
-    return currentManager->assignUniqueName(this->shared_from_this());
-  }
-  return false;
 }
 
 const smtk::common::FileLocation& Collection::readLocation() const
@@ -254,38 +203,6 @@ std::string Collection::interfaceName() const
 const smtk::common::UUID Collection::entity() const
 {
   return this->id();
-}
-
-bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
-{
-  //re-parent the collection onto a new manager
-  smtk::mesh::ManagerPtr currentManager = m_internals->manager();
-  if (currentManager)
-  { //if we are associated with a valid manager remove the manager reference
-    //to us before we re-parent our selves and this becomes impossible
-    currentManager->removeCollection(this->shared_from_this());
-  }
-
-  const bool reparenting = m_internals->reparent(newParent);
-  (void)reparenting;
-  currentManager = m_internals->manager();
-
-  //we need to get a uuid if we don't have one already
-  if (!currentManager)
-  {
-    return false;
-  }
-
-  //if we currently don't have a uuid get one
-  if (this->id().isNull())
-  {
-    this->setId(smtk::common::UUIDGenerator::instance().random());
-  }
-
-  //add us to the new manager
-  currentManager->addCollection(this->shared_from_this());
-
-  return true;
 }
 
 std::size_t Collection::numberOfMeshes() const
@@ -383,6 +300,28 @@ smtk::mesh::CellSet Collection::cells(smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.cells(dim);
+}
+
+bool Collection::classifyTo(const smtk::model::ResourcePtr& resource)
+{
+  smtk::model::ResourcePtr currentResource = this->classifiedTo();
+  if (currentResource != nullptr)
+  {
+    this->links().removeLinksTo(
+      std::static_pointer_cast<smtk::resource::Resource>(currentResource), ClassificationRole);
+  }
+  return this->links()
+           .addLinkTo(
+             std::static_pointer_cast<smtk::resource::Resource>(resource), ClassificationRole)
+           .first != smtk::common::UUID::null();
+}
+
+smtk::model::ResourcePtr Collection::classifiedTo() const
+{
+  auto classifiedObjects = this->links().linkedTo(ClassificationRole);
+  return (!classifiedObjects.empty()
+      ? std::dynamic_pointer_cast<smtk::model::Resource>(*classifiedObjects.begin())
+      : smtk::model::ResourcePtr());
 }
 
 smtk::mesh::TypeSet Collection::findAssociatedTypes(const smtk::model::EntityRef& eref) const

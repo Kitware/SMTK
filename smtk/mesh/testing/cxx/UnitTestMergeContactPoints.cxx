@@ -15,7 +15,6 @@
 
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Resource.h"
@@ -100,14 +99,13 @@ smtk::mesh::MeshSet make_MeshPoint(
 
 void verify_simple_merge()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   test(c->isValid(), "collection should be valid");
 
   //make sure merging points works properly
@@ -128,14 +126,13 @@ void verify_simple_merge()
 
 void verify_complex_merge()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   test(c->isValid(), "collection should be valid");
 
   //add multiple new mesh points
@@ -180,14 +177,13 @@ void verify_complex_merge()
 
 void verify_write_valid_collection_hdf5_after_merge()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   test(c->isValid(), "collection should be valid");
 
   //make sure merging points works properly
@@ -234,7 +230,8 @@ void verify_write_valid_collection_hdf5_after_merge()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = smtk::io::importMesh(write_path, meshManager);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  smtk::io::importMesh(write_path, c2);
 
   //remove the file from disk
   cleanup(write_path);

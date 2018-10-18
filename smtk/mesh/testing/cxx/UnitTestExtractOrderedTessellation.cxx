@@ -20,7 +20,6 @@
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -92,12 +91,11 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 int UnitTestExtractOrderedTessellation(int, char** const)
 {
   smtk::model::EntityRef eRef;
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::session::discrete::Resource::Ptr resource = create_discrete_mesh_model();
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, resource);
+  smtk::mesh::CollectionPtr c = convert(resource);
 
   typedef smtk::model::EntityRefs EntityRefs;
 

@@ -13,7 +13,6 @@
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/ReadMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -45,8 +44,7 @@ void verify_write_empty_collection()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".3dm";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = manager->makeCollection();
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
   test(c->isValid(), "empty collection is empty");
 
   const bool result = smtk::io::exportMesh(write_path, c);
@@ -80,8 +78,8 @@ void verify_write_valid_collection()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".3dm";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::readMesh(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::readMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   //export the volume elements

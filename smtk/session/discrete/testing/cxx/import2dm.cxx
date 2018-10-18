@@ -12,6 +12,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/session/discrete/Resource.h"
 #include "smtk/session/discrete/Session.h"
@@ -24,7 +25,6 @@
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Resource.h"
@@ -110,20 +110,15 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  smtk::mesh::ManagerPtr meshmgr = resource->meshes();
-  typedef std::vector<smtk::mesh::CollectionPtr> AssocCollections;
-  AssocCollections assocCollections = meshmgr->collectionsWithAssociations();
-  test(assocCollections.size() == 2, "expecting 2 mesh collections");
+  // The first resource is associated with the created model. The second
+  // resource is the created mesh collection.
+  auto resources = std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
+    importOpResult->findResource("resource"));
 
-  smtk::mesh::CollectionPtr mc = assocCollections[0];
-  if (mc->entity() == model2dm.entity())
-  {
-    // this collection has the same entity id as the model. It holds the
-    // tessellation meshes for each model entity. We are looking for the
-    // mesh that is affiliated with the model, not the one that represents
-    // its tessellation.
-    mc = assocCollections[1];
-  }
+  // Access the created mesh collection.
+  smtk::mesh::CollectionPtr mc =
+    std::dynamic_pointer_cast<smtk::mesh::Collection>(resources->value(1));
+
   test((mc->meshes(smtk::mesh::Dims2)).size() == 4, "Expecting 4 face mesh");
   test((mc->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
   test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
@@ -134,7 +129,7 @@ int main(int argc, char* argv[])
   vtkNew<vtkCompositePolyDataMapper2> map;
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
-  src->SetMeshManager(meshmgr);
+  src->SetMeshCollection(mc);
   src->SetMeshCollectionID(collectionID.toString().c_str());
   if (debug)
   {

@@ -12,7 +12,6 @@
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -44,8 +43,7 @@ void verify_write_empty_collection()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = manager->makeCollection();
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
   test(c->isValid(), "empty collection is empty");
 
   const bool result = smtk::io::exportMesh(write_path, c);
@@ -82,8 +80,8 @@ void verify_read_write_valid_collection()
   write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
   {
-    smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-    smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager);
+    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+    smtk::io::importMesh(file_path, c);
     test(c->isValid(), "collection should be valid");
     test(!c->isModified(), "loaded collection should be marked as not modifed");
 
@@ -98,8 +96,8 @@ void verify_read_write_valid_collection()
   }
 
   {
-    smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-    smtk::mesh::CollectionPtr c = smtk::io::importMesh(write_path, manager);
+    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+    smtk::io::importMesh(write_path, c);
     cleanup(write_path);
 
     test(c && c->isValid(), "collection should be valid");

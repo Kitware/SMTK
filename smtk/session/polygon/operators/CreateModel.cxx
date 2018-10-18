@@ -22,9 +22,6 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/session/polygon/CreateModel_xml.h"
 
 namespace smtk
@@ -91,9 +88,9 @@ CreateModel::Result CreateModel::operateInternal()
   {
     // There are three possible import modes
     //
-    // 1. Import a mesh into an existing resource
-    // 2. Import a mesh as a new model, but using the session of an existing resource
-    // 3. Import a mesh into a new resource
+    // 1. Import a model into an existing resource
+    // 2. Import a model as a new model, but using the session of an existing resource
+    // 3. Import a model into a new resource
 
     smtk::session::polygon::Resource::Ptr resource = nullptr;
     smtk::session::polygon::Session::Ptr session = nullptr;
@@ -185,14 +182,6 @@ CreateModel::Result CreateModel::operateInternal()
       model.setFloatProperty("feature size", storage->featureSize());
       model.setFloatProperty("model scale", storage->modelScale());
       model.setIntegerProperty(SMTK_GEOM_STYLE_PROP, smtk::model::DISCRETE);
-
-      if (result)
-      {
-        session->resource()
-          ->meshes()
-          ->makeCollection(model.entity())
-          ->name(model.name() + "_tessellation");
-      }
     }
   }
 

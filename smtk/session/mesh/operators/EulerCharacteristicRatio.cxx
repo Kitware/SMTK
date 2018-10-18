@@ -18,7 +18,6 @@
 #include "smtk/common/CompilerInformation.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Model.h"
@@ -50,9 +49,8 @@ EulerCharacteristicRatio::Result EulerCharacteristicRatio::operateInternal()
   smtk::session::mesh::Session::Ptr session = resource->session();
 
   // Access the underlying mesh collection for the model.
-  smtk::mesh::CollectionPtr collection =
-    session->meshManager()->findCollection(model.entity())->second;
-  if (!collection->isValid())
+  smtk::mesh::CollectionPtr collection = resource->session()->topology(model)->m_collection;
+  if (collection == nullptr || !collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

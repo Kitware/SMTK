@@ -111,7 +111,8 @@ Import::Result Import::operateInternal()
   }
 
   // Get the collection from the file
-  smtk::mesh::CollectionPtr collection = smtk::io::importMesh(filePath, resource->meshes(), label);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
+  smtk::io::importMesh(filePath, collection, label);
 
   if (!collection || !collection->isValid())
   {

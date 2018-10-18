@@ -16,7 +16,6 @@
 #include "smtk/io/SaveJSON.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 
 namespace py = pybind11;

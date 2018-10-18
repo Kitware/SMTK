@@ -50,8 +50,7 @@ class EntityIterator;
 namespace mesh
 {
 
-//Flyweight interface around a moab database of meshes. When constructed
-//becomes registered with a manager with a weak relationship.
+//Flyweight interface around a moab database of meshes.
 class SMTKCORE_EXPORT Collection
   : public smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>
 {
@@ -62,20 +61,10 @@ class SMTKCORE_EXPORT Collection
   Collection(const smtk::common::UUID& collectionID);
 
   //Construct a valid collection that has an associated interface
-  Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface);
-
-  // The following two constructors will be removed when smtk::mesh::Manager
-  // is deprecated.
-
-  //Construct a valid collection that is associated with a manager
-  //but has an empty interface that can be populated
-  Collection(const smtk::common::UUID& collectionID, smtk::mesh::ManagerPtr mngr);
+  Collection(smtk::mesh::InterfacePtr interface);
 
   //Construct a valid collection that has an associated interface
-  //in the future we need a better way to make collections refer
-  //to different mesh interfaces
-  Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface,
-    smtk::mesh::ManagerPtr mngr);
+  Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface);
 
 public:
   smtkTypeMacro(smtk::mesh::Collection);
@@ -84,9 +73,19 @@ public:
   // typedef referring to the parent resource.
   typedef smtk::resource::Resource ParentResource;
 
+  //A mesh collection may be classified to a model. This relationship is modeled
+  //using resource links.
+  static constexpr smtk::resource::Links::RoleType ClassificationRole = -3;
+
   static smtk::shared_ptr<Collection> create(const smtk::common::UUID& collectionID)
   {
     smtk::shared_ptr<smtk::resource::Resource> shared(new Collection(collectionID));
+    return smtk::static_pointer_cast<Collection>(shared);
+  }
+
+  static smtk::shared_ptr<Collection> create(smtk::mesh::InterfacePtr interface)
+  {
+    smtk::shared_ptr<smtk::resource::Resource> shared(new Collection(interface));
     return smtk::static_pointer_cast<Collection>(shared);
   }
 
@@ -106,8 +105,7 @@ public:
   // visit all components in a resource.
   void visit(resource::Component::Visitor& v) const override;
 
-  //determine if the given Collection is valid and is properly associated
-  //to a manager.
+  //determine if the given Collection is valid.
   bool isValid() const;
 
   //determine if the Collection has been modified. Being Modified means that
@@ -121,16 +119,6 @@ public:
   //get the name of a mesh collection
   std::string name() const override;
   void name(const std::string& n);
-
-  std::shared_ptr<smtk::mesh::Manager> manager() const;
-
-  //assign the collection a unique name, given the current manager.
-  //Note:
-  //If the current name is already unique, no change will happen but we will
-  //return true.
-  //If the collection has no manager, the current name is not changed, and
-  //false is returned
-  bool assignUniqueNameIfNotAlready();
 
   //get the file that this collection was created from
   //will return an empty FileLocation if this collection wasn't read from file
@@ -159,9 +147,6 @@ public:
 
   //fetch the entity id for this uuid
   const smtk::common::UUID entity() const;
-
-  //re-parent the collection onto a new manager.
-  bool reparent(smtk::mesh::ManagerPtr newParent);
 
   std::size_t numberOfMeshes() const;
 
@@ -195,6 +180,9 @@ public:
   smtk::mesh::CellSet cells(smtk::mesh::CellType cellType) const;
   smtk::mesh::CellSet cells(smtk::mesh::CellTypes cellTypes) const;
   smtk::mesh::CellSet cells(smtk::mesh::DimensionType dim) const;
+
+  bool classifyTo(const smtk::model::ResourcePtr&);
+  smtk::model::ResourcePtr classifiedTo() const;
 
   // Queries by a model Cursor
   smtk::mesh::TypeSet findAssociatedTypes(const smtk::model::EntityRef& eref) const;
@@ -364,12 +352,7 @@ private:
   //loaded with a newer version from disk
   void swapInterfaces(smtk::mesh::CollectionPtr& other);
 
-  friend class smtk::mesh::Manager;
   friend class smtk::io::ReadMesh;
-
-  //called by the manager that manages this collection, means that somebody
-  //has requested us to be removed from a collection
-  void removeManagerConnection();
 
   std::string m_name;
   smtk::common::FileLocation m_readLocation;
@@ -380,7 +363,7 @@ private:
   smtk::shared_ptr<MeshStringData> m_stringData;
   smtk::shared_ptr<MeshIntegerData> m_integerData;
 
-  //holds a reference to both the manager and the specific backend interface
+  //holds a reference to the specific backend interface
   class InternalImpl;
   smtk::mesh::Collection::InternalImpl* m_internals;
 };

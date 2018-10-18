@@ -16,7 +16,6 @@
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 namespace py = pybind11;
 
@@ -25,12 +24,12 @@ py::class_< smtk::extension::vtk::io::mesh::ImportVTKData > pybind11_init_smtk_e
   py::class_< smtk::extension::vtk::io::mesh::ImportVTKData > instance(m, "ImportVTKData");
   instance
     .def(py::init<>())
-    .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::std::string const &, ::smtk::mesh::ManagerPtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
+    .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::std::string const &, const ::smtk::mesh::InterfacePtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
     .def("__call__", (bool (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
     .def("__call__", (smtk::mesh::MeshSet (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkDataSet *, ::smtk::mesh::CollectionPtr) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
     .def("__call__", (bool (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkDataSet *, ::smtk::mesh::CollectionPtr, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkDataSet *, ::smtk::mesh::ManagerPtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
-    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ImportVTKData& importData, vtkDataSet *pd, ::smtk::mesh::ManagerPtr & manager){ return importData(pd, manager); })
+    .def("__call__", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::ImportVTKData::*)(::vtkDataSet *, const ::smtk::mesh::InterfacePtr &, ::std::string) const) &smtk::extension::vtk::io::mesh::ImportVTKData::operator())
+    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ImportVTKData& importData, vtkDataSet *pd, const ::smtk::mesh::InterfacePtr& interface){ return importData(pd, interface); })
     ;
   return instance;
 }

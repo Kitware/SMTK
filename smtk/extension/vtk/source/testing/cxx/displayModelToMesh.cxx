@@ -11,7 +11,6 @@
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Resource.h"
@@ -76,9 +75,8 @@ int main(int argc, char* argv[])
     std::cout << "Imported models into resource: " << numModels << std::endl;
     if (numModels > 0)
     {
-      smtk::mesh::ManagerPtr meshmgr = resource->meshes();
       smtk::io::ModelToMesh convert;
-      smtk::mesh::CollectionPtr c = convert(meshmgr, resource);
+      smtk::mesh::CollectionPtr c = convert(resource);
       test(c->isValid(), "collection should be valid");
 
       std::size_t numMeshes = c->numberOfMeshes();
@@ -91,7 +89,7 @@ int main(int argc, char* argv[])
       vtkNew<vtkCompositePolyDataMapper2> map;
       vtkNew<vtkRenderer> ren;
       vtkNew<vtkRenderWindow> win;
-      src->SetMeshManager(meshmgr);
+      src->SetMeshCollection(c);
       src->SetMeshCollectionID(collectionID.toString().c_str());
       if (debug)
       {

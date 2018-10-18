@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/moab/Interface.h"
@@ -36,9 +35,8 @@ double** cellPoints[9] = { vertex, line, triangle, quad, polygon, tetrahedron, p
 
 void verify_moab_incremental_allocator_creation()
 {
-  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
 
   test(collection->isValid(), "collection should be valid");
   test(!collection->isModified(), "collection shouldn't be modified");
@@ -55,9 +53,8 @@ void verify_moab_incremental_allocator_creation()
 
 void verify_json_incremental_allocator_creation()
 {
-  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::json::make_interface();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
 
   test(collection->isValid(), "collection should be valid");
   test(!collection->isModified(), "collection shouldn't be modified");
@@ -75,9 +72,8 @@ void verify_moab_incremental_allocator_cell(smtk::mesh::CellType cellType)
 {
   // Allocate a cell of type <cellType>.
 
-  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
 
   test(collection->isValid(), "collection should be valid");
   test(!collection->isModified(), "collection shouldn't be modified");
@@ -117,9 +113,8 @@ void verify_moab_incremental_allocator_validity(smtk::mesh::CellType cellType)
   // Allocate a cell of type <cellType>, ensuring that the allocator returns the
   // proper success and validity variables along the way.
 
-  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
 
   test(collection->isValid(), "collection should be valid");
   test(!collection->isModified(), "collection shouldn't be modified");
@@ -167,9 +162,8 @@ void verify_moab_incremental_allocator_cells()
 {
   // Allocate one of each type of cell.
 
-  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
 
   test(collection->isValid(), "collection should be valid");
   test(!collection->isModified(), "collection shouldn't be modified");

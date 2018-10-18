@@ -24,7 +24,6 @@
 
 #include "smtk/mesh/core/CellTraits.h"
 #include "smtk/mesh/core/CellTypes.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/utility/Create.h"
 
@@ -126,7 +125,7 @@ CreateUniformGrid::Result CreateUniformGrid::operateInternal()
   }
 
   // Create a new mesh collection
-  smtk::mesh::CollectionPtr collection = resource->meshes()->makeCollection();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
 
   // Construct a uniform grid
   std::vector<smtk::mesh::MeshSet> meshes;

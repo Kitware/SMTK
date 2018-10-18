@@ -22,7 +22,6 @@
 #include "smtk/io/ExportMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"

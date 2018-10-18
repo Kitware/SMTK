@@ -12,7 +12,6 @@
 #include "smtk/io/mesh/MeshIO.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/moab/Readers.h"
 #include "smtk/mesh/moab/Writers.h"
@@ -45,9 +44,9 @@ MeshIOMoab::MeshIOMoab()
 }
 
 smtk::mesh::CollectionPtr MeshIOMoab::importMesh(
-  const std::string& filePath, smtk::mesh::ManagerPtr& manager, const std::string&) const
+  const std::string& filePath, const smtk::mesh::InterfacePtr& interface, const std::string&) const
 {
-  return this->read(filePath, manager, Subset::EntireCollection);
+  return this->read(filePath, interface, Subset::EntireCollection);
 }
 
 bool MeshIOMoab::importMesh(
@@ -71,23 +70,23 @@ bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::CollectionP
 // }
 
 smtk::mesh::CollectionPtr MeshIOMoab::read(
-  const std::string& filePath, smtk::mesh::ManagerPtr& manager, Subset subset) const
+  const std::string& filePath, const smtk::mesh::InterfacePtr& interface, Subset subset) const
 {
   smtk::mesh::CollectionPtr collection;
 
   switch (subset)
   {
     case Subset::EntireCollection:
-      collection = smtk::mesh::moab::read(filePath, manager);
+      collection = smtk::mesh::moab::read(filePath);
       break;
     case Subset::OnlyDomain:
-      collection = smtk::mesh::moab::read_domain(filePath, manager);
+      collection = smtk::mesh::moab::read_domain(filePath);
       break;
     case Subset::OnlyDirichlet:
-      collection = smtk::mesh::moab::read_dirichlet(filePath, manager);
+      collection = smtk::mesh::moab::read_dirichlet(filePath);
       break;
     case Subset::OnlyNeumann:
-      collection = smtk::mesh::moab::read_neumann(filePath, manager);
+      collection = smtk::mesh::moab::read_neumann(filePath);
       break;
     default:
       collection = smtk::mesh::Collection::create();

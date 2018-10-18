@@ -30,7 +30,6 @@
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -161,8 +160,16 @@ int TestElevateMesh(int argc, char* argv[])
   }
 
   smtk::model::Face meshedFace = meshedFaceItem->valueAs<smtk::model::Entity>();
-  auto associatedCollections = resource->meshes()->associatedCollections(meshedFace);
-  smtk::mesh::CollectionPtr collection = associatedCollections[0];
+
+  // The first resource is associated with the created model. The second
+  // resource is the created mesh collection.
+  auto resources = std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
+    importOpResult->findResource("resource"));
+
+  // Access the created mesh collection.
+  smtk::mesh::CollectionPtr collection =
+    std::dynamic_pointer_cast<smtk::mesh::Collection>(resources->value(1));
+
   smtk::mesh::MeshSet mesh = collection->meshes();
 
   if (!model2dm.isValid())

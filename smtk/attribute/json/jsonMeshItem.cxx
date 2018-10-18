@@ -16,7 +16,6 @@
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/common/UUID.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/json/jsonHandleRange.h"
 

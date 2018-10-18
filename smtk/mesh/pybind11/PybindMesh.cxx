@@ -34,7 +34,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindForEachTypes.h"
 #include "PybindHandle.h"
 #include "PybindInterface.h"
-#include "PybindManager.h"
 #include "PybindMeshSet.h"
 #include "PybindMetrics.h"
 #include "PybindPointField.h"
@@ -86,7 +85,6 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::utility::MeshConstants > smtk_mesh_MeshConstants = pybind11_init_smtk_mesh_MeshConstants(mesh);
   PySharedPtrClass< smtk::mesh::IntegerTag > smtk_mesh_IntegerTag = pybind11_init_smtk_mesh_IntegerTag(mesh);
   PySharedPtrClass< smtk::mesh::Interface > smtk_mesh_Interface = pybind11_init_smtk_mesh_Interface(mesh);
-  PySharedPtrClass< smtk::mesh::Manager > smtk_mesh_Manager = pybind11_init_smtk_mesh_Manager(mesh);
   PySharedPtrClass< smtk::mesh::MeshForEach > smtk_mesh_MeshForEach = pybind11_init_smtk_mesh_MeshForEach(mesh);
   PySharedPtrClass< smtk::mesh::MeshSet > smtk_mesh_MeshSet = pybind11_init_smtk_mesh_MeshSet(mesh);
   PySharedPtrClass< smtk::mesh::OpaqueTag<16> > smtk_mesh_OpaqueTag_16_ = pybind11_init_smtk_mesh_OpaqueTag_16_(mesh);

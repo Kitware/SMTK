@@ -38,7 +38,7 @@ public:
   MeshIOXMS();
 
   smtk::mesh::CollectionPtr importMesh(
-    const std::string&, smtk::mesh::ManagerPtr&, const std::string&) const override;
+    const std::string&, const smtk::mesh::InterfacePtr&, const std::string&) const override;
 
   bool importMesh(const std::string&, smtk::mesh::CollectionPtr, const std::string&) const override;
 

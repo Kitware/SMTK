@@ -40,9 +40,10 @@ public:
 
   static bool ExtensionIsSupported(const std::string& ext);
 
-  //Load the domain sets from a moab data file as a new collection into the
-  //given manager.
-  smtk::mesh::CollectionPtr operator()(const std::string& filePath, smtk::mesh::ManagerPtr manager,
+  //Load the domain sets from a moab data file as a new collection with the
+  //given interface.
+  smtk::mesh::CollectionPtr operator()(const std::string& filePath,
+    const smtk::mesh::InterfacePtr& interface,
     std::string domainPropertyName = std::string()) const;
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
     std::string domainPropertyName = std::string()) const;
@@ -52,9 +53,9 @@ public:
 };
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(
-  const std::string& filePath, smtk::mesh::ManagerPtr manager);
+  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
-  smtk::mesh::ManagerPtr manager, const std::string& domainPropertyName);
+  const smtk::mesh::InterfacePtr& interface, const std::string& domainPropertyName);
 SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection);
 SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
   const std::string& domainPropertyName);

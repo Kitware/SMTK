@@ -10,7 +10,6 @@
 
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -20,12 +19,13 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, mngr);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   return c;
@@ -446,8 +446,7 @@ void verify_pointset_for_each_modify(const smtk::mesh::CollectionPtr& c)
 
 int UnitTestPointSet(int, char** const)
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh();
 
   verify_constructors(c);
   verify_subsets(c);

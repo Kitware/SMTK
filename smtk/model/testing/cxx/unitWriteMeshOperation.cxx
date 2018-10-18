@@ -19,7 +19,6 @@
 #include "smtk/model/DefaultSession.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Resource.h"
 

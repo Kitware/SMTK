@@ -18,8 +18,6 @@
 
 #include "smtk/io/WriteMesh.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
 
@@ -68,10 +66,9 @@ smtk::session::mesh::Export::Result Export::operateInternal()
     std::static_pointer_cast<smtk::session::mesh::Resource>(dataset.component()->resource());
   smtk::session::mesh::Session::Ptr session = resource->session();
 
-  smtk::mesh::CollectionPtr collection =
-    session->meshManager()->findCollection(dataset.entity())->second;
+  smtk::mesh::CollectionPtr collection = resource->session()->topology(dataset)->m_collection;
 
-  if (!collection->isValid())
+  if (collection == nullptr || !collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

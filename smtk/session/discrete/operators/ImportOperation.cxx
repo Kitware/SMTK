@@ -335,6 +335,12 @@ ImportOperation::Result ImportOperation::operateInternal()
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
     created->appendValue(modelEntity.component());
   }
+
+  {
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    created->setValue(resource);
+  }
+
   // for 2dm files model and mesh have same geometry,
   // so create meshes for faces and edges
   if (ext == ".2dm" || ext == ".3dm")
@@ -348,12 +354,11 @@ ImportOperation::Result ImportOperation::operateInternal()
         c->name(vtksys::SystemTools::GetFilenameWithoutExtension(filename));
       }
       result->findComponent("mesh_created")->setValue(modelEntity.component());
-    }
-  }
 
-  {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+      c->classifyTo(resource);
+
+      result->findResource("resource")->appendValue(c);
+    }
   }
 
   auto resultModels = result->findComponent("model");

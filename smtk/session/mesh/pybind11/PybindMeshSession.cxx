@@ -21,6 +21,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "PybindResource.h"
 #include "PybindSession.h"
 #include "PybindTopology.h"
 
@@ -44,6 +45,7 @@ PYBIND11_MODULE(_smtkPybindMeshSession, mesh)
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::session::mesh::Topology > smtk_session_mesh_Topology = pybind11_init_smtk_session_mesh_Topology(mesh);
   PySharedPtrClass< smtk::session::mesh::Session, smtk::model::Session > smtk_session_mesh_Session = pybind11_init_smtk_session_mesh_Session(mesh);
+  PySharedPtrClass< smtk::session::mesh::Resource, smtk::model::Resource > smtk_session_mesh_Resource = pybind11_init_smtk_session_mesh_Resource(mesh);
 
   PySharedPtrClass< smtk::session::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > smtk_session_mesh_EulerCharacteristicRatio = pybind11_init_smtk_session_mesh_EulerCharacteristicRatio(mesh);
   PySharedPtrClass< smtk::session::mesh::Import, smtk::operation::XMLOperation > smtk_session_mesh_Import = pybind11_init_smtk_session_mesh_Import(mesh);

@@ -17,7 +17,6 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityIterator.h"
 
 namespace py = pybind11;
@@ -27,7 +26,6 @@ PySharedPtrClass< smtk::mesh::Collection > pybind11_init_smtk_mesh_Collection(py
   PySharedPtrClass< smtk::mesh::Collection > instance(m, "Collection");
   instance
     .def_property("modelResource", &smtk::mesh::Collection::modelResource, &smtk::mesh::Collection::setModelResource)
-    .def("assignUniqueNameIfNotAlready", &smtk::mesh::Collection::assignUniqueNameIfNotAlready)
     .def("associateToModel", &smtk::mesh::Collection::associateToModel, py::arg("uuid"))
     .def("associatedModel", &smtk::mesh::Collection::associatedModel)
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::Collection::*)() const) &smtk::mesh::Collection::cells)
@@ -93,7 +91,6 @@ PySharedPtrClass< smtk::mesh::Collection > pybind11_init_smtk_mesh_Collection(py
     .def("removeIntegerProperty", &smtk::mesh::Collection::removeIntegerProperty, py::arg("meshset"), py::arg("propName"))
     .def("removeMeshes", &smtk::mesh::Collection::removeMeshes, py::arg("meshesToDelete"))
     .def("removeStringProperty", &smtk::mesh::Collection::removeStringProperty, py::arg("meshset"), py::arg("propName"))
-    .def("reparent", &smtk::mesh::Collection::reparent, py::arg("newParent"))
     .def("setAssociation", &smtk::mesh::Collection::setAssociation, py::arg("eref"), py::arg("meshset"))
     .def("setDirichletOnMeshes", &smtk::mesh::Collection::setDirichletOnMeshes, py::arg("meshes"), py::arg("d"))
     .def("setDomainOnMeshes", &smtk::mesh::Collection::setDomainOnMeshes, py::arg("meshes"), py::arg("m"))
@@ -110,6 +107,9 @@ PySharedPtrClass< smtk::mesh::Collection > pybind11_init_smtk_mesh_Collection(py
     .def("writeLocation", (void (smtk::mesh::Collection::*)(::smtk::common::FileLocation const &)) &smtk::mesh::Collection::writeLocation, py::arg("path"))
     .def("writeLocation", (void (smtk::mesh::Collection::*)(::std::string const &)) &smtk::mesh::Collection::writeLocation, py::arg("path"))
     .def("writeLocation", (smtk::common::FileLocation const & (smtk::mesh::Collection::*)() const) &smtk::mesh::Collection::writeLocation)
+    .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Resource> i) {
+        return std::dynamic_pointer_cast<smtk::mesh::Collection>(i);
+      })
     ;
   return instance;
 }

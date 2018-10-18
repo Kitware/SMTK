@@ -166,9 +166,10 @@ def breakMaterialsByCellType(c):
         c.removeMeshes(domainMeshes)
 
 
-def convert(inputFile, manager, material):
+def convert(inputFile, material):
     cnvrt = smtk.io.vtk.ImportVTKData()
-    collection = cnvrt(inputFile, manager, material)
+    collection = smtk.mesh.Collection.create()
+    cnvrt(inputFile, collection, material)
     return collection
 
 
@@ -201,15 +202,13 @@ def extractMaterials(c, radius, origin, outputFile, bounds):
 
 
 def test_multiscale_converter():
-    manager = smtk.mesh.Manager.create()
-
     inputFileName = smtk.testing.DATA_DIR + '/mesh/3d/nickel_superalloy.vtu'
     outputFileName = 'mesh3D.exo'
     materialName = 'ZoneIds'
     radius = 1.2
     origin = [.02, 0., 0.]
 
-    c = convert(inputFileName, manager, materialName)
+    c = convert(inputFileName, materialName)
     data = readXMLFile(inputFileName)
     bounds = data.GetBounds()
 

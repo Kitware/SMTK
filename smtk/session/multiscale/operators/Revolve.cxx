@@ -24,7 +24,6 @@
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "vtkNew.h"
 #include "vtkUnstructuredGrid.h"

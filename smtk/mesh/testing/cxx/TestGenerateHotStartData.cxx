@@ -24,7 +24,6 @@
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/operators/GenerateHotStartData.h"
 
@@ -144,15 +143,12 @@ int main(int argc, char* argv[])
   // Create a model resource
   smtk::model::ResourcePtr resource = smtk::model::Resource::create();
 
-  // Access the mesh manager
-  smtk::mesh::ManagerPtr meshManager = resource->meshes();
-
   // Load in the model
   create_simple_mesh_model(resource, std::string(argv[1]));
 
   // Convert it to a mesh
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, resource);
+  smtk::mesh::CollectionPtr collection = convert(resource);
 
   // Create a "Generate Hotstart Data" operator
   smtk::operation::Operation::Ptr generateHotStartDataOp =
@@ -173,8 +169,7 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's input mesh
-  // smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
-  smtk::mesh::MeshSet mesh = c->meshes();
+  smtk::mesh::MeshSet mesh = collection->meshes();
   valueSet = generateHotStartDataOp->parameters()->findMesh("mesh")->setValue(mesh);
 
   if (!valueSet)
@@ -271,8 +266,7 @@ int main(int argc, char* argv[])
 
   // Histogram the resulting points and compare against expected values.
   std::vector<std::size_t> histogram;
-  smtk::mesh::PointField pointField =
-    meshManager->collectionBegin()->second->meshes().pointField("ioh");
+  smtk::mesh::PointField pointField = collection->meshes().pointField("ioh");
   HistogramPointFieldData histogramPointFieldData(10, -.01, 50.01, pointField);
   smtk::mesh::for_each(mesh.points(), histogramPointFieldData);
   histogram = histogramPointFieldData.histogram();

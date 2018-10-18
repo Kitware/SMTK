@@ -24,15 +24,15 @@ PySharedPtrClass< smtk::io::ReadMesh > pybind11_init_smtk_io_ReadMesh(py::module
   instance
     .def(py::init<>())
     .def_static("ExtensionIsSupported", &smtk::io::ReadMesh::ExtensionIsSupported)
-    .def("__call__", (smtk::mesh::CollectionPtr (smtk::io::ReadMesh::*)(::std::string const &, ::smtk::mesh::ManagerPtr, ::smtk::io::mesh::Subset) const) &smtk::io::ReadMesh::operator())
+    .def("__call__", (smtk::mesh::CollectionPtr (smtk::io::ReadMesh::*)(::std::string const &, const ::smtk::mesh::InterfacePtr&, ::smtk::io::mesh::Subset) const) &smtk::io::ReadMesh::operator())
     .def("__call__", (bool (smtk::io::ReadMesh::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::smtk::io::mesh::Subset) const) &smtk::io::ReadMesh::operator())
     ;
   return instance;
 }
 
-void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7ManagerEEE(py::module &m)
+void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
-  m.def("readDirichlet", (smtk::mesh::CollectionPtr (*)(::std::string const &, ::smtk::mesh::ManagerPtr)) &smtk::io::readDirichlet, "", py::arg("filePath"), py::arg("manager"));
+  m.def("readDirichlet", (smtk::mesh::CollectionPtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readDirichlet, "", py::arg("filePath"), py::arg("interface"));
 }
 
 void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEE(py::module &m)
@@ -40,9 +40,9 @@ void pybind11_init__ZN4smtk2io13readDirichletERKNSt3__112basic_stringIcNS1_11cha
   m.def("readDirichlet", (bool (*)(::std::string const &, ::smtk::mesh::CollectionPtr)) &smtk::io::readDirichlet, "", py::arg("filePath"), py::arg("collection"));
 }
 
-void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7ManagerEEE(py::module &m)
+void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
-  m.def("readDomain", (smtk::mesh::CollectionPtr (*)(::std::string const &, ::smtk::mesh::ManagerPtr)) &smtk::io::readDomain, "", py::arg("filePath"), py::arg("manager"));
+  m.def("readDomain", (smtk::mesh::CollectionPtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readDomain, "", py::arg("filePath"), py::arg("interface"));
 }
 
 void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEE(py::module &m)
@@ -50,9 +50,9 @@ void pybind11_init__ZN4smtk2io10readDomainERKNSt3__112basic_stringIcNS1_11char_t
   m.def("readDomain", (bool (*)(::std::string const &, ::smtk::mesh::CollectionPtr)) &smtk::io::readDomain, "", py::arg("filePath"), py::arg("collection"));
 }
 
-void pybind11_init__ZN4smtk2io20readEntireCollectionERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7ManagerEEE(py::module &m)
+void pybind11_init__ZN4smtk2io20readEntireCollectionERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
-  m.def("readEntireCollection", (smtk::mesh::CollectionPtr (*)(::std::string const &, ::smtk::mesh::ManagerPtr)) &smtk::io::readEntireCollection, "", py::arg("filePath"), py::arg("manager"));
+  m.def("readEntireCollection", (smtk::mesh::CollectionPtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readEntireCollection, "", py::arg("filePath"), py::arg("interface"));
 }
 
 void pybind11_init__ZN4smtk2io20readEntireCollectionERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEE(py::module &m)
@@ -60,9 +60,9 @@ void pybind11_init__ZN4smtk2io20readEntireCollectionERKNSt3__112basic_stringIcNS
   m.def("readEntireCollection", (bool (*)(::std::string const &, ::smtk::mesh::CollectionPtr)) &smtk::io::readEntireCollection, "", py::arg("filePath"), py::arg("collection"));
 }
 
-void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7ManagerEEENS0_4mesh6SubsetE(py::module &m)
+void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEENS0_4mesh6SubsetE(py::module &m)
 {
-  m.def("readMesh", (smtk::mesh::CollectionPtr (*)(::std::string const &, ::smtk::mesh::ManagerPtr, ::smtk::io::mesh::Subset)) &smtk::io::readMesh, "", py::arg("filePath"), py::arg("manager"), py::arg("subset") = ::smtk::io::mesh::Subset::EntireCollection);
+  m.def("readMesh", (smtk::mesh::CollectionPtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&, ::smtk::io::mesh::Subset)) &smtk::io::readMesh, "", py::arg("filePath"), py::arg("interface"), py::arg("subset") = ::smtk::io::mesh::Subset::EntireCollection);
 }
 
 void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEENS0_4mesh6SubsetE(py::module &m)
@@ -70,9 +70,9 @@ void pybind11_init__ZN4smtk2io8readMeshERKNSt3__112basic_stringIcNS1_11char_trai
   m.def("readMesh", (bool (*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::smtk::io::mesh::Subset)) &smtk::io::readMesh, "", py::arg("filePath"), py::arg("collection"), py::arg("subset") = ::smtk::io::mesh::Subset::EntireCollection);
 }
 
-void pybind11_init__ZN4smtk2io11readNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7ManagerEEE(py::module &m)
+void pybind11_init__ZN4smtk2io11readNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh7InterfaceEEE(py::module &m)
 {
-  m.def("readNeumann", (smtk::mesh::CollectionPtr (*)(::std::string const &, ::smtk::mesh::ManagerPtr)) &smtk::io::readNeumann, "", py::arg("filePath"), py::arg("manager"));
+  m.def("readNeumann", (smtk::mesh::CollectionPtr (*)(::std::string const &, const ::smtk::mesh::InterfacePtr&)) &smtk::io::readNeumann, "", py::arg("filePath"), py::arg("interface"));
 }
 
 void pybind11_init__ZN4smtk2io11readNeumannERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEENS1_10shared_ptrINS_4mesh10CollectionEEE(py::module &m)

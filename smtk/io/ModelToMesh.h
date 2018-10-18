@@ -38,8 +38,7 @@ public:
   void setMergeTolerance(double tol) { m_tolerance = tol; }
 
   //convert smtk::model to a collection
-  smtk::mesh::CollectionPtr operator()(
-    const smtk::mesh::ManagerPtr& meshManager, const smtk::model::ResourcePtr& modelResource) const;
+  smtk::mesh::CollectionPtr operator()(const smtk::model::ResourcePtr& modelResource) const;
   //convert smtk::model to a collection
   smtk::mesh::CollectionPtr operator()(const smtk::model::Model& model) const;
 

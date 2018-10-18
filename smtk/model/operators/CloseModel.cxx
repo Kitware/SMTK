@@ -17,7 +17,6 @@
 #include "smtk/model/Session.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -70,9 +69,11 @@ CloseModel::Result CloseModel::operateInternal()
     }
 
     // Similarly, meshes must be added to the "mesh_expunged" attribute.
-    for (auto cit : resource->meshes()->associatedCollections(model))
+    auto associatedMeshes =
+      resource->links().linkedFrom(smtk::mesh::Collection::ClassificationRole);
+    for (auto cit : associatedMeshes)
     {
-      expungedMeshes.insert(cit->meshes());
+      expungedMeshes.insert(std::dynamic_pointer_cast<smtk::mesh::Collection>(cit)->meshes());
     }
 
     if (!resource->eraseModel(model))

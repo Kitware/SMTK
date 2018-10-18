@@ -10,10 +10,6 @@
 #include "smtk/session/polygon/internal/Model.h"
 #include "smtk/session/polygon/internal/Edge.h"
 
-#include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
-#include "smtk/mesh/core/MeshSet.h"
-
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
@@ -331,7 +327,6 @@ smtk::model::Vertex pmodel::addModelVertex(
   {
     self.embedEntity(v);
     v.assignDefaultName();
-    this->addVertMeshTessellation(v, vi);
   }
 
   return v;
@@ -1289,93 +1284,6 @@ void pmodel::addFaceTessellation(smtk::model::Face& faceRec)
   faceRec.setBoundingBox(&bbox[0]);
 }
 
-void pmodel::addFaceMeshTessellation(smtk::model::Face& faceRec)
-{
-  smtk::model::Model model = faceRec.owningModel();
-  poly::polygon_set_data<internal::Coord> polys;
-  poly::polygon_data<internal::Coord> pface;
-  smtk::model::Loops outerLoops = faceRec.positiveUse().loops();
-
-  smtk::mesh::CollectionPtr collection =
-    faceRec.owningSession().resource()->meshes()->collection(faceRec.owningModel().entity());
-  if (collection && collection->isValid())
-  {
-    smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(faceRec);
-    if (!modified.is_empty())
-    {
-      collection->removeMeshes(modified);
-    }
-
-    smtk::mesh::IncrementalAllocatorPtr ialloc = collection->interface()->incrementalAllocator();
-
-    for (smtk::model::Loops::iterator lit = outerLoops.begin(); lit != outerLoops.end(); ++lit)
-    {
-      smtk::model::Loops innerLoops = lit->containedLoops();
-      int npp = 1 + static_cast<int>(innerLoops.size());
-      std::vector<std::vector<internal::Point> > pp2(npp);
-      int ll = 0;
-      //std::cout << "  Loop " << lit->name() << "\n";
-      this->pointsInLoopOrder(pp2[ll], *lit);
-      internal::Coord denx, deny;
-      preparePointsForBoost(pp2[ll], denx, deny, false);
-      bool denom = denx > 1 || deny > 1;
-      pface.set(pp2[ll].rbegin(), pp2[ll].rend()); // boost likes its loops backwards
-      poly::assign(polys, pface);
-      ++ll;
-      for (smtk::model::Loops::iterator ilit = innerLoops.begin(); ilit != innerLoops.end();
-           ++ilit, ++ll)
-      {
-        //std::cout << "    Inner Loop " << ilit->name() << "\n";
-        this->pointsInLoopOrder(pp2[ll], *ilit);
-        preparePointsForBoost(pp2[ll], denx, deny, true);
-        poly::polygon_data<internal::Coord> loop;
-        loop.set(pp2[ll].rbegin(), pp2[ll].rend());
-        polys -= loop;
-      }
-
-      // Add the component to the face tessellation:
-      std::vector<poly::polygon_data<internal::Coord> > tess;
-      polys.get_trapezoids(tess);
-      std::vector<poly::polygon_data<internal::Coord> >::const_iterator pit;
-      double smtkPt[3];
-      internal::Point ipt;
-      for (pit = tess.begin(); pit != tess.end(); ++pit)
-      {
-        poly::polygon_data<internal::Coord>::iterator_type pcit;
-        pcit = poly::begin_points(*pit);
-        std::vector<long long int> triConn;
-        triConn.resize(3);
-        ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
-        this->liftPoint(ipt, &smtkPt[0]);
-        triConn[0] = static_cast<long long int>(ialloc->addCoordinate(smtkPt));
-        ++pcit;
-        ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
-        this->liftPoint(ipt, &smtkPt[0]);
-        triConn[2] = static_cast<long long int>(ialloc->addCoordinate(smtkPt));
-        ++pcit;
-        for (; pcit != poly::end_points(*pit); ++pcit)
-        {
-          triConn[1] = triConn[2];
-          ipt = !denom ? *pcit : internal::Point(pcit->x() * denx, pcit->y() * deny);
-          this->liftPoint(ipt, &smtkPt[0]);
-          triConn[2] = static_cast<long long int>(ialloc->addCoordinate(smtkPt));
-          ialloc->addCell(smtk::mesh::Triangle, &triConn[0]);
-        }
-      }
-    }
-
-    if (ialloc->flush())
-    {
-      smtk::mesh::MeshSet meshForEntity =
-        collection->createMesh(smtk::mesh::CellSet(collection, ialloc->cells()));
-      if (!meshForEntity.is_empty())
-      {
-        meshForEntity.setModelEntity(faceRec);
-      }
-    }
-  }
-}
-
 void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr edgeData)
 {
   if (!edgeRec.isValid() || !edgeData)
@@ -1413,54 +1321,6 @@ void pmodel::addEdgeTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr
   edgeRec.setBoundingBox(&bbox[0]);
 }
 
-void pmodel::addEdgeMeshTessellation(smtk::model::Edge& edgeRec, internal::edge::Ptr edgeData)
-{
-  if (!edgeRec.isValid() || !edgeData)
-    return;
-
-  PointSeq::const_iterator ptIt;
-  std::vector<double> coords(3);
-  smtk::mesh::CollectionPtr collection =
-    edgeRec.owningSession().resource()->meshes()->collection(edgeRec.owningModel().entity());
-  if (collection && collection->isValid())
-  {
-    smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(edgeRec);
-    if (!modified.is_empty())
-    {
-      collection->removeMeshes(modified);
-    }
-
-    smtk::mesh::IncrementalAllocatorPtr ialloc = collection->interface()->incrementalAllocator();
-
-    int connectivity[2];
-
-    for (ptIt = edgeData->pointsBegin(); ptIt != edgeData->pointsEnd(); ++ptIt)
-    {
-      this->liftPoint(*ptIt, coords.begin());
-      if (ptIt == edgeData->pointsBegin())
-      {
-        connectivity[0] = static_cast<int>(ialloc->addCoordinate(&coords[0]));
-      }
-      else
-      {
-        connectivity[1] = static_cast<int>(ialloc->addCoordinate(&coords[0]));
-        ialloc->addCell(smtk::mesh::Line, connectivity);
-        connectivity[0] = connectivity[1];
-      }
-    }
-
-    if (ialloc->flush())
-    {
-      smtk::mesh::MeshSet meshForEntity =
-        collection->createMesh(smtk::mesh::CellSet(collection, ialloc->cells()));
-      if (!meshForEntity.is_empty())
-      {
-        meshForEntity.setModelEntity(edgeRec);
-      }
-    }
-  }
-}
-
 void pmodel::addVertTessellation(smtk::model::Vertex& vertRec, internal::vertex::Ptr vertData)
 {
   if (!vertRec.isValid() || !vertData)
@@ -1471,39 +1331,6 @@ void pmodel::addVertTessellation(smtk::model::Vertex& vertRec, internal::vertex:
   smtk::model::Tessellation tess;
   tess.addPoint(snappedPt);
   vertRec.setTessellationAndBoundingBox(&tess);
-}
-
-void pmodel::addVertMeshTessellation(smtk::model::Vertex& vertRec, internal::vertex::Ptr vertData)
-{
-  if (!vertRec.isValid() || !vertData)
-    return;
-
-  double snappedPt[3];
-  smtk::mesh::CollectionPtr collection =
-    vertRec.owningSession().resource()->meshes()->collection(vertRec.owningModel().entity());
-  if (collection && collection->isValid())
-  {
-    smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(vertRec);
-    if (!modified.is_empty())
-    {
-      collection->removeMeshes(modified);
-    }
-
-    smtk::mesh::IncrementalAllocatorPtr ialloc = collection->interface()->incrementalAllocator();
-
-    long long int conn = static_cast<long long int>(ialloc->addCoordinate(snappedPt));
-    ialloc->addCell(smtk::mesh::Vertex, &conn);
-
-    if (ialloc->flush())
-    {
-      smtk::mesh::MeshSet meshForEntity =
-        collection->createMesh(smtk::mesh::CellSet(collection, ialloc->cells()));
-      if (!meshForEntity.is_empty())
-      {
-        meshForEntity.setModelEntity(vertRec);
-      }
-    }
-  }
 }
 
 Id pmodel::pointId(const Point& p) const
@@ -1585,7 +1412,6 @@ bool pmodel::tweakEdge(
     {
       smtkDebugMacro(m_session->log(), "Retessellating face " << fit->name() << ".");
       this->addFaceTessellation(*fit);
-      this->addFaceMeshTessellation(*fit);
       modEdgesAndFaces.insert(*fit);
     }
   }
@@ -1641,7 +1467,6 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
     }
     *pit = vertPosn;
     this->addEdgeTessellation(edgeRec, ee);
-    this->addEdgeMeshTessellation(edgeRec, ee);
     modifiedEdgesAndFaces.insert(edgeRec);
 
     // If any faces are attached to the vertex, they must be retessellated.
@@ -1660,7 +1485,6 @@ bool pmodel::tweakVertex(smtk::model::Vertex vertRec, const Point& vertPosn,
 
   // Update the SMTK tessellation in world coordinates:
   this->addVertTessellation(vertRec, vv);
-  this->addVertMeshTessellation(vertRec, vv);
 
   return didChange;
 }

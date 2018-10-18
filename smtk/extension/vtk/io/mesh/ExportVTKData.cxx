@@ -16,7 +16,6 @@
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/CellTraits.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
 

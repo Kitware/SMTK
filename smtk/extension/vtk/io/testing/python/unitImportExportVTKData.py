@@ -120,24 +120,12 @@ def test_same_datasets(ds, ds2):
         it2.GoToNextCell()
 
 
-def verify_null_polydata():
-    manager = smtk.mesh.Manager.create()
-    imprt = smtk.io.vtk.ImportVTKData()
-
-    pd = make_EmptyPolyData()
-    c = imprt(pd, manager)
-
-    if not (c == None):
-        raise RuntimeError(
-            "collection should be invalid for a empty poly data")
-
-
 def verify_tri_polydata():
-    manager = smtk.mesh.Manager.create()
     imprt = smtk.io.vtk.ImportVTKData()
 
     pd = make_TrianglePolyData()
-    c = imprt(pd, manager)
+    c = smtk.mesh.Collection.create()
+    imprt(pd, c)
 
     if c == None or not c.isValid():
         raise RuntimeError("collection should exist")
@@ -164,11 +152,11 @@ def verify_tri_polydata():
 
 
 def verify_tri_ugrid():
-    manager = smtk.mesh.Manager.create()
     imprt = smtk.io.vtk.ImportVTKData()
 
     ug = make_TriangleUGrid()
-    c = imprt(ug, manager)
+    c = smtk.mesh.Collection.create()
+    imprt(ug, c)
 
     if c == None or not c.isValid():
         raise RuntimeError("collection should be valid")
@@ -192,11 +180,11 @@ def verify_tri_ugrid():
 
 
 def verify_mixed_cell_ugrid():
-    manager = smtk.mesh.Manager.create()
     imprt = smtk.io.vtk.ImportVTKData()
 
     ug = make_MixedVolUGrid()
-    c = imprt(ug, manager)
+    c = smtk.mesh.Collection.create()
+    imprt(ug, c)
 
     if c == None or not c.isValid():
         raise RuntimeError("collection should be valid")
@@ -220,7 +208,6 @@ def verify_mixed_cell_ugrid():
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()
-    verify_null_polydata()
     verify_tri_polydata()
     verify_tri_ugrid()
     verify_mixed_cell_ugrid()

@@ -24,8 +24,7 @@ py::class_< smtk::session::mesh::Topology > pybind11_init_smtk_session_mesh_Topo
     .def(py::init<::smtk::mesh::CollectionPtr>())
     .def(py::init<::smtk::session::mesh::Topology const &>())
     .def("deepcopy", (smtk::session::mesh::Topology & (smtk::session::mesh::Topology::*)(::smtk::session::mesh::Topology const &)) &smtk::session::mesh::Topology::operator=)
-    .def_readwrite("m_collection", &smtk::session::mesh::Topology::m_collection)
-    .def_readwrite("m_elements", &smtk::session::mesh::Topology::m_elements)
+    .def("collection", [](const smtk::session::mesh::Topology& topology){ return topology.m_collection; })
     ;
   py::class_< smtk::session::mesh::Topology::Element >(instance, "Element")
     .def(py::init<::smtk::mesh::MeshSet, int>())

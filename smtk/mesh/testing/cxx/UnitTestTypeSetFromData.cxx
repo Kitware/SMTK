@@ -10,7 +10,6 @@
 
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -20,23 +19,25 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_hex_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_hex_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, mngr);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   return c;
 }
 
-smtk::mesh::CollectionPtr load_tet_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_tet_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, mngr);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   return c;
@@ -147,12 +148,10 @@ void verify_tet_typeset_queries(const smtk::mesh::CollectionPtr& c)
 
 int UnitTestTypeSetFromData(int, char** const)
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-
-  smtk::mesh::CollectionPtr hexCollec = load_hex_mesh(mngr);
+  smtk::mesh::CollectionPtr hexCollec = load_hex_mesh();
   verify_hex_typeset_queries(hexCollec);
 
-  smtk::mesh::CollectionPtr tetCollec = load_tet_mesh(mngr);
+  smtk::mesh::CollectionPtr tetCollec = load_tet_mesh();
   verify_tet_typeset_queries(tetCollec);
 
   return 0;

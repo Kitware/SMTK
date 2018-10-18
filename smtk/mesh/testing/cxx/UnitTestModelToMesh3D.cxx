@@ -12,7 +12,6 @@
 #include "smtk/io/WriteMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Resource.h"
@@ -84,51 +83,23 @@ void create_simple_model(smtk::model::ResourcePtr resource)
   resource->assignDefaultNames();
 }
 
-void verify_null_managers()
-{
-  smtk::mesh::ManagerPtr null_meshManager;
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
-
-  smtk::model::ResourcePtr null_modelResource;
-  smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
-
-  smtk::io::ModelToMesh convert;
-
-  {
-    smtk::mesh::CollectionPtr c = convert(null_meshManager, null_modelResource);
-    test(!c, "collection should be invalid for a NULL managers");
-  }
-
-  {
-    smtk::mesh::CollectionPtr c = convert(null_meshManager, modelResource);
-    test(!c, "collection should be invalid for a NULL mesh manager");
-  }
-
-  {
-    smtk::mesh::CollectionPtr c = convert(meshManager, null_modelResource);
-    test(!c, "collection should be invalid for a NULL model manager");
-  }
-}
-
 void verify_empty_model()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   test(!c, "collection should be invalid for an empty model");
 }
 
 void verify_model_association()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
 
   //we need to verify that the collection is now has an associated model
   test(c->hasAssociations(), "collection should have associations");
@@ -237,13 +208,12 @@ void testFindAssociationsByRef<-1>(
 
 void verify_cell_conversion()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
 
@@ -341,13 +311,12 @@ void verify_cell_conversion()
 
 void verify_vertex_conversion()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
 
@@ -357,13 +326,12 @@ void verify_vertex_conversion()
 
 void verify_cell_have_points()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   smtk::mesh::MeshSet triMeshes = c->meshes(smtk::mesh::Dims2);
 
   CountCells functor;
@@ -384,7 +352,6 @@ void verify_cell_have_points()
 
 int UnitTestModelToMesh3D(int, char** const)
 {
-  verify_null_managers();
   verify_empty_model();
   verify_model_association();
   verify_cell_conversion();

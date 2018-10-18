@@ -11,7 +11,6 @@
 #include "smtk/io/ReadMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -35,21 +34,6 @@ std::string second_mesh_path()
   return file_path;
 }
 
-void verify_cant_append_to_bad_collection()
-{
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-
-  //create a bad collection
-  std::string file_path(data_root);
-  smtk::mesh::CollectionPtr c = smtk::io::readMesh(file_path, manager);
-  test(!c->isValid(), "collection should be invalid");
-
-  //append to the bad collection is always a failure
-  bool result = smtk::io::readMesh(first_mesh_path(), c);
-  test(!result, "read into an invalid collection should fail");
-  test(!c->isValid(), "collection should still be invalid");
-}
-
 void verify_cant_append_to_null_collection()
 {
   smtk::mesh::CollectionPtr null_collection_ptr;
@@ -59,8 +43,7 @@ void verify_cant_append_to_null_collection()
 
 void verify_append_to_valid_empty_collection()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr collection = manager->makeCollection();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
 
   bool result = smtk::io::readMesh(second_mesh_path(), collection);
   test(result, "read of self into self should work");
@@ -72,9 +55,9 @@ void verify_append_to_valid_empty_collection()
 
 void verify_append_self_to_self()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(first_mesh_path(), c);
   test(c->isValid(), "collection should be valid");
 
   std::size_t origNumMeshes = c->numberOfMeshes();
@@ -92,9 +75,9 @@ void verify_append_self_to_self()
 
 void verify_append_subsection_of_self()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(first_mesh_path(), c);
   test(c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test(firstNumMesh != 0);
@@ -104,7 +87,7 @@ void verify_append_subsection_of_self()
   std::size_t secondNumMesh = 0;
   {
     smtk::mesh::CollectionPtr c2 =
-      read(first_mesh_path(), manager, smtk::io::mesh::Subset::OnlyNeumann);
+      read(first_mesh_path(), c->interface(), smtk::io::mesh::Subset::OnlyNeumann);
     test(c2->isValid(), "second collection load should be valid");
     secondNumMesh = c2->numberOfMeshes();
     test(secondNumMesh != 0);
@@ -120,9 +103,9 @@ void verify_append_subsection_of_self()
 
 void verify_cant_append_mismatched_data()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(first_mesh_path(), manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(first_mesh_path(), c);
   test(c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test(firstNumMesh != 0);
@@ -134,10 +117,9 @@ void verify_cant_append_mismatched_data()
 
 void verify_append_dirichlet_to_neumann()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c =
-    read(first_mesh_path(), manager, smtk::io::mesh::Subset::OnlyNeumann);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(first_mesh_path(), c, smtk::io::mesh::Subset::OnlyNeumann);
   test(c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test(firstNumMesh != 0);
@@ -147,7 +129,7 @@ void verify_append_dirichlet_to_neumann()
   std::size_t secondNumMesh = 0;
   {
     smtk::mesh::CollectionPtr c2 =
-      read(first_mesh_path(), manager, smtk::io::mesh::Subset::OnlyDirichlet);
+      read(first_mesh_path(), c->interface(), smtk::io::mesh::Subset::OnlyDirichlet);
     test(c2->isValid(), "second collection load should be valid");
     secondNumMesh = c2->numberOfMeshes();
     test(secondNumMesh != 0);
@@ -163,10 +145,9 @@ void verify_append_dirichlet_to_neumann()
 
 void verify_append_neumann_to_dirichlet()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c =
-    read(first_mesh_path(), manager, smtk::io::mesh::Subset::OnlyDirichlet);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(first_mesh_path(), c, smtk::io::mesh::Subset::OnlyDirichlet);
   test(c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test(firstNumMesh != 0);
@@ -176,7 +157,7 @@ void verify_append_neumann_to_dirichlet()
   std::size_t secondNumMesh = 0;
   {
     smtk::mesh::CollectionPtr c2 =
-      read(first_mesh_path(), manager, smtk::io::mesh::Subset::OnlyNeumann);
+      read(first_mesh_path(), c->interface(), smtk::io::mesh::Subset::OnlyNeumann);
     test(c2->isValid(), "second collection load should be valid");
     secondNumMesh = c2->numberOfMeshes();
     test(secondNumMesh != 0);
@@ -192,10 +173,9 @@ void verify_append_neumann_to_dirichlet()
 
 void verify_append_domain_to_dirichlet()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c =
-    read(first_mesh_path(), manager, smtk::io::mesh::Subset::OnlyDirichlet);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(first_mesh_path(), c, smtk::io::mesh::Subset::OnlyDirichlet);
   test(c->isValid(), "collection should be valid");
   std::size_t firstNumMesh = c->numberOfMeshes();
   test(firstNumMesh != 0);
@@ -205,7 +185,7 @@ void verify_append_domain_to_dirichlet()
   std::size_t secondNumMesh = 0;
   {
     smtk::mesh::CollectionPtr c2 =
-      read(first_mesh_path(), manager, smtk::io::mesh::Subset::OnlyDomain);
+      read(first_mesh_path(), c->interface(), smtk::io::mesh::Subset::OnlyDomain);
     test(c2->isValid(), "expected domains in this file");
     secondNumMesh = c2->numberOfMeshes();
     test(secondNumMesh != 0);
@@ -224,7 +204,6 @@ void verify_append_domain_to_dirichlet()
 int UnitTestAddFileToCollection(int, char** const)
 {
   //append into a collection that had failed to load previously
-  verify_cant_append_to_bad_collection();
   verify_cant_append_to_null_collection();
 
   //given a valid empty collection append a mesh into the collection

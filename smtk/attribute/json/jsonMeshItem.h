@@ -14,7 +14,6 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/common/UUID.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "nlohmann/json.hpp"
 

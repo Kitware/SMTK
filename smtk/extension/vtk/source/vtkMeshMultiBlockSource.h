@@ -50,8 +50,8 @@ public:
   vtkSetStringMacro(ModelEntityID);
   vtkGetStringMacro(ModelEntityID);
 
-  smtk::mesh::ManagerPtr GetMeshManager();
-  void SetMeshManager(smtk::mesh::ManagerPtr);
+  smtk::mesh::CollectionPtr GetMeshCollection();
+  void SetMeshCollection(smtk::mesh::CollectionPtr);
 
   // Description:
   // Mesh collection ID that this source will be built upon.
@@ -87,7 +87,7 @@ protected:
   void GenerateNormals(vtkPolyData* pd, const smtk::model::EntityRef& entityref, bool genNormals);
 
   smtk::model::ResourcePtr m_modelResource;
-  smtk::mesh::ManagerPtr m_meshMgr;
+  smtk::mesh::CollectionPtr m_meshCollection;
   std::map<smtk::mesh::MeshSet, vtkIdType> m_Meshset2BlockIdMap; // MeshSets to block index map
   vtkNew<vtkPolyDataNormals> m_normalGenerator;
 

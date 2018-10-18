@@ -11,7 +11,6 @@
 #include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/TypeSet.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"

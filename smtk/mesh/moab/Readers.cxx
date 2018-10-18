@@ -13,7 +13,6 @@
 #include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -32,8 +31,7 @@ namespace moab
 namespace
 {
 
-smtk::mesh::CollectionPtr verifyAndMake(
-  const smtk::mesh::moab::InterfacePtr interface, const smtk::mesh::ManagerPtr manager)
+smtk::mesh::CollectionPtr verifyAndMake(const smtk::mesh::moab::InterfacePtr interface)
 {
   if (!interface)
   {
@@ -43,7 +41,7 @@ smtk::mesh::CollectionPtr verifyAndMake(
     return collection;
   }
   //make a moab specific mesh collection
-  return manager->makeCollection(interface);
+  return smtk::mesh::Collection::create(interface);
 }
 
 template <typename T>
@@ -152,37 +150,34 @@ bool append_file(const smtk::mesh::moab::InterfacePtr& interface, const std::str
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read(const std::string& path, const smtk::mesh::ManagerPtr& manager)
+smtk::mesh::CollectionPtr read(const std::string& path)
 {
-  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path), manager);
+  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path));
 }
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read_domain(
-  const std::string& path, const smtk::mesh::ManagerPtr& manager)
+smtk::mesh::CollectionPtr read_domain(const std::string& path)
 {
   const std::string tag("MATERIAL_SET");
-  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()), manager);
+  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()));
 }
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read_neumann(
-  const std::string& path, const smtk::mesh::ManagerPtr& manager)
+smtk::mesh::CollectionPtr read_neumann(const std::string& path)
 {
   //Core is a fully implemented moab::Interface
   const std::string tag("NEUMANN_SET");
-  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()), manager);
+  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()));
 }
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read_dirichlet(
-  const std::string& path, const smtk::mesh::ManagerPtr& manager)
+smtk::mesh::CollectionPtr read_dirichlet(const std::string& path)
 {
   const std::string tag("DIRICHLET_SET");
-  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()), manager);
+  return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()));
 }
 
 //Import everything in a file into an existing collection

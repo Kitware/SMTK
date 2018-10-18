@@ -11,7 +11,6 @@
 #include "smtk/io/ModelToMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/utility/Reclassify.h"
 
@@ -173,13 +172,12 @@ void all_points_are_valid(smtk::mesh::CollectionPtr collection)
 
 void verify_split()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_2d_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
 
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 21, "collection should have 21 mesh elements");
@@ -208,13 +206,12 @@ void verify_split()
 
 void verify_merge()
 {
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_2d_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
   test(c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 21, "collection should have 21 mesh elements");
   test(c->points().size() == 32, "should have 32 points before split and merge");
