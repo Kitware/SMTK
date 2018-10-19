@@ -60,7 +60,6 @@ protected slots:
   virtual void onExchange();
   virtual void onNodalOptionChanged(int);
   virtual void onDomainAssociationChanged();
-  virtual void onEntitySelected();
 
 protected:
   virtual void initWidget();

@@ -257,26 +257,6 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
   this->Internals->AvailableList->blockSignals(false);
 }
 
-void qtAssociationWidget::onEntitySelected()
-{
-  QListWidget* const listW = qobject_cast<QListWidget*>(QObject::sender());
-  if (!listW)
-  {
-    return;
-  }
-
-  smtk::model::EntityArray selents;
-  QList<QListWidgetItem*> selItems = listW->selectedItems();
-  foreach (QListWidgetItem* currentItem, selItems)
-  {
-    auto entity = this->getModelEntityItem(currentItem);
-    if (entity)
-    {
-      selents.push_back(entity);
-    }
-  }
-}
-
 smtk::attribute::AttributePtr qtAssociationWidget::getSelectedAttribute(QListWidgetItem* item)
 {
   return this->getAttribute(item);
