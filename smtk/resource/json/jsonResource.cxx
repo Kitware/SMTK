@@ -28,6 +28,12 @@ void to_json(json& j, const ResourcePtr& resource)
 
 void from_json(const json& j, ResourcePtr& resource)
 {
+  // For backwards compatibility, do not require "id" json item.
+  if (j.find("id") != j.end())
+  {
+    resource->setId(j.at("id"));
+  }
+
   // For backwards compatibility, do not require "links" json item.
   if (j.find("links") != j.end())
   {

@@ -44,6 +44,7 @@ LegacyRead::Result LegacyRead::operateInternal()
 
   // Deserialize parsed JSON into a model resource:
   auto rsrc = smtk::session::polygon::Resource::create();
+  rsrc->setId(j.begin().key());
   smtk::session::polygon::SessionIOJSON::loadModelRecords(*j.begin(), rsrc);
   rsrc->setLocation(filename);
 

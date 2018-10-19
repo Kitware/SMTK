@@ -46,6 +46,7 @@ LegacyReadResource::Result LegacyReadResource::operateInternal()
 
   // Deserialize parsed JSON into a model resource:
   auto resource = smtk::session::discrete::Resource::create();
+  resource->setId(j.begin().key());
   smtk::model::SessionIOJSON::loadModelRecords(*j.begin(), resource);
 
   // Access the model associated with this resource

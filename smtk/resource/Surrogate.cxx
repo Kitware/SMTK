@@ -65,8 +65,12 @@ bool Surrogate::fetch(const ManagerPtr& manager) const
 
     // If it is, resolve this link with the resource. Otherwise, attempt to read
     // in the resource and resolve the link using the result.
+    //
+    // If we need to read the resource, select the resource type by type name
+    // and NOT by type index. The type name is guaranteed to be persistent
+    // across platforms and process threads, whereas the type index is not.
     return (resource != nullptr ? this->resolve(resource)
-                                : this->resolve(manager->read(m_index, m_location)));
+                                : this->resolve(manager->read(m_typeName, m_location)));
   }
 
   // If the manager is invalid, there's not much we can do.
