@@ -29,7 +29,6 @@ set(polygonSrcs
   operators/Read.cxx
   operators/SplitEdge.cxx
   operators/TweakEdge.cxx
-  operators/ExtractContours.cxx
   operators/Write.cxx
 )
 
@@ -72,7 +71,6 @@ set(polygonHeaders
   operators/Read.h
   operators/SplitEdge.h
   operators/TweakEdge.h
-  operators/ExtractContours.h
   operators/Write.h
 
   json/jsonEdge.h
@@ -97,7 +95,6 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LegacyRead.sbt" polygo
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" polygonOperationXML)
 
 set(import_vtk_depends)
@@ -116,11 +113,14 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   vtk_smtk_process_modules()
 
   set(polygonSrcs ${polygonSrcs}
+     operators/ExtractContours.cxx
      operators/Import.cxx
      )
   set(polygonHeaders ${polygonHeaders}
+     operators/ExtractContours.h
      operators/Import.h
      )
+  smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperationXML)
   smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" polygonOperationXML)
   list(APPEND import_vtk_depends
     vtkCommonCore
@@ -137,6 +137,9 @@ if(SMTK_ENABLE_VTK_SUPPORT)
 endif()
 
 add_library(smtkPolygonSession ${polygonSrcs})
+if(SMTK_ENABLE_VTK_SUPPORT)
+  target_compile_definitions(smtkPolygonSession PUBLIC VTK_SUPPORT)
+endif()
 target_link_libraries(smtkPolygonSession
   LINK_PUBLIC
     smtkCore

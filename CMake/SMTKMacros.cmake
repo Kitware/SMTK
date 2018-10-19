@@ -63,7 +63,6 @@ function(smtk_add_header_test name dir_prefix lib)
   #also link against the associated library so we build properly
   target_link_libraries(TestBuild_${name}
     PRIVATE ${lib})
-    #PRIVATE ${MOAB_LIBRARIES})
 
 
 endfunction(smtk_add_header_test)

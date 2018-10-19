@@ -14,6 +14,8 @@ else()
   set(BOOST_LIBRARYDIR "${conda_prefix}/lib" CACHE PATH "Initial cache")
 endif()
 
+set(MOAB_ROOT_DIR "${conda_prefix}/lib/cmake/MOAB")
+
 set(SMTK_ENABLE_EXODUS_SESSION OFF CACHE BOOL "Initial cache")
 set(SMTK_ENABLE_MESH_SESSION ON CACHE BOOL "Initial cache")
 set(SMTK_ENABLE_POLYGON_SESSION ON CACHE BOOL "Initial cache")

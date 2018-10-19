@@ -68,16 +68,15 @@ set(smtkCore_public_include_directories
 set(smtkCore_private_include_directories
   )
 
+set(moab_libs ${MOAB_LIBRARIES})
+if(WIN32)
+  set(moab_libs "MOAB")
+endif()
 set(smtkCore_public_link_libraries
   cJSON
-  ${MOAB_LIBRARIES}
+  ${moab_libs}
+  nlohmann_json
   )
-if (NOT APPLE AND NOT $ENV{CONDA_PREFIX})
-  set(smtkCore_public_link_libraries
-    ${smtkCore_public_link_libraries}
-    nlohmann_json
-  )
-endif()
 
 set(smtkCore_private_link_libraries
   ${Boost_LIBRARIES}

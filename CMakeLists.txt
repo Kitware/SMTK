@@ -94,7 +94,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 ################################################################################
 # Options that the user controls
 ################################################################################
-
 include(CMakeDependentOption)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
@@ -127,8 +126,6 @@ cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model sessio
   SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" OFF
   "SMTK_ENABLE_DISCRETE_SESSION" OFF)
-# cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
-#   SMTK_ENABLE_VTK_SUPPORT OFF)
 option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
 cmake_dependent_option(SMTK_ENABLE_VTK_SESSION "Build a session that uses VTK multiblock datasets" ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
@@ -282,9 +279,6 @@ find_package(nlohmann_json REQUIRED)
 
 # Moab is required for building smtk::mesh, as it is the default storage
 # format for meshes.
-if (DEFINED conda_prefix)
-  set(MOAB_ROOT_DIR "${conda_prefix}/lib/cmake/MOAB")
-endif()
 find_package(MOAB REQUIRED)
 
 
@@ -348,13 +342,8 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     set(PYTHON_MODULE_EXTENSION ".so")
   endif()
 
-  if (DEFINED conda_prefix)
-    find_package(PythonInterp 2.7 REQUIRED)
-    find_package(PythonLibs REQUIRED)
-  else()
-    find_package(PythonLibs REQUIRED)
-    find_package(PythonInterp 2.7 REQUIRED)
-  endif()
+  find_package(PythonInterp 2.7 REQUIRED)
+  find_package(PythonLibs REQUIRED)
 
   # Initialize SMTK_PYTHON_MODULEDIR.
   # This stores the location where we'll install SMTK's Python modules.
@@ -390,8 +379,6 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
      CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     set(SMTK_PYBIND11_FLAGS "${SMTK_PYBIND11_FLAGS} -Wno-shadow")
   endif()
-  message("SMTK_PYTHON_MODULEDIR ${SMTK_PYTHON_MODULEDIR}")
-
 
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
