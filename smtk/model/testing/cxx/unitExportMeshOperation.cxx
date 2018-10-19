@@ -21,7 +21,6 @@
 #include "smtk/model/json/jsonResource.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/operators/ExportMesh.h"
 #include "smtk/model/Resource.h"
@@ -89,15 +88,12 @@ int main(int argc, char* argv[])
   // Create a model resource
   smtk::model::ResourcePtr resource = smtk::model::Resource::create();
 
-  // Access the mesh manager
-  smtk::mesh::ManagerPtr meshManager = resource->meshes();
-
   // Load in the model
   create_simple_mesh_model(resource, std::string(argv[1]));
 
   // Convert it to a mesh
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, resource);
+  smtk::mesh::CollectionPtr collection = convert(resource);
 
   // Create a new "export mesh" operator
   smtk::operation::Operation::Ptr exportMeshOp = smtk::mesh::ExportMesh::create();
@@ -111,8 +107,7 @@ int main(int argc, char* argv[])
   std::string export_path = std::string(write_root + "/testmesh.2dm");
   exportMeshOp->parameters()->findFile("filename")->setValue(export_path);
 
-  bool valueSet = exportMeshOp->parameters()->findMesh("mesh")->setValue(
-    meshManager->collectionBegin()->second->meshes());
+  bool valueSet = exportMeshOp->parameters()->findMesh("mesh")->setValue(collection->meshes());
 
   if (!valueSet)
   {
@@ -136,9 +131,8 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  // Grab the original mesh collection
-  c = meshManager->collectionBegin()->second;
-  if (!c->isModified())
+  // Test the original mesh collection
+  if (!collection->isModified())
   {
     std::cerr << "collection should be marked as modified" << std::endl;
     return 1;

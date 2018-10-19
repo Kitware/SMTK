@@ -20,8 +20,6 @@
 #include "smtk/model/ShellEntity.h"
 #include "smtk/model/UseEntity.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
@@ -176,19 +174,6 @@ int Session::setup(const std::string& optName, const StringList& optVal)
 Resource::Ptr Session::resource() const
 {
   return m_resource ? m_resource->shared_from_this() : Resource::Ptr();
-}
-
-/// Return a reference to the mesh resource for this Session.
-smtk::mesh::ManagerPtr Session::meshManager() const
-{
-  if (m_resource)
-  {
-    return m_resource->meshes();
-  }
-  else
-  {
-    return smtk::mesh::Manager::Ptr();
-  }
 }
 
 /// Return the log (obtained from the model resource).

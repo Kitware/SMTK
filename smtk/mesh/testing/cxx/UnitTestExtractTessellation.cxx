@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -121,12 +120,13 @@ public:
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, mngr);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   return c;
@@ -466,8 +466,7 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Coll
 
 int UnitTestExtractTessellation(int, char** const)
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh();
 
   verify_constructors(c);
 

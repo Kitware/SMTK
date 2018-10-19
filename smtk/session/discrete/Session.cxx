@@ -16,10 +16,6 @@
 
 #include "smtk/resource/PropertyType.h"
 
-#include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
-#include "smtk/mesh/core/MeshSet.h"
-
 #include "smtk/model/Chain.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -36,8 +32,6 @@
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
-
-#include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
 #include "vtkCMBModelReadOperation.h"
 #include "vtkCMBModelWriterV5.h"
@@ -1145,10 +1139,6 @@ smtk::common::UUID Session::trackModel(
   smtk::model::Model smtkModel(resource, mid);
   smtkModel.setSession(smtk::model::SessionRef(resource, this->sessionId()));
 
-  // Create a collection associated with the model id
-  this->resource()->meshes()->makeCollection(mid)->name(
-    smtk::model::EntityRef(resource, mid).name() + "_tessellation");
-
   // Now add the record to resource and assign the URL to
   // the model as a string property.
   //smtk::model::EntityRef c = this->addCMBEntityToResource(mid, dmod, resource, 8);
@@ -1565,36 +1555,6 @@ bool Session::addTessellation(
     {
       smtk::model::EntityRef mutableCell(cellOut);
       mutableCell.setTessellationAndBoundingBox(&tess);
-    }
-
-    smtk::mesh::CollectionPtr collection =
-      this->resource()->meshes()->collection(cellOut.owningModel().entity());
-    if (collection && collection->isValid())
-    {
-      smtk::mesh::MeshSet modified = collection->findAssociatedMeshes(cellOut);
-      if (!modified.is_empty())
-      {
-        collection->removeMeshes(modified);
-      }
-
-      smtk::extension::vtk::io::mesh::ImportVTKData importVTKData;
-
-      // Discrete models are multiblock data sets with a single set of points.
-      // To prevent all of these points from being copied over for each element,
-      // we run vtkCleanPolyData to ensure that only the points that are relevent
-      // to the entity are passed to smtk::mesh.
-      vtkNew<vtkCleanPolyData> cleanPolyData;
-      cleanPolyData->SetInputData(poly);
-      cleanPolyData->Update();
-
-      // import the polydata into the collection.
-      smtk::mesh::MeshSet meshForEntity = importVTKData(cleanPolyData->GetOutput(), collection);
-      if (meshForEntity.is_empty())
-      {
-        return false;
-      }
-      meshForEntity.setModelEntity(cellOut);
-      hasTess = true;
     }
   }
   return hasTess;

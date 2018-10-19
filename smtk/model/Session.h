@@ -138,7 +138,6 @@ public:
   virtual int setup(const std::string& optName, const StringList& optVal);
 
   ResourcePtr resource() const;
-  smtk::mesh::ManagerPtr meshManager() const;
   smtk::io::Logger& log();
 
   virtual ~Session();

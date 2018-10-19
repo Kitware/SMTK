@@ -12,7 +12,8 @@
 #include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -22,12 +23,12 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_mesh(const smtk::mesh::InterfacePtr& interface)
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, mngr);
+  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, interface);
   test(c->isValid(), "collection should be valid");
 
   return c;
@@ -56,11 +57,10 @@ void verify_create_empty_mesh(const smtk::mesh::CollectionPtr& c)
     "the number of meshes shouldn't change when adding an empty mesh");
 }
 
-void verify_create_mesh_with_cells_from_other_collection(
-  smtk::mesh::ManagerPtr mngr, const smtk::mesh::CollectionPtr& c)
+void verify_create_mesh_with_cells_from_other_collection(const smtk::mesh::CollectionPtr& c)
 {
   //make another collection inside the manager
-  smtk::mesh::CollectionPtr otherc = load_mesh(mngr);
+  smtk::mesh::CollectionPtr otherc = load_mesh(c->interface());
 
   const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
 
@@ -69,9 +69,6 @@ void verify_create_mesh_with_cells_from_other_collection(
 
   test(result.is_empty(), "cellset from different collection should create empty meshset");
   test(numMeshesBeforeCreation == c->numberOfMeshes());
-
-  //unload the second collection from memory
-  mngr->removeCollection(otherc);
 }
 
 void verify_create_mesh(const smtk::mesh::CollectionPtr& c)
@@ -150,8 +147,7 @@ void verify_create_mesh_num_cells(const smtk::mesh::CollectionPtr& c)
 void verify_create_mesh_marks_modified()
 {
   //verify that a collection loaded from file is not marked as modified
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh(smtk::mesh::moab::make_interface());
   test(c->isModified() == false, "collection loaded from disk shouldn't be modified");
 
   //verify that creating a mesh does mark update modify flag
@@ -162,11 +158,10 @@ void verify_create_mesh_marks_modified()
 
 int UnitTestCreateMesh(int, char** const)
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh(smtk::mesh::moab::make_interface());
 
   verify_create_empty_mesh(c);
-  verify_create_mesh_with_cells_from_other_collection(mngr, c);
+  verify_create_mesh_with_cells_from_other_collection(c);
 
   verify_create_mesh(c);
 

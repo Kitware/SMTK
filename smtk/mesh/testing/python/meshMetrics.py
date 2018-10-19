@@ -20,13 +20,12 @@ import sys
 
 
 def test_mesh_metrics():
-    m = smtk.mesh.Manager.create()
-
     # Load the mesh file
     print('data_dir', smtk.testing.DATA_DIR)
     mesh_path = os.path.join(smtk.testing.DATA_DIR,
                              'mesh', '3d/cube_with_hole.exo')
-    c = smtk.io.importMesh(mesh_path, m)
+    c = smtk.mesh.Collection.create()
+    smtk.io.importMesh(mesh_path, c)
     if not c.isValid():
         raise RuntimeError("Failed to read valid mesh")
 

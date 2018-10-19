@@ -102,13 +102,21 @@ public:
   // typedef referring to the parent resource.
   typedef smtk::resource::Resource ParentResource;
 
+  // Associations to other resources and components are managed internally using
+  // smtk::resource::Links.
+  static constexpr smtk::resource::Links::RoleType AssociationRole = -1;
+
+  // A model resource may be linked to a mesh collection that represents its
+  // tessellation. It doesn't have to, though, if the model's tessellation is
+  // represented internally.
+  static constexpr smtk::resource::Links::RoleType TessellationRole = -2;
+
   Resource(smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   Resource(
     const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   Resource(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
-    shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
-    shared_ptr<UUIDsToAttributeAssignments> attribs, const smtk::common::UUID& uid,
-    smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
+    shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<UUIDsToAttributeAssignments> attribs,
+    const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
   virtual ~Resource();
 
   UUIDsToEntities& topology();
@@ -120,7 +128,8 @@ public:
   UUIDsToTessellations& analysisMesh();
   const UUIDsToTessellations& analysisMesh() const;
 
-  smtk::mesh::ManagerPtr meshes() const;
+  bool setMeshTessellations(const smtk::mesh::CollectionPtr&);
+  smtk::mesh::CollectionPtr meshTessellations() const;
 
   /// Remove all entities and properties from this object. Does not change id or emit signals.
   void clear();
@@ -342,6 +351,17 @@ public:
 
   bool findOrAddEntityToGroup(const smtk::common::UUID& grp, const smtk::common::UUID& ent);
 
+  // Return a set of resources associated to this model resource.
+  smtk::resource::ResourceSet associations() const;
+
+  // Add a resource to the set of associated resources, and return true if the
+  // association is successful.
+  bool associate(const smtk::resource::ResourcePtr& resource);
+
+  // Remove a resource from the set of associated resources, and return true if
+  // the disassociation is successful.
+  bool disassociate(const smtk::resource::ResourcePtr& resource);
+
   bool hasAttribute(const smtk::common::UUID& attribId, const smtk::common::UUID& toEntity);
   bool associateAttribute(smtk::attribute::ResourcePtr attResource,
     const smtk::common::UUID& attribId, const smtk::common::UUID& toEntity);
@@ -465,7 +485,6 @@ protected:
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
   smtk::shared_ptr<UUIDsToTessellations> m_tessellations;
   smtk::shared_ptr<UUIDsToTessellations> m_analysisMesh;
-  smtk::shared_ptr<smtk::mesh::Manager> m_meshes;
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
   smtk::shared_ptr<resource::Set> m_resources;

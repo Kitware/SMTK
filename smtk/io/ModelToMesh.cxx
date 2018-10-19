@@ -12,7 +12,6 @@
 
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Interface.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityIterator.h"
@@ -387,14 +386,14 @@ ModelToMesh::ModelToMesh()
 }
 
 smtk::mesh::CollectionPtr ModelToMesh::operator()(
-  const smtk::mesh::ManagerPtr& meshManager, const smtk::model::ResourcePtr& modelResource) const
+  const smtk::model::ResourcePtr& modelResource) const
 {
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
   typedef std::map<smtk::model::EntityRef, std::size_t> CoordinateOffsetMap;
 
   smtk::mesh::CollectionPtr nullCollectionPtr;
-  if (!meshManager || !modelResource)
+  if (!modelResource)
   {
     return nullCollectionPtr;
   }
@@ -406,7 +405,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(
   }
 
   //Create the collection and extract the allocation interface from it
-  smtk::mesh::CollectionPtr collection = meshManager->makeCollection();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
   collection->setModelResource(modelResource);
@@ -482,7 +481,7 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& mode
   typedef std::map<smtk::model::EntityRef, std::size_t> CoordinateOffsetMap;
   smtk::model::ResourcePtr modelResource = model.resource();
   smtk::mesh::CollectionPtr nullCollectionPtr;
-  if (!modelResource || !modelResource->meshes())
+  if (!modelResource)
   {
     return nullCollectionPtr;
   }
@@ -493,9 +492,8 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& mode
     return nullCollectionPtr;
   }
 
-  smtk::mesh::ManagerPtr meshManager = modelResource->meshes();
   //Create the collection and extract the allocation interface from it
-  smtk::mesh::CollectionPtr collection = meshManager->makeCollection();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
   smtk::mesh::InterfacePtr iface = collection->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
   collection->setModelResource(modelResource);

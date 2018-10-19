@@ -6,7 +6,6 @@ set(meshSrcs
   core/Collection.cxx
   core/ForEachTypes.cxx
   core/Handle.cxx
-  core/Manager.cxx
   core/MeshSet.cxx
   core/PointConnectivity.cxx
   core/PointField.cxx
@@ -69,7 +68,6 @@ set(meshHeaders
   core/ForEachTypes.h
   core/Handle.h
   core/Interface.h
-  core/Manager.h
   core/MeshSet.h
   core/PointConnectivity.h
   core/PointField.h

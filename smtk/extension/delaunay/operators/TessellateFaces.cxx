@@ -19,7 +19,6 @@
 #include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"

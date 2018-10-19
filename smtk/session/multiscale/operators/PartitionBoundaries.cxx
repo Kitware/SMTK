@@ -19,7 +19,6 @@
 #include "smtk/session/multiscale/Session.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Vertex.h"

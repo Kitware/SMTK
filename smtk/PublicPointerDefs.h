@@ -99,7 +99,6 @@ typedef smtk::shared_ptr<smtk::extension::qtSelectionManager> qtSelectionManager
 
 namespace mesh
 {
-class Manager;
 class Collection;
 class Interface;
 class Allocator;
@@ -278,7 +277,6 @@ typedef smtk::weak_ptr<smtk::operation::Manager> WeakManagerPtr;
 
 namespace mesh
 {
-typedef smtk::shared_ptr<smtk::mesh::Manager> ManagerPtr;
 typedef smtk::shared_ptr<smtk::mesh::Collection> CollectionPtr;
 typedef smtk::shared_ptr<const smtk::mesh::Collection> ConstCollectionPtr;
 typedef smtk::shared_ptr<smtk::mesh::Interface> InterfacePtr;

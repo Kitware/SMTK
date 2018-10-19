@@ -15,7 +15,6 @@
 #include "smtk/mesh/core/CellTypes.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/DimensionTypes.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
@@ -785,10 +784,10 @@ MeshIOXMS::MeshIOXMS()
     Format("xms 3d", std::vector<std::string>({ ".3dm" }), Format::Import | Format::Export));
 }
 
-smtk::mesh::CollectionPtr MeshIOXMS::importMesh(
-  const std::string& filePath, smtk::mesh::ManagerPtr& manager, const std::string& str) const
+smtk::mesh::CollectionPtr MeshIOXMS::importMesh(const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface, const std::string& str) const
 {
-  smtk::mesh::CollectionPtr collection = manager->makeCollection();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(interface);
   if (MeshIOXMS::importMesh(filePath, collection, str))
   {
     return collection;

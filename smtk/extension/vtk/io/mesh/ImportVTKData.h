@@ -12,9 +12,8 @@
 #ifndef __smtk_extension_vtk_io_mesh_ImportVTKData_h
 #define __smtk_extension_vtk_io_mesh_ImportVTKData_h
 
-#include "smtk/extension/vtk/io/IOVTKExports.h"
-//forward declarers for Manager and Collection
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/vtk/io/IOVTKExports.h"
 
 #include <string>
 
@@ -50,8 +49,8 @@ public:
   //Import a VTK dataset unstructured grid file (legacy or xml) as a
   //collection. Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
-  smtk::mesh::CollectionPtr operator()(const std::string& filename, smtk::mesh::ManagerPtr& manager,
-    std::string domainPropertyName) const;
+  smtk::mesh::CollectionPtr operator()(const std::string& filename,
+    const smtk::mesh::InterfacePtr& interface, std::string domainPropertyName) const;
 
   //Import a VTK dataset or unstructured grid file (legacy or xml) into an
   //existing collection. Optionally specify the cell property name to be used to
@@ -71,7 +70,8 @@ public:
   //Import a VTK dataset as a collection.
   //Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
-  smtk::mesh::CollectionPtr operator()(vtkDataSet* dataset, smtk::mesh::ManagerPtr& manager,
+  smtk::mesh::CollectionPtr operator()(vtkDataSet* dataset,
+    const smtk::mesh::InterfacePtr& interface,
     std::string domainPropertyName = std::string()) const;
 
 private:

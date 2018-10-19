@@ -10,7 +10,6 @@
 #include "smtk/mesh/operators/DeleteMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/Session.h"
@@ -37,24 +36,6 @@ smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
   {
     // all mesh items are guaranteed to have a valid associated collection by ableToOperate
     smtk::mesh::CollectionPtr collec = mit->collection();
-    smtk::mesh::ManagerPtr meshMgr = collec->manager();
-
-    if (meshMgr)
-    {
-      //remove the mesh from its collection
-      success = collec->removeMeshes(smtk::mesh::MeshSet(*mit));
-      if (success)
-      {
-        expunged.insert(*mit);
-      }
-
-      //if the collection no longer has any meshes, remove
-      //the collection from the manager as well
-      if (collec->numberOfMeshes() == 0)
-      {
-        meshMgr->removeCollection(collec);
-      }
-    }
   }
 
   Result result = this->createResult(success ? smtk::operation::Operation::Outcome::SUCCEEDED

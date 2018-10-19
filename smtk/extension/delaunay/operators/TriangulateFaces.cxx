@@ -13,13 +13,13 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
 #include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
@@ -79,8 +79,7 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
   // construct a collection and associate it with the face's model
   smtk::model::Resource::Ptr resource =
     std::dynamic_pointer_cast<smtk::model::Resource>(faces[0].component()->resource());
-  smtk::mesh::CollectionPtr collection = resource->meshes()->makeCollection();
-  collection->assignUniqueNameIfNotAlready();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
   collection->setModelResource(faces[0].resource());
   collection->associateToModel(faces[0].model().entity());
 
@@ -159,6 +158,9 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
       collection->setAssociation(face, meshSet);
     }
     meshSet.mergeCoincidentContactPoints();
+
+    smtk::attribute::ResourceItem::Ptr collectionItem = result->findResource("collection");
+    collectionItem->setValue(std::static_pointer_cast<smtk::resource::Resource>(collection));
 
     // we flag the model that owns this face as modified so that a mesh
     // collection for the entire model is placed in ModelBuilder's model

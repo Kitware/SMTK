@@ -16,7 +16,6 @@
 #include "smtk/io/ImportMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/utility/Metrics.h"
 
@@ -30,12 +29,11 @@ std::string data_root = SMTK_DATA_DIR;
 
 void verify_eulerCharacteristic_cube()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-
   std::string file_path(data_root);
   file_path += "/mesh/3d/cube.exo";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   test(smtk::mesh::utility::eulerCharacteristic(c->meshes().extractShell()) == 2);
@@ -44,12 +42,11 @@ void verify_eulerCharacteristic_cube()
 
 void verify_eulerCharacteristic_cubeWithHole()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-
   std::string file_path(data_root);
   file_path += "/mesh/3d/cube_with_hole.exo";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   test(smtk::mesh::utility::eulerCharacteristic(c->meshes().extractShell()) == 0);

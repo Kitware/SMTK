@@ -23,8 +23,6 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/io/SaveJSON.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"

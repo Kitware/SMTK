@@ -33,12 +33,12 @@ class SMTKCORE_EXPORT MeshIOMoab : public MeshIO
 public:
   MeshIOMoab();
 
-  //Load an entire moab data file as a new collection into the given manager
-  //Returns an invalid collection that is NOT part of the manager if the
-  //file can't be loaded. The third parameter is a label with which the domain
-  //can be parsed, but it is not currently implemented for the moab interface
-  smtk::mesh::CollectionPtr importMesh(const std::string& filePath, smtk::mesh::ManagerPtr& manager,
-    const std::string&) const override;
+  //Load an entire moab data file as a new collection with the given interface.
+  //Returns an invalid collection if the file can't be loaded. The third
+  //parameter is a label with which the domain can be parsed, but it is not
+  //currently implemented for the moab interface
+  smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+    const smtk::mesh::InterfacePtr& interface, const std::string&) const override;
 
   //Merge a moab data file into an existing valid collection. The third
   //parameter is a label with which the domain can be parsed, but it is not
@@ -55,11 +55,10 @@ public:
   //                  smtk::model::ResourcePtr resource,
   //                  const std::string& modelPropertyName ) const
 
-  //Load an entire moab data file as a new collection into the given manager
-  //Returns an invalid collection that is NOT part of the manager if the
-  //file can't be loaded
-  smtk::mesh::CollectionPtr read(
-    const std::string& filePath, smtk::mesh::ManagerPtr& manager, Subset s) const override;
+  //Load an entire moab data file as a new collection with the given interface.
+  //Returns an invalid collection if the file can't be loaded
+  smtk::mesh::CollectionPtr read(const std::string& filePath,
+    const smtk::mesh::InterfacePtr& interface, Subset s) const override;
 
   //Merge a moab data file into an existing valid collection.
   bool read(

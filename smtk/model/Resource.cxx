@@ -34,7 +34,7 @@
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
 
-#include "smtk/mesh/core/Manager.h"
+#include "smtk/mesh/core/Collection.h"
 
 #include "smtk/common/UUIDGenerator.h"
 
@@ -66,6 +66,9 @@ namespace smtk
 namespace model
 {
 
+constexpr smtk::resource::Links::RoleType Resource::AssociationRole;
+constexpr smtk::resource::Links::RoleType Resource::TessellationRole;
+
 /**@name Constructors and destructors.
   *\brief Model resource instances should always be created using the static create() method.
   *
@@ -80,7 +83,6 @@ Resource::Resource(smtk::resource::ManagerPtr mgr)
   , m_integerData(new UUIDsToIntegerData)
   , m_tessellations(new UUIDsToTessellations)
   , m_analysisMesh(new UUIDsToTessellations)
-  , m_meshes(smtk::mesh::Manager::create())
   , m_attributeAssignments(new UUIDsToAttributeAssignments)
   , m_sessions(new UUIDsToSessions)
   , m_resources(new Set)
@@ -97,7 +99,6 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
   , m_integerData(new UUIDsToIntegerData)
   , m_tessellations(new UUIDsToTessellations)
   , m_analysisMesh(new UUIDsToTessellations)
-  , m_meshes(smtk::mesh::Manager::create())
   , m_attributeAssignments(new UUIDsToAttributeAssignments)
   , m_sessions(new UUIDsToSessions)
   , m_resources(new Set)
@@ -108,9 +109,8 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
 
 /// Create a model resource using the given storage instances.
 Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
-  shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<smtk::mesh::Manager> meshes,
-  shared_ptr<UUIDsToAttributeAssignments> attribs, const smtk::common::UUID& uid,
-  smtk::resource::ManagerPtr mgr)
+  shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<UUIDsToAttributeAssignments> attribs,
+  const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(uid, mgr)
   , m_topology(inTopology)
   , m_floatData(new UUIDsToFloatData)
@@ -118,7 +118,6 @@ Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTes
   , m_integerData(new UUIDsToIntegerData)
   , m_tessellations(tess)
   , m_analysisMesh(analysismesh)
-  , m_meshes(meshes)
   , m_attributeAssignments(attribs)
   , m_sessions(new UUIDsToSessions)
   , m_resources(new Set)
@@ -176,9 +175,32 @@ const UUIDsToTessellations& Resource::analysisMesh() const
   return *m_analysisMesh.get();
 }
 
-smtk::mesh::ManagerPtr Resource::meshes() const
+bool Resource::setMeshTessellations(const smtk::mesh::CollectionPtr& collection)
 {
-  return m_meshes;
+  // We reset the mesh tessellation by first unsetting the existing mesh
+  // tessellation (if it exists) and then adding a new link to the input
+  // collection. If this becomes a bottleneck, we could add API to
+  // smtk::resource::Links to modify the RHS id of the current link,
+  // facilitating link modification in place.
+  smtk::mesh::CollectionPtr currentMeshTessellations = this->meshTessellations();
+  if (currentMeshTessellations != nullptr)
+  {
+    this->links().removeLinksTo(
+      std::static_pointer_cast<smtk::resource::Resource>(currentMeshTessellations),
+      TessellationRole);
+  }
+  return this->links()
+           .addLinkTo(
+             std::static_pointer_cast<smtk::resource::Resource>(collection), TessellationRole)
+           .first != smtk::common::UUID::null();
+}
+
+smtk::mesh::CollectionPtr Resource::meshTessellations() const
+{
+  auto tessellationObjects = this->links().linkedTo(TessellationRole);
+  return (!tessellationObjects.empty()
+      ? std::dynamic_pointer_cast<smtk::mesh::Collection>(*tessellationObjects.begin())
+      : smtk::mesh::CollectionPtr());
 }
 
 void Resource::clear()
@@ -189,7 +211,15 @@ void Resource::clear()
   m_integerData->clear();
   m_tessellations->clear();
   m_analysisMesh->clear();
-  // m_meshes->clear(); TODO
+  {
+    smtk::mesh::CollectionPtr currentMeshTessellations = this->meshTessellations();
+    if (currentMeshTessellations != nullptr)
+    {
+      this->links().removeLinksTo(
+        std::static_pointer_cast<smtk::resource::Resource>(currentMeshTessellations),
+        TessellationRole);
+    }
+  }
   m_attributeAssignments->clear();
   m_sessions->clear();
   // m_resources->clear(); TODO
@@ -2781,6 +2811,39 @@ bool Resource::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
     }
   }
   return count > 0 ? true : false;
+}
+
+smtk::resource::ResourceSet Resource::associations() const
+{
+  auto associatedObjects = this->links().linkedTo(AssociationRole);
+  smtk::resource::ResourceSet resources;
+  for (auto& object : associatedObjects)
+  {
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(object);
+    if (resource != nullptr)
+    {
+      resources.insert(resource);
+    }
+  }
+  return resources;
+}
+
+bool Resource::associate(const smtk::resource::ResourcePtr& resource)
+{
+  // Resource links allow for multiple links between the same objects. Since
+  // associations are unique, we must first check if an association between this
+  // resourse and the resource parameter exists.
+  return this->links().isLinkedTo(resource, AssociationRole)
+    ? true
+    : this->links().addLinkTo(resource, AssociationRole).first != smtk::common::UUID::null();
+}
+
+bool Resource::disassociate(const smtk::resource::ResourcePtr& resource)
+{
+  // Resource links allow for multiple links between the same objects. Since
+  // associations are unique, we can erase all links from this resource to the
+  // input resource that have an association role.
+  return this->links().removeLinksTo(resource, AssociationRole);
 }
 
 /**@name Attribute association

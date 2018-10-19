@@ -10,7 +10,6 @@
 
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -40,9 +39,9 @@ int main(int argc, char* argv[])
   if (argc > 1)
   {
     std::string file_path = argv[1];
-    smtk::mesh::ManagerPtr meshmgr = smtk::mesh::Manager::create();
     smtk::io::ImportMesh import;
-    smtk::mesh::CollectionPtr c = import(file_path, meshmgr);
+    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+    import(file_path, c);
     test(c->isValid(), "collection should be valid");
 
     std::size_t numMeshes = c->numberOfMeshes();
@@ -55,7 +54,6 @@ int main(int argc, char* argv[])
     vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetMeshManager(meshmgr);
     src->SetMeshCollectionID(collectionID.toString().c_str());
     if (debug)
     {

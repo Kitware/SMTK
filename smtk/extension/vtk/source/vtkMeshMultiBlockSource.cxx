@@ -24,7 +24,6 @@
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/DimensionTypes.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
@@ -93,7 +92,6 @@ void vtkMeshMultiBlockSource::SetModelResource(smtk::model::ResourcePtr model)
     return;
   }
   m_modelResource = model;
-  this->SetMeshManager(model ? model->meshes() : smtk::mesh::ManagerPtr());
   this->Modified();
 }
 
@@ -103,21 +101,21 @@ smtk::model::ResourcePtr vtkMeshMultiBlockSource::GetModelResource()
   return m_modelResource;
 }
 
-/// Set the SMTK mesh manager
-void vtkMeshMultiBlockSource::SetMeshManager(smtk::mesh::ManagerPtr meshmgr)
+/// Set the SMTK mesh collection
+void vtkMeshMultiBlockSource::SetMeshCollection(smtk::mesh::CollectionPtr meshcollection)
 {
-  if (m_meshMgr == meshmgr)
+  if (m_meshCollection == meshcollection)
   {
     return;
   }
-  m_meshMgr = meshmgr;
+  m_meshCollection = meshcollection;
   this->Modified();
 }
 
-/// Get the SMTK mesh manager.
-smtk::mesh::ManagerPtr vtkMeshMultiBlockSource::GetMeshManager()
+/// Get the SMTK mesh collection.
+smtk::mesh::CollectionPtr vtkMeshMultiBlockSource::GetMeshCollection()
 {
-  return m_meshMgr;
+  return m_meshCollection;
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
@@ -290,10 +288,10 @@ void vtkMeshMultiBlockSource::FindEntitiesWithMesh(const smtk::mesh::CollectionP
 void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSet* mbds)
 {
 
-  if (this->MeshCollectionID && this->MeshCollectionID[0] && m_meshMgr)
+  if (this->MeshCollectionID && this->MeshCollectionID[0])
   {
     smtk::common::UUID mcuid(this->MeshCollectionID);
-    smtk::mesh::CollectionPtr meshcollect = m_meshMgr->collection(mcuid);
+
     Model modelEntity;
     bool modelRequiresNormals = false;
     if (this->ModelEntityID && this->ModelEntityID[0] && m_modelResource)
@@ -303,7 +301,8 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       modelEntity = entity.isModel() ? entity.as<smtk::model::Model>() : entity.owningModel();
     }
 
-    if (modelEntity.isValid() && meshcollect->isValid() && meshcollect->numberOfMeshes() > 0)
+    if (modelEntity.isValid() && m_meshCollection->isValid() &&
+      m_meshCollection->numberOfMeshes() > 0)
     {
       // See if the model has any instructions about
       // whether to generate surface normals.
@@ -318,7 +317,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       std::map<smtk::model::EntityRef, std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >
         entityrefMap;
       std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
-      this->FindEntitiesWithMesh(meshcollect, modelEntity, entityrefMap, touched);
+      this->FindEntitiesWithMesh(m_meshCollection, modelEntity, entityrefMap, touched);
 
       mbds->SetNumberOfBlocks(static_cast<unsigned>(entityrefMap.size()));
       vtkIdType i;
@@ -336,8 +335,8 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
         // as a convenient method to get the flat block index in multiblock
         if (!(cit->first.entity().isNull()))
         {
-          internal_AddBlockInfo(meshcollect, cit->first, cit->second.second, cit->second.first, i,
-            poly.GetPointer(), m_Meshset2BlockIdMap);
+          internal_AddBlockInfo(m_meshCollection, cit->first, cit->second.second, cit->second.first,
+            i, poly.GetPointer(), m_Meshset2BlockIdMap);
         }
       }
 
@@ -352,7 +351,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
                 << (this->ModelEntityID ? this->ModelEntityID : "NULL")
                 << ", use all meshes from mesh collection: " << this->MeshCollectionID << std::endl;
 
-      smtk::mesh::MeshSet allMeshes = meshcollect->meshes();
+      smtk::mesh::MeshSet allMeshes = m_meshCollection->meshes();
       mbds->SetNumberOfBlocks(static_cast<unsigned>(allMeshes.size()));
 
       for (std::size_t i = 0; i < allMeshes.size(); ++i)
@@ -396,12 +395,6 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   if (!output)
   {
     vtkErrorMacro("No output dataset");
-    return 0;
-  }
-
-  if (!m_meshMgr)
-  {
-    vtkErrorMacro("No input mesh manager");
     return 0;
   }
 

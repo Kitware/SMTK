@@ -28,8 +28,6 @@
 #include "smtk/session/polygon/operators/CreateFacesFromEdges.h"
 #include "smtk/session/polygon/operators/CreateModel.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/operation/Manager.h"
 
 void findEdgesAndVertices(const smtk::model::Model& model, std::set<smtk::model::Edge>& edges,

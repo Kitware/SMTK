@@ -15,7 +15,6 @@
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 

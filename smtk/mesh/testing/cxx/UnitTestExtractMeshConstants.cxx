@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/utility/ExtractMeshConstants.h"
 
@@ -138,9 +137,9 @@ public:
 
 void verify_extract_domain()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(mesh_path(), manager, smtk::io::mesh::Subset::OnlyNeumann);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(mesh_path(), c, smtk::io::mesh::Subset::OnlyNeumann);
   test(c->isValid(), "collection should be valid");
 
   smtk::mesh::MeshSet meshes = c->meshes();

@@ -27,7 +27,6 @@
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
 
@@ -169,15 +168,12 @@ int main(int argc, char* argv[])
   // Create a model resource
   smtk::model::ResourcePtr resource = smtk::model::Resource::create();
 
-  // Access the mesh manager
-  smtk::mesh::ManagerPtr meshManager = resource->meshes();
-
   // Load in the model
   create_simple_mesh_model(resource, std::string(argv[1]));
 
   // Convert it to a mesh
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(meshManager, resource);
+  smtk::mesh::CollectionPtr collection = convert(resource);
 
   // Create an "Interpolate Onto Mesh" operator
   smtk::operation::Operation::Ptr interpolateOntoMeshOp = smtk::mesh::InterpolateOntoMesh::create();
@@ -197,7 +193,7 @@ int main(int argc, char* argv[])
   }
 
   // Set the operator's input mesh
-  smtk::mesh::MeshSet mesh = meshManager->collectionBegin()->second->meshes();
+  smtk::mesh::MeshSet mesh = collection->meshes();
   valueSet = interpolateOntoMeshOp->parameters()->findMesh("mesh")->setValue(mesh);
 
   if (!valueSet)
@@ -318,16 +314,14 @@ int main(int argc, char* argv[])
   std::vector<std::size_t> histogram;
   if (interpolateToPoints)
   {
-    smtk::mesh::PointField pointField =
-      meshManager->collectionBegin()->second->meshes().pointField("my field");
+    smtk::mesh::PointField pointField = collection->meshes().pointField("my field");
     HistogramPointFieldData histogramPointFieldData(10, -.01, 50.01, pointField);
     smtk::mesh::for_each(mesh.points(), histogramPointFieldData);
     histogram = histogramPointFieldData.histogram();
   }
   else
   {
-    smtk::mesh::CellField cellField =
-      meshManager->collectionBegin()->second->meshes().cellField("my field");
+    smtk::mesh::CellField cellField = collection->meshes().cellField("my field");
     HistogramCellFieldData histogramCellFieldData(10, -.01, 50.01, cellField);
     smtk::mesh::for_each(mesh.cells(), histogramCellFieldData);
     histogram = histogramCellFieldData.histogram();

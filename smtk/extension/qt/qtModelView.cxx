@@ -43,7 +43,6 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include <QAction>
 #include <QApplication>

@@ -12,7 +12,8 @@
 #include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
+
+#include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -47,8 +48,7 @@ void verify_write_empty_collection()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = manager->makeCollection();
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
   test(c->isValid(), "empty collection is empty");
 
   smtk::io::WriteMesh write;
@@ -84,9 +84,9 @@ void verify_write_valid_collection_hdf5()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(file_path, c);
   test(c->isValid(), "collection should be valid");
   test(!c->isModified(), "collection shouldn't be marked as modified");
 
@@ -101,7 +101,8 @@ void verify_write_valid_collection_hdf5()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = read(write_path, manager);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  read(write_path, c2);
   test(!c2->isModified(), "collection shouldn't be marked as modified");
 
   //remove the file from disk
@@ -122,9 +123,9 @@ void verify_write_valid_collection_exodus()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".exo";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
@@ -138,7 +139,8 @@ void verify_write_valid_collection_exodus()
 
   //When exporting as an exodus file we only write out the volume elements
   //so that is what we should verify are the same
-  smtk::mesh::CollectionPtr c2 = read(write_path, manager);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  read(write_path, c2);
 
   //remove the file from disk
   cleanup(write_path);
@@ -159,9 +161,9 @@ void verify_write_valid_collection_using_write_path()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = read(file_path, interface);
   test(c->isValid(), "collection should be valid");
 
   test(c->readLocation() == file_path, "readLocation should match file_path");
@@ -181,7 +183,8 @@ void verify_write_valid_collection_using_write_path()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = read(write_path, manager);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  read(write_path, c2);
 
   //remove the file from disk
   cleanup(write_path);
@@ -201,8 +204,8 @@ void verify_write_valid_collection_using_functions()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = smtk::io::readMesh(file_path, manager);
+  smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
+  smtk::mesh::CollectionPtr c = smtk::io::readMesh(file_path, interface);
   test(c->isValid(), "collection should be valid");
 
   test(c->readLocation() == file_path, "readLocation should match file_path");
@@ -221,7 +224,8 @@ void verify_write_valid_collection_using_functions()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = smtk::io::readMesh(write_path, manager);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  smtk::io::readMesh(write_path, c2);
 
   //remove the file from disk
   cleanup(write_path);
@@ -241,9 +245,9 @@ void verify_write_onlyDomain()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
@@ -257,8 +261,10 @@ void verify_write_onlyDomain()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = read(write_path, manager);
-  smtk::mesh::CollectionPtr c3 = read(file_path, manager, smtk::io::mesh::Subset::OnlyDomain);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  read(write_path, c2);
+  smtk::mesh::CollectionPtr c3 = smtk::mesh::Collection::create();
+  read(file_path, c3, smtk::io::mesh::Subset::OnlyDomain);
 
   // remove the file from disk
   cleanup(write_path);
@@ -281,9 +287,9 @@ void verify_write_onlyNeumann()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
@@ -297,8 +303,10 @@ void verify_write_onlyNeumann()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = read(write_path, manager);
-  smtk::mesh::CollectionPtr c3 = read(file_path, manager, smtk::io::mesh::Subset::OnlyNeumann);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  read(write_path, c2);
+  smtk::mesh::CollectionPtr c3 = smtk::mesh::Collection::create();
+  read(file_path, c3, smtk::io::mesh::Subset::OnlyNeumann);
 
   // remove the file from disk
   cleanup(write_path);
@@ -322,9 +330,9 @@ void verify_write_onlyDirichlet()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   //write out the mesh.
@@ -338,8 +346,10 @@ void verify_write_onlyDirichlet()
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = read(write_path, manager);
-  smtk::mesh::CollectionPtr c3 = read(file_path, manager, smtk::io::mesh::Subset::OnlyDirichlet);
+  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  read(write_path, c2);
+  smtk::mesh::CollectionPtr c3 = smtk::mesh::Collection::create();
+  read(file_path, c3, smtk::io::mesh::Subset::OnlyDirichlet);
 
   //remove the file from disk
   cleanup(write_path);
@@ -363,9 +373,9 @@ void verify_write_clears_modified_flag()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = read(file_path, manager);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  read(file_path, c);
   test(c->isValid(), "collection should be valid");
   test(!c->isModified(), "collection loaded from disk shouldn't be modified");
 

@@ -25,8 +25,6 @@
 #include "smtk/session/polygon/operators/CreateEdgeFromPoints.h"
 #include "smtk/session/polygon/operators/CreateModel.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/operation/Manager.h"
 
 namespace

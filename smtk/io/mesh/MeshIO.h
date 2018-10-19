@@ -50,7 +50,7 @@ public:
   virtual ~MeshIO() {}
 
   virtual smtk::mesh::CollectionPtr importMesh(
-    const std::string&, smtk::mesh::ManagerPtr&, const std::string&) const
+    const std::string&, const smtk::mesh::InterfacePtr&, const std::string&) const
   {
     return smtk::mesh::CollectionPtr();
   }
@@ -66,7 +66,8 @@ public:
     return false;
   }
 
-  virtual smtk::mesh::CollectionPtr read(const std::string&, smtk::mesh::ManagerPtr&, Subset) const
+  virtual smtk::mesh::CollectionPtr read(
+    const std::string&, const smtk::mesh::InterfacePtr&, Subset) const
   {
     return smtk::mesh::CollectionPtr();
   }

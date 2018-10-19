@@ -36,7 +36,6 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "smtk/model/Edge.h"

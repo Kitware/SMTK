@@ -21,7 +21,6 @@
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/mesh/utility/Reclassify.h"
@@ -62,12 +61,41 @@ namespace session
 namespace discrete
 {
 
+inline std::vector<smtk::mesh::CollectionPtr> internal_associatedCollections(
+  const smtk::attribute::ResourceItem::Ptr& associatedMeshCollectionsItem,
+  const smtk::model::EntityRef& eref)
+{
+  std::vector<smtk::mesh::CollectionPtr> collections;
+  auto resources = eref.resource()->links().linkedFrom(smtk::mesh::Collection::ClassificationRole);
+  for (std::size_t i = 0; i < associatedMeshCollectionsItem->numberOfValues(); i++)
+  {
+    resources.insert(associatedMeshCollectionsItem->value(i));
+  }
+  for (auto resource : resources)
+  {
+    auto collection = std::dynamic_pointer_cast<smtk::mesh::Collection>(resource);
+    if (collection != nullptr)
+    {
+      bool found = eref.isModel() ? collection->associatedModel() == eref.entity()
+                                  : !(collection->findAssociatedMeshes(eref).is_empty());
+      if (found)
+      {
+        collections.push_back(collection);
+      }
+    }
+  }
+
+  return collections;
+}
+
 inline bool internal_mergeAssociatedMeshes(const smtk::model::Vertex& remVert,
   const smtk::model::Edge& toRemove, const smtk::model::Edge& toAddTo,
-  smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes)
+  const smtk::attribute::ResourceItem::Ptr& associatedMeshCollectionsItem,
+  smtk::mesh::MeshSets& modifiedMeshes)
 {
   bool ok = true;
-  std::vector<smtk::mesh::CollectionPtr> meshCollections = meshMgr->associatedCollections(toAddTo);
+  std::vector<smtk::mesh::CollectionPtr> meshCollections =
+    internal_associatedCollections(associatedMeshCollectionsItem, toAddTo);
   std::vector<smtk::mesh::CollectionPtr>::iterator it;
   for (it = meshCollections.begin(); it != meshCollections.end(); ++it)
   {
@@ -84,10 +112,12 @@ inline bool internal_mergeAssociatedMeshes(const smtk::model::Vertex& remVert,
 
 bool internal_splitAssociatedMeshes(const smtk::model::Edge& srcEdge,
   const smtk::model::Edge& newEdge, const smtk::model::Vertex& newVert,
-  smtk::mesh::ManagerPtr meshMgr, smtk::mesh::MeshSets& modifiedMeshes)
+  const smtk::attribute::ResourceItem::Ptr& associatedMeshCollectionsItem,
+  smtk::mesh::MeshSets& modifiedMeshes)
 {
   bool ok = true;
-  std::vector<smtk::mesh::CollectionPtr> meshCollections = meshMgr->associatedCollections(srcEdge);
+  std::vector<smtk::mesh::CollectionPtr> meshCollections =
+    internal_associatedCollections(associatedMeshCollectionsItem, srcEdge);
   std::vector<smtk::mesh::CollectionPtr>::iterator it;
   for (it = meshCollections.begin(); it != meshCollections.end(); ++it)
   {
@@ -412,8 +442,11 @@ bool EdgeOperation::splitSelectedEdgeNodes(
       srcsModified.push_back(srced);
 
       // update associated meshes
+      smtk::attribute::ResourceItem::Ptr associatedMeshCollectionsItem =
+        this->parameters()->findResource("associated mesh collections");
+
       if (!internal_splitAssociatedMeshes(
-            srced, newEdge, newVert, resource->meshes(), modifiedMeshes))
+            srced, newEdge, newVert, associatedMeshCollectionsItem, modifiedMeshes))
       {
         std::cout << "ERROR: Associated edge meshes failed to split properly." << std::endl;
       }
@@ -500,9 +533,12 @@ bool EdgeOperation::convertSelectedEndNodes(
       smtk::model::Edge toRemove(opsession->resource(), fromEid);
       srcsRemoved.push_back(toRemove);
 
+      smtk::attribute::ResourceItem::Ptr associatedMeshCollectionsItem =
+        this->parameters()->findResource("associated mesh collections");
+
       // update associated mesh first before removing the edge
       if (!internal_mergeAssociatedMeshes(remVert, toRemove,
-            smtk::model::Edge(opsession->resource(), toEid), opsession->resource()->meshes(),
+            smtk::model::Edge(opsession->resource(), toEid), associatedMeshCollectionsItem,
             modifiedMeshes))
       {
         std::cout << "ERROR: Associated edge meshes failed to merge properly." << std::endl;

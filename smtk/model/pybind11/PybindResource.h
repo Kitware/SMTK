@@ -18,7 +18,6 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -181,7 +180,6 @@ PySharedPtrClass< smtk::model::Resource, smtk::resource::Resource > pybind11_ini
     .def("integerProperty", (smtk::model::IntegerList & (smtk::model::Resource::*)(::smtk::common::UUID const &, ::std::string const &)) &smtk::model::Resource::integerProperty, py::arg("entity"), py::arg("propName"))
     .def("log", &smtk::model::Resource::log)
     .def("lowerDimensionalBoundaries", &smtk::model::Resource::lowerDimensionalBoundaries, py::arg("ofEntity"), py::arg("lowerDimension"))
-    .def("meshes", &smtk::model::Resource::meshes)
     .def("modelOwningEntity", &smtk::model::Resource::modelOwningEntity, py::arg("uid"))
     .def("name", (std::string (smtk::model::Resource::*)(const smtk::common::UUID& ) const) &smtk::model::Resource::name, py::arg("ofEntity"))
     .def("observe", (void (smtk::model::Resource::*)(::smtk::model::ResourceEventType, ::smtk::model::ConditionCallback, void *)) &smtk::model::Resource::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))

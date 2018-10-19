@@ -20,7 +20,6 @@
 
 #include "smtk/mesh/WriteMesh_xml.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/Resource.h"

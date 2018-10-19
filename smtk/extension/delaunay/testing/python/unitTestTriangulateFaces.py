@@ -42,8 +42,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
         triangulateFace = smtk.extension.delaunay.TriangulateFaces.create()
         triangulateFace.parameters().associateEntity(face)
         result = triangulateFace.operate()
-        triangulatedFace = self.resource.meshes().associatedCollections(
-            face)[0]
+        triangulatedFace = result.find("collection").value()
         assert(triangulatedFace.points().size() == 8)
         assert(triangulatedFace.cells().size() == 8)
 

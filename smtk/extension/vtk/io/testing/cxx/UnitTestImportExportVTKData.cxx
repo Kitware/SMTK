@@ -11,8 +11,9 @@
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
+
+#include "smtk/mesh/moab/Interface.h"
 
 #include "vtkAppendFilter.h"
 #include "vtkCellIterator.h"
@@ -143,30 +144,30 @@ void test_same_datasets(vtkDataSet* ds, vtkDataSet* ds2)
 
 void verify_null_polydata()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkPolyData* pd = NULL;
-  smtk::mesh::CollectionPtr c = imprt(pd, manager);
+  smtk::mesh::CollectionPtr c = imprt(pd, interface);
   test(!c, "collection should be invalid for a NULL poly data");
 }
 
 void verify_empty_polydata()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
-  smtk::mesh::CollectionPtr c = imprt(make_EmptyPolyData(), manager);
+  smtk::mesh::CollectionPtr c = imprt(make_EmptyPolyData(), interface);
   test(!c, "collection should invalid for empty poly data");
 }
 
 void verify_tri_polydata()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkPolyData> pd = make_TrianglePolyData();
-  smtk::mesh::CollectionPtr c = imprt(pd, manager);
+  smtk::mesh::CollectionPtr c = imprt(pd, interface);
   test(c && c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
   test(c->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
@@ -187,11 +188,11 @@ void verify_tri_polydata()
 
 void verify_tri_ugrid()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkUnstructuredGrid> ug = make_TriangleUGrid();
-  smtk::mesh::CollectionPtr c = imprt(ug, manager);
+  smtk::mesh::CollectionPtr c = imprt(ug, interface);
   test(c && c->isValid(), "collection should be valid");
   test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
   test(c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
@@ -212,11 +213,11 @@ void verify_tri_ugrid()
 
 void verify_mixed_cell_ugrid()
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkUnstructuredGrid> ug = make_MixedVolUGrid();
-  smtk::mesh::CollectionPtr c = imprt(ug, manager);
+  smtk::mesh::CollectionPtr c = imprt(ug, interface);
 
   std::cout << "number of cells: " << c->cells().size() << std::endl;
   std::cout << "number of cells ug: " << ug->GetNumberOfCells() << std::endl;

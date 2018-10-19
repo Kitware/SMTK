@@ -24,25 +24,22 @@ namespace moab
 
 //construct an interface to a given file. will load all meshes inside the
 //file. If the file given fails to load we will return a invalid Collection
-smtk::mesh::CollectionPtr read(const std::string& path, const smtk::mesh::ManagerPtr& manager);
+smtk::mesh::CollectionPtr read(const std::string& path);
 
 //construct an interface to a given file. will load only meshes which are in
 //the material set.
 //file. If the file given fails to load we will return a invalid Collection
-smtk::mesh::CollectionPtr read_domain(
-  const std::string& path, const smtk::mesh::ManagerPtr& manager);
+smtk::mesh::CollectionPtr read_domain(const std::string& path);
 
 //construct an interface to a given file. will load only meshes which are in
 //the neumann set.
 //file. If the file given fails to load we will return a invalid Collection
-smtk::mesh::CollectionPtr read_neumann(
-  const std::string& path, const smtk::mesh::ManagerPtr& manager);
+smtk::mesh::CollectionPtr read_neumann(const std::string& path);
 
 //construct an interface to a given file. will load only meshes which are in
 //the dirichlet set.
 //file. If the file given fails to load we will return a invalid Collection
-smtk::mesh::CollectionPtr read_dirichlet(
-  const std::string& path, const smtk::mesh::ManagerPtr& manager);
+smtk::mesh::CollectionPtr read_dirichlet(const std::string& path);
 
 //Import everything in a file into an existing collection.
 bool import(const std::string& path, const smtk::mesh::CollectionPtr& c);

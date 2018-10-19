@@ -15,7 +15,6 @@
 #include "smtk/io/WriteMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "vtkNew.h"
 #include "vtkParametricBoy.h"
@@ -136,13 +135,13 @@ void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
 }
 
 template <typename vtkDataSetType>
-smtk::mesh::CollectionPtr convert(
-  vtkDataSetType* input, smtk::mesh::ManagerPtr manager, std::string material)
+smtk::mesh::CollectionPtr convert(vtkDataSetType* input, std::string material)
 {
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   //we convert the vtk data into a single mesh.
-  smtk::mesh::CollectionPtr collection = imprt(input, manager, material);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
+  imprt(input, collection, material);
 
   if (!collection)
   {
@@ -189,8 +188,6 @@ void extractSurfaces(smtk::mesh::CollectionPtr c, std::string outputFile)
 //Another executalbe that is SurfacePerMaterial
 int main(int argc, char* argv[])
 {
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-
   std::string inputFileName(argc > 1 ? argv[1] : "mesh3D.vtu");
   std::string outputFileName(argc > 2 ? argv[2] : "mesh3D.exo");
   std::string materialName(argc > 3 ? argv[3] : std::string());
@@ -203,16 +200,17 @@ int main(int argc, char* argv[])
   if (extension == ".vtu")
   {
     data = readXMLFile<vtkXMLUnstructuredGridReader>(inputFileName);
-    c = convert(vtkUnstructuredGrid::SafeDownCast(data), manager, materialName);
+    c = convert(vtkUnstructuredGrid::SafeDownCast(data), materialName);
   }
   else if (extension == ".vtp")
   {
     data = readXMLFile<vtkXMLPolyDataReader>(inputFileName);
-    c = convert(vtkPolyData::SafeDownCast(data), manager, materialName);
+    c = convert(vtkPolyData::SafeDownCast(data), materialName);
   }
   else if (extension == ".h5m" || extension == ".exo")
   {
-    c = smtk::io::importMesh(inputFileName, manager);
+    c = smtk::mesh::Collection::create();
+    smtk::io::importMesh(inputFileName, c);
   }
 
   if (!c)

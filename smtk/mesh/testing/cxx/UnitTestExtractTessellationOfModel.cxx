@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -253,14 +252,13 @@ int UnitTestExtractTessellationOfModel(int, char** const)
 {
   // Somehow grab an EntityRef with an associated tessellation
   smtk::model::EntityRef eRef;
-  smtk::mesh::ManagerPtr meshManager = smtk::mesh::Manager::create();
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(meshManager, modelResource);
+  smtk::mesh::CollectionPtr c = convert(modelResource);
 
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;

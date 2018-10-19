@@ -42,23 +42,24 @@ public:
 
   //Load the domain sets from a moab data file as a new collection into the
   //given manager.
-  smtk::mesh::CollectionPtr operator()(const std::string& filePath, smtk::mesh::ManagerPtr manager,
+  smtk::mesh::CollectionPtr operator()(const std::string& filePath,
+    const smtk::mesh::InterfacePtr& interface,
     mesh::Subset subset = mesh::Subset::EntireCollection) const;
   bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
     mesh::Subset subset = mesh::Subset::EntireCollection) const;
 };
 
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readMesh(const std::string& filePath,
-  smtk::mesh::ManagerPtr manager, mesh::Subset subset = mesh::Subset::EntireCollection);
+  const smtk::mesh::InterfacePtr& interface, mesh::Subset subset = mesh::Subset::EntireCollection);
 // Explicit functions for each subset type
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readEntireCollection(
-  const std::string& filePath, smtk::mesh::ManagerPtr manager);
+  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readDomain(
-  const std::string& filePath, smtk::mesh::ManagerPtr manager);
+  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readDirichlet(
-  const std::string& filePath, smtk::mesh::ManagerPtr manager);
+  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
 SMTKCORE_EXPORT smtk::mesh::CollectionPtr readNeumann(
-  const std::string& filePath, smtk::mesh::ManagerPtr manager);
+  const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
 
 SMTKCORE_EXPORT bool readMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
   mesh::Subset subset = mesh::Subset::EntireCollection);

@@ -14,7 +14,6 @@
 
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -32,12 +31,13 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
-smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/2d/twoMeshes.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, mngr);
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::io::importMesh(file_path, c);
   test(c->isValid(), "collection should be valid");
 
   return c;
@@ -56,8 +56,7 @@ void cleanup(const std::string& file_path)
 
 void verify_partial_cellfields()
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh();
 
   smtk::mesh::MeshSet mesh = c->meshes(smtk::mesh::Dims2);
   smtk::mesh::MeshSet one = mesh.subset(0);
@@ -143,8 +142,7 @@ void verify_partial_cellfields()
 
 void verify_duplicate_cellfields()
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh();
 
   smtk::mesh::MeshSet mesh = c->meshes(smtk::mesh::Dims2);
   smtk::mesh::MeshSet one = mesh.subset(0);
@@ -287,8 +285,7 @@ public:
 
 void verify_incremental_data_assignment()
 {
-  smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::CollectionPtr c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh();
   smtk::mesh::MeshSet mesh = c->meshes();
   std::function<double(double, double, double)> euclideanDistance = [](
     double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
@@ -313,8 +310,7 @@ void verify_cellfield_persistency()
 
   std::vector<double> fieldValues;
   {
-    smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-    smtk::mesh::CollectionPtr c = load_mesh(mngr);
+    smtk::mesh::CollectionPtr c = load_mesh();
 
     smtk::mesh::MeshSet mesh = c->meshes(smtk::mesh::Dims2);
     smtk::mesh::MeshSet one = mesh.subset(0);
@@ -337,9 +333,9 @@ void verify_cellfield_persistency()
   }
 
   {
-    smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
     smtk::io::ReadMesh read;
-    smtk::mesh::CollectionPtr c = read(write_path, mngr);
+    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+    read(write_path, c);
 
     //remove the file from disk
     cleanup(write_path);

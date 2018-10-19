@@ -11,7 +11,6 @@
 #include "smtk/mesh/utility/ExtractMeshConstants.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/PointConnectivity.h"
 #include "smtk/mesh/core/PointSet.h"
 

@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/moab/Interface.h"
@@ -21,9 +20,8 @@ namespace
 
 void verify_moab_allocator_creation()
 {
-  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
 
   test(collection->isValid(), "collection should be valid");
   test(!collection->isModified(), "collection shouldn't be modified");
@@ -39,9 +37,8 @@ void verify_moab_allocator_creation()
 
 void verify_json_allocator_creation()
 {
-  smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::InterfacePtr iface = smtk::mesh::json::make_interface();
-  smtk::mesh::CollectionPtr collection = mgr->makeCollection(iface);
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
 
   test(collection->isValid(), "collection should be valid");
   test(!collection->isModified(), "collection shouldn't be modified");

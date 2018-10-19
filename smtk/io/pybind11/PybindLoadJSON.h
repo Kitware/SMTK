@@ -25,7 +25,6 @@
 #include "smtk/attribute/Definition.h"
 
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/json/Readers.h"
 #include "smtk/mesh/moab/Interface.h"

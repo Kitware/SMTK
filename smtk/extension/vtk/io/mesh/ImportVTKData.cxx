@@ -17,7 +17,6 @@
 #include "smtk/mesh/core/CellTraits.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/FieldTypes.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
 
@@ -216,9 +215,9 @@ ImportVTKData::ImportVTKData()
 }
 
 smtk::mesh::CollectionPtr ImportVTKData::operator()(const std::string& filename,
-  smtk::mesh::ManagerPtr& manager, std::string materialPropertyName) const
+  const smtk::mesh::InterfacePtr& interface, std::string materialPropertyName) const
 {
-  smtk::mesh::CollectionPtr collection = manager->makeCollection();
+  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(interface);
   return this->operator()(filename, collection, materialPropertyName) ? collection
                                                                       : smtk::mesh::CollectionPtr();
 }
@@ -360,10 +359,10 @@ bool ImportVTKData::operator()(
   return !mesh.is_empty();
 }
 
-smtk::mesh::CollectionPtr ImportVTKData::operator()(
-  vtkDataSet* dataset, smtk::mesh::ManagerPtr& manager, std::string materialPropertyName) const
+smtk::mesh::CollectionPtr ImportVTKData::operator()(vtkDataSet* dataset,
+  const smtk::mesh::InterfacePtr& interface, std::string materialPropertyName) const
 {
-  smtk::mesh::CollectionPtr c = manager->makeCollection();
+  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create(interface);
   return this->operator()(dataset, c, materialPropertyName) ? c : smtk::mesh::CollectionPtr();
 }
 }

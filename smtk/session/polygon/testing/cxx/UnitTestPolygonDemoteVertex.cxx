@@ -30,8 +30,6 @@
 #include "smtk/session/polygon/operators/CreateVertices.h"
 #include "smtk/session/polygon/operators/DemoteVertex.h"
 
-#include "smtk/mesh/core/Manager.h"
-
 #include "smtk/operation/Manager.h"
 
 int UnitTestPolygonDemoteVertex(int argc, char* argv[])

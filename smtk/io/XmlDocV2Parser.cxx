@@ -24,7 +24,6 @@
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/mesh/core/Collection.h"
-#include "smtk/mesh/core/Manager.h"
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/json/jsonHandleRange.h"
 #include "smtk/model/EntityRef.h"
