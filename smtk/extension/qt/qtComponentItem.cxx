@@ -242,18 +242,10 @@ bool qtComponentItem::synchronize(UpdateSource src)
       ++uiMembers;
     }
   }
-  static const std::size_t numRequired = item->numberOfRequiredValues();
-  static const std::size_t maxAllowed = item->maxNumberOfValues();
   switch (src)
   {
     case UpdateSource::ITEM_FROM_GUI:
     {
-      if ((numRequired > 0 && uiMembers < numRequired) ||
-        (maxAllowed > 0 && uiMembers > maxAllowed))
-      {
-        // UI cannot satisfy item. Return.
-        return false;
-      }
       // Everything else in this case statement should really be
       // a single, atomic operation executed on the attribute/item:
       if (!item->setNumberOfValues(uiMembers))
@@ -273,6 +265,7 @@ bool qtComponentItem::synchronize(UpdateSource src)
           ++idx;
         }
       }
+      emit modified();
     }
     break;
 
