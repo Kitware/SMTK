@@ -6,8 +6,6 @@ build:
   number: 1
 
 source:
-  # git_rev: conda-py2
-  # git_url: https://gitlab.kitware.com/john.tourtellott/smtk.git
   - git_rev: '6425a480ffe8e08b96453618fc5530e08e68ae8a'
     git_url: https://bitbucket.org/fathomteam/moab.git
     folder: moab

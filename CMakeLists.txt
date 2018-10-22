@@ -28,8 +28,8 @@ endif()
 # Check if we are in conda environment
 if (DEFINED ENV{CONDA_PREFIX})
   message("CONDA_PREFIX $ENV{CONDA_PREFIX}")
-  include("conda/Conda.cmake")
-  include("conda/CondaToolchain.cmake")
+  include("CMake/Conda.cmake")
+  include("CMake/CondaToolchain.cmake")
 endif()
 
 ################################################################################
