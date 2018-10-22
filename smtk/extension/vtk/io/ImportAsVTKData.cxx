@@ -338,7 +338,7 @@ vtkSmartPointer<vtkDataObject> ImportAsVTKData_tif::operator()(
 
 ImportAsVTKData_cmb::ImportAsVTKData_cmb()
   : ImportAsVTKDataType<ImportAsVTKData_cmb>({ smtk::extension::vtk::io::ImportFormat(
-      "CMB File", { "bin", "vtk", "2dm", "3dm", "tin", "poly", "smesh", "fac", "sol", "stl" }) })
+      "CMB File", { "bin", "2dm", "3dm", "tin", "poly", "smesh", "fac", "sol", "stl" }) })
 {
 }
 
