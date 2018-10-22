@@ -37,14 +37,17 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindCreateVertices.h"
 #include "PybindDelete.h"
 #include "PybindDemoteVertex.h"
-#include "PybindExtractContours.h"
 #include "PybindForceCreateFace.h"
-#include "PybindImport.h"
 #include "PybindRead.h"
 #include "PybindLegacyRead.h"
 #include "PybindSplitEdge.h"
 #include "PybindTweakEdge.h"
 #include "PybindWrite.h"
+
+#ifdef VTK_SUPPORT
+#include "PybindExtractContours.h"
+#include "PybindImport.h"
+#endif
 
 #include "PybindRegistrar.h"
 
@@ -69,14 +72,17 @@ PYBIND11_MODULE(_smtkPybindPolygonSession, polygon)
   PySharedPtrClass< smtk::session::polygon::CreateVertices > smtk_session_polygon_CreateVertices = pybind11_init_smtk_session_polygon_CreateVertices(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::Delete > smtk_session_polygon_Delete = pybind11_init_smtk_session_polygon_Delete(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::DemoteVertex > smtk_session_polygon_DemoteVertex = pybind11_init_smtk_session_polygon_DemoteVertex(polygon, smtk_session_polygon_Operation);
-  PySharedPtrClass< smtk::session::polygon::ExtractContours > smtk_session_polygon_ExtractContours = pybind11_init_smtk_session_polygon_ExtractContours(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::ForceCreateFace > smtk_session_polygon_ForceCreateFace = pybind11_init_smtk_session_polygon_ForceCreateFace(polygon, smtk_session_polygon_Operation);
-  PySharedPtrClass< smtk::session::polygon::Import > smtk_session_polygon_Import = pybind11_init_smtk_session_polygon_Import(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::Read > smtk_session_polygon_Read = pybind11_init_smtk_session_polygon_Read(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::LegacyRead > smtk_session_polygon_LegacyRead = pybind11_init_smtk_session_polygon_LegacyRead(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::SplitEdge > smtk_session_polygon_SplitEdge = pybind11_init_smtk_session_polygon_SplitEdge(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::TweakEdge > smtk_session_polygon_TweakEdge = pybind11_init_smtk_session_polygon_TweakEdge(polygon, smtk_session_polygon_Operation);
   PySharedPtrClass< smtk::session::polygon::Write > smtk_session_polygon_Write = pybind11_init_smtk_session_polygon_Write(polygon, smtk_session_polygon_Operation);
+
+#ifdef VTK_SUPPORT
+  PySharedPtrClass< smtk::session::polygon::ExtractContours > smtk_session_polygon_ExtractContours = pybind11_init_smtk_session_polygon_ExtractContours(polygon, smtk_session_polygon_Operation);
+  PySharedPtrClass< smtk::session::polygon::Import > smtk_session_polygon_Import = pybind11_init_smtk_session_polygon_Import(polygon, smtk_session_polygon_Operation);
+#endif
 
   py::class_< smtk::session::polygon::Registrar > smtk_session_polygon_Registrar = pybind11_init_smtk_session_polygon_Registrar(polygon);
 }

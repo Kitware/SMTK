@@ -25,10 +25,16 @@ if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_EXTENSIONS FALSE)
 endif()
 
+# Check if we are in conda environment
+if (DEFINED ENV{CONDA_PREFIX})
+  message("CONDA_PREFIX $ENV{CONDA_PREFIX}")
+  include("CMake/Conda.cmake")
+  include("CMake/CondaToolchain.cmake")
+endif()
+
 ################################################################################
 # SMTK version number
 include(CMake/smtkVersion.cmake)
-
 project(smtk VERSION ${SMTK_VERSION})
 
 # Remove smtkTargets.cmake at the beginning of each CMake run; each time
@@ -83,6 +89,7 @@ endif()
 # Set the directory where the binaries will be stored
 set(EXECUTABLE_OUTPUT_PATH         ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 ################################################################################
 # Options that the user controls
@@ -119,8 +126,7 @@ cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model sessio
   SMTK_ENABLE_VTK_SUPPORT OFF)
 cmake_dependent_option(SMTK_ENABLE_MOAB_DISCRETE_READER "Build moab reader for discrete model" OFF
   "SMTK_ENABLE_DISCRETE_SESSION" OFF)
-cmake_dependent_option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON
-  SMTK_ENABLE_VTK_SUPPORT OFF)
+option(SMTK_ENABLE_POLYGON_SESSION "Build Boost.polygon model session." ON)
 cmake_dependent_option(SMTK_ENABLE_VTK_SESSION "Build a session that uses VTK multiblock datasets" ON
   SMTK_ENABLE_VTK_SUPPORT OFF)
 option(SMTK_ENABLE_MESH_SESSION
@@ -258,7 +264,7 @@ endif()
 # build machine without any issues. If this not desired, simply specify
 # CMAKE_INSTALL_RPATH_USE_LINK_PATH when configuring and "make install" will
 # strip all rpaths, which is default behavior.
-if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH)
+if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH AND NOT DEFINED conda_prefix)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif ()
 
@@ -330,8 +336,14 @@ add_subdirectory(thirdparty)
 # Wrapping Related Settings
 ################################################################################
 if(SMTK_ENABLE_PYTHON_WRAPPING)
-  find_package(PythonLibs REQUIRED)
+  if(WIN32)
+    set(PYTHON_MODULE_EXTENSION ".pyd")
+  else()
+    set(PYTHON_MODULE_EXTENSION ".so")
+  endif()
+
   find_package(PythonInterp 2.7 REQUIRED)
+  find_package(PythonLibs REQUIRED)
 
   # Initialize SMTK_PYTHON_MODULEDIR.
   # This stores the location where we'll install SMTK's Python modules.
@@ -354,24 +366,19 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     endif()
   endif()
 
-
-  if(SMTK_ENABLE_PYTHON_WRAPPING)
-    if(WIN32)
-      set(PYTHON_MODULE_EXTENSION ".pyd")
-    else()
-      set(PYTHON_MODULE_EXTENSION ".so")
-    endif()
-    set(PYTHON_MODULE_PREFIX "")
+  if (DEFINED conda_prefix)
+    # pybind11 version 2.3 not currently available from conda-forge
+    find_package(pybind11 REQUIRED)
+  else()
     find_package(pybind11 2.3 REQUIRED)
-
-    set(SMTK_PYBIND11_FLAGS " ")
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
-       CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
-       CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-      set(SMTK_PYBIND11_FLAGS "${SMTK_PYBIND11_FLAGS} -Wno-shadow")
-    endif()
   endif()
 
+  set(SMTK_PYBIND11_FLAGS " ")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
+     CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
+     CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    set(SMTK_PYBIND11_FLAGS "${SMTK_PYBIND11_FLAGS} -Wno-shadow")
+  endif()
 
   # Set up environment variables needed to import the python modules for tests.
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)

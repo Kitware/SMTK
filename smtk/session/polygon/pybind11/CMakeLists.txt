@@ -23,6 +23,9 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     )
 endif()
 target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkPolygonSession LINK_PRIVATE ${import_vtk_depends} ${Boost_LIBRARIES})
+if(SMTK_ENABLE_VTK_SUPPORT)
+  target_compile_definitions(${library_name} PUBLIC VTK_SUPPORT)
+endif()
 set_target_properties(${library_name}
   PROPERTIES
     CXX_VISIBILITY_PRESET hidden

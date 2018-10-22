@@ -8,8 +8,14 @@ set(smtkModelPythonTests
 set(smtkModelPythonDataTests
   modelAttributes
   modelSetPropertyOp
-  modelCloseModelOp
 )
+
+if (SMTK_ENABLE_DISCRETE_SESSION)
+  set(smtkModelPythonDataTests
+    ${smtkModelPythonDataTests}
+    modelCloseModelOp
+  )
+endif()
 
 if (SMTK_ENABLE_POLYGON_SESSION)
   set(smtkModelPythonDataTests

@@ -68,9 +68,13 @@ set(smtkCore_public_include_directories
 set(smtkCore_private_include_directories
   )
 
+set(moab_libs ${MOAB_LIBRARIES})
+if(WIN32)
+  set(moab_libs "MOAB")
+endif()
 set(smtkCore_public_link_libraries
   cJSON
-  MOAB
+  ${moab_libs}
   nlohmann_json
   )
 
