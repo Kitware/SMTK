@@ -41,7 +41,7 @@ namespace
 {
 std::string dataRoot = SMTK_DATA_DIR;
 std::string writeRoot = SMTK_SCRATCH_DIR;
-std::string filename("/model/2d/map/simple.map");
+std::string filename("/scene/ArcSetsTest/innerLoopHard_contour.vtp");
 
 void cleanup(const std::string& file_path)
 {
@@ -102,9 +102,9 @@ void ValidateModelTopology(smtk::model::Model model)
   std::cout << count[2] << " faces" << std::endl;
   test(count[2] == 0, "There should be no faces");
   std::cout << count[1] << " edges" << std::endl;
-  test(count[1] == 5, "There should be five lines");
+  test(count[1] == 7, "There should be seven lines");
   std::cout << count[0] << " vertex groups" << std::endl;
-  test(count[0] == 5, "There should be five vertex groups");
+  test(count[0] == 6, "There should be six vertex groups");
 }
 }
 
