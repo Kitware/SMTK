@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>404</width>
-    <height>495</height>
+    <height>263</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,29 +104,6 @@
       </item>
       <item row="1" column="2">
        <widget class="QListWidget" name="AvailableList"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="domainGroup">
-     <property name="title">
-      <string>Model Domain and Material Associations</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QTableWidget" name="DomainMaterialTable">
-        <column>
-         <property name="text">
-          <string>Domain</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Material</string>
-         </property>
-        </column>
-       </widget>
       </item>
      </layout>
     </widget>

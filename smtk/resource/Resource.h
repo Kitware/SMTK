@@ -129,8 +129,8 @@ public:
   template <typename Collection>
   Collection findAs(const std::string& queryString) const;
 
-  Links& links() { return m_links; }
-  const Links& links() const { return m_links; }
+  Links& links() override { return m_links; }
+  const Links& links() const override { return m_links; }
 
   /// classes that are granted permission to the key may retrieve the resource's
   /// lock.

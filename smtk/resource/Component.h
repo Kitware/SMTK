@@ -42,8 +42,8 @@ public:
   virtual ~Component();
   virtual const ResourcePtr resource() const = 0;
 
-  Links& links() { return m_links; }
-  const Links& links() const { return m_links; }
+  Links& links() override { return m_links; }
+  const Links& links() const override { return m_links; }
 
 protected:
   Component();

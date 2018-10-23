@@ -20,3 +20,7 @@ The first index in the array is "special" in that it represents the resource its
 + Fixed bug in attribute::ReferenceItem that prevented values to be set to nullptr
 + Added an IncludeIndex property to Attribute and Definition.  This is used by I/O classes to represent include file structure
 + Added a DirectoryInfo Property to Attribute Resource.  This is used by I/O classes to represent the include file structure of the resource.
++ Added Resource::attributes(object) method to return all of the attributes associated with the persistent object that are owned by the attribute resource.
++ Added Definition::attributes(object) method to return all of the attributes associated with the persistent object that are derived from the definition or definitions derived from it.
++ Added ReferenceItem::acceptableEntries() method to return it's definition's acceptability rules.
++ Added Protected method ReferenceItemDefinition::setRole(role) method for setting the role of its related resource links.

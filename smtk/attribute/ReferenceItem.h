@@ -77,6 +77,8 @@ public:
   bool setNumberOfValues(std::size_t newSize);
   /// Return this item's definition.
   virtual std::shared_ptr<const ReferenceItemDefinition> definition() const;
+  /// Return the association constraints for this item
+  const std::multimap<std::string, std::string>& acceptableEntries() const;
 
   /// Return the number of values required by this item's definition (if it has one).
   std::size_t numberOfRequiredValues() const;

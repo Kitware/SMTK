@@ -63,7 +63,7 @@ public:
   void updateModelEntities();
   QTableWidgetItem* getSelectedItem();
   /**\brief method used to update the view when the selected row of the table widget is changed
-  * broadcastSelecxted indicates if the view should notify the Selection Manager that a model entity
+  * broadcastSelected indicates if the view should notify the Selection Manager that a model entity
   has been selected - when the row changed is initiated by the Selection Manager this is set to false */
   void showCurrentRow(bool broadcastSelected);
   /**\brief method used when model entities are selected via the Selection System */
@@ -86,8 +86,16 @@ signals:
 protected:
   void buildUI() override;
   void createWidget() override;
+
+  /**\brief Display the contents of a specific attribute. */
   void displayAttribute(smtk::attribute::AttributePtr att);
+  /**\brief Gather all definitions and group them based on category.
+  * This includes all definitions derived from the types specified in the view. */
   virtual void getAllDefinitions();
+  /**\brief Return a set of all appropriate objects based on the view's model entity mask.*/
+  std::set<smtk::resource::PersistentObjectPtr> associatableObjects() const;
+  /**\brief Return a presistent object that cooresponds to a table widget item.*/
+  smtk::resource::PersistentObjectPtr object(QTableWidgetItem* item);
 
 protected slots:
   void selectionMade();

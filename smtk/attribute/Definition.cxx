@@ -206,6 +206,7 @@ ReferenceItemDefinitionPtr Definition::localAssociationRule() const
 void Definition::setLocalAssociationRule(ReferenceItemDefinitionPtr rule)
 {
   m_acceptsRules = rule;
+  m_acceptsRules->setRole(smtk::attribute::Resource::AssociationRole);
 }
 
 /**\brief Return the mask specifying which types of model entities this attribute can be associated with.
@@ -473,4 +474,27 @@ bool Definition::removeItemDefinition(ItemDefinitionPtr itemDef)
   m_itemDefPositions.erase(itemDef->name());
   this->updateDerivedDefinitions();
   return true;
+}
+
+std::set<AttributePtr> Definition::attributes(
+  const smtk::resource::ConstPersistentObjectPtr& object) const
+{
+  // Get all attributes that are associated with the object and then remove all attributes whose definitions
+  // are not derived from this one.
+  auto atts = this->resource()->attributes(object);
+  auto sharedDef = this->shared_from_this();
+  for (auto it = atts.begin(); it != atts.end();)
+  {
+    if ((*it)->definition()->isA(sharedDef))
+    {
+      // Keep this in the list
+      ++it;
+    }
+    else
+    {
+      // its not derived from this so remove it from the list
+      it = atts.erase(it);
+    }
+  }
+  return atts;
 }
