@@ -49,6 +49,8 @@ class SMTKCORE_EXPORT Attribute : public resource::Component
   friend class smtk::attribute::RefItem;
 
 public:
+  smtkTypeMacro(smtk::attribute::Attribute);
+
   static smtk::attribute::AttributePtr New(
     const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
   {
