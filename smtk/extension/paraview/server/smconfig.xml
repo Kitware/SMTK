@@ -1720,6 +1720,49 @@
 
   </ProxyGroup>
 
+  <ProxyGroup name="smtk_widgets">
+
+    <!-- Point widget -->
+    <Proxy name="SMTKHandleWidget"
+      base_proxygroup="3d_widgets"
+      base_proxyname="HandleWidget"
+      >
+      <DoubleVectorProperty name = "WorldPosition"
+        command = "SetWorldPosition"
+        argument_is_array="1"
+        default_values='0 0 0'
+        number_of_elements="3">
+      </DoubleVectorProperty>
+      <PropertyGroup panel_widget="InteractiveHandle" label="Handle">
+        <Property function="WorldPosition" name="WorldPosition" />
+      </PropertyGroup>
+    </Proxy>
+
+    <!-- Line widget -->
+    <Proxy name="SMTKLineWidget"
+      base_proxygroup="3d_widgets"
+      base_proxyname="LineWidget2"
+      >
+      <DoubleVectorProperty name = "WorldPosition1"
+        command = "SetPoint1WorldPosition"
+        argument_is_array="1"
+        default_values='0 0 0'
+        number_of_elements="3">
+      </DoubleVectorProperty>
+      <DoubleVectorProperty name = "WorldPosition2"
+        command = "SetPoint1WorldPosition"
+        argument_is_array="1"
+        default_values='0 0 0'
+        number_of_elements="3">
+      </DoubleVectorProperty>
+      <PropertyGroup panel_widget="InteractiveLine" label="Line">
+        <Property function="Point1WorldPosition" name="WorldPosition1" />
+        <Property function="Point2WorldPosition" name="WorldPosition2" />
+      </PropertyGroup>
+    </Proxy>
+
+  </ProxyGroup>
+
   <ProxyGroup name="settings">
 
     <SettingsProxy name="SMTKSettings" label="Sim Pre-processing"

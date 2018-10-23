@@ -32,9 +32,9 @@ set(PQComponentsSrcs
   pqSMTKNewResourceBehavior.cxx
   pqSMTKOperationPanel.cxx
   pqSMTKRegisterImportersBehavior.cxx
+  pqSMTKResource.cxx
   pqSMTKSaveResourceBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
-  pqSMTKResource.cxx
   pqSMTKWrapper.cxx
   pqSMTKResourcePanel.cxx
 )
@@ -51,9 +51,9 @@ set(PQComponentsHeaders
   pqSMTKNewResourceBehavior.h
   pqSMTKOperationPanel.h
   pqSMTKRegisterImportersBehavior.h
+  pqSMTKResource.h
   pqSMTKSaveResourceBehavior.h
   pqSMTKSelectionFilterBehavior.h
-  pqSMTKResource.h
   pqSMTKWrapper.h
   pqSMTKResourcePanel.h
 )

@@ -3,26 +3,38 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 # set up sources to build
 set(PQWidgetsSrcs
   pqGenerateContoursDialog.cxx
+  pqSMTKAttributeItemWidget.cxx
+  pqSMTKBoxItemWidget.cxx
+  pqSMTKLineItemWidget.cxx
+  pqSMTKPlaneItemWidget.cxx
+  pqSMTKPointItemWidget.cxx
+  pqSMTKSphereItemWidget.cxx
+  pqSMTKSplineItemWidget.cxx
   qtArcWidget.cxx
   qtInteractionWidget.cxx
-  qtLineWidget.cxx
 )
 
 set(PQWidgetsUIs
   qtArcWidget.ui
-  qtLineWidget.ui
   qtGenerateContoursDialog.ui
 )
 
 set(PQWidgetsMocHeaders
   pqGenerateContoursDialog.h
+  pqSMTKAttributeItemWidget.h
+  pqSMTKBoxItemWidget.h
+  pqSMTKLineItemWidget.h
+  pqSMTKPlaneItemWidget.h
+  pqSMTKPointItemWidget.h
+  pqSMTKSphereItemWidget.h
+  pqSMTKSplineItemWidget.h
   qtArcWidget.h
   qtInteractionWidget.h
-  qtLineWidget.h
 )
 
 set(PQWidgetsHeaders
   ${PQWidgetsMocHeaders}
+  pqSMTKAttributeItemWidgetP.h
 )
 
 #install the headers
@@ -51,11 +63,54 @@ target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
   pqApplicationComponents
   vtkPVServerManagerRendering
   smtkCore
+  smtkQtExt
   Qt5::Core
   Qt5::Widgets
-  )
+)
 
 smtk_export_header(smtkPQWidgetsExt Exports.h)
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkPQWidgetsExt)
+
+set(PQWidgetsPluginHdrs
+  pqSMTKWidgetsAutoStart.h
+)
+
+set(PQWidgetsPluginSrcs
+  pqSMTKWidgetsAutoStart.cxx
+)
+
+add_paraview_auto_start(PLUGIN_AUTOSTART_IFACES PLUGIN_AUTOSTART_IFACE_SRCS
+  CLASS_NAME pqSMTKWidgetsAutoStart
+  STARTUP startup
+  SHUTDOWN shutdown
+)
+
+pv_qt_wrap_cpp(PLUGIN_MOC_SRCS ${PQWidgetsPluginHdrs})
+add_paraview_plugin(
+  smtkPQWidgetsPlugin "1.0"
+  GUI_INTERFACES
+    ${PLUGIN_ACTION_IFACES}
+    ${PLUGIN_AUTOSTART_IFACES}
+    ${PLUGIN_PROXY_IFACES}
+    ${PLUGIN_DOCK_IFACES}
+  GUI_SOURCES
+    ${PQWidgetsPluginHdrs}
+    ${PQWidgetsPluginSrcs}
+    ${PLUGIN_MOC_SRCS}
+    ${PLUGIN_ACTION_IFACE_SRCS}
+    ${PLUGIN_AUTOSTART_IFACE_SRCS}
+    ${PLUGIN_PROXY_IFACE_SRCS}
+    ${PLUGIN_DOCK_IFACES_SRCS}
+)
+set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPQWidgetsPlugin" CACHE INTERNAL "")
+
+target_link_libraries(smtkPQWidgetsPlugin
+  LINK_PUBLIC
+  smtkPQWidgetsExt
+)
+smtk_export_header(smtkPQWidgetsPlugin PluginExports.h)
+
+#install the library and exports the library when used from a build tree
+smtk_install_library(smtkPQWidgetsPlugin)
