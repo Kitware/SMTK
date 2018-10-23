@@ -17,6 +17,8 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 
+#include "smtk/io/Logger.h"
+
 namespace smtk
 {
 namespace attribute
@@ -27,6 +29,28 @@ Associate::Result Associate::operateInternal()
   // Access the attribute resource to associate.
   smtk::attribute::Resource::Ptr resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
     this->parameters()->associations()->objectValue());
+
+  // Currently, we cannot specialize associations between resources and
+  // components. This means an attribute component is allowed as an input. If we
+  // recieve an attribute component, access its resource.
+  if (resource == nullptr)
+  {
+    smtk::attribute::Attribute::Ptr attribute =
+      std::dynamic_pointer_cast<smtk::attribute::Attribute>(
+        this->parameters()->associations()->objectValue());
+
+    if (attribute != nullptr)
+    {
+      resource = attribute->attributeResource();
+    }
+  }
+
+  // If we still do not have a valid resource, return with failure.
+  if (resource == nullptr)
+  {
+    smtkErrorMacro(this->log(), "Could not access attribute resource.");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
 
   // Access the resource to which we will associate.
   auto associateToItem = this->parameters()->findResource("associate to");
