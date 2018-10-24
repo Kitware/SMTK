@@ -183,6 +183,7 @@ ReferenceItemDefinitionPtr Definition::createLocalAssociationRule()
     m_acceptsRules = ReferenceItemDefinition::New(assocName.str());
     m_acceptsRules->setIsExtensible(false);
     m_acceptsRules->setNumberOfRequiredValues(0);
+    m_acceptsRules->setRole(smtk::attribute::Resource::AssociationRole);
   }
   return m_acceptsRules;
 }

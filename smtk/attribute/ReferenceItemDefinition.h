@@ -87,6 +87,12 @@ public:
   void setLockType(smtk::resource::LockType val) { m_lockType = val; }
   smtk::resource::LockType lockType() const { return m_lockType; }
 
+  /// Set/Get the reference's role when generating links between the containing
+  /// attribute and the reference item. By default, this value is set to
+  /// smtk::attribute::Resource::ReferenceRole.
+  void setRole(const smtk::resource::Links::RoleType& role) { m_role = role; }
+  smtk::resource::Links::RoleType role() const { return m_role; }
+
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(Item* owner, int itemPos, int subGroupPosition) const override;
 
@@ -111,6 +117,7 @@ protected:
   std::size_t m_maxNumberOfValues;
   std::multimap<std::string, std::string> m_acceptable;
   smtk::resource::LockType m_lockType;
+  smtk::resource::Links::RoleType m_role;
 };
 
 } // namespace attribute
