@@ -90,10 +90,10 @@ int unitAttributeAssociation(int, char* [])
   {
     auto associateOperation = smtk::attribute::Associate::create();
 
-    attribute::ResourcePtr resptr = attribute::Resource::create();
+    resptr = attribute::Resource::create();
     associateOperation->parameters()->associate(resptr);
 
-    model::Resource::Ptr modelMgr = model::Resource::create();
+    modelMgr = model::Resource::create();
     smtkTest(associateOperation->parameters()->findResource("associate to") != nullptr,
       "Cannot access associate opration's input resource parameter.");
     associateOperation->parameters()->findResource("associate to")->setValue(modelMgr);
