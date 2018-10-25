@@ -70,6 +70,7 @@ Import::Result Import::operateInternal()
 
   smtk::session::mesh::Resource::Ptr resource = nullptr;
   smtk::session::mesh::Session::Ptr session = nullptr;
+  smtk::mesh::Collection::Ptr collection = nullptr;
 
   // Modes 2 and 3 requre an existing resource for input
   smtk::attribute::ResourceItem::Ptr existingResourceItem =
@@ -84,17 +85,27 @@ Import::Result Import::operateInternal()
 
     smtk::attribute::StringItem::Ptr sessionOnlyItem =
       this->parameters()->findString("session only");
-    if (sessionOnlyItem->value() == "this file")
+    if (sessionOnlyItem->value() == "import into this file")
     {
       // If the "session only" value is set to "this file", then we use the
       // existing resource
       resource = existingResource;
+      collection = existingResource->collection();
+
+      // It is possible that a mesh session resource does not have a valid
+      // collection (for example, when it is newly created). In this case, we
+      // need a new collection instead.
+      if (collection == nullptr)
+      {
+        collection = smtk::mesh::Collection::create();
+      }
     }
     else
     {
       // If the "session only" value is set to "this session", then we create a
       // new resource with the session from the exisiting resource
       resource = smtk::session::mesh::Resource::create();
+      collection = smtk::mesh::Collection::create();
       resource->setSession(session);
     }
   }
@@ -104,6 +115,7 @@ Import::Result Import::operateInternal()
     // resource.
     resource = smtk::session::mesh::Resource::create();
     session = smtk::session::mesh::Session::create();
+    collection = smtk::mesh::Collection::create();
 
     // Create a new resource for the import
     resource->setLocation(filePath);
@@ -111,8 +123,10 @@ Import::Result Import::operateInternal()
   }
 
   // Get the collection from the file
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
+  smtk::mesh::MeshSet preexistingMeshes = collection->meshes();
   smtk::io::importMesh(filePath, collection, label);
+  smtk::mesh::MeshSet allMeshes = collection->meshes();
+  smtk::mesh::MeshSet newMeshes = smtk::mesh::set_difference(allMeshes, preexistingMeshes);
 
   if (!collection || !collection->isValid())
   {
@@ -141,15 +155,14 @@ Import::Result Import::operateInternal()
   // Also assign the collection to be the model's tessellation
   resource->setMeshTessellations(collection);
 
-  // Construct the topology
-  session->addTopology(Topology(collection, constructHierarchy));
-
   // Determine the model's dimension
   int dimension = int(smtk::mesh::utility::highestDimension(collection->meshes()));
 
-  // Our collections will already have a UUID, so here we create a model given
-  // the model resource and uuid
-  smtk::model::Model model = resource->insertModel(collection->entity(), dimension, dimension);
+  // Create a model with the appropriate dimension
+  smtk::model::Model model = resource->addModel(dimension, dimension);
+
+  // Construct the topology
+  session->addTopology(Topology(model.entity(), newMeshes, constructHierarchy));
 
   // Name the model according to the stem of the file
   if (!name.empty())
@@ -207,10 +220,20 @@ Import::Specification Import::createSpecification()
   std::stringstream fileFilters;
   for (auto& ioType : smtk::io::ImportMesh::SupportedIOTypes())
   {
+    bool firstFormat = true;
     for (auto& format : ioType->FileFormats())
     {
       if (format.CanImport())
       {
+        if (firstFormat)
+        {
+          firstFormat = false;
+        }
+        else
+        {
+          fileFilters << ";;";
+        }
+
         fileFilters << format.Name << "(";
         bool first = true;
         for (auto& ext : format.Extensions)
@@ -225,7 +248,7 @@ Import::Specification Import::createSpecification()
           }
           fileFilters << "*" << ext;
         }
-        fileFilters << ");;";
+        fileFilters << ")";
       }
     }
   }

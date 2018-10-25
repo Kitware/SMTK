@@ -36,7 +36,8 @@ namespace mesh
   */
 struct SMTKMESHSESSION_EXPORT Topology
 {
-  Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy = true);
+  Topology(const smtk::common::UUID& modelId, const smtk::mesh::MeshSet& meshset,
+    bool constructHierarchy = true);
 
   struct Element
   {
@@ -52,6 +53,7 @@ struct SMTKMESHSESSION_EXPORT Topology
   };
 
   smtk::mesh::CollectionPtr m_collection;
+  smtk::common::UUID m_modelId;
   std::map<smtk::common::UUID, Element> m_elements;
 };
 }

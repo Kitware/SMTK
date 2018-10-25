@@ -216,13 +216,13 @@ struct AddBoundElements
 };
 }
 
-Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy)
-  : m_collection(collection)
+Topology::Topology(
+  const smtk::common::UUID& modelId, const smtk::mesh::MeshSet& meshset, bool constructHierarchy)
+  : m_collection(meshset.collection())
+  , m_modelId(modelId)
 {
   // Insert the collection as the top-level element representing the model
-  Element* model =
-    &(m_elements.insert(std::make_pair(collection->entity(), Element(collection->meshes())))
-        .first->second);
+  Element* model = &(m_elements.insert(std::make_pair(modelId, Element(meshset))).first->second);
 
   if (constructHierarchy)
   {
@@ -238,7 +238,7 @@ Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy
     // all meshes of the highest dimension are considered to be free elements with
     // the model as their parent
     int dimension = smtk::mesh::DimensionType_MAX - 1;
-    smtk::mesh::TypeSet types = collection->types();
+    smtk::mesh::TypeSet types = meshset.types();
     while (dimension >= 0 && !types.hasDimension(static_cast<smtk::mesh::DimensionType>(dimension)))
     {
       --dimension;
@@ -246,7 +246,7 @@ Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy
 
     if (dimension < 0)
     {
-      // We have been passed an empty collection.
+      // We have been passed an empty meshset
       return;
     }
 
@@ -254,7 +254,7 @@ Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy
       addFreeElements.setElementShells(elementShells[dimension]);
       addFreeElements.setDimension(dimension);
       smtk::mesh::for_each(
-        collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
+        meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
     }
 
     AddBoundElements addBoundElements(this);
@@ -265,7 +265,7 @@ Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy
       addFreeElements.setDimension(dimension);
 
       smtk::mesh::MeshSet allMeshes =
-        collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension));
+        meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension));
       smtk::mesh::MeshSet boundMeshes;
 
       for (auto&& shell : *elementShells[dimension + 1])
@@ -293,7 +293,7 @@ Topology::Topology(smtk::mesh::CollectionPtr collection, bool constructHierarchy
     {
       addFreeElements.setDimension(dimension);
       smtk::mesh::for_each(
-        collection->meshes(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
+        meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
     }
   }
 

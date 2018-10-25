@@ -28,7 +28,7 @@
         <String Name="session only" Label="session" Advanced="1">
           <DiscreteInfo DefaultIndex="0">
             <Structure>
-              <Value Enum="this file">import into this file </Value>
+              <Value Enum="this file">import into this file</Value>
             </Structure>
             <Structure>
               <Value Enum="this session">import into a new file using this file's session</Value>
