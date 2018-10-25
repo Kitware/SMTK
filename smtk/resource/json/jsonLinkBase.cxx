@@ -21,16 +21,17 @@ namespace nlohmann
 smtk::resource::detail::LinkBase adl_serializer<smtk::resource::detail::LinkBase>::from_json(
   const json& j)
 {
-  smtk::resource::Surrogate surrogate = smtk::resource::from_json(j);
+  smtk::resource::Surrogate surrogate = smtk::resource::from_json(j["surrogate"]);
   smtk::resource::detail::LinkBase linkBase(std::move(surrogate));
-  smtk::common::from_json(j, static_cast<smtk::resource::Component::Links::Data&>(linkBase));
+  smtk::common::from_json(
+    j["linkData"], static_cast<smtk::resource::Component::Links::Data&>(linkBase));
   return linkBase;
 }
 
 void adl_serializer<smtk::resource::detail::LinkBase>::to_json(
   json& j, const smtk::resource::detail::LinkBase& linkBase)
 {
-  smtk::resource::to_json(j, static_cast<const smtk::resource::Surrogate&>(linkBase));
-  smtk::common::to_json(j, static_cast<const smtk::resource::Component::Links::Data&>(linkBase));
+  j["surrogate"] = static_cast<const smtk::resource::Surrogate&>(linkBase);
+  j["linkData"] = static_cast<const smtk::resource::Component::Links::Data&>(linkBase);
 }
 }
