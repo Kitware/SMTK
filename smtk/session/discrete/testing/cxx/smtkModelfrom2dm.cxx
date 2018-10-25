@@ -75,40 +75,6 @@ namespace
 
 //SMTK_DATA_DIR is a define setup by cmake
 std::string write_root = SMTK_SCRATCH_DIR;
-
-void cleanupsmtkfiles(const std::string& file_path, const std::string& meshname)
-{
-  //first verify the file exists
-  ::boost::filesystem::path path(file_path);
-  if (::boost::filesystem::is_regular_file(path))
-  {
-    //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
-  }
-
-  // clean up also the cmb model and h5m mesh file
-  std::string smtkfilepath = path.parent_path().string();
-  std::string smtkfilename = path.stem().string();
-
-  std::ostringstream outfilename;
-  outfilename << smtkfilename << ".cmb";
-  path = ::boost::filesystem::path(smtkfilepath) / ::boost::filesystem::path(outfilename.str());
-  std::cout << "Should remove " << path.string() << "\n";
-  if (::boost::filesystem::is_regular_file(path))
-  {
-    //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
-  }
-
-  std::ostringstream meshfilename;
-  meshfilename << smtkfilename << "_" << meshname << ".h5m";
-  path = ::boost::filesystem::path(smtkfilepath) / ::boost::filesystem::path(meshfilename.str());
-  if (::boost::filesystem::is_regular_file(path))
-  {
-    //remove the file_path if it exists.
-    ::boost::filesystem::remove(path);
-  }
-}
 }
 
 using namespace smtk::model;
@@ -117,6 +83,8 @@ using namespace smtk::io;
 int main(int argc, char* argv[])
 {
   int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
+  (void)debug;
+
   if (argc == 1)
   {
     std::cout << "Not enough arguments" << std::endl;
