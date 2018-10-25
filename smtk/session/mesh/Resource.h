@@ -37,6 +37,8 @@ public:
   const Session::Ptr& session() const { return m_session; }
   void setSession(const Session::Ptr&);
 
+  const smtk::mesh::CollectionPtr& collection() const;
+
 protected:
   Resource(const smtk::common::UUID&, smtk::resource::Manager::Ptr manager = nullptr);
   Resource(smtk::resource::Manager::Ptr manager = nullptr);

@@ -138,6 +138,9 @@ Import::Result Import::operateInternal()
   // Assign its model resource to the one associated with this session
   collection->setModelResource(resource);
 
+  // Also assign the collection to be the model's tessellation
+  resource->setMeshTessellations(collection);
+
   // Construct the topology
   session->addTopology(Topology(collection, constructHierarchy));
 

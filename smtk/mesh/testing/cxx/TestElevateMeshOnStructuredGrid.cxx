@@ -164,7 +164,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     return 1;
   }
 
-  smtk::mesh::CollectionPtr collection = resource->session()->topology(model)->m_collection;
+  smtk::mesh::CollectionPtr collection = resource->collection();
   smtk::mesh::MeshSet mesh = collection->meshes();
 
   // add auxiliary geometry

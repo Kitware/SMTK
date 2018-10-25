@@ -26,6 +26,8 @@ namespace session
 namespace mesh
 {
 
+class Resource;
+
 class SMTKMESHSESSION_EXPORT Session : public smtk::model::Session
 {
 public:
@@ -38,7 +40,8 @@ public:
   virtual ~Session() {}
 
   void addTopology(Topology t) { m_topologies.push_back(t); }
-  Topology* topology(smtk::model::Model& model);
+  Topology* topology(const std::shared_ptr<Resource>& modelResource);
+  Topology* topology(const std::shared_ptr<const Resource>& modelResource);
 
   std::string defaultFileExtension(const smtk::model::Model&) const override { return ""; }
 
