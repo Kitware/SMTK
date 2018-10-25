@@ -49,7 +49,7 @@ EulerCharacteristicRatio::Result EulerCharacteristicRatio::operateInternal()
   smtk::session::mesh::Session::Ptr session = resource->session();
 
   // Access the underlying mesh collection for the model.
-  smtk::mesh::CollectionPtr collection = resource->session()->topology(model)->m_collection;
+  smtk::mesh::CollectionPtr collection = resource->collection();
   if (collection == nullptr || !collection->isValid())
   {
     smtkErrorMacro(this->log(), "No collection associated with this model.");

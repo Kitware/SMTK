@@ -33,6 +33,11 @@ void Resource::setSession(const Session::Ptr& session)
   m_session = session->shared_from_this();
   this->registerSession(m_session);
 }
+
+const smtk::mesh::CollectionPtr& Resource::collection() const
+{
+  return m_session->topology(shared_from_this())->m_collection;
+}
 }
 }
 }

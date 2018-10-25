@@ -10,6 +10,7 @@
 //
 //=============================================================================
 #include "smtk/session/mesh/Session.h"
+#include "smtk/session/mesh/Resource.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Face.h"
@@ -28,11 +29,19 @@ Session::Session()
 {
 }
 
-Topology* Session::topology(smtk::model::Model& model)
+Topology* Session::topology(const smtk::session::mesh::Resource::Ptr& modelResource)
 {
-  std::vector<Topology>::iterator it = find_if(m_topologies.begin(), m_topologies.end(),
-    [&](const Topology& t) { return t.m_collection->entity() == model.entity(); });
+  std::vector<Topology>::iterator it =
+    find_if(m_topologies.begin(), m_topologies.end(), [&](const Topology& t) {
+      return modelResource->links().isLinkedTo(
+        t.m_collection, smtk::model::Resource::TessellationRole);
+    });
   return (it == m_topologies.end() ? nullptr : &(*it));
+}
+
+Topology* Session::topology(const std::shared_ptr<const Resource>& modelResource)
+{
+  return this->topology(std::const_pointer_cast<Resource>(modelResource));
 }
 
 smtk::model::SessionInfoBits Session::transcribeInternal(

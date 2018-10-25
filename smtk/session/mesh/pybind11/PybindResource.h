@@ -25,9 +25,7 @@ PySharedPtrClass< smtk::session::mesh::Resource, smtk::model::Resource > pybind1
     .def_static("create", (std::shared_ptr<smtk::session::mesh::Resource> (*)(::std::shared_ptr<smtk::session::mesh::Resource> &)) &smtk::session::mesh::Resource::create, py::arg("ref"))
     .def("session", &smtk::session::mesh::Resource::session)
     .def("setSession", &smtk::session::mesh::Resource::setSession)
-    .def("collectionForModel", [](const std::shared_ptr<smtk::session::mesh::Resource>& i, smtk::model::Model& model){
-        return i->session()->topology(model)->m_collection;
-      })
+    .def("collection", &smtk::session::mesh::Resource::collection)
     .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Resource> i) {
         return std::dynamic_pointer_cast<smtk::session::mesh::Resource>(i);
       })

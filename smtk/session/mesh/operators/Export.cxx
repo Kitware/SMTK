@@ -66,7 +66,7 @@ smtk::session::mesh::Export::Result Export::operateInternal()
     std::static_pointer_cast<smtk::session::mesh::Resource>(dataset.component()->resource());
   smtk::session::mesh::Session::Ptr session = resource->session();
 
-  smtk::mesh::CollectionPtr collection = resource->session()->topology(dataset)->m_collection;
+  smtk::mesh::CollectionPtr collection = resource->collection();
 
   if (collection == nullptr || !collection->isValid())
   {

@@ -26,7 +26,8 @@ PySharedPtrClass< smtk::session::mesh::Session, smtk::model::Session > pybind11_
     .def("addTopology", &smtk::session::mesh::Session::addTopology, py::arg("t"))
     .def_static("create", (std::shared_ptr<smtk::session::mesh::Session> (*)()) &smtk::session::mesh::Session::create)
     .def_static("create", (std::shared_ptr<smtk::session::mesh::Session> (*)(::std::shared_ptr<smtk::session::mesh::Session> &)) &smtk::session::mesh::Session::create, py::arg("ref"))
-    .def("topology", &smtk::session::mesh::Session::topology, py::arg("model"))
+    .def("topology", (smtk::session::mesh::Topology* (smtk::session::mesh::Session::*)(const std::shared_ptr<::smtk::session::mesh::Resource>&)) &smtk::session::mesh::Session::topology, py::return_value_policy::reference)
+    .def("topology", (smtk::session::mesh::Topology* (smtk::session::mesh::Session::*)(const std::shared_ptr<const ::smtk::session::mesh::Resource>&)) &smtk::session::mesh::Session::topology, py::return_value_policy::reference)
     ;
   return instance;
 }
