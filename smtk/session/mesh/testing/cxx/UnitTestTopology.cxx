@@ -142,7 +142,6 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetModelResource(model.resource());
-    src->SetModelEntityID(model.entity().toString().c_str());
     src->SetDefaultColor(1., 1., 0., 1.);
     map->SetInputConnection(src->GetOutputPort());
     act->SetMapper(map.GetPointer());
