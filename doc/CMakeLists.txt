@@ -60,6 +60,7 @@ if (SPHINX_FOUND)
         ${figureList}
         COMMAND ${SPHINX_EXECUTABLE}
       ARGS
+        -Q
         -b html
         "${sphinx_SOURCE_DIR}"
         "${sphinx_BUILD_DIR}/html"
