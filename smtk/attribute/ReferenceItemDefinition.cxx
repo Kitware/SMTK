@@ -14,6 +14,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/Resource.h"
 
 #include "smtk/resource/Container.h"
 #include "smtk/resource/Manager.h"
@@ -34,6 +35,7 @@ ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
   m_isExtensible = false;
   m_maxNumberOfValues = 0;
   m_lockType = smtk::resource::LockType::DoNotLock;
+  m_role = smtk::attribute::Resource::ReferenceRole;
 }
 
 ReferenceItemDefinition::~ReferenceItemDefinition()

@@ -173,15 +173,17 @@ bool ReferenceItem::setObjectValue(PersistentObjectPtr val)
 
 ReferenceItem::Key ReferenceItem::linkTo(PersistentObjectPtr val)
 {
+  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+
   // If the object is a component...
   if (auto component = std::dynamic_pointer_cast<smtk::resource::Component>(val))
   {
-    return this->attribute()->links().addLinkTo(component, Resource::ReferenceRole);
+    return this->attribute()->links().addLinkTo(component, def->role());
   }
   // If the object is a resource...
   else if (auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(val))
   {
-    return this->attribute()->links().addLinkTo(resource, Resource::ReferenceRole);
+    return this->attribute()->links().addLinkTo(resource, def->role());
   }
 
   // If the object cannot be cast to a resource or component, there's not much
