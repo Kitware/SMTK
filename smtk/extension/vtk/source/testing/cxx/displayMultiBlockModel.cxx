@@ -84,9 +84,6 @@ int main(int argc, char* argv[])
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetModelResource(resource);
-    // TODO: Accept a model name or UUID and tell the src to use it:
-    // src->SetModelEntityID(
-    //   resource->entitiesMatchingFlagsAs<Models>(MODEL_ENTITY)[0].entity().toString().c_str());
     if (debug)
     {
       win->SetMultiSamples(16);

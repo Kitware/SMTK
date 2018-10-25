@@ -54,7 +54,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
   const smtk::session::mesh::Topology* topology = nullptr;
   for (const Topology& top : m_topologies)
   {
-    if (entityRef.entity() == top.m_collection->entity())
+    if (entityRef.entity() == top.m_modelId)
     {
       // The entity is the model associated with this topology
       topology = &top;
@@ -85,7 +85,7 @@ smtk::model::SessionInfoBits Session::transcribeInternal(
   {
     // Check if the entityRef is for the model. If it is, then its UUID will be
     // identical to that of the collection that represents the model.
-    if (mutableEntityRef.entity() == topology->m_collection->entity())
+    if (mutableEntityRef.entity() == topology->m_modelId)
     {
       // We have a model. We insert the model using the resource API. It takes
       // the UUID of the model, its parametric dimension and its embedded

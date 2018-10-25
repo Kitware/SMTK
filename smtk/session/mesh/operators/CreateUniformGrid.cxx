@@ -151,12 +151,11 @@ CreateUniformGrid::Result CreateUniformGrid::operateInternal()
   // session.
   collection->setModelResource(resource);
 
-  // Construct the topology.
-  session->addTopology(smtk::session::mesh::Topology(collection, false));
+  // Create a model with the appropriate dimension
+  smtk::model::Model model = resource->addModel(3, 3);
 
-  // Our collections will already have a UUID, so here we create a model given
-  // the model resource and uuid.
-  smtk::model::Model model = resource->insertModel(collection->entity(), 3, 3);
+  // Construct the topology.
+  session->addTopology(smtk::session::mesh::Topology(model.entity(), collection->meshes(), false));
 
   // Declare the model as "dangling" so it will be transcribed.
   session->declareDanglingEntity(model);

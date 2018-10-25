@@ -142,7 +142,6 @@ smtkComponentInitMacro(smtk_extension_vtk_io_mesh_MeshIOVTK)
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetModelResource(model.resource());
-    src->SetModelEntityID(model.entity().toString().c_str());
     src->SetDefaultColor(1., 1., 0., 1.);
     map->SetInputConnection(src->GetOutputPort());
     act->SetMapper(map.GetPointer());
@@ -215,9 +214,9 @@ int UnitTestTopology(int argc, char* argv[])
     std::cout << count[2] << " faces" << std::endl;
     test(count[2] == 9, "There should be nine faces");
     std::cout << count[1] << " edges" << std::endl;
-    test(count[1] == 7, "There should be seven lines");
+    test(count[1] == 6, "There should be six lines");
     std::cout << count[0] << " vertex groups" << std::endl;
-    test(count[0] == 1, "There should be one vertex group");
+    test(count[0] == 0, "There should be no vertex groups");
 
     bool debug = false;
     if (debug)

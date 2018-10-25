@@ -73,11 +73,6 @@ public:
   smtk::model::ResourcePtr GetModelResource();
   void SetModelResource(smtk::model::ResourcePtr);
 
-  // Description:
-  // Model entity ID that this source will be built upon.
-  vtkSetStringMacro(ModelEntityID);
-  vtkGetStringMacro(ModelEntityID);
-
   void GetUUID2BlockIdMap(std::map<smtk::common::UUID, vtkIdType>& uuid2mid);
   void Dirty();
 
@@ -158,7 +153,6 @@ protected:
   vtkMultiBlockDataSet* CachedOutputInst;
   vtkMultiBlockDataSet* CachedOutputProto;
   double DefaultColor[4];
-  char* ModelEntityID; // Model Entity UUID
   int AllowNormalGeneration;
   int ShowAnalysisTessellation;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
