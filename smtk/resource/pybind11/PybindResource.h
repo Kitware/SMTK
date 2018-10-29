@@ -27,6 +27,7 @@ PySharedPtrClass< smtk::resource::Resource, smtk::resource::PersistentObject > p
     .def("location", &smtk::resource::Resource::location)
     .def("setId", &smtk::resource::Resource::setId)
     .def("setLocation", &smtk::resource::Resource::setLocation)
+    .def("find", (smtk::resource::ComponentSet (smtk::resource::Resource::*)(const std::string&) const) &smtk::resource::Resource::find)
     ;
   return instance;
 }
