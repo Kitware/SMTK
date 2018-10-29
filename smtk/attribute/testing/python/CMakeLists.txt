@@ -31,6 +31,7 @@ set(smtkAttributePythonDataTests
 )
 set(smtkAttributePythonNewDataTests
   attributeItemByPath
+  attributeQuery
 )
 
 if (SMTK_DATA_DIR)

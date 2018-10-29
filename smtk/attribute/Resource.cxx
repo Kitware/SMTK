@@ -894,10 +894,33 @@ smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& attId) con
 }
 
 std::function<bool(const smtk::resource::ComponentPtr&)> Resource::queryOperation(
-  const std::string&) const
+  const std::string& filter) const
 {
-  // TODO: fill me in!
-  return [](const smtk::resource::ComponentPtr&) { return true; };
+  if (filter.empty() || filter == "any" || filter == "*")
+  {
+    return [](const smtk::resource::ComponentPtr&) { return true; };
+  }
+  const std::string attributeFilter("attribute");
+  if (!filter.compare(0, attributeFilter.size(), attributeFilter))
+  {
+    std::string spec = filter.substr(attributeFilter.size());
+    const std::string definitionFilter("[type='");
+    auto sszm2 = spec.size() - 2;
+    auto dfsz = definitionFilter.size();
+    if (!spec.compare(0, dfsz, definitionFilter) && spec.substr(sszm2) == "']")
+    {
+      const std::string sdef = spec.substr(dfsz, sszm2 - dfsz);
+      smtk::attribute::DefinitionPtr defn = this->findDefinition(sdef);
+      if (defn)
+      {
+        return [defn](const smtk::resource::ComponentPtr& comp) {
+          auto attr = std::dynamic_pointer_cast<Attribute>(comp);
+          return (attr && attr->isA(defn));
+        };
+      }
+    }
+  }
+  return [](const smtk::resource::ComponentPtr&) { return false; };
 }
 
 // visit all components in the resource.

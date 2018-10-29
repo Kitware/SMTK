@@ -39,6 +39,14 @@ namespace attribute
 class Attribute;
 class Definition;
 
+/**\brief Store information about attribute definitions and instances.
+  *
+  * This subclass of smtk::resource::Resource holds attribute data.
+  * The file contains at least a schema (definitions and item-definitions)
+  * but may also contain attribute instances that conform to the schema
+  * as well as information about how to present the attribute system
+  * through a series of views.
+  */
 class SMTKCORE_EXPORT Resource
   : public smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>
 {
@@ -89,8 +97,19 @@ public:
   // given a resource component's UUID, return the resource component.
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override;
 
-  // given a std::string describing a query, return a functor for performing the
-  // query.
+  /**\brief Given a std::string describing a query, return a functor for performing the query.
+    *
+    * Currently, the query string must be either empty, `*`, `any`, or of the form
+    * `attribute[type='xxx']`, where `xxx` specifies the name of a definition that
+    * the resulting attributes instantiate.
+    * Note that if an attribute type `xxx` is provided, any attribute whose
+    * definition inherits from `xxx` as a base will be included, not just
+    * those whose immediate, concrete type is `xxx`.
+    *
+    * If the query string filters attributes by their definition types, note that
+    * the definition must exist at the time that queryOperation() is called.
+    * This requirement allows faster repeated evaluation of the query.
+    */
   std::function<bool(const smtk::resource::ComponentPtr&)> queryOperation(
     const std::string&) const override;
 
