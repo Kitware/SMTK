@@ -128,7 +128,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
         op.parameters().find("external point values").setToDefault()
 
         # Set the mesh
-        op.parameters().find("mesh").appendValue(self.mesh)
+        op.parameters().associate(smtk.mesh.Component.create(self.mesh))
 
         # Clamp the elevation values between -/+ 2
         outputFilter = op.parameters().find("output filter")

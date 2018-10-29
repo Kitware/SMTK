@@ -29,6 +29,7 @@
 #include "smtk/io/ExportMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
@@ -215,6 +216,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     }
 
     // set input values for the elevate mesh operator
+    elevateMesh->parameters()->associate(smtk::mesh::Component::create(mesh));
     elevateMesh->parameters()->findString("input data")->setToDefault();
     elevateMesh->parameters()
       ->findComponent("auxiliary geometry")
@@ -223,7 +225,6 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     elevateMesh->parameters()->findDouble("radius")->setValue(7.);
     elevateMesh->parameters()->findString("external point values")->setValue("set to value");
     elevateMesh->parameters()->findDouble("external point value")->setValue(-1.);
-    elevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
 
     smtk::operation::Operation::Result bathyResult = elevateMesh->operate();
     if (bathyResult->findInt("outcome")->value() !=

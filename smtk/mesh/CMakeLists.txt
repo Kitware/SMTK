@@ -4,6 +4,7 @@ set(meshSrcs
   core/CellField.cxx
   core/CellTypes.cxx
   core/Collection.cxx
+  core/Component.cxx
   core/ForEachTypes.cxx
   core/Handle.cxx
   core/MeshSet.cxx
@@ -46,7 +47,6 @@ set(meshSrcs
   operators/UndoElevateMesh.cxx
   operators/WriteMesh.cxx
 
-  resource/MeshComponent.cxx
   resource/Registrar.cxx
 
   utility/ApplyToMesh.cxx
@@ -63,6 +63,7 @@ set(meshHeaders
   core/CellTraits.h
   core/CellTypes.h
   core/Collection.h
+  core/Component.h
   core/DimensionTypes.h
   core/FieldTypes.h
   core/ForEachTypes.h
@@ -101,7 +102,6 @@ set(meshHeaders
   operators/UndoElevateMesh.h
   operators/WriteMesh.h
 
-  resource/MeshComponent.h
   resource/PropertyData.h
   resource/Registrar.h
 

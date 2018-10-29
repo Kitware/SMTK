@@ -10,7 +10,7 @@
 
 #include "smtk/mesh/core/Collection.h"
 
-#include "smtk/mesh/resource/MeshComponent.h"
+#include "smtk/mesh/core/Component.h"
 
 #include "smtk/mesh/moab/Interface.h"
 
@@ -105,14 +105,8 @@ Collection::~Collection()
 
 smtk::resource::ComponentPtr Collection::find(const smtk::common::UUID& compId) const
 {
-  const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
-  smtk::mesh::Handle handle;
-  if (iface->findById(m_internals->mesh_root_handle(), compId, handle))
-  {
-    return smtk::mesh::MeshComponent::create(this->shared_from_this(), handle);
-  }
-
-  return smtk::resource::ComponentPtr();
+  return std::static_pointer_cast<smtk::resource::Component>(
+    Component::create(std::const_pointer_cast<smtk::mesh::Collection>(shared_from_this()), compId));
 }
 
 std::function<bool(const resource::ComponentPtr&)> Collection::queryOperation(
