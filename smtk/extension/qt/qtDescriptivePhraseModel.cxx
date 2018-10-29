@@ -382,12 +382,22 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       else if (role == PhraseCleanRole)
       {
         int clean = -1;
-        auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
-        if (modelComp)
+        auto rsrc = item->relatedResource();
+        auto comp = item->relatedComponent();
+        if (rsrc && !comp)
         {
-          auto ent = modelComp->referenceAs<smtk::model::EntityRef>();
-          clean = static_cast<int>(
-            ent.hasIntegerProperty("clean") ? ent.integerProperty("clean")[0] : -1);
+          clean = rsrc->clean() ? 1 : 0; // Clean == 1, dirty == 0, N/A == -1
+        }
+        else
+        {
+          // TODO: Remove this eventually; we should only show file-level clean/dirty.
+          auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(comp);
+          if (modelComp)
+          {
+            auto ent = modelComp->referenceAs<smtk::model::EntityRef>();
+            clean = static_cast<int>(
+              ent.hasIntegerProperty("clean") ? ent.integerProperty("clean")[0] : -1);
+          }
         }
         return QVariant(clean);
       }
