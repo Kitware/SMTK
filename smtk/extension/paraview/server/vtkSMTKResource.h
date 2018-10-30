@@ -37,7 +37,7 @@ public:
   static vtkSMTKResource* New();
 
   /// Set the SMTK resource by the string representation of its resource Id.
-  void SetResource(const char* resourceIdStr);
+  void SetResourceById(const char* resourceIdStr);
 
   /// Set/get the SMTK resource.
   void SetResource(const smtk::resource::ResourcePtr& resource);

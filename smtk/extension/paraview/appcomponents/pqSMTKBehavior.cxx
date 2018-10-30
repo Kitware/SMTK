@@ -181,8 +181,8 @@ pqSMTKResource* pqSMTKBehavior::getPVResource(smtk::resource::ResourcePtr resour
     pqServer* server = pqActiveObjects::instance().activeServer();
     pqObjectBuilder* builder = pqCore->getObjectBuilder();
 
-    result = static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKResource", server));
-    vtkSMPropertyHelper(result->getProxy(), "Resource").Set(resource->id().toString().c_str());
+    result = static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKSource", server));
+    vtkSMPropertyHelper(result->getProxy(), "ResourceId").Set(resource->id().toString().c_str());
     result->getProxy()->UpdateVTKObjects();
   }
 

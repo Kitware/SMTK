@@ -236,6 +236,10 @@ endmacro()
 add_pqproxy_custom(proxyIfaces proxyIfaceSrcs
   TYPE pqSMTKResource
   XML_GROUP sources
+  XML_NAME SMTKSource
+
+  TYPE pqSMTKResource
+  XML_GROUP sources
   XML_NAME SMTKModelReader
 
   TYPE pqSMTKResource

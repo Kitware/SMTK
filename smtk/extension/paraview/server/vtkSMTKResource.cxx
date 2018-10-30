@@ -54,7 +54,7 @@ void vtkSMTKResource::PrintSelf(ostream& os, vtkIndent indent)
      << "\n";
 }
 
-void vtkSMTKResource::SetResource(const char* resourceIdStr)
+void vtkSMTKResource::SetResourceById(const char* resourceIdStr)
 {
   vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting resource to "
                 << (resourceIdStr ? resourceIdStr : "(null)"));
