@@ -4,9 +4,9 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="delete mesh" BaseType="operation" Label="Mesh - Delete">
-      <ItemDefinitions>
-        <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
-      </ItemDefinitions>
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+      </AssociationsDef>
       <BriefDescription>
         Remove a mesh from the model instance.
       </BriefDescription>
@@ -20,7 +20,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(delete mesh)" BaseType="result">
       <ItemDefinitions>
-        <MeshEntity Name="mesh_expunged" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

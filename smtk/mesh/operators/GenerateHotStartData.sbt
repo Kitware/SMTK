@@ -18,11 +18,12 @@
         onto either the points or the cells of the mesh. The input
         points can be inserted manually or read from a CSV file.
       </DetailedDescription>
-      <ItemDefinitions>
-        <MeshEntity Name="mesh" Label="Mesh" NumberOfRequiredValues="1" Extensible="true" >
-          <BriefDescription>The mesh to elevate.</BriefDescription>
-        </MeshEntity>
 
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+      </AssociationsDef>
+
+      <ItemDefinitions>
         <String Name="dstype" Label="Data Type" NumberOfRequiredValues="1">
           <BriefDescription>The name of the data set.</BriefDescription>
           <DiscreteInfo DefaultIndex="0">

@@ -269,7 +269,7 @@ int TestElevateMesh(int argc, char* argv[])
       return 1;
     }
 
-    undoElevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
+    undoElevateMesh->parameters()->associate(smtk::mesh::Component::create(mesh));
 
     smtk::operation::Operation::Result result = undoElevateMesh->operate();
     if (result->findInt("outcome")->value() !=

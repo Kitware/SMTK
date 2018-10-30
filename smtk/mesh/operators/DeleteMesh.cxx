@@ -10,13 +10,15 @@
 #include "smtk/mesh/operators/DeleteMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/Session.h"
 #include "smtk/model/Session.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/IntItem.h"
 
 #include "smtk/mesh/DeleteMesh_xml.h"
 
@@ -27,23 +29,28 @@ namespace mesh
 
 smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
 {
-  // ableToOperate should have verified that mesh(s) are set
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
-  smtk::mesh::MeshSets expunged;
-  bool success = true;
-  for (attribute::MeshItem::const_mesh_it mit = meshItem->begin(); mit != meshItem->end(); ++mit)
+  smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
+  bool allRemoved = true;
+  for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    // all mesh items are guaranteed to have a valid associated collection by ableToOperate
-    smtk::mesh::CollectionPtr collec = mit->collection();
+    smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
+    smtk::mesh::MeshSet meshset = meshComponent->mesh();
+    bool removed = meshset.collection()->removeMeshes(meshset);
+
+    if (removed)
+    {
+      result->findComponent("expunged")->appendValue(meshComponent);
+    }
+
+    allRemoved &= removed;
   }
 
-  Result result = this->createResult(success ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                             : smtk::operation::Operation::Outcome::FAILED);
-
-  if (success)
+  if (allRemoved == false)
   {
-    result->findMesh("mesh_expunged")->appendValues(expunged);
+    result->findInt("outcome")->setValue(
+      0, static_cast<int>(smtk::operation::Operation::Outcome::FAILED));
   }
   return result;
 }

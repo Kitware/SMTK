@@ -15,17 +15,16 @@
         (e.g. Mesh - Elevate). This operator removes the elevateing
         applied by these operators.
       </DetailedDescription>
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <MeshEntity Name="mesh" Label="Mesh" NumberOfRequiredValues="1" Extensible="true" >
-          <BriefDescription>The mesh to restore.</BriefDescription>
-        </MeshEntity>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(undo elevate mesh)" BaseType="result">
       <ItemDefinitions>
-        <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11">
           <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>
         </Component>
