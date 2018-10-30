@@ -15,8 +15,10 @@
         mesh is not guaranteed to contain all of the information from
         the original mesh.
       </DetailedDescription>
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
           FileFilters="AdH 2D Mesh file (*.2dm);;AdH 3D Mesh file (*.3dm)">
         </File>

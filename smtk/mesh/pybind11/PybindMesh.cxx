@@ -27,6 +27,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindCellSet.h"
 #include "PybindCellTypes.h"
 #include "PybindCollection.h"
+#include "PybindComponent.h"
 #include "PybindDimensionTypes.h"
 #include "PybindExtractMeshConstants.h"
 #include "PybindExtractTessellation.h"
@@ -156,6 +157,7 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::Neumann > smtk_mesh_Neumann = pybind11_init_smtk_mesh_Neumann(mesh, smtk_mesh_IntegerTag);
   PySharedPtrClass< smtk::mesh::UUIDTag > smtk_mesh_UUIDTag = pybind11_init_smtk_mesh_UUIDTag(mesh, smtk_mesh_OpaqueTag_16_);
   PySharedPtrClass< smtk::mesh::Model > smtk_mesh_Model = pybind11_init_smtk_mesh_Model(mesh, smtk_mesh_UUIDTag);
+  PySharedPtrClass< smtk::mesh::Component > smtk_mesh_Component = pybind11_init_smtk_mesh_Component(mesh);
 
   PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > smtk_mesh_DeleteMesh = pybind11_init_smtk_mesh_DeleteMesh(mesh);
   PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > smtk_mesh_ElevateMesh = pybind11_init_smtk_mesh_ElevateMesh(mesh);

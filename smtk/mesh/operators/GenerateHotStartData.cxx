@@ -21,6 +21,7 @@
 
 #include "smtk/mesh/GenerateHotStartData_xml.h"
 #include "smtk/mesh/core/CellField.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
 
@@ -188,20 +189,13 @@ bool GenerateHotStartData::ableToOperate()
   {
     return false;
   }
-
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
-  if (!meshItem || meshItem->numberOfValues() == 0)
-  {
-    return false;
-  }
-
   return true;
 }
 
 GenerateHotStartData::Result GenerateHotStartData::operateInternal()
 {
   // Access the mesh to elevate
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
+  smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
 
   // Access the data set type
   smtk::attribute::StringItem::Ptr typeItem = this->parameters()->findString("dstype");
@@ -249,7 +243,7 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
   bool meshIsContainedByPointCloud = true;
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    smtk::mesh::MeshSet mesh = meshItem->value(i);
+    smtk::mesh::MeshSet mesh = meshItem->valueAs<smtk::mesh::Component>(i)->mesh();
     std::array<double, 6> mesh_bounds = bounds(mesh);
 
     for (std::size_t j = 0; j < 3; j++)
@@ -271,10 +265,8 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
   // Construct an instance of our interpolator and set its parameters
   smtk::mesh::InverseDistanceWeighting interpolator(pointcloud, powerItem->value());
 
-  // Access the attribute associated with the modified meshes
+  // Construct a result object to hold our output
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
-  modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
   // Access the attribute associated with the modified model
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
@@ -310,11 +302,11 @@ GenerateHotStartData::Result GenerateHotStartData::operateInternal()
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    smtk::mesh::MeshSet mesh = meshItem->value(i);
-
+    smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
+    smtk::mesh::MeshSet mesh = meshComponent->mesh();
     smtk::mesh::utility::applyScalarPointField(fn, name, mesh);
 
-    modifiedMeshes->appendValue(mesh);
+    modified->appendValue(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);

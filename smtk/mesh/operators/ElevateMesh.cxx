@@ -17,11 +17,13 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
 
@@ -122,13 +124,6 @@ bool ElevateMesh::ableToOperate()
   {
     return false;
   }
-
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
-  if (!meshItem || meshItem->numberOfValues() == 0)
-  {
-    return false;
-  }
-
   return true;
 }
 
@@ -138,7 +133,9 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   smtk::attribute::StringItem::Ptr inputDataItem = this->parameters()->findString("input data");
 
   // Access the mesh to elevate
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
+  smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
+  smtk::mesh::MeshSet meshset = meshItem->valueAs<smtk::mesh::Component>()->mesh();
+  smtk::mesh::Collection::Ptr collection = meshset.collection();
 
   // Access the string describing the interpolation scheme
   smtk::attribute::StringItem::Ptr interpolationSchemeItem =
@@ -207,7 +204,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<smtk::model::AuxiliaryGeometry>(
-        auxGeo, radiusItem->value(), prefilter, meshItem->value().collection()->interface());
+        auxGeo, radiusItem->value(), prefilter, collection->interface());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -231,7 +228,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<std::string>(
-        fileName, radiusItem->value(), prefilter, meshItem->value().collection()->interface());
+        fileName, radiusItem->value(), prefilter, collection->interface());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -273,8 +270,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     if (interpolationSchemeItem->value() == "radial average")
     {
       interpolation = smtk::mesh::RadialAverage(
-        smtk::mesh::Collection::create(meshItem->value().collection()->interface()), pointcloud,
-        radiusItem->value());
+        smtk::mesh::Collection::create(collection->interface()), pointcloud, radiusItem->value());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -364,8 +360,6 @@ ElevateMesh::Result ElevateMesh::operateInternal()
 
   // Access the attribute associated with the modified meshes
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
-  modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
   // Access the attribute associated with the modified model
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
@@ -377,11 +371,12 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    smtk::mesh::MeshSet mesh = meshItem->value(i);
+    auto meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
+    auto mesh = meshComponent->mesh();
 
     smtk::mesh::utility::applyWarp(fn, mesh, true);
 
-    modifiedMeshes->appendValue(mesh);
+    modified->appendObjectValue(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);

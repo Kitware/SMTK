@@ -15,7 +15,6 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/ModelToMesh.h"
@@ -26,6 +25,7 @@
 
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
 
   // Set the operator's input mesh
   smtk::mesh::MeshSet mesh = collection->meshes();
-  valueSet = interpolateOntoMeshOp->parameters()->findMesh("mesh")->setValue(mesh);
+  valueSet = interpolateOntoMeshOp->parameters()->associate(smtk::mesh::Component::create(mesh));
 
   if (!valueSet)
   {

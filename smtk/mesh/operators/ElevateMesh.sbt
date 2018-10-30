@@ -16,6 +16,11 @@
         data set, and it computes new z-coordinates at each mesh node
         as a radial average of the scalar values in the external data set.
       </DetailedDescription>
+
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+      </AssociationsDef>
+
       <ItemDefinitions>
 
         <String Name="input data" Label="Input Data">
@@ -109,10 +114,6 @@
 	    </Structure>
           </DiscreteInfo>
         </String>
-
-        <MeshEntity Name="mesh" Label="Mesh" NumberOfRequiredValues="1" Extensible="true" >
-          <BriefDescription>The mesh to elevate.</BriefDescription>
-        </MeshEntity>
 
         <String Name="interpolation scheme" Label="Interpolation Scheme">
 
@@ -260,7 +261,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(elevate mesh)" BaseType="result">
       <ItemDefinitions>
-        <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
         <Component Name="tess_changed" NumberOfRequiredValues="0"
                      Extensible="true" AdvanceLevel="11">
           <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>

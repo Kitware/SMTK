@@ -25,6 +25,7 @@
 
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 
@@ -146,7 +147,7 @@ int main(int argc, char* argv[])
 
   // Set the operator's input mesh
   smtk::mesh::MeshSet mesh = collection->meshes();
-  bool valueSet = elevateMeshOp->parameters()->findMesh("mesh")->appendValue(mesh);
+  bool valueSet = elevateMeshOp->parameters()->associate(smtk::mesh::Component::create(mesh));
 
   if (!valueSet)
   {

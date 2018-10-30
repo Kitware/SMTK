@@ -21,6 +21,7 @@
 #include "smtk/model/json/jsonResource.h"
 
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 
 #include "smtk/mesh/operators/ExportMesh.h"
 #include "smtk/model/Resource.h"
@@ -107,7 +108,8 @@ int main(int argc, char* argv[])
   std::string export_path = std::string(write_root + "/testmesh.2dm");
   exportMeshOp->parameters()->findFile("filename")->setValue(export_path);
 
-  bool valueSet = exportMeshOp->parameters()->findMesh("mesh")->setValue(collection->meshes());
+  bool valueSet =
+    exportMeshOp->parameters()->associate(smtk::mesh::Component::create(collection->meshes()));
 
   if (!valueSet)
   {

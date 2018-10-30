@@ -16,8 +16,10 @@
         mesh is guaranteed to contain all of the information from
         the original mesh.
       </DetailedDescription>
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <MeshEntity Name="mesh" NumberOfRequiredValues="1" Extensible="true" />
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
           FileFilters="MOAB native file (*.h5m *.mhdf);;Exodus II file (*.exo *.exoII *.exo2 *.g *.gen);;Kitware VTK file (*.vtk);;SLAC file (*.slac);;General Mesh Viewer (GMV) file (*.gmv);;Ansys file (*.ans);;Gmsh file (*.msh *.gmsh);;Stereo Lithography file (*.stl)">
         </File>

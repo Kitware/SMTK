@@ -20,6 +20,7 @@
 
 #include "smtk/mesh/ExportMesh_xml.h"
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 #include "smtk/model/Resource.h"
@@ -58,28 +59,27 @@ bool ExportMesh::ableToOperate()
   {
     return false;
   }
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
-  return meshItem && meshItem->numberOfValues() > 0;
+  return true;
 }
 
 ExportMesh::Result ExportMesh::operateInternal()
 {
   std::string outputfile = this->parameters()->findFile("filename")->value();
 
-  // ableToOperate should have verified that mesh(s) are set
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
+  smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
 
   // for multiple meshes, we suffix the file name root with ascending integers
   std::string root = outputfile.substr(0, outputfile.find_last_of("."));
   std::string ext = outputfile.substr(outputfile.find_last_of("."));
   int index = 0;
 
-  smtk::mesh::MeshSets written;
   std::vector<std::string> generatedFiles;
 
-  for (attribute::MeshItem::const_mesh_it mit = meshItem->begin(); mit != meshItem->end(); ++mit)
+  for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    smtk::mesh::CollectionPtr collection = mit->collection();
+    smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
+    smtk::mesh::CollectionPtr collection =
+      std::dynamic_pointer_cast<smtk::mesh::Collection>(meshComponent->resource());
     bool fileExportSuccess = false;
 
     if (collection)
@@ -98,7 +98,6 @@ ExportMesh::Result ExportMesh::operateInternal()
       {
         ++index;
         generatedFiles.push_back(outputfile);
-        written.insert(*mit);
       }
     }
 

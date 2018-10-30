@@ -29,6 +29,7 @@
 #include "smtk/io/ExportMesh.h"
 
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
@@ -223,13 +224,19 @@ int TestElevateMesh(int argc, char* argv[])
     }
 
     // set input values for the elevate mesh operator
+    elevateMesh->parameters()->associate(smtk::mesh::Component::create(mesh));
     elevateMesh->parameters()->findString("input data")->setToDefault();
     elevateMesh->parameters()
       ->findComponent("auxiliary geometry")
       ->setObjectValue(auxGeo2dm.component());
     elevateMesh->parameters()->findString("interpolation scheme")->setToDefault();
     elevateMesh->parameters()->findDouble("radius")->setValue(7.);
-    elevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
+
+    if (elevateMesh->ableToOperate() == false)
+    {
+      std::cerr << "Elevate mesh operator could not operate\n";
+      return 1;
+    }
 
     smtk::operation::Operation::Result bathyResult = elevateMesh->operate();
     if (bathyResult->findInt("outcome")->value() !=
@@ -262,7 +269,7 @@ int TestElevateMesh(int argc, char* argv[])
       return 1;
     }
 
-    undoElevateMesh->parameters()->findMesh("mesh")->appendValue(mesh);
+    undoElevateMesh->parameters()->associate(smtk::mesh::Component::create(mesh));
 
     smtk::operation::Operation::Result result = undoElevateMesh->operate();
     if (result->findInt("outcome")->value() !=

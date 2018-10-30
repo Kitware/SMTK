@@ -1026,10 +1026,22 @@ bool Interface::findById(
   tag::QueryIdTag mtag(id, this->moabInterface());
 
   ::moab::ErrorCode rval;
+
   rval = m_iface->get_entities_by_type_and_tag(
     root, ::moab::MBENTITYSET, mtag.moabTagPtr(), mtag.moabTagValuePtr(), 1, result);
+
   if (rval != ::moab::MB_SUCCESS || result.size() != 1)
   {
+    // The above call does not check the root if it has the tag value. Let's do
+    // that before we give up.
+    smtk::common::UUID rootId =
+      detail::computeDenseOpaqueTagValue<smtk::common::UUID>(mtag, root, this->moabInterface());
+    if (rootId != smtk::common::UUID::null())
+    {
+      meshset = root;
+      return true;
+    }
+
     return false;
   }
   meshset = *result.begin();

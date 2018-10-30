@@ -17,6 +17,7 @@
 #include "smtk/io/Logger.h"
 
 #include "smtk/mesh/UndoElevateMesh_xml.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/utility/ApplyToMesh.h"
@@ -35,7 +36,7 @@ bool UndoElevateMesh::ableToOperate()
     return false;
   }
 
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
+  smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
   if (!meshItem || meshItem->numberOfValues() == 0)
   {
     return false;
@@ -43,7 +44,7 @@ bool UndoElevateMesh::ableToOperate()
 
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    smtk::mesh::MeshSet mesh = meshItem->value(i);
+    smtk::mesh::MeshSet mesh = meshItem->valueAs<smtk::mesh::Component>(i)->mesh();
     smtk::mesh::PointField prior = mesh.pointField("_prior");
     if (!prior.isValid())
     {
@@ -57,12 +58,10 @@ bool UndoElevateMesh::ableToOperate()
 UndoElevateMesh::Result UndoElevateMesh::operateInternal()
 {
   // Access the mesh
-  smtk::attribute::MeshItem::Ptr meshItem = this->parameters()->findMesh("mesh");
+  smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
 
   // Access the attribute associated with the modified meshes
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  smtk::attribute::MeshItem::Ptr modifiedMeshes = result->findMesh("mesh_modified");
-  modifiedMeshes->setNumberOfValues(meshItem->numberOfValues());
 
   // Access the attribute associated with the modified model
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
@@ -74,7 +73,8 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
   // apply the interpolator to the meshes and populate the result attributes
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    smtk::mesh::MeshSet mesh = meshItem->value(i);
+    smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
+    smtk::mesh::MeshSet mesh = meshComponent->mesh();
 
     bool success = smtk::mesh::utility::undoWarp(mesh);
 
@@ -84,7 +84,7 @@ UndoElevateMesh::Result UndoElevateMesh::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    modifiedMeshes->appendValue(mesh);
+    modified->appendValue(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);
