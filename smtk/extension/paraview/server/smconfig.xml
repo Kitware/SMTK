@@ -90,6 +90,31 @@
        subproxy in the "sources" section below.
   -->
   <ProxyGroup name="smtk_internal_sources">
+    <SourceProxy name="SMTKResource" class="vtkSMTKResource" label="SMTK Resource">
+      <Documentation
+        short_help="A proxy for an SMTK resource."
+        long_help="A proxy for an SMTK resource.">
+      </Documentation>
+
+      <StringVectorProperty
+        name="ResourceId"
+        command="SetResourceById"
+        animateable="0"
+        number_of_elements="1">
+        <Documentation>
+          A string representation of a resource Id.
+        </Documentation>
+      </StringVectorProperty>
+
+      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
+
+      <Hints>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
+    </SourceProxy>
+
     <SourceProxy name="SMTKModelReader" class="vtkSMTKModelReader" label="SMTK Model Reader">
       <Documentation
         short_help="Read an SMTK Geometry file."
@@ -276,8 +301,8 @@
       </Documentation>
 
       <StringVectorProperty
-        name="Resource"
-        command="SetResource"
+        name="ResourceId"
+        command="SetResourceById"
         animateable="0"
         number_of_elements="1"
         panel_visibility="never">
@@ -287,6 +312,24 @@
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
+      <Hints>
+        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+      </Hints>
+    </SourceProxy>
+
+    <SourceProxy class="vtkSMTKSource" name="SMTKSource">
+      <SubProxy command="SetVTKResource">
+        <Proxy name="VTKResource"
+               proxygroup="smtk_internal_sources"
+               proxyname="SMTKResource">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="ResourceId" />
+        </ExposedProperties>
+      </SubProxy>
+      <OutputPort index="0" name="entities"/>
+      <OutputPort index="1" name="instance prototypes"/>
+      <OutputPort index="2" name="instance points"/>
       <Hints>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
       </Hints>
