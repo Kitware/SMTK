@@ -224,6 +224,9 @@ int vtkSMTKModelRepresentation::RequestData(
   this->GlyphMapper->Modified();
 
   this->GetModelBounds();
+
+  // New input data requires updated block colors:
+  this->UpdateColorBy = true;
   return Superclass::RequestData(request, inVec, outVec);
 }
 
@@ -255,7 +258,9 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     // ordered compositing when rendering translucent geometry. We need to extend
     // this condition to consider translucent LUTs once we start supporting them.
     if (this->Entities->HasTranslucentPolygonalGeometry() ||
-      this->GlyphEntities->HasTranslucentPolygonalGeometry())
+      this->GlyphEntities->HasTranslucentPolygonalGeometry() ||
+      this->SelectedEntities->HasTranslucentPolygonalGeometry() ||
+      this->SelectedGlyphEntities->HasTranslucentPolygonalGeometry())
     {
       outInfo->Set(vtkPVRenderView::NEED_ORDERED_COMPOSITING(), 1);
     }
@@ -1131,6 +1136,8 @@ void vtkSMTKModelRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
       auto uuid = data->GetMetaData(it)->Get(vtkModelMultiBlockSource::ENTITYID());
       if (uuid)
       {
+        // FIXME? Check whether UUID corresponds to an instance or not.
+        //        Instances should use the GlyphMapper rather than the EntityMapper.
         ColorBlockAsEntity(this->EntityMapper, dataObj, uuid, this->Resource);
       }
     }
