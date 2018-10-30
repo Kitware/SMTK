@@ -14,6 +14,8 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
+#include "smtk/io/Logger.h"
+
 #include <cassert>
 
 namespace smtk
@@ -93,6 +95,17 @@ bool Surrogate::resolve(const ResourcePtr& resource) const
     m_resource = resource;
     return true;
   }
+  else
+  {
+    // If we have reached this point, there is a discrepancy between the
+    // Surrogate data and the resource from file that the surrogate describes.
+    // We warn to this effect and return with failure.
+    smtkErrorMacro(smtk::io::Logger::instance(), "Resource "
+        << resource << " is expected to be of type < " << m_typeName << " > and have id < "
+        << m_id.toString() << " > but instead is of type < " << resource->typeName()
+        << " > and has id < " << resource->id().toString() << " >.");
+  }
+
   return false;
 }
 
