@@ -158,23 +158,19 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
   smtk::view::VisibilityContent::decoratePhrase(
     phr, [this](smtk::view::VisibilityContent::Query qq, int val,
            smtk::view::ConstPhraseContentPtr data) {
-      smtk::model::EntityPtr ent =
-        data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
-      smtk::model::ResourcePtr mResource = ent
-        ? ent->modelResource()
-        : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(data->relatedResource())
-                : nullptr);
+      auto comp = data ? data->relatedComponent() : nullptr;
+      auto rsrc = comp ? comp->resource() : (data ? data->relatedResource() : nullptr);
 
       switch (qq)
       {
         case smtk::view::VisibilityContent::DISPLAYABLE:
-          return (ent || (!ent && mResource)) ? 1 : 0;
+          return (comp || (!comp && rsrc)) ? 1 : 0;
         case smtk::view::VisibilityContent::EDITABLE:
-          return (ent || (!ent && mResource)) ? 1 : 0;
+          return (comp || (!comp && rsrc)) ? 1 : 0;
         case smtk::view::VisibilityContent::GET_VALUE:
-          if (ent)
+          if (comp)
           {
-            auto valIt = m_p->m_members.find(ent);
+            auto valIt = m_p->m_members.find(comp);
             if (valIt != m_p->m_members.end())
             {
               return valIt->second;
@@ -183,7 +179,7 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
           }
           return 0; // visibility is false if the component is not a model entity or NULL.
         case smtk::view::VisibilityContent::SET_VALUE:
-          if (ent)
+          if (comp)
           {
             if (val && !m_p->m_members.empty())
             {
@@ -195,7 +191,7 @@ int qtComponentItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
                 m_p->m_phraseModel->triggerDataChanged();
               }
             }
-            m_p->m_members[ent] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            m_p->m_members[comp] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
             this->updateSynopsisLabels();
             return 1;
           }
