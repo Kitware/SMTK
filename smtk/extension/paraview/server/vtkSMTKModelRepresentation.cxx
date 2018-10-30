@@ -37,10 +37,16 @@
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ReferenceItem.h"
+
 #include "smtk/model/Entity.h"
 #include "smtk/model/Resource.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
+
 #include "smtk/view/Selection.h"
 
 namespace
@@ -446,6 +452,7 @@ bool vtkSMTKModelRepresentation::ApplyDefaultStyle(
   smtk::view::SelectionPtr seln, RenderableDataMap& renderables, vtkSMTKModelRepresentation* self)
 {
   bool atLeastOneSelected = false;
+  smtk::attribute::Attribute::Ptr attr;
   for (auto& item : seln->currentSelection())
   {
     if (item.second <= 0)
@@ -454,33 +461,59 @@ bool vtkSMTKModelRepresentation::ApplyDefaultStyle(
       continue;
     }
 
-    // Determine the actor-pair we are dealing with (normal or instanced):
-    auto entity = item.first->as<smtk::model::Entity>();
-    bool isGlyphed = entity && entity->isInstance();
-
-    // Determine if the user has hidden the entity
-    auto& smap = self->GetComponentState();
-    auto cstate = smap.find(item.first->id());
-    bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
-
-    // TODO: A single persistent object may have a "footprint"
-    // (i.e., a set<vtkDataObject*>) that represents it.
-    // In this case, we should set the selected state for all
-    // of the footprint. However, this is complicated by the fact
-    // that some of the footprint entries might correspond to
-    // children (boundary) objects that might be controlled
-    // independently.
-    //
-    // For now, assume each persistent object has at most 1
-    // vtkDataObject associated with it.
-    auto dataIt = renderables.find(item.first->id());
-    if (dataIt != renderables.end())
+    // If the item is an attribute, it will not be directly renderable,
+    // so preview its associated entities.
+    attr = item.first->as<smtk::attribute::Attribute>();
+    if (attr)
     {
-      self->SetSelectedState(dataIt->second, hidden ? -1 : item.second, isGlyphed);
-      atLeastOneSelected = true;
+      for (auto obj : *attr->associations())
+      {
+        atLeastOneSelected |= self->SelectComponentFootprint(obj, /*selnBit TODO*/ 1, renderables);
+      }
+    }
+    else
+    {
+      atLeastOneSelected |= self->SelectComponentFootprint(item.first, item.second, renderables);
     }
   }
 
+  return atLeastOneSelected;
+}
+
+bool vtkSMTKModelRepresentation::SelectComponentFootprint(
+  smtk::resource::PersistentObjectPtr item, int selnBits, RenderableDataMap& renderables)
+{
+  bool atLeastOneSelected = false;
+  if (!item)
+  {
+    return atLeastOneSelected;
+  }
+
+  // Determine the actor-pair we are dealing with (normal or instanced):
+  auto entity = item->as<smtk::model::Entity>();
+  bool isGlyphed = entity && entity->isInstance();
+
+  // Determine if the user has hidden the entity
+  auto& smap = this->GetComponentState();
+  auto cstate = smap.find(item->id());
+  bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
+
+  // TODO: A single persistent object may have a "footprint"
+  // (i.e., a set<vtkDataObject*>) that represents it.
+  // In this case, we should set the selected state for all
+  // of the footprint. However, this is complicated by the fact
+  // that some of the footprint entries might correspond to
+  // children (boundary) objects that might be controlled
+  // independently.
+  //
+  // For now, assume each persistent object has at most 1
+  // vtkDataObject associated with it.
+  auto dataIt = renderables.find(item->id());
+  if (dataIt != renderables.end())
+  {
+    this->SetSelectedState(dataIt->second, hidden ? -1 : selnBits, isGlyphed);
+    atLeastOneSelected = true;
+  }
   return atLeastOneSelected;
 }
 
