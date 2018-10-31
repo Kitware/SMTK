@@ -364,6 +364,9 @@ public:
   //xyz needs to be allocated to 3*points.size()
   virtual bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz) = 0;
 
+  virtual std::string name(const smtk::mesh::Handle& meshset) const = 0;
+  virtual bool setName(const smtk::mesh::Handle& meshset, const std::string& name) = 0;
+
   virtual std::vector<std::string> computeNames(const smtk::mesh::HandleRange& meshsets) const = 0;
 
   virtual std::vector<smtk::mesh::Domain> computeDomainValues(

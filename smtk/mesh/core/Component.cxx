@@ -51,6 +51,11 @@ const smtk::resource::ResourcePtr Component::resource() const
   return std::static_pointer_cast<smtk::resource::Resource>(m_collection.lock());
 }
 
+std::string Component::name() const
+{
+  return this->mesh().name();
+}
+
 const smtk::mesh::MeshSet Component::mesh() const
 {
   if (auto collection = m_collection.lock())

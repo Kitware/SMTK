@@ -187,6 +187,9 @@ public:
   //xyz needs to be allocated to 3*points.size()
   bool setCoordinates(const smtk::mesh::HandleRange& points, const float* const xyz) override;
 
+  std::string name(const smtk::mesh::Handle& meshset) const override;
+  bool setName(const smtk::mesh::Handle& meshset, const std::string& name) override;
+
   std::vector<std::string> computeNames(const smtk::mesh::HandleRange& meshsets) const override;
 
   std::vector<smtk::mesh::Domain> computeDomainValues(

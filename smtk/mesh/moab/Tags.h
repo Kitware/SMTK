@@ -66,7 +66,21 @@ public:
     {
       return false;
     }
+
     ::moab::ErrorCode rval = m_iface->tag_get_data(m_tag, &entity, 1, &m_tagData);
+    return (rval == ::moab::MB_SUCCESS);
+  }
+
+  bool set_name(const smtk::mesh::Handle& entity, const std::string& name)
+  {
+    if (!m_tag)
+    {
+      return false;
+    }
+
+    strcpy(m_tagData, name.substr(0, 32).c_str());
+
+    ::moab::ErrorCode rval = m_iface->tag_set_data(m_tag, &entity, 1, &m_tagData);
     return (rval == ::moab::MB_SUCCESS);
   }
 

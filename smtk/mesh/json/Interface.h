@@ -181,6 +181,9 @@ public:
 
   std::vector<std::string> computeNames(const smtk::mesh::HandleRange& meshsets) const override;
 
+  std::string name(const smtk::mesh::Handle& meshset) const override;
+  bool setName(const smtk::mesh::Handle& meshset, const std::string& name) override;
+
   std::vector<smtk::mesh::Domain> computeDomainValues(
     const smtk::mesh::HandleRange& meshsets) const override;
 
