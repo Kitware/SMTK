@@ -120,8 +120,27 @@ std::function<bool(const resource::ComponentPtr&)> Collection::queryOperation(
 // visit all components in the resource.
 void Collection::visit(smtk::resource::Component::Visitor& visitor) const
 {
-  // TODO
-  (void)visitor;
+  class Visit : public smtk::mesh::MeshForEach
+  {
+  public:
+    Visit(smtk::resource::Component::Visitor& visitor)
+      : smtk::mesh::MeshForEach()
+      , m_visitor(visitor)
+    {
+    }
+
+    void forMesh(smtk::mesh::MeshSet& mesh) override
+    {
+      m_visitor(smtk::mesh::Component::create(mesh));
+    }
+
+  private:
+    smtk::resource::Component::Visitor& m_visitor;
+  };
+
+  Visit visit_(visitor);
+
+  smtk::mesh::for_each(this->meshes(), visit_);
 }
 
 const smtk::mesh::InterfacePtr& Collection::interface() const
