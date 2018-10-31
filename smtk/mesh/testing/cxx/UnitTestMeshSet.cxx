@@ -8,9 +8,16 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
+
 #include "smtk/io/ImportMesh.h"
+
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
+
+#include "smtk/mesh/operators/SetMeshName.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -441,6 +448,38 @@ void verify_meshset_set_names(const smtk::mesh::CollectionPtr& c)
 
   c->visit(checkMeshNames);
 }
+
+void verify_meshset_set_name_op(const smtk::mesh::CollectionPtr& c)
+{
+  std::size_t numMeshesIteratedOver = 0;
+  smtk::resource::Component::Visitor setMeshNames = [&](
+    const smtk::resource::ComponentPtr& component) {
+    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+    std::stringstream s;
+    s << "my_meshset " << numMeshesIteratedOver;
+    smtk::mesh::SetMeshName::Ptr setMeshNameOp = smtk::mesh::SetMeshName::create();
+    setMeshNameOp->parameters()->associate(meshComponent);
+    setMeshNameOp->parameters()->findString("name")->setValue(s.str());
+    auto result = setMeshNameOp->operate();
+    test(result->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));
+    numMeshesIteratedOver++;
+  };
+
+  c->visit(setMeshNames);
+
+  numMeshesIteratedOver = 0;
+  smtk::resource::Component::Visitor checkMeshNames = [&](
+    const smtk::resource::ComponentPtr& component) {
+    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+    std::stringstream s;
+    s << "my_meshset " << numMeshesIteratedOver;
+    test(meshComponent->name() == s.str());
+    numMeshesIteratedOver++;
+  };
+
+  c->visit(checkMeshNames);
+}
 }
 
 int UnitTestMeshSet(int, char** const)
@@ -464,6 +503,7 @@ int UnitTestMeshSet(int, char** const)
   verify_meshset_for_each(c);
   verify_meshset_visit(c);
   verify_meshset_set_names(c);
+  verify_meshset_set_name_op(c);
 
   return 0;
 }
