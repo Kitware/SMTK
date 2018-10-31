@@ -60,7 +60,6 @@ vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
   this->SetNumberOfInputPorts(0);
   this->CachedOutput = NULL;
   this->ModelEntityID = NULL;
-  this->MeshCollectionID = NULL;
   this->AllowNormalGeneration = 0;
   this->linkInstance();
 }
@@ -70,7 +69,6 @@ vtkMeshMultiBlockSource::~vtkMeshMultiBlockSource()
   this->unlinkInstance();
   this->SetCachedOutput(NULL);
   this->SetModelEntityID(NULL);
-  this->SetMeshCollectionID(NULL);
 }
 
 void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
@@ -80,7 +78,6 @@ void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Model: " << m_modelResource.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
   os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
-  os << indent << "MeshCollectionID: " << this->MeshCollectionID << "\n";
   os << indent << "AllowNormalGeneration: " << (this->AllowNormalGeneration ? "ON" : "OFF") << "\n";
 }
 
@@ -288,101 +285,88 @@ void vtkMeshMultiBlockSource::FindEntitiesWithMesh(const smtk::mesh::CollectionP
 void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSet* mbds)
 {
 
-  if (this->MeshCollectionID && this->MeshCollectionID[0])
+  Model modelEntity;
+  bool modelRequiresNormals = false;
+  if (this->ModelEntityID && this->ModelEntityID[0] && m_modelResource)
   {
-    smtk::common::UUID mcuid(this->MeshCollectionID);
+    smtk::common::UUID uid(this->ModelEntityID);
+    smtk::model::EntityRef entity(m_modelResource, uid);
+    modelEntity = entity.isModel() ? entity.as<smtk::model::Model>() : entity.owningModel();
+  }
 
-    Model modelEntity;
-    bool modelRequiresNormals = false;
-    if (this->ModelEntityID && this->ModelEntityID[0] && m_modelResource)
+  if (modelEntity.isValid() && m_meshCollection->isValid() &&
+    m_meshCollection->numberOfMeshes() > 0)
+  {
+    // See if the model has any instructions about
+    // whether to generate surface normals.
+    if (modelEntity.hasIntegerProperty("generate normals"))
     {
-      smtk::common::UUID uid(this->ModelEntityID);
-      smtk::model::EntityRef entity(m_modelResource, uid);
-      modelEntity = entity.isModel() ? entity.as<smtk::model::Model>() : entity.owningModel();
+      const IntegerList& prop(modelEntity.integerProperty("generate normals"));
+      if (!prop.empty() && prop[0])
+        modelRequiresNormals = true;
     }
 
-    if (modelEntity.isValid() && m_meshCollection->isValid() &&
-      m_meshCollection->numberOfMeshes() > 0)
+    // Map from entityref to its parent cell entity and its meshset
+    std::map<smtk::model::EntityRef, std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >
+      entityrefMap;
+    std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
+    this->FindEntitiesWithMesh(m_meshCollection, modelEntity, entityrefMap, touched);
+
+    mbds->SetNumberOfBlocks(static_cast<unsigned>(entityrefMap.size()));
+    vtkIdType i;
+    std::map<smtk::model::EntityRef,
+      std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >::iterator cit;
+    for (i = 0, cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++i)
     {
-      // See if the model has any instructions about
-      // whether to generate surface normals.
-      if (modelEntity.hasIntegerProperty("generate normals"))
+      vtkNew<vtkPolyData> poly;
+      mbds->SetBlock(i, poly.GetPointer());
+      // Set the block name to the entity UUID.
+      mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
+      this->GenerateRepresentationForSingleMesh(
+        cit->second.second, poly.GetPointer(), cit->first, modelRequiresNormals);
+      // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
+      // as a convenient method to get the flat block index in multiblock
+      if (!(cit->first.entity().isNull()))
       {
-        const IntegerList& prop(modelEntity.integerProperty("generate normals"));
-        if (!prop.empty() && prop[0])
-          modelRequiresNormals = true;
-      }
-
-      // Map from entityref to its parent cell entity and its meshset
-      std::map<smtk::model::EntityRef, std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >
-        entityrefMap;
-      std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
-      this->FindEntitiesWithMesh(m_meshCollection, modelEntity, entityrefMap, touched);
-
-      mbds->SetNumberOfBlocks(static_cast<unsigned>(entityrefMap.size()));
-      vtkIdType i;
-      std::map<smtk::model::EntityRef,
-        std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >::iterator cit;
-      for (i = 0, cit = entityrefMap.begin(); cit != entityrefMap.end(); ++cit, ++i)
-      {
-        vtkNew<vtkPolyData> poly;
-        mbds->SetBlock(i, poly.GetPointer());
-        // Set the block name to the entity UUID.
-        mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
-        this->GenerateRepresentationForSingleMesh(
-          cit->second.second, poly.GetPointer(), cit->first, modelRequiresNormals);
-        // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
-        // as a convenient method to get the flat block index in multiblock
-        if (!(cit->first.entity().isNull()))
-        {
-          internal_AddBlockInfo(m_meshCollection, cit->first, cit->second.second, cit->second.first,
-            i, poly.GetPointer(), m_Meshset2BlockIdMap);
-        }
-      }
-
-      // TODO: how do we handle submodels in a multiblock dataset? We could have
-      //       a cycle in the submodels, so treating them as trees would not work.
-      // Finally, if nothing has any tessellation information, see if any is associated
-      // with the model itself.
-    }
-    else
-    {
-      std::cout << "Can not find the model: "
-                << (this->ModelEntityID ? this->ModelEntityID : "NULL")
-                << ", use all meshes from mesh collection: " << this->MeshCollectionID << std::endl;
-
-      smtk::mesh::MeshSet allMeshes = m_meshCollection->meshes();
-      mbds->SetNumberOfBlocks(static_cast<unsigned>(allMeshes.size()));
-
-      for (std::size_t i = 0; i < allMeshes.size(); ++i)
-      {
-        vtkNew<vtkPolyData> poly;
-
-        std::ostringstream defaultName;
-        defaultName << "mesh " << i;
-        smtk::mesh::MeshSet singleMesh = allMeshes.subset(i);
-        std::vector<std::string> meshNames = singleMesh.names();
-        std::string meshName = meshNames.size() > 0 ? meshNames[0] : defaultName.str();
-        // Set the block name to a mesh name if it has one.
-        // for now, use "mesh (<cell type>) <index>" for name
-        mbds->GetMetaData(static_cast<unsigned>(i))
-          ->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
-        this->GenerateRepresentationForSingleMesh(
-          singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
-        mbds->SetBlock(static_cast<unsigned>(i), poly.GetPointer());
-        smtk::model::EntityRefArray ents;
-        bool validEnts = singleMesh.modelEntities(ents);
-        if (validEnts && ents.size() > 0)
-        {
-          internal_AddBlockEntityInfo(
-            singleMesh, ents[0], i, poly.GetPointer(), m_Meshset2BlockIdMap);
-        }
+        internal_AddBlockInfo(m_meshCollection, cit->first, cit->second.second, cit->second.first,
+          i, poly.GetPointer(), m_Meshset2BlockIdMap);
       }
     }
+
+    // TODO: how do we handle submodels in a multiblock dataset? We could have
+    //       a cycle in the submodels, so treating them as trees would not work.
+    // Finally, if nothing has any tessellation information, see if any is associated
+    // with the model itself.
   }
   else
   {
-    vtkGenericWarningMacro(<< "A valid mesh collection id was not set, abort!");
+    smtk::mesh::MeshSet allMeshes = m_meshCollection->meshes();
+    mbds->SetNumberOfBlocks(static_cast<unsigned>(allMeshes.size()));
+
+    for (std::size_t i = 0; i < allMeshes.size(); ++i)
+    {
+      vtkNew<vtkPolyData> poly;
+
+      std::ostringstream defaultName;
+      defaultName << "mesh " << i;
+      smtk::mesh::MeshSet singleMesh = allMeshes.subset(i);
+      std::vector<std::string> meshNames = singleMesh.names();
+      std::string meshName = meshNames.size() > 0 ? meshNames[0] : defaultName.str();
+      // Set the block name to a mesh name if it has one.
+      // for now, use "mesh (<cell type>) <index>" for name
+      mbds->GetMetaData(static_cast<unsigned>(i))
+        ->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
+      this->GenerateRepresentationForSingleMesh(
+        singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
+      mbds->SetBlock(static_cast<unsigned>(i), poly.GetPointer());
+      smtk::model::EntityRefArray ents;
+      bool validEnts = singleMesh.modelEntities(ents);
+      if (validEnts && ents.size() > 0)
+      {
+        internal_AddBlockEntityInfo(
+          singleMesh, ents[0], i, poly.GetPointer(), m_Meshset2BlockIdMap);
+      }
+    }
   }
 }
 

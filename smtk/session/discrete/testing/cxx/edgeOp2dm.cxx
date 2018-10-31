@@ -289,7 +289,6 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetMeshCollection(mc);
-    src->SetMeshCollectionID(collectionID.toString().c_str());
     if (debug)
     {
       win->SetMultiSamples(16);

@@ -90,7 +90,6 @@ int main(int argc, char* argv[])
       vtkNew<vtkRenderer> ren;
       vtkNew<vtkRenderWindow> win;
       src->SetMeshCollection(c);
-      src->SetMeshCollectionID(collectionID.toString().c_str());
       if (debug)
       {
         win->SetMultiSamples(16);

@@ -45,9 +45,7 @@ vtkSmartPointer<vtkAlgorithm> SourceFromMesh::operator()(
 
   // Create a vtkMeshMultiBlockSource for our mesh.
   auto source = vtkSmartPointer<vtkMeshMultiBlockSource>::New();
-
-  // TODO: vtkMeshMultiBlockSource needs to update. Once that's done, we can set
-  // up <source> here.
+  source->SetMeshCollection(meshResource);
 
   return source;
 }

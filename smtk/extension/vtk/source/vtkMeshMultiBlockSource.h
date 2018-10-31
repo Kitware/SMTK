@@ -53,11 +53,6 @@ public:
   smtk::mesh::CollectionPtr GetMeshCollection();
   void SetMeshCollection(smtk::mesh::CollectionPtr);
 
-  // Description:
-  // Mesh collection ID that this source will be built upon.
-  vtkSetStringMacro(MeshCollectionID);
-  vtkGetStringMacro(MeshCollectionID);
-
   void GetMeshSet2BlockIdMap(std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2block);
   void Dirty();
 
@@ -92,8 +87,7 @@ protected:
   vtkNew<vtkPolyDataNormals> m_normalGenerator;
 
   vtkMultiBlockDataSet* CachedOutput;
-  char* ModelEntityID;    // Model Entity UUID
-  char* MeshCollectionID; // Model Entity UUID
+  char* ModelEntityID; // Model Entity UUID
   int AllowNormalGeneration;
 
 private:
