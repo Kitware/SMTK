@@ -11,8 +11,14 @@
         </File>
 
         <String Name="label" Label="Domain Property" NumberOfRequiredValues="1" AdvanceLevel="1">
-	  <DefaultValue></DefaultValue>
-	</String>
+          <DefaultValue></DefaultValue>
+        </String>
+
+        <Void Name="assign default names" Optional="true" IsEnabledByDefault="true" AdvanceLevel="1">
+          <BriefDescription>
+            Upon importing, assign names to meshes that have no name already.
+          </BriefDescription>
+        </Void>
 
       </ItemDefinitions>
     </AttDef>

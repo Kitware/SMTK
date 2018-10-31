@@ -163,6 +163,9 @@ public:
   smtk::mesh::PointConnectivity pointConnectivity()
     const; //all point connectivity info for all cells
 
+  /// Assign a machine-generated name to any mesh component that does not have a user-assigned name.
+  void assignDefaultNames();
+
   //For any mesh set that has a name we return that name. It is possible
   //that the we have un-named mesh sets.
   std::vector<std::string> meshNames() const;
@@ -362,6 +365,8 @@ private:
   smtk::shared_ptr<MeshFloatData> m_floatData;
   smtk::shared_ptr<MeshStringData> m_stringData;
   smtk::shared_ptr<MeshIntegerData> m_integerData;
+
+  int m_nameCounter;
 
   //holds a reference to the specific backend interface
   class InternalImpl;

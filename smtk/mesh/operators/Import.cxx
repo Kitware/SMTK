@@ -19,6 +19,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/io/ImportMesh.h"
 
@@ -76,6 +77,12 @@ Import::Result Import::operateInternal()
   AddMeshToResult addMeshToResult(result);
 
   smtk::mesh::for_each(collection->meshes(), addMeshToResult);
+
+  auto assignNames = this->parameters()->findVoid("assign default names");
+  if (assignNames && assignNames->isEnabled())
+  {
+    collection->assignDefaultNames();
+  }
 
   result->findResource("resource")->appendValue(collection);
 
