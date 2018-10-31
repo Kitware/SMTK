@@ -83,7 +83,6 @@ int main(int argc, char* argv[])
       std::cout << "number of meshes: " << numMeshes << std::endl;
       test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
 
-      smtk::common::UUID collectionID = c->entity();
       vtkNew<vtkActor> act;
       vtkNew<vtkMeshMultiBlockSource> src;
       vtkNew<vtkCompositePolyDataMapper2> map;

@@ -282,7 +282,6 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     }
     */
 
-    smtk::common::UUID collectionID = mc->entity();
     vtkNew<vtkActor> act;
     vtkNew<vtkMeshMultiBlockSource> src;
     vtkNew<vtkCompositePolyDataMapper2> map;

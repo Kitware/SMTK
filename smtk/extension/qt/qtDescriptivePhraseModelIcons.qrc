@@ -16,6 +16,9 @@
     <file alias = "modelResource.png">icons/modelResource.png</file>
     <file alias = "group.png">icons/group.png</file>
     <file alias = "aux_geom.png">icons/aux_geom.png</file>
+    <file alias = "meshset_b.png">icons/meshset_b.png</file>
+    <file alias = "meshset_w.png">icons/meshset_w.png</file>
+    <file alias = "meshResource.png">icons/meshResource.png</file>
   </qresource>
 
   <qresource prefix="/icons/display">
