@@ -41,7 +41,11 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ReferenceItem.h"
 
+#include "smtk/model/AuxiliaryGeometry.h"
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 
 #include "smtk/resource/Component.h"
@@ -512,7 +516,78 @@ bool vtkSMTKModelRepresentation::SelectComponentFootprint(
   if (dataIt != renderables.end())
   {
     this->SetSelectedState(dataIt->second, hidden ? -1 : selnBits, isGlyphed);
-    atLeastOneSelected = true;
+    atLeastOneSelected |= !hidden;
+  }
+  else
+  {
+    // The component does not have any geometry of its own... but perhaps
+    // we can render its children highlighted instead.
+    auto ent = item->as<smtk::model::Entity>();
+    if (ent)
+    {
+      if (ent->isGroup())
+      {
+        auto members = smtk::model::Group(ent).members<smtk::model::EntityRefs>();
+        atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
+      }
+      else if (ent->isModel())
+      {
+        auto model = smtk::model::Model(ent);
+        auto cells = model.cellsAs<smtk::model::EntityRefs>();
+        for (auto cell : cells)
+        {
+          // If the cell has no geometry, then add its boundary cells.
+          if (renderables.find(cell.entity()) == renderables.end())
+          {
+            auto bdys = smtk::model::CellEntity(cell).boundingCellsAs<smtk::model::EntityRefs>();
+            cells.insert(bdys.begin(), bdys.end());
+          }
+        }
+        atLeastOneSelected |= this->SelectComponentFootprint(cells, selnBits, renderables);
+
+        auto groups = model.groups();
+        for (auto group : groups)
+        {
+          auto members = group.members<smtk::model::EntityRefs>();
+          atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
+        }
+
+        // TODO: Auxiliary geometry may also be handled by a separate representation.
+        //       Need to ensure that representation also renders selection properly.
+        auto auxGeoms = model.auxiliaryGeometry();
+        // Convert auxGeoms to EntityRefs to match SelectComponentFootprint() API:
+        smtk::model::EntityRefs auxEnts;
+        for (auto auxGeom : auxGeoms)
+        {
+          auxEnts.insert(auxGeom);
+        }
+        atLeastOneSelected |= this->SelectComponentFootprint(auxEnts, selnBits, renderables);
+      }
+      else if (ent->isCellEntity())
+      {
+        auto bdys = smtk::model::CellEntity(ent).boundingCellsAs<smtk::model::EntityRefs>();
+        atLeastOneSelected |= this->SelectComponentFootprint(bdys, selnBits, renderables);
+      }
+    }
+  }
+  return atLeastOneSelected;
+}
+
+bool vtkSMTKModelRepresentation::SelectComponentFootprint(
+  const smtk::model::EntityRefs& items, int selnBits, RenderableDataMap& renderables)
+{
+  bool atLeastOneSelected = false;
+  auto& smap = this->GetComponentState();
+  for (auto item : items)
+  {
+    auto dataIt = renderables.find(item.entity());
+    auto cstate = smap.find(item.entity());
+    bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
+    if (dataIt != renderables.end())
+    {
+      this->SetSelectedState(dataIt->second, hidden ? -1 : selnBits, item.isInstance());
+      atLeastOneSelected |= !hidden;
+    }
   }
   return atLeastOneSelected;
 }
