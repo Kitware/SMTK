@@ -3,7 +3,7 @@
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="export mesh" Label="Mesh - Export" BaseType="operation">
+    <AttDef Type="export" Label="Mesh - Export" BaseType="operation">
       <BriefDescription>
         Export a mesh to disk.
       </BriefDescription>
@@ -20,13 +20,13 @@
       </AssociationsDef>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
-          FileFilters="AdH 2D Mesh file (*.2dm);;AdH 3D Mesh file (*.3dm)">
+          FileFilters="[defined programatically]">
         </File>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(export mesh)" BaseType="result">
+    <AttDef Type="result(export)" BaseType="result">
     </AttDef>
   </Definitions>
 </SMTK_AttributeResource>

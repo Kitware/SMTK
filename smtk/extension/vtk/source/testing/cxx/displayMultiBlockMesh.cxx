@@ -54,7 +54,6 @@ int main(int argc, char* argv[])
     vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetMeshCollectionID(collectionID.toString().c_str());
     if (debug)
     {
       win->SetMultiSamples(16);

@@ -8,17 +8,21 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/operators/ExportMesh.h"
+#include "smtk/mesh/operators/Export.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/MeshItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
+#include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/ExportMesh_xml.h"
+#include "smtk/mesh/Export_xml.h"
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
@@ -53,7 +57,7 @@ namespace smtk
 namespace mesh
 {
 
-bool ExportMesh::ableToOperate()
+bool Export::ableToOperate()
 {
   if (!this->Superclass::ableToOperate())
   {
@@ -62,7 +66,7 @@ bool ExportMesh::ableToOperate()
   return true;
 }
 
-ExportMesh::Result ExportMesh::operateInternal()
+Export::Result Export::operateInternal()
 {
   std::string outputfile = this->parameters()->findFile("filename")->value();
 
@@ -114,9 +118,60 @@ ExportMesh::Result ExportMesh::operateInternal()
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
-const char* ExportMesh::xmlDescription() const
+Export::Specification Export::createSpecification()
 {
-  return ExportMesh_xml;
+  Specification spec = this->smtk::operation::XMLOperation::createSpecification();
+  auto exportDef = spec->findDefinition("export");
+
+  std::vector<smtk::attribute::FileItemDefinition::Ptr> fileItemDefinitions;
+  auto fileItemDefinitionFilter = [](
+    smtk::attribute::FileItemDefinition::Ptr ptr) { return ptr->name() == "filename"; };
+  exportDef->filterItemDefinitions(fileItemDefinitions, fileItemDefinitionFilter);
+
+  assert(fileItemDefinitions.size() == 1);
+
+  std::stringstream fileFilters;
+  for (auto& ioType : smtk::io::ExportMesh::SupportedIOTypes())
+  {
+    bool firstFormat = true;
+    for (auto& format : ioType->FileFormats())
+    {
+      if (format.CanExport())
+      {
+        if (firstFormat)
+        {
+          firstFormat = false;
+        }
+        else
+        {
+          fileFilters << ";;";
+        }
+
+        fileFilters << format.Name << "(";
+        bool first = true;
+        for (auto& ext : format.Extensions)
+        {
+          if (first)
+          {
+            first = false;
+          }
+          else
+          {
+            fileFilters << " ";
+          }
+          fileFilters << "*" << ext;
+        }
+        fileFilters << ")";
+      }
+    }
+  }
+  fileItemDefinitions[0]->setFileFilters(fileFilters.str());
+  return spec;
+}
+
+const char* Export::xmlDescription() const
+{
+  return Export_xml;
 }
 }
 }

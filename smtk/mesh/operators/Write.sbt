@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the mesh "WriteMesh" Operation -->
+<!-- Description of the mesh "Write" Operation -->
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="write mesh" Label="Mesh - Save" BaseType="operation">
+    <AttDef Type="write" Label="Mesh - Save" BaseType="operation">
       <BriefDescription>
         Write a mesh to disk.
       </BriefDescription>
@@ -21,7 +21,7 @@
       </AssociationsDef>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
-          FileFilters="MOAB native file (*.h5m *.mhdf);;Exodus II file (*.exo *.exoII *.exo2 *.g *.gen);;Kitware VTK file (*.vtk);;SLAC file (*.slac);;General Mesh Viewer (GMV) file (*.gmv);;Ansys file (*.ans);;Gmsh file (*.msh *.gmsh);;Stereo Lithography file (*.stl)">
+          FileFilters="[defined programatically]">
         </File>
         <Int Name="write-component" NumberOfRequiredValues="1">
 	  <DiscreteInfo DefaultIndex="0">
@@ -35,7 +35,7 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(write mesh)" BaseType="result">
+    <AttDef Type="result(write)" BaseType="result">
       <ItemDefinitions>
         <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
       </ItemDefinitions>

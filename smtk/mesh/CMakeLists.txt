@@ -41,11 +41,13 @@ set(meshSrcs
 
   operators/DeleteMesh.cxx
   operators/ElevateMesh.cxx
-  operators/ExportMesh.cxx
+  operators/Export.cxx
   operators/GenerateHotStartData.cxx
+  operators/Import.cxx
   operators/InterpolateOntoMesh.cxx
+  operators/Read.cxx
   operators/UndoElevateMesh.cxx
-  operators/WriteMesh.cxx
+  operators/Write.cxx
 
   resource/Registrar.cxx
 
@@ -96,11 +98,13 @@ set(meshHeaders
 
   operators/DeleteMesh.h
   operators/ElevateMesh.h
-  operators/ExportMesh.h
+  operators/Export.h
   operators/GenerateHotStartData.h
+  operators/Import.h
   operators/InterpolateOntoMesh.h
+  operators/Read.h
   operators/UndoElevateMesh.h
-  operators/WriteMesh.h
+  operators/Write.h
 
   resource/PropertyData.h
   resource/Registrar.h
@@ -115,11 +119,13 @@ set(meshHeaders
 
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ElevateMesh.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExportMesh.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoElevateMesh.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteMesh.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
 
 #install the headers
 smtk_public_headers(smtkCore ${meshHeaders})

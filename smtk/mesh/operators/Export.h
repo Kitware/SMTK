@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_WriteMesh_h
-#define __smtk_mesh_WriteMesh_h
+#ifndef __smtk_mesh_Export_h
+#define __smtk_mesh_Export_h
 
 #include "smtk/operation/XMLOperation.h"
 
@@ -19,11 +19,11 @@ namespace mesh
 
 /**\brief A class for writing meshes to file.
   */
-class SMTKCORE_EXPORT WriteMesh : public smtk::operation::XMLOperation
+class SMTKCORE_EXPORT Export : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(smtk::mesh::WriteMesh);
-  smtkCreateMacro(WriteMesh);
+  smtkTypeMacro(smtk::mesh::Export);
+  smtkCreateMacro(Export);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
 
@@ -31,10 +31,11 @@ public:
 
 protected:
   Result operateInternal() override;
+  Specification createSpecification() override;
   virtual const char* xmlDescription() const override;
 };
 
 } // mesh namespace
 } // smtk namespace
 
-#endif // __smtk_mesh_WriteMesh_h
+#endif // __smtk_mesh_Export_h
