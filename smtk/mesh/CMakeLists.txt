@@ -46,6 +46,7 @@ set(meshSrcs
   operators/Import.cxx
   operators/InterpolateOntoMesh.cxx
   operators/Read.cxx
+  operators/SetMeshName.cxx
   operators/UndoElevateMesh.cxx
   operators/Write.cxx
 
@@ -103,6 +104,7 @@ set(meshHeaders
   operators/Import.h
   operators/InterpolateOntoMesh.h
   operators/Read.h
+  operators/SetMeshName.h
   operators/UndoElevateMesh.h
   operators/Write.h
 
@@ -124,6 +126,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.s
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetMeshName.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoElevateMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
 
