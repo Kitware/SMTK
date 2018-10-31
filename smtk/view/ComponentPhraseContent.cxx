@@ -16,6 +16,10 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/Component.h"
+#include "smtk/mesh/core/MeshSet.h"
+
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/operators/SetProperty.h"
@@ -80,36 +84,29 @@ std::string ComponentPhraseContent::stringValue(ContentType attr) const
   {
     case PhraseContent::TITLE:
     {
-      auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
-      if (modelComp)
-      {
-        return modelComp->referenceAs<smtk::model::EntityRef>().name();
-      }
-
-      auto attrComp = dynamic_pointer_cast<smtk::attribute::Attribute>(m_component);
-      if (attrComp)
-      {
-        return attrComp->name();
-      }
-
-      // We don't know what type of component it is, but we know it's resource type and UUID:
-      std::ostringstream txt;
-      txt << m_component->resource()->typeName() << " " << m_component->id().toString();
-      return txt.str();
+      return m_component->name();
     }
     break;
     case PhraseContent::SUBTITLE:
     {
-      auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
+      auto modelComp = m_component->as<smtk::model::Entity>();
       if (modelComp)
       {
         return modelComp->flagSummary();
       }
 
-      auto attrComp = dynamic_pointer_cast<smtk::attribute::Attribute>(m_component);
+      auto attrComp = m_component->as<smtk::attribute::Attribute>();
       if (attrComp)
       {
         return attrComp->type();
+      }
+
+      auto meshComp = m_component->as<smtk::mesh::Component>();
+      if (meshComp)
+      {
+        std::ostringstream meshSummary;
+        meshSummary << meshComp->mesh().cells().size() << " cells";
+        return meshSummary.str();
       }
       return std::string();
     }

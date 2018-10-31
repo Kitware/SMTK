@@ -23,6 +23,7 @@
 #include "smtk/model/StringData.h"
 
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -508,6 +509,7 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   double lightness = 0.2126 * color.redF() + 0.7152 * color.greenF() + 0.0722 * color.blueF();
   auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
   auto attComp = dynamic_pointer_cast<smtk::attribute::Attribute>(item->relatedComponent());
+  auto meshComp = dynamic_pointer_cast<smtk::mesh::Component>(item->relatedComponent());
   std::ostringstream resourceName;
   resourceName << ":/icons/entityTypes/";
   if (modelComp)
@@ -566,6 +568,19 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   {
     resourceName << "attribute";
   }
+  else if (meshComp)
+  {
+    resourceName << "meshset";
+    // lightness controls black/white ico
+    if (lightness >= 0.179)
+    {
+      resourceName << "_b";
+    }
+    else // if (lightness < 0.179)
+    {
+      resourceName << "_w";
+    }
+  }
   else if (item->relatedComponent() == nullptr)
   {
     // Lets check the resource
@@ -576,6 +591,10 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
     else if (dynamic_pointer_cast<smtk::attribute::Resource>(item->relatedResource()) != nullptr)
     {
       resourceName << "attributeResource";
+    }
+    else if (dynamic_pointer_cast<smtk::mesh::Collection>(item->relatedResource()))
+    {
+      resourceName << "meshResource";
     }
     else
     {

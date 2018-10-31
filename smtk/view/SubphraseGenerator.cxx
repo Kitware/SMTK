@@ -21,6 +21,9 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
 
@@ -152,7 +155,7 @@ void SubphraseGenerator::componentsOfResource(
 {
   auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-  //auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
+  auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Collection>(rsrc);
   if (modelRsrc)
   {
     // By default, make model component names and colors editable but not visibility
@@ -175,9 +178,13 @@ void SubphraseGenerator::componentsOfResource(
       result.push_back(ComponentPhraseContent::createPhrase(attr, 0, src));
     }
   }
-  // else if (meshRsrc)
-  // {
-  // }
+  else if (meshRsrc)
+  {
+    smtk::resource::Component::Visitor visitor = [&](const smtk::resource::Component::Ptr& entry) {
+      result.push_back(ComponentPhraseContent::createPhrase(entry, 0, src));
+    };
+    meshRsrc->visit(visitor);
+  }
 }
 
 void SubphraseGenerator::itemsOfAttribute(
