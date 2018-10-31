@@ -123,7 +123,6 @@ int main(int argc, char* argv[])
   test((mc->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
   test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
 
-  smtk::common::UUID collectionID = mc->entity();
   vtkNew<vtkActor> act;
   vtkNew<vtkMeshMultiBlockSource> src;
   vtkNew<vtkCompositePolyDataMapper2> map;
