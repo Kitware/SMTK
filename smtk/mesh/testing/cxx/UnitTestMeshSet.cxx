@@ -10,6 +10,7 @@
 
 #include "smtk/io/ImportMesh.h"
 #include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -399,6 +400,20 @@ void verify_meshset_for_each(const smtk::mesh::CollectionPtr& c)
   test(static_cast<std::size_t>(functor.numberOfMeshesVisited()) == volMeshes.size());
   test(functor.cells() == volMeshes.cells());
 }
+
+void verify_meshset_visit(const smtk::mesh::CollectionPtr& c)
+{
+  std::size_t numMeshesIteratedOver = 0;
+  smtk::resource::Component::Visitor countMeshesAndCells = [&](
+    const smtk::resource::ComponentPtr& component) {
+    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+    numMeshesIteratedOver++;
+  };
+
+  c->visit(countMeshesAndCells);
+
+  test(numMeshesIteratedOver == c->meshes().size());
+}
 }
 
 int UnitTestMeshSet(int, char** const)
@@ -420,6 +435,7 @@ int UnitTestMeshSet(int, char** const)
   verify_meshset_subtract(c);
 
   verify_meshset_for_each(c);
+  verify_meshset_visit(c);
 
   return 0;
 }
