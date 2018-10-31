@@ -23,7 +23,7 @@
 #include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
 
-#include "smtk/mesh/operators/ExportMesh.h"
+#include "smtk/mesh/operators/Export.h"
 #include "smtk/model/Resource.h"
 
 #include <fstream>
@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
   smtk::mesh::CollectionPtr collection = convert(resource);
 
   // Create a new "export mesh" operator
-  smtk::operation::Operation::Ptr exportMeshOp = smtk::mesh::ExportMesh::create();
+  smtk::operation::Operation::Ptr exportMeshOp = smtk::mesh::Export::create();
   if (!exportMeshOp)
   {
     std::cerr << "No \"export mesh\" operator\n";

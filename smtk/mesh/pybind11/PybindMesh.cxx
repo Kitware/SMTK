@@ -52,9 +52,11 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindDeleteMesh.h"
 #include "PybindElevateMesh.h"
-#include "PybindExportMesh.h"
+#include "PybindExport.h"
+#include "PybindImport.h"
 #include "PybindInterpolateOntoMesh.h"
-#include "PybindWriteMesh.h"
+#include "PybindRead.h"
+#include "PybindWrite.h"
 
 #include "smtk/mesh/interpolation/PointCloudFromCSV.h"
 
@@ -161,9 +163,11 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
 
   PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > smtk_mesh_DeleteMesh = pybind11_init_smtk_mesh_DeleteMesh(mesh);
   PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > smtk_mesh_ElevateMesh = pybind11_init_smtk_mesh_ElevateMesh(mesh);
-  PySharedPtrClass< smtk::mesh::ExportMesh, smtk::operation::XMLOperation > smtk_mesh_ExportMesh = pybind11_init_smtk_mesh_ExportMesh(mesh);
+  PySharedPtrClass< smtk::mesh::Export, smtk::operation::XMLOperation > smtk_mesh_Export = pybind11_init_smtk_mesh_Export(mesh);
   PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperation > smtk_mesh_InterpolateOntoMesh = pybind11_init_smtk_mesh_InterpolateOntoMesh(mesh);
-  PySharedPtrClass< smtk::mesh::WriteMesh, smtk::operation::XMLOperation > smtk_mesh_WriteMesh = pybind11_init_smtk_mesh_WriteMesh(mesh);
+  PySharedPtrClass< smtk::mesh::Import, smtk::operation::XMLOperation > smtk_mesh_Import = pybind11_init_smtk_mesh_Import(mesh);
+  PySharedPtrClass< smtk::mesh::Read, smtk::operation::XMLOperation > smtk_mesh_Read = pybind11_init_smtk_mesh_Read(mesh);
+  PySharedPtrClass< smtk::mesh::Write, smtk::operation::XMLOperation > smtk_mesh_Write = pybind11_init_smtk_mesh_Write(mesh);
 
   py::class_< smtk::mesh::PointCloud > smtk_mesh_PointCloud = pybind11_init_smtk_mesh_PointCloud(mesh);
   py::class_< smtk::mesh::StructuredGrid > smtk_mesh_StructuredGrid = pybind11_init_smtk_mesh_StructuredGrid(mesh);

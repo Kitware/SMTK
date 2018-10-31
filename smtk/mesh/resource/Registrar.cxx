@@ -11,15 +11,25 @@
 //=============================================================================
 #include "smtk/mesh/resource/Registrar.h"
 
+#include "smtk/io/ReadMesh.h"
+#include "smtk/io/WriteMesh.h"
+
 #include "smtk/mesh/core/Collection.h"
 
 #include "smtk/mesh/operators/DeleteMesh.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
-#include "smtk/mesh/operators/ExportMesh.h"
+#include "smtk/mesh/operators/Export.h"
 #include "smtk/mesh/operators/GenerateHotStartData.h"
+#include "smtk/mesh/operators/Import.h"
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
+#include "smtk/mesh/operators/Read.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
-#include "smtk/mesh/operators/WriteMesh.h"
+#include "smtk/mesh/operators/Write.h"
+
+#include "smtk/operation/groups/ExporterGroup.h"
+#include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/groups/WriterGroup.h"
 
 namespace smtk
 {
@@ -27,14 +37,26 @@ namespace mesh
 {
 namespace
 {
-typedef std::tuple<DeleteMesh, ElevateMesh, ExportMesh, GenerateHotStartData, InterpolateOntoMesh,
-  UndoElevateMesh, WriteMesh>
+typedef std::tuple<DeleteMesh, ElevateMesh, Export, GenerateHotStartData, Import,
+  InterpolateOntoMesh, Read, UndoElevateMesh, Write>
   OperationList;
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->registerOperations<OperationList>();
+
+  smtk::operation::ImporterGroup(operationManager)
+    .registerOperation<smtk::mesh::Collection, smtk::mesh::Import>();
+
+  smtk::operation::ExporterGroup(operationManager)
+    .registerOperation<smtk::mesh::Collection, smtk::mesh::Export>();
+
+  smtk::operation::ReaderGroup(operationManager)
+    .registerOperation<smtk::mesh::Collection, smtk::mesh::Read>();
+
+  smtk::operation::WriterGroup(operationManager)
+    .registerOperation<smtk::mesh::Collection, smtk::mesh::Write>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
@@ -44,7 +66,16 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::mesh::Collection>();
+  resourceManager->registerResource<smtk::mesh::Collection>(
+    [](const std::string& location) {
+      auto collection = smtk::mesh::Collection::create();
+      smtk::io::readMesh(location, collection);
+      return std::static_pointer_cast<smtk::resource::Resource>(collection);
+    },
+    [](const smtk::resource::Resource::Ptr& resource) {
+      return smtk::io::writeMesh(
+        resource->location(), std::static_pointer_cast<smtk::mesh::Collection>(resource));
+    });
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
