@@ -290,6 +290,14 @@ public:
   static bool ApplyDefaultStyle(
     smtk::view::SelectionPtr seln, RenderableDataMap& renderables, vtkSMTKModelRepresentation* rep);
 
+  /// A helper used by ApplyDefaultStyle to handle a single component.
+  bool SelectComponentFootprint(
+    smtk::resource::PersistentObjectPtr item, int selnBits, RenderableDataMap& renderables);
+
+  /// A helper used by ApplyDefaultStyle to handle model entity components.
+  bool SelectComponentFootprint(
+    const smtk::model::EntityRefs& items, int selnBits, RenderableDataMap& renderables);
+
   /// Return the map from persistent-object UUID to user-specified state.
   ///
   /// This is read only. If you want to modify component state,

@@ -37,10 +37,20 @@
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ReferenceItem.h"
+
+#include "smtk/model/AuxiliaryGeometry.h"
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
+
 #include "smtk/view/Selection.h"
 
 namespace
@@ -224,6 +234,9 @@ int vtkSMTKModelRepresentation::RequestData(
   this->GlyphMapper->Modified();
 
   this->GetModelBounds();
+
+  // New input data requires updated block colors:
+  this->UpdateColorBy = true;
   return Superclass::RequestData(request, inVec, outVec);
 }
 
@@ -255,7 +268,9 @@ int vtkSMTKModelRepresentation::ProcessViewRequest(
     // ordered compositing when rendering translucent geometry. We need to extend
     // this condition to consider translucent LUTs once we start supporting them.
     if (this->Entities->HasTranslucentPolygonalGeometry() ||
-      this->GlyphEntities->HasTranslucentPolygonalGeometry())
+      this->GlyphEntities->HasTranslucentPolygonalGeometry() ||
+      this->SelectedEntities->HasTranslucentPolygonalGeometry() ||
+      this->SelectedGlyphEntities->HasTranslucentPolygonalGeometry())
     {
       outInfo->Set(vtkPVRenderView::NEED_ORDERED_COMPOSITING(), 1);
     }
@@ -441,6 +456,7 @@ bool vtkSMTKModelRepresentation::ApplyDefaultStyle(
   smtk::view::SelectionPtr seln, RenderableDataMap& renderables, vtkSMTKModelRepresentation* self)
 {
   bool atLeastOneSelected = false;
+  smtk::attribute::Attribute::Ptr attr;
   for (auto& item : seln->currentSelection())
   {
     if (item.second <= 0)
@@ -449,33 +465,130 @@ bool vtkSMTKModelRepresentation::ApplyDefaultStyle(
       continue;
     }
 
-    // Determine the actor-pair we are dealing with (normal or instanced):
-    auto entity = item.first->as<smtk::model::Entity>();
-    bool isGlyphed = entity && entity->isInstance();
-
-    // Determine if the user has hidden the entity
-    auto& smap = self->GetComponentState();
-    auto cstate = smap.find(item.first->id());
-    bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
-
-    // TODO: A single persistent object may have a "footprint"
-    // (i.e., a set<vtkDataObject*>) that represents it.
-    // In this case, we should set the selected state for all
-    // of the footprint. However, this is complicated by the fact
-    // that some of the footprint entries might correspond to
-    // children (boundary) objects that might be controlled
-    // independently.
-    //
-    // For now, assume each persistent object has at most 1
-    // vtkDataObject associated with it.
-    auto dataIt = renderables.find(item.first->id());
-    if (dataIt != renderables.end())
+    // If the item is an attribute, it will not be directly renderable,
+    // so preview its associated entities.
+    attr = item.first->as<smtk::attribute::Attribute>();
+    if (attr)
     {
-      self->SetSelectedState(dataIt->second, hidden ? -1 : item.second, isGlyphed);
-      atLeastOneSelected = true;
+      for (auto obj : *attr->associations())
+      {
+        atLeastOneSelected |= self->SelectComponentFootprint(obj, /*selnBit TODO*/ 1, renderables);
+      }
+    }
+    else
+    {
+      atLeastOneSelected |= self->SelectComponentFootprint(item.first, item.second, renderables);
     }
   }
 
+  return atLeastOneSelected;
+}
+
+bool vtkSMTKModelRepresentation::SelectComponentFootprint(
+  smtk::resource::PersistentObjectPtr item, int selnBits, RenderableDataMap& renderables)
+{
+  bool atLeastOneSelected = false;
+  if (!item)
+  {
+    return atLeastOneSelected;
+  }
+
+  // Determine the actor-pair we are dealing with (normal or instanced):
+  auto entity = item->as<smtk::model::Entity>();
+  bool isGlyphed = entity && entity->isInstance();
+
+  // Determine if the user has hidden the entity
+  auto& smap = this->GetComponentState();
+  auto cstate = smap.find(item->id());
+  bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
+
+  // TODO: A single persistent object may have a "footprint"
+  // (i.e., a set<vtkDataObject*>) that represents it.
+  // In this case, we should set the selected state for all
+  // of the footprint. However, this is complicated by the fact
+  // that some of the footprint entries might correspond to
+  // children (boundary) objects that might be controlled
+  // independently.
+  //
+  // For now, assume each persistent object has at most 1
+  // vtkDataObject associated with it.
+  auto dataIt = renderables.find(item->id());
+  if (dataIt != renderables.end())
+  {
+    this->SetSelectedState(dataIt->second, hidden ? -1 : selnBits, isGlyphed);
+    atLeastOneSelected |= !hidden;
+  }
+  else
+  {
+    // The component does not have any geometry of its own... but perhaps
+    // we can render its children highlighted instead.
+    auto ent = item->as<smtk::model::Entity>();
+    if (ent)
+    {
+      if (ent->isGroup())
+      {
+        auto members = smtk::model::Group(ent).members<smtk::model::EntityRefs>();
+        atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
+      }
+      else if (ent->isModel())
+      {
+        auto model = smtk::model::Model(ent);
+        auto cells = model.cellsAs<smtk::model::EntityRefs>();
+        for (auto cell : cells)
+        {
+          // If the cell has no geometry, then add its boundary cells.
+          if (renderables.find(cell.entity()) == renderables.end())
+          {
+            auto bdys = smtk::model::CellEntity(cell).boundingCellsAs<smtk::model::EntityRefs>();
+            cells.insert(bdys.begin(), bdys.end());
+          }
+        }
+        atLeastOneSelected |= this->SelectComponentFootprint(cells, selnBits, renderables);
+
+        auto groups = model.groups();
+        for (auto group : groups)
+        {
+          auto members = group.members<smtk::model::EntityRefs>();
+          atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
+        }
+
+        // TODO: Auxiliary geometry may also be handled by a separate representation.
+        //       Need to ensure that representation also renders selection properly.
+        auto auxGeoms = model.auxiliaryGeometry();
+        // Convert auxGeoms to EntityRefs to match SelectComponentFootprint() API:
+        smtk::model::EntityRefs auxEnts;
+        for (auto auxGeom : auxGeoms)
+        {
+          auxEnts.insert(auxGeom);
+        }
+        atLeastOneSelected |= this->SelectComponentFootprint(auxEnts, selnBits, renderables);
+      }
+      else if (ent->isCellEntity())
+      {
+        auto bdys = smtk::model::CellEntity(ent).boundingCellsAs<smtk::model::EntityRefs>();
+        atLeastOneSelected |= this->SelectComponentFootprint(bdys, selnBits, renderables);
+      }
+    }
+  }
+  return atLeastOneSelected;
+}
+
+bool vtkSMTKModelRepresentation::SelectComponentFootprint(
+  const smtk::model::EntityRefs& items, int selnBits, RenderableDataMap& renderables)
+{
+  bool atLeastOneSelected = false;
+  auto& smap = this->GetComponentState();
+  for (auto item : items)
+  {
+    auto dataIt = renderables.find(item.entity());
+    auto cstate = smap.find(item.entity());
+    bool hidden = (cstate != smap.end() && !cstate->second.m_visibility);
+    if (dataIt != renderables.end())
+    {
+      this->SetSelectedState(dataIt->second, hidden ? -1 : selnBits, item.isInstance());
+      atLeastOneSelected |= !hidden;
+    }
+  }
   return atLeastOneSelected;
 }
 
@@ -1131,6 +1244,8 @@ void vtkSMTKModelRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
       auto uuid = data->GetMetaData(it)->Get(vtkModelMultiBlockSource::ENTITYID());
       if (uuid)
       {
+        // FIXME? Check whether UUID corresponds to an instance or not.
+        //        Instances should use the GlyphMapper rather than the EntityMapper.
         ColorBlockAsEntity(this->EntityMapper, dataObj, uuid, this->Resource);
       }
     }
