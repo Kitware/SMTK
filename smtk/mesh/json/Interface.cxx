@@ -334,6 +334,17 @@ bool Interface::setCoordinates(const smtk::mesh::HandleRange&, const float* cons
   return false;
 }
 
+std::string Interface::name(const smtk::mesh::Handle& meshset) const
+{
+  //TODO
+  return std::string();
+}
+
+bool Interface::setName(const smtk::mesh::Handle& meshset, const std::string& name)
+{
+  return false;
+}
+
 std::vector<std::string> Interface::computeNames(const smtk::mesh::HandleRange&) const
 {
   return std::vector<std::string>();

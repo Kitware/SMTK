@@ -414,6 +414,33 @@ void verify_meshset_visit(const smtk::mesh::CollectionPtr& c)
 
   test(numMeshesIteratedOver == c->meshes().size());
 }
+
+void verify_meshset_set_names(const smtk::mesh::CollectionPtr& c)
+{
+  std::size_t numMeshesIteratedOver = 0;
+  smtk::resource::Component::Visitor setMeshNames = [&](
+    const smtk::resource::ComponentPtr& component) {
+    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+    std::stringstream s;
+    s << "meshset " << numMeshesIteratedOver;
+    meshComponent->mesh().setName(s.str());
+    numMeshesIteratedOver++;
+  };
+
+  c->visit(setMeshNames);
+
+  numMeshesIteratedOver = 0;
+  smtk::resource::Component::Visitor checkMeshNames = [&](
+    const smtk::resource::ComponentPtr& component) {
+    auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+    std::stringstream s;
+    s << "meshset " << numMeshesIteratedOver;
+    test(meshComponent->name() == s.str());
+    numMeshesIteratedOver++;
+  };
+
+  c->visit(checkMeshNames);
+}
 }
 
 int UnitTestMeshSet(int, char** const)
@@ -436,6 +463,7 @@ int UnitTestMeshSet(int, char** const)
 
   verify_meshset_for_each(c);
   verify_meshset_visit(c);
+  verify_meshset_set_names(c);
 
   return 0;
 }

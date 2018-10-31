@@ -677,6 +677,27 @@ bool Interface::setCoordinates(const smtk::mesh::HandleRange& points, const floa
   return false;
 }
 
+std::string Interface::name(const smtk::mesh::Handle& meshset) const
+{
+  //construct a name tag query helper class
+  tag::QueryNameTag query_name(this->moabInterface());
+
+  if (query_name.fetch_name(meshset))
+  {
+    return std::string(query_name.current_name());
+  }
+
+  return std::string();
+}
+
+bool Interface::setName(const smtk::mesh::Handle& meshset, const std::string& name)
+{
+  //construct a name tag query helper class
+  tag::QueryNameTag query_name(this->moabInterface());
+
+  return query_name.set_name(meshset, name);
+}
+
 std::vector<std::string> Interface::computeNames(const smtk::mesh::HandleRange& meshsets) const
 {
   //construct a name tag query helper class

@@ -153,7 +153,7 @@ PySharedPtrClass< smtk::mesh::Interface > pybind11_init_smtk_mesh_Interface(py::
     .def("isModified", &smtk::mesh::Interface::isModified)
     .def("mergeCoincidentContactPoints", &smtk::mesh::Interface::mergeCoincidentContactPoints, py::arg("meshes"), py::arg("tolerance"))
     .def("meshForEach", &smtk::mesh::Interface::meshForEach, py::arg("meshes"), py::arg("filter"))
-    .def("name", &smtk::mesh::Interface::name)
+    .def("name", (std::string (smtk::mesh::Interface::*)() const) &smtk::mesh::Interface::name)
     .def("numMeshes", &smtk::mesh::Interface::numMeshes, py::arg("handle"))
     .def("pointDifference", &smtk::mesh::Interface::pointDifference, py::arg("a"), py::arg("b"), py::arg("bpc"), py::arg("containsFunctor"))
     .def("pointForEach", &smtk::mesh::Interface::pointForEach, py::arg("points"), py::arg("filter"))

@@ -180,6 +180,18 @@ bool MeshSet::is_empty() const
   return m_range.empty();
 }
 
+std::string MeshSet::name() const
+{
+  const smtk::mesh::InterfacePtr& iface = m_parent->interface();
+  return iface->name(m_handle);
+}
+
+bool MeshSet::setName(const std::string& name)
+{
+  const smtk::mesh::InterfacePtr& iface = m_parent->interface();
+  return iface->setName(m_handle, name);
+}
+
 std::size_t MeshSet::size() const
 {
   return m_range.size();

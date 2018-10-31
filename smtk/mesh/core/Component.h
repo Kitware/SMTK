@@ -68,6 +68,8 @@ public:
     return true;
   }
 
+  std::string name() const override;
+
   /// Access the meshset represented by this component.
   const smtk::mesh::MeshSet mesh() const;
   smtk::mesh::MeshSet mesh();

@@ -90,6 +90,10 @@ public:
 
   bool is_empty() const;
 
+  //set/get the name of this meshset
+  std::string name() const;
+  bool setName(const std::string&);
+
   //number of meshes
   std::size_t size() const;
 
