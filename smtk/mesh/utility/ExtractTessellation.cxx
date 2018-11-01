@@ -341,6 +341,15 @@ void extractTessellationInternal(
     addCellLen = detail::smtkToVTKConn;
   }
 
+  //construct a map to better search for point ids
+  std::unordered_map<std::int64_t, std::size_t> pointMap;
+  auto it = smtk::mesh::rangeElementsBegin(ps.range());
+  auto end = smtk::mesh::rangeElementsEnd(ps.range());
+  for (std::size_t counter = 0; it != end; ++it, ++counter)
+  {
+    pointMap[*it] = counter;
+  }
+
   int numPts = 0;
   const smtk::mesh::Handle* pointIds;
   std::size_t conn_index = 0;
@@ -375,11 +384,10 @@ void extractTessellationInternal(
 
       for (int i = 0; i < numPts; ++i)
       {
-        //call find on the pointset to determine the proper index for the
-        //point id. the point id value is based off the global point id, and
-        //we need to transform it to a relative id based of the pointset
-        //that was passed in
-        tess.m_connectivity[conn_index + i] = ps.find(pointIds[i]);
+        //determine the proper index for the point id. the point id value is
+        //based off the global point id, and we need to transform it to a
+        //relative id based of the pointset that was passed in
+        tess.m_connectivity[conn_index + i] = pointMap[pointIds[i]];
       }
 
       tess.m_cellTypes[index] = convertCellTypeFunction(ctype);
@@ -393,11 +401,10 @@ void extractTessellationInternal(
 
       for (int i = 0; i < numPts; ++i)
       {
-        //call find on the pointset to determine the proper index for the
-        //point id. the point id value is based off the global point id, and
-        //we need to transform it to a relative id based of the pointset
-        //that was passed in
-        tess.m_connectivity[conn_index + i] = ps.find(pointIds[i]);
+        //determine the proper index for the point id. the point id value is
+        //based off the global point id, and we need to transform it to a
+        //relative id based of the pointset that was passed in
+        tess.m_connectivity[conn_index + i] = pointMap[pointIds[i]];
       }
     }
   }
