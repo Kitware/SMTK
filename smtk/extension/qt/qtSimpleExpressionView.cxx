@@ -56,63 +56,28 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-class qtSimpleExpressionViewInternals
+qtSimpleExpressionView::qtSimpleExpressionViewInternals::~qtSimpleExpressionViewInternals()
 {
-public:
-  qtSimpleExpressionViewInternals() { this->FunctionParserDescription = 0; }
-
-  ~qtSimpleExpressionViewInternals()
+  if (this->FunctionParserDescription)
   {
-    if (this->FunctionParserDescription)
-    {
-      delete[] this->FunctionParserDescription;
-      this->FunctionParserDescription = 0;
-    }
+    delete[] this->FunctionParserDescription;
+    this->FunctionParserDescription = 0;
+  }
+}
+
+const char* qtSimpleExpressionView::qtSimpleExpressionViewInternals::getFunctionParserDescription()
+{
+  if (!this->FunctionParserDescription)
+  {
+    std::stringstream ss;
+    ss << "Enable VTK in the build configurations\n";
+    ss << "to allow custom lambda function\n";
+    this->FunctionParserDescription = new char[ss.str().length() + 1];
+    strcpy(this->FunctionParserDescription, ss.str().c_str());
   }
 
-  const char* getFunctionParserDescription()
-  {
-    if (!this->FunctionParserDescription)
-    {
-      std::stringstream ss;
-      ss << "Example Function: f(X) = cos(X).\n";
-      ss << "(Note: Use capital X as variable!)\n";
-      ss << "                                  \n";
-      ss << "Standard constants available:\n";
-      ss << "  PI = 3.1415926535\n";
-      ss << "                                \n";
-      ss << "Standard operations available:\n";
-      ss << "  + - * / ^\n";
-      ss << "                                \n";
-      ss << "Standard functions available:\n";
-      ss << "  abs acos asin atan ceil cos cosh\n";
-      ss << "  exp floor log mag min max norm\n";
-      ss << "  sign sin sinh sqrt tan tanh\n";
-      this->FunctionParserDescription = new char[ss.str().length() + 1];
-      strcpy(this->FunctionParserDescription, ss.str().c_str());
-    }
-
-    return this->FunctionParserDescription;
-  }
-
-  qtTableWidget* FuncTable;
-  QListWidget* FuncList;
-  QPushButton* AddButton;
-  QPushButton* DeleteButton;
-  QPushButton* CopyButton;
-  QPushButton* LoadCSVButton;
-
-  QSpinBox* NumberBox;
-  QLineEdit* ExpressionInput;
-  QLineEdit* DeltaInput;
-  QLineEdit* InitValueInput;
-  QPushButton* AddValueButton;
-  QPushButton* RemoveValueButton;
-  QGroupBox* EditorGroup;
-
-  char* FunctionParserDescription;
-  smtk::attribute::DefinitionPtr m_attDefinition;
-};
+  return this->FunctionParserDescription;
+}
 
 qtBaseView* qtSimpleExpressionView::createViewWidget(const ViewInfo& info)
 {
@@ -190,6 +155,8 @@ void qtSimpleExpressionView::createWidget()
   this->Internals->EditorGroup = new QGroupBox("Use Function Expression", frame);
   this->Internals->EditorGroup->setCheckable(1);
   this->Internals->EditorGroup->setChecked(0);
+  // Without vtk enabled, the parser cannot do anything here
+  this->Internals->EditorGroup->setDisabled(true);
   this->Internals->EditorGroup->setToolTip(this->Internals->getFunctionParserDescription());
 
   QVBoxLayout* addLayout = new QVBoxLayout(this->Internals->EditorGroup);
@@ -470,16 +437,6 @@ void qtSimpleExpressionView::displayExpressionError(std::string& errorMsg, int e
 
 void qtSimpleExpressionView::createFunctionWithExpression()
 {
-  QString funcExpr = this->Internals->ExpressionInput->text();
-  if (funcExpr.isEmpty())
-  {
-    funcExpr = "X";
-  }
-  this->Internals->ExpressionInput->setText(funcExpr);
-  double initVal = this->Internals->InitValueInput->text().toDouble();
-  double deltaVal = this->Internals->DeltaInput->text().toDouble();
-  int numValues = this->Internals->NumberBox->value();
-  emit this->onCreateFunctionWithExpression(funcExpr, initVal, deltaVal, numValues);
 }
 
 void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr attDef)
