@@ -19,6 +19,7 @@
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/operators/SetMeshName.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
@@ -67,7 +68,9 @@ bool ComponentPhraseContent::editable(ContentType attr) const
     if (attr == TITLE || attr == COLOR)
     {
       auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
-      return !!modelComp;
+      auto meshComp = dynamic_pointer_cast<smtk::mesh::Component>(m_component);
+      // Models may be assigned a color and a name; meshes may be assigned a name.
+      return !!modelComp || (attr == TITLE && !!meshComp);
     }
   }
   return false;
@@ -185,6 +188,21 @@ bool ComponentPhraseContent::editStringValue(ContentType attr, const std::string
       {
         op->parameters()->findString("name")->setValue("name");
         op->parameters()->findString("string value")->appendValue(val);
+        auto res = op->operate();
+        if (res->findInt("outcome")->value() ==
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        {
+          return true;
+        }
+      }
+    }
+    auto meshComp = std::dynamic_pointer_cast<smtk::mesh::Component>(m_component);
+    if (meshComp)
+    {
+      auto op = smtk::mesh::SetMeshName::create();
+      if (op->parameters()->associate(meshComp))
+      {
+        op->parameters()->findString("name")->setValue(val);
         auto res = op->operate();
         if (res->findInt("outcome")->value() ==
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
