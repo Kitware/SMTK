@@ -17,6 +17,7 @@
 #include "smtk/extension/paraview/widgets/pqSMTKPointItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKSphereItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKSplineItemWidget.h"
+#include "smtk/extension/paraview/widgets/qtSimpleExpressionEvaluationView.h"
 
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 
@@ -50,6 +51,8 @@ void pqSMTKWidgetsAutoStart::startup()
     "Sphere", pqSMTKSphereItemWidget::createSphereItemWidget);
   qtSMTKUtilities::registerItemConstructor(
     "Spline", pqSMTKSplineItemWidget::createSplineItemWidget);
+  qtSMTKUtilities::registerViewConstructor(
+    "SimpleExpression", qtSimpleExpressionEvaluationView::createViewWidget);
 }
 
 void pqSMTKWidgetsAutoStart::shutdown()

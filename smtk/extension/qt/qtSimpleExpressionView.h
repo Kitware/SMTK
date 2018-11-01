@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 // .NAME qtSimpleExpressionView - UI components for the attribute Expression View
+// without function evaluation
 // .SECTION Description
 // .SECTION See Also
 // qtBaseView
@@ -20,8 +21,11 @@
 
 #include <vector>
 
-class qtSimpleExpressionViewInternals;
+class QLineEdit;
+class QListWidget;
 class QListWidgetItem;
+class QGroupBox;
+class QSpinBox;
 class QTableWidgetItem;
 class QKeyEvent;
 
@@ -29,8 +33,36 @@ namespace smtk
 {
 namespace extension
 {
+class qtTableWidget;
 class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseView
 {
+  class SMTKQTEXT_EXPORT qtSimpleExpressionViewInternals
+  {
+  public:
+    qtSimpleExpressionViewInternals() { this->FunctionParserDescription = 0; }
+
+    ~qtSimpleExpressionViewInternals();
+
+    const char* getFunctionParserDescription();
+
+    smtk::extension::qtTableWidget* FuncTable;
+    QListWidget* FuncList;
+    QPushButton* AddButton;
+    QPushButton* DeleteButton;
+    QPushButton* CopyButton;
+    QPushButton* LoadCSVButton;
+
+    QSpinBox* NumberBox;
+    QLineEdit* ExpressionInput;
+    QLineEdit* DeltaInput;
+    QLineEdit* InitValueInput;
+    QPushButton* AddValueButton;
+    QPushButton* RemoveValueButton;
+    QGroupBox* EditorGroup;
+
+    char* FunctionParserDescription;
+    smtk::attribute::DefinitionPtr m_attDefinition;
+  };
   Q_OBJECT
 
 public:
@@ -60,10 +92,6 @@ public slots:
   virtual void createFunctionWithExpression();
   void onShowCategory() override { this->updateAttributeData(); }
 
-signals:
-  void onCreateFunctionWithExpression(
-    QString& expression, double initVal, double deltaVal, int numVals);
-
 protected slots:
   void updateAttributeData() override { this->initFunctionList(); }
 
@@ -86,7 +114,6 @@ protected:
   virtual void clearFuncExpression();
   virtual void getAllDefinitions(QList<smtk::attribute::DefinitionPtr>& defs);
 
-private:
   qtSimpleExpressionViewInternals* Internals;
 
 }; // class

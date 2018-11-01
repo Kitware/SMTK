@@ -1,5 +1,12 @@
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
+# smtk views that need vtk support
+set(viewSrcs
+  qtSimpleExpressionEvaluationView.cxx
+  )
+set(viewHdrs
+  qtSimpleExpressionEvaluationView.h
+  )
 # set up sources to build
 set(PQWidgetsSrcs
   pqGenerateContoursDialog.cxx
@@ -12,6 +19,7 @@ set(PQWidgetsSrcs
   pqSMTKSplineItemWidget.cxx
   qtArcWidget.cxx
   qtInteractionWidget.cxx
+  ${viewSrcs}
 )
 
 set(PQWidgetsUIs
@@ -30,6 +38,7 @@ set(PQWidgetsMocHeaders
   pqSMTKSplineItemWidget.h
   qtArcWidget.h
   qtInteractionWidget.h
+  ${viewHdrs}
 )
 
 set(PQWidgetsHeaders
@@ -62,6 +71,7 @@ target_include_directories(smtkPQWidgetsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
   pqApplicationComponents
   vtkPVServerManagerRendering
+  vtkSMTKWidgetsExt
   smtkCore
   smtkQtExt
   Qt5::Core
@@ -70,8 +80,21 @@ target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
 
 smtk_export_header(smtkPQWidgetsExt Exports.h)
 
-#install the library and exports the library when used from a build tree
-smtk_install_library(smtkPQWidgetsExt)
+set(viewInterfaces)
+set(viewSources)
+foreach(viewSrc ${viewSrcs})
+  string(REPLACE ".cxx" "" srcClass ${viewSrc})
+  set(vitmp)
+  set(vstmp)
+  add_smtk_ui_view(
+    vitmp
+    vstmp
+    CLASS_NAME ${srcClass}
+    VIEW_NAME ${srcClass}
+  )
+  list(APPEND viewInterfaces ${vitmp})
+  list(APPEND viewSources ${vstmp})
+endforeach()
 
 set(PQWidgetsPluginHdrs
   pqSMTKWidgetsAutoStart.h
@@ -95,6 +118,7 @@ add_paraview_plugin(
     ${PLUGIN_AUTOSTART_IFACES}
     ${PLUGIN_PROXY_IFACES}
     ${PLUGIN_DOCK_IFACES}
+    ${viewInterfaces}
   GUI_SOURCES
     ${PQWidgetsPluginHdrs}
     ${PQWidgetsPluginSrcs}
@@ -103,6 +127,9 @@ add_paraview_plugin(
     ${PLUGIN_AUTOSTART_IFACE_SRCS}
     ${PLUGIN_PROXY_IFACE_SRCS}
     ${PLUGIN_DOCK_IFACES_SRCS}
+    ${viewSources}
+    CS_KITS
+    vtkSMTKWidgetsExt
 )
 set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPQWidgetsPlugin" CACHE INTERNAL "")
 
@@ -113,4 +140,5 @@ target_link_libraries(smtkPQWidgetsPlugin
 smtk_export_header(smtkPQWidgetsPlugin PluginExports.h)
 
 #install the library and exports the library when used from a build tree
+smtk_install_library(smtkPQWidgetsExt)
 smtk_install_library(smtkPQWidgetsPlugin)

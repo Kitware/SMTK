@@ -1,8 +1,10 @@
 set(VTKLibSrcs
+  vtkSBFunctionParser.cxx
   vtkSMTKArcRepresentation.cxx
 )
 
 set(VTKLibHeaders
+  vtkSBFunctionParser.h
   vtkSMTKArcRepresentation.h
 )
 set (__dependencies)
