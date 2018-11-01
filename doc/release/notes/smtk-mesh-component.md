@@ -9,3 +9,7 @@ attribute.
 
 `smtk::mesh::Component` is now used to send/retrieve meshsets to/from
 attributes.
+
+Mesh resources and components now appear in the resource tree view
+and mesh component names may be edited in place using the new
+SetMeshName operator.

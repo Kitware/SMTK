@@ -180,8 +180,9 @@ void SubphraseGenerator::componentsOfResource(
   }
   else if (meshRsrc)
   {
+    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
     smtk::resource::Component::Visitor visitor = [&](const smtk::resource::Component::Ptr& entry) {
-      result.push_back(ComponentPhraseContent::createPhrase(entry, 0, src));
+      result.push_back(ComponentPhraseContent::createPhrase(entry, mutability, src));
     };
     meshRsrc->visit(visitor);
   }

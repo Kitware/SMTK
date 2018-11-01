@@ -54,6 +54,7 @@ Collection::Collection()
   , m_floatData(new MeshFloatData)
   , m_stringData(new MeshStringData)
   , m_integerData(new MeshIntegerData)
+  , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
 }
@@ -66,6 +67,7 @@ Collection::Collection(const smtk::common::UUID& collectionID)
   , m_floatData(new MeshFloatData)
   , m_stringData(new MeshStringData)
   , m_integerData(new MeshIntegerData)
+  , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
 }
@@ -79,6 +81,7 @@ Collection::Collection(smtk::mesh::InterfacePtr interface)
   , m_floatData(new MeshFloatData)
   , m_stringData(new MeshStringData)
   , m_integerData(new MeshIntegerData)
+  , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
 }
@@ -91,6 +94,7 @@ Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::Inter
   , m_floatData(new MeshFloatData)
   , m_stringData(new MeshStringData)
   , m_integerData(new MeshIntegerData)
+  , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
 }
@@ -247,6 +251,30 @@ smtk::mesh::PointConnectivity Collection::pointConnectivity() const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.pointConnectivity();
+}
+
+void Collection::assignDefaultNames()
+{
+  smtk::resource::Component::Visitor nameAssigner = [this](
+    const smtk::resource::Component::Ptr& comp) {
+    auto mset = comp ? comp->as<smtk::mesh::Component>() : nullptr;
+    if (!mset || !mset->name().empty())
+    {
+      return;
+    }
+
+    // Keep generating names until we find an unused one.
+    std::string nameToTry;
+    do
+    {
+      m_nameCounter++;
+      std::ostringstream namer;
+      namer << "mesh " << m_nameCounter;
+      nameToTry = namer.str();
+    } while (this->meshes(nameToTry).isValid());
+    mset->mesh().setName(nameToTry);
+  };
+  this->visit(nameAssigner);
 }
 
 smtk::mesh::MeshSet Collection::meshes() const
