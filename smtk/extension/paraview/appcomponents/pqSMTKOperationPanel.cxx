@@ -10,6 +10,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationPanel.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
@@ -21,6 +22,9 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ResourceItem.h"
+
+#include "smtk/extension/qt/qtOperationView.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
@@ -30,8 +34,9 @@
 
 #include "smtk/io/Logger.h"
 
-#include "pqActiveObjects.h"
-#include "pqPipelineSource.h"
+#include "vtkSMParaViewPipelineControllerWithRendering.h"
+#include "vtkSMPropertyHelper.h"
+#include "vtkSMProxy.h"
 
 #include "ui_pqSMTKOperationPanel.h"
 
@@ -246,6 +251,43 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   smtk::view::ViewPtr view = m_attrUIMgr->findOrCreateOperationView();
   auto baseView = m_attrUIMgr->setSMTKView(view, m_p->OperationEditor);
   didDisplay = baseView ? true : false;
+
+  // Connect the signal emitted from the operation view after an operation is
+  // run to a lambda that extracts any newly added resources and queries the
+  // singleton pqSMTKBehavior for pipeline sources associated with the resource.
+  // If there is no pipeline source available, we create one.
+  if (smtk::extension::qtOperationView* operationView =
+        dynamic_cast<smtk::extension::qtOperationView*>(baseView))
+  {
+    QObject::connect(operationView, &smtk::extension::qtOperationView::operationExecuted,
+      [&](const smtk::operation::Operation::Result& result) {
+
+        // Gather all resource items
+        std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
+        std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
+          smtk::attribute::ResourceItemPtr) { return true; };
+        result->filterItems(resourceItems, filter);
+
+        // For each resource item found...
+        for (auto& resourceItem : resourceItems)
+        {
+          // ...for each resource in a resource item...
+          for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
+          {
+            // (no need to look at resources that cannot be resolved)
+            if (!resourceItem->isValid() || resourceItem->value(i) == nullptr)
+            {
+              continue;
+            }
+            smtk::resource::Resource::Ptr resource = resourceItem->value(i);
+            if (pqSMTKBehavior::instance()->getPVResource(resource) == nullptr)
+            {
+              pqSMTKRenderResourceBehavior::instance()->createPipelineSource(resource);
+            }
+          }
+        }
+      });
+  }
 
   auto rsrcMgr = m_rsrc->manager();
   if (rsrcMgr)
