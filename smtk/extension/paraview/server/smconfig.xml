@@ -100,7 +100,8 @@
         name="ResourceId"
         command="SetResourceById"
         animateable="0"
-        number_of_elements="1">
+        number_of_elements="1"
+        panel_visibility="never">
         <Documentation>
           A string representation of a resource Id.
         </Documentation>
@@ -324,7 +325,8 @@
                proxyname="SMTKResource">
         </Proxy>
         <ExposedProperties>
-          <Property name="ResourceId" />
+          <Property name="ResourceId"
+                    panel_visibility="never" />
         </ExposedProperties>
       </SubProxy>
       <OutputPort index="0" name="entities"/>

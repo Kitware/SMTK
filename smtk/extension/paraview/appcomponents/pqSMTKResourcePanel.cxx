@@ -11,6 +11,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
@@ -109,6 +110,12 @@ public:
             {
               auto view = pqActiveObjects::instance().activeView();
               auto pvrc = smtkBehavior->getPVResource(mResource);
+              // If we are trying to get the value of a resource that has no
+              // pipeline source, we create one.
+              if (pvrc == nullptr)
+              {
+                pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(mResource);
+              }
               auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
               return mapr ? mapr->isVisible() : 0;
             }

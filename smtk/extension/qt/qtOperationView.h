@@ -15,6 +15,8 @@
 #ifndef __smtk_extension_qtOperationView_h
 #define __smtk_extension_qtOperationView_h
 
+#include "smtk/operation/Operation.h"
+
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h"
 
@@ -70,6 +72,12 @@ public slots:
 
 signals:
   void operationRequested(const smtk::operation::OperationPtr& brOp);
+
+  // Currently, the operation view is responsible for executing the operation.
+  // Since some processes need to distinguish between results from the operation
+  // view and results coming from other places, we signal the results of
+  // operations specifically executed within this view.
+  void operationExecuted(const smtk::operation::Operation::Result& result);
 
 protected:
   void createWidget() override;

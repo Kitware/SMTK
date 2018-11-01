@@ -28,6 +28,8 @@
 #include "smtk/attribute/json/jsonResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationPanel.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -105,10 +107,12 @@ void pqNewResourceReaction::newResource()
     auto pqCore = pqApplicationCore::instance();
     auto builder = pqCore->getObjectBuilder();
 
-    pqPipelineSource* src = builder->createSource("sources", "SMTKModelCreator", server);
+    pqSMTKResource* src =
+      static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKModelCreator", server));
     vtkSMPropertyHelper(src->getProxy(), "TypeName").Set(typeName.c_str());
     vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
-    src->getProxy()->UpdateVTKObjects();
+
+    pqSMTKRenderResourceBehavior::instance()->renderPipelineSource(src);
   }
 }
 

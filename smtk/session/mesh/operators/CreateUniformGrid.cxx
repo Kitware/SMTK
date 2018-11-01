@@ -151,6 +151,9 @@ CreateUniformGrid::Result CreateUniformGrid::operateInternal()
   // session.
   collection->setModelResource(resource);
 
+  // Also assign the collection to be the model's tessellation
+  resource->setMeshTessellations(collection);
+
   // Create a model with the appropriate dimension
   smtk::model::Model model = resource->addModel(3, 3);
 
