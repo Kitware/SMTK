@@ -129,6 +129,10 @@ std::string qtResourceItem::synopsis(bool& ok) const
       std::string locn = resource->location();
       std::string file = smtk::common::Paths::filename(locn);
       std::string dir = smtk::common::Paths::directory(locn);
+      if (dir.size() > 31)
+      {
+        dir = dir.substr(0, 14) + "..." + dir.substr(dir.size() - 14, 14);
+      }
       std::string name = dir.empty() ? "New Resource" : (file + " (" + dir + ")");
       label << (numSel == 1 ? (resource ? name : "NULL!!") : (numSel > 0 ? "too many" : "(none)"));
     }
