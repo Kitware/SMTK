@@ -543,7 +543,9 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
         resourceName << "model"; //  every session has an model
         break;
       default:
-        resourceName << "invalid";
+        // Sometimes group entities have other bits set.
+        // Otherwise... it's garbage-in, garbage-out
+        resourceName << (flags & GROUP_ENTITY ? "group" : "invalid");
         dimBits = false;
         break;
     }
