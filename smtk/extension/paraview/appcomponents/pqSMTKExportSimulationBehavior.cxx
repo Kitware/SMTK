@@ -119,6 +119,11 @@ void pqExportSimulationReaction::exportSimulation()
     exportDialog->setObjectName("SimulationExportDialog");
     exportDialog->setWindowTitle("Simulation Export Dialog");
     exportDialog->setLayout(new QVBoxLayout(exportDialog.data()));
+    // TODO: the dialog size should not be set this way. It should auto-expand
+    // to accommodate the contained opView. Either Qt is being coy, or smtk's
+    // qtBaseView logic for resizing doesn't inform the containing parent of its
+    // decisions.
+    exportDialog->resize(600, 300);
 
     // Create a new UI for the dialog.
     QSharedPointer<smtk::extension::qtUIManager> uiManager =
@@ -129,6 +134,8 @@ void pqExportSimulationReaction::exportSimulation()
     smtk::view::ViewPtr view = uiManager->findOrCreateOperationView();
     smtk::extension::qtOperationView* opView = dynamic_cast<smtk::extension::qtOperationView*>(
       uiManager->setSMTKView(view, exportDialog.data()));
+
+    exportDialog->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     // Alert the user if the operation fails. Close the dialog if the operation
     // succeeds.
