@@ -25,6 +25,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ImportPythonOperation.h"
 
@@ -35,7 +36,9 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QObject>
+#include <QPushButton>
 #include <QSharedPointer>
+#include <QWindow>
 
 pqExportSimulationReaction::pqExportSimulationReaction(QAction* parentObject)
   : Superclass(parentObject)
@@ -86,14 +89,24 @@ void pqExportSimulationReaction::exportSimulation()
     // Set the input python operation file name
     importPythonOp->parameters()->findFile("filename")->setValue(fname.toStdString());
 
-    // Execute the operation
-    auto result = importPythonOp->operate();
+    smtk::operation::Operation::Result result;
+    try
+    {
+      // Execute the operation
+      result = importPythonOp->operate();
+    }
+    catch (std::exception& e)
+    {
+      smtkErrorMacro(smtk::io::Logger::instance(), e.what());
+      return;
+    }
 
     // Test the results for success
     if (result->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
-      std::cerr << "\"import python operation\" operation failed\n";
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "\"import python operation\" operation failed\n");
       return;
     }
 
@@ -117,9 +130,32 @@ void pqExportSimulationReaction::exportSimulation()
     smtk::extension::qtOperationView* opView = dynamic_cast<smtk::extension::qtOperationView*>(
       uiManager->setSMTKView(view, exportDialog.data()));
 
-    // Close the modal dialog when the operation is executed.
-    connect(opView, &smtk::extension::qtOperationView::operationRequested,
-      [=]() { exportDialog->done(QDialog::Accepted); });
+    // Alert the user if the operation fails. Close the dialog if the operation
+    // succeeds.
+    connect(opView, &smtk::extension::qtOperationView::operationExecuted,
+      [=](const smtk::operation::Operation::Result& result) {
+        if (result->findInt("outcome")->value() !=
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        {
+          QMessageBox msgBox;
+          msgBox.setStandardButtons(QMessageBox::Ok);
+          // Create a spacer so it doesn't look weird
+          QSpacerItem* horizontalSpacer =
+            new QSpacerItem(300, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+          msgBox.setText("Export failed. Please see output log for more details.");
+          QGridLayout* layout = (QGridLayout*)msgBox.layout();
+          layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+          msgBox.exec();
+
+          // Once the user has accepted that their export failed, they are
+          // free to try again without changing any options.
+          opView->onModifiedParameters();
+        }
+        else
+        {
+          exportDialog->done(QDialog::Accepted);
+        }
+      });
 
     // Launch the modal dialog and wait for the operation to succeed.
     exportDialog->exec();
