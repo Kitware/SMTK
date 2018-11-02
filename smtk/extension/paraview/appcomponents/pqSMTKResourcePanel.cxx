@@ -32,6 +32,9 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Component.h"
+
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -77,12 +80,21 @@ public:
                                                            smtk::view::VisibilityContent::Query qq,
                                                            int val,
                                                            smtk::view::ConstPhraseContentPtr data) {
+        auto comp = data->relatedComponent();
+        auto rsrc = data->relatedResource();
+
         smtk::model::EntityPtr ent =
-          data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
-        smtk::model::ResourcePtr mResource = ent
+          data ? std::dynamic_pointer_cast<smtk::model::Entity>(comp) : nullptr;
+        smtk::model::ResourcePtr modelRsrc = ent
           ? ent->modelResource()
-          : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(data->relatedResource())
-                  : nullptr);
+          : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(rsrc) : nullptr);
+
+        smtk::mesh::ComponentPtr msh =
+          data ? std::dynamic_pointer_cast<smtk::mesh::Component>(comp) : nullptr;
+        smtk::mesh::CollectionPtr meshRsrc = msh
+          ? std::dynamic_pointer_cast<smtk::mesh::Collection>(msh->resource())
+          : (data ? std::dynamic_pointer_cast<smtk::mesh::Collection>(rsrc) : nullptr);
+
         auto smtkBehavior = pqSMTKBehavior::instance();
 
         // TODO: We could check more than just that the view is non-null.
@@ -93,35 +105,35 @@ public:
         switch (qq)
         {
           case smtk::view::VisibilityContent::DISPLAYABLE:
-            return validView && (ent || (!ent && mResource)) ? 1 : 0;
+            return validView && (ent || (!ent && modelRsrc) || (msh || (!ent && meshRsrc))) ? 1 : 0;
           case smtk::view::VisibilityContent::EDITABLE:
-            return validView && (ent || (!ent && mResource)) ? 1 : 0;
+            return validView && (ent || (!ent && modelRsrc) || (msh || (!ent && meshRsrc))) ? 1 : 0;
           case smtk::view::VisibilityContent::GET_VALUE:
-            if (ent)
+            if (ent || msh)
             {
-              auto valIt = m_visibleThings.find(ent->id());
+              auto valIt = m_visibleThings.find(comp->id());
               if (valIt != m_visibleThings.end())
               {
                 return valIt->second;
               }
               return 1; // visibility is assumed if there is no entry.
             }
-            else if (mResource)
+            else if (modelRsrc || meshRsrc)
             {
               auto view = pqActiveObjects::instance().activeView();
-              auto pvrc = smtkBehavior->getPVResource(mResource);
+              auto pvrc = smtkBehavior->getPVResource(rsrc);
               // If we are trying to get the value of a resource that has no
               // pipeline source, we create one.
               if (pvrc == nullptr)
               {
-                pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(mResource);
+                pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
               }
               auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
               return mapr ? mapr->isVisible() : 0;
             }
             return 0; // visibility is false if the component is not a model entity or NULL.
           case smtk::view::VisibilityContent::SET_VALUE:
-            if (ent)
+            if (ent || msh)
             { // Find the mapper in the active view for the related resource, then set the visibility.
               auto view = pqActiveObjects::instance().activeView();
               auto pvrc = smtkBehavior->getPVResource(data->relatedResource());
@@ -129,15 +141,15 @@ public:
               auto smap = dynamic_cast<pqSMTKModelRepresentation*>(mapr);
               if (smap)
               {
-                int rval = smap->setVisibility(ent, val ? true : false) ? 1 : 0;
+                int rval = smap->setVisibility(comp, val ? true : false) ? 1 : 0;
                 smap->renderViewEventually();
                 return rval;
               }
             }
-            else if (mResource)
+            else if (modelRsrc || meshRsrc)
             { // A resource, not a component, is being modified. Change the pipeline object's visibility.
               auto view = pqActiveObjects::instance().activeView();
-              auto pvrc = smtkBehavior->getPVResource(mResource);
+              auto pvrc = smtkBehavior->getPVResource(rsrc);
               auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
               if (mapr)
               {
