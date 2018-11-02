@@ -100,7 +100,21 @@ public:
 
   smtk::io::Logger& log() const override { PYBIND11_OVERLOAD(smtk::io::Logger&, Operation, log, ); }
 
-  Result operateInternal() override { PYBIND11_OVERLOAD_PURE(Result, Operation, operateInternal, ); }
+  Result operateInternal() override
+    {
+      // Python operations often raise exceptions. If they are uncaught, they
+      // become C++ exceptions. We convert these exceptions to a failed
+      // execution.
+      try
+      {
+        return this->operateInternalPy();
+      }
+      catch(std::exception& e)
+      {
+        this->log().addRecord(smtk::io::Logger::ERROR, e.what());
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+      }
+    }
 
   void postProcessResult(Result& res) override
     { PYBIND11_OVERLOAD(void, Operation, postProcessResult, res); }
@@ -118,6 +132,8 @@ private:
   void setObject(pybind11::object obj) { m_object = obj; }
   void setIndex(Index index) { m_index = index; }
   void setTypeName(const std::string& typeName) { m_typeName = typeName; }
+
+  Result operateInternalPy() { PYBIND11_OVERLOAD_PURE(Result, Operation, operateInternal, ); }
 
   pybind11::object m_object;
   Index m_index;

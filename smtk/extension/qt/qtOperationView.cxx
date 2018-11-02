@@ -15,6 +15,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/io/Logger.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/view/View.h"
 
@@ -174,13 +175,14 @@ void qtOperationView::onOperate()
 {
   if ((!m_applied) && this->Internals->m_instancedView->isValid())
   {
-    auto result = this->Internals->m_operator->operate();
+    smtk::operation::Operation::Result result = this->Internals->m_operator->operate();
     emit this->operationRequested(this->Internals->m_operator);
-    emit this->operationExecuted(result);
     if (this->Internals->m_applyButton)
     { // The button may disappear when a session is closed by an operator.
       this->Internals->m_applyButton->setEnabled(false);
     }
     m_applied = true;
+
+    emit this->operationExecuted(result);
   }
 }
