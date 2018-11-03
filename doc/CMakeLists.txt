@@ -86,15 +86,63 @@ if (SPHINX_FOUND)
 
   set(SMTK_USERGUIDE_DOCS
     index.rst
+
     userguide/index.rst
+    userguide/mesh/concepts.rst
+    userguide/mesh/IO.rst
+    userguide/operation/index.rst
+    userguide/operation/operators.rst
+    userguide/extension/index.rst
+    userguide/extension/paraview/index.rst
+    userguide/extension/paraview/representations.rst
+    userguide/extension/paraview/widgets.rst
+    userguide/extension/paraview/plugins.rst
+    userguide/extension/paraview/panels.rst
+    userguide/extension/paraview/lifecycle.rst
+    userguide/extension/paraview/anatomy.rst
+    userguide/extension/vtk.rst
+    userguide/extension/qt.rst
     userguide/attribute/index.rst
-    userguide/attribute/concepts.rst
     userguide/attribute/file-syntax.rst
-    userguide/model/index.rst
-    userguide/model/concepts.rst
-    userguide/model/sessions.rst
-    userguide/model/property-names.rst
+    userguide/attribute/concepts.rst
     userguide/contributing.rst
+    userguide/administration.rst
+    userguide/obtain-build-install.rst
+    userguide/simulation/index.rst
+    userguide/overview.rst
+    userguide/workflow/index.rst
+    userguide/workflow/concepts.rst
+    userguide/model/index.rst
+    userguide/model/property-names.rst
+    userguide/model/sessions.rst
+    userguide/model/session-polygon.rst
+    userguide/model/user-interface.rst
+    userguide/model/concepts.rst
+    userguide/model/operators.rst
+    userguide/model/session-cgm.rst
+    userguide/model/session-discrete.rst
+    userguide/model/session-exodus.rst
+    userguide/view/index.rst
+    userguide/view/concepts.rst
+    userguide/view/views.rst
+    userguide/view/phrases.rst
+    userguide/bindings/index.rst
+    userguide/bindings/generating-pybind11-bindings.rst
+    userguide/bindings/customizing-pybind11-bindings.rst
+    userguide/resource/index.rst
+    userguide/resource/concepts.rst
+
+    tutorials/index.rst
+    tutorials/add_a_session/index.rst
+    tutorials/add_a_session/operators.rst
+    tutorials/add_a_session/transcribing.rst
+    tutorials/add_a_session/troubleshooting.rst
+    tutorials/add_a_session/session_subclass.rst
+    tutorials/add_a_session/entity_uuids.rst
+    tutorials/python_first_steps/index.rst
+    tutorials/cxx_first_steps/index.rst
+    tutorials/implement_an_operator/index.rst
+    tutorials/debugging_python_tests/index.rst
   )
   if (DOXYGEN_FOUND)
     # Need doxygen docs built if possible

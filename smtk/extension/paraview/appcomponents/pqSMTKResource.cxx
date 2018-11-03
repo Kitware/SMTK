@@ -64,6 +64,16 @@ pqSMTKResource::pqSMTKResource(
 
 pqSMTKResource::~pqSMTKResource()
 {
+  /* FIXME:
+   * This causes a segfault on exit because the pqSMTKWrapper has been
+   * deleted out from under us. However, if the resource is deleted
+   * _before_ exit, then not removing the observer can cause a segfault
+   * later when an operation is performed.
+  auto behavior = pqSMTKBehavior::instance();
+  auto rsrcMgr = behavior->resourceManagerForServer(this->getServer());
+  rsrcMgr->smtkOperationManager()->observers().erase(m_key);
+   */
+
   QObject::disconnect(
     this, SIGNAL(dataUpdated(pqPipelineSource*)), this, SLOT(synchronizeResource()));
 

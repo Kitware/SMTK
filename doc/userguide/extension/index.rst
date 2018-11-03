@@ -1,4 +1,4 @@
-.. _smtk-resource-sys:
+.. _smtk-extension-sys:
 
 -----------------
 SMTK's Extensions

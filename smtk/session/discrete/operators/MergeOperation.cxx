@@ -74,6 +74,7 @@ bool MergeOperation::ableToOperate()
   // The source and target cells must be valid,
   if (srcid < 0 || tgtid < 0)
   {
+    smtkErrorMacro(this->log(), "Source and target cells must have valid IDs.");
     return false;
   }
 
@@ -82,6 +83,7 @@ bool MergeOperation::ableToOperate()
   // The source and target cells should not be the same
   if (sourceItem->numberOfValues() == 1 && srcid == tgtid)
   {
+    smtkErrorMacro(this->log(), "Source and target cells must be different.");
     return false;
   }
 
@@ -92,6 +94,7 @@ bool MergeOperation::ableToOperate()
   // operation does not update edge relationships after face-merge
   if (!tgtFace.isValid() || tgtFace.edges().size() != 0)
   {
+    smtkErrorMacro(this->log(), "Merging faces with edges is not supported.");
     return false;
   }
 

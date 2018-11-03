@@ -14,6 +14,7 @@
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
+#include "smtk/model/Group.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Vertex.h"
 
@@ -107,6 +108,7 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
 {
   typename T::iterator eit;
   expunged.reserve(entities.size());
+  typename V::value_type tmp;
   for (eit = entities.begin(); eit != entities.end(); ++eit)
   {
     smtk::model::Model mod = eit->owningModel();
@@ -121,7 +123,12 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
       {
         smtkDebugMacro(this->log(), "Erase " << eit->name() << " (c)");
       }
+      tmp = eit->entityRecord();
       hadSomeEffect = (mgr->erase(*eit) != 0);
+      if (hadSomeEffect)
+      {
+        expunged.insert(expunged.end(), tmp);
+      }
       if (hadSomeEffect && isCell)
       { // Remove uses and loops "owned" by the cell
         if (debugLog)
@@ -132,6 +139,14 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
         {
           if (bit->isModel())
             continue;
+          if (bit->isGroup())
+          {
+            // Remove from group, but do not delete group.
+            smtkDebugMacro(this->log(), "  Remove from group " << bit->name());
+            smtk::model::Group(*bit).removeEntity(*eit);
+            modified.insert(modified.end(), *bit);
+            continue;
+          }
           smtk::model::EntityRefs lowerShells =
             bit->as<smtk::model::UseEntity>().shellEntities<smtk::model::EntityRefs>();
           // Add child shells (inner loops):
@@ -190,12 +205,14 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
               {
                 smtkDebugMacro(this->log(), "Erase " << uit->name() << " (su)");
               }
+              expunged.insert(expunged.end(), uit->entityRecord());
               mgr->erase(*uit);
             }
             if (debugLog)
             {
               smtkDebugMacro(this->log(), "Erase " << sit->name() << " (s)");
             }
+            expunged.insert(expunged.end(), sit->entityRecord());
             mgr->erase(*sit);
           }
           if (bit->isCellEntity())
@@ -228,6 +245,7 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
             {
               smtkDebugMacro(this->log(), "Erase " << bit->name() << " (u)");
             }
+            expunged.insert(expunged.end(), bit->entityRecord());
             mgr->erase(*bit);
           }
         }
@@ -235,7 +253,6 @@ bool Resource::deleteEntities(T& entities, U& modified, V& expunged, bool debugL
     }
     if (hadSomeEffect)
     { // Check the boundary cells of the just-removed entity and see if they are now free cells:
-      expunged.push_back(*eit);
       for (smtk::model::EntityRefs::iterator bit = newFreeCells.begin(); bit != newFreeCells.end();
            ++bit)
       {

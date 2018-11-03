@@ -9,9 +9,10 @@
 //=========================================================================
 #include "smtk/view/DescriptivePhrase.h"
 
-#include "smtk/view/PhraseListContent.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
+
+#include "smtk/model/Entity.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"
@@ -45,7 +46,36 @@ DescriptivePhrasePtr DescriptivePhrase::setup(DescriptivePhraseType ptype, Ptr p
 
 DescriptivePhrasePtr DescriptivePhrase::setDelegate(SubphraseGeneratorPtr delegate)
 {
-  m_delegate = delegate;
+  if (m_delegate != delegate)
+  {
+    m_delegate = delegate;
+    // If we already have subphrases, we need to build a new set using
+    // the new subphrase generator and replace as needed:
+    if (this->areSubphrasesBuilt())
+    {
+      // If this phrase has no parent, assume it is the root
+      // and do not rebuild its children. Instead, rebuild its
+      // grandchildren -- the PhraseModel is responsible for
+      // maintaining the children of the root phrase.
+      if (!this->parent())
+      {
+        auto& children = this->subphrases();
+        for (auto child : children)
+        {
+          if (child->areSubphrasesBuilt())
+          {
+            child->markDirty(true);
+            child->buildSubphrases();
+          }
+        }
+      }
+      else
+      {
+        this->markDirty(true);
+        this->buildSubphrases();
+      }
+    }
+  }
   return shared_from_this();
 }
 
@@ -259,10 +289,59 @@ PhraseModelPtr DescriptivePhrase::phraseModel() const
   return PhraseModelPtr();
 }
 
+static int modelEntitySortOrder(smtk::model::EntityPtr ent)
+{
+  if (!ent)
+  {
+    // Put non-model entities at the end of the list.
+    return 0x8000;
+  }
+
+  // If model entity type is same, we want the highest
+  // dimension entities listed first (i.e., volumes, faces,
+  // edges, verts):
+  int db = 0x1f - ent->dimensionBits(); // at most 0x1f
+
+  if (ent->isCellEntity())
+  {
+    return 0x80 + db;
+  }
+  else if (ent->isGroup())
+  {
+    return 0x40 + db;
+  }
+  else if (ent->isModel())
+  {
+    return 0x20 + db;
+  }
+  else if (ent->isAuxiliaryGeometry())
+  {
+    return 0x100 + db;
+  }
+  else if (ent->isInstance())
+  {
+    return 0x120 + db;
+  }
+  else if (ent->isShellEntity())
+  {
+    return 0x140 + db;
+  }
+  else if (ent->isUseEntity())
+  {
+    return 0x160 + db;
+  }
+  else if (ent->isConcept())
+  {
+    return 0x60 + db;
+  }
+  // Put unknown model stuff at the end of the list:
+  return 0x4000 + db;
+}
+
 bool DescriptivePhrase::compareByTypeThenTitle(
   const DescriptivePhrasePtr& a, const DescriptivePhrasePtr& b)
 {
-  static const int sortOrder[] = {
+  static constexpr int sortOrder[] = {
     0, // RESOURCE_SUMMARY
     2, // RESOURCE_LIST
     1, // COMPONENT_SUMMARY
@@ -274,6 +353,19 @@ bool DescriptivePhrase::compareByTypeThenTitle(
     8, // LIST (free form)
     9  // INVALID_DESCRIPTION
   };
+
+  if (!a && b)
+  {
+    return false;
+  }
+  if (!b && a)
+  {
+    return true;
+  }
+  if (!a && !b)
+  {
+    return false;
+  }
 
   // I. Sort by phrase type.
   DescriptivePhraseType pta = a->phraseType();
@@ -312,7 +404,36 @@ bool DescriptivePhrase::compareByTypeThenTitle(
     }
   }
 
-  // III. Sort by title, with care taken when differences are numeric values.
+  // III. Sort by component type (if component is present)
+  smtk::resource::ComponentPtr cpa = a->relatedComponent();
+  smtk::resource::ComponentPtr cpb = b->relatedComponent();
+  if (cpa != cpb)
+  {
+    if (cpa && cpb)
+    {
+      // Note that since we compared resource types above,
+      // both components must be of the same resource-type.
+      // So, if mea != nullptr, then meb != nullptr, too.
+      // Currently, mesh and attribute resources have only 1 component type,
+      // so we don't need to discriminate here.
+      int mea = modelEntitySortOrder(cpa->as<smtk::model::Entity>());
+      int meb = modelEntitySortOrder(cpb->as<smtk::model::Entity>());
+      if (mea != meb)
+      {
+        return mea < meb;
+      }
+    }
+    else if (cpa)
+    {
+      return false; // a is component, b is resource
+    }
+    else // cpb, but !cpa
+    {
+      return true; // a is resource, b is component
+    }
+  }
+
+  // IV. Sort by title, with care taken when differences are numeric values.
   return compareByTitle(a, b);
 }
 
@@ -363,6 +484,11 @@ bool DescriptivePhrase::operator!=(const DescriptivePhrase& other) const
   return !(*this == other);
 }
 
+void DescriptivePhrase::reparent(const DescriptivePhrasePtr& nextParent)
+{
+  m_parent = nextParent;
+}
+
 void DescriptivePhrase::buildSubphrases()
 {
   if (!m_subphrasesBuilt)
@@ -387,7 +513,6 @@ void DescriptivePhrase::buildSubphrases()
 
 void DescriptivePhrase::manuallySetSubphrases(const DescriptivePhrases& children, bool notify)
 {
-  m_content = PhraseListContent::create()->setup(shared_from_this());
   bool didNotify = false;
   if (notify)
   {

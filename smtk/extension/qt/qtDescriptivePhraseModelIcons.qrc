@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/icons/entityTypes">
+    <file alias = "list_b.png">icons/list_b.png</file>
+    <file alias = "list_w.png">icons/list_w.png</file>
     <file alias = "attribute.png">icons/attribute.png</file>
     <file alias = "attributeResource.png">icons/attributeResource.png</file>
     <file alias = "cell_01_b.png">icons/cell_01_b.png</file>

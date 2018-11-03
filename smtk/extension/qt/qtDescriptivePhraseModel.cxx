@@ -512,7 +512,11 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   auto meshComp = dynamic_pointer_cast<smtk::mesh::Component>(item->relatedComponent());
   std::ostringstream resourceName;
   resourceName << ":/icons/entityTypes/";
-  if (modelComp)
+  if (item->phraseType() == smtk::view::DescriptivePhraseType::COMPONENT_LIST)
+  {
+    resourceName << "list" << (lightness >= 0.179 ? "_b" : "_w");
+  }
+  else if (modelComp)
   {
     smtk::model::BitFlags flags = modelComp->entityFlags();
     bool dimBits = true;
@@ -710,7 +714,8 @@ void qtDescriptivePhraseModel::rebuildSubphrases(const QModelIndex& qidx)
   view::DescriptivePhrasePtr phrase = this->getItem(qidx);
 
   this->removeRows(0, nrows, qidx);
-  if (phrase)
+  auto root = m_model ? m_model->root() : nullptr;
+  if (phrase && phrase != root)
     phrase->markDirty(true);
 
   nrows = phrase ? static_cast<int>(phrase->subphrases().size()) : 0;

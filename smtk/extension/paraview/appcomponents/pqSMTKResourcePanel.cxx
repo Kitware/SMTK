@@ -27,6 +27,7 @@
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
+#include "smtk/view/TwoLevelSubphraseGenerator.h"
 #include "smtk/view/VisibilityContent.h"
 
 #include "smtk/model/Entity.h"
@@ -59,6 +60,7 @@ public:
     : m_selnSource("resource panel")
     , m_selnLabel("selected")
     , m_hoverLabel("hovered")
+    , m_resourceTreeStyle(vtkSMTKSettings::HierarchicalStyle)
   {
   }
 
@@ -205,6 +207,7 @@ public:
   std::string m_selnLabel;
   std::string m_hoverLabel;
   std::map<smtk::common::UUID, int> m_visibleThings;
+  int m_resourceTreeStyle; // Which subphrase generator should be used?
 };
 
 pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
@@ -212,8 +215,6 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
 {
   m_p = new Internal;
   m_p->setup(this);
-  auto spg = smtk::view::SubphraseGenerator::create();
-  this->setPhraseGenerator(spg);
 
   auto smtkBehavior = pqSMTKBehavior::instance();
   // Listen for resources on current connections:
@@ -257,7 +258,6 @@ void pqSMTKResourcePanel::setPhraseGenerator(smtk::view::SubphraseGeneratorPtr s
     spg->setModel(m_p->m_phraseModel);
   }
   root->setDelegate(spg);
-  m_p->m_model->rebuildSubphrases(QModelIndex());
 }
 
 void pqSMTKResourcePanel::leaveEvent(QEvent* evt)
@@ -562,6 +562,30 @@ void pqSMTKResourcePanel::updateSettings()
     QObject::disconnect(
       m_p->m_view, SIGNAL(entered(const QModelIndex&)), this, SLOT(hoverRow(const QModelIndex&)));
     this->resetHover();
+  }
+  int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();
+  if (resourceTreeStyle != m_p->m_resourceTreeStyle)
+  {
+    smtk::view::SubphraseGenerator::Ptr spg = nullptr;
+    switch (resourceTreeStyle)
+    {
+      case vtkSMTKSettings::HierarchicalStyle:
+        spg = smtk::view::SubphraseGenerator::create();
+        break;
+      case vtkSMTKSettings::TwoLevelStyle:
+        spg = smtk::view::TwoLevelSubphraseGenerator::create();
+        break;
+      default:
+        smtkWarningMacro(
+          smtk::io::Logger::instance(), "Unsupported resource tree style. Resetting to default.");
+        spg = smtk::view::SubphraseGenerator::create();
+        break;
+    }
+    if (spg)
+    {
+      m_p->m_resourceTreeStyle = resourceTreeStyle;
+      this->setPhraseGenerator(spg);
+    }
   }
 }
 

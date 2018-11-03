@@ -86,66 +86,6 @@ void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource
   this->processResource(rsrc, event == smtk::resource::EventType::ADDED);
 }
 
-void ResourcePhraseModel::handleCreated(
-  Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
-{
-  (void)op;
-  if (!res || !data)
-  {
-    return;
-  }
-
-  // First, handle root node:
-  for (auto it = data->begin(); it != data->end(); ++it)
-  {
-    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(*it);
-    if (comp == nullptr)
-    {
-      continue;
-    }
-    smtk::resource::ResourcePtr rsrc = comp->resource();
-    this->processResource(rsrc, true);
-  }
-
-  // Now we need to traverse the existing phrases to see if any entries in
-  // data need to be inserted.
-  //
-  // There are a couple strategies we might use:
-  // 1. For each phrase in existence with built-out subphrases, rebuild them and call updateChildren.
-  //    This is expensive, but perhaps less error prone.
-  // 2. For each entry in data, call this->root()->visitChildren(...) and decide whether it
-  //    belongs in the subphrases of each visited phrase. If it does and the visited phrase has
-  //    its subphrases built, modify and call updateChildren().
-  // 3. For each entry in data, identify a vector<int> (or multiple vector<int>?) where it
-  //    belongs and add it.
-  // TODO
-}
-
-void ResourcePhraseModel::handleModified(Operation::Ptr, Operation::Result, ComponentItemPtr)
-{
-}
-
-void ResourcePhraseModel::handleExpunged(
-  Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
-{
-  (void)op;
-  if (!res || !data)
-  {
-    return;
-  }
-
-  for (auto it = data->begin(); it != data->end(); ++it)
-  {
-    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(*it);
-    if (comp == nullptr)
-    {
-      continue;
-    }
-    smtk::resource::ResourcePtr rsrc = comp->resource();
-    this->processResource(rsrc, false);
-  }
-}
-
 void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 {
   if (adding)

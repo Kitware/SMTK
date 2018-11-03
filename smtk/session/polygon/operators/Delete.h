@@ -57,7 +57,7 @@ protected:
   int m_numWarnings;
   smtk::model::EntityRefs m_notRemoved;
   smtk::model::EntityRefs m_modified;
-  smtk::model::EntityRefArray m_expunged;
+  smtk::model::EntityArray m_expunged;
 };
 
 } // namespace polygon

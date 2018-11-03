@@ -13,6 +13,7 @@ set(viewSrcs
   ResourcePhraseModel.cxx
   Selection.cxx
   SubphraseGenerator.cxx
+  TwoLevelSubphraseGenerator.cxx
   View.cxx
   VisibilityContent.cxx
 )
@@ -35,6 +36,7 @@ set(viewHeaders
   Selection.h
   SubphraseGenerator.h
   SubphraseGenerator.txx
+  TwoLevelSubphraseGenerator.h
   View.h
   VisibilityContent.h
   ${jsonViewHeaders}

@@ -342,6 +342,9 @@ public:
   bool operator==(const DescriptivePhrase& other) const;
   bool operator!=(const DescriptivePhrase& other) const;
 
+  /// Do not call this; it is for use by subphrase generators.
+  void reparent(const DescriptivePhrasePtr& nextParent);
+
 protected:
   friend class SubphraseGenerator;
 
