@@ -376,29 +376,6 @@ void vtkSMTKModelRepresentation::SetVisibility(bool val)
   Superclass::SetVisibility(val);
 }
 
-vtkDataObject* FindEntityData(vtkMultiBlockDataSet* mbds, smtk::model::EntityPtr ent)
-{
-  if (mbds)
-  {
-    auto it = mbds->NewTreeIterator();
-    it->VisitOnlyLeavesOn();
-    for (it->GoToFirstItem(); !it->IsDoneWithTraversal(); it->GoToNextItem())
-    {
-      vtkDataObject* data = it->GetCurrentDataObject();
-      auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(
-        it->GetCurrentMetaData()); // data->GetInformation());
-      // std::cout << "    " << uid << " == " << ent->id() << "\n";
-      if (uid == ent->id())
-      {
-        it->Delete();
-        return data;
-      }
-    }
-    it->Delete();
-  }
-  return nullptr;
-}
-
 void vtkSMTKModelRepresentation::GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata)
 {
   visdata.clear();
