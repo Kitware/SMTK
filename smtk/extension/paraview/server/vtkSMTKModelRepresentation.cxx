@@ -447,9 +447,13 @@ bool vtkSMTKModelRepresentation::ApplyDefaultStyle(
     attr = item.first->as<smtk::attribute::Attribute>();
     if (attr)
     {
-      for (auto obj : *attr->associations())
+      if (attr->associations())
       {
-        atLeastOneSelected |= self->SelectComponentFootprint(obj, /*selnBit TODO*/ 1, renderables);
+        for (auto obj : *attr->associations())
+        {
+          atLeastOneSelected |=
+            self->SelectComponentFootprint(obj, /*selnBit TODO*/ 1, renderables);
+        }
       }
     }
     else
