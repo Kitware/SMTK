@@ -32,7 +32,7 @@
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/SessionRef.h"
 
@@ -73,7 +73,7 @@ public:
   std::map<smtk::model::EntityRef, smtk::model::StringData> m_modelChanges;
   std::map<std::string, std::string> m_copyFiles;
   std::map<std::string, std::string> m_saveModels;
-  std::map<smtk::mesh::CollectionPtr, std::string> m_saveMeshes;
+  std::map<smtk::mesh::ResourcePtr, std::string> m_saveMeshes;
   std::string m_errorColor;
   bool m_enabled;
 
@@ -615,7 +615,7 @@ void smtkSaveModelView::updateSummary(const std::string& mode)
       {
         builder << "<li> " << ssit->first << " to " << ssit->second << "</li>\n";
       }
-      std::map<smtk::mesh::CollectionPtr, std::string>::const_iterator smit;
+      std::map<smtk::mesh::ResourcePtr, std::string>::const_iterator smit;
       for (smit = action->m_saveMeshes.begin(); smit != action->m_saveMeshes.end(); ++smit)
       {
         builder << "<li> " << smit->first->name() << " to " << smit->second << "</li>\n";

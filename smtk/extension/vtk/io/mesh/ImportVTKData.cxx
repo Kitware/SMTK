@@ -15,10 +15,10 @@
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/CellTraits.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/FieldTypes.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -103,13 +103,12 @@ smtk::mesh::CellType vtkToSMTKCell(int t)
   return ctype;
 }
 
-smtk::mesh::HandleRange convertVTKDataSet(
-  vtkDataSet* dataset, smtk::mesh::CollectionPtr& collection)
+smtk::mesh::HandleRange convertVTKDataSet(vtkDataSet* dataset, smtk::mesh::ResourcePtr& resource)
 {
-  smtk::mesh::InterfacePtr iface = collection->interface();
+  smtk::mesh::InterfacePtr iface = resource->interface();
   smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
 
-  smtk::mesh::HandleRange initRange = collection->cells().range();
+  smtk::mesh::HandleRange initRange = resource->cells().range();
 
   if (!alloc->reserveNumberOfCoordinates(dataset->GetNumberOfPoints()))
   {
@@ -214,26 +213,26 @@ ImportVTKData::ImportVTKData()
 {
 }
 
-smtk::mesh::CollectionPtr ImportVTKData::operator()(const std::string& filename,
+smtk::mesh::ResourcePtr ImportVTKData::operator()(const std::string& filename,
   const smtk::mesh::InterfacePtr& interface, std::string materialPropertyName) const
 {
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(interface);
-  return this->operator()(filename, collection, materialPropertyName) ? collection
-                                                                      : smtk::mesh::CollectionPtr();
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create(interface);
+  return this->operator()(filename, resource, materialPropertyName) ? resource
+                                                                    : smtk::mesh::ResourcePtr();
 }
 
-bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::CollectionPtr collection,
+bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
   std::string materialPropertyName) const
 {
   ImportAsVTKData importAsVTKData;
   auto data = importAsVTKData(filename);
   if (auto ugrid = vtkUnstructuredGrid::SafeDownCast(data.GetPointer()))
   {
-    return this->operator()(ugrid, collection, materialPropertyName);
+    return this->operator()(ugrid, resource, materialPropertyName);
   }
   else if (auto poly = vtkPolyData::SafeDownCast(data.GetPointer()))
   {
-    return this->operator()(poly, collection, materialPropertyName);
+    return this->operator()(poly, resource, materialPropertyName);
   }
   else
   {
@@ -242,7 +241,7 @@ bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::Collecti
 }
 
 smtk::mesh::MeshSet ImportVTKData::operator()(
-  vtkDataSet* dataset, smtk::mesh::CollectionPtr collection) const
+  vtkDataSet* dataset, smtk::mesh::ResourcePtr resource) const
 {
   //make sure we have a valid dataset
   if (!dataset)
@@ -260,16 +259,16 @@ smtk::mesh::MeshSet ImportVTKData::operator()(
   {
     polydata->BuildCells();
   }
-  smtk::mesh::HandleRange cells = convertVTKDataSet(dataset, collection);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(dataset, resource);
 
-  smtk::mesh::MeshSet meshset = collection->createMesh(smtk::mesh::CellSet(collection, cells));
+  smtk::mesh::MeshSet meshset = resource->createMesh(smtk::mesh::CellSet(resource, cells));
 
-  collection->interface()->setModifiedState(false);
+  resource->interface()->setModifiedState(false);
   return meshset;
 }
 
 bool ImportVTKData::operator()(
-  vtkDataSet* dataset, smtk::mesh::CollectionPtr collection, std::string materialPropertyName) const
+  vtkDataSet* dataset, smtk::mesh::ResourcePtr resource, std::string materialPropertyName) const
 {
   //make sure we have valid data
   if (!dataset)
@@ -282,7 +281,7 @@ bool ImportVTKData::operator()(
     return false;
   }
 
-  smtk::mesh::InterfacePtr iface = collection->interface();
+  smtk::mesh::InterfacePtr iface = resource->interface();
   smtk::mesh::BufferedCellAllocatorPtr alloc = iface->bufferedCellAllocator();
 
   vtkPolyData* polydata = vtkPolyData::SafeDownCast(dataset);
@@ -290,7 +289,7 @@ bool ImportVTKData::operator()(
   {
     polydata->BuildCells();
   }
-  smtk::mesh::HandleRange cells = convertVTKDataSet(dataset, collection);
+  smtk::mesh::HandleRange cells = convertVTKDataSet(dataset, resource);
 
   smtk::mesh::MeshSet mesh;
 
@@ -302,14 +301,14 @@ bool ImportVTKData::operator()(
     {
       smtk::mesh::HandleRange entities;
       entities.insert(vtkMeshHandle);
-      mesh = smtk::mesh::MeshSet(collection->shared_from_this(), iface->getRoot(), entities);
+      mesh = smtk::mesh::MeshSet(resource->shared_from_this(), iface->getRoot(), entities);
     }
   }
   else
   { //make multiple meshes each one assigned a material value
     smtk::mesh::HandleRange entities =
       convertDomain(dataset->GetCellData(), iface, cells, materialPropertyName);
-    mesh = smtk::mesh::MeshSet(collection->shared_from_this(), iface->getRoot(), entities);
+    mesh = smtk::mesh::MeshSet(resource->shared_from_this(), iface->getRoot(), entities);
   }
 
   // Now that we have a valid meshset, we add vtk cell & point data to it.
@@ -359,11 +358,11 @@ bool ImportVTKData::operator()(
   return !mesh.is_empty();
 }
 
-smtk::mesh::CollectionPtr ImportVTKData::operator()(vtkDataSet* dataset,
+smtk::mesh::ResourcePtr ImportVTKData::operator()(vtkDataSet* dataset,
   const smtk::mesh::InterfacePtr& interface, std::string materialPropertyName) const
 {
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create(interface);
-  return this->operator()(dataset, c, materialPropertyName) ? c : smtk::mesh::CollectionPtr();
+  smtk::mesh::ResourcePtr c = smtk::mesh::Resource::create(interface);
+  return this->operator()(dataset, c, materialPropertyName) ? c : smtk::mesh::ResourcePtr();
 }
 }
 }

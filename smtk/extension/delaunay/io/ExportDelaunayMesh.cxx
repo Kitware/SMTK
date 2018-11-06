@@ -12,8 +12,8 @@
 
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -84,7 +84,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 }
 
 std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
-  const smtk::model::Loop& loop, smtk::mesh::CollectionPtr& collection) const
+  const smtk::model::Loop& loop, smtk::mesh::ResourcePtr& resource) const
 {
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -92,7 +92,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 
   //query for all cells
   smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
-    loop, collection, connectivityLength, numberOfCells, numberOfPoints);
+    loop, resource, connectivityLength, numberOfCells, numberOfPoints);
 
   std::vector<std::int64_t> conn(connectivityLength);
   std::vector<float> fpoints(numberOfPoints * 3);
@@ -102,7 +102,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
   ftess.disableVTKStyleConnectivity(true);
   ftess.disableVTKCellTypes(true);
 
-  smtk::mesh::utility::extractOrderedTessellation(loop, collection, ftess);
+  smtk::mesh::utility::extractOrderedTessellation(loop, resource, ftess);
 
   std::vector<Delaunay::Shape::Point> points;
 

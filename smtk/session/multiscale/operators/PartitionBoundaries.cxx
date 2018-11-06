@@ -18,7 +18,7 @@
 #include "smtk/session/multiscale/Resource.h"
 #include "smtk/session/multiscale/Session.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Vertex.h"
@@ -120,7 +120,7 @@ public:
   }
 };
 
-bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
+bool labelIntersection(const smtk::mesh::ResourcePtr& meshResource,
   const smtk::mesh::MeshSet& shell, Filter& filter, smtk::model::EntityRefArray& created,
   smtk::session::mesh::Topology& topology)
 {
@@ -132,14 +132,14 @@ bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
 
   //extract the top cells
   smtk::mesh::for_each(shellCells, filter);
-  smtk::mesh::CellSet filteredCells = smtk::mesh::CellSet(collection, filter.validPoints);
+  smtk::mesh::CellSet filteredCells = smtk::mesh::CellSet(meshResource, filter.validPoints);
 
   //intersect the material and verts to find the verts of a given
   //material that passed the filter.
   //This verts than become a dirichlet set
-  for (auto&& dom : collection->domains())
+  for (auto&& dom : meshResource->domains())
   {
-    smtk::mesh::MeshSet domainMeshes = collection->meshes(dom);
+    smtk::mesh::MeshSet domainMeshes = meshResource->meshes(dom);
 
     //find all cells on the top of shell that share a vert in common
     //with material volume
@@ -148,18 +148,18 @@ bool labelIntersection(const smtk::mesh::CollectionPtr& collection,
       smtk::mesh::point_intersect(domainCells, filteredCells, smtk::mesh::FullyContained);
     if (!contactCells.is_empty())
     {
-      smtk::mesh::MeshSet contactD = collection->createMesh(contactCells);
-      collection->setDirichletOnMeshes(contactD, smtk::mesh::Dirichlet(created.size()));
+      smtk::mesh::MeshSet contactD = meshResource->createMesh(contactCells);
+      meshResource->setDirichletOnMeshes(contactD, smtk::mesh::Dirichlet(created.size()));
 
       // construct a new uuid
-      smtk::common::UUID id = collection->modelResource()->unusedUUID();
+      smtk::common::UUID id = meshResource->modelResource()->unusedUUID();
       // construct a topology element for the vertex set (dimension 0)
       Topology::Element element(domainMeshes, 0);
       // insert the element into the topology under the parent level
       // (designating it as a "free" element)
       topology.m_elements.insert(std::make_pair(id, element));
       // store an entity ref associated with the vertex set id
-      created.push_back(smtk::model::Vertex(collection->modelResource(), id));
+      created.push_back(smtk::model::Vertex(meshResource->modelResource(), id));
     }
   }
 
@@ -197,14 +197,14 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // The collection for this model has the same UUID as the model, so we can
+  // The mesh resource for this model has the same UUID as the model, so we can
   // access it using the model's UUID
-  smtk::mesh::CollectionPtr collection =
+  smtk::mesh::ResourcePtr meshResource =
     session->meshManager()->findCollection(dataset.entity())->second;
 
-  if (!collection->isValid())
+  if (!meshResource->isValid())
   {
-    smtkErrorMacro(this->log(), "No collection associated with this model.");
+    smtkErrorMacro(this->log(), "No mesh resource associated with this model.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
@@ -228,7 +228,7 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
   double radius = this->parameters()->findDouble("radius")->value();
 
   //extract the exterior-shell for all meshes.
-  smtk::mesh::MeshSet shell = collection->meshes().extractShell();
+  smtk::mesh::MeshSet shell = meshResource->meshes().extractShell();
 
   // compute the shell's bounds
   std::array<double, 6> bounds = smtk::mesh::utility::extent(shell);
@@ -239,18 +239,18 @@ PartitionBoundaries::Result PartitionBoundaries::operateInternal()
   const double ymin = bounds[2];
   {
     CoolingPlateFilter filter(ymin, radius, origin);
-    labelIntersection(collection, shell, filter, created, *topology);
+    labelIntersection(meshResource, shell, filter, created, *topology);
   }
 
   const double ymax = bounds[3];
   {
     CoolingPlateFilter filter(ymax, radius, origin);
-    labelIntersection(collection, shell, filter, created, *topology);
+    labelIntersection(meshResource, shell, filter, created, *topology);
   }
 
   {
     OuterEdgeFilter filter(origin, radius * 2.);
-    labelIntersection(collection, shell, filter, created, *topology);
+    labelIntersection(meshResource, shell, filter, created, *topology);
   }
 
   result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

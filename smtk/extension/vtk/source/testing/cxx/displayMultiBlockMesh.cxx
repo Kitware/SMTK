@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/io/ImportMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -40,9 +40,9 @@ int main(int argc, char* argv[])
   {
     std::string file_path = argv[1];
     smtk::io::ImportMesh import;
-    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+    smtk::mesh::ResourcePtr c = smtk::mesh::Resource::create();
     import(file_path, c);
-    test(c->isValid(), "collection should be valid");
+    test(c->isValid(), "resource should be valid");
 
     std::size_t numMeshes = c->numberOfMeshes();
     std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;

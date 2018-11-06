@@ -10,8 +10,8 @@
 
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Interface.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityIterator.h"
@@ -385,30 +385,29 @@ ModelToMesh::ModelToMesh()
 {
 }
 
-smtk::mesh::CollectionPtr ModelToMesh::operator()(
-  const smtk::model::ResourcePtr& modelResource) const
+smtk::mesh::ResourcePtr ModelToMesh::operator()(const smtk::model::ResourcePtr& modelResource) const
 {
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
   typedef std::map<smtk::model::EntityRef, std::size_t> CoordinateOffsetMap;
 
-  smtk::mesh::CollectionPtr nullCollectionPtr;
+  smtk::mesh::ResourcePtr nullResourcePtr;
   if (!modelResource)
   {
-    return nullCollectionPtr;
+    return nullResourcePtr;
   }
 
   if (modelResource->tessellations().empty())
   {
     //we have zero tesselations, we can't continue. This is an invalid model
-    return nullCollectionPtr;
+    return nullResourcePtr;
   }
 
-  //Create the collection and extract the allocation interface from it
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
-  smtk::mesh::InterfacePtr iface = collection->interface();
+  //Create the mesh resource and extract the allocation interface from it
+  smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create();
+  smtk::mesh::InterfacePtr iface = meshResource->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
-  collection->setModelResource(modelResource);
+  meshResource->setModelResource(modelResource);
 
   //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
   //the MODEL_ENTITY will be associated with the meshset that contains all
@@ -445,58 +444,58 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(
       for (c_it j = per_ent_cells.begin(); j != per_ent_cells.end(); ++j)
       {
         //now create a mesh from those cells
-        smtk::mesh::CellSet cellsForMesh(collection, j->second);
-        smtk::mesh::MeshSet ms = collection->createMesh(cellsForMesh);
-        collection->setAssociation(j->first, ms);
+        smtk::mesh::CellSet cellsForMesh(meshResource, j->second);
+        smtk::mesh::MeshSet ms = meshResource->createMesh(cellsForMesh);
+        meshResource->setAssociation(j->first, ms);
       }
 
       EntityRefs currentModels =
         modelResource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::MODEL_ENTITY);
       if (currentModels.size() > 0)
       {
-        collection->associateToModel(currentModels.begin()->entity());
+        meshResource->associateToModel(currentModels.begin()->entity());
       }
     }
   }
 
-  //Now merge all duplicate points inside the collection
+  //Now merge all duplicate points inside the mesh resource
   if (m_mergeDuplicates)
   {
     if (m_tolerance >= 0)
     {
-      collection->meshes().mergeCoincidentContactPoints(m_tolerance);
+      meshResource->meshes().mergeCoincidentContactPoints(m_tolerance);
     }
     else
     { //allow the meshes api to specify the default
-      collection->meshes().mergeCoincidentContactPoints();
+      meshResource->meshes().mergeCoincidentContactPoints();
     }
   }
 
-  return collection;
+  return meshResource;
 }
 
-smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& model) const
+smtk::mesh::ResourcePtr ModelToMesh::operator()(const smtk::model::Model& model) const
 {
   typedef smtk::model::EntityRefs EntityRefs;
   typedef std::map<smtk::model::EntityRef, std::size_t> CoordinateOffsetMap;
   smtk::model::ResourcePtr modelResource = model.resource();
-  smtk::mesh::CollectionPtr nullCollectionPtr;
+  smtk::mesh::ResourcePtr nullResourcePtr;
   if (!modelResource)
   {
-    return nullCollectionPtr;
+    return nullResourcePtr;
   }
 
   if (modelResource->tessellations().empty())
   {
     //we have zero tesselations, we can't continue. This is an invalid model
-    return nullCollectionPtr;
+    return nullResourcePtr;
   }
 
-  //Create the collection and extract the allocation interface from it
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
-  smtk::mesh::InterfacePtr iface = collection->interface();
+  //Create the mesh resource and extract the allocation interface from it
+  smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create();
+  smtk::mesh::InterfacePtr iface = meshResource->interface();
   smtk::mesh::AllocatorPtr ialloc = iface->allocator();
-  collection->setModelResource(modelResource);
+  meshResource->setModelResource(modelResource);
 
   //We create a new mesh each for the Edge(s), Face(s) and Volume(s).
   //the MODEL_ENTITY will be associated with the meshset that contains all
@@ -517,28 +516,28 @@ smtk::mesh::CollectionPtr ModelToMesh::operator()(const smtk::model::Model& mode
     for (c_it i = per_ent_cells.begin(); i != per_ent_cells.end(); ++i)
     {
       //now create a mesh from those cells
-      smtk::mesh::CellSet cellsForMesh(collection, i->second);
-      smtk::mesh::MeshSet ms = collection->createMesh(cellsForMesh);
-      collection->setAssociation(i->first, ms);
+      smtk::mesh::CellSet cellsForMesh(meshResource, i->second);
+      smtk::mesh::MeshSet ms = meshResource->createMesh(cellsForMesh);
+      meshResource->setAssociation(i->first, ms);
     }
 
-    collection->associateToModel(model.entity());
+    meshResource->associateToModel(model.entity());
   }
 
-  //Now merge all duplicate points inside the collection
+  //Now merge all duplicate points inside the mesh resource
   if (m_mergeDuplicates)
   {
     if (m_tolerance >= 0)
     {
-      collection->meshes().mergeCoincidentContactPoints(m_tolerance);
+      meshResource->meshes().mergeCoincidentContactPoints(m_tolerance);
     }
     else
     { //allow the meshes api to specify the default
-      collection->meshes().mergeCoincidentContactPoints();
+      meshResource->meshes().mergeCoincidentContactPoints();
     }
   }
 
-  return collection;
+  return meshResource;
 }
 }
 }

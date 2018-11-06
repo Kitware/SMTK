@@ -11,9 +11,9 @@
 //=============================================================================
 #include "smtk/mesh/json/Interface.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/QueryTypes.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/moab/CellTypeToType.h"
 #include "smtk/mesh/moab/HandleRangeToRange.h"

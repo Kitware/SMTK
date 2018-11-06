@@ -10,7 +10,7 @@
 
 #include "smtk/io/ImportMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -20,20 +20,20 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh()
+smtk::mesh::ResourcePtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  smtk::io::importMesh(file_path, c);
-  test(c->isValid(), "collection should be valid");
-  return c;
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  smtk::io::importMesh(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
+  return mr;
 }
 
-void verify_constructors(const smtk::mesh::CollectionPtr& c)
+void verify_constructors(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet all_meshes = c->meshes();
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
 
   smtk::mesh::CellSet all_cells_from_ms = all_meshes.cells();
   smtk::mesh::CellSet copy_of_all_cells(all_cells_from_ms);
@@ -42,20 +42,20 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test(all_cells_from_ms.size() != 0);
   test(all_cells_from_ms.size() == copy_of_all_cells.size());
 
-  smtk::mesh::CellSet zeroDim = c->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet zeroDim = mr->cells(smtk::mesh::Dims0);
   smtk::mesh::CellSet equalToZeroDim = copy_of_all_cells;
   equalToZeroDim = zeroDim; //test assignment operator
   test(equalToZeroDim.size() == zeroDim.size());
   test(equalToZeroDim.is_empty() == false);
 }
 
-void verify_subsets(const smtk::mesh::CollectionPtr& c)
+void verify_subsets(const smtk::mesh::ResourcePtr& mr)
 {
-  std::vector<std::string> mesh_names = c->meshNames();
+  std::vector<std::string> mesh_names = mr->meshNames();
 
-  test(mesh_names.empty() == false, "There are no meshes in the collection.");
+  test(mesh_names.empty() == false, "There are no meshes in the resource.");
 
-  smtk::mesh::MeshSet ms = c->meshes(mesh_names[0]);
+  smtk::mesh::MeshSet ms = mr->meshes(mesh_names[0]);
   smtk::mesh::CellSet ps = ms.cells();
 
   smtk::mesh::HandleRange range;
@@ -74,10 +74,10 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
     }
   }
 
-  smtk::mesh::CellSet ps2(c, range);
-  smtk::mesh::CellSet ps3(c, set);
-  smtk::mesh::CellSet ps4(c, vec);
-  smtk::mesh::CellSet ps5(std::const_pointer_cast<const smtk::mesh::Collection>(c), range);
+  smtk::mesh::CellSet ps2(mr, range);
+  smtk::mesh::CellSet ps3(mr, set);
+  smtk::mesh::CellSet ps4(mr, vec);
+  smtk::mesh::CellSet ps5(std::const_pointer_cast<const smtk::mesh::Resource>(mr), range);
 
   test(ps != ps2);
   test(ps2 == ps3);
@@ -85,9 +85,9 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   test(ps4 == ps5);
 }
 
-void verify_empty(const smtk::mesh::CollectionPtr& c)
+void verify_empty(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet no_mesh = c->meshes("bad name string");
+  smtk::mesh::MeshSet no_mesh = mr->meshes("bad name string");
 
   smtk::mesh::CellSet no_cells_a = no_mesh.cells();
   smtk::mesh::CellSet no_cells_b = no_mesh.cells(smtk::mesh::Hexahedron);
@@ -105,10 +105,10 @@ void verify_empty(const smtk::mesh::CollectionPtr& c)
   test(no_cells_d.size() == 0);
 }
 
-void verify_comparisons(const smtk::mesh::CollectionPtr& c)
+void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::CellSet zeroDim = c->cells(smtk::mesh::Dims0);
-  smtk::mesh::CellSet oneDim = c->cells(smtk::mesh::Dims1);
+  smtk::mesh::CellSet zeroDim = mr->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet oneDim = mr->cells(smtk::mesh::Dims1);
 
   test(zeroDim == zeroDim);
   test(!(zeroDim != zeroDim));
@@ -125,12 +125,12 @@ void verify_comparisons(const smtk::mesh::CollectionPtr& c)
   test(zeroDim_a != oneDim_b);
 }
 
-void verify_typeset(const smtk::mesh::CollectionPtr& c)
+void verify_typeset(const smtk::mesh::ResourcePtr& mr)
 {
   //verify that empty cell set has empty type set
   {
     smtk::mesh::CellTypes no_cell_types;
-    smtk::mesh::CellSet emptyCellSet = c->cells(no_cell_types);
+    smtk::mesh::CellSet emptyCellSet = mr->cells(no_cell_types);
     smtk::mesh::TypeSet noTypes = emptyCellSet.types();
 
     test(noTypes.cellTypes() == no_cell_types);
@@ -138,10 +138,10 @@ void verify_typeset(const smtk::mesh::CollectionPtr& c)
     test(noTypes.hasCells() == false);
   }
 
-  //verify that if we get all cells from the collection the type set is correct
+  //verify that if we get all cells from the resource the type set is correct
   {
-    smtk::mesh::TypeSet all_types = c->types();
-    smtk::mesh::CellSet allCells = c->cells(all_types.cellTypes());
+    smtk::mesh::TypeSet all_types = mr->types();
+    smtk::mesh::CellSet allCells = mr->cells(all_types.cellTypes());
     smtk::mesh::TypeSet allCellsTypes = allCells.types();
 
     test(allCellsTypes.cellTypes() == all_types.cellTypes());
@@ -154,10 +154,10 @@ void verify_typeset(const smtk::mesh::CollectionPtr& c)
   //verify_cell_count_by_type
 }
 
-void verify_all_cells(const smtk::mesh::CollectionPtr& c)
+void verify_all_cells(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet all_meshes = c->meshes();
-  smtk::mesh::CellSet all_cells_from_collec = c->cells();
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
+  smtk::mesh::CellSet all_cells_from_collec = mr->cells();
   smtk::mesh::CellSet all_cells_from_ms = all_meshes.cells();
 
   test(all_cells_from_collec.is_empty() == false);
@@ -236,19 +236,19 @@ void verify_cell_count_by_dim(smtk::mesh::MeshSet ms)
   test(ms.types().cellTypes() == all_typeset.cellTypes());
 }
 
-void verify_cells_by_type(const smtk::mesh::CollectionPtr& c)
+void verify_cells_by_type(const smtk::mesh::ResourcePtr& mr)
 {
   //1. verify that all cells size is equal to the vector of cellsets where
   //each element is a cell type.
-  smtk::mesh::CellSet all_cells = c->cells();
-  smtk::mesh::MeshSet all_meshes = c->meshes();
+  smtk::mesh::CellSet all_cells = mr->cells();
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
 
   std::vector<smtk::mesh::CellSet> all_cell_types;
   smtk::mesh::CellSet all_cells_appended = all_meshes.cells(smtk::mesh::Vertex);
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
     smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
-    all_cell_types.push_back(c->cells(cellType));
+    all_cell_types.push_back(mr->cells(cellType));
     all_cells_appended.append(all_meshes.cells(cellType));
   }
   test(all_cells_appended == all_cells);
@@ -271,53 +271,53 @@ void verify_cells_by_type(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::TypeSet types = all_cells.types();
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
-    //verify that if the collection has a cell, we also return
+    //verify that if the resource has a cell, we also return
     smtk::mesh::CellType ct = static_cast<smtk::mesh::CellType>(i);
     test(types.hasCell(ct) != all_cell_types[i].is_empty());
   }
 
   //now verify certain mesh subset
-  verify_cell_count_by_type(c->meshes());
-  verify_cell_count_by_dim(c->meshes());
+  verify_cell_count_by_type(mr->meshes());
+  verify_cell_count_by_dim(mr->meshes());
 
-  verify_cell_count_by_type(c->meshes(smtk::mesh::Dims1));
-  verify_cell_count_by_type(c->meshes(smtk::mesh::Dims2));
-  verify_cell_count_by_type(c->meshes(smtk::mesh::Dims3));
+  verify_cell_count_by_type(mr->meshes(smtk::mesh::Dims1));
+  verify_cell_count_by_type(mr->meshes(smtk::mesh::Dims2));
+  verify_cell_count_by_type(mr->meshes(smtk::mesh::Dims3));
 
-  verify_cell_count_by_dim(c->meshes(smtk::mesh::Dims1));
-  verify_cell_count_by_dim(c->meshes(smtk::mesh::Dims2));
-  verify_cell_count_by_dim(c->meshes(smtk::mesh::Dims3));
+  verify_cell_count_by_dim(mr->meshes(smtk::mesh::Dims1));
+  verify_cell_count_by_dim(mr->meshes(smtk::mesh::Dims2));
+  verify_cell_count_by_dim(mr->meshes(smtk::mesh::Dims3));
 }
 
-void verify_cells_by_types(const smtk::mesh::CollectionPtr& c)
+void verify_cells_by_types(const smtk::mesh::ResourcePtr& mr)
 {
 
   //verify that empty typeset returns nothing
   smtk::mesh::CellTypes no_cell_types;
-  smtk::mesh::CellSet no_associatedCells = c->cells(no_cell_types);
+  smtk::mesh::CellSet no_associatedCells = mr->cells(no_cell_types);
   test(no_associatedCells.is_empty() == true); //should be empty
 
   //1. verify that when we query based on types everything works properly
-  //when from a Collection
-  smtk::mesh::TypeSet types = c->types();
-  smtk::mesh::CellSet associatedCells = c->cells(types.cellTypes());
+  //when from a Resource
+  smtk::mesh::TypeSet types = mr->types();
+  smtk::mesh::CellSet associatedCells = mr->cells(types.cellTypes());
   test(associatedCells.is_empty() == false); //can't be false
 
   //verify cellTypes returns the same number of cells as asking for all cells
-  test(associatedCells.size() == c->cells().size());
-  test(associatedCells == c->cells());
+  test(associatedCells.size() == mr->cells().size());
+  test(associatedCells == mr->cells());
 }
 
-void verify_cells_by_dim(const smtk::mesh::CollectionPtr& c)
+void verify_cells_by_dim(const smtk::mesh::ResourcePtr& mr)
 {
 
   //simple verification that the types are the same
-  smtk::mesh::MeshSet all_meshes = c->meshes();
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
 
-  smtk::mesh::CellSet zeroDim = c->cells(smtk::mesh::Dims0);
-  smtk::mesh::CellSet oneDim = c->cells(smtk::mesh::Dims1);
-  smtk::mesh::CellSet twoDim = c->cells(smtk::mesh::Dims2);
-  smtk::mesh::CellSet threeDim = c->cells(smtk::mesh::Dims3);
+  smtk::mesh::CellSet zeroDim = mr->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet oneDim = mr->cells(smtk::mesh::Dims1);
+  smtk::mesh::CellSet twoDim = mr->cells(smtk::mesh::Dims2);
+  smtk::mesh::CellSet threeDim = mr->cells(smtk::mesh::Dims3);
 
   //fm = from meshset
   smtk::mesh::CellSet fm_zeroDim = all_meshes.cells(smtk::mesh::Dims0);
@@ -331,11 +331,11 @@ void verify_cells_by_dim(const smtk::mesh::CollectionPtr& c)
   test(threeDim == fm_threeDim);
 }
 
-void verify_cellset_intersect(const smtk::mesh::CollectionPtr& c)
+void verify_cellset_intersect(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet no_meshes = c->meshes("bad name string");
-  smtk::mesh::MeshSet all_meshes = c->meshes();
-  smtk::mesh::CellSet all_cells = c->cells();
+  smtk::mesh::MeshSet no_meshes = mr->meshes("bad name string");
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
+  smtk::mesh::CellSet all_cells = mr->cells();
 
   { //intersection of self should produce self
     smtk::mesh::CellSet result = smtk::mesh::set_intersect(all_cells, all_cells);
@@ -374,10 +374,10 @@ void verify_cellset_intersect(const smtk::mesh::CollectionPtr& c)
        number of unique items");
 }
 
-void verify_cellset_union(const smtk::mesh::CollectionPtr& c)
+void verify_cellset_union(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet all_meshes = c->meshes();
-  smtk::mesh::CellSet all_cells = c->cells();
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
+  smtk::mesh::CellSet all_cells = mr->cells();
 
   { //union with self produces self
     smtk::mesh::CellSet result = smtk::mesh::set_union(all_cells, all_cells);
@@ -385,20 +385,20 @@ void verify_cellset_union(const smtk::mesh::CollectionPtr& c)
   }
 
   { //union with nothing should produce self
-    smtk::mesh::MeshSet no_meshes = c->meshes("bad name string");
+    smtk::mesh::MeshSet no_meshes = mr->meshes("bad name string");
     smtk::mesh::CellSet no_cells = no_meshes.cells();
     smtk::mesh::CellSet result = smtk::mesh::set_union(all_cells, no_cells);
     test(result == all_cells, "Union with nothing should produce self");
   }
 
   //construct empty meshset(s)
-  smtk::mesh::CellSet all_dims = c->meshes("bad name string").cells();
+  smtk::mesh::CellSet all_dims = mr->meshes("bad name string").cells();
   smtk::mesh::CellSet append_output = all_dims;
   //verify that append and union produce the same result
   for (int i = 0; i < smtk::mesh::DimensionType_MAX; ++i)
   {
     smtk::mesh::DimensionType d(static_cast<smtk::mesh::DimensionType>(i));
-    all_dims = smtk::mesh::set_union(all_dims, c->cells(d));
+    all_dims = smtk::mesh::set_union(all_dims, mr->cells(d));
     append_output.append(all_meshes.cells(d));
   }
 
@@ -412,9 +412,9 @@ void verify_cellset_union(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-void verify_cellset_subtract(const smtk::mesh::CollectionPtr& c)
+void verify_cellset_subtract(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::CellSet all_cells = c->cells();
+  smtk::mesh::CellSet all_cells = mr->cells();
 
   { //subtract of self should produce empty
     smtk::mesh::CellSet result = smtk::mesh::set_difference(all_cells, all_cells);
@@ -423,23 +423,23 @@ void verify_cellset_subtract(const smtk::mesh::CollectionPtr& c)
   }
 
   { //subtract with nothing should produce self
-    smtk::mesh::CellSet no_cells = c->meshes("bad name string").cells();
+    smtk::mesh::CellSet no_cells = mr->meshes("bad name string").cells();
     smtk::mesh::CellSet result = smtk::mesh::set_difference(all_cells, no_cells);
     test(result == all_cells, "Subtraction with nothing should produce self");
   }
 
   { //subtract with something from nothing should produce nothing
-    smtk::mesh::CellSet no_cells = c->meshes("bad name string").cells();
+    smtk::mesh::CellSet no_cells = mr->meshes("bad name string").cells();
     smtk::mesh::CellSet result = smtk::mesh::set_difference(no_cells, all_cells);
     test(result == no_cells, "Subtraction of something from nothing should nothing");
   }
 
   //construct empty meshset
-  smtk::mesh::CellSet all_dims = c->meshes("bad name string").cells();
+  smtk::mesh::CellSet all_dims = mr->meshes("bad name string").cells();
   for (int i = 0; i < smtk::mesh::DimensionType_MAX; ++i)
   {
     smtk::mesh::DimensionType d(static_cast<smtk::mesh::DimensionType>(i));
-    all_dims.append(c->cells(d));
+    all_dims.append(mr->cells(d));
   }
 
   std::size_t size_difference = all_cells.size() - all_dims.size();
@@ -447,12 +447,12 @@ void verify_cellset_subtract(const smtk::mesh::CollectionPtr& c)
   test(non_dim_meshes.size() == size_difference, "subtract of two meshes produced wrong size");
 }
 
-void verify_cellset_point_intersect(const smtk::mesh::CollectionPtr& c)
+void verify_cellset_point_intersect(const smtk::mesh::ResourcePtr& mr)
 {
   using namespace smtk::mesh;
 
-  smtk::mesh::CellSet twoDim = c->cells(smtk::mesh::Dims2);
-  smtk::mesh::CellSet threeDim = c->cells(smtk::mesh::Dims3);
+  smtk::mesh::CellSet twoDim = mr->cells(smtk::mesh::Dims2);
+  smtk::mesh::CellSet threeDim = mr->cells(smtk::mesh::Dims3);
 
   //First test partial containment
   {
@@ -488,12 +488,12 @@ void verify_cellset_point_intersect(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-void verify_cellset_point_difference(const smtk::mesh::CollectionPtr& c)
+void verify_cellset_point_difference(const smtk::mesh::ResourcePtr& mr)
 {
   using namespace smtk::mesh;
 
-  smtk::mesh::CellSet twoDim = c->cells(smtk::mesh::Dims2);
-  smtk::mesh::CellSet threeDim = c->cells(smtk::mesh::Dims3);
+  smtk::mesh::CellSet twoDim = mr->cells(smtk::mesh::Dims2);
+  smtk::mesh::CellSet threeDim = mr->cells(smtk::mesh::Dims3);
 
   //First test partial containment
   {
@@ -579,10 +579,10 @@ public:
   smtk::mesh::CellTypes cellTypes() const { return cellTypesSeen; }
 };
 
-void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
+void verify_cellset_for_each(const smtk::mesh::ResourcePtr& mr)
 {
   CountCells functor;
-  smtk::mesh::MeshSet volMeshes = c->meshes(smtk::mesh::Dims3);
+  smtk::mesh::MeshSet volMeshes = mr->meshes(smtk::mesh::Dims3);
   smtk::mesh::for_each(volMeshes.cells(), functor);
 
   test(static_cast<std::size_t>(functor.numberOCellsVisited()) == volMeshes.cells().size());
@@ -604,7 +604,7 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
 
   //verify that point connectivity iteration and cell for_each visit
   //all the same cells, and we also see all the points
-  test(volMeshes.cells() == smtk::mesh::CellSet(c, functor.cells()));
+  test(volMeshes.cells() == smtk::mesh::CellSet(mr, functor.cells()));
   test(pointsFromConnectivity == functor.points());
   test(numPointsSeen == functor.numberOPointsSeen());
 
@@ -618,25 +618,25 @@ void verify_cellset_for_each(const smtk::mesh::CollectionPtr& c)
 
 int UnitTestCellSet(int, char** const)
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
+  smtk::mesh::ResourcePtr mr = load_mesh();
 
-  verify_constructors(c);
-  verify_subsets(c);
-  verify_empty(c);
-  verify_comparisons(c);
-  verify_typeset(c);
-  verify_all_cells(c);
-  verify_cells_by_type(c);
-  verify_cells_by_types(c);
-  verify_cells_by_dim(c);
-  verify_cellset_intersect(c);
-  verify_cellset_union(c);
-  verify_cellset_subtract(c);
+  verify_constructors(mr);
+  verify_subsets(mr);
+  verify_empty(mr);
+  verify_comparisons(mr);
+  verify_typeset(mr);
+  verify_all_cells(mr);
+  verify_cells_by_type(mr);
+  verify_cells_by_types(mr);
+  verify_cells_by_dim(mr);
+  verify_cellset_intersect(mr);
+  verify_cellset_union(mr);
+  verify_cellset_subtract(mr);
 
-  verify_cellset_point_intersect(c);
-  verify_cellset_point_difference(c);
+  verify_cellset_point_intersect(mr);
+  verify_cellset_point_difference(mr);
 
-  verify_cellset_for_each(c);
+  verify_cellset_for_each(mr);
 
   return 0;
 }

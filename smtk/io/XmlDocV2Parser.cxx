@@ -23,7 +23,7 @@
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/json/jsonHandleRange.h"
 #include "smtk/model/EntityRef.h"
@@ -503,10 +503,10 @@ void XmlDocV2Parser::processMeshEntityItem(
 
   //     //convert back to a handle
   //     smtk::mesh::HandleRange hrange = nlohmann::json::parse(val.text().get());
-  //     smtk::mesh::CollectionPtr c = modelresource->meshes()->collection(cid);
+  //     smtk::mesh::ResourcePtr c = modelresource->meshes()->resource(cid);
   //     if (!c)
   //     {
-  //       std::cerr << "Expecting a valid collection for mesh item: " << item->name() << std::endl;
+  //       std::cerr << "Expecting a valid resource for mesh item: " << item->name() << std::endl;
   //       continue;
   //     }
   //     smtk::mesh::InterfacePtr interface = c->interface();

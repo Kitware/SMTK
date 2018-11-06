@@ -11,7 +11,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -38,38 +38,38 @@ void cleanup(const std::string& file_path)
   }
 }
 
-void verify_write_empty_collection()
+void verify_write_empty_resource()
 {
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  test(c->isValid(), "empty collection is empty");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  test(mr->isValid(), "empty resource is empty");
 
-  const bool result = smtk::io::exportMesh(write_path, c);
+  const bool result = smtk::io::exportMesh(write_path, mr);
 
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
-  test(result == false, "nothing to write for an empty collection");
+  test(result == false, "nothing to write for an empty resource");
 }
 
-void verify_write_null_collection()
+void verify_write_null_resource()
 {
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
-  //use a null collection ptr
-  smtk::mesh::CollectionPtr c;
+  //use a null resource ptr
+  smtk::mesh::ResourcePtr mr;
 
-  const bool result = smtk::io::exportMesh(write_path, c);
+  const bool result = smtk::io::exportMesh(write_path, mr);
 
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
 
-  test(result == false, "Can't save null collection to disk");
+  test(result == false, "Can't save null resource to disk");
 }
 
-void verify_read_write_valid_collection()
+void verify_read_write_valid_resource()
 {
   bool result = false;
 
@@ -80,41 +80,41 @@ void verify_read_write_valid_collection()
   write_path += "/" + smtk::common::UUID::random().toString() + ".2dm";
 
   {
-    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-    smtk::io::importMesh(file_path, c);
-    test(c->isValid(), "collection should be valid");
-    test(!c->isModified(), "loaded collection should be marked as not modifed");
+    smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+    smtk::io::importMesh(file_path, mr);
+    test(mr->isValid(), "resource should be valid");
+    test(!mr->isModified(), "loaded resource should be marked as not modifed");
 
     //extract a surface mesh, and write that out
-    c->meshes(smtk::mesh::Dims3).extractShell();
-    test(c->isModified(), "extractShell should mark the collection as modified");
+    mr->meshes(smtk::mesh::Dims3).extractShell();
+    test(mr->isModified(), "extractShell should mark the resource as modified");
 
-    if (!smtk::io::exportMesh(write_path, c))
+    if (!smtk::io::exportMesh(write_path, mr))
     {
       test(result == true, "failed to properly write out a valid 2dm file");
     }
   }
 
   {
-    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-    smtk::io::importMesh(write_path, c);
+    smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+    smtk::io::importMesh(write_path, mr);
     cleanup(write_path);
 
-    test(c && c->isValid(), "collection should be valid");
-    test(!c->isModified(), "loaded collection should be marked as not modifed");
+    test(mr && mr->isValid(), "resource should be valid");
+    test(!mr->isModified(), "loaded resource should be marked as not modifed");
 
-    test(c->meshes().size() == 1, "collection should have 1 mesh");
-    test(c->cells().size() == 660, "collection should have 660 cells");
-    test(c->points().size() == 662, "collection should have 662 points");
+    test(mr->meshes().size() == 1, "resource should have 1 mesh");
+    test(mr->cells().size() == 660, "resource should have 660 cells");
+    test(mr->points().size() == 662, "resource should have 662 points");
   }
 }
 }
 
 int UnitTestExportMesh2DM(int, char** const)
 {
-  verify_write_empty_collection();
-  verify_write_null_collection();
-  verify_read_write_valid_collection();
+  verify_write_empty_resource();
+  verify_write_null_resource();
+  verify_read_write_valid_resource();
 
   return 0;
 }

@@ -34,8 +34,8 @@
 #include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  smtk::mesh::CollectionPtr collection;
+  smtk::mesh::ResourcePtr meshResource;
   {
     smtk::model::EntityRefs currentEnts =
       resource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::FACE);
@@ -193,14 +193,14 @@ int main(int argc, char* argv[])
     }
     triangulateFace->specification()->associateEntity(face);
     smtk::operation::OperationResult result = triangulateFace->operate();
-    auto associatedCollections = meshManager->associatedCollections(face);
-    collection = associatedCollections[0];
+    auto associatedResources = meshManager->associatedCollections(face);
+    meshResource = associatedResources[0];
   }
 
   // histogram non-elevated coordinate values
   {
     ValidatePoints validatePoints(5, -1., 1.);
-    smtk::mesh::for_each(collection->meshes().points(), validatePoints);
+    smtk::mesh::for_each(meshResource->meshes().points(), validatePoints);
     std::size_t valid[5] = { 0, 0, 8, 0, 0 };
 
     for (std::size_t bin = 0; bin < 5; bin++)
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
   {
     smtk::operation::Operation::Ptr op = session->op("my elevate mesh");
 
-    op->findMesh("mesh")->setValue(collection->meshes());
+    op->findMesh("mesh")->setValue(meshResource->meshes());
     smtk::operation::OperationResult result = op->operate();
     if (result->findInt("outcome")->value() != smtk::operation::Operation::OPERATION_SUCCEEDED)
     {
@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
   // histogram elevated coordinate values
   {
     ValidatePoints validatePoints(5, -1., 1.);
-    smtk::mesh::for_each(collection->meshes().points(), validatePoints);
+    smtk::mesh::for_each(meshResource->meshes().points(), validatePoints);
     std::size_t valid[5] = { 2, 0, 4, 0, 2 };
 
     for (std::size_t bin = 0; bin < 5; bin++)

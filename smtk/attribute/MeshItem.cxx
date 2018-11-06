@@ -14,7 +14,7 @@
 
 #include "smtk/model/Resource.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include <algorithm> // for std::find and std::copy
 #include <iostream>

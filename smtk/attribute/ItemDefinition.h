@@ -46,11 +46,11 @@ public:
   // Temp structure used for copying definitions
   struct CopyInfo
   {
-    // Reference to collection that is getting modified ("to")
+    // Reference to resource that is getting modified ("to")
     const smtk::attribute::Resource& ToResource;
-    // List of ValueItemDefinitions that reference expressions not currently in this collection
+    // List of ValueItemDefinitions that reference expressions not currently in this resource
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
-    // List of RefItemDefinitions that reference types not currently in this collection
+    // List of RefItemDefinitions that reference types not currently in this resource
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
     CopyInfo(const smtk::attribute::ResourcePtr resource)
       : ToResource(*resource)

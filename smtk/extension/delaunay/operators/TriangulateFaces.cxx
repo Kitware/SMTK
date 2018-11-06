@@ -19,7 +19,7 @@
 #include "smtk/extension/delaunay/io/ExportDelaunayMesh.h"
 #include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
@@ -76,12 +76,12 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
 
   bool validatePolygons = this->parameters()->findVoid("validate polygons")->isEnabled();
 
-  // construct a collection and associate it with the face's model
+  // construct a meshresource and associate it with the face's model
   smtk::model::Resource::Ptr resource =
     std::dynamic_pointer_cast<smtk::model::Resource>(faces[0].component()->resource());
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
-  collection->setModelResource(faces[0].resource());
-  collection->associateToModel(faces[0].model().entity());
+  smtk::mesh::ResourcePtr meshresource = smtk::mesh::Resource::create();
+  meshresource->setModelResource(faces[0].resource());
+  meshresource->associateToModel(faces[0].model().entity());
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
@@ -150,20 +150,20 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
       excise(p_sub, mesh);
     }
 
-    // populate the collection
+    // populate the meshresource
     smtk::extension::delaunay::io::ImportDelaunayMesh importFromDelaunayMesh;
-    smtk::mesh::MeshSet meshSet = importFromDelaunayMesh(mesh, collection);
+    smtk::mesh::MeshSet meshSet = importFromDelaunayMesh(mesh, meshresource);
     if (!meshSet.is_empty())
     {
-      collection->setAssociation(face, meshSet);
+      meshresource->setAssociation(face, meshSet);
     }
     meshSet.mergeCoincidentContactPoints();
 
-    smtk::attribute::ResourceItem::Ptr collectionItem = result->findResource("collection");
-    collectionItem->setValue(std::static_pointer_cast<smtk::resource::Resource>(collection));
+    smtk::attribute::ResourceItem::Ptr meshresourceItem = result->findResource("meshresource");
+    meshresourceItem->setValue(std::static_pointer_cast<smtk::resource::Resource>(meshresource));
 
     // we flag the model that owns this face as modified so that a mesh
-    // collection for the entire model is placed in ModelBuilder's model
+    // meshresource for the entire model is placed in ModelBuilder's model
     // tree. In the future, ModelBuilder should be able to handle meshes
     // on model entities (rather than entire models).
     smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");

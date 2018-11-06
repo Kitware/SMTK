@@ -34,7 +34,7 @@ Topology* Session::topology(const smtk::session::mesh::Resource::Ptr& modelResou
   std::vector<Topology>::iterator it =
     find_if(m_topologies.begin(), m_topologies.end(), [&](const Topology& t) {
       return modelResource->links().isLinkedTo(
-        t.m_collection, smtk::model::Resource::TessellationRole);
+        t.m_resource, smtk::model::Resource::TessellationRole);
     });
   return (it == m_topologies.end() ? nullptr : &(*it));
 }

@@ -10,9 +10,9 @@
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/PointConnectivity.h"
 #include "smtk/mesh/core/PointSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -121,7 +121,7 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::mesh::Cell
 }
 
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::EntityRef& eRef,
-  const smtk::mesh::CollectionPtr& c, std::int64_t& connectivityLength, std::int64_t& numberOfCells,
+  const smtk::mesh::ResourcePtr& c, std::int64_t& connectivityLength, std::int64_t& numberOfCells,
   std::int64_t& numberOfPoints)
 
 {
@@ -130,7 +130,7 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Ent
 }
 
 void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Loop& loop,
-  const smtk::mesh::CollectionPtr& c, std::int64_t& connectivityLength, std::int64_t& numberOfCells,
+  const smtk::mesh::ResourcePtr& c, std::int64_t& connectivityLength, std::int64_t& numberOfCells,
   std::int64_t& numberOfPoints)
 
 {
@@ -299,7 +299,7 @@ void extractTessellation(const smtk::mesh::CellSet& cs, PreAllocatedTessellation
   extractTessellation(cs, cs.points(), tess);
 }
 
-void extractTessellation(const smtk::model::EntityRef& eRef, const smtk::mesh::CollectionPtr& c,
+void extractTessellation(const smtk::model::EntityRef& eRef, const smtk::mesh::ResourcePtr& c,
   PreAllocatedTessellation& tess)
 {
   CellSet cs = c->findAssociatedCells(eRef);
@@ -426,7 +426,7 @@ void extractTessellation(
   extractTessellationInternal<smtk::mesh::PointConnectivity>(pc, ps, tess);
 }
 
-void extractTessellation(const smtk::model::EntityRef& eRef, const smtk::mesh::CollectionPtr& c,
+void extractTessellation(const smtk::model::EntityRef& eRef, const smtk::mesh::ResourcePtr& c,
   const smtk::mesh::PointSet& ps, PreAllocatedTessellation& tess)
 {
   extractTessellation(c->findAssociatedCells(eRef), ps, tess);
@@ -606,8 +606,7 @@ private:
 
 template <class OneDimensionalEntities>
 void extractOrderedTessellation(const OneDimensionalEntities& oneDimEntities,
-  const smtk::mesh::CollectionPtr& c, const smtk::mesh::PointSet& ps,
-  PreAllocatedTessellation& tess)
+  const smtk::mesh::ResourcePtr& c, const smtk::mesh::PointSet& ps, PreAllocatedTessellation& tess)
 {
   // Assuming that the lines that make up a loop are oriented but not ordered,
   // extractOrderedTessellation() takes an iterable collection of 1-dimensional
@@ -663,7 +662,7 @@ void extractOrderedTessellation(const OneDimensionalEntities& oneDimEntities,
 }
 
 void extractOrderedTessellation(const smtk::model::EdgeUse& edgeUse,
-  const smtk::mesh::CollectionPtr& c, PreAllocatedTessellation& tess)
+  const smtk::mesh::ResourcePtr& c, PreAllocatedTessellation& tess)
 {
   // Collect the cells associated with the edge
   smtk::mesh::CellSet cells = c->findAssociatedCells(edgeUse.edge());
@@ -671,7 +670,7 @@ void extractOrderedTessellation(const smtk::model::EdgeUse& edgeUse,
 }
 
 void extractOrderedTessellation(
-  const smtk::model::Loop& loop, const smtk::mesh::CollectionPtr& c, PreAllocatedTessellation& tess)
+  const smtk::model::Loop& loop, const smtk::mesh::ResourcePtr& c, PreAllocatedTessellation& tess)
 {
   smtk::mesh::HandleRange cellRange;
   smtk::mesh::CellSet cells(c, cellRange);
@@ -690,15 +689,14 @@ void extractOrderedTessellation(
 }
 
 void extractOrderedTessellation(const smtk::model::EdgeUse& edgeUse,
-  const smtk::mesh::CollectionPtr& c, const smtk::mesh::PointSet& ps,
-  PreAllocatedTessellation& tess)
+  const smtk::mesh::ResourcePtr& c, const smtk::mesh::PointSet& ps, PreAllocatedTessellation& tess)
 {
   smtk::model::EdgeUses edgeUses;
   edgeUses.push_back(edgeUse);
   extractOrderedTessellation<smtk::model::EdgeUses>(edgeUses, c, ps, tess);
 }
 
-void extractOrderedTessellation(const smtk::model::Loop& loop, const smtk::mesh::CollectionPtr& c,
+void extractOrderedTessellation(const smtk::model::Loop& loop, const smtk::mesh::ResourcePtr& c,
   const smtk::mesh::PointSet& ps, PreAllocatedTessellation& tess)
 {
   smtk::model::EdgeUses euses = loop.edgeUses();

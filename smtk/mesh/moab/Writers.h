@@ -22,17 +22,17 @@ namespace mesh
 namespace moab
 {
 
-//Write everything in a file into an existing collection.
-bool write(const std::string& path, const smtk::mesh::CollectionPtr& c);
+//Write everything in a file into an existing resource.
+bool write(const std::string& path, const smtk::mesh::ResourcePtr& c);
 
-//Write all the domain sets in a file into an existing collection
-bool write_domain(const std::string& path, const smtk::mesh::CollectionPtr& c);
+//Write all the domain sets in a file into an existing resource
+bool write_domain(const std::string& path, const smtk::mesh::ResourcePtr& c);
 
-//Write all the neumann sets in a file into an existing collection
-bool write_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c);
+//Write all the neumann sets in a file into an existing resource
+bool write_neumann(const std::string& path, const smtk::mesh::ResourcePtr& c);
 
-//Write all the dirichlet sets in a file into an existing collection
-bool write_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c);
+//Write all the dirichlet sets in a file into an existing resource
+bool write_dirichlet(const std::string& path, const smtk::mesh::ResourcePtr& c);
 }
 }
 }

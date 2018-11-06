@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/io/ImportMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/core/TypeSet.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -20,21 +20,21 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh()
+smtk::mesh::ResourcePtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  smtk::io::importMesh(file_path, c);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  smtk::io::importMesh(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
 
-  return c;
+  return mr;
 }
 
-void verify_constructors(const smtk::mesh::CollectionPtr& c)
+void verify_constructors(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet all_meshes = c->meshes();
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
 
   smtk::mesh::PointConnectivity all_cells_from_ms = all_meshes.pointConnectivity();
   smtk::mesh::PointConnectivity copy_of_all_cells(all_cells_from_ms);
@@ -44,16 +44,16 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test(all_cells_from_ms.size() == copy_of_all_cells.size());
 
   //The connectivity of the zeroth dimension is itself
-  smtk::mesh::PointConnectivity zeroDim = c->cells(smtk::mesh::Dims0).pointConnectivity();
+  smtk::mesh::PointConnectivity zeroDim = mr->cells(smtk::mesh::Dims0).pointConnectivity();
   smtk::mesh::PointConnectivity equalToZeroDim = copy_of_all_cells;
   equalToZeroDim = zeroDim; //test assignment operator
   test(equalToZeroDim.size() == zeroDim.size());
   test(equalToZeroDim.numberOfCells() == zeroDim.numberOfCells());
   test(equalToZeroDim.size() == zeroDim.size());
-  test(equalToZeroDim.size() == c->cells(smtk::mesh::Dims0).size());
+  test(equalToZeroDim.size() == mr->cells(smtk::mesh::Dims0).size());
 
   //The connectivity of the first dimension
-  smtk::mesh::PointConnectivity oneDim = c->cells(smtk::mesh::Dims1).pointConnectivity();
+  smtk::mesh::PointConnectivity oneDim = mr->cells(smtk::mesh::Dims1).pointConnectivity();
   smtk::mesh::PointConnectivity equalToOneDim = copy_of_all_cells;
   equalToOneDim = oneDim; //test assignment operator
   test(equalToOneDim.numberOfCells() == oneDim.numberOfCells());
@@ -61,9 +61,9 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test(equalToOneDim.is_empty() == false);
 }
 
-void verify_empty(const smtk::mesh::CollectionPtr& c)
+void verify_empty(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet no_mesh = c->meshes("bad name string");
+  smtk::mesh::MeshSet no_mesh = mr->meshes("bad name string");
 
   smtk::mesh::PointConnectivity no_cells_a = no_mesh.pointConnectivity();
   smtk::mesh::PointConnectivity no_cells_b =
@@ -88,10 +88,10 @@ void verify_empty(const smtk::mesh::CollectionPtr& c)
   test(no_cells_d.numberOfCells() == 0);
 }
 
-void verify_all_connecitivity(const smtk::mesh::CollectionPtr& c)
+void verify_all_connecitivity(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::MeshSet all_meshes = c->meshes();
-  smtk::mesh::PointConnectivity all_cells_from_collec = c->pointConnectivity();
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
+  smtk::mesh::PointConnectivity all_cells_from_collec = mr->pointConnectivity();
   smtk::mesh::PointConnectivity all_cells_from_ms = all_meshes.pointConnectivity();
 
   test(all_cells_from_collec.is_empty() == false);
@@ -103,10 +103,10 @@ void verify_all_connecitivity(const smtk::mesh::CollectionPtr& c)
   test(all_cells_from_collec.size() == all_cells_from_ms.size());
 }
 
-void verify_simple_equiv(const smtk::mesh::CollectionPtr& c)
+void verify_simple_equiv(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::PointConnectivity twoDim = c->cells(smtk::mesh::Dims2).pointConnectivity();
-  smtk::mesh::PointConnectivity oneDim = c->cells(smtk::mesh::Dims1).pointConnectivity();
+  smtk::mesh::PointConnectivity twoDim = mr->cells(smtk::mesh::Dims2).pointConnectivity();
+  smtk::mesh::PointConnectivity oneDim = mr->cells(smtk::mesh::Dims1).pointConnectivity();
 
   test(twoDim == twoDim);
   test(!(twoDim != twoDim));
@@ -123,17 +123,17 @@ void verify_simple_equiv(const smtk::mesh::CollectionPtr& c)
   test(twoDim_a != oneDim_b);
 }
 
-void verify_complex_equiv(const smtk::mesh::CollectionPtr& c)
+void verify_complex_equiv(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::PointConnectivity twoDim = c->cells(smtk::mesh::Dims2).pointConnectivity();
-  smtk::mesh::PointConnectivity twoDimV2 = c->cells(smtk::mesh::Dims2).pointConnectivity();
+  smtk::mesh::PointConnectivity twoDim = mr->cells(smtk::mesh::Dims2).pointConnectivity();
+  smtk::mesh::PointConnectivity twoDimV2 = mr->cells(smtk::mesh::Dims2).pointConnectivity();
   test(twoDim == twoDimV2);
 
   smtk::mesh::CellTypes ctypes_only_2d(std::string("000011100"));
-  smtk::mesh::PointConnectivity twoDim_from_ctype = c->cells(ctypes_only_2d).pointConnectivity();
+  smtk::mesh::PointConnectivity twoDim_from_ctype = mr->cells(ctypes_only_2d).pointConnectivity();
   test(twoDim == twoDim_from_ctype);
 
-  smtk::mesh::MeshSet meshes = c->meshes();
+  smtk::mesh::MeshSet meshes = mr->meshes();
   test(twoDim != meshes.pointConnectivity());
   test(twoDim == meshes.cells(smtk::mesh::Dims2).pointConnectivity());
   test(twoDim == meshes.cells(ctypes_only_2d).pointConnectivity());
@@ -155,14 +155,14 @@ void verify_complex_equiv(const smtk::mesh::CollectionPtr& c)
   test(twoDim == cs_all.pointConnectivity());
 }
 
-void verify_iteration(const smtk::mesh::CollectionPtr& c)
+void verify_iteration(const smtk::mesh::ResourcePtr& mr)
 {
 
   //fetch all 2d cells.
   //grab the number of cells, and total size.
   //iterate all the cells and count how many we visit and sum the length
   //verify all number match
-  smtk::mesh::PointConnectivity twoDim = c->cells(smtk::mesh::Dims2).pointConnectivity();
+  smtk::mesh::PointConnectivity twoDim = mr->cells(smtk::mesh::Dims2).pointConnectivity();
 
   const std::size_t reportedNumCells = twoDim.numberOfCells();
   const std::size_t reportedNumVerts = twoDim.size();
@@ -181,7 +181,7 @@ void verify_iteration(const smtk::mesh::CollectionPtr& c)
     actualNumVerts += static_cast<std::size_t>(size);
 
     allCellTypesSeen[cellType] = true;
-    // c->debugDump( points );
+    // mr->debugDump( points );
   }
   smtk::mesh::TypeSet typeSet(allCellTypesSeen, false, true);
 
@@ -194,7 +194,7 @@ void verify_iteration(const smtk::mesh::CollectionPtr& c)
   test(reportedNumVerts == actualNumVerts);
 }
 
-void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
+void verify_shared_iteration(const smtk::mesh::ResourcePtr& mr)
 {
 
   //fetch all 2d cells.
@@ -207,7 +207,7 @@ void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
 
   //this shows that the iterator info isn't stored in the shared_ptr between
   //the two connectivity objects, but is unique for both.
-  smtk::mesh::PointConnectivity twoDim = c->cells(smtk::mesh::Dims2).pointConnectivity();
+  smtk::mesh::PointConnectivity twoDim = mr->cells(smtk::mesh::Dims2).pointConnectivity();
   smtk::mesh::PointConnectivity twoDimCopy = twoDim;
 
   const std::size_t reportedNumCells = twoDim.numberOfCells();
@@ -244,18 +244,18 @@ void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
 
 int UnitTestPointConnectivity(int, char** const)
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
+  smtk::mesh::ResourcePtr mr = load_mesh();
 
-  verify_constructors(c);
-  verify_empty(c);
+  verify_constructors(mr);
+  verify_empty(mr);
 
-  verify_all_connecitivity(c);
+  verify_all_connecitivity(mr);
 
-  verify_simple_equiv(c);
-  verify_complex_equiv(c);
+  verify_simple_equiv(mr);
+  verify_complex_equiv(mr);
 
-  verify_iteration(c);
-  verify_shared_iteration(c);
+  verify_iteration(mr);
+  verify_shared_iteration(mr);
 
   return 0;
 }

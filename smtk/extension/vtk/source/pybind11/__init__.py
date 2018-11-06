@@ -22,11 +22,11 @@ class vtkMeshMultiBlockSource(vtkSMTKSourceExtPython.vtkMeshMultiBlockSource):
     def SetModelResource(self, resource):
         return _srcfns._vtkMeshMultiBlockSource_SetModelResource(self, resource)
 
-    def GetMeshCollection(self):
-        return _srcfns._vtkMeshMultiBlockSource_GetMeshCollection(self)
+    def GetMeshResource(self):
+        return _srcfns._vtkMeshMultiBlockSource_GetMeshResource(self)
 
-    def SetMeshCollection(self, collection):
-        return _srcfns._vtkMeshMultiBlockSource_SetMeshCollection(self, collection)
+    def SetMeshResource(self, resource):
+        return _srcfns._vtkMeshMultiBlockSource_SetMeshResource(self, resource)
 
 
 class vtkModelMultiBlockSource(vtkSMTKSourceExtPython.vtkModelMultiBlockSource):

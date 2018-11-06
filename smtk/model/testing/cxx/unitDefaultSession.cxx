@@ -191,7 +191,7 @@ protected:
 
     // Kill remote operator and result.
     remOp->session()->operatorCollection()->removeAttribute(remOp->specification());
-    remResult->collection()->removeAttribute(remResult);
+    remResult->resource()->removeAttribute(remResult);
 
     printParams(localResult, "local output");
     return localResult;

@@ -39,10 +39,10 @@ namespace moab
 SMTKCORE_EXPORT
 smtk::mesh::moab::InterfacePtr make_interface();
 
-//Given a smtk::mesh Collection extract the underlying smtk::mesh::moab interface
-//from it. This requires that the collection was created with the proper interface
+//Given a smtk::mesh Resource extract the underlying smtk::mesh::moab interface
+//from it. This requires that the resource was created with the proper interface
 //to begin with.
-smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::CollectionPtr& c);
+smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::ResourcePtr& c);
 
 //Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface, and than
 //extract the raw moab interface pointer from that
@@ -73,7 +73,7 @@ public:
   //If the current interface is read-only, the AllocatorPtr that is returned
   //will be NULL.
   //
-  //Note: Merely fetching a valid allocator will mark the collection as
+  //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   smtk::mesh::AllocatorPtr allocator() override;
@@ -85,7 +85,7 @@ public:
   //If the current interface is read-only, the BufferedCellAllocatorPtr that is
   //returned will be NULL.
   //
-  //Note: Merely fetching a valid allocator will mark the collection as
+  //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   smtk::mesh::BufferedCellAllocatorPtr bufferedCellAllocator() override;
@@ -97,7 +97,7 @@ public:
   //If the current interface is read-only, the IncrementalAllocatorPtr that is
   //returned will be NULL.
   //
-  //Note: Merely fetching a valid allocator will mark the collection as
+  //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   smtk::mesh::IncrementalAllocatorPtr incrementalAllocator() override;

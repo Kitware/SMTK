@@ -10,7 +10,7 @@
 
 #include "smtk/io/ImportMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 namespace
@@ -20,7 +20,7 @@ std::string data_root = SMTK_DATA_DIR;
 
 void verify_import_unstructured_grid()
 {
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::mesh::ResourcePtr c = smtk::mesh::Resource::create();
 
   std::string file_path(data_root);
   file_path += "/mesh/3d/nickel_superalloy.vtu";
@@ -30,7 +30,7 @@ void verify_import_unstructured_grid()
 
 void verify_import_polydata()
 {
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::mesh::ResourcePtr c = smtk::mesh::Resource::create();
 
   std::string file_path(data_root);
   file_path += "/scene/BasicScene_12_20_07/PolygonMesh_f8e612a9-876c-4145-9c74-ee6c39f2a157.vtp";

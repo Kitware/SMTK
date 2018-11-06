@@ -27,7 +27,7 @@ namespace mesh
 
 enum class Subset : unsigned int
 {
-  EntireCollection,
+  EntireResource,
   OnlyDomain,
   OnlyDirichlet,
   OnlyNeumann,
@@ -49,32 +49,32 @@ class SMTKCORE_EXPORT MeshIO
 public:
   virtual ~MeshIO() {}
 
-  virtual smtk::mesh::CollectionPtr importMesh(
+  virtual smtk::mesh::ResourcePtr importMesh(
     const std::string&, const smtk::mesh::InterfacePtr&, const std::string&) const
   {
-    return smtk::mesh::CollectionPtr();
+    return smtk::mesh::ResourcePtr();
   }
-  virtual bool importMesh(const std::string&, smtk::mesh::CollectionPtr, const std::string&) const
+  virtual bool importMesh(const std::string&, smtk::mesh::ResourcePtr, const std::string&) const
   {
     return false;
   }
 
-  virtual bool exportMesh(const std::string&, smtk::mesh::CollectionPtr) const { return false; }
-  virtual bool exportMesh(const std::string&, smtk::mesh::CollectionPtr, smtk::model::ResourcePtr,
-    const std::string&) const
+  virtual bool exportMesh(const std::string&, smtk::mesh::ResourcePtr) const { return false; }
+  virtual bool exportMesh(
+    const std::string&, smtk::mesh::ResourcePtr, smtk::model::ResourcePtr, const std::string&) const
   {
     return false;
   }
 
-  virtual smtk::mesh::CollectionPtr read(
+  virtual smtk::mesh::ResourcePtr read(
     const std::string&, const smtk::mesh::InterfacePtr&, Subset) const
   {
-    return smtk::mesh::CollectionPtr();
+    return smtk::mesh::ResourcePtr();
   }
-  virtual bool read(const std::string&, smtk::mesh::CollectionPtr, Subset) const { return false; }
+  virtual bool read(const std::string&, smtk::mesh::ResourcePtr, Subset) const { return false; }
 
-  virtual bool write(const std::string&, smtk::mesh::CollectionPtr, Subset) const { return false; }
-  virtual bool write(smtk::mesh::CollectionPtr, Subset) const { return false; }
+  virtual bool write(const std::string&, smtk::mesh::ResourcePtr, Subset) const { return false; }
+  virtual bool write(smtk::mesh::ResourcePtr, Subset) const { return false; }
 
   const std::vector<smtk::io::mesh::Format>& FileFormats() const { return this->Formats; }
 

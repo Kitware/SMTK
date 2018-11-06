@@ -88,7 +88,7 @@ smtk::io::mesh::Format ImportMesh::fileFormat(const std::string& filePath)
   return smtk::io::mesh::Format();
 }
 
-smtk::mesh::CollectionPtr ImportMesh::operator()(const std::string& filePath,
+smtk::mesh::ResourcePtr ImportMesh::operator()(const std::string& filePath,
   const smtk::mesh::InterfacePtr& interface, std::string domainPropertyName) const
 {
   // Grab the file extension
@@ -104,16 +104,16 @@ smtk::mesh::CollectionPtr ImportMesh::operator()(const std::string& filePath,
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
-        // import the collection
+        // import the resource
         return importer->importMesh(filePath, interface, domainPropertyName);
       }
     }
   }
 
-  return smtk::mesh::CollectionPtr();
+  return smtk::mesh::ResourcePtr();
 }
 
-bool ImportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool ImportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr resource,
   std::string domainPropertyName) const
 {
   // Grab the file extension
@@ -129,39 +129,39 @@ bool ImportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionP
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
-        // import the collection
-        return importer->importMesh(filePath, collection, domainPropertyName);
+        // import the resource
+        return importer->importMesh(filePath, resource, domainPropertyName);
       }
     }
   }
   return false;
 }
 
-smtk::mesh::CollectionPtr importMesh(
+smtk::mesh::ResourcePtr importMesh(
   const std::string& filePath, const smtk::mesh::InterfacePtr& interface)
 {
   ImportMesh importM;
   return importM(filePath, interface, std::string());
 }
 
-smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+smtk::mesh::ResourcePtr importMesh(const std::string& filePath,
   const smtk::mesh::InterfacePtr& interface, const std::string& domainPropertyName)
 {
   ImportMesh importM;
   return importM(filePath, interface, domainPropertyName);
 }
 
-bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection)
+bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource)
 {
   ImportMesh importM;
-  return importM(filePath, collection, std::string());
+  return importM(filePath, resource, std::string());
 }
 
-bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
   const std::string& domainPropertyName)
 {
   ImportMesh importM;
-  return importM(filePath, collection, domainPropertyName);
+  return importM(filePath, resource, domainPropertyName);
 }
 
 smtk::io::mesh::Format meshFileFormat(const std::string& filePath)

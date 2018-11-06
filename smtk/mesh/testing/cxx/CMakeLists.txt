@@ -13,7 +13,7 @@
 set(unit_tests
   UnitTestAllocator.cxx
   UnitTestCellTypes.cxx
-  UnitTestCollection.cxx
+  UnitTestResource.cxx
   UnitTestBufferedCellAllocator.cxx
   UnitTestIncrementalAllocator.cxx
   UnitTestIntervals.cxx
@@ -24,7 +24,7 @@ set(unit_tests
 )
 
 set(unit_tests_which_require_data
-  UnitTestAddFileToCollection.cxx
+  UnitTestAddFileToResource.cxx
   UnitTestCellSet.cxx
   UnitTestCreateMesh.cxx
   UnitTestCellField.cxx

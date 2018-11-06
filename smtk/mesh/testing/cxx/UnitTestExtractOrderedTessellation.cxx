@@ -19,7 +19,7 @@
 
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -95,7 +95,7 @@ int UnitTestExtractOrderedTessellation(int, char** const)
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(resource);
+  smtk::mesh::ResourcePtr c = convert(resource);
 
   typedef smtk::model::EntityRefs EntityRefs;
 

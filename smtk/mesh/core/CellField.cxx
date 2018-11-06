@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/core/CellField.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/core/Interface.h"
 
@@ -70,12 +70,12 @@ bool CellField::operator<(const CellField& other) const
 
 bool CellField::isValid() const
 {
-  if (m_name.empty() || m_meshset.collection() == nullptr)
+  if (m_name.empty() || m_meshset.resource() == nullptr)
   {
     return false;
   }
 
-  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.resource()->interface();
   if (!iface)
   {
     return false;
@@ -92,7 +92,7 @@ std::size_t CellField::size() const
 
 std::size_t CellField::dimension() const
 {
-  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.resource()->interface();
   if (!iface)
   {
     return 0;
@@ -104,7 +104,7 @@ std::size_t CellField::dimension() const
 
 smtk::mesh::FieldType CellField::type() const
 {
-  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.resource()->interface();
   if (!iface)
   {
     return smtk::mesh::FieldType::MaxFieldType;
@@ -122,7 +122,7 @@ smtk::mesh::CellSet CellField::cells() const
 
 bool CellField::get(const smtk::mesh::HandleRange& cellIds, void* values) const
 {
-  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.resource()->interface();
   if (!iface)
   {
     return false;
@@ -138,7 +138,7 @@ bool CellField::get(const smtk::mesh::HandleRange& cellIds, void* values) const
 
 bool CellField::set(const smtk::mesh::HandleRange& cellIds, const void* const values)
 {
-  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.resource()->interface();
   if (!iface)
   {
     return false;
@@ -154,7 +154,7 @@ bool CellField::set(const smtk::mesh::HandleRange& cellIds, const void* const va
 
 bool CellField::get(void* values) const
 {
-  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.resource()->interface();
   if (!iface)
   {
     return false;
@@ -165,7 +165,7 @@ bool CellField::get(void* values) const
 
 bool CellField::set(const void* const values)
 {
-  const smtk::mesh::InterfacePtr& iface = m_meshset.collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = m_meshset.resource()->interface();
   if (!iface)
   {
     return false;

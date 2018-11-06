@@ -16,7 +16,7 @@
         applied by these operators.
       </DetailedDescription>
       <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
-        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+        <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
       </ItemDefinitions>

@@ -90,7 +90,7 @@
         <Resource Name="resource"  Extensible="1">
           <Accepts>
             <Resource Name="smtk::session::discrete::Resource"/>
-            <Resource Name="smtk::mesh::Collection"/>
+            <Resource Name="smtk::mesh::Resource"/>
           </Accepts>
         </Resource>
 

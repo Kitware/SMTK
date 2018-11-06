@@ -14,7 +14,7 @@
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/WriteMesh.h"
 #include "smtk/io/mesh/MeshIO.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "vtkNew.h"
 #include "vtkParametricBoy.h"
@@ -63,15 +63,15 @@ public:
     }
     else
     {
-      shell = m_collection->createMesh(existingShellCells);
+      shell = m_resource->createMesh(existingShellCells);
     }
 
     smtk::mesh::Domain domain(currentMaterialValue++);
-    m_collection->setDomainOnMeshes(shell, domain);
+    m_resource->setDomainOnMeshes(shell, domain);
   }
 };
 
-void createShellPerMaterial(const smtk::mesh::CollectionPtr& c)
+void createShellPerMaterial(const smtk::mesh::ResourcePtr& c)
 {
   //for each material we iterate the meshsets
   typedef std::vector<smtk::mesh::Domain> DomainVecType;
@@ -89,7 +89,7 @@ void createShellPerMaterial(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
+void breakMaterialsByCellType(const smtk::mesh::ResourcePtr& c)
 {
   //for each material we iterate the meshsets
   typedef std::vector<smtk::mesh::Domain> DomainVecType;
@@ -135,23 +135,23 @@ void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
 }
 
 template <typename vtkDataSetType>
-smtk::mesh::CollectionPtr convert(vtkDataSetType* input, std::string material)
+smtk::mesh::ResourcePtr convert(vtkDataSetType* input, std::string material)
 {
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   //we convert the vtk data into a single mesh.
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
-  imprt(input, collection, material);
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create();
+  imprt(input, resource, material);
 
-  if (!collection)
+  if (!resource)
   {
-    std::cerr << "unable to import the collection properly" << std::endl;
+    std::cerr << "unable to import the resource properly" << std::endl;
   }
 
-  return collection;
+  return resource;
 }
 
-void extractSurfaces(smtk::mesh::CollectionPtr c, std::string outputFile)
+void extractSurfaces(smtk::mesh::ResourcePtr c, std::string outputFile)
 {
   std::cout << "Info on input: " << std::endl;
   std::cout << " volume mesh count: " << c->meshes(smtk::mesh::Dims3).size() << std::endl;
@@ -180,7 +180,7 @@ void extractSurfaces(smtk::mesh::CollectionPtr c, std::string outputFile)
 
   std::cout << "number of domains in output: " << c->domains().size() << std::endl;
 
-  smtk::io::writeMesh(outputFile, c, smtk::io::mesh::Subset::EntireCollection);
+  smtk::io::writeMesh(outputFile, c, smtk::io::mesh::Subset::EntireResource);
 }
 }
 
@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
 
   // Dispatch based on the file extension
   vtkDataSet* data;
-  smtk::mesh::CollectionPtr c;
+  smtk::mesh::ResourcePtr c;
   if (extension == ".vtu")
   {
     data = readXMLFile<vtkXMLUnstructuredGridReader>(inputFileName);
@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
   }
   else if (extension == ".h5m" || extension == ".exo")
   {
-    c = smtk::mesh::Collection::create();
+    c = smtk::mesh::Resource::create();
     smtk::io::importMesh(inputFileName, c);
   }
 

@@ -32,8 +32,8 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Resource.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
@@ -91,9 +91,9 @@ public:
 
         smtk::mesh::ComponentPtr msh =
           data ? std::dynamic_pointer_cast<smtk::mesh::Component>(comp) : nullptr;
-        smtk::mesh::CollectionPtr meshRsrc = msh
-          ? std::dynamic_pointer_cast<smtk::mesh::Collection>(msh->resource())
-          : (data ? std::dynamic_pointer_cast<smtk::mesh::Collection>(rsrc) : nullptr);
+        smtk::mesh::ResourcePtr meshRsrc = msh
+          ? std::dynamic_pointer_cast<smtk::mesh::Resource>(msh->resource())
+          : (data ? std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc) : nullptr);
 
         auto smtkBehavior = pqSMTKBehavior::instance();
 

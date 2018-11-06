@@ -23,9 +23,9 @@
 #include "smtk/io/mesh/MeshIO.h"
 
 #include "smtk/mesh/Write_xml.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
@@ -85,11 +85,11 @@ Write::Result Write::operateInternal()
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
     smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
-    smtk::mesh::CollectionPtr collection =
-      std::dynamic_pointer_cast<smtk::mesh::Collection>(meshComponent->resource());
+    smtk::mesh::ResourcePtr resource =
+      std::dynamic_pointer_cast<smtk::mesh::Resource>(meshComponent->resource());
     bool fileWriteSuccess = false;
 
-    if (collection)
+    if (resource)
     {
       if (meshItem->numberOfValues() > 1)
       {
@@ -99,7 +99,7 @@ Write::Result Write::operateInternal()
       }
 
       smtk::io::WriteMesh write;
-      fileWriteSuccess = write(outputfile, collection, componentToWrite);
+      fileWriteSuccess = write(outputfile, resource, componentToWrite);
 
       if (fileWriteSuccess)
       {

@@ -81,7 +81,7 @@ Write::Result Write::operateInternal()
 
   smtk::model::Model model = models[0];
 
-  std::string meshFilename = resource->collection()->location();
+  std::string meshFilename = resource->resource()->location();
 
   if (meshFilename.empty())
   {

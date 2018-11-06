@@ -29,7 +29,7 @@
 
         <Resource Name="resource">
           <Accepts>
-            <Resource Name="smtk::mesh::Collection"/>
+            <Resource Name="smtk::mesh::Resource"/>
           </Accepts>
         </Resource>
 

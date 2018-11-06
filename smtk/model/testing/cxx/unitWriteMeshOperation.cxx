@@ -18,7 +18,7 @@
 
 #include "smtk/model/DefaultSession.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Resource.h"
 
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 
     create_simple_mesh_model(resource, std::string(argv[1]));
     smtk::io::ModelToMesh convert;
-    smtk::mesh::CollectionPtr c = convert(meshManager, resource);
+    smtk::mesh::ResourcePtr c = convert(meshManager, resource);
 
     // Test all three mesh file types
     std::string extension[2] = { ".exo", ".h5m" };
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
       }
 
       // Grab the original mesh collection
-      smtk::mesh::CollectionPtr c = sessRef.session()->meshManager()->collectionBegin()->second;
+      smtk::mesh::ResourcePtr c = sessRef.session()->meshManager()->collectionBegin()->second;
       if (c->isModified())
       {
         std::cerr << "collection shouldn't be marked as modified" << std::endl;
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
       //     in test failures.
       smtk::mesh::ManagerPtr m2 = smtk::mesh::Manager::create();
       smtk::io::ReadMesh read;
-      smtk::mesh::CollectionPtr c2 = read(write_path, m2);
+      smtk::mesh::ResourcePtr c2 = read(write_path, m2);
       if (c2->isModified())
       {
         std::cerr << "collection shouldn't be marked as modified" << std::endl;

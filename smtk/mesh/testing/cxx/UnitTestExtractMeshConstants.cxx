@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/ExtractMeshConstants.h"
 
@@ -138,11 +138,11 @@ public:
 void verify_extract_domain()
 {
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  read(mesh_path(), c, smtk::io::mesh::Subset::OnlyNeumann);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  read(mesh_path(), mr, smtk::io::mesh::Subset::OnlyNeumann);
+  test(mr->isValid(), "resource should be valid");
 
-  smtk::mesh::MeshSet meshes = c->meshes();
+  smtk::mesh::MeshSet meshes = mr->meshes();
 
   test(!meshes.is_empty());
 

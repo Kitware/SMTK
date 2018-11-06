@@ -34,7 +34,7 @@
 #include "smtk/model/Volume.h"
 #include "smtk/model/VolumeUse.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/common/UUIDGenerator.h"
 
@@ -175,14 +175,14 @@ const UUIDsToTessellations& Resource::analysisMesh() const
   return *m_analysisMesh.get();
 }
 
-bool Resource::setMeshTessellations(const smtk::mesh::CollectionPtr& collection)
+bool Resource::setMeshTessellations(const smtk::mesh::ResourcePtr& meshResource)
 {
   // We reset the mesh tessellation by first unsetting the existing mesh
   // tessellation (if it exists) and then adding a new link to the input
-  // collection. If this becomes a bottleneck, we could add API to
+  // mesh resource. If this becomes a bottleneck, we could add API to
   // smtk::resource::Links to modify the RHS id of the current link,
   // facilitating link modification in place.
-  smtk::mesh::CollectionPtr currentMeshTessellations = this->meshTessellations();
+  smtk::mesh::ResourcePtr currentMeshTessellations = this->meshTessellations();
   if (currentMeshTessellations != nullptr)
   {
     this->links().removeLinksTo(
@@ -191,16 +191,16 @@ bool Resource::setMeshTessellations(const smtk::mesh::CollectionPtr& collection)
   }
   return this->links()
            .addLinkTo(
-             std::static_pointer_cast<smtk::resource::Resource>(collection), TessellationRole)
+             std::static_pointer_cast<smtk::resource::Resource>(meshResource), TessellationRole)
            .first != smtk::common::UUID::null();
 }
 
-smtk::mesh::CollectionPtr Resource::meshTessellations() const
+smtk::mesh::ResourcePtr Resource::meshTessellations() const
 {
   auto tessellationObjects = this->links().linkedTo(TessellationRole);
   return (!tessellationObjects.empty()
-      ? std::dynamic_pointer_cast<smtk::mesh::Collection>(*tessellationObjects.begin())
-      : smtk::mesh::CollectionPtr());
+      ? std::dynamic_pointer_cast<smtk::mesh::Resource>(*tessellationObjects.begin())
+      : smtk::mesh::ResourcePtr());
 }
 
 void Resource::clear()
@@ -212,7 +212,7 @@ void Resource::clear()
   m_tessellations->clear();
   m_analysisMesh->clear();
   {
-    smtk::mesh::CollectionPtr currentMeshTessellations = this->meshTessellations();
+    smtk::mesh::ResourcePtr currentMeshTessellations = this->meshTessellations();
     if (currentMeshTessellations != nullptr)
     {
       this->links().removeLinksTo(

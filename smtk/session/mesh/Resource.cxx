@@ -34,10 +34,10 @@ void Resource::setSession(const Session::Ptr& session)
   this->registerSession(m_session);
 }
 
-smtk::mesh::CollectionPtr Resource::collection() const
+smtk::mesh::ResourcePtr Resource::resource() const
 {
   Topology* topology = m_session->topology(shared_from_this());
-  return (topology != nullptr ? topology->m_collection : smtk::mesh::CollectionPtr());
+  return (topology != nullptr ? topology->m_resource : smtk::mesh::ResourcePtr());
 }
 }
 }

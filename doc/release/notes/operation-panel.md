@@ -76,7 +76,7 @@ In more detail:
 + Improve operator availability logic.
 + Refactor qtUIManager and pqSMTKOperationPanel.
   Now a qtUIManager may be constructed with an Operation instance
-  whose attribute collection will be rendered as its view.
+  whose attribute resource will be rendered as its view.
   Furthermore, applications can ask the qtUIManager to find/create a
   default view of its operation.
   This greatly simplifies the operation panel's job.

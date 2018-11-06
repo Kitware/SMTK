@@ -11,9 +11,9 @@
 //=============================================================================
 #include "smtk/mesh/moab/Interface.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/QueryTypes.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/BufferedCellAllocator.h"
@@ -220,7 +220,7 @@ smtk::mesh::moab::InterfacePtr make_interface()
 }
 
 //Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface
-smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::CollectionPtr& c)
+smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::ResourcePtr& c)
 {
   return smtk::dynamic_pointer_cast<smtk::mesh::moab::Interface>(c->interface());
 }
@@ -2100,7 +2100,7 @@ void Interface::meshForEach(
 
       smtk::mesh::HandleRange singleHandle;
       singleHandle += *i;
-      smtk::mesh::MeshSet singleMesh(filter.m_collection, *i, singleHandle);
+      smtk::mesh::MeshSet singleMesh(filter.m_resource, *i, singleHandle);
 
       //call the custom filter
       filter.forMesh(singleMesh);

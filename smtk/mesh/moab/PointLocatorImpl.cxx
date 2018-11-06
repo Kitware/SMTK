@@ -37,7 +37,7 @@ smtk::mesh::Handle create_point_mesh(::moab::Interface* iface, std::size_t numPo
     0, //preferred_start_id
     firstId, coords);
 
-  //copy the points into the collection
+  //copy the points into the resource
   for (std::size_t i = 0; i < numPoints; ++i)
   {
     std::array<double, 3> x = coordinates(i);

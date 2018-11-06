@@ -12,7 +12,7 @@
 #define __smtk_mesh_core_TypeSet_h
 
 //TypeSet is a helper class whose goal is to make it easier to determine
-//what kind of information you would extract from a collection given an
+//what kind of information you would extract from a resource given an
 //association
 #include "smtk/CoreExports.h"
 #include "smtk/mesh/core/QueryTypes.h"

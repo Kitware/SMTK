@@ -17,7 +17,7 @@ This process can involve any or all of the following:
 - assigning initial conditions to portions of the simulation domain or its boundary; and
 - assigning global simulation properties such as convergence criteria.
 
-SMTK provides an attribute collection that can represent
+SMTK provides an attribute resource that can represent
 arbitrarily structured data and a template system that
 can be tailored to describe almost any simulation's
 expected inputs without allowing spurious or invalid

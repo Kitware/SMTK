@@ -23,7 +23,7 @@ def test_create_cell_field():
 
     # Load the mesh file
     mesh_path = os.path.join(smtk.testing.DATA_DIR, 'mesh', '2d/twoMeshes.h5m')
-    c = smtk.mesh.Collection.create()
+    c = smtk.mesh.Resource.create()
     smtk.io.importMesh(mesh_path, c)
     if not c.isValid():
         raise RuntimeError("Failed to read valid mesh")
@@ -43,7 +43,7 @@ def test_create_cell_field():
 def test_read_cell_field(mesh_path):
 
     # Load the mesh file
-    c = smtk.mesh.Collection.create()
+    c = smtk.mesh.Resource.create()
     smtk.io.importMesh(mesh_path, c)
     if not c.isValid():
         raise RuntimeError("Failed to read back valid mesh")
@@ -66,5 +66,5 @@ def test_read_cell_field(mesh_path):
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()
-    collection_url = test_create_cell_field()
-    test_read_cell_field(collection_url)
+    resource_url = test_create_cell_field()
+    test_read_cell_field(resource_url)

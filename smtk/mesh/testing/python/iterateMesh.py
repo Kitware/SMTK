@@ -70,27 +70,27 @@ def test_file_load():
     print('data_dir', smtk.testing.DATA_DIR)
     mesh_path = os.path.join(smtk.testing.DATA_DIR,
                              'mesh', '3d/sixth_hexflatcore.h5m')
-    c = smtk.mesh.Collection.create()
-    smtk.io.importMesh(mesh_path, c)
-    if not c.isValid():
+    mr = smtk.mesh.Resource.create()
+    smtk.io.importMesh(mesh_path, mr)
+    if not mr.isValid():
         raise RuntimeError("Failed to read valid mesh")
 
     # 1. iterate meshes
     meshVisitor = MeshVisitor()
-    smtk.mesh.for_each(c.meshes(), meshVisitor)
-    if not (meshVisitor.count == c.meshes().size()):
+    smtk.mesh.for_each(mr.meshes(), meshVisitor)
+    if not (meshVisitor.count == mr.meshes().size()):
         raise RuntimeError("Python MeshForEach didn't visit each mesh")
 
     # 2. iterate cells
     cellVisitor = CellVisitor()
-    smtk.mesh.for_each(c.cells(), cellVisitor)
-    if not (cellVisitor.count == c.cells().size()):
+    smtk.mesh.for_each(mr.cells(), cellVisitor)
+    if not (cellVisitor.count == mr.cells().size()):
         raise RuntimeError("Python CellVisitor didn't visit each cell")
 
     # 3. iterate points
     pointVisitor = PointVisitor()
-    smtk.mesh.for_each(c.points(), pointVisitor)
-    if not (pointVisitor.count == c.points().size()):
+    smtk.mesh.for_each(mr.points(), pointVisitor)
+    if not (pointVisitor.count == mr.points().size()):
         raise RuntimeError("Python PointForEach didn't visit each point")
 
 

@@ -12,7 +12,7 @@
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/WriteMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "vtkNew.h"
 #include "vtkParametricBoy.h"
@@ -197,7 +197,7 @@ public:
   }
 };
 
-void labelShellWithMaterial(const smtk::mesh::CollectionPtr& c, const smtk::mesh::MeshSet& shell)
+void labelShellWithMaterial(const smtk::mesh::ResourcePtr& c, const smtk::mesh::MeshSet& shell)
 {
   //for each material we iterate the meshsets
   typedef std::vector<smtk::mesh::Domain> DomainVecType;
@@ -226,7 +226,7 @@ void labelShellWithMaterial(const smtk::mesh::CollectionPtr& c, const smtk::mesh
 static int nextDirId = 0;
 
 bool labelIntersection(
-  const smtk::mesh::CollectionPtr& c, const smtk::mesh::MeshSet& shell, Filter& filter)
+  const smtk::mesh::ResourcePtr& c, const smtk::mesh::MeshSet& shell, Filter& filter)
 {
   //need to removing the verts cells from the query for now
   //todo: filter needs to support vert cells
@@ -265,7 +265,7 @@ bool labelIntersection(
   return true;
 }
 
-void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
+void breakMaterialsByCellType(const smtk::mesh::ResourcePtr& c)
 {
   //for each material we iterate the meshsets
   typedef std::vector<smtk::mesh::Domain> DomainVecType;
@@ -299,24 +299,24 @@ void breakMaterialsByCellType(const smtk::mesh::CollectionPtr& c)
 }
 
 template <typename vtkDataSetType>
-smtk::mesh::CollectionPtr convert(vtkDataSetType* input, std::string material)
+smtk::mesh::ResourcePtr convert(vtkDataSetType* input, std::string material)
 {
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   //we convert the vtk data into a single mesh.
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
-  imprt(input, collection, material);
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create();
+  imprt(input, resource, material);
 
-  if (!collection)
+  if (!resource)
   {
-    std::cerr << "unable to import the collection properly" << std::endl;
+    std::cerr << "unable to import the resource properly" << std::endl;
   }
 
-  return collection;
+  return resource;
 }
 
-void extractMaterials(smtk::mesh::CollectionPtr c, double radius, double* origin,
-  std::string outputFile, double* bounds)
+void extractMaterials(
+  smtk::mesh::ResourcePtr c, double radius, double* origin, std::string outputFile, double* bounds)
 {
   //extract the exterior-shell for all meshes.
   smtk::mesh::MeshSet shell = c->meshes().extractShell();
@@ -384,7 +384,7 @@ int main(int argc, char* argv[])
   // Dispatch based on the file extension
   vtkDataSet* data;
   double* bounds = NULL;
-  smtk::mesh::CollectionPtr c;
+  smtk::mesh::ResourcePtr c;
   if (extension == ".vtu")
   {
     data = readXMLFile<vtkXMLUnstructuredGridReader>(inputFileName);
@@ -399,7 +399,7 @@ int main(int argc, char* argv[])
   }
   else if (extension == ".h5m" || extension == ".exo")
   {
-    c = smtk::mesh::Collection::create();
+    c = smtk::mesh::Resource::create();
     smtk::io::importMesh(inputFileName, c);
   }
 

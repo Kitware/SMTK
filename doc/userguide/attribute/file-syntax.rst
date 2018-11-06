@@ -147,7 +147,7 @@ Attributes that can be included in <Categories> Element.
 Analysis Section
 ---------------------------
 This is an optional section that define analyses.  An analysis is
-defined as a collection of categories.  For example, using the
+defined as a resource of categories.  For example, using the
 categories defined in the`Category Section`_, the following XML would
 define two analyses (Ground Water Flow, and Ground Water with Heat
 Transfer).

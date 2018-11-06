@@ -3,7 +3,7 @@ set(meshSrcs
   core/CellSet.cxx
   core/CellField.cxx
   core/CellTypes.cxx
-  core/Collection.cxx
+  core/Resource.cxx
   core/Component.cxx
   core/ForEachTypes.cxx
   core/Handle.cxx
@@ -25,7 +25,7 @@ set(meshSrcs
   json/MeshInfo.cxx
   json/jsonHandleRange.cxx
   json/jsonMeshInfo.cxx
-  json/jsonCollection.cxx
+  json/jsonResource.cxx
 
   moab/Allocator.cxx
   moab/CellTypeToType.cxx
@@ -65,7 +65,7 @@ set(meshHeaders
   core/CellField.h
   core/CellTraits.h
   core/CellTypes.h
-  core/Collection.h
+  core/Resource.h
   core/Component.h
   core/DimensionTypes.h
   core/FieldTypes.h
@@ -93,7 +93,7 @@ set(meshHeaders
   json/MeshInfo.h
   json/jsonHandleRange.h
   json/jsonMeshInfo.h
-  json/jsonCollection.h
+  json/jsonResource.h
 
   moab/Interface.h
 

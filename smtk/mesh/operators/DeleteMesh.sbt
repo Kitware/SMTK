@@ -5,7 +5,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="delete mesh" BaseType="operation" Label="Mesh - Delete">
       <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
-        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+        <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
         Remove a mesh from the model instance.

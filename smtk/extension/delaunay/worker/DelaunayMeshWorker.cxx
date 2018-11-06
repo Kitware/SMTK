@@ -28,7 +28,7 @@
 #include "smtk/model/Loop.h"
 #include "smtk/model/Resource.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/io/SaveJSON.h"
 
@@ -117,12 +117,12 @@ void DelaunayMeshWorker::meshJob()
   double inc = 100.0 / steps;
 
   //now we can actually iterate each model and mesh the faces. We need to
-  //make sure that each collection only has the faces of a single model, as
-  //the association between collection and model is only 1 to 1.
+  //make sure that each mesh resource only has the faces of a single model, as
+  //the association between mesh resource and model is only 1 to 1.
   int index = 0;
   for (std::size_t i = 0; i < resources.m_modelsToMesh.size(); ++i)
   {
-    smtk::mesh::CollectionPtr collection = resources.m_mesh->makeCollection();
+    smtk::mesh::ResourcePtr meshResource = resources.m_mesh->makeResource();
     const detail::FacesOfModel& fom = resources.m_modelsToMesh[i];
 
     for (auto it = fom.m_faces.cbegin(); it != fom.m_faces.cend(); ++it, ++index)
@@ -133,20 +133,21 @@ void DelaunayMeshWorker::meshJob()
       this->sendProgress(j, static_cast<int>(index * inc), buffer.str());
       std::cout << "[" << index * inc << "%] " << buffer.str();
 
-      this->meshFace(*it, validatePolygons, collection);
+      this->meshFace(*it, validatePolygons, meshResource);
     }
 
     //determine a location that we can write a temporary file for the heavy
     //mesh data
-    const auto tempFile = remus::common::makeTempFileHandle(collection->entity().toString(), "h5m");
-    collection->writeLocation(tempFile.path());
+    const auto tempFile =
+      remus::common::makeTempFileHandle(meshResource->entity().toString(), "h5m");
+    meshResource->writeLocation(tempFile.path());
 
-    // We need to explicitly associate the collection to a model so that
+    // We need to explicitly associate the mesh resource to a model so that
     // cmb/model builder can properly add this mesh to the UI
-    collection->associateToModel(fom.m_model.entity());
+    meshResource->associateToModel(fom.m_model.entity());
   }
 
-  //serialize all the collections into a single string
+  //serialize all the mesh resources into a single string
   std::string meshesToJson =
     smtk::io::SaveJSON::fromModelResource(resources.m_model, smtk::io::JSON_MESHES);
 
@@ -160,7 +161,7 @@ void DelaunayMeshWorker::meshJob()
 
 //----------------------------------------------------------------------------
 bool DelaunayMeshWorker::meshFace(
-  const smtk::model::Face& face, bool validatePolygons, const smtk::mesh::CollectionPtr& collection)
+  const smtk::model::Face& face, bool validatePolygons, const smtk::mesh::ResourcePtr& meshResource)
 {
   //step 1 get the face use for the face
   smtk::model::FaceUse fu_p = face.positiveUse();
@@ -222,16 +223,16 @@ bool DelaunayMeshWorker::meshFace(
     excise(p_sub, mesh);
   }
 
-  // associate the collection with the face's model
-  collection->setModelResource(face.resource());
-  collection->associateToModel(face.model().entity());
+  // associate the mesh resource with the face's model
+  meshResource->setModelResource(face.resource());
+  meshResource->associateToModel(face.model().entity());
 
-  // populate the new collection
+  // populate the new mesh resource
   smtk::extension::delaunay::io::ImportDelaunayMesh importFromDelaunayMesh;
-  smtk::mesh::MeshSet meshSet = importFromDelaunayMesh(mesh, collection);
+  smtk::mesh::MeshSet meshSet = importFromDelaunayMesh(mesh, meshResource);
   if (!meshSet.is_empty())
   {
-    collection->setAssociation(face, meshSet);
+    meshResource->setAssociation(face, meshSet);
   }
 
   return true;

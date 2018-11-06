@@ -41,7 +41,7 @@ the most aggregate, are as follows:
   association with a model entity, material, boundary condition, or
   initial condition. As a set, each :smtk:`PointSet` supports set-theoretic
   actions (intersect, difference and union).   Each `PointSet`
-  instance holds a reference to its parent collection (described below)
+  instance holds a reference to its parent resource (described below)
   and provides methods for setting attributes, computing subsets, and accessing
   individual points.
 
@@ -51,7 +51,7 @@ the most aggregate, are as follows:
   association with a model entity, material, boundary condition, or
   initial condition. As a set, each :smtk:`CellSet` supports set-theoretic
   actions (intersect, difference and union).   Each `CellSet`
-  instance holds a reference to its parent collection (described below)
+  instance holds a reference to its parent resource (described below)
   and provides methods for setting attributes, computing subsets, and accessing
   individual cells.
 
@@ -61,7 +61,7 @@ the most aggregate, are as follows:
   association with a model entity, material, boundary condition, or
   initial condition. As a set, each :smtk:`MeshSet` supports set-theoretic
   actions (intersect, difference and union). Each `MeshSet` instance
-  holds a reference to a parent collection (described below) and
+  holds a reference to a parent resource (described below) and
   provides methods for setting attributes, computing subsets, and
   accessing individual meshes. A `MeshSet` also has access to its
   underlying `CellSet` and `PointSet`.
@@ -79,7 +79,7 @@ the most aggregate, are as follows:
   Problem domains are often the union of several instances of
   `MeshSet` in a `Collection`. Often, the problem domain may be
   decomposed in several ways, so that all of the `MeshSet`s in a
-  collection may cover the problem domain several
+  resource may cover the problem domain several
   times over.
   For example, a `Collection` may have one `MeshSet` for each geometric model
   cell as well as a `MeshSet` for each material.

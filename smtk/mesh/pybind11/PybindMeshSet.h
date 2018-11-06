@@ -20,7 +20,7 @@
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/CellTypes.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/core/Handle.h"
 #include "smtk/mesh/core/PointField.h"
 #include "smtk/mesh/core/PointConnectivity.h"
@@ -35,10 +35,10 @@ PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::modu
   PySharedPtrClass< smtk::mesh::MeshSet > instance(m, "MeshSet");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::smtk::mesh::Handle>())
-    .def(py::init<::smtk::mesh::ConstCollectionPtr const &, ::smtk::mesh::Handle>())
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::smtk::mesh::Handle, ::smtk::mesh::HandleRange const &>())
-    .def(py::init<::smtk::mesh::ConstCollectionPtr const &, ::smtk::mesh::Handle, ::smtk::mesh::HandleRange const &>())
+    .def(py::init<::smtk::mesh::ResourcePtr const &, ::smtk::mesh::Handle>())
+    .def(py::init<::smtk::mesh::ConstResourcePtr const &, ::smtk::mesh::Handle>())
+    .def(py::init<::smtk::mesh::ResourcePtr const &, ::smtk::mesh::Handle, ::smtk::mesh::HandleRange const &>())
+    .def(py::init<::smtk::mesh::ConstResourcePtr const &, ::smtk::mesh::Handle, ::smtk::mesh::HandleRange const &>())
     .def(py::init<::smtk::mesh::MeshSet const &>())
     .def("__ne__", (bool (smtk::mesh::MeshSet::*)(::smtk::mesh::MeshSet const &) const) &smtk::mesh::MeshSet::operator!=)
     .def("__lt__", (bool (smtk::mesh::MeshSet::*)(::smtk::mesh::MeshSet const &) const) &smtk::mesh::MeshSet::operator<)
@@ -49,7 +49,7 @@ PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::modu
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::MeshSet::*)(::smtk::mesh::CellType) const) &smtk::mesh::MeshSet::cells, py::arg("cellType"))
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::MeshSet::*)(::smtk::mesh::CellTypes) const) &smtk::mesh::MeshSet::cells, py::arg("cTypes"))
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::MeshSet::*)(::smtk::mesh::DimensionType) const) &smtk::mesh::MeshSet::cells, py::arg("dim"))
-    .def("collection", &smtk::mesh::MeshSet::collection)
+    .def("resource", &smtk::mesh::MeshSet::resource)
     .def("createCellField", [](smtk::mesh::MeshSet& ms, const std::string& name, int dimension, const std::vector<double>& data){ return ms.createCellField(name, dimension, smtk::mesh::FieldType::Double, &data[0]); }, py::arg("name"), py::arg("dimension"), py::arg("field"))
     .def("createCellField", [](smtk::mesh::MeshSet& ms, const std::string& name, int dimension, const std::vector<int>& data){ return ms.createCellField(name, dimension, smtk::mesh::FieldType::Integer, &data[0]); }, py::arg("name"), py::arg("dimension"), py::arg("field"))
     .def("createCellField", [](smtk::mesh::MeshSet& ms, const std::string& name, int dimension, const smtk::mesh::FieldType& type){ return ms.createCellField(name, dimension, type); }, py::arg("name"), py::arg("dimension"), py::arg("type"))

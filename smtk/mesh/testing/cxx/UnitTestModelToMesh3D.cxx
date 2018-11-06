@@ -11,7 +11,7 @@
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/WriteMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Resource.h"
@@ -88,8 +88,8 @@ void verify_empty_model()
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(!c, "collection should be invalid for an empty model");
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  test(!mr, "mesh resource should be invalid for an empty model");
 }
 
 void verify_model_association()
@@ -99,35 +99,35 @@ void verify_model_association()
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
 
-  //we need to verify that the collection is now has an associated model
-  test(c->hasAssociations(), "collection should have associations");
-  test((c->associatedModel() != smtk::common::UUID()),
-    "collection should be associated to a real model");
-  test((c->isAssociatedToModel()), "collection should be associated to a real model");
-  test(c->isModified() == true, "A mesh created in memory with no file is considered modified");
+  //we need to verify that the mesh resource is now has an associated model
+  test(mr->hasAssociations(), "mesh resource should have associations");
+  test((mr->associatedModel() != smtk::common::UUID()),
+    "mesh resource should be associated to a real model");
+  test((mr->isAssociatedToModel()), "mesh resource should be associated to a real model");
+  test(mr->isModified() == true, "A mesh created in memory with no file is considered modified");
 
   //verify the MODEL_ENTITY is correct
   smtk::model::EntityRefs currentModels =
     modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   if (currentModels.size() > 0)
   { //presuming only a single model in the model resource
-    test((c->associatedModel() == currentModels.begin()->entity()),
-      "collection associated model should match model resource");
+    test((mr->associatedModel() == currentModels.begin()->entity()),
+      "mesh resource associated model should match model resource");
   }
 }
 
 template <int Dim>
 void testFindAssociations(
-  smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
 {
   std::size_t numNonEmpty = 0;
   numNonEmpty = 0;
   for (it.begin(); !it.isAtEnd(); ++it)
   {
     smtk::mesh::MeshSet entMesh =
-      c->findAssociatedMeshes(*it, static_cast<smtk::mesh::DimensionType>(Dim));
+      mr->findAssociatedMeshes(*it, static_cast<smtk::mesh::DimensionType>(Dim));
     if (entMesh.size())
     {
       ++numNonEmpty;
@@ -150,12 +150,12 @@ void testFindAssociations(
 
 template <>
 void testFindAssociations<-1>(
-  smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
 {
   std::size_t numNonEmpty = 0;
   for (it.begin(); !it.isAtEnd(); ++it)
   {
-    smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(*it);
+    smtk::mesh::MeshSet entMesh = mr->findAssociatedMeshes(*it);
     const smtk::model::Tessellation* tess = it->hasTessellation();
     if (entMesh.size())
       std::cout << "  " << it->entity().toString() << "  " << entMesh.size() << " sets "
@@ -174,12 +174,12 @@ void testFindAssociations<-1>(
 
 template <int Dim>
 void testFindAssociationsByRef(
-  smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
 {
   smtk::mesh::MeshSet entMesh =
-    c->findAssociatedMeshes(it, static_cast<smtk::mesh::DimensionType>(Dim));
+    mr->findAssociatedMeshes(it, static_cast<smtk::mesh::DimensionType>(Dim));
   smtk::mesh::CellSet entCells =
-    c->findAssociatedCells(it, static_cast<smtk::mesh::DimensionType>(Dim));
+    mr->findAssociatedCells(it, static_cast<smtk::mesh::DimensionType>(Dim));
 
   test(entMesh.cells() == entCells, "Expected mesh cellset to be the same as queried cellset.");
 
@@ -191,11 +191,11 @@ void testFindAssociationsByRef(
 
 template <>
 void testFindAssociationsByRef<-1>(
-  smtk::mesh::CollectionPtr c, smtk::model::EntityIterator& it, std::size_t correct)
+  smtk::mesh::ResourcePtr mr, smtk::model::EntityIterator& it, std::size_t correct)
 {
-  smtk::mesh::MeshSet entMesh = c->findAssociatedMeshes(it);
-  smtk::mesh::CellSet entCells = c->findAssociatedCells(it);
-  smtk::mesh::TypeSet entTypes = c->findAssociatedTypes(it);
+  smtk::mesh::MeshSet entMesh = mr->findAssociatedMeshes(it);
+  smtk::mesh::CellSet entCells = mr->findAssociatedCells(it);
+  smtk::mesh::TypeSet entTypes = mr->findAssociatedTypes(it);
   const smtk::model::Tessellation* tess = it->hasTessellation();
   (void)tess;
 
@@ -213,18 +213,18 @@ void verify_cell_conversion()
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  test(mr->isValid(), "mesh resource should be valid");
+  test(mr->numberOfMeshes() == numTetsInModel, "mesh resource should have a mesh per tet");
 
   //confirm that we have the proper number of volume cells
-  smtk::mesh::CellSet tri_cells = c->cells(smtk::mesh::Dims2);
+  smtk::mesh::CellSet tri_cells = mr->cells(smtk::mesh::Dims2);
   test(tri_cells.size() == (numTetsInModel * 10));
 
-  smtk::mesh::CellSet edge_cells = c->cells(smtk::mesh::Dims1);
+  smtk::mesh::CellSet edge_cells = mr->cells(smtk::mesh::Dims1);
   test(edge_cells.size() == 0);
 
-  smtk::mesh::CellSet vert_cells = c->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet vert_cells = mr->cells(smtk::mesh::Dims0);
   test(vert_cells.size() == 0);
 
   // verify that we get a non-empty mesh set association back for some cells
@@ -233,36 +233,36 @@ void verify_cell_conversion()
     modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
   std::cout << "All associations:\n";
-  testFindAssociations<-1>(c, it, numTetsInModel);
+  testFindAssociations<-1>(mr, it, numTetsInModel);
   std::cout << "Dim 0 associations:\n";
-  testFindAssociations<0>(c, it, 0);
+  testFindAssociations<0>(mr, it, 0);
   std::cout << "Dim 1 associations:\n";
-  testFindAssociations<1>(c, it, 0);
+  testFindAssociations<1>(mr, it, 0);
   std::cout << "Dim 2 associations:\n";
-  testFindAssociations<2>(c, it, numTetsInModel);
+  testFindAssociations<2>(mr, it, numTetsInModel);
   std::cout << "Dim 3 associations:\n";
-  testFindAssociations<3>(c, it, 0);
+  testFindAssociations<3>(mr, it, 0);
 
   {
     it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
     std::cout << "All associations:\n";
-    testFindAssociationsByRef<-1>(c, it, numTetsInModel);
+    testFindAssociationsByRef<-1>(mr, it, numTetsInModel);
     std::cout << "Dim 0 associations:\n";
-    testFindAssociationsByRef<0>(c, it, 0);
+    testFindAssociationsByRef<0>(mr, it, 0);
     std::cout << "Dim 1 associations:\n";
-    testFindAssociationsByRef<1>(c, it, 0);
+    testFindAssociationsByRef<1>(mr, it, 0);
     std::cout << "Dim 2 associations:\n";
-    testFindAssociationsByRef<2>(c, it, numTetsInModel);
+    testFindAssociationsByRef<2>(mr, it, numTetsInModel);
     std::cout << "Dim 3 associations:\n";
-    testFindAssociationsByRef<3>(c, it, 0);
+    testFindAssociationsByRef<3>(mr, it, 0);
   }
 
   {
-    std::cout << "Querying an empty collection:\n";
+    std::cout << "Querying an empty mesh resource:\n";
     it.traverse(models.begin(), models.end(), smtk::model::ITERATE_MODELS);
     std::cout << "All associations:\n";
-    smtk::mesh::CollectionPtr emptyCollection = smtk::mesh::Collection::create();
-    testFindAssociationsByRef<-1>(emptyCollection, it, 0);
+    smtk::mesh::ResourcePtr emptyResource = smtk::mesh::Resource::create();
+    testFindAssociationsByRef<-1>(emptyResource, it, 0);
   }
 
   std::cout << "Find type info of first cell:\n";
@@ -271,7 +271,7 @@ void verify_cell_conversion()
     smtk::model::CellEntities cells = models.begin()->as<smtk::model::Model>().cells();
     if (!cells.empty())
     {
-      smtk::mesh::TypeSet meshedTypes = c->findAssociatedTypes(cells[0]);
+      smtk::mesh::TypeSet meshedTypes = mr->findAssociatedTypes(cells[0]);
       smtk::mesh::CellTypes cellTypes = meshedTypes.cellTypes();
 
       //the model we have been given only has triangles, and while those
@@ -300,7 +300,7 @@ void verify_cell_conversion()
 
   std::cout << "Entity lookup via reverse classification\n";
   smtk::model::EntityRefArray ents;
-  bool entsAreValid = c->meshes().modelEntities(ents);
+  bool entsAreValid = mr->meshes().modelEntities(ents);
   test(entsAreValid == true, "Expected valid entity refs.");
   test(ents.size() == numTetsInModel, "Expected 1 tetrahedron per model.");
   for (smtk::model::EntityRefArray::iterator eit = ents.begin(); eit != ents.end(); ++eit)
@@ -316,11 +316,11 @@ void verify_vertex_conversion()
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == numTetsInModel, "collection should have a mesh per tet");
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  test(mr->isValid(), "mesh resource should be valid");
+  test(mr->numberOfMeshes() == numTetsInModel, "mesh resource should have a mesh per tet");
 
-  smtk::mesh::PointSet points = c->points();
+  smtk::mesh::PointSet points = mr->points();
   test(points.size() == 7, "After merging of identical points we should have 7");
 }
 
@@ -331,8 +331,8 @@ void verify_cell_have_points()
   create_simple_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  smtk::mesh::MeshSet triMeshes = c->meshes(smtk::mesh::Dims2);
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  smtk::mesh::MeshSet triMeshes = mr->meshes(smtk::mesh::Dims2);
 
   CountCells functor;
   smtk::mesh::for_each(triMeshes.cells(), functor);

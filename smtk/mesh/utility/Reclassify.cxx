@@ -11,10 +11,10 @@
 #include "smtk/mesh/utility/Reclassify.h"
 
 #include "smtk/mesh/core/CellSet.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Interface.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 namespace
 {
@@ -99,14 +99,14 @@ private:
   std::vector<double> m_Zpoints;
 };
 
-smtk::mesh::MeshSet make_MeshPoint(smtk::mesh::CollectionPtr collection, smtk::model::Vertex vertex)
+smtk::mesh::MeshSet make_MeshPoint(smtk::mesh::ResourcePtr resource, smtk::model::Vertex vertex)
 {
   //What are the steps that are required here:
   //1. Allocate a single point
   //2. Make a HandleRange of the single point Id
   //3. Make a Mesh of that HandleRange
   //4. assign an association to that new mesh set
-  smtk::mesh::InterfacePtr interface = collection->interface();
+  smtk::mesh::InterfacePtr interface = resource->interface();
   smtk::mesh::AllocatorPtr allocator = interface->allocator();
   const smtk::model::Tessellation* tess = vertex.hasTessellation();
 
@@ -126,11 +126,11 @@ smtk::mesh::MeshSet make_MeshPoint(smtk::mesh::CollectionPtr collection, smtk::m
     smtk::mesh::HandleRange meshCells;
     meshCells.insert(vertexHandle);
 
-    smtk::mesh::CellSet cellsForMesh(collection, meshCells);
-    result = collection->createMesh(cellsForMesh);
+    smtk::mesh::CellSet cellsForMesh(resource, meshCells);
+    result = resource->createMesh(cellsForMesh);
     if (!result.is_empty())
     {
-      collection->setAssociation(vertex, result);
+      resource->setAssociation(vertex, result);
     }
   }
 
@@ -145,10 +145,10 @@ namespace mesh
 namespace utility
 {
 
-bool split(smtk::mesh::CollectionPtr collection, smtk::model::Edge orignalEdge,
+bool split(smtk::mesh::ResourcePtr resource, smtk::model::Edge orignalEdge,
   smtk::model::Edge newEdge, smtk::model::Vertex promotedVertex)
 {
-  if (!collection)
+  if (!resource)
   {
     return false;
   }
@@ -159,7 +159,7 @@ bool split(smtk::mesh::CollectionPtr collection, smtk::model::Edge orignalEdge,
   } //both edges need tessellation for this operator to work
 
   //1. find all meshes associated to original edge
-  smtk::mesh::MeshSet origMesh = collection->findAssociatedMeshes(orignalEdge);
+  smtk::mesh::MeshSet origMesh = resource->findAssociatedMeshes(orignalEdge);
   if (origMesh.is_empty())
   {
     return false;
@@ -174,7 +174,7 @@ bool split(smtk::mesh::CollectionPtr collection, smtk::model::Edge orignalEdge,
 
   //2:
   //get the cells from the original set that should be reclassified
-  smtk::mesh::CellSet newEdgeCells(collection, functor.cells());
+  smtk::mesh::CellSet newEdgeCells(resource, functor.cells());
   if (newEdgeCells.is_empty())
   { //the split new edge is invalid since it had nothing in common with
     //the original edge
@@ -182,20 +182,20 @@ bool split(smtk::mesh::CollectionPtr collection, smtk::model::Edge orignalEdge,
   }
 
   //3 create a new mesh set for the vertex
-  smtk::mesh::MeshSet pointMesh = make_MeshPoint(collection, promotedVertex);
+  smtk::mesh::MeshSet pointMesh = make_MeshPoint(resource, promotedVertex);
   if (pointMesh.is_empty())
   { //for some reason we could not allocate a new mesh
     return false;
   }
 
   //4 Make sure the new meshes are properly disjoint
-  smtk::mesh::MeshSet newMesh = collection->createMesh(newEdgeCells);
-  collection->setAssociation(newEdge, newMesh);
+  smtk::mesh::MeshSet newMesh = resource->createMesh(newEdgeCells);
+  resource->setAssociation(newEdge, newMesh);
 
-  bool ret = make_disjoint(collection, newMesh, origMesh, orignalEdge);
+  bool ret = make_disjoint(resource, newMesh, origMesh, orignalEdge);
   if (!ret)
   { //if the split failed rollback the creation of the new mesh
-    collection->removeMeshes(newMesh);
+    resource->removeMeshes(newMesh);
   }
 
   //5 Lastly make sure we don't have any duplicate points in the underlying
@@ -208,7 +208,7 @@ bool split(smtk::mesh::CollectionPtr collection, smtk::model::Edge orignalEdge,
   return ret;
 }
 
-bool make_disjoint(smtk::mesh::CollectionPtr collection, const smtk::mesh::MeshSet& toBeRemoved,
+bool make_disjoint(smtk::mesh::ResourcePtr resource, const smtk::mesh::MeshSet& toBeRemoved,
   smtk::mesh::MeshSet& removeFrom, const smtk::model::EntityRef& modelAssoc)
 {
 
@@ -218,50 +218,50 @@ bool make_disjoint(smtk::mesh::CollectionPtr collection, const smtk::mesh::MeshS
 
   if (!diff.is_empty())
   {
-    smtk::mesh::MeshSet updatedOriginalMesh = collection->createMesh(diff);
+    smtk::mesh::MeshSet updatedOriginalMesh = resource->createMesh(diff);
     //Remove the original meshset so we don't have the original, and new
     //representation existing
-    const bool success = collection->removeMeshes(removeFrom);
+    const bool success = resource->removeMeshes(removeFrom);
     if (!success)
     {
       //rollback if the the mesh removal fails
-      collection->removeMeshes(updatedOriginalMesh);
+      resource->removeMeshes(updatedOriginalMesh);
       return false;
     }
     removeFrom = updatedOriginalMesh;
   }
 
-  collection->setAssociation(modelAssoc, removeFrom);
+  resource->setAssociation(modelAssoc, removeFrom);
   return true;
 }
 
-bool merge(smtk::mesh::CollectionPtr collection, smtk::model::Vertex toRemoveVert,
+bool merge(smtk::mesh::ResourcePtr resource, smtk::model::Vertex toRemoveVert,
   smtk::model::Edge toRemoveEdge, smtk::model::Edge toAddTo)
 {
-  smtk::mesh::MeshSet vertexToRemoveMS = collection->findAssociatedMeshes(toRemoveVert);
-  smtk::mesh::MeshSet edgeToRemoveMS = collection->findAssociatedMeshes(toRemoveEdge);
-  smtk::mesh::MeshSet toAddToMS = collection->findAssociatedMeshes(toAddTo);
+  smtk::mesh::MeshSet vertexToRemoveMS = resource->findAssociatedMeshes(toRemoveVert);
+  smtk::mesh::MeshSet edgeToRemoveMS = resource->findAssociatedMeshes(toRemoveEdge);
+  smtk::mesh::MeshSet toAddToMS = resource->findAssociatedMeshes(toAddTo);
   const smtk::model::EntityRef& eref = toAddTo;
 
   //first we need to delete the vertex, that way if the delete fails, we
   //can rollback properly. If we merge the edge and vertex and delete them
   //in the fuse call, the vertex mesh items will get the edge model association
   //if we have to rollback the delete
-  bool merged = collection->removeMeshes(vertexToRemoveMS);
+  bool merged = resource->removeMeshes(vertexToRemoveMS);
   if (merged)
   {
-    return fuse(collection, edgeToRemoveMS, toAddToMS, eref);
+    return fuse(resource, edgeToRemoveMS, toAddToMS, eref);
   }
   else
   {
     //make sure the association is restored, since the delete failed
     //it is better to be safe than sorry
-    collection->setAssociation(toRemoveVert, vertexToRemoveMS);
+    resource->setAssociation(toRemoveVert, vertexToRemoveMS);
   }
   return false;
 }
 
-bool fuse(smtk::mesh::CollectionPtr collection, smtk::mesh::MeshSet& toRemove,
+bool fuse(smtk::mesh::ResourcePtr resource, smtk::mesh::MeshSet& toRemove,
   smtk::mesh::MeshSet& toAddTo, const smtk::model::EntityRef& toAddToAssoc)
 {
   //Merge two mesh sets together and create a single meshset from that
@@ -281,33 +281,33 @@ bool fuse(smtk::mesh::CollectionPtr collection, smtk::mesh::MeshSet& toRemove,
     return false;
   }
 
-  smtk::mesh::MeshSet newSet = collection->createMesh(newSetCells);
+  smtk::mesh::MeshSet newSet = resource->createMesh(newSetCells);
   if (newSet.is_empty())
   {
     return false;
   }
 
-  bool removed = collection->removeMeshes(toAddTo);
+  bool removed = resource->removeMeshes(toAddTo);
   if (!removed)
   {
-    collection->removeMeshes(newSet);
+    resource->removeMeshes(newSet);
     return false;
   }
 
-  removed = removed && collection->removeMeshes(toRemove);
+  removed = removed && resource->removeMeshes(toRemove);
   if (!removed)
   {
     //rollback the deletion of the first meshset
-    toAddTo = collection->createMesh(toAddTo.cells());
-    collection->setAssociation(toAddToAssoc, toAddTo);
+    toAddTo = resource->createMesh(toAddTo.cells());
+    resource->setAssociation(toAddToAssoc, toAddTo);
 
-    collection->removeMeshes(newSet);
+    resource->removeMeshes(newSet);
     return false;
   }
 
   //update what toAddTo is point too
   toAddTo = newSet;
-  collection->setAssociation(toAddToAssoc, toAddTo);
+  resource->setAssociation(toAddToAssoc, toAddTo);
   return true;
 }
 }

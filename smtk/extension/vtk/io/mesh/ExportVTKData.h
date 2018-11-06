@@ -13,7 +13,7 @@
 #define __smtk_extension_vtk_io_mesh_ExportVTKData_h
 
 #include "smtk/extension/vtk/io/IOVTKExports.h"
-//forward declarers for Manager and Collection
+//forward declarers for Manager and Resource
 #include "smtk/PublicPointerDefs.h"
 
 #include <string>
@@ -41,15 +41,15 @@ namespace io
 namespace mesh
 {
 
-//Export an smtk::mesh::collection to a VTK data set.
+//Export an smtk::mesh::resource to a VTK data set.
 class SMTKIOVTK_EXPORT ExportVTKData
 {
 public:
   explicit ExportVTKData();
 
-  //Export a collection as a VTK xml polydata or xml unstructured grid file
+  //Export a resource as a VTK xml polydata or xml unstructured grid file
   //(determined by the file name suffix .vtp or .vtu).
-  bool operator()(const std::string& filename, smtk::mesh::CollectionPtr collection,
+  bool operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
     std::string domainPropertyName) const;
 
   //Export the highest dimension cells of a mesh set to polydata (starting with

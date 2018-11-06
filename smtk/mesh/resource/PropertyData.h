@@ -24,11 +24,11 @@ namespace mesh
 {
 
 typedef std::map<smtk::mesh::MeshSet, smtk::model::FloatData> MeshFloatData;
-typedef std::map<smtk::common::UUID, MeshFloatData> CollectionToMeshFloatData;
+typedef std::map<smtk::common::UUID, MeshFloatData> ResourceToMeshFloatData;
 typedef std::map<smtk::mesh::MeshSet, smtk::model::StringData> MeshStringData;
-typedef std::map<smtk::common::UUID, MeshStringData> CollectionToMeshStringData;
+typedef std::map<smtk::common::UUID, MeshStringData> ResourceToMeshStringData;
 typedef std::map<smtk::mesh::MeshSet, smtk::model::IntegerData> MeshIntegerData;
-typedef std::map<smtk::common::UUID, MeshIntegerData> CollectionToMeshIntegerData;
+typedef std::map<smtk::common::UUID, MeshIntegerData> ResourceToMeshIntegerData;
 
 } // namespace mesh
 } // namespace smtk

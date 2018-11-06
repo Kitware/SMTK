@@ -33,7 +33,7 @@ namespace session
 namespace mesh
 {
 
-void breakMaterialsByAssociation(const smtk::mesh::CollectionPtr& c)
+void breakMaterialsByAssociation(const smtk::mesh::ResourcePtr& c)
 {
   //for each association we iterate the meshsets
   smtk::model::EntityRefArray refs;
@@ -66,21 +66,21 @@ smtk::session::mesh::Export::Result Export::operateInternal()
     std::static_pointer_cast<smtk::session::mesh::Resource>(dataset.component()->resource());
   smtk::session::mesh::Session::Ptr session = resource->session();
 
-  smtk::mesh::CollectionPtr collection = resource->collection();
+  smtk::mesh::ResourcePtr meshResource = resource->resource();
 
-  if (collection == nullptr || !collection->isValid())
+  if (meshResource == nullptr || !meshResource->isValid())
   {
-    smtkErrorMacro(this->log(), "No collection associated with this model.");
+    smtkErrorMacro(this->log(), "No mesh resource associated with this model.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  breakMaterialsByAssociation(collection);
+  breakMaterialsByAssociation(meshResource);
 
-  bool writeSuccess = smtk::io::writeMesh(filePath, collection);
+  bool writeSuccess = smtk::io::writeMesh(filePath, meshResource);
 
   if (!writeSuccess)
   {
-    smtkErrorMacro(this->log(), "Collection failed to write.");
+    smtkErrorMacro(this->log(), "Mesh resource failed to write.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 

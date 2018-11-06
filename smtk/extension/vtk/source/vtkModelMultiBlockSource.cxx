@@ -17,8 +17,8 @@
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Edge.h"
@@ -470,7 +470,7 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
     exportVTKData(shell, pd);
     if (created)
     {
-      entity.meshTessellation().collection()->removeMeshes(shell);
+      entity.meshTessellation().resource()->removeMeshes(shell);
     }
   }
   else

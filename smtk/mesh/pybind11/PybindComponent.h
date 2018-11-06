@@ -17,7 +17,7 @@
 
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/resource/Component.h"
 
 namespace py = pybind11;
@@ -30,7 +30,7 @@ PySharedPtrClass< smtk::mesh::Component, smtk::resource::Component > pybind11_in
     .def("deepcopy", (smtk::mesh::Component & (smtk::mesh::Component::*)(::smtk::mesh::Component const &)) &smtk::mesh::Component::operator=)
     .def("shared_from_this", (std::shared_ptr<smtk::mesh::Component> (smtk::mesh::Component::*)()) &smtk::mesh::Component::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::mesh::Component> (smtk::mesh::Component::*)() const) &smtk::mesh::Component::shared_from_this)
-    .def_static("create", (std::shared_ptr<smtk::mesh::Component> (*)(const smtk::mesh::CollectionPtr&, const smtk::common::UUID&)) &smtk::mesh::Component::create, py::arg("collection"), py::arg("id"))
+    .def_static("create", (std::shared_ptr<smtk::mesh::Component> (*)(const smtk::mesh::ResourcePtr&, const smtk::common::UUID&)) &smtk::mesh::Component::create, py::arg("resource"), py::arg("id"))
     .def_static("create", (std::shared_ptr<smtk::mesh::Component> (*)(const smtk::mesh::MeshSet&)) &smtk::mesh::Component::create, py::arg("meshset"))
     .def("resource", &smtk::mesh::Component::resource)
     .def("mesh", (smtk::mesh::MeshSet (smtk::mesh::Component::*)()) &smtk::mesh::Component::mesh)

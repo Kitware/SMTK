@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/mesh/operators/DeleteMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Session.h"
 #include "smtk/model/Session.h"
@@ -37,7 +37,7 @@ smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
   {
     smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
     smtk::mesh::MeshSet meshset = meshComponent->mesh();
-    bool removed = meshset.collection()->removeMeshes(meshset);
+    bool removed = meshset.resource()->removeMeshes(meshset);
 
     if (removed)
     {

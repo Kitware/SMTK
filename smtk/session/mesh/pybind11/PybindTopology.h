@@ -23,7 +23,7 @@ py::class_< smtk::session::mesh::Topology > pybind11_init_smtk_session_mesh_Topo
   instance
     .def(py::init<::smtk::session::mesh::Topology const &>())
     .def("deepcopy", (smtk::session::mesh::Topology & (smtk::session::mesh::Topology::*)(::smtk::session::mesh::Topology const &)) &smtk::session::mesh::Topology::operator=)
-    .def("collection", [](const smtk::session::mesh::Topology& topology){ return topology.m_collection; })
+    .def("resource", [](const smtk::session::mesh::Topology& topology){ return topology.m_resource; })
     ;
   py::class_< smtk::session::mesh::Topology::Element >(instance, "Element")
     .def(py::init<::smtk::mesh::MeshSet, int>())

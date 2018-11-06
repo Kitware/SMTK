@@ -22,8 +22,8 @@
 #include "smtk/model/DefaultSession.h"
 
 #include "smtk/mesh/core/CellField.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/moab/Interface.h"
 
@@ -60,12 +60,12 @@ void cleanup(const std::string& file_path)
   }
 }
 
-smtk::mesh::CollectionPtr load_mesh(const smtk::mesh::InterfacePtr& interface)
+smtk::mesh::ResourcePtr load_mesh(const smtk::mesh::InterfacePtr& interface)
 {
   std::string file_path(data_root);
   file_path += "/mesh/2d/twoMeshes.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, interface);
+  smtk::mesh::ResourcePtr c = smtk::io::importMesh(file_path, interface);
 
   return c;
 }
@@ -158,7 +158,7 @@ int ImportExportMeshWithCellField(int argc, char* argv[])
 
   {
     smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
-    smtk::mesh::CollectionPtr c = load_mesh(interface);
+    smtk::mesh::ResourcePtr c = load_mesh(interface);
     smtk::mesh::MeshSet mesh = c->meshes();
     smtk::mesh::CellField distanceCellField =
       mesh.createCellField("euclidean distance", 1, smtk::mesh::FieldType::Double);
@@ -185,7 +185,7 @@ int ImportExportMeshWithCellField(int argc, char* argv[])
 
     smtk::extension::vtk::io::mesh::ImportVTKData imprt;
     smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
-    smtk::mesh::CollectionPtr c = imprt(reader->GetOutput(), interface);
+    smtk::mesh::ResourcePtr c = imprt(reader->GetOutput(), interface);
     smtk::mesh::MeshSet mesh = c->meshes();
 
     smtk::mesh::CellField distanceCellField = mesh.cellField("euclidean distance");

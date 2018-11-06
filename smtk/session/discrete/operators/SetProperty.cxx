@@ -17,7 +17,7 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -72,8 +72,8 @@ void SetProperty::setPropertyValue(
 }
 
 template <typename V, typename VL, typename VD, typename VI>
-void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item,
-  smtk::mesh::CollectionPtr c, const smtk::mesh::MeshSet& mesh)
+void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item, smtk::mesh::ResourcePtr c,
+  const smtk::mesh::MeshSet& mesh)
 {
   EntityRefArray::iterator it;
   if (!item || item->numberOfValues() == 0)
@@ -185,7 +185,7 @@ SetProperty::Result SetProperty::operateInternal()
     smtk::attribute::MeshItem::const_mesh_it it;
     for (it = meshItem->begin(); it != meshItem->end(); ++it)
     {
-      smtk::mesh::CollectionPtr c = it->collection();
+      smtk::mesh::ResourcePtr c = it->resource();
       if (!c)
         continue;
       SetMeshPropertyValue<String, StringList, StringData, StringItem>(

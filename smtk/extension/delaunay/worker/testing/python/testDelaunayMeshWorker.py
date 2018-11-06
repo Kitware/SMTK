@@ -67,7 +67,7 @@ class TestDelaunayMeshWorker(smtk.testing.TestCase):
         for search_path in paths.workerSearchPaths():
             self.meshServerLauncher.addWorkerSearchDirectory(search_path)
 
-        # access the meshing attribute collection for the delaunay worker
+        # access the meshing attribute resource for the delaunay worker
         meshingAttributes = smtk.mesh.delaunay.worker.meshing_attributes()
 
         # the mesher may require an attribute of type "Globals" that is named
@@ -77,10 +77,10 @@ class TestDelaunayMeshWorker(smtk.testing.TestCase):
         # attribute ourselves.
         #
         # TODO: the construction of default attributes should be an automated
-        #       process that is callable within the attribute collection.
+        #       process that is callable within the attribute resource.
         meshingAttributes.createAttribute("Globals", "Globals")
 
-        # now that we have a minimally sufficient attribute collection, we must
+        # now that we have a minimally sufficient attribute resource, we must
         # stringify it so it can be passed to the mesh operator.
         logger = smtk.io.Logger()
         writer = smtk.io.AttributeWriter()
@@ -116,7 +116,7 @@ class TestDelaunayMeshWorker(smtk.testing.TestCase):
         # access the face that was meshed
         face = self.mgr.findEntitiesOfType(int(smtk.model.FACE))[0]
 
-        # access the mesh collection associated with the model
+        # access the mesh resource associated with the model
         triangulatedFace = self.mgr.meshes().associatedCollections(face)[0]
 
         # confirm that the number of points and cells match our expectations

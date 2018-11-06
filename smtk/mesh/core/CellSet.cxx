@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/core/CellSet.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/core/Interface.h"
 
@@ -18,20 +18,20 @@ namespace smtk
 namespace mesh
 {
 
-CellSet::CellSet(const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& range)
+CellSet::CellSet(const smtk::mesh::ResourcePtr& parent, const smtk::mesh::HandleRange& range)
   : m_parent(parent)
   , m_range(range)
 {
 }
 
-CellSet::CellSet(const smtk::mesh::ConstCollectionPtr& parent, const smtk::mesh::HandleRange& range)
-  : m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent))
+CellSet::CellSet(const smtk::mesh::ConstResourcePtr& parent, const smtk::mesh::HandleRange& range)
+  : m_parent(std::const_pointer_cast<smtk::mesh::Resource>(parent))
   , m_range(range)
 {
 }
 
 CellSet::CellSet(
-  const smtk::mesh::CollectionPtr& parent, const std::vector<smtk::mesh::Handle>& cellIds)
+  const smtk::mesh::ResourcePtr& parent, const std::vector<smtk::mesh::Handle>& cellIds)
   : m_parent(parent)
   , m_range()
 {
@@ -41,8 +41,7 @@ CellSet::CellSet(
   }
 }
 
-CellSet::CellSet(
-  const smtk::mesh::CollectionPtr& parent, const std::set<smtk::mesh::Handle>& cellIds)
+CellSet::CellSet(const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mesh::Handle>& cellIds)
   : m_parent(parent)
   , m_range()
 {
@@ -136,10 +135,10 @@ smtk::mesh::PointConnectivity CellSet::pointConnectivity(std::size_t position) c
   return smtk::mesh::PointConnectivity(m_parent, singleIndex);
 }
 
-/**\brief Get the parent collection that this meshset belongs to.
+/**\brief Get the parent resource that this meshset belongs to.
   *
   */
-const smtk::mesh::CollectionPtr& CellSet::collection() const
+const smtk::mesh::ResourcePtr& CellSet::resource() const
 {
   return m_parent;
 }
@@ -148,7 +147,7 @@ const smtk::mesh::CollectionPtr& CellSet::collection() const
 CellSet set_intersect(const CellSet& a, const CellSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty CellSet if the collections don't match
+  { //return an empty CellSet if the resources don't match
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -160,7 +159,7 @@ CellSet set_intersect(const CellSet& a, const CellSet& b)
 CellSet set_difference(const CellSet& a, const CellSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty CellSet if the collections don't match
+  { //return an empty CellSet if the resources don't match
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -172,7 +171,7 @@ CellSet set_difference(const CellSet& a, const CellSet& b)
 CellSet set_union(const CellSet& a, const CellSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty CellSet if the collections don't match
+  { //return an empty CellSet if the resources don't match
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -185,7 +184,7 @@ CellSet set_union(const CellSet& a, const CellSet& b)
 CellSet point_intersect(const CellSet& a, const CellSet& b, ContainmentType t)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty CellSet if the collections don't match
+  { //return an empty CellSet if the resources don't match
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -202,7 +201,7 @@ CellSet point_intersect(const CellSet& a, const CellSet& b, ContainmentType t)
 CellSet point_difference(const CellSet& a, const CellSet& b, ContainmentType t)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty CellSet if the collections don't match
+  { //return an empty CellSet if the resources don't match
     return smtk::mesh::CellSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -219,7 +218,7 @@ SMTKCORE_EXPORT void for_each(const CellSet& a, CellForEach& filter)
   smtk::mesh::PointConnectivity pc(a.m_parent, a.m_range);
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
 
-  filter.collection(a.m_parent);
+  filter.resource(a.m_parent);
   iface->cellForEach(a.m_range, pc, filter);
 }
 }

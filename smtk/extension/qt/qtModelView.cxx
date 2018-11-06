@@ -11,8 +11,8 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityIterator.h"
@@ -42,7 +42,7 @@
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include <QAction>
 #include <QApplication>
@@ -439,7 +439,7 @@ bool qtModelView::requestOperation(const std::string&, const smtk::common::UUID&
 //     return OperationPtr();
 //   }
 
-//   attrib->collection()->setRefModelResource(brSession->resource());
+//   attrib->resource()->setRefModelResource(brSession->resource());
 
 //   return brOp;
 // }

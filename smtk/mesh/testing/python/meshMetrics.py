@@ -24,12 +24,12 @@ def test_mesh_metrics():
     print('data_dir', smtk.testing.DATA_DIR)
     mesh_path = os.path.join(smtk.testing.DATA_DIR,
                              'mesh', '3d/cube_with_hole.exo')
-    c = smtk.mesh.Collection.create()
-    smtk.io.importMesh(mesh_path, c)
-    if not c.isValid():
+    mr = smtk.mesh.Resource.create()
+    smtk.io.importMesh(mesh_path, mr)
+    if not mr.isValid():
         raise RuntimeError("Failed to read valid mesh")
 
-    ext = smtk.mesh.extent(c.meshes())
+    ext = smtk.mesh.extent(mr.meshes())
     tolerance = 1.e-8
     for i in range(0, 6):
         if i % 2 == 0:
@@ -37,10 +37,10 @@ def test_mesh_metrics():
         else:
             assert(abs(ext[i] - .5) < tolerance)
 
-    dim = smtk.mesh.highestDimension(c.meshes())
+    dim = smtk.mesh.highestDimension(mr.meshes())
     assert(dim == smtk.mesh.Dims3)
 
-    euler_characteristic = smtk.mesh.eulerCharacteristic(c.meshes())
+    euler_characteristic = smtk.mesh.eulerCharacteristic(mr.meshes())
     assert(euler_characteristic == 0)
 
 

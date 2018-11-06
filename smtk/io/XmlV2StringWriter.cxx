@@ -40,7 +40,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/view/View.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/json/jsonHandleRange.h"
 
 #include "smtk/model/Entity.h"
@@ -1234,7 +1234,7 @@ void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node& node, attribute::M
     if (item->isSet(i))
     {
       val = values.append_child("Val");
-      val.append_attribute("collectionid").set_value(it->collection()->entity().toString().c_str());
+      val.append_attribute("collectionid").set_value(it->resource()->entity().toString().c_str());
       nlohmann::json jrange = it->range();
       val.text().set(jrange.dump().c_str());
     }

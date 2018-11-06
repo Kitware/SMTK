@@ -5,7 +5,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="set mesh name" BaseType="operation" Label="Mesh - Set Name">
       <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
-        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+        <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <String Name="name" NumberOfRequiredValues="1"/>

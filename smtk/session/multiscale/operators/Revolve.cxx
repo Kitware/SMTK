@@ -23,7 +23,7 @@
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "vtkNew.h"
 #include "vtkUnstructuredGrid.h"
@@ -92,14 +92,14 @@ Revolve::Result Revolve::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // The collection for this model has the same UUID as the model, so we can
+  // The mesh resource for this model has the same UUID as the model, so we can
   // access it using the model's UUID
-  smtk::mesh::CollectionPtr collection =
+  smtk::mesh::ResourcePtr meshResource =
     session->meshManager()->findCollection(dataset.entity())->second;
 
-  if (!collection->isValid())
+  if (!meshResource->isValid())
   {
-    smtkErrorMacro(this->log(), "No collection associated with this model.");
+    smtkErrorMacro(this->log(), "No mesh resource associated with this model.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
@@ -110,7 +110,7 @@ Revolve::Result Revolve::operateInternal()
   // will be persistent through the revolution operation.
   vtkNew<vtkUnstructuredGrid> ug;
   smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
-  exportVTKData(collection->meshes(smtk::mesh::DimensionType(2)), ug.GetPointer(), "ZoneIds");
+  exportVTKData(meshResource->meshes(smtk::mesh::DimensionType(2)), ug.GetPointer(), "ZoneIds");
 
   // Create a VolumeOfRevolution filter
   vtkNew<vtkVolumeOfRevolutionFilter> revolve;
@@ -143,31 +143,31 @@ Revolve::Result Revolve::operateInternal()
   // domain partitioning.
   smtk::extension::vtk::io::mesh::ImportVTKData importVTKData;
   smtk::mesh::ManagerPtr meshManager = session->meshManager();
-  collection =
+  meshResource =
     importVTKData(vtkUnstructuredGrid::SafeDownCast(revolve->GetOutput()), meshManager, "ZoneIds");
 
-  if (!collection || !collection->isValid())
+  if (!meshResource || !meshResource->isValid())
   {
     // The file was not correctly read.
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
   // Assign its model manager to the one associated with this session
-  collection->setModelResource(session->resource());
-  collection->name("Revolved mesh");
+  meshResource->setModelResource(session->resource());
+  meshResource->name("Revolved mesh");
 
   // Construct the topology
-  session->addTopology(std::move(smtk::session::mesh::Topology(collection)));
+  session->addTopology(std::move(smtk::session::mesh::Topology(meshResource)));
 
-  // Our collection already has a UUID, so here we create a model given the
+  // Our mesh resource already has a UUID, so here we create a model given the
   // model manager and UUID
-  smtk::model::Model model = resource->insertModel(collection->entity(), 3, 3, "Revolved model");
+  smtk::model::Model model = resource->insertModel(meshResource->entity(), 3, 3, "Revolved model");
   session->declareDanglingEntity(model);
 
   model.setSession(smtk::model::SessionRef(resource, session->sessionId()));
 
-  // Associate the collection to our newly created model
-  collection->associateToModel(model.entity());
+  // Associate the mesh resource to our newly created model
+  meshResource->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
   model.setSession(smtk::model::SessionRef(session->resource(), session->sessionId()));

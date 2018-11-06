@@ -28,9 +28,9 @@
 
 #include "smtk/io/ExportMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/ForEachTypes.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
@@ -165,8 +165,8 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     return 1;
   }
 
-  smtk::mesh::CollectionPtr collection = resource->collection();
-  smtk::mesh::MeshSet mesh = collection->meshes();
+  smtk::mesh::ResourcePtr meshResource = resource->resource();
+  smtk::mesh::MeshSet mesh = meshResource->meshes();
 
   // add auxiliary geometry
   auto auxGeoOp = smtk::model::AddAuxiliaryGeometry::create();

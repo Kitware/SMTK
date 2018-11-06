@@ -14,8 +14,8 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include <array>
 
@@ -32,7 +32,7 @@ namespace utility
 // Return the meshsets corresponding to volume, x-min, y-min, z-min, x-max,
 // y-max, z-max, in that order.
 SMTKCORE_EXPORT
-std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::CollectionPtr,
+std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::ResourcePtr,
   const std::array<std::size_t, 3>& discretization,
   const std::function<std::array<double, 3>(std::array<double, 3>)>& transform);
 
@@ -42,7 +42,7 @@ std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::CollectionPtr,
 // Return the meshsets corresponding to area, x-min, y-min, x-max, y-max, in
 // that order.
 SMTKCORE_EXPORT
-std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::CollectionPtr,
+std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::ResourcePtr,
   const std::array<std::size_t, 2>& discretization,
   const std::function<std::array<double, 3>(std::array<double, 3>)>& transform);
 }

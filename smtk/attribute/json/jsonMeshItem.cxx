@@ -15,7 +15,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonItem.h"
 #include "smtk/common/UUID.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/json/jsonHandleRange.h"
 
@@ -50,7 +50,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::MeshItemPtr& itemPt
     if (itemPtr->isSet(i))
     {
       json value;
-      value["Resourceid"] = it->collection()->entity().toString();
+      value["Resourceid"] = it->resource()->entity().toString();
       value["Val"] = it->range();
       values.push_back(value);
     }
@@ -121,10 +121,10 @@ SMTKCORE_EXPORT void from_json(const json& /*j*/, smtk::attribute::MeshItemPtr& 
   //     cid = smtk::common::UUID(resourceId);
   //     //convert back to a handle
   //     smtk::mesh::HandleRange hrange = value.at("Val");
-  //     smtk::mesh::CollectionPtr c = modelmgr->meshes()->collection(cid);
+  //     smtk::mesh::ResourcePtr c = modelmgr->meshes()->resource(cid);
   //     if (!c)
   //     {
-  //       std::cerr << "Expecting a valid collection for mesh item: " << itemPtr->name() << std::endl;
+  //       std::cerr << "Expecting a valid resource for mesh item: " << itemPtr->name() << std::endl;
   //       continue;
   //     }
   //     smtk::mesh::InterfacePtr interface = c->interface();

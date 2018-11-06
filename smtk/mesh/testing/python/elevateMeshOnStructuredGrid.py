@@ -76,8 +76,8 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
         self.model = smtk.model.Model(
             modelEntity.modelResource(), modelEntity.id())
 
-        # Access the mesh set from the collection that comprises the model
-        self.mesh = self.resource.collection().meshes()
+        # Access the mesh set from the resource that comprises the model
+        self.mesh = self.resource.resource().meshes()
 
         # Import auxiliary geometry describing the demographic data of the mesh
         op = smtk.model.AddAuxiliaryGeometry.create()

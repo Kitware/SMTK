@@ -21,7 +21,7 @@
 
 #include "smtk/io/ExportMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -152,9 +152,9 @@ int UnitTestTriangulateFaces(int, char** const)
       return 1;
     }
 
-    smtk::attribute::ResourceItem::Ptr collectionItem = result->findResource("collection");
-    smtk::mesh::CollectionPtr triangulatedFace =
-      std::dynamic_pointer_cast<smtk::mesh::Collection>(collectionItem->value());
+    smtk::attribute::ResourceItem::Ptr resourceItem = result->findResource("meshresource");
+    smtk::mesh::ResourcePtr triangulatedFace =
+      std::dynamic_pointer_cast<smtk::mesh::Resource>(resourceItem->value());
 
     if (triangulatedFace->points().size() != 8 || triangulatedFace->cells().size() != 8)
     {

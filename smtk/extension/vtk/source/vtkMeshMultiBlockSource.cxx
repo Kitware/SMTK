@@ -22,8 +22,8 @@
 #include "smtk/model/Volume.h"
 
 #include "smtk/mesh/core/CellSet.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/DimensionTypes.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 
@@ -98,21 +98,21 @@ smtk::model::ResourcePtr vtkMeshMultiBlockSource::GetModelResource()
   return m_modelResource;
 }
 
-/// Set the SMTK mesh collection
-void vtkMeshMultiBlockSource::SetMeshCollection(smtk::mesh::CollectionPtr meshcollection)
+/// Set the SMTK mesh resource
+void vtkMeshMultiBlockSource::SetMeshResource(smtk::mesh::ResourcePtr meshresource)
 {
-  if (m_meshCollection == meshcollection)
+  if (m_meshResource == meshresource)
   {
     return;
   }
-  m_meshCollection = meshcollection;
+  m_meshResource = meshresource;
   this->Modified();
 }
 
-/// Get the SMTK mesh collection.
-smtk::mesh::CollectionPtr vtkMeshMultiBlockSource::GetMeshCollection()
+/// Get the SMTK mesh resource.
+smtk::mesh::ResourcePtr vtkMeshMultiBlockSource::GetMeshResource()
 {
-  return m_meshCollection;
+  return m_meshResource;
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
@@ -152,7 +152,7 @@ static void internal_AddBlockEntityInfo(const smtk::mesh::MeshSet& mesh,
 /// Add customized block info.
 /// Mapping from MeshSet to block id
 /// 'Volume' field array to color by volume
-static void internal_AddBlockInfo(const smtk::mesh::CollectionPtr& meshcollect,
+static void internal_AddBlockInfo(const smtk::mesh::ResourcePtr& meshcollect,
   const smtk::model::EntityRef& entityref, const smtk::mesh::MeshSet& blockmesh,
   const smtk::model::EntityRef& bordantCell, const vtkIdType& blockId, vtkPolyData* poly,
   std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2BlockId)
@@ -236,14 +236,14 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
 
     if (shellCreated)
     {
-      meshes.collection()->removeMeshes(shell);
+      meshes.resource()->removeMeshes(shell);
     }
   }
 }
 
 /// Recursively find all the entities with meshes
 /// \a entityrefMap is map from entityref to its parent cell entity and its meshset
-void vtkMeshMultiBlockSource::FindEntitiesWithMesh(const smtk::mesh::CollectionPtr& meshes,
+void vtkMeshMultiBlockSource::FindEntitiesWithMesh(const smtk::mesh::ResourcePtr& meshes,
   const EntityRef& root,
   std::map<smtk::model::EntityRef, std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >&
     entityrefMap,
@@ -294,8 +294,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
     modelEntity = entity.isModel() ? entity.as<smtk::model::Model>() : entity.owningModel();
   }
 
-  if (modelEntity.isValid() && m_meshCollection->isValid() &&
-    m_meshCollection->numberOfMeshes() > 0)
+  if (modelEntity.isValid() && m_meshResource->isValid() && m_meshResource->numberOfMeshes() > 0)
   {
     // See if the model has any instructions about
     // whether to generate surface normals.
@@ -310,7 +309,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
     std::map<smtk::model::EntityRef, std::pair<smtk::model::EntityRef, smtk::mesh::MeshSet> >
       entityrefMap;
     std::set<smtk::model::EntityRef> touched; // make this go out of scope soon.
-    this->FindEntitiesWithMesh(m_meshCollection, modelEntity, entityrefMap, touched);
+    this->FindEntitiesWithMesh(m_meshResource, modelEntity, entityrefMap, touched);
 
     mbds->SetNumberOfBlocks(static_cast<unsigned>(entityrefMap.size()));
     vtkIdType i;
@@ -328,8 +327,8 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       // as a convenient method to get the flat block index in multiblock
       if (!(cit->first.entity().isNull()))
       {
-        internal_AddBlockInfo(m_meshCollection, cit->first, cit->second.second, cit->second.first,
-          i, poly.GetPointer(), m_Meshset2BlockIdMap);
+        internal_AddBlockInfo(m_meshResource, cit->first, cit->second.second, cit->second.first, i,
+          poly.GetPointer(), m_Meshset2BlockIdMap);
       }
     }
 
@@ -340,7 +339,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
   }
   else
   {
-    smtk::mesh::MeshSet allMeshes = m_meshCollection->meshes();
+    smtk::mesh::MeshSet allMeshes = m_meshResource->meshes();
     mbds->SetNumberOfBlocks(static_cast<unsigned>(allMeshes.size()));
 
     for (std::size_t i = 0; i < allMeshes.size(); ++i)

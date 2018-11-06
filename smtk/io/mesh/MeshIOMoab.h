@@ -33,44 +33,43 @@ class SMTKCORE_EXPORT MeshIOMoab : public MeshIO
 public:
   MeshIOMoab();
 
-  //Load an entire moab data file as a new collection with the given interface.
-  //Returns an invalid collection if the file can't be loaded. The third
+  //Load an entire moab data file as a new resource with the given interface.
+  //Returns an invalid resource if the file can't be loaded. The third
   //parameter is a label with which the domain can be parsed, but it is not
   //currently implemented for the moab interface
-  smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+  smtk::mesh::ResourcePtr importMesh(const std::string& filePath,
     const smtk::mesh::InterfacePtr& interface, const std::string&) const override;
 
-  //Merge a moab data file into an existing valid collection. The third
+  //Merge a moab data file into an existing valid resource. The third
   //parameter is a label with which the domain can be parsed, but it is not
   //currently implemented for the moab interface
-  bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
     const std::string&) const override;
 
-  //Exports the collection to file. Overwrites any existing content in the file
-  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const override;
+  //Exports the resource to file. Overwrites any existing content in the file
+  bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource) const override;
 
   //TODO:
   // bool exportMesh( const std::string& filePath,
-  //                  smtk::mesh::CollectionPtr collection,
-  //                  smtk::model::ResourcePtr resource,
+  //                  smtk::mesh::ResourcePtr meshResource,
+  //                  smtk::model::ResourcePtr modelResource,
   //                  const std::string& modelPropertyName ) const
 
-  //Load an entire moab data file as a new collection with the given interface.
-  //Returns an invalid collection if the file can't be loaded
-  smtk::mesh::CollectionPtr read(const std::string& filePath,
+  //Load an entire moab data file as a new resource with the given interface.
+  //Returns an invalid resource if the file can't be loaded
+  smtk::mesh::ResourcePtr read(const std::string& filePath,
     const smtk::mesh::InterfacePtr& interface, Subset s) const override;
 
-  //Merge a moab data file into an existing valid collection.
-  bool read(
-    const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset s) const override;
+  //Merge a moab data file into an existing valid resource.
+  bool read(const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset s) const override;
 
-  //Writes the collection to file. Overwrites any existing content in the file
+  //Writes the resource to file. Overwrites any existing content in the file
   bool write(
-    const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset s) const override;
+    const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset s) const override;
 
-  //Writes the collection to the file specified by the collections data member
+  //Writes the resource to the file specified by the resources data member
   //writeLocation(). Overwrites any existing content in the file
-  bool write(smtk::mesh::CollectionPtr collection, Subset s) const override;
+  bool write(smtk::mesh::ResourcePtr resource, Subset s) const override;
 };
 }
 }

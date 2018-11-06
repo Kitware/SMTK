@@ -11,10 +11,10 @@
 #include "smtk/mesh/utility/Create.h"
 
 #include "smtk/mesh/core/CellSet.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Interface.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 namespace smtk
 {
@@ -23,12 +23,12 @@ namespace mesh
 namespace utility
 {
 
-std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::CollectionPtr collection,
+std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::ResourcePtr resource,
   const std::array<std::size_t, 3>& discretization,
   const std::function<std::array<double, 3>(std::array<double, 3>)>& transform)
 {
   // We start by constructing a mesh allocator object.
-  smtk::mesh::AllocatorPtr allocator = collection->interface()->allocator();
+  smtk::mesh::AllocatorPtr allocator = resource->interface()->allocator();
 
   // Allocate the memory for our points. The resulting memory layout is the
   // 3 x N array "coordinates".
@@ -147,10 +147,10 @@ std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::CollectionPtr c
 
   // Construct a cell set corresponding to the hexahedral cells identified by
   // the connectivity array we just created.
-  smtk::mesh::CellSet cellsForMesh(collection, createdCellIds);
+  smtk::mesh::CellSet cellsForMesh(resource, createdCellIds);
 
   // Construct a mesh set corresponding to the cell set we just created.
-  constructedMeshSets[0] = collection->createMesh(cellsForMesh);
+  constructedMeshSets[0] = resource->createMesh(cellsForMesh);
 
   for (std::size_t i = 0; i < 6; i++)
   {
@@ -161,21 +161,21 @@ std::array<smtk::mesh::MeshSet, 7> createUniformGrid(smtk::mesh::CollectionPtr c
 
     // Construct a cell set corresponding to the quadrilateral cells identified
     // by the connectivity array we just created.
-    smtk::mesh::CellSet cellsForMeshFace(collection, createdCellIdsForFaces[i]);
+    smtk::mesh::CellSet cellsForMeshFace(resource, createdCellIdsForFaces[i]);
 
     // Construct a mesh set corresponding to the cell set we just created.
-    constructedMeshSets[i + 1] = collection->createMesh(cellsForMeshFace);
+    constructedMeshSets[i + 1] = resource->createMesh(cellsForMeshFace);
   }
 
   return constructedMeshSets;
 }
 
-std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::CollectionPtr collection,
+std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::ResourcePtr resource,
   const std::array<std::size_t, 2>& discretization,
   const std::function<std::array<double, 3>(std::array<double, 3>)>& transform)
 {
   // We start by constructing a mesh allocator object.
-  smtk::mesh::AllocatorPtr allocator = collection->interface()->allocator();
+  smtk::mesh::AllocatorPtr allocator = resource->interface()->allocator();
 
   // Allocate the memory for our points. The resulting memory layout is the
   // 3 x N array "coordinates".
@@ -278,10 +278,10 @@ std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::CollectionPtr c
 
   // Construct a cell set corresponding to the quadrilateral cells identified by
   // the connectivity array we just created.
-  smtk::mesh::CellSet cellsForMesh(collection, createdCellIds);
+  smtk::mesh::CellSet cellsForMesh(resource, createdCellIds);
 
   // Construct a mesh set corresponding to the cell set we just created.
-  constructedMeshSets[0] = collection->createMesh(cellsForMesh);
+  constructedMeshSets[0] = resource->createMesh(cellsForMesh);
 
   for (std::size_t i = 0; i < 4; i++)
   {
@@ -292,10 +292,10 @@ std::array<smtk::mesh::MeshSet, 5> createUniformGrid(smtk::mesh::CollectionPtr c
 
     // Construct a cell set corresponding to the line cells identified by the
     // connectivity array we just created.
-    smtk::mesh::CellSet cellsForMeshFace(collection, createdCellIdsForEdges[i]);
+    smtk::mesh::CellSet cellsForMeshFace(resource, createdCellIdsForEdges[i]);
 
     // Construct a mesh set corresponding to the cell set we just created.
-    constructedMeshSets[i + 1] = collection->createMesh(cellsForMeshFace);
+    constructedMeshSets[i + 1] = resource->createMesh(cellsForMeshFace);
   }
 
   return constructedMeshSets;

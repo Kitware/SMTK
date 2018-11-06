@@ -33,7 +33,7 @@ public:
 
   virtual void forMesh(smtk::mesh::MeshSet& singleMesh) = 0;
 
-  smtk::mesh::CollectionPtr m_collection;
+  smtk::mesh::ResourcePtr m_resource;
 };
 
 class SMTKCORE_EXPORT CellForEach
@@ -56,7 +56,7 @@ public:
 
   const std::vector<double>& coordinates() const { return *m_coords; }
 
-  smtk::mesh::CollectionPtr collection() const { return m_collection; }
+  smtk::mesh::ResourcePtr resource() const { return m_resource; }
 
   //Set the coords for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
@@ -66,12 +66,12 @@ public:
   //smtk::mesh::Interface implementations
   void pointIds(const smtk::mesh::Handle* ptIds) { m_pointIds = ptIds; }
 
-  //Set the collection for the visitor. This should be only be called by
+  //Set the resource() for the visitor. This should be only be called by
   //smtk::mesh::Interface implementations
-  void collection(smtk::mesh::CollectionPtr c) { m_collection = c; }
+  void resource(smtk::mesh::ResourcePtr r) { m_resource = r; }
 
 private:
-  smtk::mesh::CollectionPtr m_collection;
+  smtk::mesh::ResourcePtr m_resource;
   const smtk::mesh::Handle* m_pointIds;
   std::vector<double>* m_coords;
   bool m_wantsCoordinates;
@@ -96,7 +96,7 @@ public:
   virtual void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
     bool& coordinatesModified) = 0;
 
-  smtk::mesh::CollectionPtr m_collection;
+  smtk::mesh::ResourcePtr m_resource;
 };
 }
 }

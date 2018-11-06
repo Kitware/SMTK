@@ -33,19 +33,19 @@ class SMTKCORE_EXPORT PointSet
   friend SMTKCORE_EXPORT void for_each(const PointSet& a, PointForEach& filter);
 
 public:
-  PointSet(const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& points);
-  PointSet(const smtk::mesh::ConstCollectionPtr& parent, const smtk::mesh::HandleRange& points);
+  PointSet(const smtk::mesh::ResourcePtr& parent, const smtk::mesh::HandleRange& points);
+  PointSet(const smtk::mesh::ConstResourcePtr& parent, const smtk::mesh::HandleRange& points);
 
   //construct a PointSet that represents an arbitrary unknown subset of points
   //that are children of the handle via an explicit vector of point ids. While
   //this method is inefficient, it is useful for the python bindings where
   //<points> is converted to a list.
-  PointSet(const smtk::mesh::CollectionPtr& parent, const std::vector<smtk::mesh::Handle>& points);
+  PointSet(const smtk::mesh::ResourcePtr& parent, const std::vector<smtk::mesh::Handle>& points);
 
   //construct a PointSet that represents an arbitrary unknown subset of points
   //that are children of the handle via an explicit set of point ids. This
   //constructor is preferred over the variant that takes a std::vector.
-  PointSet(const smtk::mesh::CollectionPtr& parent, const std::set<smtk::mesh::Handle>& points);
+  PointSet(const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mesh::Handle>& points);
 
   //Copy Constructor required for rule of 3
   PointSet(const PointSet& other);
@@ -110,32 +110,32 @@ public:
   //get the underlying HandleRange that this PointSet represents
   const smtk::mesh::HandleRange& range() const { return m_points; }
 
-  //get the underlying collection that this PointSet belongs to
-  const smtk::mesh::CollectionPtr& collection() const;
+  //get the underlying resource that this PointSet belongs to
+  const smtk::mesh::ResourcePtr& resource() const;
 
 private:
-  smtk::mesh::CollectionPtr m_parent;
+  smtk::mesh::ResourcePtr m_parent;
   smtk::mesh::HandleRange m_points;
 };
 
 //intersect two set of points, placing the results in the return points object.
 //This uses a point id based comparison, so points that have duplicate
 //coordinates but different id's are considered to not intersect
-//Note: If the points come from different collections the result will
+//Note: If the points come from different resources the result will
 //always be empty
 SMTKCORE_EXPORT PointSet set_intersect(const PointSet& a, const PointSet& b);
 
 //subtract points b from a, placing the results in the return points object.
 //This uses a point id based comparison, so points that have duplicate
 //coordinates but different id's are considered to not intersect
-//Note: If the points come from different collections the result will
+//Note: If the points come from different resources the result will
 //always be empty
 SMTKCORE_EXPORT PointSet set_difference(const PointSet& a, const PointSet& b);
 
 //union two set of points, placing the results in the return points object.
 //This uses a point id based comparison, so points that have duplicate
 //coordinates but different id's are considered to not intersect
-//Note: If the points come from different collections the result will
+//Note: If the points come from different resources the result will
 //always be empty
 SMTKCORE_EXPORT PointSet set_union(const PointSet& a, const PointSet& b);
 

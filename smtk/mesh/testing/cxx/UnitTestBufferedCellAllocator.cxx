@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/moab/Interface.h"
@@ -36,36 +36,36 @@ double** cellPoints[9] = { vertex, line, triangle, quad, polygon, tetrahedron, p
 void verify_moab_buffered_cell_allocator_creation()
 {
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create(iface);
 
-  test(collection->isValid(), "collection should be valid");
-  test(!collection->isModified(), "collection shouldn't be modified");
+  test(resource->isValid(), "resource should be valid");
+  test(!resource->isModified(), "resource shouldn't be modified");
 
   //at this point extract the allocator from json and verify that it
   //is NOT null
-  smtk::mesh::BufferedCellAllocatorPtr allocator = collection->interface()->bufferedCellAllocator();
+  smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
   test(!!allocator, "moab buffered cell allocator should be valid");
 
   //verify that is modified is true
-  test(collection->isModified(),
-    "collection should be modified once the buffered cell allocator is accessed");
+  test(resource->isModified(),
+    "resource should be modified once the buffered cell allocator is accessed");
 }
 
 void verify_json_buffered_cell_allocator_creation()
 {
   smtk::mesh::InterfacePtr iface = smtk::mesh::json::make_interface();
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create(iface);
 
-  test(collection->isValid(), "collection should be valid");
-  test(!collection->isModified(), "collection shouldn't be modified");
+  test(resource->isValid(), "resource should be valid");
+  test(!resource->isModified(), "resource shouldn't be modified");
 
   //at this point extract the allocator from json and verify that it
   //is null
-  smtk::mesh::BufferedCellAllocatorPtr allocator = collection->interface()->bufferedCellAllocator();
+  smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
   test(!allocator, "json incremental allocator should be NULL");
 
   //verify that is modified is true
-  test(!collection->isModified(), "collection shouldn't be modified");
+  test(!resource->isModified(), "resource shouldn't be modified");
 }
 
 void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
@@ -73,12 +73,12 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   // Allocate a cell of type <cellType>.
 
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create(iface);
 
-  test(collection->isValid(), "collection should be valid");
-  test(!collection->isModified(), "collection shouldn't be modified");
+  test(resource->isValid(), "resource should be valid");
+  test(!resource->isModified(), "resource shouldn't be modified");
 
-  smtk::mesh::BufferedCellAllocatorPtr allocator = collection->interface()->bufferedCellAllocator();
+  smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
 
   // Grab the number of vertices for the cell type being tested
   std::size_t nVerticesPerCell =
@@ -108,7 +108,7 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   test(allocator->cells().size() == 1);
 
   smtk::mesh::MeshSet mesh =
-    collection->createMesh(smtk::mesh::CellSet(collection, allocator->cells()));
+    resource->createMesh(smtk::mesh::CellSet(resource, allocator->cells()));
 
   test(mesh.points().size() == nVerticesPerCell);
 }
@@ -119,12 +119,12 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   // proper success and validity variables along the way.
 
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create(iface);
 
-  test(collection->isValid(), "collection should be valid");
-  test(!collection->isModified(), "collection shouldn't be modified");
+  test(resource->isValid(), "resource should be valid");
+  test(!resource->isModified(), "resource shouldn't be modified");
 
-  smtk::mesh::BufferedCellAllocatorPtr allocator = collection->interface()->bufferedCellAllocator();
+  smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
   test(allocator->isValid() == false);
   test(allocator->cells().size() == 0);
 
@@ -180,7 +180,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   test(allocator->cells().size() == 1);
 
   smtk::mesh::MeshSet mesh =
-    collection->createMesh(smtk::mesh::CellSet(collection, allocator->cells()));
+    resource->createMesh(smtk::mesh::CellSet(resource, allocator->cells()));
 
   test(mesh.points().size() == nVerticesPerCell);
 }
@@ -190,12 +190,12 @@ void verify_moab_buffered_cell_allocator_cells()
   // Allocate one of each type of cell.
 
   smtk::mesh::InterfacePtr iface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(iface);
+  smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create(iface);
 
-  test(collection->isValid(), "collection should be valid");
-  test(!collection->isModified(), "collection shouldn't be modified");
+  test(resource->isValid(), "resource should be valid");
+  test(!resource->isModified(), "resource shouldn't be modified");
 
-  smtk::mesh::BufferedCellAllocatorPtr allocator = collection->interface()->bufferedCellAllocator();
+  smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
 
   // First, we must allocate the number of points needed for all of the cells.
   std::size_t nVertices = 0;
@@ -246,7 +246,7 @@ void verify_moab_buffered_cell_allocator_cells()
   test(allocator->cells().size() == 9);
 
   smtk::mesh::MeshSet mesh =
-    collection->createMesh(smtk::mesh::CellSet(collection, allocator->cells()));
+    resource->createMesh(smtk::mesh::CellSet(resource, allocator->cells()));
 
   test(mesh.points().size() == nVertices);
 }

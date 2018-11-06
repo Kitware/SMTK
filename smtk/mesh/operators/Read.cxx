@@ -22,8 +22,8 @@
 
 #include "smtk/io/ReadMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/Read_xml.h"
 
@@ -71,8 +71,8 @@ Read::Result Read::operateInternal()
   smtk::attribute::IntItem::Ptr subsetItem = this->parameters()->findInt("subset");
   smtk::io::mesh::Subset subset = static_cast<smtk::io::mesh::Subset>(subsetItem->value());
 
-  auto collection = smtk::mesh::Collection::create();
-  bool success = smtk::io::readMesh(filePath, collection, subset);
+  auto resource = smtk::mesh::Resource::create();
+  bool success = smtk::io::readMesh(filePath, resource, subset);
 
   if (success == false)
   {
@@ -83,9 +83,9 @@ Read::Result Read::operateInternal()
 
   AddMeshToResult addMeshToResult(result);
 
-  smtk::mesh::for_each(collection->meshes(), addMeshToResult);
+  smtk::mesh::for_each(resource->meshes(), addMeshToResult);
 
-  result->findResource("resource")->appendValue(collection);
+  result->findResource("resource")->appendValue(resource);
 
   return result;
 }

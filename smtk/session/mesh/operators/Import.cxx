@@ -70,7 +70,7 @@ Import::Result Import::operateInternal()
 
   smtk::session::mesh::Resource::Ptr resource = nullptr;
   smtk::session::mesh::Session::Ptr session = nullptr;
-  smtk::mesh::Collection::Ptr collection = nullptr;
+  smtk::mesh::Resource::Ptr meshResource = nullptr;
 
   // Modes 2 and 3 requre an existing resource for input
   smtk::attribute::ResourceItem::Ptr existingResourceItem =
@@ -90,14 +90,14 @@ Import::Result Import::operateInternal()
       // If the "session only" value is set to "this file", then we use the
       // existing resource
       resource = existingResource;
-      collection = existingResource->collection();
+      meshResource = existingResource->resource();
 
       // It is possible that a mesh session resource does not have a valid
-      // collection (for example, when it is newly created). In this case, we
-      // need a new collection instead.
-      if (collection == nullptr)
+      // mesh resource (for example, when it is newly created). In this case, we
+      // need a new mesh resource instead.
+      if (meshResource == nullptr)
       {
-        collection = smtk::mesh::Collection::create();
+        meshResource = smtk::mesh::Resource::create();
       }
     }
     else
@@ -105,7 +105,7 @@ Import::Result Import::operateInternal()
       // If the "session only" value is set to "this session", then we create a
       // new resource with the session from the exisiting resource
       resource = smtk::session::mesh::Resource::create();
-      collection = smtk::mesh::Collection::create();
+      meshResource = smtk::mesh::Resource::create();
       resource->setSession(session);
     }
   }
@@ -115,20 +115,20 @@ Import::Result Import::operateInternal()
     // resource.
     resource = smtk::session::mesh::Resource::create();
     session = smtk::session::mesh::Session::create();
-    collection = smtk::mesh::Collection::create();
+    meshResource = smtk::mesh::Resource::create();
 
     // Create a new resource for the import
     resource->setLocation(filePath);
     resource->setSession(session);
   }
 
-  // Get the collection from the file
-  smtk::mesh::MeshSet preexistingMeshes = collection->meshes();
-  smtk::io::importMesh(filePath, collection, label);
-  smtk::mesh::MeshSet allMeshes = collection->meshes();
+  // Get the mesh resource from the file
+  smtk::mesh::MeshSet preexistingMeshes = meshResource->meshes();
+  smtk::io::importMesh(filePath, meshResource, label);
+  smtk::mesh::MeshSet allMeshes = meshResource->meshes();
   smtk::mesh::MeshSet newMeshes = smtk::mesh::set_difference(allMeshes, preexistingMeshes);
 
-  if (!collection || !collection->isValid())
+  if (!meshResource || !meshResource->isValid())
   {
     // The file was not correctly read.
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
@@ -138,7 +138,7 @@ Import::Result Import::operateInternal()
   std::string name = smtk::common::Paths::stem(filePath);
   if (!name.empty())
   {
-    collection->name(name);
+    meshResource->name(name);
   }
 
   auto format = smtk::io::meshFileFormat(filePath);
@@ -149,26 +149,26 @@ Import::Result Import::operateInternal()
     session->facade()["neumann"] = "Side Set";
   }
 
-  // Assign the collection's model resource to the one associated with this
+  // Assign the mesh resource's model resource to the one associated with this
   // session
-  collection->setModelResource(resource);
+  meshResource->setModelResource(resource);
 
-  // Also assign the collection to be the model's tessellation
-  resource->setMeshTessellations(collection);
+  // Also assign the mesh resource to be the model's tessellation
+  resource->setMeshTessellations(meshResource);
 
   // If we are reading a mesh session resource (as opposed to a new import), we
   // should access the existing model instead of creating a new one here. If
-  // this is the case, then the collection's associated model id will be related
+  // this is the case, then the mesh resource's associated model id will be related
   // to a model entity that is already in the resource (as it was put there by
   // the Read operation calling this one).
-  smtk::common::UUID associatedModelId = collection->associatedModel();
+  smtk::common::UUID associatedModelId = meshResource->associatedModel();
 
   // By default, a model is invalid
   smtk::model::Model model;
   if (associatedModelId != smtk::common::UUID::null())
   {
     // Assign the model to one described already in the resource with the id of
-    // collection's associated model. If there is no such model, then this
+    // mesh resource's associated model. If there is no such model, then this
     // instance will also be invalid.
     model = smtk::model::Model(resource, associatedModelId);
   }
@@ -176,7 +176,7 @@ Import::Result Import::operateInternal()
   if (model.isValid() == false)
   {
     // Determine the model's dimension
-    int dimension = int(smtk::mesh::utility::highestDimension(collection->meshes()));
+    int dimension = int(smtk::mesh::utility::highestDimension(meshResource->meshes()));
 
     // Create a model with the appropriate dimension
     model = resource->addModel(dimension, dimension);
@@ -198,7 +198,7 @@ Import::Result Import::operateInternal()
   // Declare the model as "dangling" so it will be transcribed
   session->declareDanglingEntity(model);
 
-  collection->associateToModel(model.entity());
+  meshResource->associateToModel(model.entity());
 
   // Set the model's session to point to the current session
   model.setSession(smtk::model::SessionRef(resource, resource->session()->sessionId()));

@@ -124,15 +124,15 @@ CreateUniformGrid::Result CreateUniformGrid::operateInternal()
     resource->setSession(session);
   }
 
-  // Create a new mesh collection
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
+  // Create a new mesh mesh resource
+  smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create();
 
   // Construct a uniform grid
   std::vector<smtk::mesh::MeshSet> meshes;
   if (dimension == 2)
   {
     std::array<std::size_t, 2> disc = { { discretization[0], discretization[1] } };
-    auto ms = smtk::mesh::utility::createUniformGrid(collection, disc, fn);
+    auto ms = smtk::mesh::utility::createUniformGrid(meshResource, disc, fn);
     for (auto& m : ms)
     {
       meshes.push_back(m);
@@ -140,30 +140,31 @@ CreateUniformGrid::Result CreateUniformGrid::operateInternal()
   }
   else
   {
-    auto ms = smtk::mesh::utility::createUniformGrid(collection, discretization, fn);
+    auto ms = smtk::mesh::utility::createUniformGrid(meshResource, discretization, fn);
     for (auto& m : ms)
     {
       meshes.push_back(m);
     }
   }
 
-  // Assign the collection's model resource to the one associated with this
+  // Assign the mesh resource's model resource to the one associated with this
   // session.
-  collection->setModelResource(resource);
+  meshResource->setModelResource(resource);
 
-  // Also assign the collection to be the model's tessellation
-  resource->setMeshTessellations(collection);
+  // Also assign the mesh resource to be the model's tessellation
+  resource->setMeshTessellations(meshResource);
 
   // Create a model with the appropriate dimension
   smtk::model::Model model = resource->addModel(3, 3);
 
   // Construct the topology.
-  session->addTopology(smtk::session::mesh::Topology(model.entity(), collection->meshes(), false));
+  session->addTopology(
+    smtk::session::mesh::Topology(model.entity(), meshResource->meshes(), false));
 
   // Declare the model as "dangling" so it will be transcribed.
   session->declareDanglingEntity(model);
 
-  collection->associateToModel(model.entity());
+  meshResource->associateToModel(model.entity());
 
   // Set the model's session to point to the current session.
   model.setSession(smtk::model::SessionRef(resource, resource->session()->sessionId()));

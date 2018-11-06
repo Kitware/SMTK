@@ -24,7 +24,7 @@
 
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Resource.h"
@@ -111,24 +111,23 @@ int main(int argc, char* argv[])
   }
 
   // The first resource is associated with the created model. The second
-  // resource is the created mesh collection.
+  // resource is the created mesh resource.
   auto resources = std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
     importOpResult->findResource("resource"));
 
-  // Access the created mesh collection.
-  smtk::mesh::CollectionPtr mc =
-    std::dynamic_pointer_cast<smtk::mesh::Collection>(resources->value(1));
+  // Access the created mesh resource.
+  smtk::mesh::ResourcePtr mr = std::dynamic_pointer_cast<smtk::mesh::Resource>(resources->value(1));
 
-  test((mc->meshes(smtk::mesh::Dims2)).size() == 4, "Expecting 4 face mesh");
-  test((mc->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
-  test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
+  test((mr->meshes(smtk::mesh::Dims2)).size() == 4, "Expecting 4 face mesh");
+  test((mr->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
+  test((mr->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
 
   vtkNew<vtkActor> act;
   vtkNew<vtkMeshMultiBlockSource> src;
   vtkNew<vtkCompositePolyDataMapper2> map;
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
-  src->SetMeshCollection(mc);
+  src->SetMeshResource(mr);
   if (debug)
   {
     win->SetMultiSamples(16);

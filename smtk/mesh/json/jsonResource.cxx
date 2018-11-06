@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/mesh/json/jsonCollection.h"
+#include "smtk/mesh/json/jsonResource.h"
 
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/json/jsonHandleRange.h"
@@ -103,40 +103,40 @@ namespace mesh
 {
 namespace json
 {
-void to_json(nlohmann::json& /*j*/, const CollectionPtr& /*collection*/)
+void to_json(nlohmann::json& /*j*/, const ResourcePtr& /*resource*/)
 {
-  //   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(collection));
+  //   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(resource));
 
-  //   ForMeshset addInfoAboutCollection(j);
+  //   ForMeshset addInfoAboutResource(j);
   //   const bool writeMeshes = true;
   //   const bool writeCellAndPoints = false;
-  //   addInfoAboutCollection.write(collection->meshes(), j, writeMeshes, writeCellAndPoints);
+  //   addInfoAboutResource.write(resource->meshes(), j, writeMeshes, writeCellAndPoints);
 
   //   //now walk through each meshset and dump  all the info related to it.
   //   nlohmann::json meshes_json;
 
-  //   smtk::mesh::MeshSet meshes = collection->meshes();
+  //   smtk::mesh::MeshSet meshes = resource->meshes();
   //   ForMeshset perMeshExportToJson(meshes_json);
   //   smtk::mesh::for_each(meshes, perMeshExportToJson);
 
   //   j["meshes"] = meshes_json;
   // }
 
-  // void from_json(const json& j, CollectionPtr& collection)
+  // void from_json(const json& j, ResourcePtr& resource)
   // {
-  //   if (!collection)
+  //   if (!resource)
   //   {
   //     // It's derived class's responsibility to create a valid mresource
   //     return;
   //   }
 
-  //   auto temp = std::static_pointer_cast<smtk::resource::Resource>(collection);
+  //   auto temp = std::static_pointer_cast<smtk::resource::Resource>(resource);
   //   smtk::resource::from_json(j, temp);
 
   //   std::vector<smtk::mesh::json::MeshInfo> meshInfos = j;
 
   //   smtk::mesh::json::InterfacePtr interface =
-  //     smtk::dynamic_pointer_cast<smtk::mesh::json::Interface>(collection->interface());
+  //     smtk::dynamic_pointer_cast<smtk::mesh::json::Interface>(resource->interface());
 
   //   if (interface)
   //   {

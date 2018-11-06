@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/core/PointConnectivity.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 namespace smtk
 {
@@ -17,7 +17,7 @@ namespace mesh
 {
 
 PointConnectivity::PointConnectivity(
-  const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& range)
+  const smtk::mesh::ResourcePtr& parent, const smtk::mesh::HandleRange& range)
   : m_parent(parent)
   , m_connectivity(parent->interface()->connectivityStorage(range))
   , m_iteratorLocation()

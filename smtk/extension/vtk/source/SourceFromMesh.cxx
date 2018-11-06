@@ -11,7 +11,7 @@
 #include "smtk/extension/vtk/source/SourceFromMesh.h"
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include <cassert>
 
@@ -31,13 +31,13 @@ static bool registered = SourceFromMesh::registerClass();
 
 bool SourceFromMesh::valid(const smtk::resource::ResourcePtr& resource) const
 {
-  return std::dynamic_pointer_cast<smtk::mesh::Collection>(resource) != nullptr;
+  return std::dynamic_pointer_cast<smtk::mesh::Resource>(resource) != nullptr;
 }
 
 vtkSmartPointer<vtkAlgorithm> SourceFromMesh::operator()(
   const smtk::resource::ResourcePtr& resource)
 {
-  auto meshResource = std::static_pointer_cast<smtk::mesh::Collection>(resource);
+  auto meshResource = std::static_pointer_cast<smtk::mesh::Resource>(resource);
 
   // The valid() call above should make certain that the static pointer cast
   // will succeed. It doesn't hurt to be cautious, though.
@@ -45,7 +45,7 @@ vtkSmartPointer<vtkAlgorithm> SourceFromMesh::operator()(
 
   // Create a vtkMeshMultiBlockSource for our mesh.
   auto source = vtkSmartPointer<vtkMeshMultiBlockSource>::New();
-  source->SetMeshCollection(meshResource);
+  source->SetMeshResource(meshResource);
 
   return source;
 }

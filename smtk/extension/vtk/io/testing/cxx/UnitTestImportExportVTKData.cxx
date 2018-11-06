@@ -10,7 +10,7 @@
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
 #include "smtk/extension/vtk/io/mesh/ImportVTKData.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/mesh/moab/Interface.h"
@@ -148,8 +148,8 @@ void verify_null_polydata()
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkPolyData* pd = NULL;
-  smtk::mesh::CollectionPtr c = imprt(pd, interface);
-  test(!c, "collection should be invalid for a NULL poly data");
+  smtk::mesh::ResourcePtr meshResource = imprt(pd, interface);
+  test(!meshResource, "resource should be invalid for a NULL poly data");
 }
 
 void verify_empty_polydata()
@@ -157,8 +157,8 @@ void verify_empty_polydata()
   smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
-  smtk::mesh::CollectionPtr c = imprt(make_EmptyPolyData(), interface);
-  test(!c, "collection should invalid for empty poly data");
+  smtk::mesh::ResourcePtr meshResource = imprt(make_EmptyPolyData(), interface);
+  test(!meshResource, "resource should invalid for empty poly data");
 }
 
 void verify_tri_polydata()
@@ -167,17 +167,17 @@ void verify_tri_polydata()
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkPolyData> pd = make_TrianglePolyData();
-  smtk::mesh::CollectionPtr c = imprt(pd, interface);
-  test(c && c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test(c->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
+  smtk::mesh::ResourcePtr meshResource = imprt(pd, interface);
+  test(meshResource && meshResource->isValid(), "resource should be valid");
+  test(meshResource->numberOfMeshes() == 1, "resource should only have a single mesh");
+  test(meshResource->cells().size() == static_cast<std::size_t>(pd->GetNumberOfCells()));
 
   //this is a triangle pd so it is 2d only
-  smtk::mesh::MeshSet meshes = c->meshes(smtk::mesh::Dims2);
+  smtk::mesh::MeshSet meshes = meshResource->meshes(smtk::mesh::Dims2);
   test(meshes.size() == 1);
-  test(meshes.cells() == c->cells());
+  test(meshes.cells() == meshResource->cells());
 
-  smtk::mesh::MeshSet meshes1d = c->meshes(smtk::mesh::Dims1);
+  smtk::mesh::MeshSet meshes1d = meshResource->meshes(smtk::mesh::Dims1);
   test(meshes1d.size() == 0);
 
   smtk::extension::vtk::io::mesh::ExportVTKData exprt;
@@ -192,17 +192,17 @@ void verify_tri_ugrid()
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkUnstructuredGrid> ug = make_TriangleUGrid();
-  smtk::mesh::CollectionPtr c = imprt(ug, interface);
-  test(c && c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test(c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
+  smtk::mesh::ResourcePtr meshResource = imprt(ug, interface);
+  test(meshResource && meshResource->isValid(), "resource should be valid");
+  test(meshResource->numberOfMeshes() == 1, "resource should only have a single mesh");
+  test(meshResource->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()));
 
   //this is a triangle grid so it is 2d only
-  smtk::mesh::MeshSet meshes = c->meshes(smtk::mesh::Dims2);
+  smtk::mesh::MeshSet meshes = meshResource->meshes(smtk::mesh::Dims2);
   test(meshes.size() == 1);
-  test(meshes.cells() == c->cells());
+  test(meshes.cells() == meshResource->cells());
 
-  smtk::mesh::MeshSet meshes1d = c->meshes(smtk::mesh::Dims1);
+  smtk::mesh::MeshSet meshes1d = meshResource->meshes(smtk::mesh::Dims1);
   test(meshes1d.size() == 0);
 
   smtk::extension::vtk::io::mesh::ExportVTKData exprt;
@@ -217,24 +217,24 @@ void verify_mixed_cell_ugrid()
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
   vtkSmartPointer<vtkUnstructuredGrid> ug = make_MixedVolUGrid();
-  smtk::mesh::CollectionPtr c = imprt(ug, interface);
+  smtk::mesh::ResourcePtr meshResource = imprt(ug, interface);
 
-  std::cout << "number of cells: " << c->cells().size() << std::endl;
+  std::cout << "number of cells: " << meshResource->cells().size() << std::endl;
   std::cout << "number of cells ug: " << ug->GetNumberOfCells() << std::endl;
 
-  test(c && c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == 1, "collection should only have a single mesh");
-  test(c->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
+  test(meshResource && meshResource->isValid(), "resource should be valid");
+  test(meshResource->numberOfMeshes() == 1, "resource should only have a single mesh");
+  test(meshResource->cells().size() == static_cast<std::size_t>(ug->GetNumberOfCells()),
     "number of cells in mesh don't match");
 
   //this is a volume only grid
-  smtk::mesh::MeshSet meshes = c->meshes(smtk::mesh::Dims3);
+  smtk::mesh::MeshSet meshes = meshResource->meshes(smtk::mesh::Dims3);
   test(meshes.size() == 1);
-  test(meshes.cells() == c->cells());
+  test(meshes.cells() == meshResource->cells());
 
   smtk::extension::vtk::io::mesh::ExportVTKData exprt;
   vtkSmartPointer<vtkUnstructuredGrid> ug2 = vtkSmartPointer<vtkUnstructuredGrid>::New();
-  exprt(c->meshes(), ug2);
+  exprt(meshResource->meshes(), ug2);
   test_same_datasets(ug, ug2);
 }
 }

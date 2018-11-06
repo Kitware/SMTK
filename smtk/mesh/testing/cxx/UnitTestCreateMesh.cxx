@@ -11,7 +11,7 @@
 
 #include "smtk/io/ImportMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/moab/Interface.h"
 
@@ -23,152 +23,152 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh(const smtk::mesh::InterfacePtr& interface)
+smtk::mesh::ResourcePtr load_mesh(const smtk::mesh::InterfacePtr& interface)
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::io::importMesh(file_path, interface);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::io::importMesh(file_path, interface);
+  test(mr->isValid(), "resource should be valid");
 
-  return c;
+  return mr;
 }
 
-void cleanup(const smtk::mesh::CollectionPtr& c, smtk::mesh::MeshSet meshset)
+void cleanup(const smtk::mesh::ResourcePtr& mr, smtk::mesh::MeshSet meshset)
 {
-  smtk::mesh::MeshSet allMeshes = c->meshes();
+  smtk::mesh::MeshSet allMeshes = mr->meshes();
 
-  const bool is_part_of_collection = smtk::mesh::set_intersect(allMeshes, meshset).is_empty();
-  if (is_part_of_collection)
+  const bool is_part_of_resource = smtk::mesh::set_intersect(allMeshes, meshset).is_empty();
+  if (is_part_of_resource)
   {
-    test(c->removeMeshes(meshset) == true);
+    test(mr->removeMeshes(meshset) == true);
   }
 }
 
-void verify_create_empty_mesh(const smtk::mesh::CollectionPtr& c)
+void verify_create_empty_mesh(const smtk::mesh::ResourcePtr& mr)
 {
-  const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
+  const std::size_t numMeshesBeforeCreation = mr->numberOfMeshes();
 
-  smtk::mesh::CellSet emptyCellSet = smtk::mesh::CellSet(c, smtk::mesh::HandleRange());
-  smtk::mesh::MeshSet result = c->createMesh(emptyCellSet);
+  smtk::mesh::CellSet emptyCellSet = smtk::mesh::CellSet(mr, smtk::mesh::HandleRange());
+  smtk::mesh::MeshSet result = mr->createMesh(emptyCellSet);
 
   test(result.is_empty(), "empty cellset should create empty meshset");
-  test(numMeshesBeforeCreation == c->numberOfMeshes(),
+  test(numMeshesBeforeCreation == mr->numberOfMeshes(),
     "the number of meshes shouldn't change when adding an empty mesh");
 }
 
-void verify_create_mesh_with_cells_from_other_collection(const smtk::mesh::CollectionPtr& c)
+void verify_create_mesh_with_cells_from_other_resource(const smtk::mesh::ResourcePtr& mr)
 {
-  //make another collection inside the manager
-  smtk::mesh::CollectionPtr otherc = load_mesh(c->interface());
+  //make another resource inside the manager
+  smtk::mesh::ResourcePtr othermr = load_mesh(mr->interface());
 
-  const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
+  const std::size_t numMeshesBeforeCreation = mr->numberOfMeshes();
 
-  smtk::mesh::CellSet cellsFromOtherMesh = otherc->cells();
-  smtk::mesh::MeshSet result = c->createMesh(cellsFromOtherMesh);
+  smtk::mesh::CellSet cellsFromOtherMesh = othermr->cells();
+  smtk::mesh::MeshSet result = mr->createMesh(cellsFromOtherMesh);
 
-  test(result.is_empty(), "cellset from different collection should create empty meshset");
-  test(numMeshesBeforeCreation == c->numberOfMeshes());
+  test(result.is_empty(), "cellset from different resource should create empty meshset");
+  test(numMeshesBeforeCreation == mr->numberOfMeshes());
 }
 
-void verify_create_mesh(const smtk::mesh::CollectionPtr& c)
+void verify_create_mesh(const smtk::mesh::ResourcePtr& mr)
 {
-  const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
+  const std::size_t numMeshesBeforeCreation = mr->numberOfMeshes();
 
   smtk::mesh::CellSet allNonVolumeCells =
-    smtk::mesh::set_difference(c->cells(), c->cells(smtk::mesh::Dims3));
-  smtk::mesh::MeshSet result = c->createMesh(allNonVolumeCells);
+    smtk::mesh::set_difference(mr->cells(), mr->cells(smtk::mesh::Dims3));
+  smtk::mesh::MeshSet result = mr->createMesh(allNonVolumeCells);
 
   test(result.size() == 1, "valid cellset should create meshset with single mesh");
-  test((numMeshesBeforeCreation + 1) == c->numberOfMeshes());
+  test((numMeshesBeforeCreation + 1) == mr->numberOfMeshes());
 
   test(result.cells().size() == allNonVolumeCells.size());
   test(result.cells() == allNonVolumeCells);
 
-  cleanup(c, result);
+  cleanup(mr, result);
 }
 
-void verify_create_mesh_num_meshes(const smtk::mesh::CollectionPtr& c)
+void verify_create_mesh_num_meshes(const smtk::mesh::ResourcePtr& mr)
 {
-  const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
+  const std::size_t numMeshesBeforeCreation = mr->numberOfMeshes();
 
   //validate that for each mesh we create the numberOfMeshes is correct
   std::vector<smtk::mesh::MeshSet> results;
   for (int i = 0; i < 3; ++i)
   {
     smtk::mesh::DimensionType dt = static_cast<smtk::mesh::DimensionType>(i);
-    results.push_back(c->createMesh(c->cells(dt)));
+    results.push_back(mr->createMesh(mr->cells(dt)));
   }
-  test((numMeshesBeforeCreation + 3) == c->numberOfMeshes());
+  test((numMeshesBeforeCreation + 3) == mr->numberOfMeshes());
 
   for (std::size_t i = 0; i < results.size(); ++i)
   {
-    cleanup(c, results[i]);
+    cleanup(mr, results[i]);
   }
 }
 
-void verify_create_mesh_updated_mesh_queries(const smtk::mesh::CollectionPtr& c)
+void verify_create_mesh_updated_mesh_queries(const smtk::mesh::ResourcePtr& mr)
 {
-  const std::size_t numMeshesBeforeCreation = c->numberOfMeshes();
+  const std::size_t numMeshesBeforeCreation = mr->numberOfMeshes();
 
   smtk::mesh::CellSet allNonVolumeCells =
-    smtk::mesh::set_difference(c->cells(), c->cells(smtk::mesh::Dims3));
-  smtk::mesh::MeshSet result = c->createMesh(allNonVolumeCells);
+    smtk::mesh::set_difference(mr->cells(), mr->cells(smtk::mesh::Dims3));
+  smtk::mesh::MeshSet result = mr->createMesh(allNonVolumeCells);
 
-  test((numMeshesBeforeCreation + 1) == c->numberOfMeshes());
+  test((numMeshesBeforeCreation + 1) == mr->numberOfMeshes());
 
   //The meshset returned from create should entirely be contained within
-  //all the meshes in the collection
-  smtk::mesh::MeshSet intersect = smtk::mesh::set_intersect(c->meshes(), result);
+  //all the meshes in the resource
+  smtk::mesh::MeshSet intersect = smtk::mesh::set_intersect(mr->meshes(), result);
   test(intersect == result);
 
   //The meshset returned from create should entirely be contained within
   //all the meshes that have 2d cells
-  intersect = smtk::mesh::set_intersect(c->meshes(smtk::mesh::Dims2), result);
+  intersect = smtk::mesh::set_intersect(mr->meshes(smtk::mesh::Dims2), result);
   test(intersect == result);
 
-  cleanup(c, result);
+  cleanup(mr, result);
 }
 
-void verify_create_mesh_num_cells(const smtk::mesh::CollectionPtr& c)
+void verify_create_mesh_num_cells(const smtk::mesh::ResourcePtr& mr)
 {
-  const std::size_t numCellsBeforeCreation = c->cells().size();
+  const std::size_t numCellsBeforeCreation = mr->cells().size();
 
   smtk::mesh::CellSet allNonVolumeCells =
-    smtk::mesh::set_difference(c->cells(), c->cells(smtk::mesh::Dims3));
-  smtk::mesh::MeshSet result = c->createMesh(allNonVolumeCells);
+    smtk::mesh::set_difference(mr->cells(), mr->cells(smtk::mesh::Dims3));
+  smtk::mesh::MeshSet result = mr->createMesh(allNonVolumeCells);
 
   test(result.size() == 1, "valid cellset should create meshset with single mesh");
-  test(numCellsBeforeCreation == c->cells().size());
+  test(numCellsBeforeCreation == mr->cells().size());
 
-  cleanup(c, result);
+  cleanup(mr, result);
 }
 
 void verify_create_mesh_marks_modified()
 {
-  //verify that a collection loaded from file is not marked as modified
-  smtk::mesh::CollectionPtr c = load_mesh(smtk::mesh::moab::make_interface());
-  test(c->isModified() == false, "collection loaded from disk shouldn't be modified");
+  //verify that a resource loaded from file is not marked as modified
+  smtk::mesh::ResourcePtr mr = load_mesh(smtk::mesh::moab::make_interface());
+  test(mr->isModified() == false, "resource loaded from disk shouldn't be modified");
 
   //verify that creating a mesh does mark update modify flag
-  verify_create_mesh(c);
-  test(c->isModified() == true, "collection should be marked as modified now");
+  verify_create_mesh(mr);
+  test(mr->isModified() == true, "resource should be marked as modified now");
 }
 }
 
 int UnitTestCreateMesh(int, char** const)
 {
-  smtk::mesh::CollectionPtr c = load_mesh(smtk::mesh::moab::make_interface());
+  smtk::mesh::ResourcePtr mr = load_mesh(smtk::mesh::moab::make_interface());
 
-  verify_create_empty_mesh(c);
-  verify_create_mesh_with_cells_from_other_collection(c);
+  verify_create_empty_mesh(mr);
+  verify_create_mesh_with_cells_from_other_resource(mr);
 
-  verify_create_mesh(c);
+  verify_create_mesh(mr);
 
-  verify_create_mesh_num_meshes(c);
-  verify_create_mesh_updated_mesh_queries(c);
+  verify_create_mesh_num_meshes(mr);
+  verify_create_mesh_updated_mesh_queries(mr);
 
-  verify_create_mesh_num_cells(c);
+  verify_create_mesh_num_cells(mr);
 
   verify_create_mesh_marks_modified();
 

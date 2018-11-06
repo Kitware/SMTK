@@ -37,7 +37,7 @@ class StructuredGrid;
 class SMTKCORE_EXPORT RadialAverage
 {
 public:
-  RadialAverage(CollectionPtr collection, const PointCloud&, double radius,
+  RadialAverage(ResourcePtr collection, const PointCloud&, double radius,
     std::function<bool(double)> prefilter = [](double) { return true; });
   RadialAverage(const StructuredGrid&, double radius,
     std::function<bool(double)> prefilter = [](double) { return true; });

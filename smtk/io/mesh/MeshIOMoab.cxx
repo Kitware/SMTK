@@ -11,7 +11,7 @@
 #include "smtk/io/mesh/MeshIOMoab.h"
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/moab/Readers.h"
 #include "smtk/mesh/moab/Writers.h"
@@ -43,75 +43,75 @@ MeshIOMoab::MeshIOMoab()
     Format("stl", std::vector<std::string>({ ".stl" }), Format::Import | Format::Export));
 }
 
-smtk::mesh::CollectionPtr MeshIOMoab::importMesh(
+smtk::mesh::ResourcePtr MeshIOMoab::importMesh(
   const std::string& filePath, const smtk::mesh::InterfacePtr& interface, const std::string&) const
 {
-  return this->read(filePath, interface, Subset::EntireCollection);
+  return this->read(filePath, interface, Subset::EntireResource);
 }
 
 bool MeshIOMoab::importMesh(
-  const std::string& filePath, smtk::mesh::CollectionPtr collection, const std::string&) const
+  const std::string& filePath, smtk::mesh::ResourcePtr resource, const std::string&) const
 {
-  return this->read(filePath, collection, Subset::EntireCollection);
+  return this->read(filePath, resource, Subset::EntireResource);
 }
 
-bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
+bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource) const
 {
-  return this->write(filePath, collection, Subset::EntireCollection);
+  return this->write(filePath, resource, Subset::EntireResource);
 }
 
 //TODO:
 // bool MeshIOMoab::exportMesh( const std::string& filePath,
-//                              smtk::mesh::CollectionPtr collection,
+//                              smtk::mesh::ResourcePtr resource,
 //                              smtk::model::ResourcePtr resource,
 //                              const std::string& modelPropertyName ) const
 // {
 
 // }
 
-smtk::mesh::CollectionPtr MeshIOMoab::read(
+smtk::mesh::ResourcePtr MeshIOMoab::read(
   const std::string& filePath, const smtk::mesh::InterfacePtr&, Subset subset) const
 {
-  smtk::mesh::CollectionPtr collection;
+  smtk::mesh::ResourcePtr resource;
 
   switch (subset)
   {
-    case Subset::EntireCollection:
-      collection = smtk::mesh::moab::read(filePath);
+    case Subset::EntireResource:
+      resource = smtk::mesh::moab::read(filePath);
       break;
     case Subset::OnlyDomain:
-      collection = smtk::mesh::moab::read_domain(filePath);
+      resource = smtk::mesh::moab::read_domain(filePath);
       break;
     case Subset::OnlyDirichlet:
-      collection = smtk::mesh::moab::read_dirichlet(filePath);
+      resource = smtk::mesh::moab::read_dirichlet(filePath);
       break;
     case Subset::OnlyNeumann:
-      collection = smtk::mesh::moab::read_neumann(filePath);
+      resource = smtk::mesh::moab::read_neumann(filePath);
       break;
     default:
-      collection = smtk::mesh::Collection::create();
+      resource = smtk::mesh::Resource::create();
   }
-  return collection;
+  return resource;
 }
 
 bool MeshIOMoab::read(
-  const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset subset) const
+  const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset subset) const
 {
   bool result;
 
   switch (subset)
   {
-    case Subset::EntireCollection:
-      result = smtk::mesh::moab::import(filePath, collection);
+    case Subset::EntireResource:
+      result = smtk::mesh::moab::import(filePath, resource);
       break;
     case Subset::OnlyDomain:
-      result = smtk::mesh::moab::import_domain(filePath, collection);
+      result = smtk::mesh::moab::import_domain(filePath, resource);
       break;
     case Subset::OnlyDirichlet:
-      result = smtk::mesh::moab::import_dirichlet(filePath, collection);
+      result = smtk::mesh::moab::import_dirichlet(filePath, resource);
       break;
     case Subset::OnlyNeumann:
-      result = smtk::mesh::moab::import_neumann(filePath, collection);
+      result = smtk::mesh::moab::import_neumann(filePath, resource);
       break;
     default:
       result = false;
@@ -120,31 +120,31 @@ bool MeshIOMoab::read(
 }
 
 bool MeshIOMoab::write(
-  const std::string& filePath, smtk::mesh::CollectionPtr collection, Subset subset) const
+  const std::string& filePath, smtk::mesh::ResourcePtr resource, Subset subset) const
 {
   switch (subset)
   {
-    case Subset::EntireCollection:
-      return smtk::mesh::moab::write(filePath, collection);
+    case Subset::EntireResource:
+      return smtk::mesh::moab::write(filePath, resource);
     case Subset::OnlyDomain:
-      return smtk::mesh::moab::write_domain(filePath, collection);
+      return smtk::mesh::moab::write_domain(filePath, resource);
     case Subset::OnlyDirichlet:
-      return smtk::mesh::moab::write_dirichlet(filePath, collection);
+      return smtk::mesh::moab::write_dirichlet(filePath, resource);
     case Subset::OnlyNeumann:
-      return smtk::mesh::moab::write_neumann(filePath, collection);
+      return smtk::mesh::moab::write_neumann(filePath, resource);
     default:
       return false;
   }
 }
 
-bool MeshIOMoab::write(smtk::mesh::CollectionPtr collection, Subset subset) const
+bool MeshIOMoab::write(smtk::mesh::ResourcePtr resource, Subset subset) const
 {
-  if (collection->writeLocation().empty())
+  if (resource->writeLocation().empty())
   { //require a file location
     return false;
   }
 
-  return this->write(collection->writeLocation().absolutePath(), collection, subset);
+  return this->write(resource->writeLocation().absolutePath(), resource, subset);
 }
 }
 }
