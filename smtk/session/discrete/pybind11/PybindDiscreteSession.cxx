@@ -25,6 +25,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindLegacyReadResource.h"
 #include "PybindCreateEdgesOperation.h"
 #include "PybindEdgeOperation.h"
+#include "PybindImportOperation.h"
 #include "PybindReadOperation.h"
 #include "PybindSession.h"
 #include "PybindSession_json.h"
@@ -48,6 +49,7 @@ PYBIND11_MODULE(_smtkPybindDiscreteSession, discrete)
   py::class_< smtk::session::discrete::ArrangementHelper, smtk::model::ArrangementHelper > smtk_session_discrete_ArrangementHelper = pybind11_init_smtk_session_discrete_ArrangementHelper(discrete);
   PySharedPtrClass< smtk::session::discrete::CreateEdgesOperation, smtk::operation::Operation > smtk_session_discrete_CreateEdgesOperation = pybind11_init_smtk_session_discrete_CreateEdgesOperation(discrete);
   PySharedPtrClass< smtk::session::discrete::EdgeOperation, smtk::operation::Operation > smtk_session_discrete_EdgeOperation = pybind11_init_smtk_session_discrete_EdgeOperation(discrete);
+  PySharedPtrClass< smtk::session::discrete::ImportOperation, smtk::operation::Operation > smtk_session_discrete_ImportOperation = pybind11_init_smtk_session_discrete_ImportOperation(discrete);
   PySharedPtrClass< smtk::session::discrete::ReadOperation, smtk::operation::Operation > smtk_session_discrete_ReadOperation = pybind11_init_smtk_session_discrete_ReadOperation(discrete);
   PySharedPtrClass< smtk::session::discrete::LegacyReadResource, smtk::operation::Operation > smtk_session_discrete_LegacyReadResource = pybind11_init_smtk_session_discrete_LegacyReadResource(discrete);
   PySharedPtrClass< smtk::session::discrete::WriteOperation, smtk::operation::Operation > smtk_session_discrete_WriteOperation = pybind11_init_smtk_session_discrete_WriteOperation(discrete);
