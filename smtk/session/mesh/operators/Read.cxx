@@ -15,6 +15,9 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/VoidItem.h"
+
+#include "smtk/model/json/jsonResource.h"
 
 #include "smtk/session/mesh/Resource.h"
 
@@ -69,6 +72,10 @@ Read::Result Read::operateInternal()
   resource->setLocation(filename);
   resource->setSession(session);
 
+  // Transcribe model data onto the resource
+  auto modelResource = std::static_pointer_cast<smtk::model::Resource>(resource);
+  smtk::model::from_json(j, modelResource);
+
   std::string meshFilename = j.at("Mesh URL");
 
   // Create an import operator
@@ -77,6 +84,7 @@ Read::Result Read::operateInternal()
   importOp->parameters()->findResource("resource")->setValue(resource);
   importOp->parameters()->findString("session only")->setDiscreteIndex(0);
   importOp->parameters()->findFile("filename")->setValue(meshFilename);
+  importOp->parameters()->findVoid("construct hierarchy")->setIsEnabled(false);
 
   // Execute the operation
   smtk::operation::Operation::Result importOpResult = importOp->operate();
