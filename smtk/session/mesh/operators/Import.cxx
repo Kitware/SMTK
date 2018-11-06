@@ -149,26 +149,47 @@ Import::Result Import::operateInternal()
     session->facade()["neumann"] = "Side Set";
   }
 
-  // Assign its model resource to the one associated with this session
+  // Assign the collection's model resource to the one associated with this
+  // session
   collection->setModelResource(resource);
 
   // Also assign the collection to be the model's tessellation
   resource->setMeshTessellations(collection);
 
-  // Determine the model's dimension
-  int dimension = int(smtk::mesh::utility::highestDimension(collection->meshes()));
+  // If we are reading a mesh session resource (as opposed to a new import), we
+  // should access the existing model instead of creating a new one here. If
+  // this is the case, then the collection's associated model id will be related
+  // to a model entity that is already in the resource (as it was put there by
+  // the Read operation calling this one).
+  smtk::common::UUID associatedModelId = collection->associatedModel().toString();
 
-  // Create a model with the appropriate dimension
-  smtk::model::Model model = resource->addModel(dimension, dimension);
+  // By default, a model is invalid
+  smtk::model::Model model;
+  if (associatedModelId != smtk::common::UUID::null())
+  {
+    // Assign the model to one described already in the resource with the id of
+    // collection's associated model. If there is no such model, then this
+    // instance will also be invalid.
+    model = smtk::model::Model(resource, associatedModelId);
+  }
+
+  if (model.isValid() == false)
+  {
+    // Determine the model's dimension
+    int dimension = int(smtk::mesh::utility::highestDimension(collection->meshes()));
+
+    // Create a model with the appropriate dimension
+    model = resource->addModel(dimension, dimension);
+
+    // Name the model according to the stem of the file
+    if (!name.empty())
+    {
+      model.setName(name);
+    }
+  }
 
   // Construct the topology
   session->addTopology(Topology(model.entity(), newMeshes, constructHierarchy));
-
-  // Name the model according to the stem of the file
-  if (!name.empty())
-  {
-    model.setName(name);
-  }
 
   // Set the url and type of the model
   model.setStringProperty("url", filePath);
