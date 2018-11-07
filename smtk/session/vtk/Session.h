@@ -154,11 +154,18 @@ public:
   static vtkInformationObjectBaseVectorKey* SMTK_CHILDREN();
   static vtkInformationDoubleKey* SMTK_LABEL_VALUE();
 
-  smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
+  smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model,
+    SessionInfoBits requestedInfo = smtk::model::SESSION_EVERYTHING);
 
   std::string defaultFileExtension(const smtk::model::Model& model) const override;
 
   bool ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* parent, int idxInParent);
+
+  bool addTessellation(const smtk::model::EntityRef&, const EntityHandle&);
+
+  ReverseIdMap_t& reverseIdMap() { return m_revIdMap; }
+
+  size_t numberOfModels() const;
 
 protected:
   friend struct EntityHandle;
@@ -175,9 +182,6 @@ protected:
   // std::map<EntityHandle,smtk::model::EntityRef> m_fwdIdMap; // not needed; store UUID in vtkInformation.
   // -- 1 --
 
-  bool addTessellation(const smtk::model::EntityRef&, const EntityHandle&);
-
-  size_t numberOfModels() const;
   vtkDataObject* modelOfHandle(const EntityHandle& h) const;
   vtkDataObject* parent(vtkDataObject* obj) const;
   int parentIndex(vtkDataObject* obj) const;
@@ -210,7 +214,9 @@ T* EntityHandle::object() const
   // Never return the pointer if the other data is invalid:
   if (!this->m_session || !this->m_object || this->m_modelNumber < 0 ||
     this->m_modelNumber > static_cast<int>(this->m_session->numberOfModels()))
+  {
     return NULL;
+  }
 
   return dynamic_cast<T*>(this->m_object.GetPointer());
 }

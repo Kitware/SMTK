@@ -221,14 +221,15 @@ smtk::model::EntityRef Session::toEntityRef(const EntityHandle& ent)
 
 // ++ 6 ++
 /// Add the dataset and its blocks to the session.
-smtk::model::Model Session::addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model)
+smtk::model::Model Session::addModel(
+  vtkSmartPointer<vtkMultiBlockDataSet>& model, SessionInfoBits requestedInfo)
 {
   EntityHandle handle(
     static_cast<int>(this->m_models.size()), model.GetPointer(), shared_from_this());
   this->m_models.push_back(model);
   smtk::model::Model result = this->toEntityRef(handle);
   this->m_revIdMap[result] = handle;
-  this->transcribe(result, smtk::model::SESSION_EVERYTHING, false);
+  this->transcribe(result, requestedInfo, false);
   result.setSession(smtk::model::SessionRef(this->resource(), this->sessionId()));
   return result;
 }
@@ -372,8 +373,10 @@ SessionInfoBits Session::transcribeInternal(
     // If the entity is valid, is there any reason to refresh it?
     // Perhaps we want additional information transcribed?
     if (this->danglingEntities().find(mutableEntityRef) == this->danglingEntities().end())
+    {
       return smtk::model::
         SESSION_EVERYTHING; // Not listed as dangling => everything transcribed already.
+    }
   }
   // -- 10 --
 
@@ -594,14 +597,20 @@ static void AddBoxToTessellation(vtkImageData* img, smtk::model::Tessellation& t
 bool Session::addTessellation(const smtk::model::EntityRef& entityref, const EntityHandle& handle)
 {
   if (entityref.hasTessellation())
+  {
     return true; // no need to recompute.
+  }
 
   vtkDataObject* data = handle.object<vtkDataObject>();
   if (!data)
+  {
     return false; // Can't squeeze triangles from a NULL
+  }
 
   if (vtkMultiBlockDataSet::SafeDownCast(data))
+  {
     return false; // Don't try to tessellate parent groups of leaf nodes.
+  }
 
   // Don't tessellate image data that is serving as a label map.
   EntityType etype = static_cast<EntityType>(data->GetInformation()->Get(SMTK_GROUP_TYPE()));

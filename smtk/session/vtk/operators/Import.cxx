@@ -137,21 +137,28 @@ Import::Result Import::operateInternal()
   return this->importExodus(resource);
 }
 
-static void AddPreservedUUID(
-  vtkDataObject* data, int& curId, const std::vector<smtk::common::UUID>& uuids)
+static void AddPreservedUUID(vtkDataObject* data, int& curId, vtkDataObject* parentData,
+  int idxInParent, int modelNumber, const std::vector<smtk::common::UUID>& uuids,
+  const SessionPtr& session, const ResourcePtr& resource)
 {
   if (!data || curId < 0 || static_cast<std::size_t>(curId) >= uuids.size())
     return;
 
+  // Assign the preserved UUID to the data's information.
   vtkInformation* info = data->GetInformation();
   info->Set(Session::SMTK_UUID_KEY(), uuids.at(curId).toString().c_str());
+  EntityHandle handle(modelNumber, data, parentData, idxInParent, session);
+  EntityRef eref(resource, uuids.at(curId));
+  session->reverseIdMap()[eref] = handle;
+  session->addTessellation(eref, handle);
   ++curId;
 }
 
-static void AddPreservedUUIDsRecursive(
-  vtkDataObject* data, int& curId, const std::vector<smtk::common::UUID>& uuids)
+static void AddPreservedUUIDsRecursive(vtkDataObject* data, int& curId, vtkDataObject* parentData,
+  int idxInParent, int modelNumber, const std::vector<smtk::common::UUID>& uuids,
+  const SessionPtr& session, const ResourcePtr& resource)
 {
-  AddPreservedUUID(data, curId, uuids);
+  AddPreservedUUID(data, curId, parentData, idxInParent, modelNumber, uuids, session, resource);
 
   vtkMultiBlockDataSet* mbds = vtkMultiBlockDataSet::SafeDownCast(data);
   if (mbds)
@@ -159,9 +166,62 @@ static void AddPreservedUUIDsRecursive(
     int nb = mbds->GetNumberOfBlocks();
     for (int i = 0; i < nb; ++i)
     {
-      AddPreservedUUIDsRecursive(mbds->GetBlock(i), curId, uuids);
+      AddPreservedUUIDsRecursive(
+        mbds->GetBlock(i), curId, data, i, modelNumber, uuids, session, resource);
     }
   }
+}
+
+static smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& modelOut,
+  const std::vector<smtk::common::UUID>& uuids, const SessionPtr& session,
+  const ResourcePtr& resource)
+{
+  // If we are reading a vtk session resource (as opposed to a new import), we
+  // should access the existing model instead of creating a new one here. If
+  // this is the case, then the first preserved id will be related to a model
+  // entity that is already in the resource (as it was put there by the Read
+  // operation calling this one).
+
+  // A default-constructed model is invalid.
+  smtk::model::Model smtkModelOut;
+  if (uuids.empty() == false)
+  {
+    // The first id in the list of preserved ids is for the containing model.
+    smtkModelOut = smtk::model::Model(resource, uuids.at(0));
+
+    // The resulting model may be invalid if the model was not successfully
+    // constructed in the parent Read operation (e.g. for LegacyRead). In this
+    // situation, we can construct the model here.
+    if (smtkModelOut.isValid() == false)
+    {
+      // First set the UUID on the multiblock dataset representing the model.
+      // This way, the resulting smtk model will have the right UUID.
+      vtkInformation* info = modelOut->GetInformation();
+      info->Set(Session::SMTK_UUID_KEY(), uuids.at(0).toString().c_str());
+      smtkModelOut = session->addModel(modelOut, smtk::model::SESSION_EVERYTHING);
+    }
+
+    // We are about to add a model. Its number will be the next index in the
+    // session's vector of models.
+    int modelNumber = session->numberOfModels();
+
+    // Add the backend information associated to the model, but don't bother
+    // transcribing it.
+    smtkModelOut = session->addModel(modelOut, smtk::model::SESSION_NOTHING);
+
+    // Assign preserved UUIDs, link the vtk data object to the smtk component
+    // and construct tessellations for the imported components.
+    int curId = 0;
+    AddPreservedUUIDsRecursive(modelOut, curId, nullptr, -1, modelNumber, uuids, session, resource);
+  }
+  else
+  {
+    // This is a proper import (there are no preexisitng UUIDs), so we can let
+    // the Session create entries in the model resource for us.
+    smtkModelOut = session->addModel(modelOut, smtk::model::SESSION_EVERYTHING);
+  }
+
+  return smtkModelOut;
 }
 
 static void AddBlockChildrenAsModelChildren(vtkMultiBlockDataSet* data)
@@ -315,16 +375,12 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
   MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   AddBlockChildrenAsModelChildren(modelOut);
 
-  // If we have preserved UUIDs, assign them now before anything else does:
-  int curId = 0;
-  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
-
-  // Now that the datasets we wish to present are marked,
-  // have the Session create entries in the model resource for us:
-  smtk::model::Model smtkModelOut = session->addModel(modelOut);
-
-  smtkModelOut.setStringProperty("url", filename);
-  smtkModelOut.setStringProperty("type", "exodus");
+  smtk::model::Model smtkModelOut = addModel(modelOut, this->m_preservedUUIDs, session, resource);
+  if (this->m_preservedUUIDs.empty())
+  {
+    smtkModelOut.setStringProperty("url", filename);
+    smtkModelOut.setStringProperty("type", "exodus");
+  }
 
   // Now set model for session and transcribe everything.
   Import::Result result = this->createResult(Import::Outcome::SUCCEEDED);
@@ -376,10 +432,6 @@ Import::Result Import::importSLAC(const smtk::session::vtk::Resource::Ptr& resou
   FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], 2, "surface", EXO_SIDE_SET);
   FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], 3, "volume", EXO_BLOCK);
 
-  // If we have preserved UUIDs, assign them now before anything else does:
-  int curId = 0;
-  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
-
   MarkMeshInfo(
     modelOut.GetPointer(), 3, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   AddBlockChildrenAsModelChildren(modelOut);
@@ -396,9 +448,12 @@ Import::Result Import::importSLAC(const smtk::session::vtk::Resource::Ptr& resou
     }
   }
 
-  smtk::model::Model smtkModelOut = session->addModel(modelOut);
-  smtkModelOut.setStringProperty("url", filename);
-  smtkModelOut.setStringProperty("type", "slac");
+  smtk::model::Model smtkModelOut = addModel(modelOut, this->m_preservedUUIDs, session, resource);
+  if (this->m_preservedUUIDs.empty())
+  {
+    smtkModelOut.setStringProperty("url", filename);
+    smtkModelOut.setStringProperty("type", "slac");
+  }
 
   // Now set model for session and transcribe everything.
   Import::Result result = this->createResult(Import::Outcome::SUCCEEDED);
@@ -546,10 +601,6 @@ Import::Result Import::importLabelMap(const smtk::session::vtk::Resource::Ptr& r
   modelOut->SetNumberOfBlocks(1);
   modelOut->SetBlock(0, img.GetPointer());
 
-  // If we have preserved UUIDs, assign them now before anything else does:
-  int curId = 0;
-  AddPreservedUUIDsRecursive(modelOut, curId, this->m_preservedUUIDs);
-
   MarkMeshInfo(modelOut.GetPointer(), imgDim, path(filename).stem().string<std::string>().c_str(),
     EXO_MODEL, -1);
   MarkMeshInfo(img.GetPointer(), imgDim, labelname.c_str(), EXO_LABEL_MAP, -1);
@@ -559,10 +610,13 @@ Import::Result Import::importLabelMap(const smtk::session::vtk::Resource::Ptr& r
       vtkDataObject::SafeDownCast(Session::SMTK_CHILDREN()->Get(info, j)), img.GetPointer(), j);
   }
 
-  smtk::model::Model smtkModelOut = session->addModel(modelOut);
-  smtkModelOut.setStringProperty("url", filename);
-  smtkModelOut.setStringProperty("type", "label map");
-  smtkModelOut.setStringProperty("label array", labelname);
+  smtk::model::Model smtkModelOut = addModel(modelOut, this->m_preservedUUIDs, session, resource);
+  if (this->m_preservedUUIDs.empty())
+  {
+    smtkModelOut.setStringProperty("url", filename);
+    smtkModelOut.setStringProperty("type", "label map");
+    smtkModelOut.setStringProperty("label array", labelname);
+  }
 
   // Now set model for session and transcribe everything.
   Import::Result result = this->createResult(Import::Outcome::SUCCEEDED);

@@ -66,6 +66,10 @@ Read::Result Read::operateInternal()
   resource->setLocation(filename);
   resource->setSession(session);
 
+  // Transcribe model data onto the resource
+  auto modelResource = std::static_pointer_cast<smtk::model::Resource>(resource);
+  smtk::model::from_json(j, modelResource);
+
   // Access all of the model files contained by the resource file.
   std::vector<std::string> modelFiles = j.at("modelFiles");
 
