@@ -161,7 +161,7 @@ Import::Result Import::operateInternal()
   // this is the case, then the collection's associated model id will be related
   // to a model entity that is already in the resource (as it was put there by
   // the Read operation calling this one).
-  smtk::common::UUID associatedModelId = collection->associatedModel().toString();
+  smtk::common::UUID associatedModelId = collection->associatedModel();
 
   // By default, a model is invalid
   smtk::model::Model model;
