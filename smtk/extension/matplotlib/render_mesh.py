@@ -15,6 +15,8 @@
 Render a 2-dmensional mesh using matplotlib.
 
 """
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 
