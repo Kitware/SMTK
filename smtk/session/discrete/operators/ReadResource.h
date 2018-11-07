@@ -34,6 +34,7 @@ public:
 protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
+  void markModifiedResources(Result&) override;
 };
 
 SMTKDISCRETESESSION_EXPORT smtk::resource::ResourcePtr readResource(const std::string&);

@@ -57,8 +57,12 @@ SMTKCORE_EXPORT
 Operation::Definition extractResultDefinition(
   Operation::Specification specification, const std::string& operatorName);
 
-/// Construct a map of all of the resources referenced in the specification,
-/// along with their lock types (Read/Write/DoNotLock).
+/// Construct a set of all of the resources referenced in the result.
+SMTKCORE_EXPORT
+std::set<smtk::resource::Resource::Ptr> extractResources(Operation::Result result);
+
+/// Construct a map of all of the resources referenced in the specification and
+/// not in the result, along with their lock types (Read/Write/DoNotLock).
 SMTKCORE_EXPORT
 ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specification);
 

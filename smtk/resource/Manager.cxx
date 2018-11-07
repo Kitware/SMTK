@@ -318,6 +318,9 @@ smtk::resource::ResourcePtr Manager::read(const Resource::Index& index, const st
 
     // Assign the resource's location
     resource->setLocation(url);
+
+    // Set the resource as unmodified from its persistent (i.e. on-disk) state
+    resource->setClean(true);
   }
 
   return resource;
@@ -342,7 +345,15 @@ bool Manager::write(const smtk::resource::ResourcePtr& resource)
   if (metadata != m_metadata.get<IndexTag>().end() && metadata->write != nullptr)
   {
     // Write out the resource to its url
-    return metadata->write(resource);
+    bool success = metadata->write(resource);
+
+    // If the write was successful, mark the resource as unmodified from its
+    // persistent (i.e. on-disk) state
+    if (success)
+    {
+      resource->setClean(true);
+    }
+    return success;
   }
 
   return false;

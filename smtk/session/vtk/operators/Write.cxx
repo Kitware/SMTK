@@ -134,7 +134,7 @@ Write::Result Write::operateInternal()
 
       exportOp->parameters()->associate(dataset.entityRecord());
       exportOp->parameters()->findFile("filename")->setValue(modelFile);
-      Result exportOpResult = exportOp->operate();
+      Result exportOpResult = exportOp->operate({});
 
       if (exportOpResult->findInt("outcome")->value() != static_cast<int>(Outcome::SUCCEEDED))
       {
@@ -171,6 +171,18 @@ Write::Result Write::operateInternal()
 const char* Write::xmlDescription() const
 {
   return Write_xml;
+}
+
+void Write::markModifiedResources(Write::Result&)
+{
+  auto resourceItem = this->parameters()->associations();
+  for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
+  {
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
+
+    // Set the resource as unmodified from its persistent (i.e. on-disk) state
+    resource->setClean(true);
+  }
 }
 
 bool write(const smtk::resource::ResourcePtr& resource)

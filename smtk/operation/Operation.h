@@ -75,7 +75,7 @@ public:
     UNKNOWN = -1       //!< The operation has not been run or the outcome is uninitialized.
   };
 
-  friend class Manager;
+  friend Manager;
   friend ImportPythonOperation;
 
   // Index is a compile-time intrinsic of the derived operation; as such, it
@@ -126,6 +126,11 @@ protected:
   // entities.
   virtual void postProcessResult(Result&) {}
 
+  // Mark resources as dirty or clean according to their use in the operation.
+  // By default, all resources used as inputs with Write LockTypes and all
+  // resources referenced in the result are marked dirty.
+  virtual void markModifiedResources(Result&);
+
   // Append an output summary string to the output result. Derived classes can
   // reimplement this method to send custom summary strings to the logger.
   virtual void generateSummary(Result&);
@@ -136,6 +141,21 @@ protected:
 
   int m_debugLevel;
   std::weak_ptr<Manager> m_manager;
+
+  // Operations need the ability to execute Operations without going through
+  // all of the checks and locks associated with the public operate() method.
+  // We therefore use a variant of the PassKey pattern to grant Operation
+  // and all of its children access to another operator's operateInternal()
+  // method. It is up to the writer of the outer Operation to ensure that
+  // Resources are accessed with appropriate lock types and that Operations
+  // called in this manner have valid inputs.
+  class Key
+  {
+    Key() {}
+  };
+
+public:
+  Result operate(Key()) { return operateInternal(); }
 
 private:
   // Construct the operation's specification. This is typically done by reading
