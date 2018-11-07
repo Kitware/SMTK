@@ -70,7 +70,7 @@ bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::CollectionP
 // }
 
 smtk::mesh::CollectionPtr MeshIOMoab::read(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface, Subset subset) const
+  const std::string& filePath, const smtk::mesh::InterfacePtr&, Subset subset) const
 {
   smtk::mesh::CollectionPtr collection;
 
