@@ -334,13 +334,13 @@ bool Interface::setCoordinates(const smtk::mesh::HandleRange&, const float* cons
   return false;
 }
 
-std::string Interface::name(const smtk::mesh::Handle& meshset) const
+std::string Interface::name(const smtk::mesh::Handle&) const
 {
   //TODO
   return std::string();
 }
 
-bool Interface::setName(const smtk::mesh::Handle& meshset, const std::string& name)
+bool Interface::setName(const smtk::mesh::Handle&, const std::string&)
 {
   return false;
 }

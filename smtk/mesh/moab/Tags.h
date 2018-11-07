@@ -53,7 +53,7 @@ public:
     , m_tagData()
   {
     //populate our tag
-    auto res = m_iface->tag_get_handle(NAME_TAG_NAME, NAME_TAG_SIZE, ::moab::MB_TYPE_OPAQUE, m_tag,
+    m_iface->tag_get_handle(NAME_TAG_NAME, NAME_TAG_SIZE, ::moab::MB_TYPE_OPAQUE, m_tag,
       ::moab::MB_TAG_SPARSE | ::moab::MB_TAG_CREAT);
   }
 //reset our warnings to the original level

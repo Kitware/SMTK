@@ -203,7 +203,7 @@ static smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& modelO
 
     // We are about to add a model. Its number will be the next index in the
     // session's vector of models.
-    int modelNumber = session->numberOfModels();
+    int modelNumber = static_cast<int>(session->numberOfModels());
 
     // Add the backend information associated to the model, but don't bother
     // transcribing it.
