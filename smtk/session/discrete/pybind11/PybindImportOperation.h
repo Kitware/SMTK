@@ -23,10 +23,6 @@ PySharedPtrClass< smtk::session::discrete::ImportOperation, smtk::operation::Ope
   PySharedPtrClass< smtk::session::discrete::ImportOperation, smtk::operation::Operation > instance(m, "ImportOperation");
   instance
     .def_static("create", (std::shared_ptr<smtk::session::discrete::ImportOperation> (*)()) &smtk::session::discrete::ImportOperation::create)
-    .def_static("create", (std::shared_ptr<smtk::session::discrete::ImportOperation> (*)(::std::shared_ptr<smtk::session::discrete::ImportOperation> &)) &smtk::session::discrete::ImportOperator::create, py::arg("ref"))
-    .def("shared_from_this", (std::shared_ptr<smtk::session::discrete::ImportOperation> (smtk::session::discrete::ImportOperation::*)()) &smtk::session::discrete::ImportOperator::shared_from_this)
-    .def("shared_from_this", (std::shared_ptr<const smtk::session::discrete::ImportOperation> (smtk::session::discrete::ImportOperation::*)() const) &smtk::session::discrete::ImportOperator::shared_from_this)
-    .def("name", &smtk::session::discrete::ImportOperation::name)
     .def("ableToOperate", &smtk::session::discrete::ImportOperation::ableToOperate)
     ;
   return instance;
