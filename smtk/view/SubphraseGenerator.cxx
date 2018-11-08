@@ -21,8 +21,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
@@ -155,7 +155,7 @@ void SubphraseGenerator::componentsOfResource(
 {
   auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-  auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Collection>(rsrc);
+  auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
   if (modelRsrc)
   {
     // By default, make model component names and colors editable but not visibility
@@ -437,13 +437,13 @@ void SubphraseGenerator::modelsOfModelSession(
 void SubphraseGenerator::meshesOfModelModel(
   DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
 {
-  std::vector<smtk::mesh::CollectionPtr> meshCollections =
-    mod.resource()->meshes()->associatedCollections(mod);
+  std::vector<smtk::mesh::ResourcePtr> meshResources =
+    mod.resource()->meshes()->associatedResources(mod);
   // We need to sort the meshes before we add them to the result since if
   // we sort the result itself we could be intermixing the mesh and model
   // information
   DescriptivePhrases meshPhrases;
-  addMeshPhrases(meshCollections, src, this->directLimit(), meshPhrases);
+  addMeshPhrases(meshResources, src, this->directLimit(), meshPhrases);
   std::sort(meshPhrases.begin(), meshPhrases.end(), DescriptivePhrase::compareByTitle);
   result.insert(result.end(), meshPhrases.begin(), meshPhrases.end());
 }
@@ -451,13 +451,13 @@ void SubphraseGenerator::meshesOfModelModel(
 void SubphraseGenerator::meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
 {
   smtk::mesh::MeshSet meshes = meshphr->relatedMesh();
-  // if this is a mesh collection
-  if (meshphr->isCollection())
+  // if this is a mesh resource
+  if (meshphr->isResource())
   {
-    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims3, result);
-    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims2, result);
-    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims1, result);
-    this->meshsetsOfCollectionByDim(meshphr, smtk::mesh::Dims0, result);
+    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims3, result);
+    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims2, result);
+    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims1, result);
+    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims0, result);
   }
   // if this is a MeshSet
   else if (meshes.size() > 1)
@@ -471,13 +471,13 @@ void SubphraseGenerator::meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhra
   }
 }
 
-void SubphraseGenerator::meshsetsOfCollectionByDim(
+void SubphraseGenerator::meshsetsOfResourceByDim(
   MeshPhrase::Ptr meshphr, smtk::mesh::DimensionType dim, DescriptivePhrases& result)
 {
-  if (meshphr->isCollection())
+  if (meshphr->isResource())
   {
-    smtk::mesh::CollectionPtr meshcollection = meshphr->relatedMeshCollection();
-    smtk::mesh::MeshSet dimMeshes = meshcollection->meshes(dim);
+    smtk::mesh::ResourcePtr meshresource = meshphr->relatedMeshResource();
+    smtk::mesh::MeshSet dimMeshes = meshresource->meshes(dim);
     if (!dimMeshes.is_empty())
     {
       result.push_back(MeshPhraseContent::createPhrase(dimMeshes, meshphr));
@@ -487,9 +487,9 @@ void SubphraseGenerator::meshsetsOfCollectionByDim(
 
 void SubphraseGenerator::meshesOfMeshList(MeshListPhrase::Ptr src, DescriptivePhrases& result)
 {
-  if (src->relatedCollections().size() > 0)
+  if (src->relatedResources().size() > 0)
   {
-    addMeshPhrases(src->relatedCollections(), src, this->directLimit(), result);
+    addMeshPhrases(src->relatedResources(), src, this->directLimit(), result);
   }
   else if (src->relatedMeshes().size() > 0)
   {

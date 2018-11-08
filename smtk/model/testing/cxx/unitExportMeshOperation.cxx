@@ -20,8 +20,8 @@
 #include "smtk/model/DefaultSession.h"
 #include "smtk/model/json/jsonResource.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/operators/Export.h"
 #include "smtk/model/Resource.h"
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 
   // Convert it to a mesh
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr collection = convert(resource);
+  smtk::mesh::ResourcePtr meshResource = convert(resource);
 
   // Create a new "export mesh" operator
   smtk::operation::Operation::Ptr exportMeshOp = smtk::mesh::Export::create();
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
   exportMeshOp->parameters()->findFile("filename")->setValue(export_path);
 
   bool valueSet =
-    exportMeshOp->parameters()->associate(smtk::mesh::Component::create(collection->meshes()));
+    exportMeshOp->parameters()->associate(smtk::mesh::Component::create(meshResource->meshes()));
 
   if (!valueSet)
   {
@@ -133,10 +133,10 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  // Test the original mesh collection
-  if (!collection->isModified())
+  // Test the original mesh resource
+  if (!meshResource->isModified())
   {
-    std::cerr << "collection should be marked as modified" << std::endl;
+    std::cerr << "mesh resource should be marked as modified" << std::endl;
     return 1;
   }
 

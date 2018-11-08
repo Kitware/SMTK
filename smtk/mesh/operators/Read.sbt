@@ -14,7 +14,7 @@
              NumberOfRequiredValues="1" AdvanceLevel="1">
           <BriefDescription>Subset of the mesh to load</BriefDescription>
           <DiscreteInfo DefaultIndex="0">
-            <Value Enum="Entire Collection">0</Value>
+            <Value Enum="Entire Resource">0</Value>
             <Value Enum="Only Domain">1</Value>
             <Value Enum="Only Dirichlet">2</Value>
             <Value Enum="Only Neumann">3</Value>
@@ -30,7 +30,7 @@
 
         <Resource Name="resource">
           <Accepts>
-            <Resource Name="smtk::mesh::Collection"/>
+            <Resource Name="smtk::mesh::Resource"/>
           </Accepts>
         </Resource>
 

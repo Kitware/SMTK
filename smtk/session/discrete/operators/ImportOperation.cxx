@@ -23,7 +23,7 @@
 
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
@@ -346,7 +346,7 @@ ImportOperation::Result ImportOperation::operateInternal()
   if (ext == ".2dm" || ext == ".3dm")
   {
     smtk::io::ModelToMesh convert;
-    smtk::mesh::CollectionPtr c = convert(modelEntity.as<smtk::model::Model>());
+    smtk::mesh::ResourcePtr c = convert(modelEntity.as<smtk::model::Model>());
     if (c->isValid() && c->numberOfMeshes() > 0)
     {
       if (c->name().empty())

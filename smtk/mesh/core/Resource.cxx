@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/core/Component.h"
 
@@ -22,9 +22,9 @@ namespace smtk
 namespace mesh
 {
 
-constexpr smtk::resource::Links::RoleType Collection::ClassificationRole;
+constexpr smtk::resource::Links::RoleType Resource::ClassificationRole;
 
-class Collection::InternalImpl
+class Resource::InternalImpl
 {
 public:
   InternalImpl()
@@ -45,8 +45,8 @@ private:
   smtk::mesh::InterfacePtr Interface;
 };
 
-Collection::Collection()
-  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(
+Resource::Resource()
+  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
   , m_name()
   , m_readLocation()
@@ -59,8 +59,8 @@ Collection::Collection()
 {
 }
 
-Collection::Collection(const smtk::common::UUID& collectionID)
-  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
+Resource::Resource(const smtk::common::UUID& resourceID)
+  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -72,8 +72,8 @@ Collection::Collection(const smtk::common::UUID& collectionID)
 {
 }
 
-Collection::Collection(smtk::mesh::InterfacePtr interface)
-  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(
+Resource::Resource(smtk::mesh::InterfacePtr interface)
+  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
   , m_name()
   , m_readLocation()
@@ -86,8 +86,8 @@ Collection::Collection(smtk::mesh::InterfacePtr interface)
 {
 }
 
-Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface)
-  : smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>(collectionID)
+Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
+  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
   , m_name()
   , m_readLocation()
   , m_writeLocation()
@@ -99,7 +99,7 @@ Collection::Collection(const smtk::common::UUID& collectionID, smtk::mesh::Inter
 {
 }
 
-Collection::~Collection()
+Resource::~Resource()
 {
   if (m_internals)
   {
@@ -107,13 +107,13 @@ Collection::~Collection()
   }
 }
 
-smtk::resource::ComponentPtr Collection::find(const smtk::common::UUID& compId) const
+smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& compId) const
 {
   return std::static_pointer_cast<smtk::resource::Component>(
-    Component::create(std::const_pointer_cast<smtk::mesh::Collection>(shared_from_this()), compId));
+    Component::create(std::const_pointer_cast<smtk::mesh::Resource>(shared_from_this()), compId));
 }
 
-std::function<bool(const resource::ComponentPtr&)> Collection::queryOperation(
+std::function<bool(const resource::ComponentPtr&)> Resource::queryOperation(
   const std::string& queryString) const
 {
   // TODO
@@ -122,7 +122,7 @@ std::function<bool(const resource::ComponentPtr&)> Collection::queryOperation(
 }
 
 // visit all components in the resource.
-void Collection::visit(smtk::resource::Component::Visitor& visitor) const
+void Resource::visit(smtk::resource::Component::Visitor& visitor) const
 {
   class Visit : public smtk::mesh::MeshForEach
   {
@@ -147,46 +147,46 @@ void Collection::visit(smtk::resource::Component::Visitor& visitor) const
   smtk::mesh::for_each(this->meshes(), visit_);
 }
 
-const smtk::mesh::InterfacePtr& Collection::interface() const
+const smtk::mesh::InterfacePtr& Resource::interface() const
 {
   return m_internals->mesh_iface();
 }
 
-void Collection::swapInterfaces(smtk::mesh::CollectionPtr& other)
+void Resource::swapInterfaces(smtk::mesh::ResourcePtr& other)
 {
-  smtk::mesh::Collection::InternalImpl* temp = other->m_internals;
+  smtk::mesh::Resource::InternalImpl* temp = other->m_internals;
   other->m_internals = m_internals;
   m_internals = temp;
 }
 
-bool Collection::isValid() const
+bool Resource::isValid() const
 {
   //make sure we have a valid uuid, and that our internals are valid
   return (this->id().isNull() != true);
 }
 
-bool Collection::isModified() const
+bool Resource::isModified() const
 {
   //make sure we have a valid uuid, and that our internals are valid
   return this->interface()->isModified();
 }
 
-std::string Collection::name() const
+std::string Resource::name() const
 {
   return m_name;
 }
 
-void Collection::name(const std::string& n)
+void Resource::name(const std::string& n)
 {
   m_name = n;
 }
 
-const smtk::common::FileLocation& Collection::readLocation() const
+const smtk::common::FileLocation& Resource::readLocation() const
 {
   return m_readLocation;
 }
 
-void Collection::readLocation(const smtk::common::FileLocation& n)
+void Resource::readLocation(const smtk::common::FileLocation& n)
 {
   m_readLocation = n;
   //if the write location hasn't been set, update it to be the read location
@@ -196,64 +196,64 @@ void Collection::readLocation(const smtk::common::FileLocation& n)
   }
 }
 
-const smtk::common::FileLocation& Collection::writeLocation() const
+const smtk::common::FileLocation& Resource::writeLocation() const
 {
   return m_writeLocation;
 }
 
-void Collection::writeLocation(const smtk::common::FileLocation& n)
+void Resource::writeLocation(const smtk::common::FileLocation& n)
 {
   m_writeLocation = n;
 }
 
-void Collection::clearReadWriteLocations()
+void Resource::clearReadWriteLocations()
 {
   m_readLocation.clear();
   m_writeLocation.clear();
 }
 
-std::string Collection::interfaceName() const
+std::string Resource::interfaceName() const
 {
   return this->interface()->name();
 }
 
-const smtk::common::UUID Collection::entity() const
+const smtk::common::UUID Resource::entity() const
 {
   return this->id();
 }
 
-std::size_t Collection::numberOfMeshes() const
+std::size_t Resource::numberOfMeshes() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   return iface->numMeshes(m_internals->mesh_root_handle());
 }
 
-smtk::mesh::TypeSet Collection::types() const
+smtk::mesh::TypeSet Resource::types() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
   return iface->computeTypes(iface->getMeshsets(handle));
 }
 
-smtk::mesh::CellSet Collection::cells() const
+smtk::mesh::CellSet Resource::cells() const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.cells();
 }
 
-smtk::mesh::PointSet Collection::points() const
+smtk::mesh::PointSet Resource::points() const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.points();
 }
 
-smtk::mesh::PointConnectivity Collection::pointConnectivity() const
+smtk::mesh::PointConnectivity Resource::pointConnectivity() const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.pointConnectivity();
 }
 
-void Collection::assignDefaultNames()
+void Resource::assignDefaultNames()
 {
   smtk::resource::Component::Visitor nameAssigner = [this](
     const smtk::resource::Component::Ptr& comp) {
@@ -277,12 +277,12 @@ void Collection::assignDefaultNames()
   this->visit(nameAssigner);
 }
 
-smtk::mesh::MeshSet Collection::meshes() const
+smtk::mesh::MeshSet Resource::meshes() const
 {
   return smtk::mesh::MeshSet(this->shared_from_this(), m_internals->mesh_root_handle());
 }
 
-std::vector<std::string> Collection::meshNames() const
+std::vector<std::string> Resource::meshNames() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -291,7 +291,7 @@ std::vector<std::string> Collection::meshNames() const
   return iface->computeNames(entities);
 }
 
-smtk::mesh::MeshSet Collection::meshes(smtk::mesh::DimensionType dim) const
+smtk::mesh::MeshSet Resource::meshes(smtk::mesh::DimensionType dim) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -301,7 +301,7 @@ smtk::mesh::MeshSet Collection::meshes(smtk::mesh::DimensionType dim) const
   return smtk::mesh::MeshSet(this->shared_from_this(), m_internals->mesh_root_handle(), entities);
 }
 
-smtk::mesh::MeshSet Collection::meshes(const std::string& name) const
+smtk::mesh::MeshSet Resource::meshes(const std::string& name) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -310,40 +310,40 @@ smtk::mesh::MeshSet Collection::meshes(const std::string& name) const
   return smtk::mesh::MeshSet(this->shared_from_this(), m_internals->mesh_root_handle(), entities);
 }
 
-smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Domain& d) const
+smtk::mesh::MeshSet Resource::meshes(const smtk::mesh::Domain& d) const
 {
   return this->domainMeshes(d);
 }
 
-smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Dirichlet& d) const
+smtk::mesh::MeshSet Resource::meshes(const smtk::mesh::Dirichlet& d) const
 {
   return this->dirichletMeshes(d);
 }
 
-smtk::mesh::MeshSet Collection::meshes(const smtk::mesh::Neumann& n) const
+smtk::mesh::MeshSet Resource::meshes(const smtk::mesh::Neumann& n) const
 {
   return this->neumannMeshes(n);
 }
 
-smtk::mesh::CellSet Collection::cells(smtk::mesh::CellType cellType) const
+smtk::mesh::CellSet Resource::cells(smtk::mesh::CellType cellType) const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.cells(cellType);
 }
 
-smtk::mesh::CellSet Collection::cells(smtk::mesh::CellTypes cellTypes) const
+smtk::mesh::CellSet Resource::cells(smtk::mesh::CellTypes cellTypes) const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.cells(cellTypes);
 }
 
-smtk::mesh::CellSet Collection::cells(smtk::mesh::DimensionType dim) const
+smtk::mesh::CellSet Resource::cells(smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms(this->shared_from_this(), m_internals->mesh_root_handle());
   return ms.cells(dim);
 }
 
-bool Collection::classifyTo(const smtk::model::ResourcePtr& resource)
+bool Resource::classifyTo(const smtk::model::ResourcePtr& resource)
 {
   smtk::model::ResourcePtr currentResource = this->classifiedTo();
   if (currentResource != nullptr)
@@ -357,7 +357,7 @@ bool Collection::classifyTo(const smtk::model::ResourcePtr& resource)
            .first != smtk::common::UUID::null();
 }
 
-smtk::model::ResourcePtr Collection::classifiedTo() const
+smtk::model::ResourcePtr Resource::classifiedTo() const
 {
   auto classifiedObjects = this->links().linkedTo(ClassificationRole);
   return (!classifiedObjects.empty()
@@ -365,12 +365,12 @@ smtk::model::ResourcePtr Collection::classifiedTo() const
       : smtk::model::ResourcePtr());
 }
 
-smtk::mesh::TypeSet Collection::findAssociatedTypes(const smtk::model::EntityRef& eref) const
+smtk::mesh::TypeSet Resource::findAssociatedTypes(const smtk::model::EntityRef& eref) const
 {
   return this->findAssociatedMeshes(eref).types();
 }
 
-smtk::mesh::MeshSet Collection::findAssociatedMeshes(const smtk::model::EntityRef& eref) const
+smtk::mesh::MeshSet Resource::findAssociatedMeshes(const smtk::model::EntityRef& eref) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -379,39 +379,39 @@ smtk::mesh::MeshSet Collection::findAssociatedMeshes(const smtk::model::EntityRe
     this->shared_from_this(), handle, iface->findAssociations(handle, eref.entity()));
 }
 
-smtk::mesh::MeshSet Collection::findAssociatedMeshes(
+smtk::mesh::MeshSet Resource::findAssociatedMeshes(
   const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(eref);
   return unfiltered.subset(dim);
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(const smtk::model::EntityRef& eref) const
+smtk::mesh::CellSet Resource::findAssociatedCells(const smtk::model::EntityRef& eref) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref);
   return ms.cells();
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(
+smtk::mesh::CellSet Resource::findAssociatedCells(
   const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref);
   return ms.cells(cellType);
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(
+smtk::mesh::CellSet Resource::findAssociatedCells(
   const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(eref, dim);
   return ms.cells();
 }
 
-smtk::mesh::TypeSet Collection::findAssociatedTypes(const smtk::common::UUID& id) const
+smtk::mesh::TypeSet Resource::findAssociatedTypes(const smtk::common::UUID& id) const
 {
   return this->findAssociatedMeshes(id).types();
 }
 
-smtk::mesh::MeshSet Collection::findAssociatedMeshes(const smtk::common::UUID& id) const
+smtk::mesh::MeshSet Resource::findAssociatedMeshes(const smtk::common::UUID& id) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -419,39 +419,39 @@ smtk::mesh::MeshSet Collection::findAssociatedMeshes(const smtk::common::UUID& i
   return smtk::mesh::MeshSet(this->shared_from_this(), handle, iface->findAssociations(handle, id));
 }
 
-smtk::mesh::MeshSet Collection::findAssociatedMeshes(
+smtk::mesh::MeshSet Resource::findAssociatedMeshes(
   const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(id);
   return unfiltered.subset(dim);
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(const smtk::common::UUID& id) const
+smtk::mesh::CellSet Resource::findAssociatedCells(const smtk::common::UUID& id) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id);
   return ms.cells();
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(
+smtk::mesh::CellSet Resource::findAssociatedCells(
   const smtk::common::UUID& id, smtk::mesh::CellType cellType) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id);
   return ms.cells(cellType);
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(
+smtk::mesh::CellSet Resource::findAssociatedCells(
   const smtk::common::UUID& id, smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(id, dim);
   return ms.cells();
 }
 
-smtk::mesh::TypeSet Collection::findAssociatedTypes(smtk::model::EntityIterator& refIt) const
+smtk::mesh::TypeSet Resource::findAssociatedTypes(smtk::model::EntityIterator& refIt) const
 {
   return this->findAssociatedMeshes(refIt).types();
 }
 
-smtk::mesh::MeshSet Collection::findAssociatedMeshes(smtk::model::EntityIterator& refIt) const
+smtk::mesh::MeshSet Resource::findAssociatedMeshes(smtk::model::EntityIterator& refIt) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -465,34 +465,34 @@ smtk::mesh::MeshSet Collection::findAssociatedMeshes(smtk::model::EntityIterator
   return smtk::mesh::MeshSet(this->shared_from_this(), handle, range);
 }
 
-smtk::mesh::MeshSet Collection::findAssociatedMeshes(
+smtk::mesh::MeshSet Resource::findAssociatedMeshes(
   smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet unfiltered = this->findAssociatedMeshes(refIt);
   return unfiltered.subset(dim);
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(smtk::model::EntityIterator& refIt) const
+smtk::mesh::CellSet Resource::findAssociatedCells(smtk::model::EntityIterator& refIt) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt);
   return ms.cells();
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(
+smtk::mesh::CellSet Resource::findAssociatedCells(
   smtk::model::EntityIterator& refIt, smtk::mesh::CellType cellType) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt);
   return ms.cells(cellType);
 }
 
-smtk::mesh::CellSet Collection::findAssociatedCells(
+smtk::mesh::CellSet Resource::findAssociatedCells(
   smtk::model::EntityIterator& refIt, smtk::mesh::DimensionType dim) const
 {
   smtk::mesh::MeshSet ms = this->findAssociatedMeshes(refIt, dim);
   return ms.cells();
 }
 
-bool Collection::setAssociation(
+bool Resource::setAssociation(
   const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
@@ -501,7 +501,7 @@ bool Collection::setAssociation(
   return iface->setAssociation(eref.entity(), meshset.m_range);
 }
 
-bool Collection::hasAssociations() const
+bool Resource::hasAssociations() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
 
@@ -512,7 +512,7 @@ bool Collection::hasAssociations() const
   return !associations.empty();
 }
 
-bool Collection::associateToModel(const smtk::common::UUID& uuid)
+bool Resource::associateToModel(const smtk::common::UUID& uuid)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
 
@@ -527,18 +527,18 @@ bool Collection::associateToModel(const smtk::common::UUID& uuid)
   return true;
 }
 
-bool Collection::isAssociatedToModel() const
+bool Resource::isAssociatedToModel() const
 {
   return this->associatedModel() != smtk::common::UUID::null();
 }
 
-smtk::common::UUID Collection::associatedModel() const
+smtk::common::UUID Resource::associatedModel() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   return iface->rootAssociation();
 }
 
-smtk::mesh::MeshSet Collection::createMesh(
+smtk::mesh::MeshSet Resource::createMesh(
   const smtk::mesh::CellSet& cells, const smtk::common::UUID& uuid)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
@@ -564,7 +564,7 @@ smtk::mesh::MeshSet Collection::createMesh(
   return smtk::mesh::MeshSet(this->shared_from_this(), m_internals->mesh_root_handle(), entities);
 }
 
-bool Collection::removeMeshes(const smtk::mesh::MeshSet& meshesToDelete)
+bool Resource::removeMeshes(const smtk::mesh::MeshSet& meshesToDelete)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   if (meshesToDelete.m_parent == this->shared_from_this())
@@ -587,7 +587,7 @@ bool Collection::removeMeshes(const smtk::mesh::MeshSet& meshesToDelete)
   return false;
 }
 
-std::vector<smtk::mesh::Domain> Collection::domains() const
+std::vector<smtk::mesh::Domain> Resource::domains() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -596,7 +596,7 @@ std::vector<smtk::mesh::Domain> Collection::domains() const
   return iface->computeDomainValues(entities);
 }
 
-smtk::mesh::MeshSet Collection::domainMeshes(const smtk::mesh::Domain& d) const
+smtk::mesh::MeshSet Resource::domainMeshes(const smtk::mesh::Domain& d) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -605,7 +605,7 @@ smtk::mesh::MeshSet Collection::domainMeshes(const smtk::mesh::Domain& d) const
   return smtk::mesh::MeshSet(this->shared_from_this(), m_internals->mesh_root_handle(), entities);
 }
 
-bool Collection::setDomainOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Domain& d)
+bool Resource::setDomainOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Domain& d)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   if (meshes.m_parent == this->shared_from_this())
@@ -615,7 +615,7 @@ bool Collection::setDomainOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk
   return false;
 }
 
-std::vector<smtk::mesh::Dirichlet> Collection::dirichlets() const
+std::vector<smtk::mesh::Dirichlet> Resource::dirichlets() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -624,7 +624,7 @@ std::vector<smtk::mesh::Dirichlet> Collection::dirichlets() const
   return iface->computeDirichletValues(entities);
 }
 
-smtk::mesh::MeshSet Collection::dirichletMeshes(const smtk::mesh::Dirichlet& d) const
+smtk::mesh::MeshSet Resource::dirichletMeshes(const smtk::mesh::Dirichlet& d) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -633,7 +633,7 @@ smtk::mesh::MeshSet Collection::dirichletMeshes(const smtk::mesh::Dirichlet& d) 
   return smtk::mesh::MeshSet(this->shared_from_this(), m_internals->mesh_root_handle(), entities);
 }
 
-bool Collection::setDirichletOnMeshes(
+bool Resource::setDirichletOnMeshes(
   const smtk::mesh::MeshSet& meshes, const smtk::mesh::Dirichlet& d)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
@@ -644,7 +644,7 @@ bool Collection::setDirichletOnMeshes(
   return false;
 }
 
-std::vector<smtk::mesh::Neumann> Collection::neumanns() const
+std::vector<smtk::mesh::Neumann> Resource::neumanns() const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -653,7 +653,7 @@ std::vector<smtk::mesh::Neumann> Collection::neumanns() const
   return iface->computeNeumannValues(entities);
 }
 
-smtk::mesh::MeshSet Collection::neumannMeshes(const smtk::mesh::Neumann& n) const
+smtk::mesh::MeshSet Resource::neumannMeshes(const smtk::mesh::Neumann& n) const
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   smtk::mesh::Handle handle = m_internals->mesh_root_handle();
@@ -662,7 +662,7 @@ smtk::mesh::MeshSet Collection::neumannMeshes(const smtk::mesh::Neumann& n) cons
   return smtk::mesh::MeshSet(this->shared_from_this(), m_internals->mesh_root_handle(), entities);
 }
 
-bool Collection::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Neumann& n)
+bool Resource::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Neumann& n)
 {
   const smtk::mesh::InterfacePtr& iface = m_internals->mesh_iface();
   if (meshes.m_parent == this->shared_from_this())
@@ -676,7 +676,7 @@ bool Collection::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes, const smt
   *
   */
 ///@{
-void Collection::setFloatProperty(
+void Resource::setFloatProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Float propValue)
 {
   smtk::model::FloatList tmp;
@@ -684,7 +684,7 @@ void Collection::setFloatProperty(
   this->setFloatProperty(meshset, propName, tmp);
 }
 
-void Collection::setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+void Resource::setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
   const smtk::model::FloatList& propValue)
 {
   if (meshset.size() > 0)
@@ -693,7 +693,7 @@ void Collection::setFloatProperty(const smtk::mesh::MeshSet& meshset, const std:
   }
 }
 
-smtk::model::FloatList const& Collection::floatProperty(
+smtk::model::FloatList const& Resource::floatProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName) const
 {
   if (meshset.size() > 0)
@@ -705,7 +705,7 @@ smtk::model::FloatList const& Collection::floatProperty(
   return dummy;
 }
 
-smtk::model::FloatList& Collection::floatProperty(
+smtk::model::FloatList& Resource::floatProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName)
 {
   if (meshset.size() > 0)
@@ -717,7 +717,7 @@ smtk::model::FloatList& Collection::floatProperty(
   return dummy;
 }
 
-bool Collection::hasFloatProperty(
+bool Resource::hasFloatProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName) const
 {
   smtk::mesh::MeshFloatData::const_iterator uit = m_floatData->find(meshset);
@@ -730,8 +730,7 @@ bool Collection::hasFloatProperty(
   return sit == uit->second.end() ? false : true;
 }
 
-bool Collection::removeFloatProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName)
+bool Resource::removeFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName)
 {
   smtk::mesh::MeshFloatData::iterator uit = m_floatData->find(meshset);
   if (uit == m_floatData->end())
@@ -749,7 +748,7 @@ bool Collection::removeFloatProperty(
   return true;
 }
 
-void Collection::setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+void Resource::setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
   const smtk::model::String& propValue)
 {
   smtk::model::StringList tmp;
@@ -757,7 +756,7 @@ void Collection::setStringProperty(const smtk::mesh::MeshSet& meshset, const std
   this->setStringProperty(meshset, propName, tmp);
 }
 
-void Collection::setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+void Resource::setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
   const smtk::model::StringList& propValue)
 {
   if (meshset.size() > 0)
@@ -766,7 +765,7 @@ void Collection::setStringProperty(const smtk::mesh::MeshSet& meshset, const std
   }
 }
 
-smtk::model::StringList const& Collection::stringProperty(
+smtk::model::StringList const& Resource::stringProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName) const
 {
   if (meshset.size() > 0)
@@ -778,7 +777,7 @@ smtk::model::StringList const& Collection::stringProperty(
   return dummy;
 }
 
-smtk::model::StringList& Collection::stringProperty(
+smtk::model::StringList& Resource::stringProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName)
 {
   if (meshset.size() > 0)
@@ -790,7 +789,7 @@ smtk::model::StringList& Collection::stringProperty(
   return dummy;
 }
 
-bool Collection::hasStringProperty(
+bool Resource::hasStringProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName) const
 {
   smtk::mesh::MeshStringData::const_iterator uit = m_stringData->find(meshset);
@@ -803,8 +802,7 @@ bool Collection::hasStringProperty(
   return sit == uit->second.end() ? false : true;
 }
 
-bool Collection::removeStringProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName)
+bool Resource::removeStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName)
 {
   smtk::mesh::MeshStringData::iterator uit = m_stringData->find(meshset);
   if (uit == m_stringData->end())
@@ -822,7 +820,7 @@ bool Collection::removeStringProperty(
   return true;
 }
 
-void Collection::setIntegerProperty(
+void Resource::setIntegerProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Integer propValue)
 {
   smtk::model::IntegerList tmp;
@@ -830,7 +828,7 @@ void Collection::setIntegerProperty(
   this->setIntegerProperty(meshset, propName, tmp);
 }
 
-void Collection::setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
+void Resource::setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
   const smtk::model::IntegerList& propValue)
 {
   if (meshset.size() > 0)
@@ -839,7 +837,7 @@ void Collection::setIntegerProperty(const smtk::mesh::MeshSet& meshset, const st
   }
 }
 
-smtk::model::IntegerList const& Collection::integerProperty(
+smtk::model::IntegerList const& Resource::integerProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName) const
 {
   if (meshset.size() > 0)
@@ -851,7 +849,7 @@ smtk::model::IntegerList const& Collection::integerProperty(
   return dummy;
 }
 
-smtk::model::IntegerList& Collection::integerProperty(
+smtk::model::IntegerList& Resource::integerProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName)
 {
   if (meshset.size() > 0)
@@ -863,7 +861,7 @@ smtk::model::IntegerList& Collection::integerProperty(
   return dummy;
 }
 
-bool Collection::hasIntegerProperty(
+bool Resource::hasIntegerProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName) const
 {
   smtk::mesh::MeshIntegerData::const_iterator uit = m_integerData->find(meshset);
@@ -876,7 +874,7 @@ bool Collection::hasIntegerProperty(
   return sit == uit->second.end() ? false : true;
 }
 
-bool Collection::removeIntegerProperty(
+bool Resource::removeIntegerProperty(
   const smtk::mesh::MeshSet& meshset, const std::string& propName)
 {
   smtk::mesh::MeshIntegerData::iterator uit = m_integerData->find(meshset);
@@ -894,52 +892,52 @@ bool Collection::removeIntegerProperty(
     m_integerData->erase(uit);
   return true;
 }
-/*! \fn Collection::properties<T>()
- *  \brief Return a pointer to the properties of the collection.
+/*! \fn Resource::properties<T>()
+ *  \brief Return a pointer to the properties of the resource.
  *
  * This templated version exists for use in functions where the
  * property type is a template parameter.
  */
 template <>
-SMTKCORE_EXPORT smtk::mesh::MeshStringData* Collection::properties<smtk::mesh::MeshStringData>()
+SMTKCORE_EXPORT smtk::mesh::MeshStringData* Resource::properties<smtk::mesh::MeshStringData>()
 {
   return &(*m_stringData);
 }
 
 template <>
-SMTKCORE_EXPORT smtk::mesh::MeshFloatData* Collection::properties<smtk::mesh::MeshFloatData>()
+SMTKCORE_EXPORT smtk::mesh::MeshFloatData* Resource::properties<smtk::mesh::MeshFloatData>()
 {
   return &(*m_floatData);
 }
 
 template <>
-SMTKCORE_EXPORT smtk::mesh::MeshIntegerData* Collection::properties<smtk::mesh::MeshIntegerData>()
+SMTKCORE_EXPORT smtk::mesh::MeshIntegerData* Resource::properties<smtk::mesh::MeshIntegerData>()
 {
   return &(*m_integerData);
 }
 
-/*! \fn Collection::meshProperties<T>(const smtk::mesh::MeshSet& meshset)
- *  \brief Return a pointer to the properties of an \a meshset in the collection.
+/*! \fn Resource::meshProperties<T>(const smtk::mesh::MeshSet& meshset)
+ *  \brief Return a pointer to the properties of an \a meshset in the resource.
  *
  * This templated version exists for use in functions where the
  * property type is a template parameter.
  */
 template <>
-SMTKCORE_EXPORT smtk::model::StringData* Collection::meshProperties<smtk::model::StringData>(
+SMTKCORE_EXPORT smtk::model::StringData* Resource::meshProperties<smtk::model::StringData>(
   const smtk::mesh::MeshSet& meshset)
 {
   return &(*m_stringData)[meshset];
 }
 
 template <>
-SMTKCORE_EXPORT smtk::model::FloatData* Collection::meshProperties<smtk::model::FloatData>(
+SMTKCORE_EXPORT smtk::model::FloatData* Resource::meshProperties<smtk::model::FloatData>(
   const smtk::mesh::MeshSet& meshset)
 {
   return &(*m_floatData)[meshset];
 }
 
 template <>
-SMTKCORE_EXPORT smtk::model::IntegerData* Collection::meshProperties<smtk::model::IntegerData>(
+SMTKCORE_EXPORT smtk::model::IntegerData* Resource::meshProperties<smtk::model::IntegerData>(
   const smtk::mesh::MeshSet& meshset)
 {
   return &(*m_integerData)[meshset];
@@ -954,21 +952,21 @@ SMTKCORE_EXPORT smtk::model::IntegerData* Collection::meshProperties<smtk::model
  * property type is a template parameter.
  */
 template <>
-SMTKCORE_EXPORT bool Collection::removeProperty<smtk::model::StringData>(
+SMTKCORE_EXPORT bool Resource::removeProperty<smtk::model::StringData>(
   const smtk::mesh::MeshSet& meshset, const std::string& pname)
 {
   return this->removeStringProperty(meshset, pname);
 }
 
 template <>
-SMTKCORE_EXPORT bool Collection::removeProperty<smtk::model::FloatData>(
+SMTKCORE_EXPORT bool Resource::removeProperty<smtk::model::FloatData>(
   const smtk::mesh::MeshSet& meshset, const std::string& pname)
 {
   return this->removeFloatProperty(meshset, pname);
 }
 
 template <>
-SMTKCORE_EXPORT bool Collection::removeProperty<smtk::model::IntegerData>(
+SMTKCORE_EXPORT bool Resource::removeProperty<smtk::model::IntegerData>(
   const smtk::mesh::MeshSet& meshset, const std::string& pname)
 {
   return this->removeIntegerProperty(meshset, pname);

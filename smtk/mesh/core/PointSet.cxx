@@ -10,29 +10,29 @@
 
 #include "smtk/mesh/core/PointSet.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Interface.h"
+#include "smtk/mesh/core/Resource.h"
 
 namespace smtk
 {
 namespace mesh
 {
 
-PointSet::PointSet(const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& points)
+PointSet::PointSet(const smtk::mesh::ResourcePtr& parent, const smtk::mesh::HandleRange& points)
   : m_parent(parent)
   , m_points(points)
 {
 }
 
 PointSet::PointSet(
-  const smtk::mesh::ConstCollectionPtr& parent, const smtk::mesh::HandleRange& points)
-  : m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent))
+  const smtk::mesh::ConstResourcePtr& parent, const smtk::mesh::HandleRange& points)
+  : m_parent(std::const_pointer_cast<smtk::mesh::Resource>(parent))
   , m_points(points)
 {
 }
 
 PointSet::PointSet(
-  const smtk::mesh::CollectionPtr& parent, const std::vector<smtk::mesh::Handle>& points)
+  const smtk::mesh::ResourcePtr& parent, const std::vector<smtk::mesh::Handle>& points)
   : m_parent(parent)
   , m_points()
 {
@@ -43,7 +43,7 @@ PointSet::PointSet(
 }
 
 PointSet::PointSet(
-  const smtk::mesh::CollectionPtr& parent, const std::set<smtk::mesh::Handle>& points)
+  const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mesh::Handle>& points)
   : m_parent(parent)
   , m_points()
 {
@@ -169,10 +169,10 @@ bool PointSet::set(const std::vector<float>& xyz)
   return iface->setCoordinates(m_points, &xyz[0]);
 }
 
-/**\brief Get the parent collection that this meshset belongs to.
+/**\brief Get the parent resource that this meshset belongs to.
   *
   */
-const smtk::mesh::CollectionPtr& PointSet::collection() const
+const smtk::mesh::ResourcePtr& PointSet::resource() const
 {
   return m_parent;
 }
@@ -180,7 +180,7 @@ const smtk::mesh::CollectionPtr& PointSet::collection() const
 PointSet set_intersect(const PointSet& a, const PointSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty PointSet if the collections don't match
+  { //return an empty PointSet if the resources don't match
     return smtk::mesh::PointSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -191,7 +191,7 @@ PointSet set_intersect(const PointSet& a, const PointSet& b)
 PointSet set_difference(const PointSet& a, const PointSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty PointSet if the collections don't match
+  { //return an empty PointSet if the resources don't match
     return smtk::mesh::PointSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -202,7 +202,7 @@ PointSet set_difference(const PointSet& a, const PointSet& b)
 PointSet set_union(const PointSet& a, const PointSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty PointSet if the collections don't match
+  { //return an empty PointSet if the resources don't match
     return smtk::mesh::PointSet(a.m_parent, smtk::mesh::HandleRange());
   }
 
@@ -213,7 +213,7 @@ PointSet set_union(const PointSet& a, const PointSet& b)
 void for_each(const PointSet& a, PointForEach& filter)
 {
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
-  filter.m_collection = a.m_parent;
+  filter.m_resource = a.m_parent;
   iface->pointForEach(a.m_points, filter);
 }
 }

@@ -35,8 +35,8 @@ class RenderMesh(smtk.testing.TestCase):
             smtk.testing.DATA_DIR, 'mesh', '2d', 'warpedMesh.h5m')
 
         # Read in the mesh
-        self.collection = smtk.mesh.Collection.create()
-        smtk.io.readMesh(meshFile, self.collection)
+        self.meshResource = smtk.mesh.Resource.create()
+        smtk.io.readMesh(meshFile, self.meshResource)
 
     def testRenderMesh(self):
 
@@ -49,7 +49,8 @@ class RenderMesh(smtk.testing.TestCase):
 
         # Set the operator's parameters
         print renderMesh.parameters()
-        renderMesh.parameters().find('mesh').setValue(self.collection.meshes())
+        renderMesh.parameters().find(
+            'mesh').setValue(self.meshResource.meshes())
 
         self.outFile = os.path.join(
             smtk.testing.TEMP_DIR, str(smtk.common.UUID.random()) + '.png')

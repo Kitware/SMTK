@@ -22,8 +22,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/StringData.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -594,7 +594,7 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
     {
       resourceName << "attributeResource";
     }
-    else if (dynamic_pointer_cast<smtk::mesh::Collection>(item->relatedResource()))
+    else if (dynamic_pointer_cast<smtk::mesh::Resource>(item->relatedResource()))
     {
       resourceName << "meshResource";
     }

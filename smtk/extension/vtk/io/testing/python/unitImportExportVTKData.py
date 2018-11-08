@@ -124,24 +124,24 @@ def verify_tri_polydata():
     imprt = smtk.io.vtk.ImportVTKData()
 
     pd = make_TrianglePolyData()
-    c = smtk.mesh.Collection.create()
-    imprt(pd, c)
+    meshResource = smtk.mesh.Resource.create()
+    imprt(pd, meshResource)
 
-    if c == None or not c.isValid():
-        raise RuntimeError("collection should exist")
-    if c.numberOfMeshes() != 1:
-        raise RuntimeError("collection should only have a single mesh")
-    if c.cells().size() != pd.GetNumberOfCells():
+    if meshResource == None or not meshResource.isValid():
+        raise RuntimeError("resource should exist")
+    if meshResource.numberOfMeshes() != 1:
+        raise RuntimeError("resource should only have a single mesh")
+    if meshResource.cells().size() != pd.GetNumberOfCells():
         raise RuntimeError(
-            "collection and polydata should have the same number of cells")
+            "resource and polydata should have the same number of cells")
 
-    meshes = c.meshes(smtk.mesh.Dims2)
+    meshes = meshResource.meshes(smtk.mesh.Dims2)
     if meshes.size() != 1:
         raise RuntimeError("wrong number of meshes")
-    if meshes.cells() != c.cells():
+    if meshes.cells() != meshResource.cells():
         raise RuntimeError("cell sets should match")
 
-    meshes1d = c.meshes(smtk.mesh.Dims1)
+    meshes1d = meshResource.meshes(smtk.mesh.Dims1)
     if meshes1d.size() != 0:
         raise RuntimeError("number of 1d cells should be 0")
 
@@ -155,21 +155,21 @@ def verify_tri_ugrid():
     imprt = smtk.io.vtk.ImportVTKData()
 
     ug = make_TriangleUGrid()
-    c = smtk.mesh.Collection.create()
-    imprt(ug, c)
+    meshResource = smtk.mesh.Resource.create()
+    imprt(ug, meshResource)
 
-    if c == None or not c.isValid():
-        raise RuntimeError("collection should be valid")
-    if c.numberOfMeshes() != 1:
-        raise RuntimeError("collection should only have a single mesh")
+    if meshResource == None or not meshResource.isValid():
+        raise RuntimeError("resource should be valid")
+    if meshResource.numberOfMeshes() != 1:
+        raise RuntimeError("resource should only have a single mesh")
 
-    meshes = c.meshes(smtk.mesh.Dims2)
+    meshes = meshResource.meshes(smtk.mesh.Dims2)
     if meshes.size() != 1:
         raise RuntimeError("wrong number of meshes")
-    if meshes.cells() != c.cells():
+    if meshes.cells() != meshResource.cells():
         raise RuntimeError("cell sets should match")
 
-    meshes1d = c.meshes(smtk.mesh.Dims1)
+    meshes1d = meshResource.meshes(smtk.mesh.Dims1)
     if meshes1d.size() != 0:
         raise RuntimeError("number of 1d cells should be 0")
 
@@ -183,21 +183,21 @@ def verify_mixed_cell_ugrid():
     imprt = smtk.io.vtk.ImportVTKData()
 
     ug = make_MixedVolUGrid()
-    c = smtk.mesh.Collection.create()
-    imprt(ug, c)
+    meshResource = smtk.mesh.Resource.create()
+    imprt(ug, meshResource)
 
-    if c == None or not c.isValid():
-        raise RuntimeError("collection should be valid")
-    if c.numberOfMeshes() != 1:
-        raise RuntimeError("collection should only have a single mesh")
-    if c.cells().size() != ug.GetNumberOfCells():
+    if meshResource == None or not meshResource.isValid():
+        raise RuntimeError("resource should be valid")
+    if meshResource.numberOfMeshes() != 1:
+        raise RuntimeError("resource should only have a single mesh")
+    if meshResource.cells().size() != ug.GetNumberOfCells():
         raise RuntimeError(
-            "collection and unsigned grid should have the same number of cells")
+            "resource and unsigned grid should have the same number of cells")
 
-    meshes = c.meshes(smtk.mesh.Dims3)
+    meshes = meshResource.meshes(smtk.mesh.Dims3)
     if meshes.size() != 1:
         raise RuntimeError("wrong number of meshes")
-    if meshes.cells() != c.cells():
+    if meshes.cells() != meshResource.cells():
         raise RuntimeError("cell sets should match")
 
     exprt = smtk.io.vtk.ExportVTKData()

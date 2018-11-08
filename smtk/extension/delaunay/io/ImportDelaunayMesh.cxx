@@ -12,8 +12,8 @@
 
 #include "smtk/extension/delaunay/io/ImportDelaunayMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "Mesh/Mesh.hh"
 #include "Shape/Point.hh"
@@ -40,16 +40,16 @@ std::size_t IndexOf(Point& point, const PointContainer& points)
 }
 
 smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
-  const Delaunay::Mesh::Mesh& mesh, smtk::mesh::CollectionPtr collection) const
+  const Delaunay::Mesh::Mesh& mesh, smtk::mesh::ResourcePtr meshresource) const
 {
-  smtk::mesh::InterfacePtr iface = collection->interface();
+  smtk::mesh::InterfacePtr iface = meshresource->interface();
   smtk::mesh::AllocatorPtr alloc = iface->allocator();
   smtk::mesh::Handle firstVertex = 0;
   std::vector<double*> coordinateMemory;
 
   if (!alloc->allocatePoints(mesh.GetVertices().size(), firstVertex, coordinateMemory))
   {
-    return collection->createMesh(smtk::mesh::CellSet(collection, smtk::mesh::HandleRange()));
+    return meshresource->createMesh(smtk::mesh::CellSet(meshresource, smtk::mesh::HandleRange()));
   }
 
   std::size_t idx = 0;
@@ -67,7 +67,7 @@ smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
   if (!alloc->allocateCells(smtk::mesh::Triangle, mesh.GetTriangles().size(),
         smtk::mesh::verticesPerCell(smtk::mesh::Triangle), createdCellIds, connectivity))
   {
-    return collection->createMesh(smtk::mesh::CellSet(collection, smtk::mesh::HandleRange()));
+    return meshresource->createMesh(smtk::mesh::CellSet(meshresource, smtk::mesh::HandleRange()));
   }
 
   idx = 0;
@@ -81,7 +81,7 @@ smtk::mesh::MeshSet ImportDelaunayMesh::operator()(
   alloc->connectivityModified(
     createdCellIds, smtk::mesh::verticesPerCell(smtk::mesh::Triangle), connectivity);
 
-  return collection->createMesh(smtk::mesh::CellSet(collection, createdCellIds));
+  return meshresource->createMesh(smtk::mesh::CellSet(meshresource, createdCellIds));
 }
 
 bool ImportDelaunayMesh::operator()(

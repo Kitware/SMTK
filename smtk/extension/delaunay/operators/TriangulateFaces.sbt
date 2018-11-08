@@ -11,7 +11,7 @@
 
         This operation creates smtk::mesh::MeshSets associated with
         smtk::mesh::Faces using Delaunay. The MeshSets reside in a new
-        smtk::mesh::Collection associated with the faces' model. The
+        smtk::mesh::Resource associated with the faces' model. The
         resulting triangulation is composed only of the boundary points.
       </DetailedDescription>
       <AssociationsDef Name="faces" NumberOfRequiredValues="1" Extensible="true">
@@ -30,8 +30,8 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(triangulate faces)" BaseType="result">
       <ItemDefinitions>
-        <Resource Name="collection" NumberOfRequiredValues="1">
-          <Accepts><Resource Name="smtk::mesh::Collection"/></Accepts>
+        <Resource Name="meshresource" NumberOfRequiredValues="1">
+          <Accepts><Resource Name="smtk::mesh::Resource"/></Accepts>
         </Resource>
         <Component Name="mesh_created" NumberOfRequiredValues="1" Extensible="true">
           <Accepts><Resource Name="smtk::model::Resource" Filter=""/></Accepts>

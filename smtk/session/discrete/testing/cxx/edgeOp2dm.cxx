@@ -27,7 +27,7 @@
 
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/testing/cxx/helpers.h"
 
 #include "smtk/model/Edge.h"
@@ -135,17 +135,17 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
 */
 
     // The first resource is associated with the created model. The second
-    // resource is the created mesh collection.
+    // resource is the created mesh resource.
     auto resources = std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
       importOpResult->findResource("resource"));
 
-    // Access the created mesh collection.
-    smtk::mesh::CollectionPtr mc =
-      std::dynamic_pointer_cast<smtk::mesh::Collection>(resources->value(1));
+    // Access the created mesh resource.
+    smtk::mesh::ResourcePtr mr =
+      std::dynamic_pointer_cast<smtk::mesh::Resource>(resources->value(1));
 
-    test((mc->meshes(smtk::mesh::Dims2)).size() == 4, "Expecting 4 face mesh");
-    test((mc->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
-    test((mc->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
+    test((mr->meshes(smtk::mesh::Dims2)).size() == 4, "Expecting 4 face mesh");
+    test((mr->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
+    test((mr->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
 
     // edge op
     smtk::session::discrete::EdgeOperation::Ptr edgeOp =
@@ -171,8 +171,8 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     smtk::attribute::MeshSelectionItemPtr meshItem =
       edgeOp->parameters()->findMeshSelection("selection");
 
-    // Explicitly list the mesh collection that is associated with the model.
-    edgeOp->parameters()->findResource("associated mesh collections")->appendValue(mc);
+    // Explicitly list the mesh resource that is associated with the model.
+    edgeOp->parameters()->findResource("associated mesh resources")->appendValue(mr);
 
     meshItem->reset();
     meshItem->setValues(edge1, pids);
@@ -202,8 +202,8 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     test(edges.size() == 11, "Expecting 11 edges");
     EntityRefs verts = resource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::VERTEX);
     test(verts.size() == 8, "Expecting 8 vertices");
-    test((mc->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
-    test((mc->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
+    test((mr->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
+    test((mr->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
 
     // split Edge10 on point 6
     pids.clear();
@@ -223,8 +223,8 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     test(edges.size() == 12, "Expecting 12 edges");
     verts = resource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::VERTEX);
     test(verts.size() == 9, "Expecting 9 vertices");
-    test((mc->meshes(smtk::mesh::Dims1)).size() == 12, "Expecting 12 edge mesh");
-    test((mc->meshes(smtk::mesh::Dims0)).size() == 9, "Expecting 9 vertex mesh");
+    test((mr->meshes(smtk::mesh::Dims1)).size() == 12, "Expecting 12 edge mesh");
+    test((mr->meshes(smtk::mesh::Dims0)).size() == 9, "Expecting 9 vertex mesh");
 
     // demote Vertex4
     pids.clear();
@@ -243,8 +243,8 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     test(edges.size() == 11, "Expecting 11 edges");
     verts = resource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::VERTEX);
     test(verts.size() == 8, "Expecting 8 vertices");
-    test((mc->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
-    test((mc->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
+    test((mr->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
+    test((mr->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
     /*
     // demote new vertex from first split on Edge1, then split Edge1 again on point 15,
     if(!newVertId.isNull())
@@ -276,8 +276,8 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     test(edges.size() == 11, "Expecting 11 edges");
     verts = resource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::VERTEX);
     test(verts.size() == 8, "Expecting 8 vertices");
-    test((mc->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
-    test((mc->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
+    test((mr->meshes(smtk::mesh::Dims1)).size() == 11, "Expecting 11 edge mesh");
+    test((mr->meshes(smtk::mesh::Dims0)).size() == 8, "Expecting 8 vertex mesh");
 
     }
     */
@@ -287,7 +287,7 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetMeshCollection(mc);
+    src->SetMeshResource(mr);
     if (debug)
     {
       win->SetMultiSamples(16);

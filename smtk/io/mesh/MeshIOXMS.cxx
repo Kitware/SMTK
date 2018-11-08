@@ -13,9 +13,9 @@
 
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/CellTypes.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/DimensionTypes.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -294,10 +294,10 @@ public:
 };
 
 std::vector<MeshByRegion> subsetByRegion(
-  smtk::mesh::CollectionPtr collection, smtk::mesh::DimensionType type)
+  smtk::mesh::ResourcePtr meshResource, smtk::mesh::DimensionType type)
 {
   std::vector<MeshByRegion> meshesByModelRef;
-  smtk::mesh::MeshSet meshes = collection->meshes(type);
+  smtk::mesh::MeshSet meshes = meshResource->meshes(type);
   if (meshes.is_empty())
   { //if we have no meshes, stop
     return meshesByModelRef;
@@ -319,7 +319,7 @@ std::vector<MeshByRegion> subsetByRegion(
     typedef smtk::model::EntityRefArray::const_iterator it;
     for (it i = modelIds.begin(); i != modelIds.end(); ++i)
     {
-      smtk::mesh::MeshSet subset = collection->findAssociatedMeshes(*i, type);
+      smtk::mesh::MeshSet subset = meshResource->findAssociatedMeshes(*i, type);
       if (!subset.is_empty())
       {
         meshesByModelRef.push_back(MeshByRegion(subset, region, type));
@@ -330,12 +330,12 @@ std::vector<MeshByRegion> subsetByRegion(
   return meshesByModelRef;
 }
 
-std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collection,
+std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::ResourcePtr meshResource,
   smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
   smtk::mesh::DimensionType type)
 {
   std::vector<MeshByRegion> meshesByModelRef;
-  smtk::mesh::MeshSet meshes = collection->meshes(type);
+  smtk::mesh::MeshSet meshes = meshResource->meshes(type);
   if (meshes.is_empty())
   { //if we have no meshes, stop
     return meshesByModelRef;
@@ -349,7 +349,7 @@ std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::CollectionPtr collec
   {
     const smtk::model::IntegerList& values =
       resource->integerProperty(i->entity(), modelPropertyName);
-    smtk::mesh::MeshSet subset = collection->findAssociatedMeshes(*i, type);
+    smtk::mesh::MeshSet subset = meshResource->findAssociatedMeshes(*i, type);
     if (values.size() == 1 && !subset.is_empty())
     { //only accept model properties that have single values
       //since that is what we think region id's should be
@@ -454,14 +454,14 @@ bool write_dm(
 }
 
 bool write_dm(
-  smtk::mesh::CollectionPtr collection, std::ostream& stream, smtk::mesh::DimensionType type)
+  smtk::mesh::ResourcePtr meshResource, std::ostream& stream, smtk::mesh::DimensionType type)
 {
-  if (!collection)
-  { //can't write out an empty collection
+  if (!meshResource)
+  { //can't write out an empty mesh Resource
     return false;
   }
 
-  std::vector<MeshByRegion> meshes = subsetByRegion(collection, type);
+  std::vector<MeshByRegion> meshes = subsetByRegion(meshResource, type);
   if (meshes.size() == 0)
   { //nothing to write out
     return false;
@@ -470,16 +470,16 @@ bool write_dm(
   return write_dm(meshes, stream, type);
 }
 
-bool write_dm(smtk::mesh::CollectionPtr collection, smtk::model::ResourcePtr resource,
+bool write_dm(smtk::mesh::ResourcePtr meshResource, smtk::model::ResourcePtr resource,
   const std::string& modelPropertyName, std::ostream& stream, smtk::mesh::DimensionType type)
 {
-  if (!collection)
-  { //can't write out an empty collection
+  if (!meshResource)
+  { //can't write out an empty mesh Resource
     return false;
   }
 
   std::vector<MeshByRegion> meshes =
-    subsetByModelProperty(collection, resource, modelPropertyName, type);
+    subsetByModelProperty(meshResource, resource, modelPropertyName, type);
   if (meshes.size() == 0)
   { //nothing to write out
     return false;
@@ -612,31 +612,31 @@ smtk::mesh::CellType to_CellType(const std::string& type)
   return smtk::mesh::CellType_MAX;
 }
 
-// Given a collection with multiple meshes for each domain, condense the
+// Given a mesh Resource with multiple meshes for each domain, condense the
 // meshsets so there is only one meshset per domain.
-void condenseMeshsetsByDomain(smtk::mesh::CollectionPtr& collection)
+void condenseMeshsetsByDomain(smtk::mesh::ResourcePtr& meshResource)
 {
-  auto domains = collection->domains();
+  auto domains = meshResource->domains();
   for (auto& domain : domains)
   {
-    auto meshForDomain = collection->domainMeshes(domain);
+    auto meshForDomain = meshResource->domainMeshes(domain);
     auto cellsForDomain = meshForDomain.cells();
 
     // construct a mesh set from these cells
-    auto singleMeshForDomain = collection->createMesh(cellsForDomain);
+    auto singleMeshForDomain = meshResource->createMesh(cellsForDomain);
 
     // set the domain on the mesh set
-    collection->setDomainOnMeshes(singleMeshForDomain, domain);
+    meshResource->setDomainOnMeshes(singleMeshForDomain, domain);
 
     for (std::size_t i = 0; i < meshForDomain.size(); i++)
     {
-      collection->removeMeshes(meshForDomain.subset(i));
+      meshResource->removeMeshes(meshForDomain.subset(i));
     }
   }
 }
 
 bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr& bcAllocator,
-  smtk::mesh::CollectionPtr& collection)
+  smtk::mesh::ResourcePtr& meshResource)
 {
   regex re("\\s+");
 
@@ -702,13 +702,13 @@ bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr&
 
           // construct a cell set containing only the cells of this material type
           smtk::mesh::CellSet cellsForMaterial(
-            collection, (bcAllocator->cells() - cellsWithMaterials));
+            meshResource, (bcAllocator->cells() - cellsWithMaterials));
 
           // construct a mesh set from these cells
-          smtk::mesh::MeshSet meshForMaterial = collection->createMesh(cellsForMaterial);
+          smtk::mesh::MeshSet meshForMaterial = meshResource->createMesh(cellsForMaterial);
 
           // set the domain on the mesh set
-          collection->setDomainOnMeshes(meshForMaterial, smtk::mesh::Domain(currentMaterialId));
+          meshResource->setDomainOnMeshes(meshForMaterial, smtk::mesh::Domain(currentMaterialId));
         }
 
         // update the material id
@@ -735,34 +735,34 @@ bool readCells(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr&
   {
     // for the last material, construct a cell set containing only the cells of
     // this material type
-    smtk::mesh::CellSet cellsForMaterial(collection, (bcAllocator->cells() - cellsWithMaterials));
+    smtk::mesh::CellSet cellsForMaterial(meshResource, (bcAllocator->cells() - cellsWithMaterials));
 
     // construct a mesh set from these cells
-    smtk::mesh::MeshSet meshForMaterial = collection->createMesh(cellsForMaterial);
+    smtk::mesh::MeshSet meshForMaterial = meshResource->createMesh(cellsForMaterial);
 
     // set the domain on the mesh set
-    collection->setDomainOnMeshes(meshForMaterial, smtk::mesh::Domain(currentMaterialId));
+    meshResource->setDomainOnMeshes(meshForMaterial, smtk::mesh::Domain(currentMaterialId));
   }
 
   // When cells are not contiguous by domain in the file, multiple meshsets are
   // created for each domain. Condense the meshsets so that there is one meshset
   // per domain.
-  condenseMeshsetsByDomain(collection);
+  condenseMeshsetsByDomain(meshResource);
 
   return true;
 }
 
-bool read_dm(std::istream& stream, smtk::mesh::CollectionPtr& collection)
+bool read_dm(std::istream& stream, smtk::mesh::ResourcePtr& meshResource)
 {
   bool success = false;
 
-  if (!collection)
+  if (!meshResource)
   {
     return success;
   }
 
   smtk::mesh::BufferedCellAllocatorPtr bcAllocator =
-    collection->interface()->bufferedCellAllocator();
+    meshResource->interface()->bufferedCellAllocator();
 
   success = readPoints(stream, bcAllocator);
   if (!success)
@@ -770,7 +770,7 @@ bool read_dm(std::istream& stream, smtk::mesh::CollectionPtr& collection)
     return success;
   }
 
-  success = readCells(stream, bcAllocator, collection);
+  success = readCells(stream, bcAllocator, meshResource);
 
   return success;
 }
@@ -784,20 +784,20 @@ MeshIOXMS::MeshIOXMS()
     Format("xms 3d", std::vector<std::string>({ ".3dm" }), Format::Import | Format::Export));
 }
 
-smtk::mesh::CollectionPtr MeshIOXMS::importMesh(const std::string& filePath,
+smtk::mesh::ResourcePtr MeshIOXMS::importMesh(const std::string& filePath,
   const smtk::mesh::InterfacePtr& interface, const std::string& str) const
 {
-  smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create(interface);
-  if (MeshIOXMS::importMesh(filePath, collection, str))
+  smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create(interface);
+  if (MeshIOXMS::importMesh(filePath, meshResource, str))
   {
-    return collection;
+    return meshResource;
   }
 
-  return smtk::mesh::CollectionPtr();
+  return smtk::mesh::ResourcePtr();
 }
 
 bool MeshIOXMS::importMesh(
-  const std::string& filePath, smtk::mesh::CollectionPtr collection, const std::string&) const
+  const std::string& filePath, smtk::mesh::ResourcePtr meshResource, const std::string&) const
 {
   ::boost::filesystem::path path(filePath);
   if (!::boost::filesystem::is_regular_file(path))
@@ -805,31 +805,31 @@ bool MeshIOXMS::importMesh(
     return false;
   }
   std::ifstream ifs(filePath.c_str(), std::ifstream::in);
-  bool success = read_dm(ifs, collection);
-  collection->interface()->setModifiedState(false);
+  bool success = read_dm(ifs, meshResource);
+  meshResource->interface()->setModifiedState(false);
   return success;
 }
 
 bool MeshIOXMS::exportMesh(
-  std::ostream& stream, smtk::mesh::CollectionPtr collection, smtk::mesh::DimensionType dim) const
+  std::ostream& stream, smtk::mesh::ResourcePtr meshResource, smtk::mesh::DimensionType dim) const
 {
-  return write_dm(collection, stream, dim);
+  return write_dm(meshResource, stream, dim);
 }
 
-bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
   smtk::mesh::DimensionType dim) const
 {
   bool result = false;
   OpenFile of(filePath);
   if (of.m_canWrite)
   {
-    result = this->exportMesh(of.m_stream, collection, dim);
+    result = this->exportMesh(of.m_stream, meshResource, dim);
     of.fileWritten(result);
   }
   return result;
 }
 
-bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
+bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -837,22 +837,22 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPt
 
   if (ext == ".2dm")
   {
-    return this->exportMesh(filePath, collection, smtk::mesh::Dims2);
+    return this->exportMesh(filePath, meshResource, smtk::mesh::Dims2);
   }
   else
   {
-    return this->exportMesh(filePath, collection, smtk::mesh::Dims3);
+    return this->exportMesh(filePath, meshResource, smtk::mesh::Dims3);
   }
 }
 
-bool MeshIOXMS::exportMesh(std::ostream& stream, smtk::mesh::CollectionPtr collection,
+bool MeshIOXMS::exportMesh(std::ostream& stream, smtk::mesh::ResourcePtr meshResource,
   smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
   smtk::mesh::DimensionType dim) const
 {
-  return write_dm(collection, resource, modelPropertyName, stream, dim);
+  return write_dm(meshResource, resource, modelPropertyName, stream, dim);
 }
 
-bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
   smtk::model::ResourcePtr resource, const std::string& modelPropertyName,
   smtk::mesh::DimensionType dim) const
 {
@@ -860,13 +860,13 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPt
   OpenFile of(filePath);
   if (of.m_canWrite)
   {
-    result = this->exportMesh(of.m_stream, collection, resource, modelPropertyName, dim);
+    result = this->exportMesh(of.m_stream, meshResource, resource, modelPropertyName, dim);
     of.fileWritten(result);
   }
   return result;
 }
 
-bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
   smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const
 {
   // Grab the file extension
@@ -875,11 +875,11 @@ bool MeshIOXMS::exportMesh(const std::string& filePath, smtk::mesh::CollectionPt
 
   if (ext == ".2dm")
   {
-    return this->exportMesh(filePath, collection, resource, modelPropertyName, smtk::mesh::Dims2);
+    return this->exportMesh(filePath, meshResource, resource, modelPropertyName, smtk::mesh::Dims2);
   }
   else
   {
-    return this->exportMesh(filePath, collection, resource, modelPropertyName, smtk::mesh::Dims3);
+    return this->exportMesh(filePath, meshResource, resource, modelPropertyName, smtk::mesh::Dims3);
   }
 }
 }

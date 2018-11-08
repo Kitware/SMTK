@@ -24,7 +24,7 @@ def test_file_load():
     print('data_dir', smtk.testing.DATA_DIR)
     mesh_path = os.path.join(smtk.testing.DATA_DIR,
                              'mesh', '3d/sixth_hexflatcore.h5m')
-    c = smtk.mesh.Collection.create()
+    c = smtk.mesh.Resource.create()
     smtk.io.importMesh(mesh_path, c)
     if not c.isValid():
         raise RuntimeError("Failed to read valid mesh")

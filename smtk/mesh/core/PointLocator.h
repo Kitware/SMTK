@@ -40,20 +40,20 @@ public:
   PointLocator(const smtk::mesh::PointSet& ps);
 
   //Construct a point locator given a coordinate generating function.
-  //Based on the backend these points maybe be added to the collection for
+  //Based on the backend these points maybe be added to the resource for
   //duration of the PointLocator
-  PointLocator(const smtk::mesh::CollectionPtr collection, std::size_t numPoints,
+  PointLocator(const smtk::mesh::ResourcePtr resource, std::size_t numPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates);
   PointLocator(
-    const smtk::mesh::CollectionPtr collection, std::size_t numPoints, const double* const xyzs)
-    : PointLocator(collection, numPoints, [&](std::size_t i) {
+    const smtk::mesh::ResourcePtr resource, std::size_t numPoints, const double* const xyzs)
+    : PointLocator(resource, numPoints, [&](std::size_t i) {
       return std::array<double, 3>({ { xyzs[3 * i], xyzs[3 * i + 1], xyzs[3 * i + 2] } });
     })
   {
   }
   PointLocator(
-    const smtk::mesh::CollectionPtr collection, std::size_t numPoints, const float* const xyzs)
-    : PointLocator(collection, numPoints, [&](std::size_t i) {
+    const smtk::mesh::ResourcePtr resource, std::size_t numPoints, const float* const xyzs)
+    : PointLocator(resource, numPoints, [&](std::size_t i) {
       return std::array<double, 3>({ { static_cast<double>(xyzs[3 * i]),
         static_cast<double>(xyzs[3 * i + 1]), static_cast<double>(xyzs[3 * i + 2]) } });
     })

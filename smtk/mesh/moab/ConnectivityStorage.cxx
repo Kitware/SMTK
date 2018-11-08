@@ -227,7 +227,7 @@ bool ConnectivityStorage::equal(smtk::mesh::ConnectivityStorage* base_other) con
     ++other_len;
   }
 
-  //if we are at the end that means the collections match
+  //if we are at the end that means the resources match
   return this_ptr == this_end;
 }
 }

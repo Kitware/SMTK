@@ -168,9 +168,9 @@ def breakMaterialsByCellType(c):
 
 def convert(inputFile, material):
     cnvrt = smtk.io.vtk.ImportVTKData()
-    collection = smtk.mesh.Collection.create()
-    cnvrt(inputFile, collection, material)
-    return collection
+    resource = smtk.mesh.Resource.create()
+    cnvrt(inputFile, resource, material)
+    return resource
 
 
 def extractMaterials(c, radius, origin, outputFile, bounds):
@@ -198,7 +198,7 @@ def extractMaterials(c, radius, origin, outputFile, bounds):
         raise RuntimeError('Dirichlet # mismatch (%d vs 3)' %
                            len(c.dirichlets()))
 
-#    smtk.io.writeEntireCollection(outputFile, c)
+#    smtk.io.writeEntireResource(outputFile, c)
 
 
 def test_multiscale_converter():

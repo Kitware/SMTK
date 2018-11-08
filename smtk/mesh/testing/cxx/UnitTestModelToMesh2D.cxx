@@ -11,7 +11,7 @@
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/WriteMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Resource.h"
@@ -64,8 +64,8 @@ void verify_empty_model()
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(!c, "collection should be invalid for an empty model");
+  smtk::mesh::ResourcePtr meshResource = convert(modelResource);
+  test(!meshResource, "mesh resource should be invalid for an empty model");
 }
 
 void verify_model_association()
@@ -75,21 +75,21 @@ void verify_model_association()
   create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
+  smtk::mesh::ResourcePtr meshResource = convert(modelResource);
 
-  //we need to verify that the collection is now has an associated model
-  test(c->hasAssociations(), "collection should have associations");
-  test((c->associatedModel() != smtk::common::UUID()),
-    "collection should be associated to a real model");
-  test((c->isAssociatedToModel()), "collection should be associated to a real model");
+  //we need to verify that the mesh resource is now has an associated model
+  test(meshResource->hasAssociations(), "mesh resource should have associations");
+  test((meshResource->associatedModel() != smtk::common::UUID()),
+    "mesh resource should be associated to a real model");
+  test((meshResource->isAssociatedToModel()), "mesh resource should be associated to a real model");
 
   //verify the MODEL_ENTITY is correct
   smtk::model::EntityRefs currentModels =
     modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
   if (currentModels.size() > 0)
   { //presuming only a single model in the model resource
-    test((c->associatedModel() == currentModels.begin()->entity()),
-      "collection associated model should match model resource");
+    test((meshResource->associatedModel() == currentModels.begin()->entity()),
+      "mesh resource associated model should match model resource");
   }
 }
 
@@ -100,18 +100,18 @@ void verify_cell_conversion()
   create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == 21, "collection should have a mesh per tet");
+  smtk::mesh::ResourcePtr meshResource = convert(modelResource);
+  test(meshResource->isValid(), "mesh resource should be valid");
+  test(meshResource->numberOfMeshes() == 21, "mesh resource should have a mesh per tet");
 
   //confirm that we have the proper number of volume cells
-  smtk::mesh::CellSet tri_cells = c->cells(smtk::mesh::Dims2);
+  smtk::mesh::CellSet tri_cells = meshResource->cells(smtk::mesh::Dims2);
   test(tri_cells.size() == 45);
 
-  smtk::mesh::CellSet edge_cells = c->cells(smtk::mesh::Dims1);
+  smtk::mesh::CellSet edge_cells = meshResource->cells(smtk::mesh::Dims1);
   test(edge_cells.size() == 32);
 
-  smtk::mesh::CellSet vert_cells = c->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet vert_cells = meshResource->cells(smtk::mesh::Dims0);
   test(vert_cells.size() == 7);
 }
 
@@ -122,17 +122,17 @@ void verify_vertex_conversion()
   create_simple_mesh_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == 21, "collection should have a mesh per tet");
+  smtk::mesh::ResourcePtr meshResource = convert(modelResource);
+  test(meshResource->isValid(), "mesh resource should be valid");
+  test(meshResource->numberOfMeshes() == 21, "mesh resource should have a mesh per tet");
 
   //make sure the merging points from ModelToMesh works properly
-  smtk::mesh::PointSet points = c->points();
+  smtk::mesh::PointSet points = meshResource->points();
   test(points.size() == 32, "We should have 32 points");
 
   //verify that after merging points we haven't deleted any of the cells
   //that represent a model vert
-  smtk::mesh::CellSet vert_cells = c->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet vert_cells = meshResource->cells(smtk::mesh::Dims0);
   test(vert_cells.size() == 7);
 }
 }

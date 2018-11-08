@@ -19,7 +19,7 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -181,10 +181,10 @@ MeshOperation::Result MeshOperation::operateInternal()
 
     smtk::mesh::ManagerPtr meshManager = resource->meshes();
 
-    //determine all existing collection
-    typedef std::map<smtk::common::UUID, smtk::mesh::CollectionPtr> CollectionStorage;
-    CollectionStorage existingCollections(
-      meshManager->collectionBegin(), meshManager->collectionEnd());
+    //determine all existing mesh resource
+    typedef std::map<smtk::common::UUID, smtk::mesh::ResourcePtr> MeshResourceStorage;
+    MeshResourceStorage existingCollections(
+      meshManager->meshResourceBegin(), meshManager->meshResourceEnd());
 
     //parse the job result as json mesh data
     cJSON* root = cJSON_Parse(meshMetaData.data());
@@ -192,23 +192,23 @@ MeshOperation::Result MeshOperation::operateInternal()
     cJSON_Delete(root);
 
     //
-    //iterate over all collections looking for new collections. When we find
-    //a new mesh collection, we will delete the file that was used to generate
-    //that collection, as that file is meant to be temporary and only exist
+    //iterate over all mesh resources looking for new mesh resources. When we find
+    //a new mesh mesh resource, we will delete the file that was used to generate
+    //that mesh resource, as that file is meant to be temporary and only exist
     //for data transfer back from the worker.
     //
     //This all should be removed, and instead remus should handle all this logic
     //
     //
     //
-    for (smtk::mesh::Manager::const_iterator i = meshManager->collectionBegin();
-         i != meshManager->collectionEnd(); ++i)
+    for (smtk::mesh::Manager::const_iterator i = meshManager->meshResourceBegin();
+         i != meshManager->meshResourceEnd(); ++i)
     {
-      smtk::mesh::CollectionPtr collection = i->second;
-      smtk::common::UUID collectionUUID = i->first;
-      if (existingCollections.find(collectionUUID) == existingCollections.end())
-      { //found a new collection
-        std::string location = collection->readLocation().absolutePath();
+      smtk::mesh::ResourcePtr meshResource = i->second;
+      smtk::common::UUID meshResourceUUID = i->first;
+      if (existingCollections.find(meshResourceUUID) == existingCollections.end())
+      { //found a new mesh resource
+        std::string location = meshResource->readLocation().absolutePath();
         if (!location.empty())
         { //delete the file if it exists
           ::boost::filesystem::path cpath(location);
@@ -217,12 +217,12 @@ MeshOperation::Result MeshOperation::operateInternal()
 
         //clear the read write locations so it looks like this
         //mesh was created from being in memory
-        collection->clearReadWriteLocations();
+        meshResource->clearReadWriteLocations();
 
-        //fetch the allocator so that the collection modified bit becomes
+        //fetch the allocator so that the mesh resource modified bit becomes
         //dirty. This is needed so it looks like this mesh was created in-memory
         //and not loaded from file.
-        collection->interface()->allocator();
+        meshResource->interface()->allocator();
       }
     }
 

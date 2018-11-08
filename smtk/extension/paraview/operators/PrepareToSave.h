@@ -14,7 +14,7 @@
 
 #include "smtk/io/Helpers.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/EntityIterator.h"
 
@@ -38,7 +38,7 @@ bool prepareToSave(const smtk::model::Models& modelsToSave,
   }
   int modelCounter = 0;
   std::set<std::string> preExistingFilenames;
-  std::set<smtk::mesh::CollectionPtr> meshCollections;
+  std::set<smtk::mesh::ResourcePtr> meshResources;
   obj.m_smtkFilename.clear();
   ::boost::filesystem::path fullSMTKPath;
   for (auto model : modelsToSave)
@@ -246,14 +246,13 @@ bool prepareToSave(const smtk::model::Models& modelsToSave,
     }
 
     // V. Determine the disposition of each mesh of the model.
-    auto collections =
-      model.resource()->links().linkedFrom(smtk::mesh::Collection::ClassificationRole);
-    for (auto collection : collections)
+    auto resources = model.resource()->links().linkedFrom(smtk::mesh::Resource::ClassificationRole);
+    for (auto resource : resources)
     {
-      auto coll = std::dynamic_pointer_cast<smtk::mesh::Collection>(collection);
-      if (coll != nullptr && meshCollections.find(coll) == meshCollections.end())
+      auto coll = std::dynamic_pointer_cast<smtk::mesh::Resource>(resource);
+      if (coll != nullptr && meshResources.find(coll) == meshResources.end())
       {
-        meshCollections.insert(coll);
+        meshResources.insert(coll);
         std::string meshURL = coll->writeLocation().absolutePath();
         //std::cout << "mesh coll " << coll << " abs " << meshURL << " rel " << coll->writeLocation().relativePath() << "\n";
         bool badMeshURL = false;

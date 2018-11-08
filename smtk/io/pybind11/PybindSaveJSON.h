@@ -15,7 +15,7 @@
 
 #include "smtk/io/SaveJSON.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 
 namespace py = pybind11;
@@ -65,10 +65,10 @@ PySharedPtrClass< smtk::io::SaveJSON > pybind11_init_smtk_io_SaveJSON(py::module
     .def_static("forResourceSessionPartial", &smtk::io::SaveJSON::forResourceSessionPartial, py::arg("sessionId"), py::arg("modelIds"), py::arg("arg2"), py::arg("modelMgrId"), py::arg("writeNativeModels") = false, py::arg("referencePath") = std::string())
     .def_static("forResourceStringProperties", &smtk::io::SaveJSON::forResourceStringProperties, py::arg("uid"), py::arg("arg1"), py::arg("modelMgr"))
     .def_static("forResourceTessellation", &smtk::io::SaveJSON::forResourceTessellation, py::arg("uid"), py::arg("arg1"), py::arg("modelMgr"))
-    .def_static("forMeshCollections", &smtk::io::SaveJSON::forMeshCollections, py::arg("pnode"), py::arg("collectionIds"), py::arg("meshMgr"))
+    .def_static("forMeshResources", &smtk::io::SaveJSON::forMeshResources, py::arg("pnode"), py::arg("resourceIds"), py::arg("meshMgr"))
     .def_static("forModelMeshes", &smtk::io::SaveJSON::forModelMeshes, py::arg("modelid"), py::arg("pnode"), py::arg("modelMgr"))
     .def_static("forModelWorker", &smtk::io::SaveJSON::forModelWorker, py::arg("workerDescription"), py::arg("meshTypeIn"), py::arg("meshTypeOut"), py::arg("session"), py::arg("engine"), py::arg("site"), py::arg("root"), py::arg("workerPath"), py::arg("requirementsFileName"))
-    .def_static("forSingleCollection", &smtk::io::SaveJSON::forSingleCollection, py::arg("mdesc"), py::arg("collection"))
+    .def_static("forSingleResource", &smtk::io::SaveJSON::forSingleResource, py::arg("mdesc"), py::arg("resource"))
     .def_static("forStringData", &smtk::io::SaveJSON::forStringData, py::arg("dict"), py::arg("sdata"))
     .def_static("fromModelResource", (int (*)(::cJSON *, ::smtk::model::ResourcePtr, ::smtk::io::JSONFlags)) &smtk::io::SaveJSON::fromModelResource, py::arg("json"), py::arg("modelMgr"), py::arg("sections") = ::smtk::io::JSONFlags::JSON_DEFAULT)
     .def_static("fromModelResource", (std::string (*)(::smtk::model::ResourcePtr, ::smtk::io::JSONFlags)) &smtk::io::SaveJSON::fromModelResource, py::arg("modelMgr"), py::arg("sections") = ::smtk::io::JSONFlags::JSON_DEFAULT)

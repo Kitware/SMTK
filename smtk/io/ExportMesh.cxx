@@ -47,7 +47,7 @@ std::vector<smtk::io::mesh::MeshIOPtr>& ExportMesh::SupportedIOTypes()
   return supportedIOTypes;
 }
 
-bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
+bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource) const
 {
   // Grab the file extension
   std::string ext = boost::filesystem::extension(filePath);
@@ -62,15 +62,15 @@ bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionP
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
-        // export the collection
-        return exporter->exportMesh(filePath, collection);
+        // export the mesh resource
+        return exporter->exportMesh(filePath, meshResource);
       }
     }
   }
   return false;
 }
 
-bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
   smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const
 {
   // Grab the file extension
@@ -86,25 +86,25 @@ bool ExportMesh::operator()(const std::string& filePath, smtk::mesh::CollectionP
         std::find(format.Extensions.begin(), format.Extensions.end(), ext) !=
           format.Extensions.end())
       {
-        // export the collection
-        return exporter->exportMesh(filePath, collection, resource, modelPropertyName);
+        // export the mesh resource
+        return exporter->exportMesh(filePath, meshResource, resource, modelPropertyName);
       }
     }
   }
   return false;
 }
 
-bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection)
+bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource)
 {
   ExportMesh exportM;
-  return exportM(filePath, collection);
+  return exportM(filePath, meshResource);
 }
 
-bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
   smtk::model::ResourcePtr resource, const std::string& modelPropertyName)
 {
   ExportMesh exportM;
-  return exportM(filePath, collection, resource, modelPropertyName);
+  return exportM(filePath, meshResource, resource, modelPropertyName);
 }
 }
 }

@@ -23,7 +23,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "smtk/extension/vtk/pybind11/PybindVTKTypeCaster.h"
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/Resource.h"
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
@@ -43,8 +43,8 @@ PYBIND11_MODULE(_smtkPybindVTKSourceFns, source)
 
   source.def("_vtkMeshMultiBlockSource_GetModelResource",[&](vtkMeshMultiBlockSource* obj){ obj->GetModelResource(); });
   source.def("_vtkMeshMultiBlockSource_SetModelResource",[&](vtkMeshMultiBlockSource* obj, smtk::model::ResourcePtr resource){ return obj->SetModelResource(resource); });
-  source.def("_vtkMeshMultiBlockSource_GetMeshCollection",[&](vtkMeshMultiBlockSource* obj){ obj->GetMeshCollection(); });
-  source.def("_vtkMeshMultiBlockSource_SetMeshCollection",[&](vtkMeshMultiBlockSource* obj, smtk::mesh::CollectionPtr collection){ return obj->SetMeshCollection(collection); });
+  source.def("_vtkMeshMultiBlockSource_GetMeshResource",[&](vtkMeshMultiBlockSource* obj){ obj->GetMeshResource(); });
+  source.def("_vtkMeshMultiBlockSource_SetMeshResource",[&](vtkMeshMultiBlockSource* obj, smtk::mesh::ResourcePtr resource){ return obj->SetMeshResource(resource); });
 
   bool pcRegistered =
     smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();

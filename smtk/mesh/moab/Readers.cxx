@@ -12,7 +12,7 @@
 #include "smtk/mesh/moab/Readers.h"
 #include "smtk/mesh/moab/Interface.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -31,17 +31,17 @@ namespace moab
 namespace
 {
 
-smtk::mesh::CollectionPtr verifyAndMake(const smtk::mesh::moab::InterfacePtr interface)
+smtk::mesh::ResourcePtr verifyAndMake(const smtk::mesh::moab::InterfacePtr interface)
 {
   if (!interface)
   {
     //create an invalid colection (i.e. one with an invalid id)
-    smtk::mesh::CollectionPtr collection = smtk::mesh::Collection::create();
-    collection->setId(smtk::common::UUID::null());
-    return collection;
+    smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create();
+    resource->setId(smtk::common::UUID::null());
+    return resource;
   }
-  //make a moab specific mesh collection
-  return smtk::mesh::Collection::create(interface);
+  //make a moab specific mesh resource
+  return smtk::mesh::Resource::create(interface);
 }
 
 template <typename T>
@@ -150,14 +150,14 @@ bool append_file(const smtk::mesh::moab::InterfacePtr& interface, const std::str
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read(const std::string& path)
+smtk::mesh::ResourcePtr read(const std::string& path)
 {
   return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path));
 }
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read_domain(const std::string& path)
+smtk::mesh::ResourcePtr read_domain(const std::string& path)
 {
   const std::string tag("MATERIAL_SET");
   return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()));
@@ -165,7 +165,7 @@ smtk::mesh::CollectionPtr read_domain(const std::string& path)
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read_neumann(const std::string& path)
+smtk::mesh::ResourcePtr read_neumann(const std::string& path)
 {
   //Core is a fully implemented moab::Interface
   const std::string tag("NEUMANN_SET");
@@ -174,34 +174,34 @@ smtk::mesh::CollectionPtr read_neumann(const std::string& path)
 
 //construct an interface to a given file. will load all meshes inside the
 //file
-smtk::mesh::CollectionPtr read_dirichlet(const std::string& path)
+smtk::mesh::ResourcePtr read_dirichlet(const std::string& path)
 {
   const std::string tag("DIRICHLET_SET");
   return verifyAndMake(load_file(smtk::mesh::moab::make_interface(), path, tag.c_str()));
 }
 
-//Import everything in a file into an existing collection
-bool import(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Import everything in a file into an existing resource
+bool import(const std::string& path, const smtk::mesh::ResourcePtr& c)
 {
   return is_valid(c) && append_file(smtk::mesh::moab::extract_interface(c), path);
 }
 
-//Import all the domain sets in a file into an existing collection
-bool import_domain(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Import all the domain sets in a file into an existing resource
+bool import_domain(const std::string& path, const smtk::mesh::ResourcePtr& c)
 {
   const std::string tag("MATERIAL_SET");
   return is_valid(c) && append_file(smtk::mesh::moab::extract_interface(c), path, tag.c_str());
 }
 
-//Import all the neumann sets in a file into an existing collection
-bool import_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Import all the neumann sets in a file into an existing resource
+bool import_neumann(const std::string& path, const smtk::mesh::ResourcePtr& c)
 {
   const std::string tag("NEUMANN_SET");
   return is_valid(c) && append_file(smtk::mesh::moab::extract_interface(c), path, tag.c_str());
 }
 
-//Import all the dirichlet sets in a file into an existing collection
-bool import_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Import all the dirichlet sets in a file into an existing resource
+bool import_dirichlet(const std::string& path, const smtk::mesh::ResourcePtr& c)
 {
   const std::string tag("DIRICHLET_SET");
   return is_valid(c) && append_file(smtk::mesh::moab::extract_interface(c), path, tag.c_str());

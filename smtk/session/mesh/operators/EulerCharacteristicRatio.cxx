@@ -17,7 +17,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/model/Model.h"
@@ -48,16 +48,16 @@ EulerCharacteristicRatio::Result EulerCharacteristicRatio::operateInternal()
     std::static_pointer_cast<smtk::session::mesh::Resource>(model.component()->resource());
   smtk::session::mesh::Session::Ptr session = resource->session();
 
-  // Access the underlying mesh collection for the model.
-  smtk::mesh::CollectionPtr collection = resource->collection();
-  if (collection == nullptr || !collection->isValid())
+  // Access the underlying mesh resource for the model.
+  smtk::mesh::ResourcePtr meshResource = resource->resource();
+  if (meshResource == nullptr || !meshResource->isValid())
   {
-    smtkErrorMacro(this->log(), "No collection associated with this model.");
+    smtkErrorMacro(this->log(), "No mesh resource associated with this model.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // Access the meshes from the collection.
-  smtk::mesh::MeshSet mesh = collection->meshes();
+  // Access the meshes from the mesh resource.
+  smtk::mesh::MeshSet mesh = meshResource->meshes();
 
   // Compute the Euler characteristics for the model's boundary and volume.
   int eulerBoundary = smtk::mesh::utility::eulerCharacteristic(mesh.extractShell());

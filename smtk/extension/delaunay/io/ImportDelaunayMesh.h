@@ -13,7 +13,7 @@
 #define __smtk_extension_delaunay_io_ImportDelaunayMesh_h
 
 #include "smtk/extension/delaunay/Exports.h"
-//forward declarers for Manager and Collection
+//forward declarers for Manager and Meshresource
 #include "smtk/PublicPointerDefs.h"
 
 namespace Delaunay
@@ -61,8 +61,8 @@ public:
   ImportDelaunayMesh(const ImportDelaunayMesh&) = delete;
   ImportDelaunayMesh& operator=(const ImportDelaunayMesh&) = delete;
 
-  //Import a Delaunay mesh into an existing collection.
-  smtk::mesh::MeshSet operator()(const Delaunay::Mesh::Mesh&, smtk::mesh::CollectionPtr) const;
+  //Import a Delaunay mesh into an existing meshresource.
+  smtk::mesh::MeshSet operator()(const Delaunay::Mesh::Mesh&, smtk::mesh::ResourcePtr) const;
 
   //Import a Delaunay mesh as a tessellation for an entity.
   bool operator()(const Delaunay::Mesh::Mesh&, smtk::model::EntityRef&) const;

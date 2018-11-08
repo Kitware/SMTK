@@ -33,10 +33,10 @@ class ComponentItemDefinition;
   *
   * While the actual value stored is a ComponentPtr, only the UUID of the
   * component and its owning resource are saved when the attribute is serialized.
-  * Then, when deserialized, the attribute collection's resourceManager()
+  * Then, when deserialized, the attribute resource's resourceManager()
   * is used to recreate the pointer.
   * (Thus the UUIDs are assumed to be present in the resource manager referenced
-  * by this item's attribute collection.)
+  * by this item's attribute resource.)
   * If the entity is not present, the returned ComponentPtr will be null and
   * no type checking of attribute values can be performed.
   */

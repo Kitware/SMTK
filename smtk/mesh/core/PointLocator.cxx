@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/core/PointLocator.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 namespace smtk
 {
@@ -17,13 +17,13 @@ namespace mesh
 {
 
 PointLocator::PointLocator(const smtk::mesh::PointSet& ps)
-  : m_locator(ps.collection()->interface()->pointLocator(ps.range()))
+  : m_locator(ps.resource()->interface()->pointLocator(ps.range()))
 {
 }
 
-PointLocator::PointLocator(const smtk::mesh::CollectionPtr collection, std::size_t numPoints,
+PointLocator::PointLocator(const smtk::mesh::ResourcePtr resource, std::size_t numPoints,
   const std::function<std::array<double, 3>(std::size_t)>& coordinates)
-  : m_locator(collection->interface()->pointLocator(numPoints, coordinates))
+  : m_locator(resource->interface()->pointLocator(numPoints, coordinates))
 {
 }
 

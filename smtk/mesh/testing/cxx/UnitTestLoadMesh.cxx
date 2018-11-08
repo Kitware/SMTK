@@ -10,7 +10,7 @@
 
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/ReadMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/moab/Interface.h"
 
@@ -28,11 +28,11 @@ void verify_load_valid_mesh()
   file_path += "/mesh/3d/twoassm_out.h5m";
 
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  read(file_path, c);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  read(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
 
-  std::size_t numMeshes = c->numberOfMeshes();
+  std::size_t numMeshes = mr->numberOfMeshes();
   std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
   test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
   test(numMeshes == 53, "dataset once loaded should have 53 meshes");
@@ -45,11 +45,11 @@ void verify_load_writeLocation()
 
   smtk::io::ReadMesh read;
   smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
-  smtk::mesh::CollectionPtr c = read(file_path, interface);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = read(file_path, interface);
+  test(mr->isValid(), "resource should be valid");
 
-  test(c->readLocation() == file_path, "collection readLocation is wrong");
-  test(c->writeLocation() == file_path, "collection default writeLocation is wrong");
+  test(mr->readLocation() == file_path, "resource readLocation is wrong");
+  test(mr->writeLocation() == file_path, "resource default writeLocation is wrong");
 }
 
 void verify_load_multiple_meshes()
@@ -59,13 +59,13 @@ void verify_load_multiple_meshes()
   second_file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c1 = smtk::mesh::Collection::create();
+  smtk::mesh::ResourcePtr c1 = smtk::mesh::Resource::create();
   read(first_file_path, c1);
-  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  smtk::mesh::ResourcePtr c2 = smtk::mesh::Resource::create();
   read(second_file_path, c2);
 
-  test(c1->isValid(), "collection should be valid");
-  test(c2->isValid(), "collection should be valid");
+  test(c1->isValid(), "resource should be valid");
+  test(c2->isValid(), "resource should be valid");
 
   //verify the size of twoassm
   {
@@ -90,14 +90,14 @@ void verify_load_same_mesh_multiple_times()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c1 = smtk::mesh::Collection::create();
+  smtk::mesh::ResourcePtr c1 = smtk::mesh::Resource::create();
   read(file_path, c1);
-  test(c1->isValid(), "collection should be valid");
+  test(c1->isValid(), "resource should be valid");
 
   //load the same mesh a second time and confirm that is valid
-  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
+  smtk::mesh::ResourcePtr c2 = smtk::mesh::Resource::create();
   read(file_path, c2);
-  test(c2->isValid(), "collection should be valid");
+  test(c2->isValid(), "resource should be valid");
 }
 
 void verify_load_onlyNeumann()
@@ -106,11 +106,11 @@ void verify_load_onlyNeumann()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  read(file_path, c, smtk::io::mesh::Subset::OnlyNeumann);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  read(file_path, mr, smtk::io::mesh::Subset::OnlyNeumann);
+  test(mr->isValid(), "resource should be valid");
 
-  std::size_t numMeshes = c->numberOfMeshes();
+  std::size_t numMeshes = mr->numberOfMeshes();
   std::cout << "number of neumann meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
   test(numMeshes == 221, "dataset once loaded should have 221 meshes");
 }
@@ -121,11 +121,11 @@ void verify_load_onlyDirichlet()
   file_path += "/mesh/3d/64bricks_12ktet.h5m";
 
   smtk::io::ReadMesh read;
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  read(file_path, c, smtk::io::mesh::Subset::OnlyDirichlet);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  read(file_path, mr, smtk::io::mesh::Subset::OnlyDirichlet);
+  test(mr->isValid(), "resource should be valid");
 
-  std::size_t numMeshes = c->numberOfMeshes();
+  std::size_t numMeshes = mr->numberOfMeshes();
   std::cout << "number of dirichlet meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
   test(numMeshes == 221, "dataset once loaded should have 221 meshes");
 }

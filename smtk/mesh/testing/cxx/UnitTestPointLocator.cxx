@@ -11,7 +11,7 @@
 #include "smtk/mesh/core/PointLocator.h"
 
 #include "smtk/io/ImportMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -21,21 +21,21 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh()
+smtk::mesh::ResourcePtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  smtk::io::importMesh(file_path, c);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  smtk::io::importMesh(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
 
-  return c;
+  return mr;
 }
 
-void verify_empty_locator(const smtk::mesh::CollectionPtr& c)
+void verify_empty_locator(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::PointSet emptyPoints = c->meshes("bad_name").points();
+  smtk::mesh::PointSet emptyPoints = mr->meshes("bad_name").points();
   test(emptyPoints.is_empty() == true);
   test(emptyPoints.size() == 0);
 
@@ -43,27 +43,27 @@ void verify_empty_locator(const smtk::mesh::CollectionPtr& c)
 
   double* xyzs = NULL;
   std::size_t numPoints = 0;
-  smtk::mesh::PointLocator locator2(c, numPoints, xyzs);
+  smtk::mesh::PointLocator locator2(mr, numPoints, xyzs);
 }
 
-void verify_raw_ptr_constructors(const smtk::mesh::CollectionPtr& c)
+void verify_raw_ptr_constructors(const smtk::mesh::ResourcePtr& mr)
 {
-  const std::size_t initialNumPoints = c->points().size();
+  const std::size_t initialNumPoints = mr->points().size();
 
   double d_xyzs[6] = { 400.0, 40.0, 0.02, 100.0, 150.0, 0.0 };
   float f_xyzs[6] = { -400.0f, 400.0f, 0.0f, 100.0f, -150.0f, 0.0f };
   std::size_t numPoints = 2;
 
   { //test raw double pointer
-    smtk::mesh::PointLocator locator2(c, numPoints, d_xyzs);
-    test((c->points().size() == initialNumPoints + numPoints));
+    smtk::mesh::PointLocator locator2(mr, numPoints, d_xyzs);
+    test((mr->points().size() == initialNumPoints + numPoints));
   }
-  test((c->points().size() == initialNumPoints));
+  test((mr->points().size() == initialNumPoints));
   { //test raw float pointer
-    smtk::mesh::PointLocator locator2(c, numPoints, f_xyzs);
-    test((c->points().size() == initialNumPoints + numPoints));
+    smtk::mesh::PointLocator locator2(mr, numPoints, f_xyzs);
+    test((mr->points().size() == initialNumPoints + numPoints));
   }
-  test((c->points().size() == initialNumPoints));
+  test((mr->points().size() == initialNumPoints));
 }
 
 class FindsSelf : public smtk::mesh::PointForEach
@@ -107,25 +107,25 @@ public:
   }
 };
 
-void verify_points_find_themselves(const smtk::mesh::CollectionPtr& c)
+void verify_points_find_themselves(const smtk::mesh::ResourcePtr& mr)
 {
   //construct a point locator for all points in the mesh
-  smtk::mesh::PointLocator locator(c->points());
+  smtk::mesh::PointLocator locator(mr->points());
 
   //now verify that each point can locate it self with the locator
   FindsSelf functor(locator);
-  smtk::mesh::for_each(c->points(), functor);
+  smtk::mesh::for_each(mr->points(), functor);
 }
 }
 
 int UnitTestPointLocator(int, char** const)
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
+  smtk::mesh::ResourcePtr mr = load_mesh();
 
-  verify_empty_locator(c);
-  verify_raw_ptr_constructors(c);
+  verify_empty_locator(mr);
+  verify_raw_ptr_constructors(mr);
 
-  verify_points_find_themselves(c);
+  verify_points_find_themselves(mr);
 
   return 0;
 }

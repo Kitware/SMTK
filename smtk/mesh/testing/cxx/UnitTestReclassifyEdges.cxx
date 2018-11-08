@@ -10,7 +10,7 @@
 
 #include "smtk/io/ModelToMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/Reclassify.h"
 
@@ -153,11 +153,11 @@ struct xyz_view
   }
 };
 
-void all_points_are_valid(smtk::mesh::CollectionPtr collection)
+void all_points_are_valid(smtk::mesh::ResourcePtr meshResource)
 {
   //no two points should be identical, that is our litmus test
   //we know that we can't have duplicate points because
-  smtk::mesh::PointSet ps = collection->points();
+  smtk::mesh::PointSet ps = meshResource->points();
   std::vector<double> points(ps.size() * 3);
   ps.get(&points[0]);
 
@@ -177,14 +177,14 @@ void verify_split()
   create_simple_2d_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
 
-  test(c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == 21, "collection should have 21 mesh elements");
-  test(c->points().size() == 32, "should have 32 points");
-  test(c->cells(smtk::mesh::Dims0).size() == 7, "should have 7 vertex cells");
-  test(c->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
-  all_points_are_valid(c);
+  test(mr->isValid(), "mesh resource should be valid");
+  test(mr->numberOfMeshes() == 21, "mesh resource should have 21 mesh elements");
+  test(mr->points().size() == 32, "should have 32 points");
+  test(mr->cells(smtk::mesh::Dims0).size() == 7, "should have 7 vertex cells");
+  test(mr->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
+  all_points_are_valid(mr);
 
   //we need to split the model first.
   //this is done by manually doing the following.
@@ -194,14 +194,14 @@ void verify_split()
   smtk::model::Vertex promotedVertex;
   add_model_edge_and_vert(modelResource, originalEdge, newEdge, promotedVertex);
 
-  bool valid = smtk::mesh::utility::split(c, originalEdge, newEdge, promotedVertex);
+  bool valid = smtk::mesh::utility::split(mr, originalEdge, newEdge, promotedVertex);
   test(valid, "split should pass");
 
-  all_points_are_valid(c);
-  test(c->points().size() == 32, "should still have 32 points after split");
-  test(c->numberOfMeshes() == 23, "collection should have 23 mesh elements after split");
-  test(c->cells(smtk::mesh::Dims0).size() == 8, "should now have 8 vertex cells");
-  test(c->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
+  all_points_are_valid(mr);
+  test(mr->points().size() == 32, "should still have 32 points after split");
+  test(mr->numberOfMeshes() == 23, "mesh resource should have 23 mesh elements after split");
+  test(mr->cells(smtk::mesh::Dims0).size() == 8, "should now have 8 vertex cells");
+  test(mr->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
 }
 
 void verify_merge()
@@ -211,11 +211,11 @@ void verify_merge()
   create_simple_2d_model(modelResource);
 
   smtk::io::ModelToMesh convert;
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
-  test(c->numberOfMeshes() == 21, "collection should have 21 mesh elements");
-  test(c->points().size() == 32, "should have 32 points before split and merge");
-  all_points_are_valid(c);
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  test(mr->isValid(), "mesh resource should be valid");
+  test(mr->numberOfMeshes() == 21, "mesh resource should have 21 mesh elements");
+  test(mr->points().size() == 32, "should have 32 points before split and merge");
+  all_points_are_valid(mr);
 
   //we need to split the model first.
   //this is done by manually doing the following.
@@ -225,16 +225,16 @@ void verify_merge()
   smtk::model::Vertex promotedVertex;
   add_model_edge_and_vert(modelResource, originalEdge, newEdge, promotedVertex);
 
-  bool svalid = smtk::mesh::utility::split(c, originalEdge, newEdge, promotedVertex);
+  bool svalid = smtk::mesh::utility::split(mr, originalEdge, newEdge, promotedVertex);
   test(svalid, "split should pass");
-  bool mvalid = smtk::mesh::utility::merge(c, promotedVertex, newEdge, originalEdge);
+  bool mvalid = smtk::mesh::utility::merge(mr, promotedVertex, newEdge, originalEdge);
   test(mvalid, "merge should pass");
 
-  all_points_are_valid(c);
-  test(c->points().size() == 32, "should have 32 points after split&merge");
-  test(c->numberOfMeshes() == 21, "collection should have 23 mesh elements after split");
-  test(c->cells(smtk::mesh::Dims0).size() == 7, "should now have 7 vertex cells");
-  test(c->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
+  all_points_are_valid(mr);
+  test(mr->points().size() == 32, "should have 32 points after split&merge");
+  test(mr->numberOfMeshes() == 21, "mesh resource should have 23 mesh elements after split");
+  test(mr->cells(smtk::mesh::Dims0).size() == 7, "should now have 7 vertex cells");
+  test(mr->cells(smtk::mesh::Dims1).size() == 32, "should have 32 edge cells");
 }
 }
 

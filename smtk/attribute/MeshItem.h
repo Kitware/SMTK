@@ -40,7 +40,7 @@ public:
 
   std::size_t numberOfRequiredValues() const;
   bool isExtensible() const;
-  /// associated item with collection's meshes given \a collectionid and its \a meshset
+  /// associated item with resource's meshes given \a resourceid and its \a meshset
   bool appendValue(const smtk::mesh::MeshSet&);
   bool appendValues(const smtk::mesh::MeshList&);
   bool appendValues(const smtk::mesh::MeshSets&);

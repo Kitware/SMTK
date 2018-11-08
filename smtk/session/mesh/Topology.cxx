@@ -12,9 +12,9 @@
 #include "smtk/session/mesh/Topology.h"
 
 #include "smtk/mesh/core/CellSet.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include <numeric>
 
@@ -55,7 +55,7 @@ public:
     smtk::common::UUID id;
     if (ids.empty())
     {
-      id = (m_topology->m_collection->modelResource()->unusedUUID());
+      id = (m_topology->m_resource->modelResource()->unusedUUID());
       // Assign the unique id to the mesh
       singleMesh.setModelEntityId(id);
     }
@@ -84,7 +84,7 @@ public:
         // shell using the existing meshests of the appropriate dimension.
         smtk::mesh::CellSet shellCells = shell.cells();
         smtk::mesh::MeshSet cellsOfDimension = smtk::mesh::set_difference(
-          m_topology->m_collection->meshes(smtk::mesh::DimensionType(m_dimension - 1)), shell);
+          m_topology->m_resource->meshes(smtk::mesh::DimensionType(m_dimension - 1)), shell);
         for (std::size_t i = 0; i < cellsOfDimension.size(); i++)
         {
           smtk::mesh::CellSet intersect =
@@ -105,9 +105,9 @@ public:
         if (!shellCells.is_empty())
         {
           m_shells->push_back(
-            std::make_pair(m_topology->m_collection->createMesh(shellCells), element));
+            std::make_pair(m_topology->m_resource->createMesh(shellCells), element));
         }
-        m_topology->m_collection->removeMeshes(shell);
+        m_topology->m_resource->removeMeshes(shell);
       }
     }
   }
@@ -147,7 +147,7 @@ struct AddBoundElements
           smtk::mesh::CellSet cs = smtk::mesh::set_intersect(m.cells(), j->first.cells());
           if (!cs.is_empty())
           {
-            m = m_topology->m_collection->createMesh(cs);
+            m = m_topology->m_resource->createMesh(cs);
             activeShells.push_back(j);
           }
           if (m_dimension == 2 && activeShells.size() == 2)
@@ -164,7 +164,7 @@ struct AddBoundElements
           smtk::common::UUID id;
           if (ids.empty())
           {
-            id = (m_topology->m_collection->modelResource()->unusedUUID());
+            id = (m_topology->m_resource->modelResource()->unusedUUID());
             // Assign the unique id to the mesh
             m.setModelEntityId(id);
           }
@@ -179,9 +179,9 @@ struct AddBoundElements
           {
             if (activeShells.size() > 1)
             {
-              smtk::mesh::MeshSet tmp = m_topology->m_collection->createMesh(
+              smtk::mesh::MeshSet tmp = m_topology->m_resource->createMesh(
                 smtk::mesh::set_difference(shell->first.cells(), m.cells()));
-              m_topology->m_collection->removeMeshes(shell->first);
+              m_topology->m_resource->removeMeshes(shell->first);
               shell->first = tmp;
             }
             shell->second->m_children.push_back(id);
@@ -218,10 +218,10 @@ struct AddBoundElements
 
 Topology::Topology(
   const smtk::common::UUID& modelId, const smtk::mesh::MeshSet& meshset, bool constructHierarchy)
-  : m_collection(meshset.collection())
+  : m_resource(meshset.resource())
   , m_modelId(modelId)
 {
-  // Insert the collection as the top-level element representing the model
+  // Insert the mesh resource as the top-level element representing the model
   Element* model = &(m_elements.insert(std::make_pair(modelId, Element(meshset))).first->second);
 
   if (constructHierarchy)
@@ -274,7 +274,7 @@ Topology::Topology(
       }
       if (!boundMeshes.is_empty() && !boundMeshes.cells().is_empty())
       {
-        smtk::mesh::MeshSet freeMeshes = m_collection->createMesh(
+        smtk::mesh::MeshSet freeMeshes = m_resource->createMesh(
           smtk::mesh::set_difference(allMeshes.cells(), boundMeshes.cells()));
         smtk::mesh::for_each(freeMeshes, addFreeElements);
       }

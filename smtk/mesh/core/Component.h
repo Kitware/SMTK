@@ -17,8 +17,8 @@
 
 #include "smtk/resource/Component.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 namespace smtk
 {
@@ -36,7 +36,7 @@ typedef std::set<smtk::mesh::Component> Components;
 class SMTKCORE_EXPORT Component : public smtk::resource::Component
 {
 protected:
-  Component(const smtk::mesh::CollectionPtr&, const smtk::common::UUID&);
+  Component(const smtk::mesh::ResourcePtr&, const smtk::common::UUID&);
   Component(const smtk::mesh::MeshSet&);
 
 public:
@@ -44,11 +44,11 @@ public:
   smtkSharedFromThisMacro(smtk::resource::Component);
 
   /// Construct a mesh component corresponding to a meshset from the input
-  /// collection and id. No checking is performed that the collection has a
+  /// resource and id. No checking is performed that the resource has a
   /// meshset with this id; if this is the case, the resolved mesh() will return
   /// a default-constructed (and invalid) mesh.
   static std::shared_ptr<Component> create(
-    const smtk::mesh::CollectionPtr&, const smtk::common::UUID&);
+    const smtk::mesh::ResourcePtr&, const smtk::common::UUID&);
 
   /// Construct a mesh component correpsonding to the input meshset.
   static std::shared_ptr<Component> create(const smtk::mesh::MeshSet&);
@@ -59,7 +59,7 @@ public:
   /// Access the component's id.
   const smtk::common::UUID& id() const override { return m_id; }
 
-  /// Set the component's id. No checking is performed that the collection has a
+  /// Set the component's id. No checking is performed that the resource has a
   /// meshset with this id; if this is the case, the resolved mesh() will return
   /// a default-constructed (and invalid) mesh.
   bool setId(const smtk::common::UUID& myID) override
@@ -75,7 +75,7 @@ public:
   smtk::mesh::MeshSet mesh();
 
 private:
-  std::weak_ptr<smtk::mesh::Collection> m_collection;
+  std::weak_ptr<smtk::mesh::Resource> m_resource;
   smtk::common::UUID m_id;
 };
 

@@ -26,8 +26,8 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include <boost/functional/hash.hpp>
 #include <float.h>
@@ -751,11 +751,11 @@ smtk::mesh::MeshSet EntityRef::meshTessellation() const
   ResourcePtr mgr = m_resource.lock();
   if (mgr && !m_entity.isNull())
   {
-    smtk::mesh::CollectionPtr collection = mgr->meshTessellations();
+    smtk::mesh::ResourcePtr resource = mgr->meshTessellations();
 
-    if (collection && collection->isValid())
+    if (resource && resource->isValid())
     {
-      return collection->findAssociatedMeshes(*this);
+      return resource->findAssociatedMeshes(*this);
     }
   }
   return smtk::mesh::MeshSet();

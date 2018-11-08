@@ -26,8 +26,8 @@ class Session;
   *
   * This operation creates smtk::mesh::MeshSets associated with
   * smtk::mesh::Faces using Delaunay. The MeshSets reside in the
-  * smtk::mesh::Collection with the same UUID as the Faces' model. If this
-  * collection does not yet exist during the construction of the meshes, it is
+  * smtk::mesh::Resource with the same UUID as the Faces' model. If this
+  * resource does not yet exist during the construction of the meshes, it is
   * created and populated with the MeshSets.
   */
 class SMTKDELAUNAYEXT_EXPORT TriangulateFaces : public smtk::operation::XMLOperation

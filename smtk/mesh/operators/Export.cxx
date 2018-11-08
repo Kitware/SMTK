@@ -23,9 +23,9 @@
 #include "smtk/io/mesh/MeshIO.h"
 
 #include "smtk/mesh/Export_xml.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
@@ -82,11 +82,11 @@ Export::Result Export::operateInternal()
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
     smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
-    smtk::mesh::CollectionPtr collection =
-      std::dynamic_pointer_cast<smtk::mesh::Collection>(meshComponent->resource());
+    smtk::mesh::ResourcePtr resource =
+      std::dynamic_pointer_cast<smtk::mesh::Resource>(meshComponent->resource());
     bool fileExportSuccess = false;
 
-    if (collection)
+    if (resource)
     {
       if (meshItem->numberOfValues() > 1)
       {
@@ -96,7 +96,7 @@ Export::Result Export::operateInternal()
       }
 
       smtk::io::ExportMesh exportMesh;
-      fileExportSuccess = exportMesh(outputfile, collection);
+      fileExportSuccess = exportMesh(outputfile, resource);
 
       if (fileExportSuccess)
       {

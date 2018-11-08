@@ -17,14 +17,14 @@ namespace smtk
 namespace mesh
 {
 
-Component::Component(const smtk::mesh::CollectionPtr& collection, const smtk::common::UUID& id)
-  : m_collection(collection)
+Component::Component(const smtk::mesh::ResourcePtr& resource, const smtk::common::UUID& id)
+  : m_resource(resource)
   , m_id(id)
 {
 }
 
 Component::Component(const smtk::mesh::MeshSet& meshset)
-  : Component(meshset.collection(), meshset.id())
+  : Component(meshset.resource(), meshset.id())
 {
   if (m_id == smtk::common::UUID::null())
   {
@@ -34,9 +34,9 @@ Component::Component(const smtk::mesh::MeshSet& meshset)
 }
 
 std::shared_ptr<Component> Component::create(
-  const smtk::mesh::CollectionPtr& collection, const smtk::common::UUID& id)
+  const smtk::mesh::ResourcePtr& resource, const smtk::common::UUID& id)
 {
-  std::shared_ptr<smtk::resource::Component> shared(new Component(collection, id));
+  std::shared_ptr<smtk::resource::Component> shared(new Component(resource, id));
   return std::static_pointer_cast<smtk::mesh::Component>(shared);
 }
 
@@ -48,7 +48,7 @@ std::shared_ptr<Component> Component::create(const smtk::mesh::MeshSet& meshset)
 
 const smtk::resource::ResourcePtr Component::resource() const
 {
-  return std::static_pointer_cast<smtk::resource::Resource>(m_collection.lock());
+  return std::static_pointer_cast<smtk::resource::Resource>(m_resource.lock());
 }
 
 std::string Component::name() const
@@ -58,13 +58,13 @@ std::string Component::name() const
 
 const smtk::mesh::MeshSet Component::mesh() const
 {
-  if (auto collection = m_collection.lock())
+  if (auto resource = m_resource.lock())
   {
-    const smtk::mesh::InterfacePtr& iface = collection->interface();
+    const smtk::mesh::InterfacePtr& iface = resource->interface();
     smtk::mesh::Handle handle;
     if (iface->findById(iface->getRoot(), m_id, handle))
     {
-      return smtk::mesh::MeshSet(collection, handle);
+      return smtk::mesh::MeshSet(resource, handle);
     }
   }
 
@@ -73,13 +73,13 @@ const smtk::mesh::MeshSet Component::mesh() const
 
 smtk::mesh::MeshSet Component::mesh()
 {
-  if (auto collection = m_collection.lock())
+  if (auto resource = m_resource.lock())
   {
-    const smtk::mesh::InterfacePtr& iface = collection->interface();
+    const smtk::mesh::InterfacePtr& iface = resource->interface();
     smtk::mesh::Handle handle;
     if (iface->findById(iface->getRoot(), m_id, handle))
     {
-      return smtk::mesh::MeshSet(collection, handle);
+      return smtk::mesh::MeshSet(resource, handle);
     }
   }
 

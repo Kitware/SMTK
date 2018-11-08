@@ -39,7 +39,7 @@ namespace io
 namespace mesh
 {
 
-//Import a VTK data set to a smtk::mesh::collection.
+//Import a VTK data set to a smtk::mesh::resource.
 //Currently we only support creating a new database from a vtk data set.
 class SMTKIOVTK_EXPORT ImportVTKData
 {
@@ -47,31 +47,30 @@ public:
   explicit ImportVTKData();
 
   //Import a VTK dataset unstructured grid file (legacy or xml) as a
-  //collection. Optionally specify the cell property name to be used to split
+  //resource. Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
-  smtk::mesh::CollectionPtr operator()(const std::string& filename,
+  smtk::mesh::ResourcePtr operator()(const std::string& filename,
     const smtk::mesh::InterfacePtr& interface, std::string domainPropertyName) const;
 
   //Import a VTK dataset or unstructured grid file (legacy or xml) into an
-  //existing collection. Optionally specify the cell property name to be used to
+  //existing resource. Optionally specify the cell property name to be used to
   //split the mesh into muliple domains.
-  bool operator()(const std::string& filename, smtk::mesh::CollectionPtr collection,
+  bool operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
     std::string domainPropertyName) const;
 
-  //Import a VTK dataset into an existing collection. Returns a meshset
+  //Import a VTK dataset into an existing resource. Returns a meshset
   //containing the newly created cells.
-  smtk::mesh::MeshSet operator()(vtkDataSet* dataset, smtk::mesh::CollectionPtr collection) const;
+  smtk::mesh::MeshSet operator()(vtkDataSet* dataset, smtk::mesh::ResourcePtr resource) const;
 
-  //Import a VTK dataset into an existing collection and specify the
+  //Import a VTK dataset into an existing resource and specify the
   //cell property name to be used to split the mesh into muliple domains.
-  bool operator()(vtkDataSet* dataset, smtk::mesh::CollectionPtr collection,
-    std::string domainPropertyName) const;
+  bool operator()(
+    vtkDataSet* dataset, smtk::mesh::ResourcePtr resource, std::string domainPropertyName) const;
 
-  //Import a VTK dataset as a collection.
+  //Import a VTK dataset as a resource.
   //Optionally specify the cell property name to be used to split
   //the mesh into muliple domains.
-  smtk::mesh::CollectionPtr operator()(vtkDataSet* dataset,
-    const smtk::mesh::InterfacePtr& interface,
+  smtk::mesh::ResourcePtr operator()(vtkDataSet* dataset, const smtk::mesh::InterfacePtr& interface,
     std::string domainPropertyName = std::string()) const;
 
 private:

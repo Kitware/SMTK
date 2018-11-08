@@ -14,7 +14,7 @@
 #include "smtk/io/WriteMesh.h"
 
 #include "smtk/io/ImportMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/EntityIterator.h"
 #include "smtk/model/Resource.h"
@@ -75,9 +75,9 @@ void create_simple_mesh_model(smtk::model::ResourcePtr resource)
 }
 
 smtk::mesh::MeshSet make_MeshPoint(
-  smtk::mesh::CollectionPtr collection, double x, double y, double z)
+  smtk::mesh::ResourcePtr meshResource, double x, double y, double z)
 {
-  smtk::mesh::InterfacePtr interface = collection->interface();
+  smtk::mesh::InterfacePtr interface = meshResource->interface();
   smtk::mesh::AllocatorPtr allocator = interface->allocator();
 
   smtk::mesh::Handle vertexHandle;
@@ -91,8 +91,8 @@ smtk::mesh::MeshSet make_MeshPoint(
   smtk::mesh::HandleRange meshCells;
   meshCells.insert(vertexHandle);
 
-  smtk::mesh::CellSet cellsForMesh(collection, meshCells);
-  smtk::mesh::MeshSet result = collection->createMesh(cellsForMesh);
+  smtk::mesh::CellSet cellsForMesh(meshResource, meshCells);
+  smtk::mesh::MeshSet result = meshResource->createMesh(cellsForMesh);
 
   return result;
 }
@@ -105,22 +105,22 @@ void verify_simple_merge()
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  test(mr->isValid(), "resouce should be valid");
 
   //make sure merging points works properly
-  smtk::mesh::PointSet points = c->points();
+  smtk::mesh::PointSet points = mr->points();
 
   test(points.size() == 88, "Should be exactly 88 points in the original mesh");
 
-  c->meshes().mergeCoincidentContactPoints();
+  mr->meshes().mergeCoincidentContactPoints();
 
-  points = c->points();
+  points = mr->points();
   test(points.size() == 32, "After merging of identical points we should have 32");
 
   //verify that after merging points we haven't deleted any of the cells
   //that represent a model vert
-  smtk::mesh::CellSet vert_cells = c->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet vert_cells = mr->cells(smtk::mesh::Dims0);
   test(vert_cells.size() == 7);
 }
 
@@ -132,24 +132,24 @@ void verify_complex_merge()
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  test(mr->isValid(), "meshResource should be valid");
 
   //add multiple new mesh points
-  smtk::mesh::MeshSet newMeshPoint1 = make_MeshPoint(c, 0.0, 2.0, 0.0);
-  smtk::mesh::MeshSet newMeshPoint2 = make_MeshPoint(c, 1.0, 0.0, 0.0);
-  smtk::mesh::MeshSet newMeshPoint3 = make_MeshPoint(c, 3.0, 0.0, 0.0);
-  smtk::mesh::MeshSet newMeshPoint4 = make_MeshPoint(c, 0.0, 2.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint1 = make_MeshPoint(mr, 0.0, 2.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint2 = make_MeshPoint(mr, 1.0, 0.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint3 = make_MeshPoint(mr, 3.0, 0.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint4 = make_MeshPoint(mr, 0.0, 2.0, 0.0);
 
   //make sure merging points works properly
-  smtk::mesh::PointSet points = c->points();
+  smtk::mesh::PointSet points = mr->points();
   test(points.size() == 92, "should be 92 points before merge");
 
   //failing to merge this point into the other points
-  c->meshes().mergeCoincidentContactPoints();
+  mr->meshes().mergeCoincidentContactPoints();
 
-  points = c->points();
-  test(c->points().size() == 32, "After merging of identical points we should have 32");
+  points = mr->points();
+  test(mr->points().size() == 32, "After merging of identical points we should have 32");
 
   //verify the all the points merged properly
   std::vector<double> p(3);
@@ -175,7 +175,7 @@ void verify_complex_merge()
   test(p[2] == 0.0);
 }
 
-void verify_write_valid_collection_hdf5_after_merge()
+void verify_write_valid_meshResource_hdf5_after_merge()
 {
   smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
@@ -183,73 +183,73 @@ void verify_write_valid_collection_hdf5_after_merge()
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(modelResource);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
+  test(mr->isValid(), "resource should be valid");
 
   //make sure merging points works properly
-  smtk::mesh::PointSet points = c->points();
+  smtk::mesh::PointSet points = mr->points();
 
   test(points.size() == 88, "Should be exactly 88 points in the original mesh");
 
   //add multiple new mesh points
-  smtk::mesh::MeshSet newMeshPoint1 = make_MeshPoint(c, 0.0, 2.0, 0.0);
-  smtk::mesh::MeshSet newMeshPoint2 = make_MeshPoint(c, 1.0, 0.0, 0.0);
-  smtk::mesh::MeshSet newMeshPoint3 = make_MeshPoint(c, 3.0, 0.0, 0.0);
-  smtk::mesh::MeshSet newMeshPoint4 = make_MeshPoint(c, 0.0, 2.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint1 = make_MeshPoint(mr, 0.0, 2.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint2 = make_MeshPoint(mr, 1.0, 0.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint3 = make_MeshPoint(mr, 3.0, 0.0, 0.0);
+  smtk::mesh::MeshSet newMeshPoint4 = make_MeshPoint(mr, 0.0, 2.0, 0.0);
 
-  points = c->points();
-  test(c->points().size() == 92, "Should be exactly 92 points before merge");
-  test(c->meshes(smtk::mesh::Dims0).size() == 11, "Should have 11 vertices before merge");
+  points = mr->points();
+  test(mr->points().size() == 92, "Should be exactly 92 points before merge");
+  test(mr->meshes(smtk::mesh::Dims0).size() == 11, "Should have 11 vertices before merge");
 
-  smtk::mesh::CellSet vert_cells = c->cells(smtk::mesh::Dims0);
+  smtk::mesh::CellSet vert_cells = mr->cells(smtk::mesh::Dims0);
   test(vert_cells.size() == 11, "Should have 11 vertex cells before merge");
 
-  c->meshes().mergeCoincidentContactPoints();
+  mr->meshes().mergeCoincidentContactPoints();
 
-  points = c->points();
+  points = mr->points();
   test(points.size() == 32, "After merging of identical points we should have 32");
 
   //verify that after merging points we haven't deleted any of the cells
   //that represent a model vert
-  test(c->meshes(smtk::mesh::Dims0).size() == 11, "Should have 11 vertices after merge");
+  test(mr->meshes(smtk::mesh::Dims0).size() == 11, "Should have 11 vertices after merge");
 
-  vert_cells = c->cells(smtk::mesh::Dims0);
+  vert_cells = mr->cells(smtk::mesh::Dims0);
   test(vert_cells.size() == 9, "Should have 9 vertex cells after merge");
 
-  // write out the collection after mergeCoincidentContactPoints()
+  // write out the resource after mergeCoincidentContactPoints()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
 
   //write out the mesh.
-  bool result = smtk::io::writeMesh(write_path, c);
+  bool result = smtk::io::writeMesh(write_path, mr);
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out a valid hdf5 collection");
+    test(result == true, "failed to properly write out a valid hdf5 resource");
   }
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::CollectionPtr c2 = smtk::mesh::Collection::create();
-  smtk::io::importMesh(write_path, c2);
+  smtk::mesh::ResourcePtr mr1 = smtk::mesh::Resource::create();
+  smtk::io::importMesh(write_path, mr1);
 
   //remove the file from disk
   cleanup(write_path);
 
   //verify the meshes
-  test(c2->isValid(), "collection should be valid");
-  test(c2->name() == c->name());
-  test(c2->types() == c->types());
+  test(mr1->isValid(), "resource should be valid");
+  test(mr1->name() == mr->name());
+  test(mr1->types() == mr->types());
 
-  test(c->meshes(smtk::mesh::Dims2).size() == 4, "Should have 4 faces in saved collection");
-  test(c->meshes(smtk::mesh::Dims1).size() == 10, "Should have 10 edges in saved collection");
-  test(c->meshes(smtk::mesh::Dims0).size() == 11, "Should have 11 vertices in saved collection");
+  test(mr->meshes(smtk::mesh::Dims2).size() == 4, "Should have 4 faces in saved resource");
+  test(mr->meshes(smtk::mesh::Dims1).size() == 10, "Should have 10 edges in saved resource");
+  test(mr->meshes(smtk::mesh::Dims0).size() == 11, "Should have 11 vertices in saved resource");
 
-  vert_cells = c->cells(smtk::mesh::Dims0);
-  test(vert_cells.size() == 9, "Should have 9 vertex cells in saved collection");
+  vert_cells = mr->cells(smtk::mesh::Dims0);
+  test(vert_cells.size() == 9, "Should have 9 vertex cells in saved resource");
 
-  points = c2->points();
-  test(points.size() == 32, "Should have 32 points in saved collection");
+  points = mr1->points();
+  test(points.size() == 32, "Should have 32 points in saved resource");
 }
 }
 
@@ -257,6 +257,6 @@ int UnitTestMergeContactPoints(int, char** const)
 {
   verify_simple_merge();
   verify_complex_merge();
-  verify_write_valid_collection_hdf5_after_merge();
+  verify_write_valid_meshResource_hdf5_after_merge();
   return 0;
 }

@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/io/ImportMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -19,27 +19,27 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh()
+smtk::mesh::ResourcePtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  smtk::io::importMesh(file_path, c);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  smtk::io::importMesh(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
 
-  return c;
+  return mr;
 }
 
-void verify_constructors(const smtk::mesh::CollectionPtr& c)
+void verify_constructors(const smtk::mesh::ResourcePtr& mr)
 {
-  std::vector<std::string> mesh_names = c->meshNames();
+  std::vector<std::string> mesh_names = mr->meshNames();
 
-  smtk::mesh::MeshSet ms = c->meshes(mesh_names[0]);
+  smtk::mesh::MeshSet ms = mr->meshes(mesh_names[0]);
   smtk::mesh::PointSet ps = ms.points();
 
   smtk::mesh::PointSet ps2(ps);
-  smtk::mesh::PointSet ps3 = c->meshes("bad_name").points();
+  smtk::mesh::PointSet ps3 = mr->meshes("bad_name").points();
   test(ps3.is_empty() == true);
   test(ps3.size() == 0);
 
@@ -54,11 +54,11 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   test(ps3.is_empty() == false);
 }
 
-void verify_subsets(const smtk::mesh::CollectionPtr& c)
+void verify_subsets(const smtk::mesh::ResourcePtr& mr)
 {
-  std::vector<std::string> mesh_names = c->meshNames();
+  std::vector<std::string> mesh_names = mr->meshNames();
 
-  smtk::mesh::MeshSet ms = c->meshes(mesh_names[0]);
+  smtk::mesh::MeshSet ms = mr->meshes(mesh_names[0]);
   smtk::mesh::PointSet ps = ms.points();
 
   smtk::mesh::HandleRange range;
@@ -77,10 +77,10 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
     }
   }
 
-  smtk::mesh::PointSet ps2(c, range);
-  smtk::mesh::PointSet ps3(c, set);
-  smtk::mesh::PointSet ps4(c, vec);
-  smtk::mesh::PointSet ps5(std::const_pointer_cast<const smtk::mesh::Collection>(c), range);
+  smtk::mesh::PointSet ps2(mr, range);
+  smtk::mesh::PointSet ps3(mr, set);
+  smtk::mesh::PointSet ps4(mr, vec);
+  smtk::mesh::PointSet ps5(std::const_pointer_cast<const smtk::mesh::Resource>(mr), range);
 
   test(ps != ps2, "point sets should not be equal");
   test(ps2 == ps3, "point sets should be equal");
@@ -88,12 +88,12 @@ void verify_subsets(const smtk::mesh::CollectionPtr& c)
   test(ps4 == ps5, "point sets should be equal");
 }
 
-void verify_comparisons(const smtk::mesh::CollectionPtr& c)
+void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
 {
-  std::vector<std::string> mesh_names = c->meshNames();
+  std::vector<std::string> mesh_names = mr->meshNames();
 
-  smtk::mesh::PointSet one = c->meshes(mesh_names[0]).points();
-  smtk::mesh::PointSet two = c->meshes(mesh_names[1]).points();
+  smtk::mesh::PointSet one = mr->meshes(mesh_names[0]).points();
+  smtk::mesh::PointSet two = mr->meshes(mesh_names[1]).points();
 
   test(one == one);
   test(!(one != one));
@@ -110,13 +110,13 @@ void verify_comparisons(const smtk::mesh::CollectionPtr& c)
   test(one_a != two_b);
 }
 
-void verify_contains(const smtk::mesh::CollectionPtr& c)
+void verify_contains(const smtk::mesh::ResourcePtr& mr)
 {
   //need to verify that point_set contains actually works
   //I think we should grab the point connectivity from a cell set and
   //verify that each point id in the point connectivity returns true
 
-  smtk::mesh::CellSet hexs = c->cells(smtk::mesh::Hexahedron);
+  smtk::mesh::CellSet hexs = mr->cells(smtk::mesh::Hexahedron);
   smtk::mesh::PointSet hexPoints = hexs.points();
   smtk::mesh::PointConnectivity hexConn = hexs.pointConnectivity();
 
@@ -133,12 +133,12 @@ void verify_contains(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-void verify_find(const smtk::mesh::CollectionPtr& c)
+void verify_find(const smtk::mesh::ResourcePtr& mr)
 {
   //need to verify that point_set contains actually works
   //I think we should grab the point connectivity from a cell set and
   //verify that each point id find return a value between 0 and (size()-1)
-  smtk::mesh::CellSet hexs = c->cells(smtk::mesh::Hexahedron);
+  smtk::mesh::CellSet hexs = mr->cells(smtk::mesh::Hexahedron);
   smtk::mesh::PointSet hexPoints = hexs.points();
   smtk::mesh::PointConnectivity hexConn = hexs.pointConnectivity();
 
@@ -155,12 +155,12 @@ void verify_find(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-void verify_get(const smtk::mesh::CollectionPtr& c)
+void verify_get(const smtk::mesh::ResourcePtr& mr)
 {
   //this is really hard to test currently as we only have bulk gets() on
   //points. So for now we are just going to make sure the function doesn't
   //crash
-  smtk::mesh::PointSet all_points = c->points();
+  smtk::mesh::PointSet all_points = mr->points();
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<double> coords(numCoords);
@@ -169,19 +169,19 @@ void verify_get(const smtk::mesh::CollectionPtr& c)
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
     smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
-    smtk::mesh::CellSet cells = c->cells(cellType);
+    smtk::mesh::CellSet cells = mr->cells(cellType);
 
     test(cells.points().get(&coords[0]) != cells.is_empty());
   }
 }
 
-void verify_float_get(const smtk::mesh::CollectionPtr& c)
+void verify_float_get(const smtk::mesh::ResourcePtr& mr)
 {
 
   //this is really hard to test currently as we only have bulk gets() on
   //points. So for now we are just going to make sure the function doesn't
   //crash
-  smtk::mesh::PointSet all_points = c->points();
+  smtk::mesh::PointSet all_points = mr->points();
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<float> coords(numCoords);
@@ -190,19 +190,19 @@ void verify_float_get(const smtk::mesh::CollectionPtr& c)
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
     smtk::mesh::CellType cellType = static_cast<smtk::mesh::CellType>(i);
-    smtk::mesh::CellSet cells = c->cells(cellType);
+    smtk::mesh::CellSet cells = mr->cells(cellType);
 
     test(cells.points().get(&coords[0]) != cells.is_empty());
   }
 }
 
-void verify_set(const smtk::mesh::CollectionPtr& c)
+void verify_set(const smtk::mesh::ResourcePtr& mr)
 {
 
   //current plan, is to fetch all the points, mark all the Y values
   //as zero, and set that back onto the data, and than finally verify
   //those values by getting again
-  smtk::mesh::PointSet all_points = c->points();
+  smtk::mesh::PointSet all_points = mr->points();
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<double> coords(numCoords);
@@ -231,13 +231,13 @@ void verify_set(const smtk::mesh::CollectionPtr& c)
   all_points.set(coords); //roll back to original points
 }
 
-void verify_float_set(const smtk::mesh::CollectionPtr& c)
+void verify_float_set(const smtk::mesh::ResourcePtr& mr)
 {
 
   //current plan, is to fetch all the points, mark all the Y values
   //as zero, and set that back onto the data, and than finally verify
   //those values by getting again
-  smtk::mesh::PointSet all_points = c->points();
+  smtk::mesh::PointSet all_points = mr->points();
   const std::size_t numCoords = 3 * all_points.size();
 
   std::vector<float> coords(numCoords);
@@ -266,9 +266,9 @@ void verify_float_set(const smtk::mesh::CollectionPtr& c)
   all_points.set(coords); //roll back to original points
 }
 
-void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
+void verify_pointset_intersect(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::PointSet all_points = c->points();
+  smtk::mesh::PointSet all_points = mr->points();
 
   { //intersection of self should produce self
     smtk::mesh::PointSet result = smtk::mesh::set_intersect(all_points, all_points);
@@ -276,13 +276,13 @@ void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
   }
 
   { //intersection with nothing should produce nothing
-    smtk::mesh::PointSet no_points = c->meshes("bad name string").points();
+    smtk::mesh::PointSet no_points = mr->meshes("bad name string").points();
     smtk::mesh::PointSet result = smtk::mesh::set_intersect(all_points, no_points);
     test(result == no_points, "Intersection with nothing should produce nothing");
   }
 
   //find meshes that have volume elements
-  smtk::mesh::PointSet volumePoints = c->meshes(smtk::mesh::Dims3).points();
+  smtk::mesh::PointSet volumePoints = mr->meshes(smtk::mesh::Dims3).points();
 
   //verify that the size of the intersection + size of difference
   //equal size
@@ -296,9 +296,9 @@ void verify_pointset_intersect(const smtk::mesh::CollectionPtr& c)
        number of unique items");
 }
 
-void verify_pointset_union(const smtk::mesh::CollectionPtr& c)
+void verify_pointset_union(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::PointSet all_points = c->points();
+  smtk::mesh::PointSet all_points = mr->points();
 
   { //union with self produces self
     smtk::mesh::PointSet result = smtk::mesh::set_union(all_points, all_points);
@@ -306,26 +306,26 @@ void verify_pointset_union(const smtk::mesh::CollectionPtr& c)
   }
 
   { //union with nothing should produce self
-    smtk::mesh::PointSet no_points = c->meshes("bad name string").points();
+    smtk::mesh::PointSet no_points = mr->meshes("bad name string").points();
     smtk::mesh::PointSet result = smtk::mesh::set_union(all_points, no_points);
     test(result == all_points, "Union with nothing should produce self");
   }
 
   //construct empty meshset(s)
-  smtk::mesh::PointSet union_output = c->meshes("bad name string").points();
+  smtk::mesh::PointSet union_output = mr->meshes("bad name string").points();
   //verify that append and union produce the same result
   for (int i = 0; i < 4; ++i)
   {
     smtk::mesh::DimensionType d(static_cast<smtk::mesh::DimensionType>(i));
-    union_output = smtk::mesh::set_union(union_output, c->meshes(d).points());
+    union_output = smtk::mesh::set_union(union_output, mr->meshes(d).points());
   }
 
   test(union_output == all_points, "Result of union should be the same as all_points");
 }
 
-void verify_pointset_subtract(const smtk::mesh::CollectionPtr& c)
+void verify_pointset_subtract(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::PointSet all_points = c->points();
+  smtk::mesh::PointSet all_points = mr->points();
 
   { //subtract of self should produce empty
     smtk::mesh::PointSet result = smtk::mesh::set_difference(all_points, all_points);
@@ -334,19 +334,19 @@ void verify_pointset_subtract(const smtk::mesh::CollectionPtr& c)
   }
 
   { //subtract with nothing should produce self
-    smtk::mesh::PointSet no_points = c->meshes("bad name string").points();
+    smtk::mesh::PointSet no_points = mr->meshes("bad name string").points();
     smtk::mesh::PointSet result = smtk::mesh::set_difference(all_points, no_points);
     test(result == all_points, "Subtraction with nothing should produce self");
   }
 
   { //subtract with something from nothing should produce nothing
-    smtk::mesh::PointSet no_points = c->meshes("bad name string").points();
+    smtk::mesh::PointSet no_points = mr->meshes("bad name string").points();
     smtk::mesh::PointSet result = smtk::mesh::set_difference(no_points, all_points);
     test(result == no_points, "Subtraction of something from nothing should nothing");
   }
 
   //find meshes that have volume elements
-  smtk::mesh::PointSet volumePoints = c->meshes(smtk::mesh::Dims3).points();
+  smtk::mesh::PointSet volumePoints = mr->meshes(smtk::mesh::Dims3).points();
 
   std::size_t size_difference = all_points.size() - volumePoints.size();
   smtk::mesh::PointSet non_dim_meshes = smtk::mesh::set_difference(all_points, volumePoints);
@@ -360,7 +360,7 @@ class CountPoints : public smtk::mesh::PointForEach
   int numPointsIteratedOver;
 
 public:
-  CountPoints(smtk::mesh::CollectionPtr)
+  CountPoints(smtk::mesh::ResourcePtr)
     : numPointsIteratedOver(0)
   {
   }
@@ -384,10 +384,10 @@ public:
   int numberOfPointsVisited() const { return numPointsIteratedOver; }
 };
 
-void verify_pointset_for_each_read(const smtk::mesh::CollectionPtr& c)
+void verify_pointset_for_each_read(const smtk::mesh::ResourcePtr& mr)
 {
-  CountPoints functor(c);
-  smtk::mesh::MeshSet volMeshes = c->meshes(smtk::mesh::Dims3);
+  CountPoints functor(mr);
+  smtk::mesh::MeshSet volMeshes = mr->meshes(smtk::mesh::Dims3);
   smtk::mesh::for_each(volMeshes.points(), functor);
   test(static_cast<std::size_t>(functor.numberOfPointsVisited()) == volMeshes.points().size());
 }
@@ -431,10 +431,10 @@ public:
   }
 };
 
-void verify_pointset_for_each_modify(const smtk::mesh::CollectionPtr& c)
+void verify_pointset_for_each_modify(const smtk::mesh::ResourcePtr& mr)
 {
   //first modify all the points to have 0 for the z value
-  smtk::mesh::MeshSet volMeshes = c->meshes(smtk::mesh::Dims3);
+  smtk::mesh::MeshSet volMeshes = mr->meshes(smtk::mesh::Dims3);
   FlattenZ functorA;
   smtk::mesh::for_each(volMeshes.points(), functorA);
 
@@ -446,27 +446,27 @@ void verify_pointset_for_each_modify(const smtk::mesh::CollectionPtr& c)
 
 int UnitTestPointSet(int, char** const)
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
+  smtk::mesh::ResourcePtr mr = load_mesh();
 
-  verify_constructors(c);
-  verify_subsets(c);
-  verify_comparisons(c);
+  verify_constructors(mr);
+  verify_subsets(mr);
+  verify_comparisons(mr);
 
-  verify_contains(c);
-  verify_find(c);
+  verify_contains(mr);
+  verify_find(mr);
 
-  verify_get(c);
-  verify_float_get(c);
+  verify_get(mr);
+  verify_float_get(mr);
 
-  verify_set(c);
-  verify_float_set(c);
+  verify_set(mr);
+  verify_float_set(mr);
 
-  verify_pointset_intersect(c);
-  verify_pointset_union(c);
-  verify_pointset_subtract(c);
+  verify_pointset_intersect(mr);
+  verify_pointset_union(mr);
+  verify_pointset_subtract(mr);
 
-  verify_pointset_for_each_read(c);
-  verify_pointset_for_each_modify(c);
+  verify_pointset_for_each_read(mr);
+  verify_pointset_for_each_modify(mr);
 
   return 0;
 }

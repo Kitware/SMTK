@@ -21,10 +21,10 @@
 
 #include "smtk/mesh/InterpolateOntoMesh_xml.h"
 #include "smtk/mesh/core/CellField.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/interpolation/InverseDistanceWeighting.h"
 #include "smtk/mesh/interpolation/PointCloud.h"
@@ -80,7 +80,7 @@ std::function<double(std::array<double, 3>)> radialAverageFrom(const InputType& 
     if (pointcloud.size() > 0)
     {
       radialAverage = smtk::mesh::RadialAverage(
-        smtk::mesh::Collection::create(interface), pointcloud, radius, prefilter);
+        smtk::mesh::Resource::create(interface), pointcloud, radius, prefilter);
     }
   }
 
@@ -141,7 +141,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   // Access the mesh to elevate
   smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
   smtk::mesh::MeshSet meshset = meshItem->valueAs<smtk::mesh::Component>()->mesh();
-  smtk::mesh::Collection::Ptr collection = meshset.collection();
+  smtk::mesh::Resource::Ptr resource = meshset.resource();
 
   // Access the string describing the interpolation scheme
   smtk::attribute::StringItem::Ptr interpolationSchemeItem =
@@ -216,7 +216,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<smtk::model::AuxiliaryGeometry>(
-        auxGeo, radiusItem->value(), prefilter, collection->interface());
+        auxGeo, radiusItem->value(), prefilter, resource->interface());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -240,7 +240,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     {
       // Compute the radial average function
       interpolation = radialAverageFrom<std::string>(
-        fileName, radiusItem->value(), prefilter, collection->interface());
+        fileName, radiusItem->value(), prefilter, resource->interface());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {
@@ -282,7 +282,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     if (interpolationSchemeItem->value() == "radial average")
     {
       interpolation = smtk::mesh::RadialAverage(
-        smtk::mesh::Collection::create(collection->interface()), pointcloud, radiusItem->value());
+        smtk::mesh::Resource::create(resource->interface()), pointcloud, radiusItem->value());
     }
     else if (interpolationSchemeItem->value() == "inverse distance weighting")
     {

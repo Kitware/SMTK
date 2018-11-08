@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_core_Collection_h
-#define __smtk_mesh_core_Collection_h
+#ifndef __smtk_mesh_core_Resource_h
+#define __smtk_mesh_core_Resource_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -51,52 +51,52 @@ namespace mesh
 {
 
 //Flyweight interface around a moab database of meshes.
-class SMTKCORE_EXPORT Collection
-  : public smtk::resource::DerivedFrom<Collection, smtk::resource::Resource>
+class SMTKCORE_EXPORT Resource
+  : public smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>
 {
-  //default constructor generates an invalid collection
-  Collection();
+  //default constructor generates an invalid resource
+  Resource();
 
-  //Construct a collection with the default interface.
-  Collection(const smtk::common::UUID& collectionID);
+  //Construct a resource with the default interface.
+  Resource(const smtk::common::UUID& resourceID);
 
-  //Construct a valid collection that has an associated interface
-  Collection(smtk::mesh::InterfacePtr interface);
+  //Construct a valid resource that has an associated interface
+  Resource(smtk::mesh::InterfacePtr interface);
 
-  //Construct a valid collection that has an associated interface
-  Collection(const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface);
+  //Construct a valid resource that has an associated interface
+  Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface);
 
 public:
-  smtkTypeMacro(smtk::mesh::Collection);
+  smtkTypeMacro(smtk::mesh::Resource);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
   // typedef referring to the parent resource.
   typedef smtk::resource::Resource ParentResource;
 
-  //A mesh collection may be classified to a model. This relationship is modeled
+  //A mesh resource may be classified to a model. This relationship is modeled
   //using resource links.
   static constexpr smtk::resource::Links::RoleType ClassificationRole = -3;
 
-  static smtk::shared_ptr<Collection> create(const smtk::common::UUID& collectionID)
+  static smtk::shared_ptr<Resource> create(const smtk::common::UUID& resourceID)
   {
-    smtk::shared_ptr<smtk::resource::Resource> shared(new Collection(collectionID));
-    return smtk::static_pointer_cast<Collection>(shared);
+    smtk::shared_ptr<smtk::resource::Resource> shared(new Resource(resourceID));
+    return smtk::static_pointer_cast<Resource>(shared);
   }
 
-  static smtk::shared_ptr<Collection> create(smtk::mesh::InterfacePtr interface)
+  static smtk::shared_ptr<Resource> create(smtk::mesh::InterfacePtr interface)
   {
-    smtk::shared_ptr<smtk::resource::Resource> shared(new Collection(interface));
-    return smtk::static_pointer_cast<Collection>(shared);
+    smtk::shared_ptr<smtk::resource::Resource> shared(new Resource(interface));
+    return smtk::static_pointer_cast<Resource>(shared);
   }
 
-  static smtk::shared_ptr<Collection> create(
-    const smtk::common::UUID& collectionID, smtk::mesh::InterfacePtr interface)
+  static smtk::shared_ptr<Resource> create(
+    const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
   {
-    smtk::shared_ptr<smtk::resource::Resource> shared(new Collection(collectionID, interface));
-    return smtk::static_pointer_cast<Collection>(shared);
+    smtk::shared_ptr<smtk::resource::Resource> shared(new Resource(resourceID, interface));
+    return smtk::static_pointer_cast<Resource>(shared);
   }
 
-  ~Collection();
+  ~Resource();
 
   resource::ComponentPtr find(const common::UUID& compId) const override;
   std::function<bool(const resource::ComponentPtr&)> queryOperation(
@@ -105,26 +105,26 @@ public:
   // visit all components in a resource.
   void visit(resource::Component::Visitor& v) const override;
 
-  //determine if the given Collection is valid.
+  //determine if the given Resource is valid.
   bool isValid() const;
 
-  //determine if the Collection has been modified. Being Modified means that
+  //determine if the Resource has been modified. Being Modified means that
   //the version we would write out to disk would differ from the version that
-  //we loaded from disk. If a collection started as in-memory it
+  //we loaded from disk. If a resource started as in-memory it
   //is considered modified once it is not empty.
-  //Every time the collection is saved to disk, the Modified flag will be
+  //Every time the resource is saved to disk, the Modified flag will be
   //reset to false.
   bool isModified() const;
 
-  //get the name of a mesh collection
+  //get the name of a mesh resource
   std::string name() const override;
   void name(const std::string& n);
 
-  //get the file that this collection was created from
-  //will return an empty FileLocation if this collection wasn't read from file
+  //get the file that this resource was created from
+  //will return an empty FileLocation if this resource wasn't read from file
   const smtk::common::FileLocation& readLocation() const;
 
-  //set the file that this collection should be saved to.
+  //set the file that this resource should be saved to.
   //By default this is set to be the same as the readLocation()
   void writeLocation(const smtk::common::FileLocation& path);
   void writeLocation(const std::string& path)
@@ -133,12 +133,12 @@ public:
   }
   const smtk::common::FileLocation& writeLocation() const;
 
-  //clear both the read and write locations for the collection. This
-  //is generally done when de-serializing a collection and the read and write
+  //clear both the read and write locations for the resource. This
+  //is generally done when de-serializing a resource and the read and write
   //locations are going to be deleted by the calling code.
   void clearReadWriteLocations();
 
-  //get a string the identifies the interface type of the collection
+  //get a string the identifies the interface type of the resource
   // valid types are:
   // "moab"
   // "json"
@@ -150,7 +150,7 @@ public:
 
   std::size_t numberOfMeshes() const;
 
-  //Queries on the full Collection
+  //Queries on the full Resource
   smtk::mesh::TypeSet types() const;
   smtk::mesh::MeshSet meshes() const;  //all meshes
   smtk::mesh::CellSet cells() const;   //all cells
@@ -179,7 +179,7 @@ public:
   smtk::mesh::MeshSet meshes(const smtk::mesh::Neumann& n) const;
   smtk::mesh::MeshSet meshes(const std::string& name) const;
 
-  //find a cells of a given type or a collection of types
+  //find a cells of a given type or a resource of types
   smtk::mesh::CellSet cells(smtk::mesh::CellType cellType) const;
   smtk::mesh::CellSet cells(smtk::mesh::CellTypes cellTypes) const;
   smtk::mesh::CellSet cells(smtk::mesh::DimensionType dim) const;
@@ -220,26 +220,26 @@ public:
 
   bool setAssociation(const smtk::model::EntityRef& eref, const smtk::mesh::MeshSet& meshset);
 
-  //determine if this collection has any associations to a model
+  //determine if this resource has any associations to a model
   bool hasAssociations() const;
 
-  // Associate a model to the collection.
-  //While a collection can be associated to just a model UUID, it is necessary
+  // Associate a model to the resource.
+  //While a resource can be associated to just a model UUID, it is necessary
   //to also call setModelResource() to facilitate calls that return associated
   //EntityRefs, rather than just UUIDs.
   bool associateToModel(const smtk::common::UUID& uuid);
 
-  // Find if the collection has an associated model
+  // Find if the resource has an associated model
   bool isAssociatedToModel() const;
 
   // Return the uuid of the associated model
   smtk::common::UUID associatedModel() const;
 
   // Construction of new meshes
-  //given a collection of existing cells make a new Mesh inside the underlying interface
+  //given a resource of existing cells make a new Mesh inside the underlying interface
   //Return that Mesh as a MeshSet with a size of 1. The CellSet could
   //be the result of appending/intersecting,difference of other CellSets.
-  //Adding a CellSet that is part of a different collection will fail, and
+  //Adding a CellSet that is part of a different resource will fail, and
   //we will return an empty MeshSet.
   //Asking to create a MeshSet from a CellSet that is empty will fail, and
   //we will return an empty MeshSet.
@@ -247,7 +247,7 @@ public:
     const smtk::mesh::CellSet& cells, const smtk::common::UUID& uuid = smtk::common::UUID::null());
 
   // Deletion of Items
-  //given a collection of meshes this will delete all meshes and any cell or vert
+  //given a resource of meshes this will delete all meshes and any cell or vert
   //that is not referenced by any other mesh
   //This will invalidate any smtk::mesh::MeshSet that contains a reference to
   //one of the meshes that has been deleted.
@@ -261,7 +261,7 @@ public:
   //this domain value the result will be empty
   smtk::mesh::MeshSet domainMeshes(const smtk::mesh::Domain& m) const;
 
-  //Assign a given domain to a collection of meshes. Overwrites
+  //Assign a given domain to a resource of meshes. Overwrites
   //any existing domain value
   bool setDomainOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Domain& m);
 
@@ -274,7 +274,7 @@ public:
   //Generally Dirichlet meshes only contain vertices
   smtk::mesh::MeshSet dirichletMeshes(const smtk::mesh::Dirichlet& d) const;
 
-  //Assign a given dirichlet to a collection of meshes. Overwrites
+  //Assign a given dirichlet to a resource of meshes. Overwrites
   //any existing dirichlet value
   //Generally Dirichlet meshes only contain vertices
   bool setDirichletOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Dirichlet& d);
@@ -287,7 +287,7 @@ public:
   //this material value the result will be empty.
   smtk::mesh::MeshSet neumannMeshes(const smtk::mesh::Neumann& n) const;
 
-  //Assign a given neumann to a collection of meshes. Overwrites
+  //Assign a given neumann to a resource of meshes. Overwrites
   //any existing neumann value
   //Generally Neumann meshes only contain vertices
   bool setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk::mesh::Neumann& n);
@@ -340,20 +340,20 @@ public:
   bool removeProperty(const smtk::mesh::MeshSet& meshset, const std::string& name);
 
 private:
-  Collection(const Collection& other);            //blank since we are used by shared_ptr
-  Collection& operator=(const Collection& other); //blank since we are used by shared_ptr
+  Resource(const Resource& other);            //blank since we are used by shared_ptr
+  Resource& operator=(const Resource& other); //blank since we are used by shared_ptr
 
-  //Sets the location that this collection was loaded from
+  //Sets the location that this resource was loaded from
   void readLocation(const std::string& path)
   {
     this->readLocation(smtk::common::FileLocation(path));
   }
   void readLocation(const smtk::common::FileLocation& path);
 
-  //Swap the internal interfaces between this Collection and another Collection
-  //this is how we can easily update a collection that has already been
+  //Swap the internal interfaces between this Resource and another Resource
+  //this is how we can easily update a resource that has already been
   //loaded with a newer version from disk
-  void swapInterfaces(smtk::mesh::CollectionPtr& other);
+  void swapInterfaces(smtk::mesh::ResourcePtr& other);
 
   friend class smtk::io::ReadMesh;
 
@@ -370,10 +370,10 @@ private:
 
   //holds a reference to the specific backend interface
   class InternalImpl;
-  smtk::mesh::Collection::InternalImpl* m_internals;
+  smtk::mesh::Resource::InternalImpl* m_internals;
 };
 
 } // namespace mesh
 } // namespace smtk
 
-#endif //__smtk_mesh_core_Collection_h
+#endif //__smtk_mesh_core_Resource_h

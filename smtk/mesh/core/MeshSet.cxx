@@ -10,8 +10,8 @@
 
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/CellField.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/core/Interface.h"
 
@@ -29,7 +29,7 @@ MeshSet::MeshSet()
 {
 }
 
-MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle handle)
+MeshSet::MeshSet(const smtk::mesh::ResourcePtr& parent, smtk::mesh::Handle handle)
 {
   m_parent = parent;
   m_handle = handle;
@@ -39,9 +39,9 @@ MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle han
   m_range = iface->getMeshsets(handle);
 }
 
-MeshSet::MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handle handle)
+MeshSet::MeshSet(const smtk::mesh::ConstResourcePtr& parent, smtk::mesh::Handle handle)
 {
-  m_parent = std::const_pointer_cast<smtk::mesh::Collection>(parent);
+  m_parent = std::const_pointer_cast<smtk::mesh::Resource>(parent);
   m_handle = handle;
 
   const smtk::mesh::InterfacePtr& iface = parent->interface();
@@ -49,7 +49,7 @@ MeshSet::MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handl
   m_range = iface->getMeshsets(handle);
 }
 
-MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle handle,
+MeshSet::MeshSet(const smtk::mesh::ResourcePtr& parent, smtk::mesh::Handle handle,
   const smtk::mesh::HandleRange& range)
   : m_parent(parent)
   , m_handle(handle)
@@ -57,9 +57,9 @@ MeshSet::MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle han
 {
 }
 
-MeshSet::MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handle handle,
+MeshSet::MeshSet(const smtk::mesh::ConstResourcePtr& parent, smtk::mesh::Handle handle,
   const smtk::mesh::HandleRange& range)
-  : m_parent(std::const_pointer_cast<smtk::mesh::Collection>(parent))
+  : m_parent(std::const_pointer_cast<smtk::mesh::Resource>(parent))
   , m_handle(handle)
   , m_range(range) //range of entity sets
 {
@@ -166,13 +166,13 @@ bool MeshSet::append(const MeshSet& other)
 
 bool MeshSet::isValid() const
 {
-  // A valid meshset has a valid collection and is a member of the collection.
-  smtk::mesh::CollectionPtr collection = this->collection();
-  if (!collection)
+  // A valid meshset has a valid resource and is a member of the resource.
+  smtk::mesh::ResourcePtr resource = this->resource();
+  if (!resource)
   {
     return false;
   }
-  return set_intersect(*this, collection->meshes()).is_empty() == false;
+  return set_intersect(*this, resource->meshes()).is_empty() == false;
 }
 
 bool MeshSet::is_empty() const
@@ -267,7 +267,7 @@ smtk::common::UUIDArray MeshSet::modelEntityIds() const
 
 /**\brief Return the model entities associated with meshset members.
   *
-  * warning Note that the parent collection of this meshset must have
+  * warning Note that the parent resource of this meshset must have
   *         its model resource set to a valid value or the result will
   *         be an array of invalid entries.
   */
@@ -298,10 +298,10 @@ bool MeshSet::setModelEntityId(const smtk::common::UUID& id)
   return iface->setAssociation(id, m_range);
 }
 
-/**\brief Get the parent collection that this meshset belongs to.
+/**\brief Get the parent resource that this meshset belongs to.
   *
   */
-const smtk::mesh::CollectionPtr& MeshSet::collection() const
+const smtk::mesh::ResourcePtr& MeshSet::resource() const
 {
   return m_parent;
 }
@@ -473,7 +473,7 @@ smtk::mesh::CellField MeshSet::createCellField(
     return CellField();
   }
 
-  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = this->resource()->interface();
   if (!iface)
   {
     return CellField();
@@ -501,7 +501,7 @@ std::set<smtk::mesh::CellField> MeshSet::cellFields() const
 {
   std::set<smtk::mesh::CellField> cellfields;
 
-  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = this->resource()->interface();
   if (!iface)
   {
     return cellfields;
@@ -521,7 +521,7 @@ std::set<smtk::mesh::CellField> MeshSet::cellFields() const
 
 bool MeshSet::removeCellField(smtk::mesh::CellField cellfield)
 {
-  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = this->resource()->interface();
 
   return iface->deleteCellField(CellFieldTag(cellfield.name()), m_range);
 }
@@ -535,7 +535,7 @@ smtk::mesh::PointField MeshSet::createPointField(
     return PointField();
   }
 
-  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = this->resource()->interface();
   if (!iface)
   {
     return PointField();
@@ -563,7 +563,7 @@ std::set<smtk::mesh::PointField> MeshSet::pointFields() const
 {
   std::set<smtk::mesh::PointField> pointfields;
 
-  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = this->resource()->interface();
   if (!iface)
   {
     return pointfields;
@@ -583,7 +583,7 @@ std::set<smtk::mesh::PointField> MeshSet::pointFields() const
 
 bool MeshSet::removePointField(smtk::mesh::PointField pointfield)
 {
-  const smtk::mesh::InterfacePtr& iface = this->collection()->interface();
+  const smtk::mesh::InterfacePtr& iface = this->resource()->interface();
 
   return iface->deletePointField(PointFieldTag(pointfield.name()), m_range);
 }
@@ -592,7 +592,7 @@ bool MeshSet::removePointField(smtk::mesh::PointField pointfield)
 MeshSet set_intersect(const MeshSet& a, const MeshSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty MeshSet if the collections don't match
+  { //return an empty MeshSet if the resources don't match
     return smtk::mesh::MeshSet(a.m_parent, a.m_handle, smtk::mesh::HandleRange());
   }
 
@@ -604,7 +604,7 @@ MeshSet set_intersect(const MeshSet& a, const MeshSet& b)
 MeshSet set_difference(const MeshSet& a, const MeshSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty MeshSet if the collections don't match
+  { //return an empty MeshSet if the resources don't match
     return smtk::mesh::MeshSet(a.m_parent, a.m_handle, smtk::mesh::HandleRange());
   }
 
@@ -616,7 +616,7 @@ MeshSet set_difference(const MeshSet& a, const MeshSet& b)
 MeshSet set_union(const MeshSet& a, const MeshSet& b)
 {
   if (a.m_parent != b.m_parent)
-  { //return an empty MeshSet if the collections don't match
+  { //return an empty MeshSet if the resources don't match
     return smtk::mesh::MeshSet(a.m_parent, a.m_handle, smtk::mesh::HandleRange());
   }
 
@@ -628,7 +628,7 @@ SMTKCORE_EXPORT void for_each(const MeshSet& a, MeshForEach& filter)
 {
   const smtk::mesh::InterfacePtr& iface = a.m_parent->interface();
 
-  filter.m_collection = a.m_parent;
+  filter.m_resource = a.m_parent;
   iface->meshForEach(a.m_range, filter);
 }
 }

@@ -23,7 +23,7 @@
 
 #include "smtk/model/DefaultSession.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/operation/Operation.h"
 
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
   std::string input_path(data_root);
   input_path += "/mesh/2d/warpedMesh.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
+  smtk::mesh::ResourcePtr c = smtk::mesh::Resource::create();
   smtk::io::readMesh(input_path, c);
 
   if (!c || !c->isValid())

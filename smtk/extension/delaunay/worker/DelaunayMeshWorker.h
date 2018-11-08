@@ -42,6 +42,6 @@ public:
 
 private:
   bool meshFace(const smtk::model::Face& face, bool validatePolygons,
-    const smtk::mesh::CollectionPtr& collection);
+    const smtk::mesh::ResourcePtr& meshResource);
 };
 #endif

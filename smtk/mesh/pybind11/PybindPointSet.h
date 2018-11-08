@@ -22,15 +22,15 @@ PySharedPtrClass< smtk::mesh::PointSet > pybind11_init_smtk_mesh_PointSet(py::mo
 {
   PySharedPtrClass< smtk::mesh::PointSet > instance(m, "PointSet");
   instance
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::smtk::mesh::HandleRange const &>())
-    .def(py::init<::smtk::mesh::ConstCollectionPtr const &, ::smtk::mesh::HandleRange const &>())
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::std::vector<smtk::mesh::Handle, std::allocator<smtk::mesh::Handle> > const &>())
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::std::set<smtk::mesh::Handle, std::less<smtk::mesh::Handle>, std::allocator<smtk::mesh::Handle> > const &>())
+    .def(py::init<::smtk::mesh::ResourcePtr const &, ::smtk::mesh::HandleRange const &>())
+    .def(py::init<::smtk::mesh::ConstResourcePtr const &, ::smtk::mesh::HandleRange const &>())
+    .def(py::init<::smtk::mesh::ResourcePtr const &, ::std::vector<smtk::mesh::Handle, std::allocator<smtk::mesh::Handle> > const &>())
+    .def(py::init<::smtk::mesh::ResourcePtr const &, ::std::set<smtk::mesh::Handle, std::less<smtk::mesh::Handle>, std::allocator<smtk::mesh::Handle> > const &>())
     .def(py::init<::smtk::mesh::PointSet const &>())
     .def("__ne__", (bool (smtk::mesh::PointSet::*)(::smtk::mesh::PointSet const &) const) &smtk::mesh::PointSet::operator!=)
     .def("deepcopy", (smtk::mesh::PointSet & (smtk::mesh::PointSet::*)(::smtk::mesh::PointSet const &)) &smtk::mesh::PointSet::operator=)
     .def("__eq__", (bool (smtk::mesh::PointSet::*)(::smtk::mesh::PointSet const &) const) &smtk::mesh::PointSet::operator==)
-    .def("collection", &smtk::mesh::PointSet::collection)
+    .def("resource", &smtk::mesh::PointSet::resource)
     .def("contains", &smtk::mesh::PointSet::contains, py::arg("pointId"))
     .def("find", &smtk::mesh::PointSet::find, py::arg("pointId"))
     .def("get", (bool (smtk::mesh::PointSet::*)(::std::vector<double, std::allocator<double> > &) const) &smtk::mesh::PointSet::get, py::arg("xyz"))

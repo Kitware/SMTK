@@ -20,8 +20,8 @@
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/Reclassify.h"
 
@@ -61,43 +61,43 @@ namespace session
 namespace discrete
 {
 
-inline std::vector<smtk::mesh::CollectionPtr> internal_associatedCollections(
-  const smtk::attribute::ResourceItem::Ptr& associatedMeshCollectionsItem,
+inline std::vector<smtk::mesh::ResourcePtr> internal_associatedMeshResources(
+  const smtk::attribute::ResourceItem::Ptr& associatedMeshResourcesItem,
   const smtk::model::EntityRef& eref)
 {
-  std::vector<smtk::mesh::CollectionPtr> collections;
-  auto resources = eref.resource()->links().linkedFrom(smtk::mesh::Collection::ClassificationRole);
-  for (std::size_t i = 0; i < associatedMeshCollectionsItem->numberOfValues(); i++)
+  std::vector<smtk::mesh::ResourcePtr> meshResources;
+  auto resources = eref.resource()->links().linkedFrom(smtk::mesh::Resource::ClassificationRole);
+  for (std::size_t i = 0; i < associatedMeshResourcesItem->numberOfValues(); i++)
   {
-    resources.insert(associatedMeshCollectionsItem->value(i));
+    resources.insert(associatedMeshResourcesItem->value(i));
   }
   for (auto resource : resources)
   {
-    auto collection = std::dynamic_pointer_cast<smtk::mesh::Collection>(resource);
-    if (collection != nullptr)
+    auto meshResource = std::dynamic_pointer_cast<smtk::mesh::Resource>(resource);
+    if (meshResource != nullptr)
     {
-      bool found = eref.isModel() ? collection->associatedModel() == eref.entity()
-                                  : !(collection->findAssociatedMeshes(eref).is_empty());
+      bool found = eref.isModel() ? meshResource->associatedModel() == eref.entity()
+                                  : !(meshResource->findAssociatedMeshes(eref).is_empty());
       if (found)
       {
-        collections.push_back(collection);
+        meshResources.push_back(meshResource);
       }
     }
   }
 
-  return collections;
+  return meshResources;
 }
 
 inline bool internal_mergeAssociatedMeshes(const smtk::model::Vertex& remVert,
   const smtk::model::Edge& toRemove, const smtk::model::Edge& toAddTo,
-  const smtk::attribute::ResourceItem::Ptr& associatedMeshCollectionsItem,
+  const smtk::attribute::ResourceItem::Ptr& associatedMeshResourcesItem,
   smtk::mesh::MeshSets& modifiedMeshes)
 {
   bool ok = true;
-  std::vector<smtk::mesh::CollectionPtr> meshCollections =
-    internal_associatedCollections(associatedMeshCollectionsItem, toAddTo);
-  std::vector<smtk::mesh::CollectionPtr>::iterator it;
-  for (it = meshCollections.begin(); it != meshCollections.end(); ++it)
+  std::vector<smtk::mesh::ResourcePtr> meshResources =
+    internal_associatedMeshResources(associatedMeshResourcesItem, toAddTo);
+  std::vector<smtk::mesh::ResourcePtr>::iterator it;
+  for (it = meshResources.begin(); it != meshResources.end(); ++it)
   {
     ok &= smtk::mesh::utility::merge(*it, remVert, toRemove, toAddTo);
     if (ok)
@@ -112,14 +112,14 @@ inline bool internal_mergeAssociatedMeshes(const smtk::model::Vertex& remVert,
 
 bool internal_splitAssociatedMeshes(const smtk::model::Edge& srcEdge,
   const smtk::model::Edge& newEdge, const smtk::model::Vertex& newVert,
-  const smtk::attribute::ResourceItem::Ptr& associatedMeshCollectionsItem,
+  const smtk::attribute::ResourceItem::Ptr& associatedMeshResourcesItem,
   smtk::mesh::MeshSets& modifiedMeshes)
 {
   bool ok = true;
-  std::vector<smtk::mesh::CollectionPtr> meshCollections =
-    internal_associatedCollections(associatedMeshCollectionsItem, srcEdge);
-  std::vector<smtk::mesh::CollectionPtr>::iterator it;
-  for (it = meshCollections.begin(); it != meshCollections.end(); ++it)
+  std::vector<smtk::mesh::ResourcePtr> meshResources =
+    internal_associatedMeshResources(associatedMeshResourcesItem, srcEdge);
+  std::vector<smtk::mesh::ResourcePtr>::iterator it;
+  for (it = meshResources.begin(); it != meshResources.end(); ++it)
   {
     ok &= smtk::mesh::utility::split(*it, srcEdge, newEdge, newVert);
     if (ok)
@@ -442,11 +442,11 @@ bool EdgeOperation::splitSelectedEdgeNodes(
       srcsModified.push_back(srced);
 
       // update associated meshes
-      smtk::attribute::ResourceItem::Ptr associatedMeshCollectionsItem =
-        this->parameters()->findResource("associated mesh collections");
+      smtk::attribute::ResourceItem::Ptr associatedMeshResourcesItem =
+        this->parameters()->findResource("associated mesh resources");
 
       if (!internal_splitAssociatedMeshes(
-            srced, newEdge, newVert, associatedMeshCollectionsItem, modifiedMeshes))
+            srced, newEdge, newVert, associatedMeshResourcesItem, modifiedMeshes))
       {
         std::cout << "ERROR: Associated edge meshes failed to split properly." << std::endl;
       }
@@ -533,12 +533,12 @@ bool EdgeOperation::convertSelectedEndNodes(
       smtk::model::Edge toRemove(opsession->resource(), fromEid);
       srcsRemoved.push_back(toRemove);
 
-      smtk::attribute::ResourceItem::Ptr associatedMeshCollectionsItem =
-        this->parameters()->findResource("associated mesh collections");
+      smtk::attribute::ResourceItem::Ptr associatedMeshResourcesItem =
+        this->parameters()->findResource("associated mesh resources");
 
       // update associated mesh first before removing the edge
       if (!internal_mergeAssociatedMeshes(remVert, toRemove,
-            smtk::model::Edge(opsession->resource(), toEid), associatedMeshCollectionsItem,
+            smtk::model::Edge(opsession->resource(), toEid), associatedMeshResourcesItem,
             modifiedMeshes))
       {
         std::cout << "ERROR: Associated edge meshes failed to merge properly." << std::endl;

@@ -12,8 +12,8 @@
 
 #include "smtk/session/mesh/Exports.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/MeshSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/common/UUID.h"
 #include "smtk/common/UUIDGenerator.h"
@@ -29,7 +29,7 @@ namespace mesh
 
 /**\brief A tree for representing hierarchical relationships between mesh sets.
 
-   When mapping a collection of mesh sets to a model, it is necessary to
+   When mapping a mesh resource of mesh sets to a model, it is necessary to
    construct hierarchical relationships between mesh sets. This struct provides
    the description of these relationships, as well as a means of automatically
    constructing the hierarchy by extracting mesh shells.
@@ -52,7 +52,7 @@ struct SMTKMESHSESSION_EXPORT Topology
     smtk::common::UUIDArray m_children;
   };
 
-  smtk::mesh::CollectionPtr m_collection;
+  smtk::mesh::ResourcePtr m_resource;
   smtk::common::UUID m_modelId;
   std::map<smtk::common::UUID, Element> m_elements;
 };

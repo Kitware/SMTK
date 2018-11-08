@@ -12,7 +12,7 @@
 #include "smtk/mesh/moab/Writers.h"
 #include "smtk/mesh/moab/Interface.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/Interface.hpp"
@@ -110,31 +110,31 @@ bool write_file(const smtk::mesh::moab::InterfacePtr& interface, const std::stri
 }
 }
 
-//Write everything in a file into an existing collection.
-bool write(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Write everything in a file into an existing resource.
+bool write(const std::string& path, const smtk::mesh::ResourcePtr& r)
 {
-  return is_valid(c) && write_file(smtk::mesh::moab::extract_interface(c), path);
+  return is_valid(r) && write_file(smtk::mesh::moab::extract_interface(r), path);
 }
 
-//Write all the domain sets in a file into an existing collection
-bool write_domain(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Write all the domain sets in a file into an existing resource
+bool write_domain(const std::string& path, const smtk::mesh::ResourcePtr& r)
 {
   const std::string tag("MATERIAL_SET");
-  return is_valid(c) && write_file(smtk::mesh::moab::extract_interface(c), path, tag.c_str());
+  return is_valid(r) && write_file(smtk::mesh::moab::extract_interface(r), path, tag.c_str());
 }
 
-//Write all the neumann sets in a file into an existing collection
-bool write_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Write all the neumann sets in a file into an existing resource
+bool write_neumann(const std::string& path, const smtk::mesh::ResourcePtr& r)
 {
   const std::string tag("NEUMANN_SET");
-  return is_valid(c) && write_file(smtk::mesh::moab::extract_interface(c), path, tag.c_str());
+  return is_valid(r) && write_file(smtk::mesh::moab::extract_interface(r), path, tag.c_str());
 }
 
-//Write all the dirichlet sets in a file into an existing collection
-bool write_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//Write all the dirichlet sets in a file into an existing resource
+bool write_dirichlet(const std::string& path, const smtk::mesh::ResourcePtr& r)
 {
   const std::string tag("DIRICHLET_SET");
-  return is_valid(c) && write_file(smtk::mesh::moab::extract_interface(c), path, tag.c_str());
+  return is_valid(r) && write_file(smtk::mesh::moab::extract_interface(r), path, tag.c_str());
 }
 }
 }

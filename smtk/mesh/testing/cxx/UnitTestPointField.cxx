@@ -11,8 +11,8 @@
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/PointField.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -30,16 +30,16 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 std::string write_root = SMTK_SCRATCH_DIR;
 
-smtk::mesh::CollectionPtr load_mesh()
+smtk::mesh::ResourcePtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/2d/twoMeshes.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  smtk::io::importMesh(file_path, c);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  smtk::io::importMesh(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
 
-  return c;
+  return mr;
 }
 
 void cleanup(const std::string& file_path)
@@ -55,9 +55,9 @@ void cleanup(const std::string& file_path)
 
 void verify_partial_pointfields()
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
+  smtk::mesh::ResourcePtr mr = load_mesh();
 
-  smtk::mesh::MeshSet mesh = c->meshes(smtk::mesh::Dims2);
+  smtk::mesh::MeshSet mesh = mr->meshes(smtk::mesh::Dims2);
   smtk::mesh::MeshSet one = mesh.subset(0);
   smtk::mesh::MeshSet two = mesh.subset(1);
 
@@ -141,9 +141,9 @@ void verify_partial_pointfields()
 
 void verify_duplicate_pointfields()
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
+  smtk::mesh::ResourcePtr mr = load_mesh();
 
-  smtk::mesh::MeshSet mesh = c->meshes(smtk::mesh::Dims2);
+  smtk::mesh::MeshSet mesh = mr->meshes(smtk::mesh::Dims2);
   smtk::mesh::MeshSet one = mesh.subset(0);
   smtk::mesh::MeshSet two = mesh.subset(1);
 
@@ -273,8 +273,8 @@ public:
 
 void verify_incremental_data_assignment()
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
-  smtk::mesh::MeshSet mesh = c->meshes();
+  smtk::mesh::ResourcePtr mr = load_mesh();
+  smtk::mesh::MeshSet mesh = mr->meshes();
   std::function<double(double, double, double)> euclideanDistance = [](
     double x, double y, double z) { return std::sqrt(x * x + y * y + z * z); };
   smtk::mesh::PointField distancePointField =
@@ -298,9 +298,9 @@ void verify_pointfield_persistency()
 
   std::vector<double> fieldValues;
   {
-    smtk::mesh::CollectionPtr c = load_mesh();
+    smtk::mesh::ResourcePtr mr = load_mesh();
 
-    smtk::mesh::MeshSet mesh = c->meshes(smtk::mesh::Dims2);
+    smtk::mesh::MeshSet mesh = mr->meshes(smtk::mesh::Dims2);
     smtk::mesh::MeshSet one = mesh.subset(0);
 
     fieldValues.resize(one.points().size());
@@ -312,24 +312,24 @@ void verify_pointfield_persistency()
 
     //write out the mesh.
     smtk::io::WriteMesh write;
-    bool result = write(write_path, c);
+    bool result = write(write_path, mr);
     if (!result)
     {
       cleanup(write_path);
-      test(result == true, "failed to properly write out a valid hdf5 collection");
+      test(result == true, "failed to properly write out a valid hdf5 resource");
     }
   }
 
   {
     smtk::io::ReadMesh read;
-    smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-    read(write_path, c);
+    smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+    read(write_path, mr);
 
     //remove the file from disk
     cleanup(write_path);
 
     {
-      smtk::mesh::MeshSet mesh = c->meshes(smtk::mesh::Dims2);
+      smtk::mesh::MeshSet mesh = mr->meshes(smtk::mesh::Dims2);
       smtk::mesh::MeshSet two = mesh.subset(0);
 
       smtk::mesh::PointField pointfield = *two.pointFields().begin();

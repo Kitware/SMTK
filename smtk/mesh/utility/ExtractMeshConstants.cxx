@@ -10,9 +10,9 @@
 
 #include "smtk/mesh/utility/ExtractMeshConstants.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/PointConnectivity.h"
 #include "smtk/mesh/core/PointSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 

@@ -16,7 +16,7 @@
 
 #include "smtk/mesh/core/ForEachTypes.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/core/MeshSet.h"
 
 namespace py = pybind11;
@@ -62,7 +62,7 @@ PySharedPtrClass< smtk::mesh::MeshForEach > pybind11_init_smtk_mesh_MeshForEach(
     .def(py::init<>())
     .def("deepcopy", (smtk::mesh::MeshForEach & (smtk::mesh::MeshForEach::*)(::smtk::mesh::MeshForEach const &)) &smtk::mesh::MeshForEach::operator=)
     .def("forMesh", &smtk::mesh::MeshForEach::forMesh, py::arg("singleMesh"))
-    .def_readwrite("m_collection", &smtk::mesh::MeshForEach::m_collection)
+    .def_readwrite("m_resource", &smtk::mesh::MeshForEach::m_resource)
     ;
 
   return instance;
@@ -75,8 +75,8 @@ PySharedPtrClass< smtk::mesh::CellForEach > pybind11_init_smtk_mesh_CellForEach(
     .def(py::init<>())
     .def(py::init<bool>())
     .def("deepcopy", (smtk::mesh::CellForEach & (smtk::mesh::CellForEach::*)(::smtk::mesh::CellForEach const &)) &smtk::mesh::CellForEach::operator=)
-    .def("collection", (smtk::mesh::CollectionPtr (smtk::mesh::CellForEach::*)() const) &smtk::mesh::CellForEach::collection)
-    .def("collection", (void (smtk::mesh::CellForEach::*)(::smtk::mesh::CollectionPtr)) &smtk::mesh::CellForEach::collection, py::arg("c"))
+    .def("resource", (smtk::mesh::ResourcePtr (smtk::mesh::CellForEach::*)() const) &smtk::mesh::CellForEach::resource)
+    .def("resource", (void (smtk::mesh::CellForEach::*)(::smtk::mesh::ResourcePtr)) &smtk::mesh::CellForEach::resource, py::arg("c"))
     .def("coordinates", (std::vector<double, std::allocator<double> > const & (smtk::mesh::CellForEach::*)() const) &smtk::mesh::CellForEach::coordinates)
     .def("coordinates", (void (smtk::mesh::CellForEach::*)(::std::vector<double, std::allocator<double> > *)) &smtk::mesh::CellForEach::coordinates, py::arg("coords"))
     .def("forCell", &smtk::mesh::CellForEach::forCell, py::arg("cellId"), py::arg("cellType"), py::arg("numPointIds"))
@@ -95,7 +95,7 @@ PySharedPtrClass< smtk::mesh::PointForEach > pybind11_init_smtk_mesh_PointForEac
     .def(py::init<>())
     .def("deepcopy", (smtk::mesh::PointForEach & (smtk::mesh::PointForEach::*)(::smtk::mesh::PointForEach const &)) &smtk::mesh::PointForEach::operator=)
     .def("forPoints", &smtk::mesh::PointForEach::forPoints, py::arg("pointIds"), py::arg("xyz"), py::arg("coordinatesModified"))
-    .def_readwrite("m_collection", &smtk::mesh::PointForEach::m_collection)
+    .def_readwrite("m_resource", &smtk::mesh::PointForEach::m_resource)
     ;
   return instance;
 }

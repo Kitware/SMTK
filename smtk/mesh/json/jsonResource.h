@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_mesh_json_jsonCollection_h
-#define __smtk_mesh_json_jsonCollection_h
+#ifndef __smtk_mesh_json_jsonResource_h
+#define __smtk_mesh_json_jsonResource_h
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "nlohmann/json.hpp"
 
@@ -20,9 +20,9 @@ namespace mesh
 {
 namespace json
 {
-void to_json(nlohmann::json&, const CollectionPtr&);
+void to_json(nlohmann::json&, const ResourcePtr&);
 
-void from_json(const nlohmann::json&, CollectionPtr&);
+void from_json(const nlohmann::json&, ResourcePtr&);
 }
 }
 }

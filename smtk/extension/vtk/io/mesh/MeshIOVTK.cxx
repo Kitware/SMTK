@@ -15,7 +15,7 @@
 #include "smtk/io/mesh/Format.h"
 #include "smtk/io/mesh/MeshIO.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/extension/vtk/io/ImportAsVTKData.h"
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
@@ -59,24 +59,24 @@ MeshIOVTK::MeshIOVTK()
   }
 }
 
-smtk::mesh::CollectionPtr MeshIOVTK::importMesh(const std::string& filePath,
+smtk::mesh::ResourcePtr MeshIOVTK::importMesh(const std::string& filePath,
   const smtk::mesh::InterfacePtr& interface, const std::string& domainPropertyName) const
 {
   smtk::extension::vtk::io::mesh::ImportVTKData import;
   return import(filePath, interface, domainPropertyName);
 }
 
-bool MeshIOVTK::importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool MeshIOVTK::importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
   const std::string& domainPropertyName) const
 {
   smtk::extension::vtk::io::mesh::ImportVTKData import;
-  return import(filePath, collection, domainPropertyName);
+  return import(filePath, resource, domainPropertyName);
 }
 
-bool MeshIOVTK::exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const
+bool MeshIOVTK::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource) const
 {
   smtk::extension::vtk::io::mesh::ExportVTKData export_;
-  return export_(filePath, collection, "");
+  return export_(filePath, resource, "");
 }
 }
 }

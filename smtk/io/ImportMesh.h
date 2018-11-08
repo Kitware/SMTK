@@ -24,7 +24,7 @@ namespace smtk
 namespace io
 {
 
-/**\brief Import an entire SMTK mesh collection from a file, or just sub-sections
+/**\brief Import an entire SMTK mesh resource from a file, or just sub-sections
   *
   */
 class SMTKCORE_EXPORT ImportMesh
@@ -40,24 +40,24 @@ public:
 
   static bool ExtensionIsSupported(const std::string& ext);
 
-  //Load the domain sets from a moab data file as a new collection with the
+  //Load the domain sets from a moab data file as a new resource with the
   //given interface.
-  smtk::mesh::CollectionPtr operator()(const std::string& filePath,
+  smtk::mesh::ResourcePtr operator()(const std::string& filePath,
     const smtk::mesh::InterfacePtr& interface,
     std::string domainPropertyName = std::string()) const;
-  bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr resource,
     std::string domainPropertyName = std::string()) const;
 
   //Return the file format selected to read the file at <filePath>.
   smtk::io::mesh::Format fileFormat(const std::string& filePath);
 };
 
-SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(
+SMTKCORE_EXPORT smtk::mesh::ResourcePtr importMesh(
   const std::string& filePath, const smtk::mesh::InterfacePtr& interface);
-SMTKCORE_EXPORT smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+SMTKCORE_EXPORT smtk::mesh::ResourcePtr importMesh(const std::string& filePath,
   const smtk::mesh::InterfacePtr& interface, const std::string& domainPropertyName);
-SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection);
-SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource);
+SMTKCORE_EXPORT bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
   const std::string& domainPropertyName);
 SMTKCORE_EXPORT smtk::io::mesh::Format meshFileFormat(const std::string& filePath);
 }

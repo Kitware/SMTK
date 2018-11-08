@@ -34,7 +34,7 @@ class PointField;
 typedef std::vector<smtk::mesh::MeshSet> MeshList;
 typedef std::set<smtk::mesh::MeshSet> MeshSets;
 
-//Represents a collection of meshes that have been constructed by a Collection
+//Represents a collection of meshes that have been constructed by a Resource
 //We represent the collection of meshes by holding onto the parent entity
 //and a vector/range of mesh entities
 class SMTKCORE_EXPORT MeshSet
@@ -43,21 +43,21 @@ class SMTKCORE_EXPORT MeshSet
   friend SMTKCORE_EXPORT MeshSet set_difference(const MeshSet& a, const MeshSet& b);
   friend SMTKCORE_EXPORT MeshSet set_union(const MeshSet& a, const MeshSet& b);
   friend SMTKCORE_EXPORT void for_each(const MeshSet& a, MeshForEach& filter);
-  friend class Collection; //required for deletion of meshes
+  friend class Resource; //required for deletion of meshes
 public:
   //default constructor generates an invalid MeshSet
   MeshSet();
 
   //construct a MeshSet that represents all meshes that are children
   //of the handle
-  MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle handle);
-  MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handle handle);
+  MeshSet(const smtk::mesh::ResourcePtr& parent, smtk::mesh::Handle handle);
+  MeshSet(const smtk::mesh::ConstResourcePtr& parent, smtk::mesh::Handle handle);
 
   //construct a MeshSet that represents an arbitrary unkown subset meshes that
   //are children of the handle.
-  MeshSet(const smtk::mesh::CollectionPtr& parent, smtk::mesh::Handle handle,
+  MeshSet(const smtk::mesh::ResourcePtr& parent, smtk::mesh::Handle handle,
     const smtk::mesh::HandleRange& range);
-  MeshSet(const smtk::mesh::ConstCollectionPtr& parent, smtk::mesh::Handle handle,
+  MeshSet(const smtk::mesh::ConstResourcePtr& parent, smtk::mesh::Handle handle,
     const smtk::mesh::HandleRange& range);
 
   //Copy Constructor required for rule of 3
@@ -112,7 +112,7 @@ public:
   smtk::common::UUIDArray modelEntityIds() const;
 
   //append the passed EntityRefArray with the model entities associated with
-  //this meshset, and return true on success. If the MeshSet's parent collection
+  //this meshset, and return true on success. If the MeshSet's parent resource
   //does not have its ModelManager set, this method will fail even though
   //modelEntityIds() will still be valid.
   bool modelEntities(smtk::model::EntityRefArray&) const;
@@ -200,11 +200,11 @@ public:
   //get the underlying HandleRange that this MeshSet represents
   const smtk::mesh::HandleRange& range() const { return m_range; }
 
-  //get the underlying collection that this MeshSet belongs to
-  const smtk::mesh::CollectionPtr& collection() const;
+  //get the underlying resource that this MeshSet belongs to
+  const smtk::mesh::ResourcePtr& resource() const;
 
 private:
-  smtk::mesh::CollectionPtr m_parent;
+  smtk::mesh::ResourcePtr m_parent;
   smtk::mesh::Handle m_handle;
   smtk::mesh::HandleRange m_range; //range of entity sets
   mutable smtk::common::UUID m_id;
@@ -218,7 +218,7 @@ private:
 //you should use CellSet. If you need to find the result of a intersection
 //based on the shared points you want to use CellSet and the point_intersect
 //call.
-//Note: If the meshsets come from different collections the result will
+//Note: If the meshsets come from different resources the result will
 //always be empty
 SMTKCORE_EXPORT MeshSet set_intersect(const MeshSet& a, const MeshSet& b);
 
@@ -228,12 +228,12 @@ SMTKCORE_EXPORT MeshSet set_intersect(const MeshSet& a, const MeshSet& b);
 //you should use CellSet. If you need to find the result of a difference
 //based on the shared points you want to use CellSet and the point_difference
 //call.
-//Note: If the meshsets come from different collections the result will
+//Note: If the meshsets come from different resources the result will
 //always be empty
 SMTKCORE_EXPORT MeshSet set_difference(const MeshSet& a, const MeshSet& b);
 
 //union two mesh sets, placing the results in the return mesh set
-//Note: If the meshsets come from different collections the result will
+//Note: If the meshsets come from different resources the result will
 //always be empty
 SMTKCORE_EXPORT MeshSet set_union(const MeshSet& a, const MeshSet& b);
 

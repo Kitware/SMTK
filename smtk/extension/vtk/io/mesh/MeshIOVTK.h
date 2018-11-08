@@ -40,19 +40,19 @@ public:
   // smtkAutoInitComponentMacro(smtk_extension_vtk_io_MeshIOVTK)
   MeshIOVTK();
 
-  //Load a vtk XML data file as a new collection into the given manager
-  //Returns an invalid collection that is NOT part of the manager if the
+  //Load a vtk XML data file as a new resource into the given manager
+  //Returns an invalid resource that is NOT part of the manager if the
   //file can't be loaded
-  smtk::mesh::CollectionPtr importMesh(const std::string& filePath,
+  smtk::mesh::ResourcePtr importMesh(const std::string& filePath,
     const smtk::mesh::InterfacePtr& interface,
     const std::string& domainPropertyName) const override;
 
-  //Merge a vtk data file into an existing valid collection.
-  bool importMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  //Merge a vtk data file into an existing valid resource.
+  bool importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
     const std::string& domainPropertyName) const override;
 
-  //Epxort a collection to a VTK XML unstructured grid or polydata.
-  bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection) const override;
+  //Epxort a resource to a VTK XML unstructured grid or polydata.
+  bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource) const override;
 };
 }
 }

@@ -30,10 +30,10 @@
             Select the mesh edge to split or mesh vertex to demote.
           </BriefDescription>
         </MeshSelection>
-        <Resource Name="associated mesh collections" Extensible="1"
+        <Resource Name="associated mesh resources" Extensible="1"
                   NumberOfRequiredValues="0" AdvanceLevel="11">
           <Accepts>
-            <Resource Name="smtk::mesh::Collection"/>
+            <Resource Name="smtk::mesh::Resource"/>
           </Accepts>
         </Resource>
       </ItemDefinitions>

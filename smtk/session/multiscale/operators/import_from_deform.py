@@ -147,22 +147,23 @@ class import_from_deform(smtk.operation.Operation):
 
         # Import the vtk data object as an SMTK mesh
         cnvrt = smtk.io.vtk.ImportVTKData()
-        collection = cnvrt(volumeDataContainer, resource.meshes(), 'ZoneIds')
+        meshResource = cnvrt(volumeDataContainer, resource.meshes(), 'ZoneIds')
 
         # Ensure that the import succeeded
-        if not collection or not collection.isValid():
+        if not meshResource or not meshResource.isValid():
             return self.createResult(smtk.operation.Operation.Outcome.FAILED)
 
         # Assign its model manager to the one associated with this session
-        collection.modelResource = resource
-        collection.name("DEFORM mesh")
+        meshResource.modelResource = resource
+        meshResource.name("DEFORM mesh")
 
         # Construct the topology
-        session.addTopology(smtk.session.mesh.Topology(collection))
+        session.addTopology(smtk.session.mesh.Topology(meshResource))
 
-        # Our collections will already have a UUID, so here we create a model
+        # Our mesh resources will already have a UUID, so here we create a model
         # given the model manager and UUID
-        model = resource.insertModel(collection.entity(), 2, 2, "DEFORM model")
+        model = resource.insertModel(
+            meshResource.entity(), 2, 2, "DEFORM model")
 
         # Declare the model as "dangling" so it will be transcribed
         session.declareDanglingEntity(model)
@@ -170,7 +171,7 @@ class import_from_deform(smtk.operation.Operation):
         # Set the model's session to point to the current session
         model.setSession(smtk.model.SessionRef(resource, session.sessionId()))
 
-        collection.associateToModel(model.entity())
+        meshResource.associateToModel(model.entity())
 
         # If we don't call "transcribe" ourselves, it never gets called.
         session.transcribe(model, smtk.model.SESSION_EVERYTHING, False)

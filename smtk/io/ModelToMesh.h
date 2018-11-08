@@ -37,10 +37,10 @@ public:
   double getMergeTolerance() const { return m_tolerance; }
   void setMergeTolerance(double tol) { m_tolerance = tol; }
 
-  //convert smtk::model to a collection
-  smtk::mesh::CollectionPtr operator()(const smtk::model::ResourcePtr& modelResource) const;
-  //convert smtk::model to a collection
-  smtk::mesh::CollectionPtr operator()(const smtk::model::Model& model) const;
+  //convert smtk::model::resource to a smtk::mesh::resource
+  smtk::mesh::ResourcePtr operator()(const smtk::model::ResourcePtr& modelResource) const;
+  //convert smtk::model to a smtk::mesh::resource
+  smtk::mesh::ResourcePtr operator()(const smtk::model::Model& model) const;
 
 private:
   bool m_mergeDuplicates;

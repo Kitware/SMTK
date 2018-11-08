@@ -24,7 +24,7 @@ namespace smtk
 namespace io
 {
 
-/**\brief Export an entire SMTK mesh collection from a file, or just sub-sections
+/**\brief Export an entire SMTK mesh resource from a file, or just sub-sections
   *
   */
 class SMTKCORE_EXPORT ExportMesh
@@ -38,15 +38,15 @@ public:
 
   static std::vector<smtk::io::mesh::MeshIOPtr>& SupportedIOTypes();
 
-  bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection) const;
-  bool operator()(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+  bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource) const;
+  bool operator()(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
     smtk::model::ResourcePtr resource, const std::string& modelPropertyName) const;
 };
 
 SMTKCORE_EXPORT
-bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection);
+bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource);
 SMTKCORE_EXPORT
-bool exportMesh(const std::string& filePath, smtk::mesh::CollectionPtr collection,
+bool exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
   smtk::model::ResourcePtr resource, const std::string& modelPropertyName);
 }
 }

@@ -28,8 +28,8 @@ class ResourceItemDefinition;
 
 /**\brief Hold resources as an attribute value.
   *
-  * An attribute whose value is a resource (such as a mesh collection,
-  * model manager, or even an attribute collection).
+  * An attribute whose value is a resource (such as a mesh resource,
+  * model manager, or even an attribute resource).
   */
 class SMTKCORE_EXPORT ResourceItem : public ReferenceItem
 {

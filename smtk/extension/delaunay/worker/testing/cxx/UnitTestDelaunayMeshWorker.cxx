@@ -35,7 +35,7 @@
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
 #include "smtk/model/Edge.h"
@@ -231,7 +231,7 @@ int main(int argc, char** const argv)
   smtk::model::Face face = model->modelResource()->findEntitiesOfType(smtk::model::FACE)[0];
 
   // Access the mesh resource associated with the model
-  smtk::mesh::CollectionPtr triangulatedFace =
+  smtk::mesh::ResourcePtr triangulatedFace =
     model->modelResource()->meshes()->associatedCollections(face)[0];
 
   // confirm that the number of points and cells match our expectations

@@ -64,7 +64,7 @@ public:
   //If the current interface is read-only, the AllocatorPtr that is returned
   //will be NULL.
   //
-  //Note: Merely fetching a valid allocator will mark the collection as
+  //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   smtk::mesh::AllocatorPtr allocator() override;
@@ -76,7 +76,7 @@ public:
   //If the current interface is read-only, the BufferedCellAllocatorPtr that is
   //returned will be NULL.
   //
-  //Note: Merely fetching a valid allocator will mark the collection as
+  //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   smtk::mesh::BufferedCellAllocatorPtr bufferedCellAllocator() override;
@@ -88,7 +88,7 @@ public:
   //If the current interface is read-only, the IncrementalAllocatorPtr that is
   //returned will be NULL.
   //
-  //Note: Merely fetching a valid allocator will mark the collection as
+  //Note: Merely fetching a valid allocator will mark the resource as
   //modified. This is done instead of on a per-allocation basis so that
   //modification state changes don't impact performance.
   smtk::mesh::IncrementalAllocatorPtr incrementalAllocator() override;

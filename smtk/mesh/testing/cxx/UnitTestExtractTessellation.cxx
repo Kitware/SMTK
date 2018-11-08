@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -78,9 +78,9 @@ public:
     m_currentLocation += numPts;
   }
 
-  smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
+  smtk::mesh::CellSet cells(smtk::mesh::ResourcePtr mr) const
   {
-    return smtk::mesh::CellSet(c, m_cells);
+    return smtk::mesh::CellSet(mr, m_cells);
   }
 };
 
@@ -120,22 +120,22 @@ public:
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-smtk::mesh::CollectionPtr load_mesh()
+smtk::mesh::ResourcePtr load_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/sixth_hexflatcore.h5m";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  smtk::io::importMesh(file_path, c);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  smtk::io::importMesh(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
 
-  return c;
+  return mr;
 }
 
-void verify_constructors(const smtk::mesh::CollectionPtr& c)
+void verify_constructors(const smtk::mesh::ResourcePtr& mr)
 {
 
-  smtk::mesh::MeshSet ms = c->meshes();
+  smtk::mesh::MeshSet ms = mr->meshes();
 
   //construct tessellation object that only wants connectivity info
   {
@@ -237,12 +237,12 @@ void verify_constructors(const smtk::mesh::CollectionPtr& c)
   }
 }
 
-void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
+void verify_alloc_lengths_meshset(const smtk::mesh::ResourcePtr& mr)
 {
 
-  smtk::mesh::MeshSet all_meshes = c->meshes();
-  smtk::mesh::MeshSet mesh3d = c->meshes(smtk::mesh::Dims3);
-  smtk::mesh::MeshSet mesh2d = c->meshes(smtk::mesh::Dims2);
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
+  smtk::mesh::MeshSet mesh3d = mr->meshes(smtk::mesh::Dims3);
+  smtk::mesh::MeshSet mesh2d = mr->meshes(smtk::mesh::Dims2);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -277,12 +277,12 @@ void verify_alloc_lengths_meshset(const smtk::mesh::CollectionPtr& c)
   test(static_cast<std::size_t>(numberOfPoints) == mesh2d.points().size());
 }
 
-void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
+void verify_alloc_lengths_cellset(const smtk::mesh::ResourcePtr& mr)
 {
 
-  smtk::mesh::CellSet all_cells = c->cells();
-  smtk::mesh::CellSet cells3d = c->cells(smtk::mesh::Dims3);
-  smtk::mesh::CellSet cells2d = c->cells(smtk::mesh::Dims2);
+  smtk::mesh::CellSet all_cells = mr->cells();
+  smtk::mesh::CellSet cells3d = mr->cells(smtk::mesh::Dims3);
+  smtk::mesh::CellSet cells2d = mr->cells(smtk::mesh::Dims2);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -317,11 +317,11 @@ void verify_alloc_lengths_cellset(const smtk::mesh::CollectionPtr& c)
   test(static_cast<std::size_t>(numberOfPoints) == cells2d.points().size());
 }
 
-void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
+void verify_extract_packed_single_type(const smtk::mesh::ResourcePtr& mr)
 {
 
-  smtk::mesh::MeshSet all_meshes = c->meshes();
-  smtk::mesh::CellSet quads = c->cells(smtk::mesh::Quad);
+  smtk::mesh::MeshSet all_meshes = mr->meshes();
+  smtk::mesh::CellSet quads = mr->cells(smtk::mesh::Quad);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -345,9 +345,9 @@ void verify_extract_packed_single_type(const smtk::mesh::CollectionPtr& c)
   smtk::mesh::for_each(quads.points(), vp);
 }
 
-void verify_extract_only_connectivity_and_types(const smtk::mesh::CollectionPtr& c)
+void verify_extract_only_connectivity_and_types(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::CellSet cells3d = c->cells(smtk::mesh::Dims3);
+  smtk::mesh::CellSet cells3d = mr->cells(smtk::mesh::Dims3);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -371,12 +371,12 @@ void verify_extract_only_connectivity_and_types(const smtk::mesh::CollectionPtr&
   //what we see when we iterate
   VerifyCells vc(cells3d, conn, locations, types, false);
   smtk::mesh::for_each(cells3d, vc);
-  test(vc.cells(c) == cells3d);
+  test(vc.cells(mr) == cells3d);
 }
 
-void verify_extract_all_to_vtk(const smtk::mesh::CollectionPtr& c)
+void verify_extract_all_to_vtk(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::CellSet cells3d = c->cells(smtk::mesh::Dims3);
+  smtk::mesh::CellSet cells3d = mr->cells(smtk::mesh::Dims3);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -400,16 +400,16 @@ void verify_extract_all_to_vtk(const smtk::mesh::CollectionPtr& c)
   //what we see when we iterate
   VerifyCells vc(cells3d, conn, locations, types, true);
   smtk::mesh::for_each(cells3d, vc);
-  test(vc.cells(c) == cells3d);
+  test(vc.cells(mr) == cells3d);
 
   //lets iterate the points and make sure they all match
   VerifyPoints<double> vp(dpoints);
   smtk::mesh::for_each(cells3d.points(), vp);
 }
 
-void verify_extract_only_connectivity_to_vtk(const smtk::mesh::CollectionPtr& c)
+void verify_extract_only_connectivity_to_vtk(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::CellSet cells2d = c->cells(smtk::mesh::Dims2);
+  smtk::mesh::CellSet cells2d = mr->cells(smtk::mesh::Dims2);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -431,13 +431,13 @@ void verify_extract_only_connectivity_to_vtk(const smtk::mesh::CollectionPtr& c)
   //what we see when we iterate
   VerifyCells vc(cells2d, conn, locations, types, true);
   smtk::mesh::for_each(cells2d, vc);
-  test(vc.cells(c) == cells2d);
+  test(vc.cells(mr) == cells2d);
 }
 
-void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::CollectionPtr& c)
+void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::CellSet cells = c->cells(smtk::mesh::Dims1);
-  cells.append(c->cells(smtk::mesh::Dims2));
+  smtk::mesh::CellSet cells = mr->cells(smtk::mesh::Dims1);
+  cells.append(mr->cells(smtk::mesh::Dims2));
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -454,32 +454,32 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Coll
   smtk::mesh::utility::PreAllocatedTessellation tess(&conn[0], &locations[0], &types[0]);
 
   //extract in releation to the points of all the meshes
-  smtk::mesh::utility::extractTessellation(cells, c->points(), tess);
+  smtk::mesh::utility::extractTessellation(cells, mr->points(), tess);
 
   // //lets iterate the cells, and verify that the extraction matches
   // //what we see when we iterate
-  VerifyCells vc(c->cells(), conn, locations, types, true);
+  VerifyCells vc(mr->cells(), conn, locations, types, true);
   smtk::mesh::for_each(cells, vc);
-  test(vc.cells(c) == cells);
+  test(vc.cells(mr) == cells);
 }
 }
 
 int UnitTestExtractTessellation(int, char** const)
 {
-  smtk::mesh::CollectionPtr c = load_mesh();
+  smtk::mesh::ResourcePtr mr = load_mesh();
 
-  verify_constructors(c);
+  verify_constructors(mr);
 
-  verify_alloc_lengths_meshset(c);
-  verify_alloc_lengths_cellset(c);
+  verify_alloc_lengths_meshset(mr);
+  verify_alloc_lengths_cellset(mr);
 
-  verify_extract_packed_single_type(c);
-  verify_extract_only_connectivity_and_types(c);
+  verify_extract_packed_single_type(mr);
+  verify_extract_only_connectivity_and_types(mr);
 
-  verify_extract_all_to_vtk(c);
-  verify_extract_only_connectivity_to_vtk(c);
+  verify_extract_all_to_vtk(mr);
+  verify_extract_only_connectivity_to_vtk(mr);
 
-  verify_extract_volume_meshes_by_global_points_to_vtk(c);
+  verify_extract_volume_meshes_by_global_points_to_vtk(mr);
 
   return 0;
 }

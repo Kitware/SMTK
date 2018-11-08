@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
@@ -86,9 +86,9 @@ public:
     m_currentLocation += numPts;
   }
 
-  smtk::mesh::CellSet cells(smtk::mesh::CollectionPtr c) const
+  smtk::mesh::CellSet cells(smtk::mesh::ResourcePtr mr) const
   {
-    return smtk::mesh::CellSet(c, m_cells);
+    return smtk::mesh::CellSet(mr, m_cells);
   }
 };
 
@@ -151,10 +151,10 @@ void create_simple_mesh_model(smtk::model::ResourcePtr resource)
 }
 
 void verify_alloc_lengths_entityref(
-  const smtk::model::EntityRef& eRef, const smtk::mesh::CollectionPtr& c)
+  const smtk::model::EntityRef& eRef, const smtk::mesh::ResourcePtr& mr)
 {
 
-  smtk::mesh::MeshSet mesh = c->findAssociatedMeshes(eRef);
+  smtk::mesh::MeshSet mesh = mr->findAssociatedMeshes(eRef);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -162,7 +162,7 @@ void verify_alloc_lengths_entityref(
 
   //query for all cells
   smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
-    eRef, c, connectivityLength, numberOfCells, numberOfPoints);
+    eRef, mr, connectivityLength, numberOfCells, numberOfPoints);
 
   test(connectivityLength != -1);
   test(numberOfCells != -1);
@@ -173,7 +173,7 @@ void verify_alloc_lengths_entityref(
   test(static_cast<std::size_t>(numberOfPoints) == mesh.points().size());
 }
 
-void verify_extract(const smtk::model::EntityRef& eRef, const smtk::mesh::CollectionPtr& c)
+void verify_extract(const smtk::model::EntityRef& eRef, const smtk::mesh::ResourcePtr& mr)
 {
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -181,7 +181,7 @@ void verify_extract(const smtk::model::EntityRef& eRef, const smtk::mesh::Collec
 
   //query for all cells
   smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
-    eRef, c, connectivityLength, numberOfCells, numberOfPoints);
+    eRef, mr, connectivityLength, numberOfCells, numberOfPoints);
 
   std::vector<std::int64_t> conn(connectivityLength);
   std::vector<float> fpoints(numberOfPoints * 3);
@@ -190,18 +190,18 @@ void verify_extract(const smtk::model::EntityRef& eRef, const smtk::mesh::Collec
 
   ftess.disableVTKStyleConnectivity(true);
   ftess.disableVTKCellTypes(true);
-  smtk::mesh::utility::extractTessellation(eRef, c, ftess);
+  smtk::mesh::utility::extractTessellation(eRef, mr, ftess);
 
   //lets iterate the points and make sure they all match
-  smtk::mesh::CellSet cells = c->findAssociatedCells(eRef);
+  smtk::mesh::CellSet cells = mr->findAssociatedCells(eRef);
   VerifyPoints<float> vp(fpoints);
   smtk::mesh::for_each(cells.points(), vp);
 }
 
 void verify_extract_volume_meshes_by_global_points_to_vtk(
-  const smtk::model::EntityRef& eRef, const smtk::mesh::CollectionPtr& c)
+  const smtk::model::EntityRef& eRef, const smtk::mesh::ResourcePtr& mr)
 {
-  smtk::mesh::CellSet cells = c->findAssociatedCells(eRef);
+  smtk::mesh::CellSet cells = mr->findAssociatedCells(eRef);
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -209,7 +209,7 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(
 
   //query for all cells
   smtk::mesh::utility::PreAllocatedTessellation::determineAllocationLengths(
-    eRef, c, connectivityLength, numberOfCells, numberOfPoints);
+    eRef, mr, connectivityLength, numberOfCells, numberOfPoints);
 
   std::vector<std::int64_t> conn(connectivityLength + numberOfCells);
   std::vector<std::int64_t> locations(numberOfCells);
@@ -218,13 +218,13 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(
   smtk::mesh::utility::PreAllocatedTessellation tess(&conn[0], &locations[0], &types[0]);
 
   //extract in releation to the points of all the meshes
-  smtk::mesh::utility::extractTessellation(eRef, c, c->points(), tess);
+  smtk::mesh::utility::extractTessellation(eRef, mr, mr->points(), tess);
 
   // //lets iterate the cells, and verify that the extraction matches
   // //what we see when we iterate
-  VerifyCells vc(c->cells(), conn, locations, types, true);
+  VerifyCells vc(mr->cells(), conn, locations, types, true);
   smtk::mesh::for_each(cells, vc);
-  test(vc.cells(c) == cells);
+  test(vc.cells(mr) == cells);
 }
 
 void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
@@ -258,7 +258,7 @@ int UnitTestExtractTessellationOfModel(int, char** const)
 
   smtk::io::ModelToMesh convert;
   convert.setIsMerging(false);
-  smtk::mesh::CollectionPtr c = convert(modelResource);
+  smtk::mesh::ResourcePtr mr = convert(modelResource);
 
   typedef smtk::model::EntityRefs EntityRefs;
   typedef smtk::model::EntityTypeBits EntityTypeBits;
@@ -275,9 +275,9 @@ int UnitTestExtractTessellationOfModel(int, char** const)
     if (!currentEnts.empty())
     {
       eRef = *currentEnts.begin();
-      verify_alloc_lengths_entityref(eRef, c);
-      verify_extract(eRef, c);
-      verify_extract_volume_meshes_by_global_points_to_vtk(eRef, c);
+      verify_alloc_lengths_entityref(eRef, mr);
+      verify_extract(eRef, mr);
+      verify_extract_volume_meshes_by_global_points_to_vtk(eRef, mr);
     }
   }
 

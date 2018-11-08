@@ -38,7 +38,7 @@ public:
   typedef value_type& reference;
   typedef const value_type& const_reference;
 
-  PointConnectivity(const smtk::mesh::CollectionPtr& parent, const smtk::mesh::HandleRange& range);
+  PointConnectivity(const smtk::mesh::ResourcePtr& parent, const smtk::mesh::HandleRange& range);
 
   //Copy Constructor required for rule of 3
   PointConnectivity(const PointConnectivity& other);
@@ -76,7 +76,7 @@ public:
     smtk::mesh::CellType& cellType, int& numPts, const smtk::mesh::Handle*& points);
 
 private:
-  smtk::mesh::CollectionPtr m_parent;
+  smtk::mesh::ResourcePtr m_parent;
 
   smtk::mesh::ConnectivityStoragePtr m_connectivity;
   smtk::mesh::ConnectivityStorage::IterationState m_iteratorLocation;

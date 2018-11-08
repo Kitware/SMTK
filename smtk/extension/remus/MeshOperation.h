@@ -38,7 +38,7 @@ namespace remus
   *
   * Key ["remusRequirements"]: The filled out requirements of the worker
   *
-  * Key ["meshingControlAttributes"]: The attribute collection of the worker
+  * Key ["meshingControlAttributes"]: The attribute resource of the worker
   *
   *
   *

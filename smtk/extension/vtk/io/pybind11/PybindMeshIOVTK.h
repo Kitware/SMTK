@@ -26,9 +26,9 @@ PySharedPtrClass< smtk::extension::vtk::io::mesh::MeshIOVTK, smtk::io::mesh::Mes
     .def(py::init<>())
     .def(py::init<::smtk::extension::vtk::io::mesh::MeshIOVTK const &>())
     .def("deepcopy", (smtk::extension::vtk::io::mesh::MeshIOVTK & (smtk::extension::vtk::io::mesh::MeshIOVTK::*)(::smtk::extension::vtk::io::mesh::MeshIOVTK const &)) &smtk::extension::vtk::io::mesh::MeshIOVTK::operator=)
-    .def("importMesh", (smtk::mesh::CollectionPtr (smtk::extension::vtk::io::mesh::MeshIOVTK::*)(::std::string const &, const ::smtk::mesh::InterfacePtr &, ::std::string const &) const) &smtk::extension::vtk::io::mesh::MeshIOVTK::importMesh, py::arg("filePath"), py::arg("interface"), py::arg("domainPropertyName"))
-    .def("importMesh", (bool (smtk::extension::vtk::io::mesh::MeshIOVTK::*)(::std::string const &, ::smtk::mesh::CollectionPtr, ::std::string const &) const) &smtk::extension::vtk::io::mesh::MeshIOVTK::importMesh, py::arg("filePath"), py::arg("collection"), py::arg("domainPropertyName"))
-    .def("exportMesh", &smtk::extension::vtk::io::mesh::MeshIOVTK::exportMesh, py::arg("filePath"), py::arg("collection"))
+    .def("importMesh", (smtk::mesh::ResourcePtr (smtk::extension::vtk::io::mesh::MeshIOVTK::*)(::std::string const &, const ::smtk::mesh::InterfacePtr &, ::std::string const &) const) &smtk::extension::vtk::io::mesh::MeshIOVTK::importMesh, py::arg("filePath"), py::arg("interface"), py::arg("domainPropertyName"))
+    .def("importMesh", (bool (smtk::extension::vtk::io::mesh::MeshIOVTK::*)(::std::string const &, ::smtk::mesh::ResourcePtr, ::std::string const &) const) &smtk::extension::vtk::io::mesh::MeshIOVTK::importMesh, py::arg("filePath"), py::arg("resource"), py::arg("domainPropertyName"))
+    .def("exportMesh", &smtk::extension::vtk::io::mesh::MeshIOVTK::exportMesh, py::arg("filePath"), py::arg("resource"))
     ;
   return instance;
 }

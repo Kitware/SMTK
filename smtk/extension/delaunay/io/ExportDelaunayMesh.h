@@ -13,7 +13,7 @@
 #define __smtk_extension_delaunay_io_ExportDelaunayMesh_h
 
 #include "smtk/extension/delaunay/Exports.h"
-//forward declarers for Manager and Collection
+//forward declarers for Manager and Resource
 #include "smtk/PublicPointerDefs.h"
 
 namespace Delaunay
@@ -55,9 +55,9 @@ public:
   std::vector<Delaunay::Shape::Point> operator()(const smtk::model::Loop&) const;
 
   //Export a model loop with a mesh representation stored in the given
-  // collection into a vector of Delaunay points.
+  // resource into a vector of Delaunay points.
   std::vector<Delaunay::Shape::Point> operator()(
-    const smtk::model::Loop&, smtk::mesh::CollectionPtr&) const;
+    const smtk::model::Loop&, smtk::mesh::ResourcePtr&) const;
 };
 }
 }

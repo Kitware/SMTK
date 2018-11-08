@@ -23,8 +23,8 @@ PySharedPtrClass< smtk::io::ModelToMesh > pybind11_init_smtk_io_ModelToMesh(py::
   instance
     .def(py::init<>())
     .def(py::init<::smtk::io::ModelToMesh const &>())
-    .def("__call__", (smtk::mesh::CollectionPtr (smtk::io::ModelToMesh::*)(::smtk::model::ResourcePtr const &) const) &smtk::io::ModelToMesh::operator())
-    .def("__call__", (smtk::mesh::CollectionPtr (smtk::io::ModelToMesh::*)(::smtk::model::Model const &) const) &smtk::io::ModelToMesh::operator())
+    .def("__call__", (smtk::mesh::ResourcePtr (smtk::io::ModelToMesh::*)(::smtk::model::ResourcePtr const &) const) &smtk::io::ModelToMesh::operator())
+    .def("__call__", (smtk::mesh::ResourcePtr (smtk::io::ModelToMesh::*)(::smtk::model::Model const &) const) &smtk::io::ModelToMesh::operator())
     .def("deepcopy", (smtk::io::ModelToMesh & (smtk::io::ModelToMesh::*)(::smtk::io::ModelToMesh const &)) &smtk::io::ModelToMesh::operator=)
     .def("isMergingEnabled", &smtk::io::ModelToMesh::isMergingEnabled)
     .def("setIsMerging", &smtk::io::ModelToMesh::setIsMerging, py::arg("m"))

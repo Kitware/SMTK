@@ -81,7 +81,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 
   // Process views
   // First write toplevel views and then write out the non-toplevel - note that the
-  // attribute or view collection do care about this - the assumption
+  // attribute resource or views do not care about this - the assumption
   // is that the designer would probably like all the toplevel views clustered together
   json viewsObj = json::array();
   bool isTop;

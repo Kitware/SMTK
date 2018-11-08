@@ -21,7 +21,7 @@ PySharedPtrClass< smtk::mesh::PointConnectivity > pybind11_init_smtk_mesh_PointC
 {
   PySharedPtrClass< smtk::mesh::PointConnectivity > instance(m, "PointConnectivity");
   instance
-    .def(py::init<::smtk::mesh::CollectionPtr const &, ::smtk::mesh::HandleRange const &>())
+    .def(py::init<::smtk::mesh::ResourcePtr const &, ::smtk::mesh::HandleRange const &>())
     .def(py::init<::smtk::mesh::PointConnectivity const &>())
     .def("__ne__", (bool (smtk::mesh::PointConnectivity::*)(::smtk::mesh::PointConnectivity const &) const) &smtk::mesh::PointConnectivity::operator!=)
     .def("deepcopy", (smtk::mesh::PointConnectivity & (smtk::mesh::PointConnectivity::*)(::smtk::mesh::PointConnectivity const &)) &smtk::mesh::PointConnectivity::operator=)

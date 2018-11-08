@@ -23,8 +23,8 @@
 
 #include "smtk/io/ImportMesh.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/Component.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/Import_xml.h"
 
@@ -64,8 +64,8 @@ Import::Result Import::operateInternal()
   smtk::attribute::StringItem::Ptr labelItem = this->parameters()->findString("label");
   std::string label = labelItem->value();
 
-  auto collection = smtk::mesh::Collection::create();
-  bool success = smtk::io::importMesh(filePath, collection, label);
+  auto resource = smtk::mesh::Resource::create();
+  bool success = smtk::io::importMesh(filePath, resource, label);
 
   if (success == false)
   {
@@ -76,15 +76,15 @@ Import::Result Import::operateInternal()
 
   AddMeshToResult addMeshToResult(result);
 
-  smtk::mesh::for_each(collection->meshes(), addMeshToResult);
+  smtk::mesh::for_each(resource->meshes(), addMeshToResult);
 
   auto assignNames = this->parameters()->findVoid("assign default names");
   if (assignNames && assignNames->isEnabled())
   {
-    collection->assignDefaultNames();
+    resource->assignDefaultNames();
   }
 
-  result->findResource("resource")->appendValue(collection);
+  result->findResource("resource")->appendValue(resource);
 
   return result;
 }

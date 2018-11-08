@@ -24,7 +24,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/json/Interface.h"
 #include "smtk/mesh/json/Readers.h"
 #include "smtk/mesh/moab/Interface.h"
@@ -59,7 +59,7 @@ PySharedPtrClass< smtk::io::LoadJSON > pybind11_init_smtk_io_LoadJSON(py::module
     .def_static("ofLog", (int (*)(char const *, ::smtk::io::Logger &)) &smtk::io::LoadJSON::ofLog, py::arg("jsonStr"), py::arg("log"))
     .def_static("ofLog", (int (*)(::cJSON *, ::smtk::io::Logger &)) &smtk::io::LoadJSON::ofLog, py::arg("logrecordarray"), py::arg("log"))
     .def_static("ofMeshesOfModel", &smtk::io::LoadJSON::ofMeshesOfModel, py::arg("node"), py::arg("modelResource"), py::arg("refPath") = std::string())
-    .def_static("ofMeshProperties", &smtk::io::LoadJSON::ofMeshProperties, py::arg("node"), py::arg("collection"))
+    .def_static("ofMeshProperties", &smtk::io::LoadJSON::ofMeshProperties, py::arg("node"), py::arg("resource"))
     .def_static("sessionNameFromTagData", &smtk::io::LoadJSON::sessionNameFromTagData, py::arg("tagData"))
     .def_static("sessionFileTypesFromTagData", &smtk::io::LoadJSON::sessionFileTypesFromTagData, py::arg("tagData"))
     .def_static("getUUIDArrayFromJSON", &smtk::io::LoadJSON::getUUIDArrayFromJSON, py::arg("uidRec"), py::arg("uids"))

@@ -12,7 +12,7 @@
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"
 #include "smtk/io/ReadMesh.h"
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -39,38 +39,38 @@ void cleanup(const std::string& file_path)
   }
 }
 
-void verify_write_empty_collection()
+void verify_write_empty_resource()
 {
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".3dm";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  test(c->isValid(), "empty collection is empty");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  test(mr->isValid(), "empty resource is empty");
 
-  const bool result = smtk::io::exportMesh(write_path, c);
+  const bool result = smtk::io::exportMesh(write_path, mr);
 
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
-  test(result == false, "nothing to write for an empty collection");
+  test(result == false, "nothing to write for an empty resource");
 }
 
-void verify_write_null_collection()
+void verify_write_null_resource()
 {
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".3dm";
 
-  //use a null collection ptr
-  smtk::mesh::CollectionPtr c;
+  //use a null resource ptr
+  smtk::mesh::ResourcePtr mr;
 
-  const bool result = smtk::io::exportMesh(write_path, c);
+  const bool result = smtk::io::exportMesh(write_path, mr);
 
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
 
-  test(result == false, "Can't save null collection to disk");
+  test(result == false, "Can't save null resource to disk");
 }
 
-void verify_write_valid_collection()
+void verify_write_valid_resource()
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
@@ -78,12 +78,12 @@ void verify_write_valid_collection()
   std::string write_path(write_root);
   write_path += "/" + smtk::common::UUID::random().toString() + ".3dm";
 
-  smtk::mesh::CollectionPtr c = smtk::mesh::Collection::create();
-  smtk::io::readMesh(file_path, c);
-  test(c->isValid(), "collection should be valid");
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  smtk::io::readMesh(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
 
   //export the volume elements
-  const bool result = smtk::io::exportMesh(write_path, c);
+  const bool result = smtk::io::exportMesh(write_path, mr);
   cleanup(write_path);
 
   if (!result)
@@ -95,9 +95,9 @@ void verify_write_valid_collection()
 
 int UnitTestExportMesh3DM(int, char** const)
 {
-  verify_write_empty_collection();
-  verify_write_null_collection();
-  verify_write_valid_collection();
+  verify_write_empty_resource();
+  verify_write_null_resource();
+  verify_write_valid_resource();
 
   return 0;
 }

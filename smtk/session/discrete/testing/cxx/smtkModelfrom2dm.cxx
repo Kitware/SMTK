@@ -16,7 +16,7 @@
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
-#include "smtk/mesh/core/Collection.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Resource.h"

@@ -17,7 +17,7 @@
         the original mesh.
       </DetailedDescription>
       <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
-        <Accepts><Resource Name="smtk::mesh::Collection" Filter="meshset"/></Accepts>
+        <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
@@ -25,7 +25,7 @@
         </File>
         <Int Name="write-component" NumberOfRequiredValues="1">
 	  <DiscreteInfo DefaultIndex="0">
-	    <Value Enum="Entire Collection">0</Value>
+	    <Value Enum="Entire Resource">0</Value>
             <Value Enum="Only Domain">1</Value>
             <Value Enum="Only Dirichlet">2</Value>
             <Value Enum="Only Neumann">3</Value>

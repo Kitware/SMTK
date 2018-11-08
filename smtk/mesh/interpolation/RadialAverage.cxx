@@ -10,9 +10,9 @@
 
 #include "RadialAverage.h"
 
-#include "smtk/mesh/core/Collection.h"
 #include "smtk/mesh/core/PointLocator.h"
 #include "smtk/mesh/core/PointSet.h"
+#include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/interpolation/PointCloud.h"
 #include "smtk/mesh/interpolation/StructuredGrid.h"
@@ -24,12 +24,12 @@ namespace
 {
 struct RadialAverageForPointCloud
 {
-  RadialAverageForPointCloud(smtk::mesh::CollectionPtr collection,
+  RadialAverageForPointCloud(smtk::mesh::ResourcePtr resource,
     const smtk::mesh::PointCloud& pointcloud, double radius, std::function<bool(double)> prefilter)
     : m_pointcloud(pointcloud)
     , m_radius(radius)
     , m_prefilter(prefilter)
-    , m_locator(collection, pointcloud.size(), pointcloud.coordinates())
+    , m_locator(resource, pointcloud.size(), pointcloud.coordinates())
   {
   }
 
@@ -189,9 +189,9 @@ namespace smtk
 namespace mesh
 {
 
-RadialAverage::RadialAverage(smtk::mesh::CollectionPtr collection, const PointCloud& pointcloud,
+RadialAverage::RadialAverage(smtk::mesh::ResourcePtr resource, const PointCloud& pointcloud,
   double radius, std::function<bool(double)> prefilter)
-  : m_function(RadialAverageForPointCloud(collection, pointcloud, radius, prefilter))
+  : m_function(RadialAverageForPointCloud(resource, pointcloud, radius, prefilter))
 {
 }
 
