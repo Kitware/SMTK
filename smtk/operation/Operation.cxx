@@ -26,6 +26,7 @@
 #include "nlohmann/json.hpp"
 
 #include <memory>
+#include <mutex>
 #include <sstream>
 
 namespace smtk
@@ -97,7 +98,12 @@ Operation::Result Operation::operate()
   // Gather all requested resources and their lock types.
   auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->specification());
 
+  // Mutex to prevent multiple Operations from locking resources at the same
+  // time (which could result in deadlock).
+  static std::mutex mutex;
+
   // Lock the resources.
+  mutex.lock();
   for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
     auto& resource = resourceAndLockType.first;
@@ -125,6 +131,7 @@ Operation::Result Operation::operate()
 
     resource->lock({}).lock(lockType);
   }
+  mutex.unlock();
 
   // Remember where the log was so we only serialize messages for this
   // operation:
