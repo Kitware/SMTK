@@ -68,6 +68,13 @@ void pqSaveResourceReaction::saveResource()
   pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(activeObjects.activeSource());
   smtk::resource::ResourcePtr resource = smtkResource->getResource();
 
+  // If there is no associated file name with this resource, call
+  // pqSaveResourceAsReaction's saveResourceAs static method instead.
+  if (resource->location().empty())
+  {
+    return pqSaveResourceAsReaction::saveResourceAs();
+  }
+
   if (smtk::attribute::ResourcePtr attResource =
         std::dynamic_pointer_cast<smtk::attribute::Resource>(resource))
   {
