@@ -150,18 +150,26 @@ Operation::Definition extractResultDefinition(
 namespace
 {
 void resourcesFromItem(
-  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ResourceItem::Ptr& item)
+  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ReferenceItem::Ptr& item)
 {
   for (std::size_t i = 0; i < item->numberOfValues(); i++)
   {
     // (no need to look at items that cannot be resolved)
-    if (!item->isValid() || item->value(i) == nullptr)
+    if (!item->isValid() || item->objectValue(i) == nullptr)
     {
       continue;
     }
 
     // ...access the associated resource.
-    smtk::resource::ResourcePtr resource = item->value(i);
+    smtk::resource::ResourcePtr resource =
+      std::dynamic_pointer_cast<smtk::resource::Resource>(item->objectValue(i));
+
+    // If the object is actually a component, access its associated resource.
+    if (resource == nullptr)
+    {
+      resource =
+        std::dynamic_pointer_cast<smtk::resource::Component>(item->objectValue(i))->resource();
+    }
 
     auto it = resourcesAndLockTypes.find(resource);
     if (it == resourcesAndLockTypes.end())
@@ -180,38 +188,45 @@ void resourcesFromItem(
     }
   }
 }
-
-void resourcesFromItem(
-  ResourceAccessMap& resourcesAndLockTypes, const smtk::attribute::ComponentItem::Ptr& item)
-{
-  for (std::size_t i = 0; i < item->numberOfValues(); i++)
-  {
-    // (no need to look at items that cannot be resolved)
-    if (!item->isValid() || !item->isEnabled())
-    {
-      continue;
-    }
-
-    // ...access the associated resource.
-    smtk::resource::ResourcePtr resource = item->value(i)->resource();
-
-    auto it = resourcesAndLockTypes.find(resource);
-    if (it == resourcesAndLockTypes.end())
-    {
-      // If the resource is not yet in our map, add it and set its lock type.
-      resourcesAndLockTypes[resource] = item->lockType();
-    }
-    else
-    {
-      // If the resource is already in our map, elevate its lock type if
-      // necessary.
-      if (item->lockType() > it->second)
-      {
-        it->second = item->lockType();
-      }
-    }
-  }
 }
+
+std::set<smtk::resource::Resource::Ptr> extractResources(Operation::Result result)
+{
+  ResourceAccessMap resourcesAndLockTypes;
+
+  // Gather all of the resource and component items in the specification.
+  std::vector<smtk::attribute::Item::Ptr> items;
+
+  // Gather all of the components using a filter.
+  auto filter = [](smtk::attribute::Item::Ptr item) {
+    return item->type() == smtk::attribute::Item::ReferenceType ||
+      item->type() == smtk::attribute::Item::ResourceType ||
+      item->type() == smtk::attribute::Item::ComponentType;
+  };
+  result->filterItems(items, filter, false);
+
+  // Also gather the association.
+  if (result->associations() != nullptr)
+  {
+    items.push_back(result->associations());
+  }
+
+  // For each item found...
+  for (auto& item : items)
+  {
+    // Extract the resources and lock types.
+    auto resourceItem = std::static_pointer_cast<smtk::attribute::ReferenceItem>(item);
+    resourcesFromItem(resourcesAndLockTypes, resourceItem);
+  }
+
+  // We are only interested in the resources, so we strip away the lock types.
+  std::set<smtk::resource::Resource::Ptr> resources;
+  for (auto resourceAndLockType : resourcesAndLockTypes)
+  {
+    resources.insert(resourceAndLockType.first);
+  }
+
+  return resources;
 }
 
 ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specification)
@@ -232,7 +247,8 @@ ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specific
 
     // For each attribute, gather all of the components using a filter.
     auto filter = [](smtk::attribute::Item::Ptr item) {
-      return item->type() == smtk::attribute::Item::ResourceType ||
+      return item->type() == smtk::attribute::Item::ReferenceType ||
+        item->type() == smtk::attribute::Item::ResourceType ||
         item->type() == smtk::attribute::Item::ComponentType;
     };
     for (auto& attribute : attributes)
@@ -242,6 +258,12 @@ ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specific
         continue;
       }
       attribute->filterItems(items, filter, false);
+
+      // Also gather the association.
+      if (attribute->associations() != nullptr)
+      {
+        items.push_back(attribute->associations());
+      }
     }
   }
 
@@ -249,16 +271,8 @@ ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specific
   for (auto& item : items)
   {
     // Extract the resources and lock types.
-    if (item->type() == smtk::attribute::Item::ResourceType)
-    {
-      auto resourceItem = std::static_pointer_cast<smtk::attribute::ResourceItem>(item);
-      resourcesFromItem(resourcesAndLockTypes, resourceItem);
-    }
-    else
-    {
-      auto componentItem = std::static_pointer_cast<smtk::attribute::ComponentItem>(item);
-      resourcesFromItem(resourcesAndLockTypes, componentItem);
-    }
+    auto resourceItem = std::static_pointer_cast<smtk::attribute::ReferenceItem>(item);
+    resourcesFromItem(resourcesAndLockTypes, resourceItem);
   }
 
   return resourcesAndLockTypes;

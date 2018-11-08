@@ -33,6 +33,7 @@ protected:
   Result operateInternal() override;
 
   virtual const char* xmlDescription() const override;
+  void markModifiedResources(Result&) override;
   void generateSummary(Result&) override;
 };
 }

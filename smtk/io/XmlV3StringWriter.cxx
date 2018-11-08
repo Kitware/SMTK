@@ -373,9 +373,10 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
     }
   }
 
-  if (idef->lockType() != smtk::resource::LockType::DoNotLock)
+  if (idef->lockType() != smtk::resource::LockType::Write)
   {
-    node.append_attribute("LockType").set_value(static_cast<unsigned int>(idef->lockType()));
+    node.append_attribute("LockType")
+      .set_value((idef->lockType() == smtk::resource::LockType::DoNotLock ? "DoNotLock" : "Read"));
   }
 
   node.append_attribute("NumberOfRequiredValues") =

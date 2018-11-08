@@ -20,13 +20,13 @@ namespace session
 namespace vtk
 {
 
-class LegacyRead;
 class Read;
+class LegacyRead;
 
 class SMTKVTKSESSION_EXPORT Import : public Operation
 {
-  friend class LegacyRead;
-  friend class Read;
+  friend Read;
+  friend LegacyRead;
 
 public:
   smtkTypeMacro(smtk::session::vtk::Import);

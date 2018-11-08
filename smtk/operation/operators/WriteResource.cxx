@@ -125,7 +125,17 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
 
     writeOperation->parameters()->associate(resource);
 
-    smtk::operation::Operation::Result writeOperationResult = writeOperation->operate();
+    // Since we bypass the write operation's validity checks (and its locks),
+    // manually check that the operation's conditions are satisfied.
+    if (writeOperation->ableToOperate() == false)
+    {
+      // An error message should already enter the logger from the local
+      // operation.
+      smtkErrorMacro(this->log(), "Write operation was unable to operate.");
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+
+    smtk::operation::Operation::Result writeOperationResult = writeOperation->operate({});
     if (writeOperationResult->findInt("outcome")->value() !=
       static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
     {
@@ -145,6 +155,18 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
 const char* WriteResource::xmlDescription() const
 {
   return WriteResource_xml;
+}
+
+void WriteResource::markModifiedResources(WriteResource::Result&)
+{
+  auto resourceItem = this->parameters()->associations();
+  for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
+  {
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
+
+    // Set the resource as unmodified from its persistent (i.e. on-disk) state
+    resource->setClean(true);
+  }
 }
 
 void WriteResource::generateSummary(WriteResource::Result& res)

@@ -141,6 +141,18 @@ Read::Specification Read::createSpecification()
   return spec;
 }
 
+void Read::markModifiedResources(Read::Result& res)
+{
+  auto resourceItem = res->findResource("resource");
+  for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
+  {
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
+
+    // Set the resource as unmodified from its persistent (i.e. on-disk) state
+    resource->setClean(true);
+  }
+}
+
 const char* Read::xmlDescription() const
 {
   return Read_xml;

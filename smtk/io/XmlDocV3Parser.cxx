@@ -419,7 +419,18 @@ void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
   xatt = node.attribute("LockType");
   if (xatt)
   {
-    idef->setLockType(smtk::resource::LockType(xatt.as_int()));
+    if (strcmp(xatt.as_string(), "DoNotLock") == 0)
+    {
+      idef->setLockType(smtk::resource::LockType::DoNotLock);
+    }
+    else if (strcmp(xatt.as_string(), "Read") == 0)
+    {
+      idef->setLockType(smtk::resource::LockType::Read);
+    }
+    else
+    {
+      idef->setLockType(smtk::resource::LockType::Write);
+    }
   }
 
   xatt = node.attribute("NumberOfRequiredValues");

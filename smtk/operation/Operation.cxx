@@ -26,6 +26,7 @@
 #include "nlohmann/json.hpp"
 
 #include <memory>
+#include <mutex>
 #include <sstream>
 
 namespace smtk
@@ -97,13 +98,40 @@ Operation::Result Operation::operate()
   // Gather all requested resources and their lock types.
   auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->specification());
 
+  // Mutex to prevent multiple Operations from locking resources at the same
+  // time (which could result in deadlock).
+  static std::mutex mutex;
+
   // Lock the resources.
+  mutex.lock();
   for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
     auto& resource = resourceAndLockType.first;
     auto& lockType = resourceAndLockType.second;
+
+#ifndef NDEBUG
+    // Given the puzzling result of deadlock that can arise if one Operation
+    // calls another Operation using its public API and passes it a Resource
+    // with a Write LockType, we print to the terminal which resources we are
+    // locking. If you are working on an Operation and are trying to debug a
+    // deadlock, consider calling operations using the following syntax:
+    // $
+    // $ op->operate({});
+    // $
+    // This will avoid the inner Operation's resource locking and execute it
+    // directly. Be sure to verify the operation's validity prior to execution
+    // (via the ableToOperate() method).
+    std::cout << "Operation \"" << this->typeName() << "\" is locking resource " << resource->name()
+              << " (" << resource->typeName() << ") with lock type \""
+              << (lockType == smtk::resource::LockType::Read
+                     ? "Read"
+                     : (lockType == smtk::resource::LockType::Write ? "Write" : "DoNotLock"))
+              << "\"\n";
+#endif
+
     resource->lock({}).lock(lockType);
   }
+  mutex.unlock();
 
   // Remember where the log was so we only serialize messages for this
   // operation:
@@ -118,18 +146,21 @@ Operation::Result Operation::operate()
   // -- and observers of both will expect them to be called in pairs.
   auto manager = m_manager.lock();
   bool observePostOperation = manager != nullptr;
+  Outcome outcome;
 
   // First, we check that the operation is able to operate.
   if (!this->ableToOperate())
   {
-    result = this->createResult(Outcome::UNABLE_TO_OPERATE);
+    outcome = Outcome::UNABLE_TO_OPERATE;
+    result = this->createResult(outcome);
     // If the operation cannot operate, there is no need to call any observers.
     observePostOperation = false;
   }
   // Then, we check if any observers wish to cancel this operation.
   else if (manager && manager->observers()(shared_from_this(), EventType::WILL_OPERATE, nullptr))
   {
-    result = this->createResult(Outcome::CANCELED);
+    outcome = Outcome::CANCELED;
+    result = this->createResult(outcome);
   }
   else
   {
@@ -143,10 +174,18 @@ Operation::Result Operation::operate()
     result = this->operateInternal();
 
     // Post-process the result if the operation was successful.
-    int outcome = result->findInt("outcome")->value();
-    if (outcome == static_cast<int>(Outcome::SUCCEEDED))
+    outcome = static_cast<Outcome>(result->findInt("outcome")->value());
+    if (outcome == Outcome::SUCCEEDED)
     {
       this->postProcessResult(result);
+    }
+
+    // By default, all executed operations are assumed to modify any input
+    // resource accessed with a Write LockType and any resources referenced in
+    // the result.
+    if (outcome == Outcome::SUCCEEDED || outcome == Outcome::FAILED)
+    {
+      this->markModifiedResources(result);
     }
   }
 
@@ -177,6 +216,7 @@ Operation::Result Operation::operate()
   {
     auto& resource = resourceAndLockType.first;
     auto& lockType = resourceAndLockType.second;
+
     resource->lock({}).unlock(lockType);
   }
 
@@ -242,6 +282,33 @@ Operation::Result Operation::createResult(Outcome outcome)
     result->findInt("outcome")->setValue(0, static_cast<int>(outcome));
   }
   return result;
+}
+
+void Operation::markModifiedResources(Operation::Result& result)
+{
+  // Gather all requested resources and their lock types.
+  auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->specification());
+
+  // Lock the resources.
+  for (auto& resourceAndLockType : resourcesAndLockTypes)
+  {
+    auto& resource = resourceAndLockType.first;
+    auto& lockType = resourceAndLockType.second;
+
+    // If the operation was attempted (failed or succeeded), mark all resources
+    // with write access as modified.
+    if (lockType == smtk::resource::LockType::Write)
+    {
+      resource->setClean(false);
+    }
+  }
+
+  // All resources referenced in the result are assumed to be modified.
+  auto resourcesFromResult = extractResources(result);
+  for (auto& resource : resourcesFromResult)
+  {
+    resource->setClean(false);
+  }
 }
 
 void Operation::generateSummary(Operation::Result& result)

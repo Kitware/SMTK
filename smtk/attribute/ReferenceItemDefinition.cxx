@@ -34,7 +34,7 @@ ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
   m_useCommonLabel = false;
   m_isExtensible = false;
   m_maxNumberOfValues = 0;
-  m_lockType = smtk::resource::LockType::DoNotLock;
+  m_lockType = smtk::resource::LockType::Write;
   m_role = smtk::attribute::Resource::ReferenceRole;
 }
 

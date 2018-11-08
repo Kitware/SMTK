@@ -112,6 +112,18 @@ const char* WriteResource::xmlDescription() const
   return WriteResource_xml;
 }
 
+void WriteResource::markModifiedResources(WriteResource::Result&)
+{
+  auto resourceItem = this->parameters()->associations();
+  for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
+  {
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
+
+    // Set the resource as unmodified from its persistent (i.e. on-disk) state
+    resource->setClean(true);
+  }
+}
+
 bool writeResource(const smtk::resource::ResourcePtr& resource)
 {
   WriteResource::Ptr write = WriteResource::create();
