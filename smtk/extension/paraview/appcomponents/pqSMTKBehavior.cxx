@@ -229,7 +229,7 @@ void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
     return;
   }
 
-  // Clear the server-side resource manager
+  // Clear the client-side resource manager
   if (entry->second.first && entry->second.first->GetResourceManager())
   {
     entry->second.first->GetResourceManager()->clear();

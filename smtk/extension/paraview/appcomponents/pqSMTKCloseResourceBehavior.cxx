@@ -30,6 +30,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKOperationPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -81,16 +82,49 @@ void pqCloseResourceReaction::closeResource()
   // Access the active resource
   smtk::resource::ResourcePtr resource = smtkResource->getResource();
 
-  // Remove it from its manager
-  if (smtk::resource::Manager::Ptr manager = resource->manager())
+  int ret = QMessageBox::Discard;
+
+  if (resource && resource->clean() == false)
   {
-    manager->remove(resource);
+    QMessageBox msgBox;
+    msgBox.setText("The resource has been modified.");
+    msgBox.setInformativeText("Do you want to save your changes?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+
+    ret = msgBox.exec();
+
+    if (ret == QMessageBox::Save)
+    {
+      pqActiveObjects* activeObjects = &pqActiveObjects::instance();
+      activeObjects->setActiveSource(smtkResource);
+      pqSaveResourceReaction::State state = pqSaveResourceReaction::saveResource();
+      if (state == pqSaveResourceReaction::State::Aborted)
+      {
+        ret = QMessageBox::Cancel;
+      }
+    }
+    else if (ret == QMessageBox::Discard)
+    {
+      // Mark the resource as clean, even though it hasn't been saved. This way,
+      // other listeners will not prompt the user to save the resource.
+      resource->setClean(true);
+    }
   }
 
-  // Destroy the active source associated with the active resource
-  pqApplicationCore* core = pqApplicationCore::instance();
-  pqObjectBuilder* builder = core->getObjectBuilder();
-  builder->destroy(smtkResource);
+  if (ret != QMessageBox::Cancel)
+  {
+    // Remove it from its manager
+    if (smtk::resource::Manager::Ptr manager = resource->manager())
+    {
+      manager->remove(resource);
+    }
+
+    // Destroy the active source associated with the active resource
+    pqApplicationCore* core = pqApplicationCore::instance();
+    pqObjectBuilder* builder = core->getObjectBuilder();
+    builder->destroy(smtkResource);
+  }
 }
 
 namespace

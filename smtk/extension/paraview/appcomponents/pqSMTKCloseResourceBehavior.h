@@ -20,7 +20,7 @@
 
 class QMenu;
 
-/// A reaction for creating a new SMTK Resource.
+/// A reaction for closing an SMTK Resource.
 class pqCloseResourceReaction : public pqReaction
 {
   Q_OBJECT
@@ -36,8 +36,7 @@ public:
 
 public slots:
   /**
-  * Updates the enabled state. Applications need not explicitly call
-  * this.
+  * Updates the enabled state. Applications need not explicitly call this.
   */
   void updateEnableState() override;
 
@@ -52,8 +51,11 @@ private:
 };
 
 /// Create a menu item under "File" for closing an SMTK resource. The behavior
-/// executes the "RemoveResource" operation on the server with the active
-/// resource as its input.
+/// checks the state of the active resource and allows the user to save or
+/// cancel the close action if the resource is modified from its on-disk
+/// representation. If the resource is "clean", the user has selected to save
+/// the resource or the user has opted to discard changes, the resource is then
+/// removed from the resource manager.
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKCloseResourceBehavior : public QObject
 {
   Q_OBJECT

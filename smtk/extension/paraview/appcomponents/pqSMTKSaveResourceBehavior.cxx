@@ -21,7 +21,9 @@
 #include "vtkSMProxyManager.h"
 
 #include "smtk/attribute/Resource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 #include "smtk/resource/Manager.h"
@@ -62,7 +64,7 @@ void pqSaveResourceReaction::updateEnableState()
 }
 
 //-----------------------------------------------------------------------------
-void pqSaveResourceReaction::saveResource()
+pqSaveResourceReaction::State pqSaveResourceReaction::saveResource()
 {
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
   pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(activeObjects.activeSource());
@@ -80,8 +82,11 @@ void pqSaveResourceReaction::saveResource()
   {
     smtk::io::Logger logger;
     smtk::io::AttributeWriter writer;
-    writer.write(attResource, attResource->location(), logger);
-    return;
+
+    // The attribute write returns true on failure
+    return writer.write(attResource, attResource->location(), logger)
+      ? pqSaveResourceReaction::State::Failed
+      : pqSaveResourceReaction::State::Succeeded;
   }
 
   // Append the location with ".smtk" if it is not already there.
@@ -93,8 +98,12 @@ void pqSaveResourceReaction::saveResource()
 
   if (smtk::resource::Manager::Ptr manager = resource->manager())
   {
-    manager->write(resource);
+    // The resource manager returns true on success
+    return manager->write(resource) ? pqSaveResourceReaction::State::Succeeded
+                                    : pqSaveResourceReaction::State::Failed;
   }
+
+  return pqSaveResourceReaction::State::Failed;
 }
 
 //-----------------------------------------------------------------------------
@@ -121,7 +130,7 @@ void pqSaveResourceAsReaction::updateEnableState()
 }
 
 //-----------------------------------------------------------------------------
-void pqSaveResourceAsReaction::saveResourceAs()
+pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs()
 {
   pqServer* server = pqActiveObjects::instance().activeServer();
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
@@ -138,8 +147,12 @@ void pqSaveResourceAsReaction::saveResourceAs()
     filters = QString("Simulation Modeling Toolkit Attribute files (*.sbi)");
   }
 
-  pqFileDialog fileDialog(server, pqCoreUtilities::mainWidget(), tr("Save File:"),
-    QFileInfo(QString::fromStdString(resource->location())).absoluteDir().absolutePath(), filters);
+  pqFileDialog fileDialog(
+    server, pqCoreUtilities::mainWidget(), tr("Save File:"),
+    (resource->location().empty()
+        ? QString()
+        : QFileInfo(QString::fromStdString(resource->location())).absoluteDir().absolutePath()),
+    filters);
   fileDialog.setObjectName("FileSaveDialog");
   fileDialog.setFileMode(pqFileDialog::AnyFile);
 
@@ -151,16 +164,31 @@ void pqSaveResourceAsReaction::saveResourceAs()
     {
       smtk::io::Logger logger;
       smtk::io::AttributeWriter writer;
-      bool success = writer.write(attResource, fname.toStdString(), logger);
-      if (!success)
+      bool fail = writer.write(attResource, fname.toStdString(), logger);
+      if (fail)
       {
         std::cout << logger.convertToString(true) << std::endl;
+        return pqSaveResourceReaction::State::Failed;
+      }
+      else
+      {
+        return pqSaveResourceReaction::State::Succeeded;
       }
     }
     else if (smtk::resource::Manager::Ptr manager = resource->manager())
     {
-      manager->write(resource, fname.toStdString());
+      return manager->write(resource, fname.toStdString())
+        ? pqSaveResourceReaction::State::Succeeded
+        : pqSaveResourceReaction::State::Failed;
     }
+    else
+    {
+      return pqSaveResourceReaction::State::Failed;
+    }
+  }
+  else
+  {
+    return pqSaveResourceReaction::State::Aborted;
   }
 }
 
