@@ -117,7 +117,6 @@ Import::Result Import::operateInternal()
     meshResource = smtk::mesh::Resource::create();
 
     // Create a new resource for the import
-    resource->setLocation(filePath);
     resource->setSession(session);
   }
 
