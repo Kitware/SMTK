@@ -85,7 +85,8 @@ Write::Result Write::operateInternal()
 
   if (meshFilename.empty())
   {
-    meshFilename = smtk::common::Paths::stem(resource->location()) + ".h5m";
+    meshFilename = smtk::common::Paths::directory(resource->location()) + "/" +
+      smtk::common::Paths::stem(resource->location()) + ".h5m";
   }
 
   j["Mesh URL"] = meshFilename;

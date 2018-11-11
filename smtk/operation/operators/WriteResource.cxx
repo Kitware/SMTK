@@ -85,6 +85,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit, ++rr)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
+    std::string originalLocation = resource->location();
 
     smtk::operation::Operation::Ptr writeOperation =
       writerGroup.writerForResource(resource->typeName());
@@ -122,6 +123,11 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     {
       writerFileItem->setValue(fileName);
     }
+    else
+    {
+      // Otherwise, update the location of the resource.
+      resource->setLocation(fileName);
+    }
 
     writeOperation->parameters()->associate(resource);
 
@@ -132,6 +138,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
       // An error message should already enter the logger from the local
       // operation.
       smtkErrorMacro(this->log(), "Write operation was unable to operate.");
+      resource->setLocation(originalLocation);
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
@@ -141,12 +148,8 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
     {
       // An error message should already enter the logger from the local
       // operation.
+      resource->setLocation(originalLocation);
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-    }
-
-    if (setFileName)
-    {
-      resource->setLocation(fileName);
     }
   }
   return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
