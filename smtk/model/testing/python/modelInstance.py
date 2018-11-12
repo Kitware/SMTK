@@ -28,7 +28,7 @@ class TestEntityInstances(smtk.testing.TestCase):
         op.parameters().find('filename').setValue(os.path.join(*fpath))
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
-            raise ImportError
+            raise RuntimeError
         self.mgr = smtk.model.Resource.CastTo(res.find('resource').value())
         self.model = self.mgr.findEntitiesOfType(
             int(smtk.model.MODEL_ENTITY))[0]

@@ -80,7 +80,7 @@ class LoadSMTKPluginInParaView(smtk.testing.TestCase):
 
         # Check that the number of operations is back to its start value
         if beforePlugin != afterUnload:
-            raise ImportError('Plugin unload failed')
+            raise RuntimeError('Plugin unload failed')
 
 
 if __name__ == '__main__':

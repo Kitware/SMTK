@@ -45,7 +45,7 @@ class RenderMesh(smtk.testing.TestCase):
             'smtk.extension.matplotlib.render_mesh.RenderMesh')
 
         if not renderMesh:
-            raise ImportError('Could not find operator \'render mesh\'')
+            raise RuntimeError('Could not find operator \'render mesh\'')
 
         # Set the operator's parameters
         print renderMesh.parameters()

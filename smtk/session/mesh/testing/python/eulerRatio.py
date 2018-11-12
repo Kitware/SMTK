@@ -44,7 +44,7 @@ class EulerRatio(smtk.testing.TestCase):
             fname.setValue(modelFile)
             res = op.operate()
             if res.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
-                raise ImportError
+                raise RuntimeError
             modelEntity = res.find('created').value(0)
             self.model = smtk.model.Model(
                 modelEntity.modelResource(), modelEntity.id())

@@ -60,7 +60,7 @@ class LoadExodusFile(smtk.testing.TestCase):
         loadRes = loadOp.operate()
 
         if loadRes.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
-            raise ImportError
+            raise RuntimeError
 
         # Access the resource
         resource = smtk.model.Resource.CastTo(loadRes.find('resource').value())
