@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
+#include "smtk/extension/vtk/source/vtkCmbLayeredConeSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
@@ -23,11 +24,14 @@
 #include "vtkAppendPoints.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
+#include "vtkClipClosedSurface.h"
 #include "vtkCompositeDataSet.h"
 #include "vtkDataObject.h"
 #include "vtkDataObjectTreeIterator.h"
 #include "vtkDataSet.h"
 #include "vtkDoubleArray.h"
+#include "vtkFloatArray.h"
+#include "vtkGDALRasterReader.h"
 #include "vtkGraph.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
@@ -44,17 +48,21 @@
 #include "vtkPLYReader.h"
 #include "vtkPNGReader.h"
 #include "vtkPTSReader.h"
+#include "vtkPlaneCollection.h"
 #include "vtkPointData.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
+#include "vtkTransform.h"
+#include "vtkTransformPolyDataFilter.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkXMLImageDataReader.h"
 #include "vtkXMLMultiBlockDataReader.h"
 #include "vtkXMLPolyDataReader.h"
 #include "vtkXMLUnstructuredGridReader.h"
+#include <vtkPlaneCollection.h>
 
 #include "boost/filesystem.hpp"
 
@@ -71,7 +79,7 @@ class vtkAuxiliaryGeometryExtension::ClassInternal
 {
 public:
   double m_totalSize;
-  double m_maxSize;
+  double m_maxSize = 8196;
   enum TupleIndex
   {
     DATA = 0,
@@ -96,7 +104,7 @@ public:
   }
 
   /// Insert (or, with a null vtkSmartPointer, remove) a cache entry associated with \a aux.
-  bool insert(const AuxiliaryGeometry& aux, const CacheValue& entry)
+  bool insert(const AuxiliaryGeometry& aux, const CacheValue& entry, bool trimCache = true)
   {
     bool hadSomeEffect = false;
     auto dataset = std::get<DATA>(entry);
@@ -120,7 +128,7 @@ public:
       m_totalSize += dataset->GetActualMemorySize();
       m_recent.push_back(aux);
     }
-    if (hadSomeEffect)
+    if (hadSomeEffect && trimCache)
     {
       this->trimCache();
     }
@@ -180,69 +188,12 @@ vtkAuxiliaryGeometryExtension::~vtkAuxiliaryGeometryExtension()
 {
 }
 
-static bool updateBoundsFromDataSet(smtk::model::AuxiliaryGeometry& aux,
-  std::vector<double>& bboxOut, vtkSmartPointer<vtkDataObject> dataobj)
-{
-  vtkDataSet* dataset;
-  vtkGraph* graph;
-  vtkCompositeDataSet* tree;
-  if ((dataset = dynamic_cast<vtkDataSet*>(dataobj.GetPointer())))
-  {
-    bboxOut.resize(6);
-    dataset->GetBounds(&bboxOut[0]);
-    if (bboxOut[0] <= bboxOut[1])
-    {
-      aux.setBoundingBox(&bboxOut[0]);
-    }
-    return true;
-  }
-  else if ((graph = dynamic_cast<vtkGraph*>(dataobj.GetPointer())))
-  {
-    bboxOut.resize(6);
-    dataset->GetBounds(&bboxOut[0]);
-    if (bboxOut[0] <= bboxOut[1])
-    {
-      aux.setBoundingBox(&bboxOut[0]);
-    }
-    return true;
-  }
-  else if ((tree = dynamic_cast<vtkCompositeDataSet*>(dataobj.GetPointer())))
-  {
-    auto it = tree->NewIterator();
-    it->SkipEmptyNodesOn();
-    vtkBoundingBox bbox;
-    bboxOut.resize(6);
-    vtkDataSet* dset;
-    vtkGraph* grph;
-    for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextItem())
-    {
-      vtkDataObject* dobj = it->GetCurrentDataObject();
-      if ((dset = dynamic_cast<vtkDataSet*>(dobj)))
-      {
-        dset->GetBounds(&bboxOut[0]);
-        bbox.AddBounds(&bboxOut[0]);
-      }
-      else if ((grph = dynamic_cast<vtkGraph*>(dobj)))
-      {
-        grph->GetBounds(&bboxOut[0]);
-        bbox.AddBounds(&bboxOut[0]);
-      }
-    }
-    it->Delete();
-    if (bbox.IsValid())
-    {
-      bbox.GetBounds(&bboxOut[0]);
-      aux.setBoundingBox(&bboxOut[0]);
-    }
-    return true;
-  }
-  return false;
-}
-
 bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)
 {
-  if (!entity.isValid())
+  smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
+  if (!entity.isValid() || (entity.url().empty() && entity.auxiliaryGeometries().size() == 0) ||
+    (!entity.url().empty() && !importAsVTKData.valid(entity.url())))
   {
     return false;
   }
@@ -266,16 +217,17 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
       }
       if (std::get<ClassInternal::TIMESTAMP>(tuple) >= mtime)
       {
-        return updateBoundsFromDataSet(entity, bboxOut, dataset);
+        return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
       }
     }
     else
     { // TODO: No URL, so just assume the data is still good?
-      return updateBoundsFromDataSet(entity, bboxOut, dataset);
+      return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
     }
   }
 
   // No cache entry for the data; we need to read it.
+  bool trimCache(true);
   if (url.empty())
   { // Can't read from non-existent URL
     if (entity.auxiliaryGeometries().empty())
@@ -307,8 +259,15 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
     }
   }
   dataset = vtkAuxiliaryGeometryExtension::generateRepresentation(entity, genNormals);
-  s_p->insert(entity, ClassInternal::CacheValue(dataset, mtime));
-  return updateBoundsFromDataSet(entity, bboxOut, dataset);
+  s_p->insert(entity, ClassInternal::CacheValue(dataset, mtime), trimCache);
+  this->addCacheGeometry(dataset, entity, mtime, trimCache);
+  return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+}
+
+void vtkAuxiliaryGeometryExtension::addCacheGeometry(const vtkSmartPointer<vtkDataObject> dataset,
+  const AuxiliaryGeometry& entity, std::time_t& mtime, bool trimCache)
+{
+  s_p->insert(entity, ClassInternal::CacheValue(dataset, mtime), trimCache);
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::fetchCachedGeometry(
@@ -420,6 +379,7 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
 {
   (void)src;
 
+  vtkAuxiliaryGeometryExtension::ensureCache();
   vtkNew<vtkMultiBlockDataSet> mbds;
   int nblk = static_cast<int>(children.size());
   mbds->SetNumberOfBlocks(nblk);
@@ -431,7 +391,65 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
   return mbds.GetPointer();
 }
 
+bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(smtk::model::AuxiliaryGeometry& aux,
+  std::vector<double>& bboxOut, vtkSmartPointer<vtkDataObject> dataobj)
+{
+  vtkDataSet* dataset;
+  vtkGraph* graph;
+  vtkCompositeDataSet* tree;
+  if ((dataset = dynamic_cast<vtkDataSet*>(dataobj.GetPointer())))
+  {
+    bboxOut.resize(6);
+    dataset->GetBounds(&bboxOut[0]);
+    if (bboxOut[0] <= bboxOut[1])
+    {
+      aux.setBoundingBox(&bboxOut[0]);
+    }
+    return true;
+  }
+  else if ((graph = dynamic_cast<vtkGraph*>(dataobj.GetPointer())))
+  {
+    bboxOut.resize(6);
+    dataset->GetBounds(&bboxOut[0]);
+    if (bboxOut[0] <= bboxOut[1])
+    {
+      aux.setBoundingBox(&bboxOut[0]);
+    }
+    return true;
+  }
+  else if ((tree = dynamic_cast<vtkCompositeDataSet*>(dataobj.GetPointer())))
+  {
+    auto it = tree->NewIterator();
+    it->SkipEmptyNodesOn();
+    vtkBoundingBox bbox;
+    bboxOut.resize(6);
+    vtkDataSet* dset;
+    vtkGraph* grph;
+    for (it->InitTraversal(); !it->IsDoneWithTraversal(); it->GoToNextItem())
+    {
+      vtkDataObject* dobj = it->GetCurrentDataObject();
+      if ((dset = dynamic_cast<vtkDataSet*>(dobj)))
+      {
+        dset->GetBounds(&bboxOut[0]);
+        bbox.AddBounds(&bboxOut[0]);
+      }
+      else if ((grph = dynamic_cast<vtkGraph*>(dobj)))
+      {
+        grph->GetBounds(&bboxOut[0]);
+        bbox.AddBounds(&bboxOut[0]);
+      }
+    }
+    it->Delete();
+    if (bbox.IsValid())
+    {
+      bbox.GetBounds(&bboxOut[0]);
+      aux.setBoundingBox(&bboxOut[0]);
+    }
+    return true;
+  }
+  return false;
+}
+
 smtkDeclareExtension(
   VTKSMTKSOURCEEXT_EXPORT, vtk_auxiliary_geometry, vtkAuxiliaryGeometryExtension);
-
 smtkComponentInitMacro(smtk_vtk_auxiliary_geometry_extension);

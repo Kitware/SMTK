@@ -79,7 +79,7 @@ set(multiscalePySrcs
 
 set(multiscale_pymodulefiles)
 
-set(matplotlib_pyxmlfiles)
+set(multiscale_pyxmlfiles)
 
 configureStringAsPyVariable(AFRL_DIR
   ${CMAKE_CURRENT_BINARY_DIR}/AFRLDir.py AFRLDir)

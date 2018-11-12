@@ -5,6 +5,7 @@ set(VTKLibSrcs
   SourceFromModel.cxx
   StructuredGridFromVTKAuxiliaryGeometry.cxx
   vtkAuxiliaryGeometryExtension.cxx
+  vtkCmbLayeredConeSource.cxx
   vtkMeshMultiBlockSource.cxx
   vtkModelAuxiliaryGeometry.cxx
   vtkModelMultiBlockSource.cxx
@@ -18,6 +19,7 @@ set(VTKLibHeaders
   SourceFromModel.h
   StructuredGridFromVTKAuxiliaryGeometry.h
   vtkAuxiliaryGeometryExtension.h
+  vtkCmbLayeredConeSource.h
   vtkMeshMultiBlockSource.h
   vtkModelAuxiliaryGeometry.h
   vtkModelMultiBlockSource.h
