@@ -141,7 +141,7 @@ public:
   QString downloadPath() const { return m_downloadPath; };
 
 private slots:
-  void items(const QList<QString>& itemIds);
+  void items(const QMap<QString, QString>& itemMap);
   void folders(const QMap<QString, QString>& folders);
   void downloadItemFinished();
   void downloadFolderFinished();

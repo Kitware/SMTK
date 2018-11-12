@@ -307,8 +307,8 @@ void DownloadFolderRequest::send()
   ListItemsRequest* itemsRequest =
     new ListItemsRequest(m_networkManager, m_girderUrl, m_girderToken, m_folderId, this);
 
-  connect(
-    itemsRequest, SIGNAL(items(const QList<QString>)), this, SLOT(items(const QList<QString>)));
+  connect(itemsRequest, SIGNAL(items(const QMap<QString, QString>)), this,
+    SLOT(items(const QMap<QString, QString>)));
   connect(itemsRequest, SIGNAL(error(const QString, QNetworkReply*)), this,
     SIGNAL(error(const QString, QNetworkReply*)));
 
@@ -325,11 +325,11 @@ void DownloadFolderRequest::send()
   foldersRequest->send();
 }
 
-void DownloadFolderRequest::items(const QList<QString>& itemIds)
+void DownloadFolderRequest::items(const QMap<QString, QString>& itemMap)
 {
-  m_itemsToDownload = new QList<QString>(itemIds);
+  m_itemsToDownload = new QList<QString>(itemMap.keys());
 
-  foreach (QString itemId, itemIds)
+  foreach (QString itemId, itemMap.keys())
   {
     DownloadItemRequest* request = new DownloadItemRequest(
       m_networkManager, m_girderUrl, m_girderToken, m_downloadPath, itemId, this);
