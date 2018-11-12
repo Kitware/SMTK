@@ -2,6 +2,7 @@
 
 # tests that require SMTK_DATA_DIR
 set(smtkMeshPythonDataTests
+  importAndWriteGenesisFile
   loadExodusFile
 )
 
@@ -14,7 +15,8 @@ endif()
 if (SMTK_DATA_DIR)
   foreach (test ${smtkMeshPythonDataTests})
     smtk_add_test_python(${test}Py ${test}.py
-      --data-dir=${SMTK_DATA_DIR} )
+      --data-dir=${SMTK_DATA_DIR}
+      --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)
     set_tests_properties( ${test}Py PROPERTIES LABELS "MeshSession" )
   endforeach()
 endif()

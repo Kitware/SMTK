@@ -67,7 +67,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
         # Execute the operator and check its results
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
-            raise ImportError
+            raise RuntimeError
 
         # Access the resulting resource and model
         self.resource = smtk.session.mesh.Resource.CastTo(
@@ -93,7 +93,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
         # Execute the operator and check its results
         res = op.operate()
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
-            raise ImportError
+            raise RuntimeError
 
         # Access the resulting auxiliary geometry
         self.auxGeo = res.find("created").value()

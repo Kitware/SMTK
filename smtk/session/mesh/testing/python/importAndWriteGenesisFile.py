@@ -13,6 +13,7 @@ import os
 import sys
 import unittest
 import smtk
+import smtk.common
 import smtk.mesh
 import smtk.model
 import smtk.operation
@@ -20,7 +21,7 @@ import smtk.session.mesh
 import smtk.testing
 
 
-class LoadExodusFile(smtk.testing.TestCase):
+class ImportAndWriteGenesisFile(smtk.testing.TestCase):
 
     def setUp(self):
 
@@ -49,7 +50,7 @@ class LoadExodusFile(smtk.testing.TestCase):
     def testLoadExodusFile(self):
         # Set up the path to the test's input file
         modelFile = os.path.join(
-            smtk.testing.DATA_DIR, 'model', '3d', 'exodus', 'disk_out_ref.ex2')
+            smtk.testing.DATA_DIR, 'model', '3d', 'genesis', 'gun-1fourth.gen')
 
         # Create an ImportResource operation (alternatively, we could have just
         # created a smtk.session.mesh.Import operation directly, avoiding the
@@ -65,6 +66,30 @@ class LoadExodusFile(smtk.testing.TestCase):
         # Access the resource
         resource = smtk.model.Resource.CastTo(loadRes.find('resource').value())
 
+        # Write the resulting smtk mesh session file
+        writeOp = self.operationManager.createOperation(
+            'smtk::operation::WriteResource')
+        writeOp.parameters().associate(resource)
+        filename = os.path.join(
+            smtk.testing.TEMP_DIR, str(resource.id()) + '.smtk')
+        writeOp.parameters().find('filename').setIsEnabled(True)
+        writeOp.parameters().find('filename').setValue(filename)
+
+        writeRes = writeOp.operate()
+
+        if writeRes.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
+            raise RuntimeError
+
+        if not os.path.isfile(filename):
+            raise RuntimeError
+
+        os.remove(filename)
+
+        additionalFilename = os.path.join(
+            smtk.testing.TEMP_DIR, str(resource.id()) + '.h5m')
+
+        if os.path.isfile(additionalFilename):
+            os.remove(additionalFilename)
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()
