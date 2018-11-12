@@ -583,5 +583,6 @@ vtkSmartPointer<vtkDataObject> rggAuxiliaryGeometryExtension::generateRGGDuctRep
   return vtkSmartPointer<vtkDataObject>();
 }
 
-smtkDeclareExtension(SMTKRGGSESSION_EXPORT, rgg_auxiliary_geometry, rggAuxiliaryGeometryExtension);
+smtkDeclareExtension(
+  /*SMTKRGGSESSION_EXPORT*/, rgg_auxiliary_geometry, rggAuxiliaryGeometryExtension);
 smtkComponentInitMacro(smtk_rgg_auxiliary_geometry_extension);
