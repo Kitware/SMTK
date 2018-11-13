@@ -3,7 +3,8 @@
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="edit duct" Label="Model - Edit Duct" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="edit duct" Label="Model - Edit Duct" BaseType="operation">
       <BriefDescription>Edit a RGG Duct.</BriefDescription>
       <DetailedDescription>
         User can edit an existing duct by changing its properties.
@@ -59,6 +60,7 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(edit duct)" BaseType="result">
       <ItemDefinitions>
         <!-- The edit duct is returned in the base result's "edit" item. -->

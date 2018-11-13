@@ -3,7 +3,8 @@
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="edit material" Label="Model - Edit Material" BaseType="operator">
+    <include href="smtk/operation/Operation.xml"/>
+    <AttDef Type="edit material" Label="Model - Edit Material" BaseType="operation">
       <BriefDescription>Edit material for RGG model.</BriefDescription>
       <DetailedDescription>
         Edit an available material for an RGG model.
@@ -77,6 +78,7 @@
 
     </AttDef>
     <!-- Result -->
+    <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(edit material)" BaseType="result">
       <ItemDefinitions>
       </ItemDefinitions>
