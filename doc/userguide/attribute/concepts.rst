@@ -78,7 +78,7 @@ deserializing all of the attributes, definitions, items, and item-definitions
 stored in an attribute resource.
 
 Interfaces to the attribute resource
-----------------------------------
+------------------------------------
 
 The attribute resource has three interfaces:
 

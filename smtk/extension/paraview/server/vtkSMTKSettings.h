@@ -38,10 +38,20 @@ public:
   vtkGetMacro(HighlightOnHover, bool);
   vtkSetMacro(HighlightOnHover, bool);
 
+  /**\brief Choose how resources should be presented.
+    *
+    * See the server-manager XML for details.
+    */
+  vtkGetMacro(ResourceTreeStyle, int);
+  vtkSetMacro(ResourceTreeStyle, int);
+  static constexpr int HierarchicalStyle = 0; // Match value in smconfig.xml
+  static constexpr int TwoLevelStyle = 1;     // Match value in smconfig.xml
+
 protected:
   vtkSMTKSettings();
 
   bool HighlightOnHover;
+  int ResourceTreeStyle;
 
 private:
   vtkSMTKSettings(const vtkSMTKSettings&) = delete;

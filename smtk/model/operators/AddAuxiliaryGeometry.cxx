@@ -161,7 +161,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
     AuxiliaryGeometries del;
     del.push_back(auxGeom);
     EntityRefArray modified;
-    EntityRefArray expunged;
+    EntityArray expunged;
     resource->deleteEntities(del, modified, expunged, /*log*/ false);
     smtkErrorMacro(this->log(), "The url \"" << urlStr << "\" is invalid or unhandled.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

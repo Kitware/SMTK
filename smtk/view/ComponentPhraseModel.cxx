@@ -117,6 +117,11 @@ void ComponentPhraseModel::handleCreated(
     smtk::resource::ResourcePtr rsrc = comp->resource();
     this->processResource(rsrc, true);
   }
+
+  // TODO: Instead of querying all resources in m_resources for a list of matching
+  //       components, we should simply add anything in res that passes our test
+  //       for matching components.
+  this->populateRoot();
 }
 
 void ComponentPhraseModel::processResource(Resource::Ptr rsrc, bool adding)

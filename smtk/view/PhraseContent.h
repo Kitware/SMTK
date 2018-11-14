@@ -86,6 +86,9 @@ public:
     return attr;
   }
 
+  /// Return the content which this instance decorates (or a nullptr).
+  Ptr peek() const { return m_decorator; }
+
   /// Should \a attr be present in the visual display of the phrase?
   virtual bool displayable(ContentType attr) const
   {

@@ -42,7 +42,17 @@ public:
     * to **subclasses** of DescriptivePhrase are also accepted.
     * It is mostly intended for use by SubphraseGenerator and its subclasses.
     */
-  Ptr setup(DescriptivePhrasePtr parent, int mutability = 0);
+  Ptr setup(DescriptivePhrasePtr parent, smtk::model::BitFlags commonFlags,
+    smtk::model::BitFlags unionFlags, int mutability = 0);
+
+  /**\brief Create a descriptive phrase whose content is a PhraseListContent instance.
+    *
+    * This is for creating a phrase that a subphrase generator knows how to populate
+    * by inspecting the commonFlags() and unionFlags() values.
+    */
+  static DescriptivePhrasePtr createPhrase(DescriptivePhrasePtr parent,
+    smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags, int mutability = 0,
+    const DescriptivePhrases& children = DescriptivePhrases());
 
   virtual ~PhraseListContent() {}
 
@@ -93,6 +103,12 @@ public:
     * where setCustomTitle() is not used.
     */
   virtual void setModelFlags(smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags);
+
+  /// Return the bit-vector common to all smtk::model children in this list.
+  smtk::model::BitFlags commonModelFlags() const { return m_commonFlags; }
+
+  /// Return the bit-vector holding the union of all smtk::model children in this list.
+  smtk::model::BitFlags unionModelFlags() const { return m_unionFlags; }
 
   void setMutability(int whatsMutable);
 

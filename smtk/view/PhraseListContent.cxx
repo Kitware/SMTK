@@ -28,11 +28,27 @@ PhraseListContent::PhraseListContent()
   // only color is mutable
 }
 
-PhraseListContent::Ptr PhraseListContent::setup(DescriptivePhrase::Ptr parent, int mutability)
+PhraseListContent::Ptr PhraseListContent::setup(DescriptivePhrase::Ptr parent,
+  smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags, int mutability)
 {
   this->setLocation(parent);
+  this->setModelFlags(commonFlags, unionFlags);
   m_mutability = mutability;
   return shared_from_this();
+}
+
+DescriptivePhrasePtr PhraseListContent::createPhrase(DescriptivePhrasePtr parent,
+  smtk::model::BitFlags commonFlags, smtk::model::BitFlags unionFlags, int mutability,
+  const DescriptivePhrases& children)
+{
+  (void)children;
+
+  auto result = DescriptivePhrase::create()->setup(DescriptivePhraseType::COMPONENT_LIST, parent);
+  auto content = PhraseListContent::create()->setup(result, commonFlags, unionFlags, mutability);
+  content->setLocation(result);
+  result->setContent(content);
+  //result->manuallySetSubphrases(children, /*notify*/ false);
+  return result;
 }
 
 bool PhraseListContent::displayable(ContentType attr) const

@@ -240,8 +240,6 @@ void GirderFileBrowserFetcher::getCollectionsFolderInformation()
 void GirderFileBrowserFetcher::finishGettingSecondLevelFolderInformation(
   const QString& type, const QMap<QString, QString>& map)
 {
-  int numItems = map.keys().size();
-
   // Let's sort these by name. QMap sorts by key.
   QMap<QString, QString> sortedByName;
   for (const auto& id : map.keys())

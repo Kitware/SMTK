@@ -1836,6 +1836,39 @@
         <BooleanDomain name="bool" />
       </IntVectorProperty>
 
+      <IntVectorProperty
+        name="ResourceTreeStyle"
+        default_values="hierarchical"
+        command="SetResourceTreeStyle"
+        information_property="ResourceTreeStyleInfo"
+        panel_visibility="default">
+        <Documentation>
+          By default, resources are presented in a hierarchical fashion:
+          only the top-level components appear beneath a resource.
+          However, they may be expanded to list their children if they
+          have any.
+          For model entities, top-level components are those which do
+          not serve as geometric boundaries for any others (if they are
+          cells) or groups that are not members of any other group (if
+          they are groups) or models that are not owned by any other
+          model (if they are not models).
+
+          The alternative is a flatter, two-level hierarchy where,
+          underneath each resource is a list of entity types. Each
+          list of entity types has children that are the given type.
+        </Documentation>
+        <EnumerationDomain name="enum">
+          <Entry text="hierarchical" value="0"/>
+          <Entry text="two-level" value="1"/>
+        </EnumerationDomain>
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="ResourceTreeStyleInfo"
+        command="GetResourceTreeStyle"
+        information_only="1">
+        <SimpleIntInformationHelper />
+      </IntVectorProperty>
+
 
       <Hints>
         <UseDocumentationForLabels />

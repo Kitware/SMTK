@@ -11,6 +11,7 @@
 
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/PhraseListContent.h"
+#include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
@@ -29,6 +30,44 @@ namespace smtk
 {
 namespace view
 {
+namespace detail
+{
+
+// Sort paths from deepest to shallowest, then rear-most to front-most.
+// Doing these things keeps us from invalidating paths when items are removed.
+struct PathComp
+{
+  bool operator()(const std::vector<int>& a, const std::vector<int>& b) const
+  {
+    if (a.size() < b.size())
+    {
+      return false;
+    }
+    else if (a.size() > b.size())
+    {
+      return true;
+    }
+    std::size_t ii = 0;
+    for (auto ai : a)
+    {
+      if (ai < b[ii])
+      {
+        return false;
+      }
+      else if (ai > b[ii])
+      {
+        return true;
+      }
+      ++ii;
+    }
+    return false; // a == b... neither is less than other.
+  }
+};
+}
+
+class PhraseDeltas : public std::set<std::vector<int>, detail::PathComp>
+{
+};
 
 std::map<std::string, PhraseModel::ModelConstructor> PhraseModel::s_modelTypes;
 
@@ -202,11 +241,8 @@ void PhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventT
 int PhraseModel::handleOperationEvent(
   Operation::Ptr op, operation::EventType event, Operation::Result res)
 {
-  /*
-  std::cout << "      phrase op "
-            << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << op
-            << "\n";
-   */
+  smtkDebugMacro(smtk::io::Logger::instance(), "      Phrase handler: op "
+      << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << op);
 
   if (!op)
   {
@@ -228,11 +264,59 @@ int PhraseModel::handleOperationEvent(
   return 0;
 }
 
+void PhraseModel::removeChildren(const std::vector<int>& parentIdx, int childRange[2])
+{
+  auto phr = this->root()->at(parentIdx);
+  std::vector<int> removeRange{ childRange[0], childRange[1] };
+
+  this->trigger(phr, PhraseModelEvent::ABOUT_TO_REMOVE, parentIdx, parentIdx, removeRange);
+  phr->subphrases().erase(phr->subphrases().begin() + removeRange[0]);
+  this->trigger(phr, PhraseModelEvent::REMOVE_FINISHED, parentIdx, parentIdx, removeRange);
+}
+
 void PhraseModel::handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
 {
   (void)op;
   (void)res;
-  (void)data;
+
+  if (!data)
+  {
+    return;
+  }
+
+  // By default, search all existing phrases for matching components and remove them.
+  std::set<smtk::common::UUID> uuids;
+  for (auto it = data->begin(); it != data->end(); ++it)
+  {
+    uuids.insert((*it)->id());
+  }
+
+  PhraseDeltas pd;
+
+  // TODO: It would be more efficient to aggregate all deletions that share a
+  // common path vector and update that path's children at once.
+  this->root()->visitChildren([&uuids, &pd](DescriptivePhrasePtr phr, std::vector<int>& path) {
+    auto comp = phr->relatedComponent();
+    if (comp && uuids.find(comp->id()) != uuids.end())
+    {
+      pd.insert(path);
+    }
+    return 0;
+  });
+
+  for (auto idx : pd)
+  {
+    if (idx.empty())
+    {
+      continue;
+    }
+
+    int removeRange[2];
+    removeRange[0] = idx.back();
+    removeRange[1] = removeRange[0];
+    idx.pop_back();
+    this->removeChildren(idx, removeRange);
+  }
 }
 
 void PhraseModel::handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
@@ -262,18 +346,52 @@ void PhraseModel::handleModified(Operation::Ptr op, Operation::Result res, Compo
 
 void PhraseModel::handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
 {
-  (void)op;
-  (void)res;
-  (void)data;
+  (void)op;  // Ignore this in the general case but allow subclasses to special-case it.
+  (void)res; // TODO: Different behavior when result is failure vs success?
 
   if (!data)
   {
     return;
   }
 
+  auto rootPhrase = this->root();
+  auto delegate = rootPhrase ? rootPhrase->findDelegate() : nullptr;
+  if (!delegate)
+  {
+    return;
+  }
+
+  smtk::resource::PersistentObjectArray objects;
   for (auto cre = data->begin(); cre != data->end(); ++cre)
   {
-    std::cout << "    add " << (*cre)->id() << " somewhere\n";
+    // std::cout << "    add " << (*cre)->id() << " somewhere\n";
+    objects.push_back(*cre);
+  }
+
+  SubphraseGenerator::PhrasesByPath phrasesToInsert;
+  delegate->subphrasesForCreatedObjects(objects, rootPhrase, phrasesToInsert);
+
+  std::vector<int> insertRange{ 0, 0 };
+  for (auto pathIt = phrasesToInsert.begin(); pathIt != phrasesToInsert.end();)
+  {
+    SubphraseGenerator::Path path = pathIt->first;
+    auto parent = pathIt->second->parent();
+    SubphraseGenerator::Path idx(
+      path.begin(), path.begin() + path.size() - 1); // Index of parent, not phrase to be inserted.
+    insertRange[0] = path.back();
+    insertRange[1] = insertRange[0];
+
+    DescriptivePhrases batch;
+    batch.push_back(pathIt->second);
+    for (++pathIt; pathIt != phrasesToInsert.end() && pathIt->first == path; ++pathIt)
+    {
+      batch.push_back(pathIt->second);
+      ++insertRange[1];
+    }
+    this->trigger(parent, PhraseModelEvent::ABOUT_TO_INSERT, idx, idx, insertRange);
+    auto& children = parent->subphrases();
+    children.insert(children.begin() + path.back(), batch.begin(), batch.end());
+    this->trigger(parent, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);
   }
 }
 

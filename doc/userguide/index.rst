@@ -41,8 +41,10 @@ simulation domain.
    model/index.rst
    mesh/index.rst
    simulation/index.rst
-   bindings/index.rst
+   view/index.rst
    extension/index.rst
+   workflow/index.rst
+   bindings/index.rst
    administration.rst
    contributing.rst
 

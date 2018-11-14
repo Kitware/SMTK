@@ -94,6 +94,17 @@ bool SubphraseGenerator::setModel(PhraseModelPtr model)
   return true;
 }
 
+void SubphraseGenerator::decoratePhrase(DescriptivePhrase::Ptr& phrase)
+{
+  PhraseModelPtr mod = this->model();
+  if (!mod)
+  {
+    return;
+  }
+
+  mod->decoratePhrase(phrase);
+}
+
 void SubphraseGenerator::decoratePhrases(DescriptivePhrases& phrases)
 {
   PhraseModelPtr mod = this->model();
@@ -106,6 +117,131 @@ void SubphraseGenerator::decoratePhrases(DescriptivePhrases& phrases)
   {
     mod->decoratePhrase(phrase);
   }
+}
+
+template <typename T>
+int MutabilityOfComponent(const T& comp)
+{
+  constexpr int modelMutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+    static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
+  constexpr int meshMutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
+  constexpr int attrMutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
+
+  if (std::dynamic_pointer_cast<smtk::model::Entity>(comp))
+  {
+    return modelMutability;
+  }
+  else if (std::dynamic_pointer_cast<smtk::mesh::Component>(comp))
+  {
+    return meshMutability;
+  }
+  else if (std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp))
+  {
+    return attrMutability;
+  }
+  return 0;
+}
+
+template <typename T>
+int MutabilityOfObject(const T& obj)
+{
+  constexpr int resourceMutability =
+    static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
+
+  if (std::dynamic_pointer_cast<smtk::resource::Resource>(obj))
+  {
+    return resourceMutability;
+  }
+  else if (std::dynamic_pointer_cast<smtk::resource::Component>(obj))
+  {
+    return MutabilityOfComponent(obj);
+  }
+
+  return 0;
+}
+
+void SubphraseGenerator::subphrasesForCreatedObjects(
+  const smtk::resource::PersistentObjectArray& objects, const DescriptivePhrasePtr& localRoot,
+  PhrasesByPath& resultingPhrases)
+{
+  (void)objects;
+  (void)resultingPhrases;
+  if (!localRoot || !localRoot->areSubphrasesBuilt())
+  {
+    return;
+  }
+
+  // We only want to add subphrases in portions of the tree that already exist.
+  // So we iterate over phrases; any phrase that has children will ask each object
+  // if its subject should be an immediate parent of the phrase with children (and,
+  // if so, what its index in the existing children should be).
+  //
+  // This search is O(m*n) where m = number of phrases in tree and n = number of
+  // objects created.
+  localRoot->visitChildren([&](DescriptivePhrasePtr parent, std::vector<int>& parentPath) -> int {
+    // Terminate early if this phrase has not been expanded by user.
+    if (!parent->areSubphrasesBuilt())
+    {
+      return 0;
+    }
+
+    smtk::resource::ResourcePtr rsrc;
+    smtk::resource::ComponentPtr comp;
+    for (auto obj : objects)
+    {
+      DescriptivePhrasePtr actualParent(parent);
+      Path childPath = this->indexOfObjectInParent(obj, actualParent, parentPath);
+      if (childPath.empty())
+      {
+        continue;
+      } // obj is not a direct child of parent
+
+      DescriptivePhrasePtr child;
+      if ((comp = obj->as<smtk::resource::Component>()))
+      {
+        child =
+          ComponentPhraseContent::createPhrase(comp, MutabilityOfComponent(comp), actualParent);
+        this->decoratePhrase(child);
+        resultingPhrases.insert(std::make_pair(childPath, child));
+      }
+      else if ((rsrc = obj->as<smtk::resource::Resource>()))
+      {
+        child = ResourcePhraseContent::createPhrase(rsrc, MutabilityOfObject(rsrc), actualParent);
+        this->decoratePhrase(child);
+        resultingPhrases.insert(std::make_pair(childPath, child));
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Unsupported object type. Skipping.");
+      }
+    }
+    return 0; // 0 => continue iterating, 1 => skip children of parent, 2 => terminate
+  });
+
+  smtk::attribute::AttributePtr attr;
+  smtk::model::EntityPtr ment;
+  smtk::mesh::ComponentPtr mcmp;
+  for (auto obj : objects)
+  {
+    auto comp = obj->as<smtk::resource::Component>();
+    if (!comp)
+    {
+      continue;
+    }
+
+    int rsrcIdx = this->findResourceLocation(comp->resource(), localRoot);
+    if (rsrcIdx < 0)
+    {
+      continue;
+    }
+
+    Path path{ rsrcIdx, -1 };
+
+    DescriptivePhrasePtr parent = localRoot->subphrases()[rsrcIdx];
+    DescriptivePhrasePtr phr;
+  }
+  /*
+  */
 }
 
 int SubphraseGenerator::directLimit() const
@@ -148,6 +284,253 @@ bool SubphraseGenerator::skipAttributes() const
 void SubphraseGenerator::setSkipAttributes(bool val)
 {
   m_skipAttributes = val;
+}
+
+template <typename T>
+void PreparePath(T& result, const T& parentPath, int childIndex)
+{
+  result.reserve(parentPath.size() + 1);
+  std::copy(parentPath.begin(), parentPath.end(), result.begin());
+  result.push_back(childIndex);
+}
+
+template <typename T>
+int IndexFromTitle(const std::string& title, const T& phrases)
+{
+  // TODO: Use bisection to speed this up.
+  int ii = 0;
+  for (auto phrase : phrases)
+  {
+    if (title < phrase->title())
+    {
+      return ii;
+    }
+    ++ii;
+  }
+  return ii;
+}
+
+SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
+  const smtk::resource::PersistentObjectPtr& obj, smtk::view::DescriptivePhrasePtr& actualParent,
+  const Path& parentPath)
+{
+  // The default subphrase generator will never have resources as children
+  // of anything, so unless obj is a component, we do not assign it a path:
+  Path result;
+  auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
+  if (!actualParent || !comp)
+  {
+    return result;
+  }
+
+  smtk::resource::ResourcePtr rsrc;
+  smtk::attribute::AttributePtr attr;
+  smtk::mesh::ComponentPtr mcmp;
+  smtk::model::EntityPtr ment;
+  // Determine if the component is a direct-ish child of parent
+  if (!actualParent->relatedComponent() && actualParent->relatedResource())
+  {
+    // Attribute and mesh resources own all their components directly.
+    // Model resources have only _free_ models as direct children.
+    if (comp->resource() == actualParent->relatedResource() &&
+      (std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp) ||
+          std::dynamic_pointer_cast<smtk::mesh::Component>(comp) ||
+          ((ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp)) && ment->isModel() &&
+            !smtk::model::Model(ment).owningModel().isValid())))
+    {
+      PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
+    }
+  }
+  else if ((ment =
+               std::dynamic_pointer_cast<smtk::model::Entity>(actualParent->relatedComponent())))
+  {
+    bool shouldAdd = false;
+    auto parentEntity = ment;
+    auto childEntity = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
+    if (childEntity)
+    {
+      smtk::model::EntityRef childRef(childEntity);
+      if (childEntity->isCellEntity())
+      {
+        // Is the parent an owning group?
+        if (parentEntity->isGroup())
+        {
+          auto groups = childRef.containingGroups();
+          for (auto group : groups)
+          {
+            if (group.entity() == parentEntity->id())
+            {
+              shouldAdd = true;
+              break;
+            }
+          }
+        }
+        else if (parentEntity->isCellEntity())
+        {
+          auto bordants = childRef.bordantEntities();
+          if (bordants.find(smtk::model::EntityRef(parentEntity)) != bordants.end())
+          {
+            shouldAdd = true;
+          }
+        }
+        else if (parentEntity->isModel())
+        {
+          smtk::model::Model parentModel(parentEntity);
+          auto cells = parentModel.cells();
+          for (auto cell : cells)
+          {
+            if (cell.entity() == childRef.entity())
+            {
+              shouldAdd = true;
+              break;
+            }
+          }
+        }
+      }
+      else if (childEntity->isGroup())
+      {
+        // Is the parent a group that owns this group?
+        auto groups = childRef.containingGroups();
+        for (auto group : groups)
+        {
+          if (group.entity() == parentEntity->id())
+          {
+            shouldAdd = true;
+            break;
+          }
+        }
+        // Is the parent a model that owns this group?
+        if (!shouldAdd && parentEntity->isModel())
+        {
+          groups = smtk::model::Model(parentEntity).groups();
+          for (auto group : groups)
+          {
+            if (group.entity() == childRef.entity())
+            {
+              shouldAdd = true;
+              break;
+            }
+          }
+        }
+      }
+      else if (childEntity->isAuxiliaryGeometry())
+      {
+        /* TODO:
+        if
+        (
+         (parent is a model::Model and comp is in model.auxiliaryGeometry()) ||
+         (parent is a model::AuxGeom and comp is in auxGeom.auxiliaryGeometry()) ||
+         (parent is a model::Group and comp is a member)
+        )
+        {
+        shouldAdd = true;
+        }
+        */
+      }
+      else if (childEntity->isInstance() &&
+        smtk::model::Instance(childEntity).prototype().entity() == parentEntity->id())
+      {
+        shouldAdd = true;
+      }
+    }
+    if (shouldAdd)
+    {
+      PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
+    }
+  }
+  return result;
+}
+
+int SubphraseGenerator::findResourceLocation(
+  smtk::resource::ResourcePtr rsrc, const DescriptivePhrase::Ptr& root) const
+{
+  if (!root || !rsrc)
+  {
+    return -1;
+  }
+
+  int ii = 0;
+  for (auto phrase : root->subphrases())
+  {
+    if (phrase->relatedResource() == rsrc)
+    {
+      return ii;
+    }
+    ++ii;
+  }
+  return -1;
+}
+
+bool SubphraseGenerator::findSortedLocation(Path& pathOut, smtk::attribute::AttributePtr attr,
+  DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const
+{
+  (void)phr;
+  if (!attr || !parent || !parent->areSubphrasesBuilt())
+  {
+    // If the user has not opened the parent phrase, do not
+    // add to it; when subphrases are generated later (on demand)
+    // they should include \a attr.
+    return false;
+  }
+
+  const auto& phrases = parent->subphrases();
+  int ii = 0;
+
+  // For now, attributes are flat, so pathOut is easy.
+  for (auto phrase : phrases)
+  {
+    if (phrase->title() > attr->name())
+    {
+      pathOut.back() = ii;
+      return true;
+    }
+    ++ii;
+  }
+  pathOut.back() = ii;
+  return true;
+}
+
+bool SubphraseGenerator::findSortedLocation(Path& pathInOut, smtk::model::EntityPtr entity,
+  DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const
+{
+  (void)phr;
+  if (!entity || !parent || !parent->areSubphrasesBuilt())
+  {
+    // If the user has not opened the parent phrase, do not
+    // add to it; when subphrases are generated later (on demand)
+    // they should include \a attr.
+    return false;
+  }
+  smtk::model::BitFlags entityType = entity->entityFlags() & smtk::model::ENTITY_MASK;
+  int rsrcIdx = pathInOut[0];
+  switch (entityType)
+  {
+    case smtk::model::CELL_ENTITY:
+      pathInOut = Path{ rsrcIdx, 0 };
+      phr->reparent(parent);
+      return true;
+      break;
+    default:
+      return false;
+      break;
+  }
+  (void)pathInOut;
+  return false;
+}
+
+bool SubphraseGenerator::findSortedLocation(Path& pathOut, smtk::mesh::ComponentPtr comp,
+  DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const
+{
+  (void)phr;
+  if (!comp || !parent || !parent->areSubphrasesBuilt())
+  {
+    // If the user has not opened the parent phrase, do not
+    // add to it; when subphrases are generated later (on demand)
+    // they should include \a attr.
+    return false;
+  }
+  (void)pathOut;
+  return false;
 }
 
 void SubphraseGenerator::componentsOfResource(

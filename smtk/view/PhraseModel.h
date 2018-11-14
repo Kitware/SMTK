@@ -178,6 +178,13 @@ protected:
   virtual int handleOperationEvent(
     Operation::Ptr op, operation::EventType e, Operation::Result res);
 
+  /**\brief Given the index of parent phrase and a range of its children, delete them.
+    *
+    * This properly signals any observers as it removes the specified children.
+    * It is called from handleExpunged.
+    */
+  void removeChildren(const std::vector<int>& parentIdx, int childRange[2]);
+
   /// Called to deal with resources/components being removed as a result of an operation.
   virtual void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   /// Called to deal with resources/components marked as modified by the operation.

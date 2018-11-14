@@ -28,10 +28,10 @@ class SMTKCORE_EXPORT ResourcePhraseContent : public PhraseContent
 public:
   smtkTypeMacro(ResourcePhraseContent);
   smtkSharedPtrCreateMacro(PhraseContent);
-  Ptr setup(const smtk::resource::ResourcePtr& component, int mutability = 0);
+  Ptr setup(const smtk::resource::ResourcePtr& resource, int mutability = 0);
   virtual ~ResourcePhraseContent();
 
-  static DescriptivePhrasePtr createPhrase(const smtk::resource::ResourcePtr& component,
+  static DescriptivePhrasePtr createPhrase(const smtk::resource::ResourcePtr& resource,
     int mutability = 0, DescriptivePhrasePtr parent = DescriptivePhrasePtr());
 
   bool displayable(ContentType attr) const override { return attr != VISIBILITY ? true : false; }

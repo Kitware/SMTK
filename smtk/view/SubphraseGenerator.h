@@ -47,6 +47,9 @@ public:
   smtkCreateMacro(SubphraseGenerator);
   virtual ~SubphraseGenerator() {}
 
+  using Path = std::vector<int>;
+  using PhrasesByPath = std::multimap<Path, DescriptivePhrasePtr>;
+
   /**\brief Return a list of descriptive phrases that elaborate upon \a src.
     *
     * Subclasses must override this method.
@@ -60,7 +63,23 @@ public:
   PhraseModelPtr model() const { return m_model.lock(); }
 
   /// If model() is non-null, ask it to decorate each phrase
+  void decoratePhrase(DescriptivePhrase::Ptr& phrase);
+
+  /// If model() is non-null, ask it to decorate each phrase
   void decoratePhrases(DescriptivePhrases& phrases);
+
+  /**\brief Append subphrases and their paths that the given set of created objects implies.
+    *
+    * After an operation, newly-created objects (components and resources) need to be
+    * inserted into the descriptive phrase hierarchy. Since the subphrase generator is
+    * responsible for populating all of the tree except the top-level phrases initially,
+    * this task also falls to the generator.
+    *
+    * The generator is responsible for decorating each path it adds to \a resultingPhrases
+    * if a phrase model is present.
+    */
+  virtual void subphrasesForCreatedObjects(const smtk::resource::PersistentObjectArray& objects,
+    const DescriptivePhrasePtr& localRoot, PhrasesByPath& resultingPhrases);
 
   /**\brief The maximum number of subphrases to directly include before turning into a list.
     *
@@ -112,6 +131,18 @@ public:
 
 protected:
   SubphraseGenerator();
+
+  virtual Path indexOfObjectInParent(const smtk::resource::PersistentObjectPtr& obj,
+    smtk::view::DescriptivePhrasePtr& parent, const Path& parentPath);
+
+  virtual int findResourceLocation(
+    smtk::resource::ResourcePtr rsrc, const DescriptivePhrase::Ptr& root) const;
+  virtual bool findSortedLocation(Path& pathOut, smtk::attribute::AttributePtr attr,
+    DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const;
+  virtual bool findSortedLocation(Path& pathOut, smtk::model::EntityPtr entity,
+    DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const;
+  virtual bool findSortedLocation(Path& pathOut, smtk::mesh::ComponentPtr comp,
+    DescriptivePhrase::Ptr& phr, const DescriptivePhrase::Ptr& parent) const;
 
   /// Populate \a result with the top-level components of \a rsrc with \a src as their parent.
   void componentsOfResource(
@@ -180,10 +211,33 @@ protected:
     DescriptivePhrase::Ptr src, const smtk::model::Instance& ent, DescriptivePhrases& result);
   ///@}
 
+  /**\brief A templated helper for creating lists of components as subphrases.
+    *
+    * This method will create a new descriptive phrase with no PhraseContent and
+    * its type set to COMPONENT_LIST.
+    * That phrase will added to \a result.
+    * It will have its subphrases populated with new phrases, one per entry of
+    * the \a components container, each with ComponentPhraseContent.
+    * If directed, its children will be decorated.
+    * If a comparator is passed in, then the children of this new phrase will be
+    * sorted using the comparator.
+    */
+  template <typename T>
+  PhraseListContentPtr addComponentPhrases(const T& components, DescriptivePhrase::Ptr parent,
+    DescriptivePhrases& result,
+    int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+      static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
+    bool decorate = true,
+    std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
+      DescriptivePhrase::compareByTypeThenTitle);
+
   /// A templated helper for the model-related utility methods.
   template <typename T>
-  void addModelEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit,
-    DescriptivePhrases& result, bool decorate = true,
+  PhraseListContentPtr addModelEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent,
+    int limit, DescriptivePhrases& result,
+    int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+      static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR),
+    bool decorate = true,
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
       DescriptivePhrase::compareByTypeThenTitle);
 

@@ -456,7 +456,7 @@ Delete::Result Delete::operateInternal()
   smtk::attribute::ComponentItem::Ptr expunged = result->findComponent("expunged");
   for (auto e = m_expunged.begin(); e != m_expunged.end(); ++e)
   {
-    expunged->appendValue(e->component());
+    expunged->appendValue(*e);
   }
 
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
