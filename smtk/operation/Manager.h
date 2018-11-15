@@ -18,6 +18,7 @@
 #include "smtk/common/TypeName.h"
 
 #include "smtk/operation/Group.h"
+#include "smtk/operation/Launcher.h"
 #include "smtk/operation/Metadata.h"
 #include "smtk/operation/MetadataContainer.h"
 #include "smtk/operation/Observer.h"
@@ -104,6 +105,10 @@ public:
   /// Return the map of metadata.
   MetadataContainer& metadata() { return m_metadata; }
 
+  /// Return the launchers associated with this manager.
+  Launchers& launchers() { return m_launchers; }
+  const Launchers& launchers() const { return m_launchers; }
+
   /// Return the observers associated with this manager.
   Observers& observers() { return m_observers; }
   const Observers& observers() const { return m_observers; }
@@ -178,6 +183,9 @@ private:
   {
     return true;
   }
+
+  /// A container for all operation launchers.
+  Launchers m_launchers;
 
   /// A container for all operation observers.
   Observers m_observers;

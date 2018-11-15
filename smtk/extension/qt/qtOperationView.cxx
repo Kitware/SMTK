@@ -14,8 +14,10 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtOperationLauncher.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/view/View.h"
 
@@ -44,6 +46,7 @@ public:
   smtk::view::ViewPtr m_instancedViewDef;
   QPointer<QPushButton> m_applyButton;
   QPointer<QPushButton> m_infoButton;
+  qtOperationLauncher* m_launcher;
 };
 
 qtBaseView* qtOperationView::createViewWidget(const ViewInfo& info)
@@ -83,6 +86,19 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
     {
       view->details().setAttribute("FilterByCategory", "false");
     }
+  }
+  if (auto manager = this->Internals->m_operator->manager())
+  {
+    auto launcher = manager->launchers()[qtOperationLauncher::type_name].target<qt::Launcher>();
+    if (launcher == nullptr)
+    {
+      manager->launchers()[qtOperationLauncher::type_name] = qt::Launcher();
+      launcher = manager->launchers()[qtOperationLauncher::type_name].target<qt::Launcher>();
+    }
+    assert(launcher != nullptr);
+    this->Internals->m_launcher = launcher->get();
+    connect(this->Internals->m_launcher, &qtOperationLauncher::resultReady, this,
+      &qtOperationView::operationExecuted);
   }
 }
 
@@ -175,14 +191,12 @@ void qtOperationView::onOperate()
 {
   if ((!m_applied) && this->Internals->m_instancedView->isValid())
   {
-    smtk::operation::Operation::Result result = this->Internals->m_operator->operate();
+    auto future = (*this->Internals->m_launcher)(this->Internals->m_operator);
     emit this->operationRequested(this->Internals->m_operator);
     if (this->Internals->m_applyButton)
     { // The button may disappear when a session is closed by an operator.
       this->Internals->m_applyButton->setEnabled(false);
     }
     m_applied = true;
-
-    emit this->operationExecuted(result);
   }
 }

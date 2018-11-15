@@ -21,6 +21,7 @@
 #include "smtk/extension/qt/qtBaseView.h"
 
 #include <QPointer>
+#include <QThread>
 
 class qtOperationViewInternals;
 class QPushButton;

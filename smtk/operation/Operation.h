@@ -115,6 +115,9 @@ public:
 
   virtual ~Operation();
 
+  /// Operations that are managed have a non-null pointer to their manager.
+  ManagerPtr manager() const { return m_manager.lock(); }
+
 protected:
   Operation();
 

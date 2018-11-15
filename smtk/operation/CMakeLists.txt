@@ -1,4 +1,5 @@
 set(operationSrcs
+  Launcher.cxx
   Group.cxx
   Manager.cxx
   Metadata.cxx
@@ -23,6 +24,7 @@ set(operationSrcs
 )
 
 set(operationHeaders
+  Launcher.h
   Group.h
   Manager.h
   Metadata.h
