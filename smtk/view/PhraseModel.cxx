@@ -110,11 +110,12 @@ PhraseModel::~PhraseModel()
   this->resetSources();
 }
 
-bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr)
+bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
+  smtk::view::SelectionPtr seln)
 {
   for (auto source : m_sources)
   {
-    if (source.m_rsrcMgr == rsrcMgr && source.m_operMgr == operMgr)
+    if (source.m_rsrcMgr == rsrcMgr && source.m_operMgr == operMgr && source.m_seln == seln)
     {
       return false; // Do not add what we already have
     }
@@ -134,16 +135,21 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
           return 0;
         })
     : -1;
-  m_sources.push_back(Source(rsrcMgr, operMgr, rsrcHandle, operHandle));
+  int selnHandle = seln
+    ? seln->observe([this](const std::string& src,
+                      smtk::view::SelectionPtr seln) { this->handleSelectionEvent(src, seln); },
+        /*observeImmediately*/ true)
+    : -1;
+  m_sources.push_back(Source(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle));
   return true;
 }
 
-bool PhraseModel::removeSource(
-  smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr)
+bool PhraseModel::removeSource(smtk::resource::ManagerPtr rsrcMgr,
+  smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
 {
   for (auto it = m_sources.begin(); it != m_sources.end(); ++it)
   {
-    if (it->m_rsrcMgr == rsrcMgr && it->m_operMgr == operMgr)
+    if (it->m_rsrcMgr == rsrcMgr && it->m_operMgr == operMgr && it->m_seln == seln)
     {
       if (it->m_rsrcHandle >= 0)
       {
@@ -152,6 +158,10 @@ bool PhraseModel::removeSource(
       if (it->m_operHandle >= 0)
       {
         it->m_operMgr->observers().erase(it->m_operHandle);
+      }
+      if (it->m_selnHandle >= 0)
+      {
+        it->m_seln->unobserve(it->m_selnHandle);
       }
       m_sources.erase(it);
       return true;
@@ -166,7 +176,7 @@ bool PhraseModel::resetSources()
   while (!m_sources.empty())
   {
     auto src = m_sources.begin();
-    if (this->removeSource(src->m_rsrcMgr, src->m_operMgr))
+    if (this->removeSource(src->m_rsrcMgr, src->m_operMgr, src->m_seln))
     {
       removedAny = true;
     }

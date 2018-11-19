@@ -91,6 +91,8 @@ bool pqSMTKSphereItemWidget::createProxyAndWidget(
     proxy->GetProperty("Center"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
   m_p->m_connector->Connect(
     proxy->GetProperty("Radius"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
+  // The above detect render-window interactions. The below detects Qt interactions:
+  QObject::connect(widget, SIGNAL(changeFinished()), this, SLOT(updateItemFromWidget()));
 
   return widget != nullptr;
 }
@@ -108,6 +110,11 @@ void pqSMTKSphereItemWidget::updateItemFromWidget()
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
   vtkSMPropertyHelper centerHelper(widget, "Center");
   vtkSMPropertyHelper radiusHelper(widget, "Radius");
+
+  // NB: Because ParaView widgets may emit a "value possibly changed" signal when
+  //     no value actually _has_ changed, we do not want to emit error messages
+  //     that could frighten/confuse users just because the SMTK items were not
+  //     updated. But this can be a silent failure point.
   for (int i = 0; i < 3; ++i)
   {
     centerItem->setValue(i, centerHelper.GetAsDouble(i));

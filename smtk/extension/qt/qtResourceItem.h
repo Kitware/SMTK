@@ -31,23 +31,10 @@ public:
   qtResourceItem(const AttributeItemInfo& info);
   virtual ~qtResourceItem();
 
-  void setLabelVisible(bool) override;
-
-protected slots:
-  void updateItemData() override;
-
 protected:
   smtk::view::PhraseModelPtr createPhraseModel() const override;
 
-  void createWidget() override;
-
   std::string synopsis(bool& membershipValid) const override;
-
-  int decorateWithMembership(smtk::view::DescriptivePhrasePtr phr) override;
-
-  void toggleCurrentItem() override;
-
-  bool synchronize(UpdateSource src) override;
 };
 }
 }

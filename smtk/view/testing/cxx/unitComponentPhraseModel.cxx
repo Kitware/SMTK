@@ -103,7 +103,7 @@ int unitComponentPhraseModel(int argc, char* argv[])
   filters.insert(
     std::make_pair(std::string("smtk::session::polygon::Resource"), std::string("face")));
   phraseModel->setComponentFilters(filters);
-  phraseModel->addSource(rsrcMgr, operMgr);
+  phraseModel->addSource(rsrcMgr, operMgr, nullptr);
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {

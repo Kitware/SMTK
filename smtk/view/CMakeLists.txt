@@ -12,6 +12,7 @@ set(viewSrcs
   ResourcePhraseContent.cxx
   ResourcePhraseModel.cxx
   Selection.cxx
+  SelectionPhraseModel.cxx
   SubphraseGenerator.cxx
   TwoLevelSubphraseGenerator.cxx
   View.cxx
@@ -34,6 +35,7 @@ set(viewHeaders
   ResourcePhraseContent.h
   ResourcePhraseModel.h
   Selection.h
+  SelectionPhraseModel.h
   SubphraseGenerator.h
   SubphraseGenerator.txx
   TwoLevelSubphraseGenerator.h
