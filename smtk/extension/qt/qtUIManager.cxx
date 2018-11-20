@@ -162,6 +162,7 @@ void qtUIManager::commonConstructor()
   this->registerItemConstructor("qtFileItem", qtFileItem::createItemWidget);
   this->registerItemConstructor("qtGroupItem", qtGroupItem::createItemWidget);
   this->registerItemConstructor("qtIntItem", qtIntItem::createItemWidget);
+  this->registerItemConstructor("qtReferenceItem", qtReferenceItem::createItemWidget);
   this->registerItemConstructor("qtResourceItem", qtResourceItem::createItemWidget);
   this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
   this->registerItemConstructor("qtVoidItem", qtVoidItem::createItemWidget);
@@ -942,16 +943,14 @@ qtItem* qtUIManager::defaultItemConstructor(const AttributeItemInfo& info)
       return qtGroupItem::createItemWidget(info);
     case smtk::attribute::Item::IntType:
       return qtIntItem::createItemWidget(info);
+    case smtk::attribute::Item::ReferenceType:
+      return qtReferenceItem::createItemWidget(info);
     case smtk::attribute::Item::ResourceType:
       return qtResourceItem::createItemWidget(info);
     case smtk::attribute::Item::StringType:
       return qtStringItem::createItemWidget(info);
     case smtk::attribute::Item::VoidType:
       return qtVoidItem::createItemWidget(info);
-    case smtk::attribute::Item::ReferenceType:
-      // ReferenceItems are currently only used for associations. We can safely
-      // ignore them here without signaling an error.
-      return nullptr;
     default:
       smtkErrorMacro(smtk::io::Logger::instance(),
         "Error: Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));

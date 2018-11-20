@@ -30,24 +30,6 @@ public:
   static qtItem* createItemWidget(const AttributeItemInfo& info);
   qtComponentItem(const AttributeItemInfo& info);
   virtual ~qtComponentItem();
-
-  void setLabelVisible(bool) override;
-
-protected slots:
-  void updateItemData() override;
-
-protected:
-  smtk::view::PhraseModelPtr createPhraseModel() const override;
-
-  void createWidget() override;
-
-  std::string synopsis(bool& membershipValid) const override;
-
-  int decorateWithMembership(smtk::view::DescriptivePhrasePtr phr) override;
-
-  void toggleCurrentItem() override;
-
-  bool synchronize(UpdateSource src) override;
 };
 }
 }

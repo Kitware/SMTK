@@ -15,11 +15,16 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/ComponentPhraseModel.h"
+#include "smtk/view/ResourcePhraseModel.h"
+#include "smtk/view/SubphraseGenerator.h"
+#include "smtk/view/VisibilityContent.h"
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
+
+#include "smtk/io/Logger.h"
 
 #include <QEvent>
 #include <QKeyEvent>
@@ -38,6 +43,22 @@ static void updateLabel(QLabel* lbl, const QString& txt, bool ok)
   lbl->setPalette(pal);
   lbl->update();
 }
+}
+
+qtItem* qtReferenceItem::createItemWidget(const AttributeItemInfo& info)
+{
+  // So we support this type of item?
+  if (info.itemAs<smtk::attribute::ReferenceItem>() == nullptr)
+  {
+    return nullptr;
+  }
+  auto qi = new qtReferenceItem(info);
+  // Unlike its subclasses, qtReferenceItem does not call
+  // createWidget in its constructor (because that would cause
+  // problems for subclasses since the method is virtual and
+  // could be overridden). Call it now:
+  qi->createWidget();
+  return qi;
 }
 
 qtReferenceItemData::qtReferenceItemData()
@@ -65,6 +86,42 @@ qtReferenceItem::~qtReferenceItem()
   m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
   delete m_p;
   m_p = nullptr;
+}
+
+qtReferenceItem::AcceptsTypes qtReferenceItem::acceptableTypes() const
+{
+  auto def = std::dynamic_pointer_cast<const smtk::attribute::ComponentItemDefinition>(
+    m_itemInfo.item()->definition());
+  if (!def)
+  {
+    return NONE;
+  }
+
+  bool rsrc = false;
+  bool comp = false;
+  for (auto entry : def->acceptableEntries())
+  {
+    if (entry.second.empty())
+    {
+      rsrc = true;
+    }
+    else
+    {
+      comp = true;
+    }
+  }
+  return rsrc ? (comp ? BOTH : RESOURCES) : (comp ? COMPONENTS : NONE);
+}
+
+void qtReferenceItem::setLabelVisible(bool visible)
+{
+  m_p->m_label->setVisible(visible);
+}
+
+void qtReferenceItem::updateItemData()
+{
+  this->updateUI();
+  this->Superclass::updateItemData();
 }
 
 void qtReferenceItem::selectionLinkToggled(bool linked)
@@ -121,20 +178,63 @@ void qtReferenceItem::synchronizeAndHide(bool escaping)
   m_p->m_popup->hide();
 }
 
+smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
+{
+  auto showsWhat = this->acceptableTypes();
+  switch (showsWhat)
+  {
+    case COMPONENTS:
+    case BOTH:
+    case NONE: // Ideally this would do something different.
+    {
+      // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
+      // to point back to the model (thus ensuring subphrases are decorated). This is required
+      // since we need to decorate phrases to show+edit "visibility" as set membership:
+      auto phraseModel = smtk::view::ComponentPhraseModel::create(m_itemInfo.component());
+      phraseModel->root()->findDelegate()->setModel(phraseModel);
+      auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
+        m_itemInfo.item()->definition());
+      std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
+        ->setComponentFilters(def->acceptableEntries());
+      return phraseModel;
+    }
+    break;
+    case RESOURCES:
+    {
+      auto phraseModel = smtk::view::ResourcePhraseModel::create(m_itemInfo.component());
+      phraseModel->root()->findDelegate()->setModel(phraseModel);
+      auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
+        m_itemInfo.item()->definition());
+      std::static_pointer_cast<smtk::view::ResourcePhraseModel>(phraseModel)
+        ->setResourceFilters(def->acceptableEntries());
+      return phraseModel;
+    }
+    break; // handled below.
+  }
+  smtkWarningMacro(
+    smtk::io::Logger::instance(), "No resources or components accepted. Unsupported.");
+  return nullptr;
+}
+
 void qtReferenceItem::createWidget()
 {
+  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
+  if (!dataObj || !this->passAdvancedCheck() ||
+    (m_itemInfo.uiManager() &&
+      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  {
+    return;
+  }
+
   this->clearWidgets();
-  this->updateUI();
+  this->updateItemData();
 }
 
 void qtReferenceItem::clearWidgets()
 {
-  /*
-  if (m_p->m_grid)
-  {
-    delete m_p->m_grid;
-  }
-  */
+  m_itemInfo.parentWidget()->layout()->removeWidget(m_widget);
+  delete m_widget;
+  m_widget = nullptr;
 }
 
 void qtReferenceItem::updateUI()
@@ -159,14 +259,21 @@ void qtReferenceItem::updateUI()
   m_p->m_qtDelegate->setTitleFontWeight(1);
   m_p->m_qtDelegate->setDrawSubtitle(false);
   m_p->m_qtDelegate->setVisibilityMode(true);
-  m_p->m_phraseModel->setDecorator(
-    [this](smtk::view::DescriptivePhrasePtr phr) { this->decorateWithMembership(phr); });
+  if (m_p->m_phraseModel)
+  {
+    m_p->m_phraseModel->setDecorator(
+      [this](smtk::view::DescriptivePhrasePtr phr) { this->decorateWithMembership(phr); });
+  }
   m_p->m_qtModel->setVisibleIconURL(":/icons/display/selected.png");
   m_p->m_qtModel->setInvisibleIconURL(":/icons/display/unselected.png");
-  m_p->m_phraseModel->addSource(rsrcMgr, operMgr);
-  m_p->m_modelObserverId = m_p->m_phraseModel->observe([this](smtk::view::DescriptivePhrasePtr phr,
-    smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
-    const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); });
+  if (m_p->m_phraseModel)
+  {
+    m_p->m_phraseModel->addSource(rsrcMgr, operMgr);
+    m_p->m_modelObserverId =
+      m_p->m_phraseModel->observe([this](smtk::view::DescriptivePhrasePtr phr,
+        smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
+        const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); });
+  }
 
   // Create a container for the item:
   m_widget = new QFrame(m_itemInfo.parentWidget());
@@ -295,6 +402,71 @@ void qtReferenceItem::updateUI()
   this->updateSynopsisLabels();
 }
 
+std::string qtReferenceItem::synopsis(bool& ok) const
+{
+  auto item = m_itemInfo.itemAs<smtk::attribute::ReferenceItem>();
+  if (!item)
+  {
+    ok = false;
+    return "uninitialized item";
+  }
+
+  std::size_t numRequired = item->numberOfRequiredValues();
+  std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
+  std::ostringstream label;
+  std::size_t numSel = 0;
+  for (auto entry : m_p->m_members)
+  {
+    if (entry.second > 0)
+    {
+      ++numSel;
+    }
+  }
+  ok = true;
+  if (numRequired < 2 && maxAllowed == 1)
+  {
+    auto ment = (m_p->m_members.empty() ? smtk::resource::PersistentObjectPtr()
+                                        : m_p->m_members.begin()->first);
+    label << (numSel == 1 ? (ment ? ment->name() : "NULL!!")
+                          : (numSel > 0 ? "too many" : "(none)"));
+    ok = numSel >= numRequired && numSel <= maxAllowed;
+  }
+  else
+  {
+    label << numSel;
+    if (numRequired > 0)
+    {
+      label << " of ";
+      if (numRequired == maxAllowed)
+      { // Exactly N values are allowed and required.
+        label << numRequired;
+      }
+      else if (maxAllowed > 0)
+      { // There is a minimum required, but a limited additional number are acceptable
+        label << numRequired << "—" << maxAllowed;
+      }
+      else
+      { // Any number are allowed, but there is a minimum.
+        label << numRequired << "+";
+      }
+      ok &= (numSel >= numRequired);
+    }
+    else
+    { // no values are required, but there may be a cap on the maximum number.
+      if (maxAllowed > 0)
+      {
+        label << " of 0–" << maxAllowed;
+      }
+      else
+      {
+        label << " chosen";
+      }
+    }
+  }
+  ok &= (maxAllowed == 0 || numSel <= maxAllowed);
+  return label.str();
+}
+
 void qtReferenceItem::updateSynopsisLabels() const
 {
   if (!m_p || !m_p->m_synopsis || !m_p->m_popupSynopsis)
@@ -375,6 +547,77 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
   return false;
 }
 
+void qtReferenceItem::toggleCurrentItem()
+{
+  auto cphr = m_p->m_qtModel->getItem(m_p->m_popupList->currentIndex());
+  if (cphr)
+  {
+    auto currentMembership = cphr->relatedVisibility();
+    // Selecting a new item when only 1 is allowed should reset all other membership.
+    if (!currentMembership && !m_p->m_members.empty())
+    {
+      auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
+      if (item->numberOfRequiredValues() <= 1 && item->maxNumberOfValues() == 1)
+      {
+        m_p->m_members.clear();
+        m_p->m_phraseModel->triggerDataChanged();
+      }
+    }
+    cphr->setRelatedVisibility(!currentMembership);
+    this->updateSynopsisLabels();
+  }
+}
+
+int qtReferenceItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr)
+{
+  smtk::view::VisibilityContent::decoratePhrase(
+    phr, [this](smtk::view::VisibilityContent::Query qq, int val,
+           smtk::view::ConstPhraseContentPtr data) {
+      auto comp = data ? data->relatedComponent() : nullptr;
+      auto rsrc = comp ? comp->resource() : (data ? data->relatedResource() : nullptr);
+      auto pobj = comp ? std::dynamic_pointer_cast<smtk::resource::PersistentObject>(comp)
+                       : std::dynamic_pointer_cast<smtk::resource::PersistentObject>(rsrc);
+
+      switch (qq)
+      {
+        case smtk::view::VisibilityContent::DISPLAYABLE:
+          return pobj ? 1 : 0;
+        case smtk::view::VisibilityContent::EDITABLE:
+          return pobj ? 1 : 0;
+        case smtk::view::VisibilityContent::GET_VALUE:
+          if (pobj)
+          {
+            auto valIt = m_p->m_members.find(pobj);
+            if (valIt != m_p->m_members.end())
+            {
+              return valIt->second;
+            }
+            return 0; // visibility is assumed if there is no entry.
+          }
+          return 0; // visibility is false if the component is not a model entity or NULL.
+        case smtk::view::VisibilityContent::SET_VALUE:
+          if (pobj)
+          {
+            if (val && !m_p->m_members.empty())
+            {
+              auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
+              if (item->numberOfRequiredValues() <= 1 &&
+                (!item->isExtensible() || item->maxNumberOfValues() == 1))
+              { // Clear all other members since only 1 is allowed and the user just chose it.
+                m_p->m_members.clear();
+                m_p->m_phraseModel->triggerDataChanged();
+              }
+            }
+            m_p->m_members[pobj] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            this->updateSynopsisLabels();
+            return 1;
+          }
+      }
+      return 0;
+    });
+  return 0;
+}
+
 void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr phr,
   smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
   const std::vector<int>& refs)
@@ -410,4 +653,66 @@ void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr ph
       this->updateSynopsisLabels();
     }
   }
+}
+
+bool qtReferenceItem::synchronize(UpdateSource src)
+{
+  auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
+  if (!item)
+  {
+    return false;
+  }
+
+  std::size_t uiMembers = 0;
+  for (auto member : m_p->m_members)
+  {
+    if (member.second)
+    {
+      ++uiMembers;
+    }
+  }
+  switch (src)
+  {
+    case UpdateSource::ITEM_FROM_GUI:
+    {
+      // Everything else in this case statement should really be
+      // a single, atomic operation executed on the attribute/item:
+      if (!item->setNumberOfValues(uiMembers))
+      {
+        return false;
+      }
+      int idx = 0;
+      for (auto member : m_p->m_members)
+      {
+        if (member.second)
+        {
+          if (!item->setObjectValue(idx, member.first))
+          {
+            return false; // Huh!?!
+          }
+          ++idx;
+        }
+      }
+      emit modified();
+    }
+    break;
+
+    case UpdateSource::GUI_FROM_ITEM:
+      m_p->m_members.clear();
+      m_p->m_phraseModel->triggerDataChanged();
+      for (auto vit = item->begin(); vit != item->end(); ++vit)
+      {
+        // Only allow non-null pointers into the set of selected items;
+        // null pointers indicate that the item's entry is invalid and
+        // the size of m_members is used to determine whether the
+        // association's rules are met, so an extra entry can prevent
+        // the association from being edited by the user.
+        if (*vit)
+        {
+          m_p->m_members[*vit] = 1; // FIXME: Use a bit specified by the application.
+        }
+      }
+      break;
+  }
+  return true;
 }
