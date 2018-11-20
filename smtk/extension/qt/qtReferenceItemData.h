@@ -58,12 +58,13 @@ public:
 
   // Main widget contents
   QGridLayout* m_grid;
-  QCheckBox* m_optional;     // Added if the item is optional to reflect IsEnabled().
-  QLabel* m_label;           // The item's label (or name if no label).
-  QLabel* m_synopsis;        // A live summary of the item's entries and acceptability
-  QPushButton* m_editBtn;    // A button to show a popup used to edit the item's entries
-  QPushButton* m_exportSeln; // A button to one-shot export the item's entries to an app. selection
-  QPushButton* m_importSeln; // A button to one-shot import an application selection to the entries
+  QCheckBox* m_optional;            // Added if the item is optional to reflect IsEnabled().
+  QLabel* m_label;                  // The item's label (or name if no label).
+  QLabel* m_synopsis;               // A live summary of the item's entries and acceptability
+  QPushButton* m_copyFromSelection; // A button to copy the selection into the item's entries
+  QPushButton* m_copyToSelection;   // A button to copy the item's entries into the selection
+  QPushButton* m_clear;             // A button to clear the item's entries
+  QPushButton* m_editBtn;           // A button to show a popup used to edit the item's entries
   QPushButton* m_linkSeln; // A button to link an app. selection to the item's entries permanently.
 
   // Popup widget contents

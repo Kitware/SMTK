@@ -241,6 +241,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   // Create a new UI.
   m_attrUIMgr = new smtk::extension::qtUIManager(
     m_editing, m_wrapper ? m_wrapper->smtkResourceManager() : nullptr);
+  m_attrUIMgr->setSelection(m_wrapper ? m_wrapper->smtkSelection() : nullptr);
   // If the operation did not have its manager set, fall back to the
   // operation manager we were told to use when listing available operations:
   if (!m_attrUIMgr->operationManager())

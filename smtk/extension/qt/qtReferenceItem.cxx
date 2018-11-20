@@ -178,6 +178,65 @@ void qtReferenceItem::synchronizeAndHide(bool escaping)
   m_p->m_popup->hide();
 }
 
+void qtReferenceItem::copyFromSelection()
+{
+  if (!m_itemInfo.uiManager())
+  {
+    return;
+  }
+  auto seln = m_itemInfo.uiManager()->selection();
+  if (seln)
+  {
+    auto selnSet = seln->currentSelectionByValueAs<smtk::resource::PersistentObjectArray>(1);
+    if (m_itemInfo.itemAs<smtk::attribute::ReferenceItem>()->setObjectValues(
+          selnSet.begin(), selnSet.end()))
+    {
+      this->synchronize(UpdateSource::GUI_FROM_ITEM);
+      this->updateSynopsisLabels();
+    }
+  }
+}
+
+void qtReferenceItem::copyToSelection()
+{
+  if (!m_itemInfo.uiManager())
+  {
+    return;
+  }
+  auto seln = m_itemInfo.uiManager()->selection();
+  if (seln)
+  {
+    smtk::resource::PersistentObjectArray nextSeln;
+    nextSeln.reserve(m_p->m_members.size());
+    for (const auto& entry : m_p->m_members)
+    {
+      nextSeln.push_back(entry.first);
+    }
+    seln->modifySelection(nextSeln, "qtReferenceItem", 1); // FIXME: Use an app-specified bit
+  }
+}
+
+void qtReferenceItem::clearItem()
+{
+  m_itemInfo.item()->reset();
+  this->synchronize(UpdateSource::GUI_FROM_ITEM);
+  this->updateSynopsisLabels();
+}
+
+void qtReferenceItem::sneakilyHideButtons()
+{
+  m_p->m_copyFromSelection->setVisible(false);
+  m_p->m_clear->setVisible(false);
+  m_p->m_copyToSelection->setVisible(false);
+}
+
+void qtReferenceItem::cleverlyShowButtons()
+{
+  m_p->m_copyFromSelection->setVisible(true);
+  m_p->m_clear->setVisible(true);
+  m_p->m_copyToSelection->setVisible(true);
+}
+
 smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 {
   auto showsWhat = this->acceptableTypes();
@@ -343,6 +402,30 @@ void qtReferenceItem::updateUI()
   entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   // An entry consists of ...
+  // ... a button to grab the selection
+  QIcon copyFromSelection(":/icons/reference-item/copy-from-selection.png");
+  m_p->m_copyFromSelection = new QPushButton(copyFromSelection, "");
+  m_p->m_copyFromSelection->setSizePolicy(sizeFixedPolicy);
+  m_p->m_copyFromSelection->setToolTip("Replace this item's members with the selection.");
+  entryLayout->addWidget(m_p->m_copyFromSelection);
+  QObject::connect(m_p->m_copyFromSelection, SIGNAL(clicked()), this, SLOT(copyFromSelection()));
+
+  // ... a button to empty the item's members
+  QIcon clearItem(":/icons/reference-item/clear.png");
+  m_p->m_clear = new QPushButton(clearItem, "");
+  m_p->m_clear->setSizePolicy(sizeFixedPolicy);
+  m_p->m_clear->setToolTip("Clear this item's members.");
+  entryLayout->addWidget(m_p->m_clear);
+  QObject::connect(m_p->m_clear, SIGNAL(clicked()), this, SLOT(clearItem()));
+
+  // ... a button to populate the selection with the item's members
+  QIcon copyToSelection(":/icons/reference-item/copy-to-selection.png");
+  m_p->m_copyToSelection = new QPushButton(copyToSelection, "");
+  m_p->m_copyToSelection->setSizePolicy(sizeFixedPolicy);
+  m_p->m_copyToSelection->setToolTip("Replace the selection with this item's members.");
+  entryLayout->addWidget(m_p->m_copyToSelection);
+  QObject::connect(m_p->m_copyToSelection, SIGNAL(clicked()), this, SLOT(copyToSelection()));
+
   // ... a synopsis (label).
   bool ok;
   QString synText = QString::fromStdString(this->synopsis(ok));
@@ -399,6 +482,7 @@ void qtReferenceItem::updateUI()
   }
   this->synchronize(UpdateSource::GUI_FROM_ITEM);
 
+  this->sneakilyHideButtons();
   this->updateSynopsisLabels();
 }
 
@@ -495,9 +579,11 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     {
       case QEvent::Enter:
         this->linkHover(true);
+        this->cleverlyShowButtons();
         break;
       case QEvent::Leave:
         this->linkHover(false);
+        this->sneakilyHideButtons();
         break;
       case QEvent::FocusIn:
         this->linkHover(true);

@@ -132,6 +132,7 @@ qt5_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
 qt5_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
 qt5_add_resources(RCS_RESOURCES
   qtDescriptivePhraseModelIcons.qrc
+  qtReferenceItemIcons.qrc
   qtAttributeIcons.qrc
 )
 

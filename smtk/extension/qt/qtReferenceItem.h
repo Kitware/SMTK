@@ -78,6 +78,12 @@ protected slots:
     */
   virtual void synchronizeAndHide(bool escaping = false);
 
+  virtual void copyFromSelection();
+  virtual void copyToSelection();
+  virtual void clearItem();
+  virtual void sneakilyHideButtons();
+  virtual void cleverlyShowButtons();
+
 protected:
   /**\brief Subclasses override this to create a model of the appropriate type.
     *
