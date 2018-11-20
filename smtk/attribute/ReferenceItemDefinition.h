@@ -87,10 +87,9 @@ public:
   void setLockType(smtk::resource::LockType val) { m_lockType = val; }
   smtk::resource::LockType lockType() const { return m_lockType; }
 
-  /// Set/Get the reference's role when generating links between the containing
+  /// Get the reference's role when generating links between the containing
   /// attribute and the reference item. By default, this value is set to
   /// smtk::attribute::Resource::ReferenceRole.
-  void setRole(const smtk::resource::Links::RoleType& role) { m_role = role; }
   smtk::resource::Links::RoleType role() const { return m_role; }
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
@@ -98,6 +97,10 @@ public:
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
+
+  // The attribute::Definition needs to be able call the setRole method when this object is used
+  // for the Definition's association rule
+  friend class Definition;
 
 protected:
   ReferenceItemDefinition(const std::string& myName);
@@ -109,6 +112,12 @@ protected:
   bool checkResource(smtk::resource::ResourcePtr rsrc) const;
   /// Return whether a component is accepted by this definition. Used internally by isValueValid().
   bool checkComponent(smtk::resource::ComponentPtr comp) const;
+
+  /// Set the reference's role when generating links between the containing
+  /// attribute and the reference item. By default, this value is set to
+  /// smtk::attribute::Resource::ReferenceRole.  Note that attribute::Definition needs to be able
+  /// call this method when this object is used for its association rule
+  void setRole(const smtk::resource::Links::RoleType& role) { m_role = role; }
 
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;

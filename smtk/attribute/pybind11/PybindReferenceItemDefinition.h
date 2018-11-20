@@ -41,7 +41,6 @@ PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::Ite
     .def("setLockType", &smtk::attribute::ReferenceItemDefinition::setLockType, py::arg("val"))
     .def("setMaxNumberOfValues", &smtk::attribute::ReferenceItemDefinition::setMaxNumberOfValues, py::arg("maxNum"))
     .def("setNumberOfRequiredValues", &smtk::attribute::ReferenceItemDefinition::setNumberOfRequiredValues, py::arg("esize"))
-    .def("setRole", &smtk::attribute::ReferenceItemDefinition::setRole)
     .def("setValueLabel", &smtk::attribute::ReferenceItemDefinition::setValueLabel, py::arg("element"), py::arg("elabel"))
     .def("type", &smtk::attribute::ReferenceItemDefinition::type)
     .def("typeName", &smtk::attribute::ReferenceItemDefinition::typeName)

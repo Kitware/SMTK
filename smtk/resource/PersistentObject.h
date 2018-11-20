@@ -16,6 +16,7 @@
 #include "smtk/SystemConfig.h"
 
 #include "smtk/common/UUID.h"
+#include "smtk/resource/Links.h"
 
 #include <string>
 
@@ -62,6 +63,9 @@ public:
   {
     return std::dynamic_pointer_cast<const T>(shared_from_this());
   }
+
+  virtual smtk::resource::Links& links() = 0;
+  virtual const smtk::resource::Links& links() const = 0;
 
 protected:
   PersistentObject();

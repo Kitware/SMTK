@@ -204,6 +204,9 @@ public:
   bool canBeAssociated(
     smtk::model::EntityRef entity, std::vector<smtk::attribute::Attribute*>* conflicts) const;
 
+  // Return all of the attributes associated with object that are derived from this definition
+  std::set<AttributePtr> attributes(const smtk::resource::ConstPersistentObjectPtr& object) const;
+
   bool conflicts(smtk::attribute::DefinitionPtr definition) const;
 
   std::size_t numberOfItemDefinitions() const { return m_itemDefs.size() + m_baseItemOffset; }

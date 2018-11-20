@@ -19,10 +19,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
-
-#include "smtk/model/Entity.h"
+#include "smtk/io/Logger.h"
 #include "smtk/model/Resource.h"
-
 #include "smtk/resource/Manager.h"
 
 #include "smtk/view/Selection.h"
@@ -125,17 +123,17 @@ public:
     return this->AllDefs;
   }
 
-  smtk::attribute::AttributePtr getAttribute(const smtk::model::EntityPtr& modelEnt) const
+  smtk::attribute::AttributePtr getAttribute(const smtk::resource::PersistentObjectPtr obj) const
   {
     // Check against all our definitions; should only find 1 attribute at the most
     auto iter = this->m_attDefinitions.cbegin();
     for (; iter != this->m_attDefinitions.cend(); ++iter)
     {
-      auto atts = modelEnt->attributes(*iter);
+      auto atts = (*iter)->attributes(obj);
       assert(atts.size() <= 1); // debug
       if (atts.size())
       {
-        return atts.at(0);
+        return *(atts.begin());
       }
     } // for
     return nullptr;
@@ -165,7 +163,6 @@ public:
   std::string m_selectionSourceName;
   std::string m_unSetVal;
   int m_selectionObserverId;
-  smtk::model::ResourcePtr m_modelResource;
   std::map<std::string, smtk::view::View::Component> m_attCompMap;
 };
 
@@ -276,7 +273,7 @@ void qtModelEntityAttributeView::createWidget()
   }
   else
   {
-    headers << "Model Entity";
+    headers << "Entity";
   }
   if (view->details().attribute("ColHeader2", s))
   {
@@ -325,6 +322,75 @@ void qtModelEntityAttributeView::createWidget()
   this->Widget = frame;
 }
 
+std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associatableObjects()
+  const
+{
+  std::set<smtk::resource::PersistentObjectPtr> result;
+  // First we need to determine if the attribute resource has resources associated with it
+  // if not we need to go to resource manager to get the information
+  auto compType = smtk::model::Entity::flagSummary(this->Internals->m_modelEntityMask);
+  auto attResource = this->uiManager()->attResource();
+  auto resources = attResource->associations();
+  if (!resources.empty())
+  {
+    // Lets see if any of the resources are model resources
+    for (auto resource : resources)
+    {
+      if (resource->isOfType(smtk::model::Resource::type_name))
+      {
+        // Find all components of the proper type
+        auto comps = resource->find(compType);
+        result.insert(comps.begin(), comps.end());
+      }
+    }
+  }
+  else // we need to use the resource manager
+  {
+    // Iterate over the acceptable entries
+    auto resManager = this->uiManager()->resourceManager();
+    // Ask the resource manager to get all appropriate resources
+    resources = resManager->find(smtk::model::Resource::type_name);
+    // Need to process all of these resources
+    for (auto resource : resources)
+    {
+      // Find all components of the proper type
+      auto comps = resource->find(compType);
+      result.insert(comps.begin(), comps.end());
+    }
+  }
+  return result;
+}
+
+smtk::resource::PersistentObjectPtr qtModelEntityAttributeView::object(QTableWidgetItem* item)
+{
+  auto resManager = this->uiManager()->resourceManager();
+  smtk::resource::PersistentObjectPtr object;
+  if (item == nullptr)
+  {
+    smtk::resource::PersistentObjectPtr obj;
+    return obj;
+  }
+
+  QVariant var = item->data(Qt::UserRole);
+  smtk::common::UUID uid = qtSMTKUtilities::QVariantToUUID(var);
+  // Get the resource
+  smtk::resource::ResourcePtr res = resManager->get(uid);
+  if (res == nullptr)
+  {
+    std::cerr << "Could not find Item's Resource!\n";
+    return res;
+  }
+  // Now get the uuid of the component
+  var = item->data(Qt::UserRole + 1);
+  uid = qtSMTKUtilities::QVariantToUUID(var);
+  auto comp = res->find(uid);
+  if (comp == nullptr)
+  {
+    std::cerr << "Could not find Item's Resource Component!\n";
+  }
+  return comp;
+}
+
 void qtModelEntityAttributeView::updateModelEntities()
 {
   // First lets clear out the attribute editor
@@ -356,35 +422,19 @@ void qtModelEntityAttributeView::updateModelEntities()
   this->Internals->ListTable->setRowCount(0);
   this->Internals->ListTable->setItemDelegateForColumn(1, col2Delegate);
 
-  // Have we associated a model resource to the view?
-  // If not we will fetch the first available model
-  // ToDo  This should be using Resource Links
-  if (!this->Internals->m_modelResource)
-  {
-    auto resManager = this->uiManager()->resourceManager();
-    auto modelResources = resManager->find<smtk::model::Resource>();
-    if (modelResources.empty())
-    {
-      this->Internals->ListTable->blockSignals(false);
-      return;
-    }
-    else
-    {
-      this->Internals->m_modelResource = *modelResources.begin();
-    }
-  }
-
-  auto entities = this->Internals->m_modelResource->findAs<smtk::model::EntityArray>(
-    smtk::model::Entity::flagSummary(this->Internals->m_modelEntityMask));
+  auto entities = this->associatableObjects();
 
   int rcount = 0;
   for (auto entity : entities)
   {
     std::string name = entity->name();
     auto item = new QTableWidgetItem(QString::fromStdString(name));
-    //save the entity as a uuid string
-    QVariant vdata = qtSMTKUtilities::UUIDToQVariant(entity->id());
+    //save the resource/entity as a uuid strings
+    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(entity);
+    QVariant vdata = qtSMTKUtilities::UUIDToQVariant(comp->resource()->id());
     item->setData(Qt::UserRole, vdata);
+    vdata = qtSMTKUtilities::UUIDToQVariant(entity->id());
+    item->setData(Qt::UserRole + 1, vdata);
     item->setFlags(item->flags() ^ Qt::ItemIsEditable);
     this->Internals->ListTable->insertRow(rcount);
     this->Internals->ListTable->setItem(rcount, 0, item);
@@ -436,14 +486,18 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   // Get selected type
   std::string tname = this->Internals->ListTable->item(row, 1)->text().toStdString();
 
-  auto attCol = this->uiManager()->attResource();
+  auto attRes = this->uiManager()->attResource();
+  auto resManager = this->uiManager()->resourceManager();
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
-  // Get the model entity UUID
-  auto data = this->Internals->ListTable->item(row, 0)->data(Qt::UserRole);
-  smtk::common::UUID mid = qtSMTKUtilities::QVariantToUUID(data);
+  // Get the component of the item
+  auto entity = this->object(this->Internals->ListTable->item(row, 0));
+  if (entity == nullptr)
+  {
+    std::cerr << "Could not find selected Item!\n";
+    return;
+  }
 
-  auto entity = this->Internals->m_modelResource->findEntity(mid);
   // Get the current attribute associated with the model entity (if any)
   auto att = this->Internals->getAttribute(entity);
   if (att && att->definition()->displayedTypeName() == tname)
@@ -453,7 +507,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   }
   else if (att)
   {
-    attCol->removeAttribute(att);
+    attRes->removeAttribute(att);
   }
 
   // Now create a new attribute for the model entity of the correct type
@@ -462,7 +516,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   {
     if (currentDefs.at(j)->displayedTypeName() == tname)
     {
-      att = attCol->createAttribute(currentDefs.at(j));
+      att = attRes->createAttribute(currentDefs.at(j));
       att->associate(entity);
       break;
     }
@@ -480,9 +534,7 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
 {
   // Lets get the model entity that is selected in the table
   int index = this->Internals->ListTable->currentRow();
-  auto data = this->Internals->ListTable->item(index, 0)->data(Qt::UserRole);
-  smtk::common::UUID mid = qtSMTKUtilities::QVariantToUUID(data);
-  auto entity = this->Internals->m_modelResource->findEntity(mid);
+  auto entity = this->object(this->Internals->ListTable->item(index, 0));
   // Get the current attribute associated with the model entity (if any)
   auto att = this->Internals->getAttribute(entity);
   this->displayAttribute(att);
@@ -493,7 +545,8 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
     if (sel)
     {
       smtk::model::EntityArray selents;
-      selents.push_back(entity);
+      auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(entity);
+      selents.push_back(modelEnt);
       auto selBit = this->uiManager()->selectionBit();
 
       sel->modifySelection(selents, this->Internals->m_selectionSourceName, selBit,
@@ -517,7 +570,7 @@ void qtModelEntityAttributeView::updateSelectedModelEntity(
   {
     for (int i = 0; i < this->Internals->ListTable->rowCount(); ++i)
     {
-      auto data = this->Internals->ListTable->item(i, 0)->data(Qt::UserRole);
+      auto data = this->Internals->ListTable->item(i, 0)->data(Qt::UserRole + 1);
       smtk::common::UUID mid = qtSMTKUtilities::QVariantToUUID(data);
       if (selEnts.at(0)->id() == mid)
       {

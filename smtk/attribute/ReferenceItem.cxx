@@ -95,6 +95,12 @@ bool ReferenceItem::setNumberOfValues(std::size_t newSize)
   return true;
 }
 
+const std::multimap<std::string, std::string>& ReferenceItem::acceptableEntries() const
+{
+  auto def = this->definitionAs<ReferenceItemDefinition>();
+  return def->acceptableEntries();
+}
+
 std::shared_ptr<const ReferenceItemDefinition> ReferenceItem::definition() const
 {
   auto ptr =

@@ -933,3 +933,20 @@ void Resource::visit(smtk::resource::Component::Visitor& visitor) const
   };
   std::for_each(m_attributes.begin(), m_attributes.end(), convertedVisitor);
 }
+
+std::set<AttributePtr> Resource::attributes(
+  const smtk::resource::ConstPersistentObjectPtr& object) const
+{
+  std::set<AttributePtr> result;
+  // Get the attributes associated with this object - Note that the
+  // linkedFrom method takes in a const shared pointer to a non-const resource even though the method
+  // does not change the resource's state. The reason for this is due to issues of auto casting shared pointers to
+  // non-const objects to shared pointers to const objects.
+  auto objs = object->links().linkedFrom(
+    const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
+  for (auto obj : objs)
+  {
+    result.insert(std::dynamic_pointer_cast<Attribute>(obj));
+  }
+  return result;
+}
