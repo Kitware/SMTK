@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/ComponentPhraseModel.h"
+#include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/VisibilityContent.h"
 
@@ -180,25 +181,38 @@ void qtReferenceItem::synchronizeAndHide(bool escaping)
 smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 {
   auto showsWhat = this->acceptableTypes();
-  if (showsWhat == COMPONENTS)
+  switch (showsWhat)
   {
-    // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
-    // to point back to the model (thus ensuring subphrases are decorated). This is required
-    // since we need to decorate phrases to show+edit "visibility" as set membership:
-    auto phraseModel = smtk::view::ComponentPhraseModel::create(m_itemInfo.component());
-    phraseModel->root()->findDelegate()->setModel(phraseModel);
-    auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
-      m_itemInfo.item()->definition());
-    std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
-      ->setComponentFilters(def->acceptableEntries());
-
-    return phraseModel;
+    case COMPONENTS:
+    case BOTH:
+    case NONE: // Ideally this would do something different.
+    {
+      // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
+      // to point back to the model (thus ensuring subphrases are decorated). This is required
+      // since we need to decorate phrases to show+edit "visibility" as set membership:
+      auto phraseModel = smtk::view::ComponentPhraseModel::create(m_itemInfo.component());
+      phraseModel->root()->findDelegate()->setModel(phraseModel);
+      auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
+        m_itemInfo.item()->definition());
+      std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
+        ->setComponentFilters(def->acceptableEntries());
+      return phraseModel;
+    }
+    break;
+    case RESOURCES:
+    {
+      auto phraseModel = smtk::view::ResourcePhraseModel::create(m_itemInfo.component());
+      phraseModel->root()->findDelegate()->setModel(phraseModel);
+      auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
+        m_itemInfo.item()->definition());
+      std::static_pointer_cast<smtk::view::ResourcePhraseModel>(phraseModel)
+        ->setResourceFilters(def->acceptableEntries());
+      return phraseModel;
+    }
+    break; // handled below.
   }
-  else
-  {
-    smtkWarningMacro(
-      smtk::io::Logger::instance(), "Showing resources or mixed components+resources unsupported.");
-  }
+  smtkWarningMacro(
+    smtk::io::Logger::instance(), "No resources or components accepted. Unsupported.");
   return nullptr;
 }
 

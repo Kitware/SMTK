@@ -12,6 +12,8 @@
 
 #include "smtk/view/PhraseModel.h"
 
+#include "smtk/view/View.h"
+
 namespace smtk
 {
 namespace view
@@ -35,6 +37,7 @@ public:
   DescriptivePhrasePtr root() const override;
 
   static PhraseModelPtr create(const ViewPtr& view);
+  static PhraseModelPtr create(const View::Component& view);
 
   bool setResourceFilters(const std::multimap<std::string, std::string>& src);
 
