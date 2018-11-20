@@ -35,8 +35,23 @@ class SMTKQTEXT_EXPORT qtReferenceItem : public qtItem
 public:
   qtReferenceItem(const AttributeItemInfo& info);
   virtual ~qtReferenceItem();
+  static qtItem* createItemWidget(const AttributeItemInfo& info);
+
+  enum AcceptsTypes
+  {
+    NONE,
+    RESOURCES,
+    COMPONENTS,
+    BOTH
+  };
+
+  AcceptsTypes acceptableTypes() const;
+
+  void setLabelVisible(bool) override;
 
 protected slots:
+  void updateItemData() override;
+
   virtual void selectionLinkToggled(bool linked);
   virtual void setOutputOptional(int state);
 
@@ -69,28 +84,28 @@ protected:
     * The model should be configured using information the item (this->getObject())
     * and be ready for use.
     */
-  virtual smtk::view::PhraseModelPtr createPhraseModel() const = 0;
+  virtual smtk::view::PhraseModelPtr createPhraseModel() const;
 
   virtual void createWidget() override;
 
   virtual void clearWidgets();
   virtual void updateUI();
 
-  virtual std::string synopsis(bool& membershipValid) const = 0;
+  virtual std::string synopsis(bool& membershipValid) const;
 
   virtual void updateSynopsisLabels() const;
 
   bool eventFilter(QObject* src, QEvent* event) override;
 
   /// Called by eventFilter() when user hits space/enter in popup.
-  virtual void toggleCurrentItem() = 0;
+  virtual void toggleCurrentItem();
 
   /**\brief This method is called by the m_p->m_phraseModel to decorate each phrase.
     *
     * This method ensures that each phrase's visibility corresponds to whether
     * or not it is a member of the underlying attribute-system's reference item.
     */
-  virtual int decorateWithMembership(smtk::view::DescriptivePhrasePtr phr) = 0;
+  virtual int decorateWithMembership(smtk::view::DescriptivePhrasePtr phr);
 
   /// Indicate whether the GUI should be updated from the item it presents or vice versa.
   enum class UpdateSource
@@ -100,7 +115,7 @@ protected:
   };
 
   /// Children must implement this.
-  virtual bool synchronize(UpdateSource src) = 0;
+  virtual bool synchronize(UpdateSource src);
 
   void checkRemovedComponents(smtk::view::DescriptivePhrasePtr, smtk::view::PhraseModelEvent,
     const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);
