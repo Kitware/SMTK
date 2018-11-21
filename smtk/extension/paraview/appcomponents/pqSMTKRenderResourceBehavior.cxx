@@ -94,6 +94,9 @@ void pqSMTKRenderResourceBehavior::renderPipelineSource(pqSMTKResource* source)
 
   m_p->ApplyBehavior(source);
 
-  pqActiveObjects::instance().activeView()->render();
-  pqCameraReaction::zoomToData();
+  if (auto activeView = pqActiveObjects::instance().activeView())
+  {
+    activeView->render();
+    pqCameraReaction::zoomToData();
+  }
 }
