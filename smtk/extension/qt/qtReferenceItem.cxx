@@ -28,6 +28,9 @@
 
 #include <QEvent>
 #include <QKeyEvent>
+#include <QMenu>
+#include <QTimer>
+#include <QWidgetAction>
 
 using namespace smtk::extension;
 using namespace smtk::attribute;
@@ -142,9 +145,42 @@ void qtReferenceItem::setOutputOptional(int state)
 
 void qtReferenceItem::linkHover(bool link)
 {
-  (void)link;
+  auto seln = this->uiManager() ? this->uiManager()->selection() : nullptr;
+  if (!seln)
+  {
+    return;
+  }
+
+  smtk::resource::PersistentObjectArray hover;
+  if (link)
+  {
+    // Traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
+    // in the application selection.
+    for (auto member : m_p->m_members)
+    {
+      if (member.second)
+      {
+        hover.push_back(member.first);
+      }
+    }
+  } // else the mouse is no longer hovering... clear the highlight.
+  // std::cout << "Hover " << (link ? "link" : "unlink") << " " << hover.size() << " items" << "\n";
+  seln->modifySelection(
+    hover, "qtReferenceItemHover", 0x02, smtk::view::SelectionAction::UNFILTERED_REPLACE, true);
+  /*
   // TODO: traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
   //       in the application selection.
+    */
+}
+
+void qtReferenceItem::linkHoverTrue()
+{
+  this->linkHover(true);
+}
+
+void qtReferenceItem::linkHoverFalse()
+{
+  this->linkHover(false);
 }
 
 void qtReferenceItem::synchronizeAndHide(bool escaping)
@@ -173,9 +209,69 @@ void qtReferenceItem::synchronizeAndHide(bool escaping)
 
   QString qsyn = QString::fromStdString(syn);
   updateLabel(m_p->m_synopsis, qsyn, ok);
-  updateLabel(m_p->m_popupSynopsis, qsyn, ok);
 
-  m_p->m_popup->hide();
+  m_p->m_editBtn->menu()->hide();
+}
+
+void qtReferenceItem::copyFromSelection()
+{
+  if (!m_itemInfo.uiManager())
+  {
+    return;
+  }
+  auto seln = m_itemInfo.uiManager()->selection();
+  if (seln)
+  {
+    auto selnSet = seln->currentSelectionByValueAs<smtk::resource::PersistentObjectArray>(1);
+    if (m_itemInfo.itemAs<smtk::attribute::ReferenceItem>()->setObjectValues(
+          selnSet.begin(), selnSet.end()))
+    {
+      this->synchronize(UpdateSource::GUI_FROM_ITEM);
+      this->updateSynopsisLabels();
+      this->linkHover(true);
+    }
+  }
+}
+
+void qtReferenceItem::copyToSelection()
+{
+  if (!m_itemInfo.uiManager())
+  {
+    return;
+  }
+  auto seln = m_itemInfo.uiManager()->selection();
+  if (seln)
+  {
+    smtk::resource::PersistentObjectArray nextSeln;
+    nextSeln.reserve(m_p->m_members.size());
+    for (const auto& entry : m_p->m_members)
+    {
+      nextSeln.push_back(entry.first);
+    }
+    seln->modifySelection(nextSeln, "qtReferenceItem", 1); // FIXME: Use an app-specified bit
+  }
+}
+
+void qtReferenceItem::clearItem()
+{
+  m_itemInfo.item()->reset();
+  this->synchronize(UpdateSource::GUI_FROM_ITEM);
+  this->updateSynopsisLabels();
+  this->linkHover(true);
+}
+
+void qtReferenceItem::sneakilyHideButtons()
+{
+  m_p->m_copyFromSelection->setVisible(false);
+  m_p->m_clear->setVisible(false);
+  m_p->m_copyToSelection->setVisible(false);
+}
+
+void qtReferenceItem::cleverlyShowButtons()
+{
+  m_p->m_copyFromSelection->setVisible(true);
+  m_p->m_clear->setVisible(true);
+  m_p->m_copyToSelection->setVisible(true);
 }
 
 smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
@@ -343,51 +439,62 @@ void qtReferenceItem::updateUI()
   entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   // An entry consists of ...
+  // ... a button to grab the selection
+  QIcon copyFromSelection(":/icons/reference-item/copy-from-selection.png");
+  m_p->m_copyFromSelection = new QPushButton(copyFromSelection, "");
+  m_p->m_copyFromSelection->setSizePolicy(sizeFixedPolicy);
+  m_p->m_copyFromSelection->setToolTip("Replace this item's members with the selection.");
+  entryLayout->addWidget(m_p->m_copyFromSelection);
+  QObject::connect(m_p->m_copyFromSelection, SIGNAL(clicked()), this, SLOT(copyFromSelection()));
+
+  // ... a button to empty the item's members
+  QIcon clearItem(":/icons/reference-item/clear.png");
+  m_p->m_clear = new QPushButton(clearItem, "");
+  m_p->m_clear->setSizePolicy(sizeFixedPolicy);
+  m_p->m_clear->setToolTip("Clear this item's members.");
+  entryLayout->addWidget(m_p->m_clear);
+  QObject::connect(m_p->m_clear, SIGNAL(clicked()), this, SLOT(clearItem()));
+
+  // ... a button to populate the selection with the item's members
+  QIcon copyToSelection(":/icons/reference-item/copy-to-selection.png");
+  m_p->m_copyToSelection = new QPushButton(copyToSelection, "");
+  m_p->m_copyToSelection->setSizePolicy(sizeFixedPolicy);
+  m_p->m_copyToSelection->setToolTip("Replace the selection with this item's members.");
+  entryLayout->addWidget(m_p->m_copyToSelection);
+  QObject::connect(m_p->m_copyToSelection, SIGNAL(clicked()), this, SLOT(copyToSelection()));
+
   // ... a synopsis (label).
   bool ok;
   QString synText = QString::fromStdString(this->synopsis(ok));
   m_p->m_synopsis = new QLabel(synText, m_widget);
-  // m_p->m_synopsis->setSizePolicy(sizeFixedPolicy);
   m_p->m_synopsis->setSizePolicy(sizeStretchyXPolicy);
   m_p->m_synopsis->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   entryLayout->addWidget(m_p->m_synopsis);
 
   // ... a button to pop up an editor for the item contents.
-  m_p->m_editBtn = new QPushButton("…", m_widget);
-  m_p->m_editBtn->setAutoDefault(true);
-  m_p->m_editBtn->setDefault(true);
+  m_p->m_editBtn = new QToolButton(m_widget);
+  m_p->m_editBtn->setPopupMode(QToolButton::InstantPopup);
+  m_p->m_editBtn->setMenu(new QMenu(m_p->m_editBtn));
   entryLayout->addWidget(m_p->m_editBtn);
 
   // Create a popup for editing the item's contents
   m_p->m_popup = new QDialog(m_p->m_editBtn);
-  m_p->m_popup->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
   m_p->m_popupLayout = new QVBoxLayout(m_p->m_popup);
   m_p->m_popupList = new QListView(m_p->m_popup);
   m_p->m_popupList->setItemDelegate(m_p->m_qtDelegate);
-  m_p->m_popupSynopsis = new QLabel(m_p->m_popup);
-  m_p->m_popupSynopsis->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-  m_p->m_popupDone = new QPushButton("Done", m_p->m_popup);
-  auto hbl = new QHBoxLayout();
-  hbl->addWidget(m_p->m_popupSynopsis);
-  hbl->addWidget(m_p->m_popupDone);
   m_p->m_popupLayout->addWidget(m_p->m_popupList);
-  m_p->m_popupLayout->addLayout(hbl);
   m_p->m_popup->installEventFilter(this);
   m_p->m_popupList->setModel(m_p->m_qtModel);
+  auto action = new QWidgetAction(m_p->m_editBtn);
+  action->setDefaultWidget(m_p->m_popup);
+  m_p->m_editBtn->menu()->addAction(action);
+  m_p->m_editBtn->setMaximumSize(QSize(16, 20));
 
-  QObject::connect(m_p->m_editBtn, SIGNAL(clicked()), m_p->m_popup, SLOT(exec()));
-  QObject::connect(m_p->m_popupDone, SIGNAL(clicked()), this, SLOT(synchronizeAndHide()));
   QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
     m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
 
-  // ... a button to export the item contents to the selection:
-  // ... a button to import the item contents from the selection:
-  // ... a label (or button?) to indicate linkage of the selection with the item:
-
   m_p->m_grid->addLayout(labelLayout, 0, 0);
   m_p->m_grid->addLayout(entryLayout, 0, 1);
-
-  // layout->addWidget(m_widget???, 0, 1);
 
   if (m_itemInfo.parentWidget() && m_itemInfo.parentWidget()->layout())
   {
@@ -399,6 +506,7 @@ void qtReferenceItem::updateUI()
   }
   this->synchronize(UpdateSource::GUI_FROM_ITEM);
 
+  this->sneakilyHideButtons();
   this->updateSynopsisLabels();
 }
 
@@ -469,7 +577,7 @@ std::string qtReferenceItem::synopsis(bool& ok) const
 
 void qtReferenceItem::updateSynopsisLabels() const
 {
-  if (!m_p || !m_p->m_synopsis || !m_p->m_popupSynopsis)
+  if (!m_p || !m_p->m_synopsis)
   {
     return;
   }
@@ -479,7 +587,6 @@ void qtReferenceItem::updateSynopsisLabels() const
                                                                      : this->synopsis(ok);
   QString qsyn = QString::fromStdString(syn);
   updateLabel(m_p->m_synopsis, qsyn, ok);
-  updateLabel(m_p->m_popupSynopsis, qsyn, ok);
 }
 
 bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
@@ -494,16 +601,20 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     switch (event->type())
     {
       case QEvent::Enter:
-        this->linkHover(true);
+        QTimer::singleShot(0, this, SLOT(linkHoverTrue()));
+        this->cleverlyShowButtons();
         break;
       case QEvent::Leave:
-        this->linkHover(false);
+        QTimer::singleShot(0, this, SLOT(linkHoverFalse()));
+        this->sneakilyHideButtons();
         break;
       case QEvent::FocusIn:
-        this->linkHover(true);
+        this->cleverlyShowButtons();
+        QTimer::singleShot(0, this, SLOT(linkHoverTrue()));
         break;
       case QEvent::FocusOut:
-        this->linkHover(false);
+        QTimer::singleShot(0, this, SLOT(linkHoverFalse()));
+        this->sneakilyHideButtons();
         break;
       default:
         break;
@@ -515,8 +626,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     switch (event->type())
     {
       case QEvent::KeyPress:
-      case QEvent::
-        ShortcutOverride: // This is what keypresses look like to us (the parent of the QListView).
+      case QEvent::ShortcutOverride: // What keypresses look like to the parent of the QListView.
       {
         // std::cout << "  Popup key\n";
         auto keyEvent = static_cast<QKeyEvent*>(event);
@@ -531,6 +641,9 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
             break;
           //case Qt::Key_Return:
           case Qt::Key_Enter:
+            this->synchronizeAndHide(false);
+            return true;
+            break;
           case Qt::Key_Space:
             // std::cout << "    Toggling\n";
             this->toggleCurrentItem();
@@ -538,6 +651,13 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
           default:
             break;
         }
+      }
+      break;
+      case QEvent::Hide:
+      {
+        // The user has clicked outside the popup.
+        // Decide whether to update the item state or abandon.
+        this->synchronizeAndHide(false);
       }
       break;
       default:
@@ -608,8 +728,16 @@ int qtReferenceItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
                 m_p->m_phraseModel->triggerDataChanged();
               }
             }
-            m_p->m_members[pobj] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            if (val)
+            {
+              m_p->m_members[pobj] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            }
+            else
+            {
+              m_p->m_members.erase(pobj);
+            }
             this->updateSynopsisLabels();
+            this->linkHoverTrue();
             return 1;
           }
       }

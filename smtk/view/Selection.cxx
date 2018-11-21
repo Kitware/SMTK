@@ -191,7 +191,7 @@ void Selection::setFilter(const SelectionFilter& fn, bool refilter)
 
 /// Perform the action (IGNORING m_defaultAction!!!), returning true if it had an effect
 bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int value,
-  SelectionAction action, SelectionMap& suggestions)
+  SelectionAction action, SelectionMap& suggestions, bool bitwise)
 {
   bool modified = false;
   // Filter out irrelevant objects:
@@ -219,11 +219,25 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
             modified = true;
             if (suggestion.second == 0)
             {
-              m_selection.erase(it);
+              if (bitwise)
+              {
+                it->second = it->second & ~value;
+              }
+              else
+              {
+                m_selection.erase(it);
+              }
             }
             else
             {
-              it->second = suggestion.second;
+              if (bitwise)
+              {
+                it->second |= suggestion.second;
+              }
+              else
+              {
+                it->second = suggestion.second;
+              }
             }
           }
         }
@@ -250,7 +264,7 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
       else if (it->second != value)
       {
         modified = true;
-        it->second = value;
+        it->second = (bitwise ? it->second | value : value);
       }
       // Now add all the suggested entries and clear.
       for (auto suggestion : suggestions)
@@ -267,13 +281,13 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
         else if (it->second != suggestion.second)
         {
           modified = true;
-          if (suggestion.second == 0)
+          if (suggestion.second == 0 && (!bitwise || (bitwise && !(it->second & ~value))))
           {
             m_selection.erase(it);
           }
           else
           {
-            it->second = suggestion.second;
+            it->second = (bitwise ? it->second | suggestion.second : suggestion.second);
           }
         }
       }
@@ -284,7 +298,15 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
       if (it != m_selection.end())
       {
         modified = true;
-        m_selection.erase(it);
+        int mask = ~value;
+        if (!bitwise || (bitwise && (it->second & mask) == 0))
+        {
+          m_selection.erase(it);
+        }
+        else
+        {
+          it->second &= mask;
+        }
       }
       // Now deal with suggestions... should we really allow additions
       // during a subtract? Not going to for now, but I guess it is
@@ -292,10 +314,19 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
       for (auto suggestion : suggestions)
       {
         it = m_selection.find(suggestion.first);
-        if (it != m_selection.end() && suggestion.second == 0)
+        if (it != m_selection.end())
         {
-          modified = true;
-          m_selection.erase(it);
+          int mask = ~value;
+          if (!bitwise || (bitwise && (it->second & mask) == 0))
+          {
+            modified = true;
+            m_selection.erase(it);
+          }
+          else if (bitwise)
+          {
+            modified = true;
+            it->second &= mask;
+          }
         }
       }
       suggestions.clear();

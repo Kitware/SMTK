@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="/icons/reference-item">
+    <file alias = "copy-from-selection.png">icons/copy-from-selection.png</file>
+    <file alias = "copy-to-selection.png">icons/copy-to-selection.png</file>
+    <file alias = "clear.png">icons/times.png</file>
+  </qresource>
+</RCC>

@@ -574,8 +574,12 @@ void qtModelEntityAttributeView::updateSelectedModelEntity(
       smtk::common::UUID mid = qtSMTKUtilities::QVariantToUUID(data);
       if (selEnts.at(0)->id() == mid)
       {
-        this->Internals->ListTable->selectRow(i);
-        this->showCurrentRow(false);
+        int alreadyShowing = this->Internals->ListTable->currentRow();
+        if (i != alreadyShowing)
+        {
+          this->Internals->ListTable->selectRow(i);
+          this->showCurrentRow(false);
+        }
         break;
       }
     }

@@ -61,6 +61,7 @@ public:
     , m_selnLabel("selected")
     , m_hoverLabel("hovered")
     , m_resourceTreeStyle(vtkSMTKSettings::HierarchicalStyle)
+    , m_updatingPanelSelectionFromSMTK(false)
   {
   }
 
@@ -208,6 +209,11 @@ public:
   std::string m_hoverLabel;
   std::map<smtk::common::UUID, int> m_visibleThings;
   int m_resourceTreeStyle; // Which subphrase generator should be used?
+
+  // Set to true when inside sendSMTKSelectionToPanel.
+  // Used to avoid updating the SMTK selection from the panel while
+  // the panel is being updated from SMTK:
+  bool m_updatingPanelSelectionFromSMTK;
 };
 
 pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
@@ -271,8 +277,16 @@ void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const 
 {
   if (!m_p->m_seln)
   {
+    // No SMTK selection exists.
     return;
-  } // No SMTK selection exists.
+  }
+  if (m_p->m_updatingPanelSelectionFromSMTK)
+  {
+    // Derp. Updating the SMTK selection the moment the SMTK
+    // selection is sent to us could cause problems even if
+    // the recursion was not infinite.
+    return;
+  }
 
   //smtk::view::Selection::SelectionMap selnMap;
   std::set<smtk::resource::Component::Ptr> selnSet;
@@ -323,7 +337,8 @@ void pqSMTKResourcePanel::sendSMTKSelectionToPanel(
       auto comp = phrase->relatedComponent();
       if (comp)
       {
-        if (seln->currentSelection().find(comp) != seln->currentSelection().end())
+        auto it = seln->currentSelection().find(comp);
+        if (it != seln->currentSelection().end() && (it->second & 0x01))
         {
           auto qidx = qmodel->indexFromPath(path);
           qseln.select(qidx, qidx);
@@ -331,8 +346,12 @@ void pqSMTKResourcePanel::sendSMTKSelectionToPanel(
       }
       return 0;
     });
+
+  // Now update the Qt selection, being careful not to trigger SMTK updates:
+  m_p->m_updatingPanelSelectionFromSMTK = true;
   qview->selectionModel()->select(
     qseln, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+  m_p->m_updatingPanelSelectionFromSMTK = false;
 }
 
 void pqSMTKResourcePanel::searchTextChanged(const QString& searchText)

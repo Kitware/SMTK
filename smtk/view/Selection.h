@@ -90,21 +90,22 @@ enum class SelectionAction
   *
   * ## The Nature of Selections
   *
-  * A selection is a map from ResourceComponents(UUIDs) to
+  * A selection is a map from PersistentObjects to
   * integers that indicate the _type_ of selection that the
-  * component is participating in.
+  * object is participating in.
   * Integers are application-specific and managed in this
   * class by registering them.
   * Applications are free to interpret the integer as a
-  * bitmask, so that the same component may be in multiple
+  * bitmask, so that the same object may be in multiple
   * selections at a time; or as a unique values that indicate
-  * the "level of selection" for each component.
+  * the "level of selection" for each object.
   * An example of the latter would be an application that
   * registers 1 to indicate a transient highlight to preview
   * mouseovers and 2 to indicate permanent selection.
+  * The latter is how modelbuilder uses SMTK selections.
   *
-  * When a component is assigned the special integer 0,
-  * the component is considered "unselected" and is removed
+  * When an object is assigned the special integer 0,
+  * the object is considered "unselected" and is removed
   * from the map.
   *
   * ## Lifecycle
@@ -113,7 +114,7 @@ enum class SelectionAction
   * each separate context in which a separate selection is allowed.
   * If your application will be making changes to resources by
   * invoking operators, you should register the operation manager with
-  * the selection so that as resource components are created and
+  * the selection so that as persistent objects are created and
   * destroyed the selection can be updated.
   *
   * After creating a selection, each UI element of your
@@ -169,15 +170,15 @@ public:
 
   /**\brief Selection filters take functions of this form.
     *
-    * Given a component and its selection "value", return true if
-    * the component should be included in the action (replacement,
+    * Given an object and its selection "value", return true if
+    * the object should be included in the action (replacement,
     * addition to, or removal from the selection). Otherwise return false.
     *
-    * The filter may also insert components into the map (the 3rd argument)
+    * The filter may also insert objects into the map (the 3rd argument)
     * which will unconditionally be included in the action.
-    * This is intended to handle use cases where related components
+    * This is intended to handle use cases where related objects
     * (e.g., edges, faces, vertices) may be geometrically picked by a user
-    * but the desired selection is on components not directly rendered
+    * but the desired selection is on objects not directly rendered
     * (e.g., volumes, models). The filter can return false (indicating that
     * the edge, face, or vertex should not be considered) but add the related
     * entities (the volume or model) to the map for action.
@@ -215,7 +216,7 @@ public:
 
   /**\brief Selection values.
     *
-    * Selected components each take on a non-zero integer value that is application-defined.
+    * Selected objects each take on a non-zero integer value that is application-defined.
     *
     * The methods in this section are used to register particular values or bits that the
     * application wishes to use. Each value is tied to a string name.
@@ -244,19 +245,42 @@ public:
     * Returns true if the arguments result in a change to the selection.
     *
     * \a action specifies indicates whether the list of
-    * \a components should replace the selection, be added to it, or be removed from it.
-    * \a value indicates the "level" at which the \a components should be selected
+    * \a objects should replace the selection, be added to it, or be removed from it.
+    * \a value indicates the "level" at which the \a objects should be selected
     * (except when the \a action is a subtraction operation, in which case \a value is ignored).
     * \a source indicates which UI element is responsible for the selection modification.
+    * \a bitwise indicates whether, treating \a value as a bit-vector, the
+    * selection should only modify those bits.
+    *
+    * When \a bitwise is true, then actions which ADD to the selection will
+    * insert new entries into the selection with \a value bits set unless those
+    * objects were already present, in which case their values will be OR-ed with
+    * \a value.
+    * Actions which SUBTRACT from the selection will remove entries whose bits are
+    * a strict subset of those in \a value; otherwise objects will have \a value's
+    * bits removed from the selection map but will remain in the map.
+    * Actions which REPLACE the selection will remove any objects already in
+    * the selection map whose bits are a subset of \a value, insert objects
+    * not already present in the map (with the given \a value), and OR \a value
+    * into the bits of any present in both the selection and the "replacement"
+    * objects.
+    *
+    * If \a bitwise is false, then actions which ADD to the selection will
+    * overwrite any existing selection-map entry for matching objects with the
+    * given \a value.
+    * Actions which SUBTRACT from the selection, will remove entries from the
+    * selection only when their mapped value exactly matches \a value.
+    * Actions which REPLACE the selection will erase the entire selection map and
+    * then insert the provided \a objects with the given \a value.
     */
   template <typename T>
-  bool modifySelection(const T& components, const std::string& source, int value,
-    SelectionAction action = SelectionAction::DEFAULT);
+  bool modifySelection(const T& objects, const std::string& source, int value,
+    SelectionAction action = SelectionAction::DEFAULT, bool bitwise = false);
 
   /**\brief Default selection action.
     *
     * Some applications need to separate the choice of which SelectionAction
-    * to use from the choice of components in the selection.
+    * to use from the choice of objects in the selection.
     * The selection keeps a default SelectionAction value as state so that
     * when modifySelection is called with the \a action set to SelectionAction::DEFAULT, the
     * selection's state is used in its stead.
@@ -285,13 +309,13 @@ public:
 
   /** \brief Querying the current selection.
     *
-    * You can obtain the current selection in bulk or components selected
+    * You can obtain the current selection in bulk or objects selected
     * with a particular value.
     * If you are using selection values as independent bits in a it vector,
     * pass \a exactMatch = false.
     */
   //@{
-  /// Visit every selected component with the given functor.
+  /// Visit every selected object with the given functor.
   void visitSelection(std::function<void(Object::Ptr, int)> visitor)
   {
     for (auto entry : m_selection)
@@ -310,7 +334,7 @@ public:
       }
     }
   }
-  /// Return the current selection as a map from components to integer selection values.
+  /// Return the current selection as a map from objects to integer selection values.
   SelectionMap& currentSelection(SelectionMap& selection) const;
   const SelectionMap& currentSelection() const { return m_selection; }
   /// Return the subset of selected elements that match the given selection value.
@@ -348,7 +372,7 @@ public:
     *
     */
   //@{
-  /// Set the filter to apply to each resource component.
+  /// Set the filter to apply to each persistent object.
   void setFilter(const SelectionFilter& fn, bool refilterSelection = true);
   //@}
 
@@ -356,7 +380,7 @@ protected:
   Selection();
 
   bool performAction(smtk::resource::PersistentObjectPtr comp, int value, SelectionAction action,
-    SelectionMap& suggested);
+    SelectionMap& suggested, bool bitwise);
   void notifyListeners(const std::string& source);
   bool refilter(const std::string& source);
 
@@ -417,7 +441,7 @@ T& Selection::currentSelectionByValue(T& selection, const std::string& valueLabe
 
 template <typename T>
 bool Selection::modifySelection(
-  const T& components, const std::string& source, int value, SelectionAction action)
+  const T& objects, const std::string& source, int value, SelectionAction action, bool bitwise)
 {
   bool modified = false;
   SelectionMap suggestions;
@@ -425,14 +449,50 @@ bool Selection::modifySelection(
   {
     action = this->defaultAction();
   }
-  if (action == SelectionAction::FILTERED_REPLACE || action == SelectionAction::UNFILTERED_REPLACE)
+  if (!bitwise &&
+    (action == SelectionAction::FILTERED_REPLACE || action == SelectionAction::UNFILTERED_REPLACE))
   {
     modified = !m_selection.empty();
     m_selection.clear();
   }
-  for (auto component : components)
+  else if (bitwise &&
+    (action == SelectionAction::FILTERED_REPLACE || action == SelectionAction::UNFILTERED_REPLACE))
   {
-    modified |= this->performAction(component, value, action, suggestions);
+    // Remove unmatched objects from existing selection
+    int mask = ~value;
+    smtk::resource::PersistentObjectSet willErase;
+    for (auto& entry : m_selection)
+    {
+      auto it = std::find(objects.begin(), objects.end(), entry.first);
+      // std::cout << "  " << entry.first->id() << "  " << (it == objects.end() ? "not in obj" : "in obj") << " " << entry.second << " " << (entry.second & mask);
+      if ((it == objects.end() && ((entry.second & mask) == 0)) || value == 0)
+      {
+        willErase.insert(entry.first);
+        // std::cout << "    erase obj\n";
+      }
+      else if (it == objects.end() && ((entry.second & mask) != 0))
+      {
+        entry.second &= mask;
+        modified = true;
+      }
+      else
+      {
+        // std::cout << "    keep  obj\n";
+      }
+    }
+    // std::cout << "---\n";
+    if (!willErase.empty())
+    {
+      modified = true;
+      for (auto key : willErase)
+      {
+        m_selection.erase(key);
+      }
+    }
+  }
+  for (auto object : objects)
+  {
+    modified |= this->performAction(object, value, action, suggestions, bitwise);
   }
   if (modified)
   {
