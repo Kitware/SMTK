@@ -46,6 +46,15 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
 
 pqSMTKAttributePanel::~pqSMTKAttributePanel()
 {
+  if (m_rsrc)
+  {
+    auto rsrcMgr = m_rsrc->manager();
+    if (rsrcMgr && m_observer >= 0)
+    {
+      rsrcMgr->observers().erase(m_observer);
+    }
+  }
+
   delete m_attrUIMgr;
 }
 
