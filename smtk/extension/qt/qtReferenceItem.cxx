@@ -227,6 +227,7 @@ void qtReferenceItem::copyFromSelection()
     {
       this->synchronize(UpdateSource::GUI_FROM_ITEM);
       this->updateSynopsisLabels();
+      this->linkHover(true);
     }
   }
 }
@@ -255,6 +256,7 @@ void qtReferenceItem::clearItem()
   m_itemInfo.item()->reset();
   this->synchronize(UpdateSource::GUI_FROM_ITEM);
   this->updateSynopsisLabels();
+  this->linkHover(true);
 }
 
 void qtReferenceItem::sneakilyHideButtons()
