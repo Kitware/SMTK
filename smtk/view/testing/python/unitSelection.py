@@ -137,16 +137,16 @@ class TestSelection(smtk.testing.TestCase):
 
         # Test selection modification and insure listener is called properly:
         mgr.modifySelection(
-            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
+            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         expectedEventCount += 1
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection listener was not called upon change.')
         mgr.modifySelection(
-            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.FILTERED_ADD)
+            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.FILTERED_ADD, False)
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection listener was called when there should be no event.')
         mgr.modifySelection(
-            [], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
+            [], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         expectedEventCount += 1
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection listener was not called upon modification.')
@@ -155,7 +155,7 @@ class TestSelection(smtk.testing.TestCase):
         def allPassFilter(comp, lvl, sugg):
             return True
         mgr.modifySelection(
-            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
+            [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         expectedEventCount += 1
         mgr.setFilter(allPassFilter)
         self.assertEqual(eventCount, expectedEventCount,
@@ -177,7 +177,7 @@ class TestSelection(smtk.testing.TestCase):
         #         sugg[cell] = lvl
         #     return False
         # mgr.setFilter(suggestFilter)
-        # mgr.modifySelection([comp,], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
+        # mgr.modifySelection([comp,], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         # expectedEventCount += 1
         # print(mgr.currentSelection())
         # self.assertEqual(eventCount, expectedEventCount, 'Selection listener
@@ -193,7 +193,7 @@ class TestSelection(smtk.testing.TestCase):
                      for cell in model.cells()]
         mgr.setFilter(None)
         mgr.modifySelection(
-            cellComps, selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT)
+            cellComps, selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         dd = {kk.id(): vv for kk, vv in mgr.currentSelection().items()}
         print(
             ''.join(['  ', '\n  '.join(['%s: %d' % (str(kk), vv) for kk, vv in dd.items()])]))

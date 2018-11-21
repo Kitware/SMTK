@@ -57,11 +57,13 @@ protected slots:
 
   /**\brief Link this item to the "hovered" selection bit.
     *
-    * This should set up the initial state, observe changes to the item and update
+    * This should set up the initial state, observe changes to the item, and update
     * the selection, and add some indication to the item showing the "hovered"
     * status (e.g., a color swatch).
     */
   virtual void linkHover(bool link);
+  virtual void linkHoverTrue();
+  virtual void linkHoverFalse();
 
   /**\brief Called when the user asks to close the popup.
     *

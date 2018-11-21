@@ -28,6 +28,7 @@
 
 #include <QEvent>
 #include <QKeyEvent>
+#include <QTimer>
 
 using namespace smtk::extension;
 using namespace smtk::attribute;
@@ -142,9 +143,42 @@ void qtReferenceItem::setOutputOptional(int state)
 
 void qtReferenceItem::linkHover(bool link)
 {
-  (void)link;
+  auto seln = this->uiManager() ? this->uiManager()->selection() : nullptr;
+  if (!seln)
+  {
+    return;
+  }
+
+  smtk::resource::PersistentObjectArray hover;
+  if (link)
+  {
+    // Traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
+    // in the application selection.
+    for (auto member : m_p->m_members)
+    {
+      if (member.second)
+      {
+        hover.push_back(member.first);
+      }
+    }
+  } // else the mouse is no longer hovering... clear the highlight.
+  // std::cout << "Hover " << (link ? "link" : "unlink") << " " << hover.size() << " items" << "\n";
+  seln->modifySelection(
+    hover, "qtReferenceItemHover", 0x02, smtk::view::SelectionAction::UNFILTERED_REPLACE, true);
+  /*
   // TODO: traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
   //       in the application selection.
+    */
+}
+
+void qtReferenceItem::linkHoverTrue()
+{
+  this->linkHover(true);
+}
+
+void qtReferenceItem::linkHoverFalse()
+{
+  this->linkHover(false);
 }
 
 void qtReferenceItem::synchronizeAndHide(bool escaping)
@@ -578,18 +612,24 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     switch (event->type())
     {
       case QEvent::Enter:
-        this->linkHover(true);
+        QTimer::singleShot(0, this, SLOT(linkHoverTrue()));
+        // this->linkHover(true);
         this->cleverlyShowButtons();
         break;
       case QEvent::Leave:
-        this->linkHover(false);
+        QTimer::singleShot(0, this, SLOT(linkHoverFalse()));
+        // this->linkHover(false);
         this->sneakilyHideButtons();
         break;
       case QEvent::FocusIn:
-        this->linkHover(true);
+        this->cleverlyShowButtons();
+        QTimer::singleShot(0, this, SLOT(linkHoverTrue()));
+        // this->linkHover(true);
         break;
       case QEvent::FocusOut:
-        this->linkHover(false);
+        QTimer::singleShot(0, this, SLOT(linkHoverFalse()));
+        this->sneakilyHideButtons();
+        // this->linkHover(false);
         break;
       default:
         break;
@@ -694,7 +734,14 @@ int qtReferenceItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
                 m_p->m_phraseModel->triggerDataChanged();
               }
             }
-            m_p->m_members[pobj] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            if (val)
+            {
+              m_p->m_members[pobj] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
+            }
+            else
+            {
+              m_p->m_members.erase(pobj);
+            }
             this->updateSynopsisLabels();
             return 1;
           }
