@@ -31,6 +31,7 @@
 #include <QLabel>
 #include <QListView>
 #include <QPushButton>
+#include <QToolButton>
 #include <QVBoxLayout>
 
 namespace smtk
@@ -64,15 +65,13 @@ public:
   QPushButton* m_copyFromSelection; // A button to copy the selection into the item's entries
   QPushButton* m_copyToSelection;   // A button to copy the item's entries into the selection
   QPushButton* m_clear;             // A button to clear the item's entries
-  QPushButton* m_editBtn;           // A button to show a popup used to edit the item's entries
+  QToolButton* m_editBtn;           // A button to show a popup used to edit the item's entries
   QPushButton* m_linkSeln; // A button to link an app. selection to the item's entries permanently.
 
   // Popup widget contents
   QDialog* m_popup;
   QVBoxLayout* m_popupLayout;
   QListView* m_popupList;
-  QLabel* m_popupSynopsis;
-  QPushButton* m_popupDone;
 
   // Selection state of items shown in m_phraseModel:
   std::map<smtk::resource::PersistentObjectPtr, int> m_members;

@@ -28,7 +28,9 @@
 
 #include <QEvent>
 #include <QKeyEvent>
+#include <QMenu>
 #include <QTimer>
+#include <QWidgetAction>
 
 using namespace smtk::extension;
 using namespace smtk::attribute;
@@ -207,9 +209,8 @@ void qtReferenceItem::synchronizeAndHide(bool escaping)
 
   QString qsyn = QString::fromStdString(syn);
   updateLabel(m_p->m_synopsis, qsyn, ok);
-  updateLabel(m_p->m_popupSynopsis, qsyn, ok);
 
-  m_p->m_popup->hide();
+  m_p->m_editBtn->menu()->hide();
 }
 
 void qtReferenceItem::copyFromSelection()
@@ -466,47 +467,34 @@ void qtReferenceItem::updateUI()
   bool ok;
   QString synText = QString::fromStdString(this->synopsis(ok));
   m_p->m_synopsis = new QLabel(synText, m_widget);
-  // m_p->m_synopsis->setSizePolicy(sizeFixedPolicy);
   m_p->m_synopsis->setSizePolicy(sizeStretchyXPolicy);
   m_p->m_synopsis->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   entryLayout->addWidget(m_p->m_synopsis);
 
   // ... a button to pop up an editor for the item contents.
-  m_p->m_editBtn = new QPushButton("…", m_widget);
-  m_p->m_editBtn->setAutoDefault(true);
-  m_p->m_editBtn->setDefault(true);
+  m_p->m_editBtn = new QToolButton(m_widget);
+  m_p->m_editBtn->setPopupMode(QToolButton::InstantPopup);
+  m_p->m_editBtn->setMenu(new QMenu(m_p->m_editBtn));
   entryLayout->addWidget(m_p->m_editBtn);
 
   // Create a popup for editing the item's contents
   m_p->m_popup = new QDialog(m_p->m_editBtn);
-  m_p->m_popup->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
   m_p->m_popupLayout = new QVBoxLayout(m_p->m_popup);
   m_p->m_popupList = new QListView(m_p->m_popup);
   m_p->m_popupList->setItemDelegate(m_p->m_qtDelegate);
-  m_p->m_popupSynopsis = new QLabel(m_p->m_popup);
-  m_p->m_popupSynopsis->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-  m_p->m_popupDone = new QPushButton("Done", m_p->m_popup);
-  auto hbl = new QHBoxLayout();
-  hbl->addWidget(m_p->m_popupSynopsis);
-  hbl->addWidget(m_p->m_popupDone);
   m_p->m_popupLayout->addWidget(m_p->m_popupList);
-  m_p->m_popupLayout->addLayout(hbl);
   m_p->m_popup->installEventFilter(this);
   m_p->m_popupList->setModel(m_p->m_qtModel);
+  auto action = new QWidgetAction(m_p->m_editBtn);
+  action->setDefaultWidget(m_p->m_popup);
+  m_p->m_editBtn->menu()->addAction(action);
+  m_p->m_editBtn->setMaximumSize(QSize(16, 20));
 
-  QObject::connect(m_p->m_editBtn, SIGNAL(clicked()), m_p->m_popup, SLOT(exec()));
-  QObject::connect(m_p->m_popupDone, SIGNAL(clicked()), this, SLOT(synchronizeAndHide()));
   QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
     m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
 
-  // ... a button to export the item contents to the selection:
-  // ... a button to import the item contents from the selection:
-  // ... a label (or button?) to indicate linkage of the selection with the item:
-
   m_p->m_grid->addLayout(labelLayout, 0, 0);
   m_p->m_grid->addLayout(entryLayout, 0, 1);
-
-  // layout->addWidget(m_widget???, 0, 1);
 
   if (m_itemInfo.parentWidget() && m_itemInfo.parentWidget()->layout())
   {
@@ -589,7 +577,7 @@ std::string qtReferenceItem::synopsis(bool& ok) const
 
 void qtReferenceItem::updateSynopsisLabels() const
 {
-  if (!m_p || !m_p->m_synopsis || !m_p->m_popupSynopsis)
+  if (!m_p || !m_p->m_synopsis)
   {
     return;
   }
@@ -599,7 +587,6 @@ void qtReferenceItem::updateSynopsisLabels() const
                                                                      : this->synopsis(ok);
   QString qsyn = QString::fromStdString(syn);
   updateLabel(m_p->m_synopsis, qsyn, ok);
-  updateLabel(m_p->m_popupSynopsis, qsyn, ok);
 }
 
 bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
@@ -615,23 +602,19 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     {
       case QEvent::Enter:
         QTimer::singleShot(0, this, SLOT(linkHoverTrue()));
-        // this->linkHover(true);
         this->cleverlyShowButtons();
         break;
       case QEvent::Leave:
         QTimer::singleShot(0, this, SLOT(linkHoverFalse()));
-        // this->linkHover(false);
         this->sneakilyHideButtons();
         break;
       case QEvent::FocusIn:
         this->cleverlyShowButtons();
         QTimer::singleShot(0, this, SLOT(linkHoverTrue()));
-        // this->linkHover(true);
         break;
       case QEvent::FocusOut:
         QTimer::singleShot(0, this, SLOT(linkHoverFalse()));
         this->sneakilyHideButtons();
-        // this->linkHover(false);
         break;
       default:
         break;
@@ -643,8 +626,7 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
     switch (event->type())
     {
       case QEvent::KeyPress:
-      case QEvent::
-        ShortcutOverride: // This is what keypresses look like to us (the parent of the QListView).
+      case QEvent::ShortcutOverride: // What keypresses look like to the parent of the QListView.
       {
         // std::cout << "  Popup key\n";
         auto keyEvent = static_cast<QKeyEvent*>(event);
@@ -659,6 +641,9 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
             break;
           //case Qt::Key_Return:
           case Qt::Key_Enter:
+            this->synchronizeAndHide(false);
+            return true;
+            break;
           case Qt::Key_Space:
             // std::cout << "    Toggling\n";
             this->toggleCurrentItem();
@@ -666,6 +651,13 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
           default:
             break;
         }
+      }
+      break;
+      case QEvent::Hide:
+      {
+        // The user has clicked outside the popup.
+        // Decide whether to update the item state or abandon.
+        this->synchronizeAndHide(false);
       }
       break;
       default:
@@ -745,6 +737,7 @@ int qtReferenceItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr
               m_p->m_members.erase(pobj);
             }
             this->updateSynopsisLabels();
+            this->linkHoverTrue();
             return 1;
           }
       }
