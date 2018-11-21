@@ -237,6 +237,7 @@
         <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
         <!-- Representation view="RenderView" type="SMTKModelCompositeRepresentation" / -->
         <DefaultFileNameProperty name="FileName" />
+        <View type="None"/>
       </Hints>
     </SourceProxy>
 
@@ -431,6 +432,7 @@
       <Hints>
         <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
         <DefaultFileNameProperty name="FileName" />
+        <View type="None"/>
       </Hints>
     </SourceProxy>
 
