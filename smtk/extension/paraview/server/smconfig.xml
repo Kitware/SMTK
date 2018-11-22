@@ -1838,6 +1838,9 @@
           Highlight rendered entities as the mouse hovers over widgets listing them.
         </Documentation>
         <BooleanDomain name="bool" />
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
       </IntVectorProperty>
       <IntVectorProperty
         name="HighlightOnHoverInfo"
