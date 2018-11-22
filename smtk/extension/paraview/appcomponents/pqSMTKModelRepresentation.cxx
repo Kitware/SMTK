@@ -16,10 +16,18 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
+
 #include "smtk/model/Entity.h"
 #include "smtk/view/Selection.h"
 
+#include "pqCoreUtilities.h"
+
+#include "vtkSMPropertyHelper.h"
+
 #include "vtkPVCompositeRepresentation.h"
+
+#include "vtkCommand.h"
 
 pqSMTKModelRepresentation::pqSMTKModelRepresentation(
   const QString& group, const QString& name, vtkSMProxy* repr, pqServer* server, QObject* parent)
@@ -36,6 +44,12 @@ pqSMTKModelRepresentation::pqSMTKModelRepresentation(
       this->handleSMTKSelectionChange(src, oseln);
     });
   }
+
+  // Subscribe to settings updates...
+  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  pqCoreUtilities::connect(smtkSettings, vtkCommand::ModifiedEvent, this, SLOT(updateSettings()));
+  // ... and initialize from current settings:
+  this->updateSettings();
 }
 
 pqSMTKModelRepresentation::~pqSMTKModelRepresentation()
@@ -101,4 +115,13 @@ bool pqSMTKModelRepresentation::setVisibility(smtk::resource::ComponentPtr comp,
     }
   }
   return false;
+}
+
+void pqSMTKModelRepresentation::updateSettings()
+{
+  auto settings = vtkSMTKSettings::GetInstance();
+  int selectionStyle = settings->GetSelectionRenderStyle();
+  vtkSMPropertyHelper(this->getProxy(), "SelectionRenderStyle").Set(selectionStyle);
+  this->getProxy()->UpdateVTKObjects();
+  this->renderViewEventually();
 }

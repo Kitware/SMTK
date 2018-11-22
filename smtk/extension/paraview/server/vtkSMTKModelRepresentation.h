@@ -147,6 +147,7 @@ public:
   vtkGetVector3Macro(HoverColor, double);
   void SetSelectionPointSize(double val);
   void SetSelectionLineWidth(double val);
+  void SetSelectionRenderStyle(int style);
   void SetOpacity(double val);
   void SetPosition(double x, double y, double z);
   void SetScale(double x, double y, double z);
