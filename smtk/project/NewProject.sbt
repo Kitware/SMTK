@@ -2,9 +2,6 @@
 <!-- Description of the project "NewProject" Operation -->
 <SMTK_AttributeResource Version="3">
   <Definitions>
-<!--     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="new project" BaseType="operation" Label="Project - New">
- -->
     <AttDef Type="new-project" Label="New Project" BaseType="" Label="Project - New">
       <BriefDescription>
         Create and initialize a CMB project.
@@ -24,7 +21,7 @@
         <Directory Name="project-directory" Label="Project Directory" NumberOfRequiredValues="1">
           <BriefDescription>A new/empty directory for storing project files</BriefDescription>
         </Directory>
-        <File Name="template-file" Label="Simulation Template File" NumberOfRequiredValues="1"
+        <File Name="simulation-template" Label="Simulation Template File" NumberOfRequiredValues="1"
           ShouldExist="true" Optional="true" IsEnabledByDefault="true"
           FileFilters="CMB Template Files (*.sbt);;All Files (*)">
           <BriefDescription>The CMB template file (*.sbt) specifying the simulation</BriefDescription>
@@ -52,12 +49,5 @@
         </String>
       </ItemDefinitions>
     </AttDef>
-    <!-- Result -->
-<!--     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(new project)" BaseType="result">
-      <ItemDefinitions>
-      </ItemDefinitions>
-    </AttDef>
- -->
   </Definitions>
 </SMTK_AttributeResource>

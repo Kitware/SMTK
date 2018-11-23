@@ -51,6 +51,7 @@ public:
   /// (Future) Consider m_checksum for veryifying that import file
   /// hasn't changed. Might be moot if we store projects as archive
   /// files.
+  //  unsigned int m_checksum;
 
   /// Stores the resource type, maybe from smtk::common::typeName() ?
   std::string m_typeName;
@@ -60,7 +61,7 @@ public:
 }; // class smtk::project::ResourceInfo
 
 /// A project Manager is responsible for tracking a set of resources
-/// used in constructing one or more simulation input decks.
+/// used in constructing one or more simulation input datasets.
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
@@ -70,24 +71,28 @@ public:
   virtual ~Manager();
 
   /// Assign the resource manager to manage resources used in projects.
-  bool registerResourceManager(smtk::resource::ManagerPtr&);
+  void setResourceManager(smtk::resource::ManagerPtr&);
 
   /// Create new project. Returns operator status
-  smtk::attribute::ResourcePtr newProjectTemplate() const;
-  int newProject(smtk::attribute::ResourcePtr specification);
+  smtk::attribute::ResourcePtr getProjectTemplate() const;
+  smtk::attribute::AttributePtr getProjectSpecification() const;
+  int createProject(smtk::attribute::AttributePtr specification);
 
   /// Return <isLoaded, projectName, projectPath>
-  std::tuple<bool, std::string, std::string> projectStatus() const;
+  std::tuple<bool, std::string, std::string> getStatus() const;
 
   /// Return project resources
-  std::vector<std::project::ResourceInfo> resourceInfos() const;
+  std::vector<smtk::project::ResourceInfo> getResourceInfos() const;
 
   // Other project methods
   int saveProject();
   int closeProject();
   int loadProject(const std::string& path); // directory or .cmb-project file
-  smtk::attribute::ResourcePtr exportTemplate() const;
+  smtk::attribute::ResourcePtr getExportTemplate() const;
   int exportProject(smtk::attribute::ResourcePtr specification);
+
+  // Future
+  // int addResource(smtk::common::ResourcePtr, const std::string& role, const std::string& identifier);
 
 private:
   Manager();
