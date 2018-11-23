@@ -38,6 +38,15 @@ public:
   vtkGetMacro(HighlightOnHover, bool);
   vtkSetMacro(HighlightOnHover, bool);
 
+  /**\brief Choose how selections should be rendered.
+    *
+    * See the server-manager XML for details.
+    */
+  vtkGetMacro(SelectionRenderStyle, int);
+  vtkSetMacro(SelectionRenderStyle, int);
+  static constexpr int SolidSelectionStyle = 0;     // Match value in smconfig.xml
+  static constexpr int WireframeSelectionStyle = 1; // Match value in smconfig.xml
+
   /**\brief Choose how resources should be presented.
     *
     * See the server-manager XML for details.
@@ -51,6 +60,7 @@ protected:
   vtkSMTKSettings();
 
   bool HighlightOnHover;
+  int SelectionRenderStyle;
   int ResourceTreeStyle;
 
 private:

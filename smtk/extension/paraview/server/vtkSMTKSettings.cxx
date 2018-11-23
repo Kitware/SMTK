@@ -23,6 +23,7 @@ vtkSMTKSettings* vtkSMTKSettings::New()
 
 vtkSMTKSettings::vtkSMTKSettings()
   : HighlightOnHover(true)
+  , SelectionRenderStyle(SolidSelectionStyle)
   , ResourceTreeStyle(HierarchicalStyle)
 {
 }
@@ -35,6 +36,7 @@ void vtkSMTKSettings::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "HighlightOnHover: " << this->HighlightOnHover << "\n";
+  os << indent << "SelectionRenderStyle: " << this->SelectionRenderStyle << "\n";
   os << indent << "ResourceTreeStyle: " << this->ResourceTreeStyle << "\n";
 }
 

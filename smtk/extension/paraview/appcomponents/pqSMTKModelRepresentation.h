@@ -35,6 +35,12 @@ signals:
   /// Emitted from within setVisibility().
   void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
 
+protected slots:
+  /// Called when vtkSMTKSettings singleton is modified.
+  ///
+  /// Currently, this will update selection render-style (wireframe/solid).
+  void updateSettings();
+
 protected:
   virtual void handleSMTKSelectionChange(const std::string& src, smtk::view::SelectionPtr seln);
 

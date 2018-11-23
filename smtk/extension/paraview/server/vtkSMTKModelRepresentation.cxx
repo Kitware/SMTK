@@ -35,6 +35,7 @@
 
 #include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
@@ -967,6 +968,22 @@ void vtkSMTKModelRepresentation::SetSelectionLineWidth(double val)
 {
   this->SelectedEntities->GetProperty()->SetLineWidth(val);
   this->SelectedGlyphEntities->GetProperty()->SetLineWidth(val);
+}
+
+void vtkSMTKModelRepresentation::SetSelectionRenderStyle(int style)
+{
+  switch (style)
+  {
+    case vtkSMTKSettings::SolidSelectionStyle:
+      this->SelectedEntities->GetProperty()->SetRepresentation(VTK_SURFACE);
+      break;
+    case vtkSMTKSettings::WireframeSelectionStyle:
+      this->SelectedEntities->GetProperty()->SetRepresentation(VTK_WIREFRAME);
+      break;
+    default:
+      vtkWarningMacro("Unknown selection render style \"" << style << "\" provided. Ignoring.");
+      break;
+  }
 }
 
 void vtkSMTKModelRepresentation::SetPointSize(double val)

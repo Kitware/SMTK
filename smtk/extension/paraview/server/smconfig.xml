@@ -1264,6 +1264,12 @@
           <String value="Surface With Edges" />
         </StringListDomain>
       </StringVectorProperty>
+      <IntVectorProperty name="SelectionRenderStyle"
+        command="SetSelectionRenderStyle"
+        default_values="0"
+        panel_widget="never"
+        number_of_elements="1">
+      </IntVectorProperty>
       <StringVectorProperty command="SetColorBy"
                             default_values="Entity"
                             name="ColorBy"
@@ -1663,6 +1669,8 @@
             <Property name="LineColor"
                       panel_visibility="always"
                       panel_visibility_default_for_representation="wireframe" />
+            <Property name="SelectionRenderStyle"
+                      panel_visibility="never"/>
           </PropertyGroup>
 
           <PropertyGroup label="Lighting">
@@ -1830,12 +1838,41 @@
           Highlight rendered entities as the mouse hovers over widgets listing them.
         </Documentation>
         <BooleanDomain name="bool" />
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
       </IntVectorProperty>
       <IntVectorProperty
         name="HighlightOnHoverInfo"
         command="GetHighlightOnHover"
         information_only="1">
         <BooleanDomain name="bool" />
+      </IntVectorProperty>
+
+      <IntVectorProperty
+        name="SelectionRenderStyle"
+        number_of_elements="1"
+        default_values="0"
+        command="SetSelectionRenderStyle"
+        information_property="SelectionRenderStyleInfo"
+        panel_visibility="default">
+        <Documentation>
+          Should representations show selected model entities
+          as solids or as wireframees?
+        </Documentation>
+        <EnumerationDomain name="enum">
+          <Entry text="solid" value="0"/>
+          <Entry text="wireframe" value="1"/>
+        </EnumerationDomain>
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="SelectionRenderStyleInfo"
+        command="GetSelectionRenderStyle"
+        information_only="1">
+        <SimpleIntInformationHelper />
       </IntVectorProperty>
 
       <IntVectorProperty
