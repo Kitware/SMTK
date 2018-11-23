@@ -54,6 +54,9 @@ pqSMTKResource::pqSMTKResource(
         this->getSourceProxy()->MarkDirty(proxy);
         this->setModifiedState(pqProxy::MODIFIED);
         proxy->MarkAllPropertiesAsModified();
+        vtkObject::SafeDownCast(proxy->GetClientSideObject())->Modified();
+        proxy->UpdateVTKObjects();
+        this->renderAllViews();
       }
       return 0;
     });
