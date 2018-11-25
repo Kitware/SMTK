@@ -244,7 +244,19 @@ int Manager::saveProject()
 
 int Manager::closeProject()
 {
-  return -1;
+  // Todo check for modified resources ?
+
+  // Release resources
+  for (auto& resourceInfo : this->m_resourceInfos)
+  {
+    auto resourcePtr = this->m_resourceManager->get(resourceInfo.m_uuid);
+    resourcePtr.reset();
+  }
+  this->m_resourceInfos.clear();
+  this->m_projectName.clear();
+  this->m_projectDirectory.clear();
+
+  return SUCCEEDED;
 }
 
 int Manager::loadProject(const std::string& path)

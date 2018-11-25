@@ -11,11 +11,14 @@ import smtk.project
 import smtk.session.mesh
 import smtk.testing
 
+PROJECT1 = 'project1'
+SUCCEEDED = int(smtk.operation.Operation.Outcome.SUCCEEDED)
+
 
 class TestProjectManager(unittest.TestCase):
 
     def setup(self):
-        folder = os.path.join(smtk.testing.TEMP_DIR, 'TestProjectManager')
+        folder = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
         shutil.rmtree(folder)
 
     def test_getProjectSpecification(self):
@@ -23,7 +26,7 @@ class TestProjectManager(unittest.TestCase):
         spec = pm.getProjectSpecification()
         self.assertEqual(spec.name(), 'new-project')
 
-    def test_createProject(self):
+    def init_project_manager(self):
         # Initialize resource manager
         rm = smtk.resource.Manager.create()
         om = smtk.operation.Manager.create()
@@ -31,16 +34,16 @@ class TestProjectManager(unittest.TestCase):
         smtk.session.mesh.Registrar.registerTo(om)
         smtk.operation.Registrar.registerTo(om)
         om.registerResourceManager(rm)
+        self.pm = smtk.project.Manager.create()
+        self.pm.setManagers(rm, om)
 
+    def create_project(self, project_name):
         # Get specification
-        pm = smtk.project.Manager.create()
-        pm.setManagers(rm, om)
-        spec = pm.getProjectSpecification()
-        spec.findString('project-name').setValue(0, 'TestProjectManager')
+        spec = self.pm.getProjectSpecification()
+        spec.findString('project-name').setValue(0, project_name)
 
         # Set project settings
-        project_folder = os.path.join(
-            smtk.testing.TEMP_DIR, 'TestProjectManager')
+        project_folder = os.path.join(smtk.testing.TEMP_DIR, project_name)
         spec.findDirectory('project-directory').setValue(0, project_folder)
 
         sim_template = os.path.join(
@@ -54,9 +57,8 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(spec.isValid())
 
         # Create project
-        result = pm.createProject(spec)
-        succeeded = int(smtk.operation.Operation.Outcome.SUCCEEDED)
-        self.assertEqual(result, succeeded)
+        result = self.pm.createProject(spec)
+        self.assertEqual(result, SUCCEEDED)
 
         # Verify that folders & files were created
         self.assertTrue(os.path.exists(project_folder))
@@ -67,10 +69,29 @@ class TestProjectManager(unittest.TestCase):
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
 
-        isLoaded, name, directory = pm.getStatus()
+        isLoaded, name, directory = self.pm.getStatus()
         self.assertTrue(isLoaded)
-        self.assertEqual(name, 'TestProjectManager')
+        self.assertEqual(name, project_name)
         self.assertEqual(directory, project_folder)
+
+    def close_project(self):
+        result = self.pm.closeProject()
+        self.assertEqual(result, SUCCEEDED)
+
+        isLoaded, name, directory = self.pm.getStatus()
+        self.assertFalse(isLoaded)
+        self.assertEqual(name, '')
+        self.assertEqual(directory, '')
+
+    def test_sequence(self):
+        self.pm = None
+        self.init_project_manager()
+        self.create_project(PROJECT1)
+        self.close_project()
+
+        # Remove project folder
+        # folder = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
+        # shutil.rmtree(folder)
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()
