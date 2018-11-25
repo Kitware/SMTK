@@ -19,9 +19,13 @@
 #include "smtk/common/TypeName.h"
 #include "smtk/common/UUID.h"
 
+#include "nlohmann/json.hpp"
+
 #include <string>
 #include <tuple>
 #include <vector>
+
+using json = nlohmann::json;
 
 namespace smtk
 {
@@ -34,6 +38,9 @@ class Manager;
 class ResourceInfo
 {
 public:
+  /// Resource filename
+  std::string m_filename;
+
   /// User-specified string for labeling resource in UI widgets.
   std::string m_identifier;
 
@@ -58,6 +65,14 @@ public:
 
   /// Resource UUID
   smtk::common::UUID m_uuid;
+
+  json to_json() const
+  {
+    json j = { { "filename", m_filename }, { "identifier", m_identifier },
+      { "importLocation", m_importLocation }, { "role", m_role }, { "typeName", m_typeName },
+      { "uuid", m_uuid.toString() } };
+    return j;
+  }
 }; // class smtk::project::ResourceInfo
 
 /// A project Manager is responsible for tracking a set of resources
@@ -70,11 +85,10 @@ public:
 
   virtual ~Manager();
 
-  /// Assign the resource manager to manage resources used in projects.
-  void setResourceManager(smtk::resource::ManagerPtr&);
+  /// Assign resource & operation managers
+  void setManagers(smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
 
-  /// Create new project. Returns operator status
-  smtk::attribute::ResourcePtr getProjectTemplate() const;
+  /// Create project with 2 methods: (i) get spec, then (ii) use spec to create
   smtk::attribute::AttributePtr getProjectSpecification() const;
   int createProject(smtk::attribute::AttributePtr specification);
 
@@ -93,13 +107,24 @@ public:
 
   // Future
   // int addResource(smtk::common::ResourcePtr, const std::string& role, const std::string& identifier);
+protected:
+  // Load and return NewProject template
+  smtk::attribute::ResourcePtr getProjectTemplate() const;
+
+  // Import model file and create new resource
+  std::tuple<int, smtk::resource::ResourcePtr> importModel(const std::string& path);
+
+  // Write persistent project data to file
+  int writeProjectFile() const;
 
 private:
   Manager();
 
   /// Resource manager for the project resources.
-  /// Question: do we need a Registrar for this?
   smtk::resource::ManagerPtr m_resourceManager;
+
+  /// Operation manager for the project operations.
+  smtk::operation::ManagerPtr m_operationManager;
 
   /// User-supplied name for the project
   std::string m_projectName;
@@ -109,7 +134,7 @@ private:
 
   /// Array of ResourceInfo objects for each project resource.
   /// These data are stored in a file in the project directory.
-  std::vector<ResourceInfo> m_resourceInfoArray;
+  std::vector<ResourceInfo> m_resourceInfos;
 }; // class smtk::project::Manager
 
 } // namespace project

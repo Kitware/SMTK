@@ -1011,8 +1011,6 @@ void XmlDocV1Parser::processModelEntityDef(
   if (mmask)
   {
     idef->setAcceptsEntries("smtk::model::Resource", mmask.text().as_string(), true);
-    std::cerr << "Mem Mask of " << idef->name() << "( " << idef << ") is "
-              << mmask.text().as_string() << "\n";
   }
 
   xatt = node.attribute("NumberOfRequiredValues");

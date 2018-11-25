@@ -11,15 +11,15 @@
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
-#include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
+#include <pybind11/pybind11.h>
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <utility>
 
 namespace py = pybind11;
 
-template <typename T, typename... Args>
+template<typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindManager.h"
@@ -32,5 +32,6 @@ PYBIND11_MODULE(_smtkPybindProject, project)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
-  py::class_< smtk::project::Manager > smtk_project_Manager = pybind11_init_smtk_project_Manager(project);
+  py::class_<smtk::project::Manager> smtk_project_Manager =
+    pybind11_init_smtk_project_Manager(project);
 }
