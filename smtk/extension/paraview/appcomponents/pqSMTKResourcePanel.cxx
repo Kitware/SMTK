@@ -289,7 +289,7 @@ void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const 
   }
 
   //smtk::view::Selection::SelectionMap selnMap;
-  std::set<smtk::resource::Component::Ptr> selnSet;
+  std::set<smtk::resource::PersistentObject::Ptr> selnSet;
   auto selected = m_p->m_view->selectionModel()->selection();
   smtk::resource::Resource::Ptr selectedResource;
   for (auto qslist : selected.indexes())
@@ -301,9 +301,13 @@ void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const 
     {
       selnSet.insert(comp);
     }
-    else if (phrase && (rsrc = phrase->relatedResource()) && !selectedResource)
-    { // Pick only the first resource selected
-      selectedResource = rsrc;
+    else if (phrase && (rsrc = phrase->relatedResource()))
+    {
+      selnSet.insert(rsrc);
+      if (!selectedResource)
+      { // Hang on to the first resource selected for later
+        selectedResource = rsrc;
+      }
     }
   }
   m_p->m_seln->modifySelection(
