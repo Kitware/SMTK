@@ -19,7 +19,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace py = pybind11;
 
-template<typename T, typename... Args>
+template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindManager.h"

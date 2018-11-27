@@ -59,6 +59,7 @@ void Manager::setManagers(
     throw std::runtime_error("Cannot set internal managers with project open");
   }
   this->m_resourceManager = resourceManager;
+  this->m_resourceManager->registerResource<smtk::attribute::Resource>();
   this->m_operationManager = operationManager;
 }
 
@@ -85,9 +86,13 @@ int Manager::createProject(smtk::attribute::AttributePtr specification)
 {
   int outcome = static_cast<int>(smtk::operation::Operation::Outcome::UNKNOWN); // return value
 
-  if (!m_resourceManager)
+  if (!this->m_resourceManager)
   {
     throw std::runtime_error("Cannot create project - must set resource manager first");
+  }
+  if (!this->m_operationManager)
+  {
+    throw std::runtime_error("Cannot create project - must set operation manager first");
   }
 
   // Todo check that at least 1 resource specified?
@@ -145,7 +150,6 @@ int Manager::createProject(smtk::attribute::AttributePtr specification)
   {
     auto templateFile = templateFileItem->value(0);
     std::cerr << "Load templateFile: " << templateFile << std::endl;
-    //auto attResource = this->m_resourceManager->create<smtk::attribute::Resource>();
     attResource = smtk::attribute::Resource::create();
     smtk::io::AttributeReader reader;
     smtk::io::Logger logger;
@@ -157,6 +161,7 @@ int Manager::createProject(smtk::attribute::AttributePtr specification)
       return FAILED;
     }
     outcome = SUCCEEDED;
+    this->m_resourceManager->add(attResource);
 
     // Initialize ResourceInfo
     attInfo.m_identifier = "default";
@@ -224,6 +229,26 @@ int Manager::createProject(smtk::attribute::AttributePtr specification)
   return outcome;
 }
 
+smtk::resource::ResourcePtr Manager::getResourceByRole(
+  const std::string& typeName, const std::string& role) const
+{
+  for (auto& resourceInfo : this->m_resourceInfos)
+  {
+    if ((resourceInfo.m_typeName != typeName) || (resourceInfo.m_role != role))
+    {
+      continue;
+    }
+
+    if (this->m_resourceManager)
+    {
+      return this->m_resourceManager->get(resourceInfo.m_uuid);
+    }
+  }
+
+  // If we reached here, resource not found
+  return smtk::resource::ResourcePtr();
+}
+
 std::tuple<bool, std::string, std::string> Manager::getStatus() const
 {
   bool isProject = !this->m_resourceInfos.empty();
@@ -239,7 +264,41 @@ std::vector<smtk::project::ResourceInfo> Manager::getResourceInfos() const
 
 int Manager::saveProject()
 {
-  return -1;
+  boost::filesystem::path boostDirectory(this->m_projectDirectory);
+  auto logger = smtk::io::Logger();
+  // For now, saving a project consists of saving its resources.
+  // Later may include saving project metadata
+  for (auto& info : this->m_resourceInfos)
+  {
+    auto resource = this->m_resourceManager->get(info.m_uuid);
+    auto path = boostDirectory / boost::filesystem::path(info.m_filename);
+    if (resource->typeName() == "smtk::attribute::Resource")
+    {
+      // Always save attribute resource, since clean() method not reliable
+      auto writer = smtk::io::AttributeWriter();
+      auto attResource = smtk::dynamic_pointer_cast<smtk::attribute::Resource>(resource);
+      bool err = writer.write(attResource, path.string(), logger);
+      if (err)
+      {
+        return FAILED;
+      }
+    } // if
+    else if (!resource->clean())
+    {
+      auto writer = this->m_operationManager->create("smtk::operation::WriteResource");
+      writer->parameters()->associate(resource);
+      writer->parameters()->find("filename")->setIsEnabled(true);
+      writer->parameters()->findFile("filename")->setValue(0, path.string());
+      auto result = writer->operate();
+      int outcome = result->findInt("outcome")->value(0);
+      if (outcome != SUCCEEDED)
+      {
+        return outcome;
+      }
+    } // else if
+  }   // for (info)
+
+  return SUCCEEDED;
 }
 
 int Manager::closeProject()
@@ -250,6 +309,7 @@ int Manager::closeProject()
   for (auto& resourceInfo : this->m_resourceInfos)
   {
     auto resourcePtr = this->m_resourceManager->get(resourceInfo.m_uuid);
+    this->m_resourceManager->remove(resourcePtr);
     resourcePtr.reset();
   }
   this->m_resourceInfos.clear();
@@ -259,9 +319,130 @@ int Manager::closeProject()
   return SUCCEEDED;
 }
 
-int Manager::loadProject(const std::string& path)
+int Manager::openProject(const std::string& projectPath)
 {
-  return -1;
+  if (!this->m_resourceManager)
+  {
+    throw std::runtime_error("Cannot create project - must set resource manager first");
+  }
+  if (!this->m_operationManager)
+  {
+    throw std::runtime_error("Cannot create project - must set operation manager first");
+  }
+
+  if (!this->m_resourceInfos.empty())
+  {
+    std::cerr << "Must close current project before opening another project" << std::endl;
+    return FAILED;
+  }
+
+  boost::filesystem::path directoryPath;
+  boost::filesystem::path dotfilePath;
+
+  boost::filesystem::path inputPath(projectPath);
+  if (!boost::filesystem::exists(inputPath))
+  {
+    std::cerr << "Specified project path not found" << std::endl;
+    return FAILED;
+  }
+
+  if (boost::filesystem::is_directory(inputPath))
+  {
+    directoryPath = inputPath;
+    dotfilePath = directoryPath / boost::filesystem::path(".cmbproject");
+    if (!boost::filesystem::exists(dotfilePath))
+    {
+      std::cerr << "No \".cmbproject\" file in specified directory" << std::endl;
+      return FAILED;
+    }
+  }
+  else if (inputPath.filename().string() != ".cmbproject")
+  {
+    std::cerr << "Invalid project filename, should be \".cmbproject\"" << std::endl;
+    return FAILED;
+  }
+  else
+  {
+    dotfilePath = inputPath;
+    directoryPath = inputPath.parent_path();
+  }
+
+  // Load .cmbproject file
+  std::ifstream dotFile;
+  dotFile.open(dotfilePath.string().c_str(), std::ios_base::in | std::ios_base::ate);
+  if (!dotFile)
+  {
+    std::cerr << "Failed loading \".cmbproject\" file" << std::endl;
+    return FAILED;
+  }
+  auto fileSize = dotFile.tellg();
+  std::string dotFileContents;
+  dotFileContents.reserve(fileSize);
+
+  dotFile.seekg(0, std::ios_base::beg);
+  dotFileContents.assign(
+    (std::istreambuf_iterator<char>(dotFile)), std::istreambuf_iterator<char>());
+
+  try
+  {
+    auto j = json::parse(dotFileContents);
+    this->m_projectName = j.at("projectName");
+    this->m_projectDirectory = j.at("projectDirectory");
+    auto jInfos = j.at("resourceInfos");
+    for (auto& jInfo : jInfos)
+    {
+      ::smtk::project::ResourceInfo info = jInfo;
+      this->m_resourceInfos.push_back(info);
+    }
+  }
+  catch (std::exception /* e */)
+  {
+    std::cerr << "Error loading \".cmbproject\" file" << std::endl;
+    return FAILED;
+  }
+
+  // Load resources
+  for (auto& info : this->m_resourceInfos)
+  {
+    auto filePath = directoryPath / boost::filesystem::path(info.m_filename);
+    auto inputPath = filePath.string();
+    if (info.m_typeName == "smtk::attribute::Resource")
+    {
+      auto attResource = smtk::attribute::Resource::create();
+      attResource->setId(info.m_uuid);
+      smtk::io::AttributeReader reader;
+      smtk::io::Logger logger;
+      bool err = reader.read(attResource, inputPath, true, logger);
+      if (err)
+      {
+        std::cerr << logger.convertToString(true) << std::endl;
+        attResource.reset();
+        return FAILED;
+      }
+      this->m_resourceManager->add(attResource);
+    } // if (attribute resource)
+    else
+    {
+      // Create a read operator
+      auto readOp = this->m_operationManager->create("smtk::operation::ReadResource");
+      if (!readOp)
+      {
+        throw std::runtime_error("No read operator");
+      }
+      readOp->parameters()->findFile("filename")->setValue(inputPath);
+      auto readOpResult = readOp->operate();
+
+      // Test for success
+      int outcome = readOpResult->findInt("outcome")->value(0);
+      if (outcome != SUCCEEDED)
+      {
+        std::cerr << "Error loading resource from: " << inputPath << std::endl;
+        return outcome;
+      }
+    } // else
+  }   // for (info)
+
+  return SUCCEEDED;
 }
 
 smtk::attribute::ResourcePtr Manager::getExportTemplate() const
@@ -287,10 +468,6 @@ std::tuple<int, smtk::resource::ResourcePtr> Manager::importModel(const std::str
 
   // Test for success
   int outcome = importOpResult->findInt("outcome")->value(0);
-  // if (outcome != SUCCEEDED)
-  // {
-  //   throw std::runtime_error("Import operator failed");
-  // }
   auto resource = importOpResult->findResource("resource")->value(0);
   return std::make_tuple(outcome, resource);
 }
@@ -303,11 +480,10 @@ int Manager::writeProjectFile() const
   json jInfos = json::array();
   for (auto& resourceInfo : this->m_resourceInfos)
   {
-    nlohmann::json jInfo = resourceInfo.to_json();
+    nlohmann::json jInfo = resourceInfo;
     jInfos.push_back(jInfo);
   }
   j["resourceInfos"] = jInfos;
-  //std::cout << j.dump(2) << std::endl;
 
   std::ofstream projectFile;
   auto path = boost::filesystem::path(m_projectDirectory) / boost::filesystem::path(".cmbproject");

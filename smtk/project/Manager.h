@@ -14,7 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
-#include "smtk/SystemConfig.h" // needed?
+#include "smtk/SystemConfig.h"
 
 #include "smtk/common/TypeName.h"
 #include "smtk/common/UUID.h"
@@ -31,11 +31,9 @@ namespace smtk
 {
 namespace project
 {
-class Manager;
-
-/// Internal class representing the persistent data stored for each
-/// project resource.
-class ResourceInfo
+/// Class representing the persistent data stored for each
+/// project resource. Intended primarily for internal use.
+class SMTKCORE_EXPORT ResourceInfo
 {
 public:
   /// Resource filename
@@ -49,7 +47,7 @@ public:
   /// a model resource, or .sbt file for an attribute resource.
   /// (Future) this will be expanded to encompass URL locations, as
   /// well as multiple locations of the same resource,
-  std::string m_importLocation; // use boost::path?
+  std::string m_importLocation;
 
   /// Identifies how the resource is used in the project.
   /// Examples include "default" and "export".
@@ -60,20 +58,38 @@ public:
   /// files.
   //  unsigned int m_checksum;
 
-  /// Stores the resource type, maybe from smtk::common::typeName() ?
+  /// Stores the resource type, as the string returned from smtk::resource::typeName()
   std::string m_typeName;
 
   /// Resource UUID
   smtk::common::UUID m_uuid;
-
-  json to_json() const
-  {
-    json j = { { "filename", m_filename }, { "identifier", m_identifier },
-      { "importLocation", m_importLocation }, { "role", m_role }, { "typeName", m_typeName },
-      { "uuid", m_uuid.toString() } };
-    return j;
-  }
 }; // class smtk::project::ResourceInfo
+
+// Static methods to convert to/from json
+void to_json(json& j, const ResourceInfo& info)
+{
+  j = { { "filename", info.m_filename }, { "identifier", info.m_identifier },
+    { "importLocation", info.m_importLocation }, { "role", info.m_role },
+    { "typeName", info.m_typeName }, { "uuid", info.m_uuid.toString() } };
+}
+
+void from_json(const json& j, ResourceInfo& info)
+{
+  try
+  {
+    info.m_filename = j.at("filename");
+    info.m_identifier = j.at("identifier");
+    info.m_importLocation = j.at("importLocation");
+    info.m_role = j.at("role");
+    info.m_typeName = j.at("typeName");
+
+    std::string uuidString = j.at("uuid");
+    info.m_uuid = smtk::common::UUID(uuidString);
+  }
+  catch (std::exception& /* e */)
+  {
+  }
+} // from_json()
 
 /// A project Manager is responsible for tracking a set of resources
 /// used in constructing one or more simulation input datasets.
@@ -92,6 +108,10 @@ public:
   smtk::attribute::AttributePtr getProjectSpecification() const;
   int createProject(smtk::attribute::AttributePtr specification);
 
+  /// Return resource of given typename and role
+  smtk::resource::ResourcePtr getResourceByRole(
+    const std::string& typeName, const std::string& role) const;
+
   /// Return <isLoaded, projectName, projectPath>
   std::tuple<bool, std::string, std::string> getStatus() const;
 
@@ -101,7 +121,7 @@ public:
   // Other project methods
   int saveProject();
   int closeProject();
-  int loadProject(const std::string& path); // directory or .cmb-project file
+  int openProject(const std::string& path); // directory or .cmbproject file
   smtk::attribute::ResourcePtr getExportTemplate() const;
   int exportProject(smtk::attribute::ResourcePtr specification);
 

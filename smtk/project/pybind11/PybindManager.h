@@ -38,10 +38,11 @@ PySharedPtrClass<smtk::project::Manager> pybind11_init_smtk_project_Manager(py::
     .def("getProjectSpecification", &smtk::project::Manager::getProjectSpecification)
     .def("createProject", &smtk::project::Manager::createProject)
     .def("getStatus", &smtk::project::Manager::getStatus)
+    .def("getResourceByRole", &smtk::project::Manager::getResourceByRole)
     .def("getResourceInfos", &smtk::project::Manager::getResourceInfos)
     .def("saveProject", &smtk::project::Manager::saveProject)
     .def("closeProject", &smtk::project::Manager::closeProject)
-    .def("loadProject", &smtk::project::Manager::loadProject)
+    .def("openProject", &smtk::project::Manager::openProject)
     .def("getExportTemplate", &smtk::project::Manager::getExportTemplate)
     .def("exportProject", &smtk::project::Manager::exportProject);
   return instance;
