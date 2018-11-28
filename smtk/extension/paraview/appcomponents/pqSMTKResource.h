@@ -49,6 +49,10 @@ signals:
   /// This is called when the pqSMTKResource is assigned a new smtk::resource::ResourcePtr.
   void resourceModified(smtk::resource::ResourcePtr);
 
+  /// Internal signal called from the subthread executing an operation to notify
+  /// the primary thread that an operation has executed.
+  void operationOccurred(QPrivateSignal);
+
 protected slots:
   /**\brief Keep the pqSMTKResource and smtk::resource::Resource in sync.
     *
