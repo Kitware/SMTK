@@ -46,17 +46,29 @@ pqSMTKResource::pqSMTKResource(
   QObject::connect(this, SIGNAL(dataUpdated(pqPipelineSource*)), this, SLOT(synchronizeResource()));
 
   // Define an observer that adds all created resources to the resource manager.
+  // This observer is called by smtk::operation::Operation::operate(), which may
+  // be run in a subthread. We wish to use this signal to update the render
+  // window, a task which must be executed on the main program thread. We
+  // therefore use this observer to emit a signal that is connected to a lambda
+  // that has this class instance as its context.
   m_key = rsrcMgr->smtkOperationManager()->observers().insert(
-    [=](std::shared_ptr<smtk::operation::Operation>, smtk::operation::EventType event,
+    [&](std::shared_ptr<smtk::operation::Operation>, smtk::operation::EventType event,
       smtk::operation::Operation::Result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
-        this->getSourceProxy()->MarkDirty(proxy);
-        this->setModifiedState(pqProxy::MODIFIED);
-        proxy->MarkAllPropertiesAsModified();
+        emit this->operationOccurred(QPrivateSignal());
       }
       return 0;
     });
+
+  QObject::connect(this, &pqSMTKResource::operationOccurred, this, [&, proxy]() {
+    this->getSourceProxy()->MarkDirty(proxy);
+    this->setModifiedState(pqProxy::MODIFIED);
+    proxy->MarkAllPropertiesAsModified();
+    vtkObject::SafeDownCast(proxy->GetClientSideObject())->Modified();
+    proxy->UpdateVTKObjects();
+    this->renderAllViews();
+  });
 }
 
 pqSMTKResource::~pqSMTKResource()

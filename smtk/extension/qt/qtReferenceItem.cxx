@@ -226,9 +226,12 @@ void qtReferenceItem::copyFromSelection()
     if (m_itemInfo.itemAs<smtk::attribute::ReferenceItem>()->setObjectValues(
           selnSet.begin(), selnSet.end()))
     {
-      this->synchronize(UpdateSource::GUI_FROM_ITEM);
-      this->updateSynopsisLabels();
-      this->linkHover(true);
+      if (this->synchronize(UpdateSource::GUI_FROM_ITEM))
+      {
+        this->updateSynopsisLabels();
+        this->linkHover(true);
+        emit modified();
+      }
     }
   }
 }
@@ -255,9 +258,12 @@ void qtReferenceItem::copyToSelection()
 void qtReferenceItem::clearItem()
 {
   m_itemInfo.item()->reset();
-  this->synchronize(UpdateSource::GUI_FROM_ITEM);
-  this->updateSynopsisLabels();
-  this->linkHover(true);
+  if (this->synchronize(UpdateSource::GUI_FROM_ITEM))
+  {
+    this->updateSynopsisLabels();
+    this->linkHover(true);
+    emit modified();
+  }
 }
 
 void qtReferenceItem::sneakilyHideButtons()
