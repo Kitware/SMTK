@@ -5,6 +5,7 @@ set(projectSrcs
 
 set(projectHeaders
   Manager.h
+  ProjectInfo.h
 )
 
 configureFileAsCVariable(
