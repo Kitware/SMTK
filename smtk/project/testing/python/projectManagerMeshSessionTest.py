@@ -1,3 +1,15 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
+
 from __future__ import print_function
 import os
 import shutil
@@ -20,11 +32,22 @@ class TestProjectManager(unittest.TestCase):
     def setup(self):
         folder = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
         shutil.rmtree(folder)
+        self.attribute_count = None
+        self.pm = None    # project manager
+        self.rm = None    # resource manager
+        self.project = None
 
     def test_getProjectSpecification(self):
         pm = smtk.project.Manager.create()
         spec = pm.getProjectSpecification()
         self.assertEqual(spec.name(), 'new-project')
+
+    def test_no_core_managers(self):
+        pm = smtk.project.Manager.create()
+        spec = pm.getProjectSpecification()
+        outcome, project = pm.createProject(spec)
+        self.assertNotEqual(outcome, SUCCEEDED)
+        self.assertIsNone(project)
 
     def init_project_manager(self):
         # Initialize resource manager
@@ -35,7 +58,7 @@ class TestProjectManager(unittest.TestCase):
         smtk.operation.Registrar.registerTo(om)
         om.registerResourceManager(self.rm)
         self.pm = smtk.project.Manager.create()
-        self.pm.setManagers(self.rm, om)
+        self.pm.setCoreManagers(self.rm, om)
 
     def create_project(self, project_name):
         before_count = len(self.rm.resources())
@@ -59,8 +82,10 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(spec.isValid())
 
         # Create project
-        result = self.pm.createProject(spec)
-        self.assertEqual(result, SUCCEEDED)
+        outcome, project = self.pm.createProject(spec)
+        self.assertEqual(outcome, SUCCEEDED)
+        self.assertIsNotNone(project)
+        self.project = project
 
         # Verify that 2 resources were created
         after_count = len(self.rm.resources())
@@ -75,14 +100,12 @@ class TestProjectManager(unittest.TestCase):
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
 
-        isLoaded, name, directory = self.pm.getStatus()
-        self.assertTrue(isLoaded)
-        self.assertEqual(name, project_name)
-        self.assertEqual(directory, project_folder)
+        self.assertEqual(self.project.name(), project_name)
+        self.assertEqual(self.project.directory(), project_folder)
 
     def modify_project(self):
         # Get simulation attributes
-        att_resource = self.pm.getResourceByRole(
+        att_resource = self.project.getResourceByRole(
             'smtk::attribute::Resource', 'default')
         before_count = len(att_resource.attributes())
 
@@ -112,14 +135,14 @@ class TestProjectManager(unittest.TestCase):
 
     def open_project(self):
         path = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
-        outcome = self.pm.openProject(path)
+        outcome, project = self.pm.openProject(path)
         self.assertEqual(outcome, SUCCEEDED)
 
-        model = self.pm.getResourceByRole(
+        model = project.getResourceByRole(
             'smtk::session::mesh::Resource', 'default')
         self.assertIsNotNone(model)
 
-        att_resource = self.pm.getResourceByRole(
+        att_resource = project.getResourceByRole(
             'smtk::attribute::Resource', 'default')
         self.assertIsNotNone(att_resource)
 
@@ -134,10 +157,10 @@ class TestProjectManager(unittest.TestCase):
         after_count = len(self.rm.resources())
         self.assertEqual(before_count - after_count, 2)
 
-        isLoaded, name, directory = self.pm.getStatus()
-        self.assertFalse(isLoaded)
-        self.assertEqual(name, '')
-        self.assertEqual(directory, '')
+        # isLoaded, name, directory = self.pm.getStatus()
+        # self.assertFalse(isLoaded)
+        # self.assertEqual(name, '')
+        # self.assertEqual(directory, '')
 
     def test_sequence(self):
         self.rm = None    # resource manager
@@ -158,7 +181,8 @@ class TestProjectManager(unittest.TestCase):
         finally:
             # Remove project folder
             folder = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
-            shutil.rmtree(folder)
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

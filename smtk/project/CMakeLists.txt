@@ -1,10 +1,12 @@
 # Set up sources to build
 set(projectSrcs
   Manager.cxx
+  Project.cxx
 )
 
 set(projectHeaders
   Manager.h
+  Project.h
   ProjectInfo.h
 )
 

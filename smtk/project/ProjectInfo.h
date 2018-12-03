@@ -38,6 +38,12 @@ namespace project
 class SMTKCORE_EXPORT ResourceInfo
 {
 public:
+  /// Default constructor
+  ResourceInfo() {}
+
+  /// Copy constructor
+  ResourceInfo(const ResourceInfo& source);
+
   /// Resource filename
   std::string m_filename;
 
@@ -67,15 +73,25 @@ public:
   smtk::common::UUID m_uuid;
 }; // class smtk::project::ResourceInfo
 
+inline ResourceInfo::ResourceInfo(const ResourceInfo& source)
+{
+  m_filename = source.m_filename;
+  m_identifier = source.m_identifier;
+  m_importLocation = source.m_importLocation;
+  m_role = source.m_role;
+  m_typeName = source.m_typeName;
+  m_uuid = source.m_uuid;
+}
+
 // Static methods to convert to/from json
-void to_json(json& j, const ResourceInfo& info)
+static void to_json(json& j, const ResourceInfo& info)
 {
   j = { { "filename", info.m_filename }, { "identifier", info.m_identifier },
     { "importLocation", info.m_importLocation }, { "role", info.m_role },
     { "typeName", info.m_typeName }, { "uuid", info.m_uuid.toString() } };
 } // to_json()
 
-void from_json(const json& j, ResourceInfo& info)
+static void from_json(const json& j, ResourceInfo& info)
 {
   try
   {
@@ -88,8 +104,9 @@ void from_json(const json& j, ResourceInfo& info)
     std::string uuidString = j.at("uuid");
     info.m_uuid = smtk::common::UUID(uuidString);
   }
-  catch (std::exception& /* e */)
+  catch (std::exception& ex)
   {
+    std::cerr << "ERROR: " << ex.what();
   }
 } // from_json()
 
@@ -109,7 +126,7 @@ public:
 }; // class smtk::project::ProjectInfo
 
 // Static methods to convert to/from json
-void to_json(json& j, const ProjectInfo& projectInfo)
+static void to_json(json& j, const ProjectInfo& projectInfo)
 {
   j = {
     { "fileVersion", 1 }, { "projectName", projectInfo.m_name },
@@ -124,11 +141,11 @@ void to_json(json& j, const ProjectInfo& projectInfo)
   j["resourceInfos"] = jInfos;
 } // to_json()
 
-void from_json(const json& j, ProjectInfo& projectInfo)
+static void from_json(const json& j, ProjectInfo& projectInfo)
 {
   try
   {
-    projectInfo.m_name = j.at("projectNname");
+    projectInfo.m_name = j.at("projectName");
     projectInfo.m_directory = j.at("projectDirectory");
     auto jInfos = j.at("resourceInfos");
     for (auto& jInfo : jInfos)
@@ -137,8 +154,9 @@ void from_json(const json& j, ProjectInfo& projectInfo)
       projectInfo.m_resourceInfos.push_back(resourceInfo);
     }
   }
-  catch (std::exception& /* e */)
+  catch (std::exception& ex)
   {
+    std::cerr << "ERROR: " << ex.what();
   }
 } // from_json()
 

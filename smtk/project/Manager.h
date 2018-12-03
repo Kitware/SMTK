@@ -16,24 +16,19 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
 
-#include "smtk/common/TypeName.h"
-#include "smtk/common/UUID.h"
-#include "smtk/project/ProjectInfo.h"
-
-#include "nlohmann/json.hpp"
-
 #include <string>
 #include <tuple>
 #include <vector>
-
-using json = nlohmann::json;
 
 namespace smtk
 {
 namespace project
 {
+class Project;
+
 /// A project Manager is responsible for tracking a set of resources
 /// used in constructing one or more simulation input datasets.
+/// The current implementation only supports one project being "open" at a time.
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
@@ -43,40 +38,36 @@ public:
   virtual ~Manager();
 
   /// Assign resource & operation managers
-  void setManagers(smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
+  void setCoreManagers(smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
 
   /// Create project with 2 methods: (i) get spec, then (ii) use spec to create
   smtk::attribute::AttributePtr getProjectSpecification() const;
-  int createProject(smtk::attribute::AttributePtr specification);
 
-  /// Return resource of given typename and role
-  smtk::resource::ResourcePtr getResourceByRole(
-    const std::string& typeName, const std::string& role) const;
+  /// Create project, returning outcome and project pointer
+  /// Outcome uses smtk::operation::Operation::Outcome enum, where 3 == SUCCEEDED
+  std::tuple<int, ProjectPtr> createProject(smtk::attribute::AttributePtr specification);
 
-  /// Return <isLoaded, projectName, projectPath>
-  std::tuple<bool, std::string, std::string> getStatus() const;
+  /// Return project instance
+  ProjectPtr getCurrentProject() const { return this->m_project; }
 
-  /// Return project resources
-  std::vector<smtk::project::ResourceInfo> getResourceInfos() const;
-
-  // Other project methods
+  /// Write project resources & metadata to the filesystem
   int saveProject();
-  int closeProject();
-  int openProject(const std::string& path); // directory or .cmbproject file
-  smtk::attribute::ResourcePtr getExportTemplate() const;
-  int exportProject(smtk::attribute::ResourcePtr specification);
 
-  // Future
-  // int addResource(smtk::common::ResourcePtr, const std::string& role, const std::string& identifier);
+  /// Close the project resources
+  int closeProject();
+
+  /// Open a new project from the filesystem. Returns outcome and project pointer
+  /// The path argument can be set to either the project directory or the .cmbproject
+  /// contained in the project directory.
+  std::tuple<int, ProjectPtr> openProject(const std::string& path);
+
+  // Future:
+  // * method to add additional resources to the current project
+  // * support for multiple projects (or multiple project managers?)
+  // * shared resources between projects?
 protected:
   // Load and return NewProject template
   smtk::attribute::ResourcePtr getProjectTemplate() const;
-
-  // Import model file and create new resource
-  std::tuple<int, smtk::resource::ResourcePtr> importModel(const std::string& path);
-
-  // Write persistent project data to file
-  int writeProjectFile() const;
 
 private:
   Manager();
@@ -87,15 +78,8 @@ private:
   /// Operation manager for the project operations.
   smtk::operation::ManagerPtr m_operationManager;
 
-  /// User-supplied name for the project
-  std::string m_projectName;
-
-  /// Filesystem directory where project resources are stored.
-  std::string m_projectDirectory;
-
-  /// Array of ResourceInfo objects for each project resource.
-  /// These data are stored in a file in the project directory.
-  std::vector<ResourceInfo> m_resourceInfos;
+  /// Current project
+  smtk::project::ProjectPtr m_project;
 }; // class smtk::project::Manager
 
 } // namespace project

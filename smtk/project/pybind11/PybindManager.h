@@ -18,8 +18,11 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/project/Manager.h"
+#include "smtk/project/Project.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
+
+#include "PybindProject.h"
 
 #include <vector>
 
@@ -34,17 +37,13 @@ PySharedPtrClass<smtk::project::Manager> pybind11_init_smtk_project_Manager(py::
     .def_static("create",
       (std::shared_ptr<smtk::project::Manager>(*)(std::shared_ptr<smtk::project::Manager>&)) &
         smtk::project::Manager::create)
-    .def("setManagers", &smtk::project::Manager::setManagers)
+    .def("setCoreManagers", &smtk::project::Manager::setCoreManagers)
     .def("getProjectSpecification", &smtk::project::Manager::getProjectSpecification)
     .def("createProject", &smtk::project::Manager::createProject)
-    .def("getStatus", &smtk::project::Manager::getStatus)
-    .def("getResourceByRole", &smtk::project::Manager::getResourceByRole)
-    .def("getResourceInfos", &smtk::project::Manager::getResourceInfos)
+    .def("getCurrentProject", &smtk::project::Manager::getCurrentProject)
     .def("saveProject", &smtk::project::Manager::saveProject)
     .def("closeProject", &smtk::project::Manager::closeProject)
-    .def("openProject", &smtk::project::Manager::openProject)
-    .def("getExportTemplate", &smtk::project::Manager::getExportTemplate)
-    .def("exportProject", &smtk::project::Manager::exportProject);
+    .def("openProject", &smtk::project::Manager::openProject);
   return instance;
 }
 
