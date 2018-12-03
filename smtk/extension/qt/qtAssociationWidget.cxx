@@ -19,11 +19,15 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/SpecificationOps.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
@@ -71,10 +75,52 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   std::ostringstream receiverSource;
   receiverSource << "qtAssociationWidget_" << this;
   m_selectionSourceName = receiverSource.str();
+  auto opManager = this->Internals->view->uiManager()->operationManager();
+  if (opManager != nullptr)
+  {
+    m_operationObserverKey = opManager->observers().insert(
+      [this](smtk::operation::Operation::Ptr oper, smtk::operation::EventType event,
+        smtk::operation::Operation::Result result) -> int {
+        return this->handleOperationEvent(oper, event, result);
+      });
+  }
+  else
+  {
+    m_operationObserverKey = -1;
+    std::cerr << "qtAssociationWidget: Could not find Operation Manager!\n";
+  }
+  auto resManager = this->Internals->view->uiManager()->resourceManager();
+  if (resManager != nullptr)
+  {
+    m_resourceObserverKey =
+      resManager->observers().insert([this](smtk::resource::Resource::Ptr resource,
+        smtk::resource::EventType event) { this->handleResourceEvent(resource, event); });
+  }
+  else
+  {
+    m_resourceObserverKey = -1;
+    std::cerr << "qtAssociationWidget: Could not find Resource Manager!\n";
+  }
 }
 
 qtAssociationWidget::~qtAssociationWidget()
 {
+  if (m_operationObserverKey != -1)
+  {
+    auto opManager = this->Internals->view->uiManager()->operationManager();
+    if (opManager != nullptr)
+    {
+      opManager->observers().erase(m_operationObserverKey);
+    }
+  }
+  if (m_resourceObserverKey != -1)
+  {
+    auto resManager = this->Internals->view->uiManager()->resourceManager();
+    if (resManager != nullptr)
+    {
+      resManager->observers().erase(m_resourceObserverKey);
+    }
+  }
   delete this->Internals;
 }
 
@@ -94,20 +140,26 @@ bool qtAssociationWidget::hasSelectedItem()
 void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)
 {
   this->Internals->currentAtt = theAtt;
+  this->refreshAssociations();
+}
 
+void qtAssociationWidget::refreshAssociations()
+{
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
   this->Internals->CurrentList->clear();
   this->Internals->AvailableList->clear();
 
-  if (!theAtt)
+  auto theAttribute = this->Internals->currentAtt.lock();
+
+  if (!theAttribute)
   {
     this->Internals->CurrentList->blockSignals(false);
     this->Internals->AvailableList->blockSignals(false);
     return;
   }
 
-  attribute::DefinitionPtr attDef = theAtt->definition();
+  attribute::DefinitionPtr attDef = theAttribute->definition();
 
   // Lets also find the base definition of the attribute that forces the unique condition
   ResourcePtr attResource = attDef->resource();
@@ -128,7 +180,7 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
       // Object doesn't have any appropriate attribute associated with it
       this->addObjectAssociationListItem(this->Internals->AvailableList, obj, false);
     }
-    else if ((*atts.begin()) == theAtt)
+    else if ((*atts.begin()) == theAttribute)
     {
       // Entity is associated with the attribute already
       this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
@@ -513,4 +565,34 @@ void qtAssociationWidget::updateListItemSelectionAfterChange(
     }
   }
   list->blockSignals(false);
+}
+
+int qtAssociationWidget::handleOperationEvent(smtk::operation::OperationPtr,
+  smtk::operation::EventType event, smtk::operation::Operation::Result result)
+{
+  if (event != smtk::operation::EventType::DID_OPERATE)
+  {
+    return 0;
+  }
+
+  std::size_t count = smtk::operation::extractResources(result).size();
+  // If nothing has changed then just return
+  if (count == 0)
+  {
+    return 0;
+  }
+
+  // The simplest solution is just to refresh the widget
+  this->refreshAssociations();
+  return 0;
+}
+
+void qtAssociationWidget::handleResourceEvent(
+  smtk::resource::Resource::Ptr resource, smtk::resource::EventType event)
+{
+  if (event == smtk::resource::EventType::REMOVED)
+  {
+    // The simplest solution is just to refresh the widget
+    this->refreshAssociations();
+  }
 }

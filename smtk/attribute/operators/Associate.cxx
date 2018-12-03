@@ -55,7 +55,7 @@ Associate::Result Associate::operateInternal()
   // Access the resource to which we will associate.
   auto associateToItem = this->parameters()->findResource("associate to");
 
-  bool success = true;
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   for (std::size_t i = 0; i < associateToItem->numberOfValues(); i++)
   {
@@ -63,11 +63,19 @@ Associate::Result Associate::operateInternal()
       std::dynamic_pointer_cast<smtk::resource::Resource>(associateToItem->objectValue());
 
     // Associate the resource to the attribute resource.
-    success &= resource->associate(associated);
+    bool success = resource->associate(associated);
+    if (success)
+    {
+      result->findResource("resource")->appendValue(resource);
+    }
+    else
+    {
+      result->findInt("outcome")->setValue(
+        static_cast<int>(smtk::operation::Operation::Outcome::FAILED));
+    }
   }
 
-  return (success ? this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED)
-                  : this->createResult(smtk::operation::Operation::Outcome::FAILED));
+  return result;
 }
 
 const char* Associate::xmlDescription() const

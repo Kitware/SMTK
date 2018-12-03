@@ -73,10 +73,12 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
         // Keep hold of the selection instance for the active server connection
         // so that this->displayResource() below can make use of it.
         m_seln = wrapper->smtkSelection();
+        m_opManager = wrapper->smtkOperationManager();
       }
       else
       {
         m_seln = nullptr;
+        m_opManager = nullptr;
       }
       return this->displayResource(attrRsrc);
     }
@@ -111,8 +113,9 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   }
 
   m_attrUIMgr = new smtk::extension::qtUIManager(rsrc);
-  m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
-  m_attrUIMgr->setSelectionBit(1);   // ToDo: should be set by application
+  m_attrUIMgr->setOperationManager(m_opManager); // Assign the operation manager
+  m_attrUIMgr->setSelection(m_seln);             // NB: m_seln may be null.
+  m_attrUIMgr->setSelectionBit(1);               // ToDo: should be set by application
 
   smtk::view::ViewPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
   if (view)
