@@ -4,6 +4,7 @@ set(unit_tests
   TestMutexedOperation
   unitOperation
   TestOperationGroup
+  TestRemoveResource
 )
 
 find_package(Threads REQUIRED)
