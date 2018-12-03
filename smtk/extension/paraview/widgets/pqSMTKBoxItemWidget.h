@@ -40,6 +40,33 @@ public:
   static qtItem* createBoxItemWidget(const AttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   void updateItemFromWidget() override;
+
+protected:
+  enum class ItemBindings
+  {
+    AxisAlignedBounds,       //!< 1 item with 6 values (xmin, xmax, ymin, ymax, zmin, zmax)
+    AxisAlignedMinMax,       //!< 2 items with 3 values each (xlo, ylo, zlo), (xhi, yhi, zhi)
+    AxisAlignedCenterDeltas, //!< 2 items with 3 values each (xc, yc, zc), (dx, dy, dz)
+    EulerAngleMinMax, //!< 3 items with 3 values each (xlo, ylo, zlo), (xhi, yhi, zhi), (roll, pitch, yaw)
+    EulerAngleCenterDeltas //!< 3 items with 3 values each (xc, yc, zc), (dx, dy, dz), (roll, pitch, yaw)
+  };
+  /**\brief Starting with the widget's assigned item (which may
+    *       be a GroupItem or a DoubleItem), determine and return bound items.
+    *
+    * If errors are encountered, this method returns false.
+    * If the name of a DoubleItem is provided, then the AxisAlignedBounds binding
+    * is assumed and that item is returned as the sole entry of \items.
+    * Otherwise, the named item must be a Group holding items called out as one
+    * of the following:
+    * + AxisAlignedMinMax: "Min", "Max" with numberOfValues == 3
+    * + AxisAlignedCenterDeltas: "Center", "Deltas", with numberOfValues == 3
+    * + EulerAngleMinMax: "Angles", "Min", "Max" with numberOfValues == 3
+    * + EulerAngleCenterDeltas: "Angles, "Center", "Deltas" with numberOfValues == 3
+    *
+    * Euler angles must be provided in degrees and are roll, pitch, and yaw
+    * (i.e., rotation about the x, y, and z axes, respectively).
+    */
+  bool fetchBoxItems(ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items);
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKBoxItemWidget_h

@@ -92,9 +92,11 @@ public:
     */
   ///@{
   /// Indicate a resource and operation manager that should be monitored for changes.
-  bool addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr);
+  bool addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
+    smtk::view::SelectionPtr seln);
   /// Indicate a resource and operation manager that should no longer be monitored for changes.
-  bool removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr);
+  bool removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
+    smtk::view::SelectionPtr seln);
   /// Stop listening for changes from all sources.
   bool resetSources();
   ///@}
@@ -209,14 +211,19 @@ protected:
   {
     smtk::resource::ManagerPtr m_rsrcMgr;
     smtk::operation::ManagerPtr m_operMgr;
+    smtk::view::SelectionPtr m_seln;
     int m_rsrcHandle;
     int m_operHandle;
+    int m_selnHandle;
     Source() {}
-    Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, int rh, int oh)
+    Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om,
+      smtk::view::SelectionPtr sn, int rh, int oh, int sh)
       : m_rsrcMgr(rm)
       , m_operMgr(om)
+      , m_seln(sn)
       , m_rsrcHandle(rh)
       , m_operHandle(oh)
+      , m_selnHandle(sh)
     {
     }
   };

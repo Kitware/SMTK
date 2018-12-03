@@ -93,7 +93,7 @@ qtReferenceItem::~qtReferenceItem()
 
 qtReferenceItem::AcceptsTypes qtReferenceItem::acceptableTypes() const
 {
-  auto def = std::dynamic_pointer_cast<const smtk::attribute::ComponentItemDefinition>(
+  auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
     m_itemInfo.item()->definition());
   if (!def)
   {
@@ -334,7 +334,12 @@ void qtReferenceItem::createWidget()
 
 void qtReferenceItem::clearWidgets()
 {
-  m_itemInfo.parentWidget()->layout()->removeWidget(m_widget);
+  auto pwidget = m_itemInfo.parentWidget();
+  if (!pwidget)
+  {
+    return;
+  }
+  pwidget->layout()->removeWidget(m_widget);
   delete m_widget;
   m_widget = nullptr;
 }
@@ -350,7 +355,8 @@ void qtReferenceItem::updateUI()
 
   // TODO: this need to connect to the right managers
   auto rsrcMgr = m_itemInfo.uiManager()->resourceManager();
-  auto operMgr = smtk::operation::Manager::create();
+  auto operMgr = m_itemInfo.uiManager()->operationManager();
+  auto seln = m_itemInfo.uiManager()->selection();
 
   auto phraseModel = this->createPhraseModel();
   m_p->m_phraseModel = phraseModel;
@@ -370,7 +376,7 @@ void qtReferenceItem::updateUI()
   m_p->m_qtModel->setInvisibleIconURL(":/icons/display/unselected.png");
   if (m_p->m_phraseModel)
   {
-    m_p->m_phraseModel->addSource(rsrcMgr, operMgr);
+    m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);
     m_p->m_modelObserverId =
       m_p->m_phraseModel->observe([this](smtk::view::DescriptivePhrasePtr phr,
         smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,

@@ -275,7 +275,7 @@ int unitQtComponentItem(int argc, char* argv[])
     }
   };
 
-  phraseModel->addSource(rsrcMgr, operMgr);
+  phraseModel->addSource(rsrcMgr, operMgr, nullptr);
   phraseModel->setDecorator([&m_visibleThings](smtk::view::DescriptivePhrasePtr phr) {
     smtk::view::VisibilityContent::decoratePhrase(
       phr, [&m_visibleThings](smtk::view::VisibilityContent::Query qq, int val,

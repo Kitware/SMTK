@@ -93,6 +93,9 @@ public:
   bool setId(const smtk::common::UUID& myID) override;
   bool setLocation(const std::string& location);
 
+  /// Make the name of a resource simply the stem of its filename.
+  std::string name() const override;
+
   /// Indicate whether the resource is in sync with its location.
   ///
   /// Resources that have a non-empty location and are identical to

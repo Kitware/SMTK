@@ -14,13 +14,13 @@
         &lt;p&gt;The visualized lists of attribute component items are
         populated from associated resources.
       </DetailedDescription>
-      <AssociationsDef>
+      <AssociationsDef Name="attribute">
         <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
 
-        <Resource Name = "associate to" Label = "Associated Resource"
-                  NumberOfRequiredValues="1" Extensible="true">
+        <Resource Name="associate to" Label="associated resource(s)"
+            NumberOfRequiredValues="1" Extensible="true">
           <Accepts>
             <Resource Name="smtk::resource::Resource"/>
           </Accepts>

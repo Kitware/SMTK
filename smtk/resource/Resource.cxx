@@ -13,6 +13,7 @@
 
 #include "smtk/resource/Resource.h"
 
+#include "smtk/common/Paths.h"
 #include "smtk/common/UUIDGenerator.h"
 
 #include "smtk/resource/Manager.h"
@@ -147,6 +148,11 @@ bool Resource::setLocation(const std::string& myLocation)
   }
 
   return myLocation == m_location;
+}
+
+std::string Resource::name() const
+{
+  return smtk::common::Paths::stem(m_location);
 }
 
 } // namespace resource

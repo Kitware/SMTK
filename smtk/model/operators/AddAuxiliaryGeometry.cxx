@@ -136,8 +136,10 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   {
     AuxiliaryGeometryExtension::Ptr ext;
     smtk::common::Extension::visit<AuxiliaryGeometryExtension::Ptr>(
-      [&ext](const std::string&, AuxiliaryGeometryExtension::Ptr obj) {
-        if (obj)
+      [&ext, &auxGeom, &bbox](const std::string&, AuxiliaryGeometryExtension::Ptr obj) {
+        // Don't take the first AuxiliaryGeometryExtenion... look for one
+        // that can handle the URL.
+        if (obj && obj->canHandleAuxiliaryGeometry(auxGeom, bbox))
         {
           ext = obj;
           return std::make_pair(true, true);
@@ -146,7 +148,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
       });
     if (ext)
     {
-      isURLValid = ext->canHandleAuxiliaryGeometry(auxGeom, bbox);
+      isURLValid = true;
       haveBBox = true;
     }
     else
@@ -173,16 +175,10 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   created->appendValue(auxGeom.component());
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
   modified->appendValue(parent.component());
-
-  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
-  modifiedItem->appendValue(parent.component());
   for (auto& m : reparented)
   {
-    modifiedItem->appendValue(m.component());
+    modified->appendValue(m.component());
   }
-
-  smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
-  createdItem->appendValue(auxGeom.component());
 
   if (auxGeom.hasURL())
   {
