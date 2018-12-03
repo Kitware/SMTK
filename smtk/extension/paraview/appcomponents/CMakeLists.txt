@@ -33,6 +33,7 @@ set(PQComponentsSrcs
   pqSMTKModelRepresentation.cxx
   pqSMTKNewResourceBehavior.cxx
   pqSMTKOperationPanel.cxx
+  pqSMTKPipelineSelectionBehavior.cxx
   pqSMTKRegisterImportersBehavior.cxx
   pqSMTKResource.cxx
   pqSMTKSaveResourceBehavior.cxx
@@ -54,6 +55,7 @@ set(PQComponentsHeaders
   pqSMTKModelRepresentation.h
   pqSMTKNewResourceBehavior.h
   pqSMTKOperationPanel.h
+  pqSMTKPipelineSelectionBehavior.h
   pqSMTKRegisterImportersBehavior.h
   pqSMTKResource.h
   pqSMTKSaveResourceBehavior.h
@@ -65,7 +67,6 @@ set(PQComponentsHeaders
 set(PQComponentsUIs
   resources/pqSMTKColorByWidget.ui
   resources/pqSMTKOperationPanel.ui
-  resources/pqSMTKResourcePanel.ui
   resources/pqSMTKSelectionFilterBehavior.ui
 )
 

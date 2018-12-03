@@ -10,13 +10,17 @@
 
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/common/UUID.h"
+#include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/EntityRef.h"
 
 using qtItemConstructor = smtk::extension::qtItemConstructor;
+using qtModelViewConstructor = smtk::extension::qtModelViewConstructor;
+using qtResourceBrowser = smtk::extension::qtResourceBrowser;
 
 SMTKViewConstructorMap qtSMTKUtilities::s_viewConstructors;
 SMTKItemConstructorMap qtSMTKUtilities::s_itemConstructors;
+SMTKModelViewConstructorMap qtSMTKUtilities::s_modelViewConstructors;
 
 const SMTKViewConstructorMap& qtSMTKUtilities::viewConstructors()
 {
@@ -26,6 +30,17 @@ const SMTKViewConstructorMap& qtSMTKUtilities::viewConstructors()
 const SMTKItemConstructorMap& qtSMTKUtilities::itemConstructors()
 {
   return qtSMTKUtilities::s_itemConstructors;
+}
+
+const SMTKModelViewConstructorMap& qtSMTKUtilities::modelViewConstructors()
+{
+  auto& ctors = qtSMTKUtilities::s_modelViewConstructors;
+  auto defEntry = ctors.find("");
+  if (defEntry == ctors.end())
+  {
+    ctors[""] = qtResourceBrowser::createDefaultView;
+  }
+  return ctors;
 }
 
 void qtSMTKUtilities::registerViewConstructor(
@@ -39,6 +54,12 @@ void qtSMTKUtilities::registerItemConstructor(const std::string& itemName, qtIte
 {
   // this will overwrite the existing constructor if the itemName exists in the map
   qtSMTKUtilities::s_itemConstructors[itemName] = itemc;
+}
+
+void qtSMTKUtilities::registerModelViewConstructor(
+  const std::string& viewName, smtk::extension::qtModelViewConstructor viewc)
+{
+  qtSMTKUtilities::s_modelViewConstructors[viewName] = viewc;
 }
 
 void qtSMTKUtilities::updateViewConstructors(smtk::extension::qtUIManager* uiMan)

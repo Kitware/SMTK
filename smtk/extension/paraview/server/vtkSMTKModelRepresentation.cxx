@@ -445,7 +445,7 @@ bool vtkSMTKModelRepresentation::ApplyDefaultStyle(
 
     // If the item is an attribute, it will not be directly renderable,
     // so preview its associated entities.
-    attr = item.first->as<smtk::attribute::Attribute>();
+    attr = std::dynamic_pointer_cast<smtk::attribute::Attribute>(item.first);
     if (attr)
     {
       auto assoc = attr->associations();

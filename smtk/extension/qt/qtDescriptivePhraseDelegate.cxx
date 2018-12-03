@@ -115,6 +115,11 @@ void qtDescriptivePhraseDelegate::setVisibilityMode(bool allEditsChangeVisibilit
   m_visibilityMode = allEditsChangeVisibility;
 }
 
+bool qtDescriptivePhraseDelegate::highlightOnHover() const
+{
+  return m_highlightOnHover;
+}
+
 void qtDescriptivePhraseDelegate::setHighlightOnHover(bool highlightOnHover)
 {
   m_highlightOnHover = highlightOnHover;
