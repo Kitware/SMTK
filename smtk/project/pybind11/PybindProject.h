@@ -24,8 +24,7 @@ PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Project(py::
   instance.def(py::init< ::smtk::project::Project const&>())
     .def("name", &smtk::project::Project::name)
     .def("directory", &smtk::project::Project::directory)
-    .def("getResourceInfos", &smtk::project::Project::getResourceInfos)
-    .def("getResourceByRole", &smtk::project::Project::getResourceByRole);
+    .def("getResources", &smtk::project::Project::getResources);
   return instance;
 }
 

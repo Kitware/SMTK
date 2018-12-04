@@ -1,13 +1,20 @@
 # Set up sources to build
+set(jsonHeaders
+  json/jsonProjectDescriptor.h
+  json/jsonResourceDescriptor.h
+)
+
 set(projectSrcs
   Manager.cxx
   Project.cxx
 )
 
 set(projectHeaders
+  ${jsonHeaders}
   Manager.h
   Project.h
-  ProjectInfo.h
+  ProjectDescriptor.h
+  ResourceDescriptor.h
 )
 
 configureFileAsCVariable(
@@ -19,6 +26,7 @@ configureFileAsCVariable(
 # Install the headers
 smtk_public_headers(smtkCore ${projectHeaders})
 
+# Future:
 # if (SMTK_ENABLE_PARAVIEW_SUPPORT)
 #   add_smtk_plugin(
 #     smtkProjectPlugin "1.0"

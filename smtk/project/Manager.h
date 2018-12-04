@@ -17,7 +17,6 @@
 #include "smtk/SystemConfig.h"
 
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace smtk
@@ -26,43 +25,41 @@ namespace project
 {
 class Project;
 
-/// A project Manager is responsible for tracking a set of resources
-/// used in constructing one or more simulation input datasets.
+/// A project Manager is responsible for creating and managing smtk projects.
 /// The current implementation only supports one project being "open" at a time.
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
   smtkTypedefs(smtk::project::Manager);
-  smtkCreateMacro(Manager);
+  static smtk::project::ManagerPtr create(
+    smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
 
   virtual ~Manager();
-
-  /// Assign resource & operation managers
-  void setCoreManagers(smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
 
   /// Create project with 2 methods: (i) get spec, then (ii) use spec to create
   smtk::attribute::AttributePtr getProjectSpecification() const;
 
-  /// Create project, returning outcome and project pointer
-  /// Outcome uses smtk::operation::Operation::Outcome enum, where 3 == SUCCEEDED
-  std::tuple<int, ProjectPtr> createProject(smtk::attribute::AttributePtr specification);
+  /// Create project for given specification, which includes filesystem path to store persistent data.
+  /// Will not write to existing directory unless replaceExistingDirectory flag is set.
+  /// Return value (pointer) is empty on error.
+  ProjectPtr createProject(smtk::attribute::AttributePtr specification, smtk::io::Logger& logger,
+    bool replaceExistingDirectory = false);
 
   /// Return project instance
   ProjectPtr getCurrentProject() const { return this->m_project; }
 
-  /// Write project resources & metadata to the filesystem
-  int saveProject();
+  /// Write project resources & metadata to the filesystem. Returns true on success
+  bool saveProject(smtk::io::Logger& logger);
 
-  /// Close the project resources
-  int closeProject();
+  /// Close the project resources. Returns true on success
+  bool closeProject(smtk::io::Logger& logger);
 
   /// Open a new project from the filesystem. Returns outcome and project pointer
   /// The path argument can be set to either the project directory or the .cmbproject
   /// contained in the project directory.
-  std::tuple<int, ProjectPtr> openProject(const std::string& path);
+  ProjectPtr openProject(const std::string& path, smtk::io::Logger& logger);
 
   // Future:
-  // * method to add additional resources to the current project
   // * support for multiple projects (or multiple project managers?)
   // * shared resources between projects?
 protected:
@@ -70,7 +67,7 @@ protected:
   smtk::attribute::ResourcePtr getProjectTemplate() const;
 
 private:
-  Manager();
+  Manager(smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
 
   /// Resource manager for the project resources.
   smtk::resource::ManagerPtr m_resourceManager;

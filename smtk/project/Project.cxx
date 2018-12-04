@@ -21,22 +21,20 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/ImportResource.h"
+#include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/operators/WriteResource.h"
+#include "smtk/project/json/jsonProjectDescriptor.h"
 #include "smtk/resource/Manager.h"
 
 #include "boost/filesystem.hpp"
-#include "nlohmann/json.hpp"
 
 #include <exception>
 #include <fstream>
 
-using json = nlohmann::json;
-
 namespace
 {
 std::string PROJECT_FILENAME = ".cmbproject";
-int UNABLE_TO_OPERATE =
-  static_cast<int>(smtk::operation::Operation::Outcome::UNABLE_TO_OPERATE);       // 0
-int FAILED = static_cast<int>(smtk::operation::Operation::Outcome::FAILED);       // 2
 int SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED); // 3
 }
 
@@ -53,35 +51,23 @@ Project::~Project()
   this->close();
 }
 
-smtk::resource::ResourcePtr Project::getResourceByRole(
-  const std::string& typeName, const std::string& role) const
+std::vector<smtk::resource::ResourcePtr> Project::getResources() const
 {
-  if (!this->m_resourceManager)
+  std::vector<smtk::resource::ResourcePtr> resourceList;
+
+  for (auto& rd : this->m_resourceDescriptors)
   {
-    return smtk::resource::ResourcePtr();
+    auto resource = this->m_resourceManager->get(rd.m_uuid);
+    resourceList.push_back(resource);
   }
 
-  for (auto& resourceInfo : this->m_resourceInfos)
-  {
-    if ((resourceInfo.m_typeName != typeName) || (resourceInfo.m_role != role))
-    {
-      continue;
-    }
-
-    if (this->m_resourceManager)
-    {
-      return this->m_resourceManager->get(resourceInfo.m_uuid);
-    }
-  }
-
-  // If we reached here, resource not found
-  return smtk::resource::ResourcePtr();
+  return resourceList;
 }
 
 void Project::setCoreManagers(
   smtk::resource::ManagerPtr resourceManager, smtk::operation::ManagerPtr operationManager)
 {
-  if (!this->m_resourceInfos.empty())
+  if (!this->m_resourceDescriptors.empty())
   {
     throw std::runtime_error("Cannot change core managers on open project");
   }
@@ -90,95 +76,95 @@ void Project::setCoreManagers(
   this->m_operationManager = operationManager;
 }
 
-int Project::build(smtk::attribute::AttributePtr specification)
+bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logger& logger,
+  bool replaceExistingDirectory)
 {
   // Note that specification is the "new-project" definition in NewProject.sbt.
   // Validate starting conditions
   if (!specification->isValid())
   {
-    std::cerr << "ERROR: invalid project specification" << std::endl;
-    return FAILED;
-  }
-  if (!this->m_resourceManager)
-  {
-    std::cerr << "Cannot create project - resource manager not set" << std::endl;
-    return FAILED;
-  }
-  if (!this->m_operationManager)
-  {
-    std::cerr << "Cannot create project - operation manager not set" << std::endl;
-    return FAILED;
+    smtkErrorMacro(logger, "invalid project specification");
+    return false;
   }
 
-  // Todo check that at least 1 resource specified?
-
-  // Initialize return value
-  int outcome = static_cast<int>(smtk::operation::Operation::Outcome::UNKNOWN);
+  // (Future) check that at least 1 resource specified?
 
   this->m_name = specification->findString("project-name")->value(0);
   this->m_directory = specification->findDirectory("project-directory")->value(0);
 
-  // Initialize project directory
+  // Check if project directory already exists
   boost::filesystem::path boostDirectory(this->m_directory);
   if (boost::filesystem::exists(boostDirectory))
   {
-    boost::filesystem::remove_all(boostDirectory);
-  }
+    if (replaceExistingDirectory)
+    {
+      boost::filesystem::remove_all(boostDirectory);
+    }
+    else
+    {
+      smtkErrorMacro(
+        logger, "Cannot create project in existing directory: \"" << this->m_directory << "\"");
+      return false;
+    }
+
+  } // if (directory already exists)
   boost::filesystem::create_directory(boostDirectory);
 
   // Import the model resource
-  ResourceInfo modelInfo;
+  ResourceDescriptor modelDescriptor;
   auto modelFileItem = specification->findFile("model-file");
   if (modelFileItem->isEnabled())
   {
     std::string modelPath = modelFileItem->value(0);
     bool copyNativeModel = specification->findVoid("copy-model-file")->isEnabled();
-    outcome = this->importModel(modelPath, copyNativeModel, modelInfo);
-    if (outcome != SUCCEEDED)
+    if (!this->importModel(modelPath, copyNativeModel, modelDescriptor, logger))
     {
-      return outcome;
+      return false;
     }
-    this->m_resourceInfos.push_back(modelInfo);
+    this->m_resourceDescriptors.push_back(modelDescriptor);
   } // if (modelFileItem emabled)
 
   // Load the attribute template
-  ResourceInfo attInfo;
+  ResourceDescriptor attDescriptor;
   auto attFileItem = specification->findFile("simulation-template");
   if (attFileItem->isEnabled())
   {
     std::string attPath = attFileItem->value(0);
-    outcome = this->importAttributeTemplate(attPath, attInfo);
-    if (outcome != SUCCEEDED)
+    bool success = this->importAttributeTemplate(attPath, attDescriptor, logger);
+    if (!success)
     {
-      return outcome;
+      return false;
     }
-    this->m_resourceInfos.push_back(attInfo);
+    this->m_resourceDescriptors.push_back(attDescriptor);
   } // if (attFileItem enabled)
 
   // Link attribute resource to model resource
-  if (!modelInfo.m_uuid.isNull() && !attInfo.m_uuid.isNull())
+  if (!modelDescriptor.m_uuid.isNull() && !attDescriptor.m_uuid.isNull())
   {
-    auto attResource = this->m_resourceManager->get(attInfo.m_uuid);
-    auto modelResource = this->m_resourceManager->get(modelInfo.m_uuid);
+    auto attResource = this->m_resourceManager->get(attDescriptor.m_uuid);
+    auto modelResource = this->m_resourceManager->get(modelDescriptor.m_uuid);
     smtk::dynamic_pointer_cast<smtk::attribute::Resource>(attResource)->associate(modelResource);
   }
 
   // Write .cmbproject file
-  this->writeProjectFile();
+  if (!this->writeProjectFile(logger))
+  {
+    return false;
+  }
 
-  return SUCCEEDED;
+  return true;
 }
 
-int Project::save() const
+bool Project::save(smtk::io::Logger& logger) const
 {
   boost::filesystem::path boostDirectory(this->m_directory);
-  auto logger = smtk::io::Logger();
+
   // For now, saving a project consists of saving its resources.
   // Later may include saving project metadata
-  for (auto& info : this->m_resourceInfos)
+  for (auto& rd : this->m_resourceDescriptors)
   {
-    auto resource = this->m_resourceManager->get(info.m_uuid);
-    auto path = boostDirectory / boost::filesystem::path(info.m_filename);
+    auto resource = this->m_resourceManager->get(rd.m_uuid);
+    auto path = boostDirectory / boost::filesystem::path(rd.m_filename);
     if (resource->typeName() == "smtk::attribute::Resource")
     {
       // Always save attribute resource, since clean() method not reliable
@@ -187,12 +173,12 @@ int Project::save() const
       bool err = writer.write(attResource, path.string(), logger);
       if (err)
       {
-        return FAILED;
+        return false;
       }
     } // if
     else if (!resource->clean())
     {
-      auto writer = this->m_operationManager->create("smtk::operation::WriteResource");
+      auto writer = this->m_operationManager->create<smtk::operation::WriteResource>();
       writer->parameters()->associate(resource);
       writer->parameters()->find("filename")->setIsEnabled(true);
       writer->parameters()->findFile("filename")->setValue(0, path.string());
@@ -200,36 +186,31 @@ int Project::save() const
       int outcome = result->findInt("outcome")->value(0);
       if (outcome != SUCCEEDED)
       {
-        return outcome;
+        smtkErrorMacro(logger, "Error writing resource file " << path.string());
+        return false;
       }
     } // else if
-  }   // for (info)
+  }   // for (rd)
 
-  return SUCCEEDED;
+  return true;
 } // save()
 
-int Project::close()
+bool Project::close()
 {
-  if (!this->m_resourceManager)
-  {
-    return UNABLE_TO_OPERATE;
-  }
-
   // Release resources
-  for (auto& resourceInfo : this->m_resourceInfos)
+  for (auto& rd : this->m_resourceDescriptors)
   {
-    auto resourcePtr = this->m_resourceManager->get(resourceInfo.m_uuid);
+    auto resourcePtr = this->m_resourceManager->get(rd.m_uuid);
     this->m_resourceManager->remove(resourcePtr);
-    resourcePtr.reset();
   }
-  this->m_resourceInfos.clear();
+  this->m_resourceDescriptors.clear();
   this->m_name.clear();
   this->m_directory.clear();
 
-  return SUCCEEDED;
+  return true;
 } // close()
 
-int Project::open(const std::string& location)
+bool Project::open(const std::string& location, smtk::io::Logger& logger)
 {
   // Setup path to directory and .cmbproject file
   boost::filesystem::path directoryPath;
@@ -238,8 +219,8 @@ int Project::open(const std::string& location)
   boost::filesystem::path inputPath(location);
   if (!boost::filesystem::exists(inputPath))
   {
-    std::cerr << "Specified project path not found" << std::endl;
-    return FAILED;
+    smtkErrorMacro(logger, "Specified project path not found" << location);
+    return false;
   }
 
   if (boost::filesystem::is_directory(inputPath))
@@ -248,14 +229,14 @@ int Project::open(const std::string& location)
     dotfilePath = directoryPath / boost::filesystem::path(PROJECT_FILENAME);
     if (!boost::filesystem::exists(dotfilePath))
     {
-      std::cerr << "No \"" << PROJECT_FILENAME << "\" file in specified directory" << std::endl;
-      return FAILED;
+      smtkErrorMacro(logger, "No \"" << PROJECT_FILENAME << "\" file in specified directory");
+      return false;
     }
   }
   else if (inputPath.filename().string() != PROJECT_FILENAME)
   {
-    std::cerr << "Invalid project filename, should be \"" << PROJECT_FILENAME << "\"" << std::endl;
-    return FAILED;
+    smtkErrorMacro(logger, "Invalid project filename, should be \"" << PROJECT_FILENAME << "\"");
+    return false;
   }
   else
   {
@@ -268,8 +249,8 @@ int Project::open(const std::string& location)
   dotFile.open(dotfilePath.string().c_str(), std::ios_base::in | std::ios_base::ate);
   if (!dotFile)
   {
-    std::cerr << "Failed loading \"" << PROJECT_FILENAME << "\" file" << std::endl;
-    return FAILED;
+    smtkErrorMacro(logger, "Failed loading \"" << PROJECT_FILENAME << "\" file");
+    return false;
   }
   auto fileSize = dotFile.tellg();
   std::string dotFileContents;
@@ -279,39 +260,41 @@ int Project::open(const std::string& location)
   dotFileContents.assign(
     (std::istreambuf_iterator<char>(dotFile)), std::istreambuf_iterator<char>());
 
-  ProjectInfo projectInfo;
+  ProjectDescriptor descriptor;
   try
   {
-    auto j = json::parse(dotFileContents);
-    projectInfo = j;
+    parse_json(dotFileContents, descriptor); // (static function in jsonProjectDescriptor.h)
   }
   catch (std::exception /* e */)
   {
-    std::cerr << "Error parsing \"" << PROJECT_FILENAME << "\" file" << std::endl;
-    return FAILED;
+    smtkErrorMacro(logger, "Error parsing \"" << PROJECT_FILENAME << "\" file");
+    return false;
   }
 
-  this->m_name = projectInfo.m_name;
-  this->m_directory = projectInfo.m_directory;
-  this->m_resourceInfos = projectInfo.m_resourceInfos;
+  this->m_name = descriptor.m_name;
+  this->m_directory = descriptor.m_directory;
+  this->m_resourceDescriptors = descriptor.m_resourceDescriptors;
 
-  return this->loadResources(directoryPath.string());
+  return this->loadResources(directoryPath.string(), logger);
 } // open()
 
-int Project::importModel(const std::string& importPath, bool copyNativeModel, ResourceInfo& resInfo)
+bool Project::importModel(const std::string& importPath, bool copyNativeModel,
+  ResourceDescriptor& descriptor, smtk::io::Logger& logger)
 {
-  std::cerr << "Loading model " << importPath << std::endl;
-  int outcome = static_cast<int>(smtk::operation::Operation::Outcome::UNKNOWN); // return value
+  smtkDebugMacro(logger, "Loading model " << importPath);
 
   boost::filesystem::path boostImportPath(importPath);
   boost::filesystem::path boostDirectory(this->m_directory);
 
   // Create the import operator
-  auto importOp = this->m_operationManager->create("smtk::operation::ImportResource");
+  auto importOp = this->m_operationManager->create<smtk::operation::ImportResource>();
   if (!importOp)
   {
-    throw std::runtime_error("No import operator");
+    smtkErrorMacro(logger, "Import operator not found");
+    return false;
   }
+
+  int outcome;
 
   // Run the import operator
   importOp->parameters()->findFile("filename")->setValue(importPath);
@@ -319,12 +302,13 @@ int Project::importModel(const std::string& importPath, bool copyNativeModel, Re
   outcome = importOpResult->findInt("outcome")->value(0);
   if (outcome != SUCCEEDED)
   {
-    return outcome;
+    smtkErrorMacro(logger, "Error importing file " << importPath);
+    return false;
   }
   auto modelResource = importOpResult->findResource("resource")->value(0);
 
   // Save the new resource
-  auto modelWriter = this->m_operationManager->create("smtk::operation::WriteResource");
+  auto modelWriter = this->m_operationManager->create<smtk::operation::WriteResource>();
   modelWriter->parameters()->associate(modelResource);
   modelWriter->parameters()->find("filename")->setIsEnabled(true);
 
@@ -338,16 +322,16 @@ int Project::importModel(const std::string& importPath, bool copyNativeModel, Re
   outcome = result->findInt("outcome")->value(0);
   if (outcome != SUCCEEDED)
   {
-    return outcome;
+    smtkErrorMacro(logger, "Error writing resource to file " << smtkPath.string());
+    return false;
   }
 
   // Update resource info
-  resInfo.m_filename = smtkFilename.string();
-  resInfo.m_identifier = "model";
-  resInfo.m_importLocation = importPath;
-  resInfo.m_role = "default";
-  resInfo.m_typeName = modelResource->typeName();
-  resInfo.m_uuid = modelResource->id();
+  descriptor.m_filename = smtkFilename.string();
+  descriptor.m_identifier = "model";
+  descriptor.m_importLocation = importPath;
+  descriptor.m_typeName = modelResource->typeName();
+  descriptor.m_uuid = modelResource->id();
 
   // Copy the import (native) model file
   if (copyNativeModel)
@@ -355,67 +339,61 @@ int Project::importModel(const std::string& importPath, bool copyNativeModel, Re
     // auto copyPath = boostDirectory / modelFilename;
     auto copyPath = boostDirectory / boostImportPath.filename();
     boost::filesystem::copy_file(importPath, copyPath);
-    resInfo.m_importLocation = copyPath.string();
+    descriptor.m_importLocation = copyPath.string();
   }
 
-  return SUCCEEDED;
+  return true; // success
 } // importModel()
 
-int Project::importAttributeTemplate(const std::string& location, ResourceInfo& resInfo)
+bool Project::importAttributeTemplate(
+  const std::string& location, ResourceDescriptor& descriptor, smtk::io::Logger& logger)
 {
-  std::cerr << "Loading templateFile: " << location << std::endl;
+  smtkDebugMacro(logger, "Loading templateFile: " << location);
 
   // Read from specified location
   auto attResource = smtk::attribute::Resource::create();
   smtk::io::AttributeReader reader;
-  smtk::io::Logger logger;
   bool readErr = reader.read(attResource, location, true, logger);
   if (readErr)
   {
-    std::cerr << logger.convertToString(true) << std::endl;
-    attResource.reset();
-    return FAILED;
+    return false; // invert from representing "error" to representing "success"
   }
   this->m_resourceManager->add(attResource);
 
-  // Update resource info
-  if (resInfo.m_identifier == "")
+  // Update descriptor
+  if (descriptor.m_identifier == "")
   {
-    resInfo.m_identifier = "default";
+    descriptor.m_identifier = "default";
   }
-  resInfo.m_filename = resInfo.m_identifier + ".sbi";
-  resInfo.m_importLocation = location;
-  if (resInfo.m_role == "")
-  {
-    resInfo.m_role = "default";
-  }
-  resInfo.m_typeName = attResource->typeName();
-  resInfo.m_uuid = attResource->id();
+  descriptor.m_filename = descriptor.m_identifier + ".sbi";
+  descriptor.m_importLocation = location;
+  descriptor.m_typeName = attResource->typeName();
+  descriptor.m_uuid = attResource->id();
 
   // Save to project directory
   auto writer = smtk::io::AttributeWriter();
   boost::filesystem::path boostDirectory(this->m_directory);
-  boost::filesystem::path sbiPath = boostDirectory / boost::filesystem::path(resInfo.m_filename);
-  logger.reset();
+  boost::filesystem::path sbiPath = boostDirectory / boost::filesystem::path(descriptor.m_filename);
   bool writeErr = writer.write(attResource, sbiPath.string(), logger);
   if (writeErr)
   {
-    return FAILED;
+    return false; // invert
   }
 
-  return SUCCEEDED;
+  return true;
 } // importAttributeTemplate()
 
-int Project::writeProjectFile() const
+bool Project::writeProjectFile(smtk::io::Logger& logger) const
 {
-  // Init ProjectInfo structure
-  ProjectInfo projInfo;
-  projInfo.m_name = this->m_name;
-  projInfo.m_directory = this->m_directory;
-  projInfo.m_resourceInfos = this->m_resourceInfos;
+  // Init ProjectDescriptor structure
+  ProjectDescriptor descriptor;
+  descriptor.m_name = this->m_name;
+  descriptor.m_directory = this->m_directory;
+  descriptor.m_resourceDescriptors = this->m_resourceDescriptors;
 
-  // Convert to json
-  nlohmann::json jInfo = projInfo;
+  // Get json string
+  std::string dotFileContents =
+    dump_json(descriptor); // (static function in jsonProjectDescriptor.h)
 
   // Write file
   std::ofstream projectFile;
@@ -424,45 +402,44 @@ int Project::writeProjectFile() const
   projectFile.open(path.string().c_str(), std::ofstream::out | std::ofstream::trunc);
   if (!projectFile)
   {
-    return FAILED;
+    smtkErrorMacro(logger, "Unable to write to project file " << path.string());
+    return false;
   }
-  projectFile << jInfo.dump(2) << "\n";
+  projectFile << dotFileContents << "\n";
   projectFile.close();
 
-  return SUCCEEDED;
+  return true;
 }
 
-int Project::loadResources(const std::string& path)
+bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
 {
   // Part of opening project from disk
   boost::filesystem::path directoryPath(path);
 
-  for (auto& info : this->m_resourceInfos)
+  for (auto& descriptor : this->m_resourceDescriptors)
   {
-    auto filePath = directoryPath / boost::filesystem::path(info.m_filename);
+    auto filePath = directoryPath / boost::filesystem::path(descriptor.m_filename);
     auto inputPath = filePath.string();
-    if (info.m_typeName == "smtk::attribute::Resource")
+    if (descriptor.m_typeName == "smtk::attribute::Resource")
     {
       auto attResource = smtk::attribute::Resource::create();
-      attResource->setId(info.m_uuid);
+      attResource->setId(descriptor.m_uuid);
       smtk::io::AttributeReader reader;
-      smtk::io::Logger logger;
       bool err = reader.read(attResource, inputPath, true, logger);
       if (err)
       {
-        std::cerr << logger.convertToString(true) << std::endl;
-        attResource.reset();
-        return FAILED;
+        return false;
       }
       this->m_resourceManager->add(attResource);
     } // if (attribute resource)
     else
     {
       // Create a read operator
-      auto readOp = this->m_operationManager->create("smtk::operation::ReadResource");
+      auto readOp = this->m_operationManager->create<smtk::operation::ReadResource>();
       if (!readOp)
       {
-        throw std::runtime_error("No read operator");
+        smtkErrorMacro(logger, "Read Resource operator not found");
+        return false;
       }
       readOp->parameters()->findFile("filename")->setValue(inputPath);
       auto readOpResult = readOp->operate();
@@ -471,13 +448,13 @@ int Project::loadResources(const std::string& path)
       int outcome = readOpResult->findInt("outcome")->value(0);
       if (outcome != SUCCEEDED)
       {
-        std::cerr << "Error loading resource from: " << inputPath << std::endl;
-        return outcome;
+        smtkErrorMacro(logger, "Error loading resource from: " << inputPath);
+        return false;
       }
     } // else
   }   // for (info)
 
-  return SUCCEEDED;
+  return true;
 } // loadResources()
 
 } // namespace project

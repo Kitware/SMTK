@@ -16,6 +16,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
@@ -32,12 +33,7 @@ PySharedPtrClass<smtk::project::Manager> pybind11_init_smtk_project_Manager(py::
 {
   PySharedPtrClass<smtk::project::Manager> instance(m, "Manager");
   instance.def(py::init< ::smtk::project::Manager const&>())
-    .def_static(
-      "create", (std::shared_ptr<smtk::project::Manager>(*)()) & smtk::project::Manager::create)
-    .def_static("create",
-      (std::shared_ptr<smtk::project::Manager>(*)(std::shared_ptr<smtk::project::Manager>&)) &
-        smtk::project::Manager::create)
-    .def("setCoreManagers", &smtk::project::Manager::setCoreManagers)
+    .def_static("create", &smtk::project::Manager::create)
     .def("getProjectSpecification", &smtk::project::Manager::getProjectSpecification)
     .def("createProject", &smtk::project::Manager::createProject)
     .def("getCurrentProject", &smtk::project::Manager::getCurrentProject)

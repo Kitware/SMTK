@@ -18,13 +18,13 @@ import unittest
 
 import smtk
 import smtk.attribute
+import smtk.io
 import smtk.operation
 import smtk.project
 import smtk.session.mesh
 import smtk.testing
 
 PROJECT1 = 'project1'
-SUCCEEDED = int(smtk.operation.Operation.Outcome.SUCCEEDED)
 
 
 class TestProjectManager(unittest.TestCase):
@@ -38,15 +38,19 @@ class TestProjectManager(unittest.TestCase):
         self.project = None
 
     def test_getProjectSpecification(self):
-        pm = smtk.project.Manager.create()
+        rm = smtk.resource.Manager.create()
+        om = smtk.operation.Manager.create()
+        pm = smtk.project.Manager.create(rm, om)
         spec = pm.getProjectSpecification()
         self.assertEqual(spec.name(), 'new-project')
 
-    def test_no_core_managers(self):
-        pm = smtk.project.Manager.create()
+    def test_invalid_project_specification(self):
+        rm = smtk.resource.Manager.create()
+        om = smtk.operation.Manager.create()
+        pm = smtk.project.Manager.create(rm, om)
         spec = pm.getProjectSpecification()
-        outcome, project = pm.createProject(spec)
-        self.assertNotEqual(outcome, SUCCEEDED)
+        logger = smtk.io.Logger.instance()
+        project = pm.createProject(spec, logger, True)
         self.assertIsNone(project)
 
     def init_project_manager(self):
@@ -57,8 +61,7 @@ class TestProjectManager(unittest.TestCase):
         smtk.session.mesh.Registrar.registerTo(om)
         smtk.operation.Registrar.registerTo(om)
         om.registerResourceManager(self.rm)
-        self.pm = smtk.project.Manager.create()
-        self.pm.setCoreManagers(self.rm, om)
+        self.pm = smtk.project.Manager.create(self.rm, om)
 
     def create_project(self, project_name):
         before_count = len(self.rm.resources())
@@ -82,12 +85,16 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(spec.isValid())
 
         # Create project
-        outcome, project = self.pm.createProject(spec)
-        self.assertEqual(outcome, SUCCEEDED)
+        logger = smtk.io.Logger.instance()
+        replace_existing_directory = True
+        project = self.pm.createProject(
+            spec, logger, replace_existing_directory)
+        print('project: ', project)
         self.assertIsNotNone(project)
         self.project = project
 
         # Verify that 2 resources were created
+        self.assertEqual(len(self.project.getResources()), 2)
         after_count = len(self.rm.resources())
         self.assertEqual(after_count - before_count, 2)
 
@@ -105,8 +112,12 @@ class TestProjectManager(unittest.TestCase):
 
     def modify_project(self):
         # Get simulation attributes
-        att_resource = self.project.getResourceByRole(
-            'smtk::attribute::Resource', 'default')
+        resources = self.project.getResources()
+        for res in resources:
+            if isinstance(res, smtk.attribute.Resource):
+                att_resource = res
+                break
+        self.assertIsNotNone(att_resource)
         before_count = len(att_resource.attributes())
 
         # Add 3 material attributes
@@ -130,41 +141,42 @@ class TestProjectManager(unittest.TestCase):
         self.attribute_count = after_count
 
     def save_project(self):
-        result = self.pm.saveProject()
-        self.assertEqual(result, SUCCEEDED)
+        success = self.pm.saveProject(smtk.io.Logger.instance())
+        self.assertTrue(success)
 
     def open_project(self):
         path = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
-        outcome, project = self.pm.openProject(path)
-        self.assertEqual(outcome, SUCCEEDED)
+        # project = self.pm.openProject(path, smtk.io.Logger.instance())
+        logger = smtk.io.Logger()
+        project = self.pm.openProject(path, logger)
+        print(logger.convertToString())
+        self.assertIsNotNone(project)
 
-        model = project.getResourceByRole(
-            'smtk::session::mesh::Resource', 'default')
-        self.assertIsNotNone(model)
+        resources = project.getResources()
+        self.assertEqual(len(resources), 2)
 
-        att_resource = project.getResourceByRole(
-            'smtk::attribute::Resource', 'default')
-        self.assertIsNotNone(att_resource)
-
-        att_count = len(att_resource.attributes())
-        self.assertEqual(att_count, self.attribute_count)
+        for res in resources:
+            if isinstance(res, smtk.attribute.Resource):
+                att_count = len(res.attributes())
+                self.assertEqual(att_count, self.attribute_count)
+            else:
+                self.assertTrue(isinstance(res, smtk.session.mesh.Resource))
 
     def close_project(self):
         before_count = len(self.rm.resources())
-        result = self.pm.closeProject()
-        self.assertEqual(result, SUCCEEDED)
+        success = self.pm.closeProject(smtk.io.Logger.instance())
+        self.assertTrue(success)
 
         after_count = len(self.rm.resources())
         self.assertEqual(before_count - after_count, 2)
 
-        # isLoaded, name, directory = self.pm.getStatus()
-        # self.assertFalse(isLoaded)
-        # self.assertEqual(name, '')
-        # self.assertEqual(directory, '')
+        project = self.pm.getCurrentProject()
+        self.assertIsNone(project)
 
     def test_sequence(self):
         self.rm = None    # resource manager
         self.pm = None    # project manager
+        self.project = None
         self.attribute_count = 0
 
         try:

@@ -16,7 +16,8 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
 
-#include "smtk/project/ProjectInfo.h"
+#include "smtk/project/ProjectDescriptor.h"
+#include "smtk/project/ResourceDescriptor.h"
 
 #include <string>
 #include <vector>
@@ -36,7 +37,6 @@ class SMTKCORE_EXPORT Project : smtkEnableSharedPtr(Project)
 
 public:
   smtkTypedefs(smtk::project::Project);
-  smtkCreateMacro(Project);
 
   virtual ~Project();
 
@@ -47,45 +47,41 @@ public:
   std::string directory() const { return this->m_directory; }
 
   /// Return project resources
-  std::vector<smtk::project::ResourceInfo> getResourceInfos() const
-  {
-    return this->m_resourceInfos;
-  }
+  std::vector<smtk::resource::ResourcePtr> getResources() const;
 
   /// Return resource of given typename and role
-  smtk::resource::ResourcePtr getResourceByRole(
-    const std::string& typeName, const std::string& role) const;
-
   // Future:
   // * method to retrieve export operator, based on location of simulation attributes
-
+  // * method to add additional resources to the current project
 protected:
   /// First set of methods are called by (friend class) smtk::project::Manager
+  smtkCreateMacro(Project);
 
   /// Assign resource & operation managers
   void setCoreManagers(smtk::resource::ManagerPtr, smtk::operation::ManagerPtr);
 
   /// Create project from application-provided specification
-  int build(smtk::attribute::AttributePtr specification);
+  bool build(smtk::attribute::AttributePtr specification, smtk::io::Logger& logger,
+    bool replaceExistingDirectory);
 
-  int save() const;
+  bool save(smtk::io::Logger& logger) const;
 
-  int close();
-
-  int open(const std::string& path);
+  bool close();
 
   /// Load project from filesystem
-  int load(smtk::project::ProjectInfo& info);
+  bool open(const std::string& path, smtk::io::Logger& logger);
 
   // Remaining calls are for internal use
 
-  int importModel(const std::string& location, bool copyNativeFile, ResourceInfo& resInfo);
+  bool importModel(const std::string& location, bool copyNativeFile, ResourceDescriptor& descriptor,
+    smtk::io::Logger& logger);
 
-  int importAttributeTemplate(const std::string& location, ResourceInfo& resInfo);
+  bool importAttributeTemplate(
+    const std::string& location, ResourceDescriptor& descriptor, smtk::io::Logger& logger);
 
-  int writeProjectFile() const;
+  bool writeProjectFile(smtk::io::Logger& logger) const;
 
-  int loadResources(const std::string& path);
+  bool loadResources(const std::string& path, smtk::io::Logger& logger);
 
   /// Resource manager for the project resources.
   smtk::resource::ManagerPtr m_resourceManager;
@@ -99,9 +95,9 @@ protected:
   /// Filesystem directory where project resources are stored.
   std::string m_directory;
 
-  /// Array of ResourceInfo objects for each project resource.
+  /// Array of ResourceDescriptor objects for each project resource.
   /// These data are stored in a file in the project directory.
-  std::vector<ResourceInfo> m_resourceInfos;
+  std::vector<ResourceDescriptor> m_resourceDescriptors;
 
 private:
   Project();
