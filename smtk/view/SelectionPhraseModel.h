@@ -43,7 +43,7 @@ public:
 protected:
   SelectionPhraseModel();
 
-  virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
+  virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln) override;
 
   void populateRoot(const std::string& src, Selection::Ptr seln);
 
