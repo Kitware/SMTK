@@ -45,6 +45,7 @@ public:
   int swatchSize() const;
   int textVerticalPad() const;
   bool drawSubtitle() const;
+  bool highlightOnHover() const;
   bool visibilityMode() const;
 
 public slots:

@@ -137,6 +137,11 @@ public:
     return m_content ? m_content->editStringValue(PhraseContent::SUBTITLE, newSubtitle) : false;
   }
 
+  /// Return the persistent object related to this phrase (or nullptr if not well defined).
+  virtual smtk::resource::PersistentObjectPtr relatedObject() const
+  {
+    return m_content ? m_content->relatedObject() : smtk::resource::PersistentObjectPtr();
+  }
   /// Return the resource related to this phrase (or nullptr if not well defined).
   virtual smtk::resource::ResourcePtr relatedResource() const
   {

@@ -15,10 +15,23 @@
 #include "smtk/extension/qt/qtViewInterface.h" // for qtSMTKViewConstructor definition
 
 #include <QVariant>
+
+#include <functional>
 #include <map>
+
+class QTreeView;
+
+namespace smtk
+{
+namespace extension
+{
+using qtModelViewConstructor = std::function<QTreeView*(QWidget*)>;
+}
+}
 
 typedef std::map<std::string, qtSMTKViewConstructor> SMTKViewConstructorMap;
 typedef std::map<std::string, smtk::extension::qtItemConstructor> SMTKItemConstructorMap;
+typedef std::map<std::string, smtk::extension::qtModelViewConstructor> SMTKModelViewConstructorMap;
 
 /// qtSMTKUtilities is a collection of arbitrary utility functions that can be
 /// used by an smtk application.
@@ -28,13 +41,18 @@ class SMTKQTEXT_EXPORT qtSMTKUtilities
 public:
   static const SMTKViewConstructorMap& viewConstructors();
   static const SMTKItemConstructorMap& itemConstructors();
+  static const SMTKModelViewConstructorMap& modelViewConstructors();
 
-  // this will overwrite the existing constructor if the viewname exists in the map
+  // this will overwrite the existing constructor if viewName exists in the map
   static void registerViewConstructor(const std::string& viewName, qtSMTKViewConstructor viewc);
 
-  // this will overwrite the existing constructor if the viewname exists in the map
+  // this will overwrite the existing constructor if viewName exists in the map
   static void registerItemConstructor(
     const std::string& itemName, smtk::extension::qtItemConstructor itemc);
+
+  // this will overwrite the existing constructor if viewName exists in the map
+  static void registerModelViewConstructor(
+    const std::string& viewName, smtk::extension::qtModelViewConstructor viewc);
 
   static void updateViewConstructors(smtk::extension::qtUIManager* uiMan);
   static void updateItemConstructors(smtk::extension::qtUIManager* uiMan);
@@ -49,6 +67,7 @@ public:
 private:
   static SMTKViewConstructorMap s_viewConstructors;
   static SMTKItemConstructorMap s_itemConstructors;
+  static SMTKModelViewConstructorMap s_modelViewConstructors;
 };
 
 #endif

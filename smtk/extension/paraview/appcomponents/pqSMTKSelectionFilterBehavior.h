@@ -20,6 +20,14 @@
 class vtkSMSMTKWrapperProxy;
 class pqServer;
 
+/**\brief Toolbar buttons to filter how selections in 3-D renderviews are transferred to SMTK.
+  *
+  * This installs a filter on a given SMTK selection object.
+  * When the application uses a "filtered" selection mode to modify
+  * the selection, this filter will prune some items provided to the
+  * modifySelection call -- optionally replacing them with suggestions
+  * appropriate to the filter.
+  */
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKSelectionFilterBehavior : public QActionGroup
 {
   Q_OBJECT

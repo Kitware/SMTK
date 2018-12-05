@@ -23,6 +23,7 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseEditor.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
+#include "smtk/extension/qt/qtResourceBrowser.h"
 
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/ResourcePhraseModel.h"
@@ -39,8 +40,6 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
-#include "ui_pqSMTKResourcePanel.h"
-
 #include "pqActiveObjects.h"
 #include "pqCoreUtilities.h"
 #include "vtkCommand.h"
@@ -53,7 +52,7 @@
 
 using qtDescriptivePhraseModel = smtk::extension::qtDescriptivePhraseModel;
 
-class pqSMTKResourcePanel::Internal : public Ui::pqSMTKResourcePanel
+class pqSMTKResourcePanel::Internal
 {
 public:
   Internal()
@@ -73,10 +72,11 @@ public:
 
   void setup(::pqSMTKResourcePanel* parent)
   {
-    QWidget* ww = new QWidget(parent);
+    // QWidget* ww = new QWidget(parent);
+    m_browser = new smtk::extension::qtResourceBrowser("", parent);
     parent->setWindowTitle("Resources");
-    this->setupUi(ww);
-    parent->setWidget(ww);
+    // this->setupUi(ww);
+    parent->setWidget(m_browser);
     m_phraseModel = smtk::view::ResourcePhraseModel::create();
     m_phraseModel->setDecorator([this](smtk::view::DescriptivePhrasePtr phr) {
       smtk::view::VisibilityContent::decoratePhrase(
@@ -85,6 +85,8 @@ public:
           return this->panelPhraseDecorator(qq, val, data);
         });
     });
+    m_browser->setPhraseModel(m_phraseModel);
+
     m_model = new smtk::extension::qtDescriptivePhraseModel;
     m_model->setPhraseModel(m_phraseModel);
     m_delegate = new smtk::extension::qtDescriptivePhraseDelegate;
@@ -92,20 +94,16 @@ public:
     m_delegate->setTextVerticalPad(6);
     m_delegate->setTitleFontWeight(1);
     m_delegate->setDrawSubtitle(false);
-    m_view->setModel(m_model);
-    m_view->setItemDelegate(m_delegate);
-    m_view->setMouseTracking(true); // Needed to receive hover events.
 
     QObject::connect(m_delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), m_model,
       SLOT(toggleVisibility(const QModelIndex&)));
+    /*
     QObject::connect(m_delegate, SIGNAL(requestColorChange(const QModelIndex&)), parent,
       SLOT(editObjectColor(const QModelIndex&)));
 
     QObject::connect(m_searchText, SIGNAL(textChanged(const QString&)), parent,
       SLOT(searchTextChanged(const QString&)));
-    QObject::connect(m_view->selectionModel(),
-      SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), parent,
-      SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
+      */
 
     auto smtkSettings = vtkSMTKSettings::GetInstance();
     pqCoreUtilities::connect(
@@ -201,6 +199,7 @@ public:
     return 0;
   }
 
+  QPointer<smtk::extension::qtResourceBrowser> m_browser;
   QPointer<smtk::extension::qtDescriptivePhraseModel> m_model;
   QPointer<smtk::extension::qtDescriptivePhraseDelegate> m_delegate;
   std::map<smtk::resource::ManagerPtr, int> m_observers;
@@ -250,119 +249,6 @@ pqSMTKResourcePanel::~pqSMTKResourcePanel()
   delete m_p;
 }
 
-smtk::view::PhraseModelPtr pqSMTKResourcePanel::model() const
-{
-  return m_p->m_phraseModel;
-}
-
-smtk::view::SubphraseGeneratorPtr pqSMTKResourcePanel::phraseGenerator() const
-{
-  auto root = m_p->m_model->getItem(QModelIndex());
-  return root ? root->findDelegate() : nullptr;
-}
-
-void pqSMTKResourcePanel::setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg)
-{
-  auto root = m_p->m_model->getItem(QModelIndex());
-  if (spg)
-  {
-    spg->setModel(m_p->m_phraseModel);
-  }
-  root->setDelegate(spg);
-}
-
-void pqSMTKResourcePanel::leaveEvent(QEvent* evt)
-{
-  this->resetHover();
-  // Now let the superclass do what it wants:
-  Superclass::leaveEvent(evt);
-}
-
-void pqSMTKResourcePanel::sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)
-{
-  if (!m_p->m_seln)
-  {
-    // No SMTK selection exists.
-    return;
-  }
-  if (m_p->m_updatingPanelSelectionFromSMTK)
-  {
-    // Derp. Updating the SMTK selection the moment the SMTK
-    // selection is sent to us could cause problems even if
-    // the recursion was not infinite.
-    return;
-  }
-
-  //smtk::view::Selection::SelectionMap selnMap;
-  std::set<smtk::resource::PersistentObject::Ptr> selnSet;
-  auto selected = m_p->m_view->selectionModel()->selection();
-  smtk::resource::Resource::Ptr selectedResource;
-  for (auto qslist : selected.indexes())
-  {
-    auto phrase = m_p->m_model->getItem(qslist);
-    smtk::resource::Component::Ptr comp;
-    smtk::resource::Resource::Ptr rsrc;
-    if (phrase && (comp = phrase->relatedComponent()))
-    {
-      selnSet.insert(comp);
-    }
-    else if (phrase && (rsrc = phrase->relatedResource()))
-    {
-      selnSet.insert(rsrc);
-      if (!selectedResource)
-      { // Hang on to the first resource selected for later
-        selectedResource = rsrc;
-      }
-    }
-  }
-  m_p->m_seln->modifySelection(
-    selnSet, m_p->m_selnSource, m_p->m_selnValue, smtk::view::SelectionAction::UNFILTERED_REPLACE);
-  if (selectedResource)
-  {
-    // Make the reader owning the first selected resource the active PV pipeline source:
-    auto behavior = pqSMTKBehavior::instance();
-    auto rsrcSrc = behavior->getPVResource(selectedResource);
-    if (rsrcSrc)
-    {
-      pqActiveObjects::instance().setActiveSource(rsrcSrc);
-    }
-  }
-}
-
-// FIXME: Doesn't most of this belong in PhraseModel and/or qtDescriptivePhraseModel?
-void pqSMTKResourcePanel::sendSMTKSelectionToPanel(
-  const std::string& src, smtk::view::SelectionPtr seln)
-{
-  if (src == m_p->m_selnSource)
-  {
-    return;
-  } // Ignore selections generated from this panel.
-  auto qview = m_p->m_view;
-  auto qmodel = m_p->m_model;
-  auto root = m_p->m_phraseModel->root();
-  QItemSelection qseln;
-  root->visitChildren(
-    [&qmodel, &qseln, &seln](smtk::view::DescriptivePhrasePtr phrase, std::vector<int>& path) {
-      auto comp = phrase->relatedComponent();
-      if (comp)
-      {
-        auto it = seln->currentSelection().find(comp);
-        if (it != seln->currentSelection().end() && (it->second & 0x01))
-        {
-          auto qidx = qmodel->indexFromPath(path);
-          qseln.select(qidx, qidx);
-        }
-      }
-      return 0;
-    });
-
-  // Now update the Qt selection, being careful not to trigger SMTK updates:
-  m_p->m_updatingPanelSelectionFromSMTK = true;
-  qview->selectionModel()->select(
-    qseln, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-  m_p->m_updatingPanelSelectionFromSMTK = false;
-}
-
 void pqSMTKResourcePanel::searchTextChanged(const QString& searchText)
 { // For now, just rebuild.
   (void)searchText;
@@ -382,22 +268,7 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   {
     return;
   }
-  m_p->m_seln = wrapper->smtkSelection();
-  if (m_p->m_seln)
-  {
-    m_p->m_selnValue = m_p->m_seln->findOrCreateLabeledValue(m_p->m_selnLabel);
-    m_p->m_hoverValue = m_p->m_seln->findOrCreateLabeledValue(m_p->m_hoverLabel);
-    QPointer<pqSMTKResourcePanel> self(this);
-    m_p->m_seln->registerSelectionSource(m_p->m_selnSource);
-    m_p->m_selnHandle =
-      m_p->m_seln->observe([self](const std::string& source, smtk::view::Selection::Ptr seln) {
-        if (self)
-        {
-          self->sendSMTKSelectionToPanel(source, seln);
-        }
-      });
-  }
-  m_p->m_phraseModel->addSource(
+  m_p->m_browser->addSource(
     wrapper->smtkResourceManager(), wrapper->smtkOperationManager(), wrapper->smtkSelection());
 }
 
@@ -408,29 +279,18 @@ void pqSMTKResourcePanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* s
     return;
   }
 
-  smtk::resource::ManagerPtr rsrcMgr = mgr->smtkResourceManager();
-  if (!rsrcMgr)
-  {
-    return;
-  }
-
-  if (m_p->m_seln)
-  {
-    m_p->m_seln->unobserve(m_p->m_selnHandle);
-  }
-
-  m_p->m_seln = nullptr;
-  m_p->m_phraseModel->removeSource(
+  m_p->m_browser->removeSource(
     mgr->smtkResourceManager(), mgr->smtkOperationManager(), mgr->smtkSelection());
 }
 
 void pqSMTKResourcePanel::activeViewChanged(pqView* view)
 {
+  // Disconnect old representations, clear local visibility map.
+  QObject::disconnect(this, SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
   m_p->m_visibleThings.clear();
+  // Connect new representations, initialize visibility map..
   if (view)
   {
-    // Disconnect old representations, connect new ones.
-    QObject::disconnect(this, SLOT(componentVisibilityChanged(smtk::resource::ComponentPtr, bool)));
     foreach (pqRepresentation* rep, view->getRepresentations())
     {
       this->representationAddedToActiveView(rep);
@@ -459,7 +319,7 @@ void pqSMTKResourcePanel::activeViewChanged(pqView* view)
         thingy2 ? thingy2->GetActiveRepresentation() : nullptr);
       if (srvrep)
       {
-        // TODO: This assumes we are running in built-in mode.
+        // TODO: This assumes we are running in built-in mode. Remove the need for me.
         srvrep->GetEntityVisibilities(m_p->m_visibleThings);
       }
     }
@@ -471,7 +331,10 @@ void pqSMTKResourcePanel::activeViewChanged(pqView* view)
       m_p->m_visibleThings[rsrc->id()] = behavior->createRepresentation(pvr, view) ? 1 : 0;
     }
   }
-  m_p->m_phraseModel->triggerDataChanged();
+  // Indicate to the Qt model that it needs to refresh every row,
+  // since visibility may be altered on each one:
+  // m_p->m_phraseModel->triggerDataChanged();
+  m_p->m_browser->phraseModel()->triggerDataChanged();
 }
 
 void pqSMTKResourcePanel::representationAddedToActiveView(pqRepresentation* rep)
@@ -504,95 +367,11 @@ void pqSMTKResourcePanel::componentVisibilityChanged(
   m_p->m_phraseModel->triggerDataChangedFor(comp);
 }
 
-void pqSMTKResourcePanel::hoverRow(const QModelIndex& idx)
-{
-  if (!m_p->m_seln)
-  {
-    return;
-  }
-  // Erase the current hover state.
-  smtk::resource::ComponentSet csetAdd;
-  smtk::resource::ComponentSet csetDel;
-  this->resetHover(csetAdd, csetDel);
-
-  // Discover what is currently hovered
-  auto phr = m_p->m_model->getItem(idx);
-  if (!phr)
-  {
-    return;
-  }
-
-  auto comp = phr->relatedComponent();
-  if (!comp)
-  {
-    return;
-  }
-
-  // Add new hover state
-  const auto& selnMap = m_p->m_seln->currentSelection();
-  auto cvit = selnMap.find(comp);
-  int sv = (cvit == selnMap.end() ? 0 : cvit->second) | m_p->m_hoverValue;
-  csetAdd.clear();
-  csetAdd.insert(comp);
-  m_p->m_seln->modifySelection(
-    csetAdd, m_p->m_selnSource, sv, smtk::view::SelectionAction::UNFILTERED_ADD);
-}
-
-void pqSMTKResourcePanel::resetHover()
-{
-  smtk::resource::ComponentSet csetAdd;
-  smtk::resource::ComponentSet csetDel;
-  this->resetHover(csetAdd, csetDel);
-}
-
-void pqSMTKResourcePanel::resetHover(
-  smtk::resource::ComponentSet& csetAdd, smtk::resource::ComponentSet& csetDel)
-{
-  // Erase the current hover state.
-  if (!m_p->m_seln)
-  {
-    return;
-  }
-  m_p->m_seln->visitSelection(
-    [this, &csetAdd, &csetDel](smtk::resource::Component::Ptr cp, int sv) {
-      sv = sv & (~m_p->m_hoverValue);
-      if (sv)
-      {
-        csetAdd.insert(cp);
-      }
-      else
-      {
-        csetDel.insert(cp);
-      }
-    });
-  if (!csetAdd.empty())
-  {
-    m_p->m_seln->modifySelection(
-      csetAdd, m_p->m_selnSource, m_p->m_selnValue, smtk::view::SelectionAction::UNFILTERED_ADD);
-  }
-  if (!csetDel.empty())
-  {
-    m_p->m_seln->modifySelection(
-      csetDel, m_p->m_selnSource, 0, smtk::view::SelectionAction::UNFILTERED_SUBTRACT);
-  }
-}
-
 void pqSMTKResourcePanel::updateSettings()
 {
   auto smtkSettings = vtkSMTKSettings::GetInstance();
-  if (smtkSettings->GetHighlightOnHover())
-  {
-    m_p->m_delegate->setHighlightOnHover(true);
-    QObject::connect(
-      m_p->m_view, SIGNAL(entered(const QModelIndex&)), this, SLOT(hoverRow(const QModelIndex&)));
-  }
-  else
-  {
-    m_p->m_delegate->setHighlightOnHover(false);
-    QObject::disconnect(
-      m_p->m_view, SIGNAL(entered(const QModelIndex&)), this, SLOT(hoverRow(const QModelIndex&)));
-    this->resetHover();
-  }
+  m_p->m_browser->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
+
   int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();
   if (resourceTreeStyle != m_p->m_resourceTreeStyle)
   {
@@ -614,33 +393,7 @@ void pqSMTKResourcePanel::updateSettings()
     if (spg)
     {
       m_p->m_resourceTreeStyle = resourceTreeStyle;
-      this->setPhraseGenerator(spg);
-    }
-  }
-}
-
-void pqSMTKResourcePanel::editObjectColor(const QModelIndex& idx)
-{
-  auto phrase = m_p->m_model->getItem(idx);
-  if (phrase)
-  {
-    std::string dialogInstructions = "Choose Color for " +
-      idx.data(qtDescriptivePhraseModel::TitleTextRole).value<QString>().toStdString() +
-      " (click Cancel to remove color)";
-    QColor currentColor = idx.data(qtDescriptivePhraseModel::PhraseColorRole).value<QColor>();
-    QColor nextColor = QColorDialog::getColor(currentColor, this, dialogInstructions.c_str(),
-      QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
-    bool removeColor = !nextColor.isValid();
-    if (removeColor)
-    {
-      smtk::model::FloatList rgba{ 0., 0., 0., -1. };
-      phrase->setRelatedColor(rgba);
-    }
-    else
-    {
-      smtk::model::FloatList rgba{ nextColor.red() / 255.0, nextColor.green() / 255.0,
-        nextColor.blue() / 255.0, nextColor.alpha() / 255.0 };
-      phrase->setRelatedColor(rgba);
+      m_p->m_browser->setPhraseGenerator(spg);
     }
   }
 }

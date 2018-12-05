@@ -14,7 +14,9 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/resource/Component.h"
 #include "smtk/resource/PropertyType.h"
+#include "smtk/resource/Resource.h"
 
 #include "smtk/model/EntityTypeBits.h"
 
@@ -141,6 +143,27 @@ public:
   virtual smtk::resource::ComponentPtr relatedComponent() const
   {
     return m_decorator ? m_decorator->relatedComponent() : nullptr;
+  }
+  /// Return the persistent object related to this phrase (or nullptr if not well defined).
+  ///
+  /// This method simply calls relatedComponent() and relatedResource() under the hood, but
+  /// that may change in the future.
+  virtual smtk::resource::PersistentObjectPtr relatedObject() const
+  {
+    if (m_decorator)
+    {
+      auto comp = m_decorator->relatedComponent();
+      if (comp)
+      {
+        return comp;
+      }
+      auto rsrc = m_decorator->relatedResource();
+      if (rsrc)
+      {
+        return rsrc;
+      }
+    }
+    return nullptr;
   }
   /// Return an operator related to this phrase (or nullptr if not well defined).
   virtual smtk::operation::OperationPtr relatedOperation() const

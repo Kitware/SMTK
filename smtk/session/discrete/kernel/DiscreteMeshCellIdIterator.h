@@ -32,16 +32,15 @@ class DiscreteMeshCellIdIterator : public std::iterator<std::forward_iterator_ta
 {
 private:
   vtkIdType NumEdges;
-  vtkIdType TotalNumCells;
   vtkIdType CurrentIndex; //stores the index
   vtkIdType CurrentValue; //stores the transformed index
 public:
   DiscreteMeshCellIdIterator(vtkIdType numEdges, vtkIdType numFaces, vtkIdType current = 0)
     : NumEdges(numEdges)
-    , TotalNumCells(numEdges + numFaces)
     , CurrentIndex(current)
     , CurrentValue(detail::transform_id(current, numEdges))
   {
+    (void)numFaces;
   }
 
   reference operator*() const { return this->CurrentValue; }

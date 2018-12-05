@@ -79,7 +79,7 @@ class HandlerDouble : public HandlerValue
 {
 public:
   HandlerDouble() = default;
-  ~HandlerDouble() = default;
+  virtual ~HandlerDouble() = default;
 
 private:
   HandlerDouble(const HandlerDouble&) = delete;

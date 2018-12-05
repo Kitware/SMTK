@@ -21,6 +21,7 @@ set(QAttrLibSrcs
   qtModelEntityAttributeView.cxx
   qtReferenceItem.cxx
   qtResourceItem.cxx
+  qtResourceBrowser.cxx
   qtOperationLauncher.cxx
   qtOperationView.cxx
   #qtModelView.cxx
@@ -85,6 +86,7 @@ set(QAttrLibMocHeaders
   qtReferenceItem.h
   qtReferenceItemData.h
   qtResourceItem.h
+  qtResourceBrowser.h
   qtOperationLauncher.h
   qtOperationView.h
   #qtModelView.h

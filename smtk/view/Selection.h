@@ -323,17 +323,6 @@ public:
       visitor(entry.first, entry.second);
     }
   }
-  void visitSelection(std::function<void(Component::Ptr, int)> visitor)
-  {
-    for (auto entry : m_selection)
-    {
-      Component::Ptr val = std::dynamic_pointer_cast<Component>(entry.first);
-      if (val)
-      {
-        visitor(val, entry.second);
-      }
-    }
-  }
   /// Return the current selection as a map from objects to integer selection values.
   SelectionMap& currentSelection(SelectionMap& selection) const;
   const SelectionMap& currentSelection() const { return m_selection; }
