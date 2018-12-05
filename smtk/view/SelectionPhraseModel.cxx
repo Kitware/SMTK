@@ -71,6 +71,8 @@ void SelectionPhraseModel::handleSelectionEvent(const std::string& src, Selectio
 
 void SelectionPhraseModel::populateRoot(const std::string& src, Selection::Ptr seln)
 {
+  (void)src;
+
   if (!seln)
   {
     return;

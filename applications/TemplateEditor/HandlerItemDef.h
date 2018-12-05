@@ -44,7 +44,7 @@ public:
 
 protected:
   HandlerItemDef();
-  ~HandlerItemDef();
+  virtual ~HandlerItemDef();
 
   /**
    * Instantiate an ItemDef if a nullptr was passed on initialization.

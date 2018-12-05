@@ -102,6 +102,8 @@ public:
   EntityRef();
   EntityRef(ResourcePtr resource, const smtk::common::UUID& entityId);
   EntityRef(EntityPtr src);
+  // Add a virtual destructor to avoid clang warnings on macos 10.14:
+  virtual ~EntityRef() {}
 
   bool setResource(ResourcePtr resource);
   ResourcePtr resource();

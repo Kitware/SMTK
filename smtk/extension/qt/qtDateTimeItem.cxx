@@ -487,7 +487,6 @@ void qtDateTimeItem::addInputEditor(int i)
     return;
   }
 
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
