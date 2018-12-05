@@ -244,6 +244,12 @@ class Logger;
 typedef smtk::shared_ptr<smtk::io::Logger> LoggerPtr;
 }
 
+namespace project
+{
+class Manager;
+class Project;
+}
+
 namespace resource
 {
 typedef smtk::shared_ptr<smtk::resource::Manager> ManagerPtr;
@@ -501,6 +507,12 @@ typedef std::set<attribute::WeakItemDefinitionPtr,
   smtk::owner_less<attribute::WeakItemDefinitionPtr> >
   WeakItemDefinitionPtrSet;
 typedef std::set<attribute::WeakItemPtr, smtk::owner_less<attribute::WeakItemPtr> > WeakItemPtrSet;
+}
+
+namespace project
+{
+typedef smtk::shared_ptr<smtk::project::Manager> ManagerPtr;
+typedef smtk::shared_ptr<smtk::project::Project> ProjectPtr;
 }
 
 // These are used internally by SMTK

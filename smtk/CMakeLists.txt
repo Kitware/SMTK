@@ -15,6 +15,9 @@ smtk_source_group(attribute)
 add_subdirectory(operation)
 smtk_source_group(operation)
 
+add_subdirectory(project)
+smtk_source_group(project)
+
 add_subdirectory(mesh)
 smtk_source_group(mesh)
 
@@ -40,6 +43,7 @@ set(smtk_headers
   ${operationHeaders}
   ${meshHeaders}
   ${modelHeaders}
+  ${projectHeaders}
   ${viewHeaders}
   ${workflowHeaders}
   ${simulationHeaders}
@@ -50,6 +54,7 @@ set(smtk_srcs
   ${resourceSrcs}
   ${attributeSrcs}
   ${operationSrcs}
+  ${projectSrcs}
   ${meshSrcs}
   ${modelSrcs}
   ${viewSrcs}
