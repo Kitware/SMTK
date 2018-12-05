@@ -40,6 +40,7 @@ public:
   virtual ~Session() {}
 
   void addTopology(Topology t) { m_topologies.push_back(t); }
+  void addTopology(const std::shared_ptr<Resource>& modelResource, Topology t);
   Topology* topology(const std::shared_ptr<Resource>& modelResource);
   Topology* topology(const std::shared_ptr<const Resource>& modelResource);
 
