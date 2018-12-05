@@ -50,7 +50,7 @@ class TestProjectManager(unittest.TestCase):
         pm = smtk.project.Manager.create(rm, om)
         spec = pm.getProjectSpecification()
         logger = smtk.io.Logger.instance()
-        project = pm.createProject(spec, logger, True)
+        project = pm.createProject(spec)
         self.assertIsNone(project)
 
     def init_project_manager(self):
@@ -88,7 +88,7 @@ class TestProjectManager(unittest.TestCase):
         logger = smtk.io.Logger.instance()
         replace_existing_directory = True
         project = self.pm.createProject(
-            spec, logger, replace_existing_directory)
+            spec, replace_existing_directory, logger)
         print('project: ', project)
         self.assertIsNotNone(project)
         self.project = project
@@ -102,7 +102,7 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(os.path.exists(project_folder))
 
         filenames = [
-            '.cmbproject', 'default.sbi', 'gun-1fourth.gen', 'gun-1fourth.h5m', 'gun-1fourth.smtk']
+            '.smtkproject', 'default.sbi', 'gun-1fourth.gen', 'gun-1fourth.h5m', 'gun-1fourth.smtk']
         for f in filenames:
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))

@@ -16,7 +16,6 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
-#include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
 
@@ -45,6 +44,10 @@ Manager::Manager(
 
 Manager::~Manager()
 {
+  if (this->m_project)
+  {
+    this->m_project->close();
+  }
 }
 
 smtk::attribute::AttributePtr Manager::getProjectSpecification() const
@@ -57,7 +60,7 @@ smtk::attribute::AttributePtr Manager::getProjectSpecification() const
 }
 
 ProjectPtr Manager::createProject(smtk::attribute::AttributePtr specification,
-  smtk::io::Logger& logger, bool replaceExistingDirectory)
+  bool replaceExistingDirectory, smtk::io::Logger& logger)
 {
   auto newProject = smtk::project::Project::create();
   newProject->setCoreManagers(this->m_resourceManager, this->m_operationManager);

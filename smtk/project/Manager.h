@@ -16,6 +16,8 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
 
+#include "smtk/io/Logger.h"
+
 #include <string>
 #include <vector>
 
@@ -42,22 +44,23 @@ public:
   /// Create project for given specification, which includes filesystem path to store persistent data.
   /// Will not write to existing directory unless replaceExistingDirectory flag is set.
   /// Return value (pointer) is empty on error.
-  ProjectPtr createProject(smtk::attribute::AttributePtr specification, smtk::io::Logger& logger,
-    bool replaceExistingDirectory = false);
+  ProjectPtr createProject(smtk::attribute::AttributePtr specification,
+    bool replaceExistingDirectory = false, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Return project instance
   ProjectPtr getCurrentProject() const { return this->m_project; }
 
   /// Write project resources & metadata to the filesystem. Returns true on success
-  bool saveProject(smtk::io::Logger& logger);
+  bool saveProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Close the project resources. Returns true on success
-  bool closeProject(smtk::io::Logger& logger);
+  bool closeProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Open a new project from the filesystem. Returns outcome and project pointer
   /// The path argument can be set to either the project directory or the .cmbproject
   /// contained in the project directory.
-  ProjectPtr openProject(const std::string& path, smtk::io::Logger& logger);
+  ProjectPtr openProject(
+    const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   // Future:
   // * support for multiple projects (or multiple project managers?)

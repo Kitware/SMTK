@@ -4,7 +4,13 @@ set(jsonHeaders
   json/jsonResourceDescriptor.h
 )
 
+set(jsonSrcs
+  json/jsonProjectDescriptor.cxx
+  json/jsonResourceDescriptor.cxx
+)
+
 set(projectSrcs
+  ${jsonSrcs}
   Manager.cxx
   Project.cxx
 )

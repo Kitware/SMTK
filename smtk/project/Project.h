@@ -16,6 +16,7 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
 
+#include "smtk/io/Logger.h"
 #include "smtk/project/ProjectDescriptor.h"
 #include "smtk/project/ResourceDescriptor.h"
 
@@ -61,27 +62,28 @@ protected:
   void setCoreManagers(smtk::resource::ManagerPtr, smtk::operation::ManagerPtr);
 
   /// Create project from application-provided specification
-  bool build(smtk::attribute::AttributePtr specification, smtk::io::Logger& logger,
-    bool replaceExistingDirectory);
+  bool build(smtk::attribute::AttributePtr specification,
+    smtk::io::Logger& logger = smtk::io::Logger::instance(), bool replaceExistingDirectory = false);
 
-  bool save(smtk::io::Logger& logger) const;
+  bool save(smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
 
   bool close();
 
   /// Load project from filesystem
-  bool open(const std::string& path, smtk::io::Logger& logger);
+  bool open(const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   // Remaining calls are for internal use
 
   bool importModel(const std::string& location, bool copyNativeFile, ResourceDescriptor& descriptor,
-    smtk::io::Logger& logger);
+    smtk::io::Logger& logger = smtk::io::Logger::instance());
 
-  bool importAttributeTemplate(
-    const std::string& location, ResourceDescriptor& descriptor, smtk::io::Logger& logger);
+  bool importAttributeTemplate(const std::string& location, ResourceDescriptor& descriptor,
+    smtk::io::Logger& logger = smtk::io::Logger::instance());
 
-  bool writeProjectFile(smtk::io::Logger& logger) const;
+  bool writeProjectFile(smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
 
-  bool loadResources(const std::string& path, smtk::io::Logger& logger);
+  bool loadResources(
+    const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Resource manager for the project resources.
   smtk::resource::ManagerPtr m_resourceManager;

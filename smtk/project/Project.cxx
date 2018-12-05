@@ -17,9 +17,9 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
+#include "smtk/common/TypeName.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
-#include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/ReadResource.h"
@@ -34,7 +34,7 @@
 
 namespace
 {
-std::string PROJECT_FILENAME = ".cmbproject";
+std::string PROJECT_FILENAME = ".smtkproject";
 int SUCCEEDED = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED); // 3
 }
 
@@ -165,7 +165,7 @@ bool Project::save(smtk::io::Logger& logger) const
   {
     auto resource = this->m_resourceManager->get(rd.m_uuid);
     auto path = boostDirectory / boost::filesystem::path(rd.m_filename);
-    if (resource->typeName() == "smtk::attribute::Resource")
+    if (resource->typeName() == smtk::common::typeName<smtk::attribute::Resource>())
     {
       // Always save attribute resource, since clean() method not reliable
       auto writer = smtk::io::AttributeWriter();
@@ -265,9 +265,10 @@ bool Project::open(const std::string& location, smtk::io::Logger& logger)
   {
     parse_json(dotFileContents, descriptor); // (static function in jsonProjectDescriptor.h)
   }
-  catch (std::exception /* e */)
+  catch (std::exception& ex)
   {
     smtkErrorMacro(logger, "Error parsing \"" << PROJECT_FILENAME << "\" file");
+    smtkErrorMacro(logger, ex.what());
     return false;
   }
 
@@ -420,7 +421,7 @@ bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
   {
     auto filePath = directoryPath / boost::filesystem::path(descriptor.m_filename);
     auto inputPath = filePath.string();
-    if (descriptor.m_typeName == "smtk::attribute::Resource")
+    if (descriptor.m_typeName == smtk::common::typeName<smtk::attribute::Resource>())
     {
       auto attResource = smtk::attribute::Resource::create();
       attResource->setId(descriptor.m_uuid);
