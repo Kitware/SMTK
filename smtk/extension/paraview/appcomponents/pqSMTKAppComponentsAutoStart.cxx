@@ -14,6 +14,7 @@
 #include "smtk/extension/paraview/appcomponents/pqPluginSMTKViewBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKExportSimulationBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKImportIntoResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKNewResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRegisterImportersBehavior.h"
@@ -50,6 +51,7 @@ void pqSMTKAppComponentsAutoStart::startup()
   // TODO: There must be a better way to do this.
   auto rsrcSaveMgr = pqSMTKSaveResourceBehavior::instance(this);
   auto rsrcNewMgr = pqSMTKNewResourceBehavior::instance(this);
+  auto rsrcImportIntoMgr = pqSMTKImportIntoResourceBehavior::instance(this);
   auto registerImportersBehavior = pqSMTKRegisterImportersBehavior::instance(this);
 
   auto pqCore = pqApplicationCore::instance();
@@ -61,6 +63,7 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk export simulation", rsrcExportSimMgr);
     pqCore->registerManager("smtk save resource", rsrcSaveMgr);
     pqCore->registerManager("smtk new resource", rsrcNewMgr);
+    pqCore->registerManager("smtk import into resource", rsrcImportIntoMgr);
     pqCore->registerManager("smtk register importers", registerImportersBehavior);
   }
   (void)rsrcMgr;
@@ -77,6 +80,7 @@ void pqSMTKAppComponentsAutoStart::shutdown()
     pqCore->unRegisterManager("smtk export simulation");
     pqCore->unRegisterManager("smtk save resource");
     pqCore->unRegisterManager("smtk new resource");
+    pqCore->unRegisterManager("smtk import into resource");
     pqCore->unRegisterManager("smtk register importers");
   }
 }

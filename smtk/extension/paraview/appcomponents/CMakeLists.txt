@@ -28,6 +28,7 @@ set(PQComponentsSrcs
   pqSMTKColorByWidget.cxx
   pqSMTKRenderResourceBehavior.cxx
   pqSMTKExportSimulationBehavior.cxx
+  pqSMTKImportIntoResourceBehavior.cxx
   pqSMTKImportOperationBehavior.cxx
   pqSMTKModelRepresentation.cxx
   pqSMTKNewResourceBehavior.cxx
@@ -48,6 +49,7 @@ set(PQComponentsHeaders
   pqSMTKColorByWidget.h
   pqSMTKRenderResourceBehavior.h
   pqSMTKExportSimulationBehavior.h
+  pqSMTKImportIntoResourceBehavior.h
   pqSMTKImportOperationBehavior.h
   pqSMTKModelRepresentation.h
   pqSMTKNewResourceBehavior.h

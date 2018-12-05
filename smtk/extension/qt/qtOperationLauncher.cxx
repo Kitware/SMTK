@@ -10,6 +10,8 @@
 
 #include "smtk/extension/qt/qtOperationLauncher.h"
 
+// #define SINGLE_THREAD
+
 namespace smtk
 {
 namespace extension
@@ -24,6 +26,16 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // Access the promise's associated future before moving the promise onto the
   // subthread.
   std::future<smtk::operation::Operation::Result> future = promise.get_future();
+
+#ifdef SINGLE_THREAD
+
+  // Execute the operation in the subthread.
+  auto result = op->operate();
+
+  // Set the promise to the output result.
+  promise.set_value(result);
+
+#else
 
   // Construct a thread to execute the operation. It takes:
   //
@@ -61,6 +73,8 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // We have the future result and we have made the one-shot connection to the
   // output. We no longer need to track this thread, so we detach it.
   thread.detach();
+
+#endif
 
   // Return the future associated with the promise created above.
   return future;
