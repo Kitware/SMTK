@@ -189,7 +189,7 @@ Import::Result Import::operateInternal()
   }
 
   // Construct the topology
-  session->addTopology(Topology(model.entity(), newMeshes, constructHierarchy));
+  session->addTopology(resource, Topology(model.entity(), newMeshes, constructHierarchy));
 
   // Set the url and type of the model
   model.setStringProperty("url", filePath);

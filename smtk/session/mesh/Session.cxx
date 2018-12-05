@@ -29,6 +29,24 @@ Session::Session()
 {
 }
 
+void Session::addTopology(const smtk::session::mesh::Resource::Ptr& modelResource, Topology t)
+{
+  std::vector<Topology>::iterator it =
+    find_if(m_topologies.begin(), m_topologies.end(), [&](const Topology& t) {
+      return modelResource->links().isLinkedTo(
+        t.m_resource, smtk::model::Resource::TessellationRole);
+    });
+
+  if (it == m_topologies.end())
+  {
+    m_topologies.push_back(t);
+  }
+  else
+  {
+    *it = t;
+  }
+}
+
 Topology* Session::topology(const smtk::session::mesh::Resource::Ptr& modelResource)
 {
   std::vector<Topology>::iterator it =
