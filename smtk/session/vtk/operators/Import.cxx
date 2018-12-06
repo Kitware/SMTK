@@ -387,17 +387,17 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
 
   {
     smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
-    resultModels->setValue(smtkModelOut.component());
+    resultModels->appendValue(smtkModelOut.component());
   }
 
   {
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+    created->appendValue(resource);
   }
 
   {
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
-    created->setValue(smtkModelOut.component());
+    created->appendValue(smtkModelOut.component());
   }
 
   return result;

@@ -24,6 +24,10 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 
+#include "smtk/operation/Observer.h"
+#include "smtk/operation/Operation.h"
+#include "smtk/resource/Observer.h"
+
 #include <set>
 
 class qtAssociationWidgetInternals;
@@ -47,7 +51,10 @@ public:
   virtual std::string selectionSourceName() { return m_selectionSourceName; }
 
 public slots:
+  // Display the association information to a specific attribute
   virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt);
+  // Refresh the association information for the current attribute;
+  virtual void refreshAssociations();
 
 signals:
   void attAssociationChanged();
@@ -82,9 +89,20 @@ protected:
   // helper function to update available/current list after selection
   void updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list);
 
+  // This widget needs to handle changes made to resources as a result of an operation.
+  // This method is used by the observation mechanism to address these changes
+  int handleOperationEvent(smtk::operation::OperationPtr op, smtk::operation::EventType event,
+    smtk::operation::Operation::Result result);
+
+  // This widget needs to handle changes made to resources as a result of resources being removed.
+  // This method is used by the observation mechanism to address this via the resource manager
+  void handleResourceEvent(smtk::resource::Resource::Ptr resource, smtk::resource::EventType event);
+
 private:
   qtAssociationWidgetInternals* Internals;
   std::string m_selectionSourceName;
+  smtk::operation::Observers::Key m_operationObserverKey;
+  smtk::resource::Observers::Key m_resourceObserverKey;
 
 }; // class
 }; // namespace attribute

@@ -419,14 +419,14 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
   {
     Resource::Ptr rsrc = *resourceIt;
 
-    // Tell observers we're about to yoink it:
-    m_observers(rsrc, smtk::resource::EventType::REMOVED);
-
     // Remove it from the manager's set of resources
     m_resources.erase(resourceIt);
 
-    // Insert the resource's manager
+    // Clear the resource's manager
     rsrc->m_manager = Ptr();
+
+    // Tell observers we have yoinked it:
+    m_observers(rsrc, smtk::resource::EventType::REMOVED);
 
     return true;
   }

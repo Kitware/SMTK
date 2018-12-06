@@ -71,5 +71,6 @@ protected:
   smtk::extension::qtUIManager* m_attrUIMgr;
   smtk::resource::ResourcePtr m_rsrc;
   smtk::view::SelectionPtr m_seln;
+  smtk::operation::ManagerPtr m_opManager;
   int m_observer;
 };
