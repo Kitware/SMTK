@@ -39,7 +39,7 @@ git tag -a -m 'SMTK VERSION' vVERSION HEAD
   - Integrate changes to `release` branch
     - [ ] `git push origin update-to-vVERSION:release vVERSION`
 
-  - Update documentation page
+ - Update documentation page
     - [ ] See `https://github.com/Kitware/paraview-docs/blob/gh-pages/versions.json`
 
 # Upload documentation
