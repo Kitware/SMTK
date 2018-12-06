@@ -163,29 +163,33 @@ bool vtkSMTKModelRepresentation::GetModelBounds()
 {
   // Entity tessellation bounds
   double entityBounds[6];
-  this->GetEntityBounds(this->GetInternalOutputPort(0)->GetProducer()->GetOutputDataObject(0),
-    entityBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
-
-  // Instance placement bounds
-  double* instanceBounds = this->GlyphMapper->GetBounds();
-
-  vtkBoundingBox bbox;
-  if (vtkBoundingBox::IsValid(entityBounds))
+  auto port = this->GetInternalOutputPort(0);
+  if (port)
   {
-    bbox.AddPoint(entityBounds[0], entityBounds[2], entityBounds[4]);
-    bbox.AddPoint(entityBounds[1], entityBounds[3], entityBounds[5]);
-  }
+    this->GetEntityBounds(port->GetProducer()->GetOutputDataObject(0), entityBounds,
+      this->EntityMapper->GetCompositeDataDisplayAttributes());
 
-  if (vtkBoundingBox::IsValid(instanceBounds))
-  {
-    bbox.AddPoint(instanceBounds[0], instanceBounds[2], instanceBounds[4]);
-    bbox.AddPoint(instanceBounds[1], instanceBounds[3], instanceBounds[5]);
-  }
+    // Instance placement bounds
+    double* instanceBounds = this->GlyphMapper->GetBounds();
 
-  if (bbox.IsValid())
-  {
-    bbox.GetBounds(this->DataBounds);
-    return true;
+    vtkBoundingBox bbox;
+    if (vtkBoundingBox::IsValid(entityBounds))
+    {
+      bbox.AddPoint(entityBounds[0], entityBounds[2], entityBounds[4]);
+      bbox.AddPoint(entityBounds[1], entityBounds[3], entityBounds[5]);
+    }
+
+    if (vtkBoundingBox::IsValid(instanceBounds))
+    {
+      bbox.AddPoint(instanceBounds[0], instanceBounds[2], instanceBounds[4]);
+      bbox.AddPoint(instanceBounds[1], instanceBounds[3], instanceBounds[5]);
+    }
+
+    if (bbox.IsValid())
+    {
+      bbox.GetBounds(this->DataBounds);
+      return true;
+    }
   }
 
   vtkMath::UninitializeBounds(this->DataBounds);
@@ -1113,6 +1117,10 @@ void vtkSMTKModelRepresentation::UpdateRepresentationSubtype()
 void vtkSMTKModelRepresentation::UpdateColoringParameters(vtkDataObject* data)
 {
   auto multiBlock = vtkMultiBlockDataSet::SafeDownCast(data);
+  if (!multiBlock)
+  {
+    return;
+  }
   switch (this->ColorBy)
   {
     case VOLUME:

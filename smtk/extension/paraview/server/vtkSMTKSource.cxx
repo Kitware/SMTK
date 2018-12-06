@@ -97,6 +97,11 @@ int vtkSMTKSource::RequestData(
   // Otherwise, access the resource generator's smtk -> vtkMultiBlockDataSet
   // converter and trigger it to rerender the resource.
   vtkAlgorithm* converter = this->VTKResource->GetConverter();
+  if (!converter)
+  {
+    vtkDebugMacro("Could create SMTK converter.");
+    return 0;
+  }
   converter->Modified();
   converter->Update();
 
