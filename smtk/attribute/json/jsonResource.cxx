@@ -159,17 +159,17 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   }
 
   // Process attribute info
-  json defininitions;
+  json definitions;
   try
   {
-    defininitions = j.at("Definitions");
+    definitions = j.at("Definitions");
   }
   catch (std::exception& /*e*/)
   {
   }
-  if (!defininitions.is_null())
+  if (!definitions.is_null())
   {
-    for (auto iterDef = defininitions.begin(); iterDef != defininitions.end(); iterDef++)
+    for (auto iterDef = definitions.begin(); iterDef != definitions.end(); iterDef++)
     {
       try
       {

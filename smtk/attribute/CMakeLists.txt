@@ -125,6 +125,8 @@ set(attributeHeaders
   VoidItemDefinition.h
 
   operators/Associate.h
+  operators/Read.h
+  operators/Write.h
 )
 
 set(attributeSrcs
@@ -172,10 +174,14 @@ set(attributeSrcs
   VoidItemDefinition.cxx
 
   operators/Associate.cxx
+  operators/Read.cxx
+  operators/Write.cxx
 )
 
 #construct operator inputs
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Associate.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
 
 #install the headers
 smtk_public_headers(smtkCore ${attributeHeaders})

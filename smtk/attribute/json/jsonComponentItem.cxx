@@ -42,7 +42,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ComponentItemPtr& i
 
   if ((numRequiredVals == 1) && (!itemPtr->isExtensible()))
   {
-    auto rsrcPtr = itemPtr->value(i)->resource();
+    auto rsrcPtr = (itemPtr->value(i) ? itemPtr->value(i)->resource() : nullptr);
     if (itemPtr->isSet() && rsrcPtr)
     {
       json val;

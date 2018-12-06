@@ -120,13 +120,15 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
 
   // Process all attributes based on this class
   std::vector<smtk::attribute::AttributePtr> atts;
-  defPtr->resource()->findDefinitionAttributes(defPtr->type(), atts);
+  smtk::attribute::ResourcePtr resource =
+    std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
+  resource->findDefinitionAttributes(defPtr->type(), atts);
   // TODO: process Attributes
   j["Attributes"] = atts;
 
   // Now process all of its derived classes
   std::vector<smtk::attribute::DefinitionPtr> derivedDefPtrs;
-  defPtr->resource()->derivedDefinitions(defPtr, derivedDefPtrs);
+  resource->derivedDefinitions(defPtr, derivedDefPtrs);
   j["DerivedDefinitions"] = derivedDefPtrs;
 }
 
@@ -138,11 +140,12 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   {
     return;
   }
-  smtk::attribute::ResourcePtr colPtr = defPtr->resource();
-  if (colPtr)
+  smtk::attribute::ResourcePtr colPtr =
+    std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
+  if (colPtr == nullptr)
   {
     std::cerr << "When converting json, definition " << defPtr->label()
-              << "has an invalid resourcePtr" << std::endl;
+              << " has an invalid resourcePtr" << std::endl;
     return;
   }
   // Same logic in XmlDocV1Parser::processDefinition
@@ -269,11 +272,13 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
     nlohmann::json itemDefs = j.at("ItemDefinitions");
     if (!itemDefs.is_null())
     {
+      smtk::attribute::ResourcePtr resource =
+        std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
       // Reference: Check XmlDocV1Parser 789
       for (json::iterator iter = itemDefs.begin(); iter != itemDefs.end(); iter++)
       {
         smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-          iter, defPtr, defPtr->resource(), expressionDefInfo, attRefDefInfo);
+          iter, defPtr, resource, expressionDefInfo, attRefDefInfo);
       }
     }
   }
@@ -292,18 +297,20 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   // fix up all of the attribute definition references
   // Reference: XmlDovV1Parser::L575
   attribute::DefinitionPtr def;
+  smtk::attribute::ResourcePtr resource =
+    std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
   for (size_t i = 0; i < expressionDefInfo.size(); i++)
   {
-    def = defPtr->resource()->findDefinition(expressionDefInfo[i].second);
+    def = resource->findDefinition(expressionDefInfo[i].second);
     if (def)
     {
       expressionDefInfo[i].first->setExpressionDefinition(def);
     }
     else
     {
-      std::cerr << "Referenced Attribute Definition: " << attRefDefInfo[i].second
-                << " is missing and required by Item Definition: " << attRefDefInfo[i].first->name()
-                << std::endl;
+      std::cerr << "Referenced Item expression Definition: " << expressionDefInfo[i].second
+                << " is missing and required by Item Definition: "
+                << expressionDefInfo[i].first->name() << std::endl;
     }
   }
 
@@ -326,7 +333,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       smtk::common::UUID id;
       try
       {
-        name = j.at("Name");
+        name = iter->at("Name");
       }
       catch (std::exception& /*e*/)
       {
@@ -339,7 +346,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       }
       try
       {
-        type = j.at("Type");
+        type = iter->at("Type");
       }
       catch (std::exception& /*e*/)
       {
@@ -352,7 +359,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       smtk::common::UUID uuid = smtk::common::UUID::null();
       try
       {
-        std::string temp = j.at("ID");
+        std::string temp = iter->at("ID");
         uuid = smtk::common::UUID(temp);
       }
       catch (std::exception& /*e*/)

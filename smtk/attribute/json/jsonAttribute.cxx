@@ -139,7 +139,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
     {
       try
       {
-        auto itemToProcess = att->item(i);
+        auto itemToProcess = att->find(itemIter->at("Name"));
         smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
           *itemIter, itemToProcess, itemExpressionInfo, attRefInfo);
       }

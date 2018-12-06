@@ -38,6 +38,7 @@ if (SMTK_DATA_DIR)
     attributeJsonWriterTest
     attributeReaderTest
     extensibleAttributeTest
+    TestReadWrite
   )
   set(attributeReaderTest_ARGS
     "${SMTK_DATA_DIR}/attribute/attribute_collection/HydraTemplateV1.sbt"
@@ -49,9 +50,16 @@ if (SMTK_DATA_DIR)
   set(attributeJsonWriterTest_ARGS
     "${SMTK_DATA_DIR}/attribute/attribute_collection/attributeJsonWriterTest.json"
     )
+  set(TestReadWrite_ARGS)
+  file(GLOB_RECURSE sbi_files ${SMTK_DATA_DIR}/*.sbi)
+  foreach(sbi_file ${sbi_files})
+    list(APPEND TestReadWrite_ARGS ${sbi_file})
+  endforeach()
+
   foreach(tst ${attributeDataTests})
     add_executable(${tst} ${tst}.cxx)
     target_link_libraries(${tst} smtkCore ${Boost_LIBRARIES})
+    target_compile_definitions(${tst} PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
     add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
     set_tests_properties(${tst} PROPERTIES LABELS "Attribute")
     set_tests_properties(${tst} PROPERTIES SKIP_RETURN_CODE 125)
