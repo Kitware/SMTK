@@ -14,6 +14,8 @@
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/attribute/operators/Associate.h"
+#include "smtk/attribute/operators/Read.h"
+#include "smtk/attribute/operators/Write.h"
 
 namespace smtk
 {
@@ -21,7 +23,7 @@ namespace attribute
 {
 namespace
 {
-typedef std::tuple<Associate> OperationList;
+typedef std::tuple<Associate, Read, Write> OperationList;
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
@@ -36,7 +38,7 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
-  resourceManager->registerResource<smtk::attribute::Resource>();
+  resourceManager->registerResource<smtk::attribute::Resource>(read, write);
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)
