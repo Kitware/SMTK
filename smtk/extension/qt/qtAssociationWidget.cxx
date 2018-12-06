@@ -590,6 +590,7 @@ int qtAssociationWidget::handleOperationEvent(smtk::operation::OperationPtr,
 void qtAssociationWidget::handleResourceEvent(
   smtk::resource::Resource::Ptr resource, smtk::resource::EventType event)
 {
+  (void)resource;
   if (event == smtk::resource::EventType::REMOVED)
   {
     // The simplest solution is just to refresh the widget
