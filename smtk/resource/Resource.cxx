@@ -134,9 +134,10 @@ bool Resource::setLocation(const std::string& myLocation)
       const std::string& m_location;
     };
 
-    typedef Container::index<LocationTag>::type ResourcesByLocation;
-    ResourcesByLocation& resources = mgr->resources().get<LocationTag>();
-    ResourcesByLocation::iterator resourceIt = mgr->resources().get<LocationTag>().find(m_location);
+    // We search for the resource by ID, since locations are not unique.
+    typedef Container::index<IdTag>::type ResourcesById;
+    ResourcesById& resources = mgr->resources().get<IdTag>();
+    ResourcesById::iterator resourceIt = resources.find(m_id);
 
     // modify the location
     resources.modify(resourceIt, SetLocation(myLocation));
