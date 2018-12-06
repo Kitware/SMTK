@@ -65,8 +65,7 @@ ReadResource::Result ReadResource::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  auto params = this->parameters();
-  auto fileItem = params->findFile("filename");
+  auto fileItem = this->parameters()->findFile("filename");
 
   std::string type;
 
