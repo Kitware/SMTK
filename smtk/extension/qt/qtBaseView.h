@@ -103,6 +103,7 @@ public:
 
 signals:
   void modified(smtk::attribute::ItemPtr);
+  void aboutToDestroy();
 
 public slots:
   virtual void updateUI()

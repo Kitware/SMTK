@@ -101,26 +101,12 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
     m_resourceObserverKey = -1;
     std::cerr << "qtAssociationWidget: Could not find Resource Manager!\n";
   }
+  QObject::connect(this->Internals->view, SIGNAL(aboutToDestroy()), this, SLOT(removeObservers()));
 }
 
 qtAssociationWidget::~qtAssociationWidget()
 {
-  if (m_operationObserverKey != -1)
-  {
-    auto opManager = this->Internals->view->uiManager()->operationManager();
-    if (opManager != nullptr)
-    {
-      opManager->observers().erase(m_operationObserverKey);
-    }
-  }
-  if (m_resourceObserverKey != -1)
-  {
-    auto resManager = this->Internals->view->uiManager()->resourceManager();
-    if (resManager != nullptr)
-    {
-      resManager->observers().erase(m_resourceObserverKey);
-    }
-  }
+  this->removeObservers();
   delete this->Internals;
 }
 
@@ -548,6 +534,26 @@ void qtAssociationWidget::onExchange()
     {
       // highlight selected item in CurrentList
       this->updateListItemSelectionAfterChange(selAvailItems, this->Internals->CurrentList);
+    }
+  }
+}
+
+void qtAssociationWidget::removeObservers()
+{
+  if (m_operationObserverKey != -1 && this->Internals->view)
+  {
+    auto opManager = this->Internals->view->uiManager()->operationManager();
+    if (opManager != nullptr)
+    {
+      opManager->observers().erase(m_operationObserverKey);
+    }
+  }
+  if (m_resourceObserverKey != -1 && this->Internals->view)
+  {
+    auto resManager = this->Internals->view->uiManager()->resourceManager();
+    if (resManager != nullptr)
+    {
+      resManager->observers().erase(m_resourceObserverKey);
     }
   }
 }
