@@ -178,65 +178,69 @@ static pqSMTKImportIntoResourceBehavior* g_instance = nullptr;
 pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* parent)
   : Superclass(parent)
 {
-  auto pqCore = pqApplicationCore::instance();
-  if (pqCore)
-  {
-    QAction* importIntoResourceAction = new QAction(tr("&Import Into Resource..."), this);
-    importIntoResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
-
-    QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
-
-    QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
-
-    QMenu* menu = NULL;
-    foreach (QAction* existingMenuAction, menuBarActions)
+  // Wait until the event loop starts, ensuring that the main window will be
+  // accessible.
+  QTimer::singleShot(0, this, [this]() {
+    auto pqCore = pqApplicationCore::instance();
+    if (pqCore)
     {
-      QString menuName = existingMenuAction->text();
-      menuName.remove('&');
-      if (menuName == "File")
+      QAction* importIntoResourceAction = new QAction(tr("&Import Into Resource..."), this);
+      importIntoResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+
+      QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
+
+      QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
+
+      QMenu* menu = NULL;
+      foreach (QAction* existingMenuAction, menuBarActions)
       {
-        menu = existingMenuAction->menu();
-        break;
+        QString menuName = existingMenuAction->text();
+        menuName.remove('&');
+        if (menuName == "File")
+        {
+          menu = existingMenuAction->menu();
+          break;
+        }
       }
+
+      if (menu)
+      {
+        // We want to defer the creation of the menu actions as much as possible
+        // so the File menu will already be populated by the time we add our
+        // custom actions. If our actions are inserted first, there is no way to
+        // control where in the list of actions they go, and they end up awkwardly
+        // sitting at the top of the menu. By using a single-shot connection to
+        // load our actions, we ensure that extant Save methods are in place; we
+        // key off of their location to make the menu look better.
+        QMetaObject::Connection* connection = new QMetaObject::Connection;
+        *connection = QObject::connect(menu, &QMenu::aboutToShow, [=]() {
+          QAction* saveAction = findSaveAction(menu);
+
+          menu->insertAction(saveAction, importIntoResourceAction);
+          menu->insertSeparator(saveAction);
+          menu->insertSeparator(importIntoResourceAction);
+
+          // Remove this connection.
+          QObject::disconnect(*connection);
+          delete connection;
+        });
+      }
+      else
+      {
+        // If the File menu doesn't already exist, I don't think the following
+        // logic works. It is taken from pqPluginActionGroupBehavior, which
+        // is designed to accomplish pretty much the same task, though.
+
+        // Create new menu.
+        menu = new QMenu("File", mainWindow);
+        menu->setObjectName("File");
+        menu->addAction(importIntoResourceAction);
+        // insert new menus before the Help menu is possible.
+        mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
+      }
+      new pqImportIntoResourceReaction(importIntoResourceAction);
     }
-
-    if (menu)
-    {
-      // We want to defer the creation of the menu actions as much as possible
-      // so the File menu will already be populated by the time we add our
-      // custom actions. If our actions are inserted first, there is no way to
-      // control where in the list of actions they go, and they end up awkwardly
-      // sitting at the top of the menu. By using a single-shot connection to
-      // load our actions, we ensure that extant Save methods are in place; we
-      // key off of their location to make the menu look better.
-      QMetaObject::Connection* connection = new QMetaObject::Connection;
-      *connection = QObject::connect(menu, &QMenu::aboutToShow, [=]() {
-        QAction* saveAction = findSaveAction(menu);
-
-        menu->insertAction(saveAction, importIntoResourceAction);
-        menu->insertSeparator(saveAction);
-        menu->insertSeparator(importIntoResourceAction);
-
-        // Remove this connection.
-        QObject::disconnect(*connection);
-        delete connection;
-      });
-    }
-    else
-    {
-      // If the File menu doesn't already exist, I don't think the following
-      // logic works. It is taken from pqPluginActionGroupBehavior, which
-      // is designed to accomplish pretty much the same task, though.
-
-      // Create new menu.
-      menu = new QMenu("File", mainWindow);
-      menu->setObjectName("File");
-      menu->addAction(importIntoResourceAction);
-      // insert new menus before the Help menu is possible.
-      mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
-    }
-    new pqImportIntoResourceReaction(importIntoResourceAction);
-  }
+  });
 }
 
 pqSMTKImportIntoResourceBehavior* pqSMTKImportIntoResourceBehavior::instance(QObject* parent)

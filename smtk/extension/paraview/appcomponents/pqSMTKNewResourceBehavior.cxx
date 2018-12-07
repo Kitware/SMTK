@@ -137,34 +137,39 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
   : Superclass(parent)
   , m_newMenu(nullptr)
 {
-  auto pqCore = pqApplicationCore::instance();
-  if (pqCore)
-  {
-    QMenu* fileMenu = this->fileMenu();
+  // Wait until the event loop starts, ensuring that the main window will be
+  // accessible.
+  QTimer::singleShot(0, this, [this]() {
+    auto pqCore = pqApplicationCore::instance();
+    if (pqCore)
+    {
+      QMenu* fileMenu = this->fileMenu();
 
-    // We want to defer the creation of the menu actions as much as possible
-    // so the File menu will already be populated by the time we add our
-    // custom actions. If our actions are inserted first, there is no way to
-    // control where in the list of actions they go, and they end up awkwardly
-    // sitting at the top of the menu. By using a single-shot connection to
-    // load our actions, we ensure that extant Save methods are in place; we
-    // key off of their location to make the menu look better.
-    QMetaObject::Connection* connection = new QMetaObject::Connection;
-    *connection = QObject::connect(fileMenu, &QMenu::aboutToShow, [this, connection, fileMenu]() {
-      QAction* saveAction = findSaveResourceAction(fileMenu);
+      // We want to defer the creation of the menu actions as much as possible
+      // so the File menu will already be populated by the time we add our
+      // custom actions. If our actions are inserted first, there is no way to
+      // control where in the list of actions they go, and they end up awkwardly
+      // sitting at the top of the menu. By using a single-shot connection to
+      // load our actions, we ensure that extant Save methods are in place; we
+      // key off of their location to make the menu look better.
+      QMetaObject::Connection* connection = new QMetaObject::Connection;
+      *connection = QObject::connect(fileMenu, &QMenu::aboutToShow, [this, connection, fileMenu]() {
+        QAction* saveAction = findSaveResourceAction(fileMenu);
 
-      this->setNewMenu(qobject_cast<QMenu*>(
-        fileMenu->insertMenu(saveAction, new QMenu("New Resource"))->parent()));
-      this->updateNewMenu();
+        this->setNewMenu(qobject_cast<QMenu*>(
+          fileMenu->insertMenu(saveAction, new QMenu("New Resource"))->parent()));
+        this->updateNewMenu();
 
-      // Remove this connection.
-      QObject::disconnect(*connection);
-      delete connection;
-    });
+        // Remove this connection.
+        QObject::disconnect(*connection);
+        delete connection;
+      });
 
-    pqActiveObjects* activeObjects = &pqActiveObjects::instance();
-    QObject::connect(activeObjects, SIGNAL(serverChanged(pqServer*)), this, SLOT(updateNewMenu()));
-  }
+      pqActiveObjects* activeObjects = &pqActiveObjects::instance();
+      QObject::connect(
+        activeObjects, SIGNAL(serverChanged(pqServer*)), this, SLOT(updateNewMenu()));
+    }
+  });
 }
 
 QMenu* pqSMTKNewResourceBehavior::fileMenu()
