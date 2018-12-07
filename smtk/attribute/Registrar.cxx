@@ -17,6 +17,9 @@
 #include "smtk/attribute/operators/Read.h"
 #include "smtk/attribute/operators/Write.h"
 
+#include "smtk/operation/groups/ReaderGroup.h"
+#include "smtk/operation/groups/WriterGroup.h"
+
 namespace smtk
 {
 namespace attribute
@@ -29,6 +32,12 @@ typedef std::tuple<Associate, Read, Write> OperationList;
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->registerOperations<OperationList>();
+
+  smtk::operation::ReaderGroup(operationManager)
+    .registerOperation<smtk::attribute::Resource, smtk::attribute::Read>();
+
+  smtk::operation::WriterGroup(operationManager)
+    .registerOperation<smtk::attribute::Resource, smtk::attribute::Write>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)

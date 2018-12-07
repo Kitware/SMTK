@@ -132,6 +132,14 @@ public:
 
     auto smtkBehavior = pqSMTKBehavior::instance();
 
+    // If we are trying to get the value of a resource that has no pipeline
+    // source, we create one.
+    auto pvrc = smtkBehavior->getPVResource(rsrc);
+    if (pvrc == nullptr)
+    {
+      pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
+    }
+
     // TODO: We could check more than just that the view is non-null.
     //       For instance, does the resource have a representation in the active view?
     //       However, that gets expensive.
@@ -156,13 +164,6 @@ public:
         else if (modelRsrc || meshRsrc)
         {
           auto view = pqActiveObjects::instance().activeView();
-          auto pvrc = smtkBehavior->getPVResource(rsrc);
-          // If we are trying to get the value of a resource that has no
-          // pipeline source, we create one.
-          if (pvrc == nullptr)
-          {
-            pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
-          }
           auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
           return mapr ? mapr->isVisible() : 0;
         }
@@ -171,7 +172,6 @@ public:
         if (ent || msh)
         { // Find the mapper in the active view for the related resource, then set the visibility.
           auto view = pqActiveObjects::instance().activeView();
-          auto pvrc = smtkBehavior->getPVResource(data->relatedResource());
           auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
           auto smap = dynamic_cast<pqSMTKModelRepresentation*>(mapr);
           if (smap)
@@ -184,7 +184,6 @@ public:
         else if (modelRsrc || meshRsrc)
         { // A resource, not a component, is being modified. Change the pipeline object's visibility.
           auto view = pqActiveObjects::instance().activeView();
-          auto pvrc = smtkBehavior->getPVResource(rsrc);
           auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
           if (mapr)
           {
