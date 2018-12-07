@@ -79,7 +79,7 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
         # Access the mesh set from the resource that comprises the model
         self.mesh = self.resource.resource().meshes()
 
-        # Import auxiliary geometry describing the demographic data of the mesh
+        # Import auxiliary geometry describing the elevation for the mesh
         op = smtk.model.AddAuxiliaryGeometry.create()
 
         # Auxiliary geometry requires a model association
@@ -160,6 +160,8 @@ class ElevateMeshOnStructuredGrid(smtk.testing.TestCase):
 
         for i in range(20):
             if validatePoints.hist[i] != expected[i]:
+                print('Expected {:1} but got {:2} at {:3}.'.format(
+                    expected[i], validatePoints.hist[i], i))
                 raise ValueError
 
 
