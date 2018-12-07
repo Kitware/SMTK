@@ -99,7 +99,7 @@ int vtkSMTKSource::RequestData(
   vtkAlgorithm* converter = this->VTKResource->GetConverter();
   if (!converter)
   {
-    vtkDebugMacro("Could create SMTK converter.");
+    vtkDebugMacro("Could not create SMTK converter.");
     return 0;
   }
   converter->Modified();
