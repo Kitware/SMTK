@@ -135,7 +135,7 @@ public:
     // If we are trying to get the value of a resource that has no pipeline
     // source, we create one.
     auto pvrc = smtkBehavior->getPVResource(rsrc);
-    if (pvrc == nullptr)
+    if (pvrc == nullptr && rsrc)
     {
       pvrc = pqSMTKRenderResourceBehavior::instance()->createPipelineSource(rsrc);
     }
