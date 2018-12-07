@@ -63,6 +63,7 @@ protected slots:
   virtual void onRemoveAssigned();
   virtual void onAddAvailable();
   virtual void onExchange();
+  virtual void removeObservers();
 
 protected:
   virtual void initWidget();

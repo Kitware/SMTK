@@ -85,6 +85,7 @@ qtBaseView::qtBaseView(const ViewInfo& info)
 
 qtBaseView::~qtBaseView()
 {
+  emit aboutToDestroy();
   if (this->Internals)
   {
     delete this->Internals;
