@@ -26,6 +26,7 @@
 #include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/attribute/json/jsonComponentItem.h"
 #include "smtk/attribute/json/jsonDateTimeItem.h"
@@ -42,6 +43,7 @@
 #include "smtk/attribute/json/jsonRefItem.h"
 #include "smtk/attribute/json/jsonStringItem.h"
 #include "smtk/attribute/json/jsonValueItem.h"
+#include "smtk/attribute/json/jsonVoidItem.h"
 
 #include "smtk/attribute/json/jsonComponentItemDefinition.h"
 #include "smtk/attribute/json/jsonDateTimeItemDefinition.h"
@@ -58,6 +60,7 @@
 #include "smtk/attribute/json/jsonRefItemDefinition.h"
 #include "smtk/attribute/json/jsonStringItemDefinition.h"
 #include "smtk/attribute/json/jsonValueItemDefinition.h"
+#include "smtk/attribute/json/jsonVoidItemDefinition.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -79,136 +82,130 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
   std::vector<AttRefDefInfo>& attRefDefInfo)
 {
   //iter format: {type: [{def1}, {def2}] }
-  smtk::attribute::Item::Type citype = smtk::attribute::Item::string2Type(iter.key());
-  json itemDefList = iter.value();
-  for (auto itemDef = itemDefList.begin(); itemDef != itemDefList.end(); itemDef++)
-  {
-    std::string citemName = (*itemDef).at("Name");
-    smtk::attribute::ItemDefinitionPtr cidef;
+  json itemDef = *iter;
+  smtk::attribute::Item::Type citype = smtk::attribute::Item::string2Type(itemDef.at("Type"));
+  std::string citemName = itemDef.at("Name");
+  smtk::attribute::ItemDefinitionPtr cidef;
 
-    switch (citype)
-    {
-      case smtk::attribute::Item::AttributeRefType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::RefItemDefinition>(citemName)))
-        {
-          smtk::attribute::RefItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, resPtr, attRefDefInfo);
-        }
-        break;
-      case smtk::attribute::Item::DoubleType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName)))
-        {
-          smtk::attribute::DoubleItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
-        }
-        break;
-      case smtk::attribute::Item::DirectoryType:
-        if ((cidef = idef->template addItemDefinition<smtk::attribute::DirectoryItemDefinition>(
-               citemName)))
-        {
-          smtk::attribute::DirectoryItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      case smtk::attribute::Item::FileType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::FileItemDefinition>(citemName)))
-        {
-          smtk::attribute::FileItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      case smtk::attribute::Item::GroupType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName)))
-        {
-          smtk::attribute::GroupItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
-        }
-        break;
-      case smtk::attribute::Item::IntType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::IntItemDefinition>(citemName)))
-        {
-          smtk::attribute::IntItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
-        }
-        break;
-      case smtk::attribute::Item::StringType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::StringItemDefinition>(citemName)))
-        {
-          smtk::attribute::StringItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp, resPtr, expressionDefInfo, attRefDefInfo);
-        }
-        break;
-      case smtk::attribute::Item::ModelEntityType:
-        if ((cidef = idef->template addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(
-               citemName)))
-        {
-          smtk::attribute::ModelEntityItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      case smtk::attribute::Item::VoidType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName)))
-        {
-          // Treat it as ItemDef
-          smtk::attribute::ItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::ItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      case smtk::attribute::Item::MeshSelectionType:
-        if ((cidef = idef->template addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(
-               citemName)))
-        {
-          //QUESTION: When parsing, valueItemDef and groupItemDef treat it as a simple ItemDef in xml parser
-          smtk::attribute::MeshSelectionItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      case smtk::attribute::Item::MeshEntityType:
-        if ((cidef =
-                idef->template addItemDefinition<smtk::attribute::MeshItemDefinition>(citemName)))
-        {
-          smtk::attribute::MeshItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      case smtk::attribute::Item::DateTimeType:
-        if ((cidef = idef->template addItemDefinition<smtk::attribute::DateTimeItemDefinition>(
-               citemName)))
-        {
-          smtk::attribute::DateTimeItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      case smtk::attribute::Item::ComponentType:
-        if ((cidef = idef->template addItemDefinition<smtk::attribute::ComponentItemDefinition>(
-               citemName)))
-        {
-          smtk::attribute::ComponentItemDefinitionPtr temp =
-            smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef);
-          smtk::attribute::from_json((*itemDef), temp);
-        }
-        break;
-      default:;
-    }
+  switch (citype)
+  {
+    case smtk::attribute::Item::AttributeRefType:
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::RefItemDefinition>(citemName)))
+      {
+        smtk::attribute::RefItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp, resPtr, attRefDefInfo);
+      }
+      break;
+    case smtk::attribute::Item::DoubleType:
+      if ((cidef =
+              idef->template addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName)))
+      {
+        smtk::attribute::DoubleItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+      }
+      break;
+    case smtk::attribute::Item::DirectoryType:
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::DirectoryItemDefinition>(
+             citemName)))
+      {
+        smtk::attribute::DirectoryItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    case smtk::attribute::Item::FileType:
+      if ((cidef =
+              idef->template addItemDefinition<smtk::attribute::FileItemDefinition>(citemName)))
+      {
+        smtk::attribute::FileItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    case smtk::attribute::Item::GroupType:
+      if ((cidef =
+              idef->template addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName)))
+      {
+        smtk::attribute::GroupItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+      }
+      break;
+    case smtk::attribute::Item::IntType:
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::IntItemDefinition>(citemName)))
+      {
+        smtk::attribute::IntItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+      }
+      break;
+    case smtk::attribute::Item::StringType:
+      if ((cidef =
+              idef->template addItemDefinition<smtk::attribute::StringItemDefinition>(citemName)))
+      {
+        smtk::attribute::StringItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+      }
+      break;
+    case smtk::attribute::Item::ModelEntityType:
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(
+             citemName)))
+      {
+        smtk::attribute::ModelEntityItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    case smtk::attribute::Item::VoidType:
+      if ((cidef =
+              idef->template addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName)))
+      {
+        smtk::attribute::VoidItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::VoidItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    case smtk::attribute::Item::MeshSelectionType:
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(
+             citemName)))
+      {
+        //QUESTION: When parsing, valueItemDef and groupItemDef treat it as a simple ItemDef in xml parser
+        smtk::attribute::MeshSelectionItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    case smtk::attribute::Item::MeshEntityType:
+      if ((cidef =
+              idef->template addItemDefinition<smtk::attribute::MeshItemDefinition>(citemName)))
+      {
+        smtk::attribute::MeshItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    case smtk::attribute::Item::DateTimeType:
+      if ((cidef =
+              idef->template addItemDefinition<smtk::attribute::DateTimeItemDefinition>(citemName)))
+      {
+        smtk::attribute::DateTimeItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::DateTimeItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    case smtk::attribute::Item::ComponentType:
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::ComponentItemDefinition>(
+             citemName)))
+      {
+        smtk::attribute::ComponentItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef);
+        smtk::attribute::from_json(itemDef, temp);
+      }
+      break;
+    default:;
   }
 }
 }
@@ -298,8 +295,12 @@ void JsonHelperFunction::processItemDefinitionTypeToJson(
     }
     break;
     case Item::VoidType:
-      // Nothing to do!
-      break;
+    {
+      smtk::attribute::VoidItemDefinitionPtr temp =
+        smtk::dynamic_pointer_cast<VoidItemDefinition>(idef);
+      smtk::attribute::to_json(j, temp);
+    }
+    break;
     case Item::DateTimeType:
     {
       smtk::attribute::DateTimeItemDefinitionPtr temp =
@@ -408,8 +409,11 @@ void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr&
     }
     break;
     case Item::VoidType:
-      // Nothing to do!
-      break;
+    {
+      smtk::attribute::VoidItemPtr temp = smtk::dynamic_pointer_cast<VoidItem>(item);
+      smtk::attribute::to_json(j, temp);
+    }
+    break;
     case Item::DateTimeType:
     {
       smtk::attribute::DateTimeItemPtr temp = smtk::dynamic_pointer_cast<DateTimeItem>(item);
@@ -516,8 +520,12 @@ void JsonHelperFunction::processItemTypeFromJson(const nlohmann::json& j, ItemPt
     }
     break;
     case smtk::attribute::Item::VoidType:
-      // Nothing to do!
-      break;
+    {
+      smtk::attribute::VoidItemPtr temp =
+        smtk::dynamic_pointer_cast<smtk::attribute::VoidItem>(itemPtr);
+      smtk::attribute::from_json(j, temp);
+    }
+    break;
     default:;
   }
 }

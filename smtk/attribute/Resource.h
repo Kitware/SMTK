@@ -22,6 +22,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryInfo.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
@@ -224,7 +225,10 @@ protected:
   std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;
   std::map<std::string, smtk::attribute::AttributePtr> m_attributes;
   std::map<smtk::common::UUID, smtk::attribute::AttributePtr> m_attributeIdMap;
-  std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet> m_derivedDefInfo;
+
+  std::map<smtk::attribute::DefinitionPtr,
+    std::set<smtk::attribute::WeakDefinitionPtr, Definition::WeakDefinitionPtrCompare> >
+    m_derivedDefInfo;
   std::set<std::string> m_categories;
   std::map<std::string, std::set<std::string> > m_analyses;
   std::map<std::string, smtk::view::ViewPtr> m_views;
