@@ -62,7 +62,7 @@ static void processDerivedValueToJson(json& j, ItemType itemPtr)
       }
       else
       {
-        j["ExpressionName"] = itemPtr->value();
+        j["Val"] = itemPtr->value();
       }
     }
     else
@@ -195,7 +195,7 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
     catch (std::exception& /*e*/)
     {
     }
-    if (!noVal.is_null())
+    if (noVal.is_null())
     {
       json expression;
       try
@@ -227,16 +227,13 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
           itemPtr->setExpression(expAtt);
         }
       }
-      else
+      try
       {
-        try
-        {
-          BasicType currentValue = j.at("ExpressionName");
-          itemPtr->setValue(currentValue);
-        }
-        catch (std::exception& /*e*/)
-        {
-        }
+        BasicType currentValue = j.at("Val");
+        itemPtr->setValue(currentValue);
+      }
+      catch (std::exception& /*e*/)
+      {
       }
     }
   }

@@ -95,7 +95,9 @@ int main(int argc, char** argv)
     std::string sbi1FileName;
     {
       std::stringstream s;
-      s << write_root << "/" << smtk::common::UUID::random().toString() << ".sbi";
+      s << write_root << "/"
+        << "originalResource"
+        << ".sbi";
       sbi1FileName = s.str();
 
       smtk::io::Logger logger;
@@ -113,7 +115,9 @@ int main(int argc, char** argv)
     std::string smtkFileName;
     {
       std::stringstream s;
-      s << write_root << "/" << smtk::common::UUID::random().toString() << ".smtk";
+      s << write_root << "/"
+        << "jsonResource"
+        << ".smtk";
       smtkFileName = s.str();
       resource->setLocation(smtkFileName);
 
@@ -156,12 +160,14 @@ int main(int argc, char** argv)
     std::string sbi2FileName;
     {
       std::stringstream s;
-      s << write_root << "/" << smtk::common::UUID::random().toString() << ".sbi";
+      s << write_root << "/"
+        << "jsonResource"
+        << ".sbi";
       sbi2FileName = s.str();
 
       smtk::io::Logger logger;
       smtk::io::AttributeWriter writer;
-      if (writer.write(resource, sbi2FileName, logger))
+      if (writer.write(copiedResource, sbi2FileName, logger))
       {
         std::cerr << "Encountered Errors while writing " << sbi2FileName << "\n";
         std::cerr << logger.convertToString();
@@ -181,7 +187,7 @@ int main(int argc, char** argv)
         std::cerr << "generated smtk file: " << smtkFileName << "\n";
         std::cerr << "generated sbi1 file: " << sbi1FileName << "\n";
         std::cerr << "generated sbi2 file: " << sbi2FileName << "\n";
-        return -2;
+        assert(false);
       }
 
       if (f1.tellg() != f2.tellg())
@@ -190,7 +196,7 @@ int main(int argc, char** argv)
         std::cerr << "generated smtk file: " << smtkFileName << "\n";
         std::cerr << "generated sbi1 file: " << sbi1FileName << "\n";
         std::cerr << "generated sbi2 file: " << sbi2FileName << "\n";
-        return -2;
+        assert(false);
       }
 
       f1.seekg(0, std::ifstream::beg);
@@ -202,7 +208,7 @@ int main(int argc, char** argv)
         std::cerr << "generated smtk file: " << smtkFileName << "\n";
         std::cerr << "generated sbi1 file: " << sbi1FileName << "\n";
         std::cerr << "generated sbi2 file: " << sbi2FileName << "\n";
-        return -2;
+        assert(false);
       }
     }
 
@@ -212,6 +218,7 @@ int main(int argc, char** argv)
     cleanup(sbi1FileName);
     cleanup(sbi2FileName);
   }
+  std::cout << "Pass all file tests" << std::endl;
 
   return 0;
 }

@@ -10,7 +10,9 @@
 #include "jsonResource.h"
 #include "nlohmann/json.hpp"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/json/jsonAttribute.h"
 #include "smtk/attribute/json/jsonDefinition.h"
 #include "smtk/io/Logger.h"
 #include "smtk/resource/json/jsonResource.h"
@@ -18,6 +20,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include <queue>
 #include <string>
 
 namespace smtk
@@ -37,7 +40,6 @@ using json = nlohmann::json;
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 {
   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(res));
-  //TODO: write some meta data?
   // Write out the category and analysis information
   if (res->numberOfCategories())
   {
@@ -73,11 +75,37 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   // In Xml we have control over including definitions, instances,
   // modelInformation and views.
 
-  // Process attribute info
-  std::vector<smtk::attribute::DefinitionPtr> definitionPtrs;
-  res->definitions(definitionPtrs);
-  // a list of defObj
-  j["Definitions"] = definitionPtrs;
+  // Process definifions from base to derived so that
+  // when deserializing defs the base def would be available when processing
+  // derived defs. Attributes are also processed in the loop for simplicity.
+  std::vector<smtk::attribute::DefinitionPtr> baseDefPtrs, derivedDefPtrs;
+  res->findBaseDefinitions(baseDefPtrs);
+  json defsObj = json::array();
+  json attsObj = json::array();
+  std::queue<smtk::attribute::DefinitionPtr, std::deque<smtk::attribute::DefinitionPtr> > defsQueue(
+    std::deque<smtk::attribute::DefinitionPtr>(baseDefPtrs.begin(), baseDefPtrs.end()));
+  while (!defsQueue.empty())
+  {
+    smtk::attribute::DefinitionPtr currentDef = defsQueue.front();
+    defsObj.push_back(currentDef);
+
+    std::vector<smtk::attribute::AttributePtr> atts;
+    res->findDefinitionAttributes(currentDef->type(), atts);
+    for (const auto& att : atts)
+    {
+      attsObj.push_back(att);
+    }
+
+    defsQueue.pop();
+
+    res->derivedDefinitions(currentDef, derivedDefPtrs);
+    for (const auto& derivedDefPtr : derivedDefPtrs)
+    {
+      defsQueue.push(derivedDefPtr);
+    }
+  }
+  j["Definitions"] = defsObj;
+  j["Attributes"] = attsObj;
 
   // Process views
   // First write toplevel views and then write out the non-toplevel - note that the
@@ -108,8 +136,8 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 {
-  std::vector<smtk::attribute::ItemExpressionDefInfo> expressDefInfo;
-  std::vector<smtk::attribute::AttRefDefInfo> refDefInfo;
+  std::vector<smtk::attribute::ItemExpressionDefInfo> expressionDefInfo;
+  std::vector<smtk::attribute::AttRefDefInfo> attRefDefInfo;
   smtk::io::Logger logger;
   //TODO: v2Parser has a notion of rootName
   if (!res.get() || j.is_null())
@@ -159,16 +187,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   }
 
   // Process attribute info
-  json definitions;
   try
   {
-    definitions = j.at("Definitions");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!definitions.is_null())
-  {
+    json definitions = j.at("Definitions");
     for (auto iterDef = definitions.begin(); iterDef != definitions.end(); iterDef++)
     {
       try
@@ -206,12 +227,162 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         // process the definition
         // Since definition is not default constructible, we have to call the
         // function directly
-        // expressionDefInfo, refDefInfo and attributes are handled in jsonDefinition
-        smtk::attribute::from_json(currentDef, def, expressDefInfo, refDefInfo);
+        smtk::attribute::from_json(currentDef, def, expressionDefInfo, attRefDefInfo);
+      }
+      catch (std::exception& /*e*/)
+      {
+        std::cerr << "Failed to find type of a definition for resource " << res->name()
+                  << std::endl;
+      }
+    }
+  }
+  catch (std::exception& /*e*/)
+  {
+    std::cerr << "Failed to find definitions for resource " << res->name() << std::endl;
+  }
+  // At this point we have all the definitions read in so lets
+  // fix up all of the attribute definition references
+  // Reference: XmlDovV1Parser::L575
+  smtk::attribute::DefinitionPtr def;
+  for (size_t i = 0; i < expressionDefInfo.size(); i++)
+  {
+    def = res->findDefinition(expressionDefInfo[i].second);
+    if (def)
+    {
+      expressionDefInfo[i].first->setExpressionDefinition(def);
+    }
+    else
+    {
+      std::cerr << "Referenced Item expression Definition: " << expressionDefInfo[i].second
+                << " is missing and required by Item Definition: "
+                << expressionDefInfo[i].first->name() << std::endl;
+    }
+  }
+  for (size_t i = 0; i < attRefDefInfo.size(); i++)
+  {
+    def = res->findDefinition(attRefDefInfo[i].second);
+    if (def)
+    {
+      attRefDefInfo[i].first->setAttributeDefinition(def);
+    }
+    else
+    {
+      std::cerr << "Referenced Attribute Definition: " << attRefDefInfo[i].second
+                << " is missing and required by Item Definition: " << attRefDefInfo[i].first->name()
+                << std::endl;
+    }
+  }
+
+  // Process attributes info
+  std::vector<ItemExpressionInfo> itemExpressionInfo;
+  std::vector<AttRefInfo> attRefInfo;
+  smtk::attribute::AttributePtr att;
+  try
+  {
+    json attributes = j.at("Attributes");
+    for (auto iter = attributes.begin(); iter != attributes.end(); iter++)
+    { // Get/Create the attribute first
+      std::string name, type;
+      smtk::common::UUID id;
+      try
+      {
+        name = iter->at("Name");
       }
       catch (std::exception& /*e*/)
       {
       }
+
+      if (name.empty())
+      {
+        std::cerr << "Invalid Attribute! - Missing json Attribute Name" << std::endl;
+        continue;
+      }
+      try
+      {
+        type = iter->at("Type");
+      }
+      catch (std::exception& /*e*/)
+      {
+      }
+      if (type.empty())
+      {
+        std::cerr << "Invalid Attribute! - Missing json Attribute type" << std::endl;
+        continue;
+      }
+      smtk::common::UUID uuid = smtk::common::UUID::null();
+      try
+      {
+        std::string uuidString = iter->at("ID");
+        uuid = smtk::common::UUID(uuidString);
+      }
+      catch (std::exception& /*e*/)
+      {
+      };
+      def = res->findDefinition(type);
+      if (!def)
+      {
+        std::cerr << "Attribute: " << name << " of Type: " << type
+                  << "  - can not find attribute definition" << std::endl;
+        continue;
+      }
+
+      // Is the definition abstract?
+      if (def->isAbstract())
+      {
+        std::cerr << "Attribute: " << name << " of Type: " << type
+                  << "  - is based on an abstract definition" << std::endl;
+        continue;
+      }
+
+      if (id.isNull())
+      {
+        att = res->createAttribute(name, def);
+      }
+      else
+      {
+        att = res->createAttribute(name, def, id);
+      }
+
+      if (!att)
+      {
+        std::cerr << "Attribute: " << name << " of Type: " << type
+                  << "  - could not be created - is the name in use" << std::endl;
+        continue;
+      }
+      smtk::attribute::from_json(*iter, att, itemExpressionInfo, attRefInfo);
+    }
+  }
+  catch (std::exception& /*e*/)
+  {
+    std::cerr << "Failed to find attributes for resource " << res->name() << std::endl;
+  }
+  // At this point we have all the attributes read in so lets
+  // fix up all of the attribute references
+  for (size_t i = 0; i < itemExpressionInfo.size(); i++)
+  {
+    att = res->findAttribute(itemExpressionInfo[i].expName);
+    if (att)
+    {
+      itemExpressionInfo[i].item->setExpression(itemExpressionInfo[i].pos, att);
+    }
+    else
+    {
+      std::cerr << "Expression Attribute: " << itemExpressionInfo[i].expName
+                << " is missing and required by Item : " << itemExpressionInfo[i].item->name()
+                << std::endl;
+    }
+  }
+  for (size_t i = 0; i < attRefInfo.size(); i++)
+  {
+    att = res->findAttribute(attRefInfo[i].attName);
+    if (att)
+    {
+      attRefInfo[i].item->setValue(attRefInfo[i].pos, att);
+    }
+    else
+    {
+      std::cerr << "Referenced Attribute: " << attRefInfo[i].attName
+                << " is missing and required by Item: " << attRefInfo[i].item->name() << std::endl;
     }
   }
 
