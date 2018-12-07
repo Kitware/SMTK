@@ -78,10 +78,12 @@ set(unit_tests
   unitJsonItemDefinitions.cxx
 )
 
+set(unit_tests_which_require_data)
+
 set(extra_libs)
 
 if(SMTK_ENABLE_POLYGON_SESSION)
-  list(APPEND unit_tests
+  list(APPEND unit_tests_which_require_data
     unitJsonItems.cxx
     )
   list(APPEND extra_libs
@@ -93,6 +95,7 @@ endif()
 smtk_unit_tests(
   Label "Attribute"
   SOURCES ${unit_tests}
+  SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES
     smtkCore
     ${extra_libs}
