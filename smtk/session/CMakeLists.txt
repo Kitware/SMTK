@@ -7,6 +7,7 @@ set(SMTK_MESH_SESSION_ENABLED "False")
 set(SMTK_MULTISCALE_SESSION_ENABLED "False")
 set(SMTK_RGG_SESSION_ENABLED "False")
 set(SMTK_VTK_SESSION_ENABLED "False")
+set(SMTK_OSCILLATOR_SESSION_ENABLED "False")
 
 ################################################################################
 # Build Discrete session
@@ -54,6 +55,14 @@ endif()
 if (SMTK_ENABLE_VTK_SESSION)
   set(SMTK_VTK_SESSION_ENABLED "True")
   add_subdirectory(vtk)
+endif()
+
+################################################################################
+# Build Oscillator session
+################################################################################
+if (SMTK_ENABLE_OSCILLATOR_SESSION)
+  set(SMTK_OSCILLATOR_SESSION_ENABLED "True")
+  add_subdirectory(oscillator)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

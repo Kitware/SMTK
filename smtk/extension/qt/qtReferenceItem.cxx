@@ -67,6 +67,7 @@ qtItem* qtReferenceItem::createItemWidget(const AttributeItemInfo& info)
 
 qtReferenceItemData::qtReferenceItemData()
   : m_optional(nullptr)
+  , m_alreadyClosingPopup(false)
   , m_modelObserverId(-1)
 {
 }
@@ -211,7 +212,12 @@ void qtReferenceItem::synchronizeAndHide(bool escaping)
   QString qsyn = QString::fromStdString(syn);
   updateLabel(m_p->m_synopsis, qsyn, ok);
 
-  m_p->m_editBtn->menu()->hide();
+  if (!m_p->m_alreadyClosingPopup)
+  {
+    m_p->m_alreadyClosingPopup = true;
+    m_p->m_editBtn->menu()->hide();
+    m_p->m_alreadyClosingPopup = false;
+  }
 }
 
 void qtReferenceItem::copyFromSelection()
@@ -503,6 +509,7 @@ void qtReferenceItem::updateUI()
   m_p->m_editBtn->menu()->addAction(action);
   m_p->m_editBtn->setMaximumSize(QSize(16, 20));
 
+  QObject::connect(m_p->m_editBtn->menu(), SIGNAL(aboutToHide()), this, SLOT(popupClosing()));
   QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
     m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
 
@@ -521,6 +528,16 @@ void qtReferenceItem::updateUI()
 
   this->sneakilyHideButtons();
   this->updateSynopsisLabels();
+}
+
+void qtReferenceItem::popupClosing()
+{
+  if (!m_p->m_alreadyClosingPopup)
+  {
+    m_p->m_alreadyClosingPopup = true;
+    this->synchronizeAndHide(false);
+    m_p->m_alreadyClosingPopup = false;
+  }
 }
 
 std::string qtReferenceItem::synopsis(bool& ok) const
@@ -668,9 +685,12 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
       break;
       case QEvent::Hide:
       {
-        // The user has clicked outside the popup.
-        // Decide whether to update the item state or abandon.
-        this->synchronizeAndHide(false);
+        if (m_p->m_popup->isVisible())
+        {
+          // The user has clicked outside the popup.
+          // Decide whether to update the item state or abandon.
+          this->synchronizeAndHide(false);
+        }
       }
       break;
       default:
@@ -771,6 +791,13 @@ void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr ph
   {
     bool didChange = false;
     auto itm = this->itemAs<smtk::attribute::ReferenceItem>();
+    // If the application releases its hold on the attribute
+    // resource being represented, then we may not have an item:
+    if (!itm)
+    {
+      return;
+    }
+
     auto qidx = m_p->m_qtModel->indexFromPath(src);
     for (auto ref : refs)
     {

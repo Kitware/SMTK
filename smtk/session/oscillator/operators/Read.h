@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_session_mesh_CreateUniformGrid_h
-#define smtk_session_mesh_CreateUniformGrid_h
+#ifndef smtk_session_oscillator_Read_h
+#define smtk_session_oscillator_Read_h
 
-#include "smtk/session/mesh/Exports.h"
+#include "smtk/session/oscillator/Resource.h"
 
 #include "smtk/operation/XMLOperation.h"
 
@@ -18,24 +18,29 @@ namespace smtk
 {
 namespace session
 {
-namespace mesh
+namespace oscillator
 {
 
-/**\brief Construct a 2- or 3-dimensional uniform grid and its sides.
+/**\brief Read an SMTK oscillator model file.
   */
-class SMTKMESHSESSION_EXPORT CreateUniformGrid : public smtk::operation::XMLOperation
+class SMTKOSCILLATORSESSION_EXPORT Read : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(smtk::session::mesh::CreateUniformGrid);
-  smtkCreateMacro(CreateUniformGrid);
+  smtkTypeMacro(smtk::session::oscillator::Read);
+  smtkCreateMacro(Read);
   smtkSharedFromThisMacro(smtk::operation::Operation);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
 protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
+  void markModifiedResources(Result&) override;
 };
-}
-}
-}
 
-#endif
+SMTKOSCILLATORSESSION_EXPORT smtk::resource::ResourcePtr read(const std::string&);
+
+} // namespace oscillator
+} // namespace session
+} // namespace smtk
+
+#endif // smtk_session_oscillator_Read_h

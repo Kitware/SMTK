@@ -67,7 +67,11 @@ std::string ResourcePhraseContent::stringValue(ContentType attr) const
       std::string locn = m_resource->location();
       std::string file = smtk::common::Paths::filename(locn);
       std::string dir = smtk::common::Paths::directory(locn);
-      return dir.empty() ? "New Resource" : (file + " (" + dir + ")");
+      if (dir.empty())
+      {
+        dir = smtk::common::Paths::currentDirectory();
+      }
+      return locn.empty() ? "New Resource" : (file + " (" + dir + ")");
     }
     break;
     case PhraseContent::SUBTITLE:

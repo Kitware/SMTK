@@ -2,10 +2,19 @@
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="createUniformGrid" Label="Model - Create Uniform Grid" BaseType="operation">
+    <AttDef Type="editDomain" Label="Model - Edit domain" BaseType="operation">
       <BriefDescription>
-        Construct a simple uniform grid
+        Edit a simulation domain that is a uniform grid
       </BriefDescription>
+      <AssociationsDef Name="input" Label="Input" NumberOfRequiredValues="0" MaximumNumberOfValues="1" Extensible="true">
+        <Accepts>
+          <!-- We create a new volume if a model is provided or
+               edit an existing volume if a volume is provided. -->
+          <Resource Name="smtk::session::oscillator::Resource" Filter="model"/>
+          <Resource Name="smtk::session::oscillator::Resource" Filter="volume"/>
+        </Accepts>
+      </AssociationsDef>
+
       <ItemDefinitions>
 
         <String Name="dimension" Label="Dimension">
@@ -29,15 +38,6 @@
               <DefaultValue>1,1</DefaultValue>
             </Double>
 
-            <Int Name="discretization2d" Label="Discretization" NumberOfRequiredValues="2">
-              <ComponentLabels>
-                <Label>Length</Label>
-                <Label>Width</Label>
-              </ComponentLabels>
-              <RangeInfo><Min Inclusive="false">0</Min></RangeInfo>
-              <DefaultValue>5,5</DefaultValue>
-            </Int>
-
             <Double Name="origin3d" Label="Origin" NumberOfRequiredValues="3">
               <ComponentLabels>
                 <Label>X</Label>
@@ -57,25 +57,14 @@
               <DefaultValue>1,1,1</DefaultValue>
             </Double>
 
-            <Int Name="discretization3d" Label="Discretization" NumberOfRequiredValues="3">
-              <ComponentLabels>
-                <Label>Length</Label>
-                <Label>Width</Label>
-                <Label>Height</Label>
-              </ComponentLabels>
-              <RangeInfo><Min Inclusive="false">0</Min></RangeInfo>
-              <DefaultValue>5,5,5</DefaultValue>
-            </Int>
-
           </ChildrenDefinitions>
 
-          <DiscreteInfo DefaultIndex="0">
+          <DiscreteInfo DefaultIndex="1">
             <Structure>
               <Value Enum="2">2</Value>
               <Items>
                 <Item>origin2d</Item>
                 <Item>size2d</Item>
-                <Item>discretization2d</Item>
               </Items>
             </Structure>
             <Structure>
@@ -83,17 +72,10 @@
               <Items>
                 <Item>origin3d</Item>
                 <Item>size3d</Item>
-                <Item>discretization3d</Item>
               </Items>
             </Structure>
           </DiscreteInfo>
         </String>
-
-        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false" Advanced="1">
-          <Accepts>
-            <Resource Name="smtk::session::mesh::Resource"/>
-          </Accepts>
-        </Resource>
 
         <String Name="session only" Label="session" Advanced="1">
           <DiscreteInfo DefaultIndex="0">
@@ -110,12 +92,13 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(createBackgroundDomain)" BaseType="result">
+    <AttDef Type="result(editDomain)" BaseType="result">
       <ItemDefinitions>
 
-        <Resource Name="resource">
+        <Resource Name="resource" NumberOfRequiredValues="1" Extensible="true">
           <Accepts>
-            <Resource Name="smtk::session::mesh::Resource"/>
+            <Resource Name="smtk::session::oscillator::Resource"/>
+            <Resource Name="smtk::attribute::Resource"/>
           </Accepts>
         </Resource>
 

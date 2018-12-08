@@ -24,6 +24,7 @@
 
 // Client side
 #include "pqActiveObjects.h"
+#include "pqLiveInsituManager.h"
 #include "pqPipelineSource.h"
 #include "pqSelectionManager.h"
 #include "pqServerManagerModel.h"
@@ -37,6 +38,7 @@ static pqSMTKPipelineSelectionBehavior* g_pipelineSelection = nullptr;
 
 pqSMTKPipelineSelectionBehavior::pqSMTKPipelineSelectionBehavior(QObject* parent)
   : Superclass(parent)
+  , m_changingSource(false)
   , m_selectionValue("selected")
 {
   if (!g_pipelineSelection)
@@ -165,8 +167,19 @@ void pqSMTKPipelineSelectionBehavior::onActiveSourceChanged(pqPipelineSource* so
     m_changingSource = true;
     auto behavior = pqSMTKBehavior::instance();
     behavior->visitResourceManagersOnServers(
-      [this, &activeResources](pqSMTKWrapper* wrapper, pqServer*) -> bool {
+      [this, &activeResources](pqSMTKWrapper* wrapper, pqServer* server) -> bool {
+        // skip bad servers
+        if (!wrapper || pqLiveInsituManager::isInsituServer(server))
+        {
+          return false;
+        }
+
         auto seln = wrapper->smtkSelection();
+        if (!seln)
+        {
+          return false;
+        }
+
         int value = seln->selectionValueFromLabel(m_selectionValue);
         seln->modifySelection(activeResources, "pqSMTKPipelineSelectionBehavior", value,
           smtk::view::SelectionAction::UNFILTERED_REPLACE, true);

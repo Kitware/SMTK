@@ -28,8 +28,6 @@
 #include "pqApplicationCore.h"
 #include "pqObjectBuilder.h"
 
-vtkSMProxy* pqSMTKAppComponentsAutoStart::s_resourceManager = nullptr;
-
 pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   : Superclass(parent)
 {

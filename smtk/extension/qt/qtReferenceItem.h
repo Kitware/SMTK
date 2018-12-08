@@ -55,6 +55,15 @@ protected slots:
   virtual void selectionLinkToggled(bool linked);
   virtual void setOutputOptional(int state);
 
+  /**\brief Called whenever the edit button's QMenu is about to hide.
+    *
+    * This may or may not be initiated by synchronizeAndHide().
+    * If not, then it is initiated directly by the user clicking outside
+    * the popup, so it will call synchronizeAndHide() with
+    * m_p->m_alreadyClosingPopup set so that it will only synchronize and
+    * not hide.
+    */
+  void popupClosing();
   /**\brief Link this item to the "hovered" selection bit.
     *
     * This should set up the initial state, observe changes to the item, and update
