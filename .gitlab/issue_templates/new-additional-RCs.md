@@ -1,21 +1,21 @@
 <!--
-This template is for tracking a release of SMTK. Please replace the
+This template is for tracking a release of smtk. Please replace the
 following strings with the associated values:
 
-  - `VERSION`
-  - `MAJOR`
-  - `MINOR`
+  - `VERSION`: e.g. 3.0.0-rc2
+  - `MAJOR`: e.g. 3
+  - `MINOR`: e.g. 0
 
 Please remove this comment.
 -->
 
 # Preparatory steps
 
-  - Update SMTK guides
-    - Assemble release notes into `doc/release/notes/SMTK-VERSION`.
+  - Update smtk guides
+    - Assemble release notes into `doc/release/notes/smtk-VERSION`.
       - [ ] Get positive review and merge.
 
-# Update SMTK
+# Update smtk
 
 If making a release from the `release` branch, e.g., `vMAJOR.MINOR.0-RC2 or above`:
 
