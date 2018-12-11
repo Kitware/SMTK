@@ -91,6 +91,15 @@ set(EXECUTABLE_OUTPUT_PATH         ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+# Set the directory where cmake configuration files are installed. The
+# convention for this directory's location is OS-dependent. See
+# https://cmake.org/cmake/help/v3.13/command/find_package.html section "Search
+# Procedure" for more information.
+set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION})
+if (WIN32)
+  set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${PROJECT_VERSION}/cmake)
+endif()
+
 ################################################################################
 # Options that the user controls
 ################################################################################
@@ -609,7 +618,7 @@ install(
     ${PROJECT_SOURCE_DIR}/CMake/SMTKPluginMacros.cmake
     ${PROJECT_SOURCE_DIR}/CMake/serverSource.cxx.in
   DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION}
+    ${SMTK_INSTALL_CONFIG_DIR}
 )
 
 ################################################################################
@@ -654,7 +663,7 @@ endif()
 # Setup the exports for the library when used from an installed location
 install(
   EXPORT ${PROJECT_NAME}
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION}
+  DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
   FILE ${PROJECT_NAME}Targets.cmake
 )
 
@@ -679,7 +688,7 @@ configure_file(
 
 install(
   EXPORT ${PROJECT_NAME}
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION}
+  DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
   FILE ${PROJECT_NAME}Targets.cmake
 )
 
@@ -698,7 +707,7 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/${PROJECT_NAME}Config.cmake
-         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION})
+         DESTINATION ${SMTK_INSTALL_CONFIG_DIR})
 
 ################################################################################
 # Build documentation
