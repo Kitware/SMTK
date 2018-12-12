@@ -29,103 +29,24 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
-// #include "ui_qtResourceBrowser.h"
-
+#include <QAbstractProxyModel>
 #include <QColorDialog>
 #include <QItemSelection>
 #include <QItemSelectionModel>
 #include <QPointer>
 #include <QTreeView>
 
+#include "smtk/extension/qt/qtResourceBrowserP.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
+
 using namespace smtk::extension;
 
-using qtDescriptivePhraseModel = smtk::extension::qtDescriptivePhraseModel;
-
-class qtResourceBrowser::Internal // : public Ui::qtResourceBrowser
-{
-public:
-  Internal()
-    : m_selnSource("resource panel")
-    , m_selnLabel("selected")
-    , m_hoverLabel("hovered")
-    , m_resourceTreeStyle(-1)
-    , m_updatingPanelSelectionFromSMTK(false)
-  {
-  }
-
-  ~Internal()
-  {
-    // Unregister our decorator before we become invalid.
-    m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
-  }
-
-  void setup(::qtResourceBrowser* parent, const std::string& viewName)
-  {
-    parent->setWindowTitle("Resources");
-    auto viewMap = qtSMTKUtilities::modelViewConstructors();
-    auto vcit = viewMap.find(viewName);
-    if (vcit == viewMap.end())
-    {
-      vcit = viewMap.find(""); // The default constructor.
-    }
-    qtModelViewConstructor ctor = vcit->second;
-    if (!ctor)
-    {
-      ctor = qtResourceBrowser::createDefaultView;
-    }
-    m_layout = new QVBoxLayout(parent);
-    m_layout->setObjectName("m_layout");
-    m_view = ctor(parent);
-    m_layout->addWidget(m_view);
-    m_phraseModel = smtk::view::ResourcePhraseModel::create();
-    m_model = new smtk::extension::qtDescriptivePhraseModel;
-    m_model->setPhraseModel(m_phraseModel);
-    m_delegate = new smtk::extension::qtDescriptivePhraseDelegate;
-
-    m_delegate->setTextVerticalPad(6);
-    m_delegate->setTitleFontWeight(1);
-    m_delegate->setDrawSubtitle(false);
-    m_view->setModel(m_model);
-    m_view->setItemDelegate(m_delegate);
-    m_view->setMouseTracking(true); // Needed to receive hover events.
-
-    QObject::connect(m_delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), m_model,
-      SLOT(toggleVisibility(const QModelIndex&)));
-    QObject::connect(m_delegate, SIGNAL(requestColorChange(const QModelIndex&)), parent,
-      SLOT(editObjectColor(const QModelIndex&)));
-
-    QObject::connect(m_view->selectionModel(),
-      SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), parent,
-      SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
-  }
-
-  QVBoxLayout* m_layout;
-  QTreeView* m_view;
-  QPointer<smtk::extension::qtDescriptivePhraseModel> m_model;
-  QPointer<smtk::extension::qtDescriptivePhraseDelegate> m_delegate;
-  std::map<smtk::resource::ManagerPtr, int> m_observers;
-  smtk::view::PhraseModel::Ptr m_phraseModel;
-  smtk::view::Selection::Ptr m_seln; // TODO: This assumes there is only 1 server connection
-  int m_selnHandle;                  // TODO: Same assumption as m_seln
-  int m_selnValue;
-  int m_hoverValue;
-  std::string m_selnSource; // TODO: This assumes there is only 1 panel (or that all should share)
-  std::string m_selnLabel;
-  std::string m_hoverLabel;
-  std::map<smtk::common::UUID, int> m_visibleThings;
-  int m_resourceTreeStyle; // Which subphrase generator should be used?
-
-  // Set to true when inside sendSMTKSelectionToPanel.
-  // Used to avoid updating the SMTK selection from the panel while
-  // the panel is being updated from SMTK:
-  bool m_updatingPanelSelectionFromSMTK;
-};
-
-qtResourceBrowser::qtResourceBrowser(const std::string& viewName, QWidget* parent)
+qtResourceBrowser::qtResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel,
+  const std::string& modelViewName, QAbstractItemModel* qmodel, QWidget* parent)
   : Superclass(parent)
 {
   m_p = new Internal;
-  m_p->setup(this, viewName);
+  m_p->setup(this, phraseModel, modelViewName, qmodel, parent);
 }
 
 qtResourceBrowser::~qtResourceBrowser()
@@ -146,6 +67,11 @@ QTreeView* qtResourceBrowser::createDefaultView(QWidget* parent)
   return view;
 }
 
+QTreeView* qtResourceBrowser::view() const
+{
+  return m_p->m_view;
+}
+
 smtk::view::PhraseModelPtr qtResourceBrowser::phraseModel() const
 {
   return m_p->m_phraseModel;
@@ -159,22 +85,23 @@ void qtResourceBrowser::setPhraseModel(const smtk::view::PhraseModelPtr& model)
   }
   m_p->m_phraseModel = model;
   // TODO: Is this all we need?
-  if (m_p->m_phraseModel && m_p->m_model)
+  auto dpmodel = m_p->descriptivePhraseModel();
+  if (m_p->m_phraseModel && dpmodel)
   {
-    m_p->m_model->setPhraseModel(m_p->m_phraseModel);
-    m_p->m_model->rebuildSubphrases(QModelIndex());
+    dpmodel->setPhraseModel(m_p->m_phraseModel);
+    dpmodel->rebuildSubphrases(QModelIndex());
   }
 }
 
 smtk::view::SubphraseGeneratorPtr qtResourceBrowser::phraseGenerator() const
 {
-  auto root = m_p->m_model->getItem(QModelIndex());
+  auto root = m_p->m_phraseModel ? m_p->m_phraseModel->root() : nullptr;
   return root ? root->findDelegate() : nullptr;
 }
 
 void qtResourceBrowser::setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg)
 {
-  auto root = m_p->m_model->getItem(QModelIndex());
+  auto root = m_p->m_phraseModel ? m_p->m_phraseModel->root() : nullptr;
   if (spg)
   {
     spg->setModel(m_p->m_phraseModel);
@@ -236,7 +163,8 @@ void qtResourceBrowser::sendPanelSelectionToSMTK(const QItemSelection&, const QI
   auto selected = m_p->m_view->selectionModel()->selection();
   for (auto qslist : selected.indexes())
   {
-    auto phrase = m_p->m_model->getItem(qslist);
+    auto phrase = qslist.data(qtDescriptivePhraseModel::PhrasePtrRole)
+                    .value<smtk::view::DescriptivePhrasePtr>();
     smtk::resource::Component::Ptr comp;
     smtk::resource::Resource::Ptr rsrc;
     if (phrase && (comp = phrase->relatedComponent()))
@@ -262,7 +190,7 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
     return;
   }
   auto qview = m_p->m_view;
-  auto qmodel = m_p->m_model;
+  auto qmodel = m_p->descriptivePhraseModel();
   auto root = m_p->m_phraseModel->root();
   QItemSelection qseln;
   root->visitChildren(
@@ -279,6 +207,15 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
       }
       return 0;
     });
+
+  auto smodel = dynamic_cast<QAbstractProxyModel*>(qview->selectionModel()->model());
+  // If our top-level model is a proxy model, map the selected
+  // indices from the descriptive phrase space into the proxy's
+  // space.
+  if (smodel)
+  {
+    qseln = smodel->mapSelectionFromSource(qseln);
+  }
 
   // Now update the Qt selection, being careful not to trigger SMTK updates:
   m_p->m_updatingPanelSelectionFromSMTK = true;
@@ -332,7 +269,8 @@ void qtResourceBrowser::hoverRow(const QModelIndex& idx)
   this->resetHover(csetAdd, csetDel);
 
   // Discover what is currently hovered
-  auto phr = m_p->m_model->getItem(idx);
+  auto phr =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   if (!phr)
   {
     return;
@@ -400,7 +338,8 @@ void qtResourceBrowser::resetHover(
 
 void qtResourceBrowser::editObjectColor(const QModelIndex& idx)
 {
-  auto phrase = m_p->m_model->getItem(idx);
+  auto phrase =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   if (phrase)
   {
     std::string dialogInstructions = "Choose Color for " +

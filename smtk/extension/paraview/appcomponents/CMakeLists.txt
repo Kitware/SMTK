@@ -36,10 +36,11 @@ set(PQComponentsSrcs
   pqSMTKPipelineSelectionBehavior.cxx
   pqSMTKRegisterImportersBehavior.cxx
   pqSMTKResource.cxx
+  pqSMTKResourceBrowser.cxx
+  pqSMTKResourcePanel.cxx
   pqSMTKSaveResourceBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKWrapper.cxx
-  pqSMTKResourcePanel.cxx
 )
 
 set(PQComponentsHeaders
@@ -58,10 +59,11 @@ set(PQComponentsHeaders
   pqSMTKPipelineSelectionBehavior.h
   pqSMTKRegisterImportersBehavior.h
   pqSMTKResource.h
+  pqSMTKResourceBrowser.h
+  pqSMTKResourcePanel.h
   pqSMTKSaveResourceBehavior.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKWrapper.h
-  pqSMTKResourcePanel.h
 )
 
 set(PQComponentsUIs

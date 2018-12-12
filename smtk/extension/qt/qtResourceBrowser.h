@@ -7,12 +7,16 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef smtk_extension_qtResourceBrowser_h
+#define smtk_extension_qtResourceBrowser_h
+
 #include "smtk/extension/qt/Exports.h"
 
 #include "smtk/PublicPointerDefs.h"
 
 #include <QWidget>
 
+class QAbstractItemModel;
 class QItemSelection;
 class QTreeView;
 
@@ -21,8 +25,25 @@ namespace smtk
 namespace extension
 {
 
+class qtDescriptivePhraseModel;
+
 /**\brief A panel that displays SMTK resources available to the application/user.
   *
+  * This is a Qt widget that displays a tree or list view holding an SMTK
+  * descriptive phrase model.
+  *
+  * Its constructor accepts
+  * (1) an smtk::view::PhraseModel that you have configured,
+  * (2) the string name registered to a QAbstractItemView subclass constructor,
+  * (3) a QAbstactItemModel implementing qtDescriptivePhraseModel model index queries, and
+  * (4) a parent QWidget.
+  *
+  * This QAbstractItemModel class should either be a
+  * qtDescriptivePhraseModel or QAbstractProxyModel whose source is a
+  * qtDescriptivePhraseModel.
+  * Because of that, indices from the QAbstractItemModel will provide properties
+  * that can be used by a qtDescriptivePhraseDelegate instance, which this
+  * class creates and owns to control how the tree rows are rendered.
   */
 class SMTKQTEXT_EXPORT qtResourceBrowser : public QWidget
 {
@@ -30,10 +51,13 @@ class SMTKQTEXT_EXPORT qtResourceBrowser : public QWidget
   typedef QWidget Superclass;
 
 public:
-  qtResourceBrowser(const std::string& viewName = "", QWidget* parent = nullptr);
+  qtResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel = smtk::view::PhraseModelPtr(),
+    const std::string& modelViewName = "", QAbstractItemModel* model = nullptr,
+    QWidget* parent = nullptr);
   ~qtResourceBrowser() override;
 
   static QTreeView* createDefaultView(QWidget* parent);
+  QTreeView* view() const;
 
   smtk::view::PhraseModelPtr phraseModel() const;
   void setPhraseModel(const smtk::view::PhraseModelPtr&);
@@ -74,3 +98,4 @@ protected:
 };
 }
 }
+#endif // smtk_extension_qtResourceBrowser_h

@@ -7,20 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/Exports.h"
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h
+#define smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h
 
-#include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 
 #include <QDockWidget>
 
-class QItemSelection;
-
-class pqSMTKResource;
-class pqSMTKWrapper;
-
-class pqRepresentation;
-class pqServer;
-class pqView;
+class pqSMTKResourceBrowser;
 
 /**\brief A panel that displays SMTK resources available to the application/user.
   *
@@ -34,26 +28,8 @@ public:
   pqSMTKResourcePanel(QWidget* parent = nullptr);
   ~pqSMTKResourcePanel() override;
 
-protected slots:
-  virtual void searchTextChanged(const QString& searchText);
-
-  virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
-  virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
-
-  /// Used to update phrase model with new visibility info for the active view.
-  virtual void activeViewChanged(pqView*);
-
-  /// Used to keep list of resource representations in active view up-to-date.
-  virtual void representationAddedToActiveView(pqRepresentation*);
-  virtual void representationRemovedFromActiveView(pqRepresentation*);
-
-  /// Used to listen for self and others making changes to component visibilities in active view's representations.
-  virtual void componentVisibilityChanged(smtk::resource::ComponentPtr comp, bool visible);
-
-  /// Called when vtkSMTKSettings is modified, indicating highlight-on-hover behavior may change.
-  virtual void updateSettings();
-
 protected:
-  class Internal;
-  Internal* m_p;
+  pqSMTKResourceBrowser* m_browser;
 };
+
+#endif // smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h

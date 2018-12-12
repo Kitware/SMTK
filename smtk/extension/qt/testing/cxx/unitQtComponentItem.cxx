@@ -10,6 +10,7 @@
 #include "smtk/extension/qt/testing/cxx/unitQtComponentItem.h"
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
 
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/ResourcePhraseModel.h"
@@ -408,8 +409,10 @@ int unitQtComponentItem(int argc, char* argv[])
     m_visibleThings.clear(); // just in case there were things not in any phrase.
     updater();
   });
-  QObject::connect(ef, &qtEventFilter::toggleItem, [&listView, &qmodel]() {
-    auto cphr = qmodel->getItem(listView->currentIndex());
+  QObject::connect(ef, &qtEventFilter::toggleItem, [&listView]() {
+    auto cphr = listView->currentIndex()
+                  .data(smtk::extension::qtDescriptivePhraseModel::PhrasePtrRole)
+                  .value<smtk::view::DescriptivePhrasePtr>();
     if (cphr)
     {
       cphr->setRelatedVisibility(!cphr->relatedVisibility());

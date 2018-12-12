@@ -12,6 +12,7 @@
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtOverlay.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/ComponentPhraseModel.h"
@@ -681,7 +682,9 @@ bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
 
 void qtReferenceItem::toggleCurrentItem()
 {
-  auto cphr = m_p->m_qtModel->getItem(m_p->m_popupList->currentIndex());
+  auto cphr = m_p->m_popupList->currentIndex()
+                .data(smtk::extension::qtDescriptivePhraseModel::PhrasePtrRole)
+                .value<smtk::view::DescriptivePhrasePtr>();
   if (cphr)
   {
     auto currentMembership = cphr->relatedVisibility();
@@ -772,7 +775,8 @@ void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr ph
     for (auto ref : refs)
     {
       auto ridx = m_p->m_qtModel->index(ref, 0, qidx);
-      auto rphr = m_p->m_qtModel->getItem(ridx);
+      auto rphr = ridx.data(smtk::extension::qtDescriptivePhraseModel::PhrasePtrRole)
+                    .value<smtk::view::DescriptivePhrasePtr>();
       auto comp = rphr ? rphr->relatedComponent() : nullptr;
       auto rsrc = rphr ? rphr->relatedResource() : nullptr;
       if (comp && m_p->m_members.find(comp) != m_p->m_members.end())
