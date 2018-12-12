@@ -13,6 +13,7 @@
 
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
+#include "smtk/common/UUID.h"
 #include "smtk/io/Logger.h"
 #include "smtk/model/Resource.h"
 
@@ -84,6 +85,15 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
 { // Follow the logic in XmlDocV1Parser::processAttribute::L1753
   try
   {
+    std::string uuidString = j.at("ID");
+    auto uuid = smtk::common::UUID(uuidString);
+    att->setId(uuid);
+  }
+  catch (std::exception& /*e*/)
+  {
+  }
+  try
+  {
     att->setAppliesToInteriorNodes(j.at("OnInteriorNodes"));
   }
   catch (std::exception& /*e*/)
@@ -140,6 +150,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
       try
       {
         auto itemToProcess = att->find(itemIter->at("Name"));
+        if (!itemToProcess)
+        {
+          continue;
+        }
         smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
           *itemIter, itemToProcess, itemExpressionInfo, attRefInfo);
       }

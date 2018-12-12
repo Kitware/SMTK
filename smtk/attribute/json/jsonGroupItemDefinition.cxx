@@ -67,11 +67,10 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinition
     for (i = 0; i < n; i++)
     {
       json itemDef;
-      std::string name = Item::type2String(defPtr->itemDefinition(i)->type());
       smtk::attribute::JsonHelperFunction::processItemDefinitionTypeToJson(
         itemDef, defPtr->itemDefinition(i));
       // Same type definitions can occur multiple times
-      itemDefs[name].push_back(itemDef);
+      itemDefs.push_back(itemDef);
     }
     j["ItemDefinitions"] = itemDefs;
   }
@@ -89,6 +88,27 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefiniti
   auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
   smtk::attribute::from_json(j, temp);
 
+  try
+  {
+    defPtr->setNumberOfRequiredGroups(j.at("NumberOfRequiredGroups"));
+  }
+  catch (std::exception)
+  {
+  }
+  try
+  {
+    defPtr->setIsExtensible(j.at("Extensible"));
+  }
+  catch (std::exception)
+  {
+  }
+  try
+  {
+    defPtr->setMaxNumberOfGroups(j.at("MaxNumberOfGroups"));
+  }
+  catch (std::exception)
+  {
+  }
   json clabels;
   try
   {
