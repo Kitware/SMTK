@@ -8,25 +8,30 @@
       <DetailedDescription>
         Create a model given a set of coordinate axes in 3D and a minimum feature size.
       </DetailedDescription>
+
+      <!-- A polygon model can be created within an existing
+           resource (or an existing resource's session) if one is
+           provided. Otherwise, a new resource is created -->
+      <AssociationsDef NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1">
+        <Accepts><Resource Name="smtk::session::polygon::Resource" Filter="model"/></Accepts>
+      </AssociationsDef>
+
       <ItemDefinitions>
 
-        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
-          <Accepts>
-            <Resource Name="smtk::session::polygon::Resource"/>
-          </Accepts>
-          <ChildrenDefinitions>
-            <String Name="session only" Label="session" Advanced="1">
-              <DiscreteInfo DefaultIndex="0">
-                <Structure>
-                  <Value Enum="this file">import into this file </Value>
-                </Structure>
-                <Structure>
-                  <Value Enum="this session">import into a new file using this file's session</Value>
-                </Structure>
-              </DiscreteInfo>
-            </String>
-          </ChildrenDefinitions>
-        </Resource>
+      <!-- In the event that we are creating a model within  an existing
+           resource, this enumeration allows the user to select
+           whether the model should simply use the resource's session
+           or if the new model should be a part of the resource itself -->
+        <String Name="session only" Label="session" Advanced="1">
+          <DiscreteInfo DefaultIndex="0">
+            <Structure>
+              <Value Enum="this file">import into this file</Value>
+            </Structure>
+            <Structure>
+              <Value Enum="this session">import into a new file using this file's session</Value>
+            </Structure>
+          </DiscreteInfo>
+        </String>
 
         <String Name="name" NumberOfValuesRequired="1" Optional="true">
           <BriefDescription>A user-assigned name for the model.</BriefDescription>

@@ -125,13 +125,13 @@ ImportOperation::Result ImportOperation::operateInternal()
   smtk::session::discrete::Session::Ptr session = nullptr;
 
   // Modes 2 and 3 requre an existing resource for input
-  smtk::attribute::ResourceItem::Ptr existingResourceItem =
-    this->parameters()->findResource("resource");
+  smtk::attribute::ReferenceItem::Ptr existingResourceItem = this->parameters()->associations();
 
-  if (existingResourceItem && existingResourceItem->isEnabled())
+  if (existingResourceItem->numberOfValues() > 0)
   {
     smtk::session::discrete::Resource::Ptr existingResource =
-      std::static_pointer_cast<smtk::session::discrete::Resource>(existingResourceItem->value());
+      std::static_pointer_cast<smtk::session::discrete::Resource>(
+        existingResourceItem->objectValue());
 
     session = existingResource->discreteSession();
 

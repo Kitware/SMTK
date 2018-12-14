@@ -73,13 +73,12 @@ Import::Result Import::operateInternal()
   smtk::mesh::Resource::Ptr meshResource = nullptr;
 
   // Modes 2 and 3 requre an existing resource for input
-  smtk::attribute::ResourceItem::Ptr existingResourceItem =
-    this->parameters()->findResource("resource");
+  smtk::attribute::ReferenceItem::Ptr existingResourceItem = this->parameters()->associations();
 
-  if (existingResourceItem && existingResourceItem->isEnabled())
+  if (existingResourceItem->numberOfValues() > 0)
   {
     smtk::session::mesh::Resource::Ptr existingResource =
-      std::static_pointer_cast<smtk::session::mesh::Resource>(existingResourceItem->value());
+      std::static_pointer_cast<smtk::session::mesh::Resource>(existingResourceItem->objectValue());
 
     session = existingResource->session();
 
