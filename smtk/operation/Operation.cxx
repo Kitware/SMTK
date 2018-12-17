@@ -199,8 +199,7 @@ Operation::Result Operation::operate()
     {
       // Serialize relevant log records to a json-formatted string.
       nlohmann::json j = std::vector<smtk::io::Logger::Record>(
-        smtk::io::Logger::instance().records().begin() + logStart,
-        smtk::io::Logger::instance().records().end());
+        this->log().records().begin() + logStart, this->log().records().end());
       result->findString("log")->appendValue(j.dump());
     }
   }
