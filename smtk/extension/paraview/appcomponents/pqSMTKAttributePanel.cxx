@@ -131,7 +131,6 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
         {
           // The application is removing the attribute resource we are viewing.
           // Clear out the panel and unobserve the manager.
-          rsrcMgr->observers().erase(m_observer);
           delete m_attrUIMgr;
           m_attrUIMgr = nullptr;
           m_rsrc = nullptr;
@@ -140,6 +139,7 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
           {
             delete w;
           }
+          rsrcMgr->observers().erase(m_observer);
         }
       });
   }
