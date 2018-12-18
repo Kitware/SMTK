@@ -115,6 +115,17 @@ void pqImportIntoResourceReaction::importIntoResource()
   }
   auto operationIndex = *operationIndices.begin();
 
+  // Construct an import operation.
+  auto importIntoOp = wrapper->smtkOperationManager()->create(operationIndex);
+
+  // Associate the active resource to the operation's parameters
+  if (importIntoOp->parameters()->associate(resource) == false)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Import operation for resource type <"
+        << resource->typeName() << "> is not configured for importing into an extant resource.");
+    return;
+  }
+
   // Access the file item definition associated with the import operation.
   auto fileItemDef = importerGroup.fileItemDefinitionForOperation(operationIndex);
 
@@ -128,15 +139,7 @@ void pqImportIntoResourceReaction::importIntoResource()
   {
     QString fileName = fileDialog.getSelectedFiles()[0];
 
-    // Construct an import operation.
-    auto importIntoOp = wrapper->smtkOperationManager()->create(operationIndex);
-
     importIntoOp->parameters()->findFile(fileItemDef->name())->setValue(fileName.toStdString());
-
-    // TODO: this needs to be standardized across import operations.
-    auto resourceItem = importIntoOp->parameters()->findResource("resource");
-    resourceItem->setIsEnabled(true);
-    resourceItem->setValue(resource);
 
     // Execute the import operation.
     auto result = importIntoOp->operate();

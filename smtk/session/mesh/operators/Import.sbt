@@ -12,6 +12,14 @@
         &lt;p&gt;This operator imports a mesh into smtk, and then
         parses its components by dimension and connectivity to form a model.
       </DetailedDescription>
+
+      <!-- Import operations can import a file into an existing
+           resource (or an existing resource's session) if one is
+           provided. Otherwise, a new resource is created -->
+      <AssociationsDef NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1">
+        <Accepts><Resource Name="smtk::session::mesh::Resource"/></Accepts>
+      </AssociationsDef>
+
       <ItemDefinitions>
 
         <File Name="filename" NumberOfRequiredValues="1"
@@ -19,12 +27,11 @@
           FileFilters="[defined programatically]">
         </File>
 
-        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
-          <Accepts>
-            <Resource Name="smtk::session::mesh::Resource"/>
-          </Accepts>
-        </Resource>
-
+      <!-- In the event that we are importing into an existing
+           resource, this enumeration allows the user to select
+           whether the import should simply use the resource's session
+           or if the imported model should be a part of the resource
+           itself -->
         <String Name="session only" Label="session" Advanced="1">
           <DiscreteInfo DefaultIndex="0">
             <Structure>
