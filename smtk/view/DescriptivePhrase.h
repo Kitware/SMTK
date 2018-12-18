@@ -191,16 +191,19 @@ public:
     return m_content ? m_content->displayable(PhraseContent::VISIBILITY) : false;
   }
   /// If this phrase has a related visibility value, return it; otherwise return -1.
-  int relatedVisibility() const { return m_content->flagValue(PhraseContent::VISIBILITY); }
+  int relatedVisibility() const
+  {
+    return m_content ? m_content->flagValue(PhraseContent::VISIBILITY) : 0;
+  }
   /// Return true if users should be allowed to change the visibility; false otherwise.
   virtual bool isRelatedVisibilityMutable() const
   {
-    return m_content->editable(PhraseContent::VISIBILITY);
+    return m_content ? m_content->editable(PhraseContent::VISIBILITY) : false;
   }
   /// A method user interfaces may call to change the visibility.
   virtual bool setRelatedVisibility(int visibility)
   {
-    return m_content->editFlagValue(PhraseContent::VISIBILITY, visibility);
+    return m_content ? m_content->editFlagValue(PhraseContent::VISIBILITY, visibility) : false;
   }
 
   ///@}

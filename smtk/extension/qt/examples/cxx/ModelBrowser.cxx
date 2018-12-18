@@ -107,7 +107,7 @@ void ModelBrowser::addToGroup()
 
   // Only keep the phrase alive as long as we must.
   {
-    DescriptivePhrasePtr phrase = m_p->qmodel->getItem(qidx);
+    auto phrase = qidx.data(smtk::extension::qtDescriptivePhraseModel::PhrasePtrRole).value<DescriptivePhrasePtr>();
     if (!phrase)
       return;
 
@@ -136,7 +136,7 @@ void ModelBrowser::removeFromGroup()
   {
     EntityRef relEnt;
     {
-      DescriptivePhrasePtr phrase = m_p->qmodel->getItem(qidx);
+      auto phrase = qidx.data(smtk::extension::qtDescriptivePhraseModel::PhrasePtrRole).value<DescriptivePhrasePtr>();
       if (phrase)
         relEnt = phrase->relatedEntity();
     }
@@ -202,7 +202,7 @@ smtk::model::Group ModelBrowser::groupParentOfIndex(const QModelIndex& qidx)
   (void)qidx;
   smtk::model::Group group;
   /*
-  DescriptivePhrasePtr phrase = m_p->qmodel->getItem(qidx);
+  auto phrase = qidx.data(smtk::extension::qtDescriptivePhraseModel::PhrasePtrRole).value<DescriptivePhrasePtr>();
   if (phrase)
   {
     EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);

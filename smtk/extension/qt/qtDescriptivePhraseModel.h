@@ -66,7 +66,8 @@ public:
     PhraseCleanRole = Qt::UserRole + 105,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
     ModelActiveRole = Qt::UserRole + 106,      //!< Is resource the active resource?
     TitleTextMutableRole = Qt::UserRole + 107, //!< Is the title editable?
-    ColorMutableRole = Qt::UserRole + 108      //!< Is the subject's color editable?
+    ColorMutableRole = Qt::UserRole + 108,     //!< Is the subject's color editable?
+    PhrasePtrRole = Qt::UserRole + 109         //!< Grab the whole descriptive phrase!
   };
 
   void setPhraseModel(smtk::view::PhraseModelPtr model);
@@ -134,6 +135,7 @@ protected:
 
 /**\brief Iterate over all expanded entries in the tree.
   *
+  * Note that if you call this method, you must include "smtk/extension/qt/qtTypeDeclarations.h".
   */
 template <typename T, typename C>
 bool qtDescriptivePhraseModel::foreach_phrase(
@@ -142,7 +144,8 @@ bool qtDescriptivePhraseModel::foreach_phrase(
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
   {
-    view::DescriptivePhrasePtr phrase = this->getItem(top);
+    view::DescriptivePhrasePtr phrase =
+      top.data(PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
     // Do not descend if top's corresponding phrase would have to invoke
     // the subphrase generator to obtain the list of children... some phrases
     // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.
@@ -166,7 +169,8 @@ bool qtDescriptivePhraseModel::foreach_phrase(
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
   {
-    view::DescriptivePhrasePtr phrase = this->getItem(top);
+    view::DescriptivePhrasePtr phrase =
+      top.data(PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
     // Do not descend if top's corresponding phrase would have to invoke
     // the subphrase generator to obtain the list of children... some models
     // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.
