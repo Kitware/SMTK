@@ -470,13 +470,11 @@ Import::Result Import::operateInternal()
   modOp->parameters()->findDouble("feature size")->setValue(diam / 1000.0);
 
   {
-    smtk::attribute::ResourceItem::Ptr existingResourceItem =
-      this->parameters()->findResource("resource");
+    smtk::attribute::ReferenceItem::Ptr existingResourceItem = this->parameters()->associations();
 
-    if (existingResourceItem && existingResourceItem->isEnabled())
+    if (existingResourceItem->numberOfValues() > 0)
     {
-      modOp->parameters()->findResource("resource")->setIsEnabled(true);
-      modOp->parameters()->findResource("resource")->setValue(existingResourceItem->value());
+      modOp->parameters()->associate(existingResourceItem->objectValue());
       smtk::attribute::StringItem::Ptr sessionOnlyItem =
         this->parameters()->findString("session only");
       modOp->parameters()->findString("session only")->setValue(sessionOnlyItem->value());

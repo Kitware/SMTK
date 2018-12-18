@@ -96,13 +96,13 @@ CreateModel::Result CreateModel::operateInternal()
     smtk::session::polygon::Session::Ptr session = nullptr;
 
     // Modes 2 and 3 requre an existing resource for input
-    smtk::attribute::ResourceItem::Ptr existingResourceItem =
-      this->parameters()->findResource("resource");
+    smtk::attribute::ReferenceItem::Ptr existingResourceItem = this->parameters()->associations();
 
-    if (existingResourceItem && existingResourceItem->isEnabled())
+    if (existingResourceItem->numberOfValues() > 0)
     {
       smtk::session::polygon::Resource::Ptr existingResource =
-        std::static_pointer_cast<smtk::session::polygon::Resource>(existingResourceItem->value());
+        std::static_pointer_cast<smtk::session::polygon::Resource>(
+          existingResourceItem->objectValue());
 
       session = existingResource->polygonSession();
 

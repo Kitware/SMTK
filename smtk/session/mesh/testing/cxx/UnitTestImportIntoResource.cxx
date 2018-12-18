@@ -158,8 +158,7 @@ int UnitTestImportIntoResource(int argc, char* argv[])
   {
     smtk::session::mesh::Import::Ptr importOp =
       operationManager->create<smtk::session::mesh::Import>();
-    importOp->parameters()->findResource("resource")->setIsEnabled(true);
-    importOp->parameters()->findResource("resource")->setObjectValue(model->resource());
+    importOp->parameters()->associate(model->resource());
     std::string importFilePath(dataRoot);
     importFilePath += "/model/3d/exodus/disk_out_ref.ex2";
     importOp->parameters()->findFile("filename")->setValue(importFilePath);

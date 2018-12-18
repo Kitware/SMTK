@@ -4,29 +4,35 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="import" Label="Model - Import Geometry" BaseType="operation">
+
+      <!-- Import operations can import a file into an existing
+           resource (or an existing resource's session) if one is
+           provided. Otherwise, a new resource is created -->
+      <AssociationsDef NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1">
+        <Accepts><Resource Name="smtk::session::polygon::Resource"/></Accepts>
+      </AssociationsDef>
+
       <ItemDefinitions>
         <File Name="filename" Label="File Name" NumberOfRequiredValues="1"
           ShouldExist="true"
           FileFilters="2D Polygon Files (*.map *.poly *.smesh *.shp);;Map files (*.map);;Poly files (*.poly *.smesh);;Shape files (*.shp);;All files (*.*)">
         </File>
 
-        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
-          <Accepts>
-            <Resource Name="smtk::session::polygon::Resource"/>
-          </Accepts>
-          <ChildrenDefinitions>
-            <String Name="session only" Label="session" Advanced="1">
-              <DiscreteInfo DefaultIndex="0">
-                <Structure>
-                  <Value Enum="this file">import into this file </Value>
-                </Structure>
-                <Structure>
-                  <Value Enum="this session">import into a new file using this file's session</Value>
-                </Structure>
-              </DiscreteInfo>
-            </String>
-          </ChildrenDefinitions>
-        </Resource>
+      <!-- In the event that we are importing into an existing
+           resource, this enumeration allows the user to select
+           whether the import should simply use the resource's session
+           or if the imported model should be a part of the resource
+           itself -->
+        <String Name="session only" Label="session" Advanced="1">
+          <DiscreteInfo DefaultIndex="0">
+            <Structure>
+              <Value Enum="this file">import into this file</Value>
+            </Structure>
+            <Structure>
+              <Value Enum="this session">import into a new file using this file's session</Value>
+            </Structure>
+          </DiscreteInfo>
+        </String>
 
         <String Name="ShapeBoundaryStyle" Label="Specify Shape File Boundary" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="true">
           <BriefDescription>This is required for shape file </BriefDescription>

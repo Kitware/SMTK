@@ -80,8 +80,7 @@ Read::Result Read::operateInternal()
 
   // Create an import operator
   smtk::session::mesh::Import::Ptr importOp = smtk::session::mesh::Import::create();
-  importOp->parameters()->findResource("resource")->setIsEnabled(true);
-  importOp->parameters()->findResource("resource")->setValue(resource);
+  importOp->parameters()->associate(resource);
   importOp->parameters()->findString("session only")->setDiscreteIndex(0);
   importOp->parameters()->findFile("filename")->setValue(meshFilename);
   importOp->parameters()->findVoid("construct hierarchy")->setIsEnabled(false);
