@@ -12,6 +12,7 @@
 #include "smtk/extension/qt/qtDescriptivePhraseEditor.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
+#include <QAbstractProxyModel>
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
@@ -363,9 +364,8 @@ bool qtDescriptivePhraseDelegate::eventFilter(QObject* editor, QEvent* evt)
   return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
-std::string qtDescriptivePhraseDelegate::determineAction(const QPoint& pPos, const QModelIndex& idx,
-  const QStyleOptionViewItem& option,
-  const smtk::extension::qtDescriptivePhraseModel* entityMod) const
+std::string qtDescriptivePhraseDelegate::determineAction(
+  const QPoint& pPos, const QModelIndex& idx, const QStyleOptionViewItem& option) const
 {
   std::string res;
   if (m_visibilityMode)
@@ -386,7 +386,7 @@ std::string qtDescriptivePhraseDelegate::determineAction(const QPoint& pPos, con
     bvis = px > option.rect.left() && px < (option.rect.left() + visiconsize.width()) &&
       py > option.rect.top() && py < (option.rect.top() + option.rect.height());
   }
-  if (!bvis && entityMod && entityMod->getItem(idx)->isRelatedColorMutable())
+  if (!bvis && idx.data(qtDescriptivePhraseModel::ColorMutableRole).toBool())
   {
     bcolor = px > (option.rect.left() + visiconsize.width() + 2) &&
       px < (option.rect.left() + visiconsize.width() + 2 + m_swatchSize) &&
@@ -418,10 +418,8 @@ bool qtDescriptivePhraseDelegate::editorEvent(
     return res;
   }
 
-  // pass in qComponentItemModel for mutability check
-  smtk::extension::qtDescriptivePhraseModel* entityMod =
-    dynamic_cast<smtk::extension::qtDescriptivePhraseModel*>(mod);
-  std::string whichIcon = this->determineAction(e->pos(), idx, option, entityMod);
+  std::string whichIcon;
+  whichIcon = this->determineAction(e->pos(), idx, option);
 
   if (whichIcon == "visible")
   {

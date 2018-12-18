@@ -147,7 +147,7 @@ One of the primary components of `smtk::mesh` is
 represent large numbers of indices. It was originally a typedef of
 `::moab::Range`, and its MOAB-based API had begun to creep into other
 non-MOAB sections of `smtk::mesh`. This class has been replaced by
-boost's interval_set, which has similar functionality and allows us to
+boost's `interval_set`, which has similar functionality and allows us to
 more cleanly contain MOAB's backend.
 
 `smtk::mesh::HandleRange` now has a different API that is analogous to
@@ -269,7 +269,8 @@ In this case all Model Faces will be displayed and will have an attribute derive
 
 ### Supporting Empty Views in a Tiled Group View
 
-+ If a child view is not displaying any attribute items the owning tiled group view will no longer display the title of the child view.
+If a child view is not displaying any attribute items
+the owning tiled group view will no longer display the title of the child view.
 
 ### Item View Support
 
@@ -308,9 +309,12 @@ You can now specify an ItemView section within the Att block of the XML or JSON.
 + Added qtDoubleItem, qtIntItem, qtStringItem classes that use the qtInputsItem class
 + Added qtFileItem and qtDirectory classes that use the qtFileSystemItem class.
 + qtAssociationWidget has been modified to work with SMTK 3.0 version of model resources but NOT using Resource Links
- + Widget now uses model::Entity instead of model::EntityRef
+    + Widget now uses model::Entity instead of model::EntityRef
 + Replaced code that was grabbing the raw pointer from a shared pointer so that this was not necessary
 + Added a IncludeIndex property to Views.  This is used by I/O classes to represent the directory structure
++ qtDescriptivePhraseModel now provides a `PhrasePtrRole` on its indexes that can be used
+  to fetch a descriptive phrase shared-pointer without access to the model (only the index).
+  This allows proxy models such as QSortFilterProxyModel to "wrap" descriptive phrases.
 
 ### Function evaluation feature in the SimpleExpression view
 
@@ -574,14 +578,14 @@ submitted by Cumulus. Currently, the API is tailored to NERSC. As
 additional submission sites are added to our workflows, the API will
 likely be made more general.
 
-### Enforce ParaView semantics for apply() on File->Open only
+### Enforce ParaView semantics for apply() on File→Open only
 
-When resoures are loaded via File->Open, ParaView semantics
+When resoures are loaded via File→Open, ParaView semantics
 apply: the apply button must be pressed to complete opening the
 file. This matches the functionality of the other ParaView readers
 (that are selectable when there are multiple readers for a file type).
 
-When a resource is created via File->New Resource, a modal dialog
+When a resource is created via File→New Resource, a modal dialog
 is presented to the user. When the user presses apply on the dialog,
 the resource is generated and its representation is rendered. The
 Properties Panel's apply button is never enabled.
@@ -610,7 +614,7 @@ operation is associated to that resource in the operation CreatorGroup.
 
 We have added a file menu option that allows a user to select a data
 file and import its contents into an existing resource. This differs
-from the canonical File->Open method, which creates a new resource for
+from the canonical File→Open method, which creates a new resource for
 the imported data.
 
 ParaView applications that load SMTK's pqAppComponents plugin now have
@@ -739,7 +743,7 @@ Our build infrastructure uses `always` but most developers will prefer `manual`.
 
 ### Support for SMTK as a third party submodule
 
-SMTK 3.0 replaces CMAKE_PROJECT_NAME with PROJECT_NAME within SMTK so
+SMTK 3.0 replaces `CMAKE_PROJECT_NAME` with `PROJECT_NAME` within SMTK so
 SMTK will build and install as a third party submodule of CMB. Also,
 the "subproject" delineation was removed from cJSON (which will soon
 be removed entirely), SMTKVTKExtensionMeshing, and

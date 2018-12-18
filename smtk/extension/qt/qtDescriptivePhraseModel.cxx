@@ -10,6 +10,7 @@
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
 
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/PhraseModel.h"
@@ -264,7 +265,13 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
     view::DescriptivePhrasePtr item = this->getItem(idx);
     if (item)
     {
-      if (role == TitleTextRole || role == Qt::DisplayRole)
+      if (role == PhrasePtrRole)
+      {
+        QVariant result;
+        result.setValue(item);
+        return result;
+      }
+      else if (role == TitleTextRole || role == Qt::DisplayRole)
       {
         return QVariant(item->title().c_str());
       }
@@ -731,7 +738,7 @@ Qt::DropActions qtDescriptivePhraseModel::supportedDropActions() const
 
 void qtDescriptivePhraseModel::toggleVisibility(const QModelIndex& idx)
 {
-  auto phrase = this->getItem(idx);
+  auto phrase = idx.data(PhrasePtrRole).value<smtk::view::DescriptivePhrase::Ptr>();
   if (!phrase)
   {
     smtkErrorMacro(
@@ -747,7 +754,7 @@ void qtDescriptivePhraseModel::toggleVisibility(const QModelIndex& idx)
 
 void qtDescriptivePhraseModel::editColor(const QModelIndex& idx)
 {
-  auto phrase = this->getItem(idx);
+  auto phrase = idx.data(PhrasePtrRole).value<smtk::view::DescriptivePhrase::Ptr>();
   if (!phrase)
   {
     smtkErrorMacro(

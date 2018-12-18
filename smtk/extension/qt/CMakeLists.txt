@@ -22,6 +22,7 @@ set(QAttrLibSrcs
   qtReferenceItem.cxx
   qtResourceItem.cxx
   qtResourceBrowser.cxx
+  qtResourceBrowserP.cxx
   qtOperationLauncher.cxx
   qtOperationView.cxx
   #qtModelView.cxx
@@ -118,13 +119,15 @@ set(QAttrLibMocHeaders
 
 set(QAttrLibHeaders
   ${QAttrLibMocHeaders}
+  RedirectOutput.h
   qtDirectoryItem.h
   qtDoubleItem.h
   qtIntItem.h
-  qtStringItem.h
-  qtViewInterface.h
+  qtResourceBrowserP.h
   qtSMTKUtilities.h
-  RedirectOutput.h
+  qtStringItem.h
+  qtTypeDeclarations.h
+  qtViewInterface.h
 )
 
 #install the headers
