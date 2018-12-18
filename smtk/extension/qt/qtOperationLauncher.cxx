@@ -10,7 +10,7 @@
 
 #include "smtk/extension/qt/qtOperationLauncher.h"
 
-// #define SINGLE_THREAD
+#define SINGLE_THREAD
 
 namespace smtk
 {
