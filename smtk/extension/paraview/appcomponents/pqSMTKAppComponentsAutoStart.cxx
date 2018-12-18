@@ -13,6 +13,7 @@
 
 #include "smtk/extension/paraview/appcomponents/pqPluginSMTKViewBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKExportSimulationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportIntoResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
@@ -42,6 +43,7 @@ void pqSMTKAppComponentsAutoStart::startup()
 {
   auto rsrcMgr = pqSMTKBehavior::instance(this);
   auto renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
+  auto closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);
   auto rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
   auto rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
   auto pipelineSync = pqSMTKPipelineSelectionBehavior::instance(this);
@@ -61,6 +63,7 @@ void pqSMTKAppComponentsAutoStart::startup()
   {
     pqCore->registerManager("smtk resource", rsrcMgr);
     pqCore->registerManager("smtk render resource", renderResourceBehavior);
+    pqCore->registerManager("smtk close resource", closeResourceBehavior);
     pqCore->registerManager("smtk import operation", rsrcImportOpMgr);
     pqCore->registerManager("smtk export simulation", rsrcExportSimMgr);
     pqCore->registerManager("smtk save resource", rsrcSaveMgr);
@@ -79,6 +82,7 @@ void pqSMTKAppComponentsAutoStart::shutdown()
   {
     pqCore->unRegisterManager("smtk resource");
     pqCore->unRegisterManager("smtk render resource");
+    pqCore->unRegisterManager("smtk close resource");
     pqCore->unRegisterManager("smtk import operation");
     pqCore->unRegisterManager("smtk export simulation");
     pqCore->unRegisterManager("smtk save resource");

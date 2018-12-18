@@ -14,6 +14,7 @@
 #include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/ReadResource.h"
+#include "smtk/operation/operators/RemoveResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 
 #include <tuple>
@@ -24,7 +25,8 @@ namespace operation
 {
 namespace
 {
-typedef std::tuple<ImportPythonOperation, ImportResource, ReadResource, WriteResource>
+typedef std::tuple<ImportPythonOperation, ImportResource, ReadResource, RemoveResource,
+  WriteResource>
   OperationList;
 }
 
