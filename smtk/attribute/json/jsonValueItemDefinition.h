@@ -97,7 +97,7 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
     json rangeInfoJson;
     if (defPtr->hasMinRange())
     {
-      rangeInfoJson["Min"]["Inclusive"] = defPtr->maxRangeInclusive();
+      rangeInfoJson["Min"]["Inclusive"] = defPtr->minRangeInclusive();
       rangeInfoJson["Min"]["Value"] = defPtr->minRange();
     }
     if (defPtr->hasMaxRange())
@@ -142,8 +142,6 @@ static void processDerivedValueDefFromJson(const json& j, ItemDefType defPtr,
       for (auto currentEnum = enumValue.begin(); currentEnum != enumValue.end(); currentEnum++)
       {
         // Data and discreteEnum
-        std::cout << "addDiscreteValue as value and key: " << currentEnum.value() << " "
-                  << currentEnum.key() << std::endl;
         BasicType currentEnumValue = currentEnum.value();
         defPtr->addDiscreteValue(currentEnumValue, currentEnum.key());
         std::string discreteEnum = defPtr->discreteEnum(i);
@@ -162,8 +160,6 @@ static void processDerivedValueDefFromJson(const json& j, ItemDefType defPtr,
       for (auto currentEnum = enumValue.begin(); currentEnum != enumValue.end(); currentEnum++)
       {
         // Data and discreteEnum
-        std::cout << "addDiscreteValue without condition as value and key: " << currentEnum.value()
-                  << " " << currentEnum.key() << std::endl;
         BasicType currentEnumValue = currentEnum.value();
         defPtr->addDiscreteValue(currentEnumValue, currentEnum.key());
       }

@@ -50,6 +50,21 @@ class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definiti
 {
 public:
   smtkTypeMacroBase(smtk::attribute::Definition);
+  struct SMTKCORE_EXPORT WeakDefinitionPtrCompare
+  {
+    bool operator()(const smtk::attribute::WeakDefinitionPtr& lhs,
+      const smtk::attribute::WeakDefinitionPtr& rhs) const
+    {
+      auto left = lhs.lock();
+      if (left == nullptr)
+        return true;
+      auto right = rhs.lock();
+      if (right == nullptr)
+        return false;
+      return left->type() < right->type();
+    }
+  };
+
   virtual ~Definition();
 
   // Description:

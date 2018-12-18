@@ -315,15 +315,12 @@ void Resource::internalFindAttributes(
       result.insert(result.end(), it->second.begin(), it->second.end());
     }
   }
-  std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::const_iterator
-    dit;
-  dit = m_derivedDefInfo.find(def);
+  auto dit = m_derivedDefInfo.find(def);
   if (dit == m_derivedDefInfo.end())
   {
     return;
   }
-  smtk::attribute::WeakDefinitionPtrSet::const_iterator defIt;
-  for (defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
+  for (auto defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
   {
     this->internalFindAttributes(defIt->lock(), result);
   }
@@ -346,15 +343,12 @@ void Resource::internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr 
   {
     result.push_back(def);
   }
-  std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::const_iterator
-    dit;
-  dit = m_derivedDefInfo.find(def);
+  auto dit = m_derivedDefInfo.find(def);
   if (dit == m_derivedDefInfo.end())
   {
     return;
   }
-  smtk::attribute::WeakDefinitionPtrSet::const_iterator defIt;
-  for (defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
+  for (auto defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
   {
     this->internalFindAllDerivedDefinitions(defIt->lock(), onlyConcrete, result);
   }
@@ -434,8 +428,7 @@ void Resource::updateCategories()
     def = toBeProcessed.front();
     def->setCategories();
     // Does this definition have derived defs from it?
-    std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::iterator dit =
-      m_derivedDefInfo.find(def);
+    auto dit = m_derivedDefInfo.find(def);
     if (dit != m_derivedDefInfo.end())
     {
       smtk::attribute::WeakDefinitionPtrSet::iterator ddit;
@@ -458,18 +451,15 @@ void Resource::updateCategories()
 void Resource::derivedDefinitions(
   smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::DefinitionPtr>& result) const
 {
-  std::map<smtk::attribute::DefinitionPtr, smtk::attribute::WeakDefinitionPtrSet>::const_iterator
-    it;
-  it = m_derivedDefInfo.find(def);
+  auto it = m_derivedDefInfo.find(def);
   result.clear();
   if (it == m_derivedDefInfo.end())
   {
     return;
   }
-  std::size_t i, n = it->second.size();
+  std::size_t i(0), n = it->second.size();
   result.resize(n);
-  smtk::attribute::WeakDefinitionPtrSet::const_iterator dit;
-  for (i = 0, dit = it->second.begin(); i < n; dit++, i++)
+  for (auto dit = it->second.begin(); i < n; dit++, i++)
   {
     result[i] = dit->lock();
   }
@@ -530,10 +520,9 @@ bool Resource::disassociate(const smtk::resource::ResourcePtr& resource)
 
 void Resource::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
 {
-  WeakDefinitionPtrSet ddefs = m_derivedDefInfo[def];
-  WeakDefinitionPtrSet::iterator iter;
+  auto ddefs = m_derivedDefInfo[def];
   smtk::attribute::DefinitionPtr d;
-  for (iter = ddefs.begin(); iter != ddefs.end(); ++iter)
+  for (auto iter = ddefs.begin(); iter != ddefs.end(); ++iter)
   {
     d = iter->lock();
     if (!d)

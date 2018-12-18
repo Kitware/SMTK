@@ -86,7 +86,7 @@ SMTKCORE_EXPORT void to_json(
     json childDef;
     smtk::attribute::JsonHelperFunction::processItemDefinitionTypeToJson(childDef, iter->second);
     // Same type definitions can occur multiple times
-    childDefs[Item::type2String(iter->second->type())].push_back(childDef);
+    childDefs.push_back(childDef);
   }
   j["ChildrenDefinitions"] = childDefs;
 }

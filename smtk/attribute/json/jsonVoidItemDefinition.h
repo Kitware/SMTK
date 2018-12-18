@@ -7,36 +7,29 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_attribute_jsonRefItemDefinition_h
-#define smtk_attribute_jsonRefItemDefinition_h
+#ifndef smtk_attribute_jsonVoidItemDefinition_h
+#define smtk_attribute_jsonVoidItemDefinition_h
 
-#include "smtk/attribute/Definition.h"
-#include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
-#include "smtk/attribute/Resource.h"
-
-#include "smtk/attribute/json/jsonItemDefinition.h"
+#include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 
 #include "nlohmann/json.hpp"
-#include "smtk/PublicPointerDefs.h"
 
 #include <string>
 using json = nlohmann::json;
 
-/**\brief Provide a way to serialize RefItemDefinitionPtr
+/**\brief Provide a way to serialize VoidItemDefinitionPtr
   */
 namespace smtk
 {
 namespace attribute
 {
 using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 SMTKCORE_EXPORT void to_json(
-  nlohmann::json& j, const smtk::attribute::RefItemDefinitionPtr& defPtr);
+  nlohmann::json& j, const smtk::attribute::VoidItemDefinitionPtr& defPtr);
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::RefItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& colPtr,
-  std::vector<AttRefDefInfo>& expressionDefInfo);
+SMTKCORE_EXPORT void from_json(
+  const nlohmann::json& j, smtk::attribute::VoidItemDefinitionPtr& defPtr);
 }
 }
 
