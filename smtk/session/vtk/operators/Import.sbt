@@ -4,27 +4,29 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="import" Label="Model - Import" BaseType="operation">
+      <!-- Import operations can import a file into an existing
+           resource (or an existing resource's session) if one is
+           provided. Otherwise, a new resource is created -->
+      <AssociationsDef Name="import into" NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1">
+        <Accepts><Resource Name="smtk::session::vtk::Resource"/></Accepts>
+      </AssociationsDef>
+
       <ItemDefinitions>
+        <String Name="session only" Label="session" Advanced="1">
+          <DiscreteInfo DefaultIndex="0">
+            <Structure>
+              <Value Enum="this file">import into this file</Value>
+            </Structure>
+            <Structure>
+              <Value Enum="this session">import into a new file using this file's session</Value>
+            </Structure>
+          </DiscreteInfo>
+        </String>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
           FileFilters="Exodus II Datasets (*.e *.exo *.ex2);; Genesis files (*.gen);; Label maps (*.vti);; NetCDF files (*.nc *.ncdf);;All files (*.*)">
         </File>
         <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>
-        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false">
-          <Accepts>
-            <Resource Name="smtk::session::vtk::Resource"/>
-          </Accepts>
-        </Resource>
-        <String Name="session only" Label="session" Advanced="1">
-          <DiscreteInfo DefaultIndex="0">
-            <Structure>
-              <Value Enum="this file">this file</Value>
-            </Structure>
-            <Structure>
-              <Value Enum="this session">this session</Value>
-            </Structure>
-          </DiscreteInfo>
-            </String>
         <Int Name="readSLACVolumes" NumberOfRequiredValues="1">
           <DefaultValue>1</DefaultValue>
           <DiscreteInfo DefaultIndex="1">

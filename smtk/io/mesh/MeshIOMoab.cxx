@@ -41,6 +41,8 @@ MeshIOMoab::MeshIOMoab()
     Format("gmsh", std::vector<std::string>({ ".msh", ".gmsh" }), Format::Import | Format::Export));
   this->Formats.push_back(
     Format("stl", std::vector<std::string>({ ".stl" }), Format::Import | Format::Export));
+  this->Formats.push_back(
+    Format("obj", std::vector<std::string>({ ".obj" }), Format::Import | Format::Export));
 }
 
 smtk::mesh::ResourcePtr MeshIOMoab::importMesh(

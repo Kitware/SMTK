@@ -15,7 +15,7 @@ find_program(SPHINX_EXECUTABLE
 
 if( NOT SPHINX_EXECUTABLE )
   set(_Python_VERSIONS
-    2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0 1.6 1.5
+    3.7 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0 1.6 1.5
   )
   foreach( _version ${_Python_VERSIONS} )
     set( _sphinx_NAMES sphinx-build-${_version} )
