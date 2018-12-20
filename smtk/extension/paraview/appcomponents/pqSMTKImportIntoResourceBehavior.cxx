@@ -133,16 +133,21 @@ void pqImportIntoResourceReaction::importIntoResource()
   pqFileDialog fileDialog(server, pqCoreUtilities::mainWidget(), tr("Import File:"), QString(),
     QString::fromStdString(fileItemDef->getFileFilters()));
   fileDialog.setObjectName("FileSaveDialog");
-  fileDialog.setFileMode(pqFileDialog::ExistingFile);
+  fileDialog.setFileMode(pqFileDialog::ExistingFiles);
 
   if (fileDialog.exec() == QDialog::Accepted)
   {
-    QString fileName = fileDialog.getSelectedFiles()[0];
+    QList<QStringList> files = fileDialog.getAllSelectedFiles();
+    for (auto cit = files.constBegin(); cit != files.constEnd(); ++cit)
+    {
+      importIntoOp->parameters()->findFile(fileItemDef->name())->setValue((*cit)[0].toStdString());
 
-    importIntoOp->parameters()->findFile(fileItemDef->name())->setValue(fileName.toStdString());
+      // Execute the import operation.
+      auto result = importIntoOp->operate();
+    }
 
-    // Execute the import operation.
-    auto result = importIntoOp->operate();
+    // Render the resource (also resets "Apply")
+    pqSMTKRenderResourceBehavior::instance()->renderPipelineSource(smtkResource);
   }
 }
 
