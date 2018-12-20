@@ -17,6 +17,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -87,28 +88,27 @@ Import::Result Import::operateInternal()
   smtk::session::vtk::Session::Ptr session = nullptr;
 
   // Modes 2 and 3 requre an existing resource for input
-  smtk::attribute::ResourceItem::Ptr existingResourceItem =
-    this->parameters()->findResource("resource");
+  smtk::attribute::ReferenceItem::Ptr existingReferenceItem = this->parameters()->associations();
 
-  if (existingResourceItem && existingResourceItem->isEnabled())
+  if (existingReferenceItem && existingReferenceItem->numberOfValues() > 0)
   {
     smtk::session::vtk::Resource::Ptr existingResource =
-      std::static_pointer_cast<smtk::session::vtk::Resource>(existingResourceItem->value());
+      std::static_pointer_cast<smtk::session::vtk::Resource>(existingReferenceItem->objectValue());
 
     session = existingResource->session();
 
     smtk::attribute::StringItem::Ptr sessionOnlyItem =
       this->parameters()->findString("session only");
-    if (sessionOnlyItem->value() == "this file")
+    if (sessionOnlyItem->value() == "import into this file")
     {
-      // If the "session only" value is set to "this file", then we use the
-      // existing resource
+      // If the "session only" value is set to "import into this file",
+      // then we use the existing resource
       resource = existingResource;
     }
     else
     {
-      // If the "session only" value is set to "this session", then we create a
-      // new resource with the session from the exisiting resource
+      // If the "session only" value is set to "import into this session",
+      // then we create a new resource with the session from the exisiting resource
       resource = smtk::session::vtk::Resource::create();
       resource->setSession(session);
     }

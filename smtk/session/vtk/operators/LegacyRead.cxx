@@ -65,8 +65,7 @@ LegacyRead::Result LegacyRead::operateInternal()
   // Import each model file listed in the resource file. The import operator
   // allows us to import models into an existing resource, so we do just that.
   Import::Ptr importOp = Import::create();
-  importOp->parameters()->findResource("resource")->setIsEnabled(true);
-  importOp->parameters()->findResource("resource")->setValue(resource);
+  importOp->parameters()->associations()->appendObjectValue(resource);
   importOp->parameters()->findString("session only")->setDiscreteIndex(0);
   {
     std::vector<std::string> uuidStrs = jsonData.at("preservedUUIDs");

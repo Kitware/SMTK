@@ -290,7 +290,10 @@ template <typename T>
 void PreparePath(T& result, const T& parentPath, int childIndex)
 {
   result.reserve(parentPath.size() + 1);
-  std::copy(parentPath.begin(), parentPath.end(), result.begin());
+  for (auto idx : parentPath)
+  {
+    result.push_back(idx);
+  }
   result.push_back(childIndex);
 }
 
