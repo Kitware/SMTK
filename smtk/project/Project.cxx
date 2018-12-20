@@ -21,6 +21,7 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
@@ -94,7 +95,7 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
 
   // Check if project directory already exists
   boost::filesystem::path boostDirectory(this->m_directory);
-  if (boost::filesystem::exists(boostDirectory))
+  if (boost::filesystem::exists(boostDirectory) && !boost::filesystem::is_empty(boostDirectory))
   {
     if (replaceExistingDirectory)
     {
@@ -124,7 +125,7 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
     this->m_resourceDescriptors.push_back(modelDescriptor);
   } // if (modelFileItem emabled)
 
-  // Load the attribute template
+  // Import the attribute template
   ResourceDescriptor attDescriptor;
   auto attFileItem = specification->findFile("simulation-template");
   if (attFileItem->isEnabled())
@@ -146,13 +147,8 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
     smtk::dynamic_pointer_cast<smtk::attribute::Resource>(attResource)->associate(modelResource);
   }
 
-  // Write .cmbproject file
-  if (!this->writeProjectFile(logger))
-  {
-    return false;
-  }
-
-  return true;
+  // Write project files and return
+  return this->save(logger);
 }
 
 bool Project::save(smtk::io::Logger& logger) const
@@ -164,44 +160,33 @@ bool Project::save(smtk::io::Logger& logger) const
   for (auto& rd : this->m_resourceDescriptors)
   {
     auto resource = this->m_resourceManager->get(rd.m_uuid);
-    auto path = boostDirectory / boost::filesystem::path(rd.m_filename);
-    if (resource->typeName() == smtk::common::typeName<smtk::attribute::Resource>())
+    auto writer = this->m_operationManager->create<smtk::operation::WriteResource>();
+    writer->parameters()->associate(resource);
+    auto result = writer->operate();
+    int outcome = result->findInt("outcome")->value(0);
+    if (outcome != SUCCEEDED)
     {
-      // Always save attribute resource, since clean() method not reliable
-      auto writer = smtk::io::AttributeWriter();
-      auto attResource = smtk::dynamic_pointer_cast<smtk::attribute::Resource>(resource);
-      bool err = writer.write(attResource, path.string(), logger);
-      if (err)
-      {
-        return false;
-      }
-    } // if
-    else if (!resource->clean())
-    {
-      auto writer = this->m_operationManager->create<smtk::operation::WriteResource>();
-      writer->parameters()->associate(resource);
-      writer->parameters()->find("filename")->setIsEnabled(true);
-      writer->parameters()->findFile("filename")->setValue(0, path.string());
-      auto result = writer->operate();
-      int outcome = result->findInt("outcome")->value(0);
-      if (outcome != SUCCEEDED)
-      {
-        smtkErrorMacro(logger, "Error writing resource file " << path.string());
-        return false;
-      }
-    } // else if
-  }   // for (rd)
+      smtkErrorMacro(
+        logger, "Error writing resource file " << resource->location() << ", outcome: " << outcome);
+      return false;
+    }
+  } // for (rd)
 
-  return true;
+  return this->writeProjectFile(logger);
 } // save()
 
 bool Project::close()
 {
+  this->releaseExportOperator();
+
   // Release resources
   for (auto& rd : this->m_resourceDescriptors)
   {
     auto resourcePtr = this->m_resourceManager->get(rd.m_uuid);
-    this->m_resourceManager->remove(resourcePtr);
+    if (resourcePtr)
+    {
+      this->m_resourceManager->remove(resourcePtr);
+    }
   }
   this->m_resourceDescriptors.clear();
   this->m_name.clear();
@@ -287,6 +272,17 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   boost::filesystem::path boostImportPath(importPath);
   boost::filesystem::path boostDirectory(this->m_directory);
 
+  // Copy the import (native) model file
+  if (copyNativeModel)
+  {
+    auto copyPath = boostDirectory / boostImportPath.filename();
+    boost::filesystem::copy_file(importPath, copyPath);
+    descriptor.m_importLocation = copyPath.string();
+
+    // And update the import path to use the copied file
+    boostImportPath = copyPath;
+  }
+
   // Create the import operator
   auto importOp = this->m_operationManager->create<smtk::operation::ImportResource>();
   if (!importOp)
@@ -308,40 +304,17 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   }
   auto modelResource = importOpResult->findResource("resource")->value(0);
 
-  // Save the new resource
-  auto modelWriter = this->m_operationManager->create<smtk::operation::WriteResource>();
-  modelWriter->parameters()->associate(modelResource);
-  modelWriter->parameters()->find("filename")->setIsEnabled(true);
+  // Set location to project directory
+  auto modelFilename = boostImportPath.filename().string() + ".smtk";
+  auto smtkPath = boostDirectory / boost::filesystem::path(modelFilename);
+  modelResource->setLocation(smtkPath.string());
 
-  // boost::filesystem::path boostModelPath(modelPath);
-  auto modelFilename = boostImportPath.stem();
-  auto smtkFilename = modelFilename.replace_extension("smtk");
-  auto smtkPath = boostDirectory / smtkFilename;
-  modelWriter->parameters()->findFile("filename")->setValue(0, smtkPath.string());
-
-  auto result = modelWriter->operate();
-  outcome = result->findInt("outcome")->value(0);
-  if (outcome != SUCCEEDED)
-  {
-    smtkErrorMacro(logger, "Error writing resource to file " << smtkPath.string());
-    return false;
-  }
-
-  // Update resource info
-  descriptor.m_filename = smtkFilename.string();
-  descriptor.m_identifier = "model";
+  // Update the descriptor
+  descriptor.m_filename = modelFilename;
+  descriptor.m_identifier = modelResource->name();
   descriptor.m_importLocation = importPath;
   descriptor.m_typeName = modelResource->typeName();
   descriptor.m_uuid = modelResource->id();
-
-  // Copy the import (native) model file
-  if (copyNativeModel)
-  {
-    // auto copyPath = boostDirectory / modelFilename;
-    auto copyPath = boostDirectory / boostImportPath.filename();
-    boost::filesystem::copy_file(importPath, copyPath);
-    descriptor.m_importLocation = copyPath.string();
-  }
 
   return true; // success
 } // importModel()
@@ -366,21 +339,15 @@ bool Project::importAttributeTemplate(
   {
     descriptor.m_identifier = "default";
   }
-  descriptor.m_filename = descriptor.m_identifier + ".sbi";
+  descriptor.m_filename = descriptor.m_identifier + ".sbi.smtk";
   descriptor.m_importLocation = location;
   descriptor.m_typeName = attResource->typeName();
   descriptor.m_uuid = attResource->id();
 
-  // Save to project directory
-  auto writer = smtk::io::AttributeWriter();
   boost::filesystem::path boostDirectory(this->m_directory);
-  boost::filesystem::path sbiPath = boostDirectory / boost::filesystem::path(descriptor.m_filename);
-  bool writeErr = writer.write(attResource, sbiPath.string(), logger);
-  if (writeErr)
-  {
-    return false; // invert
-  }
-
+  boost::filesystem::path resourcePath =
+    boostDirectory / boost::filesystem::path(descriptor.m_filename);
+  attResource->setLocation(resourcePath.string());
   return true;
 } // importAttributeTemplate()
 
@@ -420,43 +387,145 @@ bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
   for (auto& descriptor : this->m_resourceDescriptors)
   {
     auto filePath = directoryPath / boost::filesystem::path(descriptor.m_filename);
-    auto inputPath = filePath.string();
-    if (descriptor.m_typeName == smtk::common::typeName<smtk::attribute::Resource>())
-    {
-      auto attResource = smtk::attribute::Resource::create();
-      attResource->setId(descriptor.m_uuid);
-      smtk::io::AttributeReader reader;
-      bool err = reader.read(attResource, inputPath, true, logger);
-      if (err)
-      {
-        return false;
-      }
-      this->m_resourceManager->add(attResource);
-    } // if (attribute resource)
-    else
-    {
-      // Create a read operator
-      auto readOp = this->m_operationManager->create<smtk::operation::ReadResource>();
-      if (!readOp)
-      {
-        smtkErrorMacro(logger, "Read Resource operator not found");
-        return false;
-      }
-      readOp->parameters()->findFile("filename")->setValue(inputPath);
-      auto readOpResult = readOp->operate();
+    // auto inputPath = filePath.string();
+    std::cout << "Loading " << filePath.string() << std::endl;
 
-      // Test for success
-      int outcome = readOpResult->findInt("outcome")->value(0);
-      if (outcome != SUCCEEDED)
-      {
-        smtkErrorMacro(logger, "Error loading resource from: " << inputPath);
-        return false;
-      }
-    } // else
-  }   // for (info)
+    // Create a read operator
+    auto readOp = this->m_operationManager->create<smtk::operation::ReadResource>();
+    if (!readOp)
+    {
+      smtkErrorMacro(logger, "Read Resource operator not found");
+      return false;
+    }
+    readOp->parameters()->findFile("filename")->setValue(filePath.string());
+    auto readOpResult = readOp->operate();
+
+    // Check outcome
+    int outcome = readOpResult->findInt("outcome")->value(0);
+    if (outcome != SUCCEEDED)
+    {
+      smtkErrorMacro(logger, "Error loading resource from: " << filePath.string());
+      return false;
+    }
+  } // for (descriptor)
 
   return true;
 } // loadResources()
+
+smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logger, bool reset)
+{
+  // Check if already loaded
+  if (!!m_exportOperator)
+  {
+    if (reset)
+    {
+      this->releaseExportOperator();
+    }
+    else
+    {
+      return m_exportOperator;
+    }
+  }
+
+  // For now, find export operator based on fixed relative path from simulation template
+  // to the sbt import directory.
+  // Future: add .smtk info file to workflow directories
+
+  // Find the simulation attribute resource.
+  ResourceDescriptor simAttDescriptor;
+  for (auto& descriptor : m_resourceDescriptors)
+  {
+    if (descriptor.m_typeName == smtk::common::typeName<smtk::attribute::Resource>())
+    {
+      simAttDescriptor = descriptor;
+      break;
+    }
+  } // for
+
+  if (simAttDescriptor.m_filename == "")
+  {
+    smtkErrorMacro(logger, "simulation attribute not found, so no export operator defined");
+    return nullptr;
+  }
+
+  if (simAttDescriptor.m_importLocation == "")
+  {
+    smtkErrorMacro(
+      logger, "simulation resource missing import location - cannot find export operator");
+    return nullptr;
+  }
+
+  // Copy the import location and change extension from .sbt to .py
+  std::string location(simAttDescriptor.m_importLocation);
+  std::string key(".sbt");
+  auto pos = location.rfind(key);
+  if (pos == std::string::npos)
+  {
+    smtkErrorMacro(logger, "import location (" << location << ") did not end in .sbt");
+    return nullptr;
+  }
+
+  location.replace(pos, key.length(), ".py");
+  boost::filesystem::path locationPath(location);
+
+  if (!boost::filesystem::exists(locationPath))
+  {
+    smtkErrorMacro(logger, "Could not find export operator file " << location);
+    return nullptr;
+  }
+
+  std::cout << "Importing python operator: " << location << std::endl;
+
+  auto importPythonOp = m_operationManager->create<smtk::operation::ImportPythonOperation>();
+  if (!importPythonOp)
+  {
+    smtkErrorMacro(logger, "Could not create \"import python operation\"");
+    return nullptr;
+  }
+
+  // Set the input python operation file name
+  importPythonOp->parameters()->findFile("filename")->setValue(location);
+
+  smtk::operation::Operation::Result result;
+  try
+  {
+    // Execute the operation
+    result = importPythonOp->operate();
+  }
+  catch (std::exception& e)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), e.what());
+    return nullptr;
+  }
+
+  // Test the results for success
+  int outcome = result->findInt("outcome")->value();
+  if (outcome != static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "\"import python operation\" operation failed, outcome " << outcome);
+    return nullptr;
+  }
+
+  // On success, the ImportPythonOperation creates a "unique_name" value.
+  // Use that string to create the export operator, and save that string to (later) release
+  // the export operator.
+  m_exportOperatorUniqueName = result->findString("unique_name")->value();
+  m_exportOperator = m_operationManager->create(m_exportOperatorUniqueName);
+  return m_exportOperator;
+}
+
+void Project::releaseExportOperator()
+{
+  if (!m_exportOperator || !m_operationManager)
+  {
+    return;
+  }
+
+  m_operationManager->unregisterOperation(m_exportOperatorUniqueName);
+  m_exportOperator = nullptr;
+  m_exportOperatorUniqueName = "";
+}
 
 } // namespace project
 } // namespace smtk

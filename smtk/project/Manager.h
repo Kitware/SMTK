@@ -39,13 +39,19 @@ public:
   virtual ~Manager();
 
   /// Create project with 2 methods: (i) get spec, then (ii) use spec to create
-  smtk::attribute::AttributePtr getProjectSpecification() const;
+  smtk::attribute::AttributePtr getProjectSpecification();
 
   /// Create project for given specification, which includes filesystem path to store persistent data.
   /// Will not write to existing directory unless replaceExistingDirectory flag is set.
   /// Return value (pointer) is empty on error.
   ProjectPtr createProject(smtk::attribute::AttributePtr specification,
     bool replaceExistingDirectory = false, smtk::io::Logger& logger = smtk::io::Logger::instance());
+
+  /// Open a new project from the filesystem. Returns outcome and project pointer
+  /// The path argument can be set to either the project directory or the .cmbproject
+  /// contained in the project directory.
+  ProjectPtr openProject(
+    const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Return project instance
   ProjectPtr getCurrentProject() const { return this->m_project; }
@@ -56,18 +62,17 @@ public:
   /// Close the project resources. Returns true on success
   bool closeProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
 
-  /// Open a new project from the filesystem. Returns outcome and project pointer
-  /// The path argument can be set to either the project directory or the .cmbproject
-  /// contained in the project directory.
-  ProjectPtr openProject(
-    const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
+  /// Returns export operator from current project
+  smtk::operation::OperationPtr getExportOperator(
+    smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
 
   // Future:
-  // * support for multiple projects (or multiple project managers?)
-  // * shared resources between projects?
+  // * introduce "analysis" class to extend project structure
+  // * support multiple projects (or multiple project managers?)
+  // * support shared resources among projects?
 protected:
   // Load and return NewProject template
-  smtk::attribute::ResourcePtr getProjectTemplate() const;
+  smtk::attribute::ResourcePtr getProjectTemplate();
 
 private:
   Manager(smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
@@ -80,6 +85,9 @@ private:
 
   /// Current project
   smtk::project::ProjectPtr m_project;
+
+  /// New project template
+  smtk::attribute::ResourcePtr m_template;
 }; // class smtk::project::Manager
 
 } // namespace project

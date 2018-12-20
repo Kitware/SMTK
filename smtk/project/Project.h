@@ -50,10 +50,8 @@ public:
   /// Return project resources
   std::vector<smtk::resource::ResourcePtr> getResources() const;
 
-  /// Return resource of given typename and role
   // Future:
-  // * method to retrieve export operator, based on location of simulation attributes
-  // * method to add additional resources to the current project
+  // * methods to add/remove project resources
 protected:
   /// First set of methods are called by (friend class) smtk::project::Manager
   smtkCreateMacro(Project);
@@ -85,6 +83,14 @@ protected:
   bool loadResources(
     const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
+  /// Return export operator
+  /// If reset flag is true, will create new operator in order to
+  /// reset contents to their default values.
+  smtk::operation::OperationPtr getExportOperator(
+    smtk::io::Logger& logger = smtk::io::Logger::instance(), bool reset = false);
+
+  void releaseExportOperator();
+
   /// Resource manager for the project resources.
   smtk::resource::ManagerPtr m_resourceManager;
 
@@ -100,6 +106,10 @@ protected:
   /// Array of ResourceDescriptor objects for each project resource.
   /// These data are stored in a file in the project directory.
   std::vector<ResourceDescriptor> m_resourceDescriptors;
+
+  /// Export operator (cached)
+  smtk::operation::OperationPtr m_exportOperator;
+  std::string m_exportOperatorUniqueName;
 
 private:
   Project();

@@ -14,6 +14,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Registrar.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/operation/Manager.h"
@@ -50,12 +51,16 @@ Manager::~Manager()
   }
 }
 
-smtk::attribute::AttributePtr Manager::getProjectSpecification() const
+smtk::attribute::AttributePtr Manager::getProjectSpecification()
 {
   auto newTemplate = this->getProjectTemplate();
   std::string name = "new-project";
-  auto defn = newTemplate->findDefinition(name);
-  auto att = newTemplate->createAttribute(name, defn);
+  auto att = newTemplate->findAttribute(name);
+  if (!att)
+  {
+    auto defn = newTemplate->findDefinition(name);
+    att = newTemplate->createAttribute(name, defn);
+  }
   return att;
 }
 
@@ -124,12 +129,30 @@ ProjectPtr Manager::openProject(const std::string& projectPath, smtk::io::Logger
   return smtk::project::ProjectPtr();
 }
 
-smtk::attribute::ResourcePtr Manager::getProjectTemplate() const
+smtk::operation::OperationPtr Manager::getExportOperator(smtk::io::Logger& logger) const
 {
+  if (!this->m_project)
+  {
+    smtkErrorMacro(logger, "Cannot get export operator because no project is loaded");
+    return nullptr;
+  }
+
+  return m_project->getExportOperator(logger);
+}
+
+smtk::attribute::ResourcePtr Manager::getProjectTemplate()
+{
+  // The current presumption is to reuse the previous project settings.
+  // This might be revisited for usability purposes.
+  if (this->m_template)
+  {
+    return this->m_template;
+  }
+
   auto reader = smtk::io::AttributeReader();
-  auto newTemplate = smtk::attribute::Resource::create();
-  reader.readContents(newTemplate, NewProjectTemplate, smtk::io::Logger::instance());
-  return newTemplate;
+  this->m_template = smtk::attribute::Resource::create();
+  reader.readContents(this->m_template, NewProjectTemplate, smtk::io::Logger::instance());
+  return this->m_template;
 }
 
 } // namespace project

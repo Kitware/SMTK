@@ -24,6 +24,8 @@
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/project/Manager.h"
+
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
@@ -75,6 +77,9 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   this->OperationManager = smtk::operation::Manager::create();
   this->OperationManager->registerResourceManager(this->ResourceManager);
   smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->OperationManager);
+
+  this->ProjectManager =
+    smtk::project::Manager::create(this->ResourceManager, this->OperationManager);
 
   // NB: this->Selection may never be overwritten with a different instance
   //     of smtk::view::Selection once a wrapper is created; consumers of the
