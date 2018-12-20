@@ -115,7 +115,7 @@ EntityHandle::EntityHandle(
   , m_object(obj)
   , m_session(sess)
 {
-  if (sess && obj && parent && idxInParent > 0)
+  if (sess && obj && parent && idxInParent >= 0)
   {
     sess->ensureChildParentMapEntry(obj, parent, idxInParent);
   }
