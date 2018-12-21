@@ -258,7 +258,7 @@ void pqSMTKAttributeItemWidget::updateUI()
   this->m_p->m_layout->setSpacing(0);
   this->m_p->m_layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
