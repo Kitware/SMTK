@@ -792,7 +792,8 @@ UUIDs Resource::boundaryEntities(const UUID& ofEntity, int ofDimension) const
       continue;
     }
     if ((ofDimension >= 0 && other->second->dimension() == ofDimension) ||
-      (ofDimension == -2 && other->second->dimension() <= it->second->dimension()))
+      (ofDimension == -2 && other->second->dimension() <= it->second->dimension() &&
+          !other->second->isModel()))
     {
       result.insert(*ai);
     }
