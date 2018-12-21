@@ -42,6 +42,7 @@ Manager::Manager()
 
 Manager::~Manager()
 {
+  clear();
 }
 
 bool Manager::unregisterResource(const std::string& typeName)
