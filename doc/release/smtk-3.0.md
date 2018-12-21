@@ -453,9 +453,7 @@ in the AttributeItemInfo's Component entry that specify how to obtain
 initial values from model components currently loaded into
 modelbuilder/paraview.
 
-### Developer changes
-
-The new classes include:
+The new widget-item classes include:
 
 + `pqSMTKAttributeItemWidget` — a base class for all paraview-widget items; it inherits qtItem.
 + `pqSMTKBoxItemWidget` — a subclass of pqSMTKAttributeItemWidget that realizes a box widget.
@@ -469,6 +467,18 @@ each concrete widget class above as a `qtItem` subclass.
 Once the plugin is loaded, any attributes displayed in the
 attribute panel or operation panel may request, e.g., the box
 widget with `Type="Box"` as shown above.
+
+### Resource panel
+
+ParaView now includes a resource panel that lists all resources and components
+loaded into the system at the user's request.
+Visibility in ParaView's active view is displayed and may be toggled on a
+per-component level, including composite components such as models and groups.
+Model entity colors and names may also be edited in place.
+
+This panel's implementation is in pqSMTKResourcePanel and involves several other
+classes such as pqSMTKResourceBrowser, qtResourceBrowser, qtDescriptivePhraseModel,
+and smtk::view::ResourcePhraseModel.
 
 ### Operation panel
 
@@ -612,8 +622,8 @@ operation is associated to that resource in the operation CreatorGroup.
 
 ### Introduce ParaView behavior that imports files into an existing SMTK resource
 
-We have added a file menu option that allows a user to select a data
-file and import its contents into an existing resource. This differs
+We have added a file menu option that allows a user to select one or more
+files and import their contents into an existing resource. This differs
 from the canonical File→Open method, which creates a new resource for
 the imported data.
 
