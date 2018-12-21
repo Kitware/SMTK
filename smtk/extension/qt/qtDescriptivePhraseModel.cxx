@@ -499,8 +499,8 @@ Qt::ItemFlags qtDescriptivePhraseModel::flags(const QModelIndex& idx) const
 
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
-  Qt::ItemFlags itemFlags = QAbstractItemModel::flags(idx) | Qt::ItemIsEditable |
-    Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+  Qt::ItemFlags itemFlags =
+    QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
   view::DescriptivePhrasePtr dp = this->getItem(idx);
   /* TODO:
   if (dp && dp->relatedComponent().isGroup())
