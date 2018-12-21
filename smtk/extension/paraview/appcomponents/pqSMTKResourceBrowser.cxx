@@ -28,6 +28,8 @@
 #include "smtk/view/VisibilityContent.h"
 
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityIterator.h"
+#include "smtk/model/EntityRef.h"
 #include "smtk/model/Resource.h"
 
 #include "smtk/mesh/core/Component.h"
@@ -40,6 +42,53 @@
 #include "vtkCompositeRepresentation.h"
 
 #include "smtk/extension/qt/qtResourceBrowserP.h"
+
+template <typename T, typename U>
+int UpdateVisibilityForFootprint(pqSMTKModelRepresentation* smap, const T& comp, int visible,
+  U& visibleThings, const smtk::view::DescriptivePhrasePtr& phr)
+{
+  bool didUpdate = false;
+  int rval;
+
+  auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
+  if (ment && (ment->isModel() || ment->isGroup()))
+  {
+    int all = 1;
+    int any = 0;
+    smtk::model::EntityIterator childIt;
+    smtk::model::EntityRef entRef = ment->template referenceAs<smtk::model::EntityRef>();
+    childIt.traverse(entRef, smtk::model::IteratorStyle::ITERATE_CHILDREN);
+    for (childIt.begin(); !childIt.isAtEnd(); ++childIt)
+    {
+      auto child = childIt.current().entityRecord();
+      int ok = smap->setVisibility(child, visible);
+      any |= ok;
+      all &= ok;
+      visibleThings[child->id()] = visible;
+    }
+    rval = any;
+    if (any)
+    {
+      didUpdate = true;
+    }
+  }
+  else
+  {
+    rval = smap->setVisibility(comp, visible ? true : false) ? 1 : 0;
+    if (rval)
+    {
+      visibleThings[comp->id()] =
+        visible; // Should we set here or wait until we hear back from smap?
+      didUpdate = true;
+    }
+  }
+
+  if (didUpdate)
+  {
+    smap->renderViewEventually();
+  }
+  return rval;
+}
 
 pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel,
   const std::string& modelViewName, QAbstractItemModel* model, QWidget* parent)
@@ -150,8 +199,7 @@ int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Q
         auto smap = dynamic_cast<pqSMTKModelRepresentation*>(mapr);
         if (smap)
         {
-          int rval = smap->setVisibility(comp, val ? true : false) ? 1 : 0;
-          smap->renderViewEventually();
+          int rval = UpdateVisibilityForFootprint(smap, comp, val, visibleThings, data->location());
           return rval;
         }
       }
