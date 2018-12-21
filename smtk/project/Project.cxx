@@ -54,11 +54,26 @@ Project::~Project()
 
 std::vector<smtk::resource::ResourcePtr> Project::getResources() const
 {
-  std::vector<smtk::resource::ResourcePtr> resourceList;
+  std::vector<smtk::resource::ResourcePtr> resourceList; // return value
 
-  for (auto& rd : this->m_resourceDescriptors)
+  auto resManager = m_resourceManager.lock();
+  if (!resManager)
   {
-    auto resource = this->m_resourceManager->get(rd.m_uuid);
+    return resourceList;
+  }
+
+  for (auto& rd : m_resourceDescriptors)
+  {
+    if (rd.m_uuid.isNull())
+    {
+      continue;
+    }
+    auto resource = resManager->get(rd.m_uuid);
+    if (!resource)
+    {
+      continue;
+    }
+
     resourceList.push_back(resource);
   }
 
@@ -66,20 +81,39 @@ std::vector<smtk::resource::ResourcePtr> Project::getResources() const
 }
 
 void Project::setCoreManagers(
-  smtk::resource::ManagerPtr resourceManager, smtk::operation::ManagerPtr operationManager)
+  smtk::resource::ManagerPtr resManager, smtk::operation::ManagerPtr opManager)
 {
-  if (!this->m_resourceDescriptors.empty())
+  if (!m_resourceDescriptors.empty())
   {
     throw std::runtime_error("Cannot change core managers on open project");
   }
-  this->m_resourceManager = resourceManager;
-  this->m_resourceManager->registerResource<smtk::attribute::Resource>();
-  this->m_operationManager = operationManager;
+
+  if (!resManager)
+  {
+    throw std::runtime_error("Resource manager is null");
+  }
+
+  if (!opManager)
+  {
+    throw std::runtime_error("Operation manager is null");
+  }
+
+  resManager->registerResource<smtk::attribute::Resource>();
+  m_resourceManager = resManager;
+  m_operationManager = opManager;
 }
 
 bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logger& logger,
   bool replaceExistingDirectory)
 {
+  // Get resource manager
+  auto resManager = m_resourceManager.lock();
+  if (!resManager)
+  {
+    smtkErrorMacro(logger, "Resource manager is null");
+    return false;
+  }
+
   // Note that specification is the "new-project" definition in NewProject.sbt.
   // Validate starting conditions
   if (!specification->isValid())
@@ -90,11 +124,11 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
 
   // (Future) check that at least 1 resource specified?
 
-  this->m_name = specification->findString("project-name")->value(0);
-  this->m_directory = specification->findDirectory("project-directory")->value(0);
+  m_name = specification->findString("project-name")->value(0);
+  m_directory = specification->findDirectory("project-directory")->value(0);
 
   // Check if project directory already exists
-  boost::filesystem::path boostDirectory(this->m_directory);
+  boost::filesystem::path boostDirectory(m_directory);
   if (boost::filesystem::exists(boostDirectory) && !boost::filesystem::is_empty(boostDirectory))
   {
     if (replaceExistingDirectory)
@@ -104,7 +138,7 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
     else
     {
       smtkErrorMacro(
-        logger, "Cannot create project in existing directory: \"" << this->m_directory << "\"");
+        logger, "Cannot create project in existing directory: \"" << m_directory << "\"");
       return false;
     }
 
@@ -122,7 +156,7 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
     {
       return false;
     }
-    this->m_resourceDescriptors.push_back(modelDescriptor);
+    m_resourceDescriptors.push_back(modelDescriptor);
   } // if (modelFileItem emabled)
 
   // Import the attribute template
@@ -136,14 +170,14 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
     {
       return false;
     }
-    this->m_resourceDescriptors.push_back(attDescriptor);
+    m_resourceDescriptors.push_back(attDescriptor);
   } // if (attFileItem enabled)
 
   // Link attribute resource to model resource
   if (!modelDescriptor.m_uuid.isNull() && !attDescriptor.m_uuid.isNull())
   {
-    auto attResource = this->m_resourceManager->get(attDescriptor.m_uuid);
-    auto modelResource = this->m_resourceManager->get(modelDescriptor.m_uuid);
+    auto attResource = resManager->get(attDescriptor.m_uuid);
+    auto modelResource = resManager->get(modelDescriptor.m_uuid);
     smtk::dynamic_pointer_cast<smtk::attribute::Resource>(attResource)->associate(modelResource);
   }
 
@@ -153,14 +187,27 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
 
 bool Project::save(smtk::io::Logger& logger) const
 {
-  boost::filesystem::path boostDirectory(this->m_directory);
-
-  // For now, saving a project consists of saving its resources.
-  // Later may include saving project metadata
-  for (auto& rd : this->m_resourceDescriptors)
+  auto resManager = m_resourceManager.lock();
+  if (!resManager)
   {
-    auto resource = this->m_resourceManager->get(rd.m_uuid);
-    auto writer = this->m_operationManager->create<smtk::operation::WriteResource>();
+    smtkErrorMacro(logger, "Resource manager is null");
+    return false;
+  }
+
+  auto opManager = m_operationManager.lock();
+  if (!opManager)
+  {
+    smtkErrorMacro(logger, "Operation manager is null");
+    return false;
+  }
+
+  boost::filesystem::path boostDirectory(m_directory);
+
+  // Save project resources
+  for (auto& rd : m_resourceDescriptors)
+  {
+    auto resource = resManager->get(rd.m_uuid);
+    auto writer = opManager->create<smtk::operation::WriteResource>();
     writer->parameters()->associate(resource);
     auto result = writer->operate();
     int outcome = result->findInt("outcome")->value(0);
@@ -177,20 +224,26 @@ bool Project::save(smtk::io::Logger& logger) const
 
 bool Project::close()
 {
+  auto resManager = m_resourceManager.lock();
+  if (!resManager)
+  {
+    return false;
+  }
+
   this->releaseExportOperator();
 
   // Release resources
-  for (auto& rd : this->m_resourceDescriptors)
+  for (auto& rd : m_resourceDescriptors)
   {
-    auto resourcePtr = this->m_resourceManager->get(rd.m_uuid);
+    auto resourcePtr = resManager->get(rd.m_uuid);
     if (resourcePtr)
     {
-      this->m_resourceManager->remove(resourcePtr);
+      resManager->remove(resourcePtr);
     }
   }
-  this->m_resourceDescriptors.clear();
-  this->m_name.clear();
-  this->m_directory.clear();
+  m_resourceDescriptors.clear();
+  m_name.clear();
+  m_directory.clear();
 
   return true;
 } // close()
@@ -257,9 +310,9 @@ bool Project::open(const std::string& location, smtk::io::Logger& logger)
     return false;
   }
 
-  this->m_name = descriptor.m_name;
-  this->m_directory = descriptor.m_directory;
-  this->m_resourceDescriptors = descriptor.m_resourceDescriptors;
+  m_name = descriptor.m_name;
+  m_directory = descriptor.m_directory;
+  m_resourceDescriptors = descriptor.m_resourceDescriptors;
 
   return this->loadResources(directoryPath.string(), logger);
 } // open()
@@ -267,10 +320,16 @@ bool Project::open(const std::string& location, smtk::io::Logger& logger)
 bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   ResourceDescriptor& descriptor, smtk::io::Logger& logger)
 {
+  auto opManager = m_operationManager.lock();
+  if (!opManager)
+  {
+    smtkErrorMacro(logger, "Operation manager is null");
+    return false;
+  }
   smtkDebugMacro(logger, "Loading model " << importPath);
 
   boost::filesystem::path boostImportPath(importPath);
-  boost::filesystem::path boostDirectory(this->m_directory);
+  boost::filesystem::path boostDirectory(m_directory);
 
   // Copy the import (native) model file
   if (copyNativeModel)
@@ -284,7 +343,7 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   }
 
   // Create the import operator
-  auto importOp = this->m_operationManager->create<smtk::operation::ImportResource>();
+  auto importOp = opManager->create<smtk::operation::ImportResource>();
   if (!importOp)
   {
     smtkErrorMacro(logger, "Import operator not found");
@@ -322,6 +381,13 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
 bool Project::importAttributeTemplate(
   const std::string& location, ResourceDescriptor& descriptor, smtk::io::Logger& logger)
 {
+  auto resManager = m_resourceManager.lock();
+  if (!resManager)
+  {
+    smtkErrorMacro(logger, "Resource manager is null");
+    return false;
+  }
+
   smtkDebugMacro(logger, "Loading templateFile: " << location);
 
   // Read from specified location
@@ -332,10 +398,10 @@ bool Project::importAttributeTemplate(
   {
     return false; // invert from representing "error" to representing "success"
   }
-  this->m_resourceManager->add(attResource);
+  resManager->add(attResource);
 
   // Update descriptor
-  if (descriptor.m_identifier == "")
+  if (descriptor.m_identifier.empty())
   {
     descriptor.m_identifier = "default";
   }
@@ -344,7 +410,7 @@ bool Project::importAttributeTemplate(
   descriptor.m_typeName = attResource->typeName();
   descriptor.m_uuid = attResource->id();
 
-  boost::filesystem::path boostDirectory(this->m_directory);
+  boost::filesystem::path boostDirectory(m_directory);
   boost::filesystem::path resourcePath =
     boostDirectory / boost::filesystem::path(descriptor.m_filename);
   attResource->setLocation(resourcePath.string());
@@ -355,9 +421,9 @@ bool Project::writeProjectFile(smtk::io::Logger& logger) const
 {
   // Init ProjectDescriptor structure
   ProjectDescriptor descriptor;
-  descriptor.m_name = this->m_name;
-  descriptor.m_directory = this->m_directory;
-  descriptor.m_resourceDescriptors = this->m_resourceDescriptors;
+  descriptor.m_name = m_name;
+  descriptor.m_directory = m_directory;
+  descriptor.m_resourceDescriptors = m_resourceDescriptors;
 
   // Get json string
   std::string dotFileContents =
@@ -365,8 +431,7 @@ bool Project::writeProjectFile(smtk::io::Logger& logger) const
 
   // Write file
   std::ofstream projectFile;
-  auto path =
-    boost::filesystem::path(this->m_directory) / boost::filesystem::path(PROJECT_FILENAME);
+  auto path = boost::filesystem::path(m_directory) / boost::filesystem::path(PROJECT_FILENAME);
   projectFile.open(path.string().c_str(), std::ofstream::out | std::ofstream::trunc);
   if (!projectFile)
   {
@@ -381,17 +446,24 @@ bool Project::writeProjectFile(smtk::io::Logger& logger) const
 
 bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
 {
+  auto opManager = m_operationManager.lock();
+  if (!opManager)
+  {
+    smtkErrorMacro(logger, "Operation manager is null");
+    return false;
+  }
+
   // Part of opening project from disk
   boost::filesystem::path directoryPath(path);
 
-  for (auto& descriptor : this->m_resourceDescriptors)
+  for (auto& descriptor : m_resourceDescriptors)
   {
     auto filePath = directoryPath / boost::filesystem::path(descriptor.m_filename);
     // auto inputPath = filePath.string();
     std::cout << "Loading " << filePath.string() << std::endl;
 
     // Create a read operator
-    auto readOp = this->m_operationManager->create<smtk::operation::ReadResource>();
+    auto readOp = opManager->create<smtk::operation::ReadResource>();
     if (!readOp)
     {
       smtkErrorMacro(logger, "Read Resource operator not found");
@@ -414,6 +486,13 @@ bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
 
 smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logger, bool reset)
 {
+  auto opManager = m_operationManager.lock();
+  if (!opManager)
+  {
+    smtkErrorMacro(logger, "Operation manager is null");
+    return false;
+  }
+
   // Check if already loaded
   if (!!m_exportOperator)
   {
@@ -442,13 +521,13 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
     }
   } // for
 
-  if (simAttDescriptor.m_filename == "")
+  if (simAttDescriptor.m_filename.empty())
   {
     smtkErrorMacro(logger, "simulation attribute not found, so no export operator defined");
     return nullptr;
   }
 
-  if (simAttDescriptor.m_importLocation == "")
+  if (simAttDescriptor.m_importLocation.empty())
   {
     smtkErrorMacro(
       logger, "simulation resource missing import location - cannot find export operator");
@@ -476,7 +555,7 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
 
   std::cout << "Importing python operator: " << location << std::endl;
 
-  auto importPythonOp = m_operationManager->create<smtk::operation::ImportPythonOperation>();
+  auto importPythonOp = opManager->create<smtk::operation::ImportPythonOperation>();
   if (!importPythonOp)
   {
     smtkErrorMacro(logger, "Could not create \"import python operation\"");
@@ -511,20 +590,26 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
   // Use that string to create the export operator, and save that string to (later) release
   // the export operator.
   m_exportOperatorUniqueName = result->findString("unique_name")->value();
-  m_exportOperator = m_operationManager->create(m_exportOperatorUniqueName);
+  m_exportOperator = opManager->create(m_exportOperatorUniqueName);
   return m_exportOperator;
 }
 
 void Project::releaseExportOperator()
 {
-  if (!m_exportOperator || !m_operationManager)
+  if (!m_exportOperator)
   {
     return;
   }
 
-  m_operationManager->unregisterOperation(m_exportOperatorUniqueName);
+  auto opManager = m_operationManager.lock();
+  if (!opManager)
+  {
+    return;
+  }
+
+  opManager->unregisterOperation(m_exportOperatorUniqueName);
   m_exportOperator = nullptr;
-  m_exportOperatorUniqueName = "";
+  m_exportOperatorUniqueName.clear();
 }
 
 } // namespace project

@@ -54,7 +54,7 @@ public:
     const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   /// Return project instance
-  ProjectPtr getCurrentProject() const { return this->m_project; }
+  ProjectPtr getCurrentProject() const { return m_project; }
 
   /// Write project resources & metadata to the filesystem. Returns true on success
   bool saveProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
@@ -74,14 +74,17 @@ protected:
   // Load and return NewProject template
   smtk::attribute::ResourcePtr getProjectTemplate();
 
+  // Create Project instance
+  ProjectPtr initProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
+
 private:
   Manager(smtk::resource::ManagerPtr&, smtk::operation::ManagerPtr&);
 
   /// Resource manager for the project resources.
-  smtk::resource::ManagerPtr m_resourceManager;
+  smtk::resource::WeakManagerPtr m_resourceManager;
 
   /// Operation manager for the project operations.
-  smtk::operation::ManagerPtr m_operationManager;
+  smtk::operation::WeakManagerPtr m_operationManager;
 
   /// Current project
   smtk::project::ProjectPtr m_project;

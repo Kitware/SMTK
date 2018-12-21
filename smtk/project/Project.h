@@ -42,10 +42,10 @@ public:
   virtual ~Project();
 
   /// Return project name
-  std::string name() const { return this->m_name; }
+  std::string name() const { return m_name; }
 
   /// Return project directory
-  std::string directory() const { return this->m_directory; }
+  std::string directory() const { return m_directory; }
 
   /// Return project resources
   std::vector<smtk::resource::ResourcePtr> getResources() const;
@@ -92,10 +92,10 @@ protected:
   void releaseExportOperator();
 
   /// Resource manager for the project resources.
-  smtk::resource::ManagerPtr m_resourceManager;
+  smtk::resource::WeakManagerPtr m_resourceManager;
 
   /// Operation manager for the project operations.
-  smtk::operation::ManagerPtr m_operationManager;
+  smtk::operation::WeakManagerPtr m_operationManager;
 
   /// User-supplied name for the project
   std::string m_name;

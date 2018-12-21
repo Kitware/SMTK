@@ -45,9 +45,9 @@ Manager::Manager(
 
 Manager::~Manager()
 {
-  if (this->m_project)
+  if (m_project)
   {
-    this->m_project->close();
+    m_project->close();
   }
 }
 
@@ -67,12 +67,16 @@ smtk::attribute::AttributePtr Manager::getProjectSpecification()
 ProjectPtr Manager::createProject(smtk::attribute::AttributePtr specification,
   bool replaceExistingDirectory, smtk::io::Logger& logger)
 {
-  auto newProject = smtk::project::Project::create();
-  newProject->setCoreManagers(this->m_resourceManager, this->m_operationManager);
+  auto newProject = this->initProject(logger);
+  if (!newProject)
+  {
+    return newProject;
+  }
+
   bool success = newProject->build(specification, logger, replaceExistingDirectory);
   if (success)
   {
-    this->m_project = newProject;
+    m_project = newProject;
     return newProject;
   }
 
@@ -82,27 +86,27 @@ ProjectPtr Manager::createProject(smtk::attribute::AttributePtr specification,
 
 bool Manager::saveProject(smtk::io::Logger& logger)
 {
-  if (!this->m_project)
+  if (!m_project)
   {
     smtkErrorMacro(logger, "No current project to save.");
     return false;
   }
 
-  return this->m_project->save(logger);
+  return m_project->save(logger);
 }
 
 bool Manager::closeProject(smtk::io::Logger& logger)
 {
-  if (!this->m_project)
+  if (!m_project)
   {
     smtkErrorMacro(logger, "No current project to close.");
     return false;
   }
 
-  bool closed = this->m_project->close();
+  bool closed = m_project->close();
   if (closed)
   {
-    this->m_project = nullptr;
+    m_project = nullptr;
   }
 
   return closed;
@@ -110,28 +114,26 @@ bool Manager::closeProject(smtk::io::Logger& logger)
 
 ProjectPtr Manager::openProject(const std::string& projectPath, smtk::io::Logger& logger)
 {
-  if (this->m_project)
+  auto newProject = this->initProject(logger);
+  if (!newProject)
   {
-    smtkErrorMacro(logger, "Cannot open project - must close current project first");
-    return smtk::project::ProjectPtr();
+    return newProject;
   }
 
-  auto project = smtk::project::Project::create();
-  project->setCoreManagers(this->m_resourceManager, this->m_operationManager);
-  bool success = project->open(projectPath, logger);
+  bool success = newProject->open(projectPath, logger);
   if (success)
   {
-    this->m_project = project;
-    return project;
+    m_project = newProject;
+    return newProject;
   }
 
   // (else)
-  return smtk::project::ProjectPtr();
+  return ProjectPtr();
 }
 
 smtk::operation::OperationPtr Manager::getExportOperator(smtk::io::Logger& logger) const
 {
-  if (!this->m_project)
+  if (!m_project)
   {
     smtkErrorMacro(logger, "Cannot get export operator because no project is loaded");
     return nullptr;
@@ -144,15 +146,42 @@ smtk::attribute::ResourcePtr Manager::getProjectTemplate()
 {
   // The current presumption is to reuse the previous project settings.
   // This might be revisited for usability purposes.
-  if (this->m_template)
+  if (m_template)
   {
-    return this->m_template;
+    return m_template;
   }
 
   auto reader = smtk::io::AttributeReader();
-  this->m_template = smtk::attribute::Resource::create();
-  reader.readContents(this->m_template, NewProjectTemplate, smtk::io::Logger::instance());
-  return this->m_template;
+  m_template = smtk::attribute::Resource::create();
+  reader.readContents(m_template, NewProjectTemplate, smtk::io::Logger::instance());
+  return m_template;
+}
+
+ProjectPtr Manager::initProject(smtk::io::Logger& logger)
+{
+  if (m_project)
+  {
+    smtkErrorMacro(logger, "Cannot initalize new project - must close current project first");
+    return ProjectPtr();
+  }
+
+  auto resManager = m_resourceManager.lock();
+  if (!resManager)
+  {
+    smtkErrorMacro(logger, "Resource manager is null");
+    return ProjectPtr();
+  }
+
+  auto opManager = m_operationManager.lock();
+  if (!opManager)
+  {
+    smtkErrorMacro(logger, "Operation manager is null");
+    return ProjectPtr();
+  }
+
+  auto project = smtk::project::Project::create();
+  project->setCoreManagers(resManager, opManager);
+  return project;
 }
 
 } // namespace project

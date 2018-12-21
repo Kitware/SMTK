@@ -35,6 +35,7 @@ class TestProjectManager(unittest.TestCase):
         self.attribute_count = None
         self.pm = None    # project manager
         self.rm = None    # resource manager
+        self.om = None    # operation manager
         self.project = None
 
     def test_getProjectSpecification(self):
@@ -56,18 +57,18 @@ class TestProjectManager(unittest.TestCase):
     def init_project_manager(self):
         # Initialize resource manager
         self.rm = smtk.resource.Manager.create()
-        om = smtk.operation.Manager.create()
+        self.om = smtk.operation.Manager.create()
 
         smtk.attribute.Registrar.registerTo(self.rm)
-        smtk.attribute.Registrar.registerTo(om)
+        smtk.attribute.Registrar.registerTo(self.om)
 
         smtk.session.mesh.Registrar.registerTo(self.rm)
-        smtk.session.mesh.Registrar.registerTo(om)
+        smtk.session.mesh.Registrar.registerTo(self.om)
 
-        smtk.operation.Registrar.registerTo(om)
-        om.registerResourceManager(self.rm)
+        smtk.operation.Registrar.registerTo(self.om)
+        self.om.registerResourceManager(self.rm)
 
-        self.pm = smtk.project.Manager.create(self.rm, om)
+        self.pm = smtk.project.Manager.create(self.rm, self.om)
 
     def create_project(self, project_name):
         before_count = len(self.rm.resources())
@@ -182,6 +183,7 @@ class TestProjectManager(unittest.TestCase):
 
     def test_sequence(self):
         self.rm = None    # resource manager
+        self.om = None    # operation manager
         self.pm = None    # project manager
         self.project = None
         self.attribute_count = 0
