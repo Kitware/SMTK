@@ -220,6 +220,14 @@ void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
 {
   (void)server;
   std::cout << "  unfilterSelectionOnServer: " << server << "\n\n";
+
+  // Drop filtering on existing server.
+  if (m_selection)
+  {
+    m_selection->setFilter(nullptr);
+    m_selection = nullptr;
+  }
+
   if (!mgr)
   {
     return;
