@@ -73,8 +73,13 @@ bool Manager::unregisterResource(const Resource::Index& index)
 
 void Manager::clear()
 {
-  std::for_each(m_resources.begin(), m_resources.end(),
-    [this](const Resource::Ptr& resource) { this->remove(resource); });
+  for (auto resourceIt = m_resources.begin(); resourceIt != m_resources.end();)
+  {
+    Resource::Ptr resource = *resourceIt;
+    resourceIt = m_resources.erase(resourceIt);
+
+    m_observers(resource, smtk::resource::EventType::REMOVED);
+  }
 }
 
 smtk::resource::ResourcePtr Manager::create(const std::string& typeName)
