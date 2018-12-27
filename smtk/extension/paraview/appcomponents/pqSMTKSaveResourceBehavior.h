@@ -34,7 +34,14 @@ public:
   */
   pqSaveResourceReaction(QAction* parent);
 
-  static void saveResource();
+  enum class State
+  {
+    Succeeded,
+    Failed,
+    Aborted
+  };
+
+  static State saveResource();
 
 public slots:
   /**
@@ -47,7 +54,7 @@ protected:
   /**
   * Called when the action is triggered.
   */
-  void onTriggered() override { pqSaveResourceReaction::saveResource(); }
+  void onTriggered() override { (void)pqSaveResourceReaction::saveResource(); }
 
 private:
   Q_DISABLE_COPY(pqSaveResourceReaction)
@@ -65,7 +72,7 @@ public:
   */
   pqSaveResourceAsReaction(QAction* parent);
 
-  static void saveResourceAs();
+  static pqSaveResourceReaction::State saveResourceAs();
 
 public slots:
   /**
@@ -78,7 +85,7 @@ protected:
   /**
   * Called when the action is triggered.
   */
-  void onTriggered() override { pqSaveResourceAsReaction::saveResourceAs(); }
+  void onTriggered() override { (void)pqSaveResourceAsReaction::saveResourceAs(); }
 
 private:
   Q_DISABLE_COPY(pqSaveResourceAsReaction)

@@ -39,10 +39,31 @@ set(PQComponentsSrcs
   pqSMTKResource.cxx
   pqSMTKResourceBrowser.cxx
   pqSMTKResourcePanel.cxx
+  pqSMTKSaveOnCloseResourceBehavior.cxx
   pqSMTKSaveResourceBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
   pqSMTKWrapper.cxx
 )
+
+# One feature of pqSMTKSaveOnCloseResourceBehavior is the construction of a
+# prompt to save all resources upon closing the main window. This feature uses
+# parts of ParaView that were added just after the tagging of 5.6.0. To support
+# both pre- and post-5.6.0, we set a local compiler definition to enable this
+# feature if the detected ParaView contains the features we need.
+#
+# TODO: In the future, ParaView will have a means of differentiating between the
+# latest tagged branch and master. When that happens, we can replace this logic
+# with a ParaView version check to see if our ParaView is greater than 5.6.0.
+# Until then, we simply look for the header file associated with the feature we
+# want.
+find_file(main_window_event_manager_hdr
+  NAMES pqMainWindowEventManager.h
+  PATHS ${PARAVIEW_INCLUDE_DIRS}
+  NO_DEFAULT_PATH)
+if (main_window_event_manager_hdr)
+  set_source_files_properties(pqSMTKSaveOnCloseResourceBehavior.cxx
+    PROPERTIES COMPILE_DEFINITIONS "HAS_MAIN_WINDOW_EVENT_MANAGER")
+endif()
 
 set(PQComponentsHeaders
   pqPluginSMTKViewBehavior.h
@@ -63,6 +84,7 @@ set(PQComponentsHeaders
   pqSMTKResource.h
   pqSMTKResourceBrowser.h
   pqSMTKResourcePanel.h
+  pqSMTKSaveOnCloseResourceBehavior.h
   pqSMTKSaveResourceBehavior.h
   pqSMTKSelectionFilterBehavior.h
   pqSMTKWrapper.h

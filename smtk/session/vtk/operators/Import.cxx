@@ -121,7 +121,6 @@ Import::Result Import::operateInternal()
     session = smtk::session::vtk::Session::create();
 
     // Create a new resource for the import
-    resource->setLocation(filename);
     resource->setSession(session);
   }
 

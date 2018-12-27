@@ -77,6 +77,13 @@ pqSMTKResource* pqSMTKRenderResourceBehavior::createPipelineSource(
 {
   pqApplicationCore* pqCore = pqApplicationCore::instance();
   pqServer* server = pqActiveObjects::instance().activeServer();
+
+  // If there is no active server, there is not much we can do.
+  if (server == nullptr)
+  {
+    return nullptr;
+  }
+
   pqObjectBuilder* builder = pqCore->getObjectBuilder();
 
   pqSMTKResource* source =
