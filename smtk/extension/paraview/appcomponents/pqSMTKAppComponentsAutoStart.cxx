@@ -21,6 +21,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRegisterImportersBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKSaveOnCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
@@ -44,6 +45,7 @@ void pqSMTKAppComponentsAutoStart::startup()
   auto rsrcMgr = pqSMTKBehavior::instance(this);
   auto renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
   auto closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);
+  auto saveOnCloseResourceBehavior = pqSMTKSaveOnCloseResourceBehavior::instance(this);
   auto rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
   auto rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
   auto pipelineSync = pqSMTKPipelineSelectionBehavior::instance(this);
@@ -63,6 +65,7 @@ void pqSMTKAppComponentsAutoStart::startup()
   {
     pqCore->registerManager("smtk resource", rsrcMgr);
     pqCore->registerManager("smtk render resource", renderResourceBehavior);
+    pqCore->registerManager("smtk save on close resource", saveOnCloseResourceBehavior);
     pqCore->registerManager("smtk close resource", closeResourceBehavior);
     pqCore->registerManager("smtk import operation", rsrcImportOpMgr);
     pqCore->registerManager("smtk export simulation", rsrcExportSimMgr);
@@ -82,6 +85,7 @@ void pqSMTKAppComponentsAutoStart::shutdown()
   {
     pqCore->unRegisterManager("smtk resource");
     pqCore->unRegisterManager("smtk render resource");
+    pqCore->unRegisterManager("smtk save on close resource");
     pqCore->unRegisterManager("smtk close resource");
     pqCore->unRegisterManager("smtk import operation");
     pqCore->unRegisterManager("smtk export simulation");
