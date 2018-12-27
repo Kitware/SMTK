@@ -31,11 +31,11 @@ public:
   void SetLogger(smtk::io::Logger* log);
   smtk::io::Logger* GetLogger() const;
 
-  void DisplayText(const char* msg) VTK_OVERRIDE;
-  void DisplayErrorText(const char* msg) VTK_OVERRIDE;
-  void DisplayWarningText(const char* msg) VTK_OVERRIDE;
-  void DisplayGenericWarningText(const char* msg) VTK_OVERRIDE;
-  void DisplayDebugText(const char* msg) VTK_OVERRIDE;
+  void DisplayText(const char* msg) override;
+  void DisplayErrorText(const char* msg) override;
+  void DisplayWarningText(const char* msg) override;
+  void DisplayGenericWarningText(const char* msg) override;
+  void DisplayDebugText(const char* msg) override;
 
 protected:
   OutputWindow();
@@ -46,8 +46,8 @@ protected:
   smtk::io::Logger* Log;
 
 private:
-  OutputWindow(const OutputWindow&) VTK_DELETE_FUNCTION;
-  void operator=(const OutputWindow&) VTK_DELETE_FUNCTION;
+  OutputWindow(const OutputWindow&) = delete;
+  void operator=(const OutputWindow&) = delete;
 };
 
 vtkStandardNewMacro(OutputWindow);
