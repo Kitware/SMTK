@@ -23,7 +23,7 @@ class SMTKPVSERVEREXT_EXPORT vtkSMTKSettings : public vtkObject
 public:
   static vtkSMTKSettings* New();
   vtkTypeMacro(vtkSMTKSettings, vtkObject);
-  void PrintSelf(ostream& os, vtkIndent indent) VTK_OVERRIDE;
+  void PrintSelf(ostream& os, vtkIndent indent) override;
   virtual ~vtkSMTKSettings();
 
   /**\brief Return the singleton.
