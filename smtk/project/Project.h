@@ -89,6 +89,9 @@ protected:
   smtk::operation::OperationPtr getExportOperator(
     smtk::io::Logger& logger = smtk::io::Logger::instance(), bool reset = false);
 
+  bool populateExportOperator(smtk::operation::OperationPtr exportOp,
+    smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
+
   void releaseExportOperator();
 
   /// Resource manager for the project resources.

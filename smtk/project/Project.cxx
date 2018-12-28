@@ -20,6 +20,7 @@
 #include "smtk/common/TypeName.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/model/Resource.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/ImportResource.h"
@@ -490,7 +491,7 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
   if (!opManager)
   {
     smtkErrorMacro(logger, "Operation manager is null");
-    return false;
+    return smtk::operation::OperationPtr();
   }
 
   // Check if already loaded
@@ -591,7 +592,81 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
   // the export operator.
   m_exportOperatorUniqueName = result->findString("unique_name")->value();
   m_exportOperator = opManager->create(m_exportOperatorUniqueName);
+  this->populateExportOperator(m_exportOperator, logger);
+
   return m_exportOperator;
+}
+
+bool Project::populateExportOperator(
+  smtk::operation::OperationPtr exportOp, smtk::io::Logger& logger) const
+{
+  // Locate project attribute and model resources
+  std::vector<smtk::resource::ResourcePtr> attResourceList;
+  std::vector<smtk::resource::ResourcePtr> modelResourceList;
+  auto resourceList = this->getResources();
+  for (auto resource : resourceList)
+  {
+    if (resource->isOfType(smtk::common::typeName<smtk::attribute::Resource>()))
+    {
+      attResourceList.push_back(resource);
+    }
+    else if (resource->isOfType(smtk::common::typeName<smtk::model::Resource>()))
+    {
+      modelResourceList.push_back(resource);
+    }
+  } // for (resource)
+
+  // Check parameters for "attributes" and "model" items
+  auto paramAttribute = exportOp->parameters();
+
+  auto attItem = paramAttribute->findResource("attributes");
+  if (attItem)
+  {
+    if (attResourceList.size() == 1)
+    {
+      attItem->setValue(attResourceList[0]);
+    }
+    else
+    {
+      smtkWarningMacro(logger, "Unable to assign attribute resource because"
+                               " the number of attribute resources in project is "
+          << attResourceList.size());
+    }
+  }
+
+  auto modelItem = paramAttribute->findResource("model");
+  if (modelItem)
+  {
+    if (modelResourceList.size() == 1)
+    {
+      modelItem->setValue(modelResourceList[0]);
+    }
+    else
+    {
+      smtkWarningMacro(logger, "Unable to assign model resource because"
+                               " the number of model resources in project is "
+          << attResourceList.size());
+    }
+  }
+
+  // If there is a single DirectoryItem, set it to a "sim" folder below the project
+  std::vector<smtk::attribute::ItemPtr> itemList;
+  for (int i = 0; i < paramAttribute->numberOfItems(); ++i)
+  {
+    auto item = paramAttribute->item(i);
+    if (item->type() == smtk::attribute::Item::DirectoryType)
+    {
+      itemList.push_back(item);
+    }
+  } // for
+  if (itemList.size() == 1)
+  {
+    auto dirItem = dynamic_pointer_cast<smtk::attribute::DirectoryItem>(itemList[0]);
+    auto boostPath = boost::filesystem::path(m_directory) / boost::filesystem::path("sim");
+    dirItem->setValue(boostPath.string());
+  }
+
+  return true;
 }
 
 void Project::releaseExportOperator()
