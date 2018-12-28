@@ -1,6 +1,6 @@
 set(library_name "_smtkPybindRGGSession")
 set(module_path "session/rgg")
-set(build_path "${PROJECT_BINARY_DIR}/smtk/${module_path}")
+set(build_path "${CMAKE_BINARY_DIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
 pybind11_add_module(${library_name} PybindRGGSession.cxx)
@@ -11,8 +11,8 @@ target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkRGGSession)
 set_target_properties(${library_name}
   PROPERTIES
     CXX_VISIBILITY_PRESET hidden
-    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
     COMPILE_FLAGS ${SMTK_PYBIND11_FLAGS}
+    LIBRARY_OUTPUT_DIRECTORY "${build_path}"
   )
 
 # Install library
