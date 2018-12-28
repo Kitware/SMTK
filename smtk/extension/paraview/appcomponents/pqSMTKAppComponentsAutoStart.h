@@ -32,7 +32,6 @@ public:
   void shutdown();
 
 protected:
-  static vtkSMProxy* s_resourceManager;
   pqPluginSMTKViewBehavior* m_viewTracker;
 
 private:

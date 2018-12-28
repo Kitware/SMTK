@@ -418,17 +418,37 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
       }
       else if (childEntity->isAuxiliaryGeometry())
       {
-        /* TODO:
-        if
-        (
-         (parent is a model::Model and comp is in model.auxiliaryGeometry()) ||
-         (parent is a model::AuxGeom and comp is in auxGeom.auxiliaryGeometry()) ||
-         (parent is a model::Group and comp is a member)
-        )
+        if (parentEntity->isModel())
         {
-        shouldAdd = true;
+          auto auxGeoms = parentEntity->referenceAs<smtk::model::Model>().auxiliaryGeometry();
+          std::set<smtk::model::AuxiliaryGeometry> searchable(auxGeoms.begin(), auxGeoms.end());
+          if (searchable.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
+            searchable.end())
+          {
+            shouldAdd = true;
+          }
         }
-        */
+        else if (parentEntity->isAuxiliaryGeometry())
+        {
+          auto auxGeoms =
+            parentEntity->referenceAs<smtk::model::AuxiliaryGeometry>().auxiliaryGeometries();
+          std::set<smtk::model::AuxiliaryGeometry> searchable(auxGeoms.begin(), auxGeoms.end());
+          if (searchable.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
+            searchable.end())
+          {
+            shouldAdd = true;
+          }
+        }
+        else if (parentEntity->isGroup())
+        {
+          auto members =
+            parentEntity->referenceAs<smtk::model::Group>().members<smtk::model::EntityRefs>();
+          if (members.find(childEntity->referenceAs<smtk::model::AuxiliaryGeometry>()) !=
+            members.end())
+          {
+            shouldAdd = true;
+          }
+        }
       }
       else if (childEntity->isInstance() &&
         smtk::model::Instance(childEntity).prototype().entity() == parentEntity->id())

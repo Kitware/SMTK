@@ -70,22 +70,22 @@
           </ChildrenDefinitions>
 
           <DiscreteInfo DefaultIndex="0">
-	    <Structure>
+            <Structure>
               <Value Enum="2">2</Value>
-	      <Items>
-		<Item>origin2d</Item>
-		<Item>size2d</Item>
-		<Item>discretization2d</Item>
-	      </Items>
-	    </Structure>
-	    <Structure>
+              <Items>
+                <Item>origin2d</Item>
+                <Item>size2d</Item>
+                <Item>discretization2d</Item>
+              </Items>
+            </Structure>
+            <Structure>
               <Value Enum="3">3</Value>
-	      <Items>
-		<Item>origin3d</Item>
-		<Item>size3d</Item>
-		<Item>discretization3d</Item>
-	      </Items>
-	    </Structure>
+              <Items>
+                <Item>origin3d</Item>
+                <Item>size3d</Item>
+                <Item>discretization3d</Item>
+              </Items>
+            </Structure>
           </DiscreteInfo>
         </String>
 

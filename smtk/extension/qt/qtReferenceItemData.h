@@ -72,6 +72,7 @@ public:
   QDialog* m_popup;
   QVBoxLayout* m_popupLayout;
   QListView* m_popupList;
+  bool m_alreadyClosingPopup; // Set when synchronizeAndHide() should **not** hide the QMenu.
 
   // Selection state of items shown in m_phraseModel:
   std::map<smtk::resource::PersistentObjectPtr, int> m_members;

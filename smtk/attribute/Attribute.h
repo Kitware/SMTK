@@ -339,7 +339,7 @@ T Attribute::associatedObjects() const
 
   for (auto it = m_associatedObjects->begin(); it != m_associatedObjects->end(); ++it)
   {
-    auto entry = std::dynamic_pointer_cast<typename T::value_type>(*it);
+    auto entry = std::dynamic_pointer_cast<typename T::value_type::element_type>(*it);
     if (entry)
     {
       result.insert(result.end(), entry);

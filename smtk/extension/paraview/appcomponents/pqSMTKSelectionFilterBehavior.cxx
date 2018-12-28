@@ -31,6 +31,7 @@
 
 // Client side
 #include "pqApplicationCore.h"
+#include "pqLiveInsituManager.h"
 #include "pqOutputPort.h"
 #include "pqPVApplicationCore.h"
 #include "pqSelectionManager.h"
@@ -191,6 +192,12 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
   if (!mgr)
   {
     std::cout << "  filterSelectionOnServer: no mgr\n";
+    return;
+  }
+  if (pqLiveInsituManager::isInsituServer(server) ||
+    pqLiveInsituManager::instance()->isDisplayServer(server))
+  {
+    std::cout << "  server is catalyst connection... ignoring.\n";
     return;
   }
   //auto seln = mgr->GetSelection();
