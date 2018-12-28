@@ -59,9 +59,16 @@ public:
   static void addCacheGeometry(const vtkSmartPointer<vtkDataObject> dataset,
     const smtk::model::AuxiliaryGeometry& entity, std::time_t& mtime, bool trimCache);
 
-  /// Return VTK data created by a previous call to canHandleAuxiliaryGeometry.
+  /**\brief Return VTK data created by a previous call to canHandleAuxiliaryGeometry.
+    *
+    * The variant that accepts a reference to std::time_t will return the
+    * timestamp provided when addCacheGeometry() was called (if a cache entry
+    * is found; if no entry for \a entity is found, then its value is unmodified).
+    */
   static vtkSmartPointer<vtkDataObject> fetchCachedGeometry(
     const smtk::model::AuxiliaryGeometry& entity);
+  static vtkSmartPointer<vtkDataObject> fetchCachedGeometry(
+    const smtk::model::AuxiliaryGeometry& entity, std::time_t& cachedTime);
 
   /// Return the size (in kiB) of the current geometry cache.
   static double currentCacheSize();

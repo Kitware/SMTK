@@ -146,6 +146,7 @@ if (SMTK_ENABLE_MULTISCALE_SESSION)
   set(AFRL_DIR "/path/to/afrl/data" CACHE PATH "Path to a directory of AFRL data.")
 endif()
 option(SMTK_ENABLE_RGG_SESSION "Build RGG reactor model session." ON)
+option(SMTK_ENABLE_OSCILLATOR_SESSION "Build example oscillator model session." ON)
 
 # SMTK_BUILD_DOCUMENTATION is an enumerated option:
 # never  == No documentation, and no documentation tools are required.

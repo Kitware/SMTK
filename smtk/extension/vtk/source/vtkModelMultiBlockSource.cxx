@@ -402,13 +402,19 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     }
     if (bShow)
     {
-      auto ext = vtkAuxiliaryGeometryExtension::create();
-      std::vector<double> bbox;
-      if (ext->canHandleAuxiliaryGeometry(aux, bbox))
-      {
-        auto cgeom = ext->fetchCachedGeometry(aux);
-        return cgeom;
-      }
+      vtkSmartPointer<vtkDataObject> cgeom;
+      smtk::common::Extension::visit<vtkAuxiliaryGeometryExtension::Ptr>(
+        [&cgeom, &aux](
+          const std::string&, vtkAuxiliaryGeometryExtension::Ptr ext) -> std::pair<bool, bool> {
+          std::vector<double> bbox;
+          if (ext->canHandleAuxiliaryGeometry(aux, bbox))
+          {
+            cgeom = ext->fetchCachedGeometry(aux);
+            return std::make_pair(true, true);
+          }
+          return std::make_pair(false, false);
+        });
+      return cgeom;
     }
   }
   return vtkSmartPointer<vtkDataObject>();

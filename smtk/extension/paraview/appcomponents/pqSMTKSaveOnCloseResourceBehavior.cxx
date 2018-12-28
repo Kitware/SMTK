@@ -47,7 +47,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
 {
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.
-  QTimer::singleShot(0, this, [this]() {
+  QTimer::singleShot(0, this, []() {
     // Blech: pqApplicationCore doesn't have the selection manager yet,
     // so wait until we hear that the server is ready to make the connection.
     // We can't have a selection before the first connection, anyway.

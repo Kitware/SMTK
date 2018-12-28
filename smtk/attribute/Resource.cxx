@@ -935,7 +935,11 @@ std::set<AttributePtr> Resource::attributes(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
   for (auto obj : objs)
   {
-    result.insert(std::dynamic_pointer_cast<Attribute>(obj));
+    auto entry = std::dynamic_pointer_cast<Attribute>(obj);
+    if (entry)
+    { // Never insert a failed dynamic cast (null pointer)
+      result.insert(entry);
+    }
   }
   return result;
 }

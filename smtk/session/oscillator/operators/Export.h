@@ -7,35 +7,39 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_session_mesh_CreateUniformGrid_h
-#define smtk_session_mesh_CreateUniformGrid_h
-
-#include "smtk/session/mesh/Exports.h"
+#ifndef smtk_session_oscillator_Export_h
+#define smtk_session_oscillator_Export_h
 
 #include "smtk/operation/XMLOperation.h"
+#include "smtk/session/oscillator/Exports.h"
 
 namespace smtk
 {
 namespace session
 {
-namespace mesh
+namespace oscillator
 {
 
-/**\brief Construct a 2- or 3-dimensional uniform grid and its sides.
+/**\brief Export simulation configuration files for the SENSEI oscillator mini-app.
+  *
   */
-class SMTKMESHSESSION_EXPORT CreateUniformGrid : public smtk::operation::XMLOperation
+class SMTKOSCILLATORSESSION_EXPORT Export : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(smtk::session::mesh::CreateUniformGrid);
-  smtkCreateMacro(CreateUniformGrid);
+  smtkTypeMacro(smtk::session::oscillator::Export);
+  smtkCreateMacro(Export);
+  smtkSuperclassMacro(smtk::operation::XMLOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
 };
-}
-}
-}
 
-#endif
+SMTKOSCILLATORSESSION_EXPORT bool exportResource(const smtk::resource::ResourcePtr&);
+
+} // namespace oscillator
+} // namespace session
+} // namespace smtk
+
+#endif // smtk_session_oscillator_Export_h

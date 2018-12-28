@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_session_mesh_CreateUniformGrid_h
-#define smtk_session_mesh_CreateUniformGrid_h
+#ifndef smtk_session_oscillator_EditSource_h
+#define smtk_session_oscillator_EditSource_h
 
-#include "smtk/session/mesh/Exports.h"
+#include "smtk/session/oscillator/Exports.h"
 
 #include "smtk/operation/XMLOperation.h"
 
@@ -18,21 +18,23 @@ namespace smtk
 {
 namespace session
 {
-namespace mesh
+namespace oscillator
 {
 
-/**\brief Construct a 2- or 3-dimensional uniform grid and its sides.
+/**\brief Construct a 2- or 3-dimensional Gaussian source.
   */
-class SMTKMESHSESSION_EXPORT CreateUniformGrid : public smtk::operation::XMLOperation
+class SMTKOSCILLATORSESSION_EXPORT EditSource : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(smtk::session::mesh::CreateUniformGrid);
-  smtkCreateMacro(CreateUniformGrid);
+  smtkTypeMacro(smtk::session::oscillator::EditSource);
+  smtkCreateMacro(EditSource);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
 protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
+
+  void assignName(smtk::model::Model& model, smtk::model::AuxiliaryGeometry& source);
 };
 }
 }

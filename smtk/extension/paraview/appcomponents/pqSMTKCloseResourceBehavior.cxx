@@ -96,8 +96,7 @@ void pqCloseResourceReaction::closeResource()
 
     if (ret == QMessageBox::Save)
     {
-      pqActiveObjects* activeObjects = &pqActiveObjects::instance();
-      activeObjects->setActiveSource(smtkResource);
+      activeObjects.setActiveSource(smtkResource);
       pqSaveResourceReaction::State state = pqSaveResourceReaction::saveResource();
       if (state == pqSaveResourceReaction::State::Aborted)
       {

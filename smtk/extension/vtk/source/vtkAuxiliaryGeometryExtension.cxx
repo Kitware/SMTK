@@ -273,8 +273,21 @@ void vtkAuxiliaryGeometryExtension::addCacheGeometry(const vtkSmartPointer<vtkDa
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::fetchCachedGeometry(
   const smtk::model::AuxiliaryGeometry& entity)
 {
+  std::time_t dummy;
+  return vtkAuxiliaryGeometryExtension::fetchCachedGeometry(entity, dummy);
+}
+
+vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::fetchCachedGeometry(
+  const smtk::model::AuxiliaryGeometry& entity, std::time_t& cachedTime)
+{
   vtkAuxiliaryGeometryExtension::ensureCache();
-  return std::get<ClassInternal::DATA>(s_p->fetch(entity));
+  auto entry = s_p->fetch(entity);
+  auto result = std::get<ClassInternal::DATA>(entry);
+  if (result)
+  {
+    cachedTime = std::get<ClassInternal::TIMESTAMP>(entry);
+  }
+  return result;
 }
 
 double vtkAuxiliaryGeometryExtension::currentCacheSize()
