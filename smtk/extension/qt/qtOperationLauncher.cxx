@@ -35,6 +35,9 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // Set the promise to the output result.
   promise.set_value(result);
 
+  // Signal that the operation's result is ready for parsing.
+  emit resultReady(result);
+
 #else
 
   // Construct a thread to execute the operation. It takes:
