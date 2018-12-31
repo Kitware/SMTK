@@ -74,7 +74,7 @@ PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attribute_Def
     .def("associatesWithModel", &smtk::attribute::Definition::associatesWithModel)
     .def("associatesWithGroup", &smtk::attribute::Definition::associatesWithGroup)
     .def("canBeAssociated", (bool (smtk::attribute::Definition::*)(::smtk::model::BitFlags) const) &smtk::attribute::Definition::canBeAssociated, py::arg("maskType"))
-    .def("canBeAssociated", (bool (smtk::attribute::Definition::*)(::smtk::model::EntityRef, ::std::vector<smtk::attribute::Attribute *, std::allocator<smtk::attribute::Attribute *> > *) const) &smtk::attribute::Definition::canBeAssociated, py::arg("entity"), py::arg("conflicts"))
+    .def("canBeAssociated", (smtk::attribute::Definition::AssociationResultType (smtk::attribute::Definition::*)(::smtk::resource::ConstPersistentObjectPtr, ::smtk::attribute::AttributePtr&, ::smtk::attribute::DefinitionPtr&) const) &smtk::attribute::Definition::canBeAssociated, py::arg("entity"), py::arg("conflictingAttribute"), py::arg("requiredDefinition"))
     .def("conflicts", &smtk::attribute::Definition::conflicts, py::arg("definition"))
     .def("attributes", &smtk::attribute::Definition::attributes)
     .def("numberOfItemDefinitions", &smtk::attribute::Definition::numberOfItemDefinitions)

@@ -199,6 +199,7 @@ public:
   bool isObjectAssociated(const smtk::common::UUID& uid) const;
   bool isObjectAssociated(const smtk::resource::PersistentObjectPtr& componentPtr) const;
 
+  bool canBeDisassociated(smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt) const;
   ConstReferenceItemPtr associations() const { return m_associatedObjects; }
   ReferenceItemPtr associations() { return m_associatedObjects; }
 
@@ -218,9 +219,14 @@ public:
 
   void disassociateEntity(const smtk::common::UUID& entity, bool reverse = true);
   void disassociateEntity(const smtk::model::EntityRef& entity, bool reverse = true);
-  void disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse = true);
+  /// Disassociate attribute from an object.  Returns true if successful, else
+  /// it will set probAtt to attribute using this as a prerequisite
+  bool disassociate(
+    smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool reverse = true);
+  /// Disassociate attribute from an object.  Returns true if successful.
+  bool disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse = true);
 
-  void removeAllAssociations();
+  bool removeAllAssociations(bool partialRemovalOk = false);
 
   /**
    * @brief Remove expunged Entities from attribute

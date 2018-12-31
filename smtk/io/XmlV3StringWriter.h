@@ -35,6 +35,7 @@ class SMTKCORE_EXPORT XmlV3StringWriter : public XmlV2StringWriter
 public:
   XmlV3StringWriter(const smtk::attribute::ResourcePtr resource);
   virtual ~XmlV3StringWriter();
+  void generateXml(smtk::io::Logger& logger) override;
 
 protected:
   // Override methods

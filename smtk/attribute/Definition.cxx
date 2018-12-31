@@ -44,7 +44,7 @@ Definition::Definition(
   m_isDefaultColorSet = false;
   m_rootName = m_type;
   m_includeIndex = 0;
-
+  m_prerequisiteUsageCount = 0;
   if (myBaseDef)
   {
     m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
@@ -128,32 +128,52 @@ bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
   return false;
 }
 
+void Definition::setIsUnique(bool val)
+{
+  if (m_isUnique == val)
+  {
+    return;
+  }
+  // Determine if we need to add this or remove it from the exclusion list
+  m_isUnique = val;
+  auto def = this->shared_from_this();
+  if (val)
+  {
+    this->m_exclusionDefs.insert(def);
+  }
+  else
+  {
+    for (auto it = m_exclusionDefs.begin(); it != m_exclusionDefs.end(); ++it)
+    {
+      auto wdef = (*it).lock();
+      if (wdef == def)
+      {
+        m_exclusionDefs.erase(it);
+        return;
+      }
+    }
+  }
+}
+
 bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
 {
-  // 2 definitions conflict if their inheritance tree intersects and isUnique is
-  // is true within the intersection
-  // ASSUMING isUnique has been set consistantly first verify that both definitions
-  // are suppose to be unique
-  if (!(this->isUnique() && def->isUnique()))
+  // 2 Definitions conflict if they exclude each other
+  if (m_exclusionDefs.size())
   {
-    return false;
+    for (auto wdef : m_exclusionDefs)
+    {
+      auto edef = wdef.lock(); // Need to get the shared pointer (if there is one)
+      if (edef == nullptr)
+      {
+        continue;
+      }
+      if (edef == def)
+      {
+        return true;
+      }
+    }
   }
-  // Test the trivial case that they are the same definition
-  if (this == def.get())
-  {
-    return true;
-  }
-
-  // Get the most "basic" definition that is unique
-  auto attresource = this->resource();
-  if (attresource == nullptr)
-  {
-    return false; // there is no derived info
-  }
-  smtk::attribute::ConstDefinitionPtr baseDef = attresource->findIsUniqueBaseClass(def);
-  // See if the other definition is derived from this base definition.
-  // If it is not then we know there is no conflict
-  return def->isA(baseDef);
+  return false;
 }
 
 ConstReferenceItemDefinitionPtr Definition::associationRule() const
@@ -201,7 +221,7 @@ ReferenceItemDefinitionPtr Definition::localAssociationRule() const
 
 /**\brief Set the rule that decides which model entities may be associated with instances of this definition.
   *
-  * This will override the association rule the definition inherits from the Definition's Base Definiiton.
+  * This will override the association rule the definition inherits from the Definition's Base Definition.
   */
 void Definition::setLocalAssociationRule(ReferenceItemDefinitionPtr rule)
 {
@@ -305,27 +325,259 @@ bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
   return true;
 }
 
-/**\brief Return whether this attribute can be associated with the given \a entity.
+/**\brief Return whether this attribute can be associated with the given \a object.
   *
-  * TODO:
-  *   In this case we need to process BCS and DS specially
-  *   We look at the model's dimension and based on that return
-  *   the appropriate associatesWith method
-  *   Conflicts will contain a list of attributes that prevent an attribute
-  *   of this type from being associated
+  * This method first tests to see if the attribute can be associated with the object
+  * based on the attribute definition's association rules.  If the object fails the check
+  * AssociationResultType::Illegal is returned. Else the attribute definition's
+  * exclusion rules are checked.  If it fails this test, Definition::AssociationResultType::Conflict
+  * is returned along with the conflicting attributes.
+  * Finally, the attribute definition's prerequisite rules are tested.
+  * If it fails this test, Definition::AssociationResultType::Prerequisite is returned
+  * along with the missing prerequiste attribute definition.  If all checks pass,
+  * Definition::AssociationResultType::Valid is returned.
+  *
+  * Note that testing is stop when the first issue is found so there may be
+  * additional issues beyond the one reported.  For example, there may be multiple
+  * conflicts and/or missing prerequisites
   */
-bool Definition::canBeAssociated(
-  smtk::model::EntityRef /*entity*/, std::vector<Attribute*>* /*inConflicts*/) const
+Definition::AssociationResultType Definition::canBeAssociated(
+  smtk::resource::ConstPersistentObjectPtr object, AttributePtr& conflictAtt,
+  DefinitionPtr& prerequisiteDef) const
 {
-  // TO DO - Need to pull in Model Entity class to do this
-  // Procedure:
-  // 1. Determine if the definition can be applied to the model entity - this
-  // involves getting its type and calling the appropriate associatesWith method.
-  // In the case of a boundary condition set or domain set we need to look at the
-  // model's dimension to call the appropriate method. - return false if it can't.
-  // 2. Get a list of attributes on the entity and call conflicts method with each
-  // definition.  All conflicting attributes gets added to the list.
+  if (!this->checkAssociationRules(object))
+  {
+    return Definition::AssociationResultType::Illegal;
+  }
+
+  // Let's check for conflicts
+  conflictAtt = this->checkForConflicts(object);
+  if (conflictAtt != nullptr)
+  {
+    return Definition::AssociationResultType::Conflict;
+  }
+
+  // Finally let's check for missing prerequisite attributes
+  prerequisiteDef = this->checkForPrerequisites(object);
+  if (prerequisiteDef != nullptr)
+  {
+    return Definition::AssociationResultType::Prerequisite;
+  }
+  return Definition::AssociationResultType::Valid;
+}
+bool Definition::checkAssociationRules(smtk::resource::ConstPersistentObjectPtr object) const
+{
+  if (m_acceptsRules != nullptr)
+  {
+    // Let's verify that the object passes the contraints imposed by the association rules
+    if (m_acceptsRules->isValueValid(object))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  if (m_baseDefinition)
+  {
+    return m_baseDefinition->checkAssociationRules(object);
+  }
   return false;
+}
+
+AttributePtr Definition::checkForConflicts(smtk::resource::ConstPersistentObjectPtr object) const
+{
+  if (m_exclusionDefs.size())
+  {
+    for (auto wdef : m_exclusionDefs)
+    {
+      auto def = wdef.lock(); // Need to get the shared pointer (if there is one)
+      if (def == nullptr)
+      {
+        continue;
+      }
+      auto atts = def->attributes(object);
+      if (atts.size() > 0)
+      {
+        return *(atts.begin());
+      }
+    }
+  }
+  // If we have a base definition we need to test it as well
+  if (m_baseDefinition)
+  {
+    return m_baseDefinition->checkForConflicts(object);
+  }
+  return nullptr;
+}
+
+DefinitionPtr Definition::checkForPrerequisites(
+  smtk::resource::ConstPersistentObjectPtr object) const
+{
+  // Next let's see if there are any attributes that would exclude this one
+  if (m_prerequisiteDefs.size())
+  {
+    for (auto wdef : m_prerequisiteDefs)
+    {
+      auto def = wdef.lock(); // Need to get the shared pointer (if there is one)
+      if (def == nullptr)
+      {
+        continue;
+      }
+      auto atts = def->attributes(object);
+      if (atts.size() == 0)
+      {
+        return def;
+      }
+    }
+  }
+  // if we have a base definition we need to test it as well
+  if (m_baseDefinition)
+  {
+    return m_baseDefinition->checkForPrerequisites(object);
+  }
+  return nullptr;
+}
+
+void Definition::removeExclusion(smtk::attribute::DefinitionPtr def)
+{
+  for (auto it = m_exclusionDefs.begin(); it != m_exclusionDefs.end(); ++it)
+  {
+    auto exDef = (*it).lock();
+    if (def == exDef)
+    {
+      m_exclusionDefs.erase(it);
+      break;
+    }
+  }
+
+  for (auto it = def->m_exclusionDefs.begin(); it != def->m_exclusionDefs.end(); ++it)
+  {
+    auto exDef = (*it).lock();
+    if (exDef.get() == this)
+    {
+      def->m_exclusionDefs.erase(it);
+      return;
+    }
+  }
+}
+
+void Definition::removePrerequisite(smtk::attribute::DefinitionPtr def)
+{
+  for (auto it = m_prerequisiteDefs.begin(); it != m_prerequisiteDefs.end(); ++it)
+  {
+    auto reqDef = (*it).lock();
+    if (def == reqDef)
+    {
+      m_prerequisiteDefs.erase(it);
+      --def->m_prerequisiteUsageCount;
+      return;
+    }
+  }
+}
+
+bool Definition::isUsedAsAPrerequisite() const
+{
+  if (m_prerequisiteUsageCount)
+  {
+    return true;
+  }
+  auto def = m_baseDefinition;
+  while (def != nullptr)
+  {
+    if (def->m_prerequisiteUsageCount)
+    {
+      return true;
+    }
+    def = def->m_baseDefinition;
+  }
+  return false;
+}
+
+std::vector<std::string> Definition::excludedTypeNames() const
+{
+  std::vector<std::string> types;
+  for (auto it = m_exclusionDefs.begin(); it != m_exclusionDefs.end(); ++it)
+  {
+    auto exDef = (*it).lock();
+    if (exDef)
+    {
+      types.push_back(exDef->type());
+    }
+  }
+  std::sort(types.begin(), types.end());
+  return types;
+}
+
+std::vector<std::string> Definition::prerequisiteTypeNames() const
+{
+  std::vector<std::string> types;
+  for (auto it = m_prerequisiteDefs.begin(); it != m_prerequisiteDefs.end(); ++it)
+  {
+    auto preDef = (*it).lock();
+    if (preDef)
+    {
+      types.push_back(preDef->type());
+    }
+  }
+  std::sort(types.begin(), types.end());
+  return types;
+}
+
+smtk::attribute::ConstDefinitionPtr Definition::hasPrerequisite(
+  smtk::attribute::ConstDefinitionPtr def) const
+{
+  if (m_prerequisiteDefs.size())
+  {
+    for (auto it = m_prerequisiteDefs.begin(); it != m_prerequisiteDefs.end(); ++it)
+    {
+      auto preDef = (*it).lock();
+      if (preDef && def->isA(preDef))
+      {
+        return preDef;
+      }
+    }
+  }
+  if (m_baseDefinition)
+  {
+    return m_baseDefinition->hasPrerequisite(def);
+  }
+  smtk::attribute::ConstDefinitionPtr nope;
+  return nope;
+}
+
+bool Definition::hasPrerequisites() const
+{
+  if (m_prerequisiteDefs.size())
+  {
+    return true;
+  }
+  auto def = m_baseDefinition;
+  while (def != nullptr)
+  {
+    if (def->m_prerequisiteDefs.size())
+    {
+      return true;
+    }
+    def = def->m_baseDefinition;
+  }
+  return false;
+}
+
+void Definition::addPrerequisite(smtk::attribute::DefinitionPtr def)
+{
+  if (def == nullptr)
+  {
+    return;
+  }
+  auto num = m_prerequisiteDefs.size();
+  m_prerequisiteDefs.insert(def);
+  if (num < m_prerequisiteDefs.size())
+  {
+    // OK we did add a prerequisite
+    ++def->m_prerequisiteUsageCount;
+  }
 }
 
 void Definition::buildAttribute(Attribute* att) const

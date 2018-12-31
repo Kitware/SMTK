@@ -57,7 +57,7 @@ public:
   virtual bool setAcceptsEntries(
     const std::string& typeName, const std::string& queryString, bool accept);
 
-  virtual bool isValueValid(PersistentObjectPtr entity) const;
+  virtual bool isValueValid(resource::ConstPersistentObjectPtr entity) const;
 
   /// Return the number of values required by this definition.
   std::size_t numberOfRequiredValues() const;
@@ -109,9 +109,9 @@ protected:
   void copyTo(Ptr dst) const;
 
   /// Return whether a resource is accepted by this definition. Used internally by isValueValid().
-  bool checkResource(smtk::resource::ResourcePtr rsrc) const;
+  bool checkResource(smtk::resource::ConstResourcePtr rsrc) const;
   /// Return whether a component is accepted by this definition. Used internally by isValueValid().
-  bool checkComponent(smtk::resource::ComponentPtr comp) const;
+  bool checkComponent(smtk::resource::ConstComponentPtr comp) const;
 
   /// Set the reference's role when generating links between the containing
   /// attribute and the reference item. By default, this value is set to

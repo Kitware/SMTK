@@ -49,6 +49,15 @@ class Resource;
 class SMTKCORE_EXPORT Definition : public smtk::enable_shared_from_this<Definition>
 {
 public:
+  /// Return types for canBeAssociated method
+  enum class AssociationResultType
+  {
+    Valid,       //!< Association is allowed.
+    Illegal,     //!< Association with the given component type is disallowed.
+    Conflict,    //!< An association with a mutually exclusive attribute already exists.
+    Prerequisite //!< A prerequisite association does not yet exist.
+  };
+
   smtkTypeMacroBase(smtk::attribute::Definition);
   struct SMTKCORE_EXPORT WeakDefinitionPtrCompare
   {
@@ -65,6 +74,7 @@ public:
     }
   };
 
+  typedef std::set<WeakDefinitionPtr, WeakDefinitionPtrCompare> WeakDefinitionSet;
   virtual ~Definition();
 
   // Description:
@@ -135,15 +145,13 @@ public:
   int advanceLevel() const { return m_advanceLevel; }
   void setAdvanceLevel(int level) { m_advanceLevel = level; }
 
-  // Indicates if a model entity can have multiple attributes of this
-  // type associated with it
+  // Indicates if a persistent object  can have multiple attributes of this
+  // type associated with it (true means it can not)
   bool isUnique() const { return m_isUnique; }
-  // Be careful with setting isUnique to be false
-  // in order to be consistant all definitions that this is
-  // a descendant of should also have isUnique set to false!!
-  // isUnique can be set to true without requiring its parent
-  // class to also be true.
-  void setIsUnique(bool isUniqueValue) { m_isUnique = isUniqueValue; }
+  // Setting isUnique to be true indicates that only one attribute of this
+  // defintion (or any definition derived from this) can be associated to a
+  // persistent object.
+  void setIsUnique(bool isUniqueValue);
 
   // Indicates if the attribute applies to the
   // nodes of the analysis mesh
@@ -216,8 +224,26 @@ public:
   bool associatesWithGroup() const;
 
   bool canBeAssociated(smtk::model::BitFlags maskType) const;
-  bool canBeAssociated(
-    smtk::model::EntityRef entity, std::vector<smtk::attribute::Attribute*>* conflicts) const;
+  // Tests to see if attributes based on this definition can be
+  // associated with a persistent object - see the documentation
+  // for AssociationResultType for details on return values.
+  // If a conflict is found, conflictAtt is set to the conflicting attibute
+  // If a prerequisite is missing, prerequisiteDef is set to the
+  // missing requirement
+  // NOTE - testing is completed once a problem has been detected.  There maybe be
+  // other issues preventing association so this method may need be called multiple
+  // times
+  AssociationResultType canBeAssociated(smtk::resource::ConstPersistentObjectPtr object,
+    AttributePtr& conflictAtt, DefinitionPtr& prerequisiteDef) const;
+  // Check the association rules of the definition (and the definiion it derived from)
+  // to see if the object can be associated
+  bool checkAssociationRules(smtk::resource::ConstPersistentObjectPtr object) const;
+  // Test to see if there is a conflict between this definition and attributes
+  // already associated to the object.  Returns the conflicting attribute if there is a conflict
+  AttributePtr checkForConflicts(smtk::resource::ConstPersistentObjectPtr object) const;
+  // Test to see if there is a missing prerequisite attribute that would prevent attributes of
+  // this type from being associated to the object.  Returns the missing prerequisite definition
+  DefinitionPtr checkForPrerequisites(smtk::resource::ConstPersistentObjectPtr object) const;
 
   // Return all of the attributes associated with object that are derived from this definition
   std::set<AttributePtr> attributes(const smtk::resource::ConstPersistentObjectPtr& object) const;
@@ -302,6 +328,40 @@ public:
 
   std::size_t includeIndex() const { return m_includeIndex; }
 
+  // Since Exclusion Constraints are symmetric this method will
+  // also insert this "definiton" into def
+  void addExclusion(smtk::attribute::DefinitionPtr def)
+  {
+    m_exclusionDefs.insert(def);
+    def->m_exclusionDefs.insert(this->shared_from_this());
+  }
+
+  // Since Exclusion Constriants are symmetric this method will also remove
+  // this "definition" from def
+  void removeExclusion(smtk::attribute::DefinitionPtr def);
+  const WeakDefinitionSet exclusions() const { return m_exclusionDefs; }
+  // Return a list of sorted type names that exlude this type of
+  // attribute
+  std::vector<std::string> excludedTypeNames() const;
+
+  void addPrerequisite(smtk::attribute::DefinitionPtr def);
+
+  /// Returns true if the definition is used as a prerequisite
+  bool isUsedAsAPrerequisite() const;
+
+  void removePrerequisite(smtk::attribute::DefinitionPtr def);
+  const WeakDefinitionSet prerequisites() const { return m_prerequisiteDefs; }
+  // Return a sort of list of type names that are prerequisite to the type
+  // of attribute
+  std::vector<std::string> prerequisiteTypeNames() const;
+
+  // Return nullptr if def is not a prerequisite of this Definition else
+  // return the prerequisite definition that def is derived from
+  smtk::attribute::ConstDefinitionPtr hasPrerequisite(
+    smtk::attribute::ConstDefinitionPtr def) const;
+  /// Returns true if the definition has prerequisites (which can be inherited)
+  bool hasPrerequisites() const;
+
 protected:
   friend class smtk::attribute::Resource;
   // AttributeDefinitions can only be created by an attribute resource
@@ -325,12 +385,15 @@ protected:
   bool m_isNodal;
   std::set<std::string> m_categories;
   int m_advanceLevel;
+  WeakDefinitionSet m_exclusionDefs;
+  WeakDefinitionSet m_prerequisiteDefs;
+  /// Used to keep track of how many definitions are using this one as a prerequisite
+  size_t m_prerequisiteUsageCount;
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
   //Is Unique indicates if more than one attribute of this type can be assigned to a
-  // model entity - NOTE This can be inherited meaning that if the definition's Super definition
-  // has isUnique = true it will also prevent an attribute from this definition being assigned if the
-  // targeted model entity has an attribute derived from the Super Definition
+  // model entity - this constraint is implimented by using adding the definition itself
+  // into its exclusion list
   bool m_isUnique;
   bool m_isRequired;
   bool m_isNotApplicableColorSet;

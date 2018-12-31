@@ -82,6 +82,9 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   res->findBaseDefinitions(baseDefPtrs);
   json defsObj = json::array();
   json attsObj = json::array();
+  json excsObj = json::array();
+  json presObj = json::array();
+
   std::queue<smtk::attribute::DefinitionPtr, std::deque<smtk::attribute::DefinitionPtr> > defsQueue(
     std::deque<smtk::attribute::DefinitionPtr>(baseDefPtrs.begin(), baseDefPtrs.end()));
   while (!defsQueue.empty())
@@ -105,6 +108,54 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     }
   }
   j["Definitions"] = defsObj;
+
+  // Process Exceptions and Prerequistics
+  std::vector<smtk::attribute::DefinitionPtr> defs;
+  res->definitions(defs, true);
+  for (auto def : defs)
+  {
+    auto defType = def->type();
+    // Lets process the constraints of def
+
+    auto excludedTypes = def->excludedTypeNames();
+    if (excludedTypes.size())
+    {
+      json types = json::array();
+      for (auto etype : excludedTypes)
+      {
+        if (etype > defType)
+        {
+          types.push_back(defType);
+          types.push_back(etype);
+        }
+      }
+      if (types.size())
+      {
+        excsObj.push_back(types);
+      }
+    }
+    // Now the prerequistics
+    auto prerequisitesTypes = def->prerequisiteTypeNames();
+    if (prerequisitesTypes.size())
+    {
+      json pobj = json::object();
+      pobj["Type"] = defType;
+      json types(prerequisitesTypes);
+      pobj["Prerequisite"] = types;
+      presObj.push_back(pobj);
+    }
+  }
+
+  if (excsObj.size())
+  {
+    j["Exclusions"] = excsObj;
+  }
+
+  if (presObj.size())
+  {
+    j["Prerequisites"] = presObj;
+  }
+
   j["Attributes"] = attsObj;
 
   // Process views
@@ -200,7 +251,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         std::string type = currentDef.at("Type");
         if (type.empty())
         {
-          smtkErrorMacro(logger, "Definition missing Type XML Attribute");
+          smtkErrorMacro(logger, "Definition missing Type Key");
           continue;
         }
         std::string baseType = currentDef.at("BaseType").is_null() ? "" : currentDef.at("BaseType");
@@ -270,6 +321,81 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       std::cerr << "Referenced Attribute Definition: " << attRefDefInfo[i].second
                 << " is missing and required by Item Definition: " << attRefDefInfo[i].first->name()
                 << std::endl;
+    }
+  }
+
+  // Check for Exclusions
+  if (j.find("Exclusions") != j.end())
+  {
+    auto excsObj = j.at("Exclusions");
+    for (auto excsInter = excsObj.begin(); excsInter != excsObj.end(); excsInter++)
+    {
+      auto excObj = *excsInter; // Get the exclusion list
+      // First lets convert the strings to definitions
+      std::vector<smtk::attribute::DefinitionPtr> defs;
+      for (auto strIter = excObj.begin(); strIter != excObj.end(); strIter++)
+      {
+        auto def = res->findDefinition(strIter->get<std::string>());
+        if (def)
+        {
+          defs.push_back(def);
+        }
+        else
+        {
+          std::cerr << "Cannot find exclusion definiion: " << strIter->get<std::string>()
+                    << std::endl;
+        }
+      }
+      auto defsSize = defs.size();
+      for (size_t i = 0; i < defsSize; i++)
+      {
+        for (size_t k = i + 1; k < defsSize; k++)
+        {
+          defs[i]->addExclusion(defs[k]);
+        }
+      }
+    }
+  }
+
+  // Check for Prerequisites
+  if (j.find("Prerequisites") != j.end())
+  {
+    auto presObj = j.at("Prerequisites");
+    for (auto presInter = presObj.begin(); presInter != presObj.end(); presInter++)
+    {
+      auto preObj = *presInter;
+      if (preObj.find("Type") == preObj.end())
+      {
+        std::cerr << "Cannot find Type Key - Skipping Prerequisite\n";
+        continue;
+      }
+      if (preObj.find("Prerequisite") == preObj.end())
+      {
+        std::cerr << "Cannot find Prerequisite Key - Skipping Prerequisite\n";
+        continue;
+      }
+      std::string tname = preObj.at("Type").get<std::string>();
+      // Lets find the target definition
+      auto tdef = res->findDefinition(tname);
+      if (!tdef)
+      {
+        std::cerr << "Cannot find target definition: " << tname << std::endl;
+        continue;
+      }
+      auto preDefs = preObj.at("Prerequisite");
+      for (auto strIter = preDefs.begin(); strIter != preDefs.end(); strIter++)
+      {
+        auto def = res->findDefinition(strIter->get<std::string>());
+        if (def)
+        {
+          tdef->addPrerequisite(def);
+        }
+        else
+        {
+          std::cerr << "Cannot find prerequisite definiion: " << strIter->get<std::string>()
+                    << " for Definition: " << tname << std::endl;
+        }
+      }
     }
   }
 

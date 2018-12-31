@@ -53,10 +53,10 @@ public:
     return smtk::resource::ComponentPtr();
   }
 
-  std::function<bool(const smtk::resource::ComponentPtr&)> queryOperation(
+  std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
     const std::string&) const override
   {
-    return [](const smtk::resource::ComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr&) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor&) const override {}

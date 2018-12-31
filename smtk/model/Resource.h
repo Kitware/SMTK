@@ -151,7 +151,7 @@ public:
   EntityPtr findEntity(const smtk::common::UUID& uid, bool trySessions = true) const;
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& uid) const override;
-  std::function<bool(const smtk::resource::ComponentPtr&)> queryOperation(
+  std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
     const std::string&) const override;
   void visit(smtk::resource::Component::Visitor&) const override;
 

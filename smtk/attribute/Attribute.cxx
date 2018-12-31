@@ -277,25 +277,73 @@ const smtk::resource::ResourcePtr Attribute::resource() const
 
 /**\brief Remove all associations of this attribute with model entities.
   *
-  * Note that this actually resets the associations.
+  * When dealing with prerequisite constrinats it may not be possible to
+  * remove all associations.  If partialRemovalOk is true, then all
+  * associations that can be removed all.  If false, then associations are
+  * only removed iff all can be removed.
+  * Note that this may reset the associations.
   * If there are any default associations, they will be present
   * but typically there are none.
   */
-void Attribute::removeAllAssociations()
+bool Attribute::removeAllAssociations(bool partialRemovalOk)
 {
-  if (m_associatedObjects)
+  if (m_associatedObjects == nullptr)
   {
-    for (auto oit = m_associatedObjects->begin(); oit != m_associatedObjects->end(); ++oit)
+    return true;
+  }
+
+  // Do we need to worry about prerequisites?
+  if (m_definition->isUsedAsAPrerequisite())
+  {
+    std::vector<smtk::resource::PersistentObjectPtr> objs;
+    objs = this->associatedObjects<std::vector<smtk::resource::PersistentObjectPtr> >();
+    bool result = true;
+    // if we are allowed to remove what we can then disassociate where we can
+    if (partialRemovalOk)
     {
-      auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(*oit);
-      if (modelEnt)
+      for (auto obj : objs)
       {
-        modelEnt->modelResource()->disassociateAttribute(
-          nullptr, this->id(), modelEnt->id(), false);
+        if (!this->disassociate(obj))
+        {
+          result = false;
+        }
+      }
+      if (result)
+      {
+        // OK - we have been able to remove all associations,
+        // so we now need to reset the association item in the
+        // rare case there are default associations
+        m_associatedObjects->reset();
+      }
+      return result;
+    }
+    // We need to precheck all of the objects
+    AttributePtr probAtt;
+    for (auto obj : objs)
+    {
+      if (!this->canBeDisassociated(obj, probAtt))
+      {
+        result = false;
       }
     }
-    m_associatedObjects->reset();
+
+    if (!result)
+    {
+      // can not remove all of the associations
+      return false;
+    }
   }
+  // If we are here then there are no prerequisite issues to deal with
+  for (auto oit = m_associatedObjects->begin(); oit != m_associatedObjects->end(); ++oit)
+  {
+    auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(*oit);
+    if (modelEnt)
+    {
+      modelEnt->modelResource()->disassociateAttribute(nullptr, this->id(), modelEnt->id(), false);
+    }
+  }
+  m_associatedObjects->reset();
+  return true;
 }
 
 /**\brief Update attribute when entities has been expunged
@@ -415,6 +463,8 @@ bool Attribute::associate(smtk::resource::PersistentObjectPtr obj)
     return res;
   }
 
+  // Lets see if we have any conflicts
+
   res = m_associatedObjects ? m_associatedObjects->appendObjectValue(obj) : false;
   if (!res)
   {
@@ -523,16 +573,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
       auto comp = rsrc->find(entity);
       if (comp)
       {
-        this->disassociate(comp);
-
-        if (reverse)
-        {
-          smtk::model::ResourcePtr modelMgr = std::static_pointer_cast<smtk::model::Resource>(rsrc);
-          if (modelMgr)
-          {
-            modelMgr->disassociateAttribute(this->attributeResource(), this->id(), entity, false);
-          }
-        }
+        this->disassociate(comp, reverse);
       }
     }
   }
@@ -543,44 +584,105 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
   */
 void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool reverse)
 {
-  if (!m_associatedObjects)
-  {
-    return;
-  }
-
-  std::ptrdiff_t idx = m_associatedObjects->find(entity.entity());
-  if (idx >= 0)
-  {
-    m_associatedObjects->removeValue(idx);
-    if (reverse)
-    {
-      smtk::model::EntityRef mutableEntity(entity);
-      mutableEntity.disassociateAttribute(this->attributeResource(), this->id(), false);
-    }
-  }
+  this->disassociate(entity.component(), reverse);
 }
 
-void Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse)
+bool Attribute::canBeDisassociated(
+  smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt) const
 {
+  probAtt = nullptr;
   if (!m_associatedObjects)
   {
-    return;
+    return true; // obj is not associated with the attribute
   }
 
-  std::ptrdiff_t idx = m_associatedObjects->find(obj);
-  if (idx >= 0)
+  auto attRes = this->attributeResource();
+  if (attRes == nullptr)
   {
-    m_associatedObjects->removeValue(idx);
-    if (reverse)
+    // This attribute is not part of a resource so there is nothing to remove
+    return true;
+  }
+
+  // Is this attribute's definition is not used as a prerequisite
+  // we can safely remove it
+  if (!m_definition->isUsedAsAPrerequisite())
+  {
+    return true;
+  }
+  // Ok we found the object - now will removing the association
+  // invalidate a prerequisite condition? To determine this do the following:
+  // 1. Get all of the attributes associated with the object
+  // 2. For each attribute do the following:
+  // 2a. See if the attribute has this attribute's type as a prerequisite
+  // Note that hasPrerequisite returns the required prerequisite def
+  // 2b. If it does then see how many other attributes associated with the object
+  // match the type - if there is only one then return false
+  auto atts = attRes->attributes(obj);
+  for (auto att : atts)
+  {
+    // If the attribite is the same type as this, or it has no
+    // prerequisites, we can skip it
+    if ((att->m_definition == m_definition) || (!att->m_definition->hasPrerequisites()))
     {
-      auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
-      if (modelEnt)
+      // Don't need to check any atts from the original
+      // definition
+      continue;
+    }
+    auto preDef = att->m_definition->hasPrerequisite(m_definition);
+    if (preDef == nullptr)
+    {
+      // Not a prerequisite for this attribute so skip it
+      continue;
+    }
+    // Count number of atts that match the preDef
+    int count = 0;
+    for (auto att1 : atts)
+    {
+      if (att1->m_definition->isA(preDef))
       {
-        modelEnt->modelResource()->disassociateAttribute(
-          this->attributeResource(), this->id(), modelEnt->id(), false);
+        count++;
       }
     }
+    if (count == 1)
+    {
+      // Can't disassociate the attribute
+      probAtt = att;
+      return false;
+    }
   }
+  return true;
+}
+
+bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse)
+{
+  AttributePtr foo;
+  return this->disassociate(obj, foo, reverse);
+}
+
+bool Attribute::disassociate(
+  smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool reverse)
+{
+  if (!this->canBeDisassociated(obj, probAtt))
+  {
+    return false;
+  }
+  std::ptrdiff_t idx = m_associatedObjects->find(obj);
+  if (idx < 0)
+  {
+    // the obj is not associated with the attribute
+    return true;
+  }
+  m_associatedObjects->removeValue(idx);
+  if (reverse)
+  {
+    auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
+    if (modelEnt)
+    {
+      modelEnt->modelResource()->disassociateAttribute(
+        this->attributeResource(), this->id(), modelEnt->id(), false);
+    }
+  }
+  return true;
 }
 
 /**\brief Return the item with the given \a inName, searching in the given \a style.

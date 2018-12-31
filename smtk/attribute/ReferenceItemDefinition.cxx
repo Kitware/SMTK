@@ -68,7 +68,7 @@ bool ReferenceItemDefinition::setAcceptsEntries(
   }
 }
 
-bool ReferenceItemDefinition::isValueValid(PersistentObjectPtr entity) const
+bool ReferenceItemDefinition::isValueValid(resource::ConstPersistentObjectPtr entity) const
 {
   bool ok = false;
   if (!entity)
@@ -76,13 +76,13 @@ bool ReferenceItemDefinition::isValueValid(PersistentObjectPtr entity) const
     return ok;
   }
 
-  smtk::resource::ResourcePtr rsrc;
-  smtk::resource::ComponentPtr comp;
-  if ((rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(entity)))
+  smtk::resource::ConstResourcePtr rsrc;
+  smtk::resource::ConstComponentPtr comp;
+  if ((rsrc = std::dynamic_pointer_cast<const smtk::resource::Resource>(entity)))
   {
     ok = this->checkResource(rsrc);
   }
-  else if ((comp = std::dynamic_pointer_cast<smtk::resource::Component>(entity)))
+  else if ((comp = std::dynamic_pointer_cast<const smtk::resource::Component>(entity)))
   {
     ok = this->checkComponent(comp);
   }
@@ -209,7 +209,7 @@ void ReferenceItemDefinition::copyTo(Ptr dest) const
   }
 }
 
-bool ReferenceItemDefinition::checkResource(smtk::resource::ResourcePtr rsrc) const
+bool ReferenceItemDefinition::checkResource(smtk::resource::ConstResourcePtr rsrc) const
 {
   // If the resource is invalid, then no filtering is needed.
   if (!rsrc)
@@ -244,7 +244,7 @@ bool ReferenceItemDefinition::checkResource(smtk::resource::ResourcePtr rsrc) co
   return false;
 }
 
-bool ReferenceItemDefinition::checkComponent(smtk::resource::ComponentPtr comp) const
+bool ReferenceItemDefinition::checkComponent(smtk::resource::ConstComponentPtr comp) const
 {
   // If the component is invalid, then no filtering is needed.
   if (!comp)

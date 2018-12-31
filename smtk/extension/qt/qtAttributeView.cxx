@@ -401,7 +401,7 @@ void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr
   bool rvisible = false, avisible = false;
   if (theAtt)
   {
-    if (theAtt->definition()->associationMask())
+    if (theAtt->definition()->associationRule())
     {
       avisible = true;
       this->Internals->AssociationsWidget->showEntityAssociation(theAtt);
@@ -705,19 +705,26 @@ void qtAttributeView::onCopySelected()
 void qtAttributeView::onDeleteSelected()
 {
   smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
-  if (selObject)
+  if (selObject != nullptr)
   {
-    std::string keyName = selObject->name();
-    this->Internals->AttSelections.remove(keyName);
-
     attribute::DefinitionPtr attDef = selObject->definition();
     ResourcePtr attResource = attDef->resource();
-    attResource->removeAttribute(selObject);
-    this->attributeRemoved(selObject);
+    if (attResource->removeAttribute(selObject))
+    {
+      std::string keyName = selObject->name();
+      this->Internals->AttSelections.remove(keyName);
+      this->attributeRemoved(selObject);
 
-    QTableWidgetItem* selItem = this->getSelectedItem();
-    this->Internals->ListTable->removeRow(selItem->row());
-    emit this->numOfAttributesChanged();
+      QTableWidgetItem* selItem = this->getSelectedItem();
+      this->Internals->ListTable->removeRow(selItem->row());
+      emit this->numOfAttributesChanged();
+    }
+    else
+    {
+      std::string s("Can't remove attribute ");
+      s.append(selObject->name()).append(" - Might be used as a prerequisite!");
+      QMessageBox::warning(this->parentWidget(), tr("Failure to Remove Attribute"), s.c_str());
+    }
   }
 }
 
@@ -868,6 +875,10 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
     std::vector<smtk::attribute::AttributePtr>::iterator it;
     for (it = result.begin(); it != result.end(); ++it)
     {
+      if ((*it)->definition() != attDef)
+      {
+        continue;
+      }
       QTableWidgetItem* item = this->addAttributeListItem(*it);
       if ((*it)->definition()->advanceLevel())
       {

@@ -196,17 +196,31 @@ smtk::attribute::AttributePtr Resource::createAttribute(
   return att;
 }
 
-void Resource::definitions(std::vector<smtk::attribute::DefinitionPtr>& result) const
+void Resource::definitions(std::vector<smtk::attribute::DefinitionPtr>& result, bool sortList) const
 {
-  std::map<std::string, DefinitionPtr>::const_iterator it;
   result.resize(m_definitions.size());
   int i;
-  for (it = m_definitions.begin(), i = 0; it != m_definitions.end(); it++, i++)
+  if (!sortList)
   {
-    result[i] = it->second;
+    std::map<std::string, DefinitionPtr>::const_iterator it;
+    for (it = m_definitions.begin(), i = 0; it != m_definitions.end(); it++, i++)
+    {
+      result[i] = it->second;
+    }
+    return;
+  }
+  std::vector<std::string> keys;
+  for (auto info : m_definitions)
+  {
+    keys.push_back(info.first);
+  }
+  std::sort(keys.begin(), keys.end());
+  std::vector<std::string>::const_iterator kit;
+  for (kit = keys.begin(), i = 0; kit != keys.end(); kit++, i++)
+  {
+    result[i] = m_definitions.at(*(kit));
   }
 }
-
 void Resource::attributes(std::vector<smtk::attribute::AttributePtr>& result) const
 {
   std::map<std::string, AttributePtr>::const_iterator it;
@@ -267,6 +281,11 @@ bool Resource::removeAttribute(smtk::attribute::AttributePtr att)
   {
     return false;
   }
+  if (!att->removeAllAssociations(false))
+  {
+    return false;
+  }
+
   m_attributes.erase(att->name());
   m_attributeIdMap.erase(att->id());
   m_attributeClusters[att->type()].erase(att);
@@ -465,7 +484,7 @@ void Resource::derivedDefinitions(
 }
 
 smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
-  smtk::attribute::DefinitionPtr attDef) const
+  smtk::attribute::ConstDefinitionPtr attDef) const
 {
   // If there is no definition or the definition is not
   // unique then return an empty shared pointer
@@ -481,7 +500,7 @@ smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
   }
   // Keep traveling up the definition's ancestors until
   // we come to the end or we find one that isn't unique
-  smtk::attribute::DefinitionPtr uDef = attDef, def;
+  smtk::attribute::ConstDefinitionPtr uDef = attDef, def;
   while (1 && uDef.get())
   {
     def = uDef->baseDefinition();
@@ -891,12 +910,12 @@ smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& attId) con
   return this->findAttribute(attId);
 }
 
-std::function<bool(const smtk::resource::ComponentPtr&)> Resource::queryOperation(
+std::function<bool(const smtk::resource::ConstComponentPtr&)> Resource::queryOperation(
   const std::string& filter) const
 {
   if (filter.empty() || filter == "any" || filter == "*")
   {
-    return [](const smtk::resource::ComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr&) { return true; };
   }
   const std::string attributeFilter("attribute");
   if (!filter.compare(0, attributeFilter.size(), attributeFilter))
@@ -911,14 +930,14 @@ std::function<bool(const smtk::resource::ComponentPtr&)> Resource::queryOperatio
       smtk::attribute::DefinitionPtr defn = this->findDefinition(sdef);
       if (defn)
       {
-        return [defn](const smtk::resource::ComponentPtr& comp) {
-          auto attr = std::dynamic_pointer_cast<Attribute>(comp);
+        return [defn](const smtk::resource::ConstComponentPtr& comp) {
+          auto attr = std::dynamic_pointer_cast<const Attribute>(comp);
           return (attr && attr->isA(defn));
         };
       }
     }
   }
-  return [](const smtk::resource::ComponentPtr&) { return false; };
+  return [](const smtk::resource::ConstComponentPtr&) { return false; };
 }
 
 // visit all components in the resource.

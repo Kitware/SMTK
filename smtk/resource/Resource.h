@@ -123,7 +123,8 @@ public:
   /// given a std::string describing a query, return a functor for performing
   /// the query (accepts component as input, returns true if the component
   /// satisfies the query parameters).
-  virtual std::function<bool(const ComponentPtr&)> queryOperation(const std::string&) const = 0;
+  virtual std::function<bool(const ConstComponentPtr&)> queryOperation(
+    const std::string&) const = 0;
 
   /// visit all components in a resource.
   virtual void visit(std::function<void(const ComponentPtr&)>& v) const = 0;

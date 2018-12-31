@@ -35,6 +35,9 @@ public:
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
 protected:
+  void processDefinitionInformation(pugi::xml_node& rootNode) override;
+  void processExclusion(pugi::xml_node& excludeNode);
+  void processPrerequisite(pugi::xml_node& depNode);
   void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def) override;
   void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def) override;
 

@@ -83,6 +83,7 @@ protected:
   virtual void processViews(pugi::xml_node& root);
 
   void createDefinition(pugi::xml_node& defNode);
+  virtual void processDefinitionInformation(pugi::xml_node& defNode);
   virtual void processDefinition(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr def);
   virtual void processAssociationDef(pugi::xml_node& node, smtk::attribute::DefinitionPtr def);
   void processAttribute(pugi::xml_node& attNode);

@@ -38,7 +38,7 @@ public:
 
   Item::Type type() const override;
 
-  bool isValueValid(smtk::resource::PersistentObjectPtr value) const override;
+  bool isValueValid(smtk::resource::ConstPersistentObjectPtr value) const override;
 
   /// Construct an item from the definition given its owning attribute and position.
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
