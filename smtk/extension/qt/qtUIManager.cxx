@@ -39,10 +39,12 @@
 #include "smtk/io/Logger.h"
 
 #include <QApplication>
+#include <QBrush>
 #include <QClipboard>
 #include <QComboBox>
 #include <QFontMetrics>
 #include <QFrame>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QIntValidator>
 #include <QLineEdit>
@@ -447,6 +449,19 @@ void qtUIManager::updateModelViews()
   m_topView->updateModelAssociation();
 }
 
+QColor qtUIManager::contrastWithText(const QColor& color)
+{
+  int textLightness = QGuiApplication::palette().text().color().lightness();
+  if (textLightness > 127)
+  {
+    int h, s, l, a;
+    color.getHsl(&h, &s, &l, &a);
+    l = 255 - l;
+    return QColor::fromHsl(h, s, l, a);
+  }
+  return color;
+}
+
 std::string qtUIManager::currentCategory()
 {
   return m_topView ? m_topView->currentCategory() : "";
@@ -530,21 +545,21 @@ void qtUIManager::setInvalidValueColor(const QColor& color)
 void qtUIManager::setWidgetColorToInvalid(QWidget* widget)
 {
   QPalette pal = widget->palette();
-  pal.setColor(QPalette::Base, this->InvalidValueColor);
+  pal.setColor(QPalette::Base, qtUIManager::contrastWithText(this->InvalidValueColor));
   widget->setPalette(pal);
 }
 
 void qtUIManager::setWidgetColorToDefault(QWidget* widget)
 {
   QPalette pal = widget->palette();
-  pal.setColor(QPalette::Base, this->DefaultValueColor);
+  pal.setColor(QPalette::Base, qtUIManager::contrastWithText(this->DefaultValueColor));
   widget->setPalette(pal);
 }
 
 void qtUIManager::setWidgetColorToNormal(QWidget* widget)
 {
   QPalette pal = widget->palette();
-  pal.setColor(QPalette::Base, Qt::white);
+  pal.setColor(QPalette::Base, qtUIManager::contrastWithText(Qt::white));
   widget->setPalette(pal);
 }
 

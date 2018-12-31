@@ -134,6 +134,16 @@ public:
   bool categoryEnabled();
   void clearRoot();
 
+  // The default colors defined in smtk::attribute::Definition presuppose the
+  // use of a dark font. This method tests the font lightness and, if the font
+  // color is light, it adapts the input color to contrast with it.
+  //
+  // TODO: We may not want to define color in smtk::core. Instead, we may want
+  //       to use Qt's convention of naming entities within a color palette
+  //       rather than hard-coding colors; these descriptions should also live
+  //       in the smtk::extensions::qt library, where they are used.
+  static QColor contrastWithText(const QColor&);
+
   bool passAdvancedCheck(int level);
   bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
   bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
