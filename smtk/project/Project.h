@@ -41,6 +41,9 @@ public:
 
   virtual ~Project();
 
+  /// Return simulation code this project targets
+  std::string simulationCode() const { return m_simulationCode; }
+
   /// Return project name
   std::string name() const { return m_name; }
 
@@ -99,6 +102,12 @@ protected:
 
   /// Operation manager for the project operations.
   smtk::operation::WeakManagerPtr m_operationManager;
+
+  /// Target simulation code, e.g., ACE3P, OpenFOAM, Truchas.
+  /// The convention is to use the name of the folder in the
+  /// simulation-workflows repository, converted to lower case,
+  /// e.g. ace3p, openfoam, truchas.
+  std::string m_simulationCode;
 
   /// User-supplied name for the project
   std::string m_name;

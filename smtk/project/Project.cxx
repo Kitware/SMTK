@@ -22,15 +22,19 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/model/Resource.h"
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/operators/ImportPythonOperation.h"
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 #include "smtk/project/json/jsonProjectDescriptor.h"
 #include "smtk/resource/Manager.h"
 
+#ifdef SMTK_PYTHON_ENABLED
+#include "smtk/operation/operators/ImportPythonOperation.h"
+#endif
+
 #include "boost/filesystem.hpp"
 
+#include <algorithm> // for std::transform
 #include <exception>
 #include <fstream>
 
@@ -165,12 +169,20 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
   auto attFileItem = specification->findFile("simulation-template");
   if (attFileItem->isEnabled())
   {
-    std::string attPath = attFileItem->value(0);
-    bool success = this->importAttributeTemplate(attPath, attDescriptor, logger);
+    std::string attFileValue = attFileItem->value(0);
+    bool success = this->importAttributeTemplate(attFileValue, attDescriptor, logger);
     if (!success)
     {
       return false;
     }
+
+    // Extract the name of the simulation code from attFilePath
+    boost::filesystem::path attPath(attFileValue);
+    attPath.remove_filename();
+    auto simCode = attPath.filename().string();
+    std::transform(simCode.begin(), simCode.end(), simCode.begin(), ::tolower);
+    m_simulationCode = simCode;
+
     m_resourceDescriptors.push_back(attDescriptor);
   } // if (attFileItem enabled)
 
@@ -311,6 +323,7 @@ bool Project::open(const std::string& location, smtk::io::Logger& logger)
     return false;
   }
 
+  m_simulationCode = descriptor.m_simulationCode;
   m_name = descriptor.m_name;
   m_directory = descriptor.m_directory;
   m_resourceDescriptors = descriptor.m_resourceDescriptors;
@@ -406,7 +419,7 @@ bool Project::importAttributeTemplate(
   {
     descriptor.m_identifier = "default";
   }
-  descriptor.m_filename = descriptor.m_identifier + ".sbi.smtk";
+  descriptor.m_filename = std::string("sbi.") + descriptor.m_identifier + ".smtk";
   descriptor.m_importLocation = location;
   descriptor.m_typeName = attResource->typeName();
   descriptor.m_uuid = attResource->id();
@@ -422,6 +435,7 @@ bool Project::writeProjectFile(smtk::io::Logger& logger) const
 {
   // Init ProjectDescriptor structure
   ProjectDescriptor descriptor;
+  descriptor.m_simulationCode = m_simulationCode;
   descriptor.m_name = m_name;
   descriptor.m_directory = m_directory;
   descriptor.m_resourceDescriptors = m_resourceDescriptors;
@@ -459,10 +473,6 @@ bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
 
   for (auto& descriptor : m_resourceDescriptors)
   {
-    auto filePath = directoryPath / boost::filesystem::path(descriptor.m_filename);
-    // auto inputPath = filePath.string();
-    std::cout << "Loading " << filePath.string() << std::endl;
-
     // Create a read operator
     auto readOp = opManager->create<smtk::operation::ReadResource>();
     if (!readOp)
@@ -470,6 +480,8 @@ bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
       smtkErrorMacro(logger, "Read Resource operator not found");
       return false;
     }
+
+    auto filePath = directoryPath / boost::filesystem::path(descriptor.m_filename);
     readOp->parameters()->findFile("filename")->setValue(filePath.string());
     auto readOpResult = readOp->operate();
 
@@ -487,6 +499,11 @@ bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
 
 smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logger, bool reset)
 {
+#ifndef SMTK_PYTHON_ENABLED
+  (void)reset;
+  smtkErrorMacro(logger, "Python export operators are not supported in this SMTK build");
+  return smtk::operation::OperationPtr();
+#else
   auto opManager = m_operationManager.lock();
   if (!opManager)
   {
@@ -541,7 +558,7 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
   auto pos = location.rfind(key);
   if (pos == std::string::npos)
   {
-    smtkErrorMacro(logger, "import location (" << location << ") did not end in .sbt");
+    smtkErrorMacro(logger, "import location (" << location << ") does not end in .sbt");
     return nullptr;
   }
 
@@ -554,9 +571,8 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
     return nullptr;
   }
 
-  std::cout << "Importing python operator: " << location << std::endl;
-
-  auto importPythonOp = opManager->create<smtk::operation::ImportPythonOperation>();
+  smtk::operation::OperationPtr importPythonOp =
+    opManager->create<smtk::operation::ImportPythonOperation>();
   if (!importPythonOp)
   {
     smtkErrorMacro(logger, "Could not create \"import python operation\"");
@@ -595,6 +611,8 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
   this->populateExportOperator(m_exportOperator, logger);
 
   return m_exportOperator;
+
+#endif // PYTHON_ENABLED
 }
 
 bool Project::populateExportOperator(
@@ -651,7 +669,8 @@ bool Project::populateExportOperator(
 
   // If there is a single DirectoryItem, set it to a "sim" folder below the project
   std::vector<smtk::attribute::ItemPtr> itemList;
-  for (int i = 0; i < paramAttribute->numberOfItems(); ++i)
+  int numItems = static_cast<int>(paramAttribute->numberOfItems());
+  for (int i = 0; i < numItems; ++i)
   {
     auto item = paramAttribute->item(i);
     if (item->type() == smtk::attribute::Item::DirectoryType)

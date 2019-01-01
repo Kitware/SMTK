@@ -109,11 +109,12 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(os.path.exists(project_folder))
 
         filenames = [
-            '.smtkproject', 'default.sbi.smtk', 'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk']
+            '.smtkproject', 'sbi.default.smtk', 'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk']
         for f in filenames:
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
 
+        self.assertEqual(self.project.simulationCode(), 'ace3p')
         self.assertEqual(self.project.name(), project_name)
         self.assertEqual(self.project.directory(), project_folder)
 
@@ -158,6 +159,10 @@ class TestProjectManager(unittest.TestCase):
         logger = smtk.io.Logger()
         project = self.pm.openProject(path, logger)
         self.assertIsNotNone(project, msg=logger.convertToString())
+
+        self.assertEqual(project.simulationCode(), 'ace3p')
+        self.assertEqual(project.name(), PROJECT1)
+        self.assertEqual(project.directory(), path)
 
         resources = project.getResources()
         self.assertEqual(len(resources), 2)

@@ -32,16 +32,6 @@ configureFileAsCVariable(
 # Install the headers
 smtk_public_headers(smtkCore ${projectHeaders})
 
-# Future:
-# if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-#   add_smtk_plugin(
-#     smtkProjectPlugin "1.0"
-#     REGISTRAR smtk::project::Registrar
-#     MANAGERS smtk::operation::Manager smtk::resource::Manager
-#     LIBRARIES smtkCore)
-#   smtk_install_library(smtkProjectPlugin)
-# endif()
-
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()

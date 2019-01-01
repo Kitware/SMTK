@@ -27,14 +27,16 @@ namespace project
 class SMTKCORE_EXPORT ProjectDescriptor
 {
 public:
-  /// User-supplied name for the project
+  /// Simulation code identifier, e.g. ace3p, openfoam, truchas.
+  std::string m_simulationCode;
+
+  /// User-supplied name for the project.
   std::string m_name;
 
   /// Filesystem directory where project resources are stored.
   std::string m_directory;
 
-  /// Array of ResourceInfo objects for each project resource.
-  /// These data are stored in a file in the project directory.
+  /// Array descriptor objects, one for each project resource.
   std::vector<ResourceDescriptor> m_resourceDescriptors;
 
   // (Future) One or more analysis descriptors
