@@ -64,6 +64,8 @@ public:
   /// Return the server's application-wide operation manager.
   smtk::operation::ManagerPtr GetOperationManager() const { return this->OperationManager; }
   /// Return the server's application-wide selection handler.
+  /// Return the server's application-wide project manager.
+  smtk::project::ManagerPtr GetProjectManager() const { return this->ProjectManager; }
   smtk::view::SelectionPtr GetSelection() const { return this->Selection; }
 
   /// Return the SMTK selection source used by this class to indicate a hardware selection was made.
@@ -115,6 +117,7 @@ protected:
   char* JSONResponse;
   smtk::resource::ManagerPtr ResourceManager;
   smtk::operation::ManagerPtr OperationManager;
+  smtk::project::ManagerPtr ProjectManager;
   smtk::view::SelectionPtr Selection;
   std::string SelectionSource;
   int SelectionListener;

@@ -41,19 +41,20 @@ public:
 
   virtual ~Project();
 
+  /// Return simulation code this project targets
+  std::string simulationCode() const { return m_simulationCode; }
+
   /// Return project name
-  std::string name() const { return this->m_name; }
+  std::string name() const { return m_name; }
 
   /// Return project directory
-  std::string directory() const { return this->m_directory; }
+  std::string directory() const { return m_directory; }
 
   /// Return project resources
   std::vector<smtk::resource::ResourcePtr> getResources() const;
 
-  /// Return resource of given typename and role
   // Future:
-  // * method to retrieve export operator, based on location of simulation attributes
-  // * method to add additional resources to the current project
+  // * methods to add/remove project resources
 protected:
   /// First set of methods are called by (friend class) smtk::project::Manager
   smtkCreateMacro(Project);
@@ -85,11 +86,28 @@ protected:
   bool loadResources(
     const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
+  /// Return export operator
+  /// If reset flag is true, will create new operator in order to
+  /// reset contents to their default values.
+  smtk::operation::OperationPtr getExportOperator(
+    smtk::io::Logger& logger = smtk::io::Logger::instance(), bool reset = false);
+
+  bool populateExportOperator(smtk::operation::OperationPtr exportOp,
+    smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
+
+  void releaseExportOperator();
+
   /// Resource manager for the project resources.
-  smtk::resource::ManagerPtr m_resourceManager;
+  smtk::resource::WeakManagerPtr m_resourceManager;
 
   /// Operation manager for the project operations.
-  smtk::operation::ManagerPtr m_operationManager;
+  smtk::operation::WeakManagerPtr m_operationManager;
+
+  /// Target simulation code, e.g., ACE3P, OpenFOAM, Truchas.
+  /// The convention is to use the name of the folder in the
+  /// simulation-workflows repository, converted to lower case,
+  /// e.g. ace3p, openfoam, truchas.
+  std::string m_simulationCode;
 
   /// User-supplied name for the project
   std::string m_name;
@@ -100,6 +118,10 @@ protected:
   /// Array of ResourceDescriptor objects for each project resource.
   /// These data are stored in a file in the project directory.
   std::vector<ResourceDescriptor> m_resourceDescriptors;
+
+  /// Export operator (cached)
+  smtk::operation::OperationPtr m_exportOperator;
+  std::string m_exportOperatorUniqueName;
 
 private:
   Project();

@@ -84,6 +84,16 @@ smtk::operation::ManagerPtr vtkSMSMTKWrapperProxy::GetOperationManager() const
   return wrapper ? wrapper->GetOperationManager() : nullptr;
 }
 
+smtk::project::ManagerPtr vtkSMSMTKWrapperProxy::GetProjectManager() const
+{
+  // TODO: This should just "return this->ProjectManager;" but we are getting things
+  //       working in built-in mode first, so just directly fetch the version
+  //       on the server and return it.
+  auto self = const_cast<vtkSMSMTKWrapperProxy*>(this); // VTK is not const-correct
+  auto wrapper = vtkSMTKWrapper::SafeDownCast(self->GetClientSideObject());
+  return wrapper ? wrapper->GetProjectManager() : nullptr;
+}
+
 void vtkSMSMTKWrapperProxy::SetSelectedPortProxy(vtkSMSourceProxy* pxy)
 {
   vtkSMPropertyHelper(this, "SelectedPort").Set(pxy);

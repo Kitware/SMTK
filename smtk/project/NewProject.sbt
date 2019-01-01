@@ -2,7 +2,7 @@
 <!-- Description of the project "NewProject" Operation -->
 <SMTK_AttributeResource Version="3">
   <Definitions>
-    <AttDef Type="new-project" Label="New Project" BaseType="" Label="Project - New">
+    <AttDef Type="new-project" Label="New Project" BaseType="">
       <BriefDescription>
         Create and initialize a CMB project.
       </BriefDescription>
@@ -44,10 +44,19 @@
           <BriefDescription></BriefDescription>
           <DiscreteInfo DefaultIndex="0">
             <Value Enum="Mesh">mesh</Value>
-            <Value Enum="VTK">vtk</Value>>
+            <Value Enum="VTK">vtk</Value>
           </DiscreteInfo>
         </String>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+
+    <Views>
+      <View Type="Instanced" Title="New Project" TopLevel="true"
+        FilterByAdvanceLevel="true" FilterByCategory="false">
+        <InstancedAttributes>
+          <Att Name="new-project" Type="new-project" />
+        </InstancedAttributes>
+      </View>
+    </Views>
 </SMTK_AttributeResource>

@@ -27,7 +27,8 @@ namespace project
 void to_json(json& j, const ProjectDescriptor& pd)
 {
   j = {
-    { "fileVersion", 1 }, { "projectName", pd.m_name }, { "projectDirectory", pd.m_directory },
+    { "fileVersion", 1 }, { "simulationCode", pd.m_simulationCode }, { "projectName", pd.m_name },
+    { "projectDirectory", pd.m_directory },
   };
   json jDescriptors = json::array();
   for (auto& descriptor : pd.m_resourceDescriptors)
@@ -48,6 +49,7 @@ void from_json(const json& j, ProjectDescriptor& pd)
     throw std::runtime_error(ss.str());
   }
 
+  pd.m_simulationCode = j.at("simulationCode");
   pd.m_name = j.at("projectName");
   pd.m_directory = j.at("projectDirectory");
   auto jDescriptors = j.at("resources");
