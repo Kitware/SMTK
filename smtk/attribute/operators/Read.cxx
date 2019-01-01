@@ -63,6 +63,7 @@ Read::Result Read::operateInternal()
 
   // Copy the contents of the json object into the attribute resource.
   smtk::attribute::from_json(j, resource);
+  resource->setLocation(filename);
 
   // Create a result object.
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

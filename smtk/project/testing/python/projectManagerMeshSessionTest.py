@@ -35,6 +35,7 @@ class TestProjectManager(unittest.TestCase):
         self.attribute_count = None
         self.pm = None    # project manager
         self.rm = None    # resource manager
+        self.om = None    # operation manager
         self.project = None
 
     def test_getProjectSpecification(self):
@@ -56,12 +57,18 @@ class TestProjectManager(unittest.TestCase):
     def init_project_manager(self):
         # Initialize resource manager
         self.rm = smtk.resource.Manager.create()
-        om = smtk.operation.Manager.create()
+        self.om = smtk.operation.Manager.create()
+
+        smtk.attribute.Registrar.registerTo(self.rm)
+        smtk.attribute.Registrar.registerTo(self.om)
+
         smtk.session.mesh.Registrar.registerTo(self.rm)
-        smtk.session.mesh.Registrar.registerTo(om)
-        smtk.operation.Registrar.registerTo(om)
-        om.registerResourceManager(self.rm)
-        self.pm = smtk.project.Manager.create(self.rm, om)
+        smtk.session.mesh.Registrar.registerTo(self.om)
+
+        smtk.operation.Registrar.registerTo(self.om)
+        self.om.registerResourceManager(self.rm)
+
+        self.pm = smtk.project.Manager.create(self.rm, self.om)
 
     def create_project(self, project_name):
         before_count = len(self.rm.resources())
@@ -82,7 +89,7 @@ class TestProjectManager(unittest.TestCase):
             smtk.testing.DATA_DIR, 'model', '3d', 'genesis', 'gun-1fourth.gen')
         spec.findFile('model-file').setValue(0, model_file)
 
-        self.assertTrue(spec.isValid())
+        self.assertTrue(spec.isValid(), msg="project spec not valid")
 
         # Create project
         logger = smtk.io.Logger.instance()
@@ -90,7 +97,7 @@ class TestProjectManager(unittest.TestCase):
         project = self.pm.createProject(
             spec, replace_existing_directory, logger)
         print('project: ', project)
-        self.assertIsNotNone(project)
+        self.assertIsNotNone(project, msg=logger.convertToString())
         self.project = project
 
         # Verify that 2 resources were created
@@ -102,11 +109,12 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(os.path.exists(project_folder))
 
         filenames = [
-            '.smtkproject', 'default.sbi', 'gun-1fourth.gen', 'gun-1fourth.h5m', 'gun-1fourth.smtk']
+            '.smtkproject', 'sbi.default.smtk', 'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk']
         for f in filenames:
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
 
+        self.assertEqual(self.project.simulationCode(), 'ace3p')
         self.assertEqual(self.project.name(), project_name)
         self.assertEqual(self.project.directory(), project_folder)
 
@@ -141,16 +149,20 @@ class TestProjectManager(unittest.TestCase):
         self.attribute_count = after_count
 
     def save_project(self):
-        success = self.pm.saveProject(smtk.io.Logger.instance())
-        self.assertTrue(success)
+        logger = smtk.io.Logger.instance()
+        success = self.pm.saveProject(logger)
+        self.assertTrue(success, msg=logger.convertToString())
 
     def open_project(self):
         path = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
         # project = self.pm.openProject(path, smtk.io.Logger.instance())
         logger = smtk.io.Logger()
         project = self.pm.openProject(path, logger)
-        print(logger.convertToString())
-        self.assertIsNotNone(project)
+        self.assertIsNotNone(project, msg=logger.convertToString())
+
+        self.assertEqual(project.simulationCode(), 'ace3p')
+        self.assertEqual(project.name(), PROJECT1)
+        self.assertEqual(project.directory(), path)
 
         resources = project.getResources()
         self.assertEqual(len(resources), 2)
@@ -164,8 +176,9 @@ class TestProjectManager(unittest.TestCase):
 
     def close_project(self):
         before_count = len(self.rm.resources())
-        success = self.pm.closeProject(smtk.io.Logger.instance())
-        self.assertTrue(success)
+        logger = smtk.io.Logger.instance()
+        success = self.pm.closeProject(logger)
+        self.assertTrue(success, msg=logger.convertToString())
 
         after_count = len(self.rm.resources())
         self.assertEqual(before_count - after_count, 2)
@@ -175,6 +188,7 @@ class TestProjectManager(unittest.TestCase):
 
     def test_sequence(self):
         self.rm = None    # resource manager
+        self.om = None    # operation manager
         self.pm = None    # project manager
         self.project = None
         self.attribute_count = 0

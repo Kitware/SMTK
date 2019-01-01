@@ -58,6 +58,9 @@ public:
   /// Return the client-side operation manager (mirrored on the server via this proxy).
   smtk::operation::ManagerPtr GetOperationManager() const;
 
+  /// Return the client-side project manager (mirrored on the server via this proxy).
+  smtk::project::ManagerPtr GetProjectManager() const;
+
   /// Call this to indicate which PV data has the active PV selection.
   void SetSelectedPortProxy(vtkSMSourceProxy* pxy);
 

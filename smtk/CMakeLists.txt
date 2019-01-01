@@ -88,6 +88,9 @@ set(smtkCore_private_link_libraries
   )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)
+  # For code to optionally include ImportPythonOperator
+  add_definitions(-DSMTK_PYTHON_ENABLED)
+
   list(APPEND smtkCore_private_link_libraries
     pybind11::embed
     )

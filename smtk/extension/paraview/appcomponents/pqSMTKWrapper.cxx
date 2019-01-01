@@ -147,6 +147,11 @@ smtk::view::SelectionPtr pqSMTKWrapper::smtkSelection() const
   return this->smtkProxy() ? this->smtkProxy()->GetSelection() : nullptr;
 }
 
+smtk::project::ManagerPtr pqSMTKWrapper::smtkProjectManager() const
+{
+  return this->smtkProxy() ? this->smtkProxy()->GetProjectManager() : nullptr;
+}
+
 pqSMTKResource* pqSMTKWrapper::getPVResource(smtk::resource::ResourcePtr rsrc) const
 {
   pqSMTKResource* result = nullptr;
