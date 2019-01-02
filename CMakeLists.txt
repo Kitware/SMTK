@@ -197,8 +197,12 @@ if (SMTK_ENABLE_TESTING)
     set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
   endif ()
 
-  set(SMTK_PLUGIN_CONTRACT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake"
-    CACHE STRING "Local CMake file describing plugins as external projects for contract testing.")
+  set(SMTK_PLUGIN_CONTRACT_FILES ""
+    CACHE LIST "Local CMake file describing plugins as external projects for contract testing.")
+
+  if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+    list(APPEND SMTK_PLUGIN_CONTRACT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake")
+  endif()
 
   set(SMTK_COVERAGE_ENABLED OFF)
   if(SMTK_ENABLE_COVERAGE)
@@ -691,6 +695,13 @@ export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets
 # Set a prefix path that consuming projects can use to find smtk's dependencies
 set(smtk_prefix_path ${CMAKE_PREFIX_PATH})
 
+# Boost can be found by its BOOST_ROOT variable.
+list(APPEND smtk_prefix_path ${BOOST_ROOT})
+
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  list(APPEND smtk_prefix_path ${Remus_DIR})
+endif()
+
 # Qt5 is primarily found by setting Qt5_DIR. We key off of this variable to
 # identify Qt5's prefix path
 if (SMTK_ENABLE_QT_SUPPORT)
@@ -766,6 +777,7 @@ endif()
 if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILES)
   include(CMake/SMTKPluginTestingMacros.cmake)
 
+  list(REMOVE_DUPLICATES SMTK_PLUGIN_CONTRACT_FILES)
   foreach(plugin_file ${SMTK_PLUGIN_CONTRACT_FILES})
     smtk_test_plugin(${plugin_file})
   endforeach()

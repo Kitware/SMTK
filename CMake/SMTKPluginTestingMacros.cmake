@@ -25,17 +25,26 @@ function(smtk_test_plugin test_plugin_file)
     set(response_file -DCMAKE_NINJA_FORCE_RESPONSE_FILE:BOOL=ON)
   endif ()
 
-  #
+  # Create a testing directory for the plugin based off of its hashed file name.
   string(MD5 hashed_test_dir ${test_plugin_file})
+  string(SUBSTRING ${hashed_test_dir} 0 8 hashed_test_dir)
   set(test_dir "${CMAKE_BINARY_DIR}/PluginTests/${scratch_dir}/${hashed_test_dir}")
+
+  # Set up a source directory for the plugin.
   set(src_dir "${test_dir}/src")
-  set(build_dir "${test_dir}/build")
   file(MAKE_DIRECTORY ${src_dir})
+
+  # Set up a build directory for the plugin.
+  set(build_dir "${test_dir}/build")
   file(MAKE_DIRECTORY ${build_dir})
+
+  # Copy the contract file into the source directory.
   configure_file(${test_plugin_file} ${src_dir}/CMakeLists.txt COPYONLY)
 
+  # Derive a test name from the contract file name.
   get_filename_component(test_name ${test_plugin_file} NAME_WE)
 
+  # Add a test that builds and tests the plugin, but does not install it.
   add_test(NAME ${test_name}
     COMMAND ${CMAKE_CTEST_COMMAND}
     --build-and-test ${src_dir} ${build_dir}
@@ -43,9 +52,36 @@ function(smtk_test_plugin test_plugin_file)
     --build-options
       -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
       -DENABLE_TESTING=ON
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       -Dsmtk_DIR=${PROJECT_BINARY_DIR}
       ${response_file}
     )
+  # If on Windows, pass the environment PATH and PYTHONPATH to the test.
+  if (WIN32)
+    # We need to add this smtk's binary directory to the path so the plugin
+    # tests can find our newly built SMTK binaries.
+    set(smtk_test_path $ENV{PATH})
+    list(INSERT smtk_test_path 0 ${PROJECT_BINARY_DIR}/bin)
+
+    # We need to escape semicolons so they won't be erased from the path when
+    # resolved by the test's cmake instance.
+    string(REPLACE ";" "\\\;" smtk_path_env "${smtk_test_path}")
+
+    # Finally, append the path to the test's environment.
+    set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "PATH=${smtk_path_env}")
+
+    # We need to add this smtk's build directory to the pythonpath so the plugin
+    # tests can find our newly built SMTK python modules.
+    set(smtk_test_path $ENV{PYTHONPATH})
+    list(INSERT smtk_test_path 0 ${PROJECT_BINARY_DIR})
+
+    # We need to escape semicolons so they won't be erased from the pythonpath
+    # when resolved by the test's cmake instance.
+    string(REPLACE ";" "\\\;" smtk_pythonpath_env "${smtk_test_path}")
+
+    # Finally, append the pythonpath to the test's environment.
+    set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "PYTHONPATH=${smtk_pythonpath_env}")
+  endif ()
   set_tests_properties(${test_name} PROPERTIES LABELS "Plugin")
 
 endfunction(smtk_test_plugin)
