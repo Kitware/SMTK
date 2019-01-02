@@ -191,6 +191,9 @@ if (SMTK_ENABLE_TESTING)
     set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
   endif ()
 
+  set(SMTK_PLUGIN_CONTRACT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake"
+    CACHE STRING "Local CMake file describing plugins as external projects for contract testing.")
+
   set(SMTK_COVERAGE_ENABLED OFF)
   if(SMTK_ENABLE_COVERAGE)
     set(SMTK_COVERAGE_ENABLED ON)
@@ -682,6 +685,7 @@ set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
+get_property(SMTK_PLUGINS GLOBAL PROPERTY SMTK_PLUGINS)
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/${PROJECT_NAME}Config.cmake.in
   ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
@@ -719,4 +723,21 @@ install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/${PROJECT_NAME}Config.cmake
 
 if (NOT SMTK_BUILD_DOCUMENTATION STREQUAL "never")
   add_subdirectory(doc)
+endif()
+
+################################################################################
+# Test plugins
+#
+# By adding a plugin contract file to SMTK_PLUGIN_CONTRACT_FILES, the user can
+# construct a list of plugins that will be built  and tested along with smtk's
+# unit tests. See <PROJECT_SOURCE_DIR>/CMake/resource-manager-state.cmake for an
+# example of a plugin contract file.
+################################################################################
+
+if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILES)
+  include(CMake/SMTKPluginTestingMacros.cmake)
+
+  foreach(plugin_file ${SMTK_PLUGIN_CONTRACT_FILES})
+    smtk_test_plugin(${plugin_file})
+  endforeach()
 endif()
