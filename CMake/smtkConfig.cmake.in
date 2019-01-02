@@ -1,3 +1,11 @@
+#------------------------------------------------------------------------------
+# Update CMAKE_PREFIX_PATH locally when SMTK_RELOCATABLE_INSTALL=OFF
+#------------------------------------------------------------------------------
+
+set(SMTK_PREFIX_PATH "@smtk_prefix_path@")
+set(CMAKE_PREFIX_PATH_save "${CMAKE_PREFIX_PATH}")
+list(APPEND CMAKE_PREFIX_PATH ${SMTK_PREFIX_PATH})
+
 #Setup the CMake module paths
 list(APPEND CMAKE_MODULE_PATH "@SMTK_MODULE_DIR@;@SMTK_VTK_MODULE_DIR@")
 set(smtk_module_dir "@SMTK_VTK_MODULE_DIR@/Modules")
@@ -26,18 +34,39 @@ endif ()
 if(TARGET smtkCore)
 else()
 
-  set(nlohmann_json_DIR "@nlohmann_json_DIR@")
+  find_package(Boost 1.64.0
+             COMPONENTS @required_boost_components@ REQUIRED)
   find_package(nlohmann_json REQUIRED)
-
-  set(MOAB_ROOT_DIR "@MOAB_ROOT_DIR@")
   find_package(MOAB REQUIRED)
+
+  set(SMTK_ENABLE_PARAVIEW_SUPPORT @SMTK_ENABLE_PARAVIEW_SUPPORT@)
+  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+    find_package(ParaView)
+  endif()
+
+  set(SMTK_ENABLE_VTK_SUPPORT @SMTK_ENABLE_VTK_SUPPORT@)
+  if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
+    find_package(VTK REQUIRED)
+  endif()
 
   set(SMTK_ENABLE_REMUS_SUPPORT @SMTK_ENABLE_REMUS_SUPPORT@)
   if(SMTK_ENABLE_REMUS_SUPPORT)
     find_package(Remus REQUIRED)
   endif()
 
+  set(SMTK_ENABLE_PYTHON_WRAPPING @SMTK_ENABLE_PYTHON_WRAPPING@)
+  if(SMTK_ENABLE_PYTHON_WRAPPING)
+    find_package(pybind11 2.3 REQUIRED)
+  endif()
+
   set(SMTK_PLUGINS @SMTK_PLUGINS@)
 
   include("@SMTK_CONFIG_DIR@/smtkTargets.cmake")
 endif()
+
+#------------------------------------------------------------------------------
+# restore CMAKE_PREFIX_PATH
+#------------------------------------------------------------------------------
+
+set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH_save}")
+unset(CMAKE_PREFIX_PATH_save)

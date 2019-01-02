@@ -148,6 +148,12 @@ endif()
 option(SMTK_ENABLE_RGG_SESSION "Build RGG reactor model session." ON)
 option(SMTK_ENABLE_OSCILLATOR_SESSION "Build example oscillator model session." ON)
 
+# When SMTK_RELOCATABLE_INSTALL=OFF we add to smtkConfig.cmake
+# set(SMTK_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+option(SMTK_RELOCATABLE_INSTALL
+  "Do not embed hard-coded paths into the install" ON)
+mark_as_advanced(SMTK_RELOCATABLE_INSTALL)
+
 # SMTK_BUILD_DOCUMENTATION is an enumerated option:
 # never  == No documentation, and no documentation tools are required.
 # manual == Only build when requested; documentation tools (doxygen and
@@ -681,7 +687,22 @@ export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets
 # build version of smtk
 #
 # Required to happen before we include the docs directory
-set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
+
+# Set a prefix path that consuming projects can use to find smtk's dependencies
+set(smtk_prefix_path ${CMAKE_PREFIX_PATH})
+
+# Qt5 is primarily found by setting Qt5_DIR. We key off of this variable to
+# identify Qt5's prefix path
+if (SMTK_ENABLE_QT_SUPPORT)
+  list(APPEND smtk_prefix_path ${Qt5_DIR}/../../..)
+endif()
+
+# ParaView's SDK is still a WIP. Until it is in place, key off of the
+# ParaView_DIR (ParaView's build directory).
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  list(APPEND smtk_prefix_path ${ParaView_DIR})
+endif()
+
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
@@ -703,6 +724,14 @@ install(
 # Setup the config file for exports that stores what other thirdparty
 # packages we need to search for ( MOAB, Remus, etc ) for when using the
 # install version of smtk
+
+# If we are performing a relocatable install, we must erase the hard-coded
+# install paths we set in smtk_prefix_path before constructing the install
+# package configuration file
+if (SMTK_RELOCATABLE_INSTALL)
+  set(smtk_prefix_path)
+endif()
+
 set(SMTK_VTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_CONFIG_DIR "\${CMAKE_CURRENT_LIST_DIR}")

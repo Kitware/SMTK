@@ -23,13 +23,7 @@ ExternalProject_Add(read-and-write-resource-manager-state
   CMAKE_ARGS
     -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
     -DENABLE_TESTING=ON
-    -DMOAB_DIR=${MOAB_DIR}
-    -DParaView_DIR=${ParaView_DIR}
-    -Dpybind11_DIR=${pybind11_DIR}
-    -DQt5_DIR=${Qt5_DIR}
-    -DRemus_DIR=${Remus_DIR}
     -Dsmtk_DIR=${smtk_DIR}
-    -DZeroMQ_ROOT_DIR=${ZeroMQ_ROOT_DIR}
     ${response_file}
   INSTALL_COMMAND ""
   TEST_BEFORE_INSTALL True
