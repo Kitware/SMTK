@@ -10,12 +10,7 @@
 #
 # add a test that builds and tests the smtk plugin as described in the test
 # plugin file.
-function(smtk_test_plugin test_plugin_file)
-
-  if (NOT EXISTS ${test_plugin_file})
-    message(WARNING "Cannot locate test plugins file <${test_plugin_file}>.")
-    return()
-  endif()
+function(smtk_test_plugin test_plugin_file_url)
 
   # If on Windows, force response file usage. The command line gets way too long
   # on Windows without this. Once VTK_USE_FILE and PARAVIEW_USE_FILE are gone,
@@ -26,7 +21,7 @@ function(smtk_test_plugin test_plugin_file)
   endif ()
 
   # Create a testing directory for the plugin based off of its hashed file name.
-  string(MD5 hashed_test_dir ${test_plugin_file})
+  string(MD5 hashed_test_dir ${test_plugin_file_url})
   string(SUBSTRING ${hashed_test_dir} 0 8 hashed_test_dir)
   set(test_dir "${CMAKE_BINARY_DIR}/PluginTests/${scratch_dir}/${hashed_test_dir}")
 
@@ -38,11 +33,17 @@ function(smtk_test_plugin test_plugin_file)
   set(build_dir "${test_dir}/build")
   file(MAKE_DIRECTORY ${build_dir})
 
-  # Copy the contract file into the source directory.
-  configure_file(${test_plugin_file} ${src_dir}/CMakeLists.txt COPYONLY)
+  # Download the contract file into the source directory.
+  file(DOWNLOAD ${test_plugin_file_url} ${src_dir}/CMakeLists.txt)
+
+  # Check result for success
+  if (NOT EXISTS ${src_dir}/CMakeLists.txt)
+    message(WARNING "Cannot download test plugins file <${test_plugin_file_url}>.")
+    return()
+  endif()
 
   # Derive a test name from the contract file name.
-  get_filename_component(test_name ${test_plugin_file} NAME_WE)
+  get_filename_component(test_name ${test_plugin_file_url} NAME_WE)
 
   # Add a test that builds and tests the plugin, but does not install it.
   add_test(NAME ${test_name}

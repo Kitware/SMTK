@@ -197,11 +197,16 @@ if (SMTK_ENABLE_TESTING)
     set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
   endif ()
 
-  set(SMTK_PLUGIN_CONTRACT_FILES ""
+  set(SMTK_PLUGIN_CONTRACT_FILE_URLS ""
     CACHE LIST "Local CMake file describing plugins as external projects for contract testing.")
 
   if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-    list(APPEND SMTK_PLUGIN_CONTRACT_FILES "${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake")
+    set(local_url_prefix "file://")
+    if (WIN32)
+      string(APPEND local_url_prefix "/")
+    endif()
+    list(APPEND SMTK_PLUGIN_CONTRACT_FILE_URLS
+      "${local_url_prefix}${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake")
   endif()
 
   set(SMTK_COVERAGE_ENABLED OFF)
@@ -780,17 +785,17 @@ endif()
 ################################################################################
 # Test plugins
 #
-# By adding a plugin contract file to SMTK_PLUGIN_CONTRACT_FILES, the user can
-# construct a list of plugins that will be built  and tested along with smtk's
-# unit tests. See <PROJECT_SOURCE_DIR>/CMake/resource-manager-state.cmake for an
-# example of a plugin contract file.
+# By adding a plugin contract file URL to SMTK_PLUGIN_CONTRACT_FILE_URLS, the
+# user can construct a list of plugins that will be built  and tested along with
+# smtk's unit tests. See <PROJECT_SOURCE_DIR>/CMake/resource-manager-state.cmake
+# for an example of a plugin contract file.
 ################################################################################
 
-if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILES)
+if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILE_URLS)
   include(CMake/SMTKPluginTestingMacros.cmake)
 
-  list(REMOVE_DUPLICATES SMTK_PLUGIN_CONTRACT_FILES)
-  foreach(plugin_file ${SMTK_PLUGIN_CONTRACT_FILES})
-    smtk_test_plugin(${plugin_file})
+  list(REMOVE_DUPLICATES SMTK_PLUGIN_CONTRACT_FILE_URLS)
+  foreach(plugin_url ${SMTK_PLUGIN_CONTRACT_FILE_URLS})
+    smtk_test_plugin(${plugin_url})
   endforeach()
 endif()

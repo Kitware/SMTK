@@ -1,8 +1,7 @@
 # This file is provided with SMTK as an example of how to configure a plugin
 # contract file. In general, SMTK should not contain these files. Instead, the
-# dashboard computer that runs SMTK tests should contain a set of plugin
-# contract test files; these files should be passed to SMTK during its
-# configuration.
+# dashboard computer that runs SMTK tests should be passed a list of URLs for
+# plugin contract test files during its configuration.
 
 cmake_minimum_required(VERSION 2.8)
 project(resource-manager-state)
