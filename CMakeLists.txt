@@ -148,6 +148,12 @@ endif()
 option(SMTK_ENABLE_RGG_SESSION "Build RGG reactor model session." ON)
 option(SMTK_ENABLE_OSCILLATOR_SESSION "Build example oscillator model session." ON)
 
+# When SMTK_RELOCATABLE_INSTALL=OFF we add to smtkConfig.cmake
+# set(SMTK_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+option(SMTK_RELOCATABLE_INSTALL
+  "Do not embed hard-coded paths into the install" ON)
+mark_as_advanced(SMTK_RELOCATABLE_INSTALL)
+
 # SMTK_BUILD_DOCUMENTATION is an enumerated option:
 # never  == No documentation, and no documentation tools are required.
 # manual == Only build when requested; documentation tools (doxygen and
@@ -190,6 +196,18 @@ if (SMTK_ENABLE_TESTING)
   else ()
     set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
   endif ()
+
+  set(SMTK_PLUGIN_CONTRACT_FILE_URLS ""
+    CACHE LIST "Local CMake file describing plugins as external projects for contract testing.")
+
+  if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+    set(local_url_prefix "file://")
+    if (WIN32)
+      string(APPEND local_url_prefix "/")
+    endif()
+    list(APPEND SMTK_PLUGIN_CONTRACT_FILE_URLS
+      "${local_url_prefix}${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake")
+  endif()
 
   set(SMTK_COVERAGE_ENABLED OFF)
   if(SMTK_ENABLE_COVERAGE)
@@ -678,10 +696,39 @@ export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets
 # build version of smtk
 #
 # Required to happen before we include the docs directory
-set(MOAB_ROOT_DIR "${MOAB_ROOT_DIR}")
+
+# Set a prefix path that consuming projects can use to find smtk's dependencies
+set(smtk_prefix_path ${CMAKE_PREFIX_PATH})
+
+# Boost can be found by its BOOST_ROOT variable.
+list(APPEND smtk_prefix_path ${BOOST_ROOT})
+
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  list(APPEND smtk_prefix_path ${Remus_DIR})
+endif()
+
+# Qt5 is primarily found by setting Qt5_DIR. We key off of this variable to
+# identify Qt5's prefix path
+if (SMTK_ENABLE_QT_SUPPORT)
+  list(APPEND smtk_prefix_path ${Qt5_DIR}/../../..)
+endif()
+
+# ParaView's SDK is still a WIP. Until it is in place, key off of the
+# ParaView_DIR (ParaView's build directory).
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  list(APPEND smtk_prefix_path ${ParaView_DIR})
+endif()
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  set(smtk_python_executable ${PYTHON_EXECUTABLE})
+  set(smtk_python_library ${PYTHON_LIBRARIES})
+  set(smtk_python_include_dir ${PYTHON_INCLUDE_DIRS})
+endif ()
+
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
+get_property(SMTK_PLUGINS GLOBAL PROPERTY SMTK_PLUGINS)
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/${PROJECT_NAME}Config.cmake.in
   ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
@@ -699,6 +746,20 @@ install(
 # Setup the config file for exports that stores what other thirdparty
 # packages we need to search for ( MOAB, Remus, etc ) for when using the
 # install version of smtk
+
+# If we are performing a relocatable install, we must erase the hard-coded
+# install paths we set in smtk_prefix_path before constructing the install
+# package configuration file
+if (SMTK_RELOCATABLE_INSTALL)
+  set(smtk_prefix_path)
+
+  if (SMTK_ENABLE_PYTHON_WRAPPING)
+    set(smtk_python_executable)
+    set(smtk_python_library)
+    set(smtk_python_include_dir)
+  endif ()
+endif()
+
 set(SMTK_VTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
 set(SMTK_CONFIG_DIR "\${CMAKE_CURRENT_LIST_DIR}")
@@ -719,4 +780,22 @@ install (FILES ${PROJECT_BINARY_DIR}/CMakeFiles/${PROJECT_NAME}Config.cmake
 
 if (NOT SMTK_BUILD_DOCUMENTATION STREQUAL "never")
   add_subdirectory(doc)
+endif()
+
+################################################################################
+# Test plugins
+#
+# By adding a plugin contract file URL to SMTK_PLUGIN_CONTRACT_FILE_URLS, the
+# user can construct a list of plugins that will be built  and tested along with
+# smtk's unit tests. See <PROJECT_SOURCE_DIR>/CMake/resource-manager-state.cmake
+# for an example of a plugin contract file.
+################################################################################
+
+if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILE_URLS)
+  include(CMake/SMTKPluginTestingMacros.cmake)
+
+  list(REMOVE_DUPLICATES SMTK_PLUGIN_CONTRACT_FILE_URLS)
+  foreach(plugin_url ${SMTK_PLUGIN_CONTRACT_FILE_URLS})
+    smtk_test_plugin(${plugin_url})
+  endforeach()
 endif()
