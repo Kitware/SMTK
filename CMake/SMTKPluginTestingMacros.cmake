@@ -23,7 +23,7 @@ function(smtk_test_plugin test_plugin_file_url)
   # Create a testing directory for the plugin based off of its hashed file name.
   string(MD5 hashed_test_dir ${test_plugin_file_url})
   string(SUBSTRING ${hashed_test_dir} 0 8 hashed_test_dir)
-  set(test_dir "${CMAKE_BINARY_DIR}/PluginTests/${scratch_dir}/${hashed_test_dir}")
+  set(test_dir "${CMAKE_BINARY_DIR}/PluginTests/${hashed_test_dir}")
 
   # Set up a source directory for the plugin.
   set(src_dir "${test_dir}/src")
