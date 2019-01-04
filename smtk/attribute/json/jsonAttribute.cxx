@@ -85,15 +85,6 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
 { // Follow the logic in XmlDocV1Parser::processAttribute::L1753
   try
   {
-    std::string uuidString = j.at("ID");
-    auto uuid = smtk::common::UUID(uuidString);
-    att->setId(uuid);
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
     att->setAppliesToInteriorNodes(j.at("OnInteriorNodes"));
   }
   catch (std::exception& /*e*/)

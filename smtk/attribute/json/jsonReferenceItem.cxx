@@ -49,35 +49,8 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ReferenceItemPtr& i
   std::vector<json> values(nn);
   for (i = 0; i < nn; i++)
   {
-    auto obj = itemPtr->objectValue(i);
-    if (obj)
-    {
-      json val;
-      // Resource and component pair
-      auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
-      auto rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(obj);
-      if (comp)
-      {
-        rsrc = comp->resource();
-        if (rsrc)
-        {
-          values[i] = json::array({ rsrc->id(), comp->id() });
-        }
-        else
-        {
-          values[i] = json::array({ nullptr, comp->id() });
-        }
-      }
-      else if (rsrc)
-      {
-        values[i] = rsrc->id();
-      }
-      else
-      {
-        smtkErrorMacro(smtk::io::Logger::instance(),
-          "Cannot serialize reference to unknown persistent object type.");
-      }
-    }
+    auto key = itemPtr->objectKey(i);
+    values[i] = key;
   }
   j["Values"] = values;
 }
@@ -115,8 +88,6 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
   {
     return;
   }
-  auto rsrcMgr = itemPtr->attribute()->resource()->manager();
-  bool oneError = false;
   if (values.is_array())
   {
     for (auto iter = values.begin(); iter != values.end(); iter++, i++)
@@ -128,59 +99,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
         {
           continue;
         }
-        else if (val.is_array())
-        {
-          if (!rsrcMgr)
-          {
-            if (!oneError)
-            {
-              oneError = true;
-              smtkErrorMacro(smtk::io::Logger::instance(),
-                "No resource manager available to deserialize references.");
-            }
-            continue;
-          }
-          smtk::common::UUID ruid = val[0];
-          smtk::common::UUID cuid = val[1];
-          auto rsrc = rsrcMgr->get(ruid);
-          if (!rsrc)
-          {
-            smtkErrorMacro(smtk::io::Logger::instance(), "No resource "
-                << ruid << " held by manager for " << itemPtr->name() << "(" << i << ")");
-            continue;
-          }
-          auto comp = rsrc->find(cuid);
-          if (!comp)
-          {
-            smtkErrorMacro(smtk::io::Logger::instance(), "No component "
-                << cuid << " held by resource " << ruid << " for " << itemPtr->name() << "(" << i
-                << ")");
-            continue;
-          }
-          itemPtr->setObjectValue(static_cast<int>(i), comp);
-        }
-        else
-        { // Assume val is a UUID string.
-          smtk::common::UUID ruid = val;
-          if (!rsrcMgr)
-          {
-            if (!oneError)
-            {
-              oneError = true;
-              smtkErrorMacro(smtk::io::Logger::instance(),
-                "No resource manager available to deserialize reference.");
-            }
-            continue;
-          }
-          auto rsrc = rsrcMgr->get(ruid);
-          if (!rsrc)
-          {
-            smtkErrorMacro(smtk::io::Logger::instance(), "No resource "
-                << ruid << " held by manager for " << itemPtr->name() << "(" << i << ")");
-            continue;
-          }
-          itemPtr->setObjectValue(static_cast<int>(i), rsrc);
-        }
+        smtk::common::UUID ruid = val[0];
+        smtk::common::UUID cuid = val[1];
+        ReferenceItem::Key key = std::make_pair(ruid, cuid);
+        itemPtr->setObjectKey(i, key);
       }
       catch (std::exception& /*e*/)
       {

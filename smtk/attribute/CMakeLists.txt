@@ -33,6 +33,8 @@ set(jsonAttributeHeaders
   json/jsonReferenceItemDefinition.h
   json/jsonRefItem.h
   json/jsonRefItemDefinition.h
+  json/jsonResourceItem.h
+  json/jsonResourceItemDefinition.h
   json/jsonValueItem.h
   json/jsonValueItemDefinition.h
   json/jsonVoidItem.h
@@ -73,6 +75,8 @@ set(jsonAttributeSrcs
   json/jsonReferenceItem.cxx
   json/jsonReferenceItemDefinition.cxx
   json/jsonRefItem.cxx
+  json/jsonResourceItem.cxx
+  json/jsonResourceItemDefinition.cxx
   json/jsonRefItemDefinition.cxx
   json/jsonValueItem.cxx
   json/jsonValueItemDefinition.cxx

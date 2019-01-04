@@ -283,7 +283,6 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     for (auto iter = attributes.begin(); iter != attributes.end(); iter++)
     { // Get/Create the attribute first
       std::string name, type;
-      smtk::common::UUID id;
       try
       {
         name = iter->at("Name");
@@ -334,13 +333,14 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         continue;
       }
 
-      if (id.isNull())
+      if (uuid.isNull())
       {
-        att = res->createAttribute(name, def);
+        std::cerr << "uuid is null for Attribute " << name << std::endl;
+        continue;
       }
       else
       {
-        att = res->createAttribute(name, def, id);
+        att = res->createAttribute(name, def, uuid);
       }
 
       if (!att)

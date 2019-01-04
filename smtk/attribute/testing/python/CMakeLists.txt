@@ -32,6 +32,7 @@ set(smtkAttributePythonDataTests
 set(smtkAttributePythonNewDataTests
   attributeItemByPath
   attributeQuery
+  referenceItemIOTest
 )
 
 if (SMTK_DATA_DIR)
@@ -43,7 +44,7 @@ if (SMTK_DATA_DIR)
   # New-style tests that use smtk.testing.TestCase
   foreach (test ${smtkAttributePythonNewDataTests})
     smtk_add_test_python(${test}Py ${test}.py
-      -D ${SMTK_DATA_DIR})
+    --data-dir ${SMTK_DATA_DIR}  --temp-dir ${CMAKE_BINARY_DIR}/Testing/Temporary)
     set_tests_properties(${test}Py PROPERTIES SKIP_RETURN_CODE 125)
   endforeach()
 endif()
