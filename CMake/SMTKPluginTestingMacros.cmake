@@ -56,7 +56,8 @@ function(smtk_test_plugin test_plugin_file)
       -Dsmtk_DIR=${PROJECT_BINARY_DIR}
       ${response_file}
     )
-  # If on Windows, pass the environment PATH and PYTHONPATH to the test.
+
+  # If on Windows, pass the environment PATH to the test.
   if (WIN32)
     # We need to add this smtk's binary directory to the path so the plugin
     # tests can find our newly built SMTK binaries.
@@ -69,19 +70,22 @@ function(smtk_test_plugin test_plugin_file)
 
     # Finally, append the path to the test's environment.
     set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "PATH=${smtk_path_env}")
-
-    # We need to add this smtk's build directory to the pythonpath so the plugin
-    # tests can find our newly built SMTK python modules.
-    set(smtk_test_path $ENV{PYTHONPATH})
-    list(INSERT smtk_test_path 0 ${PROJECT_BINARY_DIR})
-
-    # We need to escape semicolons so they won't be erased from the pythonpath
-    # when resolved by the test's cmake instance.
-    string(REPLACE ";" "\\\;" smtk_pythonpath_env "${smtk_test_path}")
-
-    # Finally, append the pythonpath to the test's environment.
-    set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "PYTHONPATH=${smtk_pythonpath_env}")
   endif ()
+
+  # On all operating systems we pass the environment PYTHONPATH to the test.
+
+  # We need to add this smtk's build directory to the pythonpath so the plugin
+  # tests can find our newly built SMTK python modules.
+  set(smtk_test_path $ENV{PYTHONPATH})
+  list(INSERT smtk_test_path 0 ${PROJECT_BINARY_DIR})
+
+  # We need to escape semicolons so they won't be erased from the pythonpath
+  # when resolved by the test's cmake instance.
+  string(REPLACE ";" "\\\;" smtk_pythonpath_env "${smtk_test_path}")
+
+  # Finally, append the pythonpath to the test's environment.
+  set_property(TEST ${test_name} APPEND PROPERTY ENVIRONMENT "PYTHONPATH=${smtk_pythonpath_env}")
+
   set_tests_properties(${test_name} PROPERTIES LABELS "Plugin")
 
 endfunction(smtk_test_plugin)

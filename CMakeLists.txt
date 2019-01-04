@@ -714,6 +714,12 @@ if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   list(APPEND smtk_prefix_path ${ParaView_DIR})
 endif()
 
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  set(smtk_python_executable ${PYTHON_EXECUTABLE})
+  set(smtk_python_library ${PYTHON_LIBRARIES})
+  set(smtk_python_include_dir ${PYTHON_INCLUDE_DIRS})
+endif ()
+
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
@@ -741,6 +747,12 @@ install(
 # package configuration file
 if (SMTK_RELOCATABLE_INSTALL)
   set(smtk_prefix_path)
+
+  if (SMTK_ENABLE_PYTHON_WRAPPING)
+    set(smtk_python_executable)
+    set(smtk_python_library)
+    set(smtk_python_include_dir)
+  endif ()
 endif()
 
 set(SMTK_VTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")

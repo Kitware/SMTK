@@ -6,7 +6,7 @@ set(SMTK_PREFIX_PATH "@smtk_prefix_path@")
 set(CMAKE_PREFIX_PATH_save "${CMAKE_PREFIX_PATH}")
 list(APPEND CMAKE_PREFIX_PATH ${SMTK_PREFIX_PATH})
 
-#Setup the CMake module paths
+#Set up the CMake module paths
 list(APPEND CMAKE_MODULE_PATH "@SMTK_MODULE_DIR@;@SMTK_VTK_MODULE_DIR@")
 set(smtk_module_dir "@SMTK_VTK_MODULE_DIR@/Modules")
 if(IS_DIRECTORY "${smtk_module_dir}")
@@ -22,11 +22,6 @@ endif()
 unset(smtk_module_dir)
 
 set(smtk_cmake_dir ${CMAKE_CURRENT_LIST_DIR})
-
-set(SMTK_HAS_PYTHON @SMTK_ENABLE_PYTHON_WRAPPING@)
-if (SMTK_HAS_PYTHON)
-  find_package(pybind11 REQUIRED)
-endif ()
 
 #When building documentation internally we re-import ourselves, which
 #doesnt work and generates CMake warnings. So we will only look for SMTK
@@ -54,9 +49,33 @@ else()
     find_package(Remus REQUIRED)
   endif()
 
+  # if SMTK has python bindings enabled and is non-relocatable (i.e. this is
+  # SMTK's build directory or SMTK was configured with SMTK_RELOCATABLE_INSTALL
+  # set to False), and if there are no preexisting hint variables for finding
+  # a python library/include dir/executable, we use the python SMTK found to
+  # seed the python hint variables. We do not call find_package() for PythonLibs
+  # or PythonInterp, however, since the consuming program should do that (and
+  # things get all weird when they are called repeatedly).
   set(SMTK_ENABLE_PYTHON_WRAPPING @SMTK_ENABLE_PYTHON_WRAPPING@)
   if(SMTK_ENABLE_PYTHON_WRAPPING)
-    find_package(pybind11 2.3 REQUIRED)
+
+    set(SMTK_PYTHON_EXECUTABLE "@smtk_python_executable@")
+    set(SMTK_PYTHON_LIBRARY "@smtk_python_library@")
+    set(SMTK_PYTHON_INCLUDE_DIR "@smtk_python_include_dir@")
+
+    if (SMTK_PYTHON_EXECUTABLE AND NOT PYTHON_EXECUTABLE)
+      set(PYTHON_EXECUTABLE ${SMTK_PYTHON_EXECUTABLE})
+    endif ()
+
+    if (SMTK_PYTHON_LIBRARY AND NOT PYTHON_LIBRARY)
+      set(PYTHON_LIBRARY ${SMTK_PYTHON_LIBRARY})
+    endif ()
+
+    if (SMTK_PYTHON_INCLUDE_DIR AND NOT PYTHON_INCLUDE_DIR)
+      set(PYTHON_INCLUDE_DIR ${SMTK_PYTHON_INCLUDE_DIR})
+    endif ()
+
+    find_package(pybind11 2.3)
   endif()
 
   set(SMTK_PLUGINS @SMTK_PLUGINS@)
