@@ -22,6 +22,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryInfo.h"
 #include "smtk/attribute/Item.h"
@@ -222,7 +223,9 @@ protected:
     smtk::attribute::ItemDefinition::CopyInfo& info);
 
   std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
-  std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;
+  std::map<std::string,
+    std::set<smtk::attribute::AttributePtr, Attribute::WeakAttributePtrCompare> >
+    m_attributeClusters;
   std::map<std::string, smtk::attribute::AttributePtr> m_attributes;
   std::map<smtk::common::UUID, smtk::attribute::AttributePtr> m_attributeIdMap;
 
@@ -274,8 +277,7 @@ inline void Resource::findDefinitionAttributes(
   const std::string& typeName, std::vector<smtk::attribute::AttributePtr>& result) const
 {
   result.clear();
-  std::map<std::string, std::set<smtk::attribute::AttributePtr> >::const_iterator it;
-  it = m_attributeClusters.find(typeName);
+  auto it = m_attributeClusters.find(typeName);
   if (it != m_attributeClusters.end())
   {
     result.insert(result.end(), it->second.begin(), it->second.end());

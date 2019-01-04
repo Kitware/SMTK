@@ -308,8 +308,7 @@ void Resource::internalFindAttributes(
 {
   if (!def->isAbstract())
   {
-    std::map<std::string, std::set<smtk::attribute::AttributePtr> >::const_iterator it;
-    it = m_attributeClusters.find(def->type());
+    auto it = m_attributeClusters.find(def->type());
     if (it != m_attributeClusters.end())
     {
       result.insert(result.end(), it->second.begin(), it->second.end());
