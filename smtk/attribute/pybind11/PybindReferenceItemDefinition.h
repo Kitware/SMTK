@@ -12,6 +12,7 @@
 #define pybind_smtk_attribute_ReferenceItemDefinition_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"

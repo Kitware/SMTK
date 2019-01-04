@@ -50,6 +50,24 @@ class SMTKCORE_EXPORT Attribute : public resource::Component
 
 public:
   smtkTypeMacro(smtk::attribute::Attribute);
+  struct SMTKCORE_EXPORT WeakAttributePtrCompare
+  {
+    bool operator()(const smtk::attribute::WeakAttributePtr& lhs,
+      const smtk::attribute::WeakAttributePtr& rhs) const
+    {
+      auto left = lhs.lock();
+      if (left == nullptr)
+      {
+        return true;
+      }
+      auto right = rhs.lock();
+      if (right == nullptr)
+      {
+        return false;
+      }
+      return left->name() < right->name();
+    }
+  };
 
   static smtk::attribute::AttributePtr New(
     const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
