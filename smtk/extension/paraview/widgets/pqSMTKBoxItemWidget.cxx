@@ -93,16 +93,6 @@ bool pqSMTKBoxItemWidget::createProxyAndWidget(
   vtkSMPropertyHelper(widgetProxy, "RotationEnabled").Set(false);
   widgetProxy->UpdateVTKObjects();
 
-  // III. Connect to signals so we know when the properties are modified.
-  //      When they change, update the values in the SMTK item we represent.
-  m_p->m_connector->Connect(
-    proxy->GetProperty("Position"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
-  m_p->m_connector->Connect(
-    proxy->GetProperty("Scale"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
-  // Not really needed yet:
-  m_p->m_connector->Connect(
-    proxy->GetProperty("Rotation"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
-
   return widget != nullptr;
 }
 
