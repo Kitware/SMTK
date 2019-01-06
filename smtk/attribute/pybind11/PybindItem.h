@@ -68,6 +68,7 @@ PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::
     .value("MeshSelectionType", smtk::attribute::Item::Type::MeshSelectionType)
     .value("MeshEntityType", smtk::attribute::Item::Type::MeshEntityType)
     .value("DateTimeType", smtk::attribute::Item::Type::DateTimeType)
+    .value("ReferenceType", smtk::attribute::Item::Type::ReferenceType)
     .value("ResourceType", smtk::attribute::Item::Type::ResourceType)
     .value("ComponentType", smtk::attribute::Item::Type::ComponentType)
     .value("NUMBER_OF_TYPES", smtk::attribute::Item::Type::NUMBER_OF_TYPES)
