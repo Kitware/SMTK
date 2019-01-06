@@ -85,15 +85,6 @@ bool pqSMTKSphereItemWidget::createProxyAndWidget(
   // non-default (or the item has no default).
   widgetProxy->UpdateVTKObjects();
 
-  // III. Connect to signals so we know when the properties are modified.
-  //      When they change, update the values in the SMTK item we represent.
-  m_p->m_connector->Connect(
-    proxy->GetProperty("Center"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
-  m_p->m_connector->Connect(
-    proxy->GetProperty("Radius"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
-  // The above detect render-window interactions. The below detects Qt interactions:
-  QObject::connect(widget, SIGNAL(changeFinished()), this, SLOT(updateItemFromWidget()));
-
   return widget != nullptr;
 }
 

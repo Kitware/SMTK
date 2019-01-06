@@ -111,12 +111,6 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
   // non-default (or the item has no default).
   widgetProxy->UpdateVTKObjects();
 
-  // III. Connect to signals so we know when the properties are modified.
-  //      When they change, update the values in the SMTK item we represent.
-  m_p->m_connector->Connect(
-    proxy->GetProperty("Points"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
-  m_p->m_connector->Connect(
-    proxy->GetProperty("Closed"), vtkCommand::ModifiedEvent, this, SLOT(updateItemFromWidget()));
   return widget != nullptr;
 }
 
