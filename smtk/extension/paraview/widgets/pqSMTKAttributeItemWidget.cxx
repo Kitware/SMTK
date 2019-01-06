@@ -355,6 +355,9 @@ void pqSMTKAttributeItemWidget::createEditor()
   pqActiveObjects& actives(pqActiveObjects::instance());
   pvwidget->setView(actives.activeView());
   m_p->m_pvwidget = pvwidget;
+  // changeFinished is emitted when users modify properties using Qt widgets:
+  QObject::connect(pvwidget, SIGNAL(changeFinished()), this, SLOT(updateItemFromWidget()));
+  // interaction/endInteraction are emitted when users modify properties using ParaView widgets:
   QObject::connect(pvwidget, SIGNAL(interaction()), this, SLOT(updateItemFromWidget()));
   QObject::connect(pvwidget, SIGNAL(endInteraction()), this, SLOT(acceptWidgetValues()));
 
