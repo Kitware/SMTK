@@ -360,6 +360,8 @@ void pqSMTKAttributeItemWidget::createEditor()
   // interaction/endInteraction are emitted when users modify properties using ParaView widgets:
   QObject::connect(pvwidget, SIGNAL(interaction()), this, SLOT(updateItemFromWidget()));
   QObject::connect(pvwidget, SIGNAL(endInteraction()), this, SLOT(acceptWidgetValues()));
+  // When the active view changes, move the widget to that view.
+  QObject::connect(&actives, SIGNAL(viewChanged(pqView*)), pvwidget, SLOT(setView(pqView*)));
 
   editorLayout->addWidget(pvwidget);
   this->m_p->m_layout->addLayout(editorLayout, 0, 1);
