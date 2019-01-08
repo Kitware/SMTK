@@ -226,6 +226,17 @@ if (SMTK_ENABLE_TESTING)
         -P "${smtk_SOURCE_DIR}/CMake/CheckCopyright.cmake")
 endif()
 
+# On some *nix distributions, RPath has been deprecated in favor for RunPath. One
+# difference between these concepts is that RunPath is not inherited. This causes
+# issues with locating libraries without manually setting LD_LIBRARY_PATH when the
+# indirect dependency is in a nonstandard location. This flag switches the compiler
+# to use RPath in favor of RunPath.
+cmake_dependent_option(SMTK_FORCE_OLD_DTAGS "Use deprecated RPath in favor of RunPath"
+  OFF "UNIX;NOT APPLE" OFF)
+if (SMTK_FORCE_OLD_DTAGS)
+  string(APPEND CMAKE_SHARED_LINKER_FLAGS " -Wl,--disable-new-dtags")
+endif()
+
 ################################################################################
 # Boost Related Settings
 ################################################################################
