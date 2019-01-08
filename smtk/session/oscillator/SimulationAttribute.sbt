@@ -151,12 +151,9 @@
       </Views>
     </View>
 
-    <View Type="ModelEntity" Title="source terms">
+    <View Type="ModelEntity" Title="source terms" ModelEntityFilter="aux_geom|2">
       <AttributeTypes>
-        <!-- I would like to replace the 3 lines below with just: Att Type="source-term" / -->
-        <Att Type="periodic-source" />
-        <Att Type="decaying-source" />
-        <Att Type="damped-source" />
+        <Att Type="source-term" />
       </AttributeTypes>
     </View>
 

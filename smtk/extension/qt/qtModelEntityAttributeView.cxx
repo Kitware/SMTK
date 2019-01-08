@@ -159,7 +159,7 @@ public:
   QPointer<QStandardItemModel> checkablePropComboModel;
   QMap<std::string, Qt::CheckState> AttProperties;
   std::vector<smtk::attribute::DefinitionPtr> m_attDefinitions;
-  smtk::model::BitFlags m_modelEntityMask;
+  std::string m_modelEntityMask;
   std::string m_selectionSourceName;
   std::string m_unSetVal;
   int m_selectionObserverId;
@@ -328,7 +328,6 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
   std::set<smtk::resource::PersistentObjectPtr> result;
   // First we need to determine if the attribute resource has resources associated with it
   // if not we need to go to resource manager to get the information
-  auto compType = smtk::model::Entity::flagSummary(this->Internals->m_modelEntityMask);
   auto attResource = this->uiManager()->attResource();
   auto resources = attResource->associations();
   if (!resources.empty())
@@ -339,7 +338,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
       if (resource->isOfType(smtk::model::Resource::type_name))
       {
         // Find all components of the proper type
-        auto comps = resource->find(compType);
+        auto comps = resource->find(this->Internals->m_modelEntityMask);
         result.insert(comps.begin(), comps.end());
       }
     }
@@ -354,7 +353,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
     for (auto resource : resources)
     {
       // Find all components of the proper type
-      auto comps = resource->find(compType);
+      auto comps = resource->find(this->Internals->m_modelEntityMask);
       result.insert(comps.begin(), comps.end());
     }
   }
@@ -659,12 +658,11 @@ void qtModelEntityAttributeView::getAllDefinitions()
 
   if (view->details().attribute("ModelEntityFilter", val))
   {
-    smtk::model::BitFlags flags = smtk::model::Entity::specifierStringToFlag(val);
-    this->Internals->m_modelEntityMask = flags;
+    this->Internals->m_modelEntityMask = val;
   }
   else
   {
-    this->Internals->m_modelEntityMask = 0;
+    this->Internals->m_modelEntityMask = "*";
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;

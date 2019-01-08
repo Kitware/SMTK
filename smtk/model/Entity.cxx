@@ -956,14 +956,15 @@ static struct
   std::string name;
   BitFlags value;
 } orderedValues[] = {
-  { "0", smtk::model::DIMENSION_0 }, { "1", smtk::model::DIMENSION_1 },
-  { "2", smtk::model::DIMENSION_2 }, { "3", smtk::model::DIMENSION_3 },
-  { "4", smtk::model::DIMENSION_4 }, { "any", smtk::model::ANY_ENTITY },
-  { "anydim", smtk::model::ANY_DIMENSION }, { "aux_geom", smtk::model::AUX_GEOM_ENTITY },
-  { "b", smtk::model::SESSION }, { "bdy", smtk::model::MODEL_BOUNDARY },
-  { "cell", smtk::model::CELL_ENTITY }, { "chain", smtk::model::CHAIN },
-  { "closed", smtk::model::CLOSED }, { "cover", smtk::model::COVER },
-  { "domain", smtk::model::MODEL_DOMAIN }, { "e", smtk::model::EDGE }, // Backwards-compatibility
+  { "*", smtk::model::ANY_ENTITY }, { "0", smtk::model::DIMENSION_0 },
+  { "1", smtk::model::DIMENSION_1 }, { "2", smtk::model::DIMENSION_2 },
+  { "3", smtk::model::DIMENSION_3 }, { "4", smtk::model::DIMENSION_4 },
+  { "any", smtk::model::ANY_ENTITY }, { "anydim", smtk::model::ANY_DIMENSION },
+  { "aux_geom", smtk::model::AUX_GEOM_ENTITY }, { "b", smtk::model::SESSION },
+  { "bdy", smtk::model::MODEL_BOUNDARY }, { "cell", smtk::model::CELL_ENTITY },
+  { "chain", smtk::model::CHAIN }, { "closed", smtk::model::CLOSED },
+  { "cover", smtk::model::COVER }, { "domain", smtk::model::MODEL_DOMAIN },
+  { "e", smtk::model::EDGE }, // Backwards-compatibility
   { "edge", smtk::model::EDGE }, { "edge_use", smtk::model::EDGE_USE },
   { "ef", smtk::model::EDGE | smtk::model::FACE },                        // Backwards-compatibility
   { "efr", smtk::model::EDGE | smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
