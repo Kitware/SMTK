@@ -15,6 +15,7 @@
 #include "smtk/attribute/ResourceItem.h"
 
 #include "smtk/attribute/operators/Associate.h"
+#include "smtk/attribute/operators/Dissociate.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
@@ -106,6 +107,25 @@ int unitAttributeAssociation(int, char* [])
 
     smtkTest(*(resptr->associations().begin()) == modelMgr,
       "Could not set attribute resource's model-resource.");
+
+    auto dissociateOperation = smtk::attribute::Dissociate::create();
+
+    dissociateOperation->parameters()->associate(resptr);
+
+    smtkTest(dissociateOperation->parameters()->findResource("dissociate from") != nullptr,
+      "Cannot access dissociate opration's input resource parameter.");
+    dissociateOperation->parameters()->findResource("dissociate from")->setValue(modelMgr);
+
+    smtkTest(dissociateOperation->ableToOperate() == true, "Dissociate operator cannot operate");
+
+    result = dissociateOperation->operate();
+
+    smtkTest(result->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
+      "Dissociate operator failed");
+
+    smtkTest(resptr->associations().empty() == true,
+      "Could not dissociate model-resource from attribute resource.");
   }
 
   return 0;
