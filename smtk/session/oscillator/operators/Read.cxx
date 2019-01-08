@@ -29,6 +29,8 @@
 
 #include "smtk/model/SessionIOJSON.h"
 
+#include <fstream>
+
 using namespace smtk::model;
 
 namespace smtk
@@ -41,6 +43,13 @@ namespace oscillator
 Read::Result Read::operateInternal()
 {
   std::string filename = this->parameters()->findFile("filename")->value();
+
+  std::ifstream file(filename);
+  if (!file.good())
+  {
+    smtkErrorMacro(log(), "Cannot read file \"" << filename << "\".");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
 
   // Load file and parse it:
   smtk::model::SessionIOJSON::json j = smtk::model::SessionIOJSON::loadJSON(filename);
