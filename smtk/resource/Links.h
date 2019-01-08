@@ -21,7 +21,7 @@ namespace resource
 class Component;
 class Resource;
 
-/// Links is a pure virtual class describing the API for connecting one
+/// Links is a virtual class describing the API for connecting one
 /// resource/component to another resource/component.
 class SMTKCORE_EXPORT Links
 {

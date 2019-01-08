@@ -186,11 +186,11 @@ void MoveOnlyTest()
   smtkTest(links.at<MyLinks::Left>(1) == 3, "Should be set to 3.");
   smtkTest(links.at(1).right == 5, "Should be set to 5.");
   smtkTest(links.at<MyLinks::Right>(1) == 5, "Should be set to 5.");
-  smtkTest(links.at(1).role == 101, "Should be set to \"bar\".")
-    smtkTest(links.at<MyLinks::Role>(1) == 101, "Should be set to \"bar\".")
+  smtkTest(links.at(1).role == 101, "Should be set to \"bar\".");
+  smtkTest(links.at<MyLinks::Role>(1) == 101, "Should be set to \"bar\".");
 
-    // Try to modify a value using an id that is not in the links (should throw).
-    bool modified = true;
+  // Try to modify a value using an id that is not in the links (should throw).
+  bool modified = true;
   try
   {
     modified = links.set<MyLinks::Right>(2, 6);
@@ -313,7 +313,7 @@ void RecursionTest()
   }
 
   smtkTest(metaLinks.at(0).size() == 2, "first set of links should have 2 links.");
-  smtkTest(metaLinks.at(1).size() == 3, "second set of links should have 2 links.");
+  smtkTest(metaLinks.at(1).size() == 3, "second set of links should have 3 links.");
 }
 
 void MoveOnlyRecursionTest()
@@ -336,7 +336,7 @@ void MoveOnlyRecursionTest()
   }
 
   smtkTest(metaLinks.at(0).size() == 2, "first set of links should have 2 links.");
-  smtkTest(metaLinks.at(1).size() == 3, "second set of links should have 2 links.");
+  smtkTest(metaLinks.at(1).size() == 3, "second set of links should have 3 links.");
 }
 }
 
