@@ -618,6 +618,8 @@ install(
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperationXML.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKPluginMacros.cmake
     ${PROJECT_SOURCE_DIR}/CMake/serverSource.cxx.in
+    ${PROJECT_SOURCE_DIR}/CMake/qtSMTKViewImplementation.cxx.in
+    ${PROJECT_SOURCE_DIR}/CMake/qtSMTKViewImplementation.h.in
   DESTINATION
     ${SMTK_INSTALL_CONFIG_DIR}
 )
