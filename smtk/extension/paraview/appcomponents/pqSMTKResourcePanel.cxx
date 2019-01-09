@@ -27,6 +27,7 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   // registered before telling the pqSMTKResourceBrowser to use it.
 
   m_browser = new pqSMTKResourceBrowser(phraseModel, modelViewName, qtPhraseModel, this);
+  m_browser->setObjectName("pqSMTKResourceBrowser");
   this->setWindowTitle("Resources");
   this->setWidget(m_browser);
 }
