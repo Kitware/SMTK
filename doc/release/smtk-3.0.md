@@ -46,7 +46,7 @@ into a `ComponentItem`, facilitating its use of resource links.
 
 ## Changes to Core
 
-### Attribute system
+### Attribute resource
 
 #### General Code Changes
 
@@ -61,6 +61,8 @@ into a `ComponentItem`, facilitating its use of resource links.
 + Added Definition::attributes(object) method to return all of the attributes associated with the persistent object that are derived from the definition or definitions derived from it.
 + Added ReferenceItem::acceptableEntries() method to return it's definition's acceptability rules.
 + Added Protected method ReferenceItemDefinition::setRole(role) method for setting the role of its related resource links.
++ **Definitions are no longer isUnique by default**
++ Fixed bug in attribute::Resource::findIsUniqueBaseClass method that was returning the definition passed in as being Unique (even if it wasn't) when it didn't have a Base Definition.
 
 #### Read and write operations for attribute resources
 
@@ -300,6 +302,10 @@ You can now specify an ItemView section within the Att block of the XML or JSON.
     + Type="Instanced" (qtInstancedView)
     + Type="ModelEntity" (qtModelEntityAttributeView)
     + Type="Operator" (qtOperatorView)
+
+### Changes to qtAssociationWidget
++ Removed the ability to do exchanges (<==>) since no one was using it
++ With the exchange mechanism removed, extended selection has been added to both the current and available lists
 
 #### General Code Changes
 

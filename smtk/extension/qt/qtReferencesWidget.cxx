@@ -76,7 +76,6 @@ void qtReferencesWidget::initWidget()
 
   QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
   QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()));
-  QObject::connect(this->Internals->ExchangeLeftRight, SIGNAL(clicked()), this, SLOT(onExchange()));
 }
 
 void qtReferencesWidget::showAttributeReferences(
@@ -149,9 +148,5 @@ void qtReferencesWidget::onRemoveAssigned()
 }
 
 void qtReferencesWidget::onAddAvailable()
-{
-}
-
-void qtReferencesWidget::onExchange()
 {
 }

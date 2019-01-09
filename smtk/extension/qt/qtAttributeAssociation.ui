@@ -35,7 +35,11 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QListWidget" name="CurrentList"/>
+       <widget class="QListWidget" name="CurrentList">
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
       </item>
       <item row="1" column="1">
        <widget class="QFrame" name="ButtonsFrame">
@@ -74,19 +78,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="ExchangeLeftRight">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>&lt;==&gt;</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -103,7 +94,11 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QListWidget" name="AvailableList"/>
+       <widget class="QListWidget" name="AvailableList">
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

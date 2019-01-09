@@ -467,10 +467,20 @@ void Resource::derivedDefinitions(
 smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
   smtk::attribute::DefinitionPtr attDef) const
 {
-  if (!attDef.get() || !attDef->isUnique() || !attDef->baseDefinition().get())
+  // If there is no definition or the definition is not
+  // unique then return an empty shared pointer
+  if (!attDef.get() || !attDef->isUnique())
+  {
+    return smtk::attribute::ConstDefinitionPtr();
+  }
+  // If there is no base definition then we know this
+  // definiiton must be the most common unique base class
+  else if (!attDef->baseDefinition().get())
   {
     return attDef;
   }
+  // Keep traveling up the definition's ancestors until
+  // we come to the end or we find one that isn't unique
   smtk::attribute::DefinitionPtr uDef = attDef, def;
   while (1 && uDef.get())
   {

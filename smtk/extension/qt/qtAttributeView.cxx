@@ -741,12 +741,16 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   defitem->setFlags(nonEditableFlags);
   this->Internals->ListTable->setItem(numRows - 1, 1, defitem);
 
-  QTableWidgetItem* colorItem = new QTableWidgetItem();
-  this->Internals->ListTable->setItem(numRows - 1, 2, colorItem);
-  const double* rgba = childData->color();
-  QBrush bgBrush(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
-  colorItem->setBackground(bgBrush);
-  colorItem->setFlags(Qt::ItemIsEnabled);
+  // ToDo: Reactivate Color Option when we are ready to use it
+  if (false)
+  {
+    QTableWidgetItem* colorItem = new QTableWidgetItem();
+    this->Internals->ListTable->setItem(numRows - 1, 2, colorItem);
+    const double* rgba = childData->color();
+    QBrush bgBrush(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
+    colorItem->setBackground(bgBrush);
+    colorItem->setFlags(Qt::ItemIsEnabled);
+  }
   return item;
 }
 
@@ -768,12 +772,14 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->ListTable->clear();
   this->Internals->ListTable->setRowCount(0);
 
-  int numCols = viewAtt ? 3 : 2;
+  // ToDo: Reactivate Color Option when we are ready to use it
+  //int numCols = viewAtt ? 3 : 2;
+  int numCols = 2;
   this->Internals->ListTable->setColumnCount(numCols);
   this->Internals->ListTable->setHorizontalHeaderItem(
     0, new QTableWidgetItem(viewAtt ? "Attribute" : "Property"));
   this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
-  if (viewAtt)
+  if (numCols == 3)
   {
     this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
   }

@@ -115,7 +115,6 @@ void qtAssociationWidget::initWidget()
   // signals/slots
   QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
   QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()));
-  QObject::connect(this->Internals->ExchangeLeftRight, SIGNAL(clicked()), this, SLOT(onExchange()));
 }
 
 bool qtAssociationWidget::hasSelectedItem()
@@ -153,23 +152,41 @@ void qtAssociationWidget::refreshAssociations()
 
   auto objects = this->associatableObjects();
 
-  // Now go through the list of objects and for each see if it has attributes related to
-  // the base type.  If it doesn't then it can be added to the available list else
-  // if it has this attribute associated with it then it is added to the current list
-  // else it already has a different attribute of a related type associated with it and
-  // can be skipped.
-  for (auto obj : objects)
+  // If we don't have an unique base def then all the objects can be added
+  if (baseDef == nullptr)
   {
-    auto atts = baseDef->attributes(obj);
-    if (atts.size() == 0)
+    for (auto obj : objects)
     {
-      // Object doesn't have any appropriate attribute associated with it
-      this->addObjectAssociationListItem(this->Internals->AvailableList, obj, false);
+      if (theAttribute->isObjectAssociated(obj))
+      {
+        this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
+      }
+      else
+      {
+        this->addObjectAssociationListItem(this->Internals->AvailableList, obj, false);
+      }
     }
-    else if ((*atts.begin()) == theAttribute)
+  }
+  else
+  {
+    // Now go through the list of objects and for each see if it has attributes related to
+    // the base type.  If it doesn't then it can be added to the available list else
+    // if it has this attribute associated with it then it is added to the current list
+    // else it already has a different attribute of a related type associated with it and
+    // can be skipped.
+    for (auto obj : objects)
     {
-      // Entity is associated with the attribute already
-      this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
+      auto atts = baseDef->attributes(obj);
+      if (atts.size() == 0)
+      {
+        // Object doesn't have any appropriate attribute associated with it
+        this->addObjectAssociationListItem(this->Internals->AvailableList, obj, false);
+      }
+      else if ((*atts.begin()) == theAttribute)
+      {
+        // Entity is associated with the attribute already
+        this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
+      }
     }
   }
 
@@ -469,72 +486,6 @@ void qtAssociationWidget::onAddAvailable()
     this->updateListItemSelectionAfterChange(selItems, this->Internals->CurrentList);
     this->Internals->AvailableList->setCurrentItem(NULL);
     this->Internals->AvailableList->clearSelection();
-  }
-}
-
-void qtAssociationWidget::onExchange()
-{
-  auto att = this->Internals->currentAtt.lock();
-  if (att == nullptr)
-  {
-    return; // Nothing to do
-  }
-
-  this->Internals->CurrentList->blockSignals(true);
-  this->Internals->AvailableList->blockSignals(true);
-  QList<QListWidgetItem*> selCurrentItems = this->getSelectedItems(this->Internals->CurrentList);
-  QList<QListWidgetItem*> selAvailItems = this->getSelectedItems(this->Internals->AvailableList);
-  if (selCurrentItems.count() != selAvailItems.count())
-  {
-    QMessageBox::warning(
-      this, tr("Exchange Attributes"), tr("The number of items for exchange has to be the same!"));
-    return;
-  }
-
-  QListWidgetItem* selCurrentItem = NULL;
-  QListWidgetItem* selAvailItem = NULL;
-  for (int i = 0; i < selCurrentItems.count(); ++i)
-  {
-    auto currentItem = this->selectedObject(selCurrentItems[i]);
-    auto availableItem = this->selectedObject(selAvailItems[i]);
-    if (currentItem && availableItem)
-    {
-      att->disassociate(currentItem);
-
-      if (att->associate(availableItem))
-      {
-        this->removeItem(this->Internals->CurrentList, selCurrentItems[i]);
-        selCurrentItem = this->addObjectAssociationListItem(
-          this->Internals->CurrentList, availableItem, true, true);
-
-        this->removeItem(this->Internals->AvailableList, selAvailItems[i]);
-        selAvailItem =
-          this->addObjectAssociationListItem(this->Internals->AvailableList, currentItem);
-      }
-      else // faied to exchange, add back association
-      {
-        QMessageBox::warning(
-          this, tr("Exchange Attributes"), tr("Failed to associate with new object!"));
-        att->associate(currentItem);
-      }
-    }
-  }
-
-  this->Internals->CurrentList->blockSignals(false);
-  this->Internals->AvailableList->blockSignals(false);
-  if (selCurrentItems.count() || selAvailItems.count())
-  {
-    emit this->attAssociationChanged();
-    if (selCurrentItems.count())
-    {
-      // highlight selected item in AvailableList
-      this->updateListItemSelectionAfterChange(selCurrentItems, this->Internals->AvailableList);
-    }
-    if (selAvailItems.count())
-    {
-      // highlight selected item in CurrentList
-      this->updateListItemSelectionAfterChange(selAvailItems, this->Internals->CurrentList);
-    }
   }
 }
 
