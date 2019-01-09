@@ -20,9 +20,15 @@
 
 #include "smtk/attribute/json/jsonResource.h"
 
+#include "smtk/common/Paths.h"
+
 #include "smtk/io/Logger.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+//force to use filesystem version 3
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
+
 #include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
@@ -47,6 +53,25 @@ Write::Result Write::operateInternal()
   if (j.is_null())
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  // Ensure the resource suffix is .smtk so readers can subsequently read the
+  // file.
+  std::string filename = resource->location();
+  if (smtk::common::Paths::extension(resource->location()) != ".smtk")
+  {
+    filename = smtk::common::Paths::directory(filename) + "/" +
+      smtk::common::Paths::stem(filename) + ".smtk";
+
+    // If a file already exists with this name, append a distinguishing string
+    // to the name.
+    if (boost::filesystem::exists(filename.c_str()))
+    {
+      filename = smtk::common::Paths::directory(filename) + "/" +
+        smtk::common::Paths::stem(filename) + "_att.smtk";
+    }
+
+    resource->setLocation(filename);
   }
 
   {

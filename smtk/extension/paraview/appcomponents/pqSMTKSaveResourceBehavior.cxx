@@ -20,12 +20,10 @@
 #include "vtkSMProxy.h"
 #include "vtkSMProxyManager.h"
 
-#include "smtk/attribute/Resource.h"
+#include "smtk/common/Paths.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
-#include "smtk/io/AttributeWriter.h"
-#include "smtk/io/Logger.h"
 #include "smtk/resource/Manager.h"
 
 #include <QAction>
@@ -56,7 +54,7 @@ pqSaveResourceReaction::pqSaveResourceReaction(QAction* parentObject)
 void pqSaveResourceReaction::updateEnableState()
 {
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
-  // TODO: also is there's a pending accept.
+  // TODO: also if there's a pending accept.
   bool enable_state =
     (activeObjects.activeServer() != NULL && activeObjects.activeSource() != NULL &&
       dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != NULL);
@@ -77,23 +75,14 @@ pqSaveResourceReaction::State pqSaveResourceReaction::saveResource()
     return pqSaveResourceAsReaction::saveResourceAs();
   }
 
-  if (smtk::attribute::ResourcePtr attResource =
-        std::dynamic_pointer_cast<smtk::attribute::Resource>(resource))
+  // Ensure the resource suffix is .smtk so readers can subsequently read the
+  // file.
+  std::string filename = resource->location();
+  if (smtk::common::Paths::extension(resource->location()) != ".smtk")
   {
-    smtk::io::Logger logger;
-    smtk::io::AttributeWriter writer;
-
-    // The attribute write returns true on failure
-    return writer.write(attResource, attResource->location(), logger)
-      ? pqSaveResourceReaction::State::Failed
-      : pqSaveResourceReaction::State::Succeeded;
-  }
-
-  // Append the location with ".smtk" if it is not already there.
-  QFileInfo fi(resource->location().c_str());
-  if (fi.suffix() != "smtk")
-  {
-    resource->setLocation(resource->location() + ".smtk");
+    filename = smtk::common::Paths::directory(filename) + "/" +
+      smtk::common::Paths::stem(filename) + ".smtk";
+    resource->setLocation(filename);
   }
 
   if (smtk::resource::Manager::Ptr manager = resource->manager())
@@ -139,14 +128,6 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs()
 
   QString filters("Simulation Modeling Toolkit Resource files (*.smtk)");
 
-  smtk::attribute::ResourcePtr attResource =
-    std::dynamic_pointer_cast<smtk::attribute::Resource>(resource);
-
-  if (attResource != nullptr)
-  {
-    filters = QString("Simulation Modeling Toolkit Attribute files (*.sbi)");
-  }
-
   pqFileDialog fileDialog(
     server, pqCoreUtilities::mainWidget(), tr("Save File:"),
     (resource->location().empty()
@@ -160,22 +141,7 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs()
   {
     QString fname = fileDialog.getSelectedFiles()[0];
 
-    if (attResource)
-    {
-      smtk::io::Logger logger;
-      smtk::io::AttributeWriter writer;
-      bool fail = writer.write(attResource, fname.toStdString(), logger);
-      if (fail)
-      {
-        std::cout << logger.convertToString(true) << std::endl;
-        return pqSaveResourceReaction::State::Failed;
-      }
-      else
-      {
-        return pqSaveResourceReaction::State::Succeeded;
-      }
-    }
-    else if (smtk::resource::Manager::Ptr manager = resource->manager())
+    if (smtk::resource::Manager::Ptr manager = resource->manager())
     {
       return manager->write(resource, fname.toStdString())
         ? pqSaveResourceReaction::State::Succeeded
