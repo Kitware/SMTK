@@ -82,6 +82,16 @@ pqSaveResourceReaction::State pqSaveResourceReaction::saveResource()
   {
     filename = smtk::common::Paths::directory(filename) + "/" +
       smtk::common::Paths::stem(filename) + ".smtk";
+
+    // If a file already exists with this name, append a distinguishing string
+    // to the name.
+    if (smtk::common::Paths::fileExists(filename))
+    {
+      std::string id = resource->id().toString();
+      filename = smtk::common::Paths::directory(filename) + "/" +
+        smtk::common::Paths::stem(filename) + "_" + id.substr(0, 8) + ".smtk";
+    }
+
     resource->setLocation(filename);
   }
 

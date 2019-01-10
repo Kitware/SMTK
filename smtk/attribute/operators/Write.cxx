@@ -25,10 +25,6 @@
 #include "smtk/io/Logger.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
-//force to use filesystem version 3
-#define BOOST_FILESYSTEM_VERSION 3
-#include <boost/filesystem.hpp>
-
 #include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
@@ -65,10 +61,11 @@ Write::Result Write::operateInternal()
 
     // If a file already exists with this name, append a distinguishing string
     // to the name.
-    if (boost::filesystem::exists(filename.c_str()))
+    if (smtk::common::Paths::fileExists(filename))
     {
+      std::string id = resource->id().toString();
       filename = smtk::common::Paths::directory(filename) + "/" +
-        smtk::common::Paths::stem(filename) + "_att.smtk";
+        smtk::common::Paths::stem(filename) + "_" + id.substr(0, 8) + ".smtk";
     }
 
     resource->setLocation(filename);
