@@ -133,6 +133,7 @@ set(attributeHeaders
   VoidItemDefinition.h
 
   operators/Associate.h
+  operators/Dissociate.h
   operators/Read.h
   operators/Write.h
 )
@@ -182,12 +183,14 @@ set(attributeSrcs
   VoidItemDefinition.cxx
 
   operators/Associate.cxx
+  operators/Dissociate.cxx
   operators/Read.cxx
   operators/Write.cxx
 )
 
 #construct operator inputs
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Associate.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Dissociate.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
 
