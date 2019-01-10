@@ -79,6 +79,11 @@ bool Resource::isOfType(const std::string& typeName) const
 
 bool Resource::setId(const smtk::common::UUID& myId)
 {
+  if (myId == m_id)
+  {
+    return false;
+  }
+
   Manager::Ptr mgr = m_manager.lock();
   if (mgr)
   {
@@ -111,11 +116,21 @@ bool Resource::setId(const smtk::common::UUID& myId)
     *const_cast<smtk::common::UUID*>(&m_id) = myId;
   }
 
-  return myId == m_id;
+  if (myId == m_id)
+  {
+    this->setClean(false);
+    return true;
+  }
+  return false;
 }
 
 bool Resource::setLocation(const std::string& myLocation)
 {
+  if (myLocation == m_location)
+  {
+    return false;
+  }
+
   Manager::Ptr mgr = m_manager.lock();
   if (mgr)
   {
@@ -148,12 +163,31 @@ bool Resource::setLocation(const std::string& myLocation)
     *const_cast<std::string*>(&m_location) = myLocation;
   }
 
-  return myLocation == m_location;
+  if (myLocation == m_location)
+  {
+    this->setClean(false);
+    return true;
+  }
+  return false;
 }
 
 std::string Resource::name() const
 {
   return smtk::common::Paths::stem(m_location);
+}
+
+void Resource::setClean(bool state)
+{
+  if (m_clean == state)
+  {
+    return;
+  }
+  m_clean = state;
+  auto mgr = this->manager();
+  if (mgr)
+  {
+    mgr->observers()(shared_from_this(), EventType::MODIFIED);
+  }
 }
 
 } // namespace resource

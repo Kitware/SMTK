@@ -9,6 +9,13 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveOnCloseResourceBehavior.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+#ifdef SMTK_MSVC
+// Ignore "... usage of 'QObject::connect' requires the compiler to capture 'this'..." warnings.
+#pragma warning(disable : 4573)
+#endif
+
 // Client side
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"

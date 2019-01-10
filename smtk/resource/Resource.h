@@ -106,7 +106,7 @@ public:
   /// method will mark the resource as clean. Loading a resource using
   /// its metadata's read method should return a clean resource.
   bool clean() const { return m_clean; }
-  void setClean(bool state = true) { m_clean = state; }
+  void setClean(bool state = true);
 
   /// Resources that are managed have a non-null pointer to their manager.
   ManagerPtr manager() const { return m_manager.lock(); }

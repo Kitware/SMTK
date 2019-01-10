@@ -45,14 +45,15 @@ protected:
   ResourcePhraseModel();
 
   /*
-  virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
-  virtual void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event);
-  */
+  void handleSelectionEvent(const std::string& src, Selection::Ptr seln) override;
+  void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event) override;
   int handleOperationEvent(smtk::operation::Operation::Ptr op, smtk::operation::EventType event,
     smtk::operation::Operation::Result res) override;
+  */
   void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event) override;
 
   virtual void processResource(Resource::Ptr rsrc, bool adding);
+  virtual void triggerModified(const Resource::Ptr& rsrc);
 
   smtk::view::DescriptivePhrasePtr m_root;
   std::set<smtk::resource::ResourcePtr> m_resources;
