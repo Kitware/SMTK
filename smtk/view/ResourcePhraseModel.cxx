@@ -127,7 +127,8 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 
       m_resources.insert(rsrc);
       DescriptivePhrases children(m_root->subphrases());
-      children.push_back(smtk::view::ResourcePhraseContent::createPhrase(rsrc, 0, m_root));
+      children.push_back(smtk::view::ResourcePhraseContent::createPhrase(
+        rsrc, static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE), m_root));
       std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
       this->root()->findDelegate()->decoratePhrases(children);
       this->updateChildren(m_root, children, std::vector<int>());

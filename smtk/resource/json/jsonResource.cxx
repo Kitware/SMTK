@@ -25,6 +25,10 @@ void to_json(json& j, const ResourcePtr& resource)
   j["version"] = "3.0";
   j["type"] = resource->typeName();
   j["links"] = resource->links().data();
+  if (resource->isNameSet())
+  {
+    j["name"] = resource->name();
+  }
 }
 
 void from_json(const json& j, ResourcePtr& resource)
@@ -39,6 +43,11 @@ void from_json(const json& j, ResourcePtr& resource)
   if (j.find("links") != j.end())
   {
     resource->links().data() = j.at("links");
+  }
+
+  if (j.find("name") != j.end())
+  {
+    resource->setName(j.at("name"));
   }
 }
 }

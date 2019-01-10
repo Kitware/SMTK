@@ -454,13 +454,6 @@ bool qtDescriptivePhraseModel::setData(const QModelIndex& idx, const QVariant& v
     {
       std::string sval = value.value<QString>().toStdString();
       didChange = phrase->setTitle(sval);
-
-      // sort the subphrase after change
-      phrase->markDirty();
-      this->rebuildSubphrases(idx.parent());
-      // if data did get changed, we need to emit the signal
-      if (didChange)
-        emit this->phraseTitleChanged(idx);
     }
     else if (role == SubtitleTextRole && phrase->isSubtitleMutable())
     {
