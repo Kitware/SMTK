@@ -15,5 +15,7 @@
     <file alias = "growaccept24.png">icons/growaccept24.png</file>
     <file alias = "edgesplit.png">icons/edgesplit.png</file>
     <file alias = "function.png">icons/function.png</file>
+    <file alias = "arrowRight.png">icons/grnArrowRight.png</file>
+    <file alias = "arrowLeft.png">icons/grnArrowLeft.png</file>
   </qresource>
 </RCC>
