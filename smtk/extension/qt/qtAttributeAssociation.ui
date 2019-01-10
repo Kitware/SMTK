@@ -59,7 +59,7 @@
             </font>
            </property>
            <property name="text">
-            <string>==&gt;</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -73,7 +73,7 @@
             </font>
            </property>
            <property name="text">
-            <string>&lt;==</string>
+            <string/>
            </property>
           </widget>
          </item>
