@@ -92,21 +92,21 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefiniti
   {
     defPtr->setNumberOfRequiredGroups(j.at("NumberOfRequiredGroups"));
   }
-  catch (std::exception)
+  catch (const std::exception&)
   {
   }
   try
   {
     defPtr->setIsExtensible(j.at("Extensible"));
   }
-  catch (std::exception)
+  catch (const std::exception&)
   {
   }
   try
   {
     defPtr->setMaxNumberOfGroups(j.at("MaxNumberOfGroups"));
   }
-  catch (std::exception)
+  catch (const std::exception&)
   {
   }
   json clabels;

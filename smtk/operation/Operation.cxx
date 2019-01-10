@@ -109,7 +109,9 @@ Operation::Result Operation::operate()
     auto& resource = resourceAndLockType.first;
     auto& lockType = resourceAndLockType.second;
 
-#ifndef NDEBUG
+// Leave this for debugging, but do not include it in every debug build
+// as it can be quite noisy.
+#if 0
     // Given the puzzling result of deadlock that can arise if one Operation
     // calls another Operation using its public API and passes it a Resource
     // with a Write LockType, we print to the terminal which resources we are

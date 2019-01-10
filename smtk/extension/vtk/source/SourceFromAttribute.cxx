@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/extension/vtk/source/SourceFromAttribute.h"
+#include "smtk/extension/vtk/source/vtkAttributeMultiBlockSource.h"
 
 #include "smtk/attribute/Resource.h"
 
@@ -34,13 +35,20 @@ bool SourceFromAttribute::valid(const smtk::resource::ResourcePtr& resource) con
   return std::dynamic_pointer_cast<smtk::attribute::Resource>(resource) != nullptr;
 }
 
-vtkSmartPointer<vtkAlgorithm> SourceFromAttribute::operator()(const smtk::resource::ResourcePtr&)
+vtkSmartPointer<vtkAlgorithm> SourceFromAttribute::operator()(
+  const smtk::resource::ResourcePtr& resource)
 {
-  vtkNew<vtkMultiBlockDataSet> multiblock;
-  multiblock->SetNumberOfBlocks(1);
+  auto attributeResource = std::static_pointer_cast<smtk::attribute::Resource>(resource);
 
-  auto source = vtkSmartPointer<vtkTrivialProducer>::New();
-  source->SetOutput(multiblock);
+  // The valid() call above should make certain that the static pointer cast
+  // will succeed. It doesn't hurt to be cautious, though.
+  assert(attributeResource);
+
+  // Create a vtkAttributeMultiBlockSource for our attribute.
+  auto source = vtkSmartPointer<vtkAttributeMultiBlockSource>::New();
+
+  // Tell our multiblock source to generate data from attribute components.
+  source->SetResource(attributeResource);
 
   return source;
 }
