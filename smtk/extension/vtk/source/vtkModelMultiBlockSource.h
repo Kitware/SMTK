@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_vtk_ModelMultiBlockSource_h
-#define __smtk_vtk_ModelMultiBlockSource_h
+#ifndef smtk_vtk_ModelMultiBlockSource_h
+#define smtk_vtk_ModelMultiBlockSource_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
@@ -163,4 +163,4 @@ private:
   void operator=(const vtkModelMultiBlockSource&);           // Not implemented.
 };
 
-#endif // __smtk_vtk_ModelMultiBlockSource_h
+#endif // smtk_vtk_ModelMultiBlockSource_h

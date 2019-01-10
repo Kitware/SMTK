@@ -260,10 +260,14 @@ void qtAttribute::onItemModified()
     // create a "dummy" operation that will mark the attribute resource
     // as modified so that applications know when a "save" is required.
     auto uiManager = m_internals->m_view->uiManager();
-    auto markModified = uiManager->operationManager()->create<smtk::operation::MarkModified>();
-    auto didAppend = markModified->parameters()->associations()->appendObjectValue(attr);
-    (void)didAppend;
-    markModified->operate();
+    auto opManager = uiManager->operationManager();
+    if (opManager)
+    {
+      auto markModified = opManager->create<smtk::operation::MarkModified>();
+      auto didAppend = markModified->parameters()->associations()->appendObjectValue(attr);
+      (void)didAppend;
+      markModified->operate();
+    }
   }
   emit this->itemModified(iobject);
   emit this->modified();

@@ -111,7 +111,12 @@ bool Resource::setId(const smtk::common::UUID& myId)
     *const_cast<smtk::common::UUID*>(&m_id) = myId;
   }
 
-  return myId == m_id;
+  if (myId == m_id)
+  {
+    this->setClean(false);
+    return true;
+  }
+  return false;
 }
 
 bool Resource::setLocation(const std::string& myLocation)
@@ -148,7 +153,12 @@ bool Resource::setLocation(const std::string& myLocation)
     *const_cast<std::string*>(&m_location) = myLocation;
   }
 
-  return myLocation == m_location;
+  if (myLocation == m_location)
+  {
+    this->setClean(false);
+    return true;
+  }
+  return false;
 }
 
 std::string Resource::name() const
