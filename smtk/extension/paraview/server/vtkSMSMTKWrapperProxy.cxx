@@ -112,7 +112,7 @@ void vtkSMSMTKWrapperProxy::FetchHardwareSelection()
     { "method", "fetch hw selection" }, { "id", 1 },
   };
   json response = this->JSONRPCRequest(request);
-  std::cout << response.dump(2) << "\n";
+  // std::cout << response.dump(2) << "\n";
 }
 
 void vtkSMSMTKWrapperProxy::AddResourceProxy(vtkSMSourceProxy* rsrc)
@@ -124,7 +124,7 @@ void vtkSMSMTKWrapperProxy::AddResourceProxy(vtkSMSourceProxy* rsrc)
     { "method", "add resource filter" }, { "id", 1 },
   };
   json response = this->JSONRPCRequest(request);
-  std::cout << response.dump(2) << "\n";
+  // std::cout << response.dump(2) << "\n";
 }
 
 void vtkSMSMTKWrapperProxy::RemoveResourceProxy(vtkSMSourceProxy* rsrc)
