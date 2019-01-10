@@ -93,12 +93,11 @@ public:
   bool setId(const smtk::common::UUID& myID) override;
   bool setLocation(const std::string& location);
 
-  /**\brief Return the user-assigned name of the resource.
-    *
-    * If no name has been assigned, return the stem of its filename.
-    * You may use isNameSet() to determine whether the returned name
-    * is generated or assigned.
-    */
+  /// Return the user-assigned name of the resource.
+  ///
+  /// If no name has been assigned, return the stem of its filename.
+  /// You may use isNameSet() to determine whether the returned name
+  /// is generated or assigned.
   std::string name() const override;
   bool setName(const std::string& name);
   bool isNameSet() { return m_name.empty(); }
