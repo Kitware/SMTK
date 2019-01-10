@@ -71,6 +71,12 @@ free functions), facilitating their generalized manipulation via
 operation groups. The format for the files used in these methods is
 JSON, matching the .smtk formats for models and meshes.
 
+#### Prompts to save modified resources before closing
+
+Since ParaView-based applications can treat resources similarly to documents,
+we adopt the pattern of prompting the user to save changes made to
+modified resources when a "Close Resource" action is requested.
+
 #### ReferenceItem, ResourceItem, and ComponentItem
 
 The ReferenceItem (holding shared-pointer references to PersistentObject),
