@@ -112,6 +112,12 @@ qtAssociationWidget::~qtAssociationWidget()
 
 void qtAssociationWidget::initWidget()
 {
+  // Set up icons on buttons
+  QString arrowRight(":/icons/attribute/arrowRight.png");
+  QString arrowLeft(":/icons/attribute/arrowLeft.png");
+  this->Internals->MoveToRight->setIcon(QIcon(arrowRight));
+  this->Internals->MoveToLeft->setIcon(QIcon(arrowLeft));
+
   // signals/slots
   QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
   QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()));
