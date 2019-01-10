@@ -19,6 +19,7 @@ set(operationSrcs
   groups/WriterGroup.cxx
 
   operators/ImportResource.cxx
+  operators/MarkModified.cxx
   operators/ReadResource.cxx
   operators/RemoveResource.cxx
   operators/WriteResource.cxx
@@ -46,6 +47,7 @@ set(operationHeaders
   groups/WriterGroup.h
 
   operators/ImportResource.h
+  operators/MarkModified.h
   operators/ReadResource.h
   operators/RemoveResource.h
   operators/WriteResource.h
@@ -57,6 +59,7 @@ set(operationXML
   )
 
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MarkModified.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveResource.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" defOpXML)

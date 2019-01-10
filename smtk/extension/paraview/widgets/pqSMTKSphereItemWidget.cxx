@@ -106,11 +106,20 @@ void pqSMTKSphereItemWidget::updateItemFromWidget()
   //     no value actually _has_ changed, we do not want to emit error messages
   //     that could frighten/confuse users just because the SMTK items were not
   //     updated. But this can be a silent failure point.
+  bool didChange = false;
   for (int i = 0; i < 3; ++i)
   {
-    centerItem->setValue(i, centerHelper.GetAsDouble(i));
+    double cv = centerHelper.GetAsDouble(i);
+    didChange |= (centerItem->value(i) != cv);
+    centerItem->setValue(i, cv);
   }
-  radiusItem->setValue(0, radiusHelper.GetAsDouble(0));
+  double rv = radiusHelper.GetAsDouble(0);
+  didChange |= (radiusItem->value(0) != rv);
+  radiusItem->setValue(0, rv);
+  if (didChange)
+  {
+    emit modified();
+  }
 }
 
 bool pqSMTKSphereItemWidget::fetchCenterAndRadiusItems(

@@ -97,9 +97,16 @@ void pqSMTKPointItemWidget::updateItemFromWidget()
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
   vtkSMPropertyHelper pointHelper(widget, "WorldPosition");
+  bool didChange = false;
   for (int i = 0; i < 3; ++i)
   {
-    pointItem->setValue(i, pointHelper.GetAsDouble(i));
+    double coord = pointHelper.GetAsDouble(i);
+    didChange |= (pointItem->value(i) != coord);
+    pointItem->setValue(i, coord);
+  }
+  if (didChange)
+  {
+    emit modified();
   }
 }
 

@@ -101,10 +101,18 @@ void pqSMTKPlaneItemWidget::updateItemFromWidget()
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
   vtkSMPropertyHelper originHelper(widget, "Origin");
   vtkSMPropertyHelper normalHelper(widget, "Normal");
+  bool didChange = false;
   for (int i = 0; i < 3; ++i)
   {
-    originItem->setValue(i, originHelper.GetAsDouble(i));
-    normalItem->setValue(i, normalHelper.GetAsDouble(i));
+    double ov = originHelper.GetAsDouble(i);
+    double nv = normalHelper.GetAsDouble(i);
+    didChange |= (originItem->value(i) != ov) || (normalItem->value(i) != nv);
+    originItem->setValue(i, ov);
+    normalItem->setValue(i, nv);
+  }
+  if (didChange)
+  {
+    emit modified();
   }
 }
 

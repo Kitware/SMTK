@@ -32,18 +32,23 @@
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
 
+#include "vtkEventQtSlotConnect.h"
+
 using qtItem = smtk::extension::qtItem;
 using AttributeItemInfo = smtk::extension::AttributeItemInfo;
 
 pqSMTKSplineItemWidget::pqSMTKSplineItemWidget(
   const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
+  , m_handleConnection(vtkEventQtSlotConnect::New())
 {
   this->createWidget();
 }
 
 pqSMTKSplineItemWidget::~pqSMTKSplineItemWidget()
 {
+  m_handleConnection->Delete();
+  m_handleConnection = nullptr;
 }
 
 qtItem* pqSMTKSplineItemWidget::createSplineItemWidget(const AttributeItemInfo& info)
@@ -61,6 +66,9 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
   {
     return false;
   }
+
+  // Get rid of old connections; we're about to have a new object to watch.
+  m_handleConnection->Disconnect();
 
   // II. Create the ParaView widget and a proxy for its representation.
   pqApplicationCore* paraViewApp = pqApplicationCore::instance();
@@ -111,6 +119,9 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
   // non-default (or the item has no default).
   widgetProxy->UpdateVTKObjects();
 
+  m_handleConnection->Connect(widgetProxy->GetProperty("HandlePositions"),
+    vtkCommand::ModifiedEvent, this, SIGNAL(modified()));
+
   return widget != nullptr;
 }
 
@@ -127,6 +138,7 @@ void pqSMTKSplineItemWidget::updateItemFromWidget()
 
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
 
+  bool didChange = false;
   vtkSMPropertyHelper pointsHelper(widget, "HandlePositions");
   auto pointsArray = pointsHelper.GetArray<double>();
   if (!pointsItem->setValues(pointsArray.begin(), pointsArray.end()))
@@ -136,9 +148,20 @@ void pqSMTKSplineItemWidget::updateItemFromWidget()
                                   " with "
         << pointsArray.size() << " coordinates.");
   }
+  for (size_t ii = 0; ii < pointsItem->numberOfValues(); ++ii)
+  {
+    didChange |= (pointsItem->value(ii) != pointsArray[ii]);
+  }
 
   vtkSMPropertyHelper closedHelper(widget, "Closed");
-  closedItem->setIsEnabled(!!closedHelper.GetAsInt());
+  bool closed = !!closedHelper.GetAsInt();
+  didChange |= (closedItem->isEnabled() != closed);
+  closedItem->setIsEnabled(closed);
+
+  if (didChange)
+  {
+    emit modified();
+  }
 }
 
 bool pqSMTKSplineItemWidget::fetchPointsAndClosedItems(

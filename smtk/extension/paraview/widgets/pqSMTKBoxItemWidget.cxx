@@ -110,11 +110,17 @@ void pqSMTKBoxItemWidget::updateItemFromWidget()
 
   vtkSMPropertyHelper originHelper(widget, "Position");
   vtkSMPropertyHelper lengthHelper(widget, "Scale");
+  bool didChange = false;
   for (int i = 0; i < 3; ++i)
   {
     double lo = originHelper.GetAsDouble(i);
     double hi = lengthHelper.GetAsDouble(i);
+    didChange |= (valueItem->value(2 * i) != lo) || (valueItem->value(2 * i + 1) != hi);
     valueItem->setValue(2 * i, lo);
     valueItem->setValue(2 * i + 1, hi);
+  }
+  if (didChange)
+  {
+    emit modified();
   }
 }
