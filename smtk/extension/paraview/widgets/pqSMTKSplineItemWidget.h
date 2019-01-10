@@ -12,6 +12,8 @@
 
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
 
+class vtkEventQtSlotConnect;
+
 /**\brief Display an editable planar spline in 3-D with draggable handles
   *       for editing a GroupItem containing a number of DoubleItem points.
   */
@@ -35,6 +37,8 @@ protected:
     */
   bool fetchPointsAndClosedItems(
     smtk::attribute::DoubleItemPtr& pointsItem, smtk::attribute::VoidItemPtr& closedItem);
+
+  vtkEventQtSlotConnect* m_handleConnection;
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKSplineItemWidget_h

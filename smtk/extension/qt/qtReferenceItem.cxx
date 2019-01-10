@@ -140,6 +140,7 @@ void qtReferenceItem::setOutputOptional(int state)
   if (itm)
   {
     itm->setIsEnabled(state ? true : false);
+    emit modified();
   }
   m_p->m_editBtn->setEnabled(state ? true : false);
   this->updateSynopsisLabels();

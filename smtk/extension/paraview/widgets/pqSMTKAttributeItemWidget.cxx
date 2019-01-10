@@ -204,6 +204,7 @@ void pqSMTKAttributeItemWidget::setOutputOptional(int optionEnabled)
     m_p->m_pvwidget->deselect();
     m_p->m_pvwidget->hide();
   }
+  emit modified();
 }
 
 /// Create Qt widgets as required (may be called multiple times if Item is reconfigured).
