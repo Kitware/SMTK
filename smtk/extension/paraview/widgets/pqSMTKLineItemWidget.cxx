@@ -99,10 +99,18 @@ void pqSMTKLineItemWidget::updateItemFromWidget()
   // pqImplicitPlanePropertyWidget* pw = dynamic_cast<pqImplicitPlanePropertyWidget*>(m_p->m_pvwidget);
   vtkSMPropertyHelper point1Helper(widget, "Point1WorldPosition");
   vtkSMPropertyHelper point2Helper(widget, "Point2WorldPosition");
+  bool didChange = false;
   for (int i = 0; i < 3; ++i)
   {
-    point1Item->setValue(i, point1Helper.GetAsDouble(i));
-    point2Item->setValue(i, point2Helper.GetAsDouble(i));
+    double p1c = point1Helper.GetAsDouble(i);
+    double p2c = point2Helper.GetAsDouble(i);
+    didChange |= (point1Item->value(i) != p1c) || (point2Item->value(i) != p2c);
+    point1Item->setValue(i, p1c);
+    point2Item->setValue(i, p2c);
+  }
+  if (didChange)
+  {
+    emit modified();
   }
 }
 

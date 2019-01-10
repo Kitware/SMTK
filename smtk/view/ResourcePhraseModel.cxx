@@ -16,6 +16,8 @@
 #include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/Operation.h"
+#include "smtk/operation/groups/WriterGroup.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -87,6 +89,68 @@ bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, st
   this->updateChildren(m_root, children, std::vector<int>());
 
   return true;
+}
+
+int ResourcePhraseModel::handleOperationEvent(smtk::operation::Operation::Ptr op,
+  smtk::operation::EventType event, smtk::operation::Operation::Result res)
+{
+  // First, let the superclass handle most things.
+  this->Superclass::handleOperationEvent(op, event, res);
+
+  // Now, if any components were modified or the operation was a
+  // Write operation (which clears the dirty bit on its resource),
+  // tell the view that the owning resource's entry is modified
+  // (so that the clean/dirty state will be updated properly).
+  if (!op)
+  {
+    // Every event should have an operator
+    return 1;
+  }
+  // Ignore operator creation and about-to-operate events.
+  if (!res || event != operation::EventType::DID_OPERATE)
+  {
+    return 0;
+  }
+
+  // Find out which resource components were created, modified, or expunged.
+  auto modified = res->findComponent("modified");
+  for (size_t ii = 0; ii < modified->numberOfValues(); ++ii)
+  {
+    auto comp = modified->value(ii);
+    if (comp)
+    {
+      auto rsrc = comp->resource();
+      if (rsrc)
+      {
+        int childIndex = m_root->argFindChild(rsrc, true);
+        std::vector<int> idx(1, childIndex);
+        std::vector<int> empty;
+        this->trigger(m_root, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, empty);
+      }
+    }
+  }
+
+  // Also handle write operations that mark resources clean.
+  // TODO: This is a bit hacky. In the long term, it might be better
+  //       to have a resource-manager event triggered when resources
+  //       change their clean/dirty bit.
+  if (op->manager() && smtk::operation::WriterGroup(op->manager()).has(op->index()))
+  {
+    // Any associated resources should be redrawn
+    auto assocs = op->parameters()->associations();
+    for (size_t ii = 0; assocs && ii < assocs->numberOfValues(); ++ii)
+    {
+      auto rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(assocs->objectValue(ii));
+      if (rsrc)
+      {
+        int childIndex = m_root->argFindChild(rsrc, true);
+        std::vector<int> idx(1, childIndex);
+        std::vector<int> empty;
+        this->trigger(m_root, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, empty);
+      }
+    }
+  }
+  return 0;
 }
 
 void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event)

@@ -47,8 +47,9 @@ protected:
   /*
   virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
   virtual void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event);
-  virtual int handleOperationEvent(Operation::Ptr op, Operator::EventType event, Operator::Result res);
   */
+  int handleOperationEvent(smtk::operation::Operation::Ptr op, smtk::operation::EventType event,
+    smtk::operation::Operation::Result res) override;
   void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event) override;
 
   virtual void processResource(Resource::Ptr rsrc, bool adding);
