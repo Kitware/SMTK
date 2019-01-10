@@ -93,8 +93,15 @@ public:
   bool setId(const smtk::common::UUID& myID) override;
   bool setLocation(const std::string& location);
 
-  /// Make the name of a resource simply the stem of its filename.
+  /**\brief Return the user-assigned name of the resource.
+    *
+    * If no name has been assigned, return the stem of its filename.
+    * You may use isNameSet() to determine whether the returned name
+    * is generated or assigned.
+    */
   std::string name() const override;
+  bool setName(const std::string& name);
+  bool isNameSet() { return m_name.empty(); }
 
   /// Indicate whether the resource is in sync with its location.
   ///
@@ -148,6 +155,7 @@ private:
 
   smtk::common::UUID m_id;
   std::string m_location;
+  std::string m_name;
   /// True when m_location is in sync with this instance.
   bool m_clean;
 

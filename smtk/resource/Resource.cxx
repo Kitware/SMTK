@@ -173,7 +173,22 @@ bool Resource::setLocation(const std::string& myLocation)
 
 std::string Resource::name() const
 {
-  return smtk::common::Paths::stem(m_location);
+  if (m_name.empty())
+  {
+    return smtk::common::Paths::stem(m_location);
+  }
+  return m_name;
+}
+
+bool Resource::setName(const std::string& name)
+{
+  if (name == m_name)
+  {
+    return false;
+  }
+  m_name = name;
+  this->setClean(false);
+  return true;
 }
 
 void Resource::setClean(bool state)

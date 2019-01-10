@@ -146,6 +146,7 @@ template <typename T>
 int MutabilityOfObject(const T& obj)
 {
   constexpr int resourceMutability =
+    static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
     static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
 
   if (std::dynamic_pointer_cast<smtk::resource::Resource>(obj))

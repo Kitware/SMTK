@@ -64,6 +64,7 @@ std::string ResourcePhraseContent::stringValue(ContentType attr) const
   {
     case PhraseContent::TITLE:
     {
+      std::string name = m_resource->name();
       std::string locn = m_resource->location();
       std::string file = smtk::common::Paths::filename(locn);
       std::string dir = smtk::common::Paths::directory(locn);
@@ -71,7 +72,11 @@ std::string ResourcePhraseContent::stringValue(ContentType attr) const
       {
         dir = smtk::common::Paths::currentDirectory();
       }
-      return locn.empty() ? "New Resource" : (file + " (" + dir + ")");
+      if (name.empty())
+      {
+        name = "New Resource";
+      }
+      return name + " (" + (locn.empty() ? dir : locn) + ")";
     }
     break;
     case PhraseContent::SUBTITLE:
@@ -135,10 +140,27 @@ resource::FloatList ResourcePhraseContent::colorValue(ContentType attr) const
 
 bool ResourcePhraseContent::editStringValue(ContentType attr, const std::string& val)
 {
-  // This should create and call a "set entity property" operator on the
-  // related component's name for attr == TITLE.
-  (void)attr;
-  (void)val;
+  if (!m_resource)
+  {
+    return false;
+  }
+
+  switch (attr)
+  {
+    case PhraseContent::TITLE:
+      return m_resource->setName(val);
+      break;
+    case PhraseContent::SUBTITLE:
+      return m_resource->setLocation(val);
+      break;
+
+    // We will not provide strings for these:
+    case PhraseContent::COLOR:
+    case PhraseContent::VISIBILITY:
+    case PhraseContent::ICON:
+    default:
+      break;
+  }
   return false;
 }
 
