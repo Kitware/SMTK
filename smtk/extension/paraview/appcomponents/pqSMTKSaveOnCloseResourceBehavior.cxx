@@ -29,13 +29,10 @@
 #include "pqMainWindowEventManager.h"
 #endif
 
-#include "smtk/attribute/Resource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
-#include "smtk/io/AttributeWriter.h"
-#include "smtk/io/Logger.h"
 #include "smtk/resource/Manager.h"
 
 #include <QApplication>

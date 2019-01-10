@@ -102,6 +102,12 @@ bool Paths::directoryExists(const std::string& path)
   return false;
 }
 
+/// Is the given path a file?
+bool Paths::fileExists(const std::string& path)
+{
+  return boost::filesystem::exists(path.c_str());
+}
+
 /// Filter the input \a src, returning the subset of paths that are existing directories.
 std::vector<std::string> Paths::pruneInvalidDirectories(const std::vector<std::string>& src)
 {

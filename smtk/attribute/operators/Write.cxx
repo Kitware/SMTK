@@ -20,6 +20,8 @@
 
 #include "smtk/attribute/json/jsonResource.h"
 
+#include "smtk/common/Paths.h"
+
 #include "smtk/io/Logger.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -47,6 +49,26 @@ Write::Result Write::operateInternal()
   if (j.is_null())
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  // Ensure the resource suffix is .smtk so readers can subsequently read the
+  // file.
+  std::string filename = resource->location();
+  if (smtk::common::Paths::extension(resource->location()) != ".smtk")
+  {
+    filename = smtk::common::Paths::directory(filename) + "/" +
+      smtk::common::Paths::stem(filename) + ".smtk";
+
+    // If a file already exists with this name, append a distinguishing string
+    // to the name.
+    if (smtk::common::Paths::fileExists(filename))
+    {
+      std::string id = resource->id().toString();
+      filename = smtk::common::Paths::directory(filename) + "/" +
+        smtk::common::Paths::stem(filename) + "_" + id.substr(0, 8) + ".smtk";
+    }
+
+    resource->setLocation(filename);
   }
 
   {
