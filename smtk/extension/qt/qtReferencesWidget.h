@@ -44,7 +44,6 @@ public slots:
 protected slots:
   virtual void onRemoveAssigned();
   virtual void onAddAvailable();
-  virtual void onExchange();
 
 protected:
   virtual void initWidget();

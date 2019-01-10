@@ -38,7 +38,7 @@ Definition::Definition(
   m_isAbstract = false;
   m_isNodal = false;
   m_advanceLevel = 0;
-  m_isUnique = true;
+  m_isUnique = false;
   m_isRequired = false;
   m_isNotApplicableColorSet = false;
   m_isDefaultColorSet = false;
