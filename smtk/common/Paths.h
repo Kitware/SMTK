@@ -50,6 +50,7 @@ public:
   static std::string pathToLibraryContainingFunction(void (*func)(void));
   static std::string pathToThisLibrary();
 
+  static bool fileExists(const std::string& path);
   static std::string directory(const std::string& path);
   static std::string filename(const std::string& path);
   static std::string stem(const std::string& path);
