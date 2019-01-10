@@ -165,7 +165,7 @@
 
     <View Type="Instanced" Title="coprocessing" Label="coprocessing">
       <InstancedAttributes>
-        <Att Name="coprocessing" Type="coprocessing"/>
+        <Att Name="coprocessing parameters" Type="coprocessing parameters"/>
       </InstancedAttributes>
     </View>
 

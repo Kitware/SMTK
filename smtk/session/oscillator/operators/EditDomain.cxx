@@ -107,7 +107,7 @@ EditDomain::Result EditDomain::operateInternal()
   if (!resource)
   {
     resource = smtk::session::oscillator::Resource::create();
-    resource->setLocation("new oscillator geometry.smtk");
+    resource->setName("new oscillator geometry");
   }
 
   if (!model.isValid())
@@ -170,7 +170,7 @@ EditDomain::Result EditDomain::operateInternal()
   if (!sim)
   {
     sim = SimulationAttribute::create();
-    sim->setLocation("new oscillator simulation.sbi"); // TODO: Turn this into a JSON SMTK file.
+    sim->setName("new oscillator simulation"); // TODO: Turn this into a JSON SMTK file.
   }
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

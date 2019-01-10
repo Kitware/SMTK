@@ -112,7 +112,7 @@ Export::Result Export::operateInternal()
   auto coprocessing = simulation->findAttribute("coprocessing parameters");
 
   int numRanks = solver->findInt("job size")->value();
-  double timestepSize = solver->findDouble("timestep size")->value();
+  double timestepSize = solver->findDouble("time step")->value();
   double endTime = solver->findDouble("end time")->value();
   std::string pathToSim("/stage/build/sensei/sensei/bin/oscillator");
   auto resolutionItem = solver->findInt("resolution");
