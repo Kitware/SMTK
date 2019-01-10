@@ -83,7 +83,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::DateTimeItemPtr& 
   {
     numberOfValues = j.at("NumberOfValues");
   }
-  catch (std::exception e)
+  catch (const std::exception&)
   {
   }
 
@@ -100,7 +100,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::DateTimeItemPtr& 
         itemPtr->setValue(dtz);
       }
     }
-    catch (std::exception e)
+    catch (const std::exception&)
     {
     }
   }
@@ -116,7 +116,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::DateTimeItemPtr& 
       {
         values = j.at("Values");
       }
-      catch (std::exception e)
+      catch (const std::exception&)
       {
       }
       if (!values.is_null())
