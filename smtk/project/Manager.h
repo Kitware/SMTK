@@ -62,7 +62,9 @@ public:
   /// Close the project resources. Returns true on success
   bool closeProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
 
-  /// Returns export operator from current project
+  /// Returns export operator from current project.
+  /// If reset flag is true, will create new operator in order to
+  /// reset contents to their default values.
   smtk::operation::OperationPtr getExportOperator(
     smtk::io::Logger& logger = smtk::io::Logger::instance(), bool reset = false) const;
 

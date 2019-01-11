@@ -672,8 +672,8 @@ bool Project::populateExportOperator(
     }
     else
     {
-      smtkWarningMacro(logger, "Unable to assign model resource because"
-                               " the number of model resources in project is "
+      smtkWarningMacro(logger, "Unable to assign model because"
+                               " the number of models in the project is "
           << modelList.size());
     }
   }
