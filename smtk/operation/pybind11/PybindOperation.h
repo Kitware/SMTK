@@ -39,6 +39,7 @@ PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > pyb
     .def("createBaseSpecification", static_cast<smtk::operation::Operation::Specification (smtk::operation::Operation::*)() const>(&smtk::operation::PyOperation::createBaseSpecification))
     .def("parameters", &smtk::operation::Operation::parameters)
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
+    .def("manager", &smtk::operation::Operation::manager)
     ;
   py::enum_<smtk::operation::Operation::Outcome>(instance, "Outcome")
     .value("UNABLE_TO_OPERATE", smtk::operation::Operation::Outcome::UNABLE_TO_OPERATE)

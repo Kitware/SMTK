@@ -131,7 +131,7 @@ ProjectPtr Manager::openProject(const std::string& projectPath, smtk::io::Logger
   return ProjectPtr();
 }
 
-smtk::operation::OperationPtr Manager::getExportOperator(smtk::io::Logger& logger) const
+smtk::operation::OperationPtr Manager::getExportOperator(smtk::io::Logger& logger, bool reset) const
 {
   if (!m_project)
   {
@@ -139,7 +139,7 @@ smtk::operation::OperationPtr Manager::getExportOperator(smtk::io::Logger& logge
     return nullptr;
   }
 
-  return m_project->getExportOperator(logger);
+  return m_project->getExportOperator(logger, reset);
 }
 
 smtk::attribute::ResourcePtr Manager::getProjectTemplate()
