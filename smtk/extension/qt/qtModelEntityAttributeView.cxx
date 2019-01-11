@@ -507,6 +507,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   else if (att)
   {
     attRes->removeAttribute(att);
+    this->attributeRemoved(att);
   }
 
   // Now create a new attribute for the model entity of the correct type
@@ -517,6 +518,8 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
     {
       att = attRes->createAttribute(currentDefs.at(j));
       att->associate(entity);
+      // Notify the application of the new attribute via an "operation"
+      this->attributeCreated(att);
       break;
     }
   }
