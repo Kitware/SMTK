@@ -16,6 +16,7 @@
 #include "smtk/attribute/operators/Associate.h"
 #include "smtk/attribute/operators/Dissociate.h"
 #include "smtk/attribute/operators/Read.h"
+#include "smtk/attribute/operators/Signal.h"
 #include "smtk/attribute/operators/Write.h"
 
 #include "smtk/operation/groups/ReaderGroup.h"
@@ -27,7 +28,7 @@ namespace attribute
 {
 namespace
 {
-typedef std::tuple<Associate, Dissociate, Read, Write> OperationList;
+typedef std::tuple<Associate, Dissociate, Read, Signal, Write> OperationList;
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
