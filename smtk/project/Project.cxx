@@ -10,6 +10,7 @@
 #include "smtk/project/Project.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -20,6 +21,7 @@
 #include "smtk/common/TypeName.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Resource.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ImportResource.h"
@@ -620,7 +622,7 @@ bool Project::populateExportOperator(
 {
   // Locate project attribute and model resources
   std::vector<smtk::resource::ResourcePtr> attResourceList;
-  std::vector<smtk::resource::ResourcePtr> modelResourceList;
+  std::vector<smtk::resource::ComponentPtr> modelList;
   auto resourceList = this->getResources();
   for (auto resource : resourceList)
   {
@@ -630,7 +632,16 @@ bool Project::populateExportOperator(
     }
     else if (resource->isOfType(smtk::common::typeName<smtk::model::Resource>()))
     {
-      modelResourceList.push_back(resource);
+      auto modelResource = smtk::dynamic_pointer_cast<smtk::model::Resource>(resource);
+      auto uuids = modelResource->entitiesMatchingFlags(smtk::model::MODEL_ENTITY, true);
+      for (auto uuid : uuids)
+      {
+        auto model = modelResource->find(uuid);
+        if (model)
+        {
+          modelList.push_back(model);
+        }
+      }
     }
   } // for (resource)
 
@@ -652,18 +663,18 @@ bool Project::populateExportOperator(
     }
   }
 
-  auto modelItem = paramAttribute->findResource("model");
+  auto modelItem = paramAttribute->findComponent("model");
   if (modelItem)
   {
-    if (modelResourceList.size() == 1)
+    if (modelList.size() == 1)
     {
-      modelItem->setValue(modelResourceList[0]);
+      modelItem->setValue(modelList[0]);
     }
     else
     {
-      smtkWarningMacro(logger, "Unable to assign model resource because"
-                               " the number of model resources in project is "
-          << attResourceList.size());
+      smtkWarningMacro(logger, "Unable to assign model because"
+                               " the number of models in the project is "
+          << modelList.size());
     }
   }
 
