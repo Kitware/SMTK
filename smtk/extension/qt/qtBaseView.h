@@ -114,6 +114,12 @@ public slots:
   }
   virtual void updateModelAssociation() { ; }
   virtual void valueChanged(smtk::attribute::ItemPtr);
+  /// Invoke the Signal dummy operation to indicate an attribute has been created.
+  virtual void attributeCreated(const smtk::attribute::AttributePtr&);
+  /// Invoke the Signal dummy operation to indicate an attribute has been changed (renamed).
+  virtual void attributeChanged(const smtk::attribute::AttributePtr&);
+  /// Invoke the Signal dummy operation to indicate an attribute has been removed.
+  virtual void attributeRemoved(const smtk::attribute::AttributePtr&);
   virtual void childrenResized() { ; }
   virtual void showAdvanceLevelOverlay(bool val) { m_advOverlayVisible = val; }
   virtual void showAdvanceLevel(int i);

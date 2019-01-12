@@ -436,9 +436,13 @@ void PhraseModel::updateChildren(
     {
       // Run through the entire array to see if there are different instances
       // of the phrase that nonetheless behave identically.
+      // Note that we might have phrases that are different instances
+      // but identical in that they refer to the same component/resource/etc.,
+      // hence the second test in the conditional below:
       for (auto it2 = orig.begin(); it2 != orig.end(); ++it2)
       {
-        if (it->get() == it2->get())
+        if ((it->get() == it2->get()) ||
+          (it->get()->relatedObject() == it2->get()->relatedObject()))
         {
           *it = *it2;
           unused.erase(lkup[*it2]);
@@ -446,8 +450,6 @@ void PhraseModel::updateChildren(
       }
     }
   }
-  // But wait, we might have phrases that are different instances
-  // but identical in that they refer to the same component/resource/etc.
 
   // Now delete unused from model, starting at the back so we don't invalidate indices.
   std::vector<int> removalRange(2);

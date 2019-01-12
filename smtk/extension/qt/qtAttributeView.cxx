@@ -453,6 +453,7 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
   {
     ResourcePtr attResource = aAttribute->definition()->resource();
     attResource->rename(aAttribute, item->text().toStdString());
+    this->attributeChanged(aAttribute);
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
   }
 }
@@ -671,6 +672,7 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
   ResourcePtr attResource = attDef->resource();
 
   smtk::attribute::AttributePtr newAtt = attResource->createAttribute(attDef->type());
+  this->attributeCreated(newAtt);
   QTableWidgetItem* item = this->addAttributeListItem(newAtt);
   if (item)
   {
@@ -711,6 +713,7 @@ void qtAttributeView::onDeleteSelected()
     attribute::DefinitionPtr attDef = selObject->definition();
     ResourcePtr attResource = attDef->resource();
     attResource->removeAttribute(selObject);
+    this->attributeRemoved(selObject);
 
     QTableWidgetItem* selItem = this->getSelectedItem();
     this->Internals->ListTable->removeRow(selItem->row());

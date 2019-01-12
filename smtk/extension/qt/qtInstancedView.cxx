@@ -140,6 +140,7 @@ void qtInstancedView::updateAttributeData()
       else
       {
         att = resource->createAttribute(attName, attDef);
+        this->attributeCreated(att);
       }
     }
     else

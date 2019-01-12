@@ -9,8 +9,13 @@
 //=========================================================================
 #include "smtk/extension/qt/qtBaseView.h"
 
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
+
+#include "smtk/attribute/operators/Signal.h"
+#include "smtk/operation/Manager.h"
+
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/View.h"
@@ -126,6 +131,43 @@ void qtBaseView::valueChanged(smtk::attribute::ItemPtr item)
 {
   emit this->modified(item);
   this->uiManager()->onViewUIModified(this, item);
+}
+
+namespace
+{
+
+static void signalAttribute(smtk::extension::qtUIManager* uiManager,
+  const smtk::attribute::AttributePtr& attr, const char* itemName)
+{
+  if (attr && uiManager && itemName && itemName[0])
+  {
+    // create a "dummy" operation that will mark the attribute resource
+    // as modified so that applications know when a "save" is required.
+    auto opManager = uiManager->operationManager();
+    if (opManager)
+    {
+      auto markModified = opManager->create<smtk::attribute::Signal>();
+      auto didAppend = markModified->parameters()->findComponent(itemName)->appendObjectValue(attr);
+      (void)didAppend;
+      markModified->operate();
+    }
+  }
+}
+}
+
+void qtBaseView::attributeCreated(const smtk::attribute::AttributePtr& attr)
+{
+  signalAttribute(this->uiManager(), attr, "created");
+}
+
+void qtBaseView::attributeChanged(const smtk::attribute::AttributePtr& attr)
+{
+  signalAttribute(this->uiManager(), attr, "modified");
+}
+
+void qtBaseView::attributeRemoved(const smtk::attribute::AttributePtr& attr)
+{
+  signalAttribute(this->uiManager(), attr, "expunged");
 }
 
 bool qtBaseView::setFixedLabelWidth(int w)
