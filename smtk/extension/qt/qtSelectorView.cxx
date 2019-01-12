@@ -112,6 +112,7 @@ bool qtSelectorView::createSelector()
       return false;
     }
     this->Internals->m_selectorAttribute = resource->createAttribute(attName, attDef);
+    this->attributeCreated(this->Internals->m_selectorAttribute);
   }
   else
   {

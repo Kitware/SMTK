@@ -449,6 +449,7 @@ void qtSimpleExpressionView::createNewFunction(smtk::attribute::DefinitionPtr at
   ResourcePtr attResource = attDef->resource();
 
   smtk::attribute::AttributePtr newFunc = attResource->createAttribute(attDef->type());
+  this->attributeCreated(newFunc);
   QListWidgetItem* item = this->addFunctionListItem(newFunc);
   if (item)
   {
