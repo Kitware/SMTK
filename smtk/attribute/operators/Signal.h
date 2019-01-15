@@ -33,7 +33,7 @@ public:
 
 protected:
   Result operateInternal() override;
-  void generateSummary(Operation::Result&) override {}
+  virtual void generateSummary(Operation::Result&) override;
   virtual const char* xmlDescription() const override;
 };
 }
