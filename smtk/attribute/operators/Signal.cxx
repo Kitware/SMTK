@@ -42,6 +42,10 @@ Signal::Result Signal::operateInternal()
   return result;
 }
 
+void Signal::generateSummary(Operation::Result&)
+{
+}
+
 const char* Signal::xmlDescription() const
 {
   return Signal_xml;
