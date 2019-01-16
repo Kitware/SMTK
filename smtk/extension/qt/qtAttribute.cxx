@@ -257,6 +257,7 @@ void qtAttribute::onItemModified()
   auto attr = this->attribute();
   if (attr)
   {
+    bool didNotify = false;
     // create a "dummy" operation that will mark the attribute resource
     // as modified so that applications know when a "save" is required.
     auto uiManager = m_internals->m_view->uiManager();
@@ -264,9 +265,23 @@ void qtAttribute::onItemModified()
     if (opManager)
     {
       auto markModified = opManager->create<smtk::operation::MarkModified>();
-      auto didAppend = markModified->parameters()->associations()->appendObjectValue(attr);
-      (void)didAppend;
-      markModified->operate();
+      if (markModified)
+      {
+        didNotify = markModified->parameters()->associations()->appendObjectValue(attr);
+        auto result = markModified->operate();
+        didNotify &= result->findInt("outcome")->value() ==
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+      }
+    }
+    if (!didNotify)
+    {
+      static bool once = true;
+      if (once)
+      {
+        once = false;
+        smtkWarningMacro(smtk::io::Logger::instance(),
+          "Could not notify resource observers that resource state changed.");
+      }
     }
   }
   emit this->itemModified(iobject);

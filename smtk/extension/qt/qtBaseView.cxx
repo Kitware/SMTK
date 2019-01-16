@@ -11,10 +11,13 @@
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
-
 #include "smtk/attribute/operators/Signal.h"
+
 #include "smtk/operation/Manager.h"
+
+#include "smtk/io/Logger.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -141,15 +144,30 @@ static void signalAttribute(smtk::extension::qtUIManager* uiManager,
 {
   if (attr && uiManager && itemName && itemName[0])
   {
+    bool didNotify = false;
     // create a "dummy" operation that will mark the attribute resource
     // as modified so that applications know when a "save" is required.
     auto opManager = uiManager->operationManager();
     if (opManager)
     {
       auto markModified = opManager->create<smtk::attribute::Signal>();
-      auto didAppend = markModified->parameters()->findComponent(itemName)->appendObjectValue(attr);
-      (void)didAppend;
-      markModified->operate();
+      if (markModified)
+      {
+        didNotify = markModified->parameters()->findComponent(itemName)->appendObjectValue(attr);
+        auto result = markModified->operate();
+        didNotify &= result->findInt("outcome")->value() ==
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+      }
+    }
+    if (!didNotify)
+    {
+      static bool once = true;
+      if (once)
+      {
+        once = false;
+        smtkWarningMacro(
+          smtk::io::Logger::instance(), "Could not notify operation observers of attribute event.");
+      }
     }
   }
 }
