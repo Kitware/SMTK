@@ -49,6 +49,15 @@ public slots:
     * Look up \a rsrc's top-level view and call displayView() with it.
     */
   virtual bool displayResource(smtk::attribute::ResourcePtr rsrc);
+  /**\brief Populate the attribute panel with data from \a rsrc.
+    *
+    * Look up \a rsrc's top-level view and call displayView() with it.
+    * This variant does more than displayResource() alone;
+    * it will obtain the wrapper associated with the resource's manager
+    * and use it for selection as displayPipelineSource() does before
+    * calling the plain displayResource() variant.
+    */
+  virtual bool displayResourceOnServer(smtk::attribute::ResourcePtr rsrc);
   /**\brief Populate the attribute panel with the given view.
     *
     * Note that the \a view should describe an attribute resource.

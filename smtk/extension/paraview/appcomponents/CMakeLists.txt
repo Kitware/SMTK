@@ -27,6 +27,7 @@ set(PQComponentsSrcs
   pqSMTKCloseResourceBehavior.cxx
   pqSMTKColorByToolBar.cxx
   pqSMTKColorByWidget.cxx
+  pqSMTKDisplayAttributeOnLoadBehavior.cxx
   pqSMTKRenderResourceBehavior.cxx
   pqSMTKExportSimulationBehavior.cxx
   pqSMTKImportIntoResourceBehavior.cxx
@@ -72,6 +73,7 @@ set(PQComponentsHeaders
   pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.h
   pqSMTKCloseResourceBehavior.h
+  pqSMTKDisplayAttributeOnLoadBehavior.h
   pqSMTKRenderResourceBehavior.h
   pqSMTKExportSimulationBehavior.h
   pqSMTKImportIntoResourceBehavior.h

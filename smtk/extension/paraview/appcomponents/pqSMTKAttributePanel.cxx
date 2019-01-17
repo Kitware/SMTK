@@ -19,11 +19,13 @@
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/Observer.h"
 #include "smtk/resource/Resource.h"
 
 #include "smtk/io/Logger.h"
 
 #include "pqActiveObjects.h"
+#include "pqApplicationCore.h"
 #include "pqPipelineSource.h"
 
 #include <QPointer>
@@ -42,6 +44,12 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
     SLOT(displayPipelineSource(pqPipelineSource*)));
   QObject::connect(
     &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
+
+  auto pqCore = pqApplicationCore::instance();
+  if (pqCore)
+  {
+    pqCore->registerManager("smtk attribute panel", this);
+  }
 }
 
 pqSMTKAttributePanel::~pqSMTKAttributePanel()
@@ -144,6 +152,30 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
       });
   }
   return didDisplay;
+}
+
+bool pqSMTKAttributePanel::displayResourceOnServer(smtk::attribute::ResourcePtr rsrc)
+{
+  smtk::resource::ManagerPtr rsrcMgr;
+  if (rsrc && (rsrcMgr = rsrc->manager()))
+  {
+    auto behavior = pqSMTKBehavior::instance();
+    pqSMTKWrapper* wrapper = behavior->getPVResourceManager(rsrcMgr);
+    if (wrapper)
+    {
+      // Keep hold of the selection instance for the active server connection
+      // so that this->displayResource() below can make use of it.
+      m_seln = wrapper->smtkSelection();
+      m_opManager = wrapper->smtkOperationManager();
+    }
+    else
+    {
+      m_seln = nullptr;
+      m_opManager = nullptr;
+    }
+    return this->displayResource(rsrc);
+  }
+  return false;
 }
 
 bool pqSMTKAttributePanel::displayView(smtk::view::ViewPtr view)
