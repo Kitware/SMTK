@@ -670,6 +670,13 @@ concerns identified therein are still applicable.
 ParaView applications that load SMTK's pqAppComponents plugin now have
 access to menu actions to save resources into SMTK's native (`*.smtk`) format.
 
+### ParaView behavior to display attributes as they are created/loaded
+
+The pqSMTKDisplayAttributeOnLoadBehavior, when added to ParaView
+(as it is by default in pqSMTKAppComponentsAutoStart), monitors all
+SMTK resource managers and, when an attribute resource is added to any
+of them, requests the attribute panel display it.
+
 ### Importing SMTK python operations
 
 We have added a file menu option that allows a user to select a python

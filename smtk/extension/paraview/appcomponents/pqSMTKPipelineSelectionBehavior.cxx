@@ -137,7 +137,6 @@ void pqSMTKPipelineSelectionBehavior::unobserveSelectionOnServer(
   vtkSMSMTKWrapperProxy* mgr, pqServer* server)
 {
   (void)server;
-  std::cout << "  unobserveSelectionOnServer: " << server << "\n\n";
   if (!mgr)
   {
     return;
@@ -152,6 +151,7 @@ void pqSMTKPipelineSelectionBehavior::unobserveSelectionOnServer(
   if (entry != m_selectionObservers.end())
   {
     seln->unobserve(entry->second);
+    m_selectionObservers.erase(entry);
   }
 }
 
