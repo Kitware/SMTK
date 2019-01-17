@@ -64,7 +64,7 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
   if (rsrc)
   {
     auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc->getResource());
-    if (attrRsrc)
+    if (attrRsrc && attrRsrc != m_rsrc)
     {
       pqSMTKWrapper* wrapper =
         pqSMTKBehavior::instance()->resourceManagerForServer(rsrc->getServer());
@@ -165,5 +165,6 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ViewPtr view)
 
 bool pqSMTKAttributePanel::updatePipeline()
 {
-  return this->displayPipelineSource(pqActiveObjects::instance().activeSource());
+  auto dataSource = pqActiveObjects::instance().activeSource();
+  return this->displayPipelineSource(dataSource);
 }
