@@ -22,5 +22,31 @@ UserData::~UserData()
 {
 }
 
+UserDataInt::UserDataInt()
+  : m_value(0)
+{
+}
+
+UserDataInt::~UserDataInt()
+{
+}
+
+UserDataDouble::UserDataDouble()
+  : m_value(0.0)
+{
+}
+
+UserDataDouble::~UserDataDouble()
+{
+}
+
+UserDataString::UserDataString()
+{
+}
+
+UserDataString::~UserDataString()
+{
+}
+
 } // namespace simulation
 } // namespace smtk
