@@ -14,6 +14,7 @@
 #include "smtk/extension/paraview/appcomponents/pqPluginSMTKViewBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKCloseResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKDisplayAttributeOnLoadBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKExportSimulationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportIntoResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
@@ -47,6 +48,7 @@ void pqSMTKAppComponentsAutoStart::startup()
   auto rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
   auto rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
   auto pipelineSync = pqSMTKPipelineSelectionBehavior::instance(this);
+  auto displayOnLoad = pqSMTKDisplayAttributeOnLoadBehavior::instance(this);
 
   // The "New Resource" menu item keys off of the "Save Resource" menu item,
   // so the order of initialization for the following two global statics is
@@ -72,6 +74,7 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk import into resource", rsrcImportIntoMgr);
     pqCore->registerManager("smtk register importers", registerImportersBehavior);
     pqCore->registerManager("smtk pipeline selection sync", pipelineSync);
+    pqCore->registerManager("smtk display attribute on load", displayOnLoad);
   }
   (void)rsrcMgr;
 }
@@ -92,5 +95,6 @@ void pqSMTKAppComponentsAutoStart::shutdown()
     pqCore->unRegisterManager("smtk import into resource");
     pqCore->unRegisterManager("smtk register importers");
     pqCore->unRegisterManager("smtk pipeline selection sync");
+    pqCore->unRegisterManager("smtk display attribute on load");
   }
 }
