@@ -1,6 +1,7 @@
 set(smtkModelPythonTests
   modelBodyCreate
   modelBodyEntityRefs
+  modelRegressions
   entityRefTutorial
 )
 
