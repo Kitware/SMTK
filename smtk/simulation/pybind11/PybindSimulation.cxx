@@ -33,5 +33,8 @@ PYBIND11_MODULE(_smtkPybindSimulation, simulation)
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::simulation::ExportSpec > smtk_simulation_ExportSpec = pybind11_init_smtk_simulation_ExportSpec(simulation);
-  py::class_< smtk::simulation::UserData > smtk_simulation_UserData = pybind11_init_smtk_simulation_UserData(simulation);
+  PySharedPtrClass< smtk::simulation::UserData > smtk_simulation_UserData = pybind11_init_smtk_simulation_UserData(simulation);
+  PySharedPtrClass< smtk::simulation::UserDataInt > smtk_simulation_UserDataInt = pybind11_init_smtk_simulation_UserDataInt(simulation);
+  PySharedPtrClass< smtk::simulation::UserDataDouble > smtk_simulation_UserDataDouble = pybind11_init_smtk_simulation_UserDataDouble(simulation);
+  PySharedPtrClass< smtk::simulation::UserDataString > smtk_simulation_UserDataString = pybind11_init_smtk_simulation_UserDataString(simulation);
 }

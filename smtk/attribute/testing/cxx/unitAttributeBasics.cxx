@@ -12,6 +12,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/simulation/UserData.h"
 
 #include <iostream>
 
@@ -92,6 +93,41 @@ int unitAttributeBasics(int, char* [])
   att->setAppliesToInteriorNodes(false);
   smtkTest(!att->appliesToInteriorNodes(), "Should not applied to interior node.");
   smtkTest(att->resource() == resptr, "Should be this resource.");
+
+  // Lets test the UserData Interface
+  auto data = smtk::simulation::UserDataInt::New();
+  auto dataI = std::dynamic_pointer_cast<smtk::simulation::UserDataInt>(data);
+  dataI->setValue(10);
+  data = smtk::simulation::UserDataString::New();
+  auto dataS = std::dynamic_pointer_cast<smtk::simulation::UserDataString>(data);
+  dataS->setValue("foo");
+
+  att->setUserData("dataInt", dataI);
+  att->setUserData("dataString", dataS);
+  data = att->userData("dataFoo");
+  smtkTest(data == nullptr, "Should not have found user data dataFoo");
+  data = att->userData("dataInt");
+  smtkTest(data != nullptr, "Should have found user data dataInt");
+  dataI = std::dynamic_pointer_cast<smtk::simulation::UserDataInt>(data);
+  smtkTest(dataI != nullptr, "Should have found user data dataInt as Integer Data");
+  smtkTest(dataI->value() == 10,
+    "DataInt should have value 10 but instead has value : " << dataI->value());
+  data = att->userData("dataString");
+  smtkTest(data != nullptr, "Should have found user data dataString");
+  dataS = std::dynamic_pointer_cast<smtk::simulation::UserDataString>(data);
+  smtkTest(dataS != nullptr, "Should have found user data dataString as String Data");
+  smtkTest(dataS->value() == "foo",
+    "DataString should have value foo but instead has value : " << dataS->value());
+  att->clearUserData("dataInt");
+  data = att->userData("dataInt");
+  smtkTest(data == nullptr, "Should not have found user data dataInt");
+  data = att->userData("dataString");
+  smtkTest(data != nullptr, "Should have found user data dataString after clearing dataInt");
+  att->clearAllUserData();
+  data = att->userData("dataString");
+  smtkTest(
+    data == nullptr, "Should not have found user data dataString after clearing all user data");
+
   resptr = nullptr;
   smtkTest(wresptr.lock() == nullptr, "Resource was not destroyed") return status;
 }

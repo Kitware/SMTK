@@ -36,6 +36,65 @@ protected:
   UserData();
 };
 
+// User Data Representing Integers
+class SMTKCORE_EXPORT UserDataInt : public UserData
+{
+public:
+  static smtk::simulation::UserDataPtr New()
+  {
+    return smtk::simulation::UserDataPtr(new UserDataInt());
+  }
+
+  int value() const { return m_value; }
+
+  void setValue(int val) { m_value = val; }
+
+  virtual ~UserDataInt();
+
+protected:
+  UserDataInt();
+  int m_value;
+};
+
+// User Data Representing Doubles
+class SMTKCORE_EXPORT UserDataDouble : public UserData
+{
+public:
+  static smtk::simulation::UserDataPtr New()
+  {
+    return smtk::simulation::UserDataPtr(new UserDataDouble());
+  }
+
+  double value() const { return m_value; }
+
+  void setValue(double val) { m_value = val; }
+
+  virtual ~UserDataDouble();
+
+protected:
+  UserDataDouble();
+  double m_value;
+};
+
+// User Data Representing Strings
+class SMTKCORE_EXPORT UserDataString : public UserData
+{
+public:
+  static smtk::simulation::UserDataPtr New()
+  {
+    return smtk::simulation::UserDataPtr(new UserDataString());
+  }
+
+  const std::string& value() const { return m_value; }
+
+  void setValue(const std::string& val) { m_value = val; }
+
+  virtual ~UserDataString();
+
+protected:
+  UserDataString();
+  std::string m_value;
+};
 } // namespace simulation
 } // namespace smtk
 
