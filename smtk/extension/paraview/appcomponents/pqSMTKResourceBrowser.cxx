@@ -48,12 +48,11 @@ int UpdateVisibilityForFootprint(pqSMTKModelRepresentation* smap, const T& comp,
   U& visibleThings, const smtk::view::DescriptivePhrasePtr&)
 {
   bool didUpdate = false;
-  int rval;
+  int rval(0);
 
   auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
   if (ment && (ment->isModel() || ment->isGroup()))
   {
-    int all = 1;
     int any = 0;
     smtk::model::EntityIterator childIt;
     smtk::model::EntityRef entRef = ment->template referenceAs<smtk::model::EntityRef>();
@@ -63,7 +62,6 @@ int UpdateVisibilityForFootprint(pqSMTKModelRepresentation* smap, const T& comp,
       auto child = childIt.current().entityRecord();
       int ok = smap->setVisibility(child, visible);
       any |= ok;
-      all &= ok;
       visibleThings[child->id()] = visible;
     }
     rval = any;
@@ -74,7 +72,23 @@ int UpdateVisibilityForFootprint(pqSMTKModelRepresentation* smap, const T& comp,
   }
   else
   {
-    rval = smap->setVisibility(comp, visible ? true : false) ? 1 : 0;
+    // Composite auxliliary geometry condition
+    int any = 0;
+    smtk::model::AuxiliaryGeometry auxgeom =
+      ment->template referenceAs<smtk::model::AuxiliaryGeometry>();
+    auto auxgeomChildren = auxgeom.auxiliaryGeometries();
+    if (auxgeom && !auxgeomChildren.empty())
+    {
+      for (const auto& child : auxgeomChildren)
+      {
+        int ok = smap->setVisibility(child.component(), visible ? true : false);
+        any |= ok;
+        visibleThings[child.entity()] = visible;
+      }
+    }
+    rval |= any;
+
+    rval |= smap->setVisibility(comp, visible ? true : false) ? 1 : 0;
     if (rval)
     {
       visibleThings[comp->id()] =
