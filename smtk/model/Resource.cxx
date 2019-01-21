@@ -947,8 +947,15 @@ UUIDs Resource::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
   UUIDs result;
   for (UUIDWithEntityPtr it = m_topology->begin(); it != m_topology->end(); ++it)
   {
-    BitFlags masked = it->second->entityFlags() & mask;
-    if ((masked && mask == ANY_ENTITY) || (!exactMatch && masked) || (exactMatch && masked == mask))
+    BitFlags unmasked = it->second->entityFlags();
+    BitFlags masked = unmasked & mask;
+    // NB: exactMatch still allows some mismatches; specifically, we want to
+    //     disregard dimension bits set on models and groups when asking for
+    //     exact matches for MODEL_ENTITY and GROUP_ENTITY. Hence the final
+    //     condition that (unmasked & ENTITY_MASK) == (mask & ENTITY_MASK)
+    //     rather than just unmasked == mask.
+    if ((masked && (mask == ANY_ENTITY)) || (!exactMatch && masked) ||
+      (exactMatch && masked == mask && ((unmasked & ENTITY_MASK) == (mask & ENTITY_MASK))))
     {
       result.insert(it->first);
     }
