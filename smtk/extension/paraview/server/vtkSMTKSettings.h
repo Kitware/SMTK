@@ -56,12 +56,28 @@ public:
   static constexpr int HierarchicalStyle = 0; // Match value in smconfig.xml
   static constexpr int TwoLevelStyle = 1;     // Match value in smconfig.xml
 
+  /**\brief Set the default folder to use for simulation-workflow files
+    *
+    * See the server-manager XML for details.
+    */
+  vtkGetStringMacro(WorkflowsFolder);
+  vtkSetStringMacro(WorkflowsFolder);
+
+  /**\brief Set the default path for project folders
+    *
+    * See the server-manager XML for details.
+    */
+  vtkGetStringMacro(ProjectsRootFolder);
+  vtkSetStringMacro(ProjectsRootFolder);
+
 protected:
   vtkSMTKSettings();
 
   bool HighlightOnHover;
   int SelectionRenderStyle;
   int ResourceTreeStyle;
+  char* WorkflowsFolder;
+  char* ProjectsRootFolder;
 
 private:
   vtkSMTKSettings(const vtkSMTKSettings&) = delete;

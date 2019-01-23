@@ -25,11 +25,15 @@ vtkSMTKSettings::vtkSMTKSettings()
   : HighlightOnHover(true)
   , SelectionRenderStyle(SolidSelectionStyle)
   , ResourceTreeStyle(HierarchicalStyle)
+  , WorkflowsFolder(nullptr)
+  , ProjectsRootFolder(nullptr)
 {
 }
 
 vtkSMTKSettings::~vtkSMTKSettings()
 {
+  this->SetWorkflowsFolder(nullptr);
+  this->SetProjectsRootFolder(nullptr);
 }
 
 void vtkSMTKSettings::PrintSelf(ostream& os, vtkIndent indent)
@@ -38,6 +42,8 @@ void vtkSMTKSettings::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "HighlightOnHover: " << this->HighlightOnHover << "\n";
   os << indent << "SelectionRenderStyle: " << this->SelectionRenderStyle << "\n";
   os << indent << "ResourceTreeStyle: " << this->ResourceTreeStyle << "\n";
+  os << indent << "WorkflowsFolder: \"" << this->WorkflowsFolder << "\"\n";
+  os << indent << "ProjectsRootFolder: \"" << this->ProjectsRootFolder << "\"\n";
 }
 
 vtkSMTKSettings* vtkSMTKSettings::GetInstance()
