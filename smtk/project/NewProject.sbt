@@ -15,12 +15,13 @@
         that is assigned when the project is created.
       </DetailedDescription>
       <ItemDefinitions>
-        <String Name="project-name" Label="Project Name" NumberOfRequiredValues="1">
-          <BriefDescription>An informal string for user reference</BriefDescription>
-        </String>
-        <Directory Name="project-directory" Label="Project Directory" NumberOfRequiredValues="1">
-          <BriefDescription>A new/empty directory for storing project files</BriefDescription>
+        <Directory Name="workspace-path" Label="Workspace Directory" NumberOfRequiredValues="1" ShouldExist="true">
+          <BriefDescription>Root directory for projects.</BriefDescription>
         </Directory>
+        <String Name="project-folder" Label="Name" NumberOfRequiredValues="1">
+          <BriefDescription>Project files will be stored in a workspace folder with this name.</BriefDescription>
+          <DefaultValue>NewProject</DefaultValue>
+        </String>
         <File Name="simulation-template" Label="Simulation Template File" NumberOfRequiredValues="1"
           ShouldExist="true" Optional="true" IsEnabledByDefault="true"
           FileFilters="CMB Template Files (*.sbt);;All Files (*)">
@@ -44,7 +45,6 @@
           <BriefDescription></BriefDescription>
           <DiscreteInfo DefaultIndex="0">
             <Value Enum="Mesh">mesh</Value>
-            <Value Enum="VTK">vtk</Value>
           </DiscreteInfo>
         </String>
       </ItemDefinitions>

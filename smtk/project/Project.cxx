@@ -131,16 +131,29 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
 
   // (Future) check that at least 1 resource specified?
 
-  m_name = specification->findString("project-name")->value(0);
-  m_directory = specification->findDirectory("project-directory")->value(0);
+  // Check for workspace folder
+  std::string workspaceFolder = specification->findDirectory("workspace-path")->value(0);
+  boost::filesystem::path workspacePath(workspaceFolder);
+  if (!boost::filesystem::exists(workspacePath))
+  {
+    if (!boost::filesystem::create_directory(workspacePath))
+    {
+      smtkErrorMacro(logger, "Unable to create workspace folder \"" << workspaceFolder << "\"");
+      return false;
+    }
+  }
+
+  // Get project name and path
+  m_name = specification->findString("project-folder")->value(0);
+  auto projectPath = workspacePath / boost::filesystem::path(m_name);
+  m_directory = projectPath.string();
 
   // Check if project directory already exists
-  boost::filesystem::path boostDirectory(m_directory);
-  if (boost::filesystem::exists(boostDirectory) && !boost::filesystem::is_empty(boostDirectory))
+  if (boost::filesystem::exists(projectPath) && !boost::filesystem::is_empty(projectPath))
   {
     if (replaceExistingDirectory)
     {
-      boost::filesystem::remove_all(boostDirectory);
+      boost::filesystem::remove_all(projectPath);
     }
     else
     {
@@ -148,9 +161,8 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
         logger, "Cannot create project in existing directory: \"" << m_directory << "\"");
       return false;
     }
-
-  } // if (directory already exists)
-  boost::filesystem::create_directory(boostDirectory);
+  } // if (projectPath exists)
+  boost::filesystem::create_directory(projectPath);
 
   // Import the model resource
   ResourceDescriptor modelDescriptor;

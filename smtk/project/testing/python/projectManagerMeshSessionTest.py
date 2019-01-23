@@ -75,11 +75,10 @@ class TestProjectManager(unittest.TestCase):
 
         # Get specification
         spec = self.pm.getProjectSpecification()
-        spec.findString('project-name').setValue(0, project_name)
 
         # Set project settings
-        project_folder = os.path.join(smtk.testing.TEMP_DIR, project_name)
-        spec.findDirectory('project-directory').setValue(0, project_folder)
+        spec.findDirectory('workspace-path').setValue(0, smtk.testing.TEMP_DIR)
+        spec.findString('project-folder').setValue(0, project_name)
 
         sim_template = os.path.join(
             smtk.testing.DATA_DIR, 'simulation-workflows', 'ACE3P', 'ACE3P.sbt')
@@ -106,6 +105,7 @@ class TestProjectManager(unittest.TestCase):
         self.assertEqual(after_count - before_count, 2)
 
         # Verify that folders & files were created
+        project_folder = os.path.join(smtk.testing.TEMP_DIR, project_name)
         self.assertTrue(os.path.exists(project_folder))
 
         filenames = [

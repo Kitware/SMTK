@@ -1908,6 +1908,52 @@
         <SimpleIntInformationHelper />
       </IntVectorProperty>
 
+      <StringVectorProperty
+        name="WorkflowsFolder"
+        number_of_elements="1"
+        default_values=""
+        command="SetWorkflowsFolder"
+        information_property="WorkflowsFolderInfo"
+        panel_visibility="default">
+        <Documentation>
+          The default folder for simulation workflow files. Typically
+          set to one specific simulation code (ACE3P, ADH, etc.), but
+          can also be set to the top-level workflow folder to select
+          from all simulation codes.
+        </Documentation>
+        <FileListDomain name="folder"/>
+        <Hints>
+          <UseDirectoryName />
+        </Hints>
+      </StringVectorProperty>
+      <StringVectorProperty
+        name="WorkflowsFolderInfo"
+        command="GetWorkflowsFolder"
+        information_only="1">
+      </StringVectorProperty>
+
+      <StringVectorProperty
+        name="ProjectsRootFolder"
+        number_of_elements="1"
+        default_values=""
+        command="SetProjectsRootFolder"
+        information_property="ProjectsRootFolderInfo"
+        panel_visibility="default">
+        <Documentation>
+          The default parent folder for projects.
+          If set, this path is used to initialize the
+          file dialog for opening projects.
+        </Documentation>
+        <FileListDomain name="folder"/>
+        <Hints>
+          <UseDirectoryName />
+        </Hints>
+      </StringVectorProperty>
+      <StringVectorProperty
+        name="ProjectsRootFolderInfo"
+        command="GetProjectsRootFolder"
+        information_only="1">
+      </StringVectorProperty>
 
       <Hints>
         <UseDocumentationForLabels />
