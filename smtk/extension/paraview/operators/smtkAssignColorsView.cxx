@@ -18,9 +18,6 @@
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Manager.h"
-#include "smtk/session/polygon/qt/pqArcWidgetManager.h"
-#include "smtk/session/polygon/qt/pqPolygonArc.h"
-#include "smtk/session/polygon/qt/pqSplitEdgeWidget.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
