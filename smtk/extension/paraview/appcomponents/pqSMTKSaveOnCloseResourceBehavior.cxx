@@ -101,6 +101,10 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
       // server.
       auto onRemovingManagerFromServer = [&](pqSMTKWrapper* wrapper, pqServer*) {
         std::size_t numberOfUnsavedResources = 0;
+        if (!wrapper)
+        {
+          return false;
+        }
         wrapper->visitResources([&](pqSMTKResource* smtkResource) {
           smtk::resource::ResourcePtr resource = smtkResource->getResource();
           if (resource && resource->clean() == false)
@@ -137,6 +141,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
             });
           }
         }
+        return false;
       };
 
       QObject::connect(pqSMTKBehavior::instance(),
@@ -153,6 +158,10 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
           std::size_t numberOfUnsavedResources = 0;
           pqSMTKBehavior::instance()->visitResourceManagersOnServers(
             [&numberOfUnsavedResources](pqSMTKWrapper* wrapper, pqServer*) {
+              if (!wrapper)
+              {
+                return false;
+              }
               wrapper->visitResources([&numberOfUnsavedResources](pqSMTKResource* smtkResource) {
                 smtk::resource::ResourcePtr resource = smtkResource->getResource();
                 if (resource && resource->clean() == false)

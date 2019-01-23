@@ -18,8 +18,10 @@
 #include "smtk/extension/paraview/server/vtkSMTKSource.h"
 
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/operators/Signal.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/MarkModified.h"
 
 #include "vtkSMSourceProxy.h"
 
@@ -52,11 +54,15 @@ pqSMTKResource::pqSMTKResource(
   // therefore use this observer to emit a signal that is connected to a lambda
   // that has this class instance as its context.
   m_key = rsrcMgr->smtkOperationManager()->observers().insert(
-    [&](std::shared_ptr<smtk::operation::Operation>, smtk::operation::EventType event,
+    [&](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
       smtk::operation::Operation::Result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
-        emit this->operationOccurred(QPrivateSignal());
+        if (!std::dynamic_pointer_cast<smtk::attribute::Signal>(op) &&
+          !std::dynamic_pointer_cast<smtk::operation::MarkModified>(op))
+        {
+          emit this->operationOccurred(QPrivateSignal());
+        }
       }
       return 0;
     });
