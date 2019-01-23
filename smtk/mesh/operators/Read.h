@@ -11,8 +11,6 @@
 #ifndef __smtk_mesh_Read_h
 #define __smtk_mesh_Read_h
 
-#include "smtk/session/mesh/Exports.h"
-
 #include "smtk/operation/XMLOperation.h"
 
 namespace smtk
