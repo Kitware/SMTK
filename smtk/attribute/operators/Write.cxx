@@ -51,26 +51,6 @@ Write::Result Write::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // Ensure the resource suffix is .smtk so readers can subsequently read the
-  // file.
-  std::string filename = resource->location();
-  if (smtk::common::Paths::extension(resource->location()) != ".smtk")
-  {
-    filename = smtk::common::Paths::directory(filename) + "/" +
-      smtk::common::Paths::stem(filename) + ".smtk";
-
-    // If a file already exists with this name, append a distinguishing string
-    // to the name.
-    if (smtk::common::Paths::fileExists(filename))
-    {
-      std::string id = resource->id().toString();
-      filename = smtk::common::Paths::directory(filename) + "/" +
-        smtk::common::Paths::stem(filename) + "_" + id.substr(0, 8) + ".smtk";
-    }
-
-    resource->setLocation(filename);
-  }
-
   {
     std::ofstream file(resource->location());
     if (!file.good())

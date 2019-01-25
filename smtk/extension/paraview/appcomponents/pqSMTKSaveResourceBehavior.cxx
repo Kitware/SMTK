@@ -28,10 +28,12 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QDebug>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
 #include <QObject>
+#include <QTextStream>
 
 void initSaveResourceBehaviorResources()
 {
@@ -75,24 +77,14 @@ pqSaveResourceReaction::State pqSaveResourceReaction::saveResource()
     return pqSaveResourceAsReaction::saveResourceAs();
   }
 
-  // Ensure the resource suffix is .smtk so readers can subsequently read the
-  // file.
+  // Ensure the resource suffix is .smtk so readers can subsequently read the file.
   std::string filename = resource->location();
-  if (smtk::common::Paths::extension(resource->location()) != ".smtk")
+  std::string ext = smtk::common::Paths::extension(filename);
+  if (ext != ".smtk")
   {
-    filename = smtk::common::Paths::directory(filename) + "/" +
-      smtk::common::Paths::stem(filename) + ".smtk";
-
-    // If a file already exists with this name, append a distinguishing string
-    // to the name.
-    if (smtk::common::Paths::fileExists(filename))
-    {
-      std::string id = resource->id().toString();
-      filename = smtk::common::Paths::directory(filename) + "/" +
-        smtk::common::Paths::stem(filename) + "_" + id.substr(0, 8) + ".smtk";
-    }
-
-    resource->setLocation(filename);
+    qWarning() << "Invalid resource filename " << QString::fromStdString(filename)
+               << ": must have  \".smtk\" extension";
+    return pqSaveResourceReaction::State::Aborted;
   }
 
   if (smtk::resource::Manager::Ptr manager = resource->manager())
@@ -149,13 +141,31 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs()
 
   if (fileDialog.exec() == QDialog::Accepted)
   {
-    QString fname = fileDialog.getSelectedFiles()[0];
+    QString qname = fileDialog.getSelectedFiles()[0];
+    std::string filename = qname.toStdString();
+
+    // Ensure the resource suffix is .smtk so readers can subsequently read the file.
+    std::string ext = smtk::common::Paths::extension(filename);
+    if (ext.empty())
+    {
+      // If no extension provided, then add .smtk
+      filename += ".smtk";
+    }
+    else if (ext != ".smtk")
+    {
+      // But if extension is not .smtk, then abort
+      QWidget* mainWidget = pqCoreUtilities::mainWidget();
+      QString text;
+      QTextStream qs(&text);
+      qs << "Invalid filename " << qname << ": must have  \".smtk\" extension";
+      QMessageBox::critical(mainWidget, "Invalid File Name", text);
+      return pqSaveResourceReaction::State::Aborted;
+    }
 
     if (smtk::resource::Manager::Ptr manager = resource->manager())
     {
-      return manager->write(resource, fname.toStdString())
-        ? pqSaveResourceReaction::State::Succeeded
-        : pqSaveResourceReaction::State::Failed;
+      return manager->write(resource, filename) ? pqSaveResourceReaction::State::Succeeded
+                                                : pqSaveResourceReaction::State::Failed;
     }
     else
     {
