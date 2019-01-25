@@ -19,6 +19,7 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/common/Paths.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -63,7 +64,8 @@ smtk::resource::ResourcePtr vtkSMTKAttributeReader::GenerateResource() const
     this->Wrapper->GetResourceManager()->remove(this->Resource);
   }
   auto resource = smtk::attribute::Resource::create();
-  resource->setLocation(this->FileName);
+  auto name = smtk::common::Paths::stem(this->FileName);
+  resource->setName(name);
 
   if (this->Wrapper)
   {
