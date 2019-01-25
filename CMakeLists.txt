@@ -183,6 +183,9 @@ cmake_dependent_option(
 
 #turn on ctest if we want testing
 if (SMTK_ENABLE_TESTING)
+  set(SMTK_PUBLIC_DROP_SITE ON CACHE BOOL "Submit test results to public dashboards.")
+  mark_as_advanced(SMTK_PUBLIC_DROP_SITE)
+
   enable_testing()
   include(CTest)
 
