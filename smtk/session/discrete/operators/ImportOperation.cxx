@@ -350,7 +350,7 @@ ImportOperation::Result ImportOperation::operateInternal()
     {
       if (c->name().empty())
       {
-        c->name(vtksys::SystemTools::GetFilenameWithoutExtension(filename));
+        c->setName(vtksys::SystemTools::GetFilenameWithoutExtension(filename));
       }
       result->findComponent("mesh_created")->setValue(modelEntity.component());
 

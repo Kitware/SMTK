@@ -136,7 +136,8 @@ Import::Result Import::operateInternal()
   std::string name = smtk::common::Paths::stem(filePath);
   if (!name.empty())
   {
-    meshResource->name(name);
+    meshResource->setName(name);
+    resource->setName(name);
   }
 
   auto format = smtk::io::meshFileFormat(filePath);

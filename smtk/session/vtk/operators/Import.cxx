@@ -26,6 +26,8 @@
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
 
+#include "smtk/common/Paths.h"
+
 #include "vtkContourFilter.h"
 #include "vtkDataArray.h"
 #include "vtkDataSetAttributes.h"
@@ -122,6 +124,12 @@ Import::Result Import::operateInternal()
 
     // Create a new resource for the import
     resource->setSession(session);
+  }
+
+  std::string potentialName = smtk::common::Paths::stem(filename);
+  if (resource->name().empty() && !potentialName.empty())
+  {
+    resource->setName(potentialName);
   }
 
   // Downcase the filetype (especially for when we did not infer it):

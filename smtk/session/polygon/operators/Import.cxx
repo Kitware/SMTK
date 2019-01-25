@@ -33,6 +33,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 
+#include "smtk/common/Paths.h"
+
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
 #include "smtk/extension/vtk/reader/vtkCMBMapReader.h"
@@ -495,6 +497,12 @@ Import::Result Import::operateInternal()
 
   smtk::session::polygon::Resource::Ptr resource =
     std::dynamic_pointer_cast<smtk::session::polygon::Resource>(resourceItem->value());
+
+  std::string potentialName = smtk::common::Paths::stem(filename);
+  if (!potentialName.empty() && resource && resource->name().empty())
+  {
+    resource->setName(potentialName);
+  }
 
   // Retrieve the resulting model
   smtk::attribute::ComponentItemPtr componentItem =

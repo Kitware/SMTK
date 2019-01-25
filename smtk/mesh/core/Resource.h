@@ -116,10 +116,6 @@ public:
   //reset to false.
   bool isModified() const;
 
-  //get the name of a mesh resource
-  std::string name() const override;
-  void name(const std::string& n);
-
   //get the file that this resource was created from
   //will return an empty FileLocation if this resource wasn't read from file
   const smtk::common::FileLocation& readLocation() const;
@@ -357,7 +353,6 @@ private:
 
   friend class smtk::io::ReadMesh;
 
-  std::string m_name;
   smtk::common::FileLocation m_readLocation;
   smtk::common::FileLocation m_writeLocation;
 
