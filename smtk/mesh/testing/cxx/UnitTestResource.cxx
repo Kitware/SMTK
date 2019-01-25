@@ -30,7 +30,7 @@ void verify_valid_constructor()
 
   //verify the name
   test((resource->name() == std::string()));
-  resource->name("example");
+  resource->setName("example");
   test((resource->name() == std::string("example")));
 
   //verify the interface name
@@ -53,7 +53,7 @@ void verify_resource_info_moab()
 
   //verify the name
   test((resource->name() == std::string()));
-  resource->name("example");
+  resource->setName("example");
   test((resource->name() == std::string("example")));
 
   //verify the interface name
@@ -82,7 +82,7 @@ void verify_resource_info_json()
 
   //verify the name
   test((resource->name() == std::string()));
-  resource->name("example");
+  resource->setName("example");
   test((resource->name() == std::string("example")));
 
   //verify the interface name

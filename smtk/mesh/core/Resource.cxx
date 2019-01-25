@@ -48,7 +48,6 @@ private:
 Resource::Resource()
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
-  , m_name()
   , m_readLocation()
   , m_writeLocation()
   , m_floatData(new MeshFloatData)
@@ -61,7 +60,6 @@ Resource::Resource()
 
 Resource::Resource(const smtk::common::UUID& resourceID)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
-  , m_name()
   , m_readLocation()
   , m_writeLocation()
   , m_floatData(new MeshFloatData)
@@ -75,7 +73,6 @@ Resource::Resource(const smtk::common::UUID& resourceID)
 Resource::Resource(smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
-  , m_name()
   , m_readLocation()
   , m_writeLocation()
   , m_floatData(new MeshFloatData)
@@ -88,7 +85,6 @@ Resource::Resource(smtk::mesh::InterfacePtr interface)
 
 Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
-  , m_name()
   , m_readLocation()
   , m_writeLocation()
   , m_floatData(new MeshFloatData)
@@ -169,16 +165,6 @@ bool Resource::isModified() const
 {
   //make sure we have a valid uuid, and that our internals are valid
   return this->interface()->isModified();
-}
-
-std::string Resource::name() const
-{
-  return m_name;
-}
-
-void Resource::name(const std::string& n)
-{
-  m_name = n;
 }
 
 const smtk::common::FileLocation& Resource::readLocation() const
