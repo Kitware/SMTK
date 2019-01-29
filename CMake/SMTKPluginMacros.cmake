@@ -6,8 +6,9 @@
 #
 #=========================================================================
 
-# An internal cache variable for aggregating smtk plugin targets
-set(SMTK_PLUGINS "" CACHE INTERNAL "")
+define_property(GLOBAL PROPERTY SMTK_PLUGINS
+  BRIEF_DOCS "Global property for aggregating smtk plugin targets"
+  FULL_DOCS "Global property for aggregating smtk plugin targets")
 
 # create a plugin
 #  REGISTRAR is used to register the plugin
@@ -35,11 +36,7 @@ function(add_smtk_plugin SMTK_PLUGIN_NAME SMTK_PLUGIN_VERSION)
     "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN}
     )
 
-  if (SMTK_PLUGINS)
-    set(SMTK_PLUGINS "${SMTK_PLUGINS};${SMTK_PLUGIN_NAME}" CACHE INTERNAL "")
-  else ()
-    set(SMTK_PLUGINS "${SMTK_PLUGIN_NAME}" CACHE INTERNAL "")
-  endif ()
+  set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "${SMTK_PLUGIN_NAME}")
 
   string(REPLACE ";" "," SMTK_PLUGIN_MANAGERS_CS "${SMTK_PLUGIN_MANAGERS}")
 
