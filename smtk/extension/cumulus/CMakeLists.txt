@@ -141,7 +141,7 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     ${PLUGIN_PROXY_IFACE_SRCS}
     ${PLUGIN_DOCK_IFACES_SRCS}
     )
-  set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPQCumulusJobsPlugin" CACHE INTERNAL "")
+  set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQCumulusJobsPlugin")
 
   target_link_libraries(smtkPQCumulusJobsPlugin
     LINK_PUBLIC

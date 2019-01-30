@@ -87,7 +87,8 @@ add_paraview_plugin(
   SERVER_MANAGER_XML ${serverXMLSrcs}
   CS_KITS ${serverModules}
 )
-set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPVServerExtPlugin" CACHE INTERNAL "")
+set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPVServerExtPlugin")
+
 target_link_libraries(smtkPVServerExtPlugin
   LINK_PUBLIC
     smtkPVServerExt

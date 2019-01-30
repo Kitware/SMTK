@@ -131,7 +131,7 @@ add_paraview_plugin(
     CS_KITS
     vtkSMTKWidgetsExt
 )
-set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPQWidgetsPlugin" CACHE INTERNAL "")
+set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQWidgetsPlugin")
 
 target_link_libraries(smtkPQWidgetsPlugin
   LINK_PUBLIC

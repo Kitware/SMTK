@@ -6,8 +6,9 @@
 #
 #=========================================================================
 
-# An internal cache variable for aggregating smtk plugin targets
-set(SMTK_PLUGINS "" CACHE INTERNAL "")
+define_property(GLOBAL PROPERTY SMTK_PLUGINS
+  BRIEF_DOCS "Global property for aggregating smtk plugin targets"
+  FULL_DOCS "Global property for aggregating smtk plugin targets")
 
 # create a plugin
 #  REGISTRAR is used to register the plugin
