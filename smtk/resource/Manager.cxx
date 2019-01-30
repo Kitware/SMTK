@@ -409,6 +409,14 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   resource->m_manager = this->shared_from_this();
   m_resources.insert(resource);
 
+  // Resolve resource surrogate links between the new resource and currently
+  // managed resources.
+  for (auto rsrc : m_resources)
+  {
+    resource->links().resolve(rsrc);
+    rsrc->links().resolve(resource);
+  }
+
   // Tell observers we just added a resource:
   m_observers(resource, smtk::resource::EventType::ADDED);
 

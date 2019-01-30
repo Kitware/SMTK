@@ -86,6 +86,10 @@ public:
   ResourceLinkData& data() { return m_data; }
   const ResourceLinkData& data() const { return m_data; }
 
+  // Resolve any surrogates with the given resource. Returns true if a surrogate
+  // is successfully resolved.
+  bool resolve(const ResourcePtr&) const;
+
 private:
   ResourceLinks(Resource*);
 
