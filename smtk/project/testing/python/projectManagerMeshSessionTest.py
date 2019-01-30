@@ -100,7 +100,7 @@ class TestProjectManager(unittest.TestCase):
         self.project = project
 
         # Verify that 2 resources were created
-        self.assertEqual(len(self.project.getResources()), 2)
+        self.assertEqual(len(self.project.resources()), 2)
         after_count = len(self.rm.resources())
         self.assertEqual(after_count - before_count, 2)
 
@@ -120,7 +120,7 @@ class TestProjectManager(unittest.TestCase):
 
     def modify_project(self):
         # Get simulation attributes
-        resources = self.project.getResources()
+        resources = self.project.resources()
         for res in resources:
             if isinstance(res, smtk.attribute.Resource):
                 att_resource = res
@@ -164,7 +164,7 @@ class TestProjectManager(unittest.TestCase):
         self.assertEqual(project.name(), PROJECT1)
         self.assertEqual(project.directory(), path)
 
-        resources = project.getResources()
+        resources = project.resources()
         self.assertEqual(len(resources), 2)
 
         for res in resources:

@@ -51,7 +51,12 @@ public:
   std::string directory() const { return m_directory; }
 
   /// Return project resources
-  std::vector<smtk::resource::ResourcePtr> getResources() const;
+  std::vector<smtk::resource::ResourcePtr> resources() const;
+
+  /// Return resource "import location", which is the location in the
+  /// file system that was imported to create the resource. The return
+  /// string might be empty (unknown).
+  std::string importLocation(smtk::resource::ResourcePtr res) const;
 
   // Future:
   // * methods to add/remove project resources

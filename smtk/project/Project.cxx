@@ -59,7 +59,7 @@ Project::~Project()
   this->close();
 }
 
-std::vector<smtk::resource::ResourcePtr> Project::getResources() const
+std::vector<smtk::resource::ResourcePtr> Project::resources() const
 {
   std::vector<smtk::resource::ResourcePtr> resourceList; // return value
 
@@ -85,6 +85,21 @@ std::vector<smtk::resource::ResourcePtr> Project::getResources() const
   }
 
   return resourceList;
+}
+
+std::string Project::importLocation(smtk::resource::ResourcePtr res) const
+{
+  auto resId = res->id();
+  for (auto& descriptor : m_resourceDescriptors)
+  {
+    if (descriptor.m_uuid == resId)
+    {
+      return descriptor.m_importLocation;
+    }
+  }
+
+  // (else)
+  return std::string();
 }
 
 void Project::setCoreManagers(
@@ -635,7 +650,7 @@ bool Project::populateExportOperator(
   // Locate project attribute and model resources
   std::vector<smtk::resource::ResourcePtr> attResourceList;
   std::vector<smtk::resource::ComponentPtr> modelList;
-  auto resourceList = this->getResources();
+  auto resourceList = this->resources();
   for (auto resource : resourceList)
   {
     if (resource->isOfType(smtk::common::typeName<smtk::attribute::Resource>()))
