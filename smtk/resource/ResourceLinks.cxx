@@ -41,6 +41,19 @@ const Resource* ResourceLinks::leftHandSideResource() const
 {
   return m_resource;
 }
+
+bool ResourceLinks::resolve(const ResourcePtr& resource) const
+{
+  for (const Surrogate& surrogate : m_data)
+  {
+    if (surrogate.typeName() == resource->typeName() && surrogate.id() == resource->id())
+    {
+      surrogate.resolve(resource);
+      return true;
+    }
+  }
+  return false;
+}
 }
 }
 }
