@@ -338,7 +338,7 @@ add_paraview_plugin(
     ${PLUGIN_PROXY_IFACE_SRCS}
     ${PLUGIN_DOCK_IFACES_SRCS}
 )
-set(SMTK_PLUGINS "${SMTK_PLUGINS};smtkPQComponentsPlugin" CACHE INTERNAL "")
+set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQComponentsPlugin")
 
 target_link_libraries(smtkPQComponentsPlugin
   LINK_PUBLIC
