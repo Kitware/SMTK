@@ -79,8 +79,6 @@ PySharedPtrClass< smtk::mesh::Resource > pybind11_init_smtk_mesh_Resource(py::mo
     .def("meshes", (smtk::mesh::MeshSet (smtk::mesh::Resource::*)(::smtk::mesh::Dirichlet const &) const) &smtk::mesh::Resource::meshes, py::arg("d"))
     .def("meshes", (smtk::mesh::MeshSet (smtk::mesh::Resource::*)(::smtk::mesh::Neumann const &) const) &smtk::mesh::Resource::meshes, py::arg("n"))
     .def("meshes", (smtk::mesh::MeshSet (smtk::mesh::Resource::*)(::std::string const &) const) &smtk::mesh::Resource::meshes, py::arg("name"))
-    .def("name", (std::string (smtk::mesh::Resource::*)() const) &smtk::mesh::Resource::name)
-    .def("name", (void (smtk::mesh::Resource::*)(::std::string const &)) &smtk::mesh::Resource::name, py::arg("n"))
     .def("neumannMeshes", &smtk::mesh::Resource::neumannMeshes, py::arg("n"))
     .def("neumanns", &smtk::mesh::Resource::neumanns)
     .def("numberOfMeshes", &smtk::mesh::Resource::numberOfMeshes)
