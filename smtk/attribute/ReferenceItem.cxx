@@ -128,6 +128,20 @@ std::size_t ReferenceItem::maxNumberOfValues() const
   return def->maxNumberOfValues();
 }
 
+bool ReferenceItem::contains(const smtk::resource::PersistentObjectPtr& obj) const
+{
+  bool doesContain = false;
+  this->visit([&](PersistentObjectPtr other) {
+    if (other == obj)
+    {
+      doesContain = true;
+      return false; // stop iterating
+    }
+    return true; // keep iterating
+  });
+  return doesContain;
+}
+
 void ReferenceItem::visit(std::function<bool(PersistentObjectPtr)> visitor) const
 {
   for (auto it = this->begin(); it != this->end(); ++it)

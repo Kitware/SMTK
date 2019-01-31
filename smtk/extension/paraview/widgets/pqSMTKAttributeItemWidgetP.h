@@ -39,6 +39,7 @@ public:
     , m_overrideWhen(OverrideWhen::Unset)
     , m_geometrySource(GeometrySource::BestGuess)
     , m_fallbackStrategy(FallbackStrategy::Hide)
+    , m_opObserver(-1)
   {
     (void)itm;
     (void)p;
@@ -58,4 +59,6 @@ public:
 
   // state of children
   QMap<QWidget*, QPair<QLayout*, QWidget*> > m_children;
+
+  int m_opObserver;
 };

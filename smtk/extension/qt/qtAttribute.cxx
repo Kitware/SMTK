@@ -273,6 +273,7 @@ void qtAttribute::onItemModified()
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
       }
     }
+#ifndef NDEBUG
     if (!didNotify)
     {
       static bool once = true;
@@ -280,9 +281,13 @@ void qtAttribute::onItemModified()
       {
         once = false;
         smtkWarningMacro(smtk::io::Logger::instance(),
-          "Could not notify resource observers that resource state changed.");
+          "Could not notify resource observers that resource state changed. "
+          "This is not necessarily an error if the operation is unmanaged.");
       }
     }
+#else
+    (void)didNotify;
+#endif // NDEBUG
   }
   emit this->itemModified(iobject);
   emit this->modified();

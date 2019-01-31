@@ -88,6 +88,12 @@ Operation::Specification Operation::specification()
   return m_specification;
 }
 
+bool Operation::configure(const smtk::attribute::AttributePtr&, const smtk::attribute::ItemPtr&)
+{
+  // Do nothing. Subclasses might want to do something, though.
+  return false;
+}
+
 bool Operation::ableToOperate()
 {
   return this->parameters()->isValid();

@@ -376,12 +376,25 @@ void pqSMTKOperationPanel::operationListDoubleClicked(QListWidgetItem* item)
     auto seln = m_availableOperations->selection();
     const auto& smap = seln->currentSelection();
     auto params = opInstance->parameters();
+    bool anyAssociations = false;
     for (auto entry : smap)
     {
       if ((entry.second & 0x01) ==
         0x01) // FIXME: properly select entities from the map based on a specific bit flag
       {
         params->associate(entry.first);
+        anyAssociations = true;
+      }
+    }
+    if (anyAssociations)
+    {
+      if (opInstance->configure(nullptr, params->associations()))
+      {
+        auto baseView = m_attrUIMgr ? m_attrUIMgr->topView() : nullptr;
+        if (baseView)
+        {
+          baseView->attributeChanged(opInstance->parameters());
+        }
       }
     }
     if (this->editOperation(opInstance))

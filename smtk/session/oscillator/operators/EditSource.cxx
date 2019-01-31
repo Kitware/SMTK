@@ -21,17 +21,15 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/operators/Signal.h"
 
-#include "smtk/common/UUID.h"
+#include "smtk/operation/Manager.h"
 
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/mesh/core/CellTraits.h"
-#include "smtk/mesh/core/CellTypes.h"
-
-#include "smtk/mesh/utility/Create.h"
+#include "smtk/common/UUID.h"
 
 #include <ctime> // for std::time_t
 
@@ -41,6 +39,67 @@ namespace session
 {
 namespace oscillator
 {
+
+bool EditSource::configure(
+  const smtk::attribute::AttributePtr&, const smtk::attribute::ItemPtr& changedItem)
+{
+  auto params = this->parameters();
+  auto assocs = params->associations();
+  if (!changedItem || changedItem != assocs || assocs->numberOfValues() != 1)
+  {
+    return false;
+  }
+  auto ent = assocs->valueAs<smtk::model::Entity>(0);
+  if (!ent)
+  {
+    return false;
+  }
+
+  // Copy their values to local fields
+  smtk::model::FloatList center{ 0., 0., 0. };
+  smtk::model::FloatList radius{ 0. };
+
+  auto source = ent->referenceAs<smtk::model::AuxiliaryGeometry>();
+  if (source.isValid() && source.hasStringProperty("oscillator_type") &&
+    source.stringProperty("oscillator_type")[0] == "source")
+  {
+    center = source.floatProperty("center");
+    radius = source.floatProperty("radius");
+  }
+  else
+  {
+    auto model = ent->referenceAs<smtk::model::Model>();
+    if (!model.isValid())
+    {
+      return false;
+    }
+    auto bbox = model.boundingBox();
+    double minDist = -1.0;
+    for (int ii = 0; ii < 3; ++ii)
+    {
+      center[ii] = 0.5 * (bbox[2 * ii + 0] + bbox[2 * ii + 1]);
+      double delta = bbox[2 * ii + 1] - bbox[2 * ii + 0];
+      if (delta > 0.0 && (delta > minDist || minDist < 0.0))
+      {
+        minDist = delta;
+      }
+    }
+    radius[0] = minDist / 4;
+  }
+
+  smtk::attribute::DoubleItemPtr centerItem =
+    this->parameters()->findGroup("location")->findAs<smtk::attribute::DoubleItem>("center");
+  smtk::attribute::DoubleItemPtr radiusItem =
+    this->parameters()->findGroup("location")->findAs<smtk::attribute::DoubleItem>("radius");
+
+  for (int ii = 0; ii < 3; ii++)
+  {
+    centerItem->setValue(ii, center[ii]);
+  }
+  radiusItem->setValue(0, radius[0]);
+
+  return true;
+}
 
 EditSource::Result EditSource::operateInternal()
 {

@@ -13,8 +13,12 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/operators/Signal.h"
 
 #include "smtk/model/EntityRef.h"
+
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Observer.h"
 
 #include "smtk/io/Logger.h"
 
@@ -170,6 +174,17 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
   m_p->m_overrideWhen = pqSMTKAttributeItemWidget::OverrideWhenConvert(ow);
   m_p->m_fallbackStrategy = pqSMTKAttributeItemWidget::FallbackStrategyConvert(fs);
   m_p->m_geometrySource = pqSMTKAttributeItemWidget::GeometrySourceConvert(gs);
+  m_p->m_opObserver = info.baseView()->uiManager()->operationManager()->observers().insert(
+    [&](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
+      smtk::operation::Operation::Result res) {
+      if (event == smtk::operation::EventType::DID_OPERATE &&
+        std::dynamic_pointer_cast<smtk::attribute::Signal>(op) &&
+        res->findReference("modified")->contains(this->item()->attribute()))
+      {
+        this->updateWidgetFromItem();
+      }
+      return 0;
+    });
 }
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr itm, QWidget* p,
@@ -177,12 +192,29 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr it
   : qtItem(smtk::extension::AttributeItemInfo(itm, smtk::view::View::Component(), p, bview))
 {
   m_p = new Internal(itm, this->widget(), bview, orient);
+  m_p->m_opObserver = bview->uiManager()->operationManager()->observers().insert(
+    [&](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
+      smtk::operation::Operation::Result res) {
+      if (event == smtk::operation::EventType::DID_OPERATE &&
+        std::dynamic_pointer_cast<smtk::attribute::Signal>(op) &&
+        res->findReference("modified")->contains(this->item()->attribute()))
+      {
+        this->updateWidgetFromItem();
+      }
+      return 0;
+    });
   m_isLeafItem = true;
   this->createWidget();
 }
 
 pqSMTKAttributeItemWidget::~pqSMTKAttributeItemWidget()
 {
+  auto ui = this->uiManager();
+  auto operationManager = ui ? ui->operationManager() : nullptr;
+  if (operationManager && m_p->m_opObserver >= 0)
+  {
+    operationManager->observers().erase(m_p->m_opObserver);
+  }
   delete this->m_p;
   this->m_p = NULL;
 }

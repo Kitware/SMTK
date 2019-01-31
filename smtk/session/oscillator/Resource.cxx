@@ -66,6 +66,9 @@ bool Resource::resetDomainTessellation(smtk::model::Volume& domain)
   {
     tess->addLine(edgeEndpoints[ee][0], edgeEndpoints[ee][1]);
   }
+  double bbox[6] = { origin[0], origin[0] + size[0], origin[1], origin[1] + size[1], origin[2],
+    origin[2] + size[2] };
+  domain.setBoundingBox(bbox);
   return true;
 }
 }
