@@ -69,7 +69,7 @@ std::vector<smtk::resource::ResourcePtr> Project::resources() const
     return resourceList;
   }
 
-  for (auto& rd : m_resourceDescriptors)
+  for (const auto& rd : m_resourceDescriptors)
   {
     if (rd.m_uuid.isNull())
     {
@@ -90,7 +90,7 @@ std::vector<smtk::resource::ResourcePtr> Project::resources() const
 std::string Project::importLocation(smtk::resource::ResourcePtr res) const
 {
   auto resId = res->id();
-  for (auto& descriptor : m_resourceDescriptors)
+  for (const auto& descriptor : m_resourceDescriptors)
   {
     if (descriptor.m_uuid == resId)
     {
@@ -184,9 +184,11 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
   auto modelFileItem = specification->findFile("model-file");
   if (modelFileItem->isEnabled())
   {
+    // Check use-vtk-session option
     std::string modelPath = modelFileItem->value(0);
     bool copyNativeModel = specification->findVoid("copy-model-file")->isEnabled();
-    if (!this->importModel(modelPath, copyNativeModel, modelDescriptor, logger))
+    bool useVTKSession = specification->findVoid("use-vtk-session")->isEnabled();
+    if (!this->importModel(modelPath, copyNativeModel, modelDescriptor, useVTKSession, logger))
     {
       return false;
     }
@@ -246,7 +248,7 @@ bool Project::save(smtk::io::Logger& logger) const
   boost::filesystem::path boostDirectory(m_directory);
 
   // Save project resources
-  for (auto& rd : m_resourceDescriptors)
+  for (const auto& rd : m_resourceDescriptors)
   {
     auto resource = resManager->get(rd.m_uuid);
     auto writer = opManager->create<smtk::operation::WriteResource>();
@@ -275,7 +277,7 @@ bool Project::close()
   this->releaseExportOperator();
 
   // Release resources
-  for (auto& rd : m_resourceDescriptors)
+  for (const auto& rd : m_resourceDescriptors)
   {
     auto resourcePtr = resManager->get(rd.m_uuid);
     if (resourcePtr)
@@ -361,7 +363,7 @@ bool Project::open(const std::string& location, smtk::io::Logger& logger)
 } // open()
 
 bool Project::importModel(const std::string& importPath, bool copyNativeModel,
-  ResourceDescriptor& descriptor, smtk::io::Logger& logger)
+  ResourceDescriptor& descriptor, bool useVTKSession, smtk::io::Logger& logger)
 {
   auto opManager = m_operationManager.lock();
   if (!opManager)
@@ -386,7 +388,16 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   }
 
   // Create the import operator
-  auto importOp = opManager->create<smtk::operation::ImportResource>();
+  smtk::operation::OperationPtr importOp;
+  if (useVTKSession)
+  {
+    importOp = opManager->create("smtk::session::vtk::Import");
+  }
+  else
+  {
+    importOp = opManager->create<smtk::operation::ImportResource>();
+  }
+
   if (!importOp)
   {
     smtkErrorMacro(logger, "Import operator not found");
@@ -500,7 +511,7 @@ bool Project::loadResources(const std::string& path, smtk::io::Logger& logger)
   // Part of opening project from disk
   boost::filesystem::path directoryPath(path);
 
-  for (auto& descriptor : m_resourceDescriptors)
+  for (const auto& descriptor : m_resourceDescriptors)
   {
     // Create a read operator
     auto readOp = opManager->create<smtk::operation::ReadResource>();
@@ -559,7 +570,7 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
 
   // Find the simulation attribute resource.
   ResourceDescriptor simAttDescriptor;
-  for (auto& descriptor : m_resourceDescriptors)
+  for (const auto& descriptor : m_resourceDescriptors)
   {
     if (descriptor.m_typeName == smtk::common::typeName<smtk::attribute::Resource>())
     {
@@ -651,7 +662,7 @@ bool Project::populateExportOperator(
   std::vector<smtk::resource::ResourcePtr> attResourceList;
   std::vector<smtk::resource::ComponentPtr> modelList;
   auto resourceList = this->resources();
-  for (auto resource : resourceList)
+  for (const auto resource : resourceList)
   {
     if (resource->isOfType(smtk::common::typeName<smtk::attribute::Resource>()))
     {
@@ -661,7 +672,7 @@ bool Project::populateExportOperator(
     {
       auto modelResource = smtk::dynamic_pointer_cast<smtk::model::Resource>(resource);
       auto uuids = modelResource->entitiesMatchingFlags(smtk::model::MODEL_ENTITY, true);
-      for (auto uuid : uuids)
+      for (const auto& uuid : uuids)
       {
         auto model = modelResource->find(uuid);
         if (model)

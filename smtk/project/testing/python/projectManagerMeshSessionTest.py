@@ -88,6 +88,9 @@ class TestProjectManager(unittest.TestCase):
             smtk.testing.DATA_DIR, 'model', '3d', 'genesis', 'gun-1fourth.gen')
         spec.findFile('model-file').setValue(0, model_file)
 
+        # Make sure vtk-session option is off
+        spec.findVoid('use-vtk-session').setIsEnabled(False)
+
         self.assertTrue(spec.isValid(), msg="project spec not valid")
 
         # Create project

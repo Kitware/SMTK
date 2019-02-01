@@ -18,7 +18,7 @@
         <Directory Name="workspace-path" Label="Workspace Directory" NumberOfRequiredValues="1" ShouldExist="true">
           <BriefDescription>Root directory for projects.</BriefDescription>
         </Directory>
-        <String Name="project-folder" Label="Name" NumberOfRequiredValues="1">
+        <String Name="project-folder" Label="Name (Subdirectory)" NumberOfRequiredValues="1">
           <BriefDescription>Project files will be stored in a workspace folder with this name.</BriefDescription>
           <DefaultValue>NewProject</DefaultValue>
         </String>
@@ -27,26 +27,36 @@
           FileFilters="CMB Template Files (*.sbt);;All Files (*)">
           <BriefDescription>The CMB template file (*.sbt) specifying the simulation</BriefDescription>
         </File>
-        <File Name="model-file" Label="Model File" NumberOfRequiredValues="1" ShouldExist="true"
+        <File Name="model-file" Label="Input Geometry" NumberOfRequiredValues="1" ShouldExist="true"
           Optional="true" IsEnabledByDefault="true"
           FileFilters="Exodus Files (*.ex? *.gen);;All Files (*)">
-          <BriefDescription>The model file to import into the project.</BriefDescription>
+          <BriefDescription>The model or mesh file to import into the project.</BriefDescription>
           <DetailedDescription>The current implementation only supports Exodus file.</DetailedDescription>
         </File>
+        <Void Name="copy-model-file" Label="Copy Input Geometry"
+          Optional="true" IsEnabledByDefault="true">
+          <BriefDescription>If enabled, store a copy of the input geometry file in the project directory.</BriefDescription>
+        </Void>
         <String Name="model-file-identifier" Label="Model File Label" NumberOfRequiredValues="1" AdvanceLevel="1">
           <BriefDescription>A text label that can be used to identify this model</BriefDescription>
           <DefaultValue>default</DefaultValue>
         </String>
-        <Void Name="copy-model-file" Label="Copy Model File Into Project" AdvanceLevel="1"
+
+        <!--
+          The "use-vtk-session" option is set TRUE by default, as a temporary workaround for
+          loading exodus files, which otherwise would use the mesh session. The vtk session is
+          used because it copies the side set and element block names to the smtk model.
+          Once the mesh session code is updated to do the same thing, recommend that the
+          default for this item be changed to FALSE.
+        -->
+        <Void Name="use-vtk-session" Label="Use VTK Session" AdvanceLevel="1"
           Optional="true" IsEnabledByDefault="true">
-          <BriefDescription></BriefDescription>
+          <BriefDescription>Use VTK session for importing model files</BriefDescription>
+          <DetailedDescription>
+            Use this option to load models with smtk::session::vtk in place of the default
+            smtk logic.
+          </DetailedDescription>
         </Void>
-        <String Name="session-type" Label="Modeling Session" AdvanceLevel="1">
-          <BriefDescription></BriefDescription>
-          <DiscreteInfo DefaultIndex="0">
-            <Value Enum="Mesh">mesh</Value>
-          </DiscreteInfo>
-        </String>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
