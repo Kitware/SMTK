@@ -51,7 +51,12 @@ public:
   std::string directory() const { return m_directory; }
 
   /// Return project resources
-  std::vector<smtk::resource::ResourcePtr> getResources() const;
+  std::vector<smtk::resource::ResourcePtr> resources() const;
+
+  /// Return resource "import location", which is the location in the
+  /// file system that was imported to create the resource. The return
+  /// string might be empty (unknown).
+  std::string importLocation(smtk::resource::ResourcePtr res) const;
 
   // Future:
   // * methods to add/remove project resources
@@ -76,7 +81,7 @@ protected:
   // Remaining calls are for internal use
 
   bool importModel(const std::string& location, bool copyNativeFile, ResourceDescriptor& descriptor,
-    smtk::io::Logger& logger = smtk::io::Logger::instance());
+    bool useVtkSession, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
   bool importAttributeTemplate(const std::string& location, ResourceDescriptor& descriptor,
     smtk::io::Logger& logger = smtk::io::Logger::instance());
