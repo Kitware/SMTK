@@ -92,6 +92,7 @@ protected slots:
 
 protected:
   virtual void resetHover(smtk::resource::ComponentSet& add, smtk::resource::ComponentSet& del);
+  bool eventFilter(QObject*, QEvent*) override;
 
   class Internal;
   Internal* m_p;
