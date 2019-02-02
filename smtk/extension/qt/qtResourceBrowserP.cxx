@@ -64,6 +64,7 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   m_layout->setObjectName("m_layout");
   m_view = ctor(parent);
   m_layout->addWidget(m_view);
+  m_view->installEventFilter(self);
 
   // Keep or create a QAbstractItemModel subclass (which had better be
   // related somehow to a qtDescriptivePhraseModel).

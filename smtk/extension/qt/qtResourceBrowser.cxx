@@ -33,6 +33,7 @@
 #include <QColorDialog>
 #include <QItemSelection>
 #include <QItemSelectionModel>
+#include <QKeyEvent>
 #include <QPointer>
 #include <QTreeView>
 
@@ -361,4 +362,53 @@ void qtResourceBrowser::editObjectColor(const QModelIndex& idx)
       phrase->setRelatedColor(rgba);
     }
   }
+}
+
+bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
+{
+  QKeyEvent* evt;
+  if (obj == m_p->m_view && evnt->type() == QEvent::KeyPress &&
+    (evt = dynamic_cast<QKeyEvent*>(evnt)))
+  {
+    if (evt->key() == Qt::Key_Space)
+    {
+      // Iterate over the selected indices and toggle the visibility of
+      // every item to either on or off (determined by examining the first
+      // index's current state).
+      auto selected = m_p->m_view->selectionModel()->selection();
+      smtk::view::DescriptivePhrase::Ptr phrase;
+      bool toggleTo = false;
+      bool found = false;
+      for (auto idx : selected.indexes())
+      {
+        phrase = idx.data(qtDescriptivePhraseModel::PhrasePtrRole)
+                   .value<smtk::view::DescriptivePhrase::Ptr>();
+        if (!phrase)
+        {
+          continue;
+        }
+        if (phrase->displayVisibility())
+        {
+          toggleTo = !phrase->relatedVisibility();
+          found = true;
+          break;
+        }
+      }
+      if (found)
+      {
+        for (auto idx : selected.indexes())
+        {
+          phrase = idx.data(qtDescriptivePhraseModel::PhrasePtrRole)
+                     .value<smtk::view::DescriptivePhrase::Ptr>();
+          if (!phrase)
+          {
+            continue;
+          }
+          phrase->setRelatedVisibility(toggleTo);
+        }
+        return true;
+      }
+    }
+  }
+  return this->Superclass::eventFilter(obj, evnt);
 }
