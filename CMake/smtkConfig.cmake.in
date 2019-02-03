@@ -75,7 +75,7 @@ else()
       set(PYTHON_INCLUDE_DIR ${SMTK_PYTHON_INCLUDE_DIR})
     endif ()
 
-    find_package(pybind11 2.3)
+    find_package(pybind11 @pybind11_VERSION@)
   endif()
 
   set(SMTK_PLUGINS @SMTK_PLUGINS@)
