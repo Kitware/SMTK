@@ -42,11 +42,15 @@ std::set<Operation::Index> ExporterGroup::operationsForResourceAndFileName(
 void ExporterGroup::filterOperationsThatRejectFileName(
   std::set<Operation::Index>& ops, const std::string& fileName) const
 {
-  for (auto index = ops.begin(); index != ops.end(); ++index)
+  for (auto index = ops.begin(); index != ops.end();)
   {
     if (fileItemDefinitionForOperation(*index)->isValueValid(fileName) == false)
     {
-      ops.erase(index);
+      ops.erase(index++);
+    }
+    else
+    {
+      ++index;
     }
   }
 }
