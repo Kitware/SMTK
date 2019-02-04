@@ -99,7 +99,7 @@ public:
   ~Resource();
 
   resource::ComponentPtr find(const common::UUID& compId) const override;
-  std::function<bool(const resource::ComponentPtr&)> queryOperation(
+  std::function<bool(const resource::ConstComponentPtr&)> queryOperation(
     const std::string&) const override;
 
   // visit all components in a resource.

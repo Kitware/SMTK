@@ -115,6 +115,108 @@ void XmlDocV3Parser::process(xml_document& doc)
   this->process(amnode);
 }
 
+void XmlDocV3Parser::processExclusion(xml_node& excludeNode)
+{
+  // Each exclusion element has a list of type names
+  // that exclude each other
+  xml_node child;
+  // First lets convert the strings to definitions
+  std::vector<smtk::attribute::DefinitionPtr> defs;
+  for (child = excludeNode.first_child(); child; child = child.next_sibling())
+  {
+    auto tname = child.text().get();
+    auto def = m_resource->findDefinition(tname);
+    if (def != nullptr)
+    {
+      defs.push_back(def);
+    }
+    else
+    {
+      smtkWarningMacro(m_logger, "Cannot find exclusion definiion: " << tname);
+    }
+  }
+  // We need atleast 2 definitions to exclude
+  size_t i, j, n = defs.size();
+  if (n < 2)
+  {
+    return; // there is nothing to do
+  }
+  for (i = 0; i < n; i++)
+  {
+    for (j = i + 1; j < n; j++)
+    {
+      defs[i]->addExclusion(defs[j]);
+    }
+  }
+}
+void XmlDocV3Parser::processPrerequisite(xml_node& prereqNode)
+{
+  // Each Prerequisite element has a type attribute and vector of type names
+  // that it depends on
+  // First lets get the type
+  auto typeAtt = prereqNode.attribute("Type");
+  if (!typeAtt)
+  {
+    smtkWarningMacro(m_logger, "Cannot find type XML attribute");
+    return;
+  }
+  auto targetDef = m_resource->findDefinition(typeAtt.value());
+  if (targetDef == nullptr)
+  {
+    smtkWarningMacro(m_logger, "Cannot find target definiion: " << typeAtt.value());
+    return;
+  }
+  xml_node child;
+  // First lets convert the strings to definitions
+  std::vector<smtk::attribute::DefinitionPtr> defs;
+  for (child = prereqNode.first_child(); child; child = child.next_sibling())
+  {
+    auto tname = child.text().get();
+    auto def = m_resource->findDefinition(tname);
+    if (def != nullptr)
+    {
+      defs.push_back(def);
+    }
+    else
+    {
+      smtkWarningMacro(m_logger, "Cannot find prerequisite definiion: " << tname);
+    }
+  }
+  size_t i, n = defs.size();
+  if (n == 0)
+  {
+    return; // there is nothing to do
+  }
+  for (i = 0; i < n; i++)
+  {
+    targetDef->addPrerequisite(defs[i]);
+  }
+}
+
+void XmlDocV3Parser::processDefinitionInformation(xml_node& root)
+{
+  // First process the Definition Section
+  this->XmlDocV2Parser::processDefinitionInformation(root);
+  // Next process the Exclusion Section
+  xml_node child, node = root.child("Exclusions");
+  if (node)
+  {
+    for (child = node.first_child(); child; child = child.next_sibling())
+    {
+      this->processExclusion(child);
+    }
+  }
+
+  node = root.child("Prerequisites");
+  if (node)
+  {
+    for (child = node.first_child(); child; child = child.next_sibling())
+    {
+      this->processPrerequisite(child);
+    }
+  }
+}
+
 void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::DefinitionPtr def)
 {
   // we just need to process Tags added in V3

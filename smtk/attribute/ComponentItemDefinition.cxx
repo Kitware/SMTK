@@ -40,9 +40,9 @@ Item::Type ComponentItemDefinition::type() const
   return Item::ComponentType;
 }
 
-bool ComponentItemDefinition::isValueValid(smtk::resource::PersistentObjectPtr obj) const
+bool ComponentItemDefinition::isValueValid(smtk::resource::ConstPersistentObjectPtr obj) const
 {
-  auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
+  auto comp = std::dynamic_pointer_cast<const smtk::resource::Component>(obj);
   return this->checkComponent(comp);
 }
 

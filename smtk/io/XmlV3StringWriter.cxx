@@ -56,6 +56,105 @@ std::string XmlV3StringWriter::rootNodeName() const
   return std::string("SMTK_AttributeResource");
 }
 
+void XmlV3StringWriter::generateXml(smtk::io::Logger& logger)
+{
+  XmlV2StringWriter::generateXml(logger);
+  // Lets see if we have any exclusions or prerequisits constriants
+  xml_node exNode, preNode, child, n;
+  // First lets get the definitions in sorted order
+  std::vector<smtk::attribute::DefinitionPtr> defs;
+  m_resource->definitions(defs, true);
+  auto root = this->topRootNode();
+
+  // Lets process the constraints
+  for (auto def : defs)
+  {
+    auto defType = def->type();
+    auto excludedTypes = def->excludedTypeNames();
+
+    // First lets process exclusions
+    if (excludedTypes.size())
+    {
+      // First we need to see if we need to create the XML node
+      if (!exNode)
+      {
+        // This should be right after the definitions section if there is
+        // one else it should be before prerequisites, attributes and views
+        auto node = this->topDefinitionsNode();
+        if (node)
+        {
+          exNode = root.insert_child_after("Exclusions", node);
+        }
+        else
+        {
+          node = preNode ? preNode : ((this->topAttributesNode()) ? this->topAttributesNode()
+                                                                  : this->topViewsNode());
+          if (node)
+          {
+            exNode = root.insert_child_before("Exclusions", node);
+          }
+          else
+          {
+            exNode = root.append_child("Exclusions");
+          }
+        }
+      }
+      // We will now write out pair-wise rules starting with the
+      // first definition in the list that comes after this definition
+      // alphabetically - assuming all of the skipped rules have already been added
+      for (auto etype : excludedTypes)
+      {
+        if (etype > defType)
+        {
+          child = exNode.append_child("Rule");
+          n = child.append_child("Def");
+          n.text().set(defType.c_str());
+          n = child.append_child("Def");
+          n.text().set(etype.c_str());
+        }
+      }
+    }
+    // Now lets process prerequisites
+    auto prerequisitesTypes = def->prerequisiteTypeNames();
+
+    if (prerequisitesTypes.size())
+    {
+      // First we need to see if we need to create the XML node
+      if (!preNode)
+      {
+        // This should be right after the exclusion or definitions section if there is
+        // one else it should be before attributes and views
+        auto node = (exNode) ? exNode : this->topDefinitionsNode();
+        if (node)
+        {
+          preNode = root.insert_child_after("Prerequisites", node);
+        }
+        else
+        {
+          node = (this->topAttributesNode()) ? this->topAttributesNode() : this->topViewsNode();
+          if (node)
+          {
+            preNode = root.insert_child_before("Prerequisites", node);
+          }
+          else
+          {
+            preNode = root.append_child("Prerequisites");
+          }
+        }
+      }
+      child = preNode.append_child("Rule");
+      // set the xml type attribute
+      child.append_attribute("Type").set_value(defType.c_str());
+      // Write out all prerequisitesTypes
+      for (auto ptype : prerequisitesTypes)
+      {
+        n = child.append_child("Def");
+        n.text().set(ptype.c_str());
+      }
+    }
+  }
+}
+
 void XmlV3StringWriter::processDefinitionInternal(
   xml_node& definition, smtk::attribute::DefinitionPtr def)
 {

@@ -61,6 +61,8 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("clearUserData", &smtk::attribute::Attribute::clearUserData, py::arg("key"))
     .def("color", &smtk::attribute::Attribute::color)
     .def("definition", &smtk::attribute::Attribute::definition)
+    .def("disassociate", (bool (smtk::attribute::Attribute::*)(::smtk::resource::PersistentObjectPtr, ::smtk::attribute::AttributePtr&, bool)) &smtk::attribute::Attribute::disassociate, py::arg("object"), py::arg("probAtt"), py::arg("reverse") = true)
+     .def("disassociate", (bool (smtk::attribute::Attribute::*)(::smtk::resource::PersistentObjectPtr, bool)) &smtk::attribute::Attribute::disassociate, py::arg("object"), py::arg("reverse") = true)
     .def("disassociateEntity", (void (smtk::attribute::Attribute::*)(::smtk::common::UUID const &, bool)) &smtk::attribute::Attribute::disassociateEntity, py::arg("entity"), py::arg("reverse") = true)
     .def("disassociateEntity", (void (smtk::attribute::Attribute::*)(::smtk::model::EntityRef const &, bool)) &smtk::attribute::Attribute::disassociateEntity, py::arg("entity"), py::arg("reverse") = true)
     .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::Attribute::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::ACTIVE_CHILDREN)

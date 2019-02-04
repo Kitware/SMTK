@@ -152,46 +152,23 @@ void qtAssociationWidget::refreshAssociations()
 
   attribute::DefinitionPtr attDef = theAttribute->definition();
 
-  // Lets also find the base definition of the attribute that forces the unique condition
   ResourcePtr attResource = attDef->resource();
-  smtk::attribute::ConstDefinitionPtr baseDef = attResource->findIsUniqueBaseClass(attDef);
-
   auto objects = this->associatableObjects();
-
-  // If we don't have an unique base def then all the objects can be added
-  if (baseDef == nullptr)
+  smtk::attribute::DefinitionPtr preDef;
+  smtk::attribute::AttributePtr conAtt;
+  // Now lets see if the objects are associated with this attribute or can be
+  for (auto obj : objects)
   {
-    for (auto obj : objects)
+    if (theAttribute->isObjectAssociated(obj))
     {
-      if (theAttribute->isObjectAssociated(obj))
-      {
-        this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
-      }
-      else
-      {
-        this->addObjectAssociationListItem(this->Internals->AvailableList, obj, false);
-      }
+      this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
     }
-  }
-  else
-  {
-    // Now go through the list of objects and for each see if it has attributes related to
-    // the base type.  If it doesn't then it can be added to the available list else
-    // if it has this attribute associated with it then it is added to the current list
-    // else it already has a different attribute of a related type associated with it and
-    // can be skipped.
-    for (auto obj : objects)
+    else
     {
-      auto atts = baseDef->attributes(obj);
-      if (atts.size() == 0)
+      auto result = attDef->canBeAssociated(obj, conAtt, preDef);
+      if (result == smtk::attribute::Definition::AssociationResultType::Valid)
       {
-        // Object doesn't have any appropriate attribute associated with it
         this->addObjectAssociationListItem(this->Internals->AvailableList, obj, false);
-      }
-      else if ((*atts.begin()) == theAttribute)
-      {
-        // Entity is associated with the attribute already
-        this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
       }
     }
   }
@@ -433,9 +410,21 @@ void qtAssociationWidget::onRemoveAssigned()
     auto currentItem = this->selectedObject(item);
     if (currentItem)
     {
-      att->disassociate(currentItem);
-      this->removeItem(theList, item);
-      selItem = this->addObjectAssociationListItem(this->Internals->AvailableList, currentItem);
+      AttributePtr probAtt;
+      if (att->disassociate(currentItem, probAtt))
+      {
+        this->removeItem(theList, item);
+        selItem = this->addObjectAssociationListItem(this->Internals->AvailableList, currentItem);
+      }
+      else
+      {
+        std::string s("Could not disassociate from ");
+        s.append(currentItem->name())
+          .append(" - due to attribute ")
+          .append(probAtt->name())
+          .append(" using this as a prerequisite");
+        QMessageBox::warning(this, "Can't disassociate attribute", s.c_str());
+      }
     }
   }
 

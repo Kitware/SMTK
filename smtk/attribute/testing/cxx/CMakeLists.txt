@@ -73,6 +73,7 @@ endif()
 set(unit_tests
   unitAttributeBasics
   unitAttributeAssociation
+  unitAttributeAssociationConstraints
   unitComponentItem.cxx
   unitDateTimeItem.cxx
   unitJsonItemDefinitions.cxx

@@ -1024,7 +1024,7 @@ smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& uid) const
 namespace
 {
 /// Given an entity and a mask, determine if the entity is accepted by the mask.
-bool IsValueValid(const smtk::resource::ComponentPtr& comp, smtk::model::BitFlags mask)
+bool IsValueValid(const smtk::resource::ConstComponentPtr& comp, smtk::model::BitFlags mask)
 {
   auto modelEnt = dynamic_pointer_cast<const smtk::model::Entity>(comp);
   if (modelEnt)
@@ -1078,7 +1078,7 @@ bool IsValueValid(const smtk::resource::ComponentPtr& comp, smtk::model::BitFlag
 
 /// Given a query string, return a functor that determines if a component is
 /// accepted by the query.
-std::function<bool(const ComponentPtr&)> Resource::queryOperation(
+std::function<bool(const ConstComponentPtr&)> Resource::queryOperation(
   const std::string& queryString) const
 {
   smtk::model::BitFlags bitflags = queryString.empty()

@@ -112,6 +112,11 @@ protected:
   static std::string encodeModelEntityMask(smtk::model::BitFlags m);
   static std::string encodeColor(const double* color);
 
+  pugi::xml_node& topDefinitionsNode() const;
+  pugi::xml_node& topRootNode() const;
+  pugi::xml_node& topAttributesNode() const;
+  pugi::xml_node& topViewsNode() const;
+
   // Keep pugi headers out of public headers:
   struct Internals;
   Internals* m_internals;

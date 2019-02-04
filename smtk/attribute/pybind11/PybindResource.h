@@ -53,7 +53,7 @@ PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource > pybind11
     .def("createDefinition", (smtk::attribute::DefinitionPtr (smtk::attribute::Resource::*)(::std::string const &, ::smtk::attribute::DefinitionPtr)) &smtk::attribute::Resource::createDefinition, py::arg("name"), py::arg("baseDefiniiton"))
     .def("createUniqueName", &smtk::attribute::Resource::createUniqueName, py::arg("type"))
     .def("defineAnalysis", &smtk::attribute::Resource::defineAnalysis, py::arg("analysisName"), py::arg("categories"))
-    .def("definitions", &smtk::attribute::Resource::definitions, py::arg("result"))
+    .def("definitions", &smtk::attribute::Resource::definitions, py::arg("result"), py::arg("sortList"))
     .def("definitions", [](const smtk::attribute::Resource& sys){ std::vector<smtk::attribute::DefinitionPtr> result; sys.definitions(result); return result; })
     .def("derivedDefinitions", &smtk::attribute::Resource::derivedDefinitions, py::arg("def"), py::arg("result"))
     .def("disassociate", &smtk::attribute::Resource::disassociate)

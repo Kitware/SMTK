@@ -112,7 +112,7 @@ public:
     * the definition must exist at the time that queryOperation() is called.
     * This requirement allows faster repeated evaluation of the query.
     */
-  std::function<bool(const smtk::resource::ComponentPtr&)> queryOperation(
+  std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
     const std::string&) const override;
 
   // visit all components in the resource.
@@ -140,7 +140,7 @@ public:
     unsigned long mask, std::vector<smtk::attribute::DefinitionPtr>& result) const;
 
   smtk::attribute::ConstDefinitionPtr findIsUniqueBaseClass(
-    smtk::attribute::DefinitionPtr attDef) const;
+    smtk::attribute::ConstDefinitionPtr attDef) const;
 
   bool rename(AttributePtr att, const std::string& newName);
   bool defineAnalysis(const std::string& analysisName, const std::set<std::string>& categories);
@@ -204,7 +204,8 @@ public:
     const bool& copyModelAssociations = false, const unsigned int& options = 0);
 
   //Get a list of all definitions in the Resource
-  void definitions(std::vector<smtk::attribute::DefinitionPtr>& result) const;
+  void definitions(
+    std::vector<smtk::attribute::DefinitionPtr>& result, bool sortList = false) const;
   //Get a list of all attributes in the Resource
   void attributes(std::vector<smtk::attribute::AttributePtr>& result) const;
 

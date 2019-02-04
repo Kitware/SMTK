@@ -35,9 +35,9 @@ Item::Type ResourceItemDefinition::type() const
   return Item::ResourceType;
 }
 
-bool ResourceItemDefinition::isValueValid(smtk::resource::PersistentObjectPtr obj) const
+bool ResourceItemDefinition::isValueValid(smtk::resource::ConstPersistentObjectPtr obj) const
 {
-  auto rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(obj);
+  auto rsrc = std::dynamic_pointer_cast<const smtk::resource::Resource>(obj);
   return this->checkResource(rsrc);
 }
 

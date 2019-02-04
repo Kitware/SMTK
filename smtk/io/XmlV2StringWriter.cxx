@@ -501,7 +501,7 @@ void XmlV2StringWriter::processDefinitionInternal(
     definition.append_attribute("AdvanceLevel") = def->advanceLevel();
   }
   if (def->isUnique())
-  { // true is the default
+  { // false is the default
     definition.append_attribute("Unique").set_value("true");
   }
   else
@@ -1511,6 +1511,23 @@ std::string XmlV2StringWriter::encodeColor(const double* c)
 std::string XmlV2StringWriter::encodeModelEntityMask(smtk::model::BitFlags f)
 {
   return smtk::model::Entity::flagToSpecifierString(f);
+}
+
+pugi::xml_node& XmlV2StringWriter::topDefinitionsNode() const
+{
+  return m_internals->m_defs[0];
+}
+pugi::xml_node& XmlV2StringWriter::topRootNode() const
+{
+  return m_internals->m_roots[0];
+}
+pugi::xml_node& XmlV2StringWriter::topAttributesNode() const
+{
+  return m_internals->m_atts[0];
+}
+pugi::xml_node& XmlV2StringWriter::topViewsNode() const
+{
+  return m_internals->m_views[0];
 }
 
 } // namespace io

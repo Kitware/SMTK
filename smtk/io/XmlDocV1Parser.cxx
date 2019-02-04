@@ -576,9 +576,8 @@ void XmlDocV1Parser::process(xml_node& amnode)
   }
 }
 
-void XmlDocV1Parser::processAttributeInformation(xml_node& root)
+void XmlDocV1Parser::processDefinitionInformation(xml_node& root)
 {
-  // Process definitions first
   xml_node child, node = root.child("Definitions");
   std::size_t i;
   if (node)
@@ -621,7 +620,13 @@ void XmlDocV1Parser::processAttributeInformation(xml_node& root)
       }
     }
   }
-  node = root.child("Attributes");
+}
+void XmlDocV1Parser::processAttributeInformation(xml_node& root)
+{
+  // Process definitions first
+  this->processDefinitionInformation(root);
+  xml_node child, node = root.child("Attributes");
+  std::size_t i;
   if (!node)
   {
     return;
