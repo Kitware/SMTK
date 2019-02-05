@@ -10,6 +10,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtCategorySelectorView.h"
@@ -145,6 +146,7 @@ void qtUIManager::commonConstructor()
   m_currentAdvLevel = 0;
 
   // Lets register some basic view constructors
+  this->registerViewConstructor("Associations", qtAssociationView::createViewWidget);
   this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
   this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);

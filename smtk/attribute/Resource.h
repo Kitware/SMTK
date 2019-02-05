@@ -224,8 +224,7 @@ protected:
     smtk::attribute::ItemDefinition::CopyInfo& info);
 
   std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
-  std::map<std::string,
-    std::set<smtk::attribute::AttributePtr, Attribute::WeakAttributePtrCompare> >
+  std::map<std::string, std::set<smtk::attribute::AttributePtr, Attribute::CompareByName> >
     m_attributeClusters;
   std::map<std::string, smtk::attribute::AttributePtr> m_attributes;
   std::map<smtk::common::UUID, smtk::attribute::AttributePtr> m_attributeIdMap;

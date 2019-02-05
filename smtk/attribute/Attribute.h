@@ -50,8 +50,14 @@ class SMTKCORE_EXPORT Attribute : public resource::Component
 
 public:
   smtkTypeMacro(smtk::attribute::Attribute);
-  struct SMTKCORE_EXPORT WeakAttributePtrCompare
+  struct SMTKCORE_EXPORT CompareByName
   {
+    bool operator()(
+      const smtk::attribute::AttributePtr& lhs, const smtk::attribute::AttributePtr& rhs) const
+    {
+      return lhs->name() < rhs->name();
+    }
+
     bool operator()(const smtk::attribute::WeakAttributePtr& lhs,
       const smtk::attribute::WeakAttributePtr& rhs) const
     {

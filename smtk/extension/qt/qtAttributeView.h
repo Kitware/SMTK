@@ -103,6 +103,7 @@ protected:
 
 private:
   qtAttributeViewInternals* Internals;
+  bool m_hideAssociations;
 
 }; // class
 }; // namespace attribute

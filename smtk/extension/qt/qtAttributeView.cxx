@@ -129,6 +129,12 @@ qtAttributeView::qtAttributeView(const ViewInfo& info)
   : qtBaseView(info)
 {
   this->Internals = new qtAttributeViewInternals;
+  smtk::view::ViewPtr view = this->getObject();
+  m_hideAssociations = false;
+  if (view)
+  {
+    view->details().attributeAsBool("HideAssociations", m_hideAssociations);
+  }
 }
 
 qtAttributeView::~qtAttributeView()
@@ -399,7 +405,7 @@ QTableWidgetItem* qtAttributeView::getSelectedItem()
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
 {
   bool rvisible = false, avisible = false;
-  if (theAtt)
+  if (theAtt && (!m_hideAssociations))
   {
     if (theAtt->definition()->associationRule())
     {
