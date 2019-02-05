@@ -44,9 +44,9 @@ function(smtk_unit_tests)
         ${VTK_INCLUDE_DIRS}
         )
 
+    target_compile_definitions(${test_prog} PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
     if(have_testing_data)
       target_compile_definitions(${test_prog} PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
-      target_compile_definitions(${test_prog} PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
     endif()
 
     foreach (test ${SMTK_ut_SOURCES})

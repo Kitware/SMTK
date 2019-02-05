@@ -414,6 +414,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     find_package(pybind11 REQUIRED)
   else()
     find_package(pybind11 2.3 REQUIRED)
+    set(pybind11_VERSION "2.3")
   endif()
 
   set(SMTK_PYBIND11_FLAGS " ")
