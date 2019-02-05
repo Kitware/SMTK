@@ -64,6 +64,7 @@ PySharedPtrClass< smtk::mesh::MeshSet > pybind11_init_smtk_mesh_MeshSet(py::modu
     .def("domains", &smtk::mesh::MeshSet::domains)
     .def("extractShell", (smtk::mesh::MeshSet (smtk::mesh::MeshSet::*)() const) &smtk::mesh::MeshSet::extractShell)
     .def("extractAdjacenciesOfDimension", (smtk::mesh::MeshSet (smtk::mesh::MeshSet::*)(int) const) &smtk::mesh::MeshSet::extractAdjacenciesOfDimension)
+    .def("id", &smtk::mesh::MeshSet::id)
     .def("is_empty", &smtk::mesh::MeshSet::is_empty)
     .def("mergeCoincidentContactPoints", &smtk::mesh::MeshSet::mergeCoincidentContactPoints, py::arg("tolerance") = 9.9999999999999995E-7)
     .def("modelEntities", (bool (smtk::mesh::MeshSet::*)(smtk::model::EntityRefArray&)) &smtk::mesh::MeshSet::modelEntities, py::arg("arg0"))
