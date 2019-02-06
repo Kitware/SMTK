@@ -5,6 +5,7 @@ set(smtkMeshPythonDataTests
   extractTessellation
   cellField
   meshMetrics
+  pointField
   simple
   iterateMesh
 )
