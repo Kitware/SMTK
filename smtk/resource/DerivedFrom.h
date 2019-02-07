@@ -34,12 +34,17 @@ class DerivedFrom : public Parent
 public:
   typedef Parent ParentResource;
 
+  /// A static index for this resource type.
+  ///
+  /// NOTE: because we are using CRTP, it is possible to make this value static
+  ///       and redefined for each resource type, regardless of inheritance.
+  static const Resource::Index type_index;
+
   /// given a resource index, return whether or not this resource is or is
   /// derived from the resource described by the index.
   virtual bool isOfType(const Resource::Index& index) const override
   {
-    return std::type_index(typeid(Self)).hash_code() == index ? true
-                                                              : ParentResource::isOfType(index);
+    return DerivedFrom<Self, Parent>::type_index == index ? true : ParentResource::isOfType(index);
   }
 
   /// given a resource's unique name, return whether or not this resource is or
@@ -57,6 +62,10 @@ protected:
   {
   }
 };
+
+template <typename Self, typename Parent>
+const Resource::Index DerivedFrom<Self, Parent>::type_index =
+  std::type_index(typeid(Self)).hash_code();
 }
 }
 

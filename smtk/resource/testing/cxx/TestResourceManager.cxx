@@ -184,5 +184,13 @@ int TestResourceManager(int, char** const)
   smtkTest(resourceASet.size() == 3,
     "Resource manager should have three resources of type ResourceA registered.");
 
+  // Test fetching resources by exact index; this will only
+  // return instances that are of the given class not including subclasses.
+  auto indexA = ResourceA::type_index;
+  auto resourcesByIndex =
+    resourceManager->resources().get<smtk::resource::IndexTag>().equal_range(indexA);
+  int count = std::distance(resourcesByIndex.first, resourcesByIndex.second);
+  smtkTest(count == 2, "Fetched " << count << " instead of 2 resources by type-index failed.");
+
   return 0;
 }
