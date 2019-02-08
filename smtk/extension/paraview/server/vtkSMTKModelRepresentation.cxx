@@ -69,6 +69,14 @@ void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtk
   // FloatList is a typedef for std::vector<double>, so it is safe to
   // pass the raw pointer to its data.
   atts->SetBlockColor(block, color.data());
+  if (color[3] < 1.0)
+  {
+    atts->SetBlockOpacity(block, color[3]);
+  }
+  else
+  {
+    atts->RemoveBlockOpacity(block);
+  }
 }
 
 void ColorBlockAsEntity(vtkGlyph3DMapper* mapper, vtkDataObject* block,
@@ -1207,6 +1215,7 @@ void vtkSMTKModelRepresentation::ColorByVolume(vtkCompositeDataSet* data)
 
   // Traverse the blocks and set the volume's color
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockColors();
+  this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockOpacities();
   vtkCompositeDataIterator* it = data->NewIterator();
   it->GoToFirstItem();
   while (!it->IsDoneWithTraversal())
@@ -1245,6 +1254,7 @@ void vtkSMTKModelRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
 
   // Traverse the blocks and set the entity's color
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockColors();
+  this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockOpacities();
   vtkCompositeDataIterator* it = data->NewIterator();
   it->GoToFirstItem();
   while (!it->IsDoneWithTraversal())

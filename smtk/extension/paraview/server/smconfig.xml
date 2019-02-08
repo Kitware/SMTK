@@ -1492,7 +1492,7 @@
         </Documentation>
       </DoubleMapProperty>
       <IntVectorProperty command="SetUseInternalAttributes"
-                         default_values="1"
+                         default_values="0"
                          name="UseInternalAttributes"
                          number_of_elements="1">
         <BooleanDomain name="bool" />

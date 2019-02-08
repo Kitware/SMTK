@@ -27,9 +27,9 @@ py::class_< smtk::common::Color > pybind11_init_smtk_common_Color(py::module &m)
       (smtk::common::Color & (smtk::common::Color::*)(::smtk::common::Color const &))
       &smtk::common::Color::operator=)
     .def_static("stringToFloatRGBA",
-      (bool (*)(::std::vector<double, std::allocator<double> > &, ::std::string const &))
+      (bool (*)(::std::vector<double, std::allocator<double> > &, ::std::string const &, double))
       &smtk::common::Color::stringToFloatRGBA,
-      py::arg("rgba"), py::arg("colorSpec"))
+      py::arg("rgba"), py::arg("colorSpec"), py::arg("defaultAlpha"))
     ;
   return instance;
 }
