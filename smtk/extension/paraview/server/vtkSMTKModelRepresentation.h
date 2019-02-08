@@ -319,7 +319,7 @@ protected:
     vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData);
   void UpdateSelection(
     vtkMultiBlockDataSet* data, vtkCompositeDataDisplayAttributes* blockAttr, vtkActor* actor);
-  vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const std::string& uuid);
+  vtkDataObject* FindNode(vtkMultiBlockDataSet* data, const smtk::common::UUID& uuid);
 
   /**
    * Clear the current selection stored in the mapper's

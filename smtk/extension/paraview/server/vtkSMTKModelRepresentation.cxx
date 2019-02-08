@@ -57,19 +57,30 @@
 namespace
 {
 
-void ColorBlockAsEntity(vtkCompositePolyDataMapper2* mapper, vtkDataObject* block,
-  const std::string& uuid, const smtk::resource::ResourcePtr& res)
+void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtkDataObject* block,
+  const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
 {
   using namespace smtk::model;
   auto modelResource = std::static_pointer_cast<Resource>(res);
-  EntityRef entity(modelResource, smtk::common::UUID(uuid));
+  EntityRef entity(modelResource, uuid);
   FloatList color = entity.color();
   color = color[3] < 0 ? FloatList({ 1., 1., 1., 1. }) : color;
 
   // FloatList is a typedef for std::vector<double>, so it is safe to
   // pass the raw pointer to its data.
-  auto atts = mapper->GetCompositeDataDisplayAttributes();
   atts->SetBlockColor(block, color.data());
+}
+
+void ColorBlockAsEntity(vtkGlyph3DMapper* mapper, vtkDataObject* block,
+  const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
+{
+  SetAttributeBlockColorToEntity(mapper->GetBlockAttributes(), block, uuid, res);
+}
+
+void ColorBlockAsEntity(vtkCompositePolyDataMapper2* mapper, vtkDataObject* block,
+  const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
+{
+  SetAttributeBlockColorToEntity(mapper->GetCompositeDataDisplayAttributes(), block, uuid, res);
 }
 
 void AddRenderables(
@@ -788,23 +799,16 @@ void vtkSMTKModelRepresentation::UpdateSelection(
 }
 
 vtkDataObject* vtkSMTKModelRepresentation::FindNode(
-  vtkMultiBlockDataSet* data, const std::string& uuid)
+  vtkMultiBlockDataSet* data, const smtk::common::UUID& uuid)
 {
   const int numBlocks = data->GetNumberOfBlocks();
   for (int index = 0; index < numBlocks; index++)
   {
     auto currentBlock = data->GetBlock(index);
-    if (data->HasMetaData(index))
+    auto currentId = vtkModelMultiBlockSource::GetDataObjectUUID(data->GetMetaData(index));
+    if (currentId == uuid)
     {
-      auto currentId = data->GetMetaData(index)->Get(vtkModelMultiBlockSource::ENTITYID());
-      if (currentId)
-      {
-        const std::string currentIdStr = currentId;
-        if (currentIdStr.compare(uuid) == 0)
-        {
-          return currentBlock;
-        }
-      }
+      return currentBlock;
     }
 
     auto childBlock = vtkMultiBlockDataSet::SafeDownCast(currentBlock);
@@ -1246,13 +1250,16 @@ void vtkSMTKModelRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
   while (!it->IsDoneWithTraversal())
   {
     auto dataObj = it->GetCurrentDataObject();
-    if (data->HasMetaData(it))
+    auto uuid = vtkModelMultiBlockSource::GetDataObjectUUID(data->GetMetaData(it));
+    if (uuid)
     {
-      auto uuid = data->GetMetaData(it)->Get(vtkModelMultiBlockSource::ENTITYID());
-      if (uuid)
+      auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(this->Resource->find(uuid));
+      if (ent && ent->isInstance())
       {
-        // FIXME? Check whether UUID corresponds to an instance or not.
-        //        Instances should use the GlyphMapper rather than the EntityMapper.
+        ColorBlockAsEntity(this->GlyphMapper, dataObj, uuid, this->Resource);
+      }
+      else
+      {
         ColorBlockAsEntity(this->EntityMapper, dataObj, uuid, this->Resource);
       }
     }
