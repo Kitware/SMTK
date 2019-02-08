@@ -335,7 +335,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       std::vector<smtk::attribute::DefinitionPtr> defs;
       for (auto strIter = excObj.begin(); strIter != excObj.end(); strIter++)
       {
-        auto def = res->findDefinition(strIter->get<std::string>());
+        def = res->findDefinition(strIter->get<std::string>());
         if (def)
         {
           defs.push_back(def);
@@ -385,7 +385,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       auto preDefs = preObj.at("Prerequisite");
       for (auto strIter = preDefs.begin(); strIter != preDefs.end(); strIter++)
       {
-        auto def = res->findDefinition(strIter->get<std::string>());
+        def = res->findDefinition(strIter->get<std::string>());
         if (def)
         {
           tdef->addPrerequisite(def);

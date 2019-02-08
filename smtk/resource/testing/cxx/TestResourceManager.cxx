@@ -189,7 +189,7 @@ int TestResourceManager(int, char** const)
   auto indexA = ResourceA::type_index;
   auto resourcesByIndex =
     resourceManager->resources().get<smtk::resource::IndexTag>().equal_range(indexA);
-  int count = std::distance(resourcesByIndex.first, resourcesByIndex.second);
+  auto count = std::distance(resourcesByIndex.first, resourcesByIndex.second);
   smtkTest(count == 2, "Fetched " << count << " instead of 2 resources by type-index failed.");
 
   return 0;
