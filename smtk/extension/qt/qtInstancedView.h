@@ -46,6 +46,7 @@ public slots:
 signals:
   // emitted when an attribute is modified
   void modified();
+  void itemModified(qtItem*);
 
 protected:
   void updateAttributeData() override;

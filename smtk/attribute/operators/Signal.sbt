@@ -5,10 +5,10 @@
 
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="mark modified"
-            Label="Resource - Mark as Modified" BaseType="operation">
+    <AttDef Type="signal"
+            Label="Attribute - Signal Changes" BaseType="operation">
       <BriefDescription>
-        Mark the specified components as created, modified, or expunged.
+        Indicate that an attribute was created, modified, or expunged.
       </BriefDescription>
       <ItemDefinitions>
         <Component Name="created" Extensible="true" NumberOfRequiredValues="0">
@@ -25,7 +25,7 @@
 
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(mark modified)" BaseType="result"/>
+    <AttDef Type="result(signal)" BaseType="result"/>
 
   </Definitions>
 </SMTK_AttributeResource>

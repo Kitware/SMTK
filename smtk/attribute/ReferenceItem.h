@@ -85,6 +85,9 @@ public:
   /// Return the maximum number of values allowed by this item's definition (or 0).
   std::size_t maxNumberOfValues() const;
 
+  /// Return true if the ReferenceItem contains a reference to the given object.
+  bool contains(const smtk::resource::PersistentObjectPtr& obj) const;
+
   /**\brief Invoke a method on each value of this item.
     *
     * If the lambda returns false, iteration will terminate immediately.

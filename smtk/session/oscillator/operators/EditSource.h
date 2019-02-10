@@ -30,6 +30,16 @@ public:
   smtkCreateMacro(EditSource);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
+  /**\brief Change item parameters to match associated source (if any).
+    *
+    * When \a changedItem is the ReferenceItem that serves as the
+    * operation's associations and it contains a single "source" (i.e.,
+    * a 2-d auxiliary geometry representing an oscillator source),
+    * update the position and radius of the operation to match.
+    */
+  bool configure(const smtk::attribute::AttributePtr& changedAttribute,
+    const smtk::attribute::ItemPtr& changedItem) override;
+
 protected:
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;

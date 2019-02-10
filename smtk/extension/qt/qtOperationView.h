@@ -69,6 +69,7 @@ public slots:
   void requestModelEntityAssociation() override;
   void onShowCategory() override { this->updateAttributeData(); }
   virtual void onModifiedParameters();
+  virtual void onModifiedParameter(qtItem* item);
   virtual void onOperate();
 
 signals:

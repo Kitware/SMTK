@@ -30,7 +30,11 @@ using namespace smtk::extension;
 class qtInstancedViewInternals
 {
 public:
-  qtInstancedViewInternals() { m_isEmpty = true; }
+  qtInstancedViewInternals()
+    : m_isEmpty(true)
+  {
+  }
+
   //QScrollArea *ScrollArea;
   QList<QPointer<qtAttribute> > AttInstances;
   bool m_isEmpty;
@@ -176,6 +180,8 @@ void qtInstancedView::updateAttributeData()
           this->Internals->m_isEmpty = false;
         }
         QObject::connect(attInstance, SIGNAL(modified()), this, SIGNAL(modified()));
+        QObject::connect(
+          attInstance, SIGNAL(itemModified(qtItem*)), this, SIGNAL(itemModified(qtItem*)));
       }
     }
   }

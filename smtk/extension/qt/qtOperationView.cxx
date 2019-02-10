@@ -139,6 +139,7 @@ void qtOperationView::createWidget()
   this->Internals->m_instancedView.reset(iview);
 
   QObject::connect(iview, SIGNAL(modified()), this, SLOT(onModifiedParameters()));
+  QObject::connect(iview, SIGNAL(itemModified(qtItem*)), this, SLOT(onModifiedParameter(qtItem*)));
 
   this->Internals->m_applyButton = new QPushButton("Apply", this->Widget);
   this->Internals->m_applyButton->setObjectName("OpViewApplyButton");
@@ -168,6 +169,21 @@ void qtOperationView::onModifiedParameters()
   if (this->Internals->m_applyButton)
   {
     this->Internals->m_applyButton->setEnabled(this->Internals->m_instancedView->isValid());
+  }
+}
+
+void qtOperationView::onModifiedParameter(qtItem* uiItem)
+{
+  auto op = this->operation();
+  if (op && uiItem)
+  {
+    // Signal the operation that an item's value has been changed in the UI.
+    // The attribute pointer is null; that is reserved for when the UI creates
+    // or destroys an attribute instance.
+    if (op->configure(nullptr, uiItem->item()))
+    {
+      this->attributeChanged(op->parameters());
+    }
   }
 }
 

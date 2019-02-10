@@ -87,6 +87,7 @@ public:
 
 public slots:
   virtual void updateItemFromWidget() = 0;
+  virtual void updateWidgetFromItem() {}
 
   /**\brief Change whether the item is enabled (and thus the widget active).
     *

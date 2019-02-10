@@ -84,6 +84,32 @@ public:
   // resolve to the same index).
   virtual Index index() const { return std::type_index(typeid(*this)).hash_code(); }
 
+  /// Update the operation's specification and operations to be consistent.
+  ///
+  /// This does nothing by default but subclasses may override this method to
+  /// update default values (say, based on the current set of associations).
+  /// This method should be called by user interfaces when the associations
+  /// (and potentially other attributes/items in the specification) are modified.
+  ///
+  /// By default, the attribute and item passed are null.
+  /// If values are passed, the attribute or item **must** belong to the
+  /// resource for the operation itself, and should indicate changes made
+  /// by the user.
+  /// When an attribute is created or removed at the user's behest it is passed.
+  /// When an item's value(s) are directly edited by a user, then
+  /// a pointer to it is passed.
+  /// Only one value (the item or the attribute) should be non-null
+  /// for a given invocation of configure().
+  /// Both may be null (for instance, when an operation is being asked to
+  /// initialize its parameters based on the global application state rather
+  /// than a particular user input).
+  ///
+  /// This method should return true if any changes were made to the operation's
+  /// specification and false otherwise.
+  virtual bool configure(
+    const smtk::attribute::AttributePtr& changedAttribute = smtk::attribute::AttributePtr(),
+    const smtk::attribute::ItemPtr& changedItem = smtk::attribute::ItemPtr());
+
   // Check if the operation's attribute resource is valid. Derived operations
   // may implement more task-specific checks to ensure that the operation is in
   // a valid state.
