@@ -39,16 +39,29 @@ public:
 
   static qtItem* createBoxItemWidget(const AttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
+  /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
   void updateItemFromWidget() override;
+  /// Retrieve property values from the attribute's Item and update the ParaView proxy.
+  void updateWidgetFromItem() override;
 
 protected:
+  /// Describe how an attribute's items specify a bounding box.
   enum class ItemBindings
   {
-    AxisAlignedBounds,       //!< 1 item with 6 values (xmin, xmax, ymin, ymax, zmin, zmax)
-    AxisAlignedMinMax,       //!< 2 items with 3 values each (xlo, ylo, zlo), (xhi, yhi, zhi)
-    AxisAlignedCenterDeltas, //!< 2 items with 3 values each (xc, yc, zc), (dx, dy, dz)
-    EulerAngleMinMax, //!< 3 items with 3 values each (xlo, ylo, zlo), (xhi, yhi, zhi), (roll, pitch, yaw)
-    EulerAngleCenterDeltas //!< 3 items with 3 values each (xc, yc, zc), (dx, dy, dz), (roll, pitch, yaw)
+    /// 1 item with 6 values (xmin, xmax, ymin, ymax, zmin, zmax)
+    AxisAlignedBounds,
+    /// 2 items with 3 values each (xlo, ylo, zlo), (xhi, yhi, zhi)
+    AxisAlignedMinMax,
+    /// 2 items with 3 values each (xc, yc, zc), (dx, dy, dz)
+    AxisAlignedCenterDeltas,
+    /// 1 item with 6 values (min/max as above), 1 item with (roll, pitch, yaw)
+    EulerAngleBounds,
+    /// 3 items with 3 values each (xlo, ylo, zlo), (xhi, yhi, zhi), (roll, pitch, yaw)
+    EulerAngleMinMax,
+    /// 3 items with 3 values each (xc, yc, zc), (dx, dy, dz), (roll, pitch, yaw)
+    EulerAngleCenterDeltas,
+    /// No consistent set of items detected.
+    Invalid
   };
   /**\brief Starting with the widget's assigned item (which may
     *       be a GroupItem or a DoubleItem), determine and return bound items.
@@ -56,15 +69,14 @@ protected:
     * If errors are encountered, this method returns false.
     * If the name of a DoubleItem is provided, then the AxisAlignedBounds binding
     * is assumed and that item is returned as the sole entry of \items.
-    * Otherwise, the named item must be a Group holding items called out as one
-    * of the following:
-    * + AxisAlignedMinMax: "Min", "Max" with numberOfValues == 3
-    * + AxisAlignedCenterDeltas: "Center", "Deltas", with numberOfValues == 3
-    * + EulerAngleMinMax: "Angles", "Min", "Max" with numberOfValues == 3
-    * + EulerAngleCenterDeltas: "Angles, "Center", "Deltas" with numberOfValues == 3
+    * Otherwise, the named item must be a Group holding items called out as via
+    * one of the remaining valid ItemBindings enumerants.
     *
-    * Euler angles must be provided in degrees and are roll, pitch, and yaw
-    * (i.e., rotation about the x, y, and z axes, respectively).
+    * Angles must be provided in degrees and are Tait-Bryan angles
+    * as used by VTK (i.e., rotations about y then x then z axes).
+    * These are similar to Euler angles and sometimes called as such.
+    * See https://en.wikipedia.org/wiki/Euler_angles#Intrinsic_rotations
+    * for more information. VTK uses the Y_1 X_2 Z_3 ordering.
     */
   bool fetchBoxItems(ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items);
 };

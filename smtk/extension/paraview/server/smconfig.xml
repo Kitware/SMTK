@@ -1816,6 +1816,42 @@
       </PropertyGroup>
     </Proxy>
 
+    <!-- Axis-aligned box widget -->
+    <Proxy
+      name="SMTKAxisAlignedBoxWidget"
+      class="vtkPVBox"
+      >
+      <DoubleVectorProperty command="SetBounds"
+                            default_values="0 1 0 1 0 1"
+                            name="Bounds"
+                            number_of_elements="6"></DoubleVectorProperty>
+      <DoubleVectorProperty animateable="1"
+                            command="SetPosition"
+                            default_values="0.0 0.0 0.0"
+                            name="Position"
+                            number_of_elements="3">
+        <DoubleRangeDomain name="range" />
+        <Documentation>
+          Set the position of the box.
+        </Documentation>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty animateable="1"
+                            command="SetScale"
+                            default_values="1.0 1.0 1.0"
+                            name="Scale"
+                            number_of_elements="3">
+        <DoubleRangeDomain name="range" />
+        <Documentation>
+          Set the size of the box via a scale factor.
+        </Documentation>
+      </DoubleVectorProperty>
+      <PropertyGroup panel_widget="InteractiveBox" label="Box Parameters">
+        <Property function="Position" name="Position" />
+        <Property function="Scale" name="Scale" />
+        <Property function="PlaceWidget" name="Bounds" />
+      </PropertyGroup>
+    </Proxy>
+
   </ProxyGroup>
 
   <ProxyGroup name="settings">
