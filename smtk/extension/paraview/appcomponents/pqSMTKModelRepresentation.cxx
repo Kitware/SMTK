@@ -40,9 +40,8 @@ pqSMTKModelRepresentation::pqSMTKModelRepresentation(
   {
     auto seln = rsrcMgrPxy->smtkSelection();
     m_seln = seln;
-    m_selnObserver = seln->observe([this](const std::string src, smtk::view::SelectionPtr oseln) {
-      this->handleSMTKSelectionChange(src, oseln);
-    });
+    m_selnObserver = seln->observers().insert([this](const std::string src,
+      smtk::view::SelectionPtr oseln) { this->handleSMTKSelectionChange(src, oseln); });
   }
 
   // Subscribe to settings updates...
@@ -58,7 +57,7 @@ pqSMTKModelRepresentation::~pqSMTKModelRepresentation()
   smtk::view::SelectionPtr seln = m_seln.lock();
   if (seln)
   {
-    seln->unobserve(m_selnObserver);
+    seln->observers().erase(m_selnObserver);
   }
 }
 

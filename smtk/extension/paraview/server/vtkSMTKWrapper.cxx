@@ -88,7 +88,7 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   this->Selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
   this->SelectedValue = this->Selection->findOrCreateLabeledValue("selected");
   this->HoveredValue = this->Selection->findOrCreateLabeledValue("hovered");
-  this->SelectionListener = this->Selection->observe(
+  this->SelectionListener = this->Selection->observers().insert(
     [](const std::string& src, smtk::view::Selection::Ptr selnMgr) {
       /*
       std::cout << "--- RsrcManagerWrapper " << selnMgr << " src \"" << src << "\":\n";
@@ -116,7 +116,7 @@ vtkSMTKWrapper::vtkSMTKWrapper()
 
 vtkSMTKWrapper::~vtkSMTKWrapper()
 {
-  this->Selection->unobserve(this->SelectionListener);
+  this->Selection->observers().erase(this->SelectionListener);
   this->SetJSONRequest(nullptr);
   this->SetJSONResponse(nullptr);
   this->SetActiveResource(nullptr);

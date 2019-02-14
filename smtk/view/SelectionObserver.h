@@ -7,28 +7,27 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_operation_MetadataObserver_h
-#define __smtk_operation_MetadataObserver_h
+#ifndef __smtk_view_SelectionObserver_h
+#define __smtk_view_SelectionObserver_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/PublicPointerDefs.h"
 
 #include "smtk/common/Observers.h"
 
+#include <string>
+
 namespace smtk
 {
-namespace operation
+namespace view
 {
-class Metadata;
 
-typedef std::function<void(const Metadata&, bool)> MetadataObserver;
+/// Events that alter the phrase model trigger callbacks of this type.
+typedef std::function<void(const std::string&, SelectionPtr)> SelectionObserver;
 
-typedef smtk::common::Observers<MetadataObserver> MetadataObservers;
+/// A class for holding SelectionObserver functors that observe phrase model events.
+typedef smtk::common::Observers<SelectionObserver> SelectionObservers;
 }
 }
 
-#ifndef smtkCore_EXPORTS
-extern
-#endif
-  template class SMTKCORE_EXPORT std::function<void(const smtk::operation::Metadata&)>;
-
-#endif // __smtk_operation_MetadataObserver_h
+#endif // __smtk_view_SelectionObserver_h

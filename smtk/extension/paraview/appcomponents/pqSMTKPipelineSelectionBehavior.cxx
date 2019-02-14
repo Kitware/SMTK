@@ -103,7 +103,7 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
   }
 
   int observerId =
-    seln->observe([&](const std::string& source, smtk::view::SelectionPtr selection) {
+    seln->observers().insert([&](const std::string& source, smtk::view::SelectionPtr selection) {
       int selnValue = selection->selectionValueFromLabel(m_selectionValue);
       if (source != "pqSMTKPipelineSelectionBehavior")
       {
@@ -150,7 +150,7 @@ void pqSMTKPipelineSelectionBehavior::unobserveSelectionOnServer(
   auto entry = m_selectionObservers.find(seln);
   if (entry != m_selectionObservers.end())
   {
-    seln->unobserve(entry->second);
+    seln->observers().erase(entry->second);
     m_selectionObservers.erase(entry);
   }
 }

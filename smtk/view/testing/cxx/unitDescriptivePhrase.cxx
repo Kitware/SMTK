@@ -65,7 +65,7 @@ void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
   idx.push_back(0);
   idx.push_back(1);
   int numObservations = 0;
-  phraseModel->observe(
+  phraseModel->observers().insert(
     [&numObservations](DescriptivePhrasePtr pp, PhraseModelEvent pe, const std::vector<int>& src,
       const std::vector<int>& dst, const std::vector<int>& delta) {
       (void)src;

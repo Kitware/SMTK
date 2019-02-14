@@ -14,6 +14,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/view/PhraseModelObserver.h"
 #include "smtk/view/Selection.h"
 
 #include "smtk/resource/Manager.h"
@@ -29,18 +30,6 @@ namespace smtk
 {
 namespace view
 {
-
-/// Events that can be observed on an smtk::view::PhraseModel.
-enum class PhraseModelEvent
-{
-  ABOUT_TO_INSERT, //!< A phrase or range of phrases is about to be inserted in the parent.
-  INSERT_FINISHED, //!< A phrase of range of phrases has been inserted in the parent.
-  ABOUT_TO_REMOVE, //!< A phrase or range of phrases is about to be removed from the parent.
-  REMOVE_FINISHED, //!< A phrase or range of phrases has been removed from the parent.
-  ABOUT_TO_MOVE,   //!< A phrase or range of phrases is being moved from one place to another.
-  MOVE_FINISHED,   //!< A phrase or range of phrases has been moved and the update is complete.
-  PHRASE_MODIFIED  //!< The given phrase has had its text, color, or some other property modified.
-};
 
 /**\brief Hold and maintain a descriptive phrase hierarchy.
   *
@@ -60,8 +49,9 @@ class SMTKCORE_EXPORT PhraseModel : smtkEnableSharedPtr(PhraseModel)
 {
 public:
   /// Events that alter the phrase model trigger callbacks of this type.
-  using Observer = std::function<void(DescriptivePhrasePtr, PhraseModelEvent,
-    const std::vector<int>&, const std::vector<int>&, const std::vector<int>&)>;
+  using Observer = PhraseModelObserver;
+  /// A collection of observers with runtime-modifiable call behaviors.
+  using Observers = PhraseModelObservers;
   /// Subclasses of PhraseModel register their type information with a constructor of this type.
   using ModelConstructor = std::function<PhraseModelPtr(const ViewPtr&)>;
   /// Applications may have a model decorate its phrases by providing a method with this signature.
@@ -103,18 +93,6 @@ public:
 
   /// Return the root phrase of the hierarchy.
   virtual DescriptivePhrasePtr root() const;
-
-  /** \brief Manage links to user interfaces.
-    *
-    * These methods are called by GUI classes that wish to monitor
-    * changes to the descriptive phrase hierarchy.
-    */
-  ///@{
-  /// Add a listener to respond to changes this model makes to the descriptive phrase hierarchy. This may call subphrases().
-  int observe(Observer obs, bool immediatelyNotify = true);
-  /// Remove a listener added with observe() by passing the integer handle observe() returned.
-  bool unobserve(int);
-  ///@}
 
   /**\brief Infer changes between sets of subphrases; affect these changes; and notify observers.
     */
@@ -159,6 +137,10 @@ public:
 
   /// Manually specify that all rows with their relatedComponent() == \a comp should be updated.
   virtual void triggerDataChangedFor(smtk::resource::ComponentPtr comp);
+
+  /// Return the observers associated with this phrase model.
+  Observers& observers() { return m_observers; }
+  const Observers& observers() const { return m_observers; }
 
 protected:
   friend class VisibilityContent;
@@ -229,7 +211,7 @@ protected:
   };
   std::list<Source> m_sources;
 
-  std::map<int, Observer> m_observers;
+  Observers m_observers;
 
   PhraseDecorator m_decorator;
 

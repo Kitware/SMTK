@@ -5,7 +5,6 @@ set(resourceSrcs
   Links.cxx
   Lock.cxx
   Manager.cxx
-  Observer.cxx
   PersistentObject.cxx
   Resource.cxx
   ResourceLinks.cxx

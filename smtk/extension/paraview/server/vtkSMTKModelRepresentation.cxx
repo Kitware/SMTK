@@ -916,7 +916,7 @@ void vtkSMTKModelRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
     auto oldSeln = this->Wrapper->GetSelection();
     if (oldSeln)
     {
-      oldSeln->unobserve(this->SelectionObserver);
+      oldSeln->observers().erase(this->SelectionObserver);
     }
     this->SelectionObserver = -1;
     this->Wrapper->UnRegister(this);
@@ -929,7 +929,7 @@ void vtkSMTKModelRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
     // to rebuild visual properties (due to selection changes).
     auto newSeln = this->Wrapper->GetSelection();
     this->SelectionObserver = newSeln
-      ? newSeln->observe(
+      ? newSeln->observers().insert(
           [this](const std::string&, smtk::view::Selection::Ptr) { this->SelectionModified(); })
       : -1;
   }

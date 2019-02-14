@@ -25,10 +25,11 @@ py::class_< smtk::operation::MetadataObservers > pybind11_init_smtk_operation_Me
   instance
     .def(py::init<::smtk::operation::MetadataObservers const &>())
     .def(py::init<>())
-    .def("__call__", (void (smtk::operation::MetadataObservers::*)(::smtk::operation::Metadata const &)) &smtk::operation::MetadataObservers::operator())
+    .def("__call__", [](smtk::operation::MetadataObservers& obs, const smtk::operation::Metadata& md, bool adding){ obs(md, adding); })
+    .def("__len__", &smtk::operation::MetadataObservers::size)
     .def("deepcopy", (smtk::operation::MetadataObservers & (smtk::operation::MetadataObservers::*)(::smtk::operation::MetadataObservers const &)) &smtk::operation::MetadataObservers::operator=)
-    .def("insert", &smtk::operation::MetadataObservers::insert, py::arg("arg0"))
-    .def("erase", &smtk::operation::MetadataObservers::erase, py::arg("arg0"))
+    .def("insert", &smtk::operation::MetadataObservers::insert, pybind11::keep_alive<1, 2>())
+    .def("erase", &smtk::operation::MetadataObservers::erase)
     ;
   return instance;
 }

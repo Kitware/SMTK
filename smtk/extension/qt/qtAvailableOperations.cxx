@@ -43,14 +43,14 @@ void qtAvailableOperations::setOperationSource(smtk::view::AvailableOperationsPt
 
   if (m_operationSource)
   {
-    m_operationSource->unobserve(m_operationSourceObserverId);
+    m_operationSource->observers().erase(m_operationSourceObserverId);
   }
   m_operationSource = avail;
   if (m_operationSource)
   {
-    m_operationSourceObserverId =
-      m_operationSource->observe([this](smtk::view::AvailableOperationsPtr) { this->updateList(); },
-        /*immediatelyInvoke*/ true);
+    m_operationSourceObserverId = m_operationSource->observers().insert(
+      [this](smtk::view::AvailableOperationsPtr) { this->updateList(); },
+      /*immediatelyInvoke*/ true);
   }
 }
 

@@ -10,9 +10,8 @@
 #ifndef __smtk_operation_Observer_h
 #define __smtk_operation_Observer_h
 
+#include "smtk/common/Observers.h"
 #include "smtk/operation/Operation.h"
-
-#include <map>
 
 namespace smtk
 {
@@ -37,33 +36,7 @@ enum class EventType
 
 typedef std::function<int(std::shared_ptr<Operation>, EventType, Operation::Result)> Observer;
 
-class SMTKCORE_EXPORT Observers
-{
-public:
-  typedef int Key;
-
-  /// Iterate over the collection of observers and execute the observer functor.
-  /// Returns the bitwise-or of all observer return values.
-  int operator()(std::shared_ptr<Operation>, EventType, Operation::Result);
-
-  /// Ask to receive notification (and possibly a chance to cancel) events on
-  /// all operations. The return value is a handle that can be used to
-  /// unregister the observer.
-  Key insert(Observer);
-
-  /// Indicate that an observer should no longer be called. Returns the number
-  /// of remaining observers.
-  std::size_t erase(Key);
-
-  /// Returns the observer for the given key if one exists or nullptr otherwise.
-  Observer find(Key) const;
-
-private:
-  // A map of observers. The observers are held in a map so that they can be
-  // referenced (and therefore removed) at a later time using the observer's
-  // associated key.
-  std::map<Key, Observer> m_observers;
-};
+typedef smtk::common::Observers<Observer> Observers;
 }
 }
 

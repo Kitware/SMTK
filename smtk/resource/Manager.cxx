@@ -36,7 +36,7 @@ void InitializeObserver(Manager* mgr, Observer fn)
 }
 
 Manager::Manager()
-  : m_observers(this, InitializeObserver)
+  : m_observers(std::bind(InitializeObserver, this, std::placeholders::_1))
 {
 }
 

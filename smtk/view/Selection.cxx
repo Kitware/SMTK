@@ -11,7 +11,10 @@
 
 #include "smtk/resource/Component.h"
 
-#define SMTK_SELECTION_MANAGER_SOURCE "selection manager"
+namespace
+{
+static constexpr const char* g_selectionManagerSource = "selection manager";
+}
 
 namespace smtk
 {
@@ -31,6 +34,8 @@ static Selection* g_instance = nullptr;
 
 Selection::Selection()
   : m_defaultAction(SelectionAction::FILTERED_REPLACE)
+  , m_observers(
+      [this](Selection::Observer& fn) { fn(g_selectionManagerSource, this->shared_from_this()); })
   , m_filter(defaultFilter)
 {
   if (!g_instance)
@@ -152,22 +157,6 @@ Selection::SelectionMap& Selection::currentSelection(SelectionMap& selection) co
   return selection;
 }
 
-int Selection::observe(Observer fn, bool immediatelyNotify)
-{
-  if (!fn)
-  {
-    return -1;
-  }
-
-  int handle = m_listeners.empty() ? 0 : m_listeners.rbegin()->first + 1;
-  m_listeners[handle] = fn;
-  if (immediatelyNotify)
-  {
-    fn(SMTK_SELECTION_MANAGER_SOURCE, shared_from_this());
-  }
-  return handle;
-}
-
 void Selection::setFilter(const SelectionFilter& fn, bool refilter)
 {
   if (!fn)
@@ -185,7 +174,7 @@ void Selection::setFilter(const SelectionFilter& fn, bool refilter)
   m_filter = fn;
   if (refilter)
   {
-    this->refilter(SMTK_SELECTION_MANAGER_SOURCE);
+    this->refilter(g_selectionManagerSource);
   }
 }
 
@@ -337,15 +326,6 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
   return modified;
 }
 
-void Selection::notifyListeners(const std::string& source)
-{
-  Ptr self = this->shared_from_this();
-  for (auto ll : m_listeners)
-  {
-    ll.second(source, self);
-  }
-}
-
 bool Selection::refilter(const std::string& source)
 {
   SelectionMap suggestions;
@@ -392,7 +372,7 @@ bool Selection::refilter(const std::string& source)
   suggestions.clear();
   if (modified)
   {
-    this->notifyListeners(source);
+    this->observers()(source, shared_from_this());
   }
   return modified;
 }

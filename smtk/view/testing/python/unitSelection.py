@@ -112,44 +112,42 @@ class TestSelection(smtk.testing.TestCase):
         self.assertEqual(mgr, smtk.view.Selection.instance(),
                          'Selection manager reported by instance should survive creation of others.')
 
-    def testSelectionModificationFilterListen(self):
+    def testSelectionModificationFilterObserve(self):
         self.loadTestData()
         mgr = self.selnMgr
 
-        def listener(src, smgr):
+        def observer(src, smgr):
             global eventCount
-            print('Selection updated by %s' % src)
             eventCount += 1
 
-        # Test that listener is called at proper times:
-        handle = mgr.observe(listener, True)
-        print('Selection event listener-handle %d' % handle)
+        # Test that observer is called at proper times:
+        handle = mgr.observers().insert(observer, True)
         self.assertGreaterEqual(
-            handle, 0, 'Failed to register selection listener.')
+            handle, 0, 'Failed to register selection observer.')
         expectedEventCount = 1
         self.assertEqual(eventCount, expectedEventCount,
-                         'Selection listener was not called immediately.')
+                         'Selection observer was not called immediately.')
         comp = self.resource.find(self.model.entity())
         selnVal = mgr.findOrCreateLabeledValue('selection')
-        selnSrc = 'testSelectionModificationListen'
+        selnSrc = 'testSelectionModificationObserve'
         mgr.registerSelectionSource(selnSrc)
         mgr.registerSelectionValue('selection', selnVal)
 
-        # Test selection modification and insure listener is called properly:
+        # Test selection modification and ensure observer is called properly:
         mgr.modifySelection(
             [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         expectedEventCount += 1
         self.assertEqual(eventCount, expectedEventCount,
-                         'Selection listener was not called upon change.')
+                         'Selection observer was not called upon change.')
         mgr.modifySelection(
             [comp, ], selnSrc, selnVal, smtk.view.SelectionAction.FILTERED_ADD, False)
         self.assertEqual(eventCount, expectedEventCount,
-                         'Selection listener was called when there should be no event.')
+                         'Selection observer was called when there should be no event.')
         mgr.modifySelection(
             [], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         expectedEventCount += 1
         self.assertEqual(eventCount, expectedEventCount,
-                         'Selection listener was not called upon modification.')
+                         'Selection observer was not called upon modification.')
 
         # Test that filtering works
         def allPassFilter(comp, lvl, sugg):
@@ -159,14 +157,14 @@ class TestSelection(smtk.testing.TestCase):
         expectedEventCount += 1
         mgr.setFilter(allPassFilter)
         self.assertEqual(eventCount, expectedEventCount,
-                         'Selection listener was called upon no-op filter pass.')
+                         'Selection observer was called upon no-op filter pass.')
 
         def nonePassFilter(comp, lvl, sugg):
             return False
         mgr.setFilter(nonePassFilter)
         expectedEventCount += 1
         self.assertEqual(eventCount, expectedEventCount,
-                         'Selection listener was not called upon filter pass.')
+                         'Selection observer was not called upon filter pass.')
 
         # We cannot test filters that suggest new values in Python
         # because pybind copies the suggestions map by value rather
@@ -180,12 +178,13 @@ class TestSelection(smtk.testing.TestCase):
         # mgr.modifySelection([comp,], selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
         # expectedEventCount += 1
         # print(mgr.currentSelection())
-        # self.assertEqual(eventCount, expectedEventCount, 'Selection listener
+        # self.assertEqual(eventCount, expectedEventCount, 'Selection observer
         # was not called upon suggestion pass.')
 
-        self.assertTrue(mgr.unobserve(handle), 'Could not unregister listener')
+        self.assertTrue(mgr.observers().erase(
+            handle), 'Could not unregister observer')
         self.assertFalse(
-            mgr.unobserve(handle), 'Could double-unregister listener')
+            mgr.observers().erase(handle), 'Could double-unregister observer')
 
         # Test enumeration of selection
         model = smtk.model.Model(comp.modelResource(), comp.id())
