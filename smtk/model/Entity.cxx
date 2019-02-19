@@ -1506,43 +1506,22 @@ that are of type (or derived type) def.
   */
 smtk::attribute::Attributes Entity::attributes(smtk::attribute::ConstDefinitionPtr def) const
 {
-  smtk::attribute::Attributes atts;
+  smtk::attribute::Attributes result;
   // If there was no definition return empty list
   if (def == nullptr)
   {
-    return atts;
+    return result;
   }
   auto attResource = def->resource();
   // If there is no resource then return an empty list
   if (attResource == nullptr)
   {
-    return atts;
+    return result;
   }
 
-  // First lets find all attribute IDs that are assoicated with the entity
-  ResourcePtr resource = this->modelResource();
-  UUIDsToAttributeAssignments::const_iterator entry = resource->attributeAssignments().find(m_id);
-  // No attributes then just return an emoty list
-  if (entry == resource->attributeAssignments().end())
-  {
-    return atts;
-  }
-  // Lets go through all of the attributes and find the ones that come from def
-  for (auto id : entry->second.attributeIds())
-  {
-    auto a = attResource->findAttribute(id);
-    if (a == nullptr)
-    {
-      // Could not find the attribute for that ID
-      continue;
-    }
-    // Is this attribute based on def
-    if (a->definition()->isA(def))
-    {
-      atts.push_back(a);
-    }
-  }
-  return atts;
+  auto atts = def->attributes(this->shared_from_this());
+  result.insert(result.end(), atts.begin(), atts.end());
+  return result;
 }
 
 EntityPtr Entity::owningModel() const

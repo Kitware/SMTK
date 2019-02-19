@@ -187,7 +187,12 @@ public:
   // Return the attributes that are associated on a PersistentObject
   std::set<AttributePtr> attributes(const smtk::resource::ConstPersistentObjectPtr& object) const;
 
-  bool hasAttributes() { return m_attributes.size() > 0; }
+  // true if the PersistentObject has attributes associated with it
+  bool hasAttributes(const smtk::resource::ConstPersistentObjectPtr& object) const;
+
+  bool hasAttributes() const { return m_attributes.size() > 0; }
+
+  void disassociateAllAttributes(const smtk::resource::PersistentObjectPtr& object);
 
   // When a definition's items has changed use this method to update derived def
   // item offsets which is used by the find item method

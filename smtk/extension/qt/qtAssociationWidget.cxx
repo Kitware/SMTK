@@ -130,7 +130,6 @@ bool qtAssociationWidget::hasSelectedItem()
 
 void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)
 {
-  std::cerr << "Showing Associations for " << theAtt->name() << std::endl;
   this->Internals->currentAtt = theAtt;
   this->refreshAssociations();
 }

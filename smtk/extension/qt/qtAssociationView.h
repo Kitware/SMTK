@@ -31,6 +31,21 @@ namespace smtk
 {
 namespace extension
 {
+/**\brief A View that provides a GUI to edit an attribute's association information.
+  *
+  * The JSON and XML format for this View is the same as the one used for qtAttributeView with the
+  * exception that the Type is Associations instead of Attribute.  Note that the View does not
+  * allow for the creation of attributes or the editing of an attribute's non-association
+  * related information.
+  *
+  * Here is an example XML
+  *   <View Type="Associations" Title="Material Assignment" Label="Assignment">
+  *    <AttributeTypes>
+  *      <Att Type="material"/>
+  *    </AttributeTypes>
+  *  </View>
+  *
+  */
 class SMTKQTEXT_EXPORT qtAssociationView : public qtBaseView
 {
   Q_OBJECT

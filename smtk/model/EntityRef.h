@@ -219,12 +219,16 @@ public:
   void setBoundingBox(const double bbox[6]);
 
   bool hasAttributes() const;
+  bool hasAttributes(smtk::attribute::ConstResourcePtr attRes) const;
   bool hasAttribute(const smtk::common::UUID& attribId) const;
   bool associateAttribute(
     smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId);
-  bool disassociateAttribute(smtk::attribute::ResourcePtr attResource,
-    const smtk::common::UUID& attribId, bool reverse = true);
-  bool disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool reverse = true);
+  bool disassociateAttribute(
+    smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId);
+  bool disassociateAttribute(
+    smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool reverse);
+  bool disassociateAllAttributes(smtk::attribute::ResourcePtr attResource);
+  bool disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool reverse);
   /// Returns true if at least 1 attribute in the set of \a attribPtrs was removed.
   template <typename T>
   bool disassociateAttributes(const T& attribPtrs)
@@ -237,9 +241,12 @@ public:
     return removedAny;
   }
 
-  smtk::common::UUIDs attributeIds() const;
   /// Return a list of attributes on the entity based on an attribute definition
   smtk::attribute::Attributes attributes(smtk::attribute::ConstDefinitionPtr def) const;
+  /// Return a list of attributes on the entity based on an attribute resource
+  smtk::attribute::Attributes attributes(smtk::attribute::ConstResourcePtr res) const;
+  /// Return a list of attributes on the entity based on the resource manager.
+  smtk::attribute::Attributes attributes() const;
 
   // For T = {IntegerData, FloatData, StringData}:
   template <typename T>

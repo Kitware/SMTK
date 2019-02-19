@@ -33,16 +33,15 @@ int unitAttributeAssociation(int, char* [])
   // ----
   // I. First see how things work when Resource is not yet set.
   attribute::ResourcePtr resptr = attribute::Resource::create();
-  attribute::Resource& res(*resptr.get());
   smtkTest(
-    res.associations().empty() == true, "Resource should not have model storage by default.");
+    resptr->associations().empty() == true, "Resource should not have model storage by default.");
 
-  DefinitionPtr def = res.createDefinition("testDef");
+  DefinitionPtr def = resptr->createDefinition("testDef");
   auto arule = def->createLocalAssociationRule();
   def->setLocalAssociationMask(smtk::model::VERTEX);
   arule->setIsExtensible(true);
   arule->setMaxNumberOfValues(2);
-  AttributePtr att = res.createAttribute("testAtt", "testDef");
+  AttributePtr att = resptr->createAttribute("testAtt", "testDef");
 
   UUID fakeEntityId = UUID::random();
   smtkTest(!att->associateEntity(fakeEntityId),
@@ -56,9 +55,9 @@ int unitAttributeAssociation(int, char* [])
   // II. Now see how things work when the attribute resource has
   //     a valid model modelMgr pointer.
   model::Resource::Ptr modelMgr = model::Resource::create();
-  res.associate(modelMgr);
-  smtkTest(
-    *res.associations().begin() == modelMgr, "Could not set attribute resource's model-resource.");
+  resptr->associate(modelMgr);
+  smtkTest(*resptr->associations().begin() == modelMgr,
+    "Could not set attribute resource's model-resource.");
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
@@ -67,10 +66,11 @@ int unitAttributeAssociation(int, char* [])
     "Could not associate a vertex to an attribute.");
 
   att->disassociateEntity(v0);
-  smtkTest(!v0.hasAttributes(), "Disassociating an attribute did not notify the entity.");
+  smtkTest(!v0.hasAttributes(resptr), "Disassociating an attribute did not notify the entity.");
 
   att->disassociateEntity(v1.entity());
-  smtkTest(!v1.hasAttributes(), "Disassociating a non-existent attribute appears to associate it.");
+  smtkTest(
+    !v1.hasAttributes(resptr), "Disassociating a non-existent attribute appears to associate it.");
 
   v1.associateAttribute(att->attributeResource(), att->id());
   att->removeAllAssociations();

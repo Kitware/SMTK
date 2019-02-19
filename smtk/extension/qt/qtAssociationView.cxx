@@ -199,7 +199,6 @@ void qtAssociationView::getAllDefinitions()
   std::string attName, defName, val;
   smtk::attribute::AttributePtr att;
   smtk::attribute::DefinitionPtr attDef;
-  bool flag;
 
   // The view should have a single internal component called InstancedAttributes
   if ((view->details().numberOfChildren() != 1) ||
@@ -250,10 +249,6 @@ void qtAssociationView::getAllDefinitions()
       return a->displayedTypeName() < b->displayedTypeName();
     });
 
-#ifndef _MSC_VER
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
   foreach (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
   {
     foreach (QString category, this->Internals->AttDefMap.keys())
@@ -265,9 +260,6 @@ void qtAssociationView::getAllDefinitions()
       }
     }
   }
-#ifndef _MSC_VER
-#pragma GCC diagnostic pop
-#endif
 }
 
 bool qtAssociationView::isEmpty() const

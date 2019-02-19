@@ -1412,10 +1412,6 @@ void qtAttributeView::getAllDefinitions()
       return a->displayedTypeName() < b->displayedTypeName();
     });
 
-#ifndef _MSC_VER
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
   foreach (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
   {
     foreach (QString category, this->Internals->AttDefMap.keys())
@@ -1427,9 +1423,6 @@ void qtAttributeView::getAllDefinitions()
       }
     }
   }
-#ifndef _MSC_VER
-#pragma GCC diagnostic pop
-#endif
 }
 
 void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
