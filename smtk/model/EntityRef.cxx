@@ -902,111 +902,179 @@ void EntityRef::setBoundingBox(const double bbox[6])
   */
 ///@{
 /**\brief Does the entityref have any attributes associated with it?
+  * Note that this method uses the resource manager.  If the corresponding
+  * model resource is unmanaged this will return false.
   */
 bool EntityRef::hasAttributes() const
 {
-  ResourcePtr mgr = m_resource.lock();
-  UUIDsToAttributeAssignments::const_iterator it = mgr->attributeAssignments().find(m_entity);
-  if (it != mgr->attributeAssignments().end())
+  auto comp = this->component();
+  if (comp == nullptr)
   {
-    return it->second.attributeIds().empty() ? false : true;
+    return false;
+  }
+  auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
+  for (auto obj : objs)
+  {
+    auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
+    // If this is an attribute then return true
+    if (att)
+    {
+      return true;
+    }
   }
   return false;
 }
 
-/**\brief Does the entityref have any attributes associated with it?
+/** @name Attribute associations
+  *
+  */
+///@{
+/**\brief Does the entityref have any attributes associated with it from a specific attribute resource?
+  */
+bool EntityRef::hasAttributes(smtk::attribute::ConstResourcePtr attRes) const
+{
+  auto comp = this->component();
+  if (comp == nullptr)
+  {
+    return false;
+  }
+  return attRes->hasAttributes(comp);
+}
+
+/**\brief Does the entityref have a specific attribute (represented by an UUID) associate to it.
+ * Note that this method requires a resource manager.  If the model and/or attribute resource is
+ * not managed, the method will always return false  - To be deprecated
  */
 bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
 {
-  ResourcePtr mgr = m_resource.lock();
-  return mgr->hasAttribute(attribId, m_entity);
+  auto comp = this->component();
+  if (comp == nullptr)
+  {
+    return false;
+  }
+  auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
+  for (auto obj : objs)
+  {
+    auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
+    // If this is an attribute then see if it matches the UUID
+    if ((att != nullptr) && (att->id() == attribId))
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
-/**\brief Does the entityref have any attributes associated with it?
+/**\brief Does the entityref have any attributes associated with it? - To be deprecated
   */
 bool EntityRef::associateAttribute(
   smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId)
 {
-  ResourcePtr mgr = m_resource.lock();
-  return mgr->associateAttribute(attResource, attribId, m_entity);
+  auto comp = this->component();
+  auto att = attResource->findAttribute(attribId);
+  if ((comp == nullptr) || (att == nullptr))
+  {
+    return false;
+  }
+  return att->associate(comp);
 }
 
-/**\brief Does the entityref have any attributes associated with it?
+/**\brief Disassociate an attribute from the entity? - To be deprecated
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool reverse)
+  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId)
 {
-  ResourcePtr mgr = m_resource.lock();
-  return mgr->disassociateAttribute(attResource, attribId, m_entity, reverse);
+  auto att = attResource->findAttribute(attribId);
+  auto comp = this->component();
+  if ((att == nullptr) || (comp == nullptr))
+  {
+    return true; // there is no attribute to disassociate
+  }
+  return att->disassociate(comp);
+}
+
+/**\brief Disassociate an attribute from the entity? - To be deprecated!
+  */
+bool EntityRef::disassociateAttribute(
+  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool)
+{
+  return this->disassociateAttribute(attResource, attribId);
 }
 
 /**\brief Remove all attribute association form this entityref
   */
-bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool reverse)
+bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource)
 {
-  smtk::common::UUIDs atts = this->attributeIds();
-  smtk::common::UUIDs::const_iterator it;
-  bool res = true;
-  for (it = atts.begin(); it != atts.end(); ++it)
+  auto comp = this->component();
+  if (comp == nullptr)
   {
-    if (!this->disassociateAttribute(attResource, *it, reverse))
-      res = false;
+    return false;
   }
-  return res;
+  attResource->disassociateAllAttributes(comp);
+  return true;
 }
 
-/**\brief Does the entityref have any attributes associated with it?
+/**\brief Remove all attribute association form this entityref - To be deprecated!
   */
-smtk::common::UUIDs EntityRef::attributeIds() const
+bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool)
 {
-  ResourcePtr mgr = m_resource.lock();
-  UUIDsToAttributeAssignments::const_iterator entry = mgr->attributeAssignments().find(m_entity);
-  if (entry == mgr->attributeAssignments().end())
-  {
-    return smtk::common::UUIDs();
-  }
-  return entry->second.attributeIds();
+  return this->disassociateAllAttributes(attResource);
 }
+
 /**\brief Return the attributes associated with the entity
 that are of type (or derived type) def.
   */
 smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::ConstDefinitionPtr def) const
 {
-  smtk::attribute::Attributes atts;
-  // If there was no definition return empty list
-  if (def == nullptr)
+  auto ent = this->entityRecord();
+  if (ent == nullptr)
   {
-    return atts;
+    smtk::attribute::Attributes foo;
+    return foo;
   }
-  auto attResource = def->resource();
-  // If there is no resource then return an empty list
-  if (attResource == nullptr)
-  {
-    return atts;
-  }
+  return ent->attributes(def);
+}
 
-  // First lets find all attribute IDs that are assoicated with the entity
-  ResourcePtr mgr = this->m_resource.lock();
-  UUIDsToAttributeAssignments::const_iterator entry =
-    mgr->attributeAssignments().find(this->m_entity);
-  // No attributes then just return an emoty list
-  if (entry == mgr->attributeAssignments().end())
+///@}
+
+/**\brief Return the attributes associated with the entity
+that are from a specific attribute resource.
+  */
+smtk::attribute::Attributes EntityRef::attributes(smtk::attribute::ConstResourcePtr res) const
+{
+  auto comp = this->component();
+  smtk::attribute::Attributes result;
+  if (comp == nullptr)
+  {
+    return result;
+  }
+  auto atts = res->attributes(comp);
+  result.insert(result.begin(), atts.begin(), atts.end());
+  return result;
+}
+
+///@}
+
+/**\brief Return the attributes associated with the entity
+that are from attribute resources managed by the resource manager
+associated to the model resource.
+  */
+smtk::attribute::Attributes EntityRef::attributes() const
+{
+  auto comp = this->component();
+  smtk::attribute::Attributes atts;
+  if (comp == nullptr)
   {
     return atts;
   }
-  // Lets go through all of the attributes and find the ones that come from def
-  for (auto id : entry->second.attributeIds())
+  auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
+  for (auto obj : objs)
   {
-    auto a = attResource->findAttribute(id);
-    if (a == nullptr)
+    auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
+    // If this is an attribute resource, get the approproate attributes
+    if (att != nullptr)
     {
-      // Could not find the attribute for that ID
-      continue;
-    }
-    // Is this attribute based on def
-    if (a->definition()->isA(def))
-    {
-      atts.push_back(a);
+      atts.push_back(att);
     }
   }
   return atts;

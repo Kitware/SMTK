@@ -16,6 +16,7 @@ set(QAttrLibSrcs
   qtDescriptivePhraseEditor.cxx
   qtDescriptivePhraseModel.cxx
   qtGroupView.cxx
+  qtAssociationView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
   qtModelEntityAttributeView.cxx
@@ -56,6 +57,7 @@ set(QAttrLibSrcs
   )
 
 set(QAttrLibUIs
+  qtAssociationView.ui
   qtAttributeAssociation.ui
   qtCollapsibleGroupWidgetInternals.ui
   qtModelPanel.ui
@@ -81,6 +83,7 @@ set(QAttrLibMocHeaders
   qtDescriptivePhraseEditor.h
   qtDescriptivePhraseModel.h
   qtGroupView.h
+  qtAssociationView.h
   qtAttributeView.h
   qtInstancedView.h
   qtModelEntityAttributeView.h

@@ -50,8 +50,14 @@ class SMTKCORE_EXPORT Attribute : public resource::Component
 
 public:
   smtkTypeMacro(smtk::attribute::Attribute);
-  struct SMTKCORE_EXPORT WeakAttributePtrCompare
+  struct SMTKCORE_EXPORT CompareByName
   {
+    bool operator()(
+      const smtk::attribute::AttributePtr& lhs, const smtk::attribute::AttributePtr& rhs) const
+    {
+      return lhs->name() < rhs->name();
+    }
+
     bool operator()(const smtk::attribute::WeakAttributePtr& lhs,
       const smtk::attribute::WeakAttributePtr& rhs) const
     {
@@ -283,6 +289,10 @@ protected:
   Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition);
 
   void removeAllItems();
+  /// Used to disassociate an attribute from an object without checking constraints.
+  /// Typical use is either when all attributes are being disassocaited from the same
+  /// object or if the attribute is being deleted.
+  void forceDisassociate(smtk::resource::PersistentObjectPtr);
   void addItem(smtk::attribute::ItemPtr iPtr) { m_items.push_back(iPtr); }
   void setName(const std::string& newname) { m_name = newname; }
 

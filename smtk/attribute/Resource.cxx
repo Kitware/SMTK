@@ -971,3 +971,40 @@ std::set<AttributePtr> Resource::attributes(
   }
   return result;
 }
+
+bool Resource::hasAttributes(const smtk::resource::ConstPersistentObjectPtr& object) const
+{
+  // See if the object has any attributes - Note that the
+  // linkedFrom method takes in a const shared pointer to a non-const resource even though the method
+  // does not change the resource's state. The reason for this is due to issues of auto casting shared pointers to
+  // non-const objects to shared pointers to const objects.
+  auto objs = object->links().linkedFrom(
+    const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
+  for (auto obj : objs)
+  {
+    auto entry = std::dynamic_pointer_cast<Attribute>(obj);
+    if (entry)
+    { //If we find even one attribute report yes
+      return true;
+    }
+  }
+  return false;
+}
+
+void Resource::disassociateAllAttributes(const smtk::resource::PersistentObjectPtr& object)
+{
+  // Get the attributes associated with this object - Note that the
+  // linkedFrom method takes in a const shared pointer to a non-const resource even though the method
+  // does not change the resource's state. The reason for this is due to issues of auto casting shared pointers to
+  // non-const objects to shared pointers to const objects.
+  auto objs = object->links().linkedFrom(
+    const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
+  for (auto obj : objs)
+  {
+    auto entry = std::dynamic_pointer_cast<Attribute>(obj);
+    if (entry)
+    { // Never insert a failed dynamic cast (null pointer)
+      entry->forceDisassociate(object);
+    }
+  }
+}

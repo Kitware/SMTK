@@ -46,6 +46,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindInstance.h"
 #include "PybindIntegerData.h"
 #include "PybindLoop.h"
+#include "PybindRegistrar.h"
 #include "PybindResource.h"
 #include "PybindModel.h"
 #include "PybindSession.h"
@@ -150,4 +151,6 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation > smtk_model_CloseModel = pybind11_init_smtk_model_CloseModel(model);
   PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > smtk_model_ExportModelJSON = pybind11_init_smtk_model_ExportModelJSON(model);
   PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperation > smtk_model_SetProperty = pybind11_init_smtk_model_SetProperty(model);
+
+  py::class_< smtk::model::Registrar > smtk_model_Registrar = pybind11_init_smtk_model_Registrar(model);
 }

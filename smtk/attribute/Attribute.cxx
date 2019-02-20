@@ -333,15 +333,6 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
       return false;
     }
   }
-  // If we are here then there are no prerequisite issues to deal with
-  for (auto oit = m_associatedObjects->begin(); oit != m_associatedObjects->end(); ++oit)
-  {
-    auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(*oit);
-    if (modelEnt)
-    {
-      modelEnt->modelResource()->disassociateAttribute(nullptr, this->id(), modelEnt->id(), false);
-    }
-  }
   m_associatedObjects->reset();
   return true;
 }
@@ -405,7 +396,7 @@ bool Attribute::isObjectAssociated(const smtk::resource::PersistentObjectPtr& co
   */
 bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
 {
-  return m_associatedObjects ? m_associatedObjects->has(entity) : false;
+  return this->isObjectAssociated(entity);
 }
 
 /**\brief Is the model entity of the \a entityref associated with this attribute?
@@ -457,26 +448,29 @@ smtk::common::UUIDs Attribute::associatedModelEntityIds() const
 
 bool Attribute::associate(smtk::resource::PersistentObjectPtr obj)
 {
-  bool res = this->isObjectAssociated(obj);
-  if (res)
+  if (this->isObjectAssociated(obj))
   {
-    return res;
+    return true;
   }
 
   // Lets see if we have any conflicts
-
-  res = m_associatedObjects ? m_associatedObjects->appendObjectValue(obj) : false;
-  if (!res)
+  if (m_definition->checkForConflicts(obj) != nullptr)
   {
-    return res;
+    return false;
+  }
+  // What about missing prerequisites?
+  if (m_definition->checkForPrerequisites(obj) != nullptr)
+  {
+    return false;
   }
 
-  auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
-  if (modelEnt)
+  // Did it pass the association rules?
+  if ((m_associatedObjects != nullptr) && m_associatedObjects->appendObjectValue(obj))
   {
-    res = modelEnt->modelResource()->associateAttribute(nullptr, this->id(), modelEnt->id());
+    return true;
   }
-  return res;
+  // Failed the association rules
+  return false;
 }
 
 /**\brief Associate a new-style model ID (a UUID) with this attribute.
@@ -530,14 +524,6 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
 
   res =
     (m_associatedObjects) ? m_associatedObjects->appendObjectValue(entityRef.component()) : false;
-  if (!res)
-    return res;
-
-  smtk::model::ResourcePtr modelMgr = entityRef.resource();
-  if (modelMgr)
-  {
-    res = modelMgr->associateAttribute(nullptr, this->id(), entityRef.entity());
-  }
   return res;
 }
 
@@ -659,8 +645,7 @@ bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool rever
   return this->disassociate(obj, foo, reverse);
 }
 
-bool Attribute::disassociate(
-  smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool reverse)
+bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool)
 {
   if (!this->canBeDisassociated(obj, probAtt))
   {
@@ -673,18 +658,17 @@ bool Attribute::disassociate(
     return true;
   }
   m_associatedObjects->removeValue(idx);
-  if (reverse)
-  {
-    auto modelEnt = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
-    if (modelEnt)
-    {
-      modelEnt->modelResource()->disassociateAttribute(
-        this->attributeResource(), this->id(), modelEnt->id(), false);
-    }
-  }
   return true;
 }
 
+void Attribute::forceDisassociate(smtk::resource::PersistentObjectPtr obj)
+{
+  std::ptrdiff_t idx = m_associatedObjects->find(obj);
+  if (idx >= 0)
+  {
+    m_associatedObjects->removeValue(idx);
+  }
+}
 /**\brief Return the item with the given \a inName, searching in the given \a style.
   *
   * The search style dictates whether children of conditional items are included

@@ -24,19 +24,36 @@ if __name__ == '__main__':
     status = 0
 
     # Create smtk model with 1 group item
-    mmgr = smtk.model.Resource.create()
+    modelResource = smtk.model.Resource.create()
     mask = smtk.model.FACE | smtk.model.GROUP_ENTITY
-    group_item = mmgr.addGroup(mask, 'TopFaceBCS')
+    group_item = modelResource.addGroup(mask, 'TopFaceBCS')
 
     # Create attribute resource with 1 def
-    resource = smtk.attribute.Resource.create()
-    defn = resource.createDefinition('testdef')
-    resource.associate(mmgr)
+    attributeResource = smtk.attribute.Resource.create()
+    defn = attributeResource.createDefinition('testdef')
+    attributeResource.associate(modelResource)
     defn.setLocalAssociationMask(int(mask))
     defn.associationRule().setIsExtensible(True)
 
+    # Create a resource manager
+    resMan = smtk.resource.Manager.create()
+    smtk.model.Registrar.registerTo(resMan)
+    smtk.attribute.Registrar.registerTo(resMan)
+
+    if resMan.add(modelResource):
+        print("Added model resource to manager")
+    else:
+        print("Failed to add model resource to manager")
+        status = -1
+
+    if resMan.add(attributeResource):
+        print("Added attribute resource to manager")
+    else:
+        print("Failed to add attribute resource to manager")
+        status = -1
+
     # Create attribute and associate to group item
-    att = resource.createAttribute('testatt', defn)
+    att = attributeResource.createAttribute('testatt', defn)
     a = att.associateEntity(group_item.entity())
 
     if a:
@@ -56,7 +73,7 @@ if __name__ == '__main__':
         status = -1
 
     # Check to see if the model entity knows about the attribute
-    if group_item.hasAttributes():
+    if group_item.hasAttributes(attributeResource):
         print("Model Entity does have attributes")
         if group_item.hasAttribute(att.id()):
             print("Model Entity has this attribute associated")
@@ -64,13 +81,13 @@ if __name__ == '__main__':
             print(
                 "Model Entity does not have this attribute associated with it")
             status = -1
-        uuids = group_item.attributeIds()
+        atts = group_item.attributes(attributeResource)
         print(
-            "the number of attributes associated with the ent is ", len(uuids))
+            "the number of attributes associated with the ent is ", len(atts))
         # There should be only 1 attribute on it
-        if len(uuids) == 1:
+        if len(atts) == 1:
             print("Model Entity return correct attribute list size")
-        if att.id() in uuids:
+        if att in atts:
             print(
                 "Model Entity did return the attribute via attributes() call")
     else:

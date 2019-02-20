@@ -129,6 +129,12 @@ qtAttributeView::qtAttributeView(const ViewInfo& info)
   : qtBaseView(info)
 {
   this->Internals = new qtAttributeViewInternals;
+  smtk::view::ViewPtr view = this->getObject();
+  m_hideAssociations = false;
+  if (view)
+  {
+    view->details().attributeAsBool("HideAssociations", m_hideAssociations);
+  }
 }
 
 qtAttributeView::~qtAttributeView()
@@ -399,7 +405,7 @@ QTableWidgetItem* qtAttributeView::getSelectedItem()
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
 {
   bool rvisible = false, avisible = false;
-  if (theAtt)
+  if (theAtt && (!m_hideAssociations))
   {
     if (theAtt->definition()->associationRule())
     {
@@ -1406,10 +1412,6 @@ void qtAttributeView::getAllDefinitions()
       return a->displayedTypeName() < b->displayedTypeName();
     });
 
-#ifndef _MSC_VER
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
-#endif
   foreach (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
   {
     foreach (QString category, this->Internals->AttDefMap.keys())
@@ -1421,9 +1423,6 @@ void qtAttributeView::getAllDefinitions()
       }
     }
   }
-#ifndef _MSC_VER
-#pragma GCC diagnostic pop
-#endif
 }
 
 void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)

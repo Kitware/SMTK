@@ -407,17 +407,6 @@ int main(int argc, char* argv[])
     test(entity.hasStringProperty("name") == false);
     test(entity.hasIntegerProperty("7beef") == false);
 
-    // Verify that attribute assignment works (with some
-    // made-up attribute IDs)
-    smtk::common::UUID aid1, aid2;
-    aid1 = smtk::common::UUID::random();
-    aid2 = smtk::common::UUID::random();
-    test(!entity.hasAttributes(), "Detecting an un-associated attribute");
-    test(entity.associateAttribute(NULL, aid1), "Associating an attribute");
-    test(entity.associateAttribute(NULL, aid1), "Re-associating a repeated attribute");
-    test(entity.disassociateAttribute(NULL, aid1), "Disassociating an associated attribute");
-    test(!entity.disassociateAttribute(NULL, aid2), "Disassociating an un-associated attribute");
-
     // Test that face entity was created with invalid (but present) face uses.
     Face f(sm, uids[20]);
     test(f.volumes().size() == 1 && f.volumes()[0].isVolume());

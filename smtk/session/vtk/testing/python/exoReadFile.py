@@ -127,8 +127,6 @@ class TestVTKSession(smtk.testing.TestCase):
                         'Not all cell names recognized.')
 
         someCell = allCells[0]
-        self.assertEqual(someCell.attributeIds(), set([]),
-                         'Cell should not have any attribute associations.')
         asys = smtk.attribute.Resource.create()
         adef = asys.createDefinition('testDef')
         adef.setLocalAssociationMask(int(smtk.model.CELL_ENTITY))
@@ -138,7 +136,7 @@ class TestVTKSession(smtk.testing.TestCase):
 
         self.assertTrue(attr.associateEntity(someCell),
                         'Could not associate cell to attribute')
-        self.assertEqual(someCell.attributeIds(), set([attr.id()]),
+        self.assertEqual(asys.attributes(someCell.component()), set([attr]),
                          'Cell should have the assigned attribute.')
 
         # Verify that no cells which are not in the list above are present.
