@@ -59,12 +59,40 @@ std::string XmlV3StringWriter::rootNodeName() const
 void XmlV3StringWriter::generateXml(smtk::io::Logger& logger)
 {
   XmlV2StringWriter::generateXml(logger);
+  auto root = this->topRootNode();
+  // Process Resource Association Info
+  auto associations = m_resource->associations();
+  // Find the XML to place this info
+  auto node = (this->topDefinitionsNode()
+      ? this->topDefinitionsNode()
+      : ((this->topAttributesNode() ? this->topAttributesNode() : this->topViewsNode())));
+  xml_node associationsNode;
+  if (node)
+  {
+    associationsNode = root.insert_child_before("Associations", node);
+  }
+  else
+  {
+    associationsNode = root.append_child("Associations");
+  }
+
+  for (auto association : associations)
+  {
+    xml_node associationNode = associationsNode.append_child("Association");
+    // Because resource links are not serialized into XML, we add enough data
+    // to each reference item to recreate the link.
+    associationNode.append_attribute("Index").set_value(
+      static_cast<unsigned int>(association->index()));
+    associationNode.append_attribute("TypeName").set_value(association->typeName().c_str());
+    associationNode.append_attribute("Id").set_value(association->id().toString().c_str());
+    associationNode.append_attribute("Location").set_value(association->location().c_str());
+  }
+
   // Lets see if we have any exclusions or prerequisits constriants
   xml_node exNode, preNode, child, n;
   // First lets get the definitions in sorted order
   std::vector<smtk::attribute::DefinitionPtr> defs;
   m_resource->definitions(defs, true);
-  auto root = this->topRootNode();
 
   // Lets process the constraints
   for (auto def : defs)
@@ -80,7 +108,7 @@ void XmlV3StringWriter::generateXml(smtk::io::Logger& logger)
       {
         // This should be right after the definitions section if there is
         // one else it should be before prerequisites, attributes and views
-        auto node = this->topDefinitionsNode();
+        node = this->topDefinitionsNode();
         if (node)
         {
           exNode = root.insert_child_after("Exclusions", node);
@@ -124,7 +152,7 @@ void XmlV3StringWriter::generateXml(smtk::io::Logger& logger)
       {
         // This should be right after the exclusion or definitions section if there is
         // one else it should be before attributes and views
-        auto node = (exNode) ? exNode : this->topDefinitionsNode();
+        node = (exNode) ? exNode : this->topDefinitionsNode();
         if (node)
         {
           preNode = root.insert_child_after("Prerequisites", node);
@@ -342,7 +370,7 @@ void XmlV3StringWriter::processReferenceItem(pugi::xml_node& node, attribute::Re
     {
       val = node.append_child("Val");
 
-      // Because resource links are not serialized into XML, we add enough dta
+      // Because resource links are not serialized into XML, we add enough data
       // to each reference item to recreate the link.
       auto objKey = item->objectKey(i);
 

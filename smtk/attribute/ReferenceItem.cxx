@@ -470,7 +470,15 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
     // We can resolve the linked object.
     return linkedObject;
   }
-
+  // If we cannot resolve the linked object, let's check to see if the object
+  // is held by the same resource as this ReferenceItem. There's no need for
+  // resource management in this event.
+  else if (!key.first.isNull() &&
+    this->attribute()->resource()->links().data().at(key.first).resolve(
+      this->attribute()->resource()))
+  {
+    return this->attribute()->links().linkedObject(key);
+  }
   return PersistentObjectPtr();
 }
 
@@ -501,6 +509,7 @@ bool ReferenceItem::resolve()
       }
     }
   }
+
   return allResolved;
 }
 }

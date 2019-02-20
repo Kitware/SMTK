@@ -28,7 +28,7 @@ public:
   XmlDocV3Parser(smtk::attribute::ResourcePtr resource);
   virtual ~XmlDocV3Parser();
   void process(pugi::xml_document& doc) override;
-  void process(pugi::xml_node& rootNode) override { XmlDocV2Parser::process(rootNode); }
+  void process(pugi::xml_node& rootNode) override;
 
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);
