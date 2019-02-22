@@ -37,6 +37,7 @@
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
+#include "vtkTriangleFilter.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
 
@@ -232,7 +233,13 @@ bool ImportVTKData::operator()(const std::string& filename, smtk::mesh::Resource
   }
   else if (auto poly = vtkPolyData::SafeDownCast(data.GetPointer()))
   {
-    return this->operator()(poly, resource, materialPropertyName);
+    // vtkPolyData can hold polylines, triangle strips, polygons and other
+    // hard-to-digest cells. These cells can be deconstructed into SMTK-friendly
+    // cells via the vtkTriangleFilter.
+    vtkNew<vtkTriangleFilter> triangleFilter;
+    triangleFilter->SetInputData(poly);
+    triangleFilter->Update();
+    return this->operator()(triangleFilter->GetOutput(), resource, materialPropertyName);
   }
   else
   {
