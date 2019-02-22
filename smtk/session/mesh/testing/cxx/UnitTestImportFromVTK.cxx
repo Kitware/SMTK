@@ -41,6 +41,9 @@ int UnitTestImportFromVTK(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
+  std::vector<std::string> files(
+    { "/mesh/2d/ImportFromDEFORM.vtu", "/../thirdparty/delaunay/data/chesapeake-0.001-100.vtp" });
+
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();
 
@@ -61,40 +64,50 @@ int UnitTestImportFromVTK(int argc, char* argv[])
   // resources will be automatically registered to the resource manager).
   operationManager->registerResourceManager(resourceManager);
 
-  smtk::model::Entity::Ptr model;
-
+  for (auto file : files)
   {
-    // Create an import operator
-    smtk::session::mesh::Import::Ptr importOp =
-      operationManager->create<smtk::session::mesh::Import>();
-    if (!importOp)
+    smtk::model::Entity::Ptr model;
+
     {
-      std::cerr << "No import operator\n";
-      return 1;
-    }
+      // Create an import operator
+      smtk::session::mesh::Import::Ptr importOp =
+        operationManager->create<smtk::session::mesh::Import>();
+      if (!importOp)
+      {
+        std::cerr << "No import operator\n";
+        return 1;
+      }
 
-    // Set the file path
-    std::string importFilePath(dataRoot);
-    importFilePath += "/mesh/2d/ImportFromDEFORM.vtu";
-    importOp->parameters()->findFile("filename")->setValue(importFilePath);
+      // Set the file path
+      std::string importFilePath(dataRoot);
+      importFilePath += file;
+      importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
-    // Execute the operation
-    smtk::operation::Operation::Result importOpResult = importOp->operate();
+      // Test for success
+      if (importOp->ableToOperate() == false)
+      {
+        std::cerr << "Import operator unable to operate\n";
+        return 1;
+      }
 
-    // Retrieve the resulting model
-    smtk::attribute::ComponentItemPtr componentItem =
-      std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
-        importOpResult->findComponent("model"));
+      // Execute the operation
+      smtk::operation::Operation::Result importOpResult = importOp->operate();
 
-    // Access the generated model
-    model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+      // Retrieve the resulting model
+      smtk::attribute::ComponentItemPtr componentItem =
+        std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+          importOpResult->findComponent("model"));
 
-    // Test for success
-    if (importOpResult->findInt("outcome")->value() !=
-      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-    {
-      std::cerr << "Import operator failed\n";
-      return 1;
+      // Access the generated model
+      model = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
+
+      // Test for success
+      if (importOpResult->findInt("outcome")->value() !=
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+      {
+        std::cerr << "Import operator failed\n";
+        return 1;
+      }
     }
   }
 
