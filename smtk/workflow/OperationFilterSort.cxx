@@ -40,27 +40,3 @@ void OperationFilterSort::apply(const WorkingSet& workingSet, Output& operations
     return da.precedence < db.precedence || (da.precedence == db.precedence && (da.name < db.name));
   });
 }
-
-OperationFilterSort::ObserverKey OperationFilterSort::observe(Observer fn, bool invokeImmediately)
-{
-  ObserverKey key = m_observers.empty() ? 0 : (m_observers.rbegin()->first + 1);
-  m_observers.insert(std::make_pair(key, fn));
-  if (invokeImmediately)
-  {
-    fn();
-  }
-  return key;
-}
-
-bool OperationFilterSort::unobserve(const ObserverKey& id)
-{
-  return m_observers.erase(id) > 0;
-}
-
-void OperationFilterSort::triggerObservers() const
-{
-  for (auto& entry : m_observers)
-  {
-    entry.second();
-  }
-}

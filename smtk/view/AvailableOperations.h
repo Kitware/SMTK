@@ -14,6 +14,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/common/Observers.h"
+
 #include "smtk/workflow/OperationFilterSort.h"
 
 #include "smtk/operation/Manager.h"
@@ -37,7 +39,7 @@ public:
   smtkCreateMacro(AvailableOperations);
   using Index = smtk::operation::Operation::Index;
   using Observer = std::function<void(AvailableOperations::Ptr)>;
-  using ObserverMap = std::map<int, Observer>;
+  using Observers = smtk::common::Observers<Observer>;
   using OperationManager = smtk::operation::ManagerPtr;
   using OperationObserverKey = smtk::operation::MetadataObservers::Key;
   using OperationIndexSet = std::set<Index>;
@@ -71,10 +73,9 @@ public:
   OperationFilterSort workflowFilter() const { return m_workflowFilter; }
   void setWorkflowFilter(OperationFilterSort wf);
 
-  /// Add an observer to be notified when available operations change. Returns a handle.
-  int observe(Observer fn, bool immediatelyInvoke);
-  /// Remove an observer by its handle.
-  bool unobserve(int observerId);
+  /// Return the observers associated with this phrase model.
+  Observers& observers() { return m_observers; }
+  const Observers& observers() const { return m_observers; }
 
   /// Called when operations are registered/unregistered from the operation manager.
   void operationMetadataChanged(const smtk::operation::Metadata& operMeta, bool adding);
@@ -115,8 +116,6 @@ protected:
   /// When the workflow signals a change, use the existing working set to compute a new final output.
   void computeFromWorkingSet();
 
-  void triggerObservers();
-
   OperationManager m_operationManager;
   OperationObserverKey m_operationManagerObserverId;
   SelectionPtr m_selection;
@@ -128,7 +127,7 @@ protected:
   int m_workflowFilterObserverId;
   OperationIndexSet m_workingSet;
   OperationIndexArray m_available;
-  ObserverMap m_observers;
+  Observers m_observers;
 };
 }
 }

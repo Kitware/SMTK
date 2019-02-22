@@ -24,6 +24,7 @@ set(PQComponentsSrcs
   pqPluginSMTKViewBehavior.cxx
   pqSMTKAttributePanel.cxx
   pqSMTKBehavior.cxx
+  pqSMTKCallObserversOnMainThreadBehavior.cxx
   pqSMTKCloseResourceBehavior.cxx
   pqSMTKColorByToolBar.cxx
   pqSMTKColorByWidget.cxx
@@ -72,6 +73,7 @@ set(PQComponentsHeaders
   pqSMTKBehavior.h
   pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.h
+  pqSMTKCallObserversOnMainThreadBehavior.h
   pqSMTKCloseResourceBehavior.h
   pqSMTKDisplayAttributeOnLoadBehavior.h
   pqSMTKRenderResourceBehavior.h

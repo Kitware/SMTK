@@ -3,8 +3,6 @@ set(operationSrcs
   Group.cxx
   Manager.cxx
   Metadata.cxx
-  MetadataObserver.cxx
-  Observer.cxx
   Operation.cxx
   Registrar.cxx
   ResourceManagerOperation.cxx

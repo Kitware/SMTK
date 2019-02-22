@@ -15,6 +15,7 @@
 #include "smtk/SharedFromThis.h"
 
 #include "smtk/resource/Component.h"
+#include "smtk/view/SelectionObserver.h"
 
 #include <functional>
 #include <map>
@@ -124,21 +125,21 @@ enum class SelectionAction
   *
   * Similarly, each UI element of your application that will (a) share
   * the selection and (b) present the selection or otherwise need to
-  * be informed of changes to the selection should register as a
-  * listener by providing a callback to observe().
+  * be informed of changes to the selection should register as an
+  * observer by providing a callback to observe().
   *
   * ## Selection Events
   *
-  * When the selection changes, listener functions subscribed to
+  * When the selection changes, Observer functions subscribed to
   * updates will be called with the name of the UI elements that
   * caused the event (or "selection" if a change inside the
   * selection itself caused the event). A pointer to the selection
   * is also provided so you can query the selection
-  * inside the listener function. You should **not** modify
-  * the selection inside a listener as that can cause infinite
+  * inside the Observer function. You should **not** modify
+  * the selection inside a Observer as that can cause infinite
   * recursion.
   *
-  * The listener may be called under a variety of circumstances:
+  * The Observer may be called under a variety of circumstances:
   *
   * + upon initial registration with the selection (if
   *   \a immediatelyNotify is passed as true),
@@ -146,7 +147,7 @@ enum class SelectionAction
   * + upon a change to the selection's filter that
   *   results in a change to the selection.
   *
-  * While listeners are not usually informed when attempted
+  * While Observers are not usually informed when attempted
   * changes to the selection have no effect, it is possible
   * to get called when the selection is entirely replaced with
   * an identical selection.
@@ -154,6 +155,8 @@ enum class SelectionAction
 class SMTKCORE_EXPORT Selection : smtkEnableSharedPtr(Selection)
 {
 public:
+  using Observer = SelectionObserver;
+  using Observers = SelectionObservers;
   using Component = smtk::resource::Component;
   using Object = smtk::resource::PersistentObject;
 
@@ -161,9 +164,6 @@ public:
   smtkCreateMacro(Selection);
 
   static Ptr instance();
-
-  /// This is the type of function used to notify observers when the selection is modified.
-  using Observer = std::function<void(const std::string&, Selection::Ptr)>;
 
   /// This is the underlying storage type that holds selections.
   using SelectionMap = std::map<Object::Ptr, int>;
@@ -346,16 +346,9 @@ public:
   }
   //@}
 
-  /** \brief Selection Events
-    *
-    */
-  //@{
-  /// Call \a fn whenever the selection is modified. Returns a handle you can pass to unobserve().
-  int observe(Observer fn, bool immediatelyNotify = false);
-
-  /// Stop listening to selection events.
-  bool unobserve(int handle) { return m_listeners.erase(handle) > 0; }
-  //@}
+  /// Return the observers associated with this phrase model.
+  Observers& observers() { return m_observers; }
+  const Observers& observers() const { return m_observers; }
 
   /** \brief Selection filtering.
     *
@@ -370,7 +363,6 @@ protected:
 
   bool performAction(smtk::resource::PersistentObjectPtr comp, int value, SelectionAction action,
     SelectionMap& suggested, bool bitwise);
-  void notifyListeners(const std::string& source);
   bool refilter(const std::string& source);
 
   SelectionAction m_defaultAction;
@@ -379,7 +371,7 @@ protected:
   std::set<std::string> m_selectionSources;
   std::map<std::string, int> m_selectionValueLabels;
   SelectionMap m_selection;
-  std::map<int, Observer> m_listeners;
+  Observers m_observers;
   SelectionFilter m_filter;
 
 private:
@@ -485,7 +477,7 @@ bool Selection::modifySelection(
   }
   if (modified)
   {
-    this->notifyListeners(source);
+    this->observers()(source, shared_from_this());
   }
   return modified;
 }

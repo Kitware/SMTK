@@ -125,7 +125,7 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
   // Get rid of old phrases
   if (m_model)
   {
-    m_model->unobserve(m_modelObserver);
+    m_model->observers().erase(m_modelObserver);
     if (!m_model->root()->subphrases().empty())
     {
       // Provide an invalid parent since you want to clear all
@@ -140,7 +140,7 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
   {
     // Observe all changes to the model, which includes calling the observer on all
     // existing top-level phrases.
-    m_modelObserver = m_model->observe(
+    m_modelObserver = m_model->observers().insert(
       [this](smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
         const std::vector<int>& src, const std::vector<int>& dst,
         const std::vector<int>& range) { this->updateObserver(phrase, event, src, dst, range); },

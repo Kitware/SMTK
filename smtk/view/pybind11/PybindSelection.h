@@ -69,11 +69,10 @@ PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::
       &smtk::view::Selection::modifySelection)
     .def("visitSelection", (void (smtk::view::Selection::*)(::std::function<void (std::shared_ptr<smtk::resource::PersistentObject>, int)>)) &smtk::view::Selection::visitSelection, py::arg("visitor"))
     .def("visitSelection", (void (smtk::view::Selection::*)(::std::function<void (std::shared_ptr<smtk::resource::Component>, int)>)) &smtk::view::Selection::visitSelection, py::arg("visitor"))
-    .def("observe", &smtk::view::Selection::observe, py::arg("fn"), py::arg("immediatelyNotify") = false)
-    .def("unobserve", &smtk::view::Selection::unobserve, py::arg("handle"))
     .def("setFilter", &smtk::view::Selection::setFilter, py::arg("fn"), py::arg("refilterSelection") = true)
     .def("currentSelection", (smtk::view::Selection::SelectionMap & (smtk::view::Selection::*)(::smtk::view::Selection::SelectionMap &) const) &smtk::view::Selection::currentSelection, py::arg("selection"))
     .def("currentSelection", (smtk::view::Selection::SelectionMap const & (smtk::view::Selection::*)() const) &smtk::view::Selection::currentSelection)
+    .def("observers", (smtk::view::Selection::Observers & (smtk::view::Selection::*)()) &smtk::view::Selection::observers, pybind11::return_value_policy::reference_internal)
     ;
   return instance;
 }

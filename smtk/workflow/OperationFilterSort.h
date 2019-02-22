@@ -59,8 +59,7 @@ public:
   using Output = std::vector<Index>;
   using FilterList = std::map<Index, Data>;
   using Observer = std::function<void()>;
-  using ObserverKey = int;
-  using ObserverMap = std::map<ObserverKey, Observer>;
+  using Observers = smtk::common::Observers<Observer>;
   smtkTypeMacroBase(smtk::workflow::OperationFilterSort);
   smtkCreateMacro(OperationFilterSort);
   virtual ~OperationFilterSort();
@@ -71,10 +70,9 @@ public:
   /// Choose a subset of operations to present to a used from \a workingSet.
   void apply(const WorkingSet& workingSet, Output& operationsToDisplay);
 
-  /// Call \a fn when this object's internal state is updated by the workflow.
-  ObserverKey observe(Observer fn, bool invokeImmediately = true);
-  /// Remove the \a fn matching \a id from the set of observers.
-  bool unobserve(const ObserverKey& id);
+  /// Return the observers associated filter sort.
+  Observers& observers() { return m_observers; }
+  const Observers& observers() const { return m_observers; }
 
   /// Call all observers to indicate the filter list has possibly changed.
   void triggerObservers() const;
@@ -83,7 +81,7 @@ protected:
   OperationFilterSort();
 
   FilterList m_filterList;
-  ObserverMap m_observers;
+  Observers m_observers;
 };
 }
 }

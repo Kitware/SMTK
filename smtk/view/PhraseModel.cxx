@@ -24,13 +24,11 @@
 
 #include "smtk/io/Logger.h"
 
-#undef SMTK_PHRASE_DEBUG
-
 namespace smtk
 {
 namespace view
 {
-namespace detail
+namespace
 {
 
 // Sort paths from deepest to shallowest, then rear-most to front-most.
@@ -63,9 +61,37 @@ struct PathComp
     return false; // a == b... neither is less than other.
   }
 };
+
+static void notifyRecursive(
+  PhraseModel::Observer obs, DescriptivePhrasePtr parent, std::vector<int>& parentIdx)
+{
+  if (!parent || !parent->areSubphrasesBuilt())
+  {
+    return;
+  }
+  std::vector<int> range(2);
+  DescriptivePhrases& children(parent->subphrases());
+  range[0] = 0;
+  range[1] = static_cast<int>(children.size());
+  obs(parent, PhraseModelEvent::ABOUT_TO_INSERT, parentIdx, parentIdx, range);
+  obs(parent, PhraseModelEvent::INSERT_FINISHED, parentIdx, parentIdx, range);
+  parentIdx.push_back(0);
+  for (auto child : children)
+  {
+    notifyRecursive(obs, child, parentIdx);
+    ++parentIdx.back();
+  }
+  parentIdx.pop_back();
 }
 
-class PhraseDeltas : public std::set<std::vector<int>, detail::PathComp>
+static void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
+{
+  std::vector<int> parentIdx;
+  return notifyRecursive(obs, parent, parentIdx);
+}
+}
+
+class PhraseDeltas : public std::set<std::vector<int>, PathComp>
 {
 };
 
@@ -101,6 +127,7 @@ PhraseModelPtr PhraseModel::create(const smtk::view::ViewPtr& viewSpec)
 }
 
 PhraseModel::PhraseModel()
+  : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
 {
   m_decorator = [](smtk::view::DescriptivePhrasePtr) {};
 }
@@ -136,8 +163,10 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         })
     : -1;
   int selnHandle = seln
-    ? seln->observe([this](const std::string& src,
-                      smtk::view::SelectionPtr seln) { this->handleSelectionEvent(src, seln); },
+    ? seln->observers().insert(
+        [this](const std::string& src, smtk::view::SelectionPtr seln) {
+          this->handleSelectionEvent(src, seln);
+        },
         /*observeImmediately*/ true)
     : -1;
   m_sources.push_back(Source(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle));
@@ -161,7 +190,7 @@ bool PhraseModel::removeSource(smtk::resource::ManagerPtr rsrcMgr,
       }
       if (it->m_selnHandle >= 0)
       {
-        it->m_seln->unobserve(it->m_selnHandle);
+        it->m_seln->observers().erase(it->m_selnHandle);
       }
       m_sources.erase(it);
       return true;
@@ -186,49 +215,6 @@ bool PhraseModel::resetSources()
     }
   }
   return removedAny;
-}
-
-static void notifyRecursive(
-  PhraseModel::Observer obs, DescriptivePhrasePtr parent, std::vector<int>& parentIdx)
-{
-  if (!parent || !parent->areSubphrasesBuilt())
-  {
-    return;
-  }
-  std::vector<int> range(2);
-  DescriptivePhrases& children(parent->subphrases());
-  range[0] = 0;
-  range[1] = static_cast<int>(children.size());
-  obs(parent, PhraseModelEvent::ABOUT_TO_INSERT, parentIdx, parentIdx, range);
-  obs(parent, PhraseModelEvent::INSERT_FINISHED, parentIdx, parentIdx, range);
-  parentIdx.push_back(0);
-  for (auto child : children)
-  {
-    notifyRecursive(obs, child, parentIdx);
-    ++parentIdx.back();
-  }
-  parentIdx.pop_back();
-}
-
-int PhraseModel::observe(Observer obs, bool immediatelyNotify)
-{
-  if (!obs)
-  {
-    return -1;
-  }
-  int handle = m_observers.empty() ? 0 : m_observers.rbegin()->first + 1;
-  m_observers[handle] = obs;
-  std::vector<int> parents;
-  if (immediatelyNotify)
-  {
-    notifyRecursive(obs, this->root(), parents);
-  }
-  return handle;
-}
-
-bool PhraseModel::unobserve(int handle)
-{
-  return m_observers.erase(handle) > 0;
 }
 
 DescriptivePhrasePtr PhraseModel::root() const
@@ -578,6 +564,8 @@ void PhraseModel::triggerDataChangedFor(smtk::resource::ComponentPtr comp)
     });
 }
 
+namespace
+{
 int depth(DescriptivePhrasePtr phr)
 {
   int dd = -1;
@@ -587,6 +575,7 @@ int depth(DescriptivePhrasePtr phr)
     phr = phr->parent();
   }
   return dd;
+}
 }
 
 void PhraseModel::trigger(DescriptivePhrasePtr phr, PhraseModelEvent event,
@@ -613,10 +602,7 @@ void PhraseModel::trigger(DescriptivePhrasePtr phr, PhraseModelEvent event,
   std::cout.flush();
 #endif
 
-  for (auto observer : m_observers)
-  {
-    observer.second(phr, event, src, dst, arg);
-  }
+  this->observers()(phr, event, src, dst, arg);
   // Check to see if phrases we just inserted have pre-existing children. If so, trigger them.
   if (event == PhraseModelEvent::INSERT_FINISHED && phr && phr->areSubphrasesBuilt())
   {

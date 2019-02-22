@@ -86,7 +86,7 @@ qtReferenceItem::~qtReferenceItem()
 {
   if (m_p->m_phraseModel && m_p->m_modelObserverId >= 0)
   {
-    m_p->m_phraseModel->unobserve(m_p->m_modelObserverId);
+    m_p->m_phraseModel->observers().erase(m_p->m_modelObserverId);
   }
   m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
   delete m_p;
@@ -386,7 +386,7 @@ void qtReferenceItem::updateUI()
   {
     m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);
     m_p->m_modelObserverId =
-      m_p->m_phraseModel->observe([this](smtk::view::DescriptivePhrasePtr phr,
+      m_p->m_phraseModel->observers().insert([this](smtk::view::DescriptivePhrasePtr phr,
         smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
         const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); });
   }

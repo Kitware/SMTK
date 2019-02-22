@@ -28,6 +28,7 @@ set(commonHeaders
   json/jsonLinks.h
   json/jsonUUID.h
   Links.h
+  Observers.h
   Paths.h
   RangeDetector.h
   Registry.h

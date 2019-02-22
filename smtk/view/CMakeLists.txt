@@ -32,6 +32,7 @@ set(viewHeaders
   PhraseListContent.h
   PhraseContent.h
   PhraseModel.h
+  PhraseModelObserver.h
   ResourcePhraseContent.h
   ResourcePhraseModel.h
   Selection.h

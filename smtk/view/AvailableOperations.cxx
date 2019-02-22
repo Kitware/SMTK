@@ -29,7 +29,7 @@ AvailableOperations::AvailableOperations()
 {
 // For debugging:
 #ifndef NDEBUG
-  this->observe(
+  this->observers().insert(
     [](AvailableOperations::Ptr self) {
       std::cout << "Available ops changed:\n";
       auto& mdByIdx = self->operationManager()->metadata().get<smtk::operation::IndexTag>();
@@ -56,7 +56,7 @@ AvailableOperations::~AvailableOperations()
   }
   if (m_selection)
   {
-    m_selection->unobserve(m_selectionObserverId);
+    m_selection->observers().erase(m_selectionObserverId);
   }
 }
 
@@ -68,12 +68,12 @@ void AvailableOperations::setSelection(SelectionPtr seln)
   }
   if (m_selection)
   {
-    m_selection->unobserve(m_selectionObserverId);
+    m_selection->observers().erase(m_selectionObserverId);
   }
   m_selection = seln;
   if (m_selection)
   {
-    m_selectionObserverId = m_selection->observe(
+    m_selectionObserverId = m_selection->observers().insert(
       [this](const std::string& src, smtk::view::Selection::Ptr seln) {
         this->selectionModified(src, seln);
       },
@@ -133,54 +133,18 @@ void AvailableOperations::setWorkflowFilter(OperationFilterSort wf)
 
   if (m_workflowFilter)
   {
-    m_workflowFilter->unobserve(m_workflowFilterObserverId);
+    m_workflowFilter->observers().erase(m_workflowFilterObserverId);
   }
   m_workflowFilter = wf;
   if (m_workflowFilter)
   {
     m_workflowFilterObserverId =
-      m_workflowFilter->observe([this]() { this->workflowFilterModified(); });
+      m_workflowFilter->observers().insert([this]() { this->workflowFilterModified(); });
   }
   else
   {
     m_workflowFilterObserverId = -1;
   }
-}
-
-int AvailableOperations::observe(Observer fn, bool immediatelyInvoke)
-{
-  int handle;
-  if (!fn)
-  {
-    handle = -1;
-    return handle;
-  }
-
-  if (m_observers.empty())
-  {
-    handle = 0;
-  }
-  else
-  {
-    handle = m_observers.rbegin()->first + 1;
-  }
-  m_observers[handle] = fn;
-  if (immediatelyInvoke)
-  {
-    fn(shared_from_this());
-  }
-  return handle;
-}
-
-bool AvailableOperations::unobserve(int observerId)
-{
-  auto it = m_observers.find(observerId);
-  if (it != m_observers.end())
-  {
-    m_observers.erase(it);
-    return true;
-  }
-  return false;
 }
 
 void AvailableOperations::operationMetadataChanged(
@@ -355,19 +319,5 @@ void AvailableOperations::computeFromSelection()
 void AvailableOperations::computeFromWorkingSet()
 {
   availableOperations(m_workingSet, m_workflowFilter, m_available);
-  this->triggerObservers();
-}
-
-void AvailableOperations::triggerObservers()
-{
-  if (m_observers.empty())
-  {
-    return;
-  }
-
-  auto self = shared_from_this();
-  for (auto entry : m_observers)
-  {
-    entry.second(self);
-  }
+  this->observers()(shared_from_this());
 }

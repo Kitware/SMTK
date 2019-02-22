@@ -186,7 +186,7 @@ qtModelEntityAttributeView::~qtModelEntityAttributeView()
   if (sel)
   {
     sel->unregisterSelectionSource(this->Internals->m_selectionSourceName);
-    sel->unobserve(this->Internals->m_selectionObserverId);
+    sel->observers().erase(this->Internals->m_selectionObserverId);
   }
   delete this->Internals;
 }
@@ -206,7 +206,7 @@ void qtModelEntityAttributeView::buildUI()
       smtkErrorMacro(smtk::io::Logger::instance(), "register selection source "
           << this->Internals->m_selectionSourceName << "failed. Already existed!");
     }
-    this->Internals->m_selectionObserverId = sel->observe(
+    this->Internals->m_selectionObserverId = sel->observers().insert(
       [this](const std::string& selectionSource, smtk::view::SelectionPtr sp) {
         this->updateSelectedModelEntity(selectionSource, sp);
       },

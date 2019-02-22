@@ -1,0 +1,164 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#ifndef __smtk_common_Observers_h
+#define __smtk_common_Observers_h
+
+#include <functional>
+#include <map>
+#include <type_traits>
+#include <utility>
+
+namespace smtk
+{
+namespace common
+{
+
+/// An Observer is a functor that is called when certain actions are performed.
+/// This pattern allows for the injection of algorithms in response to a group
+/// of actions (e.g. Resource added/removed, Operation about to run/has run).
+/// Observers added to the Observers instance can also be initialized (allowing
+/// for a retroactive response to items currently under observation).
+///
+/// In addition to adding and removing Observer functors to an Observers
+/// instance, the execution logic of Observers can be overridden at runtime by
+/// inserting an override functor into the Observers instance. This allows for
+/// a run-time configurable type of polymorphism where consuming code can change
+/// the behavior of the Observers class, allowing consuming code to redefine the
+/// context in which Observer functors are executed. By default, the Observers
+/// call operator iterates over and calls each Observer functor.
+///
+/// Variants exist for Observer functors with no return value, where the
+/// Observer functors are simply called in sequence, and for Observer functions
+/// with a binary return value, where the observer results are aggregated via a
+/// bitwise OR operator.
+template <typename Observer>
+class Observers
+{
+public:
+  /// A key by which an Observer can be accessed within the Observers instance.
+  typedef int Key;
+
+  /// A functor to optionally initialize Observers as they are inserted into the
+  /// Observers instance.
+  typedef std::function<void(Observer&)> Initializer;
+
+  Observers()
+    : m_initializer()
+  {
+  }
+  Observers(Initializer&& initializer)
+    : m_initializer(initializer)
+  {
+  }
+
+  /// The call operator calls each of its Observer functors in sequence if there
+  /// is no override functor defined. Otherwise, it calls the override functor.
+  template <class... Types>
+  auto operator()(Types&&... args) -> decltype(std::declval<Observer>()(args...))
+  {
+    return m_override ? m_override.operator()(std::forward<Types>(args)...)
+                      : callObserversDirectly(std::forward<Types>(args)...);
+  }
+
+  /// For Observer functors that return an integral value, call all Observer
+  /// functors and aggregate their output using a bitwise OR operator.
+  template <class... Types>
+  auto callObserversDirectly(Types&&... args) ->
+    typename std::enable_if<std::is_integral<decltype(std::declval<Observer>()(args...))>::value,
+      decltype(std::declval<Observer>()(args...))>::type
+  {
+    decltype(std::declval<Observer>()(args...)) result = 0;
+
+    // This careful loop allows an observer to erase itself.
+    typename std::map<Key, Observer>::iterator entry = m_observers.begin();
+    typename std::map<Key, Observer>::iterator next;
+    for (next = entry; entry != m_observers.end(); entry = next)
+    {
+      ++next;
+      result |= entry->second(std::forward<Types>(args)...);
+    }
+    return result;
+  }
+
+  /// For Observer functors that do not return an integral value, simply call
+  /// all Observer functors.
+  template <class... Types>
+  auto callObserversDirectly(Types&&... args) ->
+    typename std::enable_if<!std::is_integral<decltype(std::declval<Observer>()(args...))>::value,
+      decltype(std::declval<Observer>()(args...))>::type
+  {
+    // This careful loop allows an observer to erase itself.
+    typename std::map<Key, Observer>::iterator entry = m_observers.begin();
+    typename std::map<Key, Observer>::iterator next;
+    for (next = entry; entry != m_observers.end(); entry = next)
+    {
+      ++next;
+      entry->second(std::forward<Types>(args)...);
+    }
+  }
+
+  /// Ask to receive notification (and possibly a chance to respond to) events.
+  /// If the Observers instance has an initializer and initialization is
+  /// requested, the Observer functor is initialized (this is commonly a means
+  /// to run the Observer functor retroactively on things already under
+  /// observation). The return value is a handle that can be used to unregister
+  /// the observer.
+  Key insert(Observer fn, bool initialize = true)
+  {
+    Key handle = m_observers.empty() ? 0 : m_observers.rbegin()->first + 1;
+    if (initialize && m_initializer)
+    {
+      m_initializer(fn);
+    }
+    return m_observers.insert(std::make_pair(handle, fn)).second ? handle : -1;
+  }
+
+  /// Indicate that an observer should no longer be called. Returns the number
+  /// of remaining observers.
+  std::size_t erase(Key handle) { return m_observers.erase(handle); }
+
+  /// Return the observer for the given key if one exists or nullptr otherwise.
+  Observer find(Key handle) const
+  {
+    auto entry = m_observers.find(handle);
+    return entry == m_observers.end() ? nullptr : entry->second;
+  }
+
+  /// Return the number of Observer functors in this instance.
+  std::size_t size() const { return m_observers.size(); }
+
+  /// Replace the default implementation (calling each Observer functor in
+  /// sequence) with a new behavior.
+  void overrideWith(Observer fn) { m_override = fn; }
+
+  /// Remove the overriding behavior, restoring the default behavior (calling
+  /// each Observer functor when Observers is called).
+  void removeOverride() { m_override = Observer(); }
+
+  const Initializer& initializer() const { return m_initializer; }
+
+  void setInitializer(Initializer fn) { m_initializer = fn; }
+
+protected:
+  // A map of observers. The observers are held in a map so that they can be
+  // referenced (and therefore removed) at a later time using the observer's
+  // associated key.
+  std::map<Key, Observer> m_observers;
+
+  // A functor to override the default behavior of the Observers' call method.
+  Observer m_override;
+
+  // A functor to override the default initialize method.
+  Initializer m_initializer;
+};
+}
+}
+
+#endif // __smtk_common_Observers_h

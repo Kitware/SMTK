@@ -235,8 +235,8 @@ void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
     m_p->m_hoverValue = m_p->m_seln->findOrCreateLabeledValue(m_p->m_hoverLabel);
     QPointer<qtResourceBrowser> self(this);
     m_p->m_seln->registerSelectionSource(m_p->m_selnSource);
-    m_p->m_selnHandle =
-      m_p->m_seln->observe([self](const std::string& source, smtk::view::Selection::Ptr seln) {
+    m_p->m_selnHandle = m_p->m_seln->observers().insert(
+      [self](const std::string& source, smtk::view::Selection::Ptr seln) {
         if (self)
         {
           self->sendSMTKSelectionToPanel(source, seln);
@@ -251,7 +251,7 @@ void qtResourceBrowser::removeSource(smtk::resource::ManagerPtr rsrcMgr,
 {
   if (m_p->m_seln == seln)
   {
-    m_p->m_seln->unobserve(m_p->m_selnHandle);
+    m_p->m_seln->observers().erase(m_p->m_selnHandle);
   }
   m_p->m_seln = nullptr;
 

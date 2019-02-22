@@ -45,8 +45,8 @@ PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation_Manage
 //    .def("metadata", [](smtk::operation::Manager& man) { std::vector<std::reference_wrapper<smtk::operation::Metadata>> vec; vec.reserve(man.metadata().size()); for (auto md : man.metadata()) { vec.push_back(md); } return vec; })
     .def("metadataObservers", (smtk::operation::Metadata::Observers & (smtk::operation::Manager::*)()) &smtk::operation::Manager::metadataObservers)
     .def("metadataObservers", (smtk::operation::Metadata::Observers const & (smtk::operation::Manager::*)() const) &smtk::operation::Manager::metadataObservers)
-    .def("observers", (smtk::operation::Observers & (smtk::operation::Manager::*)()) &smtk::operation::Manager::observers)
-    .def("observers", (smtk::operation::Observers const & (smtk::operation::Manager::*)() const) &smtk::operation::Manager::observers)
+    .def("observers", (smtk::operation::Observers & (smtk::operation::Manager::*)()) &smtk::operation::Manager::observers, pybind11::return_value_policy::reference_internal)
+    .def("observers", (smtk::operation::Observers const & (smtk::operation::Manager::*)() const) &smtk::operation::Manager::observers, pybind11::return_value_policy::reference_internal)
     .def("registerResourceManager", &smtk::operation::Manager::registerResourceManager, py::arg("arg0"))
     .def("registerOperation", [](smtk::operation::Manager& manager, const std::string& moduleName, const std::string& opName){
         return smtk::operation::ImportPythonOperation::importOperation(manager, moduleName, opName);
