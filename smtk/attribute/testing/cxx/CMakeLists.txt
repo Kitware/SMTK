@@ -74,6 +74,7 @@ set(unit_tests
   unitAttributeBasics
   unitAttributeAssociation
   unitAttributeAssociationConstraints
+  unitAttributeAnalysis
   unitComponentItem.cxx
   unitDateTimeItem.cxx
   unitJsonItemDefinitions.cxx

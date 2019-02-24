@@ -40,14 +40,57 @@ using namespace smtk::extension;
 class qtAssociationViewInternals : public Ui::qtAssociationView
 {
 public:
-  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const QString strCategory) const
+  QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    smtk::extension::qtUIManager* uiManager) const
   {
-
-    if (this->AttDefMap.keys().contains(strCategory))
+    if (uiManager->categoryEnabled())
     {
-      return this->AttDefMap[strCategory];
+      auto currentCat = uiManager->currentCategory();
+      if (this->AttDefMap.keys().contains(currentCat.c_str()))
+      {
+        return this->AttDefMap[currentCat.c_str()];
+      }
+      return this->AllDefs;
     }
-    return this->AllDefs;
+    else if (!uiManager->topLevelCategoriesSet())
+    {
+      return this->AllDefs;
+    }
+    QList<smtk::attribute::DefinitionPtr> defs;
+    foreach (DefinitionPtr attDef, this->AllDefs)
+    {
+      if (uiManager->passAttributeCategoryCheck(attDef))
+      {
+        defs.push_back(attDef);
+      }
+    }
+    return defs;
+  }
+
+  bool currentDefsIsEmpty(smtk::extension::qtUIManager* uiManager) const
+  {
+    if (uiManager->categoryEnabled())
+    {
+      auto currentCat = uiManager->currentCategory();
+      if (this->AttDefMap.keys().contains(currentCat.c_str()))
+      {
+        return (this->AttDefMap[currentCat.c_str()].size() == 0);
+      }
+      return (this->AllDefs.size() == 0);
+    }
+    else if (!uiManager->topLevelCategoriesSet())
+    {
+      return (this->AllDefs.size() == 0);
+    }
+    QList<smtk::attribute::DefinitionPtr> defs;
+    foreach (DefinitionPtr attDef, this->AllDefs)
+    {
+      if (uiManager->passAttributeCategoryCheck(attDef))
+      {
+        return false;
+      }
+    }
+    return true;
   }
 
   QPointer<qtAssociationWidget> AssociationsWidget;
@@ -154,7 +197,7 @@ void qtAssociationView::displayAttributes()
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+    this->Internals->getCurrentDefs(this->uiManager());
   std::set<AttributePtr, Attribute::CompareByName> atts;
   // Get all of the attributes that match the list of definitions
   foreach (attribute::DefinitionPtr attDef, currentDefs)
@@ -262,7 +305,15 @@ void qtAssociationView::getAllDefinitions()
   }
 }
 
+// The criterea used for this view is the same as that used in the attribute view
+// - are there any definitions that pass the category check.  Alternatively it could
+// have been - are there any attributes available to select.  However there is a problem
+// with this since this view potentially depends on a view to create attributes.  If the view's
+// visibility depends on whether it is empty or not, then there would need to be a way to ask
+// the top level view to redraw based on an attribute view changing things - in the current
+// implementation, both the attribute view and the association view would either be visible or
+// hidden at the same time.
 bool qtAssociationView::isEmpty() const
 {
-  return (this->Internals->attributes->count() == 0);
+  return this->Internals->currentDefsIsEmpty(this->uiManager());
 }

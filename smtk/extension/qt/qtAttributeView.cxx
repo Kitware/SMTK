@@ -63,15 +63,33 @@ using namespace smtk::extension;
 class qtAttributeViewInternals
 {
 public:
-  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const QString strCategory) const
+  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    smtk::extension::qtUIManager* uiManager) const
   {
-
-    if (this->AttDefMap.keys().contains(strCategory))
+    if (uiManager->categoryEnabled())
     {
-      return this->AttDefMap[strCategory];
+      auto currentCat = uiManager->currentCategory();
+      if (this->AttDefMap.keys().contains(currentCat.c_str()))
+      {
+        return this->AttDefMap[currentCat.c_str()];
+      }
+      return this->AllDefs;
     }
-    return this->AllDefs;
+    else if (!uiManager->topLevelCategoriesSet())
+    {
+      return this->AllDefs;
+    }
+    QList<smtk::attribute::DefinitionPtr> defs;
+    foreach (DefinitionPtr attDef, this->AllDefs)
+    {
+      if (uiManager->passAttributeCategoryCheck(attDef))
+      {
+        defs.push_back(attDef);
+      }
+    }
+    return defs;
   }
+
   qtTableWidget* ListTable;
   qtTableWidget* ValuesTable;
 
@@ -655,8 +673,7 @@ void qtAttributeView::onCreateNew()
   {
     strDef = this->Internals->DefsCombo->currentText();
   }
-  foreach (attribute::DefinitionPtr attDef,
-    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str()))
+  foreach (attribute::DefinitionPtr attDef, this->Internals->getCurrentDefs(this->uiManager()))
   {
     std::string txtDef = attDef->displayedTypeName();
     if (strDef == QString::fromUtf8(txtDef.c_str()))
@@ -778,7 +795,7 @@ void qtAttributeView::onViewBy(int viewBy)
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+    this->Internals->getCurrentDefs(this->uiManager());
   this->Internals->AddButton->setEnabled(currentDefs.count() > 0);
 
   bool viewAtt = (viewBy == VIEWBY_Attribute);
@@ -1477,6 +1494,6 @@ void qtAttributeView::showAdvanceLevelOverlay(bool show)
 bool qtAttributeView::isEmpty() const
 {
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+    this->Internals->getCurrentDefs(this->uiManager());
   return currentDefs.isEmpty();
 }

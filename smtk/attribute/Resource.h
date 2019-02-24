@@ -143,10 +143,17 @@ public:
     smtk::attribute::ConstDefinitionPtr attDef) const;
 
   bool rename(AttributePtr att, const std::string& newName);
+
+  // Analysis Methods
   bool defineAnalysis(const std::string& analysisName, const std::set<std::string>& categories);
   std::size_t numberOfAnalyses() const { return m_analyses.size(); }
   std::set<std::string> analysisCategories(const std::string& analysisType) const;
   const std::map<std::string, std::set<std::string> >& analyses() const { return m_analyses; }
+  bool setAnalysisParent(const std::string& analysisName, const std::string& analysisParent);
+  std::string analysisParent(const std::string& analysisName) const;
+  std::set<std::string> analysisChildren(const std::string& analysisName) const;
+  std::set<std::string> topLevelAnalyses() const;
+  DefinitionPtr buildAnalysesDefinition(const std::string& type);
 
   std::size_t numberOfAdvanceLevels() const { return m_advLevels.size(); }
   void addAdvanceLevel(int level, std::string label, const double* l_color = 0);
@@ -227,6 +234,7 @@ protected:
     attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const;
   bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
     smtk::attribute::ItemDefinition::CopyInfo& info);
+  void buildAnalysisChildren(GroupItemDefinitionPtr& gitem, const std::string& analysis);
 
   std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
   std::map<std::string, std::set<smtk::attribute::AttributePtr, Attribute::CompareByName> >
@@ -239,6 +247,8 @@ protected:
     m_derivedDefInfo;
   std::set<std::string> m_categories;
   std::map<std::string, std::set<std::string> > m_analyses;
+  std::map<std::string, std::set<std::string> > m_analysisChildren;
+  std::map<std::string, std::string> m_analysisParent;
   std::map<std::string, smtk::view::ViewPtr> m_views;
 
   // Advance levels, <int-level, <string-label, color[4]>

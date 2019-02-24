@@ -517,3 +517,30 @@ bool qtBaseView::isEmpty() const
 {
   return false;
 }
+
+void qtBaseView::setTopLevelCategories(const std::set<std::string>& categories)
+{
+  if ((!m_isTopLevel) || (this->Internals->ShowCategoryCombo == nullptr))
+  {
+    this->onShowCategory();
+    return;
+  }
+  auto current = this->Internals->ShowCategoryCombo->currentText();
+  this->Internals->ShowCategoryCombo->blockSignals(true);
+  this->Internals->ShowCategoryCombo->clear();
+  for (auto cat : categories)
+  {
+    this->Internals->ShowCategoryCombo->addItem(cat.c_str());
+  }
+  this->Internals->ShowCategoryCombo->blockSignals(false);
+  int pos = this->Internals->ShowCategoryCombo->findText(current);
+  if (pos > -1)
+  {
+    this->Internals->ShowCategoryCombo->setCurrentIndex(pos);
+  }
+  else
+  {
+    this->Internals->ShowCategoryCombo->setCurrentIndex(0);
+  }
+  this->onShowCategory();
+}

@@ -148,6 +148,9 @@ public:
   bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
   bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
   bool passCategoryCheck(const std::set<std::string>& categories);
+  void disableCategoryChecks();
+  void enableCategoryChecks();
+  void setToLevelCategories(const std::set<std::string>& categories);
 
   const QFont& advancedFont() { return this->advFont; }
   int advanceLevel() const { return m_currentAdvLevel; }
@@ -186,6 +189,9 @@ public:
 
   int selectionBit() const { return m_selectionBit; }
   void setSelectionBit(int val) { m_selectionBit = val; }
+
+  // See if we are dealing with a subset of categories
+  bool topLevelCategoriesSet() const { return m_topLevelCategoriesSet; }
 
   static qtItem* defaultItemConstructor(const AttributeItemInfo& info);
 
@@ -252,6 +258,10 @@ private:
 
   smtk::view::SelectionPtr m_selection;
   int m_selectionBit;
+  // indicates if the UI Manager should be filtering on categories at all
+  bool m_categoryChecks;
+  bool m_topLevelCategoriesSet;
+  std::set<std::string> m_topLevelCategories;
 
 }; // class
 

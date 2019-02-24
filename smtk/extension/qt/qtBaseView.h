@@ -96,6 +96,7 @@ public:
   void setInitialCategory();
 
   bool isTopLevel() const { return m_isTopLevel; }
+  void setTopLevelCategories(const std::set<std::string>& categories);
 
   //Returns true if the view does not contain any information to display - the default
   // behavior is to return false

@@ -113,14 +113,31 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
 class qtModelEntityAttributeViewInternals
 {
 public:
-  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const QString strCategory) const
+  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    smtk::extension::qtUIManager* uiManager) const
   {
-
-    if (this->AttDefMap.keys().contains(strCategory))
+    if (uiManager->categoryEnabled())
     {
-      return this->AttDefMap[strCategory];
+      auto currentCat = uiManager->currentCategory();
+      if (this->AttDefMap.keys().contains(currentCat.c_str()))
+      {
+        return this->AttDefMap[currentCat.c_str()];
+      }
+      return this->AllDefs;
     }
-    return this->AllDefs;
+    else if (!uiManager->topLevelCategoriesSet())
+    {
+      return this->AllDefs;
+    }
+    QList<smtk::attribute::DefinitionPtr> defs;
+    foreach (DefinitionPtr attDef, this->AllDefs)
+    {
+      if (uiManager->passAttributeCategoryCheck(attDef))
+      {
+        defs.push_back(attDef);
+      }
+    }
+    return defs;
   }
 
   smtk::attribute::AttributePtr getAttribute(const smtk::resource::PersistentObjectPtr obj) const
@@ -399,7 +416,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+    this->Internals->getCurrentDefs(this->uiManager());
 
   // Create an initial string list for the combo boxes
   QStringList slist;
@@ -488,7 +505,7 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
   auto attRes = this->uiManager()->attResource();
   auto resManager = this->uiManager()->resourceManager();
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+    this->Internals->getCurrentDefs(this->uiManager());
   // Get the component of the item
   auto entity = this->object(this->Internals->ListTable->item(row, 0));
   if (entity == nullptr)
@@ -737,6 +754,6 @@ void qtModelEntityAttributeView::selectionMade()
 bool qtModelEntityAttributeView::isEmpty() const
 {
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager()->currentCategory().c_str());
+    this->Internals->getCurrentDefs(this->uiManager());
   return currentDefs.isEmpty();
 }

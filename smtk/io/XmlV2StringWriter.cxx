@@ -327,36 +327,53 @@ void XmlV2StringWriter::generateXml(Logger& logger)
   // Reset the message log
   m_logger.reset();
 
+  auto uuidName = m_resource->id().toString();
+  xml_node& root(m_internals->m_roots.at(0));
+  root.append_attribute("ID").set_value(uuidName.c_str());
+  if (m_resource->numberOfCategories() || m_resource->numberOfAnalyses())
   {
-    auto uuidName = m_resource->id().toString();
-    xml_node& root(m_internals->m_roots.at(0));
-    root.append_attribute("ID").set_value(uuidName.c_str());
-    if (m_resource->numberOfCategories() || m_resource->numberOfAnalyses())
+    root.append_child(node_comment)
+      .set_value("**********  Category and Analysis Information ***********");
+    if (m_resource->numberOfCategories())
     {
-      root.append_child(node_comment)
-        .set_value("**********  Category and Analysis Information ***********");
-      if (m_resource->numberOfCategories())
+      auto catNodes = root.append_child("Categories");
+      auto cats = m_resource->categories();
+      for (auto cat : cats)
       {
-        auto catNodes = root.append_child("Categories");
-        auto cats = m_resource->categories();
-        for (auto cat : cats)
-        {
-          catNodes.append_child("Cat").text().set(cat.c_str());
-        }
+        catNodes.append_child("Cat").text().set(cat.c_str());
       }
-      if (m_resource->numberOfAnalyses())
+    }
+  }
+  if (m_resource->numberOfAnalyses())
+  {
+    auto aNodes = root.append_child("Analyses");
+    // We need to write the analyses so that an analysis's parent
+    // is always saved before the analysis itself
+    std::vector<std::string> analyses;
+    auto topLevelAnalyses = m_resource->topLevelAnalyses();
+    analyses.insert(analyses.end(), topLevelAnalyses.begin(), topLevelAnalyses.end());
+    while (!analyses.empty())
+    {
+      auto analysis = analyses.back();
+      analyses.pop_back();
+      auto anode = aNodes.append_child("Analysis");
+      anode.append_attribute("Type").set_value(analysis.c_str());
+      auto aCats = m_resource->analysisCategories(analysis);
+      for (auto acat : aCats)
       {
-        auto aNodes = root.append_child("Analyses");
-        auto analyses = m_resource->analyses();
-        for (auto it = analyses.begin(); it != analyses.end(); it++)
-        {
-          auto anode = aNodes.append_child("Analysis");
-          anode.append_attribute("Type").set_value(it->first.c_str());
-          for (auto cit = it->second.begin(); cit != it->second.end(); cit++)
-          {
-            anode.append_child("Cat").text().set(cit->c_str());
-          }
-        }
+        anode.append_child("Cat").text().set(acat.c_str());
+      }
+      // Does the analysis have a parent?
+      auto parent = m_resource->analysisParent(analysis);
+      if (parent != "")
+      {
+        anode.append_attribute("BaseType").set_value(parent.c_str());
+      }
+      // Add the analysis' children to be processed
+      auto children = m_resource->analysisChildren(analysis);
+      if (!children.empty())
+      {
+        analyses.insert(analyses.end(), children.begin(), children.end());
       }
     }
   }
@@ -387,9 +404,9 @@ void XmlV2StringWriter::generateXml(Logger& logger)
     auto cats = m_resource->directoryInfo().at(i).catagories();
     if (cats.size())
     {
-      xml_node& root(m_internals->m_roots.at(i));
-      root.append_child(node_comment).set_value("**********  Category Information ***********");
-      auto catNodes = root.append_child("Categories");
+      xml_node& catsRoot(m_internals->m_roots.at(i));
+      catsRoot.append_child(node_comment).set_value("**********  Category Information ***********");
+      auto catNodes = catsRoot.append_child("Categories");
       for (auto cat : cats)
       {
         catNodes.append_child("Cat").text().set(cat.c_str());

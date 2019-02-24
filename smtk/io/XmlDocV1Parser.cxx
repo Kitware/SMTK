@@ -534,6 +534,16 @@ void XmlDocV1Parser::process(xml_node& amnode)
         catagories.insert(cnode.text().get());
       }
       m_resource->defineAnalysis(s, catagories);
+      // Does this analaysis have a base type?
+      auto xatt = anode.attribute("BaseType");
+      if (xatt)
+      {
+        auto bt = xatt.value();
+        if (!m_resource->setAnalysisParent(s, bt))
+        {
+          smtkErrorMacro(m_logger, "Failed to set Analysis: " << s << " parent to " << bt);
+        }
+      }
     }
   }
 
