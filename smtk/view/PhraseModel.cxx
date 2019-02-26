@@ -564,6 +564,7 @@ void PhraseModel::triggerDataChangedFor(smtk::resource::ComponentPtr comp)
     });
 }
 
+#ifdef SMTK_PHRASE_DEBUG
 namespace
 {
 int depth(DescriptivePhrasePtr phr)
@@ -577,6 +578,7 @@ int depth(DescriptivePhrasePtr phr)
   return dd;
 }
 }
+#endif
 
 void PhraseModel::trigger(DescriptivePhrasePtr phr, PhraseModelEvent event,
   const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& arg)
