@@ -46,6 +46,27 @@ XmlDocV3Parser::~XmlDocV3Parser()
 {
 }
 
+void XmlDocV3Parser::process(pugi::xml_node& rootNode)
+{
+  XmlDocV2Parser::process(rootNode);
+  auto associationsNode = rootNode.child("Associations");
+  if (!associationsNode)
+  {
+    return;
+  }
+  xml_node child;
+  for (child = associationsNode.first_child(); child; child = child.next_sibling())
+  {
+    unsigned int index = child.attribute("Index").as_uint();
+    std::string typeName = child.attribute("TypeName").value();
+    smtk::common::UUID id(child.attribute("Id").value());
+    std::string location = child.attribute("Location").value();
+    m_resource->links().data().insert(smtk::resource::Surrogate(index, typeName, id, location),
+      smtk::common::UUID::random(), m_resource->id(), id,
+      smtk::attribute::Resource::AssociationRole);
+  }
+}
+
 bool XmlDocV3Parser::canParse(xml_document& doc)
 {
   // Get the attribute resource node

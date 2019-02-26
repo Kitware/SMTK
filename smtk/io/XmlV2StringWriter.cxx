@@ -327,31 +327,35 @@ void XmlV2StringWriter::generateXml(Logger& logger)
   // Reset the message log
   m_logger.reset();
 
-  if (m_resource->numberOfCategories() || m_resource->numberOfAnalyses())
   {
+    auto uuidName = m_resource->id().toString();
     xml_node& root(m_internals->m_roots.at(0));
-    root.append_child(node_comment)
-      .set_value("**********  Category and Analysis Information ***********");
-    if (m_resource->numberOfCategories())
+    root.append_attribute("ID").set_value(uuidName.c_str());
+    if (m_resource->numberOfCategories() || m_resource->numberOfAnalyses())
     {
-      auto catNodes = root.append_child("Categories");
-      auto cats = m_resource->categories();
-      for (auto cat : cats)
+      root.append_child(node_comment)
+        .set_value("**********  Category and Analysis Information ***********");
+      if (m_resource->numberOfCategories())
       {
-        catNodes.append_child("Cat").text().set(cat.c_str());
-      }
-    }
-    if (m_resource->numberOfAnalyses())
-    {
-      auto aNodes = root.append_child("Analyses");
-      auto analyses = m_resource->analyses();
-      for (auto it = analyses.begin(); it != analyses.end(); it++)
-      {
-        auto anode = aNodes.append_child("Analysis");
-        anode.append_attribute("Type").set_value(it->first.c_str());
-        for (auto cit = it->second.begin(); cit != it->second.end(); cit++)
+        auto catNodes = root.append_child("Categories");
+        auto cats = m_resource->categories();
+        for (auto cat : cats)
         {
-          anode.append_child("Cat").text().set(cit->c_str());
+          catNodes.append_child("Cat").text().set(cat.c_str());
+        }
+      }
+      if (m_resource->numberOfAnalyses())
+      {
+        auto aNodes = root.append_child("Analyses");
+        auto analyses = m_resource->analyses();
+        for (auto it = analyses.begin(); it != analyses.end(); it++)
+        {
+          auto anode = aNodes.append_child("Analysis");
+          anode.append_attribute("Type").set_value(it->first.c_str());
+          for (auto cit = it->second.begin(); cit != it->second.end(); cit++)
+          {
+            anode.append_child("Cat").text().set(cit->c_str());
+          }
         }
       }
     }

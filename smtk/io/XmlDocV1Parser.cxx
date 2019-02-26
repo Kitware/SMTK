@@ -486,6 +486,16 @@ void XmlDocV1Parser::process(xml_node& amnode)
 {
   // Reset the message log
   m_logger.reset();
+
+  // Lets get the UUID of the resource if there is one
+  auto idAtt = amnode.attribute("ID");
+  if (idAtt)
+  {
+    std::string idName = idAtt.value();
+    smtk::common::UUID uuid(idName);
+    m_resource->setId(uuid);
+  }
+
   // Clear the vectors for dealing with attribute references
   m_itemExpressionDefInfo.clear();
   m_attRefDefInfo.clear();
