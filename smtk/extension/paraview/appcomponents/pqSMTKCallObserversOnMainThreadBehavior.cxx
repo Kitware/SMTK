@@ -118,10 +118,13 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
       auto op = m_activeOperations[id];
       if (auto operation = op.lock())
       {
-        operation->manager()->observers().callObserversDirectly(operation,
-          static_cast<smtk::operation::EventType>(event),
-          !resultName.isNull() ? operation->specification()->findAttribute(resultName.toStdString())
-                               : nullptr);
+        smtk::attribute::AttributePtr att;
+        if (!resultName.isNull())
+        {
+          att = operation->specification()->findAttribute(resultName.toStdString());
+        }
+        operation->manager()->observers().callObserversDirectly(
+          operation, static_cast<smtk::operation::EventType>(event), att);
       }
       m_activeOperations.erase(id);
     });
