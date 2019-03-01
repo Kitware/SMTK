@@ -88,6 +88,7 @@ add_paraview_plugin(
   CS_KITS ${serverModules}
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPVServerExtPlugin")
+enable_smtk_plugin_by_default(smtkPVServerExtPlugin TRUE)
 
 target_link_libraries(smtkPVServerExtPlugin
   LINK_PUBLIC

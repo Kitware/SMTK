@@ -203,6 +203,7 @@ smtk_public_headers(smtkCore ${attributeHeaders})
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
     smtkAttributePlugin "1.0"
+    ENABLED_BY_DEFAULT
     REGISTRAR smtk::attribute::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore)

@@ -132,6 +132,7 @@ add_paraview_plugin(
     vtkSMTKWidgetsExt
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQWidgetsPlugin")
+enable_smtk_plugin_by_default(smtkPQWidgetsPlugin TRUE)
 
 target_link_libraries(smtkPQWidgetsPlugin
   LINK_PUBLIC

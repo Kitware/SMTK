@@ -341,6 +341,7 @@ add_paraview_plugin(
     ${PLUGIN_DOCK_IFACES_SRCS}
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQComponentsPlugin")
+enable_smtk_plugin_by_default(smtkPQComponentsPlugin TRUE)
 
 target_link_libraries(smtkPQComponentsPlugin
   LINK_PUBLIC
