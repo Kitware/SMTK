@@ -120,6 +120,7 @@ smtk_public_headers(smtkCore ${modelHeaders})
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
     smtkModelPlugin "1.0"
+    ENABLED_BY_DEFAULT
     REGISTRAR smtk::model::Registrar
     MANAGERS smtk::operation::Manager smtk::resource::Manager
     LIBRARIES smtkCore)

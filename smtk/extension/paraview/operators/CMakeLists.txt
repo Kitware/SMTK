@@ -86,6 +86,7 @@ add_paraview_plugin(
   vtkSMTKWidgetsExt
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQOperationViewsPlugin")
+enable_smtk_plugin_by_default(smtkPQOperationViewsPlugin TRUE)
 target_link_libraries(smtkPQOperationViewsPlugin
   LINK_PUBLIC
     smtkPQOperationViewsExt

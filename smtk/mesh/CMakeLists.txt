@@ -136,6 +136,7 @@ smtk_public_headers(smtkCore ${meshHeaders})
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_smtk_plugin(
     smtkMeshPlugin "1.0"
+    ENABLED_BY_DEFAULT
     REGISTRAR smtk::mesh::Registrar
     REGISTRAR_HEADER smtk/mesh/resource/Registrar.h
     MANAGERS smtk::operation::Manager smtk::resource::Manager
