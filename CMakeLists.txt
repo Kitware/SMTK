@@ -287,7 +287,8 @@ else()
   list(APPEND required_boost_components regex)
 endif()
 
-find_package(Boost 1.64.0
+set(SMTK_MINIMUM_BOOST_VERSION 1.64.0)
+find_package(Boost ${SMTK_MINIMUM_BOOST_VERSION}
              COMPONENTS ${required_boost_components} REQUIRED)
 
 if(WIN32 AND MSVC)

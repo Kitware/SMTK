@@ -29,7 +29,7 @@ set(smtk_cmake_dir ${CMAKE_CURRENT_LIST_DIR})
 if(TARGET smtkCore)
 else()
 
-  find_package(Boost 1.64.0
+  find_package(Boost @SMTK_MINIMUM_BOOST_VERSION@
              COMPONENTS @required_boost_components@ REQUIRED)
   find_package(nlohmann_json REQUIRED)
   find_package(MOAB REQUIRED)
