@@ -62,6 +62,9 @@ else()
     set(SMTK_PYTHON_EXECUTABLE "@smtk_python_executable@")
     set(SMTK_PYTHON_LIBRARY "@smtk_python_library@")
     set(SMTK_PYTHON_INCLUDE_DIR "@smtk_python_include_dir@")
+    # SMTK_PYTHON_MDOULEDIR is the location of the smtk python module relative
+    # to the location of this file.
+    set(SMTK_PYTHON_MODULEDIR "@smtk_python_moduledir@")
 
     if (SMTK_PYTHON_EXECUTABLE AND NOT PYTHON_EXECUTABLE)
       set(PYTHON_EXECUTABLE ${SMTK_PYTHON_EXECUTABLE})

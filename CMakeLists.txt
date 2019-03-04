@@ -742,6 +742,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   set(smtk_python_executable ${PYTHON_EXECUTABLE})
   set(smtk_python_library ${PYTHON_LIBRARIES})
   set(smtk_python_include_dir ${PYTHON_INCLUDE_DIRS})
+  set(smtk_python_moduledir)
 endif ()
 
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
@@ -776,6 +777,9 @@ if (SMTK_RELOCATABLE_INSTALL)
     set(smtk_python_executable)
     set(smtk_python_library)
     set(smtk_python_include_dir)
+    file(RELATIVE_PATH smtk_python_moduledir
+      ${CMAKE_INSTALL_PREFIX}/${SMTK_INSTALL_CONFIG_DIR}
+      ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR})
   endif ()
 endif()
 
