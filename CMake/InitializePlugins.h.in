@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_InitializeDefaultPlugins_h
-#define __smtk_InitializeDefaultPlugins_h
+#ifndef __smtk_@PLUGIN_LIBRARY_TARGET@_InitializePlugins_h
+#define __smtk_@PLUGIN_LIBRARY_TARGET@_InitializePlugins_h
 
-#include "smtk/plugin/Exports.h"
+#include "@PLUGIN_LIBRARY_TARGET@Export.h"
 
 namespace smtk
 {
@@ -18,8 +18,8 @@ namespace extension
 {
 namespace paraview
 {
-SMTKDEFAULTPLUGINS_EXPORT void initializeDefaultPlugins();
-SMTKDEFAULTPLUGINS_EXPORT void loadDefaultPlugins();
+@SMTK_PLUGIN_LIBRARY_EXPORT@ void initialize@PLUGIN_LIBRARY_TARGET@();
+@SMTK_PLUGIN_LIBRARY_EXPORT@ void load@PLUGIN_LIBRARY_TARGET@();
 }
 }
 }

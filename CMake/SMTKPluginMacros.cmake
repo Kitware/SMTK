@@ -6,6 +6,34 @@
 #
 #=========================================================================
 
+# SMTK plugins are extensions of ParaView plugins that allow for the automatic
+# registration of components to SMTK managers. They are created using the
+# function "add_smtk_plugin", which requires the developer to explicitly list
+# a registration class "known as a Registrar" and a list of SMTK manager types
+# to which the plugin registers. SMTK plugins can be introduced to a
+# ParaView-based application in several ways. The consuming project can
+#
+# 1) list the plugins in a configuration file that is subsequently read at
+# runtime, deferring the inclusion of plugins to the application's runtime. This
+# approach requires plugins to reside in certain locations that the application
+# is expected to look, but facilitates the presentation of a plugin to the user
+# without automatically loading the plugin. For this approach, a consuming
+# project can call "generate_smtk_plugin_config_file" to convert the list of
+# smtk plugin targets (which can be a part of the project or imported from
+# another project) described by the global property "SMTK_PLUGINS" into a
+# configuration file. The consuming project can also
+#
+# 2) directly link plugins into the application. This approach pushes the
+# requirement of locating plugins to be a build-time dependency, which can be
+# advantageous for packaging. Plugins that are directly linked to an application
+# cannot be disabled, however (i.e. the target property ENABLED_BY_DEFAULT is
+# ignored, as it is true for all plugins). To use this approach, a consuming
+# project can call "generate_smtk_plugin_library" to to use the list of smtk
+# plugin targets (which can be a part of the project or imported from another
+# project) described by the global property "SMTK_PLUGINS" to generate a library
+# against which the application can link to directly incorporate the associated
+# plugins.
+
 define_property(GLOBAL PROPERTY SMTK_PLUGINS
   BRIEF_DOCS "Global property for aggregating smtk plugin targets"
   FULL_DOCS "Global property for aggregating smtk plugin targets")
@@ -139,3 +167,82 @@ function(generate_smtk_plugin_config_file PLUGIN_CONFIG_FILE_NAME)
   configure_file(${smtk_cmake_dir}/plugins.xml.in ${plugins_file} @ONLY)
 
 endfunction(generate_smtk_plugin_config_file)
+
+# create a library that directly links smtk plugins into a consuming
+# application. The function creates a library target ${PLUGIN_LIBRARY_TARGET}
+# and two header files (defined at parent scope in the list
+# ${${PLUGIN_LIBRARY_TARGET}_HEADERS}). All targets contained in the
+# ${SMTK_PLUGINS} list will be linked into the target library, and these plugins
+# can be loaded by a consuming application by including the generated header
+# file Initialize${PLUGIN_LIBRARY_TARGET}.h and by calling the generated methods
+# smtk::extension::paraview::initialize${PLUGIN_LIBRARY_TARGET}() and
+# smtk::extension::paraview::load${PLUGIN_LIBRARY_TARGET}().
+function(generate_smtk_plugin_library PLUGIN_LIBRARY_TARGET)
+  include(${PARAVIEW_USE_FILE})
+  include(ParaViewPlugins)
+
+  # We need to add the current value of VTK_MODULES_DIR to the module path
+  # so that when the plugins are built all the modules can be found. Otherwise,
+  # modules that aren't loaded as direct dependencies of CMB modules will
+  # not be found.
+  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+
+  # Construct fields to populate the generated source files for the plugin
+  # library.
+  foreach (name IN LISTS SMTK_PLUGINS)
+    set(SMTK_PLUGIN_IMPORT_INIT "${SMTK_PLUGIN_IMPORT_INIT}PV_PLUGIN_IMPORT_INIT(${name});\n")
+    set(SMTK_PLUGIN_IMPORT "${SMTK_PLUGIN_IMPORT}PV_PLUGIN_IMPORT(${name});\n")
+    set(SMTK_PLUGIN_QUERY "${SMTK_PLUGIN_QUERY}queryPlugin(${name});\n")
+  endforeach()
+
+  # Generate a unique export symbol for the plugin library.
+  string(TOUPPER ${PLUGIN_LIBRARY_TARGET} SMTK_PLUGIN_LIBRARY_EXPORT)
+  string(APPEND SMTK_PLUGIN_LIBRARY_EXPORT "_EXPORT")
+
+  # Generate the header file that declares the two methods defined in the plugin
+  # library.
+  configure_file(${smtk_cmake_dir}/InitializePlugins.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Initialize${PLUGIN_LIBRARY_TARGET}.h @ONLY)
+
+  # Generate the source file that implements the abovementioned methods.
+  configure_file(${smtk_cmake_dir}/InitializePlugins.cxx.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Initialize${PLUGIN_LIBRARY_TARGET}.cxx @ONLY)
+
+  # Include the components from ParaView necessary for directly linking plugins
+  # into an application.
+  vtk_module_dep_includes(vtkPVClientServerCoreCore)
+  include_directories(${vtkPVClientServerCoreCore_INCLUDE_DIRS}
+    ${vtkPVClientServerCoreCore_DEPENDS_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR})
+
+  # Construct the library.
+  add_library(${PLUGIN_LIBRARY_TARGET}
+    ${CMAKE_CURRENT_BINARY_DIR}/Initialize${PLUGIN_LIBRARY_TARGET}.cxx)
+
+  # During the build phase, include the binary directory that contains the
+  # generated header file.
+  target_include_directories(${PLUGIN_LIBRARY_TARGET}
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    )
+
+  # Link against all of the smtk plugins.
+  target_link_libraries(${PLUGIN_LIBRARY_TARGET}
+    LINK_PRIVATE ${SMTK_PLUGINS} vtkPVClientServerCoreCore)
+
+  # Generate an export header using the symbol defined in
+  # ${SMTK_PLUGIN_LIBRARY_EXPORT}.
+  include(GenerateExportHeader)
+  generate_export_header(${PLUGIN_LIBRARY_TARGET}
+    EXPORT_MACRO_NAME ${SMTK_PLUGIN_LIBRARY_EXPORT}
+    EXPORT_FILE_NAME ${PLUGIN_LIBRARY_TARGET}Export.h)
+
+  # Construct a list of generated headers for the plugin library that is
+  # accessible at parent scope. That way, consuming applications can install
+  # these header files where appropriate.
+  set(${PLUGIN_LIBRARY_TARGET}_HEADERS
+    ${CMAKE_CURRENT_BINARY_DIR}/Initialize${PLUGIN_LIBRARY_TARGET}.h
+    ${CMAKE_CURRENT_BINARY_DIR}/${PLUGIN_LIBRARY_TARGET}Export.h
+    PARENT_SCOPE)
+
+endfunction(generate_smtk_plugin_library)

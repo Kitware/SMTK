@@ -649,6 +649,8 @@ install(
   FILES
     ${PROJECT_SOURCE_DIR}/CMake/SMTKMacros.cmake
     ${PROJECT_SOURCE_DIR}/CMake/EncodeStringFunctions.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/InitializePlugins.cxx.in
+    ${PROJECT_SOURCE_DIR}/CMake/InitializePlugins.h.in
     ${PROJECT_SOURCE_DIR}/CMake/plugins.xml.in
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperationXML.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKPluginMacros.cmake

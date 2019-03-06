@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/plugin/InitializeDefaultPlugins.h"
+#include "Initialize@PLUGIN_LIBRARY_TARGET@.h"
 
 #include "vtkPVPlugin.h"
 #include "vtkPVPluginLoader.h"
@@ -40,15 +40,15 @@ namespace extension
 {
 namespace paraview
 {
-void initializeDefaultPlugins()
+void initialize@PLUGIN_LIBRARY_TARGET@()
 {
   vtkPVPluginLoader::RegisterLoadPluginCallback(loadPlugins);
   vtkPVPluginTracker::SetStaticPluginSearchFunction(searchPlugins);
 }
 
-void loadDefaultPlugins()
+void load@PLUGIN_LIBRARY_TARGET@()
 {
-  @SMTK_PLUGIN_IMPORT@
+@SMTK_PLUGIN_IMPORT@
 }
 }
 }
