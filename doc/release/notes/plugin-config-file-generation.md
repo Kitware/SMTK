@@ -13,3 +13,10 @@ change introduces the exported plugin target property
 `ENABLED_BY_DEFAULT` and adds the CMake function
 `generate_smtk_plugin_config_file` for ParaView-derived applications
 that consume SMTK plugins to generate a plugins file.
+
+When SMTK (and SMTK-derived) plugins are intended to be directly
+linked into an application , it is convenient to have a plugin library
+generated using the CMake target properties from the plugins
+themselves. This change adds the CMake function
+`generate_smtk_plugin_library` for ParaView-derived applications
+that consume SMTK plugins to generate a plugin library.
