@@ -21,6 +21,7 @@
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
 #include "pqServerManagerModel.h"
+#include "vtkPVXMLParser.h"
 #include "vtkSMProxyDefinitionManager.h"
 #include "vtkSMSessionProxyManager.h"
 
@@ -83,14 +84,23 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
   }
 }
 
-std::string xmlForSMTKImporter(
-  const std::string& resource, const std::string& extensions, const std::string& description)
+std::string proxyName(
+  const std::string& resource, const std::string&, const std::string& description)
 {
   std::size_t hash = std::hash<std::string>{}(resource + description);
   std::stringstream s;
+  s << "SMTKModelImporter_" << hash;
+  return s.str();
+}
+
+std::string xmlForSMTKImporter(
+  const std::string& resource, const std::string& extensions, const std::string& description)
+{
+  std::stringstream s;
   s << "<ServerManagerConfiguration>\n";
   s << "  <ProxyGroup name=\"sources\">\n";
-  s << "    <SourceProxy name=\"SMTKModelImporter_" << hash << " \" class=\"vtkSMTKSource\" ";
+  s << "    <SourceProxy name=\"" << proxyName(resource, extensions, description)
+    << "\" class=\"vtkSMTKSource\" ";
   s << "label=\"SMTK importer for " << description << " into " << resource << "\">\n";
   s << "      <Documentation>\n";
   s << "        short_help=\"Import a " << description << " as an SMTK " << resource << ".\"\n";
@@ -138,11 +148,36 @@ void registerSMTKImporter(
     extensionsAndDescriptionsFromFileFilters(fileFilters, extensionsAndDescriptions);
     for (auto& token : extensionsAndDescriptions)
     {
-      server->proxyManager()->GetProxyDefinitionManager()->LoadConfigurationXMLFromString(
-        xmlForSMTKImporter(resource, token.first, token.second).c_str());
+      vtkNew<vtkPVXMLParser> parser;
+      if (parser->Parse(xmlForSMTKImporter(resource, token.first, token.second).c_str()) != 0)
+      {
+        server->proxyManager()->GetProxyDefinitionManager()->LoadConfigurationXML(
+          parser->GetRootElement());
+      }
     }
   }
 }
+
+// TODO: Once ParaView has the ability to unregister configurations for
+// readers, the logic below can be used to ensure that removed operations are
+// safely removed from ParaView's File->Open() interface.
+#if 0
+void unregisterSMTKImporter(
+  pqServer* server, const std::string& resource, const std::string& fileFilters)
+{
+  auto app = pqApplicationCore::instance();
+  if (app)
+  {
+    std::vector<std::pair<std::string, std::string> > extensionsAndDescriptions;
+    extensionsAndDescriptionsFromFileFilters(fileFilters, extensionsAndDescriptions);
+    for (auto& token : extensionsAndDescriptions)
+    {
+      // TODO: ParaView's vtkSIProxyDefinitionManager needs the ability to
+      // remove a configuration.
+    }
+  }
+}
+#endif
 }
 
 static pqSMTKRegisterImportersBehavior* g_instance = nullptr;
@@ -181,14 +216,14 @@ pqSMTKRegisterImportersBehavior::~pqSMTKRegisterImportersBehavior()
 }
 
 void pqSMTKRegisterImportersBehavior::constructModelImporters(
-  pqSMTKWrapper* rsrcMgr, pqServer* server)
+  pqSMTKWrapper* wrapper, pqServer* server)
 {
-  if (!rsrcMgr)
+  if (!wrapper)
   {
     return;
   }
 
-  auto importerGroup = smtk::operation::ImporterGroup(rsrcMgr->smtkOperationManager());
+  auto importerGroup = smtk::operation::ImporterGroup(wrapper->smtkOperationManager());
   for (auto& resourceName : importerGroup.supportedResources())
   {
     for (auto index : importerGroup.operationsForResource(resourceName))
@@ -197,4 +232,52 @@ void pqSMTKRegisterImportersBehavior::constructModelImporters(
       registerSMTKImporter(server, resourceName, fileItemDef->getFileFilters());
     }
   }
+
+  std::weak_ptr<smtk::operation::Manager> opManager = wrapper->smtkOperationManager();
+  wrapper->smtkOperationManager()->groupObservers().insert([opManager, server](
+    const smtk::operation::Operation::Index& index, const std::string& groupName, bool adding) {
+    if (!adding)
+    {
+      return;
+    }
+
+    if (auto operationManager = opManager.lock())
+    {
+      if (groupName == smtk::operation::ImporterGroup::type_name)
+      {
+        auto importerGroup = smtk::operation::ImporterGroup(operationManager);
+        assert(importerGroup.has(index));
+        auto fileItemDef = importerGroup.fileItemDefinitionForOperation(index);
+        registerSMTKImporter(
+          server, importerGroup.resourceForOperation(index), fileItemDef->getFileFilters());
+      }
+    }
+  });
+
+// TODO: Once ParaView has the ability to unregister configurations for
+// readers, the logic below can be used to ensure that removed operations are
+// safely removed from ParaView's File->Open() interface.
+#if 0
+  wrapper->smtkOperationManager()->groupObservers().insert(
+    [opManager, server](const smtk::operation::Operation::Index& index,
+                        const std::string& groupName, bool adding)
+    {
+      if (adding)
+      {
+        return;
+      }
+
+      if (auto operationManager = opManager.lock())
+      {
+        if (groupName == smtk::operation::ImporterGroup::type_name)
+        {
+          auto importerGroup = smtk::operation::ImporterGroup(operationManager);
+          assert(importerGroup.has(index));
+          auto fileItemDef = importerGroup.fileItemDefinitionForOperation(index);
+          unregisterSMTKImporter(server, importerGroup.resourceForOperation(index),
+                                 fileItemDef->getFileFilters());
+        }
+      }
+    });
+#endif
 }
