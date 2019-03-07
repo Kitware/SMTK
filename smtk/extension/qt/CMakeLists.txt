@@ -16,6 +16,7 @@ set(QAttrLibSrcs
   qtDescriptivePhraseEditor.cxx
   qtDescriptivePhraseModel.cxx
   qtGroupView.cxx
+  qtAnalysisView.cxx
   qtAssociationView.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
@@ -83,6 +84,7 @@ set(QAttrLibMocHeaders
   qtDescriptivePhraseEditor.h
   qtDescriptivePhraseModel.h
   qtGroupView.h
+  qtAnalysisView.h
   qtAssociationView.h
   qtAttributeView.h
   qtInstancedView.h

@@ -10,6 +10,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
@@ -136,6 +137,8 @@ void qtUIManager::commonConstructor()
   m_activeModelView = nullptr;
   m_maxValueLabelLength = 200;
   m_minValueLabelLength = 50;
+  m_topLevelCategoriesSet = false;
+  m_categoryChecks = true;
 
   // default settings
   this->advFont.setBold(true);
@@ -146,6 +149,7 @@ void qtUIManager::commonConstructor()
   m_currentAdvLevel = 0;
 
   // Lets register some basic view constructors
+  this->registerViewConstructor("Analysis", qtAnalysisView::createViewWidget);
   this->registerViewConstructor("Associations", qtAssociationView::createViewWidget);
   this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
   this->registerViewConstructor("Group", qtGroupView::createViewWidget);
@@ -491,7 +495,34 @@ bool qtUIManager::passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr 
 
 bool qtUIManager::passCategoryCheck(const std::set<std::string>& categories)
 {
-  return !this->categoryEnabled() || categories.find(this->currentCategory()) != categories.end();
+  if (!m_categoryChecks)
+  {
+    // Been told not to filter on categories
+    return true;
+  }
+  else if (this->categoryEnabled())
+  {
+    // Ok see if the current category is in the set
+    return (categories.find(this->currentCategory()) != categories.end());
+  }
+  else if (!m_topLevelCategoriesSet)
+  {
+    // The top level view is not filtering on category and no one has
+    // explicilty specified a list categories that restricts what can be
+    // displayed
+    return true;
+  }
+
+  // In this case we have been given an explicit set of categories that restrict
+  // what can be displayed even if the top level is displaying its category widget
+  for (auto cat : m_topLevelCategories)
+  {
+    if (categories.find(cat) != categories.end())
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 QString qtUIManager::clipBoardText()
@@ -790,9 +821,9 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
   if (it == m_constructors.end())
   {
     // Constructor for that type could not be found)
+    std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
     return nullptr;
   }
-
   qtBaseView* qtView = (it->second)(info);
   return qtView;
 }
@@ -973,4 +1004,22 @@ qtItem* qtUIManager::defaultItemConstructor(const AttributeItemInfo& info)
         "Error: Unsupported Item Type: " << smtk::attribute::Item::type2String(item->type()));
   }
   return aItem;
+}
+
+void qtUIManager::disableCategoryChecks()
+{
+  m_categoryChecks = false;
+}
+void qtUIManager::enableCategoryChecks()
+{
+  m_categoryChecks = true;
+}
+void qtUIManager::setToLevelCategories(const std::set<std::string>& categories)
+{
+  m_topLevelCategories = categories;
+  m_topLevelCategoriesSet = true;
+  if (m_topView)
+  {
+    m_topView->setTopLevelCategories(categories);
+  }
 }

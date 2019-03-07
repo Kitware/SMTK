@@ -14,10 +14,12 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/model/Resource.h"
 
@@ -1007,4 +1009,107 @@ void Resource::disassociateAllAttributes(const smtk::resource::PersistentObjectP
       entry->forceDisassociate(object);
     }
   }
+}
+
+bool Resource::setAnalysisParent(const std::string& analysisName, const std::string& analysisParent)
+{
+  // First verify that both the analysis and the parent actually are defined
+  if ((m_analyses.find(analysisName) == m_analyses.end()) ||
+    (m_analyses.find(analysisParent) == m_analyses.end()))
+  {
+    return false;
+  }
+  m_analysisParent[analysisName] = analysisParent;
+  m_analysisChildren[analysisParent].insert(analysisName);
+  return true;
+}
+
+std::string Resource::analysisParent(const std::string& analysisName) const
+{
+  auto it = m_analysisParent.find(analysisName);
+  if (it == m_analysisParent.end())
+  {
+    return "";
+  }
+  return it->second;
+}
+
+std::set<std::string> Resource::analysisChildren(const std::string& analysisName) const
+{
+  auto it = m_analysisChildren.find(analysisName);
+  if (it == m_analysisChildren.end())
+  {
+    std::set<std::string> empty;
+    return empty;
+  }
+  return it->second;
+}
+
+std::set<std::string> Resource::topLevelAnalyses() const
+{
+  std::set<std::string> res;
+  for (auto const& analysis : m_analyses)
+  {
+    if (m_analysisParent.find(analysis.first) == m_analysisParent.end())
+    {
+      res.insert(res.end(), analysis.first);
+    }
+  }
+  return res;
+}
+
+void Resource::buildAnalysisChildren(GroupItemDefinitionPtr& gitem, const std::string& analysis)
+{
+  auto children = this->analysisChildren(analysis);
+  if (children.size())
+  {
+    auto aitem = gitem->addItemDefinition<GroupItemDefinition>(analysis);
+    aitem->setIsOptional(true);
+    for (auto child : children)
+    {
+      this->buildAnalysisChildren(aitem, child);
+    }
+  }
+  else
+  {
+    auto aitem = gitem->addItemDefinition<VoidItemDefinition>(analysis);
+    aitem->setIsOptional(true);
+  }
+}
+
+DefinitionPtr Resource::buildAnalysesDefinition(const std::string& type)
+{
+  // First see if the defintion already exists
+  auto def = this->findDefinition(type);
+  if (def)
+  {
+    return smtk::attribute::DefinitionPtr();
+  }
+
+  // Ok lets build a definition with the following rules:
+  // 1. All items are optional and each respresents an Analysis
+  // 2. An Analysis with no children is a void item
+  // 3. An Analsyis with children is a group item
+
+  def = this->createDefinition(type);
+  auto topAnalyses = this->topLevelAnalyses();
+  for (auto analysis : topAnalyses)
+  {
+    auto children = this->analysisChildren(analysis);
+    if (children.size())
+    {
+      auto aitem = def->addItemDefinition<GroupItemDefinition>(analysis);
+      aitem->setIsOptional(true);
+      for (auto child : children)
+      {
+        this->buildAnalysisChildren(aitem, child);
+      }
+    }
+    else
+    {
+      auto aitem = def->addItemDefinition<VoidItemDefinition>(analysis);
+      aitem->setIsOptional(true);
+    }
+  }
+  return def;
 }

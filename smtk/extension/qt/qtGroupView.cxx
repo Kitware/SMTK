@@ -48,6 +48,8 @@ public:
   {
   }
   QList<smtk::extension::qtBaseView*> ChildViews;
+  QList<QWidget*> PageWidgets;
+  QList<QIcon> PageIcons;
   QList<QLabel*> Labels;
   qtGroupViewInternals::Style m_style;
   std::vector<smtk::view::ViewPtr> m_views;
@@ -176,6 +178,7 @@ void qtGroupView::createWidget()
     if (!v)
     {
       // No such View by that name in attribute resource
+      std::cerr << "Skipping Child: " << t << " could not be found in attribute resource\n";
 
       continue;
     }
@@ -259,6 +262,8 @@ void qtGroupView::clearChildViews()
   }
   this->Internals->ChildViews.clear();
   this->Internals->Labels.clear();
+  this->Internals->PageWidgets.clear();
+  this->Internals->PageIcons.clear();
 }
 
 void qtGroupView::updateUI()
@@ -281,6 +286,35 @@ void qtGroupView::updateUI()
       {
         child->widget()->show();
         this->Internals->Labels.at(i)->show();
+      }
+    }
+  }
+  else if (this->Internals->m_style == qtGroupViewInternals::TABBED)
+  {
+    QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
+    if (!tabWidget)
+    {
+      return;
+    }
+    tabWidget->clear();
+    int i, size = this->Internals->ChildViews.size();
+    for (i = 0; i < size; i++)
+    {
+      auto child = this->Internals->ChildViews.at(i);
+      child->updateUI();
+      if (child->isEmpty())
+      {
+        continue;
+      }
+      this->Internals->PageWidgets.at(i)->show();
+      if (this->Internals->PageIcons.at(i).isNull())
+      {
+        QString secTitle = child->getObject()->label().c_str();
+        tabWidget->addTab(this->Internals->PageWidgets.at(i), secTitle);
+      }
+      else
+      {
+        tabWidget->addTab(this->Internals->PageWidgets.at(i), this->Internals->PageIcons.at(i), "");
       }
     }
   }
@@ -316,6 +350,35 @@ void qtGroupView::onShowCategory()
       }
     }
   }
+  else if (this->Internals->m_style == qtGroupViewInternals::TABBED)
+  {
+    QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
+    if (!tabWidget)
+    {
+      return;
+    }
+    tabWidget->clear();
+    int i, size = this->Internals->ChildViews.size();
+    for (i = 0; i < size; i++)
+    {
+      auto child = this->Internals->ChildViews.at(i);
+      child->onShowCategory();
+      if (child->isEmpty())
+      {
+        continue;
+      }
+      this->Internals->PageWidgets.at(i)->show();
+      if (this->Internals->PageIcons.at(i).isNull())
+      {
+        QString secTitle = child->getObject()->label().c_str();
+        tabWidget->addTab(this->Internals->PageWidgets.at(i), secTitle);
+      }
+      else
+      {
+        tabWidget->addTab(this->Internals->PageWidgets.at(i), this->Internals->PageIcons.at(i), "");
+      }
+    }
+  }
   else
   {
     foreach (qtBaseView* childView, this->Internals->ChildViews)
@@ -337,29 +400,27 @@ void qtGroupView::showAdvanceLevelOverlay(bool show)
 
 void qtGroupView::addTabEntry(qtBaseView* child)
 {
-  QTabWidget* tabWidget = static_cast<QTabWidget*>(this->Widget);
+  QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
   if (!tabWidget || !child || !child->getObject())
   {
     return;
   }
-  QWidget* tabPage = new QWidget();
-  tabPage->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+  QWidget* content = new QWidget();
+  content->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
-  QScrollArea* s = new QScrollArea(tabWidget);
-  s->setWidgetResizable(true);
-  s->setFrameShape(QFrame::NoFrame);
+  QScrollArea* tabPage = new QScrollArea(tabWidget);
+  tabPage->setWidgetResizable(true);
+  tabPage->setFrameShape(QFrame::NoFrame);
   QString secTitle = child->getObject()->label().c_str();
   QString name = "tab" + QString(secTitle);
-  s->setObjectName(name);
-  s->setWidget(tabPage);
+  tabPage->setObjectName(name);
+  tabPage->setWidget(content);
 
-  QVBoxLayout* vLayout = new QVBoxLayout(tabPage);
+  QVBoxLayout* vLayout = new QVBoxLayout(content);
   vLayout->setMargin(0);
   vLayout->addWidget(child->widget());
 
-  int index = tabWidget->addTab(s, secTitle);
-  tabWidget->setTabToolTip(index, secTitle);
-
+  QIcon icon;
   //using the ui label name find if we have an icon resource
   QString resourceName = QApplication::applicationDirPath().append("/../Resources/Icons/");
   //QString resourceName = ":/SimBuilder/Icons/";
@@ -375,7 +436,6 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   if (QFile::exists(resourceName))
   {
     QPixmap image(resourceName);
-    QIcon icon;
     QMatrix transform;
     if (tabWidget->tabPosition() == QTabWidget::East)
     {
@@ -386,8 +446,29 @@ void qtGroupView::addTabEntry(qtBaseView* child)
       transform.rotate(90);
     }
     icon = image.transformed(transform);
-    tabWidget->setTabIcon(index, icon);
-    tabWidget->setTabText(index, "");
+  }
+
+  // Save the page widget and icon
+  this->Internals->PageWidgets.push_back(tabPage);
+  this->Internals->PageIcons.push_back(icon);
+
+  if (!child->isEmpty())
+  {
+    int index;
+    if (icon.isNull())
+    {
+      index = tabWidget->addTab(tabPage, secTitle);
+    }
+    else
+    {
+      index = tabWidget->addTab(tabPage, icon, "");
+    }
+
+    tabWidget->setTabToolTip(index, secTitle);
+  }
+  else
+  {
+    tabPage->hide();
   }
 
   vLayout->setAlignment(Qt::AlignTop);
@@ -439,4 +520,16 @@ void qtGroupView::updateModelAssociation()
   {
     childView->updateModelAssociation();
   }
+}
+
+bool qtGroupView::isEmpty() const
+{
+  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  {
+    if (!childView->isEmpty())
+    {
+      return false;
+    }
+  }
+  return true;
 }

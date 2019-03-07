@@ -48,7 +48,21 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   }
   if (res->numberOfAnalyses())
   {
-    j["Analyses"] = res->analyses();
+    auto analyses = res->analyses();
+    j["Analyses"] = analyses;
+    std::map<std::string, std::string> parentInfo;
+    for (auto analysis : analyses)
+    {
+      auto parent = res->analysisParent(analysis.first);
+      if (parent != "")
+      {
+        parentInfo[analysis.first] = parent;
+      }
+    }
+    if (parentInfo.size())
+    {
+      j["AnalysesParentInfo"] = parentInfo;
+    }
   }
 
   // Write out the advance levels information
@@ -202,16 +216,23 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 
   // Process Analysis Info
   // nlohmman's get function does not support nested map, so iterator is used
-  try
+  if (j.find("Analyses") != j.end())
   {
     json analyses = j.at("Analyses");
     for (json::iterator iterAna = analyses.begin(); iterAna != analyses.end(); iterAna++)
     {
       res->defineAnalysis(iterAna.key(), iterAna.value());
     }
-  }
-  catch (std::exception& /*e*/)
-  {
+
+    // Do we have parent infomation to deal with?
+    if (j.find("AnalysesParentInfo") != j.end())
+    {
+      json parentInfo = j.at("AnalysesParentInfo");
+      for (json::iterator iterAna = parentInfo.begin(); iterAna != parentInfo.end(); iterAna++)
+      {
+        res->setAnalysisParent(iterAna.key(), iterAna.value());
+      }
+    }
   }
 
   //Process AdvanceLevel info
