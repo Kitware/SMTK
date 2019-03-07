@@ -44,6 +44,10 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  smtk::operation::ReaderGroup(operationManager).unregisterOperation<smtk::attribute::Read>();
+
+  smtk::operation::WriterGroup(operationManager).unregisterOperation<smtk::attribute::Write>();
+
   operationManager->unregisterOperations<OperationList>();
 }
 

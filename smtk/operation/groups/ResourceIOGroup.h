@@ -40,6 +40,7 @@ public:
   using Group::has;
   using Group::operations;
   using Group::operationNames;
+  using Group::unregisterOperation;
 
   ResourceIOGroup(const std::string& name, std::shared_ptr<smtk::operation::Manager> manager)
     : Group(name, manager)
@@ -142,8 +143,8 @@ bool ResourceIOGroup::registerOperation(
       return false;
     }
   }
-  return (Group::registerOperation(typeName, { smtk::common::typeName<ResourceType>() }) &&
-    m_fileItemName.registerOperation(typeName, { fileItemName }));
+  return (m_fileItemName.registerOperation(typeName, { fileItemName }) &&
+    Group::registerOperation(typeName, { smtk::common::typeName<ResourceType>() }));
 }
 
 template <typename ResourceType>
@@ -179,8 +180,8 @@ bool ResourceIOGroup::registerOperation(
       return false;
     }
   }
-  return (Group::registerOperation(index, { smtk::common::typeName<ResourceType>() }) &&
-    m_fileItemName.registerOperation(index, { fileItemName }));
+  return (m_fileItemName.registerOperation(index, { fileItemName }) &&
+    Group::registerOperation(index, { smtk::common::typeName<ResourceType>() }));
 }
 
 template <typename ResourceType, typename OperationType>
@@ -216,10 +217,10 @@ bool ResourceIOGroup::registerOperation(const std::string& fileItemName)
       return false;
     }
   }
-  return (Group::registerOperation(std::type_index(typeid(OperationType)).hash_code(),
-            { smtk::common::typeName<ResourceType>() }) &&
-    m_fileItemName.registerOperation(
-      std::type_index(typeid(OperationType)).hash_code(), { fileItemName }));
+  return (m_fileItemName.registerOperation(
+            std::type_index(typeid(OperationType)).hash_code(), { fileItemName }) &&
+    Group::registerOperation(std::type_index(typeid(OperationType)).hash_code(),
+            { smtk::common::typeName<ResourceType>() }));
 }
 
 template <typename OperationType>

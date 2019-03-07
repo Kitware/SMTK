@@ -71,8 +71,7 @@ private:
   {
     bool operator()(const RegisterFunction& lhs, const RegisterFunction& rhs) const
     {
-      return lhs.target<bool (*)(const std::weak_ptr<PluginClientBase>&)>() <
-        rhs.target<bool (*)(const std::weak_ptr<PluginClientBase>&)>();
+      return &lhs < &rhs;
     }
   };
 

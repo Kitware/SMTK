@@ -61,6 +61,14 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  smtk::operation::ImporterGroup(operationManager).unregisterOperation<smtk::mesh::Import>();
+
+  smtk::operation::ExporterGroup(operationManager).unregisterOperation<smtk::mesh::Export>();
+
+  smtk::operation::ReaderGroup(operationManager).unregisterOperation<smtk::mesh::Read>();
+
+  smtk::operation::WriterGroup(operationManager).unregisterOperation<smtk::mesh::Write>();
+
   operationManager->unregisterOperations<OperationList>();
 }
 

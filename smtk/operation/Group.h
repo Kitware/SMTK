@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/operation/GroupObserver.h"
 #include "smtk/operation/Operation.h"
 
 #include <set>
@@ -48,6 +49,9 @@ class Manager;
 class SMTKCORE_EXPORT Group
 {
 public:
+  typedef GroupObserver Observer;
+  typedef GroupObservers Observers;
+
   Group(const std::string& name, std::shared_ptr<smtk::operation::Manager> manager)
     : m_manager(manager)
     , m_name(name)

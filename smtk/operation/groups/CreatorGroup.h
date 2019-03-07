@@ -42,6 +42,7 @@ public:
   using Group::operationNames;
   using Group::operationName;
   using Group::operationLabel;
+  using Group::unregisterOperation;
 
   static constexpr const char* const type_name = "creator";
 

@@ -88,6 +88,24 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+
+#ifdef ENABLE_PYARC_BINDINGS
+  smtk::operation::ExporterGroup(operationManager)
+    .unregisterOperation("smtk.session.rgg.export_to_pyarc.export_to_pyarc");
+#endif
+
+  smtk::operation::CreatorGroup(operationManager)
+    .unregisterOperation<smtk::session::rgg::CreateModel>();
+
+  // smtk::operation::ImporterGroup(operationManager)
+  //   .unregisterOperation<smtk::session::rgg::ReadRXFFile>();
+
+  // smtk::operation::ReaderGroup(operationManager)
+  //   .unregisterOperation<smtk::session::rgg::Read>();
+
+  // smtk::operation::WriterGroup(operationManager)
+  //   .unregisterOperation<smtk::session::rgg::Write>();
+
   operationManager->unregisterOperations<OperationList>();
 }
 }

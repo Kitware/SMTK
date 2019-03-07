@@ -26,6 +26,7 @@ set(operationSrcs
 set(operationHeaders
   Launcher.h
   Group.h
+  GroupObserver.h
   Manager.h
   Metadata.h
   MetadataContainer.h

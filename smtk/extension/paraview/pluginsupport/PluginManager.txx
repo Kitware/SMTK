@@ -57,7 +57,7 @@ void PluginManager::setRegistryStatus(const std::shared_ptr<Manager>& manager, b
     // ...then we also construct a functor for registering this manager to
     // future plugins. It accepts as input the plugin client and returns true is
     // the manager has not yet expired.
-    std::weak_ptr<Manager> weakMgr;
+    std::weak_ptr<Manager> weakMgr = manager;
     auto registerToFuturePlugins = [=](const std::weak_ptr<PluginClientBase>& pluginClient) {
       if (auto manager = weakMgr.lock())
       {

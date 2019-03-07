@@ -93,6 +93,22 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  smtk::operation::CreatorGroup(operationManager)
+    .unregisterOperation<smtk::session::polygon::CreateModel>();
+
+#ifdef VTK_SUPPORT
+  smtk::operation::ImporterGroup(operationManager)
+    .unregisterOperation<smtk::session::polygon::Import>();
+#endif
+
+  smtk::operation::ReaderGroup(operationManager)
+    .unregisterOperation<smtk::session::polygon::Read>();
+  smtk::operation::ReaderGroup(operationManager)
+    .unregisterOperation<smtk::session::polygon::LegacyRead>();
+
+  smtk::operation::WriterGroup(operationManager)
+    .unregisterOperation<smtk::session::polygon::Write>();
+
   operationManager->unregisterOperations<OperationList>();
 }
 }

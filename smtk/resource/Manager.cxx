@@ -52,6 +52,7 @@ bool Manager::unregisterResource(const std::string& typeName)
   if (metadata != m_metadata.get<NameTag>().end())
   {
     m_metadata.get<NameTag>().erase(metadata);
+    m_metadataObservers(*metadata, false);
     return true;
   }
 
@@ -65,6 +66,7 @@ bool Manager::unregisterResource(const Resource::Index& index)
   if (metadata != m_metadata.get<IndexTag>().end())
   {
     m_metadata.get<IndexTag>().erase(metadata);
+    m_metadataObservers(*metadata, false);
     return true;
   }
 
@@ -148,9 +150,12 @@ bool Manager::registerResource(Metadata&& metadata)
   auto alreadyRegisteredMetadata = m_metadata.get<IndexTag>().find(metadata.index());
   if (alreadyRegisteredMetadata == m_metadata.get<IndexTag>().end())
   {
-    auto size = m_metadata.get<IndexTag>().size();
-    m_metadata.get<IndexTag>().insert(metadata);
-    return m_metadata.get<IndexTag>().size() > size;
+    auto inserted = m_metadata.get<IndexTag>().insert(metadata);
+    if (inserted.second)
+    {
+      m_metadataObservers(*inserted.first, true);
+      return true;
+    }
   }
 
   return false;
