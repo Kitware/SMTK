@@ -72,6 +72,16 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  smtk::operation::CreatorGroup(operationManager)
+    .unregisterOperation("smtk.session.multiscale.import_from_deform.import_from_deform");
+
+  smtk::operation::ImporterGroup(operationManager)
+    .unregisterOperation<smtk::session::mesh::Import>();
+
+  smtk::operation::ReaderGroup(operationManager).unregisterOperation<smtk::session::mesh::Read>();
+
+  smtk::operation::WriterGroup(operationManager).unregisterOperation<smtk::session::mesh::Write>();
+
   operationManager->unregisterOperations<OperationList>();
   operationManager->unregisterOperation(
     "smtk.session.multiscale.import_from_deform.import_from_deform");

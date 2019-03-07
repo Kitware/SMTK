@@ -84,6 +84,18 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  smtk::operation::ImporterGroup(operationManager)
+    .unregisterOperation<smtk::session::discrete::ImportOperation>();
+  smtk::operation::ImporterGroup(operationManager)
+    .unregisterOperation<smtk::session::discrete::ReadOperation>();
+
+  smtk::operation::ReaderGroup(operationManager)
+    .unregisterOperation<smtk::session::discrete::ReadResource>();
+  smtk::operation::ReaderGroup(operationManager).unregisterOperation<LegacyReadResource>();
+
+  smtk::operation::WriterGroup(operationManager)
+    .unregisterOperation<smtk::session::discrete::WriteResource>();
+
   operationManager->unregisterOperations<OperationList>();
 }
 }

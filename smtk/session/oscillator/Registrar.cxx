@@ -79,6 +79,15 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  smtk::operation::CreatorGroup(operationManager)
+    .unregisterOperation<smtk::session::oscillator::EditDomain>();
+
+  smtk::operation::ReaderGroup(operationManager)
+    .unregisterOperation<smtk::session::oscillator::Read>();
+
+  smtk::operation::WriterGroup(operationManager)
+    .unregisterOperation<smtk::session::oscillator::Write>();
+
   operationManager->unregisterOperations<OperationList>();
 }
 }
