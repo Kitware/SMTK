@@ -179,6 +179,10 @@ public:
   Observers& observers() { return m_observers; }
   const Observers& observers() const { return m_observers; }
 
+  /// Return the metadata observers associated with this manager.
+  Metadata::Observers& metadataObservers() { return m_metadataObservers; }
+  const Metadata::Observers& metadataObservers() const { return m_metadataObservers; }
+
 private:
   Manager();
 
@@ -194,6 +198,9 @@ private:
 
   /// A container for all resource observers.
   Observers m_observers;
+
+  /// A container for all resource metadata observers.
+  Metadata::Observers m_metadataObservers;
 
   /// A map connecting legacy resource names to legacy readers.
   std::map<std::string, std::function<ResourcePtr(const std::string&)> > m_legacyReaders;

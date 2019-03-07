@@ -14,6 +14,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
+#include "smtk/resource/MetadataObserver.h"
 #include "smtk/resource/Resource.h"
 
 #include <functional>
@@ -38,6 +39,8 @@ class Metadata
 
 public:
   typedef std::function<void(const Metadata&)> Visitor;
+  typedef MetadataObserver Observer;
+  typedef MetadataObservers Observers;
 
   Metadata(const std::string& typeName, Resource::Index index,
     std::set<Resource::Index> parentIndices,

@@ -24,6 +24,7 @@ set(resourceHeaders
   Manager.h
   Metadata.h
   MetadataContainer.h
+  MetadataObserver.h
   Observer.h
   PersistentObject.h
   PropertyType.h
