@@ -64,7 +64,16 @@ bool Group::registerOperation(const std::string& typeName, std::set<std::string>
   Operation::Specification spec = getSpecification<std::string>(typeName, m_manager);
 
   // Add the group name to the operator specification's list of groups.
-  return spec ? addTag(spec, name(), values) : false;
+  bool added = spec ? addTag(spec, name(), values) : false;
+
+  if (added)
+  {
+    auto manager = m_manager.lock();
+    auto metadata = manager->metadata().get<NameTag>().find(typeName);
+    manager->groupObservers()(metadata->index(), m_name, true);
+  }
+
+  return added;
 }
 
 bool Group::registerOperation(const Operation::Index& index, std::set<std::string> values)
@@ -73,7 +82,15 @@ bool Group::registerOperation(const Operation::Index& index, std::set<std::strin
   Operation::Specification spec = getSpecification<Operation::Index>(index, m_manager);
 
   // Add the group name to the operator specification's list of groups.
-  return spec ? addTag(spec, name(), values) : false;
+  bool added = spec ? addTag(spec, name(), values) : false;
+
+  if (added)
+  {
+    auto manager = m_manager.lock();
+    manager->groupObservers()(index, m_name, true);
+  }
+
+  return added;
 }
 
 bool Group::unregisterOperation(const std::string& typeName)
@@ -82,7 +99,16 @@ bool Group::unregisterOperation(const std::string& typeName)
   Operation::Specification spec = getSpecification<std::string>(typeName, m_manager);
 
   // Remove the group name from the operator specification's list of groups.
-  return spec ? removeTag(spec, name()) : false;
+  bool removed = spec ? removeTag(spec, name()) : false;
+
+  if (removed)
+  {
+    auto manager = m_manager.lock();
+    auto metadata = manager->metadata().get<NameTag>().find(typeName);
+    manager->groupObservers()(metadata->index(), m_name, false);
+  }
+
+  return removed;
 }
 
 bool Group::unregisterOperation(const Operation::Index& index)
@@ -91,7 +117,15 @@ bool Group::unregisterOperation(const Operation::Index& index)
   Operation::Specification spec = getSpecification<Operation::Index>(index, m_manager);
 
   // Remove the group name from the operator specification's list of groups.
-  return spec ? removeTag(spec, name()) : false;
+  bool removed = spec ? removeTag(spec, name()) : false;
+
+  if (removed)
+  {
+    auto manager = m_manager.lock();
+    manager->groupObservers()(index, m_name, false);
+  }
+
+  return removed;
 }
 
 Operation::Specification Group::specification(const std::string& typeName) const

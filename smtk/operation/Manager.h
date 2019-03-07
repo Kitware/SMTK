@@ -113,6 +113,10 @@ public:
   Observers& observers() { return m_observers; }
   const Observers& observers() const { return m_observers; }
 
+  /// Return the group observers associated with this manager.
+  Group::Observers& groupObservers() { return m_groupObservers; }
+  const Group::Observers& groupObservers() const { return m_groupObservers; }
+
   /// Return the metadata observers associated with this manager.
   Metadata::Observers& metadataObservers() { return m_metadataObservers; }
   const Metadata::Observers& metadataObservers() const { return m_metadataObservers; }
@@ -189,6 +193,9 @@ private:
 
   /// A container for all operation observers.
   Observers m_observers;
+
+  /// A container for all operation group observers.
+  Group::Observers m_groupObservers;
 
   /// A container for all operation metadata observers.
   Metadata::Observers m_metadataObservers;
