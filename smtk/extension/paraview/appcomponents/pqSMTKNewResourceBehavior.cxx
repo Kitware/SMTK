@@ -168,6 +168,21 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
       pqActiveObjects* activeObjects = &pqActiveObjects::instance();
       QObject::connect(
         activeObjects, SIGNAL(serverChanged(pqServer*)), this, SLOT(updateNewMenu()));
+
+      pqServer* server = pqActiveObjects::instance().activeServer();
+      pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
+      if (wrapper != nullptr)
+      {
+        wrapper->smtkOperationManager()->groupObservers().insert(
+          [this](const smtk::operation::Operation::Index&, const std::string& groupName, bool) {
+            if (groupName == smtk::operation::CreatorGroup::type_name)
+            {
+              this->updateNewMenu();
+            }
+          });
+        // Access the creator group.
+        auto creatorGroup = smtk::operation::CreatorGroup(wrapper->smtkOperationManager());
+      }
     }
   });
 }
