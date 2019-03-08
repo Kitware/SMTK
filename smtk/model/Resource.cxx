@@ -1247,8 +1247,9 @@ bool Resource::hasFloatProperty(const UUID& entity, const std::string& propName)
     return false;
   }
   FloatData::const_iterator sit = uit->second.find(propName);
-  // FIXME: Should we return true even when the array (*sit) is empty?
-  return sit == uit->second.end() ? false : true;
+  // when the array (*sit) is empty, we return true due to the fact that defing a dummy
+  // property should be considered ill formed
+  return sit == uit->second.end() ? false : !sit->second.empty();
 }
 
 bool Resource::removeFloatProperty(const UUID& entity, const std::string& propName)

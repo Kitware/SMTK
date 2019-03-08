@@ -359,7 +359,7 @@ void EntityRef::setVisible(bool vis)
   */
 FloatList EntityRef::color() const
 {
-  FloatList result = this->floatProperty("color");
+  FloatList result = !this->hasColor() ? FloatList{} : this->floatProperty("color");
   int ncomp = static_cast<int>(result.size());
   if (ncomp < 4)
   {
