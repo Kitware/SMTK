@@ -9,11 +9,11 @@
 //=========================================================================
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 
-#include "smtk/extension/qt/qtDescriptivePhraseEditor.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
 #include <QAbstractProxyModel>
 #include <QApplication>
+#include <QLineEdit>
 #include <QMouseEvent>
 #include <QPainter>
 
@@ -279,7 +279,7 @@ QWidget* qtDescriptivePhraseDelegate::createEditor(
   // Otherwise, edit the title if the item says we can.
   if (idx.data(qtDescriptivePhraseModel::TitleTextMutableRole).toBool())
   {
-    smtk::extension::qtDescriptivePhraseEditor* editor = new qtDescriptivePhraseEditor(owner);
+    QLineEdit* editor = new QLineEdit(owner);
     return editor;
   }
   return nullptr;
@@ -336,24 +336,20 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
 
 void qtDescriptivePhraseDelegate::setEditorData(QWidget* editor, const QModelIndex& idx) const
 {
-  smtk::extension::qtDescriptivePhraseEditor* entityEditor =
-    qobject_cast<smtk::extension::qtDescriptivePhraseEditor*>(editor);
-  if (entityEditor)
+  QLineEdit* titleEditor = qobject_cast<QLineEdit*>(editor);
+  if (titleEditor)
   {
-    entityEditor->setTitle(idx.data(qtDescriptivePhraseModel::TitleTextRole).toString());
-    // TODO: editor should also allow adjusting entity type?
+    titleEditor->setText(idx.data(qtDescriptivePhraseModel::TitleTextRole).toString());
   }
 }
 
 void qtDescriptivePhraseDelegate::setModelData(
   QWidget* editor, QAbstractItemModel* model, const QModelIndex& idx) const
 {
-  smtk::extension::qtDescriptivePhraseEditor* entityEditor =
-    qobject_cast<smtk::extension::qtDescriptivePhraseEditor*>(editor);
-  if (entityEditor)
+  QLineEdit* titleEditor = qobject_cast<QLineEdit*>(editor);
+  if (titleEditor)
   {
-    // TODO: editor should also allow adjusting entity type?
-    model->setData(idx, entityEditor->title(), qtDescriptivePhraseModel::TitleTextRole);
+    model->setData(idx, titleEditor->text(), qtDescriptivePhraseModel::TitleTextRole);
   }
 }
 
