@@ -286,9 +286,13 @@ smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string&
   const GroupItemDefinition* def =
     static_cast<const GroupItemDefinition*>(this->definition().get());
   int i = def->findItemPosition(inName);
+  if (i < 0)
+  {
+    return smtk::attribute::ItemPtr();
+  }
   assert(m_items.size() > element);
   assert(m_items[element].size() > static_cast<std::size_t>(i));
-  return (i < 0) ? smtk::attribute::ItemPtr() : m_items[element][static_cast<std::size_t>(i)];
+  return m_items[element][static_cast<std::size_t>(i)];
 }
 
 smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::string& inName) const

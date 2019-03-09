@@ -10,7 +10,6 @@
 #include "smtk/extension/qt/qtResourceBrowser.h"
 
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
-#include "smtk/extension/qt/qtDescriptivePhraseEditor.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 

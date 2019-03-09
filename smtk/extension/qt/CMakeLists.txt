@@ -13,7 +13,6 @@ set(QAttrLibSrcs
   qtCollapsibleGroupWidget.cxx
   qtComponentItem.cxx
   qtDescriptivePhraseDelegate.cxx
-  qtDescriptivePhraseEditor.cxx
   qtDescriptivePhraseModel.cxx
   qtGroupView.cxx
   qtAnalysisView.cxx
@@ -81,7 +80,6 @@ set(QAttrLibMocHeaders
   qtComponentItem.h
   qtEmittingStringBuffer.h
   qtDescriptivePhraseDelegate.h
-  qtDescriptivePhraseEditor.h
   qtDescriptivePhraseModel.h
   qtGroupView.h
   qtAnalysisView.h
