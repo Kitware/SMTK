@@ -19,7 +19,7 @@
         model entities if the list of colors to assign is empty.
       </DetailedDescription>
       <ItemDefinitions>
-        <String Name="colors" NumberOfRequiredValues="0" Extensible="true">
+        <String Name="colors" NumberOfRequiredValues="0" Extensible="true" Optional="true" IsEnabledByDefault="true">
           <BriefDescription>A list of colors to assign to the associated entities.</BriefDescription>
           <DetailedDescription>
             Each color in the list is either a canonical color name or
@@ -27,9 +27,18 @@
             (e.g., "#ff0000" or "#f00" for pure, fully-saturated red).
 
             An empty list indicates that the color property should be removed
-            from each entity.
+            from each entity, but only if the item is enabled.
+            If the item is disabled and the list is empty, there is no effect.
           </DetailedDescription>
         </String>
+        <Double Name="opacity" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+          <BriefDescription>An opacity to assign to the associated entities.</BriefDescription>
+          <DefaultValue>1.0</DefaultValue>
+          <RangeInfo>
+            <Min Inclusive="true">0.0</Min>
+            <Max Inclusive="true">1.0</Max>
+          </RangeInfo>
+        </Double>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

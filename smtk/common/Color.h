@@ -26,12 +26,14 @@ namespace common
 class SMTKCORE_EXPORT Color
 {
 public:
-  static bool stringToFloatRGBA(double* rgba, const std::string& colorSpec);
+  static bool stringToFloatRGBA(
+    double* rgba, const std::string& colorSpec, double defaultAlpha = 1.0);
   /// Convenience to convert a string color specifier into a vector instead of a pointer.
-  static bool stringToFloatRGBA(std::vector<double>& rgba, const std::string& colorSpec)
+  static bool stringToFloatRGBA(
+    std::vector<double>& rgba, const std::string& colorSpec, double defaultAlpha = 1.0)
   {
     rgba.resize(4);
-    return Color::stringToFloatRGBA(&rgba[0], colorSpec);
+    return Color::stringToFloatRGBA(&rgba[0], colorSpec, defaultAlpha);
   }
 };
 

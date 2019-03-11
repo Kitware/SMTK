@@ -38,7 +38,7 @@ static bool hexDigitValue(int& value, char digit)
   * This returns true when \a colorSpec is a valid color and false otherwise.
   * If false is returned, then \a rgba is unmodified.
   */
-bool Color::stringToFloatRGBA(double* rgba, const std::string& colorSpec)
+bool Color::stringToFloatRGBA(double* rgba, const std::string& colorSpec, double defaultAlpha)
 {
   if (colorSpec.empty())
     return false;
@@ -81,7 +81,7 @@ bool Color::stringToFloatRGBA(double* rgba, const std::string& colorSpec)
         // Fill out any remaining components.
         for (; cc < 4; ++cc)
         {
-          rgba[cc] = (cc == 3 ? 1.0 : 0.0);
+          rgba[cc] = (cc == 3 ? defaultAlpha : 0.0);
         }
         return true;
       }

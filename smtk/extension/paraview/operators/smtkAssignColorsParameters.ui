@@ -6,14 +6,85 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>468</width>
-    <height>112</height>
+    <width>398</width>
+    <height>151</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Assign Colors</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="OperationLabel">
+     <property name="text">
+      <string>apply colors:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QToolButton" name="ApplyDefaultColorBtn">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Click here to assign this color to all the associated entities.</string>
+     </property>
+     <property name="text">
+      <string>color</string>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonIconOnly</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QToolButton" name="ApplyDefaultPaletteBtn">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Click here to assign a color from this palette to each associated entity.</string>
+     </property>
+     <property name="text">
+      <string>palette</string>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonIconOnly</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QToolButton" name="RemoveColorBtn">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click here to reset the entity so it inherits the default color assigned to its parent entity list. If the parent entity list has no color, the default color for the entity type — set in user preferences — will be used.&lt;/p&gt;&lt;p&gt;To invalidate a parent entity list's color, click on its color swatch in the tree view and hit &amp;quot;Cancel&amp;quot; in the color dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>inherited default</string>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonIconOnly</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QToolButton" name="InfoBtn">
+     <property name="text">
+      <string>info</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="1">
     <widget class="QToolButton" name="ChooseColorBtn">
      <property name="sizePolicy">
@@ -30,13 +101,6 @@
      </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>apply colors:</string>
      </property>
     </widget>
    </item>
@@ -59,63 +123,53 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QToolButton" name="RemoveColorBtn">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click here to reset the entity so it inherits the default color assigned to its parent entity list. If the parent entity list has no color, the default color for the entity type — set in user preferences — will be used.&lt;/p&gt;&lt;p&gt;To invalidate a parent entity list's color, click on its color swatch in the tree view and hit &amp;quot;Cancel&amp;quot; in the color dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
+   <item row="2" column="1">
+    <widget class="QLabel" name="OpacityLabel">
      <property name="text">
-      <string>inherited default</string>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonIconOnly</enum>
+      <string>opacity</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QToolButton" name="ApplyDefaultColorBtn">
+   <item row="2" column="2">
+    <widget class="QSlider" name="ApplyOpacitySlider">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>1</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="toolTip">
-      <string>Click here to assign this color to all the associated entities.</string>
+     <property name="maximum">
+      <number>255</number>
      </property>
-     <property name="text">
-      <string>color</string>
+     <property name="pageStep">
+      <number>16</number>
      </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonIconOnly</enum>
+     <property name="value">
+      <number>255</number>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QToolButton" name="ApplyDefaultPaletteBtn">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-     <property name="toolTip">
-      <string>Click here to assign a color from this palette to each associated entity.</string>
+     <property name="tickPosition">
+      <enum>QSlider::NoTicks</enum>
      </property>
-     <property name="text">
-      <string>palette</string>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonIconOnly</enum>
+     <property name="tickInterval">
+      <number>16</number>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QToolButton" name="InfoBtn">
-     <property name="text">
-      <string>info</string>
+   <item row="3" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-    </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>30</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

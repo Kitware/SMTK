@@ -53,6 +53,7 @@ protected slots:
   virtual void chooseDefaultColorAndApply();
   virtual void applyDefaultColor();
   virtual void applyDefaultPalette();
+  virtual void applyOpacity(int);
   virtual void removeColors();
   virtual void setDefaultPaletteAndApply();
 

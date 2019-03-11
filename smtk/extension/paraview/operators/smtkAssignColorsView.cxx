@@ -12,6 +12,7 @@
 #include "smtk/extension/paraview/operators/ui_smtkAssignColorsParameters.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/extension/qt/qtAttribute.h"
@@ -311,6 +312,10 @@ void smtkAssignColorsView::createWidget()
   QObject::connect( // Allow the user to choose a new preference.
     this->Internals->ChooseColorBtn, SIGNAL(released()), this, SLOT(chooseDefaultColorAndApply()));
 
+  // Signals and slots related to opacity mode:
+  QObject::connect( // When asked, apply the opacity specified by the slider.
+    this->Internals->ApplyOpacitySlider, SIGNAL(valueChanged(int)), this, SLOT(applyOpacity(int)));
+
   QObject::connect( // When asked, invalidate colors on the associated entities.
     this->Internals->RemoveColorBtn, SIGNAL(released()), this, SLOT(removeColors()));
 
@@ -412,8 +417,12 @@ void smtkAssignColorsView::applyDefaultColor()
 
   //std::cout << "Apply default color\n";
 
+  auto opacityItem = this->Internals->CurrentAtt->attribute()->findDouble("opacity");
+  opacityItem->setIsEnabled(false);
+
   smtk::attribute::StringItem::Ptr colorsItem =
     this->Internals->CurrentAtt->attribute()->findString("colors");
+  colorsItem->setIsEnabled(true);
   colorsItem->setNumberOfValues(1);
   colorsItem->setValue(0, color.name().toUtf8().constData());
 
@@ -454,13 +463,32 @@ void smtkAssignColorsView::applyDefaultPalette()
     return;
   }
 
+  auto opacityItem = this->Internals->CurrentAtt->attribute()->findDouble("opacity");
+  opacityItem->setIsEnabled(false);
   smtk::attribute::StringItem::Ptr colorsItem =
     this->Internals->CurrentAtt->attribute()->findString("colors");
+  colorsItem->setIsEnabled(true);
   colorsItem->setNumberOfValues(palette.size());
   for (int pp = 0; pp < palette.size(); ++pp)
   {
     colorsItem->setValue(pp, palette.at(pp).name().toUtf8().constData());
   }
+
+  this->requestOperation(this->Internals->CurrentOp);
+}
+
+void smtkAssignColorsView::applyOpacity(int val)
+{
+  // Enable opacity assignment
+  double opacity = val / 255.0;
+  auto opacityItem = this->Internals->CurrentAtt->attribute()->findDouble("opacity");
+  opacityItem->setIsEnabled(true);
+  opacityItem->setValue(opacity);
+
+  // Disable color assignment
+  smtk::attribute::StringItem::Ptr colorsItem =
+    this->Internals->CurrentAtt->attribute()->findString("colors");
+  colorsItem->setIsEnabled(false);
 
   this->requestOperation(this->Internals->CurrentOp);
 }
@@ -472,8 +500,12 @@ void smtkAssignColorsView::removeColors()
     return;
   }
 
+  auto opacityItem = this->Internals->CurrentAtt->attribute()->findDouble("opacity");
+  opacityItem->setIsEnabled(false);
+
   smtk::attribute::StringItem::Ptr colorsItem =
     this->Internals->CurrentAtt->attribute()->findString("colors");
+  colorsItem->setIsEnabled(true);
   colorsItem->setNumberOfValues(0);
   this->requestOperation(this->Internals->CurrentOp);
 }
