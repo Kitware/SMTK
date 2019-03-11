@@ -1,0 +1,151 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+#ifndef smtk_common_ThreadPool_h
+#define smtk_common_ThreadPool_h
+
+#include "smtk/CoreExports.h"
+
+#include <atomic>
+#include <condition_variable>
+#include <functional>
+#include <future>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <type_traits>
+#include <vector>
+
+namespace smtk
+{
+namespace common
+{
+/// A basic thread pool that executes functors in separate threads. It accepts
+/// the number of threads to build at construction, and waits for all tasks to
+/// complete before being destroyed. The <ReturnType> is a default-constructible
+/// type that tasks return via std::future.
+template <typename ReturnType = void>
+class ThreadPool
+{
+  static_assert(
+    std::is_same<ReturnType, void>::value || std::is_default_constructible<ReturnType>::value,
+    "Templated return type must be void or a default constructible type");
+
+public:
+  ThreadPool(unsigned int maxThreads = 0);
+  ~ThreadPool();
+
+  /// Add a task to be performed by the thread queue. Once a thread becomes
+  /// available, it will pop the task from the queue and execute it. The return
+  /// value can be accessed from the returned future.
+  template <typename Function, typename... Types>
+  std::future<ReturnType> operator()(Function&& function, Types&&... args)
+  {
+    return appendToQueue(std::bind(function, std::forward<Types>(args)...));
+  }
+
+private:
+  /// Append a functor with no inputs to the task queue. This is used in tandem
+  /// with std::bind to construct the class's call method.
+  std::future<ReturnType> appendToQueue(std::function<ReturnType()>&& task);
+
+  /// Run by a worker thread: poll the task queue for tasks to perform.
+  void exec();
+
+  std::condition_variable m_condition;
+  std::mutex m_queueMutex;
+  std::vector<std::thread> m_threads;
+  std::queue<std::packaged_task<ReturnType()> > m_queue;
+  std::atomic<bool> m_active;
+};
+
+template <typename ReturnType>
+ThreadPool<ReturnType>::ThreadPool(unsigned int maxThreads)
+  : m_active(true)
+{
+  // The maximum number of threads is either defined at construction or (by
+  // default) the maximum number of threads the hardware is configured to run in
+  // parallel.
+  unsigned int nThreads = (maxThreads == 0 ? std::thread::hardware_concurrency() : maxThreads);
+
+  for (unsigned int i = 0; i < nThreads; ++i)
+  {
+    m_threads.push_back(std::thread(&ThreadPool::exec, this));
+  }
+}
+
+template <typename ReturnType>
+ThreadPool<ReturnType>::~ThreadPool()
+{
+  // Change the state of the thread pool to signify that threads should no
+  // longer run.
+  m_active = false;
+
+  // For each thread in the pool, send a task that will cause it to exit its
+  // infinite loop.
+  for (std::size_t i = 0; i < m_threads.size(); i++)
+  {
+    (*this)([] { return ReturnType(); });
+  }
+
+  // Now that all of the threads have exited, join each thread with the parent
+  // thread.
+  for (auto& thread : m_threads)
+  {
+    thread.join();
+  }
+}
+
+template <typename ReturnType>
+std::future<ReturnType> ThreadPool<ReturnType>::appendToQueue(std::function<ReturnType()>&& task)
+{
+  std::future<ReturnType> future;
+
+  // Scope access to the queue.
+  {
+    std::unique_lock<std::mutex> queueLock(m_queueMutex);
+
+    // Construct a packaged_task to launch the input task and access its
+    // future.
+    m_queue.emplace(task);
+    future = m_queue.back().get_future();
+  }
+  // Signal to the next thread that the queue is ready for access.
+  m_condition.notify_one();
+
+  // Return the future associated with the promise created above.
+  return future;
+}
+
+template <typename ReturnType>
+void ThreadPool<ReturnType>::exec()
+{
+  // Always check if the containing class has signaled that the thread pool
+  // should no longer be active.
+  while (m_active)
+  {
+    std::packaged_task<ReturnType()> task;
+    // Scope access to the queue.
+    {
+      std::unique_lock<std::mutex> queueLock(m_queueMutex);
+
+      // Access a task from the queue.
+      m_condition.wait(queueLock, [this] { return !m_queue.empty(); });
+      task = std::move(m_queue.front());
+      m_queue.pop();
+    }
+    // Execute the task.
+    task();
+  }
+}
+}
+}
+
+#endif // smtk_common_ThreadPool_h
