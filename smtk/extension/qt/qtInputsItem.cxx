@@ -192,7 +192,8 @@ void qtInputsItem::unsetValue(int elementIndex)
 bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
-  if (item->setDiscreteIndex(elementIndex, discreteValIndex))
+  auto oldIndex = item->discreteIndex(elementIndex);
+  if (oldIndex != discreteValIndex && item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
     emit this->modified();
     m_itemInfo.baseView()->valueChanged(item);
