@@ -247,6 +247,11 @@ void qtAttributeRefItem::createWidget()
   this->clearChildItems();
   this->Internals->comboBoxes.clear();
   m_widget = new QFrame(m_itemInfo.parentWidget());
+  if (this->isReadOnly())
+  {
+    m_widget->setEnabled(false);
+  }
+
   m_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
   std::size_t i, n = item->numberOfValues();

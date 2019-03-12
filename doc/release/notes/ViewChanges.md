@@ -31,3 +31,19 @@ The following is an example of a Analysis View:
 #Changes to UIManager
 * Added the ability to enable/disable category filtering
 * Added support for top-level categories
+
+#ReadOnly View Items
+Added a new ReadOnly Option to Item Views.  In the following example the item, absolute-zero, in the attribute physical-constants has been made read only.  The current implementation disables the widgets defined by the read only item from being  modified but will still display them.
+
+```xml
+    <View Type="Instanced" Title="Global Constants">
+      <InstancedAttributes>
+        <Att Name="physics" Type="physics" />
+        <Att Name="physical-constants" Type="physical-constants">
+          <ItemViews>
+            <View Item="absolute-zero" Type="Default" ReadOnly="true"/>
+          </ItemViews>
+        </Att>
+      </InstancedAttributes>
+    </View>
+```

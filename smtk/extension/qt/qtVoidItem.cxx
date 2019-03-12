@@ -71,6 +71,10 @@ void qtVoidItem::createWidget()
 
   this->clearChildItems();
   m_widget = new QFrame(this->parentWidget());
+  if (this->isReadOnly())
+  {
+    m_widget->setEnabled(false);
+  }
   new QVBoxLayout(m_widget);
   m_widget->layout()->setMargin(0);
   m_widget->layout()->setSpacing(0);
