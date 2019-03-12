@@ -34,6 +34,7 @@ set(commonHeaders
   Registry.h
   Singleton.h
   StringUtil.h
+  ThreadPool.h
   TimeZone.h
   TypeName.h
   UUID.h

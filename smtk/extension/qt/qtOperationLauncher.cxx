@@ -10,7 +10,7 @@
 
 #include "smtk/extension/qt/qtOperationLauncher.h"
 
-#define SINGLE_THREAD
+// #define SINGLE_THREAD
 
 namespace smtk
 {
@@ -19,6 +19,8 @@ namespace extension
 std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   const smtk::operation::Operation::Ptr& op)
 {
+#ifdef SINGLE_THREAD
+
   // Construct a promise to pass to the subthread. Its associated future is the
   // output of this method.
   std::promise<smtk::operation::Operation::Result> promise;
@@ -26,8 +28,6 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // Access the promise's associated future before moving the promise onto the
   // subthread.
   std::future<smtk::operation::Operation::Result> future = promise.get_future();
-
-#ifdef SINGLE_THREAD
 
   // Execute the operation in the subthread.
   auto result = op->operate();
@@ -39,15 +39,6 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   emit resultReady(result);
 
 #else
-
-  // Construct a thread to execute the operation. It takes:
-  //
-  // 1. a pointer to this class so its emitted signal can be accessed by our
-  //    associated slot,
-  // 2. a shared pointer to the operation by value to prevent the underlying
-  //    operation from being changed before the operation completes, and
-  // 3. the associated promise to this method's returned future.
-  std::thread thread(&qtOperationLauncher::run, this, op, std::move(promise));
 
   // Construct a copy of the operation shared pointer to pass to the subsequent
   // lambda to prevent the underlying operation from being changed before the
@@ -73,9 +64,8 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
       delete connection;
     });
 
-  // We have the future result and we have made the one-shot connection to the
-  // output. We no longer need to track this thread, so we detach it.
-  thread.detach();
+  std::future<smtk::operation::Operation::Result> future =
+    m_threadPool(&qtOperationLauncher::run, this, op);
 
 #endif
 
@@ -83,18 +73,17 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   return future;
 }
 
-void qtOperationLauncher::run(smtk::operation::Operation::Ptr operation,
-  std::promise<smtk::operation::Operation::Result>&& promise)
+smtk::operation::Operation::Result qtOperationLauncher::run(
+  smtk::operation::Operation::Ptr operation)
 {
   // Execute the operation in the subthread.
   auto result = operation->operate();
 
-  // Set the promise to the output result.
-  promise.set_value(result);
-
   // Privately emit the name of the output result so the contents of this class
   // that reside on the original thread can access it.
   emit operationHasResult(QString::fromStdString(result->name()), QPrivateSignal());
+
+  return result;
 }
 }
 }

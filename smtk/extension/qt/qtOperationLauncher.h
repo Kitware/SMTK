@@ -16,6 +16,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/common/ThreadPool.h"
+
 #include "smtk/operation/Operation.h"
 
 #include <QObject>
@@ -55,8 +57,9 @@ signals:
 
 private:
   /// Internal method run on a subthread to invoke the operation.
-  void run(smtk::operation::Operation::Ptr operation,
-    std::promise<smtk::operation::Operation::Result>&& promise);
+  smtk::operation::Operation::Result run(smtk::operation::Operation::Ptr operation);
+
+  smtk::common::ThreadPool<smtk::operation::Operation::Result> m_threadPool;
 };
 
 namespace qt

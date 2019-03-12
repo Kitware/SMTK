@@ -35,10 +35,12 @@ set(unit_tests
   UnitTestDateTimeZonePair.cxx
   UnitTestLinks
   UnitTestRegistry.cxx
+  UnitTestThreadPool
 )
 
 smtk_unit_tests(
   Label "Common"
   SOURCES ${unit_tests}
-  LIBRARIES smtkCore ${Boost_LIBRARIES}
+  LIBRARIES smtkCore ${Boost_LIBRARIES} Threads::Threads
+
 )
