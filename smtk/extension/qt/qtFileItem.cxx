@@ -709,6 +709,10 @@ void qtFileItem::updateUI()
   }
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
+  if (this->isReadOnly())
+  {
+    m_widget->setEnabled(false);
+  }
   this->Internals->EntryLayout = new QGridLayout(m_widget);
   this->Internals->EntryLayout->setMargin(0);
   this->Internals->EntryLayout->setSpacing(0);

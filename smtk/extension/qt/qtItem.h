@@ -119,6 +119,8 @@ public:
   bool passAdvancedCheck();
   void showAdvanceLevelOverlay(bool);
   bool useSelectionManager() const { return m_useSelectionManager; }
+  void setReadOnly(bool mode) { m_readOnly = mode; }
+  bool isReadOnly() const { return m_readOnly; }
 
 public slots:
   // Controls whether the Selection Manager should be used for setting model
@@ -143,6 +145,7 @@ protected:
   QWidget* m_widget;
   bool m_isLeafItem;
   bool m_useSelectionManager;
+  bool m_readOnly;
   AttributeItemInfo m_itemInfo;
   QList<smtk::extension::qtItem*> m_childItems;
 

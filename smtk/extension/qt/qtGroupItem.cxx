@@ -98,6 +98,10 @@ void qtGroupItem::createWidget()
   QString title = item->label().empty() ? item->name().c_str() : item->label().c_str();
   QGroupBox* groupBox = new QGroupBox(title, m_itemInfo.parentWidget());
   m_widget = groupBox;
+  if (this->isReadOnly())
+  {
+    m_widget->setEnabled(false);
+  }
   // Instantiate a layout for the widget, but do *not* assign it to a variable.
   // because that would cause a compiler warning, since the layout is not
   // explicitly referenced anywhere in this scope. (There is no memory

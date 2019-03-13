@@ -393,6 +393,10 @@ void qtReferenceItem::updateUI()
 
   // Create a container for the item:
   m_widget = new QFrame(m_itemInfo.parentWidget());
+  if (this->isReadOnly())
+  {
+    m_widget->setEnabled(false);
+  }
   m_widget->installEventFilter(this);
   m_p->m_grid = new QGridLayout(m_widget);
   m_p->m_grid->setMargin(0);
