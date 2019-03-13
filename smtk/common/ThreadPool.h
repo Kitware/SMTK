@@ -39,6 +39,7 @@ class ThreadPool
     "Templated return type must be void or a default constructible type");
 
 public:
+  /// Initialize thread pool with <maxThreads> threads spawned to execute tasks.
   ThreadPool(unsigned int maxThreads = 0);
   ~ThreadPool();
 
