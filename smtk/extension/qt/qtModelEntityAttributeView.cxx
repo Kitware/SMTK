@@ -97,7 +97,7 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
     if (cb->currentIndex() > -1)
     {
       model->setData(index, cb->currentText(), Qt::EditRole);
-      model->setData(index, QColor(Qt::white), Qt::BackgroundRole);
+      model->setData(index, qtUIManager::contrastWithText(Qt::white), Qt::BackgroundRole);
     }
     //QApplication::postEvent(model, new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
     emit const_cast<qModelEntityAttributeViewComboBoxItemDelegate*>(this)->choiceMade();
@@ -469,7 +469,7 @@ void qtModelEntityAttributeView::updateModelEntities()
         icolor = Qt::red;
       }
       item = new QTableWidgetItem(typeName.c_str());
-      item->setBackground(icolor);
+      item->setBackground(qtUIManager::contrastWithText(icolor));
     }
     this->Internals->ListTable->setItem(rcount, 1, item);
     ++rcount;
