@@ -7,6 +7,13 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
   ${CTEST_CUSTOM_WARNING_EXCEPTION}
   # VXL has a macro conversion that we don't intend to fix.
   "VCL_STATIC_CONST_INIT_INT_DECL"
+  # For *NIX builds, MOAB does not generate export headers. Instead, it builds
+  # its libraries with default (i.e. public) visibility. SMTK builds with hidden
+  # visibility, so on MacOS we get warnings that match the following pattern
+  # where SMTK directly access symbols from the MOAB library. As of 03/19/2019,
+  # there is no plan to add symbol exporting to MOAB. Thus, we ignore these
+  # warnings.
+  "warning: direct access in function * to global weak symbol 'typeinfo for moab::* means the weak symbol cannot be overridden at runtime. This was likely caused by different translation units being compiled with different visibility settings."
 )
 
 ##------------------------------------------------------------------------------
