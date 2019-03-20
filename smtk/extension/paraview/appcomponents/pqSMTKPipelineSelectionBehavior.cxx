@@ -102,7 +102,7 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
     return;
   }
 
-  int observerId =
+  auto observerId =
     seln->observers().insert([&](const std::string& source, smtk::view::SelectionPtr selection) {
       int selnValue = selection->selectionValueFromLabel(m_selectionValue);
       if (source != "pqSMTKPipelineSelectionBehavior")

@@ -19,7 +19,6 @@
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/resource/Manager.h"
-#include "smtk/resource/Observer.h"
 #include "smtk/resource/Resource.h"
 
 #include "smtk/io/Logger.h"
@@ -57,7 +56,7 @@ pqSMTKAttributePanel::~pqSMTKAttributePanel()
   if (m_rsrc)
   {
     auto rsrcMgr = m_rsrc->manager();
-    if (rsrcMgr && m_observer >= 0)
+    if (rsrcMgr && m_observer.assigned())
     {
       rsrcMgr->observers().erase(m_observer);
     }
@@ -105,7 +104,7 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   if (m_rsrc)
   {
     auto rsrcMgr = m_rsrc->manager();
-    if (rsrcMgr && m_observer >= 0)
+    if (rsrcMgr && m_observer.assigned())
     {
       rsrcMgr->observers().erase(m_observer);
     }

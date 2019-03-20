@@ -121,7 +121,7 @@ class TestSelection(smtk.testing.TestCase):
             eventCount += 1
 
         # Test that observer is called at proper times:
-        handle = mgr.observers().insert(observer, True)
+        handle = mgr.observers().insert(observer, 0, True)
         self.assertGreaterEqual(
             handle, 0, 'Failed to register selection observer.')
         expectedEventCount = 1

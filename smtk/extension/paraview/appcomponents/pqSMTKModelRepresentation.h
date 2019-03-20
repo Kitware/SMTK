@@ -14,6 +14,8 @@
 
 #include "smtk/extension/paraview/appcomponents/Exports.h"
 
+#include "smtk/view/SelectionObserver.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKModelRepresentation : public pqPipelineRepresentation
@@ -47,7 +49,7 @@ protected:
   void initialize() override;
 
   smtk::view::WeakSelectionPtr m_seln;
-  int m_selnObserver;
+  smtk::view::SelectionObservers::Key m_selnObserver;
 };
 
 #endif

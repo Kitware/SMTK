@@ -93,12 +93,13 @@ void pqSMTKDisplayAttributeOnLoadBehavior::observeResourcesOnServer(
     return;
   }
 
-  int observerId = rsrcMgr->observers().insert(
+  smtk::resource::Observers::Key observerKey = rsrcMgr->observers().insert(
     [this](smtk::resource::ResourcePtr rsrc, smtk::resource::EventType event) {
       this->handleResourceEvent(rsrc, event);
     },
-    /* immediatelyNotify */ true);
-  m_resourceManagerObservers[rsrcMgr] = observerId;
+    0,     // assign a neutral priority
+    true); // immediatelyNotify
+  m_resourceManagerObservers[rsrcMgr] = observerKey;
 }
 
 void pqSMTKDisplayAttributeOnLoadBehavior::unobserveResourcesOnServer(

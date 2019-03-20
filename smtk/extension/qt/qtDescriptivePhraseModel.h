@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/Exports.h" // For EXPORT macro.
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/PhraseModel.h"
+#include "smtk/view/PhraseModelObserver.h"
 
 #include <QAbstractItemModel>
 #include <QIcon>
@@ -124,7 +125,7 @@ protected:
     const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& range);
 
   smtk::view::PhraseModelPtr m_model;
-  int m_modelObserver;
+  smtk::view::PhraseModelObservers::Key m_modelObserver;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
   std::string m_visibleIconURL;
   std::string m_invisibleIconURL;

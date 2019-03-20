@@ -10,6 +10,8 @@
 #include "smtk/extension/paraview/appcomponents/Exports.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/resource/Observer.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 #include <QDockWidget>
@@ -81,5 +83,5 @@ protected:
   smtk::resource::ResourcePtr m_rsrc;
   smtk::view::SelectionPtr m_seln;
   smtk::operation::ManagerPtr m_opManager;
-  int m_observer;
+  smtk::resource::Observers::Key m_observer;
 };

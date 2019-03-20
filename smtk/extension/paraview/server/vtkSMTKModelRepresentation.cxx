@@ -121,7 +121,7 @@ vtkStandardNewMacro(vtkSMTKModelRepresentation);
 vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   : Superclass()
   , Wrapper(nullptr)
-  , SelectionObserver(-1)
+  , SelectionObserver()
   , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , EntityCacheKeeper(vtkSmartPointer<vtkPVCacheKeeper>::New())
@@ -926,7 +926,7 @@ void vtkSMTKModelRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
     {
       oldSeln->observers().erase(this->SelectionObserver);
     }
-    this->SelectionObserver = -1;
+    this->SelectionObserver = smtk::view::SelectionObservers::Key();
     this->Wrapper->UnRegister(this);
   }
   this->Wrapper = wrapper;
@@ -939,7 +939,7 @@ void vtkSMTKModelRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
     this->SelectionObserver = newSeln
       ? newSeln->observers().insert(
           [this](const std::string&, smtk::view::Selection::Ptr) { this->SelectionModified(); })
-      : -1;
+      : smtk::view::SelectionObservers::Key();
   }
   this->Modified();
 }

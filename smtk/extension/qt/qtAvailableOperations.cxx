@@ -22,7 +22,7 @@ qtAvailableOperations::qtAvailableOperations(QWidget* parent)
   , m_operationList(nullptr)
   , m_layout(nullptr)
   , m_operationSource(nullptr)
-  , m_operationSourceObserverId(-1)
+  , m_operationSourceObserverId()
 {
   m_operationList = new QListWidget(this);
   m_layout = new QVBoxLayout(this);
@@ -50,7 +50,8 @@ void qtAvailableOperations::setOperationSource(smtk::view::AvailableOperationsPt
   {
     m_operationSourceObserverId = m_operationSource->observers().insert(
       [this](smtk::view::AvailableOperationsPtr) { this->updateList(); },
-      /*immediatelyInvoke*/ true);
+      0,     // assign a neutral priority
+      true); // immediatelyInvoke
   }
 }
 
@@ -87,8 +88,8 @@ void qtAvailableOperations::updateList()
       label = opMeta->typeName();
     }
     auto item = new QListWidgetItem(m_operationList);
-    item->setData(Qt::UserRole + 47,
-      QVariant::fromValue(op)); // Store the operation's index with the list item.
+    item->setData(Qt::UserRole + 47, // TODO: why 47?
+      QVariant::fromValue(op));      // Store the operation's index with the list item.
     item->setText(label.c_str());
     m_operationList->addItem(item);
   }

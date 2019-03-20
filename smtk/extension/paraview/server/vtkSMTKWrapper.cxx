@@ -111,7 +111,8 @@ vtkSMTKWrapper::vtkSMTKWrapper()
       (void)src;
       (void)selnMgr;
     },
-    true);
+    0,     // assign a neutral priority
+    true); // immediatelyInvoke
 }
 
 vtkSMTKWrapper::~vtkSMTKWrapper()

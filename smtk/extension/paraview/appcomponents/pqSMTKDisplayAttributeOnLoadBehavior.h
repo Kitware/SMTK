@@ -53,7 +53,7 @@ protected slots:
   virtual void displayAttribute();
 
 protected:
-  std::map<smtk::resource::ManagerPtr, int> m_resourceManagerObservers;
+  std::map<smtk::resource::ManagerPtr, smtk::resource::Observers::Key> m_resourceManagerObservers;
   pqSMTKAttributePanel* m_panel;
   smtk::attribute::ResourcePtr m_attr;
 

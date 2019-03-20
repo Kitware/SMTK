@@ -81,7 +81,7 @@ public:
   smtk::extension::qtDescriptivePhraseModel* m_qtModel;
   smtk::extension::qtDescriptivePhraseDelegate* m_qtDelegate;
 
-  int m_modelObserverId;
+  smtk::view::PhraseModelObservers::Key m_modelObserverId;
 };
 }
 }

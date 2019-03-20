@@ -11,6 +11,7 @@
 #define __smtk_common_Observers_h
 
 #include <functional>
+#include <limits>
 #include <map>
 #include <type_traits>
 #include <utility>
@@ -25,6 +26,11 @@ namespace common
 /// of actions (e.g. Resource added/removed, Operation about to run/has run).
 /// Observers added to the Observers instance can also be initialized (allowing
 /// for a retroactive response to items currently under observation).
+///
+/// Observer functions can be assigned an integral priority when they are added.
+/// Observer functions with a higher priority value will be executed before
+/// those with a lower priority. Observer functions with the same priority value
+/// are called in the order in which they were inserted.
 ///
 /// In addition to adding and removing Observer functors to an Observers
 /// instance, the execution logic of Observers can be overridden at runtime by
@@ -42,8 +48,29 @@ template <typename Observer>
 class Observers
 {
 public:
+  /// A value to indicate the relative order in which an observer should be
+  /// called. Larger is higher priority.
+  typedef int Priority;
+
   /// A key by which an Observer can be accessed within the Observers instance.
-  typedef int Key;
+  struct Key : std::pair<int, int>
+  {
+    // By default, construct a null key.
+    Key()
+      : std::pair<Priority, int>(std::numeric_limits<Priority>::lowest(), -1)
+    {
+    }
+    Key(int i, int j)
+      : std::pair<int, int>(i, j)
+    {
+    }
+    bool assigned() const { return this->second != -1; }
+
+    bool operator<(const Key& rhs) const
+    {
+      return this->first == rhs.first ? this->second < rhs.second : rhs.first < this->first;
+    }
+  };
 
   /// A functor to optionally initialize Observers as they are inserted into the
   /// Observers instance.
@@ -105,20 +132,37 @@ public:
   }
 
   /// Ask to receive notification (and possibly a chance to respond to) events.
-  /// If the Observers instance has an initializer and initialization is
-  /// requested, the Observer functor is initialized (this is commonly a means
-  /// to run the Observer functor retroactively on things already under
+  /// An integral priority value determines the relative order in which the
+  /// observer is called with respect to other observer functions. Observer
+  /// functions with a higher priority are called before those with a lower
+  /// priority. If the Observers instance has an initializer and initialization
+  /// is requested, the Observer functor is initialized (this is commonly a
+  /// means to run the Observer functor retroactively on things already under
   /// observation). The return value is a handle that can be used to unregister
   /// the observer.
-  Key insert(Observer fn, bool initialize = true)
+  Key insert(Observer fn, Priority priority, bool initialize)
   {
-    Key handle = m_observers.empty() ? 0 : m_observers.rbegin()->first + 1;
+    int handleId;
+    if (m_observers.empty())
+    {
+      handleId = 0;
+    }
+    else
+    {
+      auto upper = --(priority != std::numeric_limits<Priority>::lowest()
+          ? m_observers.upper_bound(Key(priority - 1, -1))
+          : m_observers.end());
+      handleId = (upper->first.first == priority ? upper->first.second + 1 : 0);
+    }
+    Key handle = Key(priority, handleId);
     if (initialize && m_initializer)
     {
       m_initializer(fn);
     }
-    return m_observers.insert(std::make_pair(handle, fn)).second ? handle : -1;
+    return m_observers.insert(std::make_pair(handle, fn)).second ? handle : Key();
   }
+
+  Key insert(Observer fn) { return insert(fn, std::numeric_limits<Priority>::lowest(), true); }
 
   /// Indicate that an observer should no longer be called. Returns the number
   /// of remaining observers.

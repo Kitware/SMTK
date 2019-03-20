@@ -32,7 +32,7 @@
 pqSMTKModelRepresentation::pqSMTKModelRepresentation(
   const QString& group, const QString& name, vtkSMProxy* repr, pqServer* server, QObject* parent)
   : Superclass(group, name, repr, server, parent)
-  , m_selnObserver(-1)
+  , m_selnObserver()
 {
   auto smtk = pqSMTKBehavior::instance();
   auto rsrcMgrPxy = smtk->resourceManagerForServer(server);

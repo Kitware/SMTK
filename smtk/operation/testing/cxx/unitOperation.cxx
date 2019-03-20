@@ -123,12 +123,13 @@ int unitOperation(int, char* [])
     [&handleTmp, &manager](std::shared_ptr<smtk::operation::Operation> op,
       smtk::operation::EventType event, smtk::operation::Operation::Result) -> int {
       std::cout << "[x] " << op->typeName() << " event " << static_cast<int>(event)
-                << " testing that an observer (" << handleTmp << ") can remove itself.\n";
+                << " testing that an observer (" << handleTmp.first << " " << handleTmp.second
+                << ") can remove itself.\n";
       manager->observers().erase(handleTmp);
       return 0;
     });
 
-  std::size_t handle = manager->observers().insert(
+  auto handle = manager->observers().insert(
     [&testOp](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
       int outcome = -1;
@@ -152,17 +153,18 @@ int unitOperation(int, char* [])
       return (obs == 4 ? 1 : 0);
     });
 
-  std::size_t another = manager->observers().insert(
+  auto another = manager->observers().insert(
     [](std::shared_ptr<smtk::operation::Operation>, smtk::operation::EventType,
       smtk::operation::Operation::Result) -> int {
       smtkTest(false, "This observer should never be called");
       return 1;
     });
 
-  smtkTest(handle != another, "Expected one handle " << handle << " and another " << another
-                                                     << " to be distinct");
-  smtkTest(static_cast<int>(manager->observers().erase(static_cast<int>(another))),
-    "Could not unregister second observer");
+  smtkTest(handle != another, "Expected one handle (" << handle.first << " " << handle.second
+                                                      << ") and another (" << another.first << " "
+                                                      << another.second << ") to be distinct");
+  smtkTest(
+    static_cast<int>(manager->observers().erase(another)), "Could not unregister second observer");
 
   auto baseOp = manager->create<TestOp>();
   testOp = smtk::dynamic_pointer_cast<TestOp>(baseOp);
@@ -170,9 +172,11 @@ int unitOperation(int, char* [])
   testOp->m_outcome = smtk::operation::Operation::Outcome::FAILED;
   auto result = testOp->operate();
   // After the first operation, handleTmp should have been erased. Verify:
-  smtkTest(!manager->observers().find(handleTmp), "Observer "
-      << handleTmp << " could not remove itself during its callback.");
-  std::cout << "[x]                observer (" << handleTmp << ") could remove itself.\n";
+  smtkTest(!manager->observers().find(handleTmp), "Observer ("
+      << handleTmp.first << " " << handleTmp.second
+      << ") could not remove itself during its callback.");
+  std::cout << "[x]                observer (" << handleTmp.first << " " << handleTmp.second
+            << ") could remove itself.\n";
 
   // This generates no events since ableToOperate() fails
   testOp->m_outcome = smtk::operation::Operation::Outcome::UNABLE_TO_OPERATE;
@@ -182,8 +186,8 @@ int unitOperation(int, char* [])
   result = testOp->operate();
   result = testOp->operate();
 
-  smtkTest(static_cast<int>(manager->observers().erase(static_cast<int>(handle))),
-    "Could not remove operation observer (" << handle << ")");
+  smtkTest(static_cast<int>(manager->observers().erase(handle)),
+    "Could not remove operation observer (" << handle.first << " " << handle.second << ")");
 
   smtkTest(obs == sizeof(expectedObservations) / sizeof(expectedObservations[0]), "Observed "
       << obs << " events,"
