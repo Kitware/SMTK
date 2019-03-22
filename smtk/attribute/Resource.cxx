@@ -84,6 +84,7 @@ smtk::attribute::DefinitionPtr Resource::createDefinition(
     // Need to add this new definition to the list of derived defs
     m_derivedDefInfo[def].insert(newDef);
   }
+  this->setClean(false);
   return newDef;
 }
 
@@ -105,6 +106,7 @@ smtk::attribute::DefinitionPtr Resource::createDefinition(
     // Need to add this new definition to the list of derived defs
     m_derivedDefInfo[baseDef].insert(newDef);
   }
+  this->setClean(false);
   return newDef;
 }
 
@@ -140,7 +142,7 @@ bool Resource::removeDefinition(DefinitionPtr def)
   }
 
   m_definitions.erase(def->type());
-
+  this->setClean(false);
   return true;
 }
 
@@ -163,6 +165,7 @@ smtk::attribute::AttributePtr Resource::createAttribute(
   m_attributeClusters[def->type()].insert(a);
   m_attributes[name] = a;
   m_attributeIdMap[a->id()] = a;
+  this->setClean(false);
   return a;
 }
 
@@ -234,7 +237,8 @@ void Resource::attributes(std::vector<smtk::attribute::AttributePtr>& result) co
   }
 }
 
-// For Reader classes
+// For Reader classes - Note that since these methods are restoring an attribute
+// into the resource it does not call setClean(false)
 smtk::attribute::AttributePtr Resource::createAttribute(
   const std::string& name, smtk::attribute::DefinitionPtr def, const smtk::common::UUID& id)
 {
@@ -291,6 +295,7 @@ bool Resource::removeAttribute(smtk::attribute::AttributePtr att)
   m_attributes.erase(att->name());
   m_attributeIdMap.erase(att->id());
   m_attributeClusters[att->type()].erase(att);
+  this->setClean(false);
   return true;
 }
 
@@ -390,6 +395,7 @@ bool Resource::rename(smtk::attribute::AttributePtr att, const std::string& newN
   m_attributes.erase(att->name());
   att->setName(newName);
   m_attributes[newName] = att;
+  this->setClean(false);
   return true;
 }
 
@@ -534,10 +540,20 @@ bool Resource::associate(const smtk::resource::ResourcePtr& resource)
 {
   // Resource links allow for multiple links between the same objects. Since
   // associations are unique, we must first check if an association between this
-  // resourse and the resource parameter exists.
-  return this->links().isLinkedTo(resource, AssociationRole)
-    ? true
-    : this->links().addLinkTo(resource, AssociationRole).first != smtk::common::UUID::null();
+  // resource and the resource parameter exists.
+  if (!this->links().isLinkedTo(resource, AssociationRole))
+  {
+    if (this->links().addLinkTo(resource, AssociationRole).first != smtk::common::UUID::null())
+    {
+      this->setClean(false);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool Resource::disassociate(const smtk::resource::ResourcePtr& resource)
@@ -545,7 +561,12 @@ bool Resource::disassociate(const smtk::resource::ResourcePtr& resource)
   // Resource links allow for multiple links between the same objects. Since
   // associations are unique, we can erase all links from this resource to the
   // input resource that have an association role.
-  return this->links().removeLinksTo(resource, AssociationRole);
+  if (this->links().removeLinksTo(resource, AssociationRole))
+  {
+    this->setClean(false);
+    return true;
+  }
+  return false;
 }
 
 void Resource::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
@@ -568,6 +589,7 @@ void Resource::addAdvanceLevel(int level, std::string label, const double* l_col
 {
   m_advLevels[level] = label;
   this->setAdvanceLevelColor(level, l_color);
+  this->setClean(false);
 }
 
 const double* Resource::advanceLevelColor(int level) const
@@ -585,7 +607,11 @@ void Resource::setAdvanceLevelColor(int level, const double* l_color)
   if (l_color && m_advLevels.find(level) != m_advLevels.end())
   {
     std::vector<double> acolor(l_color, l_color + 4);
-    m_advLevelColors[level] = acolor;
+    if (m_advLevelColors[level] != acolor)
+    {
+      m_advLevelColors[level] = acolor;
+      this->setClean(false);
+    }
   }
 }
 
@@ -863,6 +889,7 @@ smtk::attribute::AttributePtr Resource::copyAttribute(const smtk::attribute::Att
 void Resource::addView(smtk::view::ViewPtr v)
 {
   m_views[v->name()] = v;
+  this->setClean(false);
 }
 
 smtk::view::ViewPtr Resource::findViewByType(const std::string& vtype) const
@@ -1021,6 +1048,7 @@ bool Resource::setAnalysisParent(const std::string& analysisName, const std::str
   }
   m_analysisParent[analysisName] = analysisParent;
   m_analysisChildren[analysisParent].insert(analysisName);
+  this->setClean(false);
   return true;
 }
 

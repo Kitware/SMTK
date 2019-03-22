@@ -127,8 +127,7 @@ bool DateTimeItem::setToDefault(std::size_t element)
   }
 
   // (else)
-  this->setValue(element, def->defaultValue());
-  return false;
+  return this->setValue(element, def->defaultValue());
 }
 
 bool DateTimeItem::isUsingDefault(std::size_t element) const

@@ -303,8 +303,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     this->Internals->SignalMapper->setMapping(lineEdit, lineEdit);
     QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)), this,
       SLOT(setActiveField(QWidget*)));
-    QObject::connect(
-      lineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(onInputValueChanged()));
+    QObject::connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(onInputValueChanged()));
     this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
 
     auto fSystemItemDef = item->definitionAs<attribute::FileSystemItemDefinition>();

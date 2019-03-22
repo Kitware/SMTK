@@ -1183,8 +1183,8 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   {
     QObject::connect(editBox, SIGNAL(textChanged(const QString&)), this, SLOT(onLineEditChanged()),
       Qt::QueuedConnection);
-    QObject::connect(editBox, SIGNAL(textChanged(const QString&)), this, SLOT(onLineEditFinished()),
-      Qt::QueuedConnection);
+    QObject::connect(
+      editBox, SIGNAL(editingFinished()), this, SLOT(onLineEditFinished()), Qt::QueuedConnection);
   }
 
   return inputWidget;
