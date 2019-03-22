@@ -23,6 +23,8 @@
 
 #include "smtk/resource/Component.h"
 
+#include "smtk/view/SelectionObserver.h"
+
 #include <set>
 #include <vector>
 
@@ -40,10 +42,11 @@ public:
   using Index = smtk::operation::Operation::Index;
   using Observer = std::function<void(AvailableOperations::Ptr)>;
   using Observers = smtk::common::Observers<Observer>;
+  // TODO: this should be OperationManagerPtr to maintain naming consistency.
   using OperationManager = smtk::operation::ManagerPtr;
-  using OperationObserverKey = smtk::operation::MetadataObservers::Key;
   using OperationIndexSet = std::set<Index>;
   using OperationIndexArray = std::vector<Index>;
+  // TODO: this should be OperationFilterSortPtr to maintain naming consistency.
   using OperationFilterSort = smtk::workflow::OperationFilterSortPtr;
   using Data = smtk::workflow::OperationFilterSort::Data;
   virtual ~AvailableOperations();
@@ -117,14 +120,14 @@ protected:
   void computeFromWorkingSet();
 
   OperationManager m_operationManager;
-  OperationObserverKey m_operationManagerObserverId;
+  smtk::operation::MetadataObservers::Key m_operationManagerObserverId;
   SelectionPtr m_selection;
-  int m_selectionObserverId;
+  SelectionObservers::Key m_selectionObserverId;
   int m_selectionMask;
   bool m_selectionExact;
   bool m_useSelection;
   OperationFilterSort m_workflowFilter;
-  int m_workflowFilterObserverId;
+  smtk::workflow::OperationFilterSort::Observers::Key m_workflowFilterObserverId;
   OperationIndexSet m_workingSet;
   OperationIndexArray m_available;
   Observers m_observers;

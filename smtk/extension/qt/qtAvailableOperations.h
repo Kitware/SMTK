@@ -14,6 +14,8 @@
 
 #include "smtk/operation/Operation.h"
 
+#include "smtk/view/AvailableOperations.h"
+
 #include <QListWidget>
 #include <QVBoxLayout>
 
@@ -50,7 +52,7 @@ protected:
   QListWidget* m_operationList;
   QVBoxLayout* m_layout;
   smtk::view::AvailableOperationsPtr m_operationSource;
-  int m_operationSourceObserverId;
+  smtk::view::AvailableOperations::Observers::Key m_operationSourceObserverId;
 
   void updateList();
 };

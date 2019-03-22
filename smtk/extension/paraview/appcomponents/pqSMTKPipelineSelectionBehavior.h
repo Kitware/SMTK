@@ -15,6 +15,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/EntityTypeBits.h"
 
+#include "smtk/view/SelectionObserver.h"
+
 #include <QObject>
 
 #include <string>
@@ -54,7 +56,7 @@ protected slots:
 protected:
   bool m_changingSource;
   std::string m_selectionValue;
-  std::map<smtk::view::SelectionPtr, int> m_selectionObservers;
+  std::map<smtk::view::SelectionPtr, smtk::view::SelectionObservers::Key> m_selectionObservers;
 
 private:
   Q_DISABLE_COPY(pqSMTKPipelineSelectionBehavior);

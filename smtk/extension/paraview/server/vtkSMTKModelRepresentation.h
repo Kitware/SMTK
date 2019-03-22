@@ -19,6 +19,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
 #include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/view/SelectionObserver.h"
 
 #include <array>
 #include <map>
@@ -383,7 +384,7 @@ protected:
     */
   vtkSMTKWrapper* Wrapper;
   /// If Wrapper is non-null, SelectionObserver is the handle of an observer of Wrapper->GetSelection().
-  int SelectionObserver;
+  smtk::view::SelectionObservers::Key SelectionObserver;
   /**
    * Provides access to entities in the model. This is useful when coloring by
    * certain modes (e.g. in order to query the color of a volume with a given UUID).

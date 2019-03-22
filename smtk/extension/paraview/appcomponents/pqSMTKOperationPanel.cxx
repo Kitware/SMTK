@@ -217,7 +217,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   if (m_rsrc)
   {
     auto rsrcMgr = m_rsrc->manager();
-    if (rsrcMgr && m_observer >= 0)
+    if (rsrcMgr && m_observer.assigned())
     {
       rsrcMgr->observers().erase(m_observer);
     }

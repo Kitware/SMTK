@@ -24,8 +24,8 @@ namespace operation
 
 Manager::Manager()
   : m_observers()
-  , m_resourceObserver(-1)
-  , m_resourceMetadataObserver(-1)
+  , m_resourceObserver()
+  , m_resourceMetadataObserver()
 {
 }
 
@@ -111,14 +111,14 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
 bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManager)
 {
   // Only allow one resource manager to manage created resources.
-  if (m_resourceObserver != -1)
+  if (m_resourceObserver.assigned())
   {
     this->observers().erase(m_resourceObserver);
   }
 
   // Use this resource manager to conduct resource manager-related operations
   // (e.g. SaveResource, LoadResource, CreateResource).
-  if (m_resourceMetadataObserver != -1)
+  if (m_resourceMetadataObserver.assigned())
   {
     this->metadataObservers().erase(m_resourceMetadataObserver);
   }
@@ -137,7 +137,7 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
       // The underlying resource manager has expired, so we can remove this
       // metadata observer.
       m_metadataObservers.erase(m_resourceMetadataObserver);
-      m_resourceMetadataObserver = -1;
+      m_resourceMetadataObserver = MetadataObservers::Key();
       return;
     }
 
@@ -176,7 +176,7 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
         // The underlying resource manager has expired, so we can remove this
         // observer.
         m_observers.erase(m_resourceObserver);
-        m_resourceObserver = -1;
+        m_resourceObserver = Observers::Key();
         return 0;
       }
 
@@ -211,7 +211,7 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
       return 0;
     });
 
-  return m_resourceObserver != -1;
+  return m_resourceObserver.assigned();
 }
 
 std::set<std::string> Manager::availableOperations() const

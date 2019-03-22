@@ -98,14 +98,13 @@ int TestResourceManager(int, char** const)
 
   // Observe resources being added
   int numResources = 0;
-  int handle;
   auto countingObserver = [&numResources](
     const smtk::resource::Resource::Ptr& rsrc, smtk::resource::EventType event) {
     (void)rsrc;
     numResources += (event == smtk::resource::EventType::ADDED ? +1 : -1);
     std::cout << "Resource count now " << numResources << " rsrc " << rsrc << "\n";
   };
-  handle = resourceManager->observers().insert(countingObserver);
+  auto handle = resourceManager->observers().insert(countingObserver);
   smtkTest(numResources == 1, "Did not observe new resource being added.");
 
   // Change its location field (nontrivial due to weak location indexing)
@@ -130,7 +129,7 @@ int TestResourceManager(int, char** const)
   auto removingObserver = [&handle, &resourceManager](
     const smtk::resource::Resource::Ptr&, smtk::resource::EventType) {
     resourceManager->observers().erase(handle);
-    std::cout << "Observer " << handle << " removing self\n";
+    std::cout << "Observer (" << handle.first << " " << handle.second << ") removing self\n";
   };
 
   handle = resourceManager->observers().insert(removingObserver);

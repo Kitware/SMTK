@@ -11,6 +11,7 @@
 #define smtk_extension_qt_qtResourceBrowserP_h
 
 #include "smtk/extension/qt/qtResourceBrowser.h"
+#include "smtk/view/SelectionObserver.h"
 
 #include <QPointer>
 
@@ -48,7 +49,7 @@ public:
   std::map<smtk::resource::ManagerPtr, int> m_observers;
   smtk::view::PhraseModelPtr m_phraseModel;
   smtk::view::SelectionPtr m_seln; // TODO: This assumes there is only 1 server connection
-  int m_selnHandle;                // TODO: Same assumption as m_seln
+  smtk::view::SelectionObservers::Key m_selnHandle; // TODO: Same assumption as m_seln
   int m_selnValue;
   int m_hoverValue;
   std::string m_selnSource; // TODO: This assumes there is only 1 panel (or that all should share)

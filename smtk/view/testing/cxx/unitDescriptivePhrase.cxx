@@ -76,6 +76,7 @@ void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
       smtkTest(delta[0] == 2 && delta[1] == 4, "Expecting delta = [2, 4].");
       ++numObservations;
     },
+    0,    // assign a neutral priority
     false // Do not immediately notify of existing items.
     );
   phraseModel->updateChildren(phrModelSummary[3], phrFaces, idx);

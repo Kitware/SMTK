@@ -25,7 +25,7 @@ AvailableOperations::AvailableOperations()
   , m_selectionExact(true)
   , m_useSelection(true)
   , m_workflowFilter(nullptr)
-  , m_workflowFilterObserverId(-1)
+  , m_workflowFilterObserverId()
 {
 // For debugging:
 #ifndef NDEBUG
@@ -43,6 +43,7 @@ AvailableOperations::AvailableOperations()
         }
       }
     },
+    0,    // assign a neutral priority
     false // do not immediately invoke.
     );
 #endif
@@ -52,7 +53,7 @@ AvailableOperations::~AvailableOperations()
 {
   if (m_operationManager)
   {
-    m_operationManager->observers().erase(m_operationManagerObserverId);
+    m_operationManager->metadataObservers().erase(m_operationManagerObserverId);
   }
   if (m_selection)
   {
@@ -77,6 +78,7 @@ void AvailableOperations::setSelection(SelectionPtr seln)
       [this](const std::string& src, smtk::view::Selection::Ptr seln) {
         this->selectionModified(src, seln);
       },
+      0,   // assign a neutral priority
       true // immediately notify
       );
   }
@@ -120,7 +122,7 @@ void AvailableOperations::setOperationManager(smtk::operation::ManagerPtr mgr)
   }
   else
   {
-    m_operationManagerObserverId = -1;
+    m_operationManagerObserverId = smtk::operation::MetadataObservers::Key();
   }
 }
 
@@ -143,7 +145,7 @@ void AvailableOperations::setWorkflowFilter(OperationFilterSort wf)
   }
   else
   {
-    m_workflowFilterObserverId = -1;
+    m_workflowFilterObserverId = smtk::workflow::OperationFilterSort::Observers::Key();
   }
 }
 

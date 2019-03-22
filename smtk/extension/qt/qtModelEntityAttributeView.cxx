@@ -179,7 +179,7 @@ public:
   std::string m_modelEntityMask;
   std::string m_selectionSourceName;
   std::string m_unSetVal;
-  int m_selectionObserverId;
+  smtk::view::SelectionObservers::Key m_selectionObserverId;
   std::map<std::string, smtk::view::View::Component> m_attCompMap;
 };
 
@@ -227,7 +227,7 @@ void qtModelEntityAttributeView::buildUI()
       [this](const std::string& selectionSource, smtk::view::SelectionPtr sp) {
         this->updateSelectedModelEntity(selectionSource, sp);
       },
-      true);
+      0, true);
   }
 }
 

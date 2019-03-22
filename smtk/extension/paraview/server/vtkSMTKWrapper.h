@@ -14,6 +14,8 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/view/SelectionObserver.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 #include "vtkAlgorithm.h"
@@ -120,7 +122,7 @@ protected:
   smtk::project::ManagerPtr ProjectManager;
   smtk::view::SelectionPtr Selection;
   std::string SelectionSource;
-  int SelectionListener;
+  smtk::view::SelectionObservers::Key SelectionListener;
   int HoveredValue;
   int SelectedValue;
 

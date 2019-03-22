@@ -147,28 +147,30 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
       return false; // Do not add what we already have
     }
   }
-  int rsrcHandle = rsrcMgr
+  auto rsrcHandle = rsrcMgr
     ? rsrcMgr->observers().insert(
         [this](Resource::Ptr rsrc, resource::EventType event) {
           this->handleResourceEvent(rsrc, event);
           return 0;
         },
-        /*observeImmediately*/ true)
-    : -1;
-  int operHandle = operMgr
+        0,    // assign a neutral priority
+        true) // observeImmediately
+    : smtk::resource::Observers::Key();
+  auto operHandle = operMgr
     ? operMgr->observers().insert(
         [this](Operation::Ptr op, operation::EventType event, Operation::Result res) {
           this->handleOperationEvent(op, event, res);
           return 0;
         })
-    : -1;
-  int selnHandle = seln
+    : smtk::operation::Observers::Key();
+  auto selnHandle = seln
     ? seln->observers().insert(
         [this](const std::string& src, smtk::view::SelectionPtr seln) {
           this->handleSelectionEvent(src, seln);
         },
-        /*observeImmediately*/ true)
-    : -1;
+        0,    // assign a neutral priority
+        true) // observeImmediately
+    : smtk::view::SelectionObservers::Key();
   m_sources.push_back(Source(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle));
   return true;
 }
@@ -180,15 +182,15 @@ bool PhraseModel::removeSource(smtk::resource::ManagerPtr rsrcMgr,
   {
     if (it->m_rsrcMgr == rsrcMgr && it->m_operMgr == operMgr && it->m_seln == seln)
     {
-      if (it->m_rsrcHandle >= 0)
+      if (it->m_rsrcHandle != smtk::resource::Observers::Key())
       {
         it->m_rsrcMgr->observers().erase(it->m_rsrcHandle);
       }
-      if (it->m_operHandle >= 0)
+      if (it->m_operHandle != smtk::operation::Observers::Key())
       {
         it->m_operMgr->observers().erase(it->m_operHandle);
       }
-      if (it->m_selnHandle >= 0)
+      if (it->m_selnHandle != smtk::view::SelectionObservers::Key())
       {
         it->m_seln->observers().erase(it->m_selnHandle);
       }

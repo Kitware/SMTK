@@ -211,7 +211,7 @@ pqSMTKAttributeItemWidget::~pqSMTKAttributeItemWidget()
 {
   auto ui = this->uiManager();
   auto operationManager = ui ? ui->operationManager() : nullptr;
-  if (operationManager && m_p->m_opObserver >= 0)
+  if (operationManager && m_p->m_opObserver.assigned())
   {
     operationManager->observers().erase(m_p->m_opObserver);
   }

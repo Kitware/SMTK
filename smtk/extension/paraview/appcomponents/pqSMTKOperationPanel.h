@@ -12,6 +12,8 @@
 
 #include "smtk/operation/Operation.h" // for Index
 
+#include "smtk/resource/Observer.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 #include <QDockWidget>
@@ -102,5 +104,5 @@ protected:
   smtk::extension::qtUIManager* m_attrUIMgr;
   smtk::resource::ResourcePtr m_rsrc;
   smtk::view::AvailableOperationsPtr m_availableOperations;
-  int m_observer;
+  smtk::resource::Observers::Key m_observer;
 };

@@ -68,7 +68,7 @@ qtItem* qtReferenceItem::createItemWidget(const AttributeItemInfo& info)
 qtReferenceItemData::qtReferenceItemData()
   : m_optional(nullptr)
   , m_alreadyClosingPopup(false)
-  , m_modelObserverId(-1)
+  , m_modelObserverId()
 {
 }
 
@@ -84,7 +84,7 @@ qtReferenceItem::qtReferenceItem(const AttributeItemInfo& info)
 
 qtReferenceItem::~qtReferenceItem()
 {
-  if (m_p->m_phraseModel && m_p->m_modelObserverId >= 0)
+  if (m_p->m_phraseModel && m_p->m_modelObserverId.assigned())
   {
     m_p->m_phraseModel->observers().erase(m_p->m_modelObserverId);
   }

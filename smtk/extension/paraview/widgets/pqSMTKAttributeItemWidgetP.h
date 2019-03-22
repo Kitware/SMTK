@@ -13,6 +13,8 @@
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/operation/Observer.h"
+
 #include "pqInteractivePropertyWidget.h"
 
 #include "vtkEventQtSlotConnect.h"
@@ -39,7 +41,7 @@ public:
     , m_overrideWhen(OverrideWhen::Unset)
     , m_geometrySource(GeometrySource::BestGuess)
     , m_fallbackStrategy(FallbackStrategy::Hide)
-    , m_opObserver(-1)
+    , m_opObserver()
   {
     (void)itm;
     (void)p;
@@ -60,5 +62,5 @@ public:
   // state of children
   QMap<QWidget*, QPair<QLayout*, QWidget*> > m_children;
 
-  int m_opObserver;
+  smtk::operation::Observers::Key m_opObserver;
 };

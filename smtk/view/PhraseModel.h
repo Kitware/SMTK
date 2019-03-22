@@ -194,12 +194,13 @@ protected:
     smtk::resource::ManagerPtr m_rsrcMgr;
     smtk::operation::ManagerPtr m_operMgr;
     smtk::view::SelectionPtr m_seln;
-    int m_rsrcHandle;
-    int m_operHandle;
-    int m_selnHandle;
+    smtk::resource::Observers::Key m_rsrcHandle;
+    smtk::operation::Observers::Key m_operHandle;
+    smtk::view::SelectionObservers::Key m_selnHandle;
     Source() {}
     Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om,
-      smtk::view::SelectionPtr sn, int rh, int oh, int sh)
+      smtk::view::SelectionPtr sn, smtk::resource::Observers::Key rh,
+      smtk::operation::Observers::Key oh, smtk::view::SelectionObservers::Key sh)
       : m_rsrcMgr(rm)
       , m_operMgr(om)
       , m_seln(sn)

@@ -93,7 +93,7 @@ public:
 
 qtDescriptivePhraseModel::qtDescriptivePhraseModel(QObject* owner)
   : QAbstractItemModel(owner)
-  , m_modelObserver(-1)
+  , m_modelObserver()
   , m_visibleIconURL(":/icons/display/eyeball.png")
   , m_invisibleIconURL(":/icons/display/eyeballClosed.png")
 {
@@ -144,7 +144,7 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
       [this](smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
         const std::vector<int>& src, const std::vector<int>& dst,
         const std::vector<int>& range) { this->updateObserver(phrase, event, src, dst, range); },
-      true);
+      0, true);
   }
 }
 

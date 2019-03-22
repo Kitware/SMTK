@@ -86,7 +86,6 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   }
   else
   {
-    m_operationObserverKey = -1;
     std::cerr << "qtAssociationWidget: Could not find Operation Manager!\n";
   }
   auto resManager = this->Internals->view->uiManager()->resourceManager();
@@ -98,7 +97,6 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   }
   else
   {
-    m_resourceObserverKey = -1;
     std::cerr << "qtAssociationWidget: Could not find Resource Manager!\n";
   }
   QObject::connect(this->Internals->view, SIGNAL(aboutToDestroy()), this, SLOT(removeObservers()));
@@ -486,7 +484,7 @@ void qtAssociationWidget::onAddAvailable()
 
 void qtAssociationWidget::removeObservers()
 {
-  if (m_operationObserverKey != -1 && this->Internals->view)
+  if (m_operationObserverKey.assigned() && this->Internals->view)
   {
     auto opManager = this->Internals->view->uiManager()->operationManager();
     if (opManager != nullptr)
@@ -494,7 +492,7 @@ void qtAssociationWidget::removeObservers()
       opManager->observers().erase(m_operationObserverKey);
     }
   }
-  if (m_resourceObserverKey != -1 && this->Internals->view)
+  if (m_resourceObserverKey.assigned() && this->Internals->view)
   {
     auto resManager = this->Internals->view->uiManager()->resourceManager();
     if (resManager != nullptr)
