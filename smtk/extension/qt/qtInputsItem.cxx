@@ -193,7 +193,14 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
   auto oldIndex = item->discreteIndex(elementIndex);
-  if (oldIndex != discreteValIndex && item->setDiscreteIndex(elementIndex, discreteValIndex))
+  // Would we actually change the value?
+  if (item->isSet(elementIndex) && (oldIndex == discreteValIndex))
+  {
+    // Return true to indicate that the input item is in a valid state and can be processed
+    // This is needed for updating active children in the descrete editor
+    return true;
+  }
+  else if (item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
     emit this->modified();
     m_itemInfo.baseView()->valueChanged(item);
