@@ -1,7 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/rgg/qt/nuclide">
-    <file>zoomin.png</file>
-    <file>zoomout.png</file>
-    <file>nuclear-wallet-cards.txt</file>
-</qresource>
-</RCC>
