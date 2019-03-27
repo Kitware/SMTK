@@ -24,6 +24,7 @@ set(VTKLibHeaders
   vtkCmbLayeredConeSource.h
   vtkMeshMultiBlockSource.h
   vtkModelAuxiliaryGeometry.h
+  vtkModelAuxiliaryGeometry.txx
   vtkModelMultiBlockSource.h
   vtkTracksAllInstances.h
 )

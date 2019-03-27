@@ -16,6 +16,7 @@
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Loop.h"
+#include "smtk/model/Resource.h"
 #include "smtk/model/Vertex.h"
 
 namespace smtk
