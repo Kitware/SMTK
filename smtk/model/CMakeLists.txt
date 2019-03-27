@@ -60,6 +60,7 @@ set(modelSrcs
 
 set(modelHeaders
   Arrangement.h
+  Arrangement.txx
   ArrangementHelper.h
   ArrangementKind.h
   AttributeAssignments.h
@@ -93,7 +94,9 @@ set(modelHeaders
   Registrar.h
   Shell.h
   ShellEntity.h
+  ShellEntity.txx
   Resource.h
+  Resource.txx
   StringData.h
   Tessellation.h
   UseEntity.h
