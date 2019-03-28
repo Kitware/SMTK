@@ -13,7 +13,9 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/Item.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -179,21 +181,20 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
   } // if (projectPath exists)
   boost::filesystem::create_directory(projectPath);
 
-  // Import the model resource
-  ResourceDescriptor modelDescriptor;
-  auto modelFileItem = specification->findFile("model-file");
-  if (modelFileItem->isEnabled())
+  // Import model resources
+  if (!this->importModels(specification, logger))
   {
-    // Check use-vtk-session option
-    std::string modelPath = modelFileItem->value(0);
-    bool copyNativeModel = specification->findVoid("copy-model-file")->isEnabled();
-    bool useVTKSession = specification->findVoid("use-vtk-session")->isEnabled();
-    if (!this->importModel(modelPath, copyNativeModel, modelDescriptor, useVTKSession, logger))
-    {
-      return false;
-    }
-    m_resourceDescriptors.push_back(modelDescriptor);
-  } // if (modelFileItem emabled)
+    return false;
+  }
+
+  // Initialize modelDescriptor to the primary model.
+  // At this point, only models have been loaded, and the default model is
+  // loaded first.
+  ResourceDescriptor modelDescriptor;
+  if (!m_resourceDescriptors.empty())
+  {
+    modelDescriptor = m_resourceDescriptors[0];
+  }
 
   // Import the attribute template
   ResourceDescriptor attDescriptor;
@@ -361,6 +362,52 @@ bool Project::open(const std::string& location, smtk::io::Logger& logger)
 
   return this->loadResources(directoryPath.string(), logger);
 } // open()
+
+bool Project::importModels(
+  const smtk::attribute::AttributePtr specification, smtk::io::Logger& logger)
+{
+  bool useVTKSession = specification->findVoid("use-vtk-session")->isEnabled();
+  auto modelGroupItem = specification->findGroup("model-group");
+  bool copyFile = modelGroupItem->find("copy-file")->isEnabled();
+
+  for (int i = 0; i < 2; ++i)
+  {
+    smtk::attribute::ItemPtr baseItem;
+    std::string identifier;
+    switch (i)
+    {
+      case 0:
+        baseItem = modelGroupItem->find("model-file");
+        identifier = "default";
+        break;
+
+      case 1:
+        baseItem = modelGroupItem->find("second-model-file");
+        identifier = "second";
+        break;
+
+      default:
+        assert(false);
+    } // switch
+    assert(!!baseItem);
+
+    if (baseItem->isEnabled())
+    {
+      auto fileItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(baseItem);
+      std::string modelPath = fileItem->value(0);
+
+      ResourceDescriptor modelDescriptor;
+      if (!this->importModel(modelPath, copyFile, modelDescriptor, useVTKSession, logger))
+      {
+        return false;
+      }
+      modelDescriptor.m_identifier = identifier;
+      m_resourceDescriptors.push_back(modelDescriptor);
+    }
+  } // for (i)
+
+  return true;
+}
 
 bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   ResourceDescriptor& descriptor, bool useVTKSession, smtk::io::Logger& logger)
