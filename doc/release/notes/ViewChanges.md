@@ -3,6 +3,9 @@ This view has the same syntax as an Attribute View but only allows the user to c
 
 #Changes to Attribute View
 * added a new XML attribute "HideAssociations".  If set to true the view will not display the association editing widget save screen Real Estate
+* If there is only one type of attribute being created/modified then the type column is no longer displayed
+* For the time being the view by property  feature has been disabled until we can decide on whether it is useful and if so, what is the best way to display the information.
+* The column "Attribute" has been renamed to "Name"
 
 #New View Type - Analysis
 An Analysis View is a specialized view for choosing the types of analyses the user wants to perform.  These choices are persistent and can be used by an export operation instead of having the operator ask the user what types of analyses should be performed.
@@ -38,12 +41,19 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
 ```xml
     <View Type="Instanced" Title="Global Constants">
       <InstancedAttributes>
-        <Att Name="physics" Type="physics" />
+        <Att Name="physics" Type="physics">
+          <ItemViews>
+            <View Item="fluid-body-force" Type="Default" FixedWidth="0"/>
+          </ItemViews>
+        </Att>
         <Att Name="physical-constants" Type="physical-constants">
           <ItemViews>
-            <View Item="absolute-zero" Type="Default" ReadOnly="true"/>
+            <View Item="absolute-zero" Type="Default" ReadOnly="true" FixedWidth="50/>
           </ItemViews>
         </Att>
       </InstancedAttributes>
     </View>
 ```
+#Changes to Displaying Items
+* Extensible Group Items know display "Add Row" instead of "Add sub group" - this label can be changed using an ItemView with the XML attribute : ExtensibleLabel
+* Added a FixedWidth Option for Double and Int ItemViews as also shown in the above example - **Note: setting the fixed width to 0 means there is no fixed width.**

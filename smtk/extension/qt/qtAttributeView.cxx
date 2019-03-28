@@ -225,7 +225,8 @@ void qtAttributeView::createWidget()
   QLabel* labelViewBy = new QLabel("View By: ", this->Internals->FiltersFrame);
   filterLayout->addWidget(labelViewBy, 0, 0);
   filterLayout->addWidget(this->Internals->ViewByCombo, 0, 1);
-
+  // ToDo - determine if show by property is still needed and if so how should it be presented
+  this->Internals->FiltersFrame->setHidden(true);
   //If we have more than 1 def then create a combo box for selecting a def for property viewing,
   // else just create a label
   if (this->Internals->AllDefs.size() > 1)
@@ -810,8 +811,14 @@ void qtAttributeView::onViewBy(int viewBy)
   int numCols = 2;
   this->Internals->ListTable->setColumnCount(numCols);
   this->Internals->ListTable->setHorizontalHeaderItem(
-    0, new QTableWidgetItem(viewAtt ? "Attribute" : "Property"));
+    0, new QTableWidgetItem(viewAtt ? "Name" : "Property"));
   this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
+  if (this->Internals->AllDefs.size() == 1)
+  {
+    // If there is only one attribute type then there is no reason to
+    // show the type column
+    this->Internals->ListTable->setColumnHidden(1, true);
+  }
   if (numCols == 3)
   {
     this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
