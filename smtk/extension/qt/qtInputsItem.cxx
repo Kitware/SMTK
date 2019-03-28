@@ -956,7 +956,12 @@ QWidget* qtInputsItem::createDoubleWidget(
     qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
 
     editBox->setValidator(validator);
-    editBox->setFixedWidth(100);
+    int widthValue = 100; // Default fixed width
+    m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
+    if (widthValue > 0)
+    {
+      editBox->setFixedWidth(widthValue);
+    }
     validator->setBottom(minVal);
     validator->setTop(maxVal);
     if (vitem->isSet(elementIdx))
@@ -1050,7 +1055,12 @@ QWidget* qtInputsItem::createIntWidget(
     qtIntValidator* validator = new qtIntValidator(this, elementIdx, editBox, pWidget);
 
     editBox->setValidator(validator);
-    editBox->setFixedWidth(100);
+    int widthValue = 100; // Default fixed width
+    m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
+    if (widthValue > 0)
+    {
+      editBox->setFixedWidth(widthValue);
+    }
     validator->setBottom(minVal);
     validator->setTop(maxVal);
     if (vitem->isSet(elementIdx))

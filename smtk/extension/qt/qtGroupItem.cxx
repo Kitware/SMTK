@@ -189,7 +189,9 @@ void qtGroupItem::updateItemData()
       this->Internals->AddItemButton = new QToolButton(this->Internals->ChildrensFrame);
       this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
       QString iconName(":/icons/attribute/plus.png");
-      this->Internals->AddItemButton->setText("Add Sub Group");
+      std::string extensibleLabel = "Add Row";
+      m_itemInfo.component().attribute("ExtensibleLabel", extensibleLabel);
+      this->Internals->AddItemButton->setText(extensibleLabel.c_str());
       this->Internals->AddItemButton->setIcon(QIcon(iconName));
       this->Internals->AddItemButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
       connect(this->Internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddSubGroup()));
@@ -419,7 +421,6 @@ void qtGroupItem::addItemsToTable(int i)
         arItem->setAttributeWidgetVisible(false);
       }
       this->Internals->ItemsTable->setCellWidget(numRows, added + 1, childItem->widget());
-      this->Internals->ItemsTable->setItem(numRows, added + 1, new QTableWidgetItem());
       itemList.push_back(childItem);
       connect(childItem, SIGNAL(widgetSizeChanged()), this, SLOT(onChildWidgetSizeChanged()));
       added++;
@@ -435,7 +436,7 @@ void qtGroupItem::addItemsToTable(int i)
     minusButton->setFixedSize(QSize(16, 16));
     minusButton->setIcon(QIcon(iconName));
     minusButton->setSizePolicy(sizeFixedPolicy);
-    minusButton->setToolTip("Remove sub group");
+    minusButton->setToolTip("Remove Row");
     //QVariant vdata(static_cast<int>(i));
     //minusButton->setProperty("SubgroupIndex", vdata);
     connect(minusButton, SIGNAL(clicked()), this, SLOT(onRemoveSubGroup()));
