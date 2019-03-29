@@ -200,7 +200,7 @@ if (SMTK_ENABLE_TESTING)
   endif ()
 
   set(SMTK_PLUGIN_CONTRACT_FILE_URLS ""
-    CACHE LIST "Local CMake file describing plugins as external projects for contract testing.")
+    CACHE STRING "Local CMake file describing plugins as external projects for contract testing.")
 
   if (SMTK_ENABLE_PARAVIEW_SUPPORT)
     set(local_url_prefix "file://")
