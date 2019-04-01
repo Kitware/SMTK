@@ -129,7 +129,7 @@ void qtAnalysisView::analysisChanged()
   // Lets iterate over the items in the analysis attribute and set
   // the categories accordingly
   std::set<std::string> cats;
-  std::size_t i, n = m_analysisAttribute->numberOfItems();
+  int i, n = static_cast<int>(m_analysisAttribute->numberOfItems());
   for (i = 0; i < n; i++)
   {
     this->processAnalysisItem(m_analysisAttribute->item(i), cats);
