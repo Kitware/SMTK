@@ -13,7 +13,7 @@ set (CTEST_CUSTOM_WARNING_EXCEPTION
   # where SMTK directly access symbols from the MOAB library. As of 03/19/2019,
   # there is no plan to add symbol exporting to MOAB. Thus, we ignore these
   # warnings.
-  "warning: direct access in function * to global weak symbol 'typeinfo for moab::* means the weak symbol cannot be overridden at runtime. This was likely caused by different translation units being compiled with different visibility settings."
+  "warning: direct access in function .* to global weak symbol 'typeinfo for moab::.* means the weak symbol cannot be overridden at runtime\. This was likely caused by different translation units being compiled with different visibility settings\."
 )
 
 ##------------------------------------------------------------------------------
