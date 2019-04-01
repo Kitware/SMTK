@@ -32,6 +32,8 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
+typedef void (qtBaseView::*qtBaseViewMemFn)();
+
 class qtGroupViewInternals
 {
 public:
@@ -47,15 +49,98 @@ public:
     , m_tabPosition(QTabWidget::East)
   {
   }
-  QList<smtk::extension::qtBaseView*> ChildViews;
-  QList<QWidget*> PageWidgets;
-  QList<QIcon> PageIcons;
-  QList<QLabel*> Labels;
+
+  void updateChildren(qtGroupView* gview, qtBaseViewMemFn mfunc);
+
+  // ChildViews represent all of the qtViews associated with the
+  // group's children views while TabbedViews represent those
+  // children who are currently being displayed as tabs
+  QList<smtk::extension::qtBaseView *> m_ChildViews, m_TabbedViews;
+  QList<QWidget*> m_PageWidgets;
+  QList<QIcon> m_PageIcons;
+  QList<QLabel*> m_Labels;
   qtGroupViewInternals::Style m_style;
-  std::vector<smtk::view::ViewPtr> m_views;
+  std::vector<smtk::view::ViewPtr> m_activeViews;
   int m_currentTabSelected;
   QTabWidget::TabPosition m_tabPosition;
+  std::string m_savedViewName;
 };
+
+void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mfunc)
+{
+  // In the case of tiling we don't want to show the
+  // label for empty views
+  if (m_style == qtGroupViewInternals::TILED)
+  {
+    int i, size = m_ChildViews.size();
+    for (i = 0; i < size; i++)
+    {
+      auto child = m_ChildViews.at(i);
+      (child->*mfunc)();
+      if (child->isEmpty())
+      {
+        child->widget()->hide();
+        m_Labels.at(i)->hide();
+      }
+      else
+      {
+        child->widget()->show();
+        m_Labels.at(i)->show();
+      }
+    }
+  }
+  else if (m_style == qtGroupViewInternals::TABBED)
+  {
+    QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(gview->widget());
+    if (!tabWidget)
+    {
+      return;
+    }
+    tabWidget->clear();
+    std::string lastSavedViewName = gview->uiManager()->activeTabInfo(gview->getObject()->name());
+    m_TabbedViews.clear();
+    m_currentTabSelected = -1;
+    int i, size = m_ChildViews.size();
+    for (i = 0; i < size; i++)
+    {
+      auto child = m_ChildViews.at(i);
+      (child->*mfunc)();
+      if (child->isEmpty())
+      {
+        continue;
+      }
+      m_PageWidgets.at(i)->show();
+      m_TabbedViews.append(child);
+      if (child->getObject()->name() == lastSavedViewName)
+      {
+        m_currentTabSelected = m_TabbedViews.size() - 1;
+      }
+      if (m_PageIcons.at(i).isNull())
+      {
+        QString secTitle = child->getObject()->label().c_str();
+        tabWidget->addTab(m_PageWidgets.at(i), secTitle);
+      }
+      else
+      {
+        tabWidget->addTab(m_PageWidgets.at(i), m_PageIcons.at(i), "");
+      }
+    }
+    // If we could not find the saved tab and there are tabs in the widget
+    // set the curren to the first
+    if ((m_currentTabSelected == -1) && (m_TabbedViews.size() > 0))
+    {
+      m_currentTabSelected = 0;
+    }
+    tabWidget->setCurrentIndex(m_currentTabSelected);
+  }
+  else
+  {
+    foreach (qtBaseView* childView, m_ChildViews)
+    {
+      (childView->*mfunc)();
+    }
+  }
+}
 
 qtBaseView* qtGroupView::createViewWidget(const ViewInfo& info)
 {
@@ -79,9 +164,16 @@ qtGroupView::~qtGroupView()
 void qtGroupView::updateCurrentTab(int ithTab)
 {
   this->Internals->m_currentTabSelected = ithTab;
+  if (ithTab == -1)
+  {
+    //Clear the active tab info since nothing is selected
+    this->uiManager()->setActiveTabInfo(this->getObject()->name(), "");
+    return;
+  }
   qtBaseView* currView = this->getChildView(ithTab);
   if (currView)
   {
+    this->uiManager()->setActiveTabInfo(this->getObject()->name(), currView->getObject()->name());
     currView->updateUI();
   }
 }
@@ -140,6 +232,9 @@ void qtGroupView::createWidget()
       //Else leave it as the default which is East
     }
     QTabWidget* tab = new QTabWidget(this->parentWidget());
+    // If we have previously created a widget for this view
+    // lets get the name of the last selected tab View name
+    this->Internals->m_savedViewName = this->uiManager()->activeTabInfo(this->getObject()->name());
     tab->setUsesScrollButtons(true);
     this->Widget = tab;
   }
@@ -205,35 +300,20 @@ void qtGroupView::createWidget()
   }
 }
 
-void qtGroupView::getChildView(const std::string& viewType, QList<qtBaseView*>& views)
-{
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
-  {
-    if (childView->getObject()->type() == viewType)
-    {
-      views.append(childView);
-    }
-    else if (childView->getObject()->type() == "Group")
-    {
-      qobject_cast<qtGroupView*>(childView)->getChildView(viewType, views);
-    }
-  }
-}
-
 qtBaseView* qtGroupView::getChildView(int pageIndex)
 {
-  if (pageIndex >= 0 && pageIndex < this->Internals->ChildViews.count())
+  if (pageIndex >= 0 && pageIndex < this->Internals->m_TabbedViews.count())
   {
-    return this->Internals->ChildViews.value(pageIndex);
+    return this->Internals->m_TabbedViews.value(pageIndex);
   }
   return NULL;
 }
 
 void qtGroupView::addChildView(qtBaseView* child)
 {
-  if (!this->Internals->ChildViews.contains(child))
+  if (!this->Internals->m_ChildViews.contains(child))
   {
-    this->Internals->ChildViews.append(child);
+    this->Internals->m_ChildViews.append(child);
     if (this->Internals->m_style == qtGroupViewInternals::TILED)
     {
       this->addTileEntry(child);
@@ -251,147 +331,36 @@ void qtGroupView::addChildView(qtBaseView* child)
 
 const QList<qtBaseView*>& qtGroupView::childViews() const
 {
-  return this->Internals->ChildViews;
+  return this->Internals->m_ChildViews;
 }
 
 void qtGroupView::clearChildViews()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
   {
     delete childView;
   }
-  this->Internals->ChildViews.clear();
-  this->Internals->Labels.clear();
-  this->Internals->PageWidgets.clear();
-  this->Internals->PageIcons.clear();
+  this->Internals->m_ChildViews.clear();
+  this->Internals->m_Labels.clear();
+  this->Internals->m_PageWidgets.clear();
+  this->Internals->m_PageIcons.clear();
+  this->Internals->m_TabbedViews.clear();
 }
 
 void qtGroupView::updateUI()
 {
-  // In the case of tiling we don't want to show the
-  // label for empty views
-  if (this->Internals->m_style == qtGroupViewInternals::TILED)
-  {
-    int i, size = this->Internals->ChildViews.size();
-    for (i = 0; i < size; i++)
-    {
-      auto child = this->Internals->ChildViews.at(i);
-      child->updateUI();
-      if (child->isEmpty())
-      {
-        child->widget()->hide();
-        this->Internals->Labels.at(i)->hide();
-      }
-      else
-      {
-        child->widget()->show();
-        this->Internals->Labels.at(i)->show();
-      }
-    }
-  }
-  else if (this->Internals->m_style == qtGroupViewInternals::TABBED)
-  {
-    QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
-    if (!tabWidget)
-    {
-      return;
-    }
-    tabWidget->clear();
-    int i, size = this->Internals->ChildViews.size();
-    for (i = 0; i < size; i++)
-    {
-      auto child = this->Internals->ChildViews.at(i);
-      child->updateUI();
-      if (child->isEmpty())
-      {
-        continue;
-      }
-      this->Internals->PageWidgets.at(i)->show();
-      if (this->Internals->PageIcons.at(i).isNull())
-      {
-        QString secTitle = child->getObject()->label().c_str();
-        tabWidget->addTab(this->Internals->PageWidgets.at(i), secTitle);
-      }
-      else
-      {
-        tabWidget->addTab(this->Internals->PageWidgets.at(i), this->Internals->PageIcons.at(i), "");
-      }
-    }
-  }
-  else
-  {
-    foreach (qtBaseView* childView, this->Internals->ChildViews)
-    {
-      childView->updateUI();
-    }
-  }
+  this->Internals->updateChildren(this, &qtBaseView::updateUI);
 }
 
 void qtGroupView::onShowCategory()
 {
-  // In the case of tiling we don't want to show the
-  // label for empty views
-  if (this->Internals->m_style == qtGroupViewInternals::TILED)
-  {
-    int i, size = this->Internals->ChildViews.size();
-    for (i = 0; i < size; i++)
-    {
-      auto child = this->Internals->ChildViews.at(i);
-      child->onShowCategory();
-      if (child->isEmpty())
-      {
-        child->widget()->hide();
-        this->Internals->Labels.at(i)->hide();
-      }
-      else
-      {
-        child->widget()->show();
-        this->Internals->Labels.at(i)->show();
-      }
-    }
-  }
-  else if (this->Internals->m_style == qtGroupViewInternals::TABBED)
-  {
-    QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
-    if (!tabWidget)
-    {
-      return;
-    }
-    tabWidget->clear();
-    int i, size = this->Internals->ChildViews.size();
-    for (i = 0; i < size; i++)
-    {
-      auto child = this->Internals->ChildViews.at(i);
-      child->onShowCategory();
-      if (child->isEmpty())
-      {
-        continue;
-      }
-      this->Internals->PageWidgets.at(i)->show();
-      if (this->Internals->PageIcons.at(i).isNull())
-      {
-        QString secTitle = child->getObject()->label().c_str();
-        tabWidget->addTab(this->Internals->PageWidgets.at(i), secTitle);
-      }
-      else
-      {
-        tabWidget->addTab(this->Internals->PageWidgets.at(i), this->Internals->PageIcons.at(i), "");
-      }
-    }
-  }
-  else
-  {
-    foreach (qtBaseView* childView, this->Internals->ChildViews)
-    {
-      childView->onShowCategory();
-    }
-  }
+  this->Internals->updateChildren(this, &qtBaseView::onShowCategory);
   this->qtBaseView::onShowCategory();
 }
 
 void qtGroupView::showAdvanceLevelOverlay(bool show)
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
   {
     childView->showAdvanceLevelOverlay(show);
   }
@@ -449,8 +418,8 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   }
 
   // Save the page widget and icon
-  this->Internals->PageWidgets.push_back(tabPage);
-  this->Internals->PageIcons.push_back(icon);
+  this->Internals->m_PageWidgets.push_back(tabPage);
+  this->Internals->m_PageIcons.push_back(icon);
 
   if (!child->isEmpty())
   {
@@ -464,7 +433,12 @@ void qtGroupView::addTabEntry(qtBaseView* child)
       index = tabWidget->addTab(tabPage, icon, "");
     }
 
+    this->Internals->m_TabbedViews.append(child);
     tabWidget->setTabToolTip(index, secTitle);
+    if (child->getObject()->name() == this->Internals->m_savedViewName)
+    {
+      this->Internals->m_currentTabSelected = index;
+    }
   }
   else
   {
@@ -496,7 +470,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
     return;
   }
   QLabel* label = new QLabel(child->getObject()->label().c_str(), this->Widget);
-  this->Internals->Labels.append(label);
+  this->Internals->m_Labels.append(label);
   QFont titleFont;
   titleFont.setBold(true);
   titleFont.setItalic(true);
@@ -516,7 +490,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
 
 void qtGroupView::updateModelAssociation()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
   {
     childView->updateModelAssociation();
   }
@@ -524,7 +498,7 @@ void qtGroupView::updateModelAssociation()
 
 bool qtGroupView::isEmpty() const
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
   {
     if (!childView->isEmpty())
     {

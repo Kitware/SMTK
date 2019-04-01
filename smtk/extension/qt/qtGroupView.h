@@ -33,7 +33,6 @@ public:
   qtGroupView(const ViewInfo& info);
   virtual ~qtGroupView();
 
-  void getChildView(const std::string& viewType, QList<qtBaseView*>& views);
   qtBaseView* getChildView(int pageIndex);
 
   virtual void addChildView(qtBaseView*);
