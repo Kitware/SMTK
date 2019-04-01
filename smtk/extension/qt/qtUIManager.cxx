@@ -1023,3 +1023,19 @@ void qtUIManager::setToLevelCategories(const std::set<std::string>& categories)
     m_topView->setTopLevelCategories(categories);
   }
 }
+
+void qtUIManager::setActiveTabInfo(
+  const std::string& groupViewName, const std::string& activeTabName)
+{
+  m_activeTabInfo[groupViewName] = activeTabName;
+}
+
+std::string qtUIManager::activeTabInfo(const std::string& groupViewName) const
+{
+  auto it = m_activeTabInfo.find(groupViewName);
+  if (it == m_activeTabInfo.end())
+  {
+    return "";
+  }
+  return it->second;
+}

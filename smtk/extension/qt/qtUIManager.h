@@ -193,6 +193,10 @@ public:
   // See if we are dealing with a subset of categories
   bool topLevelCategoriesSet() const { return m_topLevelCategoriesSet; }
 
+  //methods for saving/retrieving the active tab in a group view
+  void setActiveTabInfo(const std::string& groupViewName, const std::string& activeTabName);
+  std::string activeTabInfo(const std::string& groupViewName) const;
+
   static qtItem* defaultItemConstructor(const AttributeItemInfo& info);
 
 #ifdef _WIN32
@@ -262,6 +266,7 @@ private:
   bool m_categoryChecks;
   bool m_topLevelCategoriesSet;
   std::set<std::string> m_topLevelCategories;
+  std::map<std::string, std::string> m_activeTabInfo;
 
 }; // class
 

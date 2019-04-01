@@ -27,6 +27,7 @@ The following is an example of a Analysis View:
 
 #Changes to Group View
 * View no longer displays empty tabs
+* Current tabs are now remembered when the group rebuilds its widget - previously this was only true for the top-level tabbed group views
 
 # Changes to BaseView
 * Added the concept of top level categories that represents a set of categories (that can be a subset of those defined in the attribute resource) that can be used to display or filter attribute information.
