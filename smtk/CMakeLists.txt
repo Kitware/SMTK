@@ -82,6 +82,7 @@ set(smtkCore_public_link_libraries
   cJSON
   ${moab_libs}
   nlohmann_json
+  taocpp::pegtl
   )
 
 set(smtkCore_private_link_libraries

@@ -48,10 +48,6 @@ add_executable(unitArrangement unitArrangement.cxx)
 target_link_libraries(unitArrangement smtkCore)
 add_test(NAME unitArrangement COMMAND unitArrangement)
 
-add_executable(unitEntity unitEntity.cxx)
-target_link_libraries(unitEntity smtkCore smtkCoreModelTesting)
-add_test(NAME unitEntity COMMAND unitEntity)
-
 add_executable(unitExportMeshOperation unitExportMeshOperation.cxx)
 target_compile_definitions(unitExportMeshOperation PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 target_link_libraries(unitExportMeshOperation smtkCore smtkCoreModelTesting
@@ -69,3 +65,16 @@ if (SMTK_DATA_DIR)
     COMMAND $<TARGET_FILE:unitExportMeshOperation>
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
 endif()
+
+if (SMTK_ENABLE_POLYGON_SESSION)
+  list(APPEND unit_tests_which_require_data unitEntity.cxx)
+endif ()
+
+set(external_libs ${Boost_LIBRARIES})
+
+smtk_unit_tests(
+  LABEL "Model"
+  # SOURCES ${unit_tests}
+  SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
+  LIBRARIES smtkCore smtkPolygonSession smtkCoreModelTesting ${external_libs}
+)

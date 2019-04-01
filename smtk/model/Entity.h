@@ -49,6 +49,7 @@ class SMTKCORE_EXPORT Entity : public smtk::resource::Component
 
 public:
   using UUID = smtk::common::UUID;
+  using QueryFunctor = std::function<bool(const smtk::resource::ConstComponentPtr&)>;
   //using ResourcePtr = smtk::resource::ResourcePtr;
 
   smtkTypeMacro(Entity);
@@ -115,6 +116,8 @@ public:
   static BitFlags specifierStringToFlag(const std::string& spec);
   static BitFlags dimensionToDimensionBits(int dim);
   static int dimensionBitsToDimension(BitFlags dimBits);
+
+  static QueryFunctor filterStringToQueryFunctor(const std::string& spec);
 
   int arrange(ArrangementKind, const Arrangement& arr, int index = -1);
   int unarrange(ArrangementKind, int index, bool removeIfLast = false);

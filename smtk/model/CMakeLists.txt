@@ -20,15 +20,11 @@ set(modelSrcs
   AttributeAssignments.cxx
   AuxiliaryGeometry.cxx
   AuxiliaryGeometryExtension.cxx
-  Session.cxx
-  SessionRef.cxx
-  SessionIO.cxx
-  SessionIOJSON.cxx
   CellEntity.cxx
   Chain.cxx
+  DefaultSession.cxx
   EntityRef.cxx
   EntityRefArrangementOps.cxx
-  DefaultSession.cxx
   Edge.cxx
   EdgeUse.cxx
   Entity.cxx
@@ -42,6 +38,10 @@ set(modelSrcs
   Model.cxx
   PointLocatorExtension.cxx
   Registrar.cxx
+  Session.cxx
+  SessionRef.cxx
+  SessionIO.cxx
+  SessionIOJSON.cxx
   Shell.cxx
   ShellEntity.cxx
   Resource.cxx
@@ -83,11 +83,13 @@ set(modelHeaders
   Events.h
   Face.h
   FaceUse.h
+  FilterGrammar.h
   FloatData.h
   GridInfo.h
   Group.h
   Instance.h
   IntegerData.h
+  LimitingClause.h
   Loop.h
   Model.h
   PointLocatorExtension.h

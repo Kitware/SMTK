@@ -8,30 +8,59 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/model/Entity.h"
+#include "smtk/model/FilterGrammar.h"
+#include "smtk/model/Group.h"
+#include "smtk/model/LimitingClause.h"
 #include "smtk/model/Resource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/resource/PropertyType.h"
+#include "smtk/resource/Resource.h"
+
+#include "smtk/io/Logger.h"
+
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/StringUtil.h"
 #include "smtk/common/UUIDGenerator.h"
 
-#include "smtk/resource/Resource.h"
+// We use either STL regex or Boost regex, depending on support. These flags
+// correspond to the equivalent logic used to determine the inclusion of Boost's
+// regex library.
+#if defined(SMTK_CLANG) ||                                                                         \
+  (defined(SMTK_GCC) && __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) ||                 \
+  defined(SMTK_MSVC)
+#include <regex>
+using std::regex;
+using std::sregex_token_iterator;
+using std::regex_replace;
+using std::regex_search;
+using std::regex_match;
+#else
+#include <boost/regex.hpp>
+using boost::regex;
+using boost::sregex_token_iterator;
+using boost::regex_replace;
+using boost::regex_search;
+using boost::regex_match;
+#endif
 
 #include <algorithm>
 #include <cctype>
+#include <functional>
 #include <map>
 #include <set>
 #include <vector>
 
 #include <sstream>
 
-//#include <boost/variant.hpp>
-
-using namespace std;
 using namespace smtk::common;
 using namespace smtk::resource;
+
+// The code in the namespace below is all written in the style of PEGTL
+// so that the grammar and actions are consistent and thus easier to read.
 
 namespace smtk
 {
@@ -569,7 +598,7 @@ std::string Entity::flagSummary(BitFlags flags, int form)
     bool entSep = false;
     for (BitFlags entType = CELL_ENTITY; entType < ENTITY_MASK; entType <<= 1)
     {
-      if ((entType & GROUP_ENTITY) && NO_SUBGROUPS)
+      if (entType & (GROUP_ENTITY | NO_SUBGROUPS))
         continue;
       if (entType & flags)
       {
@@ -951,6 +980,10 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
 // WARNING!!! This array must be kept sorted (according to
 // std::string's less-than operator) so that bisection works
 // for searching by keyword.
+//
+// WARNING!!!! No strings in this array may include parentheses,
+// square brackets, or angle brackets. Those are reserved for
+// searches.
 static struct
 {
   std::string name;
@@ -1124,6 +1157,261 @@ int Entity::dimensionBitsToDimension(BitFlags dimBits)
       break;
   }
   return -1;
+}
+
+namespace
+{
+/// Given an entity and a mask, determine if the entity is accepted by the mask.
+bool IsValueValid(const smtk::resource::ConstComponentPtr& comp, smtk::model::BitFlags mask)
+{
+  auto modelEnt = dynamic_pointer_cast<const smtk::model::Entity>(comp);
+  if (modelEnt)
+  {
+    smtk::model::EntityRef c = modelEnt->referenceAs<smtk::model::EntityRef>();
+
+    if (!mask)
+    {
+      return false; // Nothing can possibly match.
+    }
+    if (mask == smtk::model::ANY_ENTITY)
+    {
+      return true; // Fast-track the trivial case.
+    }
+
+    smtk::model::BitFlags itemType = c.entityFlags();
+    // The m_membershipMask must match the entity type, the dimension, and (if the
+    // item is a group) group constraint flags separately;
+    // In other words, we require the entity type, the dimension, and the
+    // group constraints to be acceptable independently.
+    if (((mask & smtk::model::ENTITY_MASK) && !(itemType & mask & smtk::model::ENTITY_MASK) &&
+          (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
+      ((mask & smtk::model::ANY_DIMENSION) && !(itemType & mask & smtk::model::ANY_DIMENSION)) ||
+      ((itemType & smtk::model::GROUP_ENTITY) && (mask & smtk::model::GROUP_CONSTRAINT_MASK) &&
+          !(itemType & mask & smtk::model::GROUP_CONSTRAINT_MASK)))
+      return false;
+    if (itemType != mask && itemType & smtk::model::GROUP_ENTITY &&
+      // if the mask is only defined as "group", don't have to check further for members
+      mask != smtk::model::GROUP_ENTITY)
+    {
+      // If the the membershipMask is the same as itemType, we don't need to check, else
+      // if the item is a group: recursively check that its members
+      // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
+      // require all entries to have the same entity type flag as the first.
+      smtk::model::BitFlags typeMask = mask;
+      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
+      if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
+      {
+        typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
+      }
+      if (!c.as<model::Group>().meetsMembershipConstraints(c, typeMask, mustBeHomogenous))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+bool CheckPropStringValues(const StringList& propValues, const LimitingClause& clause)
+{
+  if (clause.m_propStringValues.empty())
+  {
+    return true;
+  }
+  if (propValues.size() != clause.m_propStringValues.size())
+  {
+    return false;
+  }
+  auto sit = clause.m_propStringValues.begin();
+  auto rit = clause.m_propStringIsRegex.begin();
+  for (auto vit = propValues.begin();
+
+       sit != clause.m_propStringValues.end();
+
+       ++sit, ++rit, ++vit)
+  {
+    if (*rit == true)
+    {
+      // This is a regex, test it.
+      regex match(*sit);
+      if (!std::regex_search(*vit, match))
+      {
+        return false;
+      }
+    }
+    else
+    {
+      if (*sit != *vit)
+      {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+}
+
+Entity::QueryFunctor limitedQueryFunctor(
+  smtk::model::BitFlags bitFlags, LimitingClause& limitClause)
+{
+  LimitingClause clause(limitClause);
+  return [bitFlags, clause](const smtk::resource::ConstComponentPtr& comp) -> bool {
+    // See if the component matches the bitFlags:
+    if (!IsValueValid(comp, bitFlags))
+    {
+      return false;
+    }
+    auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(comp->resource());
+    if (!modelRsrc)
+    {
+      return false;
+    }
+    // The component matches; see if the requested properties match.
+    switch (clause.m_propType)
+    {
+      case smtk::resource::PropertyType::FLOAT_PROPERTY:
+      {
+        auto props = modelRsrc->floatPropertiesForEntity(comp->id());
+        if (props == modelRsrc->floatProperties().end() || props->second.empty())
+        {
+          return false;
+        }
+        if (clause.m_propName.empty())
+        {
+          return true;
+        }
+        auto pit = props->second.find(clause.m_propName);
+        if (pit == props->second.end())
+        {
+          return false;
+        }
+        if (clause.m_propFloatValues.empty())
+        {
+          return true;
+        }
+        if (pit->second != clause.m_propFloatValues)
+        {
+          return false;
+        }
+      }
+      break;
+
+      case smtk::resource::PropertyType::STRING_PROPERTY:
+      {
+        auto props = modelRsrc->stringPropertiesForEntity(comp->id());
+        if (props == modelRsrc->stringProperties().end() || props->second.empty())
+        {
+          return false;
+        }
+        if (clause.m_propName.empty())
+        {
+          return true;
+        }
+        StringData::const_iterator pit;
+        if (!clause.m_propNameIsRegex)
+        {
+          pit = props->second.find(clause.m_propName);
+          if (pit == props->second.end())
+          {
+            return false;
+          }
+          return CheckPropStringValues(pit->second, clause);
+        }
+        else
+        {
+          regex re(clause.m_propName);
+          for (pit = props->second.begin(); pit != props->second.end(); ++pit)
+          {
+            if (regex_search(pit->first, re))
+            {
+              if (CheckPropStringValues(pit->second, clause))
+              {
+                return true;
+              }
+            }
+          }
+          // No matching property name had matching values
+          return false;
+        }
+      }
+      break;
+
+      case smtk::resource::PropertyType::INTEGER_PROPERTY:
+      {
+        auto props = modelRsrc->integerPropertiesForEntity(comp->id());
+        if (props == modelRsrc->integerProperties().end() || props->second.empty())
+        {
+          return false;
+        }
+        if (clause.m_propName.empty())
+        {
+          return true;
+        }
+        auto pit = props->second.find(clause.m_propName);
+        if (pit == props->second.end())
+        {
+          return false;
+        }
+        if (clause.m_propIntValues.empty())
+        {
+          return true;
+        }
+        if (pit->second != clause.m_propIntValues)
+        {
+          return false;
+        }
+      }
+      break;
+
+      case smtk::resource::PropertyType::INVALID_PROPERTY: // fall through
+      default:
+        break;
+    }
+    return true;
+  };
+}
+
+Entity::QueryFunctor Entity::filterStringToQueryFunctor(const std::string& filter)
+{
+  // If we can turn the filter string into a simple bit-vector comparison,
+  // do that since it will be much faster to evaluate:
+  std::size_t pos;
+  if ((pos = filter.find("[")) == std::string::npos)
+  {
+    smtk::model::BitFlags bitflags =
+      filter.empty() ? smtk::model::ANY_ENTITY : smtk::model::Entity::specifierStringToFlag(filter);
+    return std::bind(IsValueValid, std::placeholders::_1, bitflags);
+  }
+  // Now we know the filter string has a limiting clause of some sort,
+  // evaluate it.
+  std::string entityStr = filter.substr(0, pos);
+  std::string limitStr = filter.substr(pos);
+  smtk::model::BitFlags bitflags = smtk::model::Entity::specifierStringToFlag(entityStr);
+
+  LimitingClause limitClause;
+  tao::pegtl::string_input<> in(limitStr, "filterStringToQueryFunctor");
+  try
+  {
+    tao::pegtl::parse<FilterGrammar, FilterAction>(in, limitClause);
+  }
+  catch (tao::pegtl::parse_error& err)
+  {
+    const auto p = err.positions.front();
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Entity::filterStringToQueryFunctor: " << err.what() << "\n"
+                                             << in.line_as_string(p) << "\n"
+                                             << std::string(p.byte_in_line, ' ') << "^\n");
+    return std::bind(IsValueValid, std::placeholders::_1, bitflags);
+  }
+  if (limitClause.m_propType == smtk::resource::PropertyType::INVALID_PROPERTY)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Entity::filterStringToQueryFunctor: could not parse limit clause. Skipping.");
+    return std::bind(IsValueValid, std::placeholders::_1, bitflags);
+  }
+
+  return limitedQueryFunctor(bitflags, limitClause);
 }
 
 int Entity::arrange(ArrangementKind kind, const Arrangement& arr, int index)
