@@ -6,6 +6,7 @@ This view has the same syntax as an Attribute View but only allows the user to c
 * If there is only one type of attribute being created/modified then the type column is no longer displayed
 * For the time being the view by property  feature has been disabled until we can decide on whether it is useful and if so, what is the best way to display the information.
 * The column "Attribute" has been renamed to "Name"
+* Attempting to rename an attribute to a name already is use now generates a warning dialog.
 
 #New View Type - Analysis
 An Analysis View is a specialized view for choosing the types of analyses the user wants to perform.  These choices are persistent and can be used by an export operation instead of having the operator ask the user what types of analyses should be performed.

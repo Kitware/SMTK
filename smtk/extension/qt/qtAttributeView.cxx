@@ -477,6 +477,19 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
   if (aAttribute && item->text().toStdString() != aAttribute->name())
   {
     ResourcePtr attResource = aAttribute->definition()->resource();
+    // Lets see if the name is in use
+    auto att = attResource->findAttribute(item->text().toStdString());
+    if (att != nullptr)
+    {
+      std::string s;
+      s = "Can't rename " + aAttribute->type() + ":" + aAttribute->name() +
+        ".  There already exists an attribute of type: " + att->type() + " named " + att->name() +
+        ".";
+
+      QMessageBox::warning(this->Widget, "Attribute Can't be Renamed", s.c_str());
+      item->setText(aAttribute->name().c_str());
+      return;
+    }
     attResource->rename(aAttribute, item->text().toStdString());
     this->attributeChanged(aAttribute);
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
