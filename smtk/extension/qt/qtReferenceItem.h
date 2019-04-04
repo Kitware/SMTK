@@ -49,6 +49,22 @@ public:
 
   void setLabelVisible(bool) override;
 
+  /**\brief Set the paths (into qrc files or the local filesystem) of icons
+    *       used to indicate which items are selected and which are not.
+    *
+    * This returns true if the values were modified and false otherwise.
+    *
+    * Note that calling this method will not result in re-renders of any
+    * views displaying the model; you are responsible for calling this
+    * method before rendering takes place or for causing a render if
+    * calling after the initial render.
+    */
+  bool setSelectionIconPaths(
+    const std::string& selectedIconPath, const std::string& unselectedIconPath);
+
+  /// Return the paths to icons used to display the membership in the item.
+  std::pair<std::string, std::string> selectionIconPaths() const;
+
 protected slots:
   void updateItemData() override;
 

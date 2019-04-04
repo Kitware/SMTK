@@ -561,8 +561,104 @@ Void Item Definition <Void>
 
    Describe "void" items and how they are serialized
 
-RootView Section <RootView>
----------------------------
+Views Section <Views>
+---------------------
+
+The Views section of an SBT file contains multiple <View> items,
+one of which should be marked as a top-level view by adding the
+TopLevel attribute to it. The top-level view is typically composed
+of multiple other views, each of which may be defined in the
+Views section.
+
+Each <View> XML element has attributes and child elements that
+configure the view.
+The child elements may include information about which attributes
+or classes of attributes to present as well as how individual items
+inside those attributes should be presented to the user.
+
+.. list-table:: Common XML Attributes for View Definition Elements
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - Type
+     - An enumeration that specifies what information the view should
+       present and dictates the children XML elements it must or may contain.
+       Acceptable values include: "Group" (a view that groups child views
+       in tabs), "Instanced" (a view that displays attribute instances
+       specified by their names), "Attribute" (a view that displays all
+       attributes sharing a common definition and usually allows users to
+       manage instances by adding and removing them), "ModelEntity" (a view
+       that shows model entities and lets users choose an attribute to
+       associate with each one, optionally creating instances as needed),
+       "SimpleExpression", "Category", or "Selector".
+       (Required)
+
+   * - Title
+     - A string that summarizes the view to a user.
+       When a view is tabbed inside another, the title string
+       serves as the label for the tab.
+       (Required)
+
+   * - TopLevel
+     - Boolean value indicating whether the view is the root view
+       that should be presented to the user or (if TopLevel is
+       false or omitted) the view is a child that may be included
+       by the toplevel view.
+
+
 .. todo::
 
    Describe root views and how they are serialized
+
+View configuration
+^^^^^^^^^^^^^^^^^^
+
+Each view Type above may need configuration information
+specified by child XML elements of the <View>.
+The sections below define those child element types:
+the first section covers how a view chooses what attributes
+to show while the second section covers ways to customize
+how those attributes' items are presented.
+
+Attribute selection
+~~~~~~~~~~~~~~~~~~~
+
+.. todo::
+
+   Describe <InstancedAttributes>, <Attributes>, ... elements here.
+
+Item Views
+~~~~~~~~~~
+
+If you wish to customize how items of the chosen attributes are presented,
+you should add an <ItemViews> child to the <Att> tags in the attribute selectors
+covered in the previous section.
+Inside <ItemViews> you can add a <View> tag for each item whose appearance you
+wish to customize.
+
+.. todo::
+
+  Describe <ItemsViews> children
+
+.. list-table:: XML Attributes for Item View Elements
+   :widths: 10 40
+   :header-rows: 1
+
+   * - XML Attribute
+     - Description
+
+   * - Type
+     - The name of a widget you would like the application to use to present the
+       item (and potentially its children as well) to users.
+       SMTK provides "Box" (for showing a 3-D bounding box widget), "Point" (for
+       showing a 3-D handle widget), "Line", "Plane", "Sphere", "Spline".
+       These types usually only make sense for Group items.
+
+   * - ItemMemberIcon, ItemNonMemberIcon
+     - These attributes are only used for ReferenceItem, ResourceItem, and ComponentItem
+       classes. They specify paths (either on disk or, with a leading colon, to Qt resource files)
+       to images to use as icons that display whether a persistent object is a member
+       of the item or not.

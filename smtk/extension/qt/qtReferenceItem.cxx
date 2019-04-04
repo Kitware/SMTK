@@ -68,7 +68,11 @@ qtItem* qtReferenceItem::createItemWidget(const AttributeItemInfo& info)
 qtReferenceItemData::qtReferenceItemData()
   : m_optional(nullptr)
   , m_alreadyClosingPopup(false)
+  , m_qtModel(nullptr)
+  , m_qtDelegate(nullptr)
   , m_modelObserverId()
+  , m_selectedIconURL(":/icons/display/selected.png")
+  , m_unselectedIconURL(":/icons/display/unselected.png")
 {
 }
 
@@ -80,6 +84,14 @@ qtReferenceItem::qtReferenceItem(const AttributeItemInfo& info)
   : Superclass(info)
   , m_p(new qtReferenceItemData)
 {
+  // Grab default icons from the configuration object if specified.
+  std::string selectedIconURL;
+  std::string unselectedIconURL;
+  if (info.component().attribute("ItemMemberIcon", selectedIconURL) &&
+    info.component().attribute("ItemNonMemberIcon", unselectedIconURL))
+  {
+    this->setSelectionIconPaths(selectedIconURL, unselectedIconURL);
+  }
 }
 
 qtReferenceItem::~qtReferenceItem()
@@ -121,6 +133,29 @@ qtReferenceItem::AcceptsTypes qtReferenceItem::acceptableTypes() const
 void qtReferenceItem::setLabelVisible(bool visible)
 {
   m_p->m_label->setVisible(visible);
+}
+
+bool qtReferenceItem::setSelectionIconPaths(
+  const std::string& selectedIconPath, const std::string& unselectedIconPath)
+{
+  if (m_p->m_selectedIconURL == selectedIconPath && m_p->m_unselectedIconURL == unselectedIconPath)
+  {
+    return false;
+  }
+
+  m_p->m_selectedIconURL = selectedIconPath;
+  m_p->m_unselectedIconURL = unselectedIconPath;
+  if (m_p->m_qtModel)
+  {
+    m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL.c_str());
+    m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL.c_str());
+  }
+  return true;
+}
+
+std::pair<std::string, std::string> qtReferenceItem::selectionIconPaths() const
+{
+  return std::make_pair(m_p->m_selectedIconURL, m_p->m_unselectedIconURL);
 }
 
 void qtReferenceItem::updateItemData()
@@ -380,8 +415,8 @@ void qtReferenceItem::updateUI()
     m_p->m_phraseModel->setDecorator(
       [this](smtk::view::DescriptivePhrasePtr phr) { this->decorateWithMembership(phr); });
   }
-  m_p->m_qtModel->setVisibleIconURL(":/icons/display/selected.png");
-  m_p->m_qtModel->setInvisibleIconURL(":/icons/display/unselected.png");
+  m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL.c_str());
+  m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL.c_str());
   if (m_p->m_phraseModel)
   {
     m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);

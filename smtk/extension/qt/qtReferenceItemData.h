@@ -82,6 +82,10 @@ public:
   smtk::extension::qtDescriptivePhraseDelegate* m_qtDelegate;
 
   smtk::view::PhraseModelObservers::Key m_modelObserverId;
+
+  // Icons used to show item membership
+  std::string m_selectedIconURL;
+  std::string m_unselectedIconURL;
 };
 }
 }
