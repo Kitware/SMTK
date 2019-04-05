@@ -81,7 +81,7 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init_smtk_mesh_FieldType(mesh);
   PySharedPtrClass< smtk::mesh::CellForEach > smtk_mesh_CellForEach = pybind11_init_smtk_mesh_CellForEach(mesh);
   PySharedPtrClass< smtk::mesh::CellSet > smtk_mesh_CellSet = pybind11_init_smtk_mesh_CellSet(mesh);
-  PySharedPtrClass< smtk::mesh::Resource > smtk_mesh_Resource = pybind11_init_smtk_mesh_Resource(mesh);
+  PySharedPtrClass< smtk::mesh::Resource, smtk::resource::Resource > smtk_mesh_Resource = pybind11_init_smtk_mesh_Resource(mesh);
   PySharedPtrClass< smtk::mesh::ConnectivityStorage > smtk_mesh_ConnectivityStorage = pybind11_init_smtk_mesh_ConnectivityStorage(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_CellField = pybind11_init_smtk_mesh_CellField(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_PointField = pybind11_init_smtk_mesh_PointField(mesh);
