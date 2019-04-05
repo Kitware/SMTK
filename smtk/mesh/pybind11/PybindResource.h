@@ -14,6 +14,7 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/mesh/core/Resource.h"
+#include "smtk/resource/Resource.h"
 
 #include "smtk/common/UUID.h"
 
@@ -21,9 +22,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::Resource > pybind11_init_smtk_mesh_Resource(py::module &m)
+PySharedPtrClass< smtk::mesh::Resource, smtk::resource::Resource > pybind11_init_smtk_mesh_Resource(py::module &m)
 {
-  PySharedPtrClass< smtk::mesh::Resource > instance(m, "Resource");
+  PySharedPtrClass< smtk::mesh::Resource, smtk::resource::Resource > instance(m, "Resource");
   instance
     .def_property("modelResource", &smtk::mesh::Resource::modelResource, &smtk::mesh::Resource::setModelResource)
     .def("associateToModel", &smtk::mesh::Resource::associateToModel, py::arg("uuid"))
@@ -32,6 +33,8 @@ PySharedPtrClass< smtk::mesh::Resource > pybind11_init_smtk_mesh_Resource(py::mo
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::Resource::*)(::smtk::mesh::CellType) const) &smtk::mesh::Resource::cells, py::arg("cellType"))
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::Resource::*)(::smtk::mesh::CellTypes) const) &smtk::mesh::Resource::cells, py::arg("cellTypes"))
     .def("cells", (smtk::mesh::CellSet (smtk::mesh::Resource::*)(::smtk::mesh::DimensionType) const) &smtk::mesh::Resource::cells, py::arg("dim"))
+    .def("classifiedTo", &smtk::mesh::Resource::classifiedTo)
+    .def("classifyTo", &smtk::mesh::Resource::classifyTo)
     .def("clearReadWriteLocations", &smtk::mesh::Resource::clearReadWriteLocations)
     .def_static("create", (std::shared_ptr<smtk::mesh::Resource> (*)()) &smtk::mesh::Resource::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::Resource> (*)(::std::shared_ptr<smtk::mesh::Resource> &)) &smtk::mesh::Resource::create, py::arg("ref"))
