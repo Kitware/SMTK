@@ -1021,70 +1021,12 @@ smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& uid) const
   return std::dynamic_pointer_cast<smtk::resource::Component>(this->findEntity(uid));
 }
 
-namespace
-{
-/// Given an entity and a mask, determine if the entity is accepted by the mask.
-bool IsValueValid(const smtk::resource::ConstComponentPtr& comp, smtk::model::BitFlags mask)
-{
-  auto modelEnt = dynamic_pointer_cast<const smtk::model::Entity>(comp);
-  if (modelEnt)
-  {
-    smtk::model::EntityRef c = modelEnt->referenceAs<smtk::model::EntityRef>();
-
-    if (!mask)
-    {
-      return false; // Nothing can possibly match.
-    }
-    if (mask == smtk::model::ANY_ENTITY)
-    {
-      return true; // Fast-track the trivial case.
-    }
-
-    smtk::model::BitFlags itemType = c.entityFlags();
-    // The m_membershipMask must match the entity type, the dimension, and (if the
-    // item is a group) group constraint flags separately;
-    // In other words, we require the entity type, the dimension, and the
-    // group constraints to be acceptable independently.
-    if (((mask & smtk::model::ENTITY_MASK) && !(itemType & mask & smtk::model::ENTITY_MASK) &&
-          (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY) ||
-      ((mask & smtk::model::ANY_DIMENSION) && !(itemType & mask & smtk::model::ANY_DIMENSION)) ||
-      ((itemType & smtk::model::GROUP_ENTITY) && (mask & smtk::model::GROUP_CONSTRAINT_MASK) &&
-          !(itemType & mask & smtk::model::GROUP_CONSTRAINT_MASK)))
-      return false;
-    if (itemType != mask && itemType & smtk::model::GROUP_ENTITY &&
-      // if the mask is only defined as "group", don't have to check further for members
-      mask != smtk::model::GROUP_ENTITY)
-    {
-      // If the the membershipMask is the same as itemType, we don't need to check, else
-      // if the item is a group: recursively check that its members
-      // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
-      // require all entries to have the same entity type flag as the first.
-      smtk::model::BitFlags typeMask = mask;
-      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
-      if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
-      {
-        typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
-      }
-      if (!c.as<model::Group>().meetsMembershipConstraints(c, typeMask, mustBeHomogenous))
-      {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
-}
-}
-
 /// Given a query string, return a functor that determines if a component is
 /// accepted by the query.
 std::function<bool(const ConstComponentPtr&)> Resource::queryOperation(
   const std::string& queryString) const
 {
-  smtk::model::BitFlags bitflags = queryString.empty()
-    ? smtk::model::ANY_ENTITY
-    : smtk::model::Entity::specifierStringToFlag(queryString);
-  return std::bind(IsValueValid, std::placeholders::_1, bitflags);
+  return smtk::model::Entity::filterStringToQueryFunctor(queryString);
 }
 
 // visit all components in the resource.

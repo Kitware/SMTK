@@ -32,6 +32,7 @@ else()
   find_package(Boost @SMTK_MINIMUM_BOOST_VERSION@
              COMPONENTS @required_boost_components@ REQUIRED)
   find_package(nlohmann_json REQUIRED)
+  find_package(pegtl REQUIRED)
   find_package(MOAB REQUIRED)
 
   set(SMTK_ENABLE_QT_SUPPORT @SMTK_ENABLE_QT_SUPPORT@)

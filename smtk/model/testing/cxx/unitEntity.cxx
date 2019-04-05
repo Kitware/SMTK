@@ -13,7 +13,16 @@
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
+#include "smtk/operation/Registrar.h"
+#include "smtk/operation/operators/ReadResource.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+
 #include "smtk/common/testing/cxx/helpers.h"
+
+#include "smtk/session/polygon/Registrar.h"
+#include "smtk/session/polygon/Resource.h"
 
 #include <iostream>
 #include <sstream>
@@ -23,6 +32,13 @@
 using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+
+namespace
+{
+std::string dataRoot = SMTK_DATA_DIR;
+std::string writeRoot = SMTK_SCRATCH_DIR;
+std::string filename("/model/2d/smtk/epic-trex-drummer.smtk");
+}
 
 static const char* correct = "0x00000101  vertex\n"
                              "0x00000102  edge\n"
@@ -420,8 +436,126 @@ int TestEntityIOSpecs()
   return 0;
 }
 
-int main()
+int TestEntityQueryFunctor()
 {
+  std::cout << "\nTesting Entity::filterStringToQueryFunctor()\n\n";
+  // I. Load in a test model
+  smtk::resource::Manager::Ptr rsrcMgr = smtk::resource::Manager::create();
+  {
+    smtk::session::polygon::Registrar::registerTo(rsrcMgr);
+  }
+  smtk::operation::Manager::Ptr operMgr = smtk::operation::Manager::create();
+  {
+    smtk::operation::Registrar::registerTo(operMgr);
+    smtk::session::polygon::Registrar::registerTo(operMgr);
+  }
+  // Register the resource manager to the operation manager (newly created
+  // resources will be automatically registered to the resource manager).
+  operMgr->registerResourceManager(rsrcMgr);
+
+  std::string readFilePath = dataRoot + filename;
+  auto rdr = operMgr->create<smtk::operation::ReadResource>();
+  rdr->parameters()->findFile("filename")->setValue(readFilePath);
+  rdr->operate();
+  smtk::resource::ResourcePtr rsrc = nullptr;
+  std::for_each(rsrcMgr->resources().begin(), rsrcMgr->resources().end(),
+    [&rsrc](const smtk::resource::ResourcePtr& rr) {
+      if (rr && !rsrc)
+      {
+        rsrc = rr;
+      }
+    });
+  smtkTest(!!rsrc, "Unable to load resource \"" + readFilePath + "\"");
+
+  // II. Try various filters with and without limiting clauses.
+  //     Note that the whitespace here is purposefully included
+  //     to verify that the parser will accept it.
+  // clang-format off
+  Entity::QueryFunctor qf;
+  qf = Entity::filterStringToQueryFunctor("model|2[ integer { 'counter' = ( 0 , 0 ) } ]");
+  qf = Entity::filterStringToQueryFunctor("edge [ floating-point { 'pressure'  = 101.0e3 } ]");
+  qf = Entity::filterStringToQueryFunctor("any[ floating-point { 'color' = ( 0, 0, 0, -1  ) } ]");
+
+  // Find all groups named "drum" (test exact string-property name+value matches).
+  qf = Entity::filterStringToQueryFunctor("group [ string { /n.me/  = \t( /dr.m/ ) } ]");
+  // Find all models with the exact cell_counters integer property (test integer property).
+  auto q2 = Entity::filterStringToQueryFunctor("model[integer{ 'cell_counters' =( 45, 71 , 25 ,0 , 0, 0) }]");
+  // Find anything with a string name property regardless of value (test name-only matching).
+  // Note this also tests regular expressions containing square brackets inside the regex...
+  auto q3 = Entity::filterStringToQueryFunctor("any[ string { /n.[mM]e/ } ]");
+  // Again test name-only matching, but for integer properties.
+  auto q4 = Entity::filterStringToQueryFunctor("loop[integer]");
+  // Test exact floating-point property name+value matches.
+  auto q5 = Entity::filterStringToQueryFunctor("face[floating-point{'color'=( 1 ,  0.666667\t, 0 , 1)}]");
+  // Test exact integer property name+value matches with scalar value (not vector tuple).
+  auto q6 = Entity::filterStringToQueryFunctor("any[integer{'visible'=1}]");
+  // Test exact integer property name+value matches.
+  auto q7 = Entity::filterStringToQueryFunctor("any[integer{'visible'}]");
+  // clang-format on
+
+  // III. Evaluate each functor on the model data
+  int qfCount = 0;
+  int q2Count = 0;
+  int q3Count = 0;
+  int q4Count = 0;
+  int q5Count = 0;
+  int q6Count = 0;
+  int q7Count = 0;
+  smtk::resource::Component::Visitor visitor = [&](const smtk::resource::ComponentPtr& comp) {
+    if (qf(comp))
+    {
+      ++qfCount;
+    }
+    if (q2(comp))
+    {
+      ++q2Count;
+    }
+    if (q3(comp))
+    {
+      ++q3Count;
+    }
+    if (q4(comp))
+    {
+      ++q4Count;
+    }
+    if (q5(comp))
+    {
+      ++q5Count;
+    }
+    if (q6(comp))
+    {
+      ++q6Count;
+    }
+    if (q7(comp))
+    {
+      ++q7Count;
+    }
+  };
+  rsrc->visit(visitor);
+
+  std::cout << "  " << qfCount << " groups named 'drum'.\n";
+  std::cout << "  " << q2Count << " models with the proper cell_counters int-vector.\n";
+  std::cout << "  " << q3Count << " entities with string names.\n";
+  std::cout << "  " << q4Count << " loops with any integer properties.\n";
+  std::cout << "  " << q5Count << " faces colored orange.\n";
+  std::cout << "  " << q6Count << " visible entities.\n";
+  std::cout << "  " << q7Count << " visible+invisible entities.\n";
+
+  smtkTest(qfCount == 1, "Expected to find 1 group.");
+  smtkTest(q2Count == 1, "Expected to find 1 model.");
+  smtkTest(q3Count == 165, "Expected to find 165 named entities.");
+  smtkTest(q4Count == 23, "Expected to find 23 loops with integer properties.");
+  smtkTest(q5Count == 6, "Expected to find 6 of 16 faces colored orange.");
+  smtkTest(q6Count == 51, "Expected to find 51 of 67 visible entities.");
+  smtkTest(q7Count == 67, "Expected to find 67 entities with visibility.");
+  return 0;
+}
+
+int unitEntity(int argc, char* argv[])
+{
+  (void)argc;
+  (void)argv;
+
   int status = 0;
   try
   {
@@ -433,6 +567,8 @@ int main()
   }
 
   status |= TestEntitySummary();
+
+  status |= TestEntityQueryFunctor();
 
   return status ? 1 : 0;
 }
