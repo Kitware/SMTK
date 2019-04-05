@@ -62,8 +62,6 @@ add_smtk_plugin(
     ${uisrc}
   SOURCES
     ${non_ui_srcs}
-  CS_KITS
-    vtkSMTKWidgetsExt
   REGISTRAR
     smtk::session::oscillator::Registrar
   MANAGERS

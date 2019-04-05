@@ -24,7 +24,6 @@ add_paraview_plugin(
   GUI_SOURCES ${OUTSRCS} ${MOC_SRCS} ${UI_SRCS}
               ${OpenCVSrc}
   CS_KITS
-    vtkSMTKWidgetsExt
     vtkSMTKOpenCVExt
   )
 

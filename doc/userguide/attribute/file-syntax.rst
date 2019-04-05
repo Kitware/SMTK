@@ -654,8 +654,11 @@ wish to customize.
      - The name of a widget you would like the application to use to present the
        item (and potentially its children as well) to users.
        SMTK provides "Box" (for showing a 3-D bounding box widget), "Point" (for
-       showing a 3-D handle widget), "Line", "Plane", "Sphere", "Spline".
-       These types usually only make sense for Group items.
+       showing a 3-D handle widget), "Line", "Plane", "Sphere", "Cylinder", "Spline".
+       These types usually only make sense for Group items, although "Box" can also
+       be used for a Double item with 6 required values (xmin, xmax, ymin, ymax, zmin, zmax).
+       Items may also have custom views provided by the application or external libraries;
+       in that case, the Type specifier will be the string used to register the custom view.
 
    * - ItemMemberIcon, ItemNonMemberIcon
      - These attributes are only used for ReferenceItem, ResourceItem, and ComponentItem

@@ -52,6 +52,8 @@ set(serverWrappedHdrs
 # library for this module (vtkSMTKReaderExtCS).
 set(serverModules
   vtkSMTKReaderExt
+  vtkSMTKSourceExt
+  vtkSMTKWidgetsExt
   )
 
 set(serverModuleCSLibs)

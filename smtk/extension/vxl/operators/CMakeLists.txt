@@ -73,8 +73,6 @@ add_paraview_plugin(
   #SERVER_MANAGER_XML smconfig.xml
   GUI_INTERFACES ${viewInterfaces}
   GUI_SOURCES ${viewSources}
-  CS_KITS
-    vtkSMTKWidgetsExt
 )
 target_link_libraries(smtkVXLOperationViewsPlugin
   LINK_PUBLIC

@@ -7,6 +7,8 @@ set(VTKLibSrcs
   vtkAttributeMultiBlockSource.cxx
   vtkAuxiliaryGeometryExtension.cxx
   vtkCmbLayeredConeSource.cxx
+  vtkConeFrustum.cxx
+  vtkImplicitConeFrustum.cxx
   vtkMeshMultiBlockSource.cxx
   vtkModelAuxiliaryGeometry.cxx
   vtkModelMultiBlockSource.cxx
@@ -22,6 +24,8 @@ set(VTKLibHeaders
   vtkAttributeMultiBlockSource.h
   vtkAuxiliaryGeometryExtension.h
   vtkCmbLayeredConeSource.h
+  vtkConeFrustum.h
+  vtkImplicitConeFrustum.h
   vtkMeshMultiBlockSource.h
   vtkModelAuxiliaryGeometry.h
   vtkModelAuxiliaryGeometry.txx

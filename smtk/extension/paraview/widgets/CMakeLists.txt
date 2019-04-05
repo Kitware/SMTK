@@ -9,9 +9,12 @@ set(viewHdrs
   )
 # set up sources to build
 set(PQWidgetsSrcs
+  pqConePropertyWidget.cxx
   pqGenerateContoursDialog.cxx
   pqSMTKAttributeItemWidget.cxx
   pqSMTKBoxItemWidget.cxx
+  pqSMTKConeItemWidget.cxx
+  pqSMTKInfiniteCylinderItemWidget.cxx
   pqSMTKLineItemWidget.cxx
   pqSMTKPlaneItemWidget.cxx
   pqSMTKPointItemWidget.cxx
@@ -25,12 +28,16 @@ set(PQWidgetsSrcs
 set(PQWidgetsUIs
   qtArcWidget.ui
   qtGenerateContoursDialog.ui
+  resources/pqConePropertyWidget.ui
 )
 
 set(PQWidgetsMocHeaders
+  pqConePropertyWidget.h
   pqGenerateContoursDialog.h
   pqSMTKAttributeItemWidget.h
   pqSMTKBoxItemWidget.h
+  pqSMTKConeItemWidget.h
+  pqSMTKInfiniteCylinderItemWidget.h
   pqSMTKLineItemWidget.h
   pqSMTKPlaneItemWidget.h
   pqSMTKPointItemWidget.h
@@ -128,7 +135,7 @@ add_paraview_plugin(
     ${PLUGIN_PROXY_IFACE_SRCS}
     ${PLUGIN_DOCK_IFACES_SRCS}
     ${viewSources}
-    CS_KITS
+  CS_KITS
     vtkSMTKWidgetsExt
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQWidgetsPlugin")

@@ -41,7 +41,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/VoidItem.h"
-#include "smtk/extension/paraview/widgets/qtArcWidget.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/io/Logger.h"
 #include "smtk/operation/Operation.h"
