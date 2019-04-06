@@ -262,7 +262,6 @@ void qtInputsItem::addInputEditor(int i)
   {
     return;
   }
-
   auto itemDef = item->definitionAs<ValueItemDefinition>();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
@@ -307,7 +306,6 @@ void qtInputsItem::addInputEditor(int i)
     // The "Add New Value" button is in first row, so take that into account
     row = item->isExtensible() ? row + 1 : row;
     this->Internals->EntryLayout->addLayout(editorLayout, row, 1);
-
     // there could be conditional children, so we need another layout
     // so that the combobox will stay TOP-left when there are multiple
     // combo boxes.
@@ -546,38 +544,22 @@ void qtInputsItem::onRemoveValue()
     return;
   }
 
-  QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
-  QLayout* childLayout = this->Internals->ChildrenMap.value(childwidget);
-  if (childLayout)
-  {
-    QLayoutItem* child;
-    while ((child = childLayout->takeAt(0)) != 0)
-    {
-      delete child;
-    }
-    delete childLayout;
-  }
-  delete childwidget;
-  delete this->Internals->ExtensibleMap.value(minusButton).first;
-  this->Internals->ExtensibleMap.remove(minusButton);
-  this->Internals->MinusButtonIndices.removeOne(minusButton);
-  delete minusButton;
-
+  bool status = false;
   switch (item->type())
   {
     case smtk::attribute::Item::DoubleType:
     {
-      dynamic_pointer_cast<DoubleItem>(item)->removeValue(gIdx);
+      status = dynamic_pointer_cast<DoubleItem>(item)->removeValue(gIdx);
       break;
     }
     case smtk::attribute::Item::IntType:
     {
-      dynamic_pointer_cast<IntItem>(item)->removeValue(gIdx);
+      status = dynamic_pointer_cast<IntItem>(item)->removeValue(gIdx);
       break;
     }
     case smtk::attribute::Item::StringType:
     {
-      dynamic_pointer_cast<StringItem>(item)->removeValue(gIdx);
+      status = dynamic_pointer_cast<StringItem>(item)->removeValue(gIdx);
       break;
     }
     default:
@@ -585,7 +567,15 @@ void qtInputsItem::onRemoveValue()
       // smtk::attribute::Item::type2String(item->type()) << "\n";
       break;
   }
-  this->updateExtensibleState();
+
+  // Were we able to remove the value?
+  if (!status)
+  {
+    // Nothing to update since nothing changed
+    return;
+  }
+  this->clearChildWidgets();
+  this->loadInputValues();
   emit this->modified();
 }
 
@@ -1149,6 +1139,12 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       else
       {
         QLineEdit* lineEdit = new QLineEdit(pWidget);
+        int widthValue = 0; // Default no fixed width
+        m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
+        if (widthValue > 0)
+        {
+          lineEdit->setFixedWidth(widthValue);
+        }
         if (sitem->isSecure())
         {
           lineEdit->setEchoMode(QLineEdit::Password);
