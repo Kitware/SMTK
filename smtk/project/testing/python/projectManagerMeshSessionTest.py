@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 from __future__ import print_function
 import os
@@ -25,6 +25,7 @@ import smtk.session.mesh
 import smtk.testing
 
 PROJECT1 = 'project1'
+NUMBER_OF_RESOURCES = 3
 
 
 class TestProjectManager(unittest.TestCase):
@@ -84,9 +85,18 @@ class TestProjectManager(unittest.TestCase):
             smtk.testing.DATA_DIR, 'simulation-workflows', 'ACE3P', 'ACE3P.sbt')
         spec.findFile('simulation-template').setValue(0, sim_template)
 
+        model_group_item = spec.findGroup('model-group')
+        model_group_item.setIsEnabled(True)
+
         model_file = os.path.join(
             smtk.testing.DATA_DIR, 'model', '3d', 'genesis', 'gun-1fourth.gen')
-        spec.findFile('model-file').setValue(0, model_file)
+        model_group_item.find('model-file').setValue(0, model_file)
+
+        second_model_file = os.path.join(
+            smtk.testing.DATA_DIR, 'model', '3d', 'exodus', 'disk_out_ref.ex2')
+        model_group_item.find('second-model-file').setIsEnabled(True)
+        model_group_item.find(
+            'second-model-file').setValue(0, second_model_file)
 
         # Make sure vtk-session option is off
         spec.findVoid('use-vtk-session').setIsEnabled(False)
@@ -103,16 +113,18 @@ class TestProjectManager(unittest.TestCase):
         self.project = project
 
         # Verify that 2 resources were created
-        self.assertEqual(len(self.project.resources()), 2)
+        self.assertEqual(len(self.project.resources()), NUMBER_OF_RESOURCES)
         after_count = len(self.rm.resources())
-        self.assertEqual(after_count - before_count, 2)
+        self.assertEqual(after_count - before_count, NUMBER_OF_RESOURCES)
 
         # Verify that folders & files were created
         project_folder = os.path.join(smtk.testing.TEMP_DIR, project_name)
         self.assertTrue(os.path.exists(project_folder))
 
         filenames = [
-            '.smtkproject', 'sbi.default.smtk', 'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk']
+            '.smtkproject', 'sbi.default.smtk',
+            'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk',
+            'disk_out_ref.ex2', 'disk_out_ref.ex2.h5m', 'disk_out_ref.ex2.smtk']
         for f in filenames:
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
@@ -148,7 +160,7 @@ class TestProjectManager(unittest.TestCase):
         type_item = att.findString('NonlinearMaterial').setValue(0, 'AL6061')
 
         after_count = len(att_resource.attributes())
-        self.assertEqual(after_count - before_count, 3)
+        self.assertEqual(after_count - before_count, NUMBER_OF_RESOURCES)
         self.attribute_count = after_count
 
     def save_project(self):
@@ -168,7 +180,7 @@ class TestProjectManager(unittest.TestCase):
         self.assertEqual(project.directory(), path)
 
         resources = project.resources()
-        self.assertEqual(len(resources), 2)
+        self.assertEqual(len(resources), NUMBER_OF_RESOURCES)
 
         for res in resources:
             if isinstance(res, smtk.attribute.Resource):
@@ -184,7 +196,7 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(success, msg=logger.convertToString())
 
         after_count = len(self.rm.resources())
-        self.assertEqual(before_count - after_count, 2)
+        self.assertEqual(before_count - after_count, NUMBER_OF_RESOURCES)
 
         project = self.pm.getCurrentProject()
         self.assertIsNone(project)
@@ -212,6 +224,7 @@ class TestProjectManager(unittest.TestCase):
             folder = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
             if os.path.exists(folder):
                 shutil.rmtree(folder)
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

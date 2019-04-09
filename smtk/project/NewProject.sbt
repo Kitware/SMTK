@@ -2,7 +2,7 @@
 <!-- Description of the project "NewProject" Operation -->
 <SMTK_AttributeResource Version="3">
   <Definitions>
-    <AttDef Type="new-project" Label="New Project" BaseType="">
+    <AttDef Type="new-project" Label="New Project" BaseType="" Version="1">
       <BriefDescription>
         Create and initialize a CMB project.
       </BriefDescription>
@@ -20,28 +20,35 @@
         </Directory>
         <String Name="project-folder" Label="Name (Subdirectory)" NumberOfRequiredValues="1">
           <BriefDescription>Project files will be stored in a workspace folder with this name.</BriefDescription>
-          <DefaultValue>NewProject</DefaultValue>
         </String>
+
         <File Name="simulation-template" Label="Simulation Template File" NumberOfRequiredValues="1"
           ShouldExist="true" Optional="true" IsEnabledByDefault="true"
           FileFilters="CMB Template Files (*.sbt);;All Files (*)">
           <BriefDescription>The CMB template file (*.sbt) specifying the simulation</BriefDescription>
         </File>
-        <File Name="model-file" Label="Input Geometry" NumberOfRequiredValues="1" ShouldExist="true"
-          Optional="true" IsEnabledByDefault="true"
-          FileFilters="Exodus Files (*.ex? *.gen);;All Files (*)">
-          <BriefDescription>The model or mesh file to import into the project.</BriefDescription>
-          <DetailedDescription>The current implementation only supports Exodus file.</DetailedDescription>
-        </File>
-        <Void Name="copy-model-file" Label="Copy Input Geometry"
-          Optional="true" IsEnabledByDefault="true">
-          <BriefDescription>If enabled, store a copy of the input geometry file in the project directory.</BriefDescription>
-        </Void>
-        <String Name="model-file-identifier" Label="Model File Label" NumberOfRequiredValues="1" AdvanceLevel="1">
-          <BriefDescription>A text label that can be used to identify this model</BriefDescription>
-          <DefaultValue>default</DefaultValue>
-        </String>
 
+        <Group Name="model-group" Label="Input Geometry" Optional="true" IsEnabledByDefault="true">
+          <ItemDefinitions>
+            <File Name="model-file" Label="Geometry File" NumberOfRequiredValues="1" ShouldExist="true"
+              FileFilters="Exodus Files (*.ex? *.gen);;NetCDF Files (*.ncdf);;All Files (*)">
+              <BriefDescription>The model or mesh file to import into the project.</BriefDescription>
+              <DetailedDescription>The current implementation only supports Exodus and NetCDF files.</DetailedDescription>
+            </File>
+
+            <File Name="second-model-file" Label="Second Geometry File" NumberOfRequiredValues="1" ShouldExist="true"
+              Optional="true" IsEnabledByDefault="false"
+              FileFilters="Exodus Files (*.ex? *.gen);;NetCDF Files (*.ncdf);;All Files (*)">
+              <BriefDescription>A second model or mesh file to import into the project.</BriefDescription>
+              <DetailedDescription>The current implementation only supports Exodus and NetCDF files.</DetailedDescription>
+            </File>
+
+            <Void Name="copy-file" Label="Copy Geometry File(s) Into Project Folder" Optional="true" IsEnabledByDefault="true">
+              <BriefDescription>If enabled, store a copy of the file in the project directory.</BriefDescription>
+            </Void>
+
+          </ItemDefinitions>
+        </Group>
         <!--
           The "use-vtk-session" option is set TRUE by default, as a temporary workaround for
           loading exodus files, which otherwise would use the mesh session. The vtk session is

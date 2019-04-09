@@ -80,6 +80,8 @@ protected:
 
   // Remaining calls are for internal use
 
+  bool importModels(const smtk::attribute::AttributePtr specification, smtk::io::Logger& logger);
+
   bool importModel(const std::string& location, bool copyNativeFile, ResourceDescriptor& descriptor,
     bool useVtkSession, smtk::io::Logger& logger = smtk::io::Logger::instance());
 
