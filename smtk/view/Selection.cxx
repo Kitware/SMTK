@@ -60,6 +60,7 @@ Selection::Ptr Selection::instance()
   Selection::Ptr result;
   if (!g_instance)
   {
+    // The following will set g_instance:
     result = Selection::create();
   }
   else
@@ -131,6 +132,33 @@ int Selection::findOrCreateLabeledValue(const std::string& label)
     return handle;
   }
   return it->second;
+}
+
+bool Selection::resetSelectionBits(const std::string& source, int value)
+{
+  bool modified = false;
+  int mask = ~value;
+  for (auto it = m_selection.begin(); it != m_selection.end(); /* fancy */)
+  {
+    auto curr = it;
+    bool shouldErase = (it->second & mask) == 0;
+    modified |= (it->second & value) != 0;
+    it->second = it->second & mask;
+
+    ++it;
+
+    if (shouldErase)
+    {
+      m_selection.erase(curr);
+    }
+  }
+
+  if (modified)
+  {
+    this->observers()(source, shared_from_this());
+  }
+
+  return modified;
 }
 
 bool Selection::setDefaultAction(const SelectionAction& action)

@@ -18,13 +18,19 @@ import smtk.view
 import sys
 import uuid
 
+from copy import copy
+
 eventCount = 0
+eventCount2 = 0
 
 
 class TestSelection(smtk.testing.TestCase):
 
     def setUp(self):
         self.selnMgr = smtk.view.Selection.create()
+
+    def tearDown(self):
+        self.selnMgr = None
 
     def loadTestData(self):
         import os
@@ -122,8 +128,8 @@ class TestSelection(smtk.testing.TestCase):
 
         # Test that observer is called at proper times:
         handle = mgr.observers().insert(observer, 0, True)
-        self.assertGreaterEqual(
-            handle, 0, 'Failed to register selection observer.')
+        self.assertTrue(
+            handle.assigned(), 'Failed to register selection observer.')
         expectedEventCount = 1
         self.assertEqual(eventCount, expectedEventCount,
                          'Selection observer was not called immediately.')
@@ -224,6 +230,84 @@ class TestSelection(smtk.testing.TestCase):
         mgr.visitSelection(selectionVisitor)
         self.assertEqual(
             visitSeln, ddExpected, 'Did not visit selection properly.')
+
+    def testBitwiseOperations(self):
+        self.loadTestData()
+        mgr = self.selnMgr
+
+        def observer(src, smgr):
+            global eventCount2
+            eventCount2 += 1
+
+        # Test that observer is called at proper times:
+        handle = mgr.observers().insert(observer, 0, True)
+
+        self.assertTrue(
+            handle.assigned(), 'Failed to register selection observer.')
+        expectedEventCount = 1
+
+        comp = self.resource.find(self.model.entity())
+        model = smtk.model.Model(comp.modelResource(), comp.id())
+        cellComps = [self.resource.find(cell.entity())
+                     for cell in model.cells()]
+        lots = copy(cellComps)
+
+        selnVal = mgr.findOrCreateLabeledValue('selection')
+        selnVal2 = mgr.findOrCreateLabeledValue('selection2')
+        selnSrc = 'testSelectionModificationObserve'
+        mgr.registerSelectionSource(selnSrc)
+        mgr.registerSelectionValue('selection', selnVal)
+        mgr.registerSelectionValue('selection2', selnVal2)
+        print('Selection values: %d %d' % (selnVal, selnVal2))
+
+        # Test selection modification and ensure observer is called properly:
+        mgr.modifySelection(
+            lots, selnSrc, selnVal, smtk.view.SelectionAction.DEFAULT, False)
+        expectedEventCount += 1
+
+        # Add the model to the list of entities so each selection bit
+        # has >= 1 component with *only* that bit present.
+        lots.append(comp)
+
+        mgr.modifySelection(
+            lots[8:], selnSrc, selnVal2, smtk.view.SelectionAction.FILTERED_ADD, True)
+        expectedEventCount += 1
+
+        print('Before: %d items in selection (%d cells)' %
+              (len(mgr.currentSelection()), len(cellComps)))
+        self.assertEqual(eventCount2, expectedEventCount,
+                         'Selection observer was not called.')
+        self.assertEqual(len(mgr.currentSelection()), 17,
+                         'Expected 16 cells + 1 model in selection.')
+
+        # Remove the selnVal2 bit (this should remove comp from the selection)
+        mgr.resetSelectionBits(selnSrc, selnVal2)
+        expectedEventCount += 1
+        print('After1: %d items in selection' % len(mgr.currentSelection()))
+        self.assertEqual(len(mgr.currentSelection()), 16,
+                         'Expected 16 cells in selection at this point.')
+        self.assertEqual(eventCount2, expectedEventCount,
+                         'Selection observer was not called upon modification.')
+
+        # Remove the selnVal2 bit again (resulting in no changes)
+        mgr.resetSelectionBits(selnSrc, selnVal2)
+        print('After2: %d items in selection' % len(mgr.currentSelection()))
+        self.assertEqual(len(mgr.currentSelection()), 16,
+                         'Expected 16 cells in selection at this point.')
+        self.assertEqual(eventCount2, expectedEventCount,
+                         'Selection observer was not called upon modification.')
+
+        # Remove the selnVal bit (this should remove lots[8:] from the
+        # selection)
+        mgr.resetSelectionBits(selnSrc, selnVal)
+        expectedEventCount += 1
+        print('After3: %d items in selection' % len(mgr.currentSelection()))
+        self.assertEqual(eventCount2, expectedEventCount,
+                         'Selection observer was not called upon modification.')
+        self.assertEqual(len(mgr.currentSelection()), 0,
+                         'Expected 0 cells in selection at this point.')
+
+        print('')
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()

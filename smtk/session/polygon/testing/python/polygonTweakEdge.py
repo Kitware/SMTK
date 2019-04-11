@@ -276,21 +276,25 @@ class TestPolygonCreation(smtk.testing.TestCase):
             print('Face {:1} edges {:2}'.format(
                 ff, ';'.join([x.name() for x in smtk.model.Face(flist[ff]).edges()])))
         # Test the easy case: an isolated, non-periodic edge is reshaped:
-        print('Tweaking {:1} {:2}'.format(edges[0].name(), edges[0].entity()))
+        print('Tweaking {:1} {:2}'.format(
+            edges[0].name(), str(edges[0].entity())))
         mods = self.tweakEdge(edges[0], [[0, 0], [1, 0], [2, 3], [3, 3]])
         tinkered += mods
         # Test that when an edge is tweaked whose endpoint is connected to a second edge,
         # the second edge's point-sequence and tessellation are also updated:
-        print('Tweaking {:1} {:2}'.format(edges[1].name(), edges[1].entity()))
+        print('Tweaking {:1} {:2}'.format(
+            edges[1].name(), str(edges[1].entity())))
         mods = self.tweakEdge(edges[1], [[0, 1], [1, 1]])
         tinkered += mods
 
-        print('Tweaking {:1} {:2}'.format(edges[4].name(), edges[4].entity()))
+        print('Tweaking {:1} {:2}'.format(
+            edges[4].name(), str(edges[4].entity())))
         mods = self.tweakEdge(edges[4], [[4, 1.5], [5, 3], [
             4.5, 3.25], [4, 3], [4, 1.5]])
         tinkered += mods
 
-        print('Tweaking {:1} {:2}'.format(edges[3].name(), edges[3].entity()))
+        print('Tweaking {:1} {:2}'.format(
+            edges[3].name(), str(edges[3].entity())))
         mods = self.tweakEdge(edges[3], [[4, 1.5], [3, 0], [
             3.5, -0.25], [4, 0], [4, 1.5]])
         tinkered += mods

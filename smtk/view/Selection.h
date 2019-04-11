@@ -277,6 +277,15 @@ public:
   bool modifySelection(const T& objects, const std::string& source, int value,
     SelectionAction action = SelectionAction::DEFAULT, bool bitwise = false);
 
+  /**\brief Reset values in the selection map so no entries contain the given bit \a value.
+    *
+    * This method assumes each value in the selection map is a bit vector.
+    *
+    * This will remove objects from the selection entirely if their
+    * selection value is a subset of the bits set in \a value.
+    */
+  bool resetSelectionBits(const std::string& source, int value);
+
   /**\brief Default selection action.
     *
     * Some applications need to separate the choice of which SelectionAction
