@@ -346,7 +346,7 @@ protected:
    * Entities bounding a volume entity (if any), use the color defined by
    * the bounded entity.  Currently uses only volume 0.
    */
-  void ColorByVolume(vtkCompositeDataSet* data);
+  void ColorByVolume(vtkMultiBlockDataSet* data);
   void ColorByEntity(vtkMultiBlockDataSet* data);
   void ColorByField();
 
