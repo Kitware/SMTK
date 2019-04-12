@@ -79,7 +79,7 @@ void CreateInstances::addUniformRandomRule(Instance& instance, const EntityRef& 
 void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef& prototype)
 {
   (void)prototype;
-  auto snapItem = this->parameters()->findModelEntity("snap to entity");
+  auto snapItem = this->parameters()->findComponent("snap to entity");
   if (snapItem->isEnabled())
   {
     // TODO? Check whether extension is available?
@@ -125,7 +125,7 @@ CreateInstances::Result CreateInstances::operateInternal()
       instance.assignDefaultName();
       createdItem->appendValue(prototype.component());
       modifiedItem->appendValue(instance.component());
-      result->findModelEntity("tess_changed")->appendValue(instance);
+      result->findComponent("tess_changed")->appendValue(instance.component());
       if (rule == "tabular")
       {
         this->addTabularRule(instance, prototype);

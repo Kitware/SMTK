@@ -99,7 +99,8 @@ void AddRenderables(
     return;
   }
   auto mbit = data->NewTreeIterator();
-  mbit->VisitOnlyLeavesOn();
+  // Some entity might uses composite data sets.
+  mbit->VisitOnlyLeavesOff();
   for (mbit->GoToFirstItem(); !mbit->IsDoneWithTraversal(); mbit->GoToNextItem())
   {
     auto obj = mbit->GetCurrentDataObject();
@@ -152,9 +153,11 @@ void vtkSMTKModelRepresentation::SetupDefaults()
 
   vtkNew<vtkCompositeDataDisplayAttributes> glyphAtt;
   this->GlyphMapper->SetBlockAttributes(glyphAtt);
+  this->GlyphMapper->SetScaleModeToNoDataScaling(); // We use a per point scale array
 
   vtkNew<vtkCompositeDataDisplayAttributes> selGlyphAtt;
   this->SelectedGlyphMapper->SetBlockAttributes(selGlyphAtt);
+  this->SelectedGlyphMapper->SetScaleModeToNoDataScaling(); // We use a per point scale array
 
   this->Entities->SetMapper(this->EntityMapper);
   this->SelectedEntities->SetMapper(this->SelectedEntityMapper);
@@ -862,7 +865,8 @@ void vtkSMTKModelRepresentation::ClearSelection(vtkMapper* mapper)
     // Glyph3DMapper does not behave as vtkCompositePolyDataMapper2, hence it is
     // necessary to update the block visibility of each node directly.
     auto mbds = vtkMultiBlockDataSet::SafeDownCast(gm->GetInputDataObject(0, 0));
-    vtkCompositeDataIterator* iter = mbds->NewIterator();
+    vtkDataObjectTreeIterator* iter = mbds->NewTreeIterator();
+    iter->VisitOnlyLeavesOff();
 
     iter->GoToFirstItem();
     while (!iter->IsDoneWithTraversal())
@@ -1208,7 +1212,7 @@ void vtkSMTKModelRepresentation::ColorByField()
   }
 }
 
-void vtkSMTKModelRepresentation::ColorByVolume(vtkCompositeDataSet* data)
+void vtkSMTKModelRepresentation::ColorByVolume(vtkMultiBlockDataSet* data)
 {
   if (!this->UpdateColorBy)
     return;
@@ -1216,7 +1220,8 @@ void vtkSMTKModelRepresentation::ColorByVolume(vtkCompositeDataSet* data)
   // Traverse the blocks and set the volume's color
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockColors();
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockOpacities();
-  vtkCompositeDataIterator* it = data->NewIterator();
+  vtkDataObjectTreeIterator* it = data->NewTreeIterator();
+  it->VisitOnlyLeavesOff();
   it->GoToFirstItem();
   while (!it->IsDoneWithTraversal())
   {
@@ -1255,7 +1260,8 @@ void vtkSMTKModelRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
   // Traverse the blocks and set the entity's color
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockColors();
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockOpacities();
-  vtkCompositeDataIterator* it = data->NewIterator();
+  vtkDataObjectTreeIterator* it = data->NewTreeIterator();
+  it->VisitOnlyLeavesOff();
   it->GoToFirstItem();
   while (!it->IsDoneWithTraversal())
   {
