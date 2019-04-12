@@ -16,6 +16,7 @@
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -31,6 +32,8 @@
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
+
+#include "smtk/view/Selection.h"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -62,6 +65,8 @@ class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 public:
   WeakAttributePtr currentAtt;
   QPointer<qtBaseView> view;
+  QListWidgetItem* lastHighlightedItem;
+  QBrush normalBackground;
 };
 
 qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
@@ -70,12 +75,34 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   this->Internals = new qtAssociationWidgetInternals;
   this->Internals->setupUi(this);
   this->Internals->view = bview;
-
   this->initWidget();
   std::ostringstream receiverSource;
   receiverSource << "qtAssociationWidget_" << this;
   m_selectionSourceName = receiverSource.str();
-  auto opManager = this->Internals->view->uiManager()->operationManager();
+  auto uiManager = this->Internals->view->uiManager();
+  if (uiManager == nullptr)
+  {
+    std::cerr << "qtAssociationWidget: Could not find UI Manager!\n";
+    return;
+  }
+
+  if (uiManager->highlightOnHover())
+  {
+    QObject::connect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+    QObject::connect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+  }
+  else
+  {
+    QObject::disconnect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+    QObject::disconnect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+    this->resetHover();
+  }
+
+  auto opManager = uiManager->operationManager();
   if (opManager != nullptr)
   {
     m_operationObserverKey = opManager->observers().insert(
@@ -100,6 +127,8 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
     std::cerr << "qtAssociationWidget: Could not find Resource Manager!\n";
   }
   QObject::connect(this->Internals->view, SIGNAL(aboutToDestroy()), this, SLOT(removeObservers()));
+
+  this->Internals->lastHighlightedItem = nullptr;
 }
 
 qtAssociationWidget::~qtAssociationWidget()
@@ -119,6 +148,8 @@ void qtAssociationWidget::initWidget()
   // signals/slots
   QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
   QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()));
+  this->Internals->CurrentList->setMouseTracking(true);   // Needed to receive hover events.
+  this->Internals->AvailableList->setMouseTracking(true); // Needed to receive hover events.
 }
 
 bool qtAssociationWidget::hasSelectedItem()
@@ -130,6 +161,17 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
 {
   this->Internals->currentAtt = theAtt;
   this->refreshAssociations();
+
+  // Lets store the normal backgound color of an item - we will
+  // need to use this when dealing with hovering
+  if (this->Internals->CurrentList->count())
+  {
+    this->Internals->normalBackground = this->Internals->CurrentList->item(0)->background();
+  }
+  else if (this->Internals->AvailableList->count())
+  {
+    this->Internals->normalBackground = this->Internals->AvailableList->item(0)->background();
+  }
 }
 
 void qtAssociationWidget::refreshAssociations()
@@ -281,38 +323,13 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
 
 smtk::resource::PersistentObjectPtr qtAssociationWidget::object(QListWidgetItem* item)
 {
-  auto resManager = this->Internals->view->uiManager()->resourceManager();
-  smtk::resource::PersistentObjectPtr object;
-  if ((resManager == nullptr) || (item == nullptr))
+  if (item == nullptr)
   {
     smtk::resource::PersistentObjectPtr obj;
     return obj;
   }
 
-  QVariant var = item->data(Qt::UserRole);
-  smtk::common::UUID uid = qtSMTKUtilities::QVariantToUUID(var);
-  // Get the resource
-  smtk::resource::ResourcePtr res = resManager->get(uid);
-  if (res == nullptr)
-  {
-    std::cerr << "Could not find Item's Resource!\n";
-    return res;
-  }
-  // Now check to see if there is data associated with UserRole+1 which would mean we are
-  // dealing with a resource component
-  var = item->data(Qt::UserRole + 1);
-  if (!var.isValid())
-  {
-    return res;
-  }
-
-  uid = qtSMTKUtilities::QVariantToUUID(var);
-  auto comp = res->find(uid);
-  if (comp == nullptr)
-  {
-    std::cerr << "Could not find Item's Resource Component!\n";
-  }
-  return comp;
+  return item->data(Qt::UserRole).value<smtk::resource::PersistentObjectPtr>();
 }
 
 QList<QListWidgetItem*> qtAssociationWidget::getSelectedItems(QListWidget* theList) const
@@ -356,19 +373,8 @@ QListWidgetItem* qtAssociationWidget::addObjectAssociationListItem(QListWidget* 
   QListWidgetItem* item =
     new QListWidgetItem(QString::fromStdString(name), theList, smtk_USER_DATA_TYPE);
   QVariant vdata;
-  //save the entity as a uuid strings
-  if (res)
-  {
-    vdata = qtSMTKUtilities::UUIDToQVariant(object->id());
-    item->setData(Qt::UserRole, vdata);
-  }
-  else
-  {
-    vdata = qtSMTKUtilities::UUIDToQVariant(comp->resource()->id());
-    item->setData(Qt::UserRole, vdata);
-    vdata = qtSMTKUtilities::UUIDToQVariant(comp->id());
-    item->setData(Qt::UserRole + 1, vdata);
-  }
+  vdata.setValue(object);
+  item->setData(Qt::UserRole, vdata);
   theList->addItem(item);
   if (sort)
   {
@@ -551,4 +557,92 @@ void qtAssociationWidget::handleResourceEvent(
     // The simplest solution is just to refresh the widget
     this->refreshAssociations();
   }
+}
+
+void qtAssociationWidget::leaveEvent(QEvent* evt)
+{
+  this->resetHover();
+  // Now let the superclass do what it wants:
+  QWidget::leaveEvent(evt);
+}
+
+void qtAssociationWidget::hoverRow(const QModelIndex& idx)
+{
+  auto uiManager = this->Internals->view->uiManager();
+  if (uiManager == nullptr)
+  {
+    return;
+  }
+
+  auto selection = uiManager->selection();
+  if (selection == nullptr)
+  {
+    return;
+  }
+  int row = idx.row();
+
+  // Lets create the hover background color;
+  // If there was a previously highlighted item and it is still using the
+  // hover color then reset its background;
+  if (this->Internals->lastHighlightedItem != nullptr)
+  {
+    this->Internals->lastHighlightedItem->setBackground(this->Internals->normalBackground);
+  }
+
+  // Discover what is currently hovered
+  auto obj = idx.data(Qt::UserRole).value<smtk::resource::PersistentObjectPtr>();
+  if (obj == nullptr)
+  {
+    return;
+  }
+
+  auto item = this->Internals->CurrentList->item(row);
+  if (item != nullptr)
+  {
+    auto iobj = item->data(Qt::UserRole).value<smtk::resource::PersistentObjectPtr>();
+    if (iobj != obj)
+    {
+      item = this->Internals->AvailableList->item(row);
+    }
+  }
+  else
+  {
+    item = this->Internals->AvailableList->item(row);
+  }
+
+  if (item)
+  {
+    item->setBackground(
+      QBrush(this->Internals->CurrentList->palette().highlight().color().lighter(125)));
+    this->Internals->lastHighlightedItem = item;
+  }
+  // Add new hover state
+  auto hoverMask = uiManager->hoverBit();
+  const auto& selnMap = selection->currentSelection();
+  auto cvit = selnMap.find(obj);
+  int sv = (cvit == selnMap.end() ? 0 : cvit->second) | hoverMask;
+  smtk::resource::PersistentObjectSet objs;
+  objs.insert(obj);
+  selection->modifySelection(
+    objs, m_selectionSourceName, sv, smtk::view::SelectionAction::UNFILTERED_REPLACE, true);
+}
+
+void qtAssociationWidget::resetHover()
+{
+  auto uiManager = this->Internals->view->uiManager();
+  if (uiManager == nullptr)
+  {
+    return;
+  }
+
+  if (this->Internals->lastHighlightedItem != nullptr)
+  {
+    this->Internals->lastHighlightedItem->setBackground(this->Internals->normalBackground);
+  }
+  auto selection = uiManager->selection();
+  if (selection == nullptr)
+  {
+    return;
+  }
+  selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
 }

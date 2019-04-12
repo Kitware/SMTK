@@ -49,6 +49,7 @@ public:
   bool hasSelectedItem();
   // when register the instance with qtSelectionManager, also add the memory address.
   virtual std::string selectionSourceName() { return m_selectionSourceName; }
+  void leaveEvent(QEvent*) override;
 
 public slots:
   // Display the association information to a specific attribute
@@ -63,6 +64,8 @@ protected slots:
   virtual void onRemoveAssigned();
   virtual void onAddAvailable();
   virtual void removeObservers();
+  virtual void hoverRow(const QModelIndex& idx);
+  virtual void resetHover();
 
 protected:
   virtual void initWidget();

@@ -9,19 +9,20 @@
 //=========================================================================
 #include "smtk/extension/paraview/appcomponents/pqSMTKAttributePanel.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Resource.h"
+
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
-#include "smtk/view/View.h"
-
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Resource.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
-#include "smtk/io/Logger.h"
+#include "smtk/view/Selection.h"
+#include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -123,6 +124,10 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   m_attrUIMgr->setOperationManager(m_opManager); // Assign the operation manager
   m_attrUIMgr->setSelection(m_seln);             // NB: m_seln may be null.
   m_attrUIMgr->setSelectionBit(1);               // ToDo: should be set by application
+
+  // Find or Create a value for highlight on hover
+  auto hoverBit = m_seln->findOrCreateLabeledValue("hovered");
+  m_attrUIMgr->setHoverBit(hoverBit);
 
   smtk::view::ViewPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
   if (view)

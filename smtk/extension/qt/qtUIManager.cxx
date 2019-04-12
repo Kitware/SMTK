@@ -139,6 +139,7 @@ void qtUIManager::commonConstructor()
   m_minValueLabelLength = 50;
   m_topLevelCategoriesSet = false;
   m_categoryChecks = true;
+  m_highlightOnHover = true;
 
   // default settings
   this->advFont.setBold(true);
@@ -147,6 +148,8 @@ void qtUIManager::commonConstructor()
   this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
 
   m_currentAdvLevel = 0;
+  m_selectionBit = 0;
+  m_hoverBit = 0;
 
   // Lets register some basic view constructors
   this->registerViewConstructor("Analysis", qtAnalysisView::createViewWidget);

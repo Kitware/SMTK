@@ -190,12 +190,19 @@ public:
   int selectionBit() const { return m_selectionBit; }
   void setSelectionBit(int val) { m_selectionBit = val; }
 
+  int hoverBit() const { return m_hoverBit; }
+  void setHoverBit(int val) { m_hoverBit = val; }
+
   // See if we are dealing with a subset of categories
   bool topLevelCategoriesSet() const { return m_topLevelCategoriesSet; }
 
   //methods for saving/retrieving the active tab in a group view
   void setActiveTabInfo(const std::string& groupViewName, const std::string& activeTabName);
   std::string activeTabInfo(const std::string& groupViewName) const;
+
+  bool highlightOnHover() const { return m_highlightOnHover; }
+
+  void setHighlightOnHover(bool val) { m_highlightOnHover = val; }
 
   static qtItem* defaultItemConstructor(const AttributeItemInfo& info);
 
@@ -262,6 +269,11 @@ private:
 
   smtk::view::SelectionPtr m_selection;
   int m_selectionBit;
+
+  // For Hover-based information
+  bool m_highlightOnHover;
+  int m_hoverBit;
+
   // indicates if the UI Manager should be filtering on categories at all
   bool m_categoryChecks;
   bool m_topLevelCategoriesSet;
