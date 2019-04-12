@@ -134,8 +134,31 @@ class TestCaseMeta(type):
         return super(TestCaseMeta, cls).__new__(cls, name, bases, attrs)
 
 
-class TestCase:
-    __metaclass__ = TestCaseMeta
+def with_metaclass(meta, *bases):
+    """Shamelessly stolen from six.
+       See https://github.com/benjaminp/six for this function's license.
+    """
+    class metaclass(type):
+
+        def __new__(cls, name, this_bases, d):
+            return meta(name, bases, d)
+
+        @classmethod
+        def __prepare__(cls, name, this_bases):
+            return meta.__prepare__(name, bases)
+
+    return type.__new__(metaclass, 'temporary_class', (), {})
+
+
+class TestCase(with_metaclass(TestCaseMeta)):
+
+    """A base class for SMTK unit tests.
+
+    This class extends either vtk.test.Testing.vtkTest (when VTK
+    is available) or unittest.TestCase (otherwise). If VTK is
+    available, then image generation and comparison functions
+    will be available to tests.
+    """
 
     def haveVTK(self):
         """Return True if VTK can be imported.

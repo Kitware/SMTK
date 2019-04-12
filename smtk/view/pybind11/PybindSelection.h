@@ -67,8 +67,8 @@ PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::
         (smtk::view::Selection::*)(const ::std::vector<smtk::resource::PersistentObject::Ptr>&,
           const std::string&, int, smtk::view::SelectionAction, bool))
       &smtk::view::Selection::modifySelection)
+    .def("resetSelectionBits", &smtk::view::Selection::resetSelectionBits)
     .def("visitSelection", (void (smtk::view::Selection::*)(::std::function<void (std::shared_ptr<smtk::resource::PersistentObject>, int)>)) &smtk::view::Selection::visitSelection, py::arg("visitor"))
-    .def("visitSelection", (void (smtk::view::Selection::*)(::std::function<void (std::shared_ptr<smtk::resource::Component>, int)>)) &smtk::view::Selection::visitSelection, py::arg("visitor"))
     .def("setFilter", &smtk::view::Selection::setFilter, py::arg("fn"), py::arg("refilterSelection") = true)
     .def("currentSelection", (smtk::view::Selection::SelectionMap & (smtk::view::Selection::*)(::smtk::view::Selection::SelectionMap &) const) &smtk::view::Selection::currentSelection, py::arg("selection"))
     .def("currentSelection", (smtk::view::Selection::SelectionMap const & (smtk::view::Selection::*)() const) &smtk::view::Selection::currentSelection)

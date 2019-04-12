@@ -16,6 +16,24 @@ import smtk
 import smtk.session.discrete
 import smtk.testing
 
+"""The following snippet is from PEP 469."""
+try:
+    dict.iteritems
+except AttributeError:
+    # Python 3
+    def itervalues(d):
+        return iter(d.values())
+
+    def iteritems(d):
+        return iter(d.items())
+else:
+    # Python 2
+    def itervalues(d):
+        return d.itervalues()
+
+    def iteritems(d):
+        return d.iteritems()
+
 
 def hex2rgb(hexstr):
     hh = hexstr[1:] if hexstr[0] == '#' else hexstr
@@ -163,7 +181,7 @@ class TestDiscreteSplitEdge(smtk.testing.TestCase):
                 'Edge10':            '#0e433b',
                 'Edge11':            '#104c57'
             }
-            for (name, color) in entityColors.iteritems():
+            for (name, color) in iteritems(entityColors):
                 self.setEntityProperty(
                     self.resource.findEntitiesByProperty('name', name),
                     'color', as_float=hex2rgb(color))
