@@ -242,6 +242,11 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   {
     // Iterate over the acceptable entries
     auto resManager = this->Internals->view->uiManager()->resourceManager();
+    if (resManager == nullptr)
+    {
+      return result;
+    }
+
     decltype(assocMap.equal_range("")) range;
     for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
     {
@@ -278,7 +283,7 @@ smtk::resource::PersistentObjectPtr qtAssociationWidget::object(QListWidgetItem*
 {
   auto resManager = this->Internals->view->uiManager()->resourceManager();
   smtk::resource::PersistentObjectPtr object;
-  if (item == nullptr)
+  if ((resManager == nullptr) || (item == nullptr))
   {
     smtk::resource::PersistentObjectPtr obj;
     return obj;

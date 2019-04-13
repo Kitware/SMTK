@@ -364,6 +364,11 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
   {
     // Iterate over the acceptable entries
     auto resManager = this->uiManager()->resourceManager();
+    if (resManager == nullptr)
+    {
+      std::cerr << "qtModelEntityAttributeView: Could not find Resource Manager!\n";
+      return result;
+    }
     // Ask the resource manager to get all appropriate resources
     resources = resManager->find(smtk::model::Resource::type_name);
     // Need to process all of these resources
@@ -381,7 +386,7 @@ smtk::resource::PersistentObjectPtr qtModelEntityAttributeView::object(QTableWid
 {
   auto resManager = this->uiManager()->resourceManager();
   smtk::resource::PersistentObjectPtr object;
-  if (item == nullptr)
+  if ((resManager == nullptr) || (item == nullptr))
   {
     smtk::resource::PersistentObjectPtr obj;
     return obj;
@@ -504,6 +509,11 @@ void qtModelEntityAttributeView::cellChanged(int row, int column)
 
   auto attRes = this->uiManager()->attResource();
   auto resManager = this->uiManager()->resourceManager();
+  if (resManager == nullptr)
+  {
+    return;
+  }
+
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     this->Internals->getCurrentDefs(this->uiManager());
   // Get the component of the item
