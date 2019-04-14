@@ -1,6 +1,7 @@
 #New View Type - Associations
 This view has the same syntax as an Attribute View but only allows the user to change the association information of the attribute resulting in taking up less screen Real Estate
 
+
 #Changes to Attribute View
 * added a new XML attribute "HideAssociations".  If set to true the view will not display the association editing widget save screen Real Estate
 * If there is only one type of attribute being created/modified then the type column is no longer displayed
@@ -59,3 +60,6 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
 #Changes to Displaying Items
 * Extensible Group Items know display "Add Row" instead of "Add sub group" - this label can be changed using an ItemView with the XML attribute : ExtensibleLabel
 * Added a FixedWidth Option for String, Double and Int ItemViews as also shown in the above example - **Note: setting the fixed width to 0 means there is no fixed width.**
+
+#Other Changes
+* Views showing associations will now highlight geometry when the user hovers over it
