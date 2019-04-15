@@ -23,6 +23,7 @@
 #include "smtk/common/TypeName.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
+#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Resource.h"
 #include "smtk/operation/Manager.h"
@@ -30,7 +31,6 @@
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/WriteResource.h"
 #include "smtk/project/json/jsonProjectDescriptor.h"
-#include "smtk/resource/Manager.h"
 
 #ifdef SMTK_PYTHON_ENABLED
 #include "smtk/operation/operators/ImportPythonOperation.h"

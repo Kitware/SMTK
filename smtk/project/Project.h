@@ -19,6 +19,7 @@
 #include "smtk/io/Logger.h"
 #include "smtk/project/ProjectDescriptor.h"
 #include "smtk/project/ResourceDescriptor.h"
+#include "smtk/resource/Manager.h"
 
 #include <string>
 #include <vector>
@@ -57,6 +58,10 @@ public:
   /// file system that was imported to create the resource. The return
   /// string might be empty (unknown).
   std::string importLocation(smtk::resource::ResourcePtr res) const;
+
+  /// Return resource of specified type and identifier
+  template <typename ResourceType>
+  smtk::shared_ptr<ResourceType> findResource(const std::string& identifier) const;
 
   // Future:
   // * methods to add/remove project resources
@@ -133,6 +138,32 @@ protected:
 private:
   Project();
 }; // class smtk::project::Project
+
+template <typename ResourceType>
+smtk::shared_ptr<ResourceType> Project::findResource(const std::string& identifier) const
+{
+  auto resManager = m_resourceManager.lock();
+  if (!resManager)
+  {
+    return nullptr;
+  }
+
+  // Traverse resource descriptors
+  for (const auto& rd : m_resourceDescriptors)
+  {
+    if (rd.m_identifier == identifier)
+    {
+      smtk::resource::ResourcePtr resource = resManager->get(rd.m_uuid);
+      if ((resource != nullptr) && (resource->isOfType<ResourceType>()))
+      {
+        return smtk::static_pointer_cast<ResourceType>(resource);
+      }
+    } // if (identifier match)
+  }   // for (resource descriptors)
+
+  // (Resource was not found)
+  return nullptr;
+}
 
 } // namespace project
 } // namespace smtk

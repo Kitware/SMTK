@@ -19,6 +19,7 @@ import unittest
 import smtk
 import smtk.attribute
 import smtk.io
+import smtk.mesh
 import smtk.operation
 import smtk.project
 import smtk.session.mesh
@@ -188,6 +189,18 @@ class TestProjectManager(unittest.TestCase):
                 self.assertEqual(att_count, self.attribute_count)
             else:
                 self.assertTrue(isinstance(res, smtk.session.mesh.Resource))
+
+        # Make sure we can find resources by identifer
+        att_res = project.findAttributeResource('default')
+        self.assertIsNotNone(att_res)
+        model_res = project.findModelResource('default')
+        self.assertIsNotNone(model_res)
+
+        # And that we don't find things that aren't there
+        nomesh_res = project.findMeshResource('default')
+        self.assertIsNone(nomesh_res)
+        noatt_res = project.findAttributeResource('second')
+        self.assertIsNone(noatt_res)
 
     def close_project(self):
         before_count = len(self.rm.resources())
