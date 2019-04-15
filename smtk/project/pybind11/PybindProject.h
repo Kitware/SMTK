@@ -16,6 +16,11 @@
 
 #include "smtk/project/Project.h"
 
+#include "smtk/attribute/Resource.h"
+#include "smtk/mesh/core/Resource.h"
+#include "smtk/model/Resource.h"
+#include "smtk/resource/Resource.h"
+
 namespace py = pybind11;
 
 PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Project(py::module& m)
@@ -27,6 +32,16 @@ PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Project(py::
     .def("directory", &smtk::project::Project::directory)
     .def("resources", &smtk::project::Project::resources)
     .def("importLocation", &smtk::project::Project::importLocation)
+
+    .def("findAttributeResource", [](smtk::project::Project& prj, const std::string& identifier) {
+        return prj.findResource<smtk::attribute::Resource>(identifier);
+      })
+    .def("findMeshResource", [](smtk::project::Project& prj, const std::string& identifier) {
+        return prj.findResource<smtk::mesh::Resource>(identifier);
+      })
+    .def("findModelResource", [](smtk::project::Project& prj, const std::string& identifier) {
+        return prj.findResource<smtk::model::Resource>(identifier);
+      })
     ;
   return instance;
 }

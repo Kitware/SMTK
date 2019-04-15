@@ -11,5 +11,6 @@
 #=============================================================================
 
 import smtk.common
+import smtk.io
 import smtk.resource
 from ._smtkPybindProject import *
