@@ -100,7 +100,7 @@ public:
   /// is generated or assigned.
   std::string name() const override;
   bool setName(const std::string& name);
-  bool isNameSet() { return m_name.empty(); }
+  bool isNameSet() { return !m_name.empty(); }
 
   /// Indicate whether the resource is in sync with its location.
   ///
