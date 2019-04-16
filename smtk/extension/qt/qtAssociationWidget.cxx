@@ -63,6 +63,10 @@ using namespace smtk::extension;
 class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
+  qtAssociationWidgetInternals()
+    : lastHighlightedItem(nullptr)
+  {
+  }
   WeakAttributePtr currentAtt;
   QPointer<qtBaseView> view;
   QListWidgetItem* lastHighlightedItem;
@@ -638,6 +642,7 @@ void qtAssociationWidget::resetHover()
   if (this->Internals->lastHighlightedItem != nullptr)
   {
     this->Internals->lastHighlightedItem->setBackground(this->Internals->normalBackground);
+    this->Internals->lastHighlightedItem = nullptr;
   }
   auto selection = uiManager->selection();
   if (selection == nullptr)
