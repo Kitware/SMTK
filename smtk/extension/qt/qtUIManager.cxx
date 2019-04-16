@@ -1042,3 +1042,13 @@ std::string qtUIManager::activeTabInfo(const std::string& groupViewName) const
   }
   return it->second;
 }
+
+void qtUIManager::setHighlightOnHover(bool val)
+{
+  if (val == m_highlightOnHover)
+  {
+    return;
+  }
+  m_highlightOnHover = val;
+  emit highlightOnHoverChanged(val);
+}

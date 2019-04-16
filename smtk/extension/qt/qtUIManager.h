@@ -202,7 +202,7 @@ public:
 
   bool highlightOnHover() const { return m_highlightOnHover; }
 
-  void setHighlightOnHover(bool val) { m_highlightOnHover = val; }
+  void setHighlightOnHover(bool val);
 
   static qtItem* defaultItemConstructor(const AttributeItemInfo& info);
 
@@ -224,6 +224,7 @@ signals:
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
+  void highlightOnHoverChanged(bool);
   void refreshEntityItems();
 
   friend class qtBaseView;

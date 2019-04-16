@@ -66,6 +66,7 @@ protected slots:
   virtual void removeObservers();
   virtual void hoverRow(const QModelIndex& idx);
   virtual void resetHover();
+  virtual void highlightOnHoverChanged(bool);
 
 protected:
   virtual void initWidget();

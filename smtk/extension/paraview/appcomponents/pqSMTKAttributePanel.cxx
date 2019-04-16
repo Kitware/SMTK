@@ -16,6 +16,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
@@ -26,7 +28,17 @@
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
+#include "pqCoreUtilities.h"
 #include "pqPipelineSource.h"
+
+#include "vtkSMGlobalPropertiesProxy.h"
+#include "vtkSMProperty.h"
+#include "vtkSMPropertyHelper.h"
+#include "vtkSMProxy.h"
+#include "vtkSMSessionProxyManager.h"
+
+#include "vtkCommand.h"
+#include "vtkVector.h"
 
 #include <QPointer>
 #include <QVBoxLayout>
@@ -50,6 +62,9 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   {
     pqCore->registerManager("smtk attribute panel", this);
   }
+
+  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  pqCoreUtilities::connect(smtkSettings, vtkCommand::ModifiedEvent, this, SLOT(updateSettings()));
 }
 
 pqSMTKAttributePanel::~pqSMTKAttributePanel()
@@ -129,6 +144,9 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   auto hoverBit = m_seln->findOrCreateLabeledValue("hovered");
   m_attrUIMgr->setHoverBit(hoverBit);
 
+  // Fetch the current user preferences and update the UI manager with them.
+  this->updateSettings();
+
   smtk::view::ViewPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
   if (view)
   {
@@ -203,4 +221,15 @@ bool pqSMTKAttributePanel::updatePipeline()
 {
   auto dataSource = pqActiveObjects::instance().activeSource();
   return this->displayPipelineSource(dataSource);
+}
+
+void pqSMTKAttributePanel::updateSettings()
+{
+  if (!m_attrUIMgr)
+  {
+    return;
+  }
+
+  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
 }
