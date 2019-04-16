@@ -245,7 +245,8 @@ void qtDiscreteValueEditor::onInputValueChanged()
     {
       smtk::view::View::Component comp; // not current used but will be
       AttributeItemInfo info(item->activeChildItem(static_cast<int>(i)), comp,
-        this->Internals->m_childrenFrame, this->Internals->m_inputItem->m_itemInfo.baseView());
+        this->Internals->m_childrenFrame.data(),
+        this->Internals->m_inputItem->m_itemInfo.baseView());
       qtItem* childItem = uiManager->createItem(info);
       if (childItem)
       {

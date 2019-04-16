@@ -17,6 +17,7 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/view/View.h"
 #include <QObject>
+#include <QPointer>
 
 class qtItemInternals;
 
@@ -55,7 +56,7 @@ class SMTKQTEXT_EXPORT AttributeItemInfo
 {
 public:
   AttributeItemInfo(smtk::attribute::ItemPtr item, smtk::view::View::Component itemComp,
-    QWidget* parent, qtBaseView* bview)
+    QPointer<QWidget> parent, qtBaseView* bview)
     : m_item(item)
     , m_component(itemComp)
     , m_parentWidget(parent)
@@ -74,7 +75,7 @@ public:
 
   smtk::view::View::Component component() const { return m_component; }
 
-  QWidget* parentWidget() const { return m_parentWidget; }
+  QPointer<QWidget> parentWidget() const { return m_parentWidget; }
 
   qtBaseView* baseView() const { return m_baseView; }
 
@@ -83,7 +84,7 @@ public:
 protected:
   smtk::attribute::WeakItemPtr m_item;     // Pointer to the attribute Item
   smtk::view::View::Component m_component; // qtItem Component Definition
-  QWidget* m_parentWidget;                 // Parent Widget of the qtItem
+  QPointer<QWidget> m_parentWidget;        // Parent Widget of the qtItem
   qtBaseView* m_baseView;                  // View Definition
 };
 
@@ -105,8 +106,8 @@ public:
 
   qtUIManager* uiManager() const { return m_itemInfo.uiManager(); }
 
-  QWidget* widget() { return m_widget; }
-  QWidget* parentWidget() { return m_itemInfo.parentWidget(); }
+  QPointer<QWidget> widget() { return m_widget; }
+  QPointer<QWidget> parentWidget() { return m_itemInfo.parentWidget(); }
 
   virtual void addChildItem(qtItem*);
   virtual void clearChildItems();
@@ -142,7 +143,7 @@ protected:
   virtual void createWidget() { ; }
   virtual void setAdvanceLevel(int level);
 
-  QWidget* m_widget;
+  QPointer<QWidget> m_widget;
   bool m_isLeafItem;
   bool m_useSelectionManager;
   bool m_readOnly;

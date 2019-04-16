@@ -18,7 +18,6 @@
 
 #include <QComboBox>
 #include <QLayout>
-#include <QPointer>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
@@ -53,9 +52,9 @@ qtItem::qtItem(const AttributeItemInfo& info)
 qtItem::~qtItem()
 {
   this->clearChildItems();
-  if (m_itemInfo.parentWidget() && m_widget && m_itemInfo.parentWidget()->layout())
+  if (m_widget)
   {
-    this->m_itemInfo.parentWidget()->layout()->removeWidget(m_widget);
+    delete m_widget;
   }
   if (this->Internals)
   {
