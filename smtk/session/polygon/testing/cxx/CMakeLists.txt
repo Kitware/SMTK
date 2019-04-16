@@ -24,7 +24,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     UnitTestPolygonReadWrite.cxx)
 endif()
 
-if (SMTK_ENABLE_REMUS_SUPPORT)
+if (SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_REMUS_SUPPORT)
   list(APPEND unit_tests_which_require_data UnitTestPolygonImport.cxx)
 endif ()
 
