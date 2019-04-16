@@ -24,9 +24,7 @@ To implement this, the following was added to Definition:
 * I/O classes can read and write these rules in XML and JSON
 
 
-In addition, the implementation of isUnique has been changed  It now used the exclusion mechanism by inserting
-itself into the list.  Note that this rule is not written out when serialized or when saved
-to a file
+In addition, the implementation of isUnique has been changed  It now used the exclusion mechanism by inserting itself into the list.  Note that this rule is not written out when serialized or when saved to a file
 
 
 The qtAssociationWidget has been modified to use these new ruled when determining availability and qtAttributeView has been modified to test for association rules instead of association masks
@@ -192,6 +190,13 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
 
 #### New ViewItem Styles
 * There are now Infinite Cylinder and Conical Frustum options for Group Items - See Changes to ParaView Extensions for more info.
+
+#### Using QPointer it qtItem and AttributeItemInfo
+* ***AttributeItemInfo::parentWidget() now returns a QPointer\<QWidget>***
+* ***qtItem::parentWidget() now returns a QPointer\<QWidget>***
+* ***qtItem::widget() now returns a QPointer\<QWidget>***
+
+These changes were done to improve general stability as well as to simplifying when a qtItem needs to delete its main widget.
 
 ##Changes to Selection
 * Selections now have a `resetSelectionBits()` method
