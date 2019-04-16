@@ -257,28 +257,6 @@ void qtBaseView::makeTopLevel()
 
   m_topLevelInitialized = true;
   int pos;
-  std::vector<double> vals;
-  pos = view->details().findChild("DefaultColor");
-  QColor color;
-  if (pos != -1)
-  {
-    view->details().child(pos).contentsAsVector(vals);
-    if (vals.size() == 3)
-    {
-      color.setRgbF(vals[0], vals[1], vals[2]);
-      this->uiManager()->setDefaultValueColor(color);
-    }
-  }
-  pos = view->details().findChild("InvalidColor");
-  if (pos != -1)
-  {
-    view->details().child(pos).contentsAsVector(vals);
-    if (vals.size() == 3)
-    {
-      color.setRgbF(vals[0], vals[1], vals[2]);
-      this->uiManager()->setInvalidValueColor(color);
-    }
-  }
 
   pos = view->details().findChild("AdvancedFontEffects");
   if (pos != -1)

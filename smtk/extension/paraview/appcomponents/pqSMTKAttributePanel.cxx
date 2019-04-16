@@ -78,6 +78,7 @@ pqSMTKAttributePanel::~pqSMTKAttributePanel()
     }
   }
 
+  m_propertyLinks.clear();
   delete m_attrUIMgr;
 }
 
@@ -128,6 +129,7 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   m_rsrc = rsrc;
   if (m_attrUIMgr)
   {
+    m_propertyLinks.clear();
     delete m_attrUIMgr;
     while (QWidget* w = this->widget()->findChild<QWidget*>())
     {
@@ -143,6 +145,36 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   // Find or Create a value for highlight on hover
   auto hoverBit = m_seln->findOrCreateLabeledValue("hovered");
   m_attrUIMgr->setHoverBit(hoverBit);
+
+  // Start watching the resource's associate PV server for user preference changes.
+  pqServer* server = pqActiveObjects::instance().activeServer();
+  vtkSMSessionProxyManager* pxm = server ? server->proxyManager() : nullptr;
+  auto paletteProxy = pxm
+    ? vtkSMGlobalPropertiesProxy::SafeDownCast(pxm->GetProxy("global_properties", "ColorPalette"))
+    : nullptr;
+  auto defaultValueColorProp =
+    paletteProxy ? paletteProxy->GetProperty("SMTKDefaultValueBackground") : nullptr;
+  auto invalidValueColorProp =
+    paletteProxy ? paletteProxy->GetProperty("SMTKInvalidValueBackground") : nullptr;
+  if (defaultValueColorProp && invalidValueColorProp)
+  {
+    vtkVector3d dc;
+    vtkSMPropertyHelper(defaultValueColorProp).Get(dc.GetData(), 3);
+    QVariantList vdc;
+    vdc << dc[0] << dc[1] << dc[2];
+    m_attrUIMgr->setDefaultValueColorRgbF(vdc);
+
+    vtkVector3d ic;
+    vtkSMPropertyHelper(invalidValueColorProp).Get(ic.GetData(), 3);
+    QVariantList vic;
+    vic << ic[0] << ic[1] << ic[2];
+    m_attrUIMgr->setInvalidValueColorRgbF(vic);
+
+    m_propertyLinks.addPropertyLink(m_attrUIMgr, "defaultValueColorRgbF",
+      SIGNAL(defaultValueColorChanged()), paletteProxy, defaultValueColorProp);
+    m_propertyLinks.addPropertyLink(m_attrUIMgr, "invalidValueColorRgbF",
+      SIGNAL(invalidValueColorChanged()), paletteProxy, invalidValueColorProp);
+  }
 
   // Fetch the current user preferences and update the UI manager with them.
   this->updateSettings();

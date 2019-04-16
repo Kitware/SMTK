@@ -1952,12 +1952,44 @@
         </Hints>
       </DoubleVectorProperty>
 
+      <DoubleVectorProperty
+        default_values="1.0 1.0 0.5"
+        label="Background color for items with default values"
+        name="SMTKDefaultValueBackground"
+        number_of_elements="3"
+        panel_widget="color_selector">
+        <DoubleRangeDomain max="1 1 1"
+          min="0 0 0"
+          name="range" />
+        <Documentation>Color for attribute items holding default values.</Documentation>
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
+      </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+        default_values="1.0 0.5 0.5"
+        label="Background color for items with invalid values"
+        name="SMTKInvalidValueBackground"
+        number_of_elements="3"
+        panel_widget="color_selector">
+        <DoubleRangeDomain max="1 1 1"
+          min="0 0 0"
+          name="range" />
+        <Documentation>Color for attribute items holding invalid values.</Documentation>
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
+      </DoubleVectorProperty>
+
       <PropertyGroup label="SMTK Colors">
         <Documentation>
           Colors used when displaying SMTK model and mesh components.
         </Documentation>
         <Property name="DefaultFaceColor"/>
         <Property name="SMTKHighlightColor"/>
+        <Property name="SMTKDefaultValueBackground"/>
+        <Property name="SMTKInvalidValueBackground"/>
       </PropertyGroup>
 
     </Extension>

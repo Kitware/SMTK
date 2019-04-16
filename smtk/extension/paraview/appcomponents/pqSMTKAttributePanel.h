@@ -14,6 +14,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+#include "pqPropertyLinks.h"
+
 #include <QDockWidget>
 
 class pqServer;
@@ -95,4 +97,5 @@ protected:
   smtk::view::SelectionPtr m_seln;
   smtk::operation::ManagerPtr m_opManager;
   smtk::resource::Observers::Key m_observer;
+  pqPropertyLinks m_propertyLinks;
 };

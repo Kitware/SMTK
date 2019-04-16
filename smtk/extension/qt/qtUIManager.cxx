@@ -570,12 +570,88 @@ bool qtUIManager::advanceFontStyleItalic() const
 
 void qtUIManager::setDefaultValueColor(const QColor& color)
 {
+  if (color == this->DefaultValueColor)
+  {
+    return;
+  }
   this->DefaultValueColor = color;
+  if (m_topView)
+  {
+    m_topView->onShowCategory();
+  }
+}
+
+QVariantList qtUIManager::defaultValueColorRgbF() const
+{
+  QVariantList val;
+  val << this->DefaultValueColor.redF() << this->DefaultValueColor.greenF()
+      << this->DefaultValueColor.blueF()
+    // << this->DefaultValueColor.alphaF()
+    ;
+  return val;
+}
+
+void qtUIManager::setDefaultValueColorRgbF(const QVariantList& color)
+{
+  if (color.size() != 3)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Bad color specification.");
+    return;
+  }
+  auto replacement =
+    QColor::fromRgbF(color[0].toDouble(), color[1].toDouble(), color[2].toDouble());
+  if (replacement == this->DefaultValueColor)
+  {
+    return;
+  }
+  this->DefaultValueColor = replacement;
+  if (m_topView)
+  {
+    m_topView->onShowCategory();
+  }
 }
 
 void qtUIManager::setInvalidValueColor(const QColor& color)
 {
+  if (color == this->InvalidValueColor)
+  {
+    return;
+  }
   this->InvalidValueColor = color;
+  if (m_topView)
+  {
+    m_topView->onShowCategory();
+  }
+}
+
+QVariantList qtUIManager::invalidValueColorRgbF() const
+{
+  QVariantList val;
+  val << this->InvalidValueColor.redF() << this->InvalidValueColor.greenF()
+      << this->InvalidValueColor.blueF()
+    // << this->InvalidValueColor.alphaF()
+    ;
+  return val;
+}
+
+void qtUIManager::setInvalidValueColorRgbF(const QVariantList& color)
+{
+  if (color.size() != 3)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Bad color specification.");
+    return;
+  }
+  auto replacement =
+    QColor::fromRgbF(color[0].toDouble(), color[1].toDouble(), color[2].toDouble());
+  if (replacement == this->InvalidValueColor)
+  {
+    return;
+  }
+  this->InvalidValueColor = replacement;
+  if (m_topView)
+  {
+    m_topView->onShowCategory();
+  }
 }
 
 void qtUIManager::setWidgetColorToInvalid(QWidget* widget)
