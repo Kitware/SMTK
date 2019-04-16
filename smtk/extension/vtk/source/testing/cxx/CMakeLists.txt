@@ -1,3 +1,12 @@
+add_executable(displayConeFrustum MACOSX_BUNDLE displayConeFrustum.cxx)
+target_link_libraries(displayConeFrustum
+  smtkCore
+  vtkRenderingGL2PSOpenGL2
+  vtkSMTKSourceExt
+  vtkSMTKWidgetsExt
+  vtkTestingRendering
+)
+
 add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
 target_link_libraries(displayMultiBlockModel
   smtkCore

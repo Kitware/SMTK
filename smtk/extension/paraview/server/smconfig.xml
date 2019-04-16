@@ -21,9 +21,9 @@
       <InputProperty command="SetSelectedPort" label="Selected Port" name="SelectedPort">
         <Documentation>
           This property specifies the dataset which has most
-					recently had a user specify a selection.
+          recently had a user specify a selection.
           When a JSON request is issued to transfer the ParaView selection
-					to SMTK, it is this data that the vtkSelection refers to.
+          to SMTK, it is this data that the vtkSelection refers to.
         </Documentation>
         <ProxyGroupDomain name="groups">
           <Group name="sources" />
@@ -37,7 +37,7 @@
         <Documentation>
           This property specifies the selection a user most recently made.
           When a JSON request is issued to transfer the ParaView selection
-					to SMTK, it is this vtkSelection that is used.
+          to SMTK, it is this vtkSelection that is used.
         </Documentation>
         <ProxyGroupDomain name="groups">
           <Group name="sources" />
@@ -1126,6 +1126,154 @@
   </ProxyGroup>
 
 <!-- ====================================================================== -->
+  <ProxyGroup name="3d_widget_representations">
+    <Proxy
+      class="vtkConeRepresentation"
+      name="ConeRepresentation">
+      <IntVectorProperty
+        animateable="1"
+        command="SetVisibility"
+        default_values="0"
+        name="Visibility"
+        number_of_elements="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+      <DoubleVectorProperty
+        argument_is_array="1"
+        command="SetBottomPoint"
+        default_values="0 0 0"
+        information_property="BottomPointInfo"
+        name="BottomPoint"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="GetBottomPoint"
+        information_only="1"
+        name="BottomPointInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        argument_is_array="1"
+        command="SetTopPoint"
+        default_values="0 0 0"
+        information_property="TopPointInfo"
+        name="TopPoint"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="GetTopPoint"
+        information_only="1"
+        name="TopPointInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="SetBottomRadius"
+        default_values="1"
+        information_property="BottomRadiusInfo"
+        name="BottomRadius"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="GetBottomRadius"
+        information_only="1"
+        name="BottomRadiusInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="SetTopRadius"
+        default_values="0.5"
+        information_property="TopRadiusInfo"
+        name="TopRadius"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="GetTopRadius"
+        information_only="1"
+        name="TopRadiusInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <IntVectorProperty
+        command="SetCylindrical"
+        information_property="CylindricalInfo"
+        default_values="0"
+        name="Cylindrical"
+        >
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="CylindricalInfo"
+        command="GetCylindrical"
+        default_values="0"
+        number_of_elements="1"
+        information_only="1">
+        <SimpleIntInformationHelper />
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+    </Proxy>
+  </ProxyGroup>
+
+<!-- ====================================================================== -->
+  <ProxyGroup name="3d_widgets">
+
+    <Proxy
+      base_proxygroup="3d_widgets"
+      base_proxyname="WidgetBase"
+      class="vtkConeWidget"
+      name="ConeWidget">
+    </Proxy>
+
+  </ProxyGroup>
+
+<!-- ====================================================================== -->
+  <ProxyGroup name="implicit_functions">
+
+    <Proxy
+      name="ImplicitConeFrustum"
+      class="vtkImplicitConeFrustum"
+      >
+      <DoubleVectorProperty
+        name="BottomPoint"
+        command="SetBottomPoint"
+        default_values="0 0 0"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range"/>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        name="TopPoint"
+        command="SetTopPoint"
+        default_values="0 0 1"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range"/>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        name="BottomRadius"
+        command="SetBottomRadius"
+        default_values="0.5"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" min="0.0"/>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        name="TopRadius"
+        command="SetTopRadius"
+        default_values="0.1"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" min="0.0"/>
+      </DoubleVectorProperty>
+      <PropertyGroup label="Cone Frustum Parameters" panel_widget="InteractiveCone">
+        <Property function="BottomPoint" name="BottomPoint" />
+        <Property function="BottomRadius" name="BottomRadius" />
+        <Property function="TopPoint" name="TopPoint" />
+        <Property function="TopRadius" name="TopRadius" />
+      </PropertyGroup>
+    </Proxy>
+
+  </ProxyGroup>
+
+<!-- ====================================================================== -->
   <ProxyGroup name="representations">
     <RepresentationProxy name="SMTKModelRepresentation"
                          class="vtkSMTKModelRepresentation"
@@ -1726,6 +1874,47 @@
         </ShareProperties>
       </SubProxy>
     </SMTKModelRepresentationProxy>
+
+    <!-- Widget representations -->
+    <!-- Cone widget -->
+    <NewWidgetRepresentationProxy
+      class="vtk3DWidgetRepresentation"
+      name="ConeWidgetRepresentation">
+      <IntVectorProperty
+        command="SetEnabled"
+        default_values="0"
+        name="Enabled"
+        number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>Enable/Disable widget interaction.</Documentation>
+      </IntVectorProperty>
+      <SubProxy>
+        <Proxy
+          name="Prop"
+          proxygroup="3d_widget_representations"
+          proxyname="ConeRepresentation"></Proxy>
+        <ExposedProperties>
+          <Property name="Visibility" />
+          <Property name="BottomPointInfo" />
+          <Property name="BottomPoint" />
+          <Property name="TopPointInfo" />
+          <Property name="TopPoint" />
+          <Property name="BottomRadiusInfo" />
+          <Property name="BottomRadius" />
+          <Property name="TopRadiusInfo" />
+          <Property name="TopRadius" />
+          <Property name="CylindricalInfo" />
+          <Property name="Cylindrical" />
+        </ExposedProperties>
+      </SubProxy>
+      <SubProxy>
+        <Proxy
+          name="Widget"
+          proxygroup="3d_widgets"
+          proxyname="ConeWidget"></Proxy>
+      </SubProxy>
+    </NewWidgetRepresentationProxy>
+
   </ProxyGroup>
 
   <!-- Expose user preferences -->
@@ -2006,6 +2195,6 @@
         <Property name="HighlightOnHover" />
       </PropertyGroup>
 
-	</ProxyGroup>
+  </ProxyGroup>
 
 </ServerManagerConfiguration>

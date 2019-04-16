@@ -39,7 +39,6 @@ add_smtk_plugin(
   GUI_INTERFACES ${OUTIFACES} ${OUTIFACES1} ${OUTIFACES2}
   GUI_SOURCES ${GUI_SOURCES}
   CS_KITS
-    vtkSMTKWidgetsExt
     vtkPolygonOperationsExt
   REGISTRAR
     smtk::session::polygon::Registrar

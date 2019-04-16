@@ -1,9 +1,13 @@
 set(VTKLibSrcs
+  vtkConeRepresentation.cxx
+  vtkConeWidget.cxx
   vtkSBFunctionParser.cxx
   vtkSMTKArcRepresentation.cxx
 )
 
 set(VTKLibHeaders
+  vtkConeRepresentation.h
+  vtkConeWidget.h
   vtkSBFunctionParser.h
   vtkSMTKArcRepresentation.h
 )
@@ -38,7 +42,8 @@ target_include_directories(${vtk-module}
 
 target_link_libraries(${vtk-module}
   LINK_PUBLIC
-  ${__dependencies}
+    ${__dependencies}
+    vtkSMTKSourceExt
   )
 
 #has to be after the vtk_module_library

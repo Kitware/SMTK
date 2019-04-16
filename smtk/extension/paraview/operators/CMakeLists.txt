@@ -82,8 +82,6 @@ add_paraview_plugin(
   smtkPQOperationViewsPlugin "1.0"
   GUI_INTERFACES ${viewInterfaces}
   GUI_SOURCES ${viewSources}
-  CS_KITS
-  vtkSMTKWidgetsExt
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQOperationViewsPlugin")
 enable_smtk_plugin_by_default(smtkPQOperationViewsPlugin TRUE)

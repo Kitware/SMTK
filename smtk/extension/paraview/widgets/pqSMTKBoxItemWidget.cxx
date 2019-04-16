@@ -255,7 +255,7 @@ void pqSMTKBoxItemWidget::updateItemFromWidget()
       break;
     case ItemBindings::Invalid:
     default:
-      smtkErrorMacro(smtk::io::Logger::instance(), "Grrk");
+      smtkErrorMacro(smtk::io::Logger::instance(), "Unable to determine item binding.");
       break;
   }
 

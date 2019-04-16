@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConePropertyWidget</class>
+ <widget class="QWidget" name="ConePropertyWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>379</width>
+    <height>187</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <item row="8" column="0">
+    <widget class="QLabel" name="labelRadius2">
+     <property name="text">
+      <string>Radius 2</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="labelRadius1">
+     <property name="text">
+      <string>Radius 1</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="pqDoubleLineEdit" name="radius2"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="pqDoubleLineEdit" name="radius1"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="pqDoubleLineEdit" name="point1X"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="labelPoint1">
+     <property name="text">
+      <string>Point 1</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2">
+    <widget class="pqDoubleLineEdit" name="point1Y"/>
+   </item>
+   <item row="5" column="3">
+    <widget class="pqDoubleLineEdit" name="point1Z"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="labelPoint2">
+     <property name="text">
+      <string>Point 2</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="pqDoubleLineEdit" name="point2X"/>
+   </item>
+   <item row="6" column="2">
+    <widget class="pqDoubleLineEdit" name="point2Y"/>
+   </item>
+   <item row="6" column="3">
+    <widget class="pqDoubleLineEdit" name="point2Z"/>
+   </item>
+   <item row="10" column="0" colspan="4">
+    <widget class="QLabel" name="pickLabel">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Note: Use 'P' to place alternating points on mesh or 'Ctrl+P' to snap to the closest mesh point. Use '1'/'Ctrl+1' for point 1 and '2'/'Ctrl+2' for point 2.</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QCheckBox" name="show3DWidget">
+     <property name="text">
+      <string>Show cone</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="labelLength">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Length: &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;na&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="cylindrical">
+     <property name="text">
+      <string>Cylinder</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>pqDoubleLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>pqDoubleLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>show3DWidget</tabstop>
+  <tabstop>point1X</tabstop>
+  <tabstop>point1Y</tabstop>
+  <tabstop>point1Z</tabstop>
+  <tabstop>point2X</tabstop>
+  <tabstop>point2Y</tabstop>
+  <tabstop>point2Z</tabstop>
+  <tabstop>radius1</tabstop>
+  <tabstop>radius2</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
