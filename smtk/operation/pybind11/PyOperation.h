@@ -94,11 +94,29 @@ public:
 
   Index index() const override { return m_index; }
 
-  bool ableToOperate() override { PYBIND11_OVERLOAD(bool, Operation, ableToOperate, ); }
+  bool ableToOperate() override
+    {
+      // When a python operation is constructed on one thread and called on
+      // another, we need to temporarily cut the relationship between
+      // PyThreadState and the original thread before calling this method on a
+      // new thread. Otherwise, we result in deadlock. Pybind11's
+      // gil_scoped_release provides this functionality.
+      pybind11::gil_scoped_release thread_state(true);
+      PYBIND11_OVERLOAD(bool, Operation, ableToOperate, );
+    }
 
   std::string typeName() const override { return m_typeName; }
 
-  smtk::io::Logger& log() const override { PYBIND11_OVERLOAD(smtk::io::Logger&, Operation, log, ); }
+  smtk::io::Logger& log() const override
+    {
+      // When a python operation is constructed on one thread and called on
+      // another, we need to temporarily cut the relationship between
+      // PyThreadState and the original thread before calling this method on a
+      // new thread. Otherwise, we result in deadlock. Pybind11's
+      // gil_scoped_release provides this functionality.
+      pybind11::gil_scoped_release thread_state(true);
+      PYBIND11_OVERLOAD(smtk::io::Logger&, Operation, log, );
+    }
 
   Result operateInternal() override
     {
