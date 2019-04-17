@@ -90,21 +90,9 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
     return;
   }
 
-  if (uiManager->highlightOnHover())
-  {
-    QObject::connect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)));
-    QObject::connect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)));
-  }
-  else
-  {
-    QObject::disconnect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)));
-    QObject::disconnect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)));
-    this->resetHover();
-  }
+  this->highlightOnHoverChanged(uiManager->highlightOnHover());
+  QObject::connect(
+    uiManager, SIGNAL(highlightOnHoverChanged(bool)), this, SLOT(highlightOnHoverChanged(bool)));
 
   auto opManager = uiManager->operationManager();
   if (opManager != nullptr)
@@ -650,4 +638,23 @@ void qtAssociationWidget::resetHover()
     return;
   }
   selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
+}
+
+void qtAssociationWidget::highlightOnHoverChanged(bool shouldHighlight)
+{
+  if (shouldHighlight)
+  {
+    QObject::connect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+    QObject::connect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+  }
+  else
+  {
+    QObject::disconnect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+    QObject::disconnect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
+      SLOT(hoverRow(const QModelIndex&)));
+    this->resetHover();
+  }
 }

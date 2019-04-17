@@ -14,6 +14,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+#include "pqPropertyLinks.h"
+
 #include <QDockWidget>
 
 class pqServer;
@@ -78,10 +80,22 @@ public slots:
     */
   virtual bool updatePipeline();
 
+protected slots:
+  /**\brief Called when vtkSMTKSettings is modified, indicating user preferences have changed.
+    *
+    * The attribute panel listens for changes to the highlight-on-hover
+    * preference as well as default-value and error-value colors.
+    * This slot notifies the qtUIManager when these have changed
+    * and it in turn emits a signal that views or items can listen to
+    * for updates.
+    */
+  virtual void updateSettings();
+
 protected:
   smtk::extension::qtUIManager* m_attrUIMgr;
   smtk::resource::ResourcePtr m_rsrc;
   smtk::view::SelectionPtr m_seln;
   smtk::operation::ManagerPtr m_opManager;
   smtk::resource::Observers::Key m_observer;
+  pqPropertyLinks m_propertyLinks;
 };

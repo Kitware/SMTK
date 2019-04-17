@@ -16,6 +16,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
@@ -26,7 +28,17 @@
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
+#include "pqCoreUtilities.h"
 #include "pqPipelineSource.h"
+
+#include "vtkSMGlobalPropertiesProxy.h"
+#include "vtkSMProperty.h"
+#include "vtkSMPropertyHelper.h"
+#include "vtkSMProxy.h"
+#include "vtkSMSessionProxyManager.h"
+
+#include "vtkCommand.h"
+#include "vtkVector.h"
 
 #include <QPointer>
 #include <QVBoxLayout>
@@ -50,6 +62,9 @@ pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   {
     pqCore->registerManager("smtk attribute panel", this);
   }
+
+  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  pqCoreUtilities::connect(smtkSettings, vtkCommand::ModifiedEvent, this, SLOT(updateSettings()));
 }
 
 pqSMTKAttributePanel::~pqSMTKAttributePanel()
@@ -63,6 +78,7 @@ pqSMTKAttributePanel::~pqSMTKAttributePanel()
     }
   }
 
+  m_propertyLinks.clear();
   delete m_attrUIMgr;
 }
 
@@ -113,6 +129,7 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   m_rsrc = rsrc;
   if (m_attrUIMgr)
   {
+    m_propertyLinks.clear();
     delete m_attrUIMgr;
     while (QWidget* w = this->widget()->findChild<QWidget*>())
     {
@@ -128,6 +145,39 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   // Find or Create a value for highlight on hover
   auto hoverBit = m_seln->findOrCreateLabeledValue("hovered");
   m_attrUIMgr->setHoverBit(hoverBit);
+
+  // Start watching the resource's associate PV server for user preference changes.
+  pqServer* server = pqActiveObjects::instance().activeServer();
+  vtkSMSessionProxyManager* pxm = server ? server->proxyManager() : nullptr;
+  auto paletteProxy = pxm
+    ? vtkSMGlobalPropertiesProxy::SafeDownCast(pxm->GetProxy("global_properties", "ColorPalette"))
+    : nullptr;
+  auto defaultValueColorProp =
+    paletteProxy ? paletteProxy->GetProperty("SMTKDefaultValueBackground") : nullptr;
+  auto invalidValueColorProp =
+    paletteProxy ? paletteProxy->GetProperty("SMTKInvalidValueBackground") : nullptr;
+  if (defaultValueColorProp && invalidValueColorProp)
+  {
+    vtkVector3d dc;
+    vtkSMPropertyHelper(defaultValueColorProp).Get(dc.GetData(), 3);
+    QVariantList vdc;
+    vdc << dc[0] << dc[1] << dc[2];
+    m_attrUIMgr->setDefaultValueColorRgbF(vdc);
+
+    vtkVector3d ic;
+    vtkSMPropertyHelper(invalidValueColorProp).Get(ic.GetData(), 3);
+    QVariantList vic;
+    vic << ic[0] << ic[1] << ic[2];
+    m_attrUIMgr->setInvalidValueColorRgbF(vic);
+
+    m_propertyLinks.addPropertyLink(m_attrUIMgr, "defaultValueColorRgbF",
+      SIGNAL(defaultValueColorChanged()), paletteProxy, defaultValueColorProp);
+    m_propertyLinks.addPropertyLink(m_attrUIMgr, "invalidValueColorRgbF",
+      SIGNAL(invalidValueColorChanged()), paletteProxy, invalidValueColorProp);
+  }
+
+  // Fetch the current user preferences and update the UI manager with them.
+  this->updateSettings();
 
   smtk::view::ViewPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
   if (view)
@@ -203,4 +253,15 @@ bool pqSMTKAttributePanel::updatePipeline()
 {
   auto dataSource = pqActiveObjects::instance().activeSource();
   return this->displayPipelineSource(dataSource);
+}
+
+void pqSMTKAttributePanel::updateSettings()
+{
+  if (!m_attrUIMgr)
+  {
+    return;
+  }
+
+  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  m_attrUIMgr->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
 }

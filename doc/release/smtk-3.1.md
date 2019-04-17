@@ -118,11 +118,13 @@ Qt requires that all methods that affect the GUI be performed on the application
 
 To support this pattern, SMTK's Observer pattern has been generalized to a single description (smtk::common::Observers) that adopts a run-time configurable type of polymorphism where consuming code can change the class's behavior, allowing consuming code to redefine the context in which the Observer functors are executed.
 
-##Changes to Views and QT Extensions
-###New View Type - Associations
+## Changes to the View System and Qt Extensions
+
+### New View Type - Associations
+
 This view has the same syntax as an Attribute View but only allows the user to change the association information of the attribute resulting in taking up less screen Real Estate
 
-###New View Type - Analysis
+### New View Type - Analysis
 An Analysis View is a specialized view for choosing the types of analyses the user wants to perform.  These choices are persistent and can be used by an export operation instead of having the operator ask the user what types of analyses should be performed.
 
 Unlike other views the Analysis View will construct both an Attribute Definition and corresponding Attribute when needed.  The Attribute Definition is based on the Analysis Information stored in the Attribute Resource.  Any Analysis that is referred to by another will be represented as a Group Item.  All other Analyses will be represented as a Void Item.
@@ -141,9 +143,13 @@ The following is an example of a Analysis View:
   * AnalysisAttributeName is the name of the Attribute the view will create to represent the Analysis  (if needed)
 
 ### Changes to BaseView
+
 * Added the concept of top level categories that represents a set of categories (that can be a subset of those defined in the attribute resource) that can be used to display or filter attribute information.
+* The `<DefaultColor>` and `<InvalidColor>` configuration tags are no longer supported by qtBaseView.
+  They have been turned into user preferences rather than XML/JSON view parameters.
 
 ###Changes to Attribute View
+
 * added a new XML attribute "HideAssociations".  If set to true the view will not display the association editing widget save screen Real Estate
 * If there is only one type of attribute being created/modified then the type column is no longer displayed
 * For the time being the view by property  feature has been disabled until we can decide on whether it is useful and if so, what is the best way to display the information.
@@ -151,15 +157,25 @@ The following is an example of a Analysis View:
 * Attempting to rename an attribute to a name already is use now generates a warning dialog.
 
 ###Changes to Group View
+
 * View no longer displays empty tabs
 * Current tabs are now remembered when the group rebuilds its widget - previously this was only true for the top-level tabbed group views
 
 ###Changes to UIManager
+
 * Added the ability to enable/disable category filtering
 * Added support for top-level categories
+* Colors to indicate default and invalid values are now Qt properties
+  to support ParaView's user preference framework.
+* The UI manager now emits a `highlightOnHoverChanged(bool)` signal
+  when the user preference changes.
+  The pqSMTKAttributePanel delivers these changes to the UI manager it maintains;
+  other users of qtUIManager are expected to do the same.
 
-###Item Changes
-####ReadOnly View Items
+### Item Changes
+
+#### ReadOnly View Items
+
 Added a new ReadOnly Option to Item Views.  In the following example the item, absolute-zero, in the attribute physical-constants has been made read only.  The current implementation disables the widgets defined by the read only item from being  modified but will still display them.
 
 ```xml

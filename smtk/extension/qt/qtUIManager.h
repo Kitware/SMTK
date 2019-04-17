@@ -19,6 +19,7 @@
 #include <QMap>
 #include <QPointer>
 #include <QTextEdit>
+#include <QVariant>
 #include <map>
 
 class QTableWidget;
@@ -46,8 +47,15 @@ typedef qtItem* (*qtItemConstructor)(const AttributeItemInfo& info);
   */
 class SMTKQTEXT_EXPORT qtUIManager : public QObject
 {
-
   Q_OBJECT
+
+  Q_PROPERTY(QColor defaultValueColor READ defaultValueColor WRITE setDefaultValueColor);
+  Q_PROPERTY(
+    QVariantList defaultValueColorRgbF READ defaultValueColorRgbF WRITE setDefaultValueColorRgbF);
+
+  Q_PROPERTY(QColor invalidValueColor READ invalidValueColor WRITE setInvalidValueColor);
+  Q_PROPERTY(
+    QVariantList invalidValueColorRgbF READ invalidValueColorRgbF WRITE setInvalidValueColorRgbF);
 
 public:
   qtUIManager(smtk::attribute::ResourcePtr resource);
@@ -85,9 +93,14 @@ public:
   // Description:
   // Set/Get the color used for indicating items with default values
   void setDefaultValueColor(const QColor& color);
+  void setDefaultValueColorRgbF(const QVariantList& color);
   QColor defaultValueColor() const { return this->DefaultValueColor; }
+  QVariantList defaultValueColorRgbF() const;
+
   void setInvalidValueColor(const QColor& color);
+  void setInvalidValueColorRgbF(const QVariantList& color);
   QColor invalidValueColor() const { return this->InvalidValueColor; }
+  QVariantList invalidValueColorRgbF() const;
 
   // Description:
   // Set the advanced values font to be bold and/or italic
@@ -202,7 +215,7 @@ public:
 
   bool highlightOnHover() const { return m_highlightOnHover; }
 
-  void setHighlightOnHover(bool val) { m_highlightOnHover = val; }
+  void setHighlightOnHover(bool val);
 
   static qtItem* defaultItemConstructor(const AttributeItemInfo& info);
 
@@ -224,6 +237,28 @@ signals:
   void fileItemCreated(smtk::extension::qtFileItem* fileItem);
   void modelEntityItemCreated(smtk::extension::qtModelEntityItem* entItem);
   void viewUIChanged(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
+  /**\brief Emitted by the UI manager when the user setting has changed so
+    *       that children can reset any active hovers and update themselves.
+    */
+  void highlightOnHoverChanged(bool);
+  /**\brief Emitted by the UI manager when the defaultValueColor property is changed internally.
+    *
+    * This is currently a dummy signal required by pqPropertyLinks to synchronize
+    * the vtkSMProperty (used by ParaView to store user preferences) and the
+    * QColor value (used by the UI manager). Since UI components never change the
+    * default color, only responding to changes in user preferences, this signal
+    * is unused but must be present.
+    */
+  void defaultValueColorChanged();
+  /**\brief Emitted by the UI manager when the invalidValueColor property is changed internally.
+    *
+    * This is currently a dummy signal required by pqPropertyLinks to synchronize
+    * the vtkSMProperty (used by ParaView to store user preferences) and the
+    * QColor value (used by the UI manager). Since UI components never change the
+    * invalid color, only responding to changes in user preferences, this signal
+    * is unused but must be present.
+    */
+  void invalidValueColorChanged();
   void refreshEntityItems();
 
   friend class qtBaseView;
