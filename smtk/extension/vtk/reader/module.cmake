@@ -10,6 +10,7 @@ vtk_module(vtkSMTKReaderExt
     vtkFiltersGeneral
     vtkFiltersGeometry
     vtkGeovisCore
+    vtkInfovisLayout
     vtkIOGDAL
     vtkIOGeometry
     vtkIOParallelExodus
