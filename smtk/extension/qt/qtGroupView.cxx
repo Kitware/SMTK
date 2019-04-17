@@ -92,10 +92,12 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
   else if (m_style == qtGroupViewInternals::TABBED)
   {
     QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(gview->widget());
+
     if (!tabWidget)
     {
       return;
     }
+    tabWidget->blockSignals(true);
     tabWidget->clear();
     std::string lastSavedViewName = gview->uiManager()->activeTabInfo(gview->getObject()->name());
     m_TabbedViews.clear();
@@ -131,6 +133,7 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     {
       m_currentTabSelected = 0;
     }
+    tabWidget->blockSignals(false);
     tabWidget->setCurrentIndex(m_currentTabSelected);
   }
   else
