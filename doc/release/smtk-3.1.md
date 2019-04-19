@@ -195,7 +195,7 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
     </View>
 ```
 ####Changes to Displaying Items
-* Extensible Group Items know display "Add Row" instead of "Add sub group" - this label can be changed using an ItemView with the XML attribute : ExtensibleLabel
+* Extensible Group Items now display "Add Row" instead of "Add sub group" - this label can be changed using an ItemView with the XML attribute : ExtensibleLabel
 * Added a FixedWidth Option for String, Double and Int ItemViews as also shown in the above example - **Note: setting the fixed width to 0 means there is no fixed width.**
 * qtReferenceItem now allows developers to override the visibility icons
   with custom URLs. See qtReferenceItem::setSelectionIconPaths() and
