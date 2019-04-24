@@ -52,6 +52,11 @@ public:
   bool operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
     std::string domainPropertyName) const;
 
+  //Export a meshset as a VTK xml polydata or xml unstructured grid file
+  //(determined by the file name suffix .vtp or .vtu).
+  bool operator()(const std::string& filename, const smtk::mesh::MeshSet& meshset,
+    std::string domainPropertyName) const;
+
   //Export the highest dimension cells of a mesh set to polydata (starting with
   //Dims2).
   void operator()(const smtk::mesh::MeshSet& meshset, vtkPolyData* pd,

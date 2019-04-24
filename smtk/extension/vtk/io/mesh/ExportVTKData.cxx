@@ -69,7 +69,19 @@ bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::Resource
   std::string domainPropertyName) const
 {
   // fail if the resource is empty
-  if (!resource || !resource->isValid() || resource->meshes().is_empty())
+  if (!resource || !resource->isValid())
+  {
+    return false;
+  }
+
+  return (*this)(filename, resource->meshes(), domainPropertyName);
+}
+
+bool ExportVTKData::operator()(const std::string& filename, const smtk::mesh::MeshSet& meshset,
+  std::string domainPropertyName) const
+{
+  // fail if the meshset is empty
+  if (meshset.is_empty())
   {
     return false;
   }
@@ -80,7 +92,7 @@ bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::Resource
   if (extension == ".vtu")
   {
     vtkSmartPointer<vtkUnstructuredGrid> ug = vtkSmartPointer<vtkUnstructuredGrid>::New();
-    this->operator()(resource->meshes(), ug, domainPropertyName);
+    this->operator()(meshset, ug, domainPropertyName);
     vtkNew<vtkXMLUnstructuredGridWriter> writer;
     writer->SetFileName(filename.c_str());
     writer->SetInputData(ug);
@@ -90,7 +102,7 @@ bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::Resource
   else if (extension == ".vtp")
   {
     vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
-    this->operator()(resource->meshes(), pd, domainPropertyName);
+    this->operator()(meshset, pd, domainPropertyName);
     vtkNew<vtkXMLPolyDataWriter> writer;
     writer->SetFileName(filename.c_str());
     writer->SetInputData(pd);
@@ -100,7 +112,7 @@ bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::Resource
   else if (extension == ".vtk")
   {
     vtkSmartPointer<vtkUnstructuredGrid> ug = vtkSmartPointer<vtkUnstructuredGrid>::New();
-    this->operator()(resource->meshes(), ug, domainPropertyName);
+    this->operator()(meshset, ug, domainPropertyName);
     vtkNew<vtkUnstructuredGridWriter> writer;
     writer->SetFileName(filename.c_str());
     writer->SetInputData(ug);
