@@ -100,6 +100,15 @@ if (WIN32)
   set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${PROJECT_VERSION}/cmake)
 endif()
 
+# If SMTK_INSTALL_TESTING_DATA is set to ON, set the directory where smtk's data
+# directory is installed.
+if (SMTK_INSTALL_TESTING_DATA)
+  set(SMTK_INSTALL_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/${PROJECT_VERSION})
+  if (WIN32)
+    set(SMTK_INSTALL_DATA_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${PROJECT_VERSION})
+  endif()
+endif()
+
 ################################################################################
 # Options that the user controls
 ################################################################################
@@ -108,6 +117,7 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" ON)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+option(SMTK_INSTALL_TESTING_DATA "Install Testing Data" OFF)
 option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings" OFF)
 # Provide system packagers with the ability to install SMTK
@@ -188,17 +198,6 @@ if (SMTK_ENABLE_TESTING)
   enable_testing()
   include(CTest)
 
-  unset(SMTK_DATA_DIR CACHE)
-  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/data/smtk-data" data)
-  if (NOT data STREQUAL "\n")
-    message(WARNING
-      "Testing is enabled, but the data is not available. Use git-lfs in order "
-      "to obtain the testing data.")
-    set(SMTK_DATA_DIR)
-  else ()
-    set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
-  endif ()
-
   set(SMTK_PLUGIN_CONTRACT_FILE_URLS ""
     CACHE STRING "Local CMake file describing plugins as external projects for contract testing.")
 
@@ -226,6 +225,19 @@ if (SMTK_ENABLE_TESTING)
     COMMAND ${CMAKE_COMMAND}
         "-Dsmtk_SOURCE_DIR=${PROJECT_SOURCE_DIR}"
         -P "${smtk_SOURCE_DIR}/CMake/CheckCopyright.cmake")
+endif()
+
+if(SMTK_ENABLE_TESTING OR SMTK_INSTALL_TESTING_DATA)
+  unset(SMTK_DATA_DIR CACHE)
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/data/smtk-data" data)
+  if (NOT data STREQUAL "\n")
+    message(WARNING
+      "Testing data is not available. Use git-lfs in order to obtain the "
+      "testing data.")
+    set(SMTK_DATA_DIR)
+  else ()
+    set(SMTK_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
+  endif ()
 endif()
 
 # On some *nix distributions, RPath has been deprecated in favor for RunPath. One
@@ -756,6 +768,10 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   set(smtk_python_moduledir)
 endif ()
 
+if (SMTK_DATA_DIR)
+  set(smtk_data_dir ${SMTK_DATA_DIR})
+endif()
+
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
@@ -792,6 +808,12 @@ if (SMTK_RELOCATABLE_INSTALL)
       ${CMAKE_INSTALL_PREFIX}/${SMTK_INSTALL_CONFIG_DIR}
       ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR})
   endif ()
+endif()
+
+if (SMTK_INSTALL_TESTING_DATA)
+  set(smtk_data_dir ${SMTK_INSTALL_DATA_DIR}/data)
+else()
+  set(smtk_data_dir)
 endif()
 
 set(SMTK_VTK_MODULE_DIR "\${CMAKE_CURRENT_LIST_DIR}")
@@ -832,4 +854,8 @@ if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILE_URLS)
   foreach(plugin_url ${SMTK_PLUGIN_CONTRACT_FILE_URLS})
     smtk_test_plugin(${plugin_url})
   endforeach()
+endif()
+
+if (SMTK_INSTALL_TESTING_DATA AND SMTK_DATA_DIR)
+  install(DIRECTORY ${SMTK_DATA_DIR} DESTINATION ${SMTK_INSTALL_DATA_DIR})
 endif()

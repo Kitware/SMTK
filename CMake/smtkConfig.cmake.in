@@ -23,6 +23,8 @@ unset(smtk_module_dir)
 
 set(smtk_cmake_dir @SMTK_MODULE_DIR@)
 
+set(SMTK_DATA_DIR @smtk_data_dir@)
+
 #When building documentation internally we re-import ourselves, which
 #doesnt work and generates CMake warnings. So we will only look for SMTK
 #if the smtkCore target doesn't already exist
