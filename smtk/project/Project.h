@@ -63,8 +63,15 @@ public:
   template <typename ResourceType>
   smtk::shared_ptr<ResourceType> findResource(const std::string& identifier) const;
 
-  // Future:
-  // * methods to add/remove project resources
+  /// Load model file and add to the project resources.
+  /// Returns boolean indicating if the resource was successfully added.
+  /// This method only accepts the model if the project doesn't already have one with the same
+  /// identifer. In other words, you can add a model, but not replace an existing one.
+  /// This method does not add resource links to the input model; any required links
+  /// must be created in the application code.
+  bool addModel(const std::string& location, const std::string& identifier, bool copyNativeFile,
+    bool useVTKSession);
+
 protected:
   /// First set of methods are called by (friend class) smtk::project::Manager
   smtkCreateMacro(Project);
