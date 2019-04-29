@@ -29,7 +29,7 @@ namespace smtk
 namespace extension
 {
 
-qtItem* qtResourceItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtResourceItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::ResourceItem>() == nullptr)
@@ -46,7 +46,7 @@ qtItem* qtResourceItem::createItemWidget(const AttributeItemInfo& info)
   return qi;
 }
 
-qtResourceItem::qtResourceItem(const AttributeItemInfo& info)
+qtResourceItem::qtResourceItem(const qtAttributeItemInfo& info)
   : qtReferenceItem(info)
 {
 }

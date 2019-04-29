@@ -25,7 +25,7 @@ namespace extension
 class SMTKQTEXT_EXPORT qtStringItem
 {
 public:
-  static qtItem* createItemWidget(const AttributeItemInfo& info)
+  static qtItem* createItemWidget(const qtAttributeItemInfo& info)
   {
     return qtInputsItem::createItemWidget(info);
   }

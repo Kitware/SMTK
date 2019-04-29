@@ -35,10 +35,10 @@
 #include "vtkVectorOperators.h"
 
 using qtItem = smtk::extension::qtItem;
-using AttributeItemInfo = smtk::extension::AttributeItemInfo;
+using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKInfiniteCylinderItemWidget::pqSMTKInfiniteCylinderItemWidget(
-  const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -48,7 +48,7 @@ pqSMTKInfiniteCylinderItemWidget::~pqSMTKInfiniteCylinderItemWidget()
 {
 }
 
-qtItem* pqSMTKInfiniteCylinderItemWidget::createCylinderItemWidget(const AttributeItemInfo& info)
+qtItem* pqSMTKInfiniteCylinderItemWidget::createCylinderItemWidget(const qtAttributeItemInfo& info)
 {
   return new pqSMTKInfiniteCylinderItemWidget(info);
 }

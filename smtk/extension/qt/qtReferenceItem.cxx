@@ -49,7 +49,7 @@ static void updateLabel(QLabel* lbl, const QString& txt, bool ok)
 }
 }
 
-qtItem* qtReferenceItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtReferenceItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::ReferenceItem>() == nullptr)
@@ -80,7 +80,7 @@ qtReferenceItemData::~qtReferenceItemData()
 {
 }
 
-qtReferenceItem::qtReferenceItem(const AttributeItemInfo& info)
+qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
   : Superclass(info)
   , m_p(new qtReferenceItemData)
 {

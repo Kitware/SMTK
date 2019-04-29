@@ -1215,7 +1215,7 @@ void qtAttributeView::addComparativeAttribute(smtk::attribute::AttributePtr att)
       {
         smtk::view::View::Component comp;
         comp.setAttribute("Orientation", "Vertical");
-        AttributeItemInfo info(attItem, comp, NULL, this);
+        qtAttributeItemInfo info(attItem, comp, NULL, this);
         auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
         qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);
@@ -1354,7 +1354,7 @@ void qtAttributeView::addComparativeProperty(
       {
         smtk::view::View::Component comp;
         comp.setAttribute("Orientation", "Vertical");
-        AttributeItemInfo info(attItem, comp, NULL, this);
+        qtAttributeItemInfo info(attItem, comp, NULL, this);
         auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
         qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);

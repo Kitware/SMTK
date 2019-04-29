@@ -55,7 +55,7 @@ class testItemWidgetFactory : public qtAttributeItemWidgetFactory
 public:
   virtual ~testItemWidgetFactory() { ++numDeleted; }
 
-  virtual qtItem* createValueItemWidget(const AttributeItemInfo& info)
+  virtual qtItem* createValueItemWidget(const qtAttributeItemInfo& info)
   {
     // TODO: Need to create an attribute view and see that this gets called.
     return new qtInputsItem(info);

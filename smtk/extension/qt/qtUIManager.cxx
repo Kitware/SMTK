@@ -907,7 +907,7 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
   return qtView;
 }
 
-qtItem* qtUIManager::createItem(const AttributeItemInfo& info)
+qtItem* qtUIManager::createItem(const qtAttributeItemInfo& info)
 {
   if (info.uiManager() != this)
   {
@@ -1048,7 +1048,7 @@ void qtUIManager::findDefinitionsLongLabels()
   }
 }
 
-qtItem* qtUIManager::defaultItemConstructor(const AttributeItemInfo& info)
+qtItem* qtUIManager::defaultItemConstructor(const qtAttributeItemInfo& info)
 {
   auto item = info.item();
   qtItem* aItem = nullptr;

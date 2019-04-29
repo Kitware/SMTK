@@ -114,7 +114,7 @@ public:
   bool UserSetAttVisibility;
 };
 
-qtItem* qtAttributeRefItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtAttributeRefItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::ReferenceItem>() == nullptr)
@@ -124,7 +124,7 @@ qtItem* qtAttributeRefItem::createItemWidget(const AttributeItemInfo& info)
   return new qtAttributeRefItem(info);
 }
 
-qtAttributeRefItem::qtAttributeRefItem(const AttributeItemInfo& info)
+qtAttributeRefItem::qtAttributeRefItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
   this->Internals = new qtAttributeRefItemInternals;

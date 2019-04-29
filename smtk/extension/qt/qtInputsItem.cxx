@@ -154,7 +154,7 @@ public:
   QList<QPointer<qtDiscreteValueEditor> > DiscreteEditors;
 };
 
-qtItem* qtInputsItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtInputsItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::ValueItem>() == nullptr)
@@ -164,7 +164,7 @@ qtItem* qtInputsItem::createItemWidget(const AttributeItemInfo& info)
   return new qtInputsItem(info);
 }
 
-qtInputsItem::qtInputsItem(const AttributeItemInfo& info)
+qtInputsItem::qtInputsItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
   this->Internals = new qtInputsItemInternals;

@@ -22,6 +22,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
+#include "smtk/attribute/PathGrammar.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
@@ -59,16 +60,7 @@ public:
       return;
     }
     auto iviews = m_attComp.child(sindex);
-    std::string iname;
-    std::size_t i, n = iviews.numberOfChildren();
-    for (i = 0; i < n; i++)
-    {
-      // Do we have an item attribute?
-      if (iviews.child(i).attribute("Item", iname))
-      {
-        m_itemViewMap[iname] = iviews.child(i);
-      }
-    }
+    qtAttributeItemInfo::buildFromComponent(iviews, m_view, m_itemViewMap);
   }
 
   ~qtAttributeInternals() {}
@@ -77,7 +69,7 @@ public:
   QList<smtk::extension::qtItem*> m_items;
   QPointer<qtBaseView> m_view;
   smtk::view::View::Component m_attComp;
-  std::map<std::string, smtk::view::View::Component> m_itemViewMap;
+  std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 };
 
 qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute,
@@ -193,7 +185,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   if (includeAssociations && att->associations())
   {
     smtk::view::View::Component comp; // not currently used but will be
-    AttributeItemInfo info(att->associations(), comp, m_widget, m_internals->m_view);
+    qtAttributeItemInfo info(att->associations(), comp, m_widget, m_internals->m_view);
     qItem = uiManager->createItem(info);
     if (qItem && qItem->widget())
     {
@@ -211,13 +203,15 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     auto it = m_internals->m_itemViewMap.find(item->name());
     if (it != m_internals->m_itemViewMap.end())
     {
-      AttributeItemInfo info(item, it->second, m_widget, m_internals->m_view);
+      auto info = it->second;
+      info.setParentWidget(m_widget);
+      info.setItem(item);
       qItem = uiManager->createItem(info);
     }
     else
     {
       smtk::view::View::Component comp; // not current used but will be
-      AttributeItemInfo info(item, comp, m_widget, m_internals->m_view);
+      qtAttributeItemInfo info(item, comp, m_widget, m_internals->m_view);
       qItem = uiManager->createItem(info);
     }
     if (qItem && qItem->widget())

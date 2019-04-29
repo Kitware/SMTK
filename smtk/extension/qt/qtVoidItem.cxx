@@ -28,12 +28,12 @@ public:
   QPointer<QCheckBox> optionalCheck;
 };
 
-qtItem* qtVoidItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtVoidItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   return new qtVoidItem(info);
 }
 
-qtVoidItem::qtVoidItem(const AttributeItemInfo& info)
+qtVoidItem::qtVoidItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
   this->Internals = new qtVoidItemInternals;

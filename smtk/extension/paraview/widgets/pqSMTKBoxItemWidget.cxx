@@ -35,10 +35,10 @@
 #include "vtkVectorOperators.h"
 
 using qtItem = smtk::extension::qtItem;
-using AttributeItemInfo = smtk::extension::AttributeItemInfo;
+using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKBoxItemWidget::pqSMTKBoxItemWidget(
-  const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -48,7 +48,7 @@ pqSMTKBoxItemWidget::~pqSMTKBoxItemWidget()
 {
 }
 
-qtItem* pqSMTKBoxItemWidget::createBoxItemWidget(const AttributeItemInfo& info)
+qtItem* pqSMTKBoxItemWidget::createBoxItemWidget(const qtAttributeItemInfo& info)
 {
   return new pqSMTKBoxItemWidget(info);
 }

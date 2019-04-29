@@ -21,7 +21,7 @@
   * coordinates used to place the point widget;
   * the item's values will be copied to the 3-D representation only if
   * they exist and there is no default or if they are non-default.
-  * In the future, flags in the AttributeItemInfo may be used to
+  * In the future, flags in the qtAttributeItemInfo may be used to
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
@@ -30,10 +30,10 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKPointItemWidget : public pqSMTKAttributeItem
   Q_OBJECT
 public:
   pqSMTKPointItemWidget(
-    const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKPointItemWidget();
 
-  static qtItem* createPointItemWidget(const AttributeItemInfo& info);
+  static qtItem* createPointItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   void updateItemFromWidget() override;
 

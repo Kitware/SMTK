@@ -7,6 +7,7 @@ set(QAttrLibSrcs
   qtUIManager.cxx
   qtAttribute.cxx
   qtAttributeDisplay.cxx
+  qtAttributeItemInfo.cxx
   qtBaseView.cxx
   qtCategorySelectorView.cxx
   qtCheckItemComboBox.cxx
@@ -123,6 +124,7 @@ set(QAttrLibMocHeaders
 set(QAttrLibHeaders
   ${QAttrLibMocHeaders}
   RedirectOutput.h
+  qtAttributeItemInfo.h
   qtDirectoryItem.h
   qtDoubleItem.h
   qtIntItem.h

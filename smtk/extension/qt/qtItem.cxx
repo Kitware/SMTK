@@ -31,15 +31,7 @@ public:
   QPointer<QComboBox> AdvLevelCombo;
 };
 
-qtUIManager* AttributeItemInfo::uiManager() const
-{
-  if (m_baseView)
-  {
-    return m_baseView->uiManager();
-  }
-  return nullptr;
-}
-qtItem::qtItem(const AttributeItemInfo& info)
+qtItem::qtItem(const qtAttributeItemInfo& info)
   : m_itemInfo(info)
 {
   this->Internals = new qtItemInternals();

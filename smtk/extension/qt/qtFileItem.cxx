@@ -98,7 +98,7 @@ public:
   QPointer<QToolButton> AddItemButton;
 };
 
-qtItem* qtFileItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtFileItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::FileSystemItem>() == nullptr)
@@ -108,7 +108,7 @@ qtItem* qtFileItem::createItemWidget(const AttributeItemInfo& info)
   return new qtFileItem(info);
 }
 
-qtFileItem::qtFileItem(const AttributeItemInfo& info)
+qtFileItem::qtFileItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
   this->Internals = new qtFileItemInternals;

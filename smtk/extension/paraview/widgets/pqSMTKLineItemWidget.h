@@ -15,7 +15,7 @@
 /**\brief Display a 3-D line with draggable handles for editing a GroupItem.
   *
   * For now, this code assumes that the Group has 2 entries and
-  * their AttributeItemInfo entries specify a mapping to the
+  * their qtAttributeItemInfo entries specify a mapping to the
   * endpoints of the line (named Point1 and Point2).
   * In the future, other item types (such as defining a line by a
   * a base point, direction, and optionally length) may be supported.
@@ -24,7 +24,7 @@
   * coordinates used to size the line widget;
   * the item's values will be copied to the 3-D representation only if
   * they exist and there is no default or if they are non-default.
-  * In the future, flags in the AttributeItemInfo may be used to
+  * In the future, flags in the qtAttributeItemInfo may be used to
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
@@ -33,10 +33,10 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKLineItemWidget : public pqSMTKAttributeItemW
   Q_OBJECT
 public:
   pqSMTKLineItemWidget(
-    const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKLineItemWidget();
 
-  static qtItem* createLineItemWidget(const AttributeItemInfo& info);
+  static qtItem* createLineItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   void updateItemFromWidget() override;
 

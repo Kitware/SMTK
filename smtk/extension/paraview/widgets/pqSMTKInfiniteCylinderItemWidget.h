@@ -25,7 +25,7 @@
   * Currently, there is no support to initialize the box coordinates;
   * the item's values will be copied to the 3-D representation only if
   * they exist and there is no default or if they are non-default.
-  * In the future, flags in the AttributeItemInfo may be used to
+  * In the future, flags in the qtAttributeItemInfo may be used to
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
@@ -34,10 +34,10 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKInfiniteCylinderItemWidget : public pqSMTKAt
   Q_OBJECT
 public:
   pqSMTKInfiniteCylinderItemWidget(
-    const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKInfiniteCylinderItemWidget();
 
-  static qtItem* createCylinderItemWidget(const AttributeItemInfo& info);
+  static qtItem* createCylinderItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
   void updateItemFromWidget() override;

@@ -41,13 +41,13 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKConeItemWidget : public pqSMTKAttributeItemW
   Q_OBJECT
 public:
   pqSMTKConeItemWidget(
-    const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKConeItemWidget();
 
   /// Create an instance of the widget that allows users to define a cone.
-  static qtItem* createConeItemWidget(const AttributeItemInfo& info);
+  static qtItem* createConeItemWidget(const qtAttributeItemInfo& info);
   /// Create an instance of the widget that allows users to define a cylinder.
-  static qtItem* createCylinderItemWidget(const AttributeItemInfo& info);
+  static qtItem* createCylinderItemWidget(const qtAttributeItemInfo& info);
 
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
