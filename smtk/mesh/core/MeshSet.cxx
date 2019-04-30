@@ -183,13 +183,27 @@ bool MeshSet::is_empty() const
 std::string MeshSet::name() const
 {
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-  return iface->name(m_handle);
+  if (m_range.size() == 1)
+  {
+    return iface->name(smtk::mesh::rangeElement(m_range, 0));
+  }
+  else
+  {
+    return iface->name(m_handle);
+  }
 }
 
 bool MeshSet::setName(const std::string& name)
 {
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-  return iface->setName(m_handle, name);
+  if (m_range.size() == 1)
+  {
+    return iface->setName(smtk::mesh::rangeElement(m_range, 0), name);
+  }
+  else
+  {
+    return iface->setName(m_handle, name);
+  }
 }
 
 std::size_t MeshSet::size() const
@@ -260,7 +274,14 @@ void MeshSet::setId(const smtk::common::UUID& id)
 {
   m_id = id;
   const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-  iface->setId(m_handle, id);
+  if (m_range.size() == 1)
+  {
+    iface->setId(smtk::mesh::rangeElement(m_range, 0), id);
+  }
+  else
+  {
+    iface->setId(m_handle, id);
+  }
 }
 
 /**\brief Return an array of model entity UUIDs associated with meshset members.
