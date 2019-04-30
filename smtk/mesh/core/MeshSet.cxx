@@ -241,7 +241,14 @@ const smtk::common::UUID& MeshSet::id() const
   if (!m_id)
   {
     const smtk::mesh::InterfacePtr& iface = m_parent->interface();
-    m_id = iface->getId(m_handle);
+    if (m_range.size() == 1)
+    {
+      m_id = iface->getId(smtk::mesh::rangeElement(m_range, 0));
+    }
+    else
+    {
+      m_id = iface->getId(m_handle);
+    }
   }
   return m_id;
 }
