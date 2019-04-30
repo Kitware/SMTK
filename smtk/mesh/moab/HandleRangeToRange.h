@@ -13,6 +13,8 @@
 #ifndef __smtk_mesh_moab_HandleRangeToRange_h
 #define __smtk_mesh_moab_HandleRangeToRange_h
 
+#include "smtk/CoreExports.h"
+
 #include "smtk/mesh/core/Handle.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -30,8 +32,10 @@ namespace moab
 //these aren't exported as they are private functions that only
 //smtk::mesh should call
 
+SMTKCORE_EXPORT
 smtk::mesh::HandleRange moabToSMTKRange(const ::moab::Range&);
 
+SMTKCORE_EXPORT
 ::moab::Range smtkToMOABRange(const smtk::mesh::HandleRange&);
 }
 }
