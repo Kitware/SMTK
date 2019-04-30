@@ -539,11 +539,11 @@ smtk::mesh::MeshSet Resource::createMesh(
       entities.insert(meshSetHandle);
       if (uuid)
       {
-        iface->setId(meshCreated, uuid);
+        iface->setId(meshSetHandle, uuid);
       }
       else
       {
-        iface->setId(meshCreated, smtk::common::UUIDGenerator::instance().random());
+        iface->setId(meshSetHandle, smtk::common::UUIDGenerator::instance().random());
       }
     }
   }
