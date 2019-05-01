@@ -62,12 +62,13 @@ const smtk::mesh::MeshSet Component::mesh() const
   {
     const smtk::mesh::InterfacePtr& iface = resource->interface();
     smtk::mesh::Handle handle;
+    smtk::mesh::HandleRange entities;
     if (iface->findById(iface->getRoot(), m_id, handle))
     {
-      return smtk::mesh::MeshSet(resource, handle);
+      entities.insert(handle);
+      return smtk::mesh::MeshSet(resource, iface->getRoot(), entities);
     }
   }
-
   return smtk::mesh::MeshSet();
 }
 
@@ -77,9 +78,11 @@ smtk::mesh::MeshSet Component::mesh()
   {
     const smtk::mesh::InterfacePtr& iface = resource->interface();
     smtk::mesh::Handle handle;
+    smtk::mesh::HandleRange entities;
     if (iface->findById(iface->getRoot(), m_id, handle))
     {
-      return smtk::mesh::MeshSet(resource, handle);
+      entities.insert(handle);
+      return smtk::mesh::MeshSet(resource, iface->getRoot(), entities);
     }
   }
 

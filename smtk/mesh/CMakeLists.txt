@@ -95,6 +95,7 @@ set(meshHeaders
   json/jsonMeshInfo.h
   json/jsonResource.h
 
+  moab/HandleRangeToRange.h
   moab/Interface.h
 
   operators/DeleteMesh.h
