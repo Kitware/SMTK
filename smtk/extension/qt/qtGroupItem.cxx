@@ -422,7 +422,8 @@ void qtGroupItem::addItemsToTable(int i)
       }
       this->Internals->ItemsTable->setCellWidget(numRows, added + 1, childItem->widget());
       itemList.push_back(childItem);
-      connect(childItem, SIGNAL(widgetSizeChanged()), this, SLOT(onChildWidgetSizeChanged()));
+      connect(childItem, SIGNAL(widgetSizeChanged()), this, SLOT(onChildWidgetSizeChanged()),
+        Qt::QueuedConnection);
       added++;
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
     }
