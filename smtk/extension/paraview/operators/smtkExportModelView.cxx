@@ -336,7 +336,7 @@ void smtkExportModelView::createWidget()
   */
 
   smtk::view::View::Component comp; // not current used but will be
-  AttributeItemInfo info(
+  qtAttributeItemInfo info(
     this->Internals->CurrentOp.lock()->parameters()->findAs<smtk::attribute::FileSystemItem>(
       "filename", smtk::attribute::ACTIVE_CHILDREN),
     comp, nullptr, this);

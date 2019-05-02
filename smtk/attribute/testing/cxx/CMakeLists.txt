@@ -78,6 +78,7 @@ set(unit_tests
   unitComponentItem.cxx
   unitDateTimeItem.cxx
   unitJsonItemDefinitions.cxx
+  unitPathGrammar.cxx
 )
 
 set(unit_tests_which_require_data)

@@ -37,8 +37,8 @@ class SMTKQTEXT_EXPORT qtInputsItem : public qtItem
   friend class qtDiscreteValueEditor;
 
 public:
-  static qtItem* createItemWidget(const AttributeItemInfo& info);
-  qtInputsItem(const AttributeItemInfo& info);
+  static qtItem* createItemWidget(const qtAttributeItemInfo& info);
+  qtInputsItem(const qtAttributeItemInfo& info);
   virtual ~qtInputsItem();
   void setLabelVisible(bool) override;
   void unsetValue(int elementIndex);

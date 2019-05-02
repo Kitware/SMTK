@@ -15,11 +15,18 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtAttributeItemInfo.h"
 #include "smtk/view/View.h"
 #include <QObject>
 #include <QPointer>
 
 class qtItemInternals;
+
+namespace smtk
+{
+namespace extension
+{
+class qtUIManager;
 
 /* Define a casting macro for use by the constants below.  */
 #if defined(__cplusplus)
@@ -44,56 +51,12 @@ class qtItemInternals;
 #define smtk_DOUBLE_CONSTRAINT_PRECISION 0.000001
 #define smtk_USER_DATA_TYPE 10000
 
-namespace smtk
-{
-namespace extension
-{
-class qtBaseView;
-class qtUIManager;
-
-// This struct is used to construct qtItem instances using factory methods
-class SMTKQTEXT_EXPORT AttributeItemInfo
-{
-public:
-  AttributeItemInfo(smtk::attribute::ItemPtr item, smtk::view::View::Component itemComp,
-    QPointer<QWidget> parent, qtBaseView* bview)
-    : m_item(item)
-    , m_component(itemComp)
-    , m_parentWidget(parent)
-    , m_baseView(bview)
-  {
-  }
-
-  virtual ~AttributeItemInfo() {}
-  smtk::attribute::ItemPtr item() const { return m_item.lock(); }
-
-  template <typename ItemType>
-  std::shared_ptr<ItemType> itemAs() const
-  {
-    return std::dynamic_pointer_cast<ItemType>(this->item());
-  }
-
-  smtk::view::View::Component component() const { return m_component; }
-
-  QPointer<QWidget> parentWidget() const { return m_parentWidget; }
-
-  qtBaseView* baseView() const { return m_baseView; }
-
-  qtUIManager* uiManager() const;
-
-protected:
-  smtk::attribute::WeakItemPtr m_item;     // Pointer to the attribute Item
-  smtk::view::View::Component m_component; // qtItem Component Definition
-  QPointer<QWidget> m_parentWidget;        // Parent Widget of the qtItem
-  qtBaseView* m_baseView;                  // View Definition
-};
-
 class SMTKQTEXT_EXPORT qtItem : public QObject
 {
   Q_OBJECT
 
 public:
-  qtItem(const AttributeItemInfo& info);
+  qtItem(const qtAttributeItemInfo& info);
   virtual ~qtItem();
 
   smtk::attribute::ItemPtr item() const { return m_itemInfo.item(); }
@@ -130,6 +93,7 @@ public slots:
   // virtual void setUseSelectionManager(bool mode) { m_useSelectionManager = mode; }
 
 signals:
+  /// /brief Signal indicates that the underlying widget's size has been modified
   void widgetSizeChanged();
   // Signal indicates that the underlying item has been modified
   void modified();
@@ -147,13 +111,13 @@ protected:
   bool m_isLeafItem;
   bool m_useSelectionManager;
   bool m_readOnly;
-  AttributeItemInfo m_itemInfo;
+  qtAttributeItemInfo m_itemInfo;
   QList<smtk::extension::qtItem*> m_childItems;
 
 private:
   qtItemInternals* Internals;
 }; // class
-}; // namespace attribute
+}; // namespace extension
 }; // namespace smtk
 
 #endif

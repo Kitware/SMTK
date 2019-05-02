@@ -34,7 +34,7 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKAttributeItemWidget : public smtk::extension
   Q_OBJECT
 public:
   using qtItem = smtk::extension::qtItem;
-  using AttributeItemInfo = smtk::extension::AttributeItemInfo;
+  using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
   /**\brief Specify when the widget may override values in the item.
     *
@@ -77,7 +77,8 @@ public:
   static GeometrySource GeometrySourceConvert(const std::string& str);
   static std::string GeometrySourceConvert(GeometrySource val);
 
-  pqSMTKAttributeItemWidget(const AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+  pqSMTKAttributeItemWidget(
+    const qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr, QWidget* p,
     smtk::extension::qtBaseView* bview, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKAttributeItemWidget();

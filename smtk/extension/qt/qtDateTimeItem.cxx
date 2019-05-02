@@ -74,7 +74,7 @@ public:
   QPointer<QToolButton> AddItemButton;
 };
 
-qtItem* qtDateTimeItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtDateTimeItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::DateTimeItem>() == nullptr)
@@ -84,7 +84,7 @@ qtItem* qtDateTimeItem::createItemWidget(const AttributeItemInfo& info)
   return new qtDateTimeItem(info);
 }
 
-qtDateTimeItem::qtDateTimeItem(const AttributeItemInfo& info)
+qtDateTimeItem::qtDateTimeItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
   this->Internals = new qtDateTimeItemInternals;

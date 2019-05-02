@@ -35,10 +35,10 @@
 #include "vtkEventQtSlotConnect.h"
 
 using qtItem = smtk::extension::qtItem;
-using AttributeItemInfo = smtk::extension::AttributeItemInfo;
+using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKSplineItemWidget::pqSMTKSplineItemWidget(
-  const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
   , m_handleConnection(vtkEventQtSlotConnect::New())
 {
@@ -51,7 +51,7 @@ pqSMTKSplineItemWidget::~pqSMTKSplineItemWidget()
   m_handleConnection = nullptr;
 }
 
-qtItem* pqSMTKSplineItemWidget::createSplineItemWidget(const AttributeItemInfo& info)
+qtItem* pqSMTKSplineItemWidget::createSplineItemWidget(const qtAttributeItemInfo& info)
 {
   return new pqSMTKSplineItemWidget(info);
 }

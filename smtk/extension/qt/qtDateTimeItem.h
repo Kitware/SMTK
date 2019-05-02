@@ -32,8 +32,8 @@ class SMTKQTEXT_EXPORT qtDateTimeItem : public qtItem
   Q_OBJECT
 
 public:
-  static qtItem* createItemWidget(const AttributeItemInfo& info);
-  qtDateTimeItem(const AttributeItemInfo& info);
+  static qtItem* createItemWidget(const qtAttributeItemInfo& info);
+  qtDateTimeItem(const qtAttributeItemInfo& info);
   virtual ~qtDateTimeItem();
   void setLabelVisible(bool) override;
 

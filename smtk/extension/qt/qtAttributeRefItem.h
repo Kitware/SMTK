@@ -33,8 +33,8 @@ class SMTKQTEXT_EXPORT qtAttributeRefItem : public qtItem
   Q_OBJECT
 
 public:
-  static qtItem* createItemWidget(const AttributeItemInfo& info);
-  qtAttributeRefItem(const AttributeItemInfo& info);
+  static qtItem* createItemWidget(const qtAttributeItemInfo& info);
+  qtAttributeRefItem(const qtAttributeItemInfo& info);
   virtual ~qtAttributeRefItem();
 
   void setLabelVisible(bool) override;

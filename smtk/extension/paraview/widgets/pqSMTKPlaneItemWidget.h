@@ -15,7 +15,7 @@
 /**\brief Display a 3-D plane with draggable handles for editing a GroupItem.
   *
   * For now, this code assumes that the Group has 2 entries and they
-  * that their AttributeItemInfo entries specify a mapping to the
+  * that their qtAttributeItemInfo entries specify a mapping to the
   * Origin and Normal of the plane.
   * In the future, other item types (such as a DoubleItem holding
   * 4 values used as linear polynomial coefficients) may be supported.
@@ -24,7 +24,7 @@
   * coordinates used to size the plane widget;
   * the item's values will be copied to the 3-D representation only if
   * they exist and there is no default or if they are non-default.
-  * In the future, flags in the AttributeItemInfo may be used to
+  * In the future, flags in the qtAttributeItemInfo may be used to
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
@@ -33,10 +33,10 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKPlaneItemWidget : public pqSMTKAttributeItem
   Q_OBJECT
 public:
   pqSMTKPlaneItemWidget(
-    const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKPlaneItemWidget();
 
-  static qtItem* createPlaneItemWidget(const AttributeItemInfo& info);
+  static qtItem* createPlaneItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   void updateItemFromWidget() override;
 

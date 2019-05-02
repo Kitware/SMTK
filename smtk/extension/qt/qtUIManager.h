@@ -38,7 +38,7 @@ class qtBaseView;
 class qtModelView;
 
 typedef qtBaseView* (*widgetConstructor)(const ViewInfo& info);
-typedef qtItem* (*qtItemConstructor)(const AttributeItemInfo& info);
+typedef qtItem* (*qtItemConstructor)(const qtAttributeItemInfo& info);
 
 /**\brief Container for managers whose content is presented via Qt widgets.
   *
@@ -193,7 +193,7 @@ public:
   qtBaseView* createView(const ViewInfo& info);
 
   //Mechanism for creating new GUI item based on registered factory functions
-  qtItem* createItem(const AttributeItemInfo& info);
+  qtItem* createItem(const qtAttributeItemInfo& info);
 
   // Methods for dealing with selection process
   smtk::view::SelectionPtr selection() const { return m_selection; }
@@ -217,7 +217,7 @@ public:
 
   void setHighlightOnHover(bool val);
 
-  static qtItem* defaultItemConstructor(const AttributeItemInfo& info);
+  static qtItem* defaultItemConstructor(const qtAttributeItemInfo& info);
 
 #ifdef _WIN32
 #define LINE_BREAKER_STRING "\n";

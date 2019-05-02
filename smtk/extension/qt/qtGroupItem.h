@@ -29,8 +29,8 @@ class SMTKQTEXT_EXPORT qtGroupItem : public qtItem
   Q_OBJECT
 
 public:
-  static qtItem* createItemWidget(const AttributeItemInfo& info);
-  qtGroupItem(const AttributeItemInfo& info);
+  static qtItem* createItemWidget(const qtAttributeItemInfo& info);
+  qtGroupItem(const qtAttributeItemInfo& info);
   virtual ~qtGroupItem();
   void setLabelVisible(bool) override;
 

@@ -41,9 +41,10 @@ public:
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QPointer<QTableWidget> ItemsTable;
+  std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 };
 
-qtItem* qtGroupItem::createItemWidget(const AttributeItemInfo& info)
+qtItem* qtGroupItem::createItemWidget(const qtAttributeItemInfo& info)
 {
   // So we support this type of item?
   if (info.itemAs<smtk::attribute::GroupItem>() == nullptr)
@@ -53,10 +54,11 @@ qtItem* qtGroupItem::createItemWidget(const AttributeItemInfo& info)
   return new qtGroupItem(info);
 }
 
-qtGroupItem::qtGroupItem(const AttributeItemInfo& info)
+qtGroupItem::qtGroupItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
   this->Internals = new qtGroupItemInternals;
+  m_itemInfo.createNewDictionary(this->Internals->m_itemViewMap);
   m_isLeafItem = true;
   this->createWidget();
 }
@@ -98,6 +100,7 @@ void qtGroupItem::createWidget()
   QString title = item->label().empty() ? item->name().c_str() : item->label().c_str();
   QGroupBox* groupBox = new QGroupBox(title, m_itemInfo.parentWidget());
   m_widget = groupBox;
+
   if (this->isReadOnly())
   {
     m_widget->setEnabled(false);
@@ -241,7 +244,6 @@ void qtGroupItem::onAddSubGroup()
 void qtGroupItem::addSubGroup(int i)
 {
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
-  auto ui_manager = this->uiManager();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
     return;
@@ -287,10 +289,22 @@ void qtGroupItem::addSubGroup(int i)
 
   for (std::size_t j = 0; j < numItems; j++)
   {
-    smtk::view::View::Component comp; // not current used but will be
-    AttributeItemInfo info(
-      item->item(i, static_cast<int>(j)), comp, m_widget, m_itemInfo.baseView());
-    qtItem* childItem = ui_manager->createItem(info);
+    auto citem = item->item(i, static_cast<int>(j));
+    auto it = Internals->m_itemViewMap.find(citem->name());
+    qtItem* childItem;
+    if (it != Internals->m_itemViewMap.end())
+    {
+      auto info = it->second;
+      info.setParentWidget(m_widget);
+      info.setItem(citem);
+      childItem = m_itemInfo.uiManager()->createItem(info);
+    }
+    else
+    {
+      smtk::view::View::Component comp; // lets create a default style (an empty component)
+      qtAttributeItemInfo info(citem, comp, m_widget, m_itemInfo.baseView());
+      childItem = m_itemInfo.uiManager()->createItem(info);
+    }
     if (childItem)
     {
       subGroupLayout->addWidget(childItem->widget());
@@ -372,7 +386,6 @@ void qtGroupItem::updateExtensibleState()
 void qtGroupItem::addItemsToTable(int i)
 {
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
-  auto ui_manager = this->uiManager();
   if (!item || !item->isExtensible())
   {
     return;
@@ -396,10 +409,22 @@ void qtGroupItem::addItemsToTable(int i)
   int numRows = this->Internals->ItemsTable->rowCount();
   for (j = 0; j < m; j++)
   {
-    smtk::attribute::ItemPtr attItem = item->item(i, static_cast<int>(j));
-    smtk::view::View::Component comp; // not currently used but will be
-    AttributeItemInfo info(attItem, comp, m_widget, m_itemInfo.baseView());
-    qtItem* childItem = ui_manager->createItem(info);
+    auto citem = item->item(i, static_cast<int>(j));
+    auto it = Internals->m_itemViewMap.find(citem->name());
+    qtItem* childItem;
+    if (it != Internals->m_itemViewMap.end())
+    {
+      auto info = it->second;
+      info.setParentWidget(m_widget);
+      info.setItem(citem);
+      childItem = m_itemInfo.uiManager()->createItem(info);
+    }
+    else
+    {
+      smtk::view::View::Component comp; // lets create a default style (an empty component)
+      qtAttributeItemInfo info(citem, comp, m_widget, m_itemInfo.baseView());
+      childItem = m_itemInfo.uiManager()->createItem(info);
+    }
     if (childItem)
     {
       if (added == 0)
@@ -410,7 +435,7 @@ void qtGroupItem::addItemsToTable(int i)
       if (added >= numCols)
       {
         this->Internals->ItemsTable->insertColumn(numCols + 1);
-        std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
+        std::string strItemLabel = citem->label().empty() ? citem->name() : citem->label();
         this->Internals->ItemsTable->setHorizontalHeaderItem(
           numCols + 1, new QTableWidgetItem(strItemLabel.c_str()));
       }

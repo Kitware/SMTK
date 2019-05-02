@@ -148,7 +148,7 @@ std::string pqSMTKAttributeItemWidget::GeometrySourceConvert(GeometrySource val)
 }
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
-  const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
   : qtItem(info)
 {
   // Subclass constructors must call:
@@ -189,7 +189,7 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr itm, QWidget* p,
   smtk::extension::qtBaseView* bview, Qt::Orientation orient)
-  : qtItem(smtk::extension::AttributeItemInfo(itm, smtk::view::View::Component(), p, bview))
+  : qtItem(smtk::extension::qtAttributeItemInfo(itm, smtk::view::View::Component(), p, bview))
 {
   m_p = new Internal(itm, this->widget(), bview, orient);
   m_p->m_opObserver = bview->uiManager()->operationManager()->observers().insert(

@@ -35,10 +35,10 @@
 #include "vtkVectorOperators.h"
 
 using qtItem = smtk::extension::qtItem;
-using AttributeItemInfo = smtk::extension::AttributeItemInfo;
+using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKConeItemWidget::pqSMTKConeItemWidget(
-  const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
   , m_forceCylinder(false)
 {
@@ -49,12 +49,12 @@ pqSMTKConeItemWidget::~pqSMTKConeItemWidget()
 {
 }
 
-qtItem* pqSMTKConeItemWidget::createConeItemWidget(const AttributeItemInfo& info)
+qtItem* pqSMTKConeItemWidget::createConeItemWidget(const qtAttributeItemInfo& info)
 {
   return new pqSMTKConeItemWidget(info);
 }
 
-qtItem* pqSMTKConeItemWidget::createCylinderItemWidget(const AttributeItemInfo& info)
+qtItem* pqSMTKConeItemWidget::createCylinderItemWidget(const qtAttributeItemInfo& info)
 {
   auto item = new pqSMTKConeItemWidget(info);
   item->setForceCylindrical(true);

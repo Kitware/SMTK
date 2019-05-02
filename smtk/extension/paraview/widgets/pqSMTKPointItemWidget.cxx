@@ -32,10 +32,10 @@
 #include "vtkSMProxy.h"
 
 using qtItem = smtk::extension::qtItem;
-using AttributeItemInfo = smtk::extension::AttributeItemInfo;
+using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
 
 pqSMTKPointItemWidget::pqSMTKPointItemWidget(
-  const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient)
+  const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient)
   : pqSMTKAttributeItemWidget(info, orient)
 {
   this->createWidget();
@@ -45,7 +45,7 @@ pqSMTKPointItemWidget::~pqSMTKPointItemWidget()
 {
 }
 
-qtItem* pqSMTKPointItemWidget::createPointItemWidget(const AttributeItemInfo& info)
+qtItem* pqSMTKPointItemWidget::createPointItemWidget(const qtAttributeItemInfo& info)
 {
   return new pqSMTKPointItemWidget(info);
 }

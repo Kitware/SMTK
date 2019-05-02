@@ -16,7 +16,7 @@
   *       for editing a GroupItem with 1 vector and 1 scalar.
   *
   * For now, this code assumes that the Group has 2 entries and they
-  * that its AttributeItemInfo entry specify a mapping to the
+  * that its qtAttributeItemInfo entry specify a mapping to the
   * Center and Radius of the sphere.
   * In the future, other item types (such as 3 DoubleItem holding
   * 3 points used to bound the sphere) may be supported.
@@ -26,10 +26,10 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKSphereItemWidget : public pqSMTKAttributeIte
   Q_OBJECT
 public:
   pqSMTKSphereItemWidget(
-    const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKSphereItemWidget();
 
-  static qtItem* createSphereItemWidget(const AttributeItemInfo& info);
+  static qtItem* createSphereItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   void updateItemFromWidget() override;
   void updateWidgetFromItem() override;

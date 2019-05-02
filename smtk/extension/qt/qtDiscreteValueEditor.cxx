@@ -49,6 +49,7 @@ public:
   QPointer<QLayout> m_childrenLayout;
   int m_hintChildWidth;
   int m_hintChildHeight;
+  std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 
   void clearChildItems()
   {
@@ -66,6 +67,11 @@ qtDiscreteValueEditor::qtDiscreteValueEditor(
   , m_useSelectionManager(false)
 {
   this->Internals = new qtDiscreteValueEditorInternals(item, elementIdx, childLayout);
+  if (item != nullptr)
+  {
+    item->m_itemInfo.createNewDictionary(this->Internals->m_itemViewMap);
+  }
+
   this->createWidget();
 }
 
@@ -243,11 +249,23 @@ void qtDiscreteValueEditor::onInputValueChanged()
 
     for (i = 0; i < m; i++)
     {
-      smtk::view::View::Component comp; // not current used but will be
-      AttributeItemInfo info(item->activeChildItem(static_cast<int>(i)), comp,
-        this->Internals->m_childrenFrame.data(),
-        this->Internals->m_inputItem->m_itemInfo.baseView());
-      qtItem* childItem = uiManager->createItem(info);
+      auto citem = item->activeChildItem(static_cast<int>(i));
+      auto it = Internals->m_itemViewMap.find(citem->name());
+      qtItem* childItem;
+      if (it != Internals->m_itemViewMap.end())
+      {
+        auto info = it->second;
+        info.setParentWidget(this->Internals->m_childrenFrame.data());
+        info.setItem(citem);
+        childItem = this->Internals->m_inputItem->uiManager()->createItem(info);
+      }
+      else
+      {
+        smtk::view::View::Component comp; // create a default view style
+        qtAttributeItemInfo info(citem, comp, this->Internals->m_childrenFrame.data(),
+          this->Internals->m_inputItem->m_itemInfo.baseView());
+        childItem = this->Internals->m_inputItem->uiManager()->createItem(info);
+      }
       if (childItem)
       {
         clayout->addWidget(childItem->widget());
@@ -271,10 +289,4 @@ void qtDiscreteValueEditor::onInputValueChanged()
   }
   this->Internals->m_inputItem->m_itemInfo.baseView()->childrenResized();
   emit this->widgetSizeChanged();
-}
-
-QSize qtDiscreteValueEditor::sizeHint() const
-{
-  return QSize(this->Internals->m_combo->width(),
-    this->Internals->m_combo->height() + this->Internals->m_hintChildHeight);
 }

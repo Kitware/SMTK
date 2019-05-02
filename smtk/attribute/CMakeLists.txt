@@ -114,6 +114,7 @@ set(attributeHeaders
   MeshSelectionItemDefinition.h
   ModelEntityItem.h
   ModelEntityItemDefinition.h
+  PathGrammar.h
   ReferenceItem.h
   ReferenceItemDefinition.h
   RefItem.h

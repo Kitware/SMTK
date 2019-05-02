@@ -22,10 +22,10 @@ class SMTKPQWIDGETSEXT_EXPORT pqSMTKSplineItemWidget : public pqSMTKAttributeIte
   Q_OBJECT
 public:
   pqSMTKSplineItemWidget(
-    const smtk::extension::AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
+    const smtk::extension::qtAttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   virtual ~pqSMTKSplineItemWidget();
 
-  static qtItem* createSplineItemWidget(const AttributeItemInfo& info);
+  static qtItem* createSplineItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
   void updateItemFromWidget() override;
 

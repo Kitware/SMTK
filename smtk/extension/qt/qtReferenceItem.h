@@ -33,9 +33,9 @@ class SMTKQTEXT_EXPORT qtReferenceItem : public qtItem
   using Superclass = qtItem;
 
 public:
-  qtReferenceItem(const AttributeItemInfo& info);
+  qtReferenceItem(const qtAttributeItemInfo& info);
   virtual ~qtReferenceItem();
-  static qtItem* createItemWidget(const AttributeItemInfo& info);
+  static qtItem* createItemWidget(const qtAttributeItemInfo& info);
 
   enum AcceptsTypes
   {

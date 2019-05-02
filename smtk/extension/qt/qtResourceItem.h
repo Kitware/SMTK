@@ -27,8 +27,8 @@ class SMTKQTEXT_EXPORT qtResourceItem : public qtReferenceItem
   using Superclass = qtReferenceItem;
 
 public:
-  static qtItem* createItemWidget(const AttributeItemInfo& info);
-  qtResourceItem(const AttributeItemInfo& info);
+  static qtItem* createItemWidget(const qtAttributeItemInfo& info);
+  qtResourceItem(const qtAttributeItemInfo& info);
   virtual ~qtResourceItem();
 
 protected:
