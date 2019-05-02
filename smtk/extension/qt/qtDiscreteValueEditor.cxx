@@ -270,6 +270,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
     }
   }
   this->Internals->m_inputItem->m_itemInfo.baseView()->childrenResized();
+  emit this->widgetSizeChanged();
 }
 
 QSize qtDiscreteValueEditor::sizeHint() const

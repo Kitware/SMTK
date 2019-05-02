@@ -654,6 +654,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
   if (item->isDiscrete())
   {
     auto editor = new qtDiscreteValueEditor(this, elementIdx, childLayout);
+    QObject::connect(editor, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
     // editor->setUseSelectionManager(m_useSelectionManager);
     this->Internals->DiscreteEditors.append(editor);
     return editor;

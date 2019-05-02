@@ -160,6 +160,7 @@ The following is an example of a Analysis View:
 
 * View no longer displays empty tabs
 * Current tabs are now remembered when the group rebuilds its widget - previously this was only true for the top-level tabbed group views
+* Fixed issue with displaying Discrete Items that has children
 
 ###Changes to UIManager
 

@@ -41,6 +41,10 @@ public slots:
   // Indicates if it is possible use the Selection Manager
   // void setUseSelectionManager(bool mode) { m_useSelectionManager = mode; }
 
+signals:
+  /// /brief Signal indicates that the underlying widget's size has been modified
+  void widgetSizeChanged();
+
 protected slots:
   virtual void updateItemData();
 
