@@ -254,6 +254,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
         this->Internals->m_childItems.push_back(childItem);
         connect(
           childItem, SIGNAL(modified()), this->Internals->m_inputItem, SLOT(onChildItemModified()));
+        connect(childItem, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
       }
     }
 
