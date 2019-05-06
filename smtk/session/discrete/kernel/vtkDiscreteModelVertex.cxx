@@ -10,12 +10,12 @@
 
 #include "vtkDiscreteModelVertex.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelVertexUse.h"
 #include "vtkDiscreteModel.h"
 #include "vtkInformation.h"
 #include "vtkInformationIdTypeKey.h"
-#include "vtkModel.h"
-#include "vtkModelItemIterator.h"
-#include "vtkModelVertexUse.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkProperty.h"

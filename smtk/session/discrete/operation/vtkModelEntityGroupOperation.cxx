@@ -10,11 +10,11 @@
 
 #include "vtkModelEntityGroupOperation.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelEntity.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkIdList.h"
-#include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkModelEntityGroupOperation);

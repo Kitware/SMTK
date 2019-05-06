@@ -17,8 +17,8 @@
 
 #include "smtk/model/ArrangementHelper.h"
 
-#include "vtkModelEdgeUse.h"
-#include "vtkModelRegion.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelEdgeUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelRegion.h"
 
 namespace py = pybind11;
 

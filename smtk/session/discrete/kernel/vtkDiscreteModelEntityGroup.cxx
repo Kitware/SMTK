@@ -10,11 +10,11 @@
 
 #include "vtkDiscreteModelEntityGroup.h"
 
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntity.h"
 #include "vtkInformation.h"
 #include "vtkObjectFactory.h"
-#include "vtkSerializer.h"
 
 vtkDiscreteModelEntityGroup* vtkDiscreteModelEntityGroup::New()
 {

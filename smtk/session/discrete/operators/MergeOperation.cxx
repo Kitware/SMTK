@@ -25,12 +25,12 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFace.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItem.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelRegion.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModel.h"
-#include "vtkModelFace.h"
-#include "vtkModelItem.h"
-#include "vtkModelRegion.h"
 
 #include "MergeOperation_xml.h"
 

@@ -31,12 +31,12 @@
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItem.h"
 #include "vtkDataSetRegionSurfaceFilter.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkMasterPolyDataNormals.h"
 #include "vtkMergeDuplicateCells.h"
-#include "vtkModel.h"
-#include "vtkModelItem.h"
 #include "vtkPDataSetReader.h"
 
 #ifdef SMTK_ENABLE_REMUS_SUPPORT

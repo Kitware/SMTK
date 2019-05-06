@@ -16,7 +16,7 @@
 
 #include "smtk/session/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
 
-#include "vtkModelEntity.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelEntity.h"
 
 class vtkInformationStringKey;
 class vtkModelGeometricEntity;

@@ -10,11 +10,11 @@
 
 #include "vtkCMBParserBase.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelEntity.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkModel3dmGridRepresentation.h"
-#include "vtkModelEntity.h"
 
 #include <vtkCharArray.h>
 #include <vtkFieldData.h>

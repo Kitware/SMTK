@@ -28,12 +28,11 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Volume.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelRegion.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModel.h"
-#include "vtkModel.h"
-#include "vtkModelRegion.h"
 
 #include "vtkCellData.h"
 #include "vtkInformation.h"

@@ -23,11 +23,11 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkIdList.h"
-#include "vtkModel.h"
 #include "vtkModelMaterial.h"
 #include "vtkModelUserName.h"
 

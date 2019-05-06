@@ -10,9 +10,9 @@
 
 #include "vtkModelUserName.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelEntity.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
-#include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkModelUserName);

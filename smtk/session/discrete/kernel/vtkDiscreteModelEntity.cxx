@@ -10,12 +10,12 @@
 
 #include "vtkDiscreteModelEntity.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkModelItemIterator.h"
 #include "vtkObjectFactory.h"
 
 vtkDiscreteModelEntity::vtkDiscreteModelEntity()

@@ -8,15 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/session/discrete/kernel/Model/vtkModelFaceUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelShellUse.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include "vtkModelFaceUse.h"
-#include "vtkModelItemIterator.h"
 #include "vtkModelMaterial.h"
-#include "vtkModelShellUse.h"
 #include "vtkXMLModelReader.h"
 #include "vtkXMLModelWriter.h"
 

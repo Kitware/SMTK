@@ -10,6 +10,10 @@
 
 #include "vtkXMLModelWriter.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelEntity.h"
+#include "smtk/session/discrete/kernel/Serialize/vtkInformationKeyMap.h"
+#include "smtk/session/discrete/kernel/Serialize/vtkXMLElement.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleKey.h"
 #include "vtkInformationDoubleVectorKey.h"
@@ -17,13 +21,9 @@
 #include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
 #include "vtkInformationIterator.h"
-#include "vtkInformationKeyMap.h"
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkInformationStringKey.h"
-#include "vtkModel.h"
-#include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
-#include "vtkXMLElement.h"
 
 #include <list>
 #include <map>

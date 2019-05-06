@@ -10,8 +10,8 @@
 
 #include "vtkModelEntityOperationBase.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelGeometricEntity.h"
 #include "vtkDiscreteModel.h"
-#include "vtkModelGeometricEntity.h"
 #include "vtkModelUserName.h"
 #include "vtkObjectFactory.h"
 #include "vtkProperty.h"
