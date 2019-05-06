@@ -11,7 +11,9 @@
 //=============================================================================
 #include "smtk/operation/Registrar.h"
 
+#ifdef SMTK_PYTHON_ENABLED
 #include "smtk/operation/operators/ImportPythonOperation.h"
+#endif
 #include "smtk/operation/operators/ImportResource.h"
 #include "smtk/operation/operators/MarkModified.h"
 #include "smtk/operation/operators/ReadResource.h"
@@ -26,8 +28,11 @@ namespace operation
 {
 namespace
 {
-typedef std::tuple<ImportPythonOperation, ImportResource, MarkModified, ReadResource,
-  RemoveResource, WriteResource>
+typedef std::tuple<
+#ifdef SMTK_PYTHON_ENABLED
+  ImportPythonOperation,
+#endif
+  ImportResource, MarkModified, ReadResource, RemoveResource, WriteResource>
   OperationList;
 }
 
