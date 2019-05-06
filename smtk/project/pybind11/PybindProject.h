@@ -32,6 +32,7 @@ PySharedPtrClass<smtk::project::Project> pybind11_init_smtk_project_Project(py::
     .def("directory", &smtk::project::Project::directory)
     .def("resources", &smtk::project::Project::resources)
     .def("importLocation", &smtk::project::Project::importLocation)
+    .def("addModel", &smtk::project::Project::addModel)
 
     .def("findAttributeResource", [](smtk::project::Project& prj, const std::string& identifier) {
         return prj.findResource<smtk::attribute::Resource>(identifier);

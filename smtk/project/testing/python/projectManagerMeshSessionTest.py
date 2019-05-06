@@ -26,7 +26,6 @@ import smtk.session.mesh
 import smtk.testing
 
 PROJECT1 = 'project1'
-NUMBER_OF_RESOURCES = 3
 
 
 class TestProjectManager(unittest.TestCase):
@@ -39,6 +38,7 @@ class TestProjectManager(unittest.TestCase):
         self.rm = None    # resource manager
         self.om = None    # operation manager
         self.project = None
+        self.NUMBER_OF_RESOURCES = 0  # for checking
 
     def test_getProjectSpecification(self):
         rm = smtk.resource.Manager.create()
@@ -93,12 +93,6 @@ class TestProjectManager(unittest.TestCase):
             smtk.testing.DATA_DIR, 'model', '3d', 'genesis', 'gun-1fourth.gen')
         model_group_item.find('model-file').setValue(0, model_file)
 
-        second_model_file = os.path.join(
-            smtk.testing.DATA_DIR, 'model', '3d', 'exodus', 'disk_out_ref.ex2')
-        model_group_item.find('second-model-file').setIsEnabled(True)
-        model_group_item.find(
-            'second-model-file').setValue(0, second_model_file)
-
         # Make sure vtk-session option is off
         spec.findVoid('use-vtk-session').setIsEnabled(False)
 
@@ -112,11 +106,13 @@ class TestProjectManager(unittest.TestCase):
         print('project: ', project)
         self.assertIsNotNone(project, msg=logger.convertToString())
         self.project = project
+        self.NUMBER_OF_RESOURCES = 2
 
         # Verify that 2 resources were created
-        self.assertEqual(len(self.project.resources()), NUMBER_OF_RESOURCES)
+        self.assertEqual(
+            len(self.project.resources()), self.NUMBER_OF_RESOURCES)
         after_count = len(self.rm.resources())
-        self.assertEqual(after_count - before_count, NUMBER_OF_RESOURCES)
+        self.assertEqual(after_count - before_count, self.NUMBER_OF_RESOURCES)
 
         # Verify that folders & files were created
         project_folder = os.path.join(smtk.testing.TEMP_DIR, project_name)
@@ -124,8 +120,7 @@ class TestProjectManager(unittest.TestCase):
 
         filenames = [
             '.smtkproject', 'sbi.default.smtk',
-            'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk',
-            'disk_out_ref.ex2', 'disk_out_ref.ex2.h5m', 'disk_out_ref.ex2.smtk']
+            'gun-1fourth.gen', 'gun-1fourth.gen.h5m', 'gun-1fourth.gen.smtk']
         for f in filenames:
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
@@ -136,11 +131,7 @@ class TestProjectManager(unittest.TestCase):
 
     def modify_project(self):
         # Get simulation attributes
-        resources = self.project.resources()
-        for res in resources:
-            if isinstance(res, smtk.attribute.Resource):
-                att_resource = res
-                break
+        att_resource = self.project.findAttributeResource('default')
         self.assertIsNotNone(att_resource)
         before_count = len(att_resource.attributes())
 
@@ -161,13 +152,44 @@ class TestProjectManager(unittest.TestCase):
         type_item = att.findString('NonlinearMaterial').setValue(0, 'AL6061')
 
         after_count = len(att_resource.attributes())
-        self.assertEqual(after_count - before_count, NUMBER_OF_RESOURCES)
+        self.assertEqual(after_count - before_count, 3)
         self.attribute_count = after_count
+
+        # Add second model
+        before_count = len(self.rm.resources())
+        second_model_file = os.path.join(
+            smtk.testing.DATA_DIR, 'model', '3d', 'exodus', 'disk_out_ref.ex2')
+        copy_native_file = True
+        use_vtk_session = False
+
+        # Confirm that we cannot add 'default' model (because project already
+        # has one)
+        success = self.project.addModel(
+            second_model_file, 'default', copy_native_file, use_vtk_session)
+        self.assertFalse(success)
+
+        # Confirm that we can add 'second' model
+        success = self.project.addModel(
+            second_model_file, 'second', copy_native_file, use_vtk_session)
+        self.assertTrue(success)
+
+        after_count = len(self.rm.resources())
+        self.assertEqual(after_count - before_count, 1)
+        self.NUMBER_OF_RESOURCES += 1
 
     def save_project(self):
         logger = smtk.io.Logger.instance()
         success = self.pm.saveProject(logger)
         self.assertTrue(success, msg=logger.convertToString())
+
+        # Verify that second model files were created
+        project_folder = os.path.join(
+            smtk.testing.TEMP_DIR, self.project.name())
+        filenames = [
+            'disk_out_ref.ex2', 'disk_out_ref.ex2.h5m', 'disk_out_ref.ex2.smtk']
+        for f in filenames:
+            path = os.path.join(project_folder, f)
+            self.assertTrue(os.path.exists(path), '{}'.format(path))
 
     def open_project(self):
         path = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
@@ -181,7 +203,7 @@ class TestProjectManager(unittest.TestCase):
         self.assertEqual(project.directory(), path)
 
         resources = project.resources()
-        self.assertEqual(len(resources), NUMBER_OF_RESOURCES)
+        self.assertEqual(len(resources), self.NUMBER_OF_RESOURCES)
 
         for res in resources:
             if isinstance(res, smtk.attribute.Resource):
@@ -209,7 +231,7 @@ class TestProjectManager(unittest.TestCase):
         self.assertTrue(success, msg=logger.convertToString())
 
         after_count = len(self.rm.resources())
-        self.assertEqual(before_count - after_count, NUMBER_OF_RESOURCES)
+        self.assertEqual(before_count - after_count, self.NUMBER_OF_RESOURCES)
 
         project = self.pm.getCurrentProject()
         self.assertIsNone(project)
@@ -220,6 +242,7 @@ class TestProjectManager(unittest.TestCase):
         self.pm = None    # project manager
         self.project = None
         self.attribute_count = 0
+        self.NUMBER_OF_RESOURCES = 0
 
         try:
             self.init_project_manager()

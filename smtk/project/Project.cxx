@@ -104,6 +104,32 @@ std::string Project::importLocation(smtk::resource::ResourcePtr res) const
   return std::string();
 }
 
+bool Project::addModel(const std::string& location, const std::string& identifier,
+  bool copyNativeFile, bool useVTKSession)
+{
+  // Project must not already have a model with the same identifier
+  auto model = this->findResource<smtk::model::Resource>(identifier);
+  if (model != nullptr)
+  {
+    std::cerr << "Cannot import model " << location
+              << " -- project already has model with identifier " << identifier << std::endl;
+    return false;
+  }
+
+  // Create descriptor
+  ResourceDescriptor modelDescriptor;
+  auto logger = smtk::io::Logger::instance();
+  if (!this->importModel(location, copyNativeFile, modelDescriptor, useVTKSession, logger))
+  {
+    std::cerr << logger.convertToString() << std::endl;
+    return false;
+  }
+  modelDescriptor.m_identifier = identifier;
+  m_resourceDescriptors.push_back(modelDescriptor);
+
+  return true;
+}
+
 void Project::setCoreManagers(
   smtk::resource::ManagerPtr resManager, smtk::operation::ManagerPtr opManager)
 {
