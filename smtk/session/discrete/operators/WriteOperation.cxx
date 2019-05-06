@@ -21,9 +21,9 @@
 
 #include "smtk/model/Model.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItem.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModel.h"
-#include "vtkModelItem.h"
 #include <vtksys/SystemTools.hxx>
 
 #include "WriteOperation_xml.h"

@@ -10,6 +10,7 @@
 
 #include "vtkCMBIncorporateMeshOperation.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkAlgorithm.h"
 #include "vtkCMBModelBuilder.h"
 #include "vtkCellArray.h"
@@ -23,7 +24,6 @@
 #include "vtkIncrementalOctreePointLocator.h"
 #include "vtkMasterPolyDataNormals.h"
 #include "vtkMergeDuplicateCells.h"
-#include "vtkModelItemIterator.h"
 #include "vtkModelMaterial.h"
 #include "vtkModelUserName.h"
 #include "vtkObjectFactory.h"

@@ -20,12 +20,12 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFace.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItem.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModel.h"
-#include "vtkModelFace.h"
-#include "vtkModelItem.h"
-#include "vtkModelItemIterator.h"
 
 #include "CreateEdgesOperation_xml.h"
 

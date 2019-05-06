@@ -11,10 +11,10 @@
 #include "vtkCreateModelEdgesOperation.h"
 
 #include "ModelEdgeHelper.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemListIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelItemListIterator.h"
 #include "vtkNew.h"
 
 #include "vtkObjectFactory.h"

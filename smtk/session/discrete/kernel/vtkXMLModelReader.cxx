@@ -9,6 +9,9 @@
 //=========================================================================
 #include "vtkXMLModelReader.h"
 
+#include "smtk/session/discrete/kernel/Serialize/vtkInformationKeyMap.h"
+#include "smtk/session/discrete/kernel/Serialize/vtkModelXMLParser.h"
+#include "smtk/session/discrete/kernel/Serialize/vtkXMLElement.h"
 #include "vtkCollection.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
@@ -22,24 +25,21 @@
 #include "vtkInformationIdTypeKey.h"
 #include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
-#include "vtkInformationKeyMap.h"
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkInformationStringKey.h"
 #include "vtkModelMaterial.h"
 #include "vtkModelUserName.h"
-#include "vtkModelXMLParser.h"
-#include "vtkXMLElement.h"
-#
-#include "vtkModelEdgeUse.h"
-#include "vtkModelFaceUse.h"
-#include "vtkModelItemIterator.h"
-#include "vtkModelLoopUse.h"
-#include "vtkModelShellUse.h"
-#include "vtkModelVertexUse.h"
+
+#include "smtk/session/discrete/kernel/Model/vtkModelEdgeUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFaceUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelLoopUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelShellUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelVertexUse.h"
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
 #include "vtkType.h"
-#
+
 #include <map>
 #include <sstream>
 #include <vtksys/SystemTools.hxx>

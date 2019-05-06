@@ -19,8 +19,8 @@
 #ifndef __smtkdiscrete_vtkModelEntity_h
 #define __smtkdiscrete_vtkModelEntity_h
 
+#include "smtk/session/discrete/kernel/Model/vtkModelItem.h"
 #include "smtk/session/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
-#include "vtkModelItem.h"
 
 class vtkInformationDoubleVectorKey;
 class vtkInformationIdTypeKey;

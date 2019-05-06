@@ -11,6 +11,7 @@
 #include "vtkCMBModelBuilder.h"
 
 #include "ModelParserHelper.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkAbstractArray.h"
 #include "vtkAlgorithm.h"
 #include "vtkCMBParserBase.h"
@@ -36,7 +37,6 @@
 #include "vtkModel3dm2DGridRepresentation.h"
 #include "vtkModel3dmGridRepresentation.h"
 #include "vtkModelEntityOperationBase.h"
-#include "vtkModelItemIterator.h"
 #include "vtkModelMaterial.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"

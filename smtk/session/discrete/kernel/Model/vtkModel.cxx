@@ -10,6 +10,7 @@
 
 #include "vtkModel.h"
 
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkIdList.h"
 #include "vtkInformation.h"
 #include "vtkModelEdge.h"
@@ -22,7 +23,6 @@
 #include "vtkModelShellUse.h"
 #include "vtkModelVertex.h"
 #include "vtkModelVertexUse.h"
-#include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 
 vtkModel::vtkModel()

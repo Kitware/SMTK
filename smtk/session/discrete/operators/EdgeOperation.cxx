@@ -33,14 +33,14 @@
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Volume.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModel.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFace.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelRegion.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelVertex.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModel.h"
-#include "vtkModelFace.h"
-#include "vtkModelItemIterator.h"
-#include "vtkModelRegion.h"
 
 #include "vtkCellData.h"
 #include "vtkInformation.h"

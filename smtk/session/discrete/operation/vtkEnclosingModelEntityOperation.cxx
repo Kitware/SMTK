@@ -22,7 +22,7 @@
 #include "vtkMath.h"
 #include "vtkModelUserName.h"
 
-#include "vtkModelRegion.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelRegion.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"

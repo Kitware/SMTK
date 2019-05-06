@@ -10,12 +10,12 @@
 
 #include "vtkModelBCGridRepresentation.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
-#include "vtkModelItemIterator.h"
 #include <iostream>
 #include <string>
 #include <vtkIdList.h>

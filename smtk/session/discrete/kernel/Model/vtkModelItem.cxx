@@ -10,12 +10,12 @@
 
 #include "vtkModelItem.h"
 
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkIdList.h"
 #include "vtkInformation.h"
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkModelItemListIterator.h"
 #include "vtkObjectFactory.h"
-#include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 
 #include "vtkModelItemInternals.h"

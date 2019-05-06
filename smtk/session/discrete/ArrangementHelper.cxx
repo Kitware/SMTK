@@ -16,8 +16,8 @@
 
 #include "smtk/common/UUIDGenerator.h"
 
-#include "vtkModelEdge.h"
-#include "vtkModelEdgeUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelEdge.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelEdgeUse.h"
 
 namespace
 {

@@ -10,15 +10,15 @@
 
 #include "vtkDiscreteModelRegion.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelShellUse.h"
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationStringKey.h"
 #include "vtkModelMaterial.h"
-#include "vtkModelShellUse.h"
 #include "vtkObjectFactory.h"
-#include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 
 vtkInformationKeyRestrictedMacro(vtkDiscreteModelRegion, POINTINSIDE, DoubleVector, 3);

@@ -22,7 +22,7 @@ set(import_vtk_depends
     vtkRenderingOpenGL2
     vtksys
     )
-target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkDiscreteSession vtkCommonDataModel LINK_PRIVATE ${import_vtk_depends})
+target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkDiscreteSession vtkCommonDataModel LINK_PRIVATE vtkSMTKDiscreteModel ${import_vtk_depends})
 set_target_properties(${library_name}
   PROPERTIES
     CXX_VISIBILITY_PRESET hidden

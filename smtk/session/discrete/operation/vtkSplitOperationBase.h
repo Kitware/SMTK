@@ -15,8 +15,8 @@
 #ifndef __smtkdiscrete_vtkSplitOperationBase_h
 #define __smtkdiscrete_vtkSplitOperationBase_h
 
-#include "ModelEdgeHelper.h"
 #include "smtk/session/discrete/Exports.h" // For export macro
+#include "smtk/session/discrete/kernel/ModelEdgeHelper.h"
 #include "vtkObject.h"
 
 class vtkDiscreteModel;

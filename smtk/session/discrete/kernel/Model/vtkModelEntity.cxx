@@ -10,6 +10,7 @@
 
 #include "vtkModelEntity.h"
 
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkIdList.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleVectorKey.h"
@@ -21,7 +22,6 @@
 #include "vtkModelItemIterator.h"
 #include "vtkObjectFactory.h"
 #include "vtkOpenGLProperty.h"
-#include "vtkSerializer.h"
 
 vtkInformationKeyRestrictedMacro(vtkModelEntity, COLOR, DoubleVector, 4);
 vtkInformationKeyMacro(vtkModelEntity, VISIBILITY, Integer);

@@ -10,13 +10,13 @@
 
 #include "vtkModelMaterial.h"
 
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleVectorKey.h"
 #include "vtkObjectFactory.h"
-#include "vtkSerializer.h"
 
 vtkInformationKeyRestrictedMacro(vtkModelMaterial, WAREHOUSEID, DoubleVector, 2);
 

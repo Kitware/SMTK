@@ -11,6 +11,10 @@
 #include "vtkDiscreteModelFace.h"
 
 #include "ModelVertexClassification.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFaceUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelShellUse.h"
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkBitArray.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -22,9 +26,6 @@
 #include "vtkFeatureEdges.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
-#include "vtkModelFaceUse.h"
-#include "vtkModelItemIterator.h"
-#include "vtkModelShellUse.h"
 #include "vtkNew.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
@@ -32,7 +33,6 @@
 #include "vtkPointSet.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
-#include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 #include "vtkSplitEventData.h"
 

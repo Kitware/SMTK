@@ -10,9 +10,9 @@
 
 #include "ModelVertexClassification.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelVertex.h"
-#include "vtkModelItemIterator.h"
 
 #include <map> //need to store the set of point ids
 

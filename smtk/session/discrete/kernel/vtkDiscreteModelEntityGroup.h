@@ -18,8 +18,8 @@
 #ifndef __smtkdiscrete_vtkDiscreteModelEntityGroup_h
 #define __smtkdiscrete_vtkDiscreteModelEntityGroup_h
 
+#include "smtk/session/discrete/kernel/Model/vtkModelEntity.h"
 #include "smtk/session/discrete/kernel/vtkSMTKDiscreteModelModule.h" // For export macro
-#include "vtkModelEntity.h"
 
 class vtkDiscreteModelEntity;
 

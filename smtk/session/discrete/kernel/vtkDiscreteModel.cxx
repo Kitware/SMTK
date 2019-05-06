@@ -10,6 +10,11 @@
 
 #include "vtkDiscreteModel.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelFaceUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelShellUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelVertexUse.h"
+#include "smtk/session/discrete/kernel/Serialize/vtkSerializer.h"
 #include "vtkCell.h"
 #include "vtkCharArray.h"
 #include "vtkConnectivityFilter.h"
@@ -23,18 +28,13 @@
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationObjectBaseKey.h"
-#include "vtkModelFaceUse.h"
 #include "vtkModelGridRepresentation.h"
-#include "vtkModelItemIterator.h"
 #include "vtkModelMaterial.h"
-#include "vtkModelShellUse.h"
 #include "vtkModelUserName.h"
-#include "vtkModelVertexUse.h"
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
-#include "vtkSerializer.h"
 
 #include <algorithm>
 

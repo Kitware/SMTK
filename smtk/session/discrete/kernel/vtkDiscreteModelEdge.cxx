@@ -10,13 +10,13 @@
 
 #include "vtkDiscreteModelEdge.h"
 
+#include "smtk/session/discrete/kernel/Model/vtkModelEdgeUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFace.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelVertexUse.h"
 #include "vtkCell.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
-#include "vtkModelEdgeUse.h"
-#include "vtkModelFace.h"
-#include "vtkModelItemIterator.h"
-#include "vtkModelVertexUse.h"
 #include "vtkObjectFactory.h"
 
 #include "vtkDiscreteModel.h"

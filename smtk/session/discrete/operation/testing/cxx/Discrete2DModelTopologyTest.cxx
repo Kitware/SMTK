@@ -8,16 +8,16 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/session/discrete/kernel/Model/vtkModelEdgeUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFace.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelFaceUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelVertex.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelVertexUse.h"
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
-#include "vtkModelEdgeUse.h"
-#include "vtkModelFace.h"
-#include "vtkModelFaceUse.h"
-#include "vtkModelItemIterator.h"
-#include "vtkModelVertex.h"
-#include "vtkModelVertexUse.h"
 
-#include "vtkModelLoopUse.h"
+#include "smtk/session/discrete/kernel/Model/vtkModelLoopUse.h"
 
 bool IsSingleFaceModelValid(vtkDiscreteModel* model, int numberOfEdges, int* edgeDirections);
 
