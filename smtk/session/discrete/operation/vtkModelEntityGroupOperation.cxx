@@ -16,7 +16,6 @@
 #include "vtkIdList.h"
 #include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
-#
 
 vtkStandardNewMacro(vtkModelEntityGroupOperation);
 

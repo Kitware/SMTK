@@ -29,7 +29,7 @@
 #include "vtkModelUserName.h"
 #include "vtkModelXMLParser.h"
 #include "vtkXMLElement.h"
-#
+
 #include "vtkModelEdgeUse.h"
 #include "vtkModelFaceUse.h"
 #include "vtkModelItemIterator.h"
@@ -39,7 +39,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
 #include "vtkType.h"
-#
+
 #include <map>
 #include <sstream>
 #include <vtksys/SystemTools.hxx>
