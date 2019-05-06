@@ -458,6 +458,7 @@ void qtGroupItem::onChildWidgetSizeChanged()
   {
     this->Internals->ItemsTable->resizeColumnsToContents();
     this->Internals->ItemsTable->resizeRowsToContents();
+    emit this->widgetSizeChanged();
   }
 }
 
