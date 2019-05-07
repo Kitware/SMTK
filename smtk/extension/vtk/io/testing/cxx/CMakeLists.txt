@@ -26,20 +26,37 @@ set(unit_test_libs)
 smtk_unit_tests(LABEL "vtk/io"
                 SOURCES ${unit_tests}
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-                LIBRARIES smtkIOVTK smtkCoreModelTesting vtkCommonCore
-                vtkFiltersSources vtkIOXML vtkFiltersCore
-                vtkCommonComputationalGeometry ${unit_test_libs}
+                LIBRARIES smtkIOVTK smtkCoreModelTesting
+                VTK::CommonComputationalGeometry
+                VTK::CommonCore
+                VTK::CommonDataModel
+                VTK::FiltersCore
+                VTK::FiltersSources
+                VTK::IOXML
+                VTK::vtksys
+                ${unit_test_libs}
+                # TODO: Use Boost:: imported targets
                 ${Boost_LIBRARIES})
 
 add_executable(MultiScaleConverter MultiScaleConverter.cxx)
 target_link_libraries(MultiScaleConverter
                       LINK_PUBLIC smtkIOVTK
-                                  vtkIOExodus vtkIOXML vtksys)
+                                  VTK::CommonComputationalGeometry
+                                  VTK::CommonCore
+                                  VTK::CommonDataModel
+                                  VTK::FiltersSources
+                                  VTK::IOXML
+                                  VTK::vtksys)
 target_include_directories(MultiScaleConverter PRIVATE ${MOAB_INCLUDE_DIRS})
 
 add_executable(SurfacePerMaterialExtraction SurfacePerMaterialExtraction.cxx)
 
 target_link_libraries(SurfacePerMaterialExtraction
                       LINK_PUBLIC smtkIOVTK
-                                  vtkIOExodus vtkIOXML vtksys)
+                                  VTK::CommonComputationalGeometry
+                                  VTK::CommonCore
+                                  VTK::CommonDataModel
+                                  VTK::FiltersSources
+                                  VTK::IOXML
+                                  VTK::vtksys)
 target_include_directories(SurfacePerMaterialExtraction PRIVATE ${MOAB_INCLUDE_DIRS})

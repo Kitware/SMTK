@@ -8,7 +8,7 @@ target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
 target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkIOVTK
-  vtkCommonCore vtkWrappingPythonCore )
+  VTK::CommonCore VTK::WrappingPythonCore )
 set_target_properties(${library_name}
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${build_path}"
