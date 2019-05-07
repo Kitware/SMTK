@@ -16,7 +16,7 @@
 // STL includes.
 #include <string> // STL required.
 
-#include "smtk/extension/vtk/widgets/Exports.h" // For export macro
+#include "smtk/extension/vtk/widgets/vtkSMTKWidgetsExtModule.h" // For export macro
 
 // Forware declarations.
 class vtkDoubleArray;
