@@ -245,13 +245,9 @@ smtk_public_headers(smtkDiscreteSession ${discreteSessionHeaders} ${DiscreteMode
 set(PROJECT_NAME SMTKDiscreteModules)
 smtk_install_library(smtkDiscreteSession)
 
-if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
-  add_smtk_plugin(
-    smtkDiscreteSessionPlugin "1.0"
-    REGISTRAR smtk::session::discrete::Registrar
-    MANAGERS smtk::operation::Manager smtk::resource::Manager
-    LIBRARIES smtkCore smtkDiscreteSession)
-  smtk_install_library(smtkDiscreteSessionPlugin)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
