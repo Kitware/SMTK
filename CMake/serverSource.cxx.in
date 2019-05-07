@@ -10,14 +10,14 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-@SMTK_PLUGIN_REGISTRAR_HEADER@
+#include "@_smtk_plugin_REGISTRAR_HEADER@"
 
 #include "smtk/extension/paraview/pluginsupport/PluginClient.txx"
 
 #include <memory>
 
 typedef smtk::extension::paraview::PluginClient<
-  @SMTK_PLUGIN_REGISTRAR@, @SMTK_PLUGIN_MANAGERS_CS@> @SMTK_PLUGIN_NAME@Client;
+  @_smtk_plugin_REGISTRAR@, @_smtk_plugin_managers@> @_smtk_plugin_name@Client;
 
-static std::shared_ptr<@SMTK_PLUGIN_NAME@Client> my@SMTK_PLUGIN_NAME@Client =
-  std::dynamic_pointer_cast<@SMTK_PLUGIN_NAME@Client>(@SMTK_PLUGIN_NAME@Client::create());
+static std::shared_ptr<@_smtk_plugin_name@Client> my@_smtk_plugin_name@Client =
+  std::dynamic_pointer_cast<@_smtk_plugin_name@Client>(@_smtk_plugin_name@Client::create());
