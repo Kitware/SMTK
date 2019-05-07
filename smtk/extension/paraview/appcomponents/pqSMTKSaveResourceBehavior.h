@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKSaveResourceBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKSaveResourceBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include "pqReaction.h"
@@ -92,7 +90,7 @@ private:
 };
 
 /// Create a menu item under "File" for saving resources.
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKSaveResourceBehavior : public QObject
+class pqSMTKSaveResourceBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

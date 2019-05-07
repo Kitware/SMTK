@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKExportSimulationBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKExportSimulationBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include "pqReaction.h"
@@ -57,7 +55,7 @@ private:
 /// simulations are python operations. The action associated with this menu item
 /// loads a python operation, executes it immediately, and then unloads the
 /// operation.
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKExportSimulationBehavior : public QObject
+class pqSMTKExportSimulationBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

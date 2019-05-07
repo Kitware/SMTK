@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_vtkSMTKEncodeSelection_h
 #define smtk_extension_paraview_appcomponents_vtkSMTKEncodeSelection_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "vtkPVEncodeSelectionForServer.h"
 
 #include <memory>
@@ -39,7 +37,7 @@ class Selection;
   * with vtkObjectFactory (see pqSMTKAppComponentsAutoStart) and
   * perform our selection work at that point.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT vtkSMTKEncodeSelection : public vtkPVEncodeSelectionForServer
+class vtkSMTKEncodeSelection : public vtkPVEncodeSelectionForServer
 {
 public:
   static vtkSMTKEncodeSelection* New();

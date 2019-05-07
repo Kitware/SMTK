@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKSaveOnCloseResourceBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKSaveOnCloseResourceBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include <QObject>
 
 /// A behavior for prompting the user to save resources before closing them.
@@ -27,7 +25,7 @@
 /// instances where this behavior prompts to save before closing resources, only
 /// the third instance is cancelable. The other two are connected to ParaView
 /// signals that do not support cancelling the action.
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKSaveOnCloseResourceBehavior : public QObject
+class pqSMTKSaveOnCloseResourceBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

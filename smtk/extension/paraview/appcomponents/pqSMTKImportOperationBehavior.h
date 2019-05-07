@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKImportOperationBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKImportOperationBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include "pqReaction.h"
@@ -54,7 +52,7 @@ private:
 };
 
 /// Create a menu item under "File" for importing operations.
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKImportOperationBehavior : public QObject
+class pqSMTKImportOperationBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

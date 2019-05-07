@@ -21,20 +21,12 @@
 #include "pqApplicationCore.h"
 #include "pqCoreUtilities.h"
 #include "pqFileDialog.h"
+#include "pqMainWindowEventManager.h"
 #include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"
 #include "pqServer.h"
 #include "vtkSMProxy.h"
 #include "vtkSMProxyManager.h"
-
-// One feature of pqSMTKSaveOnCloseResourceBehavior is the construction of a
-// prompt to save all resources upon closing the main window. This feature uses
-// parts of ParaView that were added just after the tagging of 5.6.0. To support
-// both pre- and post-5.6.0, we set a local compiler definition to enable this
-// feature if the detected ParaView contains the features we need.
-#ifdef HAS_MAIN_WINDOW_EVENT_MANAGER
-#include "pqMainWindowEventManager.h"
-#endif
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
@@ -43,6 +35,7 @@
 #include "smtk/resource/Manager.h"
 
 #include <QApplication>
+#include <QCloseEvent>
 
 static pqSMTKSaveOnCloseResourceBehavior* g_instance = nullptr;
 
@@ -149,7 +142,6 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
           pqSMTKBehavior::removingManagerFromServer,
         onRemovingManagerFromServer);
 
-#ifdef HAS_MAIN_WINDOW_EVENT_MANAGER
       // The final functor is connected to the main window's "close" signal, and
       // it prompts the user to save all unsaved resources on all servers. It
       // also provides the user with the ability to cancel the close.
@@ -219,7 +211,6 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
           }
           closeEvent->setAccepted(ret != QMessageBox::Cancel);
         });
-#endif
     }
   });
 }

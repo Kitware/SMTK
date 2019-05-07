@@ -19,7 +19,7 @@ class pqSMTKResourceBrowser;
 /**\brief A panel that displays SMTK resources available to the application/user.
   *
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourcePanel : public QDockWidget
+class pqSMTKResourcePanel : public QDockWidget
 {
   Q_OBJECT
   typedef QDockWidget Superclass;

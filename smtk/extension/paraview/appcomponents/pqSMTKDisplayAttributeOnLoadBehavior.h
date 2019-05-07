@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKDisplayAttributeOnLoadBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKDisplayAttributeOnLoadBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/EntityTypeBits.h"
@@ -34,7 +32,7 @@ class pqServer;
   * When any SMTK resource manager is updated to include a new attribute,
   * display that attribute.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKDisplayAttributeOnLoadBehavior : public QObject
+class pqSMTKDisplayAttributeOnLoadBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

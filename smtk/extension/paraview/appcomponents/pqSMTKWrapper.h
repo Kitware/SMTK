@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponenets_pqSMTKWrapper_h
 #define smtk_extension_paraview_appcomponenets_pqSMTKWrapper_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
 
@@ -46,7 +44,7 @@ class vtkSMSMTKWrapperProxy;
   * its lifetime. (A pqSMTKResource is a pipeline source object whose filename property
   * may change while SMTK resources are tied to the contents of a particular file.)
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKWrapper : public pqProxy
+class pqSMTKWrapper : public pqProxy
 {
   Q_OBJECT
   using Superclass = pqProxy;

@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKResourceBrowser_h
 #define smtk_extension_paraview_appcomponents_pqSMTKResourceBrowser_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/extension/qt/qtResourceBrowser.h"
 
 #include "smtk/view/VisibilityContent.h"
@@ -40,7 +38,7 @@ class pqView;
   *   disconnected-from resource managers as client-server connections are
   *   made and broken.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceBrowser : public smtk::extension::qtResourceBrowser
+class pqSMTKResourceBrowser : public smtk::extension::qtResourceBrowser
 {
   Q_OBJECT
   typedef smtk::extension::qtResourceBrowser Superclass;

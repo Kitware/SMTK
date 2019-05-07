@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKCloseResourceBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKCloseResourceBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include "pqReaction.h"
@@ -56,7 +54,7 @@ private:
 /// representation. If the resource is "clean", the user has selected to save
 /// the resource or the user has opted to discard changes, the resource is then
 /// removed from the resource manager.
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKCloseResourceBehavior : public QObject
+class pqSMTKCloseResourceBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

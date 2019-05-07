@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKSelectionFilterBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKSelectionFilterBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/EntityTypeBits.h"
 
@@ -28,7 +26,7 @@ class pqServer;
   * modifySelection call -- optionally replacing them with suggestions
   * appropriate to the filter.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKSelectionFilterBehavior : public QActionGroup
+class pqSMTKSelectionFilterBehavior : public QActionGroup
 {
   Q_OBJECT
   using Superclass = QActionGroup;

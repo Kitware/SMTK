@@ -1,359 +1,171 @@
-###
-# This directory contains 2 targets:
-# + smtkPQComponentsExt, containing non-Qt (unwrapped) classes and Qt classes
-# + smtkPQComponentsPlugin, a plugin exposing the above with an autostart object
-###
-
-set(PLUGIN_AUTOSTART_IFACES)
-set(PLUGIN_AUTOSTART_IFACE_SRCS)
-set(PLUGIN_ACTION_IFACES)
-set(PLUGIN_ACTION_IFACE_SRCS)
-set(PLUGIN_DOCK_IFACES)
-set(PLUGIN_DOCK_IFACES_SRCS)
-
-set(PQComponentsUnwrappedSrcs
-  vtkSMTKEncodeSelection.cxx
-)
-
-set(PQComponentsUnwrappedHdrs
-  vtkSMTKEncodeSelection.h
-)
-
-find_package(Qt5 REQUIRED COMPONENTS Core)
-
-# set up sources to build
-set(PQComponentsSrcs
+set(sources
   pqPluginSMTKViewBehavior.cxx
-  pqSMTKAttributePanel.cxx
-  pqSMTKBehavior.cxx
-  pqSMTKCallObserversOnMainThreadBehavior.cxx
-  pqSMTKCloseResourceBehavior.cxx
-  pqSMTKColorByToolBar.cxx
-  pqSMTKColorByWidget.cxx
-  pqSMTKDisplayAttributeOnLoadBehavior.cxx
-  pqSMTKRenderResourceBehavior.cxx
-  pqSMTKExportSimulationBehavior.cxx
-  pqSMTKImportIntoResourceBehavior.cxx
-  pqSMTKImportOperationBehavior.cxx
-  pqSMTKResourceRepresentation.cxx
-  pqSMTKNewResourceBehavior.cxx
-  pqSMTKOperationPanel.cxx
-  pqSMTKPipelineSelectionBehavior.cxx
-  pqSMTKRegisterImportersBehavior.cxx
-  pqSMTKResource.cxx
-  pqSMTKResourceBrowser.cxx
-  pqSMTKResourcePanel.cxx
-  pqSMTKSaveOnCloseResourceBehavior.cxx
-  pqSMTKSaveResourceBehavior.cxx
-  pqSMTKSelectionFilterBehavior.cxx
-  pqSMTKSubtractUI.cxx
-  pqSMTKWrapper.cxx
-)
-
-# One feature of pqSMTKSaveOnCloseResourceBehavior is the construction of a
-# prompt to save all resources upon closing the main window. This feature uses
-# parts of ParaView that were added just after the tagging of 5.6.0. To support
-# both pre- and post-5.6.0, we set a local compiler definition to enable this
-# feature if the detected ParaView contains the features we need.
-#
-# TODO: In the future, ParaView will have a means of differentiating between the
-# latest tagged branch and master. When that happens, we can replace this logic
-# with a ParaView version check to see if our ParaView is greater than 5.6.0.
-# Until then, we simply look for the header file associated with the feature we
-# want.
-find_file(main_window_event_manager_hdr
-  NAMES pqMainWindowEventManager.h
-  PATHS ${PARAVIEW_INCLUDE_DIRS}
-  NO_DEFAULT_PATH)
-if (main_window_event_manager_hdr)
-  set_source_files_properties(pqSMTKSaveOnCloseResourceBehavior.cxx
-    PROPERTIES COMPILE_DEFINITIONS "HAS_MAIN_WINDOW_EVENT_MANAGER")
-endif()
-
-set(PQComponentsHeaders
   pqPluginSMTKViewBehavior.h
+  pqSMTKAppComponentsAutoStart.cxx
+  pqSMTKAppComponentsAutoStart.h
+  pqSMTKAttributePanel.cxx
   pqSMTKAttributePanel.h
+  pqSMTKBehavior.cxx
   pqSMTKBehavior.h
-  pqSMTKColorByToolBar.h
-  pqSMTKColorByWidget.h
+  pqSMTKCallObserversOnMainThreadBehavior.cxx
   pqSMTKCallObserversOnMainThreadBehavior.h
+  pqSMTKCloseResourceBehavior.cxx
   pqSMTKCloseResourceBehavior.h
+  pqSMTKColorByToolBar.cxx
+  pqSMTKColorByToolBar.h
+  pqSMTKColorByWidget.cxx
+  pqSMTKColorByWidget.h
+  pqSMTKDisplayAttributeOnLoadBehavior.cxx
   pqSMTKDisplayAttributeOnLoadBehavior.h
-  pqSMTKRenderResourceBehavior.h
+  pqSMTKExportSimulationBehavior.cxx
   pqSMTKExportSimulationBehavior.h
+  pqSMTKImportIntoResourceBehavior.cxx
   pqSMTKImportIntoResourceBehavior.h
+  pqSMTKImportOperationBehavior.cxx
   pqSMTKImportOperationBehavior.h
-  pqSMTKResourceRepresentation.h
+  pqSMTKNewResourceBehavior.cxx
   pqSMTKNewResourceBehavior.h
+  pqSMTKOperationPanel.cxx
   pqSMTKOperationPanel.h
+  pqSMTKPipelineSelectionBehavior.cxx
   pqSMTKPipelineSelectionBehavior.h
+  pqSMTKRegisterImportersBehavior.cxx
   pqSMTKRegisterImportersBehavior.h
+  pqSMTKRenderResourceBehavior.cxx
+  pqSMTKRenderResourceBehavior.h
+  pqSMTKResource.cxx
   pqSMTKResource.h
+  pqSMTKResourceBrowser.cxx
   pqSMTKResourceBrowser.h
+  pqSMTKResourcePanel.cxx
   pqSMTKResourcePanel.h
+  pqSMTKResourceRepresentation.cxx
+  pqSMTKResourceRepresentation.h
+  pqSMTKSaveOnCloseResourceBehavior.cxx
   pqSMTKSaveOnCloseResourceBehavior.h
+  pqSMTKSaveResourceBehavior.cxx
   pqSMTKSaveResourceBehavior.h
+  pqSMTKSelectionFilterBehavior.cxx
   pqSMTKSelectionFilterBehavior.h
+  pqSMTKSubtractUI.cxx
   pqSMTKSubtractUI.h
+  pqSMTKWrapper.cxx
   pqSMTKWrapper.h
-)
 
-set(PQComponentsUIs
+  vtkSMTKEncodeSelection.cxx
+  vtkSMTKEncodeSelection.h)
+
+set(ui_files
   resources/pqSMTKColorByWidget.ui
   resources/pqSMTKOperationPanel.ui
-  resources/pqSMTKSelectionFilterBehavior.ui
-)
+  resources/pqSMTKSelectionFilterBehavior.ui)
+set(CMAKE_AUTOUIC_SEARCH_PATHS
+  "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
-set(PQComponentsResources
+set(rc_files
   resources/pqSMTKCloseResourceBehavior.qrc
   resources/pqSMTKImportOperationBehavior.qrc
   resources/pqSMTKSaveResourceBehavior.qrc
-  resources/pqSMTKSelectionFilterBehavior.qrc
-)
+  resources/pqSMTKSelectionFilterBehavior.qrc)
 
-#install the headers
-smtk_public_headers(
-  smtkPQComponentsExt
-  ${PQComponentsHeaders}
-  ${PQComponentsUnwrappedHdrs}
-)
-
-pv_qt_wrap_cpp(MOC_BUILT_SOURCES ${PQComponentsHeaders})
-pv_qt_wrap_ui(UI_BUILT_SOURCES ${PQComponentsUIs})
-pv_qt_add_resources(RCS_SOURCES ${PQComponentsResources})
-
-source_group("Qt_Source" FILES ${PQComponentsSrcs} )
-source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} )
-source_group("Qt_Header" FILES ${PQComponentsHeaders})
-source_group("Qt_Resources" FILES ${PQComponentsUIs})
-
-add_library(smtkPQComponentsExt
-  ${PQComponentsSrcs}
-  ${PQComponentsUnwrappedSrcs}
-  ${MOC_BUILT_SOURCES}
-  ${UI_BUILT_SOURCES}
-  ${RCS_SOURCES}
-)
-
-# Need to add the location of the moc files to the include dirs:
-target_include_directories(smtkPQComponentsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-
-#set smtkPQComponentsExt to publicly link to smtkCore
-target_link_libraries(smtkPQComponentsExt LINK_PUBLIC
-  pqApplicationComponents
-  pqComponents
-
-  # Server-side stuff because some stuff uses GetClientSideObject()
-  vtkPVVTKExtensionsDefault
-  smtkPVServerExt
-
-  smtkQtExt
-  Qt5::Core
-)
-
-smtk_export_header(smtkPQComponentsExt Exports.h)
-
-set(PQComponentsPluginHdrs
-  pqSMTKAppComponentsAutoStart.h
-)
-
-set(PQComponentsPluginSrcs
-  pqSMTKAppComponentsAutoStart.cxx
-)
-
-add_paraview_auto_start(PLUGIN_AUTOSTART_IFACES PLUGIN_AUTOSTART_IFACE_SRCS
+paraview_plugin_add_auto_start(
   CLASS_NAME pqSMTKAppComponentsAutoStart
-  STARTUP startup
-  SHUTDOWN shutdown
-)
-
-add_paraview_action_group(selectionFilterIfaces selectionFilterIfaceSrcs
+  INTERFACES auto_start_interfaces
+  SOURCES auto_start_sources)
+paraview_plugin_add_action_group(
   CLASS_NAME pqSMTKSelectionFilterBehavior
   GROUP_NAME "ToolBar/SMTK Selection Filters"
-)
-list(APPEND PLUGIN_ACTION_IFACES "${selectionFilterIfaces}")
-list(APPEND PLUGIN_ACTION_IFACE_SRCS "${selectionFilterIfaceSrcs}")
-
-add_paraview_toolbar(colorByToolBarIfaces colorByToolBarIfaceSrcs
+  INTERFACES action_group_interfaces
+  SOURCES action_group_sources)
+paraview_plugin_add_toolbar(
   CLASS_NAME pqSMTKColorByToolBar
-)
-list(APPEND PLUGIN_ACTION_IFACES "${colorByToolBarIfaces}")
-list(APPEND PLUGIN_ACTION_IFACE_SRCS "${colorByToolBarIfaceSrcs}")
+  INTERFACES toolbar_interfaces
+  SOURCES toolbar_sources)
 
-add_pqproxy(modelRepIfaces modelRepIfaceSrcs
-  TYPE pqSMTKResourceRepresentation
-  XML_GROUP representations
-  XML_NAME SMTKResourceCompositeRepresentation
-)
-list(APPEND PLUGIN_PROXY_IFACES ${modelRepIfaces})
-list(APPEND PLUGIN_PROXY_IFACE_SRCS ${modelRepIfaceSrcs})
+paraview_plugin_add_proxy(
+  NAME pqSMTKResourceRepresentation
+  INTERFACES repr_proxy_interfaces
+  SOURCES repr_proxy_sources
+  PROXY_TYPE pqSMTKResourceRepresentation
+    XML_GROUP representations
+    XML_NAME SMTKResourceCompositeRepresentation)
+paraview_plugin_add_proxy(
+  NAME pqServerManagerModel
+  INTERFACES proxy_interfaces
+  SOURCES proxy_sources
+  PROXY_TYPE pqSMTKResourceSource
+    CLASS_NAME pqSMTKResource
+    XML_GROUP sources
+    XML_NAME SMTKResourceSource
+  PROXY_TYPE pqSMTKResourceResourceReader
+    CLASS_NAME pqSMTKResource
+    XML_GROUP sources
+    XML_NAME SMTKResourceReader
+  PROXY_TYPE pqSMTKResourceCreator
+    CLASS_NAME pqSMTKResource
+    XML_GROUP sources
+    XML_NAME SMTKResourceCreator
+  PROXY_TYPE pqSMTKResourceImporter
+    CLASS_NAME pqSMTKResource
+    XML_GROUP sources
+    XML_NAME_REGEX SMTKResourceImporter.*
+  PROXY_TYPE pqSMTKResource
+    XML_GROUP sources
+    XML_NAME SMTKResource
+  PROXY_TYPE pqSMTKWrapper
+    XML_GROUP smtk
+    XML_NAME SMTKWrapper)
 
-# Once the ParaView in CMB's superbuild includes commit
-# SHA:000b6db4985a73899feb973185d8f60a2ef85f60 (03/20/2018), this macro can be
-# replaced by ParaView's "add_pqproxy" macro.
-macro(add_pqproxy_custom OUTIFACES OUTSRCS)
-  set (arg_types)
-  set (_doing)
-  set (_active_index)
-  foreach (arg ${ARGN})
-    if ((NOT _doing) AND ("${arg}" MATCHES "^(TYPE|XML_GROUP|XML_NAME|XML_NAME_REGEX)$"))
-      set (_doing "${arg}")
-    elseif (_doing STREQUAL "TYPE")
-      list(APPEND arg_types "${arg}")
-      list(LENGTH arg_types _active_index)
-      math(EXPR _active_index "${_active_index}-1")
-      set (_type_${_active_index}_xmlgroup)
-      set (_type_${_active_index}_xmlname)
-      set (_doing)
-    elseif (_doing STREQUAL "XML_GROUP")
-      set (_type_${_active_index}_xmlgroup "${arg}")
-      set (_doing)
-    elseif (_doing STREQUAL "XML_NAME")
-      set (_type_${_active_index}_xmlname "${arg}")
-      set (_doing)
-    elseif (_doing STREQUAL "XML_NAME_REGEX")
-      set (_type_${_active_index}_xmlname_regex "${arg}")
-      set (_doing)
-    else()
-      set (_doing)
-    endif()
-  endforeach()
-
-  list(LENGTH arg_types num_items)
-  math(EXPR max_index "${num_items}-1")
-  set (ARG_INCLUDES)
-  set (ARG_BODY)
-  foreach (index RANGE ${max_index})
-    list(GET arg_types ${index} arg_type)
-    set (arg_xml_group "${_type_${index}_xmlgroup}")
-    set (arg_xml_name "${_type_${index}_xmlname}")
-    set (arg_xml_name_regex "${_type_${index}_xmlname_regex}")
-    set (ARG_INCLUDES "${ARG_INCLUDES}#include \"${arg_type}.h\"\n")
-    if (arg_xml_name_regex)
-    set (ARG_INCLUDES "${ARG_INCLUDES}#include <QRegularExpression>\n")
-    set (ARG_BODY "${ARG_BODY}
-    if (QString(\"${arg_xml_group}\") == proxy->GetXMLGroup() &&
-        QString(proxy->GetXMLName()).contains(QRegularExpression(\"${arg_xml_name_regex}\")))
-        {
-        return new ${arg_type}(regGroup, regName, proxy, server, NULL);
-        }")
-    else ()
-    set (ARG_BODY "${ARG_BODY}
-    if (QString(\"${arg_xml_group}\") == proxy->GetXMLGroup() &&
-        QString(\"${arg_xml_name}\") == proxy->GetXMLName())
-        {
-        return new ${arg_type}(regGroup, regName, proxy, server, NULL);
-        }")
-    endif()
-  endforeach()
-
-  if (ARG_INCLUDES AND ARG_BODY)
-    list(GET arg_types 0 ARG_TYPE)
-    set (IMP_CLASS "${ARG_TYPE}ServerManagerModelImplementation")
-    configure_file(${ParaView_CMAKE_DIR}/pqServerManagerModelImplementation.h.in
-      ${CMAKE_CURRENT_BINARY_DIR}/${IMP_CLASS}.h @ONLY)
-    configure_file(${ParaView_CMAKE_DIR}/pqServerManagerModelImplementation.cxx.in
-      ${CMAKE_CURRENT_BINARY_DIR}/${IMP_CLASS}.cxx @ONLY)
-
-    set (_moc_srcs)
-    QT5_WRAP_CPP(_moc_srcs ${CMAKE_CURRENT_BINARY_DIR}/${IMP_CLASS}.h)
-
-    set(${OUTIFACES} ${${OUTIFACES}} ${ARG_TYPE}ServerManagerModel) # don't add
-                                        # the extra "Implementation" here.
-    set(${OUTSRCS}
-      ${${OUTSRCS}}
-      ${_moc_srcs}
-      ${CMAKE_CURRENT_BINARY_DIR}/${IMP_CLASS}.h
-      ${CMAKE_CURRENT_BINARY_DIR}/${IMP_CLASS}.cxx
-      )
-  endif()
-
-  unset (ARG_TYPE)
-  unset (ARG_INCLUDES)
-  unset (ARG_BODY)
-endmacro()
-
-add_pqproxy_custom(proxyIfaces proxyIfaceSrcs
-  TYPE pqSMTKResource
-  XML_GROUP sources
-  XML_NAME SMTKResourceSource
-
-  TYPE pqSMTKResource
-  XML_GROUP sources
-  XML_NAME SMTKResourceReader
-
-  TYPE pqSMTKResource
-  XML_GROUP sources
-  XML_NAME SMTKResourceCreator
-
-  TYPE pqSMTKResource
-  XML_GROUP sources
-  XML_NAME_REGEX SMTKResourceImporter*
-
-  TYPE pqSMTKResource
-  XML_GROUP sources
-  XML_NAME SMTKResource
-
-  TYPE pqSMTKWrapper
-  XML_GROUP smtk
-  XML_NAME SMTKWrapper
-)
-
-list(APPEND PLUGIN_PROXY_IFACES ${proxyIfaces})
-list(APPEND PLUGIN_PROXY_IFACE_SRCS ${proxyIfaceSrcs})
-
-add_paraview_dock_window(attrPanelIfaces attrPanelIfaceSrcs
+paraview_plugin_add_dock_window(
   CLASS_NAME pqSMTKAttributePanel
   DOCK_AREA Left
-)
-list(APPEND PLUGIN_DOCK_IFACES ${attrPanelIfaces})
-list(APPEND PLUGIN_DOCK_IFACES_SRCS ${attrPanelIfaceSrcs})
-
-add_paraview_dock_window(rsrcPanelIfaces rsrcPanelIfaceSrcs
+  INTERFACES attribute_dock_interfaces
+  SOURCES attribute_dock_sources)
+paraview_plugin_add_dock_window(
   CLASS_NAME pqSMTKResourcePanel
   DOCK_AREA Left
-)
-list(APPEND PLUGIN_DOCK_IFACES ${rsrcPanelIfaces})
-list(APPEND PLUGIN_DOCK_IFACES_SRCS ${rsrcPanelIfaceSrcs})
-
-add_paraview_dock_window(operPanelIfaces operPanelIfaceSrcs
+  INTERFACES resource_dock_interfaces
+  SOURCES resource_dock_sources)
+paraview_plugin_add_dock_window(
   CLASS_NAME pqSMTKOperationPanel
   DOCK_AREA Left
-)
-list(APPEND PLUGIN_DOCK_IFACES ${operPanelIfaces})
-list(APPEND PLUGIN_DOCK_IFACES_SRCS ${operPanelIfaceSrcs})
+  INTERFACES operation_dock_interfaces
+  SOURCES operation_dock_sources)
 
-pv_qt_wrap_cpp(PLUGIN_MOC_SRCS ${PQComponentsPluginHdrs})
-add_smtk_plugin(
-  smtkPQComponentsPlugin "1.0"
-  GUI_INTERFACES
-    ${PLUGIN_ACTION_IFACES}
-    ${PLUGIN_AUTOSTART_IFACES}
-    ${PLUGIN_PROXY_IFACES}
-    ${PLUGIN_DOCK_IFACES}
-  GUI_SOURCES
-    ${PQComponentsPluginHdrs}
-    ${PQComponentsPluginSrcs}
-    ${PLUGIN_MOC_SRCS}
-    ${PLUGIN_ACTION_IFACE_SRCS}
-    ${PLUGIN_AUTOSTART_IFACE_SRCS}
-    ${PLUGIN_PROXY_IFACE_SRCS}
-    ${PLUGIN_DOCK_IFACES_SRCS}
+set(interfaces
+  ${auto_start_interfaces}
+  ${action_group_interfaces}
+  ${toolbar_interfaces}
+  ${repr_proxy_interfaces}
+  ${proxy_interfaces}
+  ${attribute_dock_interfaces}
+  ${resource_dock_interfaces}
+  ${operation_dock_interfaces})
+list(APPEND sources
+  ${auto_start_sources}
+  ${action_group_sources}
+  ${toolbar_sources}
+  ${repr_proxy_sources}
+  ${proxy_sources}
+  ${attribute_dock_sources}
+  ${resource_dock_sources}
+  ${operation_dock_sources})
+
+smtk_add_plugin(smtkPQComponentsPlugin
   REGISTRAR
     smtk::extension::paraview::server::Registrar
   MANAGERS
     smtk::operation::Manager smtk::resource::Manager
-)
-set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQComponentsPlugin")
-enable_smtk_plugin_by_default(smtkPQComponentsPlugin TRUE)
-
+  PARAVIEW_PLUGIN_ARGS
+    VERSION "1.0"
+    UI_FILES ${ui_files}
+    UI_RESOURCES ${rc_files}
+    UI_INTERFACES ${interfaces}
+    SOURCES ${sources})
 target_link_libraries(smtkPQComponentsPlugin
-  LINK_PUBLIC
-    smtkPQComponentsExt
-    vtkSMTKOperationsExt
-)
-smtk_export_header(smtkPQComponentsPlugin PluginExports.h)
-
-#install the library and exports the library when used from a build tree
-smtk_install_library(smtkPQComponentsExt)
-smtk_install_library(smtkPQComponentsPlugin)
+  PRIVATE
+    ParaView::pqApplicationComponents
+    smtkPVServerExt
+    smtkCore
+    smtkQtExt
+    vtkSMTKOperationsExt)

@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKImportIntoResourceBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKImportIntoResourceBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include "pqReaction.h"
@@ -53,7 +51,7 @@ private:
 
 /// Create a menu item under "File" for importing a file into an existing SMTK
 /// resource.
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKImportIntoResourceBehavior : public QObject
+class pqSMTKImportIntoResourceBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;
