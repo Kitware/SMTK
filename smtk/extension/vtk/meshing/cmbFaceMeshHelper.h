@@ -17,7 +17,7 @@
 #ifndef __VTK_WRAP__
 
 #include "smtk/common/CompilerInformation.h"
-#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
+#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
 #include "vtkABI.h"
 #include "vtkType.h"
 

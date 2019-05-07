@@ -16,7 +16,7 @@
 #define __smtk_vtk_cmbFaceMesherInterface_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
+#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
 #include "vtkABI.h"
 #include <string> //for std string
 
