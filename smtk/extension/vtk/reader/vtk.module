@@ -1,0 +1,22 @@
+NAME
+  vtkSMTKReaderExt
+LIBRARY_NAME
+  vtkSMTKReaderExt
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::CommonTransforms
+  VTK::IOGDAL
+PRIVATE_DEPENDS
+  VTK::CommonMisc
+  VTK::CommonSystem
+  VTK::FiltersCore
+  VTK::FiltersGeneral
+  VTK::FiltersGeometry
+  VTK::IOGeometry
+  VTK::IOLAS
+  VTK::IOLegacy
+  VTK::IOXML
+  VTK::InfovisLayout
+  VTK::vtksys
