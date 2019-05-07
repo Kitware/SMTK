@@ -5,24 +5,12 @@ if (NOT EXISTS ${PVPYTHON_EXE})
   # Find paraview
   find_package(ParaView)
 
-  # On some operating systems and in certain configurations, ParaView creates a
-  # launcher for each of its executables. The launcher is responsible for setting
-  # up the appropriate environment and then launching the real executable. When a
-  # launcher is not available, it is likely because the rpath for the real
-  # executable has been set to accomplish the task of configuring the environment.
-  # We first check if ParaView has a launcher for pvpython, and fall back to using
-  # the real pvpython.
-  set(PVPYTHON_TARGET pvpython-launcher)
-  if (NOT TARGET ${PVPYTHON_TARGET})
-    set(PVPYTHON_TARGET pvpython)
-  endif()
-
-  if (NOT TARGET ${PVPYTHON_TARGET})
+  if (NOT TARGET ParaView::pvpython)
     message(FATAL_ERROR "Could not locate target pvpython. Either build ParaView with python support or disable SMTK's python support.")
   endif()
 
   # Access the location of ParaView's pvpython
-  get_target_property(PVPYTHON_EXE ${PVPYTHON_TARGET} LOCATION)
+  get_target_property(PVPYTHON_EXE ParaView::pvpython LOCATION)
 endif()
 
 # Execute a python script that prints the correct PYTHONPATH for ParaView.

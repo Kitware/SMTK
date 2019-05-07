@@ -39,18 +39,28 @@ target_include_directories(smtkPolygonQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkPolygonQtExt to publicly link to smtkCore
 target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
-  pqApplicationComponents
   smtkCore
-  smtkPQWidgetsExt
   smtkQtExt
   vtkPolygonOperationsExt
   vtkSMTKSourceExt
-  vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
+  ParaView::ClientServerCoreCore
+  ParaView::pqApplicationComponents
   Qt5::Core
   Qt5::Widgets
+  VTK::CommonCore
+  VTK::DomainsChemistryOpenGL2
 LINK_PRIVATE
-  ${VTK_LIBRARIES}
+  ParaView::ClientServer
+  ParaView::ClientServerCoreRendering
+  ParaView::ServerManagerCore
+  ParaView::ServerManagerDefault
+  ParaView::ServerManagerRendering
+  ParaView::VTKExtensionsCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::InteractionWidgets
+  VTK::RenderingCore
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)

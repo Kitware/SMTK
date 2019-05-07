@@ -1,11 +1,6 @@
 ################################################################################
 # Build widgets
 ################################################################################
-if (PARAVIEW_BUILD_QT_GUI)
-  add_subdirectory(widgets)
-  add_subdirectory(appcomponents)
-  add_subdirectory(operators)
-endif()
 add_subdirectory(pluginsupport)
 
 set(module_files
@@ -27,6 +22,12 @@ vtk_module_build(
 
 set(plugin_files
   server/plugin/paraview.plugin)
+if (TARGET ParaView::pqApplicationComponents)
+  list(APPEND plugin_files
+    appcomponents/paraview.plugin
+    operators/paraview.plugin
+    widgets/paraview.plugin)
+endif ()
 
 paraview_plugin_scan(
   PLUGIN_FILES ${plugin_files}

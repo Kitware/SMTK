@@ -364,7 +364,12 @@ find_package(MOAB REQUIRED)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   # include ParaView and ensure it is using the OpenGL2 backend
-  find_package(ParaView)
+  find_package(ParaView REQUIRED)
+  if (SMTK_ENABLE_PYTHON_SUPPORT AND NOT PARAVIEW_ENABLE_PYTHON)
+    message(FATAL_ERROR
+      "SMTK with Python and ParaView support requires that ParaView also be "
+      "built with Python support.")
+  endif ()
 endif()
 
 ################################################################################

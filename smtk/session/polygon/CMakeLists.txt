@@ -101,17 +101,6 @@ set(import_vtk_depends)
 
 # The import operator is only available if there is VTK
 if(SMTK_ENABLE_VTK_SUPPORT)
-  include("${VTK_USE_FILE}")
-  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-
-  # Don't add the VTK or other subdirectories as they use the
-  # vtk_module_library() macro and vtk/module.cmake file.
-  # The vtk_smtk_process_modules() macro finds all subdirectories
-  # containing a module.cmake file automatically.
-  include (smtkVTKModules)
-  vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
-  vtk_smtk_process_modules()
-
   set(polygonSrcs ${polygonSrcs}
      operators/ExtractContours.cxx
      operators/Import.cxx
@@ -154,7 +143,7 @@ vtk_module_autoinit(
 smtk_export_header(smtkPolygonSession Exports.h)
 
 # Install the library and exports the library when used from a build tree
-set(PROJECT_NAME SMTKPolygonModules)
+set(SMTK_EXPORT_SET SMTKPolygonModules)
 smtk_install_library(smtkPolygonSession)
 # Install the headers
 smtk_public_headers(smtkPolygonSession ${polygonHeaders})
@@ -177,7 +166,8 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   vtk_module_build(
     MODULES ${vtk_modules}
     PACKAGE SMTKPolygonExt
-    INSTALL_EXPORT smtk
+    INSTALL_EXPORT SMTKPolygonModules
+    CMAKE_DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
     TEST_DIRECTORY_NAME "NONE"
     # Handled by SMTK macros. Used in preference to VTK's since SMTK also adds
     # unit tests for each public header.
