@@ -12,8 +12,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
-#include "smtk/extension/vtk/source/Exports.h"
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 #include "smtk/model/CellEntity.h" // for CellEntities
 

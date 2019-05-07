@@ -10,7 +10,7 @@
 #ifndef vtkConeFrustum_h
 #define vtkConeFrustum_h
 
-#include "smtk/extension/vtk/source/Exports.h" // For export macro
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 #include "vtkCell.h" // Needed for VTK_CELL_SIZE

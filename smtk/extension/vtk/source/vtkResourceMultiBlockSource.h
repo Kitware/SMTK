@@ -10,7 +10,7 @@
 #ifndef smtk_vtk_ResourceMultiBlockSource_h
 #define smtk_vtk_ResourceMultiBlockSource_h
 
-#include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Resource.h"

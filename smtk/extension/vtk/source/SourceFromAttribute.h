@@ -15,8 +15,8 @@
 #include "smtk/AutoInit.h"
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/vtk/source/Exports.h"
 #include "smtk/extension/vtk/source/SourceGenerator.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 
 #include "vtkAlgorithm.h"
 

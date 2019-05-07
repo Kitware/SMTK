@@ -1,34 +1,55 @@
 add_executable(displayConeFrustum MACOSX_BUNDLE displayConeFrustum.cxx)
 target_link_libraries(displayConeFrustum
   smtkCore
-  vtkRenderingGL2PSOpenGL2
   vtkSMTKSourceExt
   vtkSMTKWidgetsExt
-  vtkTestingRendering
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::FiltersSources
+  VTK::IOXML
+  VTK::InteractionStyle
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  VTK::TestingRendering
 )
 
 add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
 target_link_libraries(displayMultiBlockModel
   smtkCore
-  vtkRenderingGL2PSOpenGL2
   vtkSMTKSourceExt
-  vtkTestingRendering
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::IOXML
+  VTK::InteractionStyle
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  VTK::TestingRendering
 )
 
 add_executable(displayMultiBlockMesh MACOSX_BUNDLE displayMultiBlockMesh.cxx)
 target_link_libraries(displayMultiBlockMesh
   smtkCore
-  vtkRenderingGL2PSOpenGL2
   vtkSMTKSourceExt
-  vtkTestingRendering
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::IOXML
+  VTK::InteractionStyle
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  VTK::TestingRendering
 )
 
 add_executable(displayModelToMesh MACOSX_BUNDLE displayModelToMesh.cxx)
 target_link_libraries(displayModelToMesh
   smtkCore
-  vtkRenderingGL2PSOpenGL2
   vtkSMTKSourceExt
-  vtkTestingRendering
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::IOXML
+  VTK::InteractionStyle
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  VTK::TestingRendering
 )
 
 # Only run tests if the data directory exists
