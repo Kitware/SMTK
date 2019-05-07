@@ -45,7 +45,7 @@
 #ifndef __vtkTerrainExtractionFilter_h
 #define __vtkTerrainExtractionFilter_h
 
-#include "smtk/extension/vxl/vtk/Exports.h"
+#include "smtk/extension/vxl/vtk/vtkSMTKVXLExtModule.h"
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkSmartPointer.h"
 
