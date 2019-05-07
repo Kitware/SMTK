@@ -21,7 +21,7 @@
   * In the future, other item types (such as 3 DoubleItem holding
   * 3 points used to bound the sphere) may be supported.
   */
-class SMTKPQWIDGETSEXT_EXPORT pqSMTKSphereItemWidget : public pqSMTKAttributeItemWidget
+class pqSMTKSphereItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:

@@ -22,7 +22,7 @@
 
 class vtkSMProxy;
 
-class SMTKPQWIDGETSEXT_EXPORT qtArcWidget : public qtInteractionWidget
+class qtArcWidget : public qtInteractionWidget
 {
   Q_OBJECT;
   typedef qtInteractionWidget Superclass;
