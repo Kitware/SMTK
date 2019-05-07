@@ -70,7 +70,15 @@ vtk_module_autoinit(
 smtk_export_header(smtkVTKSession Exports.h)
 
 #install the library and exports the library when used from a build tree
+set(SMTK_EXPORT_SET SMTKVTKSession)
 smtk_install_library(smtkVTKSession)
+
+install(
+  EXPORT ${SMTK_EXPORT_SET}
+  DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
+  FILE ${SMTK_EXPORT_SET}-targets.cmake
+)
+export(EXPORT ${SMTK_EXPORT_SET} FILE "${PROJECT_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}/${SMTK_EXPORT_SET}-targets.cmake")
 
 # Operations which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
@@ -87,12 +95,8 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" vtkOperatio
 smtk_public_headers(smtkVTKSession ${vtkHeaders})
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_smtk_plugin(
-    smtkVTKSessionPlugin "1.0"
-    REGISTRAR smtk::session::vtk::Registrar
-    MANAGERS smtk::operation::Manager smtk::resource::Manager
-    LIBRARIES smtkCore smtkVTKSession)
-smtk_install_library(smtkVTKSessionPlugin)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
