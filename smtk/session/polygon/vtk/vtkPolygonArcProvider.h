@@ -16,7 +16,7 @@
 #ifndef __smtk_polygon_vtkPolygonArcProvider_h
 #define __smtk_polygon_vtkPolygonArcProvider_h
 
-#include "smtk/session/polygon/vtk/Exports.h"
+#include "smtk/session/polygon/vtk/vtkPolygonOperationsExtModule.h"
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkPolyData;

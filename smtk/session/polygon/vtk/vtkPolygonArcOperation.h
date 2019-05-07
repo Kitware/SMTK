@@ -16,7 +16,7 @@
 #define __smtk_polygon_vtkPolygonArcOperation_h
 
 #include "smtk/extension/vtk/operators/vtkSMTKOperation.h"
-#include "smtk/session/polygon/vtk/Exports.h"
+#include "smtk/session/polygon/vtk/vtkPolygonOperationsExtModule.h"
 
 class vtkPolyData;
 class vtkContourRepresentation;

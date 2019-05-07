@@ -56,4 +56,5 @@ LINK_PRIVATE
 smtk_export_header(smtkPolygonQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree
+set(PROJECT_NAME SMTKPolygonModules)
 smtk_install_library(smtkPolygonQtExt)

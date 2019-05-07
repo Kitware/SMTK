@@ -163,6 +163,7 @@ target_include_directories(smtkPolygonSession
 smtk_export_header(smtkPolygonSession Exports.h)
 
 # Install the library and exports the library when used from a build tree
+set(PROJECT_NAME SMTKPolygonModules)
 smtk_install_library(smtkPolygonSession)
 # Install the headers
 smtk_public_headers(smtkPolygonSession ${polygonHeaders})
@@ -173,6 +174,24 @@ target_include_directories(smtkPolygonSession
   PUBLIC
     $<BUILD_INTERFACE:${smtk_SOURCE_DIR}/smtk/extension/vtk/meshing>
 )
+
+if (SMTK_ENABLE_VTK_SUPPORT)
+  set(module_files
+    "${CMAKE_CURRENT_SOURCE_DIR}/vtk/vtk.module")
+  vtk_module_scan(
+    MODULE_FILES ${module_files}
+    PROVIDES_MODULES vtk_modules
+    HIDE_MODULES_FROM_CACHE ON
+    WANT_BY_DEFAULT ON)
+  vtk_module_build(
+    MODULES ${vtk_modules}
+    PACKAGE SMTKPolygonExt
+    INSTALL_EXPORT smtk
+    TEST_DIRECTORY_NAME "NONE"
+    # Handled by SMTK macros. Used in preference to VTK's since SMTK also adds
+    # unit tests for each public header.
+    INSTALL_HEADERS OFF)
+endif ()
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(qt)
