@@ -74,179 +74,110 @@ endif( ${CMAKE_HAVE_SYS_SOCKET_H} )
 ###############################################################################
 ###############################################################################
 
-SET(ModelFiles
+set(sources
+  Model/vtkModel.cxx
+  Model/vtkModelEdge.cxx
+  Model/vtkModelEdgeUse.cxx
+  Model/vtkModelEntity.cxx
+  Model/vtkModelFace.cxx
+  Model/vtkModelFaceUse.cxx
+  Model/vtkModelGeometricEntity.cxx
+  Model/vtkModelItem.cxx
+  Model/vtkModelItemGenericIterator.cxx
+  Model/vtkModelItemIterator.cxx
+  Model/vtkModelItemListIterator.cxx
+  Model/vtkModelLoopUse.cxx
+  Model/vtkModelRegion.cxx
+  Model/vtkModelShellUse.cxx
+  Model/vtkModelVertex.cxx
+  Model/vtkModelVertexUse.cxx
+  Model/vtkUUID.cxx
+  Serialize/vtkCommonSerializationHelper.cxx
+  Serialize/vtkInformationKeyMap.cxx
+  Serialize/vtkModelXMLParser.cxx
+  Serialize/vtkRenderingSerializationHelper.cxx
   Serialize/vtkSerializableObject.cxx
   Serialize/vtkSerializationHelper.cxx
   Serialize/vtkSerializationHelperMap.cxx
   Serialize/vtkSerializer.cxx
-  Serialize/vtkModelXMLParser.cxx
-  Serialize/vtkCommonSerializationHelper.cxx
-  Serialize/vtkInformationKeyMap.cxx
-  Serialize/vtkRenderingSerializationHelper.cxx
-  Serialize/vtkXMLElement.cxx
-  Model/vtkModelItem.cxx
-  Model/vtkModelItemIterator.cxx
-  Model/vtkModelItemGenericIterator.cxx
-  Model/vtkModelItemListIterator.cxx
-  Model/vtkModelEntity.cxx
-  Model/vtkModel.cxx
-  Model/vtkModelGeometricEntity.cxx
-  Model/vtkModelVertex.cxx
-  Model/vtkModelVertexUse.cxx
-  Model/vtkModelEdge.cxx
-  Model/vtkModelEdgeUse.cxx
-  Model/vtkModelLoopUse.cxx
-  Model/vtkModelFace.cxx
-  Model/vtkModelFaceUse.cxx
-  Model/vtkModelShellUse.cxx
-  Model/vtkModelRegion.cxx
-  Model/vtkUUID.cxx
-)
+  Serialize/vtkXMLElement.cxx)
 
-SET(DiscreteModelFiles
-  DiscreteMesh.cxx
-  DiscreteMeshCellIdIterator.h
-  MeshClassification.h
-  ModelEdgeHelper.h
-  ModelParserHelper.h
-  ModelVertexClassification.cxx
-  vtkModel3dmGridRepresentation.cxx
-  vtkModel3dm2DGridRepresentation.cxx
-  vtkModelBCGridRepresentation.cxx
-  vtkModelGridRepresentation.cxx
-  vtkModelGeneratedGridRepresentation.cxx
-  vtkDiscreteModel.cxx
-  vtkModelMaterial.cxx
-  vtkDiscreteModelEdge.cxx
-  vtkDiscreteModelEntity.cxx
-  vtkDiscreteModelEntityGroup.cxx
-  vtkDiscreteModelFace.cxx
-  vtkDiscreteModelGeometricEntity.cxx
-  vtkDiscreteModelRegion.cxx
-  vtkDiscreteModelVertex.cxx
-  #vtkDiscreteModelWrapper.cxx
-  vtkModelUserName.cxx
-  vtkXMLModelReader.cxx
-  vtkXMLModelWriter.cxx
-  vtkMergeEventData.cxx
-  vtkSplitEventData.cxx
-)
-
-SET_SOURCE_FILES_PROPERTIES(
+set(classes
+  DiscreteMesh
+  ModelVertexClassification
   vtkDiscreteModel
+  vtkDiscreteModelEdge
+  vtkDiscreteModelEntity
+  vtkDiscreteModelEntityGroup
+  vtkDiscreteModelFace
   vtkDiscreteModelGeometricEntity
-  vtkModelGridRepresentation
+  vtkDiscreteModelRegion
+  vtkDiscreteModelVertex
+  vtkDiscreteModelWrapper
+  vtkMergeEventData
+  vtkModel3dm2DGridRepresentation
+  vtkModel3dmGridRepresentation
+  vtkModelBCGridRepresentation
   vtkModelGeneratedGridRepresentation
-  Model/vtkModel
-  Model/vtkModelEdge
-  Model/vtkModel
-  Model/vtkModelFace
-  Model/vtkModelGeometricEntity
-  Model/vtkModelItem
-  Model/vtkModelItemIterator
-  Model/vtkModelRegion
-  Model/vtkModelVertex
-  ABSTRACT
-)
+  vtkModelGridRepresentation
+  vtkModelMaterial
+  vtkModelUserName
+  vtkSplitEventData
+  vtkXMLModelReader
+  vtkXMLModelWriter)
 
-SET(DiscreteModelHeaders
+set(headers
+  Model/vtkModel.h
+  Model/vtkModelEdge.h
+  Model/vtkModelEdgeUse.h
+  Model/vtkModelEntity.h
+  Model/vtkModelFace.h
+  Model/vtkModelFaceUse.h
+  Model/vtkModelGeometricEntity.h
+  Model/vtkModelItem.h
+  Model/vtkModelItemGenericIterator.h
+  Model/vtkModelItemIterator.h
+  Model/vtkModelItemListIterator.h
+  Model/vtkModelLoopUse.h
+  Model/vtkModelRegion.h
+  Model/vtkModelShellUse.h
+  Model/vtkModelVertex.h
+  Model/vtkModelVertexUse.h
+  Model/vtkUUID.h
+  Serialize/vtkCommonSerializationHelper.h
+  Serialize/vtkInformationKeyMap.h
+  Serialize/vtkModelXMLParser.h
+  Serialize/vtkRenderingSerializationHelper.h
   Serialize/vtkSerializableObject.h
   Serialize/vtkSerializationHelper.h
   Serialize/vtkSerializationHelperMap.h
   Serialize/vtkSerializer.h
-  Serialize/vtkModelXMLParser.h
-  Serialize/vtkCommonSerializationHelper.h
-  Serialize/vtkInformationKeyMap.h
-  Serialize/vtkRenderingSerializationHelper.h
   Serialize/vtkXMLElement.h
-  Model/vtkModelItem.h
-  Model/vtkModelItemIterator.h
-  Model/vtkModelItemGenericIterator.h
-  Model/vtkModelItemListIterator.h
-  Model/vtkModel.h
-  Model/vtkModelEntity.h
-  Model/vtkModelGeometricEntity.h
-  Model/vtkModelVertex.h
-  Model/vtkModelVertexUse.h
-  Model/vtkModelEdge.h
-  Model/vtkModelEdgeUse.h
-  Model/vtkModelLoopUse.h
-  Model/vtkModelFace.h
-  Model/vtkModelFaceUse.h
-  Model/vtkModelShellUse.h
-  Model/vtkModelRegion.h
-  Model/vtkUUID.h
 
-  DiscreteMesh.h
   DiscreteMeshCellIdIterator.h
   MeshClassification.h
   ModelEdgeHelper.h
-  ModelVertexClassification.h
-  vtkModel3dmGridRepresentation.h
-  vtkModel3dm2DGridRepresentation.h
-  vtkModelBCGridRepresentation.h
-  vtkModelGridRepresentation.h
-  vtkModelGeneratedGridRepresentation.h
-  vtkDiscreteModel.h
-  vtkModelMaterial.h
-  vtkDiscreteModelEdge.h
-  vtkDiscreteModel.h
-  vtkDiscreteModelEntity.h
-  vtkDiscreteModelEntityGroup.h
-  vtkDiscreteModelFace.h
-  vtkDiscreteModelGeometricEntity.h
-  vtkDiscreteModelRegion.h
-  vtkDiscreteModelVertex.h
-  vtkDiscreteModelWrapper.h
-  vtkModelUserName.h
-  vtkXMLModelReader.h
-  vtkXMLModelWriter.h
-  vtkMergeEventData.h
-  vtkSplitEventData.h
-
-  "${CMAKE_CURRENT_BINARY_DIR}/vtkSMTKDiscreteModelModule.h"
-)
+  ModelParserHelper.h)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)
    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 endif(MSVC)
 
-SET_SOURCE_FILES_PROPERTIES(
-  ${ModelFiles}
-  ${DiscreteModelFiles}
-  PROPERTIES
-    WRAP_EXCLUDE
-    WRAP_EXCLUDE_PYTHON
-)
+vtk_module_add_module(vtkSMTKDiscreteModel
+  CLASSES ${classes}
+  SOURCES ${sources}
+  HEADERS ${headers})
+vtk_module_link(vtkSMTKDiscreteModel
+  PRIVATE
+    ${UUID_LIBS})
 
-set(_module_src
-  ${ModelFiles}
-  ${DiscreteModelFiles}
-  vtkDiscreteModelWrapper.cxx
-)
-
-set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
-set(VTK_INSTALL_NO_HEADERS 1)
-vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
-target_include_directories(${vtk-module}
-  PUBLIC
-    $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include/smtk/${PROJECT_VERSION}>)
-
-target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
-
-# install the headers
-smtk_public_headers(vtkSMTKDiscreteModel ${DiscreteModelHeaders})
-
-# ... and make header compilation tests link properly:
-smtk_install_library(vtkSMTKDiscreteModel)
-
-if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  # This module currently has source files located in its sub directories,
-  # so it will not be CS wrapped properly, and generate a lot of warning at CMake configure time.
-  # Therefore we disable CS wrapping until the issue with source files in sub directories is addressed.
-  # vtk_add_cs_wrapping(${vtk-module})
-  # smtk_install_library(${vtk-module}CS)
-endif ()
+# The list of public headers for a VTK module are stored as a "module property"
+# (which is just a namespaced CMake TARGET property with some extra support for
+# being different at install time). Ask for the headers and replace any
+# in-source absolute paths with relative paths.
+_vtk_module_get_module_property(vtkSMTKDiscreteModel
+  PROPERTY headers
+  VARIABLE vtk_headers)
+string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" vtk_headers "${vtk_headers}")
+smtk_public_headers(vtkSMTKDiscreteModel ${vtk_headers})

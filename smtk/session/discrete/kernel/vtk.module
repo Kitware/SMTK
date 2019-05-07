@@ -1,0 +1,15 @@
+NAME
+  vtkSMTKDiscreteModel
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
+PRIVATE_DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::FiltersCore
+  VTK::FiltersSources
+  VTK::IOXMLParser
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
+  VTK::vtksys
