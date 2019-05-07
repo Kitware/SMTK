@@ -17,7 +17,7 @@
 #ifndef __smtk_vtk_CleanPolylines_h
 #define __smtk_vtk_CleanPolylines_h
 
-#include "smtk/extension/vtk/filter/Exports.h" // For export macro
+#include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class VTKSMTKFILTEREXT_EXPORT vtkCleanPolylines : public vtkPolyDataAlgorithm

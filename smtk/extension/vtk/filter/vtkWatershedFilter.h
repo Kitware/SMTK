@@ -11,7 +11,7 @@
 #ifndef vtkWatershedFilter_h
 #define vtkWatershedFilter_h
 
-#include "smtk/extension/vtk/filter/Exports.h" // For export macro
+#include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 
 #include "vtkImageAlgorithm.h"
 

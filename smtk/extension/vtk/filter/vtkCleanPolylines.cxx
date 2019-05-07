@@ -168,7 +168,7 @@ void vtkCleanPolylines::StripLines(vtkPolyData* input, vtkPolyData* result, vtkD
   // We need a map for non-manifold Points
   std::set<vtkIdType> vCells; // A set of visited cells
   std::pair<std::set<vtkIdType>::iterator, bool> ret;
-  unsigned short nCells;
+  vtkIdType nCells;
   // Scan each point in the input for a cell count not equal to 2 (non-manifold point)
   vtkIdType pid, lastLineId, *pCells;
   unsigned short i;
@@ -222,7 +222,7 @@ void vtkCleanPolylines::TraverseLine(vtkIdType startPid, vtkIdType startCellId, 
   unsigned char* marks, vtkIdList* ids, double* length, vtkIdType* lastLineId)
 {
   vtkIdType pid, lastPid, cell, *pntCells;
-  unsigned short nCells;
+  vtkIdType nCells;
   vtkIdType nPnts, *cellPnts;
   double p0[3], p1[3];
   *length = 0.0;
@@ -298,7 +298,7 @@ void vtkCleanPolylines::RemoveNonManifoldFeatures(
   vtkNew<vtkIdList> ids;
   vtkNew<vtkCellArray> plines;
   result->SetLines(plines.GetPointer());
-  unsigned short nCells;
+  vtkIdType nCells;
   // Scan each point in the input for a cell count not equal to 2 (non-manifold point)
   vtkIdType *pCells, cell, nPts, *cPnts;
   unsigned short i, j;
@@ -438,7 +438,7 @@ void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCell
   vtkPolyData* input, vtkDoubleArray* lengths, unsigned char* marks, vtkIdList* ids, double* length)
 {
   vtkIdType pid, lastPid, cell, *pntCells;
-  unsigned short nCells;
+  vtkIdType nCells;
   int i;
   vtkIdType nPnts, *cellPnts;
   *length = 0.0;

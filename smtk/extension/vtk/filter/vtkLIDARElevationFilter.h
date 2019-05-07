@@ -22,7 +22,7 @@
 #ifndef __vtkLIDARElevationFilter_h
 #define __vtkLIDARElevationFilter_h
 
-#include "smtk/extension/vtk/filter/Exports.h"
+#include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h"
 #include "vtkDataSetAlgorithm.h"
 class vtkTransform;
 
