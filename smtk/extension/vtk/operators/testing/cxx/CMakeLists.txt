@@ -3,12 +3,15 @@ if (SMTK_DATA_DIR AND SMTK_ENABLE_POLYGON_SESSION)
   add_executable(DeleteSmtkCell DeleteSmtkCell.cxx)
   target_link_libraries(DeleteSmtkCell
     smtkCore
-    vtkSMTKOperationsExt
     smtkPolygonSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PSOpenGL2
-    vtkTestingRendering
-    vtkSMTKReaderExt)
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::IOXML
+    VTK::InteractionStyle
+    VTK::RenderingCore
+    VTK::TestingRendering
+    )
   add_test(
     NAME DeleteSmtkCell
     COMMAND DeleteSmtkCell ${SMTK_DATA_DIR}/model/2d/smtk/simple.smtk  -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/DeleteSmtkCell.png"      -T "${CMAKE_CURRENT_BINARY_DIR}"
@@ -17,9 +20,15 @@ if (SMTK_DATA_DIR AND SMTK_ENABLE_POLYGON_SESSION)
   add_executable(DeleteSmtkCell2 DeleteSmtkCell2.cxx)
   target_link_libraries(DeleteSmtkCell2
     smtkCore
-    vtkSMTKOperationsExt
     smtkPolygonSession
-    vtkSMTKSourceExt)
+    vtkSMTKSourceExt
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::IOXML
+    VTK::InteractionStyle
+    VTK::RenderingCore
+    VTK::TestingRendering
+    )
   add_test(
     NAME DeleteSmtkCell2
     COMMAND DeleteSmtkCell2 ${SMTK_DATA_DIR}/model/2d/smtk/simple.smtk -T "${CMAKE_CURRENT_BINARY_DIR}"
