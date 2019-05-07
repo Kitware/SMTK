@@ -1,8 +1,5 @@
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
-find_package( VTK REQUIRED )
-include_directories(${VTK_INCLUDE_DIRS})
-
 set(VXLWidgetsHeaders
   pqTerrainExtractionManager.h
    )
@@ -42,6 +39,7 @@ LINK_PRIVATE
 smtk_export_header(smtkVXLWidgetsExt Exports.h)
 
 #install the library and exports the library when used from a build tree
+set(PROJECT_NAME SMTKVXLExt)
 smtk_install_library(smtkVXLWidgetsExt)
 
 if (SMTK_ENABLE_TESTING)

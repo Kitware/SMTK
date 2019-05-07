@@ -1,9 +1,3 @@
-# Only include the VTK use-file in subdirectories
-# that require VTK include paths. Otherwise, command
-# lines get too long on some platforms.
-include("${VTK_USE_FILE}")
-list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-
 set(vtkSrcs
   Registrar.cxx
   Resource.cxx
@@ -37,8 +31,8 @@ add_library(smtkVTKSession ${vtkSrcs})
 #set smtkVTKSession to publicly link to smtkCore and VTK
 set(__dependencies)
 foreach(lib IN ITEMS
-    vtkIOMPIImage
-    vtkIOMPIParallel
+    VTK::IOMPIImage
+    VTK::IOMPIParallel
     )
   if (TARGET ${lib})
     list(APPEND __dependencies ${lib})
@@ -46,39 +40,33 @@ foreach(lib IN ITEMS
 endforeach()
 
 set(import_vtk_depends
-    vtkIOExodus
-    vtkIONetCDF
-    vtkIOXML
-    vtkImagingCore
-    vtkFiltersGeneral
-    vtkIOLegacy
-    vtkIOParallel
-    vtkIOParallelExodus
-    vtkIOGeometry
-    vtkFiltersGeometry
+    VTK::IOExodus
+    VTK::IONetCDF
+    VTK::IOXML
+    VTK::ImagingCore
+    VTK::FiltersGeneral
+    VTK::IOLegacy
+    VTK::IOParallel
+    VTK::IOParallelExodus
+    VTK::IOGeometry
+    VTK::FiltersGeometry
     )
 
 target_link_libraries(smtkVTKSession
   LINK_PUBLIC
     smtkCore
     smtkIOVTK
-    vtkCommonDataModel
+    VTK::CommonDataModel
   LINK_PRIVATE
     ${import_vtk_depends}
     ${__dependencies}
     ${Boost_LIBRARIES}
 )
+vtk_module_autoinit(
+  TARGETS smtkVTKSession
+  MODULES VTK::CommonDataModel
+          ${import_vtk_depends})
 
-#vtk targets don't specify an include directory through usage-requirements, so
-#we manually add them here
-set(includes_from_vtk)
-foreach(module ${import_vtk_depends})
-  list(APPEND includes_from_vtk "${${module}_INCLUDE_DIRS}")
-endforeach(module)
-target_include_directories(smtkVTKSession
-  PRIVATE
-  ${includes_from_vtk}
-  )
 smtk_export_header(smtkVTKSession Exports.h)
 
 #install the library and exports the library when used from a build tree

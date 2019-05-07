@@ -377,18 +377,12 @@ find_package(Threads REQUIRED)
 ################################################################################
 
 if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
-  # Find the package here so environment variables are set, but
-  # be careful not to include the VTK_USE_FILE until inside
-  # a subdirectory that requires it; otherwise the list of include
-  # paths can become too long for some platforms.
   find_package(VTK REQUIRED)
-endif()
-
-if (SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT)
-  if(NOT VTK_RENDERING_BACKEND STREQUAL "OpenGL2")
+  if (SMTK_ENABLE_PYTHON_SUPPORT AND NOT VTK_WRAP_PYTHON)
     message(FATAL_ERROR
-      "SMTK requires that VTK be built with the OpenGL2 Rendering backend.")
-  endif()
+      "SMTK with Python and VTK support requires that VTK also be built with "
+      "Python support.")
+  endif ()
 endif()
 
 ################################################################################
@@ -474,15 +468,13 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     elseif (SMTK_ENABLE_VTK_SUPPORT)
       list(APPEND required_python_modules
         vtk)
-      # TODO: VTK needs to export a variable for this
       set(vtk_PYTHONPATH
-        "${VTK_INSTALL_PREFIX}/lib/python2.7/site-packages"
-        "${VTK_INSTALL_PREFIX}/lib"
-        "${VTK_INSTALL_PREFIX}/lib64/python2.7/site-packages"
-        "${VTK_INSTALL_PREFIX}/lib64")
+        "${VTK_PYTHONPATH}")
+      list(GET VTK_PREFIX_PATH 0
+        vtk_prefix)
       set(vtk_libpath
-        "${VTK_INSTALL_PREFIX}/lib"
-        "${VTK_INSTALL_PREFIX}/lib64")
+        "${VTK_PREFIX_PATH}/lib"
+        "${VTK_PREFIX_PATH}/lib64")
     endif ()
 
     set(envsep ":")

@@ -13,27 +13,17 @@ if(SMTK_ENABLE_POLYGON_SESSION)
 
   # The import operator is only available if there is VTK
   if(SMTK_ENABLE_VTK_SUPPORT)
-    include("${VTK_USE_FILE}")
-    list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-
-    # Don't add the VTK or other subdirectories as they use the
-    # vtk_module_library() macro and vtk/module.cmake file.
-    # The vtk_smtk_process_modules() macro finds all subdirectories
-    # containing a module.cmake file automatically.
-    include (smtkVTKModules)
-    vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
-
     list(APPEND import_vtk_depends
-      vtkCommonCore
-      vtkCommonDataModel
-      vtkFiltersGeometry
-      vtkInteractionStyle
-      vtkIOParallel
-      vtkRenderingCore
-      vtkRenderingFreeType
-      vtkRenderingOpenGL2
       vtkSMTKReaderExt
-      vtksys
+      VTK::CommonCore
+      VTK::CommonDataModel
+      VTK::FiltersGeometry
+      VTK::IOParallel
+      VTK::InteractionStyle
+      VTK::RenderingCore
+      VTK::RenderingFreeType
+      VTK::RenderingOpenGL2
+      VTK::vtksys
       )
   endif()
 
@@ -46,18 +36,9 @@ if(SMTK_ENABLE_POLYGON_SESSION)
     ${import_vtk_depends}
     ${Boost_LIBRARIES}
     )
-
-  #vtk targets don't specify an include directory through usage-requirements, so
-  #we manually add them here
-  set(includes_from_vtk)
-  foreach(module ${import_vtk_depends})
-    list(APPEND includes_from_vtk "${${module}_INCLUDE_DIRS}")
-  endforeach(module)
-
-  target_include_directories(smtkOpenCVExt
-    PRIVATE
-    ${includes_from_vtk}
-    )
+  vtk_module_autolink(
+    TARGETS smtkOpenCVExt
+    MODULES ${import_vtk_depends})
 
   smtk_export_header(smtkOpenCVExt Exports.h)
 

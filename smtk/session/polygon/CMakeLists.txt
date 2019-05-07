@@ -123,16 +123,16 @@ if(SMTK_ENABLE_VTK_SUPPORT)
   smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperationXML)
   smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" polygonOperationXML)
   list(APPEND import_vtk_depends
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkFiltersGeometry
-    vtkInteractionStyle
-    vtkIOParallel
-    vtkRenderingCore
-    vtkRenderingFreeType
-    vtkRenderingOpenGL2
     vtkSMTKReaderExt
-    vtksys
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::FiltersGeometry
+    VTK::IOParallel
+    VTK::InteractionStyle
+    VTK::RenderingCore
+    VTK::RenderingFreeType
+    VTK::RenderingOpenGL2
+    VTK::vtksys
     )
 endif()
 
@@ -147,18 +147,9 @@ target_link_libraries(smtkPolygonSession
     ${import_vtk_depends}
     ${Boost_LIBRARIES}
   )
-
-#vtk targets don't specify an include directory through usage-requirements, so
-#we manually add them here
-set(includes_from_vtk)
-foreach(module ${import_vtk_depends})
-  list(APPEND includes_from_vtk "${${module}_INCLUDE_DIRS}")
-endforeach(module)
-
-target_include_directories(smtkPolygonSession
-  PRIVATE
-  ${includes_from_vtk}
-  )
+vtk_module_autoinit(
+  TARGETS smtkPolygonSession
+  MODULES ${import_vtk_depends})
 
 smtk_export_header(smtkPolygonSession Exports.h)
 

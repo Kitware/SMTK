@@ -11,8 +11,8 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PSOpenGL2
-    vtkTestingRendering
+    VTK::RenderingGL2PSOpenGL2
+    VTK::TestingRendering
   )
   add_test(
     NAME discreteImport2dmTest
@@ -22,6 +22,7 @@ if(SMTK_DATA_DIR)
       -V "${SMTK_DATA_DIR}/baseline/smtk/discrete/import2dm.png"
       -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
+
 # TODO This test uses the old MeshSelectionItem and needs
 # to be updated or removed
 #  add_executable(EdgeOp2dmTest edgeOp2dm.cxx)
@@ -29,8 +30,8 @@ if(SMTK_DATA_DIR)
 #    smtkCore
 #    smtkDiscreteSession
 #    vtkSMTKSourceExt
-#    vtkRenderingGL2PSOpenGL2
-#    vtkTestingRendering
+#    VTK::RenderingGL2PSOpenGL2
+#    VTK::TestingRendering
 #  )
 #  add_test(
 #    NAME discreteEdgeOp2dmTest
@@ -46,8 +47,8 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PSOpenGL2
-    vtkTestingRendering
+    VTK::RenderingGL2PSOpenGL2
+    VTK::TestingRendering
     ${Boost_LIBRARIES}
   )
   target_compile_definitions(smtkModelfrom2dmTest PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
@@ -66,8 +67,8 @@ if(SMTK_DATA_DIR)
     smtkDiscreteSession
     vtkSMTKOperationsExt
     vtkSMTKSourceExt
-    vtkRenderingGL2PSOpenGL2
-    vtkTestingRendering
+    VTK::RenderingGL2PSOpenGL2
+    VTK::TestingRendering
     )
   add_test(
     NAME entityGroup2dmTest
@@ -95,8 +96,8 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PSOpenGL2
-    vtkTestingRendering
+    VTK::RenderingGL2PSOpenGL2
+    VTK::TestingRendering
   )
   add_test(
     NAME discreteRemove2dmTest
@@ -110,8 +111,8 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
-    vtkRenderingGL2PSOpenGL2
-    vtkTestingRendering
+    VTK::RenderingGL2PSOpenGL2
+    VTK::TestingRendering
   )
   add_test(
     NAME discreteMergeFaceTest

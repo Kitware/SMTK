@@ -8,21 +8,25 @@ target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
 set(import_vtk_depends
-    vtkCommonExecutionModel
-    vtkFiltersCore
-    vtkFiltersGeometry
-    vtkFiltersSources
-    vtkGeovisCore
-    vtkIOGDAL
-    vtkIOParallel
-    vtkRenderingCore
-    vtkRenderingFreeType
-    vtkRenderingGL2PSOpenGL2
-    vtkRenderingContextOpenGL2
-    vtkRenderingOpenGL2
-    vtksys
+    VTK::CommonExecutionModel
+    VTK::FiltersCore
+    VTK::FiltersGeometry
+    VTK::FiltersSources
+    VTK::GeovisCore
+    VTK::IOGDAL
+    VTK::IOParallel
+    VTK::RenderingCore
+    VTK::RenderingFreeType
+    VTK::RenderingGL2PSOpenGL2
+    VTK::RenderingContextOpenGL2
+    VTK::RenderingOpenGL2
+    VTK::vtksys
     )
-target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkDiscreteSession vtkCommonDataModel LINK_PRIVATE vtkSMTKDiscreteModel ${import_vtk_depends})
+target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkDiscreteSession VTK::CommonDataModel LINK_PRIVATE vtkSMTKDiscreteModel ${import_vtk_depends})
+vtk_module_autoinit(
+  TARGETS ${library_name}
+  MODULES VTK::CommonDataModel
+          ${import_vtk_depends})
 set_target_properties(${library_name}
   PROPERTIES
     CXX_VISIBILITY_PRESET hidden

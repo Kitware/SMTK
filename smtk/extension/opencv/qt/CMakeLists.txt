@@ -1,8 +1,5 @@
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
-find_package( VTK REQUIRED )
-include_directories(${VTK_INCLUDE_DIRS})
-
 set(OpenCVOperationsHeaders imageFeatureExtractorWidget.h)
 set(OpenCVOperationsSrcs imageFeatureExtractorWidget.cxx)
 set(OpenCVOperationsUI imageFeatureExtractor.ui)

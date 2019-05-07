@@ -175,10 +175,12 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" unitO
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
+set (__public_dependencies)
 set (__private_dependencies)
 
 if (VTK_WRAP_PYTHON)
-  list(APPEND __private_dependencies vtkPythonInterpreter)
+  list(APPEND __public_dependencies VTK::PythonUsed)
+  list(APPEND __private_dependencies VTK::PythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
 if(SMTK_ENABLE_MOAB_DISCRETE_READER)
@@ -205,21 +207,22 @@ target_link_libraries(smtkDiscreteSession
   LINK_PUBLIC
     smtkCore
     smtkIOVTK
+    ${__public_dependencies}
   LINK_PRIVATE
   ${Boost_LIBRARIES}
-    vtkCommonExecutionModel
-    vtkFiltersCore
-    vtkFiltersGeometry
-    vtkFiltersSources
-    vtkGeovisCore
-    vtkIOGDAL
-    vtkIOParallel
-    vtkRenderingCore
-    vtkRenderingFreeType
-    vtkRenderingGL2PSOpenGL2
-    vtkRenderingContextOpenGL2
-    vtkRenderingOpenGL2
-    vtksys
+    VTK::CommonExecutionModel
+    VTK::FiltersCore
+    VTK::FiltersGeometry
+    VTK::FiltersSources
+    VTK::GeovisCore
+    VTK::IOGDAL
+    VTK::IOParallel
+    VTK::RenderingCore
+    VTK::RenderingFreeType
+    VTK::RenderingGL2PSOpenGL2
+    VTK::RenderingContextOpenGL2
+    VTK::RenderingOpenGL2
+    VTK::vtksys
     ${__private_dependencies}
     vtkSMTKReaderExt
     vtkSMTKDiscreteModel
@@ -239,6 +242,7 @@ smtk_export_header(smtkDiscreteSession Exports.h)
 smtk_public_headers(smtkDiscreteSession ${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
+set(PROJECT_NAME SMTKDiscreteModules)
 smtk_install_library(smtkDiscreteSession)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
