@@ -1,0 +1,7 @@
+NAME
+  vtkSMTKOpenCVExt
+DEPENDS
+  vtkSMTKOperationsExt
+PRIVATE_DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
