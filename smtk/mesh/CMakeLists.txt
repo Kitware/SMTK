@@ -164,14 +164,8 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" def
 smtk_public_headers(smtkCore ${meshHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_smtk_plugin(
-    smtkMeshPlugin "1.0"
-    ENABLED_BY_DEFAULT
-    REGISTRAR smtk::mesh::Registrar
-    REGISTRAR_HEADER smtk/mesh/resource/Registrar.h
-    MANAGERS smtk::operation::Manager smtk::resource::Manager
-    LIBRARIES smtkCore)
-  smtk_install_library(smtkMeshPlugin)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
