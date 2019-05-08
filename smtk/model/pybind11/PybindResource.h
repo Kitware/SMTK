@@ -181,6 +181,7 @@ PySharedPtrClass< smtk::model::Resource, smtk::resource::Resource > pybind11_ini
     .def("log", &smtk::model::Resource::log)
     .def("lowerDimensionalBoundaries", &smtk::model::Resource::lowerDimensionalBoundaries, py::arg("ofEntity"), py::arg("lowerDimension"))
     .def("modelOwningEntity", &smtk::model::Resource::modelOwningEntity, py::arg("uid"))
+    .def("name", (std::string (smtk::model::Resource::*)() const) &smtk::resource::Resource::name)
     .def("name", (std::string (smtk::model::Resource::*)(const smtk::common::UUID& ) const) &smtk::model::Resource::name, py::arg("ofEntity"))
     .def("observe", (void (smtk::model::Resource::*)(::smtk::model::ResourceEventType, ::smtk::model::ConditionCallback, void *)) &smtk::model::Resource::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
     .def("observe", (void (smtk::model::Resource::*)(::smtk::model::ResourceEventType, ::smtk::model::OneToOneCallback, void *)) &smtk::model::Resource::observe, py::arg("event"), py::arg("functionHandle"), py::arg("callData"))
