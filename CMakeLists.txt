@@ -804,11 +804,14 @@ if (SMTK_RELOCATABLE_INSTALL)
     set(smtk_python_executable)
     set(smtk_python_library)
     set(smtk_python_include_dir)
-    file(RELATIVE_PATH smtk_python_moduledir
-      ${CMAKE_INSTALL_PREFIX}/${SMTK_INSTALL_CONFIG_DIR}
-      ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR})
   endif ()
 endif()
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  file(RELATIVE_PATH smtk_python_moduledir
+    ${CMAKE_INSTALL_PREFIX}/${SMTK_INSTALL_CONFIG_DIR}
+    ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR})
+endif ()
 
 if (SMTK_INSTALL_TESTING_DATA)
   set(smtk_data_dir ${SMTK_INSTALL_DATA_DIR}/data)
