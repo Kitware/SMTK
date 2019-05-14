@@ -150,11 +150,12 @@ The following is an example of a Analysis View:
 
 ###Changes to Attribute View
 
-* added a new XML attribute "HideAssociations".  If set to true the view will not display the association editing widget save screen Real Estate
+* Added a new XML attribute "HideAssociations".  If set to true the view will not display the association editing widget save screen Real Estate
 * If there is only one type of attribute being created/modified then the type column is no longer displayed
 * For the time being the view by property  feature has been disabled until we can decide on whether it is useful and if so, what is the best way to display the information.
 * The column "Attribute" has been renamed to "Name"
 * Attempting to rename an attribute to a name already is use now generates a warning dialog.
+* Fixed issue where changing the attribute being view would prevent an item being updated.
 
 ###Changes to Group View
 
@@ -201,6 +202,9 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
 * qtReferenceItem now allows developers to override the visibility icons
   with custom URLs. See qtReferenceItem::setSelectionIconPaths() and
   doc/userguide/attribute/file-syntax.rst for details.
+
+####Line Edit Items change Attribute Items on EdittingFinished
+* Prior to 3.1, QlineEdit's used to set String, Double, and Int Items would try to update the item on key press events - this result in a large number of edits/modified signals being emitted.  Now items are updated when the edittingFinished signal is emitted.
 
 ####Highlighting when Hovering
 * Views showing associations will now highlight geometry when the user hovers over it
