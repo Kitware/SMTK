@@ -351,17 +351,19 @@ void qtAttributeView::createWidget()
   QObject::connect(
     this->Internals->ViewByCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
 
+  // We want the signals that may change the attribute to be displayed Queued instead of
+  // Direct so that QLineEdit::edittingFinished signals are processed prior to these.
   QObject::connect(this->Internals->ListTable, SIGNAL(itemClicked(QTableWidgetItem*)), this,
-    SLOT(onListBoxClicked(QTableWidgetItem*)));
+    SLOT(onListBoxClicked(QTableWidgetItem*)), Qt::QueuedConnection);
   QObject::connect(this->Internals->ListTable, SIGNAL(itemSelectionChanged()), this,
-    SLOT(onListBoxSelectionChanged()));
+    SLOT(onListBoxSelectionChanged()), Qt::QueuedConnection);
   QObject::connect(this->Internals->ListTable, SIGNAL(itemChanged(QTableWidgetItem*)), this,
     SLOT(onAttributeNameChanged(QTableWidgetItem*)));
   // we need this so that the attribute name will also be changed
   // when a recorded test is play back, which is using setText
   // on the underline QLineEdit of the cell.
   QObject::connect(this->Internals->ListTable, SIGNAL(cellChanged(int, int)), this,
-    SLOT(onAttributeCellChanged(int, int)));
+    SLOT(onAttributeCellChanged(int, int)), Qt::QueuedConnection);
 
   QObject::connect(this->Internals->AddButton, SIGNAL(clicked()), this, SLOT(onCreateNew()));
   QObject::connect(this->Internals->CopyButton, SIGNAL(clicked()), this, SLOT(onCopySelected()));
