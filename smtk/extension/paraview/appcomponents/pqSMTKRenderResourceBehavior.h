@@ -17,13 +17,22 @@
 
 #include <QObject>
 
-/// Given an SMTK resource, this behavior constructs a pipeline source for the
+/// This behavior is responsible for the connections between the
+/// addition/removal of a resource from a resource manager and the associated
+/// creation/deletion of its pipeline.
+///
+/// Given an SMTK resource, the behavior constructs a pipeline source for the
 /// resource and adds it to the active view. Resources created using ParaView's
 /// File->Open do not need this functionality, as it occurs internally within
-/// ParaView. Other created resources (such as those loaded when resolving links,
-/// resources created via the operation panel, etc.) do not automatically go
-/// through ParaView's machinations; we duplicate ParaView's source-handling
-/// process here.
+/// ParaView. As such, the creation of a pipeline is not connected to a resource
+/// manager via observation. Other created resources (such as those loaded when
+/// resolving links, resources created via the operation panel, etc.) do not
+/// automatically go through ParaView's machinations; we duplicate ParaView's
+/// source-handling process here.
+///
+/// The destruction of a pipeline source can be safely connected to a resource
+/// manager's signal of a removed resource because we do not need to guard
+/// against ParaView's pipeline removal logic.
 class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKRenderResourceBehavior : public QObject
 {
   Q_OBJECT
@@ -35,6 +44,7 @@ public:
 
 public slots:
   pqSMTKResource* createPipelineSource(const smtk::resource::Resource::Ptr&);
+  void destroyPipelineSource(const smtk::resource::Resource::Ptr&);
   void renderPipelineSource(pqSMTKResource* source);
 
 protected:

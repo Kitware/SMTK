@@ -118,11 +118,6 @@ void pqCloseResourceReaction::closeResource()
     {
       manager->remove(resource);
     }
-
-    // Destroy the active source associated with the active resource
-    pqApplicationCore* core = pqApplicationCore::instance();
-    pqObjectBuilder* builder = core->getObjectBuilder();
-    builder->destroy(smtkResource);
   }
 }
 
