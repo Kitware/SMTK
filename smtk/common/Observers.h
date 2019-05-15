@@ -142,16 +142,47 @@ public:
   /// the observer.
   Key insert(Observer fn, Priority priority, bool initialize)
   {
+    // An observer's handle id (the second value in its key) defines the order
+    // in which the observer is called at a specific priority level. We
+    // monotonically increase this value for each priority value we encounter.
     int handleId;
     if (m_observers.empty())
     {
+      // If there are no observers, then this observer is the first of its
+      // priority level.
       handleId = 0;
     }
     else
     {
-      auto upper = --(priority != std::numeric_limits<Priority>::lowest()
-          ? m_observers.upper_bound(Key(priority - 1, -1))
-          : m_observers.end());
+      // Search for the the last observer (the one with the highest handle id)
+      // at the requested priority. To do this, we first access the first
+      // observer at the priority lower than the requested priority. We then
+      // access the observer before it.
+      typename std::map<Key, Observer>::iterator upper;
+      if (priority != std::numeric_limits<Priority>::lowest())
+      {
+        auto key = Key(priority - 1, -1);
+        upper = m_observers.upper_bound(key);
+
+        // If the found observer is the first observer in the map, the incident
+        // observer is the first at its priority level. It will be assigned as
+        // such by the subsequent logic of this method without the iterator
+        // decrement.
+        if (upper != m_observers.begin())
+        {
+          --upper;
+        }
+      }
+      else
+      {
+        // If the requested priority is unset, we return the
+        // last observer in the map.
+        upper = --m_observers.end();
+      }
+      // If the observer we found is at the same priority as the incident
+      // observer, the new handle id is one higher than the found observer's
+      // handle id. Otherwise, this is the first observer at this priority
+      // level.
       handleId = (upper->first.first == priority ? upper->first.second + 1 : 0);
     }
     Key handle = Key(priority, handleId);
