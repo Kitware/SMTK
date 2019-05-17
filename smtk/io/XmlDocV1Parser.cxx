@@ -505,7 +505,7 @@ void XmlDocV1Parser::process(xml_node& amnode)
   xml_node node, cnode;
 
   // Get the category information, starting with current set
-  std::set<std::string> newCats, secCatagories = m_resource->categories();
+  std::set<std::string> newCats, seccategories = m_resource->categories();
   std::string defCat, s;
   this->getCategories(amnode, newCats, defCat);
   if (defCat != "")
@@ -513,36 +513,55 @@ void XmlDocV1Parser::process(xml_node& amnode)
     m_defaultCategory = defCat;
   }
   // Add the new Categories
-  secCatagories.insert(newCats.begin(), newCats.end());
+  seccategories.insert(newCats.begin(), newCats.end());
 
   // Process Analysis Info
-  std::set<std::string> catagories;
+  std::set<std::string> categories;
   node = amnode.child("Analyses");
   if (node)
   {
+    attribute::Analyses& analyses = m_resource->analyses();
     xml_node anode;
+    auto xatt = node.attribute("Exclusive");
+    if (xatt && xatt.as_bool())
+    {
+      analyses.setTopLevelExclusive(true);
+    }
     for (anode = node.first_child(); anode; anode = anode.next_sibling())
     {
       s = anode.attribute("Type").value();
-      catagories.clear();
+      categories.clear();
       for (cnode = anode.first_child(); cnode; cnode = cnode.next_sibling())
       {
         if (cnode.text().empty())
         {
           continue;
         }
-        catagories.insert(cnode.text().get());
+        categories.insert(cnode.text().get());
       }
-      m_resource->defineAnalysis(s, catagories);
-      // Does this analaysis have a base type?
-      auto xatt = anode.attribute("BaseType");
+      auto analysis = analyses.create(s);
+      if (analysis == nullptr)
+      {
+        smtkErrorMacro(m_logger, "Failed to create Analysis: " << s);
+        continue;
+      }
+      analysis->setLocalCategories(categories);
+      // Does this analysis have a base type?
+      xatt = anode.attribute("BaseType");
       if (xatt)
       {
         auto bt = xatt.value();
-        if (!m_resource->setAnalysisParent(s, bt))
+        auto parent = analyses.find(bt);
+        if (parent == nullptr)
         {
           smtkErrorMacro(m_logger, "Failed to set Analysis: " << s << " parent to " << bt);
         }
+        analysis->setParent(parent);
+      }
+      xatt = anode.attribute("Exclusive");
+      if (xatt && xatt.as_bool())
+      {
+        analysis->setExclusive(true);
       }
     }
   }
@@ -580,15 +599,15 @@ void XmlDocV1Parser::process(xml_node& amnode)
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
 
-  // Now we need to check to see if there are any catagories in the resource
-  // that were not explicitly listed in the catagories section - first update catagories
+  // Now we need to check to see if there are any categories in the resource
+  // that were not explicitly listed in the categories section - first update categories
   m_resource->updateCategories();
 
   std::set<std::string>::const_iterator it;
   const std::set<std::string>& cats = m_resource->categories();
   for (it = cats.begin(); it != cats.end(); it++)
   {
-    if (secCatagories.find(*it) == secCatagories.end())
+    if (seccategories.find(*it) == seccategories.end())
     {
       smtkErrorMacro(
         m_logger, "Category: " << *it << " was not listed in Resource's Category Section");

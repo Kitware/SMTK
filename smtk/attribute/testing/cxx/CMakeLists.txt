@@ -77,6 +77,7 @@ set(unit_tests
   unitAttributeAnalysis
   unitComponentItem.cxx
   unitDateTimeItem.cxx
+  unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
   unitPathGrammar.cxx
 )

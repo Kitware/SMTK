@@ -1095,6 +1095,11 @@ void qtUIManager::enableCategoryChecks()
 }
 void qtUIManager::setToLevelCategories(const std::set<std::string>& categories)
 {
+  // Check to see if we need to update anything
+  if (m_topLevelCategoriesSet && (m_topLevelCategories == categories))
+  {
+    return; // Nothing to do
+  }
   m_topLevelCategories = categories;
   m_topLevelCategoriesSet = true;
   if (m_topView)

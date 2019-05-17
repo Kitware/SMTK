@@ -34,6 +34,7 @@ public:
   qtDiscreteValueEditor(qtInputsItem* item, int elementIdx, QLayout* childLayout);
   virtual ~qtDiscreteValueEditor();
   bool useSelectionManger() const { return m_useSelectionManager; }
+  void updateContents();
 
 public slots:
   void onInputValueChanged();

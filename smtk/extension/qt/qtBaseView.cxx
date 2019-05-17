@@ -126,8 +126,17 @@ bool qtBaseView::displayItem(smtk::attribute::ItemPtr item)
   {
     return false;
   }
-  return this->uiManager()->passAdvancedCheck(item->advanceLevel()) &&
-    this->uiManager()->passItemCategoryCheck(item->definition());
+  return this->advanceLevelTest(item) && this->categoryTest(item);
+}
+
+bool qtBaseView::categoryTest(smtk::attribute::ItemPtr item)
+{
+  return this->uiManager()->passItemCategoryCheck(item->definition());
+}
+
+bool qtBaseView::advanceLevelTest(smtk::attribute::ItemPtr item)
+{
+  return this->uiManager()->passAdvancedCheck(item->advanceLevel());
 }
 
 void qtBaseView::valueChanged(smtk::attribute::ItemPtr item)

@@ -86,6 +86,7 @@ set(jsonAttributeSrcs
 
 set(attributeHeaders
   ${jsonAttributeHeaders}
+  Analyses.h
   Attribute.h
   Resource.h
   ComponentItem.h
@@ -142,6 +143,7 @@ set(attributeHeaders
 
 set(attributeSrcs
   ${jsonAttributeSrcs}
+  Analyses.cxx
   Attribute.cxx
   Resource.cxx
   ComponentItem.cxx

@@ -129,7 +129,7 @@ void qtDiscreteValueEditor::createWidget()
   wlayout->addWidget(combo);
   this->Internals->m_combo = combo;
   this->updateItemData();
-  this->onInputValueChanged();
+  this->updateContents();
 }
 
 void qtDiscreteValueEditor::updateItemData()
@@ -166,6 +166,44 @@ void qtDiscreteValueEditor::updateItemData()
 
 void qtDiscreteValueEditor::onInputValueChanged()
 {
+  // Do we need to update anything?
+  QComboBox* const comboBox = this->Internals->m_combo;
+  if (!comboBox)
+  {
+    return;
+  }
+  int curIdx = comboBox->currentIndex();
+  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
+
+  // If the current selection matches the current value of the item then we can just return
+  if (item->isSet(this->Internals->m_elementIndex) &&
+    (curIdx == item->discreteIndex(this->Internals->m_elementIndex)))
+  {
+    return; // There is nothing to update
+  }
+
+  // If the current selection is invalid and the item value is not set then we can just return
+  if (!(item->isDiscreteIndexValid(curIdx) || item->isSet(this->Internals->m_elementIndex)))
+  {
+    return; // There is nothing to update
+  }
+
+  // Is the current selection valid - if not lets unset the item
+  if (!item->isDiscreteIndexValid(curIdx))
+  {
+    item->unset(this->Internals->m_elementIndex);
+  }
+  else
+  {
+    item->setDiscreteIndex(this->Internals->m_elementIndex, curIdx);
+  }
+
+  this->updateContents();
+  this->Internals->m_inputItem->forceUpdate();
+}
+
+void qtDiscreteValueEditor::updateContents()
+{
   auto uiManager = this->Internals->m_inputItem->uiManager();
   if (uiManager == nullptr)
     return;
@@ -177,28 +215,8 @@ void qtDiscreteValueEditor::onInputValueChanged()
   }
   this->Internals->clearChildItems();
 
-  int curIdx = comboBox->currentIndex();
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
-  bool refresh = false;
   auto itemDef = item->definitionAs<attribute::ValueItemDefinition>();
-  if (!item->isDiscreteIndexValid(curIdx))
-  {
-    if (item->isSet(this->Internals->m_elementIndex))
-    {
-      this->Internals->m_inputItem->unsetValue(this->Internals->m_elementIndex);
-      refresh = true;
-    }
-  }
-  else
-  {
-    // We are dealing with a valid value
-    refresh =
-      this->Internals->m_inputItem->setDiscreteValue(this->Internals->m_elementIndex, curIdx);
-  }
-  if (!refresh)
-  {
-    return;
-  }
   // update children frame if necessary
   this->Internals->m_hintChildWidth = 0;
   this->Internals->m_hintChildHeight = 0;

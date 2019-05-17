@@ -255,9 +255,7 @@ void pqSMTKAttributeItemWidget::acceptWidgetValues()
 void pqSMTKAttributeItemWidget::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->item();
-  smtk::extension::qtBaseView* bview = m_itemInfo.baseView();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (bview && !bview->uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }
@@ -278,9 +276,7 @@ void pqSMTKAttributeItemWidget::clearChildWidgets()
 void pqSMTKAttributeItemWidget::updateUI()
 {
   auto dataObj = this->item();
-  smtk::extension::qtBaseView* bview = m_itemInfo.baseView();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (bview && !bview->uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }

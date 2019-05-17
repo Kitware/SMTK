@@ -46,22 +46,40 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     // When parsing, it might has a default value, so here a value object is added
     j["Categories"]["Value"] = res->categories();
   }
-  if (res->numberOfAnalyses())
+  smtk::attribute::Analyses& analyses = res->analyses();
+  if (analyses.size())
   {
-    auto analyses = res->analyses();
-    j["Analyses"] = analyses;
-    std::map<std::string, std::string> parentInfo;
-    for (auto analysis : analyses)
+    std::map<std::string, std::string> pInfo;
+    std::vector<std::string> aNames;
+    std::vector<std::string> eInfo;
+    // we need this for backward compatibility
+    std::map<std::string, std::set<std::string> > aInfo;
+    for (auto analysis : analyses.analyses())
     {
-      auto parent = res->analysisParent(analysis.first);
-      if (parent != "")
+      aNames.push_back(analysis->name());
+      aInfo[analysis->name()] = analysis->localCategories();
+      if (analysis->parent() != nullptr)
       {
-        parentInfo[analysis.first] = parent;
+        pInfo[analysis->name()] = analysis->parent()->name();
+      }
+      if (analysis->isExclusive())
+      {
+        eInfo.push_back(analysis->name());
       }
     }
-    if (parentInfo.size())
+    j["Analyses"] = aInfo;
+    j["AnalysesOrder"] = aNames;
+    if (pInfo.size())
     {
-      j["AnalysesParentInfo"] = parentInfo;
+      j["AnalysesParentInfo"] = pInfo;
+    }
+    if (eInfo.size())
+    {
+      j["AnalysesExclusiveInfo"] = eInfo;
+    }
+    if (analyses.areTopLevelExclusive())
+    {
+      j["AnalysesTopLevelExclusive"] = true;
     }
   }
 
@@ -218,20 +236,74 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   // nlohmman's get function does not support nested map, so iterator is used
   if (j.find("Analyses") != j.end())
   {
-    json analyses = j.at("Analyses");
-    for (json::iterator iterAna = analyses.begin(); iterAna != analyses.end(); iterAna++)
-    {
-      res->defineAnalysis(iterAna.key(), iterAna.value());
-    }
+    smtk::attribute::Analyses& analyses = res->analyses();
+    json jAnalyses = j.at("Analyses");
+    std::vector<std::string> eInfo;
+    // we need this for backward compatibility
+    auto aInfo = j.at("Analyses").get<std::map<std::string, std::set<std::string> > >();
 
+    // Get the order of analysis creation if it exists
+    if (j.find("AnalysesOrder") != j.end())
+    {
+      auto aNames = j.at("AnalysesOrder").get<std::vector<std::string> >();
+      for (auto const& name : aNames)
+      {
+        // Lets find its local categories
+        auto it = aInfo.find(name);
+        if (it != aInfo.end())
+        {
+          auto analysis = analyses.create(name);
+          analysis->setLocalCategories(it->second);
+        }
+        else
+        {
+          smtkErrorMacro(logger, "Analysis: " << name << " missing local categories!");
+        }
+      }
+    }
+    else
+    {
+      // There is no specified order so use the dictionary itself
+      for (auto const& info : aInfo)
+      {
+        auto analysis = analyses.create(info.first);
+        analysis->setLocalCategories(info.second);
+      }
+    }
     // Do we have parent infomation to deal with?
     if (j.find("AnalysesParentInfo") != j.end())
     {
       json parentInfo = j.at("AnalysesParentInfo");
-      for (json::iterator iterAna = parentInfo.begin(); iterAna != parentInfo.end(); iterAna++)
+      for (auto const& val : parentInfo.items())
       {
-        res->setAnalysisParent(iterAna.key(), iterAna.value());
+        if (!analyses.setAnalysisParent(val.key(), val.value()))
+        {
+          smtkErrorMacro(
+            logger, "Analsis: " << val.key() << " could not set parent to: " << val.value() << "!");
+        }
       }
+    }
+    // What about Exclusive Info?
+    if (j.find("AnalysesExclusiveInfo") != j.end())
+    {
+      auto eNames = j.at("AnalysesExclusiveInfo").get<std::vector<std::string> >();
+      for (auto const& name : eNames)
+      {
+        auto a = analyses.find(name);
+        if (a != nullptr)
+        {
+          a->setExclusive(true);
+        }
+        else
+        {
+          smtkErrorMacro(
+            logger, "Could not find Analysis: " << name << " to set its exclusive property!");
+        }
+      }
+    }
+    if (j.find("AnalysesTopLevelExclusive") != j.end())
+    {
+      analyses.setTopLevelExclusive(j.at("AnalysesTopLevelExclusive").get<bool>());
     }
   }
 

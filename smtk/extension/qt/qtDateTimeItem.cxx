@@ -344,9 +344,7 @@ void qtDateTimeItem::onTimeZoneRegion()
 void qtDateTimeItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() &&
-      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }
@@ -374,9 +372,7 @@ void qtDateTimeItem::loadInputValues()
 void qtDateTimeItem::updateUI()
 {
   auto dataObj = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() &&
-      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }

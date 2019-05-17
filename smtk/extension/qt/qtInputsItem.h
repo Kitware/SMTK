@@ -43,6 +43,9 @@ public:
   void setLabelVisible(bool) override;
   void unsetValue(int elementIndex);
   bool setDiscreteValue(int elementIndex, int discreteValIndex);
+  /// \brief Forces the object to act as if the underlying item was modified.
+  /// Used mainly by helper classes like qtDiscreteValueEditor
+  void forceUpdate();
 
 public slots:
   void setOutputOptional(int);

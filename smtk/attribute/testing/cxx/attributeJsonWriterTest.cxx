@@ -68,25 +68,29 @@ int main(int argc, char* argv[])
     smtk::attribute::Resource& resource(*resPtr.get());
     std::cout << "Resource Created\n";
     // Lets add some analyses
-    std::set<std::string> analysis;
-    analysis.insert("Flow");
-    analysis.insert("General");
-    analysis.insert("Time");
-    resource.defineAnalysis("CFD Flow", analysis);
-    analysis.clear();
+    smtk::attribute::Analyses& analyses = resPtr->analyses();
+    std::set<std::string> cats;
+    cats.insert("Flow");
+    cats.insert("General");
+    cats.insert("Time");
+    auto analysis = analyses.create("CFD Flow");
+    analysis->setLocalCategories(cats);
+    cats.clear();
 
-    analysis.insert("Flow");
-    analysis.insert("Heat");
-    analysis.insert("General");
-    analysis.insert("Time");
-    resource.defineAnalysis("CFD Flow with Heat Transfer", analysis);
-    analysis.clear();
+    cats.insert("Flow");
+    cats.insert("Heat");
+    cats.insert("General");
+    cats.insert("Time");
+    analysis = analyses.create("CFD Flow with Heat Transfer");
+    analysis->setLocalCategories(cats);
+    cats.clear();
 
-    analysis.insert("Constituent");
-    analysis.insert("General");
-    analysis.insert("Time");
-    resource.defineAnalysis("Constituent Transport", analysis);
-    analysis.clear();
+    cats.insert("Constituent");
+    cats.insert("General");
+    cats.insert("Time");
+    analysis = analyses.create("Constituent Transport");
+    analysis->setLocalCategories(cats);
+    cats.clear();
 
     double lcolor1[] = { 1.0, 1.0, 0.0, 0.1 };
     double lcolor2[] = { 1.0, 0.0, 1.0, 0.2 };
