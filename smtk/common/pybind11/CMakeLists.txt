@@ -29,3 +29,10 @@ install(
   FILES "${build_path}/__init__.py"
   DESTINATION "${install_path}"
   )
+
+install(
+     FILES
+     PybindUUIDTypeCaster.h
+     DESTINATION
+       include/smtk/${SMTK_VERSION}/smtk/common/pybind11
+     )
