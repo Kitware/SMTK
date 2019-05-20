@@ -808,9 +808,15 @@ if (SMTK_RELOCATABLE_INSTALL)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
+  # Get absolute path to CMAKE_INSTALL_PREFIX
+  set(cmake_install_path ${CMAKE_INSTALL_PREFIX})
+  if (NOT IS_ABSOLUTE cmake_install_path)
+    set(cmake_install_path "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PREFIX}")
+  endif()
+
   file(RELATIVE_PATH smtk_python_moduledir
-    ${CMAKE_INSTALL_PREFIX}/${SMTK_INSTALL_CONFIG_DIR}
-    ${CMAKE_INSTALL_PREFIX}/${SMTK_PYTHON_MODULEDIR})
+    ${cmake_install_path}/${SMTK_INSTALL_CONFIG_DIR}
+    ${cmake_install_path}/${SMTK_PYTHON_MODULEDIR})
 endif ()
 
 if (SMTK_INSTALL_TESTING_DATA)
