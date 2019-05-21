@@ -155,6 +155,8 @@ int UnitTestImportIntoResource(int argc, char* argv[])
     test(count[0] == 0, "There should be no vertex groups");
   }
 
+  smtk::model::Entity::Ptr secondModel;
+
   {
     smtk::session::mesh::Import::Ptr importOp =
       operationManager->create<smtk::session::mesh::Import>();
@@ -172,11 +174,20 @@ int UnitTestImportIntoResource(int argc, char* argv[])
       std::cerr << "Import operator failed\n";
       return 1;
     }
+
+    // Retrieve the resulting model
+    smtk::attribute::ComponentItemPtr componentItem =
+      std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
+        importOpResult->findComponent("model"));
+
+    // Access the generated model
+    secondModel = std::dynamic_pointer_cast<smtk::model::Entity>(componentItem->value());
   }
 
   {
     std::size_t count[4] = { 0, 0, 0, 0 };
     ParseModelTopology(model->referenceAs<smtk::model::Model>(), count);
+    ParseModelTopology(secondModel->referenceAs<smtk::model::Model>(), count);
 
     std::cout << count[3] << " volumes" << std::endl;
     test(count[3] == 2, "There should be two volumes");

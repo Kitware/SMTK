@@ -75,6 +75,7 @@ Import::Result Import::operateInternal()
   // Modes 2 and 3 requre an existing resource for input
   smtk::attribute::ReferenceItem::Ptr existingResourceItem = this->parameters()->associations();
 
+  bool newResource = true;
   if (existingResourceItem->numberOfValues() > 0)
   {
     smtk::session::mesh::Resource::Ptr existingResource =
@@ -88,6 +89,7 @@ Import::Result Import::operateInternal()
     {
       // If the "session only" value is set to "this file", then we use the
       // existing resource
+      newResource = false;
       resource = existingResource;
       meshResource = existingResource->resource();
 
@@ -134,7 +136,7 @@ Import::Result Import::operateInternal()
 
   // Name the mesh according to the stem of the file
   std::string name = smtk::common::Paths::stem(filePath);
-  if (!name.empty())
+  if (!name.empty() && newResource == true)
   {
     meshResource->setName(name);
     resource->setName(name);
@@ -164,7 +166,7 @@ Import::Result Import::operateInternal()
 
   // By default, a model is invalid
   smtk::model::Model model;
-  if (associatedModelId != smtk::common::UUID::null())
+  if (associatedModelId != smtk::common::UUID::null() && newResource == true)
   {
     // Assign the model to one described already in the resource with the id of
     // mesh resource's associated model. If there is no such model, then this
