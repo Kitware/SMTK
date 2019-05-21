@@ -132,8 +132,9 @@ bool ImportPythonOperation::importOperation(
   smtk::operation::Operation::Index index = std::hash<std::string>{}(typeName);
   auto create = std::bind(smtk::operation::PyOperation::create, moduleName, opName, index);
 
-  return manager.registerOperation(
-    Metadata(typeName, index, create()->createSpecification(), create));
+  auto specification = create()->createSpecification();
+
+  return manager.registerOperation(Metadata(typeName, index, specification, create));
 }
 
 ImportPythonOperation::Result ImportPythonOperation::operateInternal()
