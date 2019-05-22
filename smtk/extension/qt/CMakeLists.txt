@@ -161,10 +161,13 @@ add_library(smtkQtExt
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkQtExt to publicly link to smtkCore
-target_link_libraries(smtkQtExt LINK_PUBLIC
+target_link_libraries(smtkQtExt
+  LINK_PUBLIC
   smtkCore
   Qt5::Core
   Qt5::Widgets
+  LINK_PRIVATE
+  Threads::Threads
   )
 smtk_export_header(smtkQtExt Exports.h)
 
