@@ -43,25 +43,38 @@ int main(int argc, char* argv[])
     smtk::attribute::Resource& resource(*resptr.get());
     std::cout << "Resource Created\n";
     // Lets add some analyses
+    smtk::attribute::Analyses& analyses = resptr->analyses();
     std::set<std::string> analysis;
     analysis.insert("Flow");
     analysis.insert("General");
     analysis.insert("Time");
-    resource.defineAnalysis("CFD Flow", analysis);
+    auto a = analyses.create("CFD Flow");
+    a->setLocalCategories(analysis);
+
     analysis.clear();
 
     analysis.insert("Flow");
     analysis.insert("Heat");
     analysis.insert("General");
     analysis.insert("Time");
-    resource.defineAnalysis("CFD Flow with Heat Transfer", analysis);
-    analysis.clear();
+    a = analyses.create("CFD Flow with Heat Transfer");
+    a->setLocalCategories(analysis);
 
     analysis.insert("Constituent");
     analysis.insert("General");
     analysis.insert("Time");
-    resource.defineAnalysis("Constituent Transport", analysis);
+    a = analyses.create("Constituent Transport");
+    a->setLocalCategories(analysis);
     analysis.clear();
+
+    // Lets verify that we can't create an analysis with an name
+    // that already exists
+    a = analyses.create("Constituent Transport");
+    if (a != nullptr)
+    {
+      std::cout << "ERROR - Was able to create an analysis that shares a name with another\n";
+      status = -1;
+    }
 
     // Lets create an attribute to represent an expression
     smtk::attribute::DefinitionPtr expDef = resource.createDefinition("ExpDef");

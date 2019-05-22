@@ -154,6 +154,14 @@ protected:
   // Set the information to be displayed in the ViewInfoDialog
   virtual void setInfoToBeDisplayed();
 
+  /// \brief Test for category filtering.
+  /// Returns true if the item's categories pass
+  virtual bool categoryTest(smtk::attribute::ItemPtr);
+
+  /// \brief Test for advance level filtering.
+  /// Returns true if the item's advance level pass
+  virtual bool advanceLevelTest(smtk::attribute::ItemPtr);
+
   QWidget* Widget;
   QScrollArea* m_ScrollArea;
   bool m_isTopLevel;

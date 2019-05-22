@@ -330,7 +330,8 @@ void XmlV2StringWriter::generateXml(Logger& logger)
   auto uuidName = m_resource->id().toString();
   xml_node& root(m_internals->m_roots.at(0));
   root.append_attribute("ID").set_value(uuidName.c_str());
-  if (m_resource->numberOfCategories() || m_resource->numberOfAnalyses())
+  Analyses& analyses = m_resource->analyses();
+  if (m_resource->numberOfCategories() || analyses.size())
   {
     root.append_child(node_comment)
       .set_value("**********  Category and Analysis Information ***********");
@@ -344,36 +345,44 @@ void XmlV2StringWriter::generateXml(Logger& logger)
       }
     }
   }
-  if (m_resource->numberOfAnalyses())
+  if (analyses.size())
   {
     auto aNodes = root.append_child("Analyses");
+    if (analyses.areTopLevelExclusive())
+    {
+      aNodes.append_attribute("Exclusive").set_value(true);
+    }
     // We need to write the analyses so that an analysis's parent
     // is always saved before the analysis itself
-    std::vector<std::string> analyses;
-    auto topLevelAnalyses = m_resource->topLevelAnalyses();
-    analyses.insert(analyses.end(), topLevelAnalyses.begin(), topLevelAnalyses.end());
-    while (!analyses.empty())
+    std::vector<smtk::attribute::Analyses::Analysis*> alist;
+    auto topLevelAnalyses = analyses.topLevel();
+    alist.insert(alist.end(), topLevelAnalyses.begin(), topLevelAnalyses.end());
+    while (!alist.empty())
     {
-      auto analysis = analyses.back();
-      analyses.pop_back();
+      auto analysis = alist.back();
+      alist.pop_back();
       auto anode = aNodes.append_child("Analysis");
-      anode.append_attribute("Type").set_value(analysis.c_str());
-      auto aCats = m_resource->analysisCategories(analysis);
+      anode.append_attribute("Type").set_value(analysis->name().c_str());
+      if (analysis->isExclusive())
+      {
+        anode.append_attribute("Exclusive").set_value(true);
+      }
+      auto aCats = analysis->localCategories();
       for (auto acat : aCats)
       {
         anode.append_child("Cat").text().set(acat.c_str());
       }
       // Does the analysis have a parent?
-      auto parent = m_resource->analysisParent(analysis);
-      if (parent != "")
+      auto parent = analysis->parent();
+      if (parent != nullptr)
       {
-        anode.append_attribute("BaseType").set_value(parent.c_str());
+        anode.append_attribute("BaseType").set_value(parent->name().c_str());
       }
       // Add the analysis' children to be processed
-      auto children = m_resource->analysisChildren(analysis);
+      auto children = analysis->children();
       if (!children.empty())
       {
-        analyses.insert(analyses.end(), children.begin(), children.end());
+        alist.insert(alist.end(), children.begin(), children.end());
       }
     }
   }

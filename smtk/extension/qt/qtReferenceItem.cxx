@@ -364,9 +364,7 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 void qtReferenceItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() &&
-      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }
@@ -390,8 +388,7 @@ void qtReferenceItem::clearWidgets()
 void qtReferenceItem::updateUI()
 {
   smtk::attribute::ItemPtr itm = m_itemInfo.item();
-  if (!itm || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() && !m_itemInfo.uiManager()->passItemCategoryCheck(itm->definition())))
+  if (!m_itemInfo.baseView()->displayItem(itm))
   {
     return;
   }

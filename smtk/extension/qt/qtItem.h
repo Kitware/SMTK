@@ -80,7 +80,6 @@ public:
 
   virtual void setLabelVisible(bool) { ; }
 
-  bool passAdvancedCheck();
   void showAdvanceLevelOverlay(bool);
   bool useSelectionManager() const { return m_useSelectionManager; }
   void setReadOnly(bool mode) { m_readOnly = mode; }

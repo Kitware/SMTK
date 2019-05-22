@@ -22,6 +22,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/Analyses.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryInfo.h"
@@ -144,16 +145,8 @@ public:
 
   bool rename(AttributePtr att, const std::string& newName);
 
-  // Analysis Methods
-  bool defineAnalysis(const std::string& analysisName, const std::set<std::string>& categories);
-  std::size_t numberOfAnalyses() const { return m_analyses.size(); }
-  std::set<std::string> analysisCategories(const std::string& analysisType) const;
-  const std::map<std::string, std::set<std::string> >& analyses() const { return m_analyses; }
-  bool setAnalysisParent(const std::string& analysisName, const std::string& analysisParent);
-  std::string analysisParent(const std::string& analysisName) const;
-  std::set<std::string> analysisChildren(const std::string& analysisName) const;
-  std::set<std::string> topLevelAnalyses() const;
-  DefinitionPtr buildAnalysesDefinition(const std::string& type);
+  // Access Analysis Information
+  smtk::attribute::Analyses& analyses() { return m_analyses; }
 
   std::size_t numberOfAdvanceLevels() const { return m_advLevels.size(); }
   void addAdvanceLevel(int level, std::string label, const double* l_color = 0);
@@ -234,7 +227,6 @@ protected:
     attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const;
   bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
     smtk::attribute::ItemDefinition::CopyInfo& info);
-  void buildAnalysisChildren(GroupItemDefinitionPtr& gitem, const std::string& analysis);
 
   std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
   std::map<std::string, std::set<smtk::attribute::AttributePtr, Attribute::CompareByName> >
@@ -246,9 +238,7 @@ protected:
     std::set<smtk::attribute::WeakDefinitionPtr, Definition::WeakDefinitionPtrCompare> >
     m_derivedDefInfo;
   std::set<std::string> m_categories;
-  std::map<std::string, std::set<std::string> > m_analyses;
-  std::map<std::string, std::set<std::string> > m_analysisChildren;
-  std::map<std::string, std::string> m_analysisParent;
+  smtk::attribute::Analyses m_analyses;
   std::map<std::string, smtk::view::ViewPtr> m_views;
 
   // Advance levels, <int-level, <string-label, color[4]>
@@ -318,31 +308,7 @@ inline std::vector<smtk::attribute::AttributePtr> Resource::findAttributes(
   return result;
 }
 
-inline std::set<std::string> Resource::analysisCategories(const std::string& analysisType) const
-{
-  std::map<std::string, std::set<std::string> >::const_iterator it;
-  it = m_analyses.find(analysisType);
-  if (it != m_analyses.end())
-  {
-    return it->second;
-  }
-  return std::set<std::string>();
-}
-
-inline bool Resource::defineAnalysis(
-  const std::string& analysisName, const std::set<std::string>& categoriesIn)
-{
-  std::map<std::string, std::set<std::string> >::const_iterator it;
-  it = m_analyses.find(analysisName);
-  if (it != m_analyses.end())
-  {
-    // it already exists
-    return false;
-  }
-  m_analyses[analysisName] = categoriesIn;
-  return true;
-}
-}
-}
+} // end attribute namepsace
+} // end smtk namespace
 
 #endif /* __smtk_attribute_Resource_h */

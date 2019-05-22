@@ -80,13 +80,6 @@ void qtItem::clearChildItems()
   m_childItems.clear();
 }
 
-bool qtItem::passAdvancedCheck()
-{
-  smtk::attribute::ItemPtr dataObj = this->item();
-  return !m_itemInfo.uiManager() ||
-    m_itemInfo.uiManager()->passAdvancedCheck(dataObj->advanceLevel());
-}
-
 void qtItem::showAdvanceLevelOverlay(bool show)
 {
   if (!m_widget)

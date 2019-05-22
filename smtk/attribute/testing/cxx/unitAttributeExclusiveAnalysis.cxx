@@ -14,6 +14,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/attribute/operators/Read.h"
 #include "smtk/attribute/operators/Write.h"
@@ -35,6 +36,7 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
   auto a = analyses.find("a");
   auto a1 = analyses.find("a1");
   auto b = analyses.find("b");
+  smtkTest((analyses.areTopLevelExclusive()), prefix << "Toplevel analyses are not exclusive!");
   smtkTest((a != nullptr), prefix << "Could not find a!");
   smtkTest((a1 != nullptr), prefix << "Could not find a1!");
   smtkTest((b != nullptr), prefix << "Could not find b!");
@@ -43,12 +45,14 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
 }
 }
 
-int unitAttributeAnalysis(int, char* [])
+int unitAttributeExclusiveAnalysis(int, char* [])
 {
   // ----
   // I. Let's create an attribute resource and some analyses
   attribute::ResourcePtr attRes = attribute::Resource::create();
   attribute::Analyses& analyses = attRes->analyses();
+  // Make the top level to be exclusive
+  analyses.setTopLevelExclusive(true);
   std::set<std::string> cats;
   cats.insert("foo");
   auto analysis = analyses.create("a");
@@ -56,47 +60,83 @@ int unitAttributeAnalysis(int, char* [])
   analysis = analyses.create("b");
   analysis->setLocalCategories(cats);
   analysis = analyses.create("c");
+  // Lets make c's children exclusive
+  analysis->setExclusive(true);
   analysis->setLocalCategories(cats);
   analysis = analyses.create("a1");
+  analysis->setLocalCategories(cats);
+  analysis = analyses.create("c1");
+  analysis->setLocalCategories(cats);
+  analysis = analyses.create("c2");
   analysis->setLocalCategories(cats);
 
   // We shouldn't be able to create 2 analyses with the same name
   analysis = analyses.create("a1");
-  smtkTest((analysis == nullptr), "Was able to create 2 analyses named a1")
+  smtkTest((analysis == nullptr), "Was able to create 2 analyses named a1");
 
-    // Lets try to set the parent to something that doesn't exists
-    smtkTest(!(analyses.setAnalysisParent("z", "x")), "Succeded in setting z's parent to x");
+  // Lets try to set the parent to something that doesn't exists
+  smtkTest(!(analyses.setAnalysisParent("z", "x")), "Succeded in setting z's parent to x");
   smtkTest(!(analyses.setAnalysisParent("z", "a")), "Succeded in setting z's parent to a");
   smtkTest(!(analyses.setAnalysisParent("a", "x")), "Succeded in setting a's parent to x");
-  // This should work
+  // These should work
   smtkTest(analyses.setAnalysisParent("a1", "a"), "Was not able to set a1's parent to a");
+  smtkTest(analyses.setAnalysisParent("c1", "c"), "Was not able to set c1's parent to c");
+  smtkTest(analyses.setAnalysisParent("c2", "c"), "Was not able to set c2's parent to c");
   // Lets test out the attribute definition building method
   // Definition should have 1 group (a), and 2 void (b, c) items. group a should have 1 void item (a1)
   auto def = analyses.buildAnalysesDefinition(attRes, "Analysis");
   smtkTest((def != nullptr), "Could not build definition");
-  smtkTest((def->numberOfItemDefinitions() == 3), "Definition does not have 3 items") int pos =
-    def->findItemPosition("a");
-  smtkTest(pos > -1, "Could not find item a");
-  auto gitem =
-    std::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(def->itemDefinition(pos));
+  smtkTest((def->numberOfItemDefinitions() == 1), "Definition does not have 1 items");
+  auto sitem =
+    std::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(def->itemDefinition(0));
+  smtkTest((sitem != nullptr), "Could not find top level string item");
+  smtkTest((sitem->isDiscrete()), "Top level Item is not discrete");
+  std::cerr << "Number of Top Level Analyses = " << sitem->numberOfDiscreteValues() << std::endl;
+  std::cerr << "Names of Top Level Analyses are :";
+  for (std::size_t i = 0; i < sitem->numberOfDiscreteValues(); ++i)
+  {
+    std::cerr << sitem->discreteEnum(i) << " ";
+  }
+  std::cerr << std::endl;
+
+  smtkTest((sitem->numberOfDiscreteValues() == 3), "Expected 3 top level analyses but found "
+      << sitem->numberOfDiscreteValues());
+  smtkTest((sitem->discreteEnum(0) == "a"), "First Analysis is not a");
+  smtkTest((sitem->discreteEnum(1) == "b"), "Second Analysis is not b");
+  smtkTest((sitem->discreteEnum(2) == "c"), "Third Analysis is not c");
+  std::cerr << "Number of Top Level Children Definitions = "
+            << sitem->numberOfChildrenItemDefinitions() << std::endl;
+  smtkTest((sitem->numberOfChildrenItemDefinitions() == 2),
+    "Top level Item does not have 2 children item definitions");
+  auto childrenDefs = sitem->childrenItemDefinitions();
+  auto it = childrenDefs.find("a");
+  smtkTest((it != childrenDefs.end()), "Could not find a's definition");
+  auto gitem = std::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(it->second);
   smtkTest((gitem != nullptr), "a is not a group item");
-  pos = def->findItemPosition("b");
-  smtkTest(pos > -1, "Could not find item b");
-  auto vitem =
-    std::dynamic_pointer_cast<smtk::attribute::VoidItemDefinition>(def->itemDefinition(pos));
-  smtkTest((vitem != nullptr), "b is not a void item");
-  pos = def->findItemPosition("c");
-  smtkTest(pos > -1, "Could not find item c");
-  vitem = std::dynamic_pointer_cast<smtk::attribute::VoidItemDefinition>(def->itemDefinition(pos));
-  smtkTest((vitem != nullptr), "c is not a void item");
-  pos = def->findItemPosition("a1");
-  smtkTest(pos == -1, "Could find item a1 in Definition");
-  smtkTest((gitem->numberOfItemDefinitions() == 1), "a's group item does not have 1 item") pos =
-    gitem->findItemPosition("a1");
+
+  smtkTest((gitem->numberOfItemDefinitions() == 1), "a's group item does not have 1 item");
+  auto pos = gitem->findItemPosition("a1");
   smtkTest(pos == 0, "Could not find item a1 in group item a");
-  vitem =
+  auto vitem =
     std::dynamic_pointer_cast<smtk::attribute::VoidItemDefinition>(gitem->itemDefinition(pos));
   smtkTest((vitem != nullptr), "a1 is not a void item");
+
+  it = childrenDefs.find("c");
+  smtkTest((it != childrenDefs.end()), "Could not find c's definition");
+  sitem = std::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(it->second);
+  smtkTest((sitem != nullptr), "c is not a string item");
+  std::cerr << "Number of c's children analyses = " << sitem->numberOfDiscreteValues() << std::endl;
+  std::cerr << "Names of c's children analyses are :";
+  for (std::size_t i = 0; i < sitem->numberOfDiscreteValues(); ++i)
+  {
+    std::cerr << sitem->discreteEnum(i) << " ";
+  }
+  std::cerr << std::endl;
+
+  smtkTest((sitem->numberOfDiscreteValues() == 2), "c's item does not have 2 analyses");
+  smtkTest((sitem->discreteEnum(0) == "c1"), "c's first analysis is not c1");
+  smtkTest((sitem->discreteEnum(1) == "c2"), "c's second analysis is not c2");
+
   // Should fail if we try to create another with the same type name
   def = analyses.buildAnalysesDefinition(attRes, "Analysis");
   smtkTest((def == nullptr), "Was able to build second definition");
@@ -110,8 +150,8 @@ int unitAttributeAnalysis(int, char* [])
   io::AttributeReader reader;
   io::Logger logger;
   std::string writeRroot(SMTK_SCRATCH_DIR);
-  std::string fname = writeRroot + "/unitAttributeAnalysisTest.sbi";
-  std::string rname = writeRroot + "/unitAttributeAnalysisTest.smtk";
+  std::string fname = writeRroot + "/unitAttributeExclusiveAnalysisTest.sbi";
+  std::string rname = writeRroot + "/unitAttributeExclusiveAnalysisTest.smtk";
 
   //Test JSON File I/O
   attRes->setLocation(rname);

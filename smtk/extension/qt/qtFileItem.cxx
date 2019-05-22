@@ -557,9 +557,7 @@ void qtFileItem::setInputValue(const QString& val)
 void qtFileItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() &&
-      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }
@@ -700,9 +698,7 @@ void qtFileItem::loadInputValues()
 void qtFileItem::updateUI()
 {
   auto dataObj = m_itemInfo.itemAs<FileSystemItem>();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() &&
-      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }

@@ -197,7 +197,7 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   if (item->isSet(elementIndex) && (oldIndex == discreteValIndex))
   {
     // Return true to indicate that the input item is in a valid state and can be processed
-    // This is needed for updating active children in the descrete editor
+    // This is needed for updating active children in the discrete editor
     return true;
   }
   else if (item->setDiscreteIndex(elementIndex, discreteValIndex))
@@ -209,6 +209,13 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   return false;
 }
 
+void qtInputsItem::forceUpdate()
+{
+  auto item = m_itemInfo.itemAs<ValueItem>();
+  emit this->modified();
+  m_itemInfo.baseView()->valueChanged(item);
+}
+
 void qtInputsItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
@@ -216,12 +223,8 @@ void qtInputsItem::setLabelVisible(bool visible)
 
 void qtInputsItem::createWidget()
 {
-  //pqApplicationCore* paraViewApp = pqApplicationCore::instance();
-  //std::cout << "PV app: " << paraViewApp << "\n";
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() &&
-      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }
@@ -364,9 +367,7 @@ void qtInputsItem::loadInputValues()
 void qtInputsItem::updateUI()
 {
   smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
-  if (!dataObj || !this->passAdvancedCheck() ||
-    (m_itemInfo.uiManager() &&
-      !m_itemInfo.uiManager()->passItemCategoryCheck(dataObj->definition())))
+  if (!m_itemInfo.baseView()->displayItem(dataObj))
   {
     return;
   }

@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/AttributeWriter.h"
@@ -75,7 +76,7 @@ void qtAnalysisView::createWidget()
   auto attDef = attRes->findDefinition(defName);
   if (!attDef)
   {
-    attDef = attRes->buildAnalysesDefinition(defName);
+    attDef = attRes->analyses().buildAnalysesDefinition(attRes, defName);
   }
   m_analysisAttribute = attRes->findAttribute(attName);
   if (!m_analysisAttribute)
@@ -91,11 +92,11 @@ void qtAnalysisView::createWidget()
 
   this->setFixedLabelWidth(labelWidth);
   smtk::view::View::Component comp; // Right now not being used
-  qtAttribute* attInstance = new qtAttribute(m_analysisAttribute, comp, this->widget(), this);
-  attInstance->createBasicLayout(true);
+  auto analysisQtAttribute = new qtAttribute(m_analysisAttribute, comp, this->widget(), this);
+  analysisQtAttribute->createBasicLayout(true);
   this->uiManager()->enableCategoryChecks();
-  layout->addWidget(attInstance->widget());
-  QObject::connect(attInstance, SIGNAL(modified()), this, SLOT(analysisChanged()));
+  layout->addWidget(analysisQtAttribute->widget());
+  QObject::connect(analysisQtAttribute, SIGNAL(modified()), this, SLOT(analysisChanged()));
   // OK - lets apply the initial state.
   this->analysisChanged();
 }
@@ -109,8 +110,51 @@ void qtAnalysisView::processAnalysisItem(
     return;
   }
   auto attRes = this->uiManager()->attResource();
-  auto myCats = attRes->analysisCategories(item->name());
-  cats.insert(myCats.begin(), myCats.end());
+
+  // Are we dealing with a string item - in that case the value of the string
+  // is the analysis and we need to process it's active children.  Else
+  // the item's name is the analysis and we need to see if its a group
+  auto sitem = std::dynamic_pointer_cast<const StringItem>(item);
+  if (sitem != nullptr)
+  {
+    // If the item is not set we can just return (nothing to process)
+    if (!sitem->isSet())
+    {
+      return;
+    }
+
+    auto analysis = attRes->analyses().find(sitem->value());
+    if (analysis != nullptr)
+    {
+      auto myCats = analysis->localCategories();
+      cats.insert(myCats.begin(), myCats.end());
+    }
+    else
+    {
+      std::cerr << "Could not find Analysis: " << sitem->value() << std::endl;
+    }
+    // Lets check its active children
+    int i, n = static_cast<int>(sitem->numberOfActiveChildrenItems());
+    for (i = 0; i < n; i++)
+    {
+      this->processAnalysisItem(sitem->activeChildItem(i), cats);
+    }
+    return;
+  }
+
+  // If we are here then we are dealing with an item
+  // representing the actual analysis
+  auto analysis = attRes->analyses().find(item->name());
+  if (analysis != nullptr)
+  {
+    auto myCats = analysis->localCategories();
+    cats.insert(myCats.begin(), myCats.end());
+  }
+  else
+  {
+    std::cerr << "Could not find Analysis: " << item->name() << std::endl;
+  }
+
   auto gitem = std::dynamic_pointer_cast<const GroupItem>(item);
   if (gitem == nullptr)
   {
@@ -135,4 +179,10 @@ void qtAnalysisView::analysisChanged()
     this->processAnalysisItem(m_analysisAttribute->item(i), cats);
   }
   this->uiManager()->setToLevelCategories(cats);
+}
+
+bool qtAnalysisView::categoryTest(smtk::attribute::ItemPtr)
+{
+  // Analysis View contents ignores category filtering
+  return true;
 }

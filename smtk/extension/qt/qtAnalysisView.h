@@ -12,6 +12,7 @@
 #define __smtk_extension_qtAnalysisView_h
 
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtBaseView.h"
 
 #include <set>
@@ -52,22 +53,29 @@ class SMTKQTEXT_EXPORT qtAnalysisView : public qtBaseView
   Q_OBJECT
 
 public:
+  /// \brief Factory method to create a qtAnalysisView from a ViewInfo
   static qtBaseView* createViewWidget(const ViewInfo& info);
   qtAnalysisView(const ViewInfo& info);
   virtual ~qtAnalysisView();
 
 public slots:
+  /// \brief Slot used to update the category filtering based on the state of the Analysis Attribute
   void analysisChanged();
 
 protected:
   void createWidget() override;
+  /// \brief Method to assembly the categories represented by an item in the Analysis Attribute
   void processAnalysisItem(smtk::attribute::ConstItemPtr item, std::set<std::string>& cats);
+  /// \brief Override's qtBaseView Test
+  ///
+  /// Since the items of the Analysis Attribute have no categories, this view turns off this
+  // check by always returning true.
+  bool categoryTest(smtk::attribute::ItemPtr) override;
 
 private:
-  smtk::attribute::AttributePtr m_analysisAttribute;
-
-}; // class
-}; // namespace attribute
-}; // namespace smtk
+  smtk::attribute::AttributePtr m_analysisAttribute; ///< Analysis Attribute used by the View
+};
+}
+}
 
 #endif
