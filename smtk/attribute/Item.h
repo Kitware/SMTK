@@ -17,6 +17,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
+#include "smtk/attribute/SearchStyle.h"
 #include <map>
 #include <queue>
 #include <string>
@@ -75,6 +76,20 @@ public:
   std::string label() const;
   virtual Item::Type type() const = 0;
   virtual bool isValid() const = 0;
+
+  /// @{
+  /// \brief return a child item that matches name and satisfies the SearchStyle
+  smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
+  smtk::attribute::ConstItemPtr find(
+    const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
+
+  template <typename T>
+  typename T::Ptr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
+
+  template <typename T>
+  typename T::ConstPtr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
+  /// @}
+
   /**
    * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
    * is true, each active) child item. If a subclass presents childern items(ValueItem,
@@ -166,6 +181,11 @@ protected:
   Item(Attribute* owningAttribute, int itemPosition);
   Item(Item* owningItem, int myPosition, int mySubGroupPOsition);
   virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
+  /// \brief Internal implementation of the find method
+  virtual smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style);
+  virtual smtk::attribute::ConstItemPtr findInternal(
+    const std::string& name, SearchStyle style) const;
+
   Attribute* m_attribute;
   Item* m_owningItem;
   int m_position;
@@ -184,6 +204,18 @@ inline smtk::simulation::UserDataPtr Item::userData(const std::string& key) cons
 {
   std::map<std::string, smtk::simulation::UserDataPtr>::const_iterator it = m_userData.find(key);
   return ((it == m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
+}
+
+template <typename T>
+typename T::Ptr Item::findAs(const std::string& iname, SearchStyle style)
+{
+  return smtk::dynamic_pointer_cast<T>(this->find(iname, style));
+}
+
+template <typename T>
+typename T::ConstPtr Item::findAs(const std::string& iname, SearchStyle style) const
+{
+  return smtk::dynamic_pointer_cast<const T>(this->find(iname, style));
 }
 }
 }

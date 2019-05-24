@@ -20,6 +20,10 @@ namespace py = pybind11;
 void pybind11_init_smtk_attribute_SearchStyle(py::module &m)
 {
   py::enum_<smtk::attribute::SearchStyle>(m, "SearchStyle")
+    .value("IMMEDIATE", smtk::attribute::SearchStyle::IMMEDIATE)
+    .value("RECURSIVE", smtk::attribute::SearchStyle::RECURSIVE)
+    .value("IMMEDIATE_ACTIVE", smtk::attribute::SearchStyle::IMMEDIATE_ACTIVE)
+    .value("RECURSIVE_ACTIVE", smtk::attribute::SearchStyle::RECURSIVE_ACTIVE)
     .value("NO_CHILDREN", smtk::attribute::SearchStyle::NO_CHILDREN)
     .value("ACTIVE_CHILDREN", smtk::attribute::SearchStyle::ACTIVE_CHILDREN)
     .value("ALL_CHILDREN", smtk::attribute::SearchStyle::ALL_CHILDREN)

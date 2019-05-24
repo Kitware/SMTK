@@ -4,6 +4,7 @@ target_link_libraries(attributeReaderWriterTest smtkCore)
 set(attributeTests
   basicAttributeDefinitionTest
   basicAttributeDerivationTest
+  basicAttributeFindTest
   basicAttributeXMLWriterTest
   childrenItemsTest
   definitionTagsTest

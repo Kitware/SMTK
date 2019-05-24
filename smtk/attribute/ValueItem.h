@@ -128,13 +128,20 @@ public:
   // Use COPY_MODEL_ASSOCIATIONS if you want them copied as well.These options are defined in Item.h .
   bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0) override;
 
+  /// @{
+  /// \brief Search the item's children - Deprecated! Please use Item::find
   ItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle);
   ConstItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle) const;
+  /// @}
 
 protected:
   ValueItem(Attribute* owningAttribute, int itemPosition);
   ValueItem(Item* owningItem, int myPosition, int mySubGroupPosition);
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
+  /// \brief Internal implementation of the find method
+  smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style) override;
+  smtk::attribute::ConstItemPtr findInternal(
+    const std::string& name, SearchStyle style) const override;
   virtual void updateDiscreteValue(std::size_t elementIndex) = 0;
   virtual void updateActiveChildrenItems();
   std::vector<int> m_discreteIndices;

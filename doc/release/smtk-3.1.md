@@ -32,6 +32,26 @@ The qtAssociationWidget has been modified to use these new ruled when determinin
 
 See attribute/testing/cxx/unitAttributeAssociationConstraints.cxx for an example.
 
+### Changes to Finding Items
+#### Added new SearchStyle Enums
+The original enums were a bit confusing and were not complete.  New enums were added though the original ones are being kept for backward compatibility but they should be considered deprecated and will be removed in the next release.
+
+*  IMMEDIATE - Search only the top level items of an item or attribute (same as NO_CHILDREN)
+*  RECURSIVE - Recursively search for the item regardless if it is active or not (same as ALL_CHILDREN)
+* IMMEDIATE_ACTIVE - Search only the top level active items of an item or attribute
+* RECURSIVE_ACTIVE - Recursively search for an active item (same as ACTIVE_CHILDREN)
+
+#### Item::find added
+All Item derived classes can now perform find; therefore, ValueItem::findChild method should be treated as deprecated.
+
+#### Attribute's Find Item Methods
+* Previously it would not search group items.  This has been corrected.
+* ItemAtPath now has an additional parameter to indicate if only active items should be returned.
+
+#### Other Changes
+* GroupItem - searching now can include items that are not just the top level children and you can now provide a SearchStyle
+* ValueItem - searching will take GroupItems into consideration.
+
 ###Changes to Attribute Association Related API
 
 * attribute::Attribute

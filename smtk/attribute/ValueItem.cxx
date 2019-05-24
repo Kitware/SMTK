@@ -426,7 +426,116 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   return Item::assign(sourceItem, options);
 }
 
-/**\brief Find a child of this item with the given name.
+smtk::attribute::ItemPtr ValueItem::findInternal(const std::string& childName, SearchStyle style)
+{
+  // Do we have it among our children?
+
+  // Are we only caring about active children?
+  if ((style == RECURSIVE_ACTIVE) || (style == IMMEDIATE_ACTIVE))
+  {
+    for (auto& item : m_activeChildrenItems)
+    {
+      if (item->name() == childName)
+      {
+        return item;
+      }
+    }
+    if (style == RECURSIVE_ACTIVE)
+    {
+      // Ok - we didn't find it so lets recursively check its active chiildren
+      for (auto& item : m_activeChildrenItems)
+      {
+        ItemPtr result = item->find(childName, style);
+        if (result)
+        {
+          return result;
+        }
+      }
+    }
+    // Couldn't find anything
+    return nullptr;
+  }
+
+  // Ok lets see if we can find the name in the item's children
+  auto it = m_childrenItems.find(childName);
+  if (it != m_childrenItems.end())
+  {
+    return it->second;
+  }
+
+  if (style == IMMEDIATE)
+  {
+    // We are not suppose to recursively look for a match
+    return nullptr;
+  }
+
+  for (auto& child : m_childrenItems)
+  {
+    ItemPtr result = child.second->find(childName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
+}
+
+smtk::attribute::ConstItemPtr ValueItem::findInternal(
+  const std::string& childName, SearchStyle style) const
+{
+  // Do we have it among our children?
+
+  // Are we only caring about active children?
+  if ((style == RECURSIVE_ACTIVE) || (style == IMMEDIATE_ACTIVE))
+  {
+    for (auto& item : m_activeChildrenItems)
+    {
+      if (item->name() == childName)
+      {
+        return item;
+      }
+    }
+    if (style == RECURSIVE_ACTIVE)
+    {
+      // Ok - we didn't find it so lets recursively check its active chiildren
+      for (auto& item : m_activeChildrenItems)
+      {
+        ConstItemPtr result = item->find(childName, style);
+        if (result)
+        {
+          return result;
+        }
+      }
+    }
+    // Couldn't find anything
+    return nullptr;
+  }
+
+  // Ok lets see if we can find the name in the item's children
+  auto it = m_childrenItems.find(childName);
+  if (it != m_childrenItems.end())
+  {
+    return it->second;
+  }
+
+  if (style == IMMEDIATE)
+  {
+    // We are not suppose to recursively look for a match
+    return nullptr;
+  }
+
+  for (auto& child : m_childrenItems)
+  {
+    ConstItemPtr result = child.second->find(childName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
+}
+
+/**\brief Find a child of this item with the given name - To Be Deprecated (please use find!)
   *
   * If the \a style is ALL_CHILDREN or ACTIVE_CHILDREN,
   * any of *this* item's children that are ValueItems
@@ -435,112 +544,12 @@ bool ValueItem::assign(ConstItemPtr& sourceItem, unsigned int options)
 ///@{
 smtk::attribute::ItemPtr ValueItem::findChild(const std::string& cname, SearchStyle style)
 {
-  std::vector<smtk::attribute::ItemPtr>::const_iterator ait;
-  std::map<std::string, smtk::attribute::ItemPtr>::const_iterator it;
-
-  // First, ask if we have a match at all.
-  it = m_childrenItems.find(cname);
-  if (it != m_childrenItems.end())
-  { // Now, if we have a match, see if it is active should that be required.
-    if (style == ACTIVE_CHILDREN)
-    {
-      ait = std::find(m_activeChildrenItems.begin(), m_activeChildrenItems.end(), it->second);
-      if (ait != m_activeChildrenItems.end())
-        return it->second; // Our match is active, return it.
-    }
-    else
-    { // We have a match and do not need it to be active.
-      return it->second;
-    }
-  }
-
-  // None of our children match, but perhaps they have children that do.
-  switch (style)
-  {
-    case ACTIVE_CHILDREN:
-      for (ait = m_activeChildrenItems.begin(); ait != m_activeChildrenItems.end(); ++ait)
-      {
-        ValueItem::Ptr vchild = dynamic_pointer_cast<ValueItem>(*ait);
-        if (vchild)
-        {
-          ItemPtr match = vchild->findChild(cname, style);
-          if (match)
-            return match;
-        }
-      }
-      break;
-    case ALL_CHILDREN:
-      for (it = m_childrenItems.begin(); it != m_childrenItems.end(); ++it)
-      {
-        ValueItem::Ptr vchild = dynamic_pointer_cast<ValueItem>(it->second);
-        if (vchild)
-        {
-          ItemPtr match = vchild->findChild(cname, style);
-          if (match)
-            return match;
-        }
-      }
-      break;
-    case NO_CHILDREN:
-    default:
-      break;
-  }
-  return ItemPtr();
+  return this->findInternal(cname, style);
 }
 
 smtk::attribute::ConstItemPtr ValueItem::findChild(
   const std::string& cname, SearchStyle style) const
 {
-  std::vector<smtk::attribute::ItemPtr>::const_iterator ait;
-  std::map<std::string, smtk::attribute::ItemPtr>::const_iterator it;
-
-  // First, ask if we have a match at all.
-  it = m_childrenItems.find(cname);
-  if (it != m_childrenItems.end())
-  { // Now, if we have a match, see if it is active should that be required.
-    if (style == ACTIVE_CHILDREN)
-    {
-      ait = std::find(m_activeChildrenItems.begin(), m_activeChildrenItems.end(), it->second);
-      if (ait != m_activeChildrenItems.end())
-        return it->second; // Our match is active, return it.
-    }
-    else
-    { // We have a match and do not need it to be active.
-      return it->second;
-    }
-  }
-
-  // None of our children match, but perhaps they have children that do.
-  switch (style)
-  {
-    case ACTIVE_CHILDREN:
-      for (ait = m_activeChildrenItems.begin(); ait != m_activeChildrenItems.end(); ++ait)
-      {
-        ConstValueItemPtr vchild = dynamic_pointer_cast<const ValueItem>(*ait);
-        if (vchild)
-        {
-          ConstItemPtr match = vchild->findChild(cname, style);
-          if (match)
-            return match;
-        }
-      }
-      break;
-    case ALL_CHILDREN:
-      for (it = m_childrenItems.begin(); it != m_childrenItems.end(); ++it)
-      {
-        ConstValueItemPtr vchild = dynamic_pointer_cast<const ValueItem>(it->second);
-        if (vchild)
-        {
-          ConstItemPtr match = vchild->findChild(cname, style);
-          if (match)
-            return match;
-        }
-      }
-      break;
-    case NO_CHILDREN:
-    default:
-      break;
-  }
-  return ConstItemPtr();
+  return this->findInternal(cname, style);
 }
 ///@}

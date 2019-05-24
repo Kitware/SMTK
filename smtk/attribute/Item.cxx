@@ -83,6 +83,28 @@ std::string Item::label() const
   return m_definition->label();
 }
 
+smtk::attribute::ItemPtr Item::find(const std::string& itemName, SearchStyle style)
+{
+  return this->findInternal(itemName, style);
+}
+
+smtk::attribute::ConstItemPtr Item::find(const std::string& itemName, SearchStyle style) const
+{
+  return this->findInternal(itemName, style);
+}
+
+smtk::attribute::ItemPtr Item::findInternal(const std::string&, SearchStyle)
+{
+  // By default there are no children to search
+  return nullptr;
+}
+
+smtk::attribute::ConstItemPtr Item::findInternal(const std::string&, SearchStyle) const
+{
+  // By default there are no children to search
+  return nullptr;
+}
+
 bool Item::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
 {
   if (m_definition)
