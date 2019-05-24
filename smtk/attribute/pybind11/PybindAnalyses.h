@@ -24,7 +24,7 @@ namespace py = pybind11;
 
 py::class_< smtk::attribute::Analyses > pybind11_init_smtk_attribute_Analyses(py::module &m)
 {
-  py::class_< smtk::attribute::Analyses > instance(m, "Analyses");
+  py::class_< smtk::attribute::Analyses, std::unique_ptr<smtk::attribute::Analyses, py::nodelete>> instance(m, "Analyses");
   instance
     .def(py::init<>())
     .def(py::init<::smtk::attribute::Analyses const &>())
