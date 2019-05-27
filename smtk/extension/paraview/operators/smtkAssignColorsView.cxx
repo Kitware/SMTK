@@ -314,7 +314,12 @@ void smtkAssignColorsView::createWidget()
 
   // Signals and slots related to opacity mode:
   QObject::connect( // When asked, apply the opacity specified by the slider.
-    this->Internals->ApplyOpacitySlider, SIGNAL(valueChanged(int)), this, SLOT(applyOpacity(int)));
+    this->Internals->OpacitySlider, SIGNAL(valueChanged(int)), this,
+    SLOT(processOpacitySlider(int)));
+
+  QObject::connect( // When asked, apply the opacity specified by the slider.
+    this->Internals->OpacityValue, SIGNAL(valueChanged(double)), this,
+    SLOT(processOpacityValue(double)));
 
   QObject::connect( // When asked, invalidate colors on the associated entities.
     this->Internals->RemoveColorBtn, SIGNAL(released()), this, SLOT(removeColors()));
@@ -477,13 +482,18 @@ void smtkAssignColorsView::applyDefaultPalette()
   this->requestOperation(this->Internals->CurrentOp);
 }
 
-void smtkAssignColorsView::applyOpacity(int val)
+void smtkAssignColorsView::processOpacitySlider(int val)
 {
-  // Enable opacity assignment
+  // Tell the spinbox what the new value is
   double opacity = val / 255.0;
+  this->Internals->OpacityValue->setValue(opacity);
+}
+
+void smtkAssignColorsView::processOpacityValue(double val)
+{
   auto opacityItem = this->Internals->CurrentAtt->attribute()->findDouble("opacity");
   opacityItem->setIsEnabled(true);
-  opacityItem->setValue(opacity);
+  opacityItem->setValue(val);
 
   // Disable color assignment
   smtk::attribute::StringItem::Ptr colorsItem =
@@ -491,6 +501,11 @@ void smtkAssignColorsView::applyOpacity(int val)
   colorsItem->setIsEnabled(false);
 
   this->requestOperation(this->Internals->CurrentOp);
+  // Lets make sure the opacity slider reflects this new value
+  this->Internals->OpacitySlider->blockSignals(true);
+  int sval = 255 * val;
+  this->Internals->OpacitySlider->setValue(sval);
+  this->Internals->OpacitySlider->blockSignals(false);
 }
 
 void smtkAssignColorsView::removeColors()
