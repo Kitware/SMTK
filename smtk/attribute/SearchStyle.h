@@ -17,14 +17,20 @@ namespace smtk
 namespace attribute
 {
 
-/**\brief How should searches for items be conducted?
-  *
-  */
+/// \brief How should searches for items be conducted?
+///
+/// Used by find methods in Attribute and Item derived classes
+
 enum SearchStyle
 {
-  NO_CHILDREN,     //!< Search only the attribute, not its children
-  ACTIVE_CHILDREN, //!< Search the attribute, descending active children
-  ALL_CHILDREN     //!< Search the attribute, descending all children
+  IMMEDIATE = 0,   ///< Search only the top level items of an item or attribute
+  NO_CHILDREN = 0, ///< Search only the top level items of an item or attribute (Deprecated!)
+  RECURSIVE = 1,   ///< Recursively search for the item regardless if it is active or not
+  ALL_CHILDREN =
+    1, ///< Recursively search for the item regardless if it is active or not (Deprecated!)
+  IMMEDIATE_ACTIVE = 2, ///< Search only the top level active items of an item or attribute
+  RECURSIVE_ACTIVE = 3, ///< Recursively search for an active item
+  ACTIVE_CHILDREN = 3   ///< Recursively search for an active item (Depricated!)
 };
 
 } // attribute namespace

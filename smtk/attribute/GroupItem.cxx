@@ -281,32 +281,79 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
   return true;
 }
 
-smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string& inName)
+smtk::attribute::ItemPtr GroupItem::findInternal(const std::string& childName, SearchStyle style)
 {
-  const GroupItemDefinition* def =
-    static_cast<const GroupItemDefinition*>(this->definition().get());
-  int i = def->findItemPosition(inName);
-  if (i < 0)
-  {
-    return smtk::attribute::ItemPtr();
-  }
-  assert(m_items.size() > element);
-  assert(m_items[element].size() > static_cast<std::size_t>(i));
-  return m_items[element][static_cast<std::size_t>(i)];
+  return this->find(0, childName, style);
 }
 
-smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::string& inName) const
+smtk::attribute::ConstItemPtr GroupItem::findInternal(
+  const std::string& childName, SearchStyle style) const
 {
-  const GroupItemDefinition* def =
-    static_cast<const GroupItemDefinition*>(this->definition().get());
-  int i = def->findItemPosition(inName);
-  if (i < 0)
-  {
-    return smtk::attribute::ConstItemPtr();
-  }
+  return this->find(0, childName, style);
+}
+
+smtk::attribute::ItemPtr GroupItem::find(
+  std::size_t element, const std::string& inName, SearchStyle style)
+{
+  // Make sure element is valid
   assert(m_items.size() > element);
-  assert(m_items[element].size() > static_cast<std::size_t>(i));
-  return m_items[element][static_cast<std::size_t>(i)];
+
+  // Lets see if we can find it in the group's items
+  for (auto& item : m_items[element])
+  {
+    if (item->name() == inName)
+    {
+      return item;
+    }
+  }
+
+  if ((style == IMMEDIATE) || (style == IMMEDIATE_ACTIVE))
+  {
+    return nullptr; // its not amoung the group's item
+  }
+
+  // Lets check the children
+  for (auto& item : m_items[element])
+  {
+    ItemPtr result = item->find(inName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
+}
+
+smtk::attribute::ConstItemPtr GroupItem::find(
+  std::size_t element, const std::string& inName, SearchStyle style) const
+{
+  // Make sure element is valid
+  assert(m_items.size() > element);
+
+  // Lets see if we can find it in the group's items
+  for (auto& item : m_items[element])
+  {
+    if (item->name() == inName)
+    {
+      return item;
+    }
+  }
+
+  if ((style == IMMEDIATE) || (style == IMMEDIATE_ACTIVE))
+  {
+    return nullptr; // its not amoung the group's items
+  }
+
+  // Lets check the children
+  for (auto& item : m_items[element])
+  {
+    ConstItemPtr result = item->find(inName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
 }
 
 bool GroupItem::assign(ConstItemPtr& sourceItem, unsigned int options)

@@ -92,25 +92,19 @@ public:
     return m_items[element][ith];
   }
 
-  smtk::attribute::ItemPtr find(const std::string& inName) { return this->find(0, inName); }
-  smtk::attribute::ItemPtr find(std::size_t element, const std::string& name);
-  smtk::attribute::ConstItemPtr find(const std::string& inName) const
-  {
-    return this->find(0, inName);
-  }
-  smtk::attribute::ConstItemPtr find(std::size_t element, const std::string& name) const;
+  smtk::attribute::ItemPtr find(
+    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE);
+  smtk::attribute::ConstItemPtr find(
+    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE) const;
+  using Item::find;
 
   template <typename T>
-  typename T::Ptr findAs(std::size_t element, const std::string& name);
-
+  typename T::Ptr findAs(
+    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE);
   template <typename T>
-  typename T::ConstPtr findAs(std::size_t element, const std::string& name) const;
-
-  template <typename T>
-  typename T::Ptr findAs(const std::string& name);
-
-  template <typename T>
-  typename T::ConstPtr findAs(const std::string& name) const;
+  typename T::ConstPtr findAs(
+    std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE) const;
+  using Item::findAs;
 
   void reset() override;
 
@@ -127,6 +121,10 @@ protected:
   GroupItem(Attribute* owningAttribute, int itemPosition);
   GroupItem(Item* owningItem, int myPosition, int mySubGroupPosition);
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
+  /// \brief Internal implementation of the find method
+  smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style) override;
+  smtk::attribute::ConstItemPtr findInternal(
+    const std::string& name, SearchStyle style) const override;
   // This method will detach all of the items directly owned by
   // this group
   void detachAllItems();
@@ -136,28 +134,18 @@ private:
 };
 
 template <typename T>
-typename T::Ptr GroupItem::findAs(std::size_t element, const std::string& iname)
+typename T::Ptr GroupItem::findAs(std::size_t element, const std::string& iname, SearchStyle style)
 {
-  return smtk::dynamic_pointer_cast<T>(this->find(element, iname));
+  return smtk::dynamic_pointer_cast<T>(this->find(element, iname, style));
 }
 
 template <typename T>
-typename T::ConstPtr GroupItem::findAs(std::size_t element, const std::string& iname) const
+typename T::ConstPtr GroupItem::findAs(
+  std::size_t element, const std::string& iname, SearchStyle style) const
 {
-  return smtk::dynamic_pointer_cast<const T>(this->find(element, iname));
+  return smtk::dynamic_pointer_cast<const T>(this->find(element, iname, style));
 }
 
-template <typename T>
-typename T::Ptr GroupItem::findAs(const std::string& iname)
-{
-  return smtk::dynamic_pointer_cast<T>(this->find(iname));
-}
-
-template <typename T>
-typename T::ConstPtr GroupItem::findAs(const std::string& iname) const
-{
-  return smtk::dynamic_pointer_cast<const T>(this->find(iname));
-}
 } // namespace attribute
 } // namespace smtk
 

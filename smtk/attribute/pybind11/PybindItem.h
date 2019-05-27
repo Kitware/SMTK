@@ -25,6 +25,8 @@ PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::
   PySharedPtrClass< smtk::attribute::Item > instance(m, "Item");
   instance
     .def("deepcopy", (smtk::attribute::Item & (smtk::attribute::Item::*)(::smtk::attribute::Item const &)) &smtk::attribute::Item::operator=)
+    .def("_find", (smtk::attribute::ItemPtr (smtk::attribute::Item::*)(::std::string const &, ::smtk::attribute::SearchStyle)) &smtk::attribute::Item::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::RECURSIVE_ACTIVE)
+    .def("_find", (smtk::attribute::ConstItemPtr (smtk::attribute::Item::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::Item::find, py::arg("name"), py::arg("style") = ::smtk::attribute::SearchStyle::RECURSIVE_ACTIVE)
     .def("name", &smtk::attribute::Item::name)
     .def("label", &smtk::attribute::Item::label)
     .def("type", &smtk::attribute::Item::type)
