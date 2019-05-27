@@ -161,84 +161,59 @@ bool Attribute::isMemberOf(const std::vector<std::string>& categories) const
   *
   */
 smtk::attribute::ConstItemPtr Attribute::itemAtPath(
-  const std::string& path, const std::string& seps) const
+  const std::string& path, const std::string& seps, bool activeOnly) const
 {
-  smtk::attribute::ConstItemPtr result;
   std::vector<std::string> tree;
   std::vector<std::string>::iterator it;
   boost::split(tree, path, boost::is_any_of(seps));
   if (tree.empty())
   {
-    return result;
+    return nullptr;
   }
 
   it = tree.begin();
-  smtk::attribute::ConstItemPtr current = this->find(*it, NO_CHILDREN);
+  smtk::attribute::ConstItemPtr current = this->find(*it, IMMEDIATE);
   if (current)
   {
-    bool ok = true;
+    SearchStyle style = activeOnly ? IMMEDIATE_ACTIVE : IMMEDIATE;
     for (++it; it != tree.end(); ++it)
     {
-      ConstValueItemPtr vitm = smtk::dynamic_pointer_cast<const ValueItem>(current);
-      ConstGroupItemPtr gitm = smtk::dynamic_pointer_cast<const GroupItem>(current);
-      if (vitm && (current = vitm->findChild(*it, NO_CHILDREN)))
-        continue; // OK, keep descending
-      else if (gitm && (current = gitm->find(*it)))
-        continue; // OK, keep descending
-      else
+      current = current->find(*it, style);
+      if (current == nullptr)
       {
-        ok = false;
-        break;
+        break; // we couldn't find the next item in the path
       }
     }
-    if (ok)
-    {
-      result = current;
-    }
   }
-  return result;
+  return current;
 }
 
-smtk::attribute::ItemPtr Attribute::itemAtPath(const std::string& path, const std::string& seps)
+smtk::attribute::ItemPtr Attribute::itemAtPath(
+  const std::string& path, const std::string& seps, bool activeOnly)
 {
-  smtk::attribute::ItemPtr result;
   std::vector<std::string> tree;
   std::vector<std::string>::iterator it;
   boost::split(tree, path, boost::is_any_of(seps));
   if (tree.empty())
   {
-    return result;
+    return nullptr;
   }
 
   it = tree.begin();
-  smtk::attribute::ItemPtr current = this->find(*it, NO_CHILDREN);
+  smtk::attribute::ItemPtr current = this->find(*it, IMMEDIATE);
   if (current)
   {
-    bool ok = true;
+    SearchStyle style = activeOnly ? IMMEDIATE_ACTIVE : IMMEDIATE;
     for (++it; it != tree.end(); ++it)
     {
-      ValueItemPtr vitm = smtk::dynamic_pointer_cast<ValueItem>(current);
-      GroupItemPtr gitm = smtk::dynamic_pointer_cast<GroupItem>(current);
-      if (vitm && (current = vitm->findChild(*it, NO_CHILDREN)))
+      current = current->find(*it, style);
+      if (current == nullptr)
       {
-        continue; // OK, keep descending
+        break; // we couldn't find the next item in the path
       }
-      else if (gitm && (current = gitm->find(*it)))
-      {
-        continue; // OK, keep descending
-      }
-      else
-      {
-        ok = false;
-        break;
-      }
-    }
-    if (ok)
-    {
-      result = current;
     }
   }
-  return result;
+  return current;
 }
 
 /**\brief Validate the attribute against its definition.
@@ -677,45 +652,58 @@ void Attribute::forceDisassociate(smtk::resource::PersistentObjectPtr obj)
   */
 smtk::attribute::ItemPtr Attribute::find(const std::string& inName, SearchStyle style)
 {
-  int i = m_definition->findItemPosition(inName);
-  if (i < 0 && style != NO_CHILDREN)
-  { // try to find child items that match the name and type.
-    std::size_t numItems = this->numberOfItems();
-    for (i = 0; i < static_cast<int>(numItems); ++i)
+  // Lets see if we can find it in the attribute's items
+  for (auto& item : m_items)
+  {
+    if (item->name() == inName)
     {
-      ValueItem::Ptr vitem = dynamic_pointer_cast<ValueItem>(this->item(i));
-      Item::Ptr match;
-      if (vitem && (match = vitem->findChild(inName, style)))
-      {
-        return match;
-      }
+      return item;
     }
-    i = -1; // Nothing found.
   }
-  assert(i < 0 || m_items.size() > static_cast<std::size_t>(i));
-  return (i < 0) ? smtk::attribute::ItemPtr() : m_items[static_cast<std::size_t>(i)];
+
+  if (style == IMMEDIATE)
+  {
+    return nullptr; // its not amoung the attribute's items
+  }
+
+  // Lets check the children
+  for (auto& item : m_items)
+  {
+    ItemPtr result = item->find(inName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
 }
 
 smtk::attribute::ConstItemPtr Attribute::find(const std::string& inName, SearchStyle style) const
 {
-  int i = m_definition->findItemPosition(inName);
-  if (i < 0 && style != NO_CHILDREN)
-  { // try to find child items that match the name and type.
-    std::size_t numItems = this->numberOfItems();
-    for (i = 0; i < static_cast<int>(numItems); ++i)
+  // Lets see if we can find it in the attribute's items
+  for (auto& item : m_items)
+  {
+    if (item->name() == inName)
     {
-      ConstValueItemPtr vitem = dynamic_pointer_cast<const ValueItem>(this->item(i));
-      ConstItemPtr match;
-      if (vitem && (match = vitem->findChild(inName, style)))
-      {
-        return match;
-      }
+      return item;
     }
-    i = -1; // Nothing found.
   }
-  assert(i < 0 || m_items.size() > static_cast<std::size_t>(i));
-  return (i < 0) ? smtk::attribute::ConstItemPtr()
-                 : smtk::const_pointer_cast<const Item>(m_items[static_cast<std::size_t>(i)]);
+
+  if (style == IMMEDIATE)
+  {
+    return nullptr; // its not amoung the attribute's items
+  }
+
+  // Lets check the children
+  for (auto& item : m_items)
+  {
+    ConstItemPtr result = item->find(inName, style);
+    if (result)
+    {
+      return result;
+    }
+  }
+  return nullptr;
 }
 
 smtk::attribute::IntItemPtr Attribute::findInt(const std::string& nameStr)

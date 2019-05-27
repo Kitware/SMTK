@@ -50,8 +50,8 @@ if __name__ == '__main__':
         find_subitem = find_group_item.find('intdef')
         find_int_subitem = smtk.attribute.ValueItem.CastTo(find_subitem)
         print('find_int_subitem:', find_int_subitem.valueAsString())
-    except (Exception, ex):
-        print('Exception:')
+    except Exception as ex:
+        print('Exception:', ex)
 
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]

@@ -122,25 +122,35 @@ public:
                                                           : m_items[static_cast<std::size_t>(ith)]);
   }
 
+  /// @{
+  /// \brief Find an item via its path with respects to the attribute.
+  ///
+  /// If activeOnly is true then all items in the path must active (with repsect to a parent ValueItem)
+  /// else nullptr will be returned.  This parameter will have no effect on other types of items.
+  /// Note that the path should not start with a separator character.
   smtk::attribute::ConstItemPtr itemAtPath(
-    const std::string& path, const std::string& seps = "/") const;
-  smtk::attribute::ItemPtr itemAtPath(const std::string& path, const std::string& seps = "/");
+    const std::string& path, const std::string& seps = "/", bool activeOnly = false) const;
+  smtk::attribute::ItemPtr itemAtPath(
+    const std::string& path, const std::string& seps = "/", bool activeOnly = false);
 
   template <typename T>
-  typename T::ConstPtr itemAtPathAs(const std::string& path, const std::string& seps = "/") const;
+  typename T::ConstPtr itemAtPathAs(
+    const std::string& path, const std::string& seps = "/", bool activeOnly = false) const;
   template <typename T>
-  typename T::Ptr itemAtPathAs(const std::string& path, const std::string& seps = "/");
+  typename T::Ptr itemAtPathAs(
+    const std::string& path, const std::string& seps = "/", bool activeOnly = false);
+  /// @}
 
-  smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = ACTIVE_CHILDREN);
+  smtk::attribute::ItemPtr find(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
   smtk::attribute::ConstItemPtr find(
-    const std::string& name, SearchStyle style = ACTIVE_CHILDREN) const;
+    const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
   std::size_t numberOfItems() const { return m_items.size(); }
 
   template <typename T>
-  typename T::Ptr findAs(const std::string& name, SearchStyle style = ACTIVE_CHILDREN);
+  typename T::Ptr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE);
 
   template <typename T>
-  typename T::ConstPtr findAs(const std::string& name, SearchStyle style = ACTIVE_CHILDREN) const;
+  typename T::ConstPtr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
 
   /**
    * @brief Given a container, file items in the attribute by a lambda function
@@ -405,15 +415,17 @@ T Attribute::associatedModelEntities() const
 /**\brief Return an item given its path, converted to a given pointer type.
       */
 template <typename T>
-typename T::ConstPtr Attribute::itemAtPathAs(const std::string& path, const std::string& seps) const
+typename T::Ptr Attribute::itemAtPathAs(
+  const std::string& path, const std::string& seps, bool activeOnly)
 {
-  typename T::ConstPtr result;
-  smtk::attribute::ConstItemPtr itm = this->itemAtPath(path, seps);
-  if (!!itm)
-  {
-    result = smtk::dynamic_pointer_cast<const T>(itm);
-  }
-  return result;
+  return smtk::dynamic_pointer_cast<T>(this->itemAtPath(path, seps, activeOnly));
+}
+
+template <typename T>
+typename T::ConstPtr Attribute::itemAtPathAs(
+  const std::string& path, const std::string& seps, bool activeOnly) const
+{
+  return smtk::dynamic_pointer_cast<const T>(this->itemAtPath(path, seps, activeOnly));
 }
 
 template <typename T>
