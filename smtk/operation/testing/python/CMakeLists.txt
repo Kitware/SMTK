@@ -1,6 +1,14 @@
+set(smtkOperationPythonTests
+  testConstructedAPI
+)
+
 # tests that require SMTK_DATA_DIR
 set(smtkOperationPythonDataTests
 )
+
+foreach (test ${smtkOperationPythonTests})
+  smtk_add_test_python(${test}Py ${test}.py --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)
+endforeach()
 
 #only run these tests if we have a valid data directory and we have a moab
 #built with hdf5
