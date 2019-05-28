@@ -11,6 +11,7 @@
 #=============================================================================
 
   set(unit_tests_headers
+    qtPrintLog.h
     )
 
   set(unit_tests_headers_data
@@ -27,9 +28,6 @@
     )
 
 if (SMTK_ENABLE_POLYGON_SESSION)
-  list(APPEND unit_tests_headers
-    qtPrintLog.h
-    )
   list(APPEND unit_tests_headers_data
     unitQtComponentItem.h
     )
