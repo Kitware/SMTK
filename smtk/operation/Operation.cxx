@@ -102,7 +102,7 @@ bool Operation::ableToOperate()
 Operation::Result Operation::operate()
 {
   // Gather all requested resources and their lock types.
-  auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->specification());
+  auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->parameters());
 
   // Mutex to prevent multiple Operations from locking resources at the same
   // time (which could result in deadlock).
@@ -294,7 +294,7 @@ Operation::Result Operation::createResult(Outcome outcome)
 void Operation::markModifiedResources(Operation::Result& result)
 {
   // Gather all requested resources and their lock types.
-  auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->specification());
+  auto resourcesAndLockTypes = extractResourcesAndLockTypes(this->parameters());
 
   // Lock the resources.
   for (auto& resourceAndLockType : resourcesAndLockTypes)

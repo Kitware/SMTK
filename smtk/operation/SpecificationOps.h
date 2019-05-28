@@ -61,6 +61,11 @@ Operation::Definition extractResultDefinition(
 SMTKCORE_EXPORT
 std::set<smtk::resource::Resource::Ptr> extractResources(Operation::Result result);
 
+/// Construct a map of all of the resources referenced in the parameters and not
+/// in the result, along with their lock types (Read/Write/DoNotLock).
+SMTKCORE_EXPORT
+ResourceAccessMap extractResourcesAndLockTypes(Operation::Parameters parameters);
+
 /// Construct a map of all of the resources referenced in the specification and
 /// not in the result, along with their lock types (Read/Write/DoNotLock).
 SMTKCORE_EXPORT
