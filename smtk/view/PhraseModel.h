@@ -142,6 +142,9 @@ public:
   Observers& observers() { return m_observers; }
   const Observers& observers() const { return m_observers; }
 
+  /// Return the operationManager for the first Source registered
+  smtk::operation::ManagerPtr operationManager() const;
+
 protected:
   friend class VisibilityContent;
   PhraseModel();

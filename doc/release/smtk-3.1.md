@@ -219,6 +219,11 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
 
 These changes were done to improve general stability as well as to simplifying when a qtItem needs to delete its main widget.
 
+### Coloring Model Components
+* Fixed bug that prevented color from being applied to 3D View when using the Resource Panel
+* Fixed bug that caused an application to become non-responsive when applying a new color palette
+* When setting a color to a model entity that does not have one, the initial color is now opaque instead of being completely transparent
+
 ##Changes to Selection
 * Selections now have a `resetSelectionBits()` method
   that provides a way to remove a bit-vector from

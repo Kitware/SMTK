@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/view/ComponentPhraseContent.h"
+#include "smtk/view/PhraseModel.h"
 
 #include "smtk/view/DescriptivePhrase.h"
 
@@ -24,6 +25,8 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/operators/SetProperty.h"
+
+#include "smtk/operation/Manager.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -178,12 +181,32 @@ resource::FloatList ComponentPhraseContent::colorValue(ContentType attr) const
 
 bool ComponentPhraseContent::editStringValue(ContentType attr, const std::string& val)
 {
+  // Lets try to get the local operation manager
+  auto dp = this->location();
+  smtk::operation::ManagerPtr opManager;
+  if (dp != nullptr)
+  {
+    auto model = dp->phraseModel();
+    if (model != nullptr)
+    {
+      opManager = model->operationManager();
+    }
+  }
   if (attr == TITLE)
   {
     auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
     if (modelComp)
     {
-      auto op = smtk::model::SetProperty::create();
+      smtk::model::SetProperty::Ptr op;
+      if (opManager)
+      {
+        op = opManager->create<smtk::model::SetProperty>();
+      }
+      else
+      {
+        op = smtk::model::SetProperty::create();
+      }
+
       if (op->parameters()->associate(modelComp))
       {
         op->parameters()->findString("name")->setValue("name");
@@ -199,7 +222,15 @@ bool ComponentPhraseContent::editStringValue(ContentType attr, const std::string
     auto meshComp = std::dynamic_pointer_cast<smtk::mesh::Component>(m_component);
     if (meshComp)
     {
-      auto op = smtk::mesh::SetMeshName::create();
+      smtk::mesh::SetMeshName::Ptr op;
+      if (opManager)
+      {
+        op = opManager->create<smtk::mesh::SetMeshName>();
+      }
+      else
+      {
+        op = smtk::mesh::SetMeshName::create();
+      }
       if (op->parameters()->associate(meshComp))
       {
         op->parameters()->findString("name")->setValue(val);
@@ -224,12 +255,31 @@ bool ComponentPhraseContent::editFlagValue(ContentType attr, int val)
 
 bool ComponentPhraseContent::editColorValue(ContentType attr, const resource::FloatList& val)
 {
+  // Lets try to get the local operation manager
+  auto dp = this->location();
+  smtk::operation::ManagerPtr opManager;
+  if (dp != nullptr)
+  {
+    auto model = dp->phraseModel();
+    if (model != nullptr)
+    {
+      opManager = model->operationManager();
+    }
+  }
   if (attr == COLOR)
   {
     auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
     if (modelComp)
     {
-      auto op = smtk::model::SetProperty::create();
+      smtk::model::SetProperty::Ptr op;
+      if (opManager)
+      {
+        op = opManager->create<smtk::model::SetProperty>();
+      }
+      else
+      {
+        op = smtk::model::SetProperty::create();
+      }
       if (op->parameters()->associate(modelComp))
       {
         op->parameters()->findString("name")->setValue("color");
