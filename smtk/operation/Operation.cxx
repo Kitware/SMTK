@@ -48,6 +48,8 @@ Operation::~Operation()
   // If the specification exists...
   if (m_specification != nullptr)
   {
+    smtk::resource::ScopedLockGuard(m_specification->lock({}), smtk::resource::LockType::Write);
+
     // ...and if the parameters have been generated, remove the parameters from
     // the specification.
     if (m_parameters != nullptr)
@@ -241,7 +243,9 @@ Operation::Parameters Operation::parameters()
   // retrieve the exisiting one or create a new one.
   if (!m_parameters)
   {
-    m_parameters = createParameters(this->specification(), this->typeName());
+    auto specification = this->specification();
+    smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Write);
+    m_parameters = createParameters(specification, this->typeName());
   }
 
   // If we still don't have our parameters, then there's not much we can do.
@@ -261,7 +265,9 @@ Operation::Result Operation::createResult(Outcome outcome)
   // subsequently retrieved from cache to avoid superfluous lookups.
   if (!m_resultDefinition)
   {
-    m_resultDefinition = extractResultDefinition(this->specification(), this->typeName());
+    auto specification = this->specification();
+    smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Read);
+    m_resultDefinition = extractResultDefinition(specification, this->typeName());
   }
 
   // Now that we have our result definition, we create our result attribute.
@@ -270,7 +276,11 @@ Operation::Result Operation::createResult(Outcome outcome)
   if (m_resultDefinition)
   {
     // Create a new instance of the result.
-    result = this->specification()->createAttribute(m_resultDefinition);
+    {
+      auto specification = this->specification();
+      smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Write);
+      result = specification->createAttribute(m_resultDefinition);
+    }
 
     // Hold on to a copy of the generated result so we can remove it from our
     // specification when the operation is destroyed.
