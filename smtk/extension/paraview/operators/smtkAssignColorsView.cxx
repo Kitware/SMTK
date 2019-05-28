@@ -236,6 +236,25 @@ void smtkAssignColorsView::attributeModified()
   // Always enable the apply button here.
 }
 
+// Properly create and initialize the PalatteChooser Diaglog Widget
+void smtkAssignColorsView::prepPaletteChooser()
+{
+  // Set up a preset dialog; display only categorical (indexed) colormaps.
+  this->Internals->PaletteChooser =
+    new pqPresetDialog(nullptr, pqPresetDialog::SHOW_INDEXED_COLORS_ONLY);
+  this->Internals->PaletteChooser->setCustomizableLoadColors(false);
+  this->Internals->PaletteChooser->setCustomizableLoadOpacities(false);
+  this->Internals->PaletteChooser->setCustomizableUsePresetRange(false);
+  this->Internals->PaletteChooser->setCustomizableLoadAnnotations(true);
+  // Signals and slots related to palette mode (this->Internals->PaletteChooser):
+  QObject::connect( // Allow the user to choose a new preference.
+    this->Internals->ChoosePaletteBtn, SIGNAL(released()), this->Internals->PaletteChooser,
+    SLOT(show()));
+  QObject::connect( // When the user has chosen a preference, remember and apply it.
+    this->Internals->PaletteChooser, SIGNAL(applyPreset(const Json::Value&)), this,
+    SLOT(setDefaultPaletteAndApply()));
+}
+
 void smtkAssignColorsView::createWidget()
 {
   smtk::view::ViewPtr view = this->getObject();
@@ -278,14 +297,7 @@ void smtkAssignColorsView::createWidget()
   QColor defaultColor =
     settings->value("ModelBuilder/Operations/AssignColors/defaultColor", defColor).value<QColor>();
 
-  // Set up a preset dialog; display only categorical (indexed) colormaps.
-  this->Internals->PaletteChooser =
-    new pqPresetDialog(nullptr, pqPresetDialog::SHOW_INDEXED_COLORS_ONLY);
-  this->Internals->PaletteChooser->setCustomizableLoadColors(false);
-  this->Internals->PaletteChooser->setCustomizableLoadOpacities(false);
-  this->Internals->PaletteChooser->setCustomizableUsePresetRange(false);
-  this->Internals->PaletteChooser->setCustomizableLoadAnnotations(true);
-
+  this->prepPaletteChooser();
   this->Internals->ApplyDefaultColorBtn->setIcon(smtkAssignColorsView::renderColorSwatch(
     defaultColor, 0.75 * this->Internals->ApplyDefaultColorBtn->height()));
 
@@ -296,15 +308,8 @@ void smtkAssignColorsView::createWidget()
   this->Internals->RemoveColorBtn->setIcon(smtkAssignColorsView::renderInvalidSwatch(
     0.75 * this->Internals->ApplyDefaultColorBtn->height()));
 
-  // Signals and slots related to palette mode (this->Internals->PaletteChooser):
   QObject::connect( // When asked, apply the colormap specified by the user preference.
     this->Internals->ApplyDefaultPaletteBtn, SIGNAL(released()), this, SLOT(applyDefaultPalette()));
-  QObject::connect( // Allow the user to choose a new preference.
-    this->Internals->ChoosePaletteBtn, SIGNAL(released()), this->Internals->PaletteChooser,
-    SLOT(show()));
-  QObject::connect( // When the user has chosen a preference, remember and apply it.
-    this->Internals->PaletteChooser, SIGNAL(applyPreset(const Json::Value&)), this,
-    SLOT(setDefaultPaletteAndApply()));
 
   // Signals and slots related to single-color mode:
   QObject::connect( // When asked, apply the colormap specified by the user preference.
@@ -436,7 +441,14 @@ void smtkAssignColorsView::setDefaultPaletteAndApply()
   //std::cerr << "Change default palette to \"" << name << "\"" << std::endl;
   pqSettings* settings = pqApplicationCore::instance()->settings();
   settings->setValue("ModelBuilder/Operations/AssignColors/defaultPalette", name.c_str());
+
+  // There is a strange bug that seems to make QT treat the PaletteChooser as a modal
+  // dialog - the UI does not seem to respond after you set the default palette.
+  // One solution that seems to work is to destroy and recreate the dialog
   this->Internals->PaletteChooser->hide();
+  delete this->Internals->PaletteChooser;
+  this->prepPaletteChooser();
+
   this->Internals->ApplyDefaultPaletteBtn->setText(QString::fromUtf8(name.c_str()));
   this->Internals->updatePaletteIcon(name);
 
