@@ -64,7 +64,8 @@ protected slots:
 protected:
   void updateAttributeData() override;
   void createWidget() override;
-  virtual void setInfoToBeDisplayed() override;
+  void setInfoToBeDisplayed() override;
+  void prepPaletteChooser();
 
 private:
   smtkAssignColorsViewInternals* Internals;
