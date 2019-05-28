@@ -31,7 +31,7 @@
             If the item is disabled and the list is empty, there is no effect.
           </DetailedDescription>
         </String>
-        <Double Name="opacity" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+        <Double Name="opacity" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false" AdvanceLevel="13">
           <BriefDescription>An opacity to assign to the associated entities.</BriefDescription>
           <DefaultValue>1.0</DefaultValue>
           <RangeInfo>
