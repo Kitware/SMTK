@@ -193,7 +193,8 @@ MACRO(ADD_SMTK_UI_VIEW OUTIFACES OUTSRCS)
   CONFIGURE_FILE(${smtk_cmake_dir}/qtSMTKViewImplementation.cxx.in
                  ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.cxx @ONLY)
 
-  qt5_wrap_cpp(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h)
+  qt5_wrap_cpp(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h
+    OPTIONS "-I ${SMTK_INCLUDE_DIRS}")
 
   SET(${OUTSRCS}
       ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.cxx
