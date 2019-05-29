@@ -112,6 +112,18 @@ bool PhraseModel::unregisterModelType(const std::string& typeName)
   return s_modelTypes.erase(typeName) > 0;
 }
 
+// Returns the operation manager - right now it assumes the first source
+// TODO: figure out the proper behavior when there is more
+// than one source
+smtk::operation::ManagerPtr PhraseModel::operationManager() const
+{
+  if (m_sources.size())
+  {
+    return m_sources.front().m_operMgr;
+  }
+  return nullptr;
+}
+
 PhraseModelPtr PhraseModel::create(const smtk::view::ViewPtr& viewSpec)
 {
   if (!viewSpec || viewSpec->type().empty())

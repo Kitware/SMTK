@@ -286,8 +286,8 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
         FloatList rgba = item->relatedColor();
         if (rgba.size() >= 4 && rgba[3] < 0)
         {
-          // make it an invalid color
-          color = QColor(255, 255, 255, 0);
+          // return white by default
+          color = QColor(255, 255, 255, 255);
         }
         else
         {
@@ -358,8 +358,8 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
           }
           if (!gotColor)
           {
-            // Assign an invalid color
-            color = QColor(255, 255, 255, 0);
+            // return white by default
+            color = QColor(255, 255, 255, 255);
           }
         }
         else
