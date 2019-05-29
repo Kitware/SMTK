@@ -49,7 +49,7 @@ public:
 signals:
   /// Internal signal from the executing subthread to the primary thread
   /// indicating the completion of the operation.
-  void operationHasResult(QString resultName, QPrivateSignal);
+  void operationHasResult(QString parametersName, QString resultName, QPrivateSignal);
 
   /// Externally accessible signal on the primary thread containing the
   /// operation results.
