@@ -13,6 +13,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
+#include "smtk/extension/qt/qtDoubleLineEdit.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -943,7 +944,7 @@ QWidget* qtInputsItem::createDoubleWidget(
 
   if (option == "LineEdit")
   {
-    QLineEdit* editBox = new QLineEdit(pWidget);
+    qtDoubleLineEdit* editBox = new qtDoubleLineEdit(pWidget);
     qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
 
     editBox->setValidator(validator);

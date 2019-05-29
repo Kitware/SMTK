@@ -51,6 +51,7 @@ All Item derived classes can now perform find; therefore, ValueItem::findChild m
 #### Other Changes
 * GroupItem - searching now can include items that are not just the top level children and you can now provide a SearchStyle
 * ValueItem - searching will take GroupItems into consideration.
+* ValueItem::valueAsString will return a double as full precision.
 
 ###Changes to Attribute Association Related API
 
@@ -222,6 +223,7 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
 * qtReferenceItem now allows developers to override the visibility icons
   with custom URLs. See qtReferenceItem::setSelectionIconPaths() and
   doc/userguide/attribute/file-syntax.rst for details.
+* DoubleItems now display using the same mechanism as in ParaView.  When not being edited a lower precision version is displayed but when in edit mode the full precision is provided.
 
 ####Line Edit Items change Attribute Items on EdittingFinished
 * Prior to 3.1, QlineEdit's used to set String, Double, and Int Items would try to update the item on key press events - this result in a large number of edits/modified signals being emitted.  Now items are updated when the edittingFinished signal is emitted.

@@ -18,6 +18,7 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include <cassert>
+#include <limits>
 #include <sstream>
 #include <stdio.h>
 #include <vector>
@@ -219,6 +220,7 @@ std::string ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
     else
     {
       std::stringstream buffer;
+      buffer.precision(std::numeric_limits<DataT>::max_digits10);
       assert(m_values.size() > element);
       buffer << m_values[element];
       return buffer.str();
