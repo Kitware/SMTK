@@ -415,6 +415,7 @@ void PhraseModel::updateChildren(
   }
 
   std::map<DescriptivePhrasePtr, int> lkup;
+  std::map<int, DescriptivePhrasePtr> insert;
   int ii = 0;
   std::set<int> unused;
   DescriptivePhrases& orig(src->subphrases());
@@ -425,7 +426,8 @@ void PhraseModel::updateChildren(
   }
 
   // Find mapping and subtract out the still-in-use phrases from unused.
-  for (DescriptivePhrases::iterator it = next.begin(); it != next.end(); ++it)
+  ii = 0;
+  for (DescriptivePhrases::iterator it = next.begin(); it != next.end(); ++it, ++ii)
   {
     auto oit = lkup.find(*it);
     if (oit != lkup.end())
@@ -439,6 +441,7 @@ void PhraseModel::updateChildren(
       // Note that we might have phrases that are different instances
       // but identical in that they refer to the same component/resource/etc.,
       // hence the second test in the conditional below:
+      bool preexist = false;
       for (auto it2 = orig.begin(); it2 != orig.end(); ++it2)
       {
         if ((it->get() == it2->get()) ||
@@ -446,7 +449,15 @@ void PhraseModel::updateChildren(
         {
           *it = *it2;
           unused.erase(lkup[*it2]);
+          preexist = true;
+          break; // only accept the first match.
         }
+      }
+      // If there is no matching entry in orig for *it, then mark its
+      // location for insertion.
+      if (!preexist)
+      {
+        insert[ii] = *it;
       }
     }
   }
@@ -469,69 +480,86 @@ void PhraseModel::updateChildren(
     uu = ug;
   }
 
-  // Update lkup to account for removed rows.
-  int delta = 0;
-  auto nxen = lkup.begin();
-  for (auto entry = lkup.begin(); entry != lkup.end(); ++entry)
+  if (insert.size() + orig.size() != next.size())
   {
-    while (entry != lkup.end() && unused.find(entry->second) != unused.end())
-    { // row is unused
-      ++delta;
-      nxen = entry;
-      ++nxen;
-      lkup.erase(entry);
-      entry = nxen;
-    }
-    if (entry != lkup.end())
-    { // row used... update as needed
-      entry->second -= delta;
-    }
-    else
-    {
-      break;
-    }
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Update to descriptive phrases has correspondence problems"
+        << " (" << orig.size() << " + " << insert.size() << " != " << next.size() << ")\n");
   }
 
-  std::map<int, DescriptivePhrasePtr> insert;
-
-  // Move rows that previously existed but are now ordered differently.
-  // int destRow = static_cast<int>(lkup.size()) - 1;
-  int iref = static_cast<int>(next.size()) - 1;
-  for (auto it = next.rbegin(); it != next.rend(); ++it, --iref)
-  {
-    auto oit = lkup.find(*it);
-    if (oit == lkup.end())
-    { // Skip rows we need to create
-      insert[iref] = *it;
-      continue;
-    }
-    // Is this a batch of rows to move in sequence?
-    // FIXME: TODO: Move rows!
-  }
-
-  // Finally, insert new phrases.
-  std::vector<int> insertRange(2);
+  // Insert new entries, starting at the front so as not to attempt
+  // insertion beyond the end of the list.
   DescriptivePhrases batch;
-  std::map<int, DescriptivePhrasePtr>::iterator ib;
-  for (ib = insert.begin(); ib != insert.end();)
+  std::vector<int> insertRange(2);
+  for (auto entry = insert.begin(); entry != insert.end(); /* handled inside */)
   {
-    batch.clear();
-    batch.push_back(ib->second);
-    auto ie = ib;
-    auto prev = ie;
-    for (++ie; ie != insert.end() && (ie->first == prev->first + 1); ++ie, ++prev)
+    // Batch consecutive insertions into a single event
+    batch.push_back(entry->second);
+    insertRange[0] = entry->first > orig.size() ? orig.size() : entry->first;
+    insertRange[1] = entry->first;
+    ii = entry->first;
+    auto ep1 = entry;
+    for (++ep1, ++ii; ep1 != insert.end() && ep1->first == ii; ++ep1, ++ii)
     {
-      batch.push_back(ie->second);
+      batch.push_back(ep1->second);
+      insertRange[1] = ii;
     }
-    insertRange[0] = ib->first;
-    insertRange[1] = prev->first;
+
     this->trigger(src, PhraseModelEvent::ABOUT_TO_INSERT, idx, idx, insertRange);
     orig.insert(orig.begin() + insertRange[0], batch.begin(), batch.end());
     this->trigger(src, PhraseModelEvent::INSERT_FINISHED, idx, idx, insertRange);
-    ib = ie;
-    if (ib != insert.end())
-    {
-      ++ib;
+    batch.clear();
+
+    entry = ep1;
+  }
+
+  // Now reconcile entries that have been reordered in orig.
+  auto ni = next.begin();
+  auto oi = orig.begin();
+  for (ii = 0; ni != next.end() && oi != orig.end(); ++ii)
+  {
+    if (*ni == *oi)
+    { // Entries match.
+      ++ni;
+      ++oi;
+    }
+    else
+    { // Reorder required.
+      auto mv = ni;
+      for (; mv != next.end() && *mv != *oi; ++mv)
+      {
+        // do nothing
+      }
+      if (mv == next.end())
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Mismatched entries in descriptive phrase.");
+        break;
+      }
+      else
+      {
+        // We have a start and destination location; see if we
+        // should batch move.
+        auto bi = oi;
+        auto ci = mv;
+        for (++bi, ++ci; bi != orig.end() && ci != next.end() && *bi == *ci; ++bi, ++ci)
+        {
+          // Do nothing (advancing to find batch size)
+        }
+        std::vector<int> moveRange(3);
+        moveRange[0] = static_cast<int>(oi - orig.begin());
+        moveRange[1] = static_cast<int>(bi == orig.end() ? orig.size() : bi - orig.begin());
+        moveRange[2] = static_cast<int>(mv - next.begin());
+        this->trigger(src, PhraseModelEvent::ABOUT_TO_MOVE, idx, idx, moveRange);
+        // Copy batch to destination (which must be *after* source)
+        orig.insert(
+          orig.begin() + moveRange[2], orig.begin() + moveRange[0], orig.begin() + moveRange[1]);
+        // Erase batch in its original location (we cannot use iterators in orig
+        // as they may have been invalidated by insertion).
+        orig.erase(orig.begin() + moveRange[0], orig.begin() + moveRange[1]);
+        this->trigger(src, PhraseModelEvent::MOVE_FINISHED, idx, idx, moveRange);
+        // Update iterator to continue search for relocated entries.
+        oi = orig.begin() + moveRange[1];
+      }
     }
   }
 }
