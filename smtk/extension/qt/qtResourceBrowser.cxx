@@ -342,19 +342,28 @@ void qtResourceBrowser::editObjectColor(const QModelIndex& idx)
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   if (phrase)
   {
+    if ((phrase->phraseModel() == nullptr) ||
+      (phrase->phraseModel()->operationManager() == nullptr))
+    {
+      std::cerr << "Can not access Operation Manager for editting color!\n";
+    }
     std::string dialogInstructions = "Choose Color for " +
       idx.data(qtDescriptivePhraseModel::TitleTextRole).value<QString>().toStdString() +
       " (click Cancel to remove color)";
+    // If the currentColor is invalid lets set it to opaque white
     QColor currentColor = idx.data(qtDescriptivePhraseModel::PhraseColorRole).value<QColor>();
+    if (!currentColor.isValid())
+    {
+      currentColor.setRed(255);
+      currentColor.setGreen(255);
+      currentColor.setBlue(255);
+      currentColor.setAlpha(255);
+    }
+
     QColor nextColor = QColorDialog::getColor(currentColor, this, dialogInstructions.c_str(),
       QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
-    bool removeColor = !nextColor.isValid();
-    if (removeColor)
-    {
-      smtk::model::FloatList rgba{ 0., 0., 0., -1. };
-      phrase->setRelatedColor(rgba);
-    }
-    else
+    bool canceled = !nextColor.isValid();
+    if (!canceled)
     {
       smtk::model::FloatList rgba{ nextColor.red() / 255.0, nextColor.green() / 255.0,
         nextColor.blue() / 255.0, nextColor.alpha() / 255.0 };
