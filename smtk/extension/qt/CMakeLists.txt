@@ -37,6 +37,8 @@ set(QAttrLibSrcs
   qtAssociationWidget.cxx
   qtReferencesWidget.cxx
   qtColorButton.cxx
+  qtLineEdit.cxx
+  qtDoubleLineEdit.cxx
 
   qtItem.cxx
   qtDiscreteValueEditor.cxx
@@ -104,6 +106,8 @@ set(QAttrLibMocHeaders
   qtAssociationWidget.h
   qtReferencesWidget.h
   qtColorButton.h
+  qtLineEdit.h
+  qtDoubleLineEdit.h
 
   qtItem.h
   qtDiscreteValueEditor.h
