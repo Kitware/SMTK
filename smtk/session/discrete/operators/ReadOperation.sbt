@@ -45,9 +45,9 @@
       <ItemDefinitions>
 
         <!-- The model imported from the file. -->
-        <Resource Name="resource">
+        <Resource Name="resource" HoldReference="true">
           <Accepts>
-            <Resource Name="smtk::session::discrete::Resource"/>
+            <Resource Name="smtk::session::discrete::Resource" HoldReference="true"/>
           </Accepts>
         </Resource>
 

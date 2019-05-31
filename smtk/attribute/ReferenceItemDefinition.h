@@ -92,6 +92,12 @@ public:
   /// smtk::attribute::Resource::ReferenceRole.
   smtk::resource::Links::RoleType role() const { return m_role; }
 
+  /// Set/Get a flag to determine whether the ReferenceItem should keep an
+  /// assigned reference in memory (i.e. shared_ptr vs weak_ptr to the
+  /// reference).
+  void setHoldReference(bool choice) { m_holdReference = choice; }
+  bool holdReference() const { return m_holdReference; }
+
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(Item* owner, int itemPos, int subGroupPosition) const override;
 
@@ -127,6 +133,7 @@ protected:
   std::multimap<std::string, std::string> m_acceptable;
   smtk::resource::LockType m_lockType;
   smtk::resource::Links::RoleType m_role;
+  bool m_holdReference;
 };
 
 } // namespace attribute

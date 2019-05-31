@@ -15,6 +15,8 @@
 
 #include "smtk/resource/Component.h"
 
+#include <boost/variant.hpp>
+
 #include <cassert>
 #include <sstream>
 
@@ -24,14 +26,183 @@ namespace smtk
 namespace attribute
 {
 
+/// Internally, ReferenceItems cache retreived PersistentObjects to speed up
+/// repeated calls to their contents. These PersistentObjects can be cached as
+/// std::shared_ptr-s or std::weak_ptr-s as determined by the flag
+/// "holdReference" in ReferenceItemDefinition. To accomplish this, we cache
+/// retreived values as a variant that accepts both types.
+struct ReferenceItem::Cache
+  : std::vector<boost::variant<std::shared_ptr<smtk::resource::PersistentObject>,
+      std::weak_ptr<smtk::resource::PersistentObject> > >
+{
+};
+
+namespace
+{
+class access_reference
+  : public boost::static_visitor<std::shared_ptr<smtk::resource::PersistentObject> >
+{
+public:
+  const std::shared_ptr<smtk::resource::PersistentObject>& operator()(
+    const std::shared_ptr<smtk::resource::PersistentObject>& persistentObject) const
+  {
+    return persistentObject;
+  }
+
+  std::shared_ptr<smtk::resource::PersistentObject> operator()(
+    std::weak_ptr<smtk::resource::PersistentObject> weakPersistentObject) const
+  {
+    return weakPersistentObject.lock();
+  }
+};
+}
+
+struct ReferenceItem::const_iterator::CacheIterator : ReferenceItem::Cache::const_iterator
+{
+  CacheIterator() {}
+  CacheIterator(const ReferenceItem::Cache::const_iterator& it)
+    : ReferenceItem::Cache::const_iterator(it)
+  {
+  }
+  CacheIterator& operator=(ReferenceItem::Cache::const_iterator& it)
+  {
+    ReferenceItem::Cache::const_iterator::operator=(it);
+    return *this;
+  }
+};
+
+ReferenceItem::const_iterator::const_iterator()
+  : m_cacheIterator(new ReferenceItem::const_iterator::CacheIterator)
+{
+}
+ReferenceItem::const_iterator::const_iterator(const ReferenceItem::const_iterator& it)
+  : m_cacheIterator(new ReferenceItem::const_iterator::CacheIterator(*(it.m_cacheIterator)))
+{
+}
+
+ReferenceItem::const_iterator::~const_iterator()
+{
+}
+
+ReferenceItem::const_iterator& ReferenceItem::const_iterator::operator=(
+  const ReferenceItem::const_iterator& it)
+{
+  m_cacheIterator.reset(new ReferenceItem::const_iterator::CacheIterator(*(it.m_cacheIterator)));
+  return *this;
+}
+
+ReferenceItem::const_iterator& ReferenceItem::const_iterator::operator++()
+{
+  (*m_cacheIterator)++;
+  return *this;
+}
+ReferenceItem::const_iterator& ReferenceItem::const_iterator::operator--()
+{
+  (*m_cacheIterator)--;
+  return *this;
+}
+
+ReferenceItem::const_iterator ReferenceItem::const_iterator::operator++(int)
+{
+  operator++();
+  return const_iterator(*this);
+}
+ReferenceItem::const_iterator ReferenceItem::const_iterator::operator--(int)
+{
+  operator--();
+  return const_iterator(*this);
+}
+
+ReferenceItem::const_iterator ReferenceItem::const_iterator::operator+(
+  const ReferenceItem::const_iterator::difference_type& d) const
+{
+  const_iterator returnValue(*this);
+  *(returnValue.m_cacheIterator) += d;
+  return returnValue;
+}
+
+ReferenceItem::const_iterator ReferenceItem::const_iterator::operator-(
+  const ReferenceItem::const_iterator::difference_type& d) const
+{
+  const_iterator returnValue(*this);
+  *(returnValue.m_cacheIterator) -= d;
+  return returnValue;
+}
+
+ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator*() const
+{
+  return boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+}
+ReferenceItem::const_iterator::pointer ReferenceItem::const_iterator::operator->() const
+{
+  return boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+}
+ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator[](
+  const difference_type& d)
+{
+  return boost::apply_visitor(access_reference(), (*m_cacheIterator)[d]);
+}
+
+ReferenceItem::const_iterator::difference_type operator-(
+  const ReferenceItem::const_iterator& a, const ReferenceItem::const_iterator& b)
+{
+  return static_cast<ReferenceItem::const_iterator::difference_type>(
+    *(a.m_cacheIterator) - *(b.m_cacheIterator));
+}
+
+bool operator<(const ReferenceItem::const_iterator& it1, const ReferenceItem::const_iterator& it2)
+{
+  return (*(it1.m_cacheIterator) < *(it2.m_cacheIterator));
+}
+
+bool operator>(const ReferenceItem::const_iterator& it1, const ReferenceItem::const_iterator& it2)
+{
+  return (*(it1.m_cacheIterator) > *(it2.m_cacheIterator));
+}
+
+bool operator<=(const ReferenceItem::const_iterator& it1, const ReferenceItem::const_iterator& it2)
+{
+  return !(it1 > it2);
+}
+
+bool operator>=(const ReferenceItem::const_iterator& it1, const ReferenceItem::const_iterator& it2)
+{
+  return !(it1 < it2);
+}
+
+bool operator==(const ReferenceItem::const_iterator& it1, const ReferenceItem::const_iterator& it2)
+{
+  return (*(it1.m_cacheIterator) == *(it2.m_cacheIterator));
+}
+
+bool operator!=(const ReferenceItem::const_iterator& it1, const ReferenceItem::const_iterator& it2)
+{
+  return !(it1 == it2);
+}
+
 ReferenceItem::ReferenceItem(Attribute* owningAttribute, int itemPosition)
   : Item(owningAttribute, itemPosition)
+  , m_cache(new Cache())
 {
 }
 
 ReferenceItem::ReferenceItem(Item* inOwningItem, int itemPosition, int mySubGroupPosition)
   : Item(inOwningItem, itemPosition, mySubGroupPosition)
+  , m_cache(new Cache())
 {
+}
+
+ReferenceItem::ReferenceItem(const ReferenceItem& referenceItem)
+  : Item(referenceItem)
+  , m_cache(new Cache(*referenceItem.m_cache))
+{
+}
+
+ReferenceItem& ReferenceItem::operator=(const ReferenceItem& referenceItem)
+{
+  Item::operator=(referenceItem);
+  m_cache.reset(new ReferenceItem::Cache(*(referenceItem.m_cache)));
+  return *this;
 }
 
 ReferenceItem::~ReferenceItem()
@@ -51,11 +222,7 @@ bool ReferenceItem::isValid() const
   }
 
   // Do all objects resolve to a valid reference?
-  //
-  // NOTE: we const_cast here because we treat m_values as a cache variable with
-  //       lazy evalutation semantics. We could declare m_values to be mutable
-  //       instead.
-  if (const_cast<ReferenceItem*>(this)->resolve() == false)
+  if (this->resolve() == false)
   {
     return false;
   }
@@ -65,7 +232,7 @@ bool ReferenceItem::isValid() const
 
 std::size_t ReferenceItem::numberOfValues() const
 {
-  return m_values.size();
+  return m_cache->size();
 }
 
 bool ReferenceItem::setNumberOfValues(std::size_t newSize)
@@ -91,7 +258,7 @@ bool ReferenceItem::setNumberOfValues(std::size_t newSize)
     return false; // The number of values requested is too large.
 
   m_keys.resize(newSize);
-  m_values.resize(newSize);
+  m_cache->resize(newSize);
   return true;
 }
 
@@ -155,14 +322,14 @@ void ReferenceItem::visit(std::function<bool(PersistentObjectPtr)> visitor) cons
 
 smtk::attribute::ReferenceItem::Key ReferenceItem::objectKey(std::size_t i) const
 {
-  if (i >= static_cast<std::size_t>(m_values.size()))
+  if (i >= static_cast<std::size_t>(m_cache->size()))
     return Key();
   return m_keys[i];
 }
 
 bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::ReferenceItem::Key& key)
 {
-  if (i < m_values.size())
+  if (i < m_cache->size())
   {
     this->attribute()->links().removeLink(m_keys[i]);
     m_keys[i] = key;
@@ -173,16 +340,15 @@ bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::Reference
 
 smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(std::size_t i) const
 {
-  if (i >= static_cast<std::size_t>(m_values.size()))
+  if (i >= static_cast<std::size_t>(m_cache->size()))
     return nullptr;
-  if (m_values[i] == nullptr)
+
+  auto result = boost::apply_visitor(access_reference(), (*m_cache)[i]);
+  if (result == nullptr)
   {
-    // NOTE: we const_cast here because we treat m_values as a cache variable
-    //       with lazy evalutation semantics. We could declare m_values to be
-    //       mutable instead.
-    const_cast<ReferenceItem*>(this)->m_values[i] = this->objectValue(m_keys[i]);
+    result = this->objectValue(m_keys[i]);
+    assignToCache(i, result);
   }
-  auto result = m_values[i];
   return result;
 }
 
@@ -214,11 +380,11 @@ ReferenceItem::Key ReferenceItem::linkTo(PersistentObjectPtr val)
 bool ReferenceItem::setObjectValue(std::size_t i, PersistentObjectPtr val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
-  if (i < m_values.size() && (val == nullptr || def->isValueValid(val)))
+  if (i < m_cache->size() && (val == nullptr || def->isValueValid(val)))
   {
     this->attribute()->links().removeLink(m_keys[i]);
     m_keys[i] = this->linkTo(val);
-    m_values[i] = val;
+    assignToCache(i, val);
     return true;
   }
   return false;
@@ -255,15 +421,15 @@ bool ReferenceItem::appendObjectValue(PersistentObjectPtr val)
   }
   // Finally - are we allowed to change the number of values?
   if ((def->isExtensible() && def->maxNumberOfValues() &&
-        m_values.size() >= def->maxNumberOfValues()) ||
-    (!def->isExtensible() && m_values.size() >= def->numberOfRequiredValues()))
+        m_cache->size() >= def->maxNumberOfValues()) ||
+    (!def->isExtensible() && m_cache->size() >= def->numberOfRequiredValues()))
   {
     // The number of values is fixed or we reached the max number of items
     return false;
   }
 
   m_keys.push_back(this->linkTo(val));
-  m_values.push_back(val);
+  appendToCache(val);
   return true;
 }
 
@@ -280,18 +446,18 @@ bool ReferenceItem::removeValue(std::size_t i)
   }
   this->attribute()->links().removeLink(m_keys[i]);
   m_keys.erase(m_keys.begin() + i);
-  m_values.erase(m_values.begin() + i);
+  (*m_cache).erase((*m_cache).begin() + i);
   return true;
 }
 
 void ReferenceItem::reset()
 {
   m_keys.clear();
-  m_values.clear();
+  (*m_cache).clear();
   if (this->numberOfRequiredValues() > 0)
   {
     m_keys.resize(this->numberOfRequiredValues());
-    m_values.resize(this->numberOfRequiredValues());
+    (*m_cache).resize(this->numberOfRequiredValues());
   }
 }
 
@@ -320,10 +486,6 @@ std::string ReferenceItem::valueAsString(std::size_t i) const
     }
     result << "component(" << rid << "," << comp->id() << ")";
   }
-  else
-  {
-    result << "unknown(" << (m_values[i] ? m_values[i]->id().toString() : "") << ")";
-  }
   return result.str();
 }
 
@@ -334,7 +496,7 @@ bool ReferenceItem::isSet(std::size_t i) const
 
 void ReferenceItem::unset(std::size_t i)
 {
-  this->setObjectValue(i, nullptr);
+  this->setObjectValue(i, PersistentObjectPtr());
 }
 
 bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
@@ -345,7 +507,7 @@ bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   {
     return false; // Source is not a model entity item
   }
-  // Are we suppose to assign the model enity values?
+  // Are we supposed to assign the model enity values?
   if (options & Item::IGNORE_RESOURCE_COMPONENTS)
   {
     return Item::assign(sourceItem, options);
@@ -387,28 +549,29 @@ bool ReferenceItem::has(PersistentObjectPtr entity) const
   return this->find(entity) >= 0;
 }
 
-typename ReferenceItem::const_iterator ReferenceItem::begin() const
+ReferenceItem::const_iterator ReferenceItem::begin() const
 {
-  // NOTE: we const_cast here because we treat m_values as a cache variable with
-  //       lazy evalutation semantics. We could declare m_values to be mutable
-  //       instead.
-  const_cast<ReferenceItem*>(this)->resolve();
-
-  return m_values.begin();
+  const_iterator it = const_iterator();
+  ReferenceItem::Cache::const_iterator begin = m_cache->begin();
+  *(it.m_cacheIterator) = begin;
+  return it;
 }
 
-typename ReferenceItem::const_iterator ReferenceItem::end() const
+ReferenceItem::const_iterator ReferenceItem::end() const
 {
-  return m_values.end();
+  const_iterator it = const_iterator();
+  ReferenceItem::Cache::const_iterator end = m_cache->end();
+  *(it.m_cacheIterator) = end;
+  return it;
 }
 
 std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
 {
   std::ptrdiff_t idx = 0;
-  const_iterator it;
-  for (it = this->begin(); it != this->end(); ++it, ++idx)
+  for (auto it = m_cache->begin(); it != m_cache->end(); ++it, ++idx)
   {
-    if (*it && (*it)->id() == uid)
+    auto reference = boost::apply_visitor(access_reference(), *it);
+    if (reference && reference->id() == uid)
     {
       return idx;
     }
@@ -419,12 +582,16 @@ std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
 std::ptrdiff_t ReferenceItem::find(PersistentObjectPtr comp) const
 {
   std::ptrdiff_t idx = 0;
-  const_iterator it;
-  for (it = this->begin(); it != this->end(); ++it, ++idx)
+  for (auto it = m_cache->begin(); it != m_cache->end(); ++it, ++idx)
   {
-    if (*it == comp)
+    auto reference = boost::apply_visitor(access_reference(), *it);
+    if (reference == comp)
     {
       return idx;
+    }
+    if (reference && reference->id() == comp->id())
+    {
+      std::cerr << "PROBLEM!!!  Found comp: " << comp->name() << " by ID\n";
     }
   }
   return -1;
@@ -456,7 +623,7 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   if (n != 0)
   {
     m_keys.resize(n);
-    m_values.resize(n);
+    m_cache->resize(n);
   }
   return true;
 }
@@ -482,27 +649,39 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
   return PersistentObjectPtr();
 }
 
-bool ReferenceItem::resolve()
+bool ReferenceItem::resolve() const
 {
   bool allResolved = true;
 
   // We treat keys and values as vectors in lockstep with each other. If they
   // are not, then something unexpected has occured.
-  assert(m_keys.size() == m_values.size());
+  assert(m_keys.size() == m_cache->size());
+
+  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
 
   // Iterate over the objects' keys and values.
   auto key = m_keys.begin();
-  auto value = m_values.begin();
-  for (; value != m_values.end(); ++value, ++key)
+  auto value = m_cache->begin();
+  for (; value != m_cache->end(); ++value, ++key)
   {
     // If a value is not currently resolved...
-    if (*value == nullptr)
+    auto reference = boost::apply_visitor(access_reference(), *value);
+    if (reference == nullptr)
     {
       // ...set it equal to the object pointer accessed using its key.
-      *value = this->objectValue(*key);
+      auto newValue = this->objectValue(*key);
+
+      if (def->holdReference())
+      {
+        *value = std::shared_ptr<smtk::resource::PersistentObject>(newValue);
+      }
+      else
+      {
+        *value = std::weak_ptr<smtk::resource::PersistentObject>(newValue);
+      }
 
       // If it's still not resolved...
-      if (*value == nullptr)
+      if (newValue == nullptr)
       {
         // ...there's not much we can do.
         allResolved = false;
@@ -511,6 +690,27 @@ bool ReferenceItem::resolve()
   }
 
   return allResolved;
+}
+
+void ReferenceItem::assignToCache(std::size_t i, const PersistentObjectPtr& obj) const
+{
+  auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+
+  if (def->holdReference())
+  {
+    (*m_cache)[i] = std::shared_ptr<smtk::resource::PersistentObject>(obj);
+  }
+  else
+  {
+    (*m_cache)[i] = std::weak_ptr<smtk::resource::PersistentObject>(obj);
+  }
+}
+
+void ReferenceItem::appendToCache(const PersistentObjectPtr& obj) const
+{
+  std::size_t i = m_cache->size();
+  m_cache->push_back(Cache::value_type());
+  return assignToCache(i, obj);
 }
 }
 }

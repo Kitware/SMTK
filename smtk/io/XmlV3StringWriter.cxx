@@ -506,6 +506,11 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
       .set_value((idef->lockType() == smtk::resource::LockType::DoNotLock ? "DoNotLock" : "Read"));
   }
 
+  if (idef->holdReference())
+  {
+    node.append_attribute("HoldReference") = true;
+  }
+
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->isExtensible())

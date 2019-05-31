@@ -556,6 +556,12 @@ void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
     }
   }
 
+  xatt = node.attribute("HoldReference");
+  if (xatt)
+  {
+    idef->setHoldReference(xatt.as_bool());
+  }
+
   xatt = node.attribute("NumberOfRequiredValues");
   if (xatt)
   {

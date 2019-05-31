@@ -38,7 +38,7 @@
     <AttDef Type="result(create model)" BaseType="result">
       <ItemDefinitions>
         <!-- The created model is returned in the base result's "created" item. -->
-        <Resource Name="resource">
+        <Resource Name="resource" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::session::oscillator::Resource"/>
           </Accepts>

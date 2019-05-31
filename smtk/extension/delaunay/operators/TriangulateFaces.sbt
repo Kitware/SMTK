@@ -30,7 +30,7 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(triangulate faces)" BaseType="result">
       <ItemDefinitions>
-        <Resource Name="meshresource" NumberOfRequiredValues="1">
+        <Resource Name="meshresource" NumberOfRequiredValues="1" HoldReference="true">
           <Accepts><Resource Name="smtk::mesh::Resource"/></Accepts>
         </Resource>
         <Component Name="mesh_created" NumberOfRequiredValues="1" Extensible="true">

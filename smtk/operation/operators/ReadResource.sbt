@@ -24,7 +24,8 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(read resource)" BaseType="result">
       <ItemDefinitions>
-        <Resource Name="resource" NumberOfRequiredValues="0" Extensible="true"></Resource>
+        <Resource Name="resource" NumberOfRequiredValues="0"
+                  Extensible="true" HoldReference="true"></Resource>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

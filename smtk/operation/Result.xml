@@ -4,8 +4,8 @@
     </Int>
     <String Name="log" Optional="True" NumberOfRequiredValues="0" Extensible="True">
     </String>
-    <Component Name="created"  NumberOfRequiredValues="0" Extensible="1"/>
-    <Component Name="modified"  NumberOfRequiredValues="0" Extensible="1"/>
-    <Component Name="expunged"  NumberOfRequiredValues="0" Extensible="1"/>
+    <Component Name="created"  NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
+    <Component Name="modified"  NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
+    <Component Name="expunged"  NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
   </ItemDefinitions>
 </AttDef>

@@ -36,6 +36,7 @@ ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
   m_maxNumberOfValues = 0;
   m_lockType = smtk::resource::LockType::Write;
   m_role = smtk::attribute::Resource::ReferenceRole;
+  m_holdReference = false;
 }
 
 ReferenceItemDefinition::~ReferenceItemDefinition()

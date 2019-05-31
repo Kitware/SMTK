@@ -16,7 +16,7 @@
     <AttDef Type="result(legacy read)" BaseType="result">
       <ItemDefinitions>
 
-        <Resource Name="resource">
+        <Resource Name="resource" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::session::discrete::Resource"/>
           </Accepts>
