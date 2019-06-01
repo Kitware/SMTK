@@ -39,8 +39,8 @@ typedef std::vector<smtk::attribute::ComponentItemDefinition::Ptr> ComponentDefi
 
 /// Return a new set of parameters for an operation.
 SMTKCORE_EXPORT
-Operation::Parameters createParameters(
-  Operation::Specification specification, const std::string& operatorName);
+Operation::Parameters createParameters(Operation::Specification specification,
+  const std::string& operatorName, const std::string& parametersName);
 
 /// Return parameters for an operation if they already exist or a new parameters object otherwise.
 SMTKCORE_EXPORT

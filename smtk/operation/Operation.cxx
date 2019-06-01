@@ -29,6 +29,15 @@
 #include <mutex>
 #include <sstream>
 
+namespace
+{
+// We construct unique parameter and result names in a thread-safe way, rather
+// than letting the attribute system spin one for us. This atomic counter is
+// used to create that name. Its value is irrelevant so we don't need to reset
+// it; its uniqueness is what we are after.
+static std::atomic<std::size_t> g_uniqueCounter{ 0 };
+}
+
 namespace smtk
 {
 namespace operation
@@ -245,7 +254,8 @@ Operation::Parameters Operation::parameters()
   {
     auto specification = this->specification();
     smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Write);
-    m_parameters = createParameters(specification, this->typeName());
+    m_parameters = createParameters(
+      specification, this->typeName(), this->typeName() + std::to_string(g_uniqueCounter++));
   }
 
   // If we still don't have our parameters, then there's not much we can do.
@@ -279,7 +289,8 @@ Operation::Result Operation::createResult(Outcome outcome)
     {
       auto specification = this->specification();
       smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Write);
-      result = specification->createAttribute(m_resultDefinition);
+      result = specification->createAttribute(
+        this->typeName() + "_result_" + std::to_string(g_uniqueCounter++), m_resultDefinition);
     }
 
     // Hold on to a copy of the generated result so we can remove it from our

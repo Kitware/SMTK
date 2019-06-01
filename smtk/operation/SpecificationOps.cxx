@@ -24,8 +24,8 @@ namespace smtk
 namespace operation
 {
 
-Operation::Parameters createParameters(
-  Operation::Specification specification, const std::string& operatorName)
+Operation::Parameters createParameters(Operation::Specification specification,
+  const std::string& operatorName, const std::string& parametersName)
 {
   Operation::Definition parameterDefinition =
     extractParameterDefinition(specification, operatorName);
@@ -33,7 +33,7 @@ Operation::Parameters createParameters(
   if (parameterDefinition != nullptr)
   {
     // Now that we have our operation definition, create our parameters attribute.
-    return specification->createAttribute(parameterDefinition);
+    return specification->createAttribute(parametersName, parameterDefinition);
   }
 
   // If we cannot find the parameter definition, we cannot create the parameters.
