@@ -495,7 +495,8 @@ void PhraseModel::updateChildren(
   {
     // Batch consecutive insertions into a single event
     batch.push_back(entry->second);
-    insertRange[0] = entry->first > orig.size() ? orig.size() : entry->first;
+    int osz = static_cast<int>(orig.size());
+    insertRange[0] = entry->first > osz ? osz : entry->first;
     insertRange[1] = entry->first;
     ii = entry->first;
     auto ep1 = entry;

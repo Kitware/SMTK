@@ -180,6 +180,15 @@ bool ResourcePhraseContent::editColorValue(ContentType attr, const resource::Flo
   return false;
 }
 
+smtk::resource::PersistentObjectPtr ResourcePhraseContent::relatedObject() const
+{
+  if (m_resource)
+  {
+    return m_resource;
+  }
+  return this->PhraseContent::relatedObject();
+}
+
 smtk::resource::ResourcePtr ResourcePhraseContent::relatedResource() const
 {
   return m_resource;

@@ -296,6 +296,15 @@ bool ComponentPhraseContent::editColorValue(ContentType attr, const resource::Fl
   return false;
 }
 
+smtk::resource::PersistentObjectPtr ComponentPhraseContent::relatedObject() const
+{
+  if (m_component)
+  {
+    return m_component;
+  }
+  return this->PhraseContent::relatedObject();
+}
+
 smtk::resource::ResourcePtr ComponentPhraseContent::relatedResource() const
 {
   if (!m_component)
