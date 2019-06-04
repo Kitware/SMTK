@@ -48,6 +48,7 @@ public:
   bool editFlagValue(ContentType attr, int val) override;
   bool editColorValue(ContentType attr, const resource::FloatList& val) override;
 
+  smtk::resource::PersistentObjectPtr relatedObject() const override;
   smtk::resource::ResourcePtr relatedResource() const override;
 
   void setMutability(int whatsMutable);

@@ -125,6 +125,9 @@ void ComponentPhraseModel::handleCreated(
   //       components, we should simply add anything in res that passes our test
   //       for matching components.
   this->populateRoot();
+
+  // Finally, call our subclass method to deal with children of the root element
+  this->PhraseModel::handleCreated(op, res, data);
 }
 
 void ComponentPhraseModel::processResource(Resource::Ptr rsrc, bool adding)

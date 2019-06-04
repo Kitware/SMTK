@@ -215,7 +215,8 @@ Operation::Result Operation::operate()
   // Execute post-operation observation
   if (observePostOperation)
   {
-    manager->observers()(shared_from_this(), EventType::DID_OPERATE, result);
+    auto self = shared_from_this();
+    manager->observers()(self, EventType::DID_OPERATE, result);
   }
 
   // Unlock the resources.

@@ -331,6 +331,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
   smtk::attribute::AttributePtr attr;
   smtk::mesh::ComponentPtr mcmp;
   smtk::model::EntityPtr ment;
+  bool added = false;
   // Determine if the component is a direct-ish child of parent
   if (!actualParent->relatedComponent() && actualParent->relatedResource())
   {
@@ -343,10 +344,11 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
             !smtk::model::Model(ment).owningModel().isValid())))
     {
       PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
+      added = true;
     }
   }
-  else if ((ment =
-               std::dynamic_pointer_cast<smtk::model::Entity>(actualParent->relatedComponent())))
+  if (!added &&
+    (ment = std::dynamic_pointer_cast<smtk::model::Entity>(actualParent->relatedComponent())))
   {
     bool shouldAdd = false;
     auto parentEntity = ment;
@@ -459,6 +461,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
     }
     if (shouldAdd)
     {
+      added = true;
       PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
     }
   }
