@@ -55,13 +55,16 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // associated to the input operation, so we delete the connection upon firing.
   QMetaObject::Connection* connection = new QMetaObject::Connection;
   *connection = QObject::connect(this, &qtOperationLauncher::operationHasResult, this,
-    [&, connection, operation](QString resultName) {
-      auto result = operation->specification()->findAttribute(resultName.toStdString());
-      this->resultReady(result);
+    [&, connection, operation](QString parametersName, QString resultName) {
+      if (parametersName.toStdString() == operation->parameters()->name())
+      {
+        auto result = operation->specification()->findAttribute(resultName.toStdString());
+        this->resultReady(result);
 
-      // Remove this connection.
-      QObject::disconnect(*connection);
-      delete connection;
+        // Remove this connection.
+        QObject::disconnect(*connection);
+        delete connection;
+      }
     });
 
   std::future<smtk::operation::Operation::Result> future =
@@ -81,7 +84,8 @@ smtk::operation::Operation::Result qtOperationLauncher::run(
 
   // Privately emit the name of the output result so the contents of this class
   // that reside on the original thread can access it.
-  emit operationHasResult(QString::fromStdString(result->name()), QPrivateSignal());
+  emit operationHasResult(QString::fromStdString(operation->parameters()->name()),
+    QString::fromStdString(result->name()), QPrivateSignal());
 
   return result;
 }

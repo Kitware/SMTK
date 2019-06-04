@@ -52,6 +52,18 @@ private:
   std::size_t m_waitingWriters;
   std::size_t m_activeWriters;
 };
+
+/// A scope-guarded utility for handling locks.
+class SMTKCORE_EXPORT ScopedLockGuard
+{
+public:
+  ScopedLockGuard(Lock&, LockType);
+  ~ScopedLockGuard();
+
+private:
+  Lock& m_lock;
+  LockType m_lockType;
+};
 }
 }
 

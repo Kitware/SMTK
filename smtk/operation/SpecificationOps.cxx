@@ -24,8 +24,8 @@ namespace smtk
 namespace operation
 {
 
-Operation::Parameters createParameters(
-  Operation::Specification specification, const std::string& operatorName)
+Operation::Parameters createParameters(Operation::Specification specification,
+  const std::string& operatorName, const std::string& parametersName)
 {
   Operation::Definition parameterDefinition =
     extractParameterDefinition(specification, operatorName);
@@ -33,7 +33,7 @@ Operation::Parameters createParameters(
   if (parameterDefinition != nullptr)
   {
     // Now that we have our operation definition, create our parameters attribute.
-    return specification->createAttribute(parameterDefinition);
+    return specification->createAttribute(parametersName, parameterDefinition);
   }
 
   // If we cannot find the parameter definition, we cannot create the parameters.
@@ -227,6 +227,40 @@ std::set<smtk::resource::Resource::Ptr> extractResources(Operation::Result resul
   }
 
   return resources;
+}
+
+ResourceAccessMap extractResourcesAndLockTypes(Operation::Parameters parameters)
+{
+  ResourceAccessMap resourcesAndLockTypes;
+
+  // Gather all of the resource and component items in the specification.
+  std::vector<smtk::attribute::Item::Ptr> items;
+
+  {
+    // For each attribute, gather all of the components using a filter.
+    auto filter = [](smtk::attribute::Item::Ptr item) {
+      return item->type() == smtk::attribute::Item::ReferenceType ||
+        item->type() == smtk::attribute::Item::ResourceType ||
+        item->type() == smtk::attribute::Item::ComponentType;
+    };
+    parameters->filterItems(items, filter, false);
+
+    // Also gather the association.
+    if (parameters->associations() != nullptr)
+    {
+      items.push_back(parameters->associations());
+    }
+  }
+
+  // For each item found...
+  for (auto& item : items)
+  {
+    // Extract the resources and lock types.
+    auto resourceItem = std::static_pointer_cast<smtk::attribute::ReferenceItem>(item);
+    resourcesFromItem(resourcesAndLockTypes, resourceItem);
+  }
+
+  return resourcesAndLockTypes;
 }
 
 ResourceAccessMap extractResourcesAndLockTypes(Operation::Specification specification)

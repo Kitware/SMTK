@@ -10,39 +10,67 @@
 #
 #=============================================================================
 
-if (SMTK_ENABLE_POLYGON_SESSION)
   set(unit_tests_headers
     qtPrintLog.h
-  )
+    )
+
   set(unit_tests_headers_data
-    unitQtComponentItem.h
-  )
+    )
 
   set(unit_tests
     UnitTestEmittingStringBuffer.cxx
   )
 
   set(unit_tests_which_require_data
+    )
+
+  set(additional_libraries
+    )
+
+if (SMTK_ENABLE_POLYGON_SESSION)
+  list(APPEND unit_tests_headers_data
+    unitQtComponentItem.h
+    )
+
+  list(APPEND unit_tests_which_require_data
     unitQtComponentItem.cxx
-  )
+    )
+
+  list(APPEND additional_libraries
+    smtkPolygonSession
+    )
 
   set(unitQtComponentItem_EXTRA_ARGUMENTS "--exit")
+endif ()
 
-  qt5_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
-  if (SMTK_DATA_DIR)
-    qt5_wrap_cpp(unit_tests_headers_moc_data ${unit_tests_headers_data})
-  endif ()
+if (SMTK_ENABLE_MESH_SESSION)
+  list(APPEND unit_tests_headers
+    UnitTestOperationLauncher.h
+    )
+  list(APPEND unit_tests_which_require_data
+    UnitTestOperationLauncher.cxx
+    )
 
-  smtk_unit_tests(LABEL "qt"
-    SOURCES ${unit_tests}
-    SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-    EXTRA_SOURCES ${unit_tests_headers_moc} ${unit_tests_headers_moc_data}
-    LIBRARIES
-      smtkQtExt
-      smtkCore
-      smtkCoreModelTesting
-      smtkCoreResourceTesting
-      smtkPolygonSession
-      ${Boost_LIBRARIES}
+  list(APPEND additional_libraries
+    smtkMeshSession
+    )
+endif ()
+
+qt5_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
+if (SMTK_DATA_DIR)
+  qt5_wrap_cpp(unit_tests_headers_moc_data ${unit_tests_headers_data})
+endif ()
+
+smtk_unit_tests(LABEL "qt"
+  SOURCES ${unit_tests}
+  SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
+  EXTRA_SOURCES ${unit_tests_headers_moc} ${unit_tests_headers_moc_data}
+  LIBRARIES
+  smtkQtExt
+  smtkCore
+  smtkCoreModelTesting
+  smtkCoreResourceTesting
+  ${additional_libraries}
+  ${Boost_LIBRARIES}
+  Threads::Threads
   )
-endif()

@@ -107,5 +107,17 @@ void Lock::unlock(LockType lockType)
   }
 }
 
+ScopedLockGuard::ScopedLockGuard(Lock& lock, LockType lockType)
+  : m_lock(lock)
+  , m_lockType(lockType)
+{
+  m_lock.lock(m_lockType);
+}
+
+ScopedLockGuard::~ScopedLockGuard()
+{
+  m_lock.unlock(m_lockType);
+}
+
 } // namespace resource
 } // namespace smtk
