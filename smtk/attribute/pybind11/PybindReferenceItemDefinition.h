@@ -30,6 +30,8 @@ PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::Ite
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ReferenceItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::ReferenceItemDefinition::buildItem, py::arg("owner"), py::arg("itemPos"), py::arg("subGroupPosition"))
     .def("createCopy", &smtk::attribute::ReferenceItemDefinition::createCopy, py::arg("info"))
     .def("hasValueLabels", &smtk::attribute::ReferenceItemDefinition::hasValueLabels)
+    .def("holdReference", (bool (smtk::attribute::ReferenceItemDefinition::*)() const) &smtk::attribute::ReferenceItemDefinition::holdReference)
+    .def("setHoldReference", (void (smtk::attribute::ReferenceItemDefinition::*)(bool)) &smtk::attribute::ReferenceItemDefinition::setHoldReference)
     .def("isExtensible", &smtk::attribute::ReferenceItemDefinition::isExtensible)
     .def("isValueValid", &smtk::attribute::ReferenceItemDefinition::isValueValid, py::arg("entity"))
     .def("lockType", &smtk::attribute::ReferenceItemDefinition::lockType)

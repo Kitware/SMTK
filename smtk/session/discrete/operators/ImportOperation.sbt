@@ -93,7 +93,7 @@
       <ItemDefinitions>
 
         <!-- The model imported from the file. -->
-        <Resource Name="resource"  Extensible="1">
+        <Resource Name="resource"  Extensible="1" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::session::discrete::Resource"/>
             <Resource Name="smtk::mesh::Resource"/>

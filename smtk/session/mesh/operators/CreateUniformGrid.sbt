@@ -113,7 +113,7 @@
     <AttDef Type="result(createBackgroundDomain)" BaseType="result">
       <ItemDefinitions>
 
-        <Resource Name="resource">
+        <Resource Name="resource" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::session::mesh::Resource"/>
           </Accepts>

@@ -87,7 +87,7 @@
         <Component Name="mesh_created" NumberOfRequiredValues="1">
           <Accepts><Resource Name="smtk::session::multiscale::Session" Filter=""/></Accepts>
         </Component>
-        <Resource Name="resource">
+        <Resource Name="resource" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::session::multiscale::Resource"/>
           </Accepts>

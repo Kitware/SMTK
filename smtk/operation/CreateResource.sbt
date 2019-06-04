@@ -20,7 +20,7 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(create resource)" BaseType="result">
       <ItemDefinitions>
-        <Resource Name="resource" IsEnabledByDefault="true"></Resource>
+        <Resource Name="resource" IsEnabledByDefault="true" HoldReference="true"></Resource>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

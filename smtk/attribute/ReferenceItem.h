@@ -15,6 +15,7 @@
 #include "smtk/common/UUID.h"
 #include "smtk/resource/Lock.h"
 
+#include <iterator>
 #include <vector>
 
 namespace smtk
@@ -48,9 +49,60 @@ class ReferenceItemDefinition;
   */
 class SMTKCORE_EXPORT ReferenceItem : public Item
 {
-public:
   using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
-  using const_iterator = std::vector<smtk::resource::PersistentObjectPtr>::const_iterator;
+
+public:
+  /**\brief An iterator for references held by a ReferenceItem.
+  *
+  * Iterators into ReferenceItem will always dereference to a
+  * PersistentObjectPtr, regardless of the underlying storage mechanism used
+  * to hold the reference.
+  */
+  class SMTKCORE_EXPORT const_iterator
+  {
+    friend class ReferenceItem;
+
+  public:
+    typedef const_iterator self_type;
+    typedef std::random_access_iterator_tag iterator_category;
+    typedef const smtk::resource::PersistentObjectPtr value_type;
+    typedef value_type reference;
+    typedef value_type pointer;
+    typedef std::ptrdiff_t difference_type;
+
+    const_iterator();
+    const_iterator(const const_iterator& it);
+
+    ~const_iterator();
+
+    const_iterator& operator=(const const_iterator& it);
+
+    const_iterator& operator++();
+    const_iterator& operator--();
+
+    const_iterator operator++(int);
+    const_iterator operator--(int);
+
+    const_iterator operator+(const difference_type& d) const;
+    const_iterator operator-(const difference_type& d) const;
+
+    reference operator*() const;
+    pointer operator->() const;
+    reference operator[](const difference_type& d);
+
+    friend difference_type SMTKCORE_EXPORT operator-(const const_iterator&, const const_iterator&);
+
+    friend bool SMTKCORE_EXPORT operator<(const const_iterator& it1, const const_iterator& it2);
+    friend bool SMTKCORE_EXPORT operator>(const const_iterator& it1, const const_iterator& it2);
+    friend bool SMTKCORE_EXPORT operator<=(const const_iterator& it1, const const_iterator& it2);
+    friend bool SMTKCORE_EXPORT operator>=(const const_iterator& it1, const const_iterator& it2);
+    friend bool SMTKCORE_EXPORT operator==(const const_iterator& it1, const const_iterator& it2);
+    friend bool SMTKCORE_EXPORT operator!=(const const_iterator& it1, const const_iterator& it2);
+
+  private:
+    struct CacheIterator;
+    std::unique_ptr<CacheIterator> m_cacheIterator;
+  };
 
   /// A Key is a pair of UUIDs. the First UUID is the id of the resource link,
   /// and the second one is the id of the component link.
@@ -58,8 +110,11 @@ public:
 
   smtkTypeMacro(ReferenceItem);
   smtkSuperclassMacro(Item);
-  /// Destructor
+
+  ReferenceItem(const ReferenceItem&);
   ~ReferenceItem() override;
+
+  ReferenceItem& operator=(const ReferenceItem&);
 
   /// Indicate we are a reference to a persistent object.
   Item::Type type() const override { return Item::ReferenceType; }
@@ -152,15 +207,18 @@ public:
     */
   bool setObjectValue(PersistentObjectPtr val);
   /// Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
+  //bool setObjectValue(std::size_t i, PersistentObjectPtr val);
   bool setObjectValue(std::size_t i, PersistentObjectPtr val);
 
   template <typename I>
-  bool setObjectValues(I vbegin, I vend, std::size_t offset = 0);
+  bool setObjectValues(
+    I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0);
   template <typename I>
   bool appendObjectValues(I vbegin, I vend);
 
   template <typename I, typename T>
-  bool setValuesVia(I vbegin, I vend, const T& converter, std::size_t offset = 0);
+  bool setValuesVia(I vbegin, I vend, const T& converter,
+    typename std::iterator_traits<I>::difference_type offset = 0);
   template <typename I, typename T>
   bool appendValuesVia(I vbegin, I vend, const T& converter);
 
@@ -257,20 +315,27 @@ protected:
 
   /// Resolve the object pointers by accessing them using their associated keys.
   /// Return true if all object pointers were successfully resolved.
-  bool resolve();
+  bool resolve() const;
 
   /// Construct a link between the attribute that owns this item and \a val.
   Key linkTo(PersistentObjectPtr val);
 
-  std::vector<PersistentObjectPtr> m_values;
   std::vector<Key> m_keys;
+
+private:
+  void assignToCache(std::size_t i, const PersistentObjectPtr& obj) const;
+  void appendToCache(const PersistentObjectPtr& obj) const;
+
+  struct Cache;
+  mutable std::unique_ptr<Cache> m_cache;
 };
 
 template <typename I>
-bool ReferenceItem::setObjectValues(I vbegin, I vend, std::size_t offset)
+bool ReferenceItem::setObjectValues(
+  I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset)
 {
   bool ok = false;
-  std::size_t num = vend - vbegin + offset;
+  std::size_t num = std::distance(vbegin, vend) + offset;
   if (this->setNumberOfValues(num))
   {
     ok = true;
@@ -299,10 +364,11 @@ bool ReferenceItem::appendObjectValues(I vbegin, I vend)
 }
 
 template <typename I, typename T>
-bool ReferenceItem::setValuesVia(I vbegin, I vend, const T& converter, std::size_t offset)
+bool ReferenceItem::setValuesVia(
+  I vbegin, I vend, const T& converter, typename std::iterator_traits<I>::difference_type offset)
 {
   bool ok = false;
-  std::size_t num = vend - vbegin + offset;
+  std::size_t num = std::distance(vbegin, vend) + offset;
   if (this->setNumberOfValues(num))
   {
     ok = true;

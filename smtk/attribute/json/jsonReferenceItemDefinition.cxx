@@ -61,6 +61,10 @@ SMTKCORE_EXPORT void to_json(
     }
     j["ReferenceLabels"] = valueLabel;
   }
+  if (defPtr->holdReference())
+  {
+    j["HoldReference"] = true;
+  }
 }
 
 SMTKCORE_EXPORT void from_json(
@@ -136,6 +140,13 @@ SMTKCORE_EXPORT void from_json(
     catch (std::exception& /*e*/)
     {
     }
+  }
+  try
+  {
+    defPtr->setHoldReference(j.at("HoldReference"));
+  }
+  catch (std::exception& /*e*/)
+  {
   }
 }
 }

@@ -214,6 +214,7 @@ ImportResource::Specification ImportResource::createSpecification()
   auto resourceDef = smtk::attribute::ResourceItemDefinition::New("resource");
   resourceDef->setNumberOfRequiredValues(0);
   resourceDef->setIsExtensible(true);
+  resourceDef->setHoldReference(true);
   resultDef->addItemDefinition(resourceDef);
 
   return spec;
