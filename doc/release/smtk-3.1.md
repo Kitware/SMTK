@@ -141,6 +141,14 @@ To support this pattern, SMTK's Observer pattern has been generalized to a singl
 
 ## Changes to the View System and Qt Extensions
 
+### Descriptive Phrase System
+
++ The PhraseModel's updateChildren() method has been rewritten to avoid
+  crashes that were occurring due to insertions beyond the end of storage.
++ The ComponentPhraseModel class has been fixed properly handle operation results;
+  in the past, only the top-level components would be kept updated after operations
+  complete. Now, children are inserted as well.
+
 ### New View Type - Associations
 
 This view has the same syntax as an Attribute View but only allows the user to change the association information of the attribute resulting in taking up less screen Real Estate
