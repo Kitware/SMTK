@@ -236,6 +236,10 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   auto theAttribute = this->Internals->currentAtt.lock();
   auto attResource = theAttribute->attributeResource();
   auto associationItem = theAttribute->associatedObjects();
+  if (associationItem == nullptr)
+  {
+    return result;
+  }
   auto assocMap = associationItem->acceptableEntries();
 
   auto resources = attResource->associations();
