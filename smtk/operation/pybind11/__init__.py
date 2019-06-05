@@ -20,8 +20,18 @@ a more user-friendly API to the python interface for operation parameters.
 
 
 def _create_api(parameters):
-    for i in range(parameters.numberOfItems()):
-        item = parameters.item(i)
+
+    def bind(instance, name, func):
+        """
+        Bind the function *func* to *instance*  with provided name *name*. The
+        provided *func* should accept the instance as the first argument, i.e.
+        "self".
+        """
+        bound_method = func.__get__(instance, instance.__class__)
+        setattr(instance, name, bound_method)
+        return bound_method
+
+    def api_for_item(parameters, item):
         name = item.name()
         import re
         nameList = re.split(r"[^a-zA-Z0-9]", item.name().title())
@@ -36,11 +46,11 @@ def _create_api(parameters):
                 if len(argv) > 1:
                     index = argv[0]
                 return self.find(name).setValue(index, argv[-1])
-            setattr(parameters, set_attr, setValue)
+            bind(parameters, set_attr, setValue)
 
             def value(self, index=0):
                 return self.find(name).value(index)
-            setattr(parameters, get_attr, value)
+            bind(parameters, get_attr, value)
         if item.isOptional():
             enable_attr = 'enable' + ''.join(nameList)
             enabled_attr = nameList[0].lower()
@@ -50,18 +60,18 @@ def _create_api(parameters):
 
             def enable(self, choice):
                 return self.find(name).setIsEnabled(choice)
-            setattr(parameters, enable_attr, enable)
+            bind(parameters, enable_attr, enable)
 
             def isEnabled(self):
                 return self.find(name).isEnabled()
-            setattr(parameters, enabled_attr, isEnabled)
+            bind(parameters, enabled_attr, isEnabled)
 
         if hasattr(item, 'isDiscrete'):
             setindex_attr = 'set' + ''.join(nameList) + 'Index'
 
             def setDiscreteIndex(self, index, value):
                 return self.find(name).setDiscreteIndex(index, value)
-            setattr(parameters, setindex_attr, setDiscreteIndex)
+            bind(parameters, setindex_attr, setDiscreteIndex)
             getindex_attr = nameList[0].lower()
             if len(nameList) > 1:
                 getindex_attr += ''.join(nameList[1:])
@@ -69,7 +79,10 @@ def _create_api(parameters):
 
             def discreteIndex(self, index):
                 return self.find(name).discreteIndex(index)
-            setattr(parameters, getindex_attr, discreteIndex)
+            bind(parameters, getindex_attr, discreteIndex)
+
+    for i in range(parameters.numberOfItems()):
+        api_for_item(parameters, parameters.item(i))
 
 
 def _params(self):
