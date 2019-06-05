@@ -20,15 +20,21 @@ import re
 class TestConstructedAPI(smtk.testing.TestCase):
 
     def testConstructedAPI(self):
-        op = smtk.operation.ReadResource.create()
+        op = smtk.operation.WriteResource.create()
         parameters = op.parameters()
-        print(dir(parameters))
         assert(hasattr(parameters, 'setFilename'))
         assert(hasattr(parameters, 'filename'))
+        filename = 'foo.smtk'
+        parameters.setFilename(filename)
+        assert(parameters.filename() == filename)
         assert(hasattr(parameters, 'setDebugLevel'))
         assert(hasattr(parameters, 'debugLevel'))
         assert(hasattr(parameters, 'enableDebugLevel'))
         assert(hasattr(parameters, 'debugLevelEnabled'))
+        parameters.enableDebugLevel(True)
+        assert(parameters.debugLevelEnabled() == True)
+        parameters.setDebugLevel(3)
+        assert(parameters.debugLevel() == 3)
 
 
 if __name__ == '__main__':
