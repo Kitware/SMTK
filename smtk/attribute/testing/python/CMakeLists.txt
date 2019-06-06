@@ -32,6 +32,7 @@ set(smtkAttributePythonDataTests
 set(smtkAttributePythonNewDataTests
   attributeItemByPath
   attributeQuery
+  groupItemRotateTest
   referenceItemIOTest
 )
 

@@ -42,6 +42,7 @@ PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > pybind11_i
     .def("numberOfRequiredGroups", &smtk::attribute::GroupItem::numberOfRequiredGroups)
     .def("removeGroup", &smtk::attribute::GroupItem::removeGroup, py::arg("element"))
     .def("reset", &smtk::attribute::GroupItem::reset)
+    .def("rotate", &smtk::attribute::GroupItem::rotate, py::arg("fromPosition"), py::arg("toPosition"))
     .def("setNumberOfGroups", &smtk::attribute::GroupItem::setNumberOfGroups, py::arg("newSize"))
     .def("type", &smtk::attribute::GroupItem::type)
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
