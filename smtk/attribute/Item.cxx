@@ -168,6 +168,14 @@ void Item::reset()
   }
 }
 
+bool Item::rotate(std::size_t fromPosition, std::size_t toPosition)
+{
+  // No default behavior. Method must be overriden
+  (void)fromPosition;
+  (void)toPosition;
+  return false;
+}
+
 void Item::setAdvanceLevel(int mode, int level)
 {
   if ((mode < 0) || (mode > 1))

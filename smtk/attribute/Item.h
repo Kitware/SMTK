@@ -18,6 +18,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/attribute/SearchStyle.h"
+#include <algorithm>
 #include <map>
 #include <queue>
 #include <string>
@@ -164,6 +165,10 @@ public:
 
   virtual void reset();
 
+  /// Rotate internal data. Implementation to be added in subclasses.
+  /// Default behavior here is no-op (returns false).
+  virtual bool rotate(std::size_t fromPosition, std::size_t toPosition);
+
   //This should be used only by attributes
   void detachOwningAttribute() { m_attribute = NULL; }
   //This should only be called by the item that owns
@@ -185,6 +190,9 @@ protected:
   virtual smtk::attribute::ItemPtr findInternal(const std::string& name, SearchStyle style);
   virtual smtk::attribute::ConstItemPtr findInternal(
     const std::string& name, SearchStyle style) const;
+  // Internal method for rotate()
+  template <typename T>
+  bool rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t toPosition);
 
   Attribute* m_attribute;
   Item* m_owningItem;
@@ -216,6 +224,34 @@ template <typename T>
 typename T::ConstPtr Item::findAs(const std::string& iname, SearchStyle style) const
 {
   return smtk::dynamic_pointer_cast<const T>(this->find(iname, style));
+}
+
+template <typename T>
+bool Item::rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t toPosition)
+{
+  std::size_t lastPosition = v.size() - 1;
+  if ((fromPosition > lastPosition) || (toPosition > lastPosition) || (fromPosition == toPosition))
+  {
+    return false;
+  }
+
+  auto first = v.begin();
+  auto middle = v.begin();
+  auto last = v.begin();
+  if (fromPosition < toPosition)
+  {
+    first += fromPosition;
+    last += toPosition + 1;
+    middle += fromPosition + 1;
+  }
+  else
+  {
+    first += toPosition;
+    last += fromPosition + 1;
+    middle += fromPosition;
+  }
+  std::rotate(first, middle, last);
+  return true;
 }
 }
 }

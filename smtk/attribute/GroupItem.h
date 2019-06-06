@@ -116,7 +116,7 @@ public:
     * position arguments are valid with respect to the underlying data/range,
     * and the two position arguments aren't equal to each other.
     */
-  bool rotate(std::size_t fromPosition, std::size_t toPosition);
+  bool rotate(std::size_t fromPosition, std::size_t toPosition) override;
 
   // Iterator-style access to values:
   const_iterator begin() const;

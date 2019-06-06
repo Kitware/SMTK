@@ -10,7 +10,6 @@
 
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
-#include <algorithm>
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -127,29 +126,7 @@ void GroupItem::reset()
 
 bool GroupItem::rotate(std::size_t fromPosition, std::size_t toPosition)
 {
-  std::size_t lastPosition = m_items.size() - 1;
-  if ((fromPosition > lastPosition) || (toPosition > lastPosition) || (fromPosition == toPosition))
-  {
-    return false;
-  }
-
-  auto first = m_items.begin();
-  auto middle = m_items.begin();
-  auto last = m_items.begin();
-  if (fromPosition < toPosition)
-  {
-    first += fromPosition;
-    last += toPosition + 1;
-    middle += fromPosition + 1;
-  }
-  else
-  {
-    first += toPosition;
-    last += fromPosition + 1;
-    middle += fromPosition;
-  }
-  std::rotate(first, middle, last);
-  return true;
+  return this->rotateVector(m_items, fromPosition, toPosition);
 }
 
 /**\brief Return an iterator to the first group in this item.
