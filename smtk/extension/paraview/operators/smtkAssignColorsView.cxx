@@ -253,6 +253,8 @@ void smtkAssignColorsView::prepPaletteChooser()
   QObject::connect( // When the user has chosen a preference, remember and apply it.
     this->Internals->PaletteChooser, SIGNAL(applyPreset(const Json::Value&)), this,
     SLOT(setDefaultPaletteAndApply()));
+  QObject::connect( // When the user has cancel the dialog.
+    this->Internals->PaletteChooser, SIGNAL(rejected()), this, SLOT(resetPaletteChooser()));
 }
 
 void smtkAssignColorsView::createWidget()
@@ -439,6 +441,12 @@ void smtkAssignColorsView::applyDefaultColor()
   this->requestOperation(this->Internals->CurrentOp);
 }
 
+void smtkAssignColorsView::resetPaletteChooser()
+{
+  delete this->Internals->PaletteChooser;
+  this->prepPaletteChooser();
+}
+
 void smtkAssignColorsView::setDefaultPaletteAndApply()
 {
   const Json::Value& preset = this->Internals->PaletteChooser->currentPreset();
@@ -451,7 +459,7 @@ void smtkAssignColorsView::setDefaultPaletteAndApply()
   // dialog - the UI does not seem to respond after you set the default palette.
   // One solution that seems to work is to destroy and recreate the dialog
   this->Internals->PaletteChooser->hide();
-  delete this->Internals->PaletteChooser;
+  this->Internals->PaletteChooser->deleteLater();
   this->prepPaletteChooser();
 
   this->Internals->ApplyDefaultPaletteBtn->setText(QString::fromUtf8(name.c_str()));
