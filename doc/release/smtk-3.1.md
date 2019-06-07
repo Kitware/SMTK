@@ -188,9 +188,10 @@ The following is an example of a Analysis View:
 
 ###Changes to Group View
 
-* View no longer displays empty tabs
-* Current tabs are now remembered when the group rebuilds its widget - previously this was only true for the top-level tabbed group views
-* Fixed issue with displaying Discrete Items that has children
+* View no longer displays empty tabs.
+* Current tabs are now remembered when the group rebuilds its widget - previously this was only true for the top-level tabbed group views.
+* Fixed issue with displaying Discrete Items that has children.
+* Fixed issue where child widgets were not deleted.
 
 ###Changes to UIManager
 
