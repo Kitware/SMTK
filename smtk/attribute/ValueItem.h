@@ -79,6 +79,10 @@ public:
   //If the item's definition indicated a size of 0 then it will go back to
   // having no values
   void reset() override;
+
+  /// Rotate the order between specified positions.
+  bool rotate(std::size_t fromPosition, std::size_t toPosition) override;
+
   virtual bool setToDefault(std::size_t elementIndex = 0) = 0;
   // Returns true if there is a default defined and the item is curently set to it
   virtual bool isUsingDefault(std::size_t elementIndex) const = 0;

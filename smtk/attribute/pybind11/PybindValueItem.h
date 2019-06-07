@@ -52,6 +52,7 @@ PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_i
     .def("numberOfRequiredValues", &smtk::attribute::ValueItem::numberOfRequiredValues)
     .def("numberOfValues", &smtk::attribute::ValueItem::numberOfValues)
     .def("reset", &smtk::attribute::ValueItem::reset)
+    .def("rotate", &smtk::attribute::ValueItem::rotate, py::arg("fromPosition"), py::arg("toPosition"))
     .def("setDiscreteIndex", (bool (smtk::attribute::ValueItem::*)(int)) &smtk::attribute::ValueItem::setDiscreteIndex, py::arg("value"))
     .def("setDiscreteIndex", (bool (smtk::attribute::ValueItem::*)(::size_t, int)) &smtk::attribute::ValueItem::setDiscreteIndex, py::arg("elementIndex"), py::arg("value"))
     .def("setExpression", (bool (smtk::attribute::ValueItem::*)(::smtk::attribute::AttributePtr)) &smtk::attribute::ValueItem::setExpression, py::arg("exp"))
