@@ -123,6 +123,10 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("types", &smtk::attribute::Attribute::types)
     .def("unsetColor", &smtk::attribute::Attribute::unsetColor)
     .def("userData", &smtk::attribute::Attribute::userData, py::arg("key"))
+    .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Component> i) {
+        return std::dynamic_pointer_cast<smtk::attribute::Attribute>(i);
+      })
+    ;
     ;
   return instance;
 }
