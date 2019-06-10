@@ -63,6 +63,14 @@ qtGroupItem::qtGroupItem(const AttributeItemInfo& info)
 
 qtGroupItem::~qtGroupItem()
 {
+  for (auto& entry : this->Internals->ExtensibleMap)
+  {
+    for (auto qi : entry)
+    {
+      delete qi->widget();
+      delete qi;
+    }
+  }
   delete this->Internals;
 }
 

@@ -80,7 +80,7 @@ public:
   pqSMTKAttributeItemWidget(const AttributeItemInfo& info, Qt::Orientation orient = Qt::Horizontal);
   pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr, QWidget* p,
     smtk::extension::qtBaseView* bview, Qt::Orientation orient = Qt::Horizontal);
-  virtual ~pqSMTKAttributeItemWidget();
+  ~pqSMTKAttributeItemWidget() override;
 
   /// Subclasses must override this method to create the ParaView widget of their choice.
   virtual bool createProxyAndWidget(vtkSMProxy*& source, pqInteractivePropertyWidget*& widget) = 0;
@@ -102,11 +102,11 @@ public slots:
   void setOutputOptional(int optionEnabled);
 
 protected slots:
-  virtual void updateItemData();
+  void updateItemData() override;
   virtual void acceptWidgetValues();
 
 protected:
-  virtual void createWidget();
+  void createWidget() override;
   virtual void clearChildWidgets();
   virtual void updateUI();
   virtual void createEditor();
