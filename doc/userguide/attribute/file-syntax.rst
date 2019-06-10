@@ -4,10 +4,10 @@ Template File Syntax (Reference)
 File Layout
 -----------
 All attribute template and instance files must contain the
-<SMTK_AttributeSystem> XML element. The following table shows the XML
+<SMTK_AttributeResource> XML element. The following table shows the XML
 Attributes that can be included in this XML Element.
 
-.. list-table:: XML Attributes for <SMTK_AttributeSystem> Element
+.. list-table:: XML Attributes for <SMTK_AttributeResource> Element
    :widths: 10 40
    :header-rows: 1
 
@@ -17,7 +17,7 @@ Attributes that can be included in this XML Element.
    * - Version
      - Integer value that indicates the SMTK attribute format (Required)
 
-       Valid Values are 1 or 2
+       Current value is 3 (latest version)
 
 This element can contain the following optional children XML Elements:
 

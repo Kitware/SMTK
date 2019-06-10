@@ -1,7 +1,7 @@
 Key Concepts
 ============
 
-Like the attribute resource, the model system is composed of C++ classes,
+Like the attribute resource, the model resource is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
 :smtk:`Resource <smtk::model::Resource>`
