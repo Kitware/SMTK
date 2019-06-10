@@ -12,13 +12,13 @@ These subsystems are:
   basic provenance information about versions of data on disk.
   Each file is a *resource*, which may hold a resource of *resource components*;
   the *resource manager* assembles resources together for processing into a simulation input.
-* The **attribute** system, which provides a way to specify how information should be
+* The **attribute** resource, which provides a way to specify how information should be
   organized for scientific and engineering workflows, accept that information from users,
   and ensure that it is consistent with the specification.
-* The **model** system, which provides geometric modeling and allows you to tie
+* The **model** resource, which provides geometric modeling and allows you to tie
   information from the attribute resource to geometric entities (e.g., assign boundary conditions
   in the attribute resource to particular boundaries on a CAD model).
-* The **mesh** system, which can manipulate meshes of geometric models; it provides a way
+* The **mesh** resource, which can manipulate meshes of geometric models; it provides a way
   to propagate simulation attribute information from model entities onto meshes.
   It also provides a way to run external mesh creation tools on the model.
 * The **operation** system, which provides an interface to

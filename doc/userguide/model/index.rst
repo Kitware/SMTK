@@ -1,10 +1,10 @@
 .. _smtk-model-sys:
 
 -----------------------------
-SMTK's Geometric Model System
+SMTK's Geometric Model Resource
 -----------------------------
 
-SMTK's second major component is its geometric modeling system,
+SMTK's second major component is its geometric modeling resource,
 which allows you to interact with multiple modeling sessions
 that may each interact with different solid modeling kernels.
 

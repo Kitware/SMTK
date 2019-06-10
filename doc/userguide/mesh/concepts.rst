@@ -1,7 +1,7 @@
 Key Concepts
 ============
 
-Like the model system, the mesh system is composed of C++ classes,
+Like the model resource, the mesh resource is composed of C++ classes,
 also accessible in Python, and is based on concepts from MOAB_,
 which it uses internally. The paradigm we use facilitates an
 interaction with meshes and their components in aggregate,

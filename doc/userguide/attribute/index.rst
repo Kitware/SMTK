@@ -1,7 +1,7 @@
 .. _smtk-attribute-sys:
 
 -----------------------
-SMTK's Attribute System
+SMTK's Attribute Resource
 -----------------------
 
 General Description
@@ -12,7 +12,7 @@ General Description
    :width: 60%
 
 
-SMTK's first major component is its attribute modeling system,
+SMTK's first major component is its attribute modeling resource,
 which provides a way to model and represent non-geometric
 simulation data such as material properties, boundary conditions,
 and solver parameters.
