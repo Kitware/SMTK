@@ -551,6 +551,7 @@ bool ReferenceItem::has(PersistentObjectPtr entity) const
 
 ReferenceItem::const_iterator ReferenceItem::begin() const
 {
+  this->resolve();
   const_iterator it = const_iterator();
   ReferenceItem::Cache::const_iterator begin = m_cache->begin();
   *(it.m_cacheIterator) = begin;
@@ -641,8 +642,7 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
   // is held by the same resource as this ReferenceItem. There's no need for
   // resource management in this event.
   else if (!key.first.isNull() &&
-    this->attribute()->resource()->links().data().at(key.first).resolve(
-      this->attribute()->resource()))
+    this->attribute()->resource()->links().resolve(this->attribute()->resource()))
   {
     return this->attribute()->links().linkedObject(key);
   }
