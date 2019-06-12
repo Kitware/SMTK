@@ -5,7 +5,7 @@
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="remove model" BaseType="operation" AdvanceLevel="11">
-      <AssociationsDef Name="model(s)" NumberOfRequiredValues="1" Extensible="true">
+      <AssociationsDef Name="model(s)" NumberOfRequiredValues="1" Extensible="true" HoldReference="true">
         <Accepts><Resource Name="smtk::session::discrete::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
     </AttDef>

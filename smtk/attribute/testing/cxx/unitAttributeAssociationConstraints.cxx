@@ -74,6 +74,8 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
   smtkTest(result == Definition::AssociationResultType::Conflict, prefix
       << "- A1 did not return conflict");
   smtkTest(probAtt == attA, prefix << "- A1 did not return attA as conflicting");
+  smtkTest(attC->associations()->has(attTest), prefix
+      << "- C does not think it is associated with attTest")
 }
 
 int unitAttributeAssociationConstraints(int, char* [])
