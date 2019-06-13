@@ -569,10 +569,9 @@ ReferenceItem::const_iterator ReferenceItem::end() const
 std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
 {
   std::ptrdiff_t idx = 0;
-  for (auto it = m_cache->begin(); it != m_cache->end(); ++it, ++idx)
+  for (auto it = this->begin(); it != this->end(); ++it, ++idx)
   {
-    auto reference = boost::apply_visitor(access_reference(), *it);
-    if (reference && reference->id() == uid)
+    if ((*it) && (*it)->id() == uid)
     {
       return idx;
     }
@@ -583,14 +582,13 @@ std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
 std::ptrdiff_t ReferenceItem::find(PersistentObjectPtr comp) const
 {
   std::ptrdiff_t idx = 0;
-  for (auto it = m_cache->begin(); it != m_cache->end(); ++it, ++idx)
+  for (auto it = this->begin(); it != this->end(); ++it, ++idx)
   {
-    auto reference = boost::apply_visitor(access_reference(), *it);
-    if (reference == comp)
+    if (*it == comp)
     {
       return idx;
     }
-    if (reference && reference->id() == comp->id())
+    if ((*it) && (*it)->id() == comp->id())
     {
       std::cerr << "PROBLEM!!!  Found comp: " << comp->name() << " by ID\n";
     }
@@ -666,7 +664,13 @@ bool ReferenceItem::resolve() const
   {
     // If a value is not currently resolved...
     auto reference = boost::apply_visitor(access_reference(), *value);
-    if (reference == nullptr)
+    // TODO: There is a problem with resources being freed once they
+    // are no longer needed.  A side effect of this is that we can not
+    // trust the weak pointer result since we are not sure if the
+    // the returned object is not from an older version of the resource
+    // that was not properly deleted.  For the time being we will always
+    // look up the object if we are not explicitly holding the reference.
+    if ((reference == nullptr) || !def->holdReference())
     {
       // ...set it equal to the object pointer accessed using its key.
       auto newValue = this->objectValue(*key);
