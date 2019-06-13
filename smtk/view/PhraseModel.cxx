@@ -348,6 +348,12 @@ void PhraseModel::handleModified(Operation::Ptr op, Operation::Result res, Compo
         if (modified.find(phr->relatedComponent()) != modified.end())
         {
           this->trigger(phr, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, std::vector<int>());
+          // Now check whether the modification requires a reorder
+          auto pp = phr->parent();
+          smtk::view::DescriptivePhrases sorted(pp->subphrases().begin(), pp->subphrases().end());
+          std::sort(sorted.begin(), sorted.end(), DescriptivePhrase::compareByTypeThenTitle);
+          std::vector<int> pidx(idx.begin(), idx.begin() + idx.size() - 1);
+          this->updateChildren(pp, sorted, pidx);
         }
         return 0;
       });
@@ -548,18 +554,18 @@ void PhraseModel::updateChildren(
         }
         std::vector<int> moveRange(3);
         moveRange[0] = static_cast<int>(oi - orig.begin());
-        moveRange[1] = static_cast<int>(bi == orig.end() ? orig.size() : bi - orig.begin());
-        moveRange[2] = static_cast<int>(mv - next.begin());
+        moveRange[1] = static_cast<int>(bi == orig.end() ? orig.size() : bi - orig.begin()) - 1;
+        moveRange[2] = static_cast<int>((mv - next.begin()) + (moveRange[1] - moveRange[0]) + 1);
         this->trigger(src, PhraseModelEvent::ABOUT_TO_MOVE, idx, idx, moveRange);
         // Copy batch to destination (which must be *after* source)
-        orig.insert(
-          orig.begin() + moveRange[2], orig.begin() + moveRange[0], orig.begin() + moveRange[1]);
+        orig.insert(orig.begin() + moveRange[2], orig.begin() + moveRange[0],
+          orig.begin() + moveRange[1] + 1);
         // Erase batch in its original location (we cannot use iterators in orig
         // as they may have been invalidated by insertion).
-        orig.erase(orig.begin() + moveRange[0], orig.begin() + moveRange[1]);
+        orig.erase(orig.begin() + moveRange[0], orig.begin() + moveRange[1] + 1);
         this->trigger(src, PhraseModelEvent::MOVE_FINISHED, idx, idx, moveRange);
         // Update iterator to continue search for relocated entries.
-        oi = orig.begin() + moveRange[1];
+        oi = orig.begin() + moveRange[0];
       }
     }
   }
