@@ -1,11 +1,11 @@
-#SMTK 3.1 Release Notes
-SMTK 3.1 is a minor release with new features.  Note any non-backward compatible changes are in bold italics.
+# SMTK 3.1 Release Notes
+SMTK 3.1 is a minor release with new features.  Note any non-backward compatible changes are in bold italics. See also [SMTK 3.0 Release Notes](smtk-3.0.md).
 
-##Changes to SMTK's Resource System
+## Changes to SMTK's Resource System
 * isNameSet method was not properly returning the status of the Resource's name.  This has been fixed
 
-##Changes to Attribute Resource System
-###Adding Exclusions and Prerequisites
+## Changes to Attribute Resource System
+### Adding Exclusions and Prerequisites
 Attribute Definitions can now provide mechanisms for modeling exclusion and prerequisites constraints.  An exclusion constraint prevents an attribute from being associated to same persistent object if another attribute is already associated and its definition excludes the attribute's type.  For example, consider two attribute definitions A and B as well as two attributes a (of type A) and b (or type B).  If we have specified that A and B excludes each other then if we have associated a to an object, we are prevented from associating b to the same object.
 
 In the case of a prerequisite, an attribute is prevent from being associated if there is not an attribute of an appropriate type associated with the object.  So continuing the above example lets assume we add a new definition C that has A as it prerequisite and an attribute c (type C).  c can be associated to an object only if a is already associated to it.
@@ -53,7 +53,7 @@ All Item derived classes can now perform find; therefore, ValueItem::findChild m
 * ValueItem - searching will take GroupItems into consideration.
 * ValueItem::valueAsString will return a double as full precision.
 
-###Changes to Attribute Association Related API
+### Changes to Attribute Association Related API
 
 * attribute::Attribute
  * ***Removed functionality to maintain model::resource's attribute association back-store (no longer needed)***
@@ -69,7 +69,7 @@ All Item derived classes can now perform find; therefore, ValueItem::findChild m
  * Added hasAttributes(smtk::attribute::ConstResourcePtr attRes) const
  * Added disassociation methods that don't take in the reverse bool parameter.  The original API which does take in the reverse parameter is marked for depreciation (via comment) and calls the new API
 
-###General Changes
+### General Changes
 * Added the concept of Parent Analysis.  The parent relationship is used to determine the categories associated with an analysis.
 * Added the concept of Top Level Analyses - these are analyses that do not have a parent.
 * Added the ability to create an attribute definition to represent the analysis structure.
@@ -125,14 +125,14 @@ operations, eliminating the overhead and potential bottleneck of
 spawning a new thread for each operation.
 
 
-##Changes to I/O
-###Track attribute resource id, associations in xml I/O
+## Changes to I/O
+### Track attribute resource id, associations in xml I/O
 
 In order for an attribute resource to be reliably written/read to/from
 XML, its ID is now stored in its generated .sbi file. Additionally, an
 attribute's associations are stored in XML with enough information to recreate their underlying links.
 
-##Changes to SMTK's Observer Mechanism
+## Changes to SMTK's Observer Mechanism
 ### Add logic in the PV layer to force observers to fire on main thread
 
 Qt requires that all methods that affect the GUI be performed on the application's main thread. Many of the registered Observer functions for both operations and resources are designed to affect the GUI. Rather than connect GUI-modifying logic to a signal triggered by an observer, we mutate the behavior of the operation and resource Observer calling logic to ensure that all Observer functors are called on the main thread, regardless of which thread performs the observation.
@@ -177,7 +177,7 @@ The following is an example of a Analysis View:
 * The `<DefaultColor>` and `<InvalidColor>` configuration tags are no longer supported by qtBaseView.
   They have been turned into user preferences rather than XML/JSON view parameters.
 
-###Changes to Attribute View
+### Changes to Attribute View
 
 * Added a new XML attribute "HideAssociations".  If set to true the view will not display the association editing widget save screen Real Estate
 * If there is only one type of attribute being created/modified then the type column is no longer displayed
@@ -186,14 +186,14 @@ The following is an example of a Analysis View:
 * Attempting to rename an attribute to a name already is use now generates a warning dialog.
 * Fixed issue where changing the attribute being view would prevent an item being updated.
 
-###Changes to Group View
+### Changes to Group View
 
 * View no longer displays empty tabs.
 * Current tabs are now remembered when the group rebuilds its widget - previously this was only true for the top-level tabbed group views.
 * Fixed issue with displaying Discrete Items that has children.
 * Fixed issue where child widgets were not deleted.
 
-###Changes to UIManager
+### Changes to UIManager
 
 * Added the ability to enable/disable category filtering
 * Added support for top-level categories
@@ -226,7 +226,7 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
       </InstancedAttributes>
     </View>
 ```
-####Changes to Displaying Items
+#### Changes to Displaying Items
 * Extensible Group Items now display "Add Row" instead of "Add sub group" - this label can be changed using an ItemView with the XML attribute : ExtensibleLabel
 * Added a FixedWidth Option for String, Double and Int ItemViews as also shown in the above example - **Note: setting the fixed width to 0 means there is no fixed width.**
 * qtReferenceItem now allows developers to override the visibility icons
@@ -234,10 +234,10 @@ Added a new ReadOnly Option to Item Views.  In the following example the item, a
   doc/userguide/attribute/file-syntax.rst for details.
 * DoubleItems now display using the same mechanism as in ParaView.  When not being edited a lower precision version is displayed but when in edit mode the full precision is provided.
 
-####Line Edit Items change Attribute Items on EdittingFinished
+#### Line Edit Items change Attribute Items on EdittingFinished
 * Prior to 3.1, QlineEdit's used to set String, Double, and Int Items would try to update the item on key press events - this result in a large number of edits/modified signals being emitted.  Now items are updated when the edittingFinished signal is emitted.
 
-####Highlighting when Hovering
+#### Highlighting when Hovering
 * Views showing associations will now highlight geometry when the user hovers over it
 
 #### New ViewItem Styles
@@ -255,12 +255,12 @@ These changes were done to improve general stability as well as to simplifying w
 * Fixed bug that caused an application to become non-responsive when applying a new color palette
 * When setting a color to a model entity that does not have one, the initial color is now opaque instead of being completely transparent
 
-##Changes to Selection
+## Changes to Selection
 * Selections now have a `resetSelectionBits()` method
   that provides a way to remove a bit-vector from
   all of the objects in the current selection map.
 
-##Changes to Rendering
+## Changes to Rendering
 ### Fix glyphing wth wrong scale and resurrect create instance
 
 Now smtk will glyph prototypes with a per point scale array(default to [1,1,1])
@@ -294,7 +294,7 @@ Create instace operation is made to be SMTK3 compatible.
 ## Changes to Simulation Namespace
 * Added UserData classes to represent Ints, Doubles, and Strings
 
-##Changes to Project Manager
+## Changes to Project Manager
 ### Add second model as an option when specifying new projects
 
 The project manager was updated to accept a second geometry
@@ -305,8 +305,8 @@ attributes resource when the project is initialized.
 of course.)
 
 
-##Changes to Software Process
-###Add cmake logic to generate a plugin config file
+## Changes to Software Process
+### Add cmake logic to generate a plugin config file
 
 ParaView-derived applications currently ingest plugins in one of two
 ways: the plugins are either linked directly into the application, or
@@ -329,7 +329,7 @@ themselves. This change adds the CMake function
 `generate_smtk_plugin_library` for ParaView-derived applications
 that consume SMTK plugins to generate a plugin library.
 
-###Add mechanism to include plugin contract tests to an SMTK build
+### Add mechanism to include plugin contract tests to an SMTK build
 
 We introduce the configure variable `SMTK_PLUGIN_CONTRACT_FILE_URLS`, a
 list of URLs for contract files that each describe a plugin as an external
