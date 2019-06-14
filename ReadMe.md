@@ -60,6 +60,10 @@ See [CONTRIBUTING.md][] for instructions to contribute.
 
 [CONTRIBUTING.md]: CONTRIBUTING.md
 
+Latest Release Notes
+====================
+Can be found [here](doc/release/smtk-3.1.md).
+
 License
 =======
 
