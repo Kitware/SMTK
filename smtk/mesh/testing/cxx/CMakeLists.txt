@@ -30,6 +30,7 @@ set(unit_tests_which_require_data
   UnitTestCellField.cxx
   UnitTestExportMesh2DM.cxx
   UnitTestExportMesh3DM.cxx
+  UnitTestExtractCanonicalIndices.cxx
   UnitTestExtractMeshConstants.cxx
   UnitTestExtractTessellation.cxx
   UnitTestExtractTessellationOfModel.cxx

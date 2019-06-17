@@ -884,6 +884,30 @@ bool Interface::computeAdjacenciesOfDimension(
   return (rval == ::moab::MB_SUCCESS);
 }
 
+bool Interface::canonicalIndex(
+  const smtk::mesh::Handle& cellId, smtk::mesh::Handle& parent, int& canonicalIndex) const
+{
+  // Access the cell's parent cell
+  std::vector< ::moab::EntityHandle> adjacencies;
+  m_iface->get_adjacencies(
+    &cellId, 1, m_iface->dimension_from_handle(cellId) + 1, false, adjacencies);
+
+  // Exit early if the cell's parent was not found
+  if (adjacencies.empty())
+  {
+    return false;
+  }
+
+  // Assign the parent handle
+  parent = adjacencies[0];
+
+  // Access the cell's "side number" (the canonical ordering information side
+  // number)
+  int sense, offset;
+  ::moab::ErrorCode rval = m_iface->side_number(parent, cellId, canonicalIndex, sense, offset);
+  return (rval == ::moab::MB_SUCCESS);
+}
+
 bool Interface::mergeCoincidentContactPoints(
   const smtk::mesh::HandleRange& meshes, double tolerance)
 {

@@ -54,6 +54,7 @@ set(meshSrcs
 
   utility/ApplyToMesh.cxx
   utility/Create.cxx
+  utility/ExtractCanonicalIndices.cxx
   utility/ExtractMeshConstants.cxx
   utility/ExtractTessellation.cxx
   utility/Metrics.cxx
@@ -114,6 +115,7 @@ set(meshHeaders
 
   utility/ApplyToMesh.h
   utility/Create.h
+  utility/ExtractCanonicalIndices.h
   utility/ExtractMeshConstants.h
   utility/ExtractTessellation.h
   utility/Metrics.h

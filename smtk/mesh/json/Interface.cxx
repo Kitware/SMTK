@@ -475,6 +475,11 @@ bool Interface::computeAdjacenciesOfDimension(
   return false;
 }
 
+bool Interface::canonicalIndex(const smtk::mesh::Handle&, smtk::mesh::Handle&, int&) const
+{
+  return false;
+}
+
 bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange&, double)
 {
   return false;
