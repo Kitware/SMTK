@@ -558,8 +558,8 @@ void PhraseModel::updateChildren(
         moveRange[2] = static_cast<int>((mv - next.begin()) + (moveRange[1] - moveRange[0]) + 1);
         this->trigger(src, PhraseModelEvent::ABOUT_TO_MOVE, idx, idx, moveRange);
         // Copy batch to destination (which must be *after* source)
-        orig.insert(orig.begin() + moveRange[2], orig.begin() + moveRange[0],
-          orig.begin() + moveRange[1] + 1);
+        DescriptivePhrases moved(orig.begin() + moveRange[0], orig.begin() + moveRange[1] + 1);
+        orig.insert(orig.begin() + moveRange[2], moved.begin(), moved.end());
         // Erase batch in its original location (we cannot use iterators in orig
         // as they may have been invalidated by insertion).
         orig.erase(orig.begin() + moveRange[0], orig.begin() + moveRange[1] + 1);
