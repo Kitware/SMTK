@@ -95,7 +95,7 @@
     <AttDef Type="result(editDomain)" BaseType="result">
       <ItemDefinitions>
 
-        <Resource Name="resource" NumberOfRequiredValues="1" Extensible="true">
+        <Resource Name="resource" NumberOfRequiredValues="1" Extensible="true" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::session::oscillator::Resource"/>
             <Resource Name="smtk::attribute::Resource"/>
