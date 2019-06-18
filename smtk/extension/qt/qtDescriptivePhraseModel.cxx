@@ -173,8 +173,11 @@ QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelInd
     //std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
 
     view::DescriptivePhrasePtr entry = subphrases[row];
-    this->P->ptrs[entry->phraseId()] = entry;
-    return this->createIndex(row, column, entry->phraseId());
+    if (entry)
+    {
+      this->P->ptrs[entry->phraseId()] = entry;
+      return this->createIndex(row, column, entry->phraseId());
+    }
   }
 
   return QModelIndex();
