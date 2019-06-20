@@ -71,10 +71,6 @@ RemoveResource::Result RemoveResource::operateInternal()
     }
   }
 
-  // Clear this operation's associations to remove shared pointers to removed
-  // resources.
-  resourceItem->reset();
-
   return result;
 }
 

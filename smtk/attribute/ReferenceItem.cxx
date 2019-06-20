@@ -664,13 +664,16 @@ bool ReferenceItem::resolve() const
   {
     // If a value is not currently resolved...
     auto reference = boost::apply_visitor(access_reference(), *value);
-    // TODO: There is a problem with resources being freed once they
-    // are no longer needed.  A side effect of this is that we can not
-    // trust the weak pointer result since we are not sure if the
-    // the returned object is not from an older version of the resource
-    // that was not properly deleted.  For the time being we will always
-    // look up the object if we are not explicitly holding the reference.
-    if ((reference == nullptr) || !def->holdReference())
+    // TODO: There is a problem with resources being freed once they are no
+    //       longer needed.  A side effect of this is that we cannot trust the
+    //       weak pointer result since we are not sure if the returned object is
+    //       not from an older version of the resource that was not properly
+    //       deleted.  For the time being we will always look up the object if
+    //       we are not explicitly holding the reference and the attribute
+    //       resource itself is being managed.
+    // if (reference == nullptr)
+    if ((reference == nullptr) ||
+      (!def->holdReference() && this->attribute()->resource()->manager() != nullptr))
     {
       // ...set it equal to the object pointer accessed using its key.
       auto newValue = this->objectValue(*key);
