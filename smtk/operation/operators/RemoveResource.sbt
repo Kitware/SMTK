@@ -12,7 +12,7 @@
       <DetailedDecscription>
         Remove resources from its associated resource manager.
       </DetailedDecscription>
-      <AssociationsDef LockType="Write">
+      <AssociationsDef LockType="Write" HoldReference="true">
         <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
@@ -23,7 +23,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(remove resource)" BaseType="result">
       <ItemDefinitions>
-        <!-- TODO -->
       </ItemDefinitions>
     </AttDef>
   </Definitions>
