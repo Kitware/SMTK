@@ -229,8 +229,13 @@ typename T::ConstPtr Item::findAs(const std::string& iname, SearchStyle style) c
 template <typename T>
 bool Item::rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t toPosition)
 {
+  if (fromPosition == toPosition) // no-op
+  {
+    return true;
+  }
+
   std::size_t lastPosition = v.size() - 1;
-  if ((fromPosition > lastPosition) || (toPosition > lastPosition) || (fromPosition == toPosition))
+  if ((fromPosition > lastPosition) || (toPosition > lastPosition))
   {
     return false;
   }

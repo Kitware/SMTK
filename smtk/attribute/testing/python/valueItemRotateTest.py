@@ -145,12 +145,12 @@ class TestValueItemRotate(smtk.testing.TestCase):
                 diff_count += 1
         self.assertEqual(diff_count, 0)
 
-    def test_invalid_positions(self):
+    def test_argument_validity(self):
         int_length = 7
         int_item = self.init_int_item(int_length)
         self.assertFalse(int_item.rotate(9, 5))
         self.assertFalse(int_item.rotate(0, 7))
-        self.assertFalse(int_item.rotate(3, 3))
+        self.assertTrue(int_item.rotate(3, 3))
 
     def test_int_values(self):
         """Test item values & expressions"""

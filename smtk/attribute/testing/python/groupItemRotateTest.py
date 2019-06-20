@@ -94,12 +94,12 @@ class TestGroupItemRotate(smtk.testing.TestCase):
         actual_value = group_item.item(ith, 1).value()
         self.assertEqual(expected_value, actual_value)
 
-    def testInvalidPositions(self):
+    def test_argument_validity(self):
         length = 8
         group_item = self.init_group_item(length)
         self.assertFalse(group_item.rotate(9, 5))
         self.assertFalse(group_item.rotate(0, 11))
-        self.assertFalse(group_item.rotate(4, 4))
+        self.assertTrue(group_item.rotate(4, 4))
 
     # Tests 1-3 rotate forward (fromPosition < toPosition)
     def test1(self):

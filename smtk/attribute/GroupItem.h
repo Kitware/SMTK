@@ -113,8 +113,7 @@ public:
     * The subgroup at fromPosition is moved to toPosition, and the subgroups
     * in between are shifted one position.
     * The return value is true if the rotation was applied, which is when both
-    * position arguments are valid with respect to the underlying data/range,
-    * and the two position arguments aren't equal to each other.
+    * position arguments are valid with respect to the underlying data/range.
     */
   bool rotate(std::size_t fromPosition, std::size_t toPosition) override;
 
