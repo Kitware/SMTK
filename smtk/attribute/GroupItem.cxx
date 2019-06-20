@@ -124,6 +124,11 @@ void GroupItem::reset()
   Item::reset();
 }
 
+bool GroupItem::rotate(std::size_t fromPosition, std::size_t toPosition)
+{
+  return this->rotateVector(m_items, fromPosition, toPosition);
+}
+
 /**\brief Return an iterator to the first group in this item.
   *
   */

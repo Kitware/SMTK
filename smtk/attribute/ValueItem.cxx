@@ -284,6 +284,27 @@ void ValueItem::reset()
   Item::reset();
 }
 
+bool ValueItem::rotate(std::size_t fromPosition, std::size_t toPosition)
+{
+  const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
+  if (!def)
+  {
+    return false;
+  }
+
+  this->rotateVector(m_isSet, fromPosition, toPosition);
+  if (def->isDiscrete())
+  {
+    this->rotateVector(m_discreteIndices, fromPosition, toPosition);
+  }
+  if (def->allowsExpressions())
+  {
+    this->rotateVector(m_expressions, fromPosition, toPosition);
+  }
+
+  return true;
+}
+
 bool ValueItem::setDiscreteIndex(std::size_t element, int index)
 {
   if (!this->isDiscrete())

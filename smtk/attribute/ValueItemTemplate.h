@@ -70,6 +70,7 @@ public:
   bool appendExpression(smtk::attribute::AttributePtr exp) override;
   bool removeValue(std::size_t element);
   void reset() override;
+  bool rotate(std::size_t fromPosition, std::size_t toPosition) override;
   bool setToDefault(std::size_t element = 0) override;
   bool isUsingDefault(std::size_t element) const override;
   bool isUsingDefault() const override;
@@ -539,6 +540,23 @@ void ValueItemTemplate<DataT>::reset()
     }
   }
   ValueItem::reset();
+}
+
+template <typename DataT>
+bool ValueItemTemplate<DataT>::rotate(std::size_t fromPosition, std::size_t toPosition)
+{
+  const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());
+  if (!def)
+  {
+    return false;
+  }
+
+  if (!this->rotateVector(m_values, fromPosition, toPosition))
+  {
+    return false;
+  }
+
+  return ValueItem::rotate(fromPosition, toPosition);
 }
 
 template <typename DataT>

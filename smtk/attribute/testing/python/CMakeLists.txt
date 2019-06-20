@@ -32,7 +32,9 @@ set(smtkAttributePythonDataTests
 set(smtkAttributePythonNewDataTests
   attributeItemByPath
   attributeQuery
+  groupItemRotateTest
   referenceItemIOTest
+  valueItemRotateTest
 )
 
 if (SMTK_DATA_DIR)
