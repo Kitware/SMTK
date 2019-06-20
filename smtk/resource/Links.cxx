@@ -353,22 +353,22 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
   auto& resourceLink = resourceLinkData.value(key.first);
   auto& componentLink = resourceLink.at(key.second);
 
+  // Refresh the link using the manager, if one is available
+  //
+  // TODO: This should be removed once we have accounted for all of the
+  // shared pointers to resoruces
+  // if (resourceLink.resource() == nullptr && lhs1->manager() != nullptr)
+  if (lhs1->manager() != nullptr)
+  {
+    resourceLink.fetch(lhs1->manager());
+  }
+
   if (componentLink.right == linkToResource)
   {
-    if (resourceLink.resource() == nullptr && lhs1->manager() != nullptr)
-    {
-      resourceLink.fetch(lhs1->manager());
-    }
-
     return std::make_pair(resourceLink.resource(), componentLink.role);
   }
   else
   {
-    if (resourceLink.resource() == nullptr && lhs1->manager() != nullptr)
-    {
-      resourceLink.fetch(lhs1->manager());
-    }
-
     if (resourceLink.resource() == nullptr)
     {
       return std::make_pair(ComponentPtr(), componentLink.role);
