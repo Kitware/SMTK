@@ -145,6 +145,24 @@ public:
   /// Return the operationManager for the first Source registered
   smtk::operation::ManagerPtr operationManager() const;
 
+  /**\brief Set what aspects of top-level phrases should be user-editable.
+    *
+    * Note that this does not specify the means by which the
+    * editing will occur; it is merely a guide that the UI layers
+    * which own/use instances of this class may use to determine
+    * which editing actions to make available.
+    *
+    * Valid bits are from the PhraseContent::ContentType enum.
+    * By default, this is PhraseContent::EVERYTHING.
+    */
+  void setMutableAspects(int mutableAspects) { m_mutableAspects = mutableAspects; }
+
+  /**\brief Get what aspects of top-level phrases should be user-editable.
+    *
+    * Valid bits are from the PhraseContent::ContentType enum.
+    */
+  int mutableAspects() const { return m_mutableAspects; }
+
 protected:
   friend class VisibilityContent;
   PhraseModel();
@@ -218,6 +236,8 @@ protected:
   Observers m_observers;
 
   PhraseDecorator m_decorator;
+
+  int m_mutableAspects;
 
   static std::map<std::string, ModelConstructor> s_modelTypes;
 };

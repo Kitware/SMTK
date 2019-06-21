@@ -61,6 +61,7 @@ bool PhraseListContent::displayable(ContentType attr) const
     case PhraseContent::VISIBILITY:
     case PhraseContent::COLOR:
     case PhraseContent::ICON:
+    default:
       break;
   }
   return false;

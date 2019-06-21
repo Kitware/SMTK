@@ -47,6 +47,8 @@ PhraseModelPtr ResourcePhraseModel::create(const smtk::view::View::Component& vi
 ResourcePhraseModel::ResourcePhraseModel()
   : m_root(DescriptivePhrase::create())
 {
+  // Do not allow color of resources to be mutable by default.
+  m_mutableAspects &= ~static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
   auto generator = smtk::view::SubphraseGenerator::create();
   m_root->setDelegate(generator);
 }
@@ -127,8 +129,8 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 
       m_resources.insert(rsrc);
       DescriptivePhrases children(m_root->subphrases());
-      children.push_back(smtk::view::ResourcePhraseContent::createPhrase(
-        rsrc, static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE), m_root));
+      children.push_back(
+        smtk::view::ResourcePhraseContent::createPhrase(rsrc, m_mutableAspects, m_root));
       std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
       this->root()->findDelegate()->decoratePhrases(children);
       this->updateChildren(m_root, children, std::vector<int>());
