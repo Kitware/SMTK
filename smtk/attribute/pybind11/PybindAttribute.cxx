@@ -72,6 +72,9 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
 {
   attribute.doc() = "<description>";
 
+  py::module::import("smtk.common");
+  py::module::import("smtk.resource");
+
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::attribute::Analyses > smtk_attribute_Analyses = pybind11_init_smtk_attribute_Analyses(attribute);
@@ -93,7 +96,7 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
   PySharedPtrClass< smtk::attribute::RefItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_RefItemDefinition = pybind11_init_smtk_attribute_RefItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item > smtk_attribute_ReferenceItem = pybind11_init_smtk_attribute_ReferenceItem(attribute);
   PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ReferenceItemDefinition = pybind11_init_smtk_attribute_ReferenceItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource > smtk_attribute_Resource = pybind11_init_smtk_attribute_Resource(attribute);
+  PySharedPtrClass< smtk::attribute::Resource> smtk_attribute_Resource = pybind11_init_smtk_attribute_Resource(attribute);
   PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > smtk_attribute_ValueItem = pybind11_init_smtk_attribute_ValueItem(attribute);
   PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ValueItemDefinition = pybind11_init_smtk_attribute_ValueItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::VoidItem, smtk::attribute::Item > smtk_attribute_VoidItem = pybind11_init_smtk_attribute_VoidItem(attribute);

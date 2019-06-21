@@ -22,7 +22,7 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::mesh::Resource, smtk::resource::Resource > pybind11_init_smtk_mesh_Resource(py::module &m)
+PySharedPtrClass< smtk::mesh::Resource> pybind11_init_smtk_mesh_Resource(py::module &m)
 {
   PySharedPtrClass< smtk::mesh::Resource, smtk::resource::Resource > instance(m, "Resource");
   instance
@@ -99,6 +99,7 @@ PySharedPtrClass< smtk::mesh::Resource, smtk::resource::Resource > pybind11_init
     .def("setFloatProperty", (void (smtk::mesh::Resource::*)(::smtk::mesh::MeshSet const &, ::std::string const &, ::smtk::model::FloatList const &)) &smtk::mesh::Resource::setFloatProperty, py::arg("meshset"), py::arg("propName"), py::arg("propValue"))
     .def("setIntegerProperty", (void (smtk::mesh::Resource::*)(::smtk::mesh::MeshSet const &, ::std::string const &, ::smtk::model::Integer)) &smtk::mesh::Resource::setIntegerProperty, py::arg("meshset"), py::arg("propName"), py::arg("propValue"))
     .def("setIntegerProperty", (void (smtk::mesh::Resource::*)(::smtk::mesh::MeshSet const &, ::std::string const &, ::smtk::model::IntegerList const &)) &smtk::mesh::Resource::setIntegerProperty, py::arg("meshset"), py::arg("propName"), py::arg("propValue"))
+    // .def("setName", [](smtk::mesh::Resource::Ptr& resource, const std::string& name) { resource->setName(name); })
     .def("setNeumannOnMeshes", &smtk::mesh::Resource::setNeumannOnMeshes, py::arg("meshes"), py::arg("n"))
     .def("setStringProperty", (void (smtk::mesh::Resource::*)(::smtk::mesh::MeshSet const &, ::std::string const &, ::smtk::model::String const &)) &smtk::mesh::Resource::setStringProperty, py::arg("meshset"), py::arg("propName"), py::arg("propValue"))
     .def("setStringProperty", (void (smtk::mesh::Resource::*)(::smtk::mesh::MeshSet const &, ::std::string const &, ::smtk::model::StringList const &)) &smtk::mesh::Resource::setStringProperty, py::arg("meshset"), py::arg("propName"), py::arg("propValue"))

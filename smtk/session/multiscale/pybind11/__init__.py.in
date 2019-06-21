@@ -11,6 +11,4 @@
 #=============================================================================
 
 if @SMTK_MULTISCALE_SESSION_ENABLED@:
-  import smtk.model
-  import smtk.session.mesh
   from _smtkPybindMultiscaleSession import *
