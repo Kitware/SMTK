@@ -25,9 +25,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource > pybind11_init_smtk_attribute_Resource(py::module &m)
+PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resource(py::module &m)
 {
-  PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource > instance(m, "Resource");
+  PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource> instance(m, "Resource");
   instance
     .def("addAdvanceLevel", &smtk::attribute::Resource::addAdvanceLevel, py::arg("level"), py::arg("label"), py::arg("l_color") = 0)
     .def("addView", &smtk::attribute::Resource::addView, py::arg("arg0"))

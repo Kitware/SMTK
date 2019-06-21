@@ -29,6 +29,7 @@ class TestModelRegressions(unittest.TestCase):
         """Groups should not match cells when finding entities by type."""
 
         rsrc = smtk.model.Resource.create()
+        rsrc.setName('foo')
         mask = smtk.model.VOLUME
         g = rsrc.addGroup(mask, 'Foo')
         v1 = rsrc.addVolume()

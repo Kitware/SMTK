@@ -69,6 +69,9 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
 {
   mesh.doc() = "<description>";
 
+  py::module::import("smtk.resource");
+  py::module::import("smtk.model");
+
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::mesh::HandleInterval > smtk_mesh_HandleInterval = pybind11_init_HandleInterval(mesh);
@@ -82,7 +85,7 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   pybind11_init_smtk_mesh_FieldType(mesh);
   PySharedPtrClass< smtk::mesh::CellForEach > smtk_mesh_CellForEach = pybind11_init_smtk_mesh_CellForEach(mesh);
   PySharedPtrClass< smtk::mesh::CellSet > smtk_mesh_CellSet = pybind11_init_smtk_mesh_CellSet(mesh);
-  PySharedPtrClass< smtk::mesh::Resource, smtk::resource::Resource > smtk_mesh_Resource = pybind11_init_smtk_mesh_Resource(mesh);
+  PySharedPtrClass< smtk::mesh::Resource> smtk_mesh_Resource = pybind11_init_smtk_mesh_Resource(mesh);
   PySharedPtrClass< smtk::mesh::ConnectivityStorage > smtk_mesh_ConnectivityStorage = pybind11_init_smtk_mesh_ConnectivityStorage(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_CellField = pybind11_init_smtk_mesh_CellField(mesh);
   PySharedPtrClass< smtk::mesh::CellField > smtk_mesh_PointField = pybind11_init_smtk_mesh_PointField(mesh);

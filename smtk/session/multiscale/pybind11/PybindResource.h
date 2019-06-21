@@ -19,9 +19,9 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::session::multiscale::Resource, smtk::model::Resource > pybind11_init_smtk_session_multiscale_Resource(py::module &m)
+PySharedPtrClass< smtk::session::multiscale::Resource> pybind11_init_smtk_session_multiscale_Resource(py::module &m)
 {
-  PySharedPtrClass< smtk::session::multiscale::Resource, smtk::model::Resource > instance(m, "Resource");
+  PySharedPtrClass< smtk::session::multiscale::Resource, smtk::session::mesh::Resource > instance(m, "Resource");
   instance
     .def_static("create", (std::shared_ptr<smtk::session::multiscale::Resource> (*)()) &smtk::session::multiscale::Resource::create)
     .def_static("create", (std::shared_ptr<smtk::session::multiscale::Resource> (*)(::std::shared_ptr<smtk::session::multiscale::Resource> &)) &smtk::session::multiscale::Resource::create, py::arg("ref"))

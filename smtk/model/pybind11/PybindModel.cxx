@@ -74,6 +74,8 @@ PYBIND11_MODULE(_smtkPybindModel, model)
 {
   model.doc() = "<description>";
 
+  py::module::import("smtk.resource");
+
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::model::Arrangement > smtk_model_Arrangement = pybind11_init_smtk_model_Arrangement(model);

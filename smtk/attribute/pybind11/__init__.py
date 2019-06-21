@@ -10,8 +10,6 @@
 #
 #=============================================================================
 
-import smtk.common
-import smtk.resource
 from ._smtkPybindAttribute import *
 
 """
