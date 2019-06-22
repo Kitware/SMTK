@@ -104,6 +104,8 @@ int unitComponentPhraseModel(int argc, char* argv[])
 
   // I. Construct a ComponentPhraseModel that displays edges and faces. Load some geometry.
   auto phraseModel = smtk::view::ComponentPhraseModel::create();
+  phraseModel->setMutableAspects(static_cast<int>(PhraseContent::ContentType::TITLE) |
+    static_cast<int>(PhraseContent::ContentType::COLOR));
   std::multimap<std::string, std::string> filters;
   filters.insert(
     std::make_pair(std::string("smtk::session::polygon::Resource"), std::string("edge")));
@@ -133,6 +135,23 @@ int unitComponentPhraseModel(int argc, char* argv[])
   test(phraseModel->root()->root() == phraseModel->root(),
     "Model's root phrase was not root of tree.");
   phraseModel->root()->visitChildren(printer);
+
+  // I.a. Verify that top-level phrases have a mutability as specified.
+  int wantMutability = phraseModel->mutableAspects();
+  auto& topLevel = phraseModel->root()->subphrases();
+  for (auto entry : topLevel)
+  {
+    PhraseContent::ContentType attribs[] = { PhraseContent::ContentType::TITLE,
+      PhraseContent::ContentType::SUBTITLE, PhraseContent::ContentType::COLOR,
+      PhraseContent::ContentType::VISIBILITY, PhraseContent::ContentType::ICON };
+    int editable = 0;
+    for (auto attrib : attribs)
+    {
+      editable |= entry->content()->editable(attrib) ? static_cast<int>(attrib) : 0;
+    }
+    smtkTest(editable == wantMutability, "Mutability and editability mismatched");
+  }
+  std::cout << "Top-level mutability and editability were properly matched.\n";
 
   // II. Now change the filters to a reduced set and verify there are fewer phrases.
   filters.erase(filters.begin());

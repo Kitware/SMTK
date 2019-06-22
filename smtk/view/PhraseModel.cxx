@@ -140,6 +140,7 @@ PhraseModelPtr PhraseModel::create(const smtk::view::ViewPtr& viewSpec)
 
 PhraseModel::PhraseModel()
   : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
+  , m_mutableAspects(PhraseContent::EVERYTHING)
 {
   m_decorator = [](smtk::view::DescriptivePhrasePtr) {};
 }
