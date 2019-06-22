@@ -48,7 +48,8 @@ public:
     SUBTITLE = 0x02,   //!< The phrase's subtitle.
     COLOR = 0x04,      //!< A control for displaying/editing the color of the phrase's subject.
     VISIBILITY = 0x08, //!< A control for displaying/editing the visibility of the phrase's subject.
-    ICON = 0x10        //!< The icon of the phrase's subject.
+    ICON = 0x10,       //!< The icon of the phrase's subject.
+    EVERYTHING = 0xff  //!< Every aspect of the phrase content.
   };
 
   /**\brief Append the given decorator at the tail of this object's chain of decorators.

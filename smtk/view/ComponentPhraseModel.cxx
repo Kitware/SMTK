@@ -215,7 +215,8 @@ void ComponentPhraseModel::populateRoot()
   DescriptivePhrases children;
   for (auto comp : comps)
   {
-    children.push_back(smtk::view::ComponentPhraseContent::createPhrase(comp, 0, m_root));
+    children.push_back(
+      smtk::view::ComponentPhraseContent::createPhrase(comp, m_mutableAspects, m_root));
   }
   std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
   this->root()->findDelegate()->decoratePhrases(children);
