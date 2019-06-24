@@ -602,8 +602,7 @@ std::ptrdiff_t ReferenceItem::find(const PersistentObjectPtr& comp) const
   std::ptrdiff_t idx = 0;
   for (auto it = this->begin(); it != this->end(); ++it, ++idx)
   {
-    auto reference = boost::apply_visitor(access_reference(), *it);
-    if (reference == comp)
+    if ((*it) == comp)
     {
       return idx;
     }
