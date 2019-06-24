@@ -1,6 +1,9 @@
 add_executable(attributeReaderWriterTest attributeReaderWriterTest.cxx)
 target_link_libraries(attributeReaderWriterTest smtkCore)
 
+add_executable(attributeImportExportTest attributeImportExportTest.cxx)
+target_link_libraries(attributeImportExportTest smtkCore)
+
 set(attributeTests
   basicAttributeDefinitionTest
   basicAttributeDerivationTest

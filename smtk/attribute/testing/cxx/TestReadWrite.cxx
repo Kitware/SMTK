@@ -19,6 +19,8 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/attribute/operators/Export.h"
+#include "smtk/attribute/operators/Import.h"
 #include "smtk/attribute/operators/Read.h"
 #include "smtk/attribute/operators/Write.h"
 
@@ -77,16 +79,20 @@ int main(int argc, char** argv)
 
     smtk::attribute::ResourcePtr resource;
     {
-      resource = smtk::attribute::Resource::create();
-      smtk::io::Logger logger;
-      smtk::io::AttributeReader reader;
+      auto importer = smtk::attribute::Import::create();
+      importer->parameters()->findFile("filename")->setValue(inputFileName);
 
-      if (reader.read(resource, inputFileName, logger))
+      auto result = importer->operate();
+      if (result->findInt("outcome")->value() !=
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
-        std::cerr << "Encountered Errors while reading input data\n";
-        std::cerr << logger.convertToString();
+        std::cerr << "Import operator failed\n";
+        std::cerr << importer->log().convertToString(true) << "\n";
         return -2;
       }
+
+      resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
+        result->findResource("resource")->value());
     }
 
     // 2. Write the resource out to a new .sbi file (to ensure it is of the
@@ -100,12 +106,16 @@ int main(int argc, char** argv)
         << ".sbi";
       sbi1FileName = s.str();
 
-      smtk::io::Logger logger;
-      smtk::io::AttributeWriter writer;
-      if (writer.write(resource, sbi1FileName, logger))
+      smtk::attribute::Export::Ptr exporter = smtk::attribute::Export::create();
+      exporter->parameters()->associate(resource);
+      exporter->parameters()->findFile("filename")->setValue(sbi1FileName);
+
+      auto result = exporter->operate();
+      if (result->findInt("outcome")->value() !=
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
       {
-        std::cerr << "Encountered Errors while writing " << sbi1FileName << "\n";
-        std::cerr << logger.convertToString();
+        std::cerr << "Export operator failed\n";
+        std::cerr << exporter->log().convertToString(true) << "\n";
         return -2;
       }
     }
