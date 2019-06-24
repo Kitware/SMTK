@@ -36,6 +36,7 @@ vtkSMTKSource::vtkSMTKSource()
 
 vtkSMTKSource::~vtkSMTKSource()
 {
+  this->SetVTKResource(nullptr);
 }
 
 void vtkSMTKSource::PrintSelf(ostream& os, vtkIndent indent)
