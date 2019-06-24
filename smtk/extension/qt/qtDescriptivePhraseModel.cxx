@@ -592,16 +592,17 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   }
   else if (item->relatedComponent() == nullptr)
   {
+    auto relatedResource = item->relatedResource();
     // Lets check the resource
-    if (dynamic_pointer_cast<smtk::model::Resource>(item->relatedResource()) != nullptr)
+    if (dynamic_pointer_cast<smtk::model::Resource>(relatedResource) != nullptr)
     {
       resourceName << "modelResource";
     }
-    else if (dynamic_pointer_cast<smtk::attribute::Resource>(item->relatedResource()) != nullptr)
+    else if (dynamic_pointer_cast<smtk::attribute::Resource>(relatedResource) != nullptr)
     {
       resourceName << "attributeResource";
     }
-    else if (dynamic_pointer_cast<smtk::mesh::Resource>(item->relatedResource()))
+    else if (dynamic_pointer_cast<smtk::mesh::Resource>(relatedResource))
     {
       resourceName << "meshResource";
     }
