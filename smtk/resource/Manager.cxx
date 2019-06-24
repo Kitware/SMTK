@@ -416,7 +416,7 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
 
   // Resolve resource surrogate links between the new resource and currently
   // managed resources.
-  for (auto rsrc : m_resources)
+  for (auto& rsrc : m_resources)
   {
     resource->links().resolve(rsrc);
     rsrc->links().resolve(resource);

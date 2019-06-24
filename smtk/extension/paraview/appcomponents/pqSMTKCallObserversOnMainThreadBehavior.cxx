@@ -69,7 +69,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // Override the resource Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
   wrapper->smtkResourceManager()->observers().overrideWith(
-    [this](smtk::resource::Resource::Ptr rsrc, smtk::resource::EventType event) -> int {
+    [this](const smtk::resource::Resource::Ptr& rsrc, smtk::resource::EventType event) -> int {
       m_activeResources[rsrc->id()] = rsrc;
       emit resourceEvent(
         QString::fromStdString(rsrc->id().toString()), static_cast<int>(event), QPrivateSignal());

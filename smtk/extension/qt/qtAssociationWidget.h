@@ -100,7 +100,8 @@ protected:
 
   // This widget needs to handle changes made to resources as a result of resources being removed.
   // This method is used by the observation mechanism to address this via the resource manager
-  void handleResourceEvent(smtk::resource::Resource::Ptr resource, smtk::resource::EventType event);
+  void handleResourceEvent(
+    const smtk::resource::Resource::Ptr& resource, smtk::resource::EventType event);
 
 private:
   qtAssociationWidgetInternals* Internals;

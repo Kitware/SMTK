@@ -148,7 +148,7 @@ public:
     * If the lambda returns false, iteration will terminate immediately.
     * Otherwise, iteration continues.
     */
-  void visit(std::function<bool(PersistentObjectPtr)> visitor) const;
+  void visit(std::function<bool(const PersistentObjectPtr&)> visitor) const;
 
   /**\brief Populate a container of the given type with members of this item.
     *
@@ -159,7 +159,7 @@ public:
     *     ReferenceItemPtr modelEntityItem;
     *     std::set<smtk::model::EntityPtr> modelEntities;
     *     modelEntityItem->as(modelEntities,
-    *       [](PersistentObjectPtr obj)
+    *       [](const PersistentObjectPtr& obj)
     *       { return std::dynamic_pointer_cast<smtk::model::Entity>(obj); });
     *
     * will populate the \a modelEntities set with only those persistent
@@ -168,8 +168,8 @@ public:
     */
   template <typename Container>
   void as(Container& result,
-    std::function<typename Container::value_type(PersistentObjectPtr)> converter = [](
-      PersistentObjectPtr obj) { return obj; }) const
+    std::function<typename Container::value_type(const PersistentObjectPtr&)> converter = [](
+      const PersistentObjectPtr& obj) { return obj; }) const
   {
     for (auto it = this->begin(); it != this->end(); ++it)
     {
@@ -181,8 +181,8 @@ public:
     }
   }
   template <typename Container>
-  Container as(std::function<typename Container::value_type(PersistentObjectPtr)> converter = [](
-                 PersistentObjectPtr obj) { return obj; }) const
+  Container as(std::function<typename Container::value_type(const PersistentObjectPtr&)> converter =
+                 [](const PersistentObjectPtr& obj) { return obj; }) const
   {
     Container result;
     this->as(result, converter);
@@ -205,10 +205,10 @@ public:
     * This always sets the 0-th item and is a convenience method
     * for cases where only 1 value is needed.
     */
-  bool setObjectValue(PersistentObjectPtr val);
+  bool setObjectValue(const PersistentObjectPtr& val);
   /// Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
-  //bool setObjectValue(std::size_t i, PersistentObjectPtr val);
-  bool setObjectValue(std::size_t i, PersistentObjectPtr val);
+  //bool setObjectValue(std::size_t i, const PersistentObjectPtr& val);
+  bool setObjectValue(std::size_t i, const PersistentObjectPtr& val);
 
   template <typename I>
   bool setObjectValues(
@@ -230,7 +230,7 @@ public:
     * if there is an unset value anywhere in the allocated array, that will
     * be preferred to reallocation.
     */
-  bool appendObjectValue(PersistentObjectPtr val);
+  bool appendObjectValue(const PersistentObjectPtr& val);
   /**\brief Remove the value at the \a i-th location.
     *
     * If the number of values may not be changed, then the \a i-th
@@ -274,7 +274,7 @@ public:
   /// Return true if the component is contained in this item; false otherwise.
   bool has(const smtk::common::UUID& compId) const;
   /// Return true if \a obj is contained in this item; false otherwise.
-  bool has(PersistentObjectPtr obj) const;
+  bool has(const PersistentObjectPtr& obj) const;
 
   /**\brief Return an iterator to the first model-entity value in this item.
     *
@@ -292,7 +292,7 @@ public:
   /**\brief Return the index of the given \a component.
     *
     */
-  std::ptrdiff_t find(PersistentObjectPtr component) const;
+  std::ptrdiff_t find(const PersistentObjectPtr& component) const;
 
   // Returns Read/Write/DoNotLock for read locking, write locking, or bypassing
   // locks.
@@ -318,7 +318,7 @@ protected:
   bool resolve() const;
 
   /// Construct a link between the attribute that owns this item and \a val.
-  Key linkTo(PersistentObjectPtr val);
+  Key linkTo(const PersistentObjectPtr& val);
 
   std::vector<Key> m_keys;
 

@@ -97,17 +97,21 @@ QSize qtTextEdit::sizeHint() const
   return QSize(200, 70);
 }
 
-qtUIManager::qtUIManager(smtk::attribute::ResourcePtr resource)
+qtUIManager::qtUIManager(const smtk::attribute::ResourcePtr& resource)
   : m_parentWidget(nullptr)
   , m_attResource(resource)
   , m_useInternalFileBrowser(false)
+  , m_resourceManager(nullptr)
 {
-  m_resourceManager = m_attResource ? m_attResource->manager() : nullptr;
+  if (auto attResource = m_attResource.lock())
+  {
+    m_resourceManager = attResource->manager();
+  }
   this->commonConstructor();
 }
 
 qtUIManager::qtUIManager(
-  smtk::operation::OperationPtr op, smtk::resource::ManagerPtr resourceManager)
+  const smtk::operation::OperationPtr& op, const smtk::resource::ManagerPtr& resourceManager)
   : m_parentWidget(nullptr)
   , m_resourceManager(resourceManager)
   , m_operation(op)

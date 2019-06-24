@@ -161,7 +161,7 @@ pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr m
   return result;
 }
 
-pqSMTKResource* pqSMTKBehavior::getPVResource(smtk::resource::ResourcePtr resource)
+pqSMTKResource* pqSMTKBehavior::getPVResource(const smtk::resource::ResourcePtr& resource)
 {
   pqSMTKResource* result = nullptr;
   this->visitResourceManagersOnServers([&result, &resource](pqSMTKWrapper* mos, pqServer*) {

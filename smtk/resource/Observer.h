@@ -36,7 +36,7 @@ enum class EventType
   REMOVED   //!< An existing resource's contents are being removed from memory.
 };
 
-typedef std::function<void(std::shared_ptr<Resource>, EventType)> Observer;
+typedef std::function<void(const std::shared_ptr<Resource>&, EventType)> Observer;
 
 typedef smtk::common::Observers<Observer> Observers;
 }

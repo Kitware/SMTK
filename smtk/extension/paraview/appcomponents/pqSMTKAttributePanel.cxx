@@ -187,23 +187,23 @@ bool pqSMTKAttributePanel::displayResource(smtk::attribute::ResourcePtr rsrc)
   auto rsrcMgr = rsrc->manager();
   if (rsrcMgr)
   {
-    m_observer = rsrcMgr->observers().insert(
-      [this, rsrcMgr](smtk::resource::Resource::Ptr attrRsrc, smtk::resource::EventType evnt) {
-        if (evnt == smtk::resource::EventType::REMOVED && attrRsrc == m_rsrc)
+    m_observer = rsrcMgr->observers().insert([this, rsrcMgr](
+      const smtk::resource::Resource::Ptr& attrRsrc, smtk::resource::EventType evnt) {
+      if (evnt == smtk::resource::EventType::REMOVED && attrRsrc == m_rsrc)
+      {
+        // The application is removing the attribute resource we are viewing.
+        // Clear out the panel and unobserve the manager.
+        delete m_attrUIMgr;
+        m_attrUIMgr = nullptr;
+        m_rsrc = nullptr;
+        m_seln = nullptr;
+        while (QWidget* w = this->widget()->findChild<QWidget*>())
         {
-          // The application is removing the attribute resource we are viewing.
-          // Clear out the panel and unobserve the manager.
-          delete m_attrUIMgr;
-          m_attrUIMgr = nullptr;
-          m_rsrc = nullptr;
-          m_seln = nullptr;
-          while (QWidget* w = this->widget()->findChild<QWidget*>())
-          {
-            delete w;
-          }
-          rsrcMgr->observers().erase(m_observer);
+          delete w;
         }
-      });
+        rsrcMgr->observers().erase(m_observer);
+      }
+    });
   }
   return didDisplay;
 }
