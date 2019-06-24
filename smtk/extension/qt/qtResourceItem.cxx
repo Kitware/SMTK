@@ -80,10 +80,6 @@ std::string qtResourceItem::synopsis(bool& ok) const
     return "uninitialized item";
   }
 
-  if (m_p->m_members.size())
-  {
-    auto foo = m_p->m_members.begin()->first;
-  }
   std::size_t numRequired = item->numberOfRequiredValues();
   std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
