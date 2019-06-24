@@ -70,7 +70,13 @@ Operation::~Operation()
     // by this operation.
     for (auto& result : m_results)
     {
-      m_specification->removeAttribute(result);
+      auto res = result.lock();
+      if (!res)
+      {
+        continue;
+      }
+
+      m_specification->removeAttribute(res);
     }
   }
 }
@@ -123,7 +129,7 @@ Operation::Result Operation::operate()
   mutex.lock();
   for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
-    auto& resource = resourceAndLockType.first;
+    auto resource = resourceAndLockType.first.lock();
     auto& lockType = resourceAndLockType.second;
 
 // Leave this for debugging, but do not include it in every debug build
@@ -233,7 +239,7 @@ Operation::Result Operation::operate()
   // Unlock the resources.
   for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
-    auto& resource = resourceAndLockType.first;
+    auto resource = resourceAndLockType.first.lock();
     auto& lockType = resourceAndLockType.second;
 
     resource->lock({}).unlock(lockType);
@@ -321,12 +327,12 @@ void Operation::markModifiedResources(Operation::Result& result)
   // Lock the resources.
   for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
-    auto& resource = resourceAndLockType.first;
+    auto resource = resourceAndLockType.first.lock();
     auto& lockType = resourceAndLockType.second;
 
     // If the operation was attempted (failed or succeeded), mark all resources
     // with write access as modified.
-    if (lockType == smtk::resource::LockType::Write)
+    if (resource != nullptr && lockType == smtk::resource::LockType::Write)
     {
       resource->setClean(false);
     }
@@ -334,9 +340,13 @@ void Operation::markModifiedResources(Operation::Result& result)
 
   // All resources referenced in the result are assumed to be modified.
   auto resourcesFromResult = extractResources(result);
-  for (auto& resource : resourcesFromResult)
+  for (auto& rsrc : resourcesFromResult)
   {
-    resource->setClean(false);
+    auto resource = rsrc.lock();
+    if (resource != nullptr)
+    {
+      resource->setClean(false);
+    }
   }
 }
 

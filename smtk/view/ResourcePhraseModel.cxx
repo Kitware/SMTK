@@ -93,8 +93,7 @@ bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, st
   return true;
 }
 
-void ResourcePhraseModel::handleResourceEvent(
-  const Resource::Ptr& rsrc, smtk::resource::EventType event)
+void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event)
 {
   if (event == smtk::resource::EventType::MODIFIED)
   {
@@ -106,7 +105,7 @@ void ResourcePhraseModel::handleResourceEvent(
   }
 }
 
-void ResourcePhraseModel::processResource(const Resource::Ptr& rsrc, bool adding)
+void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 {
   if (adding)
   {

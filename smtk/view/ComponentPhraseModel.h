@@ -100,10 +100,10 @@ protected:
   virtual void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   virtual void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   */
-  void handleResourceEvent(const Resource::Ptr& rsrc, smtk::resource::EventType event) override;
+  void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event) override;
   void handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data) override;
 
-  virtual void processResource(const Resource::Ptr& rsrc, bool adding);
+  virtual void processResource(Resource::Ptr rsrc, bool adding);
   virtual void populateRoot();
 
   smtk::view::DescriptivePhrasePtr m_root;

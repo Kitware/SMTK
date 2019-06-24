@@ -171,7 +171,7 @@ protected:
   virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
 
   /// A method called when a resource manager adds or removes a resource.
-  virtual void handleResourceEvent(const Resource::Ptr& rsrc, smtk::resource::EventType event);
+  virtual void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event);
 
   /**\brief A method called when operators have modified one or more resources.
     *

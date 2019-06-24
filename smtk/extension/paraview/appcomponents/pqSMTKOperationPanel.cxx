@@ -295,22 +295,22 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
   {
     // If the operation's specification is destroyed, then
     // get rid of the UI.
-    m_observer = rsrcMgr->observers().insert([this, rsrcMgr](
-      const smtk::resource::Resource::Ptr& attrRsrc, smtk::resource::EventType evnt) {
-      if (evnt == smtk::resource::EventType::REMOVED && attrRsrc == m_rsrc)
-      {
-        // The application is removing the attribute resource we are viewing.
-        // Clear out the panel and unobserve the manager.
-        rsrcMgr->observers().erase(m_observer);
-        delete m_attrUIMgr;
-        while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
+    m_observer = rsrcMgr->observers().insert(
+      [this, rsrcMgr](smtk::resource::Resource::Ptr attrRsrc, smtk::resource::EventType evnt) {
+        if (evnt == smtk::resource::EventType::REMOVED && attrRsrc == m_rsrc)
         {
-          delete w;
+          // The application is removing the attribute resource we are viewing.
+          // Clear out the panel and unobserve the manager.
+          rsrcMgr->observers().erase(m_observer);
+          delete m_attrUIMgr;
+          while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
+          {
+            delete w;
+          }
+          m_attrUIMgr = nullptr;
+          m_rsrc = nullptr;
         }
-        m_attrUIMgr = nullptr;
-        m_rsrc = nullptr;
-      }
-    });
+      });
   }
   return didDisplay;
 }

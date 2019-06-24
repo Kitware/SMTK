@@ -100,7 +100,7 @@ std::string qtResourceItem::synopsis(bool& ok) const
   {
     auto resource = (m_p->m_members.empty()
         ? smtk::resource::ResourcePtr()
-        : std::static_pointer_cast<smtk::resource::Resource>(m_p->m_members.begin()->first));
+        : std::static_pointer_cast<smtk::resource::Resource>(m_p->m_members.begin()->first.lock()));
 
     if (resource != nullptr)
     {

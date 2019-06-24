@@ -395,19 +395,22 @@ void qtUIManager::internalInitialize()
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
-  const std::map<int, std::string>& levels = m_attResource->advanceLevels();
-  if (levels.size() > 0)
+  if (auto attResource = m_attResource.lock())
   {
-    // use the minimum enum value as initial advance level
-    std::map<int, std::string>::const_iterator ait = levels.begin();
-    int minLevel = ait->first;
-    ait++;
-    for (; ait != levels.end(); ++ait)
+    const std::map<int, std::string>& levels = attResource->advanceLevels();
+    if (levels.size() > 0)
     {
-      minLevel = std::min(minLevel, ait->first);
+      // use the minimum enum value as initial advance level
+      std::map<int, std::string>::const_iterator ait = levels.begin();
+      int minLevel = ait->first;
+      ait++;
+      for (; ait != levels.end(); ++ait)
+      {
+        minLevel = std::min(minLevel, ait->first);
+      }
+      // m_currentAdvLevel can not be lower than the minLevel
+      m_currentAdvLevel = std::max(minLevel, m_currentAdvLevel);
     }
-    // m_currentAdvLevel can not be lower than the minLevel
-    m_currentAdvLevel = std::max(minLevel, m_currentAdvLevel);
   }
 }
 
@@ -427,30 +430,33 @@ void qtUIManager::setAdvanceLevel(int b)
 
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
-  combo->blockSignals(true);
-  const std::map<int, std::string>& levels = m_attResource->advanceLevels();
-  if (levels.size() == 0)
+  if (auto attResource = m_attResource.lock())
   {
-    // for backward compatibility, we automatically add
-    // two levels which is implicitly supported in previous version
-    combo->addItem("General", 0);
-    combo->addItem("Advanced", 1);
-
-    combo->setCurrentIndex(m_currentAdvLevel);
-  }
-  else
-  {
-    std::map<int, std::string>::const_iterator ait;
-    for (ait = levels.begin(); ait != levels.end(); ++ait)
+    combo->blockSignals(true);
+    const std::map<int, std::string>& levels = attResource->advanceLevels();
+    if (levels.size() == 0)
     {
-      combo->addItem(ait->second.c_str(), ait->first);
-      if (m_currentAdvLevel == ait->first)
+      // for backward compatibility, we automatically add
+      // two levels which is implicitly supported in previous version
+      combo->addItem("General", 0);
+      combo->addItem("Advanced", 1);
+
+      combo->setCurrentIndex(m_currentAdvLevel);
+    }
+    else
+    {
+      std::map<int, std::string>::const_iterator ait;
+      for (ait = levels.begin(); ait != levels.end(); ++ait)
       {
-        combo->setCurrentIndex(combo->count() - 1);
+        combo->addItem(ait->second.c_str(), ait->first);
+        if (m_currentAdvLevel == ait->first)
+        {
+          combo->setCurrentIndex(combo->count() - 1);
+        }
       }
     }
+    combo->blockSignals(false);
   }
-  combo->blockSignals(false);
 }
 
 void qtUIManager::updateModelViews()
@@ -1030,25 +1036,28 @@ int qtUIManager::getWidthOfItemsMaxLabel(
 void qtUIManager::findDefinitionsLongLabels()
 {
   this->Def2LongLabel.clear();
-  // Generate list of all concrete definitions in the manager
-  std::vector<smtk::attribute::DefinitionPtr> defs;
-  std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-  m_attResource->findBaseDefinitions(baseDefinitions);
-  std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
-
-  for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
+  if (auto attResource = m_attResource.lock())
   {
-    std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-    m_attResource->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
-    defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
-  }
+    // Generate list of all concrete definitions in the manager
+    std::vector<smtk::attribute::DefinitionPtr> defs;
+    std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
+    attResource->findBaseDefinitions(baseDefinitions);
+    std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
-  std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
-  for (defIter = defs.begin(); defIter != defs.end(); defIter++)
-  {
-    std::string text;
-    this->findDefinitionLongLabel(*defIter, text);
-    this->Def2LongLabel[*defIter] = text;
+    for (baseIter = baseDefinitions.begin(); baseIter != baseDefinitions.end(); baseIter++)
+    {
+      std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
+      attResource->findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+      defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
+    }
+
+    std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
+    for (defIter = defs.begin(); defIter != defs.end(); defIter++)
+    {
+      std::string text;
+      this->findDefinitionLongLabel(*defIter, text);
+      this->Def2LongLabel[*defIter] = text;
+    }
   }
 }
 
