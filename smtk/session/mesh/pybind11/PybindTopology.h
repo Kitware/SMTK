@@ -13,6 +13,7 @@
 
 #include <pybind11/pybind11.h>
 
+#include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/session/mesh/Topology.h"
 
 namespace py = pybind11;
@@ -22,6 +23,7 @@ py::class_< smtk::session::mesh::Topology > pybind11_init_smtk_session_mesh_Topo
   py::class_< smtk::session::mesh::Topology > instance(m, "Topology");
   instance
     .def(py::init<::smtk::session::mesh::Topology const &>())
+    .def(py::init<::smtk::common::UUID const, ::smtk::mesh::MeshSet const &, bool>())
     .def("deepcopy", (smtk::session::mesh::Topology & (smtk::session::mesh::Topology::*)(::smtk::session::mesh::Topology const &)) &smtk::session::mesh::Topology::operator=)
     .def("resource", [](const smtk::session::mesh::Topology& topology){ return topology.m_resource; })
     ;
