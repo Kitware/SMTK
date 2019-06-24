@@ -50,10 +50,21 @@ public:
   }
 
   std::shared_ptr<smtk::resource::PersistentObject> operator()(
-    std::weak_ptr<smtk::resource::PersistentObject> weakPersistentObject) const
+    const std::weak_ptr<smtk::resource::PersistentObject>& weakPersistentObject) const
   {
     return weakPersistentObject.lock();
   }
+};
+
+class remove_reference : public boost::static_visitor<>
+{
+public:
+  void operator()(std::shared_ptr<smtk::resource::PersistentObject>& persistentObject) const
+  {
+    persistentObject.reset();
+  }
+
+  void operator()(std::weak_ptr<smtk::resource::PersistentObject>&) const {}
 };
 }
 
@@ -207,6 +218,13 @@ ReferenceItem& ReferenceItem::operator=(const ReferenceItem& referenceItem)
 
 ReferenceItem::~ReferenceItem()
 {
+  // The unique_ptr for m_cache should handle all of this cleanup. Let's be
+  // sure, though.
+  for (auto it = m_cache->begin(); it != m_cache->end(); ++it)
+  {
+    boost::apply_visitor(remove_reference(), *it);
+  }
+  m_cache->clear();
 }
 
 bool ReferenceItem::isValid() const
