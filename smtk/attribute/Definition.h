@@ -104,7 +104,7 @@ public:
 
   void setLabel(const std::string& newLabel) { m_label = newLabel; }
 
-  smtk::attribute::DefinitionPtr baseDefinition() const { return m_baseDefinition; }
+  const smtk::attribute::DefinitionPtr& baseDefinition() const { return m_baseDefinition; }
 
   bool isA(smtk::attribute::ConstDefinitionPtr def) const;
 
