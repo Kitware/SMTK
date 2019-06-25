@@ -7,16 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKModelImporter.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceCreator.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -26,11 +24,13 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 
-#include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/ReadResource.h"
 
 #include "smtk/resource/Manager.h"
 
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/json/jsonResource.h"
 
 #include "vtkCompositeDataIterator.h"
 #include "vtkInformation.h"
@@ -39,16 +39,16 @@
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 
-#include <cassert>
+#include "nlohmann/json.hpp"
 
-using namespace smtk;
+using json = nlohmann::json;
 
-vtkStandardNewMacro(vtkSMTKModelImporter);
+vtkStandardNewMacro(vtkSMTKResourceCreator);
 
-vtkSMTKModelImporter::vtkSMTKModelImporter()
+vtkSMTKResourceCreator::vtkSMTKResourceCreator()
 {
-  this->FileName = nullptr;
-  this->ResourceName = nullptr;
+  this->TypeName = nullptr;
+  this->Parameters = nullptr;
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
@@ -56,21 +56,27 @@ vtkSMTKModelImporter::vtkSMTKModelImporter()
   this->Modified();
 }
 
-vtkSMTKModelImporter::~vtkSMTKModelImporter()
+vtkSMTKResourceCreator::~vtkSMTKResourceCreator()
 {
-  this->SetFileName(nullptr);
-  this->SetResourceName(nullptr);
+  this->SetTypeName(nullptr);
+  this->SetParameters(nullptr);
 }
 
-void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKResourceCreator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileName: " << this->FileName << "\n";
+  os << indent << "TypeName: " << this->TypeName << "\n";
+  os << indent << "Parameters: " << this->Parameters << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKModelImporter::GenerateResource() const
+smtk::resource::ResourcePtr vtkSMTKResourceCreator::GenerateResource() const
 {
-  if (!this->FileName)
+  if (this->Resource && this->Wrapper)
+  {
+    this->Wrapper->GetResourceManager()->remove(this->Resource);
+  }
+
+  if (!this->TypeName || !this->Parameters)
   {
     return smtk::resource::ResourcePtr();
   }
@@ -92,40 +98,26 @@ smtk::resource::ResourcePtr vtkSMTKModelImporter::GenerateResource() const
     return smtk::resource::ResourcePtr();
   }
 
-  // Access the importer group associated with this operation manager.
-  smtk::operation::ImporterGroup importerGroup(operMgr);
-
-  // Collect all of the import operation ids associated with our resource. If no
-  // resource is associated with this importer, then just use all importers.
-  std::string resourceName(this->ResourceName);
-  std::set<smtk::operation::Operation::Index> ops = resourceName.empty()
-    ? importerGroup.operationsForFileName(this->FileName)
-    : importerGroup.operationsForResourceAndFileName(resourceName, this->FileName);
-
-  if (ops.empty())
-  {
-    return smtk::resource::ResourcePtr();
-  }
-
-  // If there is more than one operation that can import this file type, we
-  // just use the first one.
-  //
-  // TODO: handle the case where multiple importers can import a file type
-  smtk::operation::Operation::Index opIdx = *ops.begin();
-
-  auto oper = operMgr->create(opIdx);
+  auto oper = operMgr->create(std::string(this->TypeName));
   if (!oper)
   {
     return smtk::resource::ResourcePtr();
   }
 
-  // Access the local operation's file item. Since importers have no restriction
-  // on the name of their file item, we record the name during operation
-  // registration and access it through the importer Group API.
-  smtk::attribute::FileItem::Ptr importerFileItem =
-    oper->parameters()->findFile(importerGroup.fileItemNameForOperation(opIdx));
+  json j;
 
-  importerFileItem->setValue(this->FileName);
+  try
+  {
+    j = json::parse(this->Parameters);
+  }
+  catch (std::exception&)
+  {
+    return smtk::resource::ResourcePtr();
+  }
+  auto parameters = oper->parameters();
+  std::vector<smtk::attribute::ItemExpressionInfo> itemExpressionInfo;
+  std::vector<smtk::attribute::AttRefInfo> attRefInfo;
+  smtk::attribute::from_json(j, parameters, itemExpressionInfo, attRefInfo);
 
   auto result = oper->operate();
   if (result->findInt("outcome")->value() !=

@@ -13,7 +13,6 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h" // TODO: remove need for me
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"

@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
-#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKResource.h"
-#include "smtk/extension/paraview/server/vtkSMTKSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/view/Selection.h"
@@ -172,7 +172,7 @@ void vtkSMTKWrapper::ProcessJSON()
   {
     auto uid = j["params"]["resource"].get<smtk::common::UUID>();
     auto rsrc = this->GetResourceManager()->get(uid);
-    auto repr = vtkSMTKModelRepresentation::SafeDownCast(this->Representation);
+    auto repr = vtkSMTKResourceRepresentation::SafeDownCast(this->Representation);
     if (repr)
     {
       repr->SetResource(rsrc);
@@ -228,14 +228,14 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
       {
         // Go up the pipeline until we get to something that has an smtk resource:
         vtkAlgorithm* alg = smtkThing;
-        while (alg && !vtkSMTKSource::SafeDownCast(alg))
+        while (alg && !vtkSMTKResourceSource::SafeDownCast(alg))
         { // TODO: Also stop when we get to a mesh source...
           alg = alg->GetInputAlgorithm(0, 0);
         }
         // Now we have a resource:
         smtk::model::ResourcePtr mResource = alg
           ? std::dynamic_pointer_cast<smtk::model::Resource>(
-              dynamic_cast<vtkSMTKSource*>(alg)->GetVTKResource()->GetResource())
+              dynamic_cast<vtkSMTKResourceSource*>(alg)->GetVTKResource()->GetResource())
           : nullptr;
         auto mit = mbdsThing->NewIterator();
         for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
@@ -316,10 +316,10 @@ vtkSMTKResource* vtkSMTKWrapper::GetVTKResource(vtkAlgorithm* algorithm)
   }
 
   // Recursively walk up ParaView's pipeline until we encounter one of our
-  // creation filters (marked by inheritence from vtkSMTKSource).
+  // creation filters (marked by inheritence from vtkSMTKResourceSource).
   vtkAlgorithm* alg = algorithm;
-  vtkSMTKSource* source = nullptr;
-  while (alg && !(source = vtkSMTKSource::SafeDownCast(alg)))
+  vtkSMTKResourceSource* source = nullptr;
+  while (alg && !(source = vtkSMTKResourceSource::SafeDownCast(alg)))
   {
     alg = (alg->GetNumberOfInputPorts() > 0 ? alg->GetInputAlgorithm(0, 0) : nullptr);
   }
@@ -329,7 +329,7 @@ vtkSMTKResource* vtkSMTKWrapper::GetVTKResource(vtkAlgorithm* algorithm)
   }
 
   // If we didn't find it, that's ok. It may be exposed within the pipeline
-  // directly (as opposed to being a subfilter of vtkSMTKSource).
+  // directly (as opposed to being a subfilter of vtkSMTKResourceSource).
   if (vtkresource == nullptr)
   {
     alg = algorithm;

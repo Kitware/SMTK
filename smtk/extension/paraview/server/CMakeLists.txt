@@ -16,34 +16,32 @@ set(serverXMLSrcs
 
 set(serverWrappedSrcs
   vtkPVModelSources.cxx
-  vtkSMTKAttributeReader.cxx
-  vtkSMTKModelImporter.cxx
-  vtkSMTKModelCreator.cxx
-  vtkSMTKModelReader.cxx
   vtkSMTKResource.cxx
+  vtkSMTKResourceCreator.cxx
   vtkSMTKResourceGenerator.cxx
+  vtkSMTKResourceImporter.cxx
+  vtkSMTKResourceReader.cxx
+  vtkSMTKResourceSource.cxx
   vtkSMTKSettings.cxx
-  vtkSMTKSource.cxx
   vtkSMSMTKWrapperProxy.cxx
   vtkSMTKWrapper.cxx
-  vtkSMSMTKModelRepresentationProxy.cxx
-  vtkSMTKModelRepresentation.cxx
+  vtkSMSMTKResourceRepresentationProxy.cxx
+  vtkSMTKResourceRepresentation.cxx
 )
 
 set(serverWrappedHdrs
   vtkPVModelSources.h
-  vtkSMTKAttributeReader.h
-  vtkSMTKModelImporter.h
-  vtkSMTKModelCreator.h
-  vtkSMTKModelReader.h
   vtkSMTKResource.h
+  vtkSMTKResourceCreator.h
   vtkSMTKResourceGenerator.h
+  vtkSMTKResourceImporter.h
+  vtkSMTKResourceReader.h
+  vtkSMTKResourceSource.h
   vtkSMTKSettings.h
-  vtkSMTKSource.h
   vtkSMSMTKWrapperProxy.h
   vtkSMTKWrapper.h
-  vtkSMSMTKModelRepresentationProxy.h
-  vtkSMTKModelRepresentation.h
+  vtkSMSMTKResourceRepresentationProxy.h
+  vtkSMTKResourceRepresentation.h
 )
 
 # the server plugin adds vtkCMBGeometryReader as a source, so we need the

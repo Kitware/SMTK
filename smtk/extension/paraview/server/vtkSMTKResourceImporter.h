@@ -7,12 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_server_vtkSMTKModelImporter_h
-#define smtk_extension_paraview_server_vtkSMTKModelImporter_h
+#ifndef smtk_extension_paraview_server_vtkSMTKResourceImporter_h
+#define smtk_extension_paraview_server_vtkSMTKResourceImporter_h
 
 #include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
-
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -24,20 +22,20 @@
 
 class vtkSMTKWrapper;
 
-/**\brief Use SMTK to import a model as a ParaView-friendly model source.
+/**\brief Use SMTK to import a resource as a ParaView-friendly source.
   *
   * If the SMTK wrapper object is set, then the wrapper's resource and operation
   * manager are used to import the file (or perhaps in the future to create a
   * new resource). Otherwise SMTK's default environment is used.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelImporter : public vtkSMTKResourceGenerator
+class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceImporter : public vtkSMTKResourceGenerator
 {
 public:
-  vtkTypeMacro(vtkSMTKModelImporter, vtkSMTKResourceGenerator);
+  vtkTypeMacro(vtkSMTKResourceImporter, vtkSMTKResourceGenerator);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkSMTKModelImporter* New();
+  static vtkSMTKResourceImporter* New();
 
-  /// Set/get the URL of the SMTK model resource.
+  /// Set/get the URL of the SMTK resource.
   vtkGetStringMacro(FileName);
   vtkSetStringMacro(FileName);
 
@@ -49,15 +47,15 @@ public:
   smtk::resource::ResourcePtr GenerateResource() const override;
 
 protected:
-  vtkSMTKModelImporter();
-  ~vtkSMTKModelImporter() override;
+  vtkSMTKResourceImporter();
+  ~vtkSMTKResourceImporter() override;
 
   char* FileName;
   char* ResourceName;
 
 private:
-  vtkSMTKModelImporter(const vtkSMTKModelImporter&) = delete;
-  void operator=(const vtkSMTKModelImporter&) = delete;
+  vtkSMTKResourceImporter(const vtkSMTKResourceImporter&) = delete;
+  void operator=(const vtkSMTKResourceImporter&) = delete;
 };
 
 #endif

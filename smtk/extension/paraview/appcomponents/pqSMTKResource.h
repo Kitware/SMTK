@@ -56,7 +56,7 @@ signals:
 protected slots:
   /**\brief Keep the pqSMTKResource and smtk::resource::Resource in sync.
     *
-    * This is called when the ParaView pipeline source (vtkSMTKSource) has had
+    * This is called when the ParaView pipeline source (vtkSMTKResourceSource) has had
     * its data modified. This can be the result of a filename change that
     * means the old SMTK resource should be removed from the manager and a new one
     * added. It may also be an unrelated change resulting in a modified resource, but

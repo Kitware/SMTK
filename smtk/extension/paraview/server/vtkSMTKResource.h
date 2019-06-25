@@ -22,12 +22,12 @@ class vtkSMTKWrapper;
 
 /**\brief A base class for manipulating SMTK resources in ParaView.
  *
- * SMTK resources are presented through ParaView as the result of vtkSMTKSource,
- * but the actual ownership of the resource and its conversion into a
- * vtkMultiBlockDataSet is handled by vtkSMTKResource and its derived classes.
- * The source and resource are separated into two different filters to
- * facilitate the update of the source filter without triggering a regeneration
- * of the resource.
+ * SMTK resources are presented through ParaView as the result of
+ * vtkSMTKResourceSource, but the actual ownership of the resource and its
+ * conversion into a vtkMultiBlockDataSet is handled by vtkSMTKResource and its
+ * derived classes. The source and resource are separated into two different
+ * filters to facilitate the update of the source filter without triggering a
+ * regeneration of the resource.
  */
 class SMTKPVSERVEREXT_EXPORT vtkSMTKResource : public vtkMultiBlockDataSetAlgorithm
 {

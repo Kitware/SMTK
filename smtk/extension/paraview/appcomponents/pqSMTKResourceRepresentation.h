@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_appcomponents_pqSMTKModelRepresentation_h
-#define smtk_extension_paraview_appcomponents_pqSMTKModelRepresentation_h
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKResourceRepresentation_h
+#define smtk_extension_paraview_appcomponents_pqSMTKResourceRepresentation_h
 
 #include "pqPipelineRepresentation.h"
 
@@ -18,15 +18,15 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKModelRepresentation : public pqPipelineRepresentation
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceRepresentation : public pqPipelineRepresentation
 {
   Q_OBJECT
   typedef pqPipelineRepresentation Superclass;
 
 public:
-  pqSMTKModelRepresentation(const QString& group, const QString& name, vtkSMProxy* repr,
+  pqSMTKResourceRepresentation(const QString& group, const QString& name, vtkSMProxy* repr,
     pqServer* server, QObject* parent = nullptr);
-  ~pqSMTKModelRepresentation() override;
+  ~pqSMTKResourceRepresentation() override;
 
   void onInputChanged() override;
 

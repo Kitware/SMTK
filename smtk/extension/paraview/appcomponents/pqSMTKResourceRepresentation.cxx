@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKModelRepresentation.h"
-#include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKResourceRepresentationProxy.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
-#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h" // TODO Remove the need for me.
+#include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h" // TODO Remove the need for me.
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
@@ -29,7 +29,7 @@
 
 #include "vtkCommand.h"
 
-pqSMTKModelRepresentation::pqSMTKModelRepresentation(
+pqSMTKResourceRepresentation::pqSMTKResourceRepresentation(
   const QString& group, const QString& name, vtkSMProxy* repr, pqServer* server, QObject* parent)
   : Superclass(group, name, repr, server, parent)
   , m_selnObserver()
@@ -51,7 +51,7 @@ pqSMTKModelRepresentation::pqSMTKModelRepresentation(
   this->updateSettings();
 }
 
-pqSMTKModelRepresentation::~pqSMTKModelRepresentation()
+pqSMTKResourceRepresentation::~pqSMTKResourceRepresentation()
 {
   // Avoid getting observations after we are dead.
   smtk::view::SelectionPtr seln = m_seln.lock();
@@ -61,16 +61,16 @@ pqSMTKModelRepresentation::~pqSMTKModelRepresentation()
   }
 }
 
-void pqSMTKModelRepresentation::initialize()
+void pqSMTKResourceRepresentation::initialize()
 {
-  auto proxy = vtkSMSMTKModelRepresentationProxy::SafeDownCast(this->getProxy());
+  auto proxy = vtkSMSMTKResourceRepresentationProxy::SafeDownCast(this->getProxy());
   if (proxy)
     proxy->ConnectAdditionalPorts();
 
   pqPipelineRepresentation::initialize();
 }
 
-void pqSMTKModelRepresentation::handleSMTKSelectionChange(
+void pqSMTKResourceRepresentation::handleSMTKSelectionChange(
   const std::string& src, smtk::view::SelectionPtr seln)
 {
   (void)src;
@@ -78,7 +78,7 @@ void pqSMTKModelRepresentation::handleSMTKSelectionChange(
   this->renderViewEventually();
 }
 
-void pqSMTKModelRepresentation::onInputChanged()
+void pqSMTKResourceRepresentation::onInputChanged()
 {
   pqPipelineRepresentation::onInputChanged();
 
@@ -93,18 +93,18 @@ void pqSMTKModelRepresentation::onInputChanged()
     {
       rsrcMgrPxy->smtkProxy()->SetResourceForRepresentation(
         std::static_pointer_cast<smtk::resource::Resource>(input->getResource()),
-        vtkSMSMTKModelRepresentationProxy::SafeDownCast(this->getProxy()));
+        vtkSMSMTKResourceRepresentationProxy::SafeDownCast(this->getProxy()));
     }
   }
 }
 
-bool pqSMTKModelRepresentation::setVisibility(smtk::resource::ComponentPtr comp, bool visible)
+bool pqSMTKResourceRepresentation::setVisibility(smtk::resource::ComponentPtr comp, bool visible)
 {
   auto pxy = this->getProxy();
   auto mpr = pxy->GetClientSideObject(); // TODO: Remove the need for me.
   auto cmp = vtkPVCompositeRepresentation::SafeDownCast(mpr);
   auto spx =
-    cmp ? vtkSMTKModelRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
+    cmp ? vtkSMTKResourceRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
   if (spx)
   {
     if (spx->SetEntityVisibility(comp, visible))
@@ -116,7 +116,7 @@ bool pqSMTKModelRepresentation::setVisibility(smtk::resource::ComponentPtr comp,
   return false;
 }
 
-void pqSMTKModelRepresentation::updateSettings()
+void pqSMTKResourceRepresentation::updateSettings()
 {
   auto settings = vtkSMTKSettings::GetInstance();
   int selectionStyle = settings->GetSelectionRenderStyle();

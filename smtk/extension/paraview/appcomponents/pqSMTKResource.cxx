@@ -13,9 +13,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
-#include "smtk/extension/paraview/server/vtkSMTKAttributeReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKResource.h"
-#include "smtk/extension/paraview/server/vtkSMTKSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/operators/Signal.h"
@@ -126,7 +125,7 @@ smtk::resource::ResourcePtr pqSMTKResource::getResource() const
   //       works in built-in mode.
   smtk::resource::ResourcePtr rsrc;
   auto pxy = this->getProxy()->GetClientSideObject();
-  auto smtkRsrcRdr = vtkSMTKSource::SafeDownCast(pxy);
+  auto smtkRsrcRdr = vtkSMTKResourceSource::SafeDownCast(pxy);
   rsrc = smtkRsrcRdr ? smtkRsrcRdr->GetVTKResource()->GetResource() : nullptr;
   if (rsrc)
   {

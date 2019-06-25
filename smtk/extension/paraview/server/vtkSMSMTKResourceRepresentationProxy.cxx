@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
-#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKResourceRepresentationProxy.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 
 #include "vtkClientServerStream.h"
 #include "vtkObjectFactory.h"
@@ -19,18 +19,18 @@
 #include "vtkSMProperty.h"
 #include "vtkSMPropertyHelper.h"
 
-vtkStandardNewMacro(vtkSMSMTKModelRepresentationProxy);
+vtkStandardNewMacro(vtkSMSMTKResourceRepresentationProxy);
 
-vtkSMSMTKModelRepresentationProxy::vtkSMSMTKModelRepresentationProxy() = default;
+vtkSMSMTKResourceRepresentationProxy::vtkSMSMTKResourceRepresentationProxy() = default;
 
-vtkSMSMTKModelRepresentationProxy::~vtkSMSMTKModelRepresentationProxy() = default;
+vtkSMSMTKResourceRepresentationProxy::~vtkSMSMTKResourceRepresentationProxy() = default;
 
-void vtkSMSMTKModelRepresentationProxy::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMSMTKResourceRepresentationProxy::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
 
-void vtkSMSMTKModelRepresentationProxy::ConnectAdditionalPorts()
+void vtkSMSMTKResourceRepresentationProxy::ConnectAdditionalPorts()
 {
   vtkSMPropertyHelper helper(this, "Input");
   vtkSMSourceProxy* input = vtkSMSourceProxy::SafeDownCast(helper.GetAsProxy(0));
@@ -39,7 +39,7 @@ void vtkSMSMTKModelRepresentationProxy::ConnectAdditionalPorts()
     auto source = vtkSMSourceProxy::SafeDownCast(input->GetTrueParentProxy());
     if (source)
     {
-      vtkSMProxy* repProxy = this->GetSubProxy("SMTKModelRepresentation");
+      vtkSMProxy* repProxy = this->GetSubProxy("SMTKResourceRepresentation");
       if (repProxy)
       {
         vtkSMPropertyHelper(repProxy, "GlyphPrototypes", true).Set(source, 1);
@@ -51,12 +51,12 @@ void vtkSMSMTKModelRepresentationProxy::ConnectAdditionalPorts()
   }
 }
 
-vtkSMProxy* vtkSMSMTKModelRepresentationProxy::GetModelRepresentationSubProxy()
+vtkSMProxy* vtkSMSMTKResourceRepresentationProxy::GetResourceRepresentationSubProxy()
 {
-  return this->GetSubProxy("SMTKModelRepresentation");
+  return this->GetSubProxy("SMTKResourceRepresentation");
 }
 
-void vtkSMSMTKModelRepresentationProxy::SetPropertyModifiedFlag(const char* name, int flag)
+void vtkSMSMTKResourceRepresentationProxy::SetPropertyModifiedFlag(const char* name, int flag)
 {
   if (!this->InitializedInputs && strcmp(name, "Input"))
   {

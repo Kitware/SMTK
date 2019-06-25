@@ -69,7 +69,7 @@
           <Group name="representations" />
         </ProxyGroupDomain>
         <ProxyListDomain name="proxy_list">
-          <Proxy group="representations" name="SMTKModelRepresentation"/>
+          <Proxy group="representations" name="SMTKResourceRepresentation"/>
         </ProxyListDomain>
         <Documentation>This property is used by the resource manager
           to invoke methods on representations.</Documentation>
@@ -81,13 +81,13 @@
   <!--
        smtk_internal_sources are the sources that generate SMTK resources and
        their corresponding vtkMultiBlockDataSets. They are not exposed as
-       readers or sources because they are used as subproxies to vtkSMTKSource,
-       which facilitates the modification of the resource in situ without
-       triggering a regeneration of the resource.
+       readers or sources because they are used as subproxies to
+       vtkSMTKResourceSource, which facilitates the modification of the resource
+       in situ without triggering a regeneration of the resource.
 
        NB: when adding a source proxy to this group, you must also add a source
-       proxy that instances vtkSMTKSource and has the new source proxy as its
-       subproxy in the "sources" section below.
+       proxy that instances vtkSMTKResourceSource and has the new source proxy
+       as its subproxy in the "sources" section below.
   -->
   <ProxyGroup name="smtk_internal_sources">
     <SourceProxy name="SMTKResource" class="vtkSMTKResource" label="SMTK Resource">
@@ -107,19 +107,19 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
-    <SourceProxy name="SMTKModelReader" class="vtkSMTKModelReader" label="SMTK Model Reader">
+    <SourceProxy name="SMTKResourceReader" class="vtkSMTKResourceReader" label="SMTK Resource Reader">
       <Documentation
-        short_help="Read an SMTK Geometry file."
-        long_help="Read an SMTK Geometry file as a set of multiblock datasets.">
+        short_help="Read an SMTK file."
+        long_help="Read an SMTK file as a set of multiblock datasets.">
       </Documentation>
 
       <StringVectorProperty
@@ -133,21 +133,21 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
-    <SourceProxy name="SMTKModelCreator" class="vtkSMTKModelCreator" label="SMTK Model Creator">
+    <SourceProxy name="SMTKResourceCreator" class="vtkSMTKResourceCreator" label="SMTK Resource Creator">
       <Documentation
-        short_help="Create a new SMTK model."
-        long_help="Create a new SMTK model and represent it as a set of multiblock datasets.">
+        short_help="Create a new SMTK resource."
+        long_help="Create a new SMTK resource and represent it as a set of multiblock datasets.">
       </Documentation>
 
       <StringVectorProperty
@@ -166,18 +166,18 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
-    <SourceProxy name="SMTKModelImporter" class="vtkSMTKModelImporter" label="SMTK Model Importer">
+    <SourceProxy name="SMTKResourceImporter" class="vtkSMTKResourceImporter" label="SMTK Resource Importer">
       <Documentation
         short_help="Import a file into SMTK."
         long_help="Import a file as a set of multiblock datasets.">
@@ -203,41 +203,14 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
-      </Hints>
-    </SourceProxy>
-
-    <SourceProxy name="SMTKAttributeReader" class="vtkSMTKAttributeReader" label="SMTK Attribute Reader">
-      <Documentation
-        short_help="Read an SMTK attribute file."
-        long_help="Read an SMTK attribute file as a set of multiblock datasets.">
-      </Documentation>
-
-      <StringVectorProperty
-        name="FileName"
-        command="SetFileName"
-        animateable="0"
-        number_of_elements="1">
-        <FileListDomain name="files"/>
-        <Documentation>
-          The path to an SMTK XML file to read.
-        </Documentation>
-      </StringVectorProperty>
-
-      <OutputPort index="0" name="attributes"/>
-
-      <Hints>
-        <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
-        <!-- Representation view="RenderView" type="SMTKModelCompositeRepresentation" / -->
-        <DefaultFileNameProperty name="FileName" />
-        <View type="None"/>
       </Hints>
     </SourceProxy>
 
@@ -310,16 +283,16 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKSource">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceSource">
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
@@ -330,21 +303,21 @@
                     panel_visibility="never" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
     <!--
-        We describe an instance of vtkSMTKSource with a subproxy for each of the
-        internal sources described in smtk_internal_sources. This pattern
-        facilitates the modification of the resource in situ without triggering
-        a regeneration of the resource.
+        We describe an instance of vtkSMTKResourceSource with a subproxy
+        for each of the internal sources described in smtk_internal_sources.
+        This pattern facilitates the modification of the resource in situ
+        without triggering a regeneration of the resource.
     -->
-    <SourceProxy class="vtkSMTKSource" name="SMTKModelReader">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceReader">
       <Documentation
         short_help="Read an SMTK Resource file."
         long_help="Read an SMTK Resource file as a set of multiblock datasets.">
@@ -352,45 +325,45 @@
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
-               proxyname="SMTKModelReader">
+               proxyname="SMTKResourceReader">
         </Proxy>
         <ExposedProperties>
           <Property name="FileName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKModelCreator">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceCreator">
       <Documentation
         short_help="Create an SMTK resource.">
       </Documentation>
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
-               proxyname="SMTKModelCreator">
+               proxyname="SMTKResourceCreator">
         </Proxy>
         <ExposedProperties>
           <Property name="TypeName" />
           <Property name="Parameters" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKModelImporter">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceImporter">
       <Documentation
         short_help="Import an SMTK resource."
         long_help="Import a file as an SMTK Resource.">
@@ -398,41 +371,19 @@
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
-               proxyname="SMTKModelImporter">
+               proxyname="SMTKResourceImporter">
         </Proxy>
         <ExposedProperties>
           <Property name="FileName" />
           <Property name="ResourceName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
-      </Hints>
-    </SourceProxy>
-
-    <SourceProxy class="vtkSMTKSource" name="SMTKAttributeReader">
-      <Documentation
-        short_help="Read an SMTK attribute file."
-        long_help="Read an SMTK attribute file as a set of multiblock datasets.">
-      </Documentation>
-      <SubProxy command="SetVTKResource">
-        <Proxy name="VTKResource"
-               proxygroup="smtk_internal_sources"
-               proxyname="SMTKAttributeReader">
-        </Proxy>
-        <ExposedProperties>
-          <Property name="FileName" />
-        </ExposedProperties>
-      </SubProxy>
-      <OutputPort index="0" name="attributes"/>
-      <Hints>
-        <ReaderFactory extensions="sbt sbi crf" file_description="SMTK Attribute Files"/>
-        <DefaultFileNameProperty name="FileName" />
-        <View type="None"/>
       </Hints>
     </SourceProxy>
 
@@ -1275,13 +1226,13 @@
 
 <!-- ====================================================================== -->
   <ProxyGroup name="representations">
-    <RepresentationProxy name="SMTKModelRepresentation"
-                         class="vtkSMTKModelRepresentation"
+    <RepresentationProxy name="SMTKResourceRepresentation"
+                         class="vtkSMTKResourceRepresentation"
                          processes="client|renderserver|dataserver">
       <Documentation>
         This specialized representation uses extended functionality of the
         composite mapper to better integrate with SMTKModel. Handles selection
-        of SMTK Model entities.
+        of SMTK components.
       </Documentation>
       <IntVectorProperty command="SetVisibility"
                          default_values="1"
@@ -1428,7 +1379,7 @@
           <String value="Field" />
         </StringListDomain>
         <Documentation>
-          Model entities can be colored in different ways:
+          components can be colored in different ways:
           using the color defined on the entity (Entity); or
           using the color defined by the volume bounded by the entity (Volume); or
           mapping field values (scalars) defined on points or cells through a color lookup table (Field),
@@ -1647,16 +1598,16 @@
         <Documentation>Use block attributes set through proxy properties.
         </Documentation>
       </IntVectorProperty>
-    <!-- End of SMTKModelRepresentation -->
+    <!-- End of SMTKResourceRepresentation -->
     </RepresentationProxy>
 
 <!-- ====================================================================== -->
-    <SMTKModelRepresentationProxy name="SMTKModelCompositeRepresentation"
+    <SMTKResourceRepresentationProxy name="SMTKResourceCompositeRepresentation"
                                   class="vtkPVCompositeRepresentation"
                                   processes="client|dataserver|renderserver">
       <Documentation>SMTK's default representation. It is a stripped down
       version of PVRepresentationBase (selection is handled by
-      SMTKModelRepresentation).</Documentation>
+      SMTKResourceRepresentation).</Documentation>
 
       <InputProperty command="SetInputConnection"
                      name="Input">
@@ -1708,16 +1659,16 @@
         set. If ForcedCacheKey is true, it overrides UseCache and CacheKey.
         Instead, ForcedCacheKey is used.</Documentation>
       </DoubleVectorProperty>
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Surface"
                           text="Model Surface"/>
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Points"
                           text="Model Points" />
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Wireframe"
                           text="Model Wireframe" />
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Surface With Edges"
                           text="Model Surface With Edges" />
       <RepresentationType subproxy="OutlineRepresentation"
@@ -1782,9 +1733,9 @@
       </ProxyProperty>
 
       <SubProxy>
-        <Proxy name="SMTKModelRepresentation"
+        <Proxy name="SMTKResourceRepresentation"
           proxygroup="representations"
-          proxyname="SMTKModelRepresentation">
+          proxyname="SMTKResourceRepresentation">
         </Proxy>
         <ExposedProperties>
           <PropertyGroup label="Color Mode">
@@ -1868,12 +1819,12 @@
         <Proxy name="OutlineRepresentation"
                proxygroup="representations"
                proxyname="OutlineRepresentation"></Proxy>
-        <ShareProperties subproxy="SMTKModelRepresentation">
+        <ShareProperties subproxy="SMTKResourceRepresentation">
           <Exception name="Input" />
           <Exception name="Visibility" />
         </ShareProperties>
       </SubProxy>
-    </SMTKModelRepresentationProxy>
+    </SMTKResourceRepresentationProxy>
 
     <!-- Widget representations -->
     <!-- Cone widget -->
@@ -2114,7 +2065,7 @@
         information_property="SelectionRenderStyleInfo"
         panel_visibility="default">
         <Documentation>
-          Should representations show selected model entities
+          Should representations show selected components
           as solids or as wireframees?
         </Documentation>
         <EnumerationDomain name="enum">

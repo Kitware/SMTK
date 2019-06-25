@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
-#include "smtk/extension/paraview/server/vtkSMSMTKModelRepresentationProxy.h"
+#include "smtk/extension/paraview/server/vtkSMSMTKResourceRepresentationProxy.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h" // TODO: Remove the need for me
 
@@ -196,8 +196,8 @@ void vtkSMSMTKWrapperProxy::JSONRPCNotification(const std::string& note)
 
 void vtkSMSMTKWrapperProxy::SetRepresentation(vtkSMRepresentationProxy* pxy)
 {
-  auto smtkProxy = vtkSMSMTKModelRepresentationProxy::SafeDownCast(pxy);
-  auto repProxy = smtkProxy->GetModelRepresentationSubProxy();
+  auto smtkProxy = vtkSMSMTKResourceRepresentationProxy::SafeDownCast(pxy);
+  auto repProxy = smtkProxy->GetResourceRepresentationSubProxy();
 
   vtkSMPropertyHelper(this, "Representation").Set(vtkSMProxy::SafeDownCast(repProxy));
   this->UpdateVTKObjects();

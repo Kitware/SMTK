@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_representation_vtkSMTKModelRepresentation_h
-#define smtk_extension_paraview_representation_vtkSMTKModelRepresentation_h
+#ifndef smtk_extension_paraview_representation_vtkSMTKResourceRepresentation_h
+#define smtk_extension_paraview_representation_vtkSMTKResourceRepresentation_h
 #include <unordered_map>
 
 #include <vtkProperty.h> // for VTK_POINTS etc.
@@ -42,22 +42,22 @@ class vtkSelection;
 class vtkTexture;
 
 /**
- *  \brief Representation of an SMTK Model. Renders the outputs of
- *  vtkSMTKModelReader.
+ *  \brief Representation of an SMTK Resource. Renders the outputs of
+ *  vtkSMTKResourceReader.
  *
  *  Input data arrives through 3 ports:
  *
  *  |       Input                 |    Mapper     |  Actor         |
  *  | :-------------------------- | :------------ | :------------- |
- *  |   Port 0: Model entities    |  EntityMapper | Entities       |
+ *  |   Port 0: Components        |  EntityMapper | Entities       |
  *  |   Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities  |
  *  |   Port 2: Glyph points      |  GlyphMapper  | GlyphEntities  |
  *
- *  vtkSMSMTKModelRepresentationProxy sets certain properties used as mapper
+ *  vtkSMSMTKResourceRepresentationProxy sets certain properties used as mapper
  *  inputs (GlyphPrototypes and GlyphPoints).
  *
- *  Each of the model mappers has a selection counterpart (SelectedEntityMapper
- *  and SelectedGlyphMapper) which renders only selected entities.
+ *  Each of the mappers has a selection counterpart (SelectedEntityMapper and
+ *  SelectedGlyphMapper) which renders only selected entities.
  *
  *  The representation supports different coloring modes (ColorBy):
  *
@@ -88,13 +88,13 @@ class vtkTexture;
  *  (multi-block node pointers change after an update). Coloring using these internal
  *  attributes can be enabled/disabled through UseInternalAttributes.
  *
- *  \sa vtkSMSMTKModelRepresentationProxy vtkCompositeDataDisplayAttributes
+ *  \sa vtkSMSMTKResourceRepresentationProxy vtkCompositeDataDisplayAttributes
  */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelRepresentation : public vtkPVDataRepresentation
+class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceRepresentation : public vtkPVDataRepresentation
 {
 public:
-  static vtkSMTKModelRepresentation* New();
-  vtkTypeMacro(vtkSMTKModelRepresentation, vtkPVDataRepresentation);
+  static vtkSMTKResourceRepresentation* New();
+  vtkTypeMacro(vtkSMTKResourceRepresentation, vtkPVDataRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   /// The visual state of a single component
@@ -108,8 +108,8 @@ public:
   /// A map from UUIDs to vtkDataObjects rendered by this representation (across all its actors)
   using RenderableDataMap = std::map<smtk::common::UUID, vtkDataObject*>;
   /// The type of a function used to update display attributes based on selections.
-  using StyleFromSelectionFunction =
-    std::function<bool(smtk::view::SelectionPtr, RenderableDataMap&, vtkSMTKModelRepresentation*)>;
+  using StyleFromSelectionFunction = std::function<bool(
+    smtk::view::SelectionPtr, RenderableDataMap&, vtkSMTKResourceRepresentation*)>;
 
   //@{
   /**
@@ -125,7 +125,7 @@ public:
   //@}
 
   /**
-   * Model rendering properties. Forwarded to the relevant vtkProperty instances.
+   * Resource rendering properties. Forwarded to the relevant vtkProperty instances.
    */
   void SetMapScalars(int val);
   void SetInterpolateScalarsBeforeMapping(int val);
@@ -165,7 +165,7 @@ public:
 
   //@{
   /**
-   * Block properties for tessellation entities (Port 0: Model Entities).
+   * Block properties for tessellation entities (Port 0: Components).
    */
   void SetBlockVisibility(unsigned int index, bool visible);
   bool GetBlockVisibility(unsigned int index) const;
@@ -284,13 +284,13 @@ public:
     * This function is never null; if SetSelectionStyle() is passed a null pointer,
     * then the default handler is used.
     *
-    * The default value of this function is vtkSMTKModelRepresentation::ApplyDefaultStyle().
+    * The default value of this function is vtkSMTKResourceRepresentation::ApplyDefaultStyle().
     */
   void SetSelectionStyle(StyleFromSelectionFunction);
 
   /// The default selection-style function (i.e., the default value of ApplyStyle).
-  static bool ApplyDefaultStyle(
-    smtk::view::SelectionPtr seln, RenderableDataMap& renderables, vtkSMTKModelRepresentation* rep);
+  static bool ApplyDefaultStyle(smtk::view::SelectionPtr seln, RenderableDataMap& renderables,
+    vtkSMTKResourceRepresentation* rep);
 
   /// A helper used by ApplyDefaultStyle to handle a single component.
   bool SelectComponentFootprint(
@@ -307,8 +307,8 @@ public:
   const ComponentStateMap& GetComponentState() const { return this->ComponentState; }
 
 protected:
-  vtkSMTKModelRepresentation();
-  ~vtkSMTKModelRepresentation();
+  vtkSMTKResourceRepresentation();
+  ~vtkSMTKResourceRepresentation();
 
   int FillInputPortInformation(int port, vtkInformation* info) override;
   void SetupDefaults();
@@ -427,7 +427,7 @@ protected:
 
   //@{
   /**
-   * Block attributes for model entities.
+   * Block attributes for components.
    */
   bool BlockAttrChanged = false;
   vtkTimeStamp BlockAttributeTime;
@@ -461,8 +461,8 @@ protected:
   StyleFromSelectionFunction ApplyStyle;
 
 private:
-  vtkSMTKModelRepresentation(const vtkSMTKModelRepresentation&) = delete;
-  void operator=(const vtkSMTKModelRepresentation&) = delete;
+  vtkSMTKResourceRepresentation(const vtkSMTKResourceRepresentation&) = delete;
+  void operator=(const vtkSMTKResourceRepresentation&) = delete;
 };
 
 #endif

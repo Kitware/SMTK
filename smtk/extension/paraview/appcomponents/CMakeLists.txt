@@ -33,7 +33,7 @@ set(PQComponentsSrcs
   pqSMTKExportSimulationBehavior.cxx
   pqSMTKImportIntoResourceBehavior.cxx
   pqSMTKImportOperationBehavior.cxx
-  pqSMTKModelRepresentation.cxx
+  pqSMTKResourceRepresentation.cxx
   pqSMTKNewResourceBehavior.cxx
   pqSMTKOperationPanel.cxx
   pqSMTKPipelineSelectionBehavior.cxx
@@ -80,7 +80,7 @@ set(PQComponentsHeaders
   pqSMTKExportSimulationBehavior.h
   pqSMTKImportIntoResourceBehavior.h
   pqSMTKImportOperationBehavior.h
-  pqSMTKModelRepresentation.h
+  pqSMTKResourceRepresentation.h
   pqSMTKNewResourceBehavior.h
   pqSMTKOperationPanel.h
   pqSMTKPipelineSelectionBehavior.h
@@ -177,9 +177,9 @@ list(APPEND PLUGIN_ACTION_IFACES "${colorByToolBarIfaces}")
 list(APPEND PLUGIN_ACTION_IFACE_SRCS "${colorByToolBarIfaceSrcs}")
 
 add_pqproxy(modelRepIfaces modelRepIfaceSrcs
-  TYPE pqSMTKModelRepresentation
+  TYPE pqSMTKResourceRepresentation
   XML_GROUP representations
-  XML_NAME SMTKModelCompositeRepresentation
+  XML_NAME SMTKResourceCompositeRepresentation
 )
 list(APPEND PLUGIN_PROXY_IFACES ${modelRepIfaces})
 list(APPEND PLUGIN_PROXY_IFACE_SRCS ${modelRepIfaceSrcs})
@@ -272,23 +272,19 @@ endmacro()
 add_pqproxy_custom(proxyIfaces proxyIfaceSrcs
   TYPE pqSMTKResource
   XML_GROUP sources
-  XML_NAME SMTKSource
+  XML_NAME SMTKResourceSource
 
   TYPE pqSMTKResource
   XML_GROUP sources
-  XML_NAME SMTKModelReader
+  XML_NAME SMTKResourceReader
 
   TYPE pqSMTKResource
   XML_GROUP sources
-  XML_NAME SMTKModelCreator
+  XML_NAME SMTKResourceCreator
 
   TYPE pqSMTKResource
   XML_GROUP sources
-  XML_NAME_REGEX SMTKModelImporter*
-
-  TYPE pqSMTKResource
-  XML_GROUP sources
-  XML_NAME SMTKAttributeReader
+  XML_NAME_REGEX SMTKResourceImporter*
 
   TYPE pqSMTKResource
   XML_GROUP sources

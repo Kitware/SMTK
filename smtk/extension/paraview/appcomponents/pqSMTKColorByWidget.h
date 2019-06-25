@@ -18,7 +18,7 @@ class vtkSMProxy;
 
 /**\brief A widget that allows users to choose an SMTK representation's color-by mode.
   *
-  * This widget works with a vtkSMSMTKModelRepresentationProxy, setting its
+  * This widget works with a vtkSMSMTKResourceRepresentationProxy, setting its
   * "ColorBy" property.
   *
   * In the future, when we support coloring by attribute or group, it will
