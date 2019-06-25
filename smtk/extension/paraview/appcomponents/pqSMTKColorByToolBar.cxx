@@ -29,7 +29,7 @@ pqSMTKColorByToolBar::pqSMTKColorByToolBar(QWidget* parent)
   this->setObjectName("SMTKColorMode");
   auto widget = new pqSMTKColorByWidget(this);
   widget << pqSetName("colorBy");
-  widget->setToolTip("Color SMTK model entities by...");
+  widget->setToolTip("Color SMTK components by...");
   this->addWidget(widget);
   QObject::connect(&pqActiveObjects::instance(),
     SIGNAL(representationChanged(pqDataRepresentation*)), widget,

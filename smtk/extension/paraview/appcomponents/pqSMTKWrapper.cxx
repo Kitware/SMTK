@@ -301,7 +301,7 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
             smtkThing->GetVTKResource()->GetResource());
           if (mResource)
           {
-            //std::cout << "  selected model entities:";
+            //std::cout << "  selected components:";
             auto mit = mbdsThing->NewIterator();
             for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
             {

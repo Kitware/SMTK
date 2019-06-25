@@ -107,7 +107,7 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -133,7 +133,7 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -166,7 +166,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -203,7 +203,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -310,7 +310,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -330,7 +330,7 @@
                     panel_visibility="never" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
@@ -358,7 +358,7 @@
           <Property name="FileName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
@@ -382,7 +382,7 @@
           <Property name="Parameters" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
@@ -405,7 +405,7 @@
           <Property name="ResourceName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
@@ -1281,7 +1281,7 @@
       <Documentation>
         This specialized representation uses extended functionality of the
         composite mapper to better integrate with SMTKModel. Handles selection
-        of SMTK Model entities.
+        of SMTK components.
       </Documentation>
       <IntVectorProperty command="SetVisibility"
                          default_values="1"
@@ -1428,7 +1428,7 @@
           <String value="Field" />
         </StringListDomain>
         <Documentation>
-          Model entities can be colored in different ways:
+          components can be colored in different ways:
           using the color defined on the entity (Entity); or
           using the color defined by the volume bounded by the entity (Volume); or
           mapping field values (scalars) defined on points or cells through a color lookup table (Field),
@@ -2114,7 +2114,7 @@
         information_property="SelectionRenderStyleInfo"
         panel_visibility="default">
         <Documentation>
-          Should representations show selected model entities
+          Should representations show selected components
           as solids or as wireframees?
         </Documentation>
         <EnumerationDomain name="enum">

@@ -49,7 +49,7 @@ class vtkTexture;
  *
  *  |       Input                 |    Mapper     |  Actor         |
  *  | :-------------------------- | :------------ | :------------- |
- *  |   Port 0: Model entities    |  EntityMapper | Entities       |
+ *  |   Port 0: components        |  EntityMapper | Entities       |
  *  |   Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities  |
  *  |   Port 2: Glyph points      |  GlyphMapper  | GlyphEntities  |
  *
@@ -165,7 +165,7 @@ public:
 
   //@{
   /**
-   * Block properties for tessellation entities (Port 0: Model Entities).
+   * Block properties for tessellation entities (Port 0: Components).
    */
   void SetBlockVisibility(unsigned int index, bool visible);
   bool GetBlockVisibility(unsigned int index) const;
@@ -427,7 +427,7 @@ protected:
 
   //@{
   /**
-   * Block attributes for model entities.
+   * Block attributes for components.
    */
   bool BlockAttrChanged = false;
   vtkTimeStamp BlockAttributeTime;

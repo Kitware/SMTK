@@ -34,6 +34,7 @@
 #include "vtkDataObjectTreeIterator.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"

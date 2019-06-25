@@ -120,7 +120,7 @@ std::string xmlForSMTKImporter(
         </ExposedProperties>
       </SubProxy>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="components"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 )";

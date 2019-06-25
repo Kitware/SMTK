@@ -89,7 +89,7 @@ pqSMTKColorByWidget::pqSMTKColorByWidget(QWidget* _p)
 {
   this->Internal = new pqSMTKColorByWidget::pqInternals();
   this->Internal->setupUi(this);
-  this->setToolTip("Choose colors used to draw SMTK model entities.");
+  this->setToolTip("Choose colors used to draw SMTK components.");
   this->connect(this->Internal->comboBox, SIGNAL(currentIndexChanged(const QString&)),
     SLOT(comboBoxChanged(const QString&)));
 }
