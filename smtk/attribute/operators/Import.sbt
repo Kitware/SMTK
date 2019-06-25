@@ -15,7 +15,7 @@
           FileFilters="SMTK SimBuilder Template Files (*.sbt);;SMTK SimBuilder Instance Files (*.sbi);;eXtensible Markup Language files (*.xml*)">
         </File>
       <Void Name="UseDirectoryInfo" Label="Use Directory Information"
-            Optional="true" IsEnabledByDefault="false"/>
+            Optional="true" IsEnabledByDefault="true"/>
       </ItemDefinitions>
     </AttDef>
     <include href="smtk/operation/Result.xml"/>

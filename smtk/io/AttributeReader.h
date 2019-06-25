@@ -44,7 +44,7 @@ public:
   bool read(
     smtk::attribute::ResourcePtr resource, const std::string& filename, smtk::io::Logger& logger)
   {
-    return this->read(resource, filename, false, logger);
+    return this->read(resource, filename, true, logger);
   }
 
   bool readContents(smtk::attribute::ResourcePtr resource, const std::string& filecontents,
