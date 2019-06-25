@@ -114,7 +114,7 @@ pqSMTKResource* pqSMTKRenderResourceBehavior::createPipelineSource(
   pqObjectBuilder* builder = pqCore->getObjectBuilder();
 
   pqSMTKResource* source =
-    static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKSource", server));
+    static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKResourceSource", server));
   vtkSMPropertyHelper(source->getProxy(), "ResourceId").Set(resource->id().toString().c_str());
 
   this->renderPipelineSource(source);

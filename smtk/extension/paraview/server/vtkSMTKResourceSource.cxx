@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
@@ -22,9 +22,9 @@
 
 using namespace smtk;
 
-vtkStandardNewMacro(vtkSMTKSource);
+vtkStandardNewMacro(vtkSMTKResourceSource);
 
-vtkSMTKSource::vtkSMTKSource()
+vtkSMTKResourceSource::vtkSMTKResourceSource()
   : VTKResource(nullptr)
 {
   this->SetNumberOfInputPorts(0);
@@ -34,17 +34,17 @@ vtkSMTKSource::vtkSMTKSource()
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 }
 
-vtkSMTKSource::~vtkSMTKSource()
+vtkSMTKResourceSource::~vtkSMTKResourceSource()
 {
 }
 
-void vtkSMTKSource::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKResourceSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "VTKResource: " << this->VTKResource << "\n";
 }
 
-vtkMTimeType vtkSMTKSource::GetMTime()
+vtkMTimeType vtkSMTKResourceSource::GetMTime()
 {
   // Access the modification time of this class ignoring the resource.
   vtkMTimeType mTime = this->vtkObject::GetMTime();
@@ -57,7 +57,7 @@ vtkMTimeType vtkSMTKSource::GetMTime()
   return std::max({ mTime, resource_mTime });
 }
 
-int vtkSMTKSource::FillOutputPortInformation(int port, vtkInformation* info)
+int vtkSMTKResourceSource::FillOutputPortInformation(int port, vtkInformation* info)
 {
   // We must have a resource to query for output port information.
   if (this->VTKResource == nullptr)
@@ -78,7 +78,7 @@ int vtkSMTKSource::FillOutputPortInformation(int port, vtkInformation* info)
   return 1;
 }
 
-int vtkSMTKSource::RequestData(
+int vtkSMTKResourceSource::RequestData(
   vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
 {
   // We must have a resource to operate

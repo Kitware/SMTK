@@ -100,7 +100,7 @@ std::string xmlForSMTKImporter(
   s << "<ServerManagerConfiguration>\n";
   s << "  <ProxyGroup name=\"sources\">\n";
   s << "    <SourceProxy name=\"" << proxyName(resource, extensions, description)
-    << "\" class=\"vtkSMTKSource\" ";
+    << "\" class=\"vtkSMTKResourceSource\" ";
   s << "label=\"SMTK importer for " << description << " into " << resource << "\">\n";
   s << "      <Documentation>\n";
   s << "        short_help=\"Import a " << description << " as an SMTK " << resource << ".\"\n";

@@ -81,13 +81,13 @@
   <!--
        smtk_internal_sources are the sources that generate SMTK resources and
        their corresponding vtkMultiBlockDataSets. They are not exposed as
-       readers or sources because they are used as subproxies to vtkSMTKSource,
-       which facilitates the modification of the resource in situ without
-       triggering a regeneration of the resource.
+       readers or sources because they are used as subproxies to
+       vtkSMTKResourceSource, which facilitates the modification of the resource
+       in situ without triggering a regeneration of the resource.
 
        NB: when adding a source proxy to this group, you must also add a source
-       proxy that instances vtkSMTKSource and has the new source proxy as its
-       subproxy in the "sources" section below.
+       proxy that instances vtkSMTKResourceSource and has the new source proxy
+       as its subproxy in the "sources" section below.
   -->
   <ProxyGroup name="smtk_internal_sources">
     <SourceProxy name="SMTKResource" class="vtkSMTKResource" label="SMTK Resource">
@@ -292,7 +292,7 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKSource">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceSource">
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
@@ -312,12 +312,12 @@
     </SourceProxy>
 
     <!--
-        We describe an instance of vtkSMTKSource with a subproxy for each of the
-        internal sources described in smtk_internal_sources. This pattern
-        facilitates the modification of the resource in situ without triggering
-        a regeneration of the resource.
+        We describe an instance of vtkSMTKResourceSource with a subproxy
+        for each of the internal sources described in smtk_internal_sources.
+        This pattern facilitates the modification of the resource in situ
+        without triggering a regeneration of the resource.
     -->
-    <SourceProxy class="vtkSMTKSource" name="SMTKResourceReader">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceReader">
       <Documentation
         short_help="Read an SMTK Resource file."
         long_help="Read an SMTK Resource file as a set of multiblock datasets.">
@@ -341,7 +341,7 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKResourceCreator">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceCreator">
       <Documentation
         short_help="Create an SMTK resource.">
       </Documentation>
@@ -363,7 +363,7 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKResourceImporter">
+    <SourceProxy class="vtkSMTKResourceSource" name="SMTKResourceImporter">
       <Documentation
         short_help="Import an SMTK resource."
         long_help="Import a file as an SMTK Resource.">

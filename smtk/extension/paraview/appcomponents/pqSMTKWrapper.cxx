@@ -13,7 +13,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
-#include "smtk/extension/paraview/server/vtkSMTKSource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h" // TODO: remove need for me
@@ -244,7 +244,7 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
   {
     auto dataInput = port->getSourceProxy();
     auto dataThing = dataInput->GetClientSideObject();
-    auto smtkThing = dynamic_cast<vtkSMTKSource*>(dataThing);
+    auto smtkThing = dynamic_cast<vtkSMTKResourceSource*>(dataThing);
     auto mbdsThing = smtkThing ? smtkThing->GetOutput() : nullptr;
     auto selnInput = port->getSelectionInput();
     vtkPVSelectionSource* selnThing =

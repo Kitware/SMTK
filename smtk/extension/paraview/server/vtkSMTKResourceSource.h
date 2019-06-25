@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_server_vtkSMTKSource_h
-#define smtk_extension_paraview_server_vtkSMTKSource_h
+#ifndef smtk_extension_paraview_server_vtkSMTKResourceSource_h
+#define smtk_extension_paraview_server_vtkSMTKResourceSource_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 
@@ -20,22 +20,23 @@
 /**\brief A class for SMTK-based sources exposed in ParaView.
  *
  * SMTK resources are represented in ParaView pipelines as the result of a
- * vtkSMTKSource algorithm. Internally, vtkSMTKSource contains a resource
- * generating class (vtkSMTKResourceGenerator) whose job is to construct a
- * resource and create a vtkMultiBlockDataSet from the resource. The resulting
- * resource is then manipulated in situ by SMTK operations; these operations
- * flag the source (vtkSMTKSource) for update. By encapsulating the resource
- * generator within this class, we can trigger an execution of the visualizaion
- * pipeline without affecting a regeneration of the resource. The resource will
- * be regenerated only if the exposed methods of the resource generator (e.g.
- * FileName) are modified. This design is based off of ParaView's vtkMetaReader.
+ * vtkSMTKResourceSource algorithm. Internally, vtkSMTKResourceSource contains a
+ * resource generating class (vtkSMTKResourceGenerator) whose job is to
+ * construct a resource and create a vtkMultiBlockDataSet from the resource. The
+ * resulting resource is then manipulated in situ by SMTK operations; these
+ * operations flag the source (vtkSMTKResourceSource) for update. By
+ * encapsulating the resource generator within this class, we can trigger an
+ * execution of the visualizaion pipeline without affecting a regeneration of
+ * the resource. The resource will be regenerated only if the exposed methods of
+ * the resource generator (e.g. FileName) are modified. This design is based off
+ * of ParaView's vtkMetaReader.
  */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKSource : public vtkMultiBlockDataSetAlgorithm
+class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  vtkTypeMacro(vtkSMTKSource, vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkSMTKResourceSource, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkSMTKSource* New();
+  static vtkSMTKResourceSource* New();
 
   /**
    * Set/get the internal resource.
@@ -53,14 +54,14 @@ public:
 protected:
   int FillOutputPortInformation(int port, vtkInformation* info) override;
 
-  vtkSMTKSource();
-  ~vtkSMTKSource() override;
+  vtkSMTKResourceSource();
+  ~vtkSMTKResourceSource() override;
 
   vtkSMTKResource* VTKResource;
 
 private:
-  vtkSMTKSource(const vtkSMTKSource&) = delete;
-  void operator=(const vtkSMTKSource&) = delete;
+  vtkSMTKResourceSource(const vtkSMTKResourceSource&) = delete;
+  void operator=(const vtkSMTKResourceSource&) = delete;
 };
 
 #endif
