@@ -50,10 +50,21 @@ public:
   }
 
   std::shared_ptr<smtk::resource::PersistentObject> operator()(
-    std::weak_ptr<smtk::resource::PersistentObject> weakPersistentObject) const
+    const std::weak_ptr<smtk::resource::PersistentObject>& weakPersistentObject) const
   {
     return weakPersistentObject.lock();
   }
+};
+
+class remove_reference : public boost::static_visitor<>
+{
+public:
+  void operator()(std::shared_ptr<smtk::resource::PersistentObject>& persistentObject) const
+  {
+    persistentObject.reset();
+  }
+
+  void operator()(std::weak_ptr<smtk::resource::PersistentObject>&) const {}
 };
 }
 
@@ -207,6 +218,13 @@ ReferenceItem& ReferenceItem::operator=(const ReferenceItem& referenceItem)
 
 ReferenceItem::~ReferenceItem()
 {
+  // The unique_ptr for m_cache should handle all of this cleanup. Let's be
+  // sure, though.
+  for (auto it = m_cache->begin(); it != m_cache->end(); ++it)
+  {
+    boost::apply_visitor(remove_reference(), *it);
+  }
+  m_cache->clear();
 }
 
 bool ReferenceItem::isValid() const
@@ -298,7 +316,7 @@ std::size_t ReferenceItem::maxNumberOfValues() const
 bool ReferenceItem::contains(const smtk::resource::PersistentObjectPtr& obj) const
 {
   bool doesContain = false;
-  this->visit([&](PersistentObjectPtr other) {
+  this->visit([&](const PersistentObjectPtr& other) {
     if (other == obj)
     {
       doesContain = true;
@@ -309,7 +327,7 @@ bool ReferenceItem::contains(const smtk::resource::PersistentObjectPtr& obj) con
   return doesContain;
 }
 
-void ReferenceItem::visit(std::function<bool(PersistentObjectPtr)> visitor) const
+void ReferenceItem::visit(std::function<bool(const PersistentObjectPtr&)> visitor) const
 {
   for (auto it = this->begin(); it != this->end(); ++it)
   {
@@ -352,12 +370,12 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(std::size_t i) co
   return result;
 }
 
-bool ReferenceItem::setObjectValue(PersistentObjectPtr val)
+bool ReferenceItem::setObjectValue(const PersistentObjectPtr& val)
 {
   return this->setObjectValue(0, val);
 }
 
-ReferenceItem::Key ReferenceItem::linkTo(PersistentObjectPtr val)
+ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
 
@@ -377,7 +395,7 @@ ReferenceItem::Key ReferenceItem::linkTo(PersistentObjectPtr val)
   return ReferenceItem::Key();
 }
 
-bool ReferenceItem::setObjectValue(std::size_t i, PersistentObjectPtr val)
+bool ReferenceItem::setObjectValue(std::size_t i, const PersistentObjectPtr& val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if (i < m_cache->size() && (val == nullptr || def->isValueValid(val)))
@@ -390,7 +408,7 @@ bool ReferenceItem::setObjectValue(std::size_t i, PersistentObjectPtr val)
   return false;
 }
 
-bool ReferenceItem::appendObjectValue(PersistentObjectPtr val)
+bool ReferenceItem::appendObjectValue(const PersistentObjectPtr& val)
 {
   // First - is this value valid?
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
@@ -544,7 +562,7 @@ bool ReferenceItem::has(const smtk::common::UUID& entity) const
   return this->find(entity) >= 0;
 }
 
-bool ReferenceItem::has(PersistentObjectPtr entity) const
+bool ReferenceItem::has(const PersistentObjectPtr& entity) const
 {
   return this->find(entity) >= 0;
 }
@@ -579,12 +597,12 @@ std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
   return -1;
 }
 
-std::ptrdiff_t ReferenceItem::find(PersistentObjectPtr comp) const
+std::ptrdiff_t ReferenceItem::find(const PersistentObjectPtr& comp) const
 {
   std::ptrdiff_t idx = 0;
   for (auto it = this->begin(); it != this->end(); ++it, ++idx)
   {
-    if (*it == comp)
+    if ((*it) == comp)
     {
       return idx;
     }

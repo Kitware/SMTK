@@ -198,7 +198,10 @@ void qtReferenceItem::linkHover(bool link)
     {
       if (member.second)
       {
-        hover.push_back(member.first);
+        if (auto object = member.first.lock())
+        {
+          hover.push_back(object);
+        }
       }
     }
   } // else the mouse is no longer hovering... clear the highlight.
@@ -289,10 +292,12 @@ void qtReferenceItem::copyToSelection()
   if (seln)
   {
     smtk::resource::PersistentObjectArray nextSeln;
-    nextSeln.reserve(m_p->m_members.size());
     for (const auto& entry : m_p->m_members)
     {
-      nextSeln.push_back(entry.first);
+      if (auto object = entry.first.lock())
+      {
+        nextSeln.push_back(entry.first.lock());
+      }
     }
     seln->modifySelection(nextSeln, "qtReferenceItem", 1); // FIXME: Use an app-specified bit
   }
@@ -601,7 +606,7 @@ std::string qtReferenceItem::synopsis(bool& ok) const
   if (numRequired < 2 && maxAllowed == 1)
   {
     auto ment = (m_p->m_members.empty() ? smtk::resource::PersistentObjectPtr()
-                                        : m_p->m_members.begin()->first);
+                                        : m_p->m_members.begin()->first.lock());
     label << (numSel == 1 ? (ment ? ment->name() : "NULL!!")
                           : (numSel > 0 ? "too many" : "(none)"));
     ok = numSel >= numRequired && numSel <= maxAllowed;
@@ -894,7 +899,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
       {
         if (member.second)
         {
-          if (!item->setObjectValue(idx, member.first))
+          if (!item->setObjectValue(idx, member.first.lock()))
           {
             return false; // Huh!?!
           }

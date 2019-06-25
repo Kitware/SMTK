@@ -111,7 +111,7 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   if (resManager != nullptr)
   {
     m_resourceObserverKey =
-      resManager->observers().insert([this](smtk::resource::Resource::Ptr resource,
+      resManager->observers().insert([this](const smtk::resource::Resource::Ptr& resource,
         smtk::resource::EventType event) { this->handleResourceEvent(resource, event); });
   }
   else
@@ -545,7 +545,7 @@ int qtAssociationWidget::handleOperationEvent(smtk::operation::OperationPtr,
 }
 
 void qtAssociationWidget::handleResourceEvent(
-  smtk::resource::Resource::Ptr resource, smtk::resource::EventType event)
+  const smtk::resource::Resource::Ptr& resource, smtk::resource::EventType event)
 {
   (void)resource;
   if (event == smtk::resource::EventType::REMOVED)

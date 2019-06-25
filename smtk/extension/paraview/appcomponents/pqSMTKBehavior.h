@@ -66,7 +66,7 @@ public:
   pqSMTKWrapper* getPVResourceManager(smtk::resource::ManagerPtr rsrcMgr);
 
   /// Return the pqSMTKResource for a given smtk::resource::ResourcePtr.
-  pqSMTKResource* getPVResource(smtk::resource::ResourcePtr rsrc);
+  pqSMTKResource* getPVResource(const smtk::resource::ResourcePtr& rsrc);
 
   /**\brief Call a visitor function \a fn on each existing resource manager/server pair.
     *

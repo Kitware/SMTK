@@ -109,7 +109,7 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
 {
   if (adding)
   {
-    if (m_resources.find(rsrc) == m_resources.end())
+    if (m_resourceIds.find(rsrc->id()) == m_resourceIds.end())
     {
       // Only attempt to filter resource out if there are filters defined.
       bool acceptable = m_resourceFilters.empty() ? true : false;
@@ -127,7 +127,7 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
         return;
       }
 
-      m_resources.insert(rsrc);
+      m_resourceIds.insert(rsrc->id());
       DescriptivePhrases children(m_root->subphrases());
       children.push_back(
         smtk::view::ResourcePhraseContent::createPhrase(rsrc, m_mutableAspects, m_root));
@@ -138,10 +138,10 @@ void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
   }
   else
   {
-    auto it = m_resources.find(rsrc);
-    if (it != m_resources.end())
+    auto it = m_resourceIds.find(rsrc->id());
+    if (it != m_resourceIds.end())
     {
-      m_resources.erase(it);
+      m_resourceIds.erase(it);
       DescriptivePhrases children(m_root->subphrases());
       children.erase(std::remove_if(children.begin(), children.end(),
                        [&rsrc](const DescriptivePhrase::Ptr& phr) -> bool {

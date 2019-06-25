@@ -37,6 +37,7 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/groups/CreatorGroup.h"
 #include "smtk/resource/Manager.h"
+#include "smtk/view/Selection.h"
 
 #include <QAction>
 #include <QApplication>
@@ -117,6 +118,14 @@ void pqCloseResourceReaction::closeResource()
     if (smtk::resource::Manager::Ptr manager = resource->manager())
     {
       manager->remove(resource);
+    }
+
+    // Remove it from the active selection
+    {
+      smtk::view::Selection::SelectionMap& selections =
+        const_cast<smtk::view::Selection::SelectionMap&>(
+          smtk::view::Selection::instance()->currentSelection());
+      selections.erase(resource);
     }
   }
 }

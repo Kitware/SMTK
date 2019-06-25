@@ -94,7 +94,7 @@ void pqSMTKDisplayAttributeOnLoadBehavior::observeResourcesOnServer(
   }
 
   smtk::resource::Observers::Key observerKey = rsrcMgr->observers().insert(
-    [this](smtk::resource::ResourcePtr rsrc, smtk::resource::EventType event) {
+    [this](const smtk::resource::ResourcePtr& rsrc, smtk::resource::EventType event) {
       this->handleResourceEvent(rsrc, event);
     },
     0,     // assign a neutral priority

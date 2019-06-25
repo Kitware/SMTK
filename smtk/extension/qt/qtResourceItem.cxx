@@ -80,10 +80,6 @@ std::string qtResourceItem::synopsis(bool& ok) const
     return "uninitialized item";
   }
 
-  if (m_p->m_members.size())
-  {
-    auto foo = m_p->m_members.begin()->first;
-  }
   std::size_t numRequired = item->numberOfRequiredValues();
   std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
@@ -100,7 +96,7 @@ std::string qtResourceItem::synopsis(bool& ok) const
   {
     auto resource = (m_p->m_members.empty()
         ? smtk::resource::ResourcePtr()
-        : std::static_pointer_cast<smtk::resource::Resource>(m_p->m_members.begin()->first));
+        : std::static_pointer_cast<smtk::resource::Resource>(m_p->m_members.begin()->first.lock()));
 
     if (resource != nullptr)
     {

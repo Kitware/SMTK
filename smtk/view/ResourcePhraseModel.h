@@ -56,7 +56,7 @@ protected:
   virtual void triggerModified(const Resource::Ptr& rsrc);
 
   smtk::view::DescriptivePhrasePtr m_root;
-  std::set<smtk::resource::ResourcePtr> m_resources;
+  std::set<smtk::common::UUID> m_resourceIds;
   std::multimap<std::string, std::string> m_resourceFilters;
 };
 }

@@ -58,9 +58,9 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
     QVariantList invalidValueColorRgbF READ invalidValueColorRgbF WRITE setInvalidValueColorRgbF);
 
 public:
-  qtUIManager(smtk::attribute::ResourcePtr resource);
-  qtUIManager(
-    smtk::operation::OperationPtr operation, smtk::resource::ManagerPtr resourceManager = nullptr);
+  qtUIManager(const smtk::attribute::ResourcePtr& resource);
+  qtUIManager(const smtk::operation::OperationPtr& operation,
+    const smtk::resource::ManagerPtr& resourceManager = nullptr);
   virtual ~qtUIManager();
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
@@ -85,7 +85,7 @@ public:
   smtk::operation::ManagerPtr operationManager() const { return m_operationManager; }
   void setOperationManager(smtk::operation::ManagerPtr mgr) { m_operationManager = mgr; }
 
-  smtk::attribute::ResourcePtr attResource() const { return m_attResource; }
+  smtk::attribute::ResourcePtr attResource() const { return m_attResource.lock(); }
 
   void setActiveModelView(smtk::extension::qtModelView*);
   smtk::extension::qtModelView* activeModelView();
@@ -280,7 +280,7 @@ private:
   bool AdvancedBold;   // true by default
   bool AdvancedItalic; // false by default
 
-  smtk::attribute::ResourcePtr m_attResource;
+  std::weak_ptr<smtk::attribute::Resource> m_attResource;
   smtk::resource::ManagerPtr m_resourceManager;
   smtk::operation::ManagerPtr m_operationManager;
   smtk::operation::OperationPtr m_operation;

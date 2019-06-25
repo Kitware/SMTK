@@ -190,7 +190,9 @@ void resourcesFromItem(
 }
 }
 
-std::set<smtk::resource::Resource::Ptr> extractResources(Operation::Result result)
+std::set<std::weak_ptr<smtk::resource::Resource>,
+  std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+extractResources(Operation::Result result)
 {
   ResourceAccessMap resourcesAndLockTypes;
 
@@ -220,7 +222,9 @@ std::set<smtk::resource::Resource::Ptr> extractResources(Operation::Result resul
   }
 
   // We are only interested in the resources, so we strip away the lock types.
-  std::set<smtk::resource::Resource::Ptr> resources;
+  std::set<std::weak_ptr<smtk::resource::Resource>,
+    std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+    resources;
   for (auto resourceAndLockType : resourcesAndLockTypes)
   {
     resources.insert(resourceAndLockType.first);

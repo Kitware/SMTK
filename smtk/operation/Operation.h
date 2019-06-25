@@ -196,7 +196,7 @@ private:
   Specification m_specification;
   Parameters m_parameters;
   Definition m_resultDefinition;
-  std::vector<Result> m_results;
+  std::vector<std::weak_ptr<smtk::attribute::Attribute> > m_results;
 };
 }
 }
