@@ -7,10 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
@@ -41,30 +40,28 @@
 
 using namespace smtk;
 
-vtkStandardNewMacro(vtkSMTKModelReader);
+vtkStandardNewMacro(vtkSMTKResourceReader);
 
-vtkSMTKModelReader::vtkSMTKModelReader()
+vtkSMTKResourceReader::vtkSMTKResourceReader()
 {
   this->FileName = nullptr;
   this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
-  // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
-  // results in the filter being updated:
   this->Modified();
 }
 
-vtkSMTKModelReader::~vtkSMTKModelReader()
+vtkSMTKResourceReader::~vtkSMTKResourceReader()
 {
   this->SetFileName(nullptr);
 }
 
-void vtkSMTKModelReader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKResourceReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKModelReader::GenerateResource() const
+smtk::resource::ResourcePtr vtkSMTKResourceReader::GenerateResource() const
 {
   if (!this->FileName)
   {

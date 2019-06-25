@@ -43,7 +43,7 @@ class vtkTexture;
 
 /**
  *  \brief Representation of an SMTK Model. Renders the outputs of
- *  vtkSMTKModelReader.
+ *  vtkSMTKResourceReader.
  *
  *  Input data arrives through 3 ports:
  *

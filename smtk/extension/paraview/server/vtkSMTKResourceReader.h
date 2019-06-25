@@ -7,12 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_server_vtkSMTKModelReader_h
-#define smtk_extension_paraview_server_vtkSMTKModelReader_h
+#ifndef smtk_extension_paraview_server_vtkSMTKResourceReader_h
+#define smtk_extension_paraview_server_vtkSMTKResourceReader_h
 
 #include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
-
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -22,20 +20,20 @@
 
 class vtkSMTKWrapper;
 
-/**\brief Use SMTK to provide a ParaView-friendly model source.
+/**\brief Use SMTK to provide a ParaView-friendly resource.
   *
   * If the SMTK wrapper object is set, then the wrapper's resource and operation
-  * manager are used to load the file (or perhaps in the future to create a new resource).
-  * Otherwise SMTK's default environment is used.
+  * managers are used to load the file. Otherwise, SMTK's default environment is
+  * used.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelReader : public vtkSMTKResourceGenerator
+class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceReader : public vtkSMTKResourceGenerator
 {
 public:
-  vtkTypeMacro(vtkSMTKModelReader, vtkSMTKResourceGenerator);
+  vtkTypeMacro(vtkSMTKResourceReader, vtkSMTKResourceGenerator);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkSMTKModelReader* New();
+  static vtkSMTKResourceReader* New();
 
-  /// Set/get the URL of the SMTK model resource.
+  /// Set/get the URL of the SMTK resource.
   vtkGetStringMacro(FileName);
   vtkSetStringMacro(FileName);
 
@@ -43,14 +41,14 @@ public:
   smtk::resource::ResourcePtr GenerateResource() const override;
 
 protected:
-  vtkSMTKModelReader();
-  ~vtkSMTKModelReader() override;
+  vtkSMTKResourceReader();
+  ~vtkSMTKResourceReader() override;
 
   char* FileName;
 
 private:
-  vtkSMTKModelReader(const vtkSMTKModelReader&) = delete;
-  void operator=(const vtkSMTKModelReader&) = delete;
+  vtkSMTKResourceReader(const vtkSMTKResourceReader&) = delete;
+  void operator=(const vtkSMTKResourceReader&) = delete;
 };
 
 #endif

@@ -33,7 +33,6 @@
 
 #include "vtkDataObjectTreeIterator.h"
 
-#include "smtk/extension/paraview/server/vtkSMTKModelReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"

@@ -107,7 +107,7 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -116,10 +116,10 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy name="SMTKModelReader" class="vtkSMTKModelReader" label="SMTK Model Reader">
+    <SourceProxy name="SMTKResourceReader" class="vtkSMTKResourceReader" label="SMTK Resource Reader">
       <Documentation
-        short_help="Read an SMTK Geometry file."
-        long_help="Read an SMTK Geometry file as a set of multiblock datasets.">
+        short_help="Read an SMTK file."
+        long_help="Read an SMTK file as a set of multiblock datasets.">
       </Documentation>
 
       <StringVectorProperty
@@ -133,12 +133,12 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
@@ -166,7 +166,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -203,7 +203,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -310,7 +310,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
 
@@ -344,7 +344,7 @@
         facilitates the modification of the resource in situ without triggering
         a regeneration of the resource.
     -->
-    <SourceProxy class="vtkSMTKSource" name="SMTKModelReader">
+    <SourceProxy class="vtkSMTKSource" name="SMTKResourceReader">
       <Documentation
         short_help="Read an SMTK Resource file."
         long_help="Read an SMTK Resource file as a set of multiblock datasets.">
@@ -352,17 +352,17 @@
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
-               proxyname="SMTKModelReader">
+               proxyname="SMTKResourceReader">
         </Proxy>
         <ExposedProperties>
           <Property name="FileName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
@@ -382,7 +382,7 @@
           <Property name="Parameters" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
@@ -405,7 +405,7 @@
           <Property name="ResourceName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="model entities"/>
+      <OutputPort index="0" name="entities"/>
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
