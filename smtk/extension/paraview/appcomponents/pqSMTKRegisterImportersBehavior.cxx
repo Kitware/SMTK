@@ -89,7 +89,7 @@ std::string proxyName(
 {
   std::size_t hash = std::hash<std::string>{}(resource + description);
   std::stringstream s;
-  s << "SMTKModelImporter_" << hash;
+  s << "SMTKResourceImporter_" << hash;
   return s.str();
 }
 
@@ -110,7 +110,7 @@ std::string xmlForSMTKImporter(
       <SubProxy command="SetVTKResource">
         <Proxy name="Resource"
                proxygroup="smtk_internal_sources"
-               proxyname="SMTKModelImporter">
+               proxyname="SMTKResourceImporter">
         </Proxy>
         <ExposedProperties>
           <Property name="FileName" />)";
@@ -187,7 +187,7 @@ pqSMTKRegisterImportersBehavior::pqSMTKRegisterImportersBehavior(QObject* parent
 {
   QObject::connect(pqSMTKBehavior::instance(),
     (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
-    this, &pqSMTKRegisterImportersBehavior::constructModelImporters);
+    this, &pqSMTKRegisterImportersBehavior::constructImporters);
 }
 
 pqSMTKRegisterImportersBehavior* pqSMTKRegisterImportersBehavior::instance(QObject* parent)
@@ -215,8 +215,7 @@ pqSMTKRegisterImportersBehavior::~pqSMTKRegisterImportersBehavior()
   QObject::disconnect(this);
 }
 
-void pqSMTKRegisterImportersBehavior::constructModelImporters(
-  pqSMTKWrapper* wrapper, pqServer* server)
+void pqSMTKRegisterImportersBehavior::constructImporters(pqSMTKWrapper* wrapper, pqServer* server)
 {
   if (!wrapper)
   {

@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKModelImporter.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceImporter.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
@@ -43,9 +43,9 @@
 
 using namespace smtk;
 
-vtkStandardNewMacro(vtkSMTKModelImporter);
+vtkStandardNewMacro(vtkSMTKResourceImporter);
 
-vtkSMTKModelImporter::vtkSMTKModelImporter()
+vtkSMTKResourceImporter::vtkSMTKResourceImporter()
 {
   this->FileName = nullptr;
   this->ResourceName = nullptr;
@@ -56,19 +56,19 @@ vtkSMTKModelImporter::vtkSMTKModelImporter()
   this->Modified();
 }
 
-vtkSMTKModelImporter::~vtkSMTKModelImporter()
+vtkSMTKResourceImporter::~vtkSMTKResourceImporter()
 {
   this->SetFileName(nullptr);
   this->SetResourceName(nullptr);
 }
 
-void vtkSMTKModelImporter::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKResourceImporter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << this->FileName << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKModelImporter::GenerateResource() const
+smtk::resource::ResourcePtr vtkSMTKResourceImporter::GenerateResource() const
 {
   if (!this->FileName)
   {

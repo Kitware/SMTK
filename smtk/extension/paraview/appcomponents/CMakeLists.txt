@@ -284,7 +284,7 @@ add_pqproxy_custom(proxyIfaces proxyIfaceSrcs
 
   TYPE pqSMTKResource
   XML_GROUP sources
-  XML_NAME_REGEX SMTKModelImporter*
+  XML_NAME_REGEX SMTKResourceImporter*
 
   TYPE pqSMTKResource
   XML_GROUP sources

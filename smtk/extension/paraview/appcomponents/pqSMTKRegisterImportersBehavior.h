@@ -34,7 +34,7 @@ protected:
   pqSMTKRegisterImportersBehavior(QObject* parent = nullptr);
 
 protected slots:
-  void constructModelImporters(pqSMTKWrapper* rsrcMgr, pqServer* server);
+  void constructImporters(pqSMTKWrapper* rsrcMgr, pqServer* server);
 
 private:
   Q_DISABLE_COPY(pqSMTKRegisterImportersBehavior);

@@ -177,7 +177,7 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy name="SMTKModelImporter" class="vtkSMTKModelImporter" label="SMTK Model Importer">
+    <SourceProxy name="SMTKResourceImporter" class="vtkSMTKResourceImporter" label="SMTK Resource Importer">
       <Documentation
         short_help="Import a file into SMTK."
         long_help="Import a file as a set of multiblock datasets.">
@@ -208,7 +208,7 @@
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
@@ -390,7 +390,7 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKModelImporter">
+    <SourceProxy class="vtkSMTKSource" name="SMTKResourceImporter">
       <Documentation
         short_help="Import an SMTK resource."
         long_help="Import a file as an SMTK Resource.">
@@ -398,7 +398,7 @@
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
-               proxyname="SMTKModelImporter">
+               proxyname="SMTKResourceImporter">
         </Proxy>
         <ExposedProperties>
           <Property name="FileName" />
