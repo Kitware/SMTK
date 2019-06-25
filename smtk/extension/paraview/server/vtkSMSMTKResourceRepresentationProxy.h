@@ -8,36 +8,37 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 /**
- * @class   vtkSMSMTKModelRepresentationProxy
+ * @class   vtkSMSMTKResourceRepresentationProxy
  *
  * This is a proxy for a vtkPVCompositeRepresentation which parents a
- * vtkSMTKModelRepresentation.
+ * vtkSMTKResourceRepresentation.
  *
  * Updates additional input properties of the representation
  * (GlyphPrototypes and GlyphPoints).
  */
-#ifndef smtk_extension_paraview_representation_vtkSMSMTKModelRepresentationProxy_h
-#define smtk_extension_paraview_representation_vtkSMSMTKModelRepresentationProxy_h
+#ifndef smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
+#define smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
 
 #include "smtk/extension/paraview/server/Exports.h" //needed for exports
 #include "vtkSMPVRepresentationProxy.h"
 
-class vtkSMTKModelRepresentation;
+class vtkSMTKResourceRepresentation;
 
-class SMTKPVSERVEREXT_EXPORT vtkSMSMTKModelRepresentationProxy : public vtkSMPVRepresentationProxy
+class SMTKPVSERVEREXT_EXPORT vtkSMSMTKResourceRepresentationProxy
+  : public vtkSMPVRepresentationProxy
 {
 public:
-  static vtkSMSMTKModelRepresentationProxy* New();
-  vtkTypeMacro(vtkSMSMTKModelRepresentationProxy, vtkSMPVRepresentationProxy);
+  static vtkSMSMTKResourceRepresentationProxy* New();
+  vtkTypeMacro(vtkSMSMTKResourceRepresentationProxy, vtkSMPVRepresentationProxy);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
-  vtkSMProxy* GetModelRepresentationSubProxy();
+  vtkSMProxy* GetResourceRepresentationSubProxy();
 
 protected:
-  vtkSMSMTKModelRepresentationProxy();
-  ~vtkSMSMTKModelRepresentationProxy() override;
+  vtkSMSMTKResourceRepresentationProxy();
+  ~vtkSMSMTKResourceRepresentationProxy() override;
 
-  friend class pqSMTKModelRepresentation;
+  friend class pqSMTKResourceRepresentation;
 
   /**
    * Connects additional input ports required by the representation (instance
@@ -47,16 +48,16 @@ protected:
 
   /**
    * Ensures that whenever the "Input" property changes, ConnectAdditionalPorts
-   * is called. This is critical in cases when pqSMTKModelRepresentation has not
-   * been constructed (e.g. Python invocations of SMTKModelRepresentation).
+   * is called. This is critical in cases when pqSMTKResourceRepresentation has not
+   * been constructed (e.g. Python invocations of SMTKResourceRepresentation).
    */
   void SetPropertyModifiedFlag(const char* name, int flag) override;
 
   bool InitializedInputs = false;
 
 private:
-  vtkSMSMTKModelRepresentationProxy(const vtkSMSMTKModelRepresentationProxy&) = delete;
-  void operator=(const vtkSMSMTKModelRepresentationProxy&) = delete;
+  vtkSMSMTKResourceRepresentationProxy(const vtkSMSMTKResourceRepresentationProxy&) = delete;
+  void operator=(const vtkSMSMTKResourceRepresentationProxy&) = delete;
 };
 
 #endif

@@ -69,7 +69,7 @@
           <Group name="representations" />
         </ProxyGroupDomain>
         <ProxyListDomain name="proxy_list">
-          <Proxy group="representations" name="SMTKModelRepresentation"/>
+          <Proxy group="representations" name="SMTKResourceRepresentation"/>
         </ProxyListDomain>
         <Documentation>This property is used by the resource manager
           to invoke methods on representations.</Documentation>
@@ -112,7 +112,7 @@
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
@@ -139,7 +139,7 @@
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
@@ -172,7 +172,7 @@
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
@@ -209,7 +209,7 @@
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
@@ -288,7 +288,7 @@
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
@@ -307,7 +307,7 @@
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
@@ -336,7 +336,7 @@
       <OutputPort index="2" name="instance points"/>
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
@@ -359,7 +359,7 @@
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
 
@@ -382,7 +382,7 @@
       <OutputPort index="1" name="instance prototypes"/>
       <OutputPort index="2" name="instance points"/>
       <Hints>
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
     </SourceProxy>
@@ -1226,8 +1226,8 @@
 
 <!-- ====================================================================== -->
   <ProxyGroup name="representations">
-    <RepresentationProxy name="SMTKModelRepresentation"
-                         class="vtkSMTKModelRepresentation"
+    <RepresentationProxy name="SMTKResourceRepresentation"
+                         class="vtkSMTKResourceRepresentation"
                          processes="client|renderserver|dataserver">
       <Documentation>
         This specialized representation uses extended functionality of the
@@ -1598,16 +1598,16 @@
         <Documentation>Use block attributes set through proxy properties.
         </Documentation>
       </IntVectorProperty>
-    <!-- End of SMTKModelRepresentation -->
+    <!-- End of SMTKResourceRepresentation -->
     </RepresentationProxy>
 
 <!-- ====================================================================== -->
-    <SMTKModelRepresentationProxy name="SMTKModelCompositeRepresentation"
+    <SMTKResourceRepresentationProxy name="SMTKResourceCompositeRepresentation"
                                   class="vtkPVCompositeRepresentation"
                                   processes="client|dataserver|renderserver">
       <Documentation>SMTK's default representation. It is a stripped down
       version of PVRepresentationBase (selection is handled by
-      SMTKModelRepresentation).</Documentation>
+      SMTKResourceRepresentation).</Documentation>
 
       <InputProperty command="SetInputConnection"
                      name="Input">
@@ -1659,16 +1659,16 @@
         set. If ForcedCacheKey is true, it overrides UseCache and CacheKey.
         Instead, ForcedCacheKey is used.</Documentation>
       </DoubleVectorProperty>
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Surface"
                           text="Model Surface"/>
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Points"
                           text="Model Points" />
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Wireframe"
                           text="Model Wireframe" />
-      <RepresentationType subproxy="SMTKModelRepresentation"
+      <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Surface With Edges"
                           text="Model Surface With Edges" />
       <RepresentationType subproxy="OutlineRepresentation"
@@ -1733,9 +1733,9 @@
       </ProxyProperty>
 
       <SubProxy>
-        <Proxy name="SMTKModelRepresentation"
+        <Proxy name="SMTKResourceRepresentation"
           proxygroup="representations"
-          proxyname="SMTKModelRepresentation">
+          proxyname="SMTKResourceRepresentation">
         </Proxy>
         <ExposedProperties>
           <PropertyGroup label="Color Mode">
@@ -1819,12 +1819,12 @@
         <Proxy name="OutlineRepresentation"
                proxygroup="representations"
                proxyname="OutlineRepresentation"></Proxy>
-        <ShareProperties subproxy="SMTKModelRepresentation">
+        <ShareProperties subproxy="SMTKResourceRepresentation">
           <Exception name="Input" />
           <Exception name="Visibility" />
         </ShareProperties>
       </SubProxy>
-    </SMTKModelRepresentationProxy>
+    </SMTKResourceRepresentationProxy>
 
     <!-- Widget representations -->
     <!-- Cone widget -->

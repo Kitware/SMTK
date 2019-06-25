@@ -10,13 +10,13 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
-#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h" // FIXME: Remove the need for me
+#include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h" // FIXME: Remove the need for me
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
@@ -44,7 +44,7 @@
 #include "smtk/extension/qt/qtResourceBrowserP.h"
 
 template <typename T, typename U>
-int UpdateVisibilityForFootprint(pqSMTKModelRepresentation* smap, const T& comp, int visible,
+int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& comp, int visible,
   U& visibleThings, const smtk::view::DescriptivePhrasePtr&)
 {
   bool didUpdate = false;
@@ -210,7 +210,7 @@ int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Q
       { // Find the mapper in the active view for the related resource, then set the visibility.
         auto view = pqActiveObjects::instance().activeView();
         auto mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
-        auto smap = dynamic_cast<pqSMTKModelRepresentation*>(mapr);
+        auto smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
         if (smap)
         {
           int rval = UpdateVisibilityForFootprint(smap, comp, val, visibleThings, data->location());
@@ -299,7 +299,7 @@ void pqSMTKResourceBrowser::activeViewChanged(pqView* view)
       m_p->m_visibleThings[rsrc->id()] = rep->isVisible() ? 1 : 0;
       auto thingy = rep->getProxy()->GetClientSideObject();
       auto thingy2 = vtkCompositeRepresentation::SafeDownCast(thingy);
-      auto srvrep = vtkSMTKModelRepresentation::SafeDownCast(
+      auto srvrep = vtkSMTKResourceRepresentation::SafeDownCast(
         thingy2 ? thingy2->GetActiveRepresentation() : nullptr);
       if (srvrep)
       {
@@ -323,7 +323,7 @@ void pqSMTKResourceBrowser::activeViewChanged(pqView* view)
 
 void pqSMTKResourceBrowser::representationAddedToActiveView(pqRepresentation* rep)
 {
-  auto modelRep = dynamic_cast<pqSMTKModelRepresentation*>(rep);
+  auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
   if (modelRep)
   {
     QObject::connect(modelRep,
@@ -334,7 +334,7 @@ void pqSMTKResourceBrowser::representationAddedToActiveView(pqRepresentation* re
 
 void pqSMTKResourceBrowser::representationRemovedFromActiveView(pqRepresentation* rep)
 {
-  auto modelRep = dynamic_cast<pqSMTKModelRepresentation*>(rep);
+  auto modelRep = dynamic_cast<pqSMTKResourceRepresentation*>(rep);
   if (modelRep)
   {
     QObject::disconnect(modelRep,

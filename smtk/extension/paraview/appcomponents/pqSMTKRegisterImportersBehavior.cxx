@@ -129,7 +129,7 @@ std::string xmlForSMTKImporter(
   s << "        <ReaderFactory extensions=\"" << extensions << "\" ";
   s << "file_description=\"" << description << "\"/>";
   s << R"(
-        <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
+        <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
     </SourceProxy>
   </ProxyGroup>

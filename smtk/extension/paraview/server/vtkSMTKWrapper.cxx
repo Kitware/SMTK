@@ -9,8 +9,8 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
-#include "smtk/extension/paraview/server/vtkSMTKModelRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKResource.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
@@ -172,7 +172,7 @@ void vtkSMTKWrapper::ProcessJSON()
   {
     auto uid = j["params"]["resource"].get<smtk::common::UUID>();
     auto rsrc = this->GetResourceManager()->get(uid);
-    auto repr = vtkSMTKModelRepresentation::SafeDownCast(this->Representation);
+    auto repr = vtkSMTKResourceRepresentation::SafeDownCast(this->Representation);
     if (repr)
     {
       repr->SetResource(rsrc);
