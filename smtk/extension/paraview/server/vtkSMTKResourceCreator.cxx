@@ -7,9 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/vtkSMTKModelCreator.h"
+#include "smtk/extension/paraview/server/vtkSMTKResourceCreator.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
@@ -44,9 +43,9 @@
 
 using json = nlohmann::json;
 
-vtkStandardNewMacro(vtkSMTKModelCreator);
+vtkStandardNewMacro(vtkSMTKResourceCreator);
 
-vtkSMTKModelCreator::vtkSMTKModelCreator()
+vtkSMTKResourceCreator::vtkSMTKResourceCreator()
 {
   this->TypeName = nullptr;
   this->Parameters = nullptr;
@@ -57,20 +56,20 @@ vtkSMTKModelCreator::vtkSMTKModelCreator()
   this->Modified();
 }
 
-vtkSMTKModelCreator::~vtkSMTKModelCreator()
+vtkSMTKResourceCreator::~vtkSMTKResourceCreator()
 {
   this->SetTypeName(nullptr);
   this->SetParameters(nullptr);
 }
 
-void vtkSMTKModelCreator::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKResourceCreator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "TypeName: " << this->TypeName << "\n";
   os << indent << "Parameters: " << this->Parameters << "\n";
 }
 
-smtk::resource::ResourcePtr vtkSMTKModelCreator::GenerateResource() const
+smtk::resource::ResourcePtr vtkSMTKResourceCreator::GenerateResource() const
 {
   if (this->Resource && this->Wrapper)
   {

@@ -280,7 +280,7 @@ add_pqproxy_custom(proxyIfaces proxyIfaceSrcs
 
   TYPE pqSMTKResource
   XML_GROUP sources
-  XML_NAME SMTKModelCreator
+  XML_NAME SMTKResourceCreator
 
   TYPE pqSMTKResource
   XML_GROUP sources

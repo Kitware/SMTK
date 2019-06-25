@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_server_vtkSMTKModelCreator_h
-#define smtk_extension_paraview_server_vtkSMTKModelCreator_h
+#ifndef smtk_extension_paraview_server_vtkSMTKResourceCreator_h
+#define smtk_extension_paraview_server_vtkSMTKResourceCreator_h
 
 #include "smtk/extension/paraview/server/Exports.h"
 
@@ -20,12 +20,12 @@ class vtkSMTKWrapper;
 
 /**\brief A class for SMTK-based model sources.
   */
-class SMTKPVSERVEREXT_EXPORT vtkSMTKModelCreator : public vtkSMTKResourceGenerator
+class SMTKPVSERVEREXT_EXPORT vtkSMTKResourceCreator : public vtkSMTKResourceGenerator
 {
 public:
-  vtkTypeMacro(vtkSMTKModelCreator, vtkSMTKResourceGenerator);
+  vtkTypeMacro(vtkSMTKResourceCreator, vtkSMTKResourceGenerator);
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  static vtkSMTKModelCreator* New();
+  static vtkSMTKResourceCreator* New();
 
   /// Set/get the create operation type name.
   vtkGetStringMacro(TypeName);
@@ -39,15 +39,15 @@ public:
   smtk::resource::ResourcePtr GenerateResource() const override;
 
 protected:
-  vtkSMTKModelCreator();
-  ~vtkSMTKModelCreator() override;
+  vtkSMTKResourceCreator();
+  ~vtkSMTKResourceCreator() override;
 
   char* TypeName;
   char* Parameters;
 
 private:
-  vtkSMTKModelCreator(const vtkSMTKModelCreator&) = delete;
-  void operator=(const vtkSMTKModelCreator&) = delete;
+  vtkSMTKResourceCreator(const vtkSMTKResourceCreator&) = delete;
+  void operator=(const vtkSMTKResourceCreator&) = delete;
 };
 
 #endif

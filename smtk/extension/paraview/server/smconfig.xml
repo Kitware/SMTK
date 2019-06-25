@@ -144,10 +144,10 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy name="SMTKModelCreator" class="vtkSMTKModelCreator" label="SMTK Model Creator">
+    <SourceProxy name="SMTKResourceCreator" class="vtkSMTKResourceCreator" label="SMTK Resource Creator">
       <Documentation
-        short_help="Create a new SMTK model."
-        long_help="Create a new SMTK model and represent it as a set of multiblock datasets.">
+        short_help="Create a new SMTK resource."
+        long_help="Create a new SMTK resource and represent it as a set of multiblock datasets.">
       </Documentation>
 
       <StringVectorProperty
@@ -171,7 +171,7 @@
       <OutputPort index="2" name="instance points"/>
 
       <Hints>
-        <ReaderFactory extensions="smtk" file_description="SMTK Model Geometry Files"/>
+        <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
         <Representation view="RenderView" type="SMTKModelCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
       </Hints>
@@ -368,14 +368,14 @@
       </Hints>
     </SourceProxy>
 
-    <SourceProxy class="vtkSMTKSource" name="SMTKModelCreator">
+    <SourceProxy class="vtkSMTKSource" name="SMTKResourceCreator">
       <Documentation
         short_help="Create an SMTK resource.">
       </Documentation>
       <SubProxy command="SetVTKResource">
         <Proxy name="VTKResource"
                proxygroup="smtk_internal_sources"
-               proxyname="SMTKModelCreator">
+               proxyname="SMTKResourceCreator">
         </Proxy>
         <ExposedProperties>
           <Property name="TypeName" />

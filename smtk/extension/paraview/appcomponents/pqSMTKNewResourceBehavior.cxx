@@ -108,7 +108,7 @@ void pqNewResourceReaction::newResource()
     auto builder = pqCore->getObjectBuilder();
 
     pqSMTKResource* src =
-      static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKModelCreator", server));
+      static_cast<pqSMTKResource*>(builder->createSource("sources", "SMTKResourceCreator", server));
     vtkSMPropertyHelper(src->getProxy(), "TypeName").Set(typeName.c_str());
     vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
 
