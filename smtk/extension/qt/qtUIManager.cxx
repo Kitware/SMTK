@@ -100,8 +100,8 @@ QSize qtTextEdit::sizeHint() const
 qtUIManager::qtUIManager(const smtk::attribute::ResourcePtr& resource)
   : m_parentWidget(nullptr)
   , m_attResource(resource)
-  , m_useInternalFileBrowser(false)
   , m_resourceManager(nullptr)
+  , m_useInternalFileBrowser(false)
 {
   if (auto attResource = m_attResource.lock())
   {

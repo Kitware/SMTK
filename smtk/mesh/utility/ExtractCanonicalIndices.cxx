@@ -25,21 +25,6 @@
 #include <unordered_map>
 #include <utility>
 
-namespace
-{
-// Return the dimension of the cell type
-int dimension(smtk::mesh::CellType cellEnum)
-{
-  switch (cellEnum)
-  {
-    smtkMeshCellEnumToTypeMacro(return CellTraits::TOPOLOGICAL_DIMENSIONS);
-    case smtk::mesh::CellType_MAX:
-      break;
-  }
-  return -1;
-}
-}
-
 namespace smtk
 {
 namespace mesh
