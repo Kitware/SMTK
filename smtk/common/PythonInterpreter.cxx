@@ -113,39 +113,20 @@ void PythonInterpreter::initialize()
   Py_NoSiteFlag = 1;
   pybind11::initialize_interpreter();
 
-  // If the executing process's environment has set PYTHONPATH to find smtk,
-  // then there's no need for us to look for it.
-  if (canFindModule("smtk"))
-  {
-    return;
-  }
-
-  // Otherwise, locate the directory containing the library that describes this
+  // Locate the directory containing the library that describes this
   // class.
   boost::filesystem::path smtkLibDir =
     boost::dll::symbol_location(PythonInterpreter::instance).parent_path();
 
-  // We first look for SMTK as run from the build tree.
-  bool smtkFound = this->addPathToBuildTree(smtkLibDir.parent_path().string(), "smtk");
-
-  // If we don't find it, then we look for SMTK as an installed module.
-  if (!smtkFound)
-  {
-    smtkFound = this->addPathToInstalledModule(smtkLibDir.string(), "smtk");
-  }
-
-  // If we don't find it, then we look for SMTK as a packaged module.
-  if (!smtkFound)
-  {
-    smtkFound = this->addPathToPackagedModule(smtkLibDir.string(), "smtk");
-  }
-
-  // If we still don't find it, we don't do anyting special. Consuming projects
-  // (like CMB) may have packaged SMTK with logic that does not follow SMTK's
-  // install or build pattern, and that's ok. In this case, it is up to the
-  // consuming project to properly set the embedded python's PYTHONPATH to find
-  // SMTK, and can use the public methods pathToLibraryContainingFunction(),
-  // addToPythonPath() and canFindModule() to do so.
+  // Use it to ensure that the smtk module is in our embedded python instance's
+  // module path. If we don't find it, we don't do anyting special. Consuming
+  // projects (like CMB) may have packaged SMTK with logic that does not follow
+  // SMTK's install or build pattern, and that's ok. In this case, it is up to
+  // the consuming project to properly set the embedded python's PYTHONPATH to
+  // find SMTK, and can use the public methods
+  // pathToLibraryContainingFunction(), addToPythonPath() and canFindModule() to
+  // do so.
+  this->addPathToPluginModule("smtk", smtkLibDir.string());
 }
 
 void PythonInterpreter::finalize()
@@ -204,6 +185,35 @@ bool PythonInterpreter::addToPythonPath(const std::string& path_list, std::strin
   }
 
   return true;
+}
+
+bool PythonInterpreter::addPathToPluginModule(const std::string& module, const std::string& libdir)
+{
+  // If the executing process's environment has set PYTHONPATH to find the
+  // module, then there's no need for us to look for it.
+  if (canFindModule(module))
+  {
+    return true;
+  }
+
+  // Otherwise, locate the directory containing a library in the plugin.
+  // We first look for SMTK as run from the build tree.
+  bool found =
+    this->addPathToBuildTree(boost::filesystem::path(libdir).parent_path().string(), module);
+
+  // If we don't find it, then we look for the module as an installed project.
+  if (!found)
+  {
+    found = this->addPathToInstalledModule(libdir, module);
+  }
+
+  // If we don't find it, then we look for the module as a packaged project.
+  if (!found)
+  {
+    found = this->addPathToPackagedModule(libdir, module);
+  }
+
+  return found;
 }
 
 bool PythonInterpreter::canFindModule(const std::string& module) const
