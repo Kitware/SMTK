@@ -268,7 +268,7 @@ public:
   virtual void SetWrapper(vtkSMTKWrapper*);
   vtkGetObjectMacro(Wrapper, vtkSMTKWrapper);
 
-  void SetResource(smtk::resource::ResourcePtr res);
+  void SetResource(const smtk::resource::ResourcePtr& res);
 
   void GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata);
   bool SetEntityVisibility(smtk::resource::PersistentObjectPtr ent, bool visible);
@@ -389,7 +389,7 @@ protected:
    * Provides access to entities in the model. This is useful when coloring by
    * certain modes (e.g. in order to query the color of a volume with a given UUID).
    */
-  smtk::resource::ResourcePtr Resource;
+  std::weak_ptr<smtk::resource::Resource> Resource;
 
   /// Map from component ids to their state (which is currently only visibility, but may be expanded)
   ComponentStateMap ComponentState;

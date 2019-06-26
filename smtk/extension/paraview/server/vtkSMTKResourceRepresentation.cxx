@@ -883,7 +883,7 @@ void vtkSMTKResourceRepresentation::ClearSelection(vtkMapper* mapper)
   }
 }
 
-void vtkSMTKResourceRepresentation::SetResource(smtk::resource::ResourcePtr res)
+void vtkSMTKResourceRepresentation::SetResource(const smtk::resource::ResourcePtr& res)
 {
   this->Resource = res;
 }
@@ -1233,7 +1233,8 @@ void vtkSMTKResourceRepresentation::ColorByVolume(vtkMultiBlockDataSet* data)
       dataObj->GetFieldData()->GetAbstractArray(vtkModelMultiBlockSource::GetVolumeTagName()));
     if (arr)
     {
-      if (!this->Resource)
+      auto resource = this->Resource.lock();
+      if (!resource)
       {
         vtkErrorMacro(<< "Invalid Resource!");
         return;
@@ -1241,7 +1242,7 @@ void vtkSMTKResourceRepresentation::ColorByVolume(vtkMultiBlockDataSet* data)
 
       // FIXME Do something with additional volumes this block might be bounding
       // (currently only using the first one)
-      ColorBlockAsEntity(this->EntityMapper, dataObj, arr->GetValue(0), this->Resource);
+      ColorBlockAsEntity(this->EntityMapper, dataObj, arr->GetValue(0), resource);
     }
     else
     {
@@ -1260,6 +1261,11 @@ void vtkSMTKResourceRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
   if (!this->UpdateColorBy)
     return;
 
+  auto resource = this->Resource.lock();
+
+  if (!resource)
+    return;
+
   // Traverse the blocks and set the entity's color
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockColors();
   this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockOpacities();
@@ -1272,14 +1278,14 @@ void vtkSMTKResourceRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
     auto uuid = vtkModelMultiBlockSource::GetDataObjectUUID(data->GetMetaData(it));
     if (uuid)
     {
-      auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(this->Resource->find(uuid));
+      auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(resource->find(uuid));
       if (ent && ent->isInstance())
       {
-        ColorBlockAsEntity(this->GlyphMapper, dataObj, uuid, this->Resource);
+        ColorBlockAsEntity(this->GlyphMapper, dataObj, uuid, resource);
       }
       else
       {
-        ColorBlockAsEntity(this->EntityMapper, dataObj, uuid, this->Resource);
+        ColorBlockAsEntity(this->EntityMapper, dataObj, uuid, resource);
       }
     }
     it->GoToNextItem();
