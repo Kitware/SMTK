@@ -11,7 +11,7 @@
 //=========================================================================
 
 #include "@_smtk_ui_view_CLASS_NAME@Implementation.h"
-#include "@_smtk_ui_view_CLASS_NAME@.h"
+#include "@_smtk_ui_view_HEADER_PATH@@_smtk_ui_view_CLASS_NAME@.h"
 
 @_smtk_ui_view_CLASS_NAME@Implementation::@_smtk_ui_view_CLASS_NAME@Implementation(QObject* p)
 : QObject(p)
