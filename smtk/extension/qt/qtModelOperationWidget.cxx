@@ -12,6 +12,7 @@
 
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtCollapsibleGroupWidget.h"
 #include "smtk/extension/qt/qtInstancedView.h"
 #include "smtk/extension/qt/qtModelView.h"
@@ -267,7 +268,12 @@ bool qtModelOperationWidget::checkExistingOperation(const std::string& opName)
   // if the operator is already created, just set its UI to be current widget
   if (this->Internals->OperationMap.contains(opName))
   {
-    this->Internals->OperationMap[opName].opUiView->requestModelEntityAssociation();
+    auto iview =
+      dynamic_cast<qtBaseAttributeView*>(this->Internals->OperationMap[opName].opUiView.data());
+    if (iview)
+    {
+      iview->requestModelEntityAssociation();
+    }
     this->Internals->OperationsLayout->setCurrentWidget(
       this->Internals->OperationMap[opName].opUiParent);
     return true;

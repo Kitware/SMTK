@@ -16,7 +16,7 @@
 #define __smtk_extension_qtAssociationView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 #include <QMap>
 #include <QModelIndex>
@@ -46,7 +46,7 @@ namespace extension
   *  </View>
   *
   */
-class SMTKQTEXT_EXPORT qtAssociationView : public qtBaseView
+class SMTKQTEXT_EXPORT qtAssociationView : public qtBaseAttributeView
 {
   Q_OBJECT
 

@@ -122,7 +122,7 @@ void qtPolygonEdgeOperationView::attributeModified()
 }
 
 qtPolygonEdgeOperationView::qtPolygonEdgeOperationView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtPolygonEdgeOperationViewInternals(m_useSelectionManager);
 }
@@ -492,7 +492,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::operation::Operat
 
 void qtPolygonEdgeOperationView::showAdvanceLevelOverlay(bool show)
 {
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 void qtPolygonEdgeOperationView::requestModelEntityAssociation()

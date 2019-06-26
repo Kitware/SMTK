@@ -155,7 +155,7 @@ qtBaseView* qtAttributeView::createViewWidget(const ViewInfo& info)
 }
 
 qtAttributeView::qtAttributeView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtAttributeViewInternals;
   this->Internals->m_alertIconPath = ":/icons/attribute/errorAlert.png";
@@ -1473,7 +1473,7 @@ void qtAttributeView::getAllDefinitions()
     }
 
     this->Internals->m_attCompMap[defName] = attsComp.child(i);
-    this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
+    this->qtBaseAttributeView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);
   }
 
@@ -1542,7 +1542,7 @@ void qtAttributeView::showAdvanceLevelOverlay(bool show)
   {
     this->Internals->CurrentAtt->showAdvanceLevelOverlay(show);
   }
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 bool qtAttributeView::isEmpty() const

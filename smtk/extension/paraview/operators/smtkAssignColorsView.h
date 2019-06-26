@@ -23,7 +23,8 @@ class QColor;
 class QIcon;
 class smtkAssignColorsViewInternals;
 
-class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkAssignColorsView : public smtk::extension::qtBaseView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkAssignColorsView
+  : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 

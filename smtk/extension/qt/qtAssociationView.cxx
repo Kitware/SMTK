@@ -114,7 +114,7 @@ qtBaseView* qtAssociationView::createViewWidget(const ViewInfo& info)
 }
 
 qtAssociationView::qtAssociationView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtAssociationViewInternals;
 }
@@ -282,7 +282,7 @@ void qtAssociationView::getAllDefinitions()
     }
 
     this->Internals->m_attCompMap[defName] = attsComp.child(i);
-    this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
+    this->qtBaseAttributeView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);
   }
 

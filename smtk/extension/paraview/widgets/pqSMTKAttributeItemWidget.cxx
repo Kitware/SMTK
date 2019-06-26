@@ -10,6 +10,8 @@
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
+#include "smtk/extension/qt/qtBaseAttributeView.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
@@ -255,7 +257,8 @@ void pqSMTKAttributeItemWidget::acceptWidgetValues()
 void pqSMTKAttributeItemWidget::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->item();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<smtk::extension::qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -276,7 +279,8 @@ void pqSMTKAttributeItemWidget::clearChildWidgets()
 void pqSMTKAttributeItemWidget::updateUI()
 {
   auto dataObj = this->item();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<smtk::extension::qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -317,9 +321,9 @@ void pqSMTKAttributeItemWidget::updateUI()
   }
   QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  if (m_itemInfo.baseView())
+  if (iview)
   {
-    label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
+    label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);

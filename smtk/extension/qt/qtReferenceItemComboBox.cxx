@@ -12,7 +12,7 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtTableWidget.h"
@@ -188,9 +188,10 @@ void qtReferenceItemComboBox::createWidget()
   }
   QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  if (m_itemInfo.baseView())
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview)
   {
-    label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
+    label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -679,9 +680,10 @@ void qtReferenceItemComboBox::setOutputOptional(int state)
   if (enable != item->isEnabled())
   {
     item->setIsEnabled(enable);
-    if (m_itemInfo.baseView())
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
     {
-      m_itemInfo.baseView()->valueChanged(item);
+      iview->valueChanged(item);
     }
     emit this->modified();
   }

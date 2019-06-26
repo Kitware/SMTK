@@ -10,7 +10,7 @@
 
 #include "smtk/extension/qt/qtFileItem.h"
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -422,7 +422,11 @@ void qtFileItem::onInputValueChanged()
     {
       this->updateFileComboList(editBox->text());
     }
-    m_itemInfo.baseView()->valueChanged(item);
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
+    {
+      iview->valueChanged(item);
+    }
 
     QFile theFile(item->value(elementIdx).c_str());
     if ((fSystemItemDef->isValueValid(item->value(elementIdx))) &&
@@ -558,7 +562,8 @@ void qtFileItem::setInputValue(const QString& val)
 void qtFileItem::createWidget()
 {
   smtk::attribute::ItemPtr item = m_itemInfo.item();
-  if (!m_itemInfo.baseView()->displayItem(item))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(item))
   {
     return;
   }
@@ -687,8 +692,9 @@ void qtFileItem::loadInputValues(const smtk::attribute::FileSystemItem& item,
 
 void qtFileItem::updateUI()
 {
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
   auto item = m_itemInfo.itemAs<FileSystemItem>();
-  if (!m_itemInfo.baseView()->displayItem(item))
+  if (iview && !iview->displayItem(item))
   {
     return;
   }
@@ -733,9 +739,9 @@ void qtFileItem::updateUI()
   }
   QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  if (m_itemInfo.baseView())
+  if (iview)
   {
-    label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
+    label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -814,9 +820,10 @@ void qtFileItem::setOutputOptional(int state)
   {
     item->setIsEnabled(enable);
     emit this->modified();
-    if (m_itemInfo.baseView())
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
     {
-      m_itemInfo.baseView()->valueChanged(item);
+      iview->valueChanged(item);
     }
   }
 }

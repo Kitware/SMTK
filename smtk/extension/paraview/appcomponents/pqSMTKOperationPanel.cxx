@@ -397,7 +397,8 @@ void pqSMTKOperationPanel::operationListDoubleClicked(QListWidgetItem* item)
     {
       if (opInstance->configure(nullptr, params->associations()))
       {
-        auto baseView = m_attrUIMgr ? m_attrUIMgr->topView() : nullptr;
+        auto baseView = dynamic_cast<smtk::extension::qtBaseAttributeView*>(
+          m_attrUIMgr ? m_attrUIMgr->topView() : nullptr);
         if (baseView)
         {
           baseView->attributeChanged(opInstance->parameters());

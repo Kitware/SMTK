@@ -10,13 +10,13 @@
 // .NAME qtGroupView - UI components for Group View
 // .SECTION Description
 // .SECTION See Also
-// qtBaseView
+// qtBaseAttributeView
 
 #ifndef __smtk_extension_qtGroupView_h
 #define __smtk_extension_qtGroupView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 class qtGroupViewInternals;
 
@@ -24,7 +24,7 @@ namespace smtk
 {
 namespace extension
 {
-class SMTKQTEXT_EXPORT qtGroupView : public qtBaseView
+class SMTKQTEXT_EXPORT qtGroupView : public qtBaseAttributeView
 {
   Q_OBJECT
 

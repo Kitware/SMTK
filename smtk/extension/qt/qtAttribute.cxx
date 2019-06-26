@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtAttribute.h"
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -113,17 +113,18 @@ void qtAttribute::createWidget()
 
   int numShowItems = 0;
   std::size_t i, n = att->numberOfItems();
-  if (m_internals->m_view)
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_internals->m_view.data());
+  if (iview)
   {
     for (i = 0; i < n; i++)
     {
-      if (m_internals->m_view->displayItem(att->item(static_cast<int>(i))))
+      if (iview->displayItem(att->item(static_cast<int>(i))))
       {
         numShowItems++;
       }
     }
     // also check associations
-    if (m_internals->m_view->displayItem(att->associations()))
+    if (iview->displayItem(att->associations()))
     {
       numShowItems++;
     }

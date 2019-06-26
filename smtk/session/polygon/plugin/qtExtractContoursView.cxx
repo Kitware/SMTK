@@ -121,7 +121,7 @@ qtBaseView* qtExtractContoursView::createViewWidget(const ViewInfo& info)
 }
 
 qtExtractContoursView::qtExtractContoursView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtExtractContoursViewInternals;
 }
@@ -345,7 +345,7 @@ void qtExtractContoursView::operationSelected(const smtk::operation::OperationPt
 
 void qtExtractContoursView::showAdvanceLevelOverlay(bool show)
 {
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 void qtExtractContoursView::requestModelEntityAssociation()

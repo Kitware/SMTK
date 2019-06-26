@@ -11,7 +11,7 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 
 #include "smtk/attribute/Definition.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 #include "smtk/extension/qt/qtDoubleLineEdit.h"
 #include "smtk/extension/qt/qtOverlay.h"
@@ -186,7 +186,11 @@ void qtInputsItem::unsetValue(int elementIndex)
   {
     item->unset(elementIndex);
     emit modified();
-    m_itemInfo.baseView()->valueChanged(item);
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
+    {
+      iview->valueChanged(item);
+    }
   }
 }
 
@@ -204,7 +208,11 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   else if (item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
     emit this->modified();
-    m_itemInfo.baseView()->valueChanged(item);
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
+    {
+      iview->valueChanged(item);
+    }
     return true;
   }
   return false;
@@ -214,7 +222,11 @@ void qtInputsItem::forceUpdate()
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
   emit this->modified();
-  m_itemInfo.baseView()->valueChanged(item);
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview)
+  {
+    iview->valueChanged(item);
+  }
 }
 
 void qtInputsItem::setLabelVisible(bool visible)
@@ -225,7 +237,8 @@ void qtInputsItem::setLabelVisible(bool visible)
 void qtInputsItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -368,7 +381,8 @@ void qtInputsItem::loadInputValues()
 void qtInputsItem::updateUI()
 {
   smtk::attribute::ValueItemPtr dataObj = m_itemInfo.itemAs<ValueItem>();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -413,9 +427,9 @@ void qtInputsItem::updateUI()
   }
   QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  if (m_itemInfo.baseView())
+  if (iview)
   {
-    label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
+    label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -506,9 +520,10 @@ void qtInputsItem::setOutputOptional(int state)
   if (enable != item->isEnabled())
   {
     item->setIsEnabled(enable);
-    if (m_itemInfo.baseView())
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
     {
-      m_itemInfo.baseView()->valueChanged(item);
+      iview->valueChanged(item);
     }
     emit this->modified();
   }
@@ -877,10 +892,10 @@ void qtInputsItem::onExpressionReferenceChanged()
     inputitem->unset(elementIdx);
   }
 
-  qtBaseView* bview = m_itemInfo.baseView();
-  if (bview)
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview)
   {
-    bview->valueChanged(inputitem->shared_from_this());
+    iview->valueChanged(inputitem->shared_from_this());
   }
   emit this->modified();
 }
@@ -1260,18 +1275,18 @@ void qtInputsItem::doubleValueChanged(double newVal)
   // Lets determine if the item is set to the default value -
   isDefault = ditem->isUsingDefault(elementIdx);
   isInvalid = !ditem->isSet(elementIdx);
-  qtBaseView* bview = m_itemInfo.baseView();
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
   if (valChanged)
   {
-    if (bview != NULL)
+    if (iview)
     {
-      bview->valueChanged(ditem);
+      iview->valueChanged(ditem);
     }
     emit this->modified();
   }
-  if (bview != NULL)
+  if (iview)
   {
-    qtUIManager* uimanager = bview->uiManager();
+    qtUIManager* uimanager = iview->uiManager();
     isDefault ? uimanager->setWidgetColorToDefault(senderWidget)
               : (isInvalid ? uimanager->setWidgetColorToInvalid(senderWidget)
                            : uimanager->setWidgetColorToNormal(senderWidget));
@@ -1302,18 +1317,18 @@ void qtInputsItem::intValueChanged(int newVal)
   // Lets determine if the item is set to the default value -
   isDefault = iitem->isUsingDefault(elementIdx);
   isInvalid = !iitem->isSet(elementIdx);
-  qtBaseView* bview = m_itemInfo.baseView();
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
   if (valChanged)
   {
-    if (bview != NULL)
+    if (iview)
     {
-      bview->valueChanged(iitem);
+      iview->valueChanged(iitem);
     }
     emit this->modified();
   }
-  if (bview != NULL)
+  if (iview)
   {
-    qtUIManager* uimanager = bview->uiManager();
+    qtUIManager* uimanager = iview->uiManager();
     isDefault ? uimanager->setWidgetColorToDefault(senderWidget)
               : (isInvalid ? uimanager->setWidgetColorToInvalid(senderWidget)
                            : uimanager->setWidgetColorToNormal(senderWidget));
@@ -1414,18 +1429,18 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   // Lets determine if the item is set to the default value -
   isDefault = rawitem->isUsingDefault(elementIdx);
   isInvalid = !rawitem->isSet(elementIdx);
-  qtBaseView* bview = m_itemInfo.baseView();
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
   if (valChanged)
   {
-    if (bview != NULL)
+    if (iview)
     {
-      bview->valueChanged(rawitem->shared_from_this());
+      iview->valueChanged(rawitem->shared_from_this());
     }
     emit this->modified();
   }
-  if (bview != NULL)
+  if (iview)
   {
-    qtUIManager* uimanager = bview->uiManager();
+    qtUIManager* uimanager = iview->uiManager();
     isDefault ? uimanager->setWidgetColorToDefault(inputBox)
               : (isInvalid ? uimanager->setWidgetColorToInvalid(inputBox)
                            : uimanager->setWidgetColorToNormal(inputBox));

@@ -65,7 +65,7 @@ qtBaseView* qtOperationView::createViewWidget(const ViewInfo& info)
 }
 
 qtOperationView::qtOperationView(const OperationViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
   , m_applied(false)
 {
   this->Internals = new qtOperationViewInternals;
@@ -194,7 +194,7 @@ void qtOperationView::onModifiedParameter(qtItem* uiItem)
 void qtOperationView::showAdvanceLevelOverlay(bool show)
 {
   this->Internals->m_instancedView->showAdvanceLevelOverlay(show);
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 void qtOperationView::requestModelEntityAssociation()

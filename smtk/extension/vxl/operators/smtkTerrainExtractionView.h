@@ -16,7 +16,7 @@
 #ifndef smtkTerrainExtractionView_h
 #define smtkTerrainExtractionView_h
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/vxl/operators/Exports.h"
 #include "smtk/extension/vxl/operators/ui_smtkTerrainExtractionParameters.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
@@ -28,7 +28,8 @@ class pqTerrainExtractionManager;
 class QString;
 class QWidget;
 
-class SMTKVXLOPERATIONVIEWSEXT_EXPORT smtkTerrainExtractionView : public smtk::extension::qtBaseView
+class SMTKVXLOPERATIONVIEWSEXT_EXPORT smtkTerrainExtractionView
+  : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 

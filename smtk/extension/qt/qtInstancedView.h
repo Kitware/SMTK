@@ -16,7 +16,7 @@
 #define __smtk_extension_qtInstancedView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 class qtInstancedViewInternals;
 class QScrollArea;
@@ -25,7 +25,7 @@ namespace smtk
 {
 namespace extension
 {
-class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseView
+class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseAttributeView
 {
   Q_OBJECT
 

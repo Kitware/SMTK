@@ -11,20 +11,20 @@
 #define smtk_extension_paraview_operators_smtkModelIOView_h
 
 #include "smtk/extension/paraview/operators/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
 class QColor;
 class QIcon;
 class QMouseEvent;
 
-class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkModelIOView : public smtk::extension::qtBaseView
+class SMTKPQOPERATIONVIEWSEXT_EXPORT smtkModelIOView : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 
 public:
   smtkModelIOView(const smtk::extension::ViewInfo& info)
-    : smtk::extension::qtBaseView(info)
+    : smtk::extension::qtBaseAttributeView(info)
   {
   }
   virtual ~smtkModelIOView() {}

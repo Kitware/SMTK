@@ -16,7 +16,7 @@
 #define __smtk_extension_qtModelEntityAttributeView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 #include <QMap>
 #include <QModelIndex>
@@ -51,7 +51,7 @@ namespace smtk
 {
 namespace extension
 {
-class SMTKQTEXT_EXPORT qtModelEntityAttributeView : public qtBaseView
+class SMTKQTEXT_EXPORT qtModelEntityAttributeView : public qtBaseAttributeView
 {
   Q_OBJECT
 

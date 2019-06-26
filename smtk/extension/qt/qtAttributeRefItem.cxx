@@ -260,6 +260,7 @@ void qtAttributeRefItem::createWidget()
     return;
   }
 
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
   QGridLayout* thisLayout = new QGridLayout(m_widget);
   thisLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   thisLayout->setContentsMargins(0, 0, 0, 0);
@@ -313,7 +314,7 @@ void qtAttributeRefItem::createWidget()
   QString lText = item->label().c_str();
   this->Internals->theLabel = new QLabel(lText, m_widget);
 
-  this->Internals->theLabel->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
+  this->Internals->theLabel->setFixedWidth(iview->fixedLabelWidth() - padding);
   this->Internals->theLabel->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel->setWordWrap(true);
   this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -440,7 +441,11 @@ void qtAttributeRefItem::setOutputOptional(int state)
   {
     item->setIsEnabled(enable);
     emit this->modified();
-    m_itemInfo.baseView()->valueChanged(item);
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
+    {
+      iview->valueChanged(item);
+    }
   }
 }
 
@@ -456,6 +461,11 @@ void qtAttributeRefItem::onInputValueChanged()
 
 void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 {
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (!iview)
+  {
+    return;
+  }
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
 
@@ -470,7 +480,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     if (curIdx == comboBox->count() - 1) // create New attribute
     {
       QList<smtk::attribute::DefinitionPtr> AllDefs;
-      m_itemInfo.baseView()->getDefinitions(attDef, AllDefs);
+      iview->getDefinitions(attDef, AllDefs);
       QList<QString> defTypes;
       QList<QString> defLabels;
       foreach (smtk::attribute::DefinitionPtr aDef, AllDefs)
@@ -566,13 +576,13 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 
     if (!currentAtt)
     {
-      int currentLen = m_itemInfo.baseView()->fixedLabelWidth();
+      int currentLen = iview->fixedLabelWidth();
       int tmpLen = m_itemInfo.uiManager()->getWidthOfAttributeMaxLabel(
         attPtr->definition(), m_itemInfo.uiManager()->advancedFont());
-      m_itemInfo.baseView()->setFixedLabelWidth(tmpLen);
+      iview->setFixedLabelWidth(tmpLen);
       smtk::view::View::Component comp; // currently not used
       currentAtt = new qtAttribute(attPtr, comp, m_widget, m_itemInfo.baseView());
-      m_itemInfo.baseView()->setFixedLabelWidth(currentLen);
+      iview->setFixedLabelWidth(currentLen);
       if (currentAtt->widget())
       {
         QBoxLayout* mylayout =
@@ -604,6 +614,6 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
   if (valChanged)
   {
     emit this->modified();
-    m_itemInfo.baseView()->valueChanged(item);
+    iview->valueChanged(item);
   }
 }

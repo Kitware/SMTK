@@ -10,7 +10,7 @@
 #include "smtk/extension/qt/qtReferenceItem.h"
 #include "smtk/extension/qt/qtReferenceItemData.h"
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -369,7 +369,8 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 void qtReferenceItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -393,7 +394,8 @@ void qtReferenceItem::clearWidgets()
 void qtReferenceItem::updateUI()
 {
   smtk::attribute::ItemPtr itm = m_itemInfo.item();
-  if (!m_itemInfo.baseView()->displayItem(itm))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(itm))
   {
     return;
   }
@@ -472,9 +474,9 @@ void qtReferenceItem::updateUI()
   QString labelText = !itm->label().empty() ? itm->label().c_str() : itm->name().c_str();
   m_p->m_label = new QLabel(labelText, m_widget);
   m_p->m_label->setSizePolicy(sizeFixedPolicy);
-  if (m_itemInfo.baseView())
+  if (iview)
   {
-    m_p->m_label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
+    m_p->m_label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   m_p->m_label->setWordWrap(true);
   m_p->m_label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
