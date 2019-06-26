@@ -48,6 +48,10 @@ public:
   // Return a list of the directories in the embedded python's PYTHONPATH
   std::vector<std::string> pythonPath();
 
+  // Within an SMTK plugin, this method can be called during registration to
+  // append the plugin's python module to the embedded python's module path.
+  bool addPathToPluginModule(const std::string& module, const std::string& libdir);
+
   // Given a string <paths> containing a <separator>-separated list of paths,
   // add each path to the embedded python's PYTHONPATH.
   bool addToPythonPath(const std::string& paths, std::string separator = ",");
