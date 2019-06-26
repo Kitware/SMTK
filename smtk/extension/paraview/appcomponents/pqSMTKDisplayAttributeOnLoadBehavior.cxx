@@ -164,6 +164,7 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
         break;
       case smtk::resource::EventType::REMOVED:
         // TODO: Find another attribute to display
+        m_attr = nullptr;
         break;
     }
   }

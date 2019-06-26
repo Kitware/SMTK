@@ -28,10 +28,12 @@
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/utility/Create.h"
 
+#include "smtk/common/testing/cxx/helpers.h"
+
 #include <array>
 #include <functional>
 
-int UnitTestExtractCanonicalIndices(int argc, char* argv[])
+int UnitTestExtractCanonicalIndices(int, char* [])
 {
   // Create a new mesh mesh resource
   smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create();
@@ -63,10 +65,12 @@ int UnitTestExtractCanonicalIndices(int argc, char* argv[])
 
     smtk::mesh::utility::extractCanonicalIndices(meshes[i], meshes[0], indices);
 
-    assert(std::equal(referenceCellIndices.begin(), referenceCellIndices.end(),
-      validReferenceCellIndices.begin() + (i - 1) * 4));
-    assert(std::equal(canonicalIndices.begin(), canonicalIndices.end(),
-      validCanonicalIndices.begin() + (i - 1) * 4));
+    smtkTest(std::equal(referenceCellIndices.begin(), referenceCellIndices.end(),
+               validReferenceCellIndices.begin() + (i - 1) * 4),
+      "Incorrect reference cell indices.");
+    smtkTest(std::equal(canonicalIndices.begin(), canonicalIndices.end(),
+               validCanonicalIndices.begin() + (i - 1) * 4),
+      "Invalid canonical indices.");
   }
 
   return 0;
