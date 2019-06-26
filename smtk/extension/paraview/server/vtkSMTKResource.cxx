@@ -45,6 +45,7 @@ vtkSMTKResource::vtkSMTKResource()
 vtkSMTKResource::~vtkSMTKResource()
 {
   this->SetWrapper(nullptr);
+  this->SetResource(nullptr);
 }
 
 void vtkSMTKResource::PrintSelf(ostream& os, vtkIndent indent)
