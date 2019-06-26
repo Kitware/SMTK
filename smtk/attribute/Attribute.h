@@ -76,13 +76,13 @@ public:
   };
 
   static smtk::attribute::AttributePtr New(
-    const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
+    const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
   {
     return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition));
   }
 
   static smtk::attribute::AttributePtr New(const std::string& myName,
-    smtk::attribute::DefinitionPtr myDefinition, const smtk::common::UUID& myId)
+    const smtk::attribute::DefinitionPtr& myDefinition, const smtk::common::UUID& myId)
   {
     return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId));
   }
@@ -99,8 +99,8 @@ public:
 
   const std::string& type() const;
   std::vector<std::string> types() const;
-  bool isA(smtk::attribute::DefinitionPtr def) const;
-  smtk::attribute::DefinitionPtr definition() const { return m_definition; }
+  bool isA(const smtk::attribute::DefinitionPtr& def) const;
+  const smtk::attribute::DefinitionPtr& definition() const { return m_definition; }
 
   const double* color() const;
   void setColor(double r, double g, double b, double alpha);
@@ -215,7 +215,7 @@ public:
   bool isObjectAssociated(const smtk::common::UUID& uid) const;
   bool isObjectAssociated(const smtk::resource::PersistentObjectPtr& componentPtr) const;
 
-  bool canBeDisassociated(smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt) const;
+  bool canBeDisassociated(smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const;
   ConstReferenceItemPtr associations() const { return m_associatedObjects; }
   ReferenceItemPtr associations() { return m_associatedObjects; }
 
@@ -294,16 +294,16 @@ public:
   std::size_t includeIndex() const { return m_includeIndex; }
 
 protected:
-  Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
+  Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition,
     const smtk::common::UUID& myId);
-  Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition);
+  Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition);
 
   void removeAllItems();
   /// Used to disassociate an attribute from an object without checking constraints.
   /// Typical use is either when all attributes are being disassocaited from the same
   /// object or if the attribute is being deleted.
   void forceDisassociate(smtk::resource::PersistentObjectPtr);
-  void addItem(smtk::attribute::ItemPtr iPtr) { m_items.push_back(iPtr); }
+  void addItem(smtk::attribute::ItemPtr& iPtr) { m_items.push_back(iPtr); }
   void setName(const std::string& newname) { m_name = newname; }
 
   void addReference(smtk::attribute::RefItem* attRefItem, std::size_t pos)

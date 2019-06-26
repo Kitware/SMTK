@@ -48,7 +48,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 using namespace smtk::attribute;
 using namespace smtk::common;
 
-Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition,
+Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition,
   const smtk::common::UUID& myId)
   : Component()
   , m_name(myName)
@@ -62,7 +62,7 @@ Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr m
   m_definition->buildAttribute(this);
 }
 
-Attribute::Attribute(const std::string& myName, smtk::attribute::DefinitionPtr myDefinition)
+Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
   : Component()
   , m_name(myName)
   , m_definition(myDefinition)
@@ -133,16 +133,20 @@ const std::string& Attribute::type() const
 std::vector<std::string> Attribute::types() const
 {
   std::vector<std::string> tvec;
-  smtk::attribute::DefinitionPtr def = m_definition;
-  while (def)
+  // To avoid the overhead of shared pointers
+  // we can safely grab the raw pointer of the definition(s)
+  // The reason being the attribute shares ownership of its
+  // definition which in turn shares ownership with its base
+  auto def = m_definition.get();
+  while (def != nullptr)
   {
     tvec.push_back(def->type());
-    def = def->baseDefinition();
+    def = def->baseDefinition().get();
   }
   return tvec;
 }
 
-bool Attribute::isA(smtk::attribute::DefinitionPtr def) const
+bool Attribute::isA(const smtk::attribute::DefinitionPtr& def) const
 {
   return m_definition->isA(def);
 }
@@ -549,7 +553,7 @@ void Attribute::disassociateEntity(const smtk::model::EntityRef& entity, bool re
 }
 
 bool Attribute::canBeDisassociated(
-  smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt) const
+  smtk::resource::PersistentObjectPtr& obj, AttributePtr& probAtt) const
 {
   probAtt = nullptr;
   if (!m_associatedObjects)
