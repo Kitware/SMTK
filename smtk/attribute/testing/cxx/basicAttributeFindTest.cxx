@@ -61,6 +61,12 @@ int main()
   s_idef1->addConditionalItem("b-a-b", "b-a-b");
   g_idef1->addItemDefinition<StringItemDefinitionPtr>("b-b-a");
 
+  // There was an issue with searching empty groups that caused a crash
+  // Let add one to be make sure we don't regress.
+  g_idef = def->addItemDefinition<GroupItemDefinitionPtr>("empty");
+  g_idef->setIsExtensible(true);
+  g_idef->setNumberOfRequiredGroups(0);
+
   // Ok now create an attribute
   AttributePtr att = resource->createAttribute("testAtt", "testDef");
 
