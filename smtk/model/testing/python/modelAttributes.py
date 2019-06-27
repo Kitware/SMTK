@@ -153,8 +153,9 @@ class TestModelAttributes(unittest.TestCase):
         right_edges = scope.store.addGroup(flags, 'right_edges')
         uuid_list = list()
         for i in [6, 9]:
-            uuid_list.append(uuid.UUID(scope.edge_list[i]))
-        scope.store.addToGroup(right_edges.entity(), set(uuid_list))
+            entity_ref = smtk.model.EntityRef(
+                scope.store, uuid.UUID(scope.edge_list[i]))
+            right_edges.addEntity(entity_ref)
 
         # Create boundary condition attributes
         defn = resource.findDefinition('Velocity')
