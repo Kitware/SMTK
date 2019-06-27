@@ -132,15 +132,26 @@ class TestModelAttributes(unittest.TestCase):
             scope.att_data.append(meta)
 
         # Generate boundary groups, hard-code to specific model edges
-        flags = smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_1
+#        flags = smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_1
+        flags = smtk.model.EDGE
         left_edges = scope.store.addGroup(flags, 'left_edges')
-        uuid_list = list()
+
+        # originally, these edges were added to left_edges via
+        # scope.store.addToGroup(). Doing so caused the subsequent logic
+        # (left_edges.findFirstNonGroupMember()) to fail. If entities are added
+        # to the group through the group's API, it seems to work though.
         for i in [0, 1, 2]:
-            uuid_list.append(uuid.UUID(scope.edge_list[i]))
-        scope.store.addToGroup(left_edges.entity(), set(uuid_list))
+            entity_ref = smtk.model.EntityRef(
+                scope.store, uuid.UUID(scope.edge_list[i]))
+            left_edges.addEntity(entity_ref)
+
+        if not left_edges.findFirstNonGroupMember().isValid():
+            logging.error("Unable to add left_edges to leftBC")
+            logging.error(logger.convertToString())
+            sys.exit(4)
 
         right_edges = scope.store.addGroup(flags, 'right_edges')
-        del uuid_list[:]
+        uuid_list = list()
         for i in [6, 9]:
             uuid_list.append(uuid.UUID(scope.edge_list[i]))
         scope.store.addToGroup(right_edges.entity(), set(uuid_list))
