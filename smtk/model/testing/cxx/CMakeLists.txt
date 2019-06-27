@@ -28,21 +28,9 @@ add_executable(unitTessellation unitTessellation.cxx)
 target_link_libraries(unitTessellation smtkCore smtkCoreModelTesting)
 add_test(NAME unitTessellation COMMAND unitTessellation)
 
-#add_executable(unitOperation unitOperation.cxx)
-#smtk_operation_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitOutcomeOperation.sbt" unitOperationXML)
-#target_include_directories(unitOperation PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-#target_link_libraries(unitOperation smtkCore smtkCoreModelTesting)
-#add_test(NAME unitOperation COMMAND unitOperation)
-
 add_executable(unitEntityRef unitEntityRef.cxx)
 target_link_libraries(unitEntityRef smtkCore smtkCoreModelTesting)
 add_test(NAME unitEntityRef COMMAND unitEntityRef)
-
-#add_executable(unitDefaultSession unitDefaultSession.cxx)
-#smtk_operation_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitForwardingOperation.sbt" unitOperationXML)
-#target_include_directories(unitDefaultSession PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-#target_link_libraries(unitDefaultSession smtkCore smtkCoreModelTesting)
-#add_test(NAME unitDefaultSession COMMAND unitDefaultSession)
 
 add_executable(unitArrangement unitArrangement.cxx)
 target_link_libraries(unitArrangement smtkCore)
@@ -66,8 +54,16 @@ if (SMTK_DATA_DIR)
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
 endif()
 
+set(additional_libs)
+
+if (SMTK_ENABLE_DISCRETE_SESSION)
+  list(APPEND unit_tests_which_require_data TestGroupPropertyQuery.cxx)
+  list(APPEND additional_libs smtkDiscreteSession)
+endif ()
+
 if (SMTK_ENABLE_POLYGON_SESSION)
   list(APPEND unit_tests_which_require_data unitEntity.cxx)
+  list(APPEND additional_libs smtkPolygonSession)
 endif ()
 
 set(external_libs ${Boost_LIBRARIES})
@@ -76,5 +72,5 @@ smtk_unit_tests(
   LABEL "Model"
   # SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore smtkPolygonSession smtkCoreModelTesting ${external_libs}
+  LIBRARIES smtkCore smtkCoreModelTesting ${additional_libs} ${external_libs}
 )
