@@ -301,7 +301,10 @@ smtk::attribute::ItemPtr GroupItem::find(
   std::size_t element, const std::string& inName, SearchStyle style)
 {
   // Make sure element is valid
-  assert(m_items.size() > element);
+  if (m_items.size() <= element)
+  {
+    return nullptr;
+  }
 
   // Lets see if we can find it in the group's items
   for (auto& item : m_items[element])
@@ -333,7 +336,10 @@ smtk::attribute::ConstItemPtr GroupItem::find(
   std::size_t element, const std::string& inName, SearchStyle style) const
 {
   // Make sure element is valid
-  assert(m_items.size() > element);
+  if (m_items.size() <= element)
+  {
+    return nullptr;
+  }
 
   // Lets see if we can find it in the group's items
   for (auto& item : m_items[element])
