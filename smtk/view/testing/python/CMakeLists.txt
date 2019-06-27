@@ -1,4 +1,5 @@
 set(smtkViewPythonTests
+  modifyViewComponents
 )
 
 # Additional tests that require SMTK_DATA_DIR
