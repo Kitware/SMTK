@@ -1193,6 +1193,17 @@ bool IsValueValid(const smtk::resource::ConstComponentPtr& comp, smtk::model::Bi
       // if the mask is only defined as "group", don't have to check further for members
       mask != smtk::model::GROUP_ENTITY)
     {
+      // If the mask does not explicitly include groups and if the component is an empty
+      // group, reject the component.
+      if (!(mask & smtk::model::GROUP_ENTITY))
+      {
+        EntityRef preExistingMember = c.as<model::Group>().findFirstNonGroupMember();
+        if (!preExistingMember.isValid())
+        {
+          return false;
+        }
+      }
+
       // If the the membershipMask is the same as itemType, we don't need to check, else
       // if the item is a group: recursively check that its members
       // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,

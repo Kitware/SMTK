@@ -54,8 +54,16 @@ if (SMTK_DATA_DIR)
     "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json")
 endif()
 
+set(additional_libs)
+
+if (SMTK_ENABLE_DISCRETE_SESSION)
+  list(APPEND unit_tests_which_require_data TestGroupPropertyQuery.cxx)
+  list(APPEND additional_libs smtkDiscreteSession)
+endif ()
+
 if (SMTK_ENABLE_POLYGON_SESSION)
   list(APPEND unit_tests_which_require_data unitEntity.cxx)
+  list(APPEND additional_libs smtkPolygonSession)
 endif ()
 
 set(external_libs ${Boost_LIBRARIES})
@@ -64,5 +72,5 @@ smtk_unit_tests(
   LABEL "Model"
   # SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  LIBRARIES smtkCore smtkPolygonSession smtkCoreModelTesting ${external_libs}
+  LIBRARIES smtkCore smtkCoreModelTesting ${additional_libs} ${external_libs}
 )
