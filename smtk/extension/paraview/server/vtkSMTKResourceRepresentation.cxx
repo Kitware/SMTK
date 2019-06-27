@@ -323,21 +323,22 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
     // are called here to ensure the block attributes are updated with the current
     // block pointers. To do this, it uses the flat-index mapped attributes stored in
     // this class.
-    auto producerPort = vtkPVRenderView::GetPieceProducer(inInfo, this, 0);
-    this->EntityMapper->SetInputConnection(0, producerPort);
-    this->SelectedEntityMapper->SetInputConnection(0, producerPort);
-    auto producer = producerPort->GetProducer();
-    auto data = producer->GetOutputDataObject(vtkModelMultiBlockSource::MODEL_ENTITY_PORT);
-    this->UpdateColoringParameters(data);
+    auto modelEntityPort = this->GetInternalOutputPort(vtkModelMultiBlockSource::MODEL_ENTITY_PORT);
+    auto instancePort = this->GetInternalOutputPort(vtkModelMultiBlockSource::INSTANCE_PORT);
+
+    this->EntityMapper->SetInputConnection(0, modelEntityPort);
+    this->SelectedEntityMapper->SetInputConnection(0, modelEntityPort);
+    auto modelEntityProducer = modelEntityPort->GetProducer();
+    auto modelEntityData = modelEntityProducer->GetOutputDataObject(0);
+    this->UpdateColoringParameters(modelEntityData);
     this->UpdateRepresentationSubtype();
 
     // Entities
-    auto multiblockModel = vtkMultiBlockDataSet::SafeDownCast(data);
+    auto multiblockModel = vtkMultiBlockDataSet::SafeDownCast(modelEntityData);
     // Glyphs
-    data = producer->GetNumberOfOutputPorts() > 1
-      ? producer->GetOutputDataObject(vtkModelMultiBlockSource::INSTANCE_PORT)
-      : nullptr;
-    auto multiblockInstance = vtkMultiBlockDataSet::SafeDownCast(data);
+    auto instanceProducer = instancePort->GetProducer();
+    auto instanceData = instanceProducer->GetOutputDataObject(0);
+    auto multiblockInstance = vtkMultiBlockDataSet::SafeDownCast(instanceData);
 
     // If the input has changed, update the map of polydata pointers in RenderableData:
     this->UpdateRenderableData(multiblockModel, multiblockInstance);
