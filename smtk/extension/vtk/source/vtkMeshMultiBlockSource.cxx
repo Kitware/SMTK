@@ -61,6 +61,7 @@ vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
   this->CachedOutput = NULL;
   this->ModelEntityID = NULL;
   this->AllowNormalGeneration = 0;
+  this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
   this->linkInstance();
 }
 
