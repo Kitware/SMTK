@@ -31,6 +31,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "moab/FileOptions.hpp"
 #include "moab/Interface.hpp"
 
+#include "moab/ErrorHandler.hpp"
 #include "moab/ReaderIface.hpp"
 #include "moab/Skinner.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -242,6 +243,12 @@ Interface::Interface()
   m_alloc.reset(new smtk::mesh::moab::Allocator(m_iface.get()));
   m_bcAlloc.reset(new smtk::mesh::moab::BufferedCellAllocator(m_iface.get()));
   m_iAlloc.reset(new smtk::mesh::moab::IncrementalAllocator(m_iface.get()));
+
+  // Moab has become increasingly verbose. For now, let's make it quiet.
+  //
+  // TODO: pipe moab messaging through SMTK's messaging (perhaps with some
+  //       filtering)
+  ::moab::MBErrorHandler_Finalize();
 }
 
 Interface::~Interface()
