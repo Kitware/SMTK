@@ -73,7 +73,7 @@ Write::Result Write::operateInternal()
   smtk::io::mesh::Subset componentToWrite =
     static_cast<smtk::io::mesh::Subset>(this->parameters()->findInt("write-component")->value());
 
-  smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
+  smtk::attribute::ReferenceItem::Ptr resourceItem = this->parameters()->associations();
 
   // for multiple meshes, we suffix the file name root with ascending integers
   std::string root = outputfile.substr(0, outputfile.find_last_of("."));
@@ -82,16 +82,14 @@ Write::Result Write::operateInternal()
 
   std::vector<std::string> generatedFiles;
 
-  for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
+  for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
   {
-    smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
-    smtk::mesh::ResourcePtr resource =
-      std::dynamic_pointer_cast<smtk::mesh::Resource>(meshComponent->resource());
+    smtk::mesh::ResourcePtr resource = resourceItem->valueAs<smtk::mesh::Resource>(i);
     bool fileWriteSuccess = false;
 
     if (resource)
     {
-      if (meshItem->numberOfValues() > 1)
+      if (resourceItem->numberOfValues() > 1)
       {
         std::stringstream s;
         s << root << "_" << index << ext;
