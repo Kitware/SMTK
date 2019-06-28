@@ -20,8 +20,6 @@ namespace extension
 namespace delaunay
 {
 
-class Session;
-
 /**\brief Triangulate model faces into meshes using Delaunay.
   *
   * This operation creates smtk::mesh::MeshSets associated with
@@ -33,15 +31,13 @@ class Session;
 class SMTKDELAUNAYEXT_EXPORT TriangulateFaces : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(TriangulateFaces);
+  smtkTypeMacro(smtk::extension::delaunay::TriangulateFaces);
   smtkCreateMacro(TriangulateFaces);
   smtkSharedFromThisMacro(smtk::operation::Operation);
-  smtkSuperclassMacro(smtk::operation::XMLOperation);
 
   bool ableToOperate() override;
 
 protected:
-  TriangulateFaces();
   Result operateInternal() override;
   const char* xmlDescription() const override;
 };
