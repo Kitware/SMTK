@@ -33,6 +33,10 @@ In the case of extensible Group Items, the item view style refers to subgroups. 
 ### Changes to qtItem
 * **Removed passAdvanceCheck method** - In the qtItem classes, to determine if an item should be viewed, the code was either calling qtBaseView::displayItem check or a combination of qtUIManager::passItemCategoryCheck and this method.  Since a view can have its own set of filtering rules, having this method just confuses the developer as to how to determine if the item should be displayed.
 
+### Changes to qtFileItem
+* Invalidity calculation now takes into consideration the ShouldExists hint associated with the item's definition.
+* Combobox now only sets the item's value when the user finishes entering the filename instead of every keystroke.
+
 ### Changes to qtInputItem
 * Added a forceUpdate method - this always forces the object to act as if the underlying item was modified.  Used mainly by helper classes like qtDiscreteValueEditor.
 

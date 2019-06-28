@@ -32,8 +32,6 @@
 #include <QVariant>
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/DirectoryItem.h"
-#include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/FileSystemItem.h"
@@ -183,23 +181,23 @@ void qtFileItem::enableFileBrowser(bool state)
   }
 }
 
-QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
+QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
+  const smtk::attribute::FileSystemItem& item,
+  const smtk::attribute::FileSystemItemDefinition& itemDef)
 {
-  auto item = m_itemInfo.itemAs<attribute::FileSystemItem>();
-
   QWidget* fileTextWidget = NULL;
   QComboBox* fileCombo = NULL;
   QLineEdit* lineEdit = NULL;
   QFrame* frame = new QFrame(m_itemInfo.parentWidget());
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
   QString defaultText;
-  if (item->type() == smtk::attribute::Item::FileType)
+  if (item.type() == smtk::attribute::Item::FileType)
   {
-    auto fDef = item->definitionAs<attribute::FileItemDefinition>();
-    if (fDef->hasDefault())
-      defaultText = fDef->defaultValue().c_str();
+    auto fDef = dynamic_cast<const attribute::FileItemDefinition&>(itemDef);
+    if (fDef.hasDefault())
+      defaultText = fDef.defaultValue().c_str();
     // For open Files, we use a combobox to show the recent file list
-    if (fDef->shouldExist() && !item->isExtensible())
+    if (fDef.shouldExist() && !item.isExtensible())
     {
       fileCombo = new QComboBox(frame);
       fileCombo->setEditable(true);
@@ -207,9 +205,9 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
       this->Internals->fileCombo = fileCombo;
     }
 
-    if (!fDef->shouldExist())
+    if (!fDef.shouldExist())
     {
-      std::string filters = fDef->getFileFilters();
+      std::string filters = fDef.getFileFilters();
       regex re(";;");
       sregex_token_iterator it(filters.begin(), filters.end(), re, -1), last;
       if (it != last && std::next(it) != last)
@@ -268,7 +266,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   layout->addWidget(fileBrowserButton);
   layout->setAlignment(Qt::AlignCenter);
 
-  QString valText = item ? item->valueAsString(elementIdx).c_str() : defaultText;
+  QString valText = item.valueAsString(elementIdx).c_str();
 
   QVariant vdata;
   vdata.setValue(static_cast<void*>(fileTextWidget));
@@ -282,6 +280,24 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     fileCombo->setCurrentIndex(fileCombo->findText(valText));
   else if (lineEdit)
     lineEdit->setText(valText);
+
+  // Lets color the widget properly
+  QFile qfile(item.value(elementIdx).c_str());
+  if ((itemDef.isValueValid(item.value(elementIdx))) && (!itemDef.shouldExist() || qfile.exists()))
+  {
+    if (item.isUsingDefault(elementIdx))
+    {
+      m_itemInfo.uiManager()->setWidgetColorToDefault(fileTextWidget);
+    }
+    else
+    {
+      m_itemInfo.uiManager()->setWidgetColorToNormal(fileTextWidget);
+    }
+  }
+  else
+  {
+    m_itemInfo.uiManager()->setWidgetColorToInvalid(fileTextWidget);
+  }
 
   QObject::connect(
     fileBrowserButton, SIGNAL(clicked()), this->Internals->SignalMapper, SLOT(map()));
@@ -306,23 +322,6 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
     QObject::connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(onInputValueChanged()));
     this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
 
-    auto fSystemItemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
-    if (fSystemItemDef->isValueValid(lineEdit->text().toStdString()))
-    {
-      if (item->isUsingDefault(elementIdx))
-      {
-        m_itemInfo.uiManager()->setWidgetColorToDefault(lineEdit);
-      }
-      else
-      {
-        m_itemInfo.uiManager()->setWidgetColorToNormal(lineEdit);
-      }
-    }
-    else
-    {
-      m_itemInfo.uiManager()->setWidgetColorToInvalid(lineEdit);
-    }
-
     if (this->Internals->fileExtCombo)
     {
       QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentTextChanged(const QString&)),
@@ -333,8 +332,8 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
       QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)), this,
         SLOT(setActiveField(QWidget*)));
 
-      QObject::connect(this->Internals->fileExtCombo, SIGNAL(editTextChanged(const QString&)), this,
-        SLOT(onInputValueChanged()));
+      QObject::connect(this->Internals->fileExtCombo->lineEdit(),
+        SIGNAL(editTextChanged(const QString&)), this, SLOT(onInputValueChanged()));
       QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentIndexChanged(int)), this,
         SLOT(onInputValueChanged()));
     }
@@ -350,7 +349,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
       SLOT(setActiveField(QWidget*)));
 
     QObject::connect(
-      fileCombo, SIGNAL(editTextChanged(const QString&)), this, SLOT(onInputValueChanged()));
+      fileCombo->lineEdit(), SIGNAL(editingFinished()), this, SLOT(onInputValueChanged()));
     QObject::connect(
       fileCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputValueChanged()));
     this->Internals->SignalMapper->setMapping(fileBrowserButton, fileCombo);
@@ -386,8 +385,6 @@ void qtFileItem::onInputValueChanged()
 
   if (!value.empty())
   {
-    smtk::attribute::FileItemPtr fItem =
-      smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
     auto fSystemItemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
     auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
     if (fItemDef && this->Internals->fileExtCombo)
@@ -423,7 +420,9 @@ void qtFileItem::onInputValueChanged()
     }
     m_itemInfo.baseView()->valueChanged(item);
 
-    if (fSystemItemDef->isValueValid(item->value(elementIdx)))
+    QFile theFile(item->value(elementIdx).c_str());
+    if ((fSystemItemDef->isValueValid(item->value(elementIdx))) &&
+      (!fSystemItemDef->shouldExist() || theFile.exists()))
     {
       if (item->isUsingDefault(elementIdx))
       {
@@ -456,23 +455,19 @@ bool qtFileItem::onLaunchFileBrowser()
   }
 
   // If local file browser instantiated, get data from it
-  smtk::attribute::DirectoryItemPtr dItem;
-  smtk::attribute::FileItemPtr fItem;
   auto item = m_itemInfo.itemAs<attribute::FileSystemItem>();
 
   QString filters;
   QFileDialog::FileMode mode = QFileDialog::AnyFile;
   if (this->Internals->IsDirectory)
   {
-    dItem = smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(item);
-    auto dItemDef = dItem->definitionAs<attribute::DirectoryItemDefinition>();
     mode = QFileDialog::Directory;
-    this->Internals->FileBrowser->setOption(QFileDialog::ShowDirsOnly, dItemDef->shouldExist());
+    auto itemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
+    this->Internals->FileBrowser->setOption(QFileDialog::ShowDirsOnly, itemDef->shouldExist());
   }
   else
   {
-    fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
-    auto fItemDef = fItem->definitionAs<attribute::FileItemDefinition>();
+    auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
     filters = fItemDef->getFileFilters().c_str();
     mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile : QFileDialog::AnyFile;
   }
@@ -531,11 +526,9 @@ void qtFileItem::setInputValue(const QString& val)
   // valid extension to it.
   if (!value.isEmpty() && !this->Internals->IsDirectory)
   {
-    smtk::attribute::FileItemPtr fItem;
     smtk::attribute::ItemPtr item = m_itemInfo.item();
 
-    fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
-    auto fItemDef = fItem->definitionAs<attribute::FileItemDefinition>();
+    auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
     if (fItemDef->isValueValid(val.toStdString()) == false)
     {
       QFileInfo fi(val);
@@ -556,8 +549,8 @@ void qtFileItem::setInputValue(const QString& val)
 
 void qtFileItem::createWidget()
 {
-  smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  smtk::attribute::ItemPtr item = m_itemInfo.item();
+  if (!m_itemInfo.baseView()->displayItem(item))
   {
     return;
   }
@@ -572,15 +565,10 @@ void qtFileItem::updateItemData()
   this->qtItem::updateItemData();
 }
 
-void qtFileItem::addInputEditor(int i)
+void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& item,
+  const smtk::attribute::FileSystemItemDefinition& itemDef)
 {
-  auto item = m_itemInfo.itemAs<FileSystemItem>();
-  if (!item)
-  {
-    return;
-  }
-
-  int n = static_cast<int>(item->numberOfValues());
+  int n = static_cast<int>(item.numberOfValues());
   if (!n)
   {
     return;
@@ -590,18 +578,17 @@ void qtFileItem::addInputEditor(int i)
   childLayout->setContentsMargins(12, 3, 3, 0);
   childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-  QWidget* editBox = this->createFileBrowseWidget(i);
+  QWidget* editBox = this->createFileBrowseWidget(i, item, itemDef);
   if (!editBox)
   {
     return;
   }
 
-  auto itemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
-  if (item->isExtensible())
+  if (item.isExtensible())
   {
     QToolButton* minusButton = new QToolButton(m_widget);
     QString iconName(":/icons/attribute/minus.png");
@@ -618,9 +605,9 @@ void qtFileItem::addInputEditor(int i)
     this->Internals->MinusButtonIndices.push_back(minusButton);
   }
 
-  if (n != 1 && itemDef->hasValueLabels())
+  if (n != 1 && itemDef.hasValueLabels())
   {
-    std::string componentLabel = itemDef->valueLabel(i);
+    std::string componentLabel = itemDef.valueLabel(i);
     if (!componentLabel.empty())
     {
       // acbauer -- this should probably be improved to look nicer
@@ -633,11 +620,11 @@ void qtFileItem::addInputEditor(int i)
   editorLayout->addWidget(editBox);
 
   // always going vertical for discrete and extensible items
-  if (this->Internals->VectorItemOrient == Qt::Vertical || item->isExtensible())
+  if (this->Internals->VectorItemOrient == Qt::Vertical || item.isExtensible())
   {
     int row = 2 * i;
     // The "Add New Value" button is in first row, so take that into account
-    row = item->isExtensible() ? row + 1 : row;
+    row = item.isExtensible() ? row + 1 : row;
     this->Internals->EntryLayout->addLayout(editorLayout, row, 1);
 
     // there could be conditional children, so we need another layout
@@ -657,21 +644,16 @@ void qtFileItem::addInputEditor(int i)
   this->updateExtensibleState();
 }
 
-void qtFileItem::loadInputValues()
+void qtFileItem::loadInputValues(const smtk::attribute::FileSystemItem& item,
+  const smtk::attribute::FileSystemItemDefinition& itemDef)
 {
-  auto item = m_itemInfo.itemAs<FileSystemItem>();
-  if (!item)
+  int n = static_cast<int>(item.numberOfValues());
+  if (!n && !item.isExtensible())
   {
     return;
   }
 
-  int n = static_cast<int>(item->numberOfValues());
-  if (!n && !item->isExtensible())
-  {
-    return;
-  }
-
-  if (item->isExtensible())
+  if (item.isExtensible())
   {
     if (!this->Internals->AddItemButton)
     {
@@ -691,14 +673,14 @@ void qtFileItem::loadInputValues()
 
   for (int i = 0; i < n; i++)
   {
-    this->addInputEditor(i);
+    this->addInputEditor(i, item, itemDef);
   }
 }
 
 void qtFileItem::updateUI()
 {
-  auto dataObj = m_itemInfo.itemAs<FileSystemItem>();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto item = m_itemInfo.itemAs<FileSystemItem>();
+  if (!m_itemInfo.baseView()->displayItem(item))
   {
     return;
   }
@@ -720,26 +702,26 @@ void qtFileItem::updateUI()
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
-  if (dataObj->isOptional())
+  if (item->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(m_itemInfo.parentWidget());
-    optionalCheck->setChecked(dataObj->isEnabled());
+    optionalCheck->setChecked(item->isEnabled());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(optionalCheck);
   }
-  auto itemDef = dataObj->definitionAs<attribute::FileSystemItemDefinition>();
+  auto itemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
 
   QString labelText;
-  if (!dataObj->label().empty())
+  if (!item->label().empty())
   {
-    labelText = dataObj->label().c_str();
+    labelText = item->label().c_str();
   }
   else
   {
-    labelText = dataObj->name().c_str();
+    labelText = item->name().c_str();
   }
   QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
@@ -767,7 +749,7 @@ void qtFileItem::updateUI()
   labelLayout->addWidget(label);
   this->Internals->theLabel = label;
 
-  this->loadInputValues();
+  this->loadInputValues(*item, *itemDef);
 
   // we need this layout so that for items with conditionan children,
   // the label will line up at Top-left against the chilren's widgets.
@@ -782,9 +764,9 @@ void qtFileItem::updateUI()
   {
     m_itemInfo.parentWidget()->layout()->addWidget(m_widget);
   }
-  if (dataObj->isOptional())
+  if (item->isOptional())
   {
-    this->setOutputOptional(dataObj->isEnabled() ? 1 : 0);
+    this->setOutputOptional(item->isEnabled() ? 1 : 0);
   }
 }
 
@@ -838,11 +820,12 @@ void qtFileItem::onAddNewValue()
   {
     return;
   }
+  auto itemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
   if (item->setNumberOfValues(item->numberOfValues() + 1))
   {
     //    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
     //      this->Internals->EntryFrame->layout());
-    this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
+    this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1, *item, *itemDef);
     emit this->modified();
   }
 }
