@@ -20,8 +20,6 @@ namespace extension
 namespace delaunay
 {
 
-class Session;
-
 /**\brief Tessellate model faces using Delaunay.
   *
   * This operation updates the smtk::model::Tessellations associated with
@@ -30,15 +28,13 @@ class Session;
 class SMTKDELAUNAYEXT_EXPORT TessellateFaces : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(TessellateFaces);
-  smtkSuperclassMacro(smtk::operation::XMLOperation);
+  smtkTypeMacro(smtk::extension::delaunay::TessellateFaces);
   smtkCreateMacro(TessellateFaces);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
   bool ableToOperate() override;
 
 protected:
-  TessellateFaces();
   Result operateInternal() override;
   const char* xmlDescription() const override;
 };
@@ -46,4 +42,4 @@ protected:
 }
 }
 
-#endif // __smtk_extension_delaunay_TessellateFaces_h
+#endif

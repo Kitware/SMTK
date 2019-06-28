@@ -21,7 +21,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
-#include "PybindRegisterOperations.h"
+#include "PybindRegistrar.h"
 #include "PybindTessellateFaces.h"
 #include "PybindTriangulateFaces.h"
 
@@ -33,5 +33,6 @@ PYBIND11_MODULE(_smtkPybindExtensionDelaunay, delaunay)
 
   py::class_< smtk::extension::delaunay::TessellateFaces, smtk::operation::XMLOperation > smtk_extension_delaunay_TessellateFaces = pybind11_init_smtk_extension_delaunay_TessellateFaces(delaunay);
   py::class_< smtk::extension::delaunay::TriangulateFaces, smtk::operation::XMLOperation > smtk_extension_delaunay_TriangulateFaces = pybind11_init_smtk_extension_delaunay_TriangulateFaces(delaunay);
-  pybind11_init__extension_delaunay_registerOperations(delaunay);
+
+  py::class_< smtk::extension::delaunay::Registrar > smtk_extension_delaunay_Registrar = pybind11_init_smtk_extension_delaunay_Registrar(delaunay);
 }

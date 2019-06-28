@@ -44,10 +44,6 @@ namespace extension
 namespace delaunay
 {
 
-TriangulateFaces::TriangulateFaces()
-{
-}
-
 bool TriangulateFaces::ableToOperate()
 {
   auto associations = this->parameters()->associations();
@@ -64,7 +60,7 @@ bool TriangulateFaces::ableToOperate()
     }
   }
 
-  return this->Superclass::ableToOperate();
+  return smtk::operation::Operation::ableToOperate();
 }
 
 TriangulateFaces::Result TriangulateFaces::operateInternal()
@@ -156,6 +152,7 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
     if (!meshSet.is_empty())
     {
       meshresource->setAssociation(face, meshSet);
+      meshSet.setName(face.name());
     }
     meshSet.mergeCoincidentContactPoints();
 

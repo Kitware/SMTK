@@ -43,10 +43,6 @@ namespace extension
 namespace delaunay
 {
 
-TessellateFaces::TessellateFaces()
-{
-}
-
 bool TessellateFaces::ableToOperate()
 {
   auto associations = this->parameters()->associations();
@@ -63,7 +59,7 @@ bool TessellateFaces::ableToOperate()
     }
   }
 
-  return this->Superclass::ableToOperate();
+  return smtk::operation::Operation::ableToOperate();
 }
 
 TessellateFaces::Result TessellateFaces::operateInternal()
