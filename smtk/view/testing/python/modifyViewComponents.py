@@ -44,6 +44,15 @@ class testModifyViewComponents(smtk.testing.TestCase):
         success = attCompAgain.attribute('Title')
         if not success:
             raise Exception('smtk.view.component.setAttribute() failed!')
+        # Test unsetAttribute
+        attCompJr = attComp.unsetAttribute('Title')
+        Found = attComp.attribute('Title')
+        if Found:
+            raise Exception('smtk.view.component.unsetAttribute() failed!')
+        attCompJr.setAttribute('Title', 'Foo')
+        success = attComp.attribute('Title')
+        if not success:
+            raise Exception('smtk.view.component.unsetAttribute() failed!')
 
         # Test Child()
         attCompAgain.setAttribute('Type', 'Baz')
