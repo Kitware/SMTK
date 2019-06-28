@@ -182,10 +182,10 @@ std::pair<vtkMeshMultiBlockSource*, vtkIdType> vtkPVModelSources::findMeshSetSou
   vtkMeshMultiBlockSource* source = nullptr;
   vtkIdType blockId = -1;
   vtkMeshMultiBlockSource::visitInstances([mesh, &source, &blockId](vtkMeshMultiBlockSource* inst) {
-    std::map<smtk::mesh::MeshSet, vtkIdType> blockMap;
-    inst->GetMeshSet2BlockIdMap(blockMap);
-    std::map<smtk::mesh::MeshSet, vtkIdType>::const_iterator bit;
-    if ((bit = blockMap.find(mesh)) != blockMap.end())
+    std::map<smtk::common::UUID, vtkIdType> blockMap;
+    inst->GetUUID2BlockIdMap(blockMap);
+    std::map<smtk::common::UUID, vtkIdType>::const_iterator bit;
+    if ((bit = blockMap.find(mesh.id())) != blockMap.end())
     {
       source = inst;
       blockId = bit->second;

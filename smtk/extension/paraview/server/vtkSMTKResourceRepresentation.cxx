@@ -61,8 +61,12 @@ void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtk
   const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
 {
   using namespace smtk::model;
-  auto modelResource = std::static_pointer_cast<Resource>(res);
-  EntityRef entity(modelResource, uuid);
+  auto modelResource = std::dynamic_pointer_cast<Resource>(res);
+  EntityRef entity;
+  if (modelResource != nullptr)
+  {
+    entity = EntityRef(modelResource, uuid);
+  }
   FloatList color = entity.color();
   color = color[3] < 0 ? FloatList({ 1., 1., 1., 1. }) : color;
 
@@ -676,21 +680,21 @@ void vtkSMTKResourceRepresentation::SetInterpolateScalarsBeforeMapping(int val)
 }
 
 void vtkSMTKResourceRepresentation::UpdateRenderableData(
-  vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData)
+  vtkMultiBlockDataSet* resourceData, vtkMultiBlockDataSet* instanceData)
 {
-  if ((modelData && modelData->GetMTime() > this->RenderableTime) ||
+  if ((resourceData && resourceData->GetMTime() > this->RenderableTime) ||
     (instanceData && instanceData->GetMTime() > this->RenderableTime) ||
     (this->SelectionTime > this->RenderableTime))
   {
     this->RenderableData.clear();
     AddRenderables(instanceData, this->RenderableData);
-    AddRenderables(modelData, this->RenderableData);
+    AddRenderables(resourceData, this->RenderableData);
     this->RenderableTime.Modified();
   }
 }
 
 void vtkSMTKResourceRepresentation::UpdateDisplayAttributesFromSelection(
-  vtkMultiBlockDataSet* modelData, vtkMultiBlockDataSet* instanceData)
+  vtkMultiBlockDataSet* resourceData, vtkMultiBlockDataSet* instanceData)
 {
   auto rm = this->GetWrapper();
   auto sm = rm ? rm->GetSelection() : nullptr;
@@ -708,12 +712,12 @@ void vtkSMTKResourceRepresentation::UpdateDisplayAttributesFromSelection(
     this->SelectedGlyphEntities->SetVisibility(1);
   }
 
-  if (!modelData)
+  if (!resourceData)
   {
     return;
   }
 
-  if (modelData->GetMTime() < this->ApplyStyleTime &&
+  if (resourceData->GetMTime() < this->ApplyStyleTime &&
     (!instanceData || instanceData->GetMTime() < this->ApplyStyleTime) &&
     this->RenderableTime < this->ApplyStyleTime && this->SelectionTime < this->ApplyStyleTime)
   {
@@ -771,7 +775,6 @@ void vtkSMTKResourceRepresentation::UpdateSelection(
 {
   auto rm = this->GetWrapper(); // vtkSMTKWrapper::Instance(); // TODO: Remove the need for this.
   auto sm = rm ? rm->GetSelection() : nullptr;
-  // std::cout << "rep " << this << " wrapper " << rm << " seln " << sm << "\n";
   if (!sm)
   {
     actor->SetVisibility(0);
@@ -784,8 +787,6 @@ void vtkSMTKResourceRepresentation::UpdateSelection(
     actor->SetVisibility(0);
     return;
   }
-
-  // std::cout << "Updating rep selection from " << sm << ", have " << selection.size() << " entries in map\n";
 
   int propVis = 0;
   this->ClearSelection(actor->GetMapper()); // FIXME: ClearSelection does stupid things.
