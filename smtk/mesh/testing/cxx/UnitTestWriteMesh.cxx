@@ -8,12 +8,21 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ReferenceItem.h"
+
 #include "smtk/common/UUID.h"
+
 #include "smtk/io/ReadMesh.h"
 #include "smtk/io/WriteMesh.h"
+
 #include "smtk/mesh/core/Resource.h"
 
 #include "smtk/mesh/moab/Interface.h"
+
+#include "smtk/mesh/operators/Write.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -410,6 +419,49 @@ void verify_write_clears_modified_flag()
   //remove the file from disk
   cleanup(write_path);
 }
+
+void verify_write_operation()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/3d/twoassm_out.h5m";
+
+  std::string write_path(write_root);
+  write_path += "/" + smtk::common::UUID::random().toString() + ".h5m";
+
+  smtk::io::ReadMesh read;
+  smtk::mesh::ResourcePtr mr = smtk::mesh::Resource::create();
+  read(file_path, mr);
+  test(mr->isValid(), "resource should be valid");
+  test(!mr->isModified(), "resource shouldn't be marked as modified");
+
+  //write out the mesh.
+  auto writeOp = smtk::mesh::Write::create();
+  test(writeOp != nullptr, "failed to create write operation");
+  test(writeOp->parameters() != nullptr, "failed to access write operation parameters");
+  test(
+    writeOp->parameters()->associate(mr), "failed to associate mesh resource to write operation");
+  test(writeOp->parameters()->findFile("filename")->setValue(write_path),
+    "failed to set file path for write operation");
+  auto result = writeOp->operate();
+  test(result->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
+    "write operation failed to operate");
+
+  //reload the written file and verify the number of meshes are the same as the
+  //input mesh
+  smtk::mesh::ResourcePtr mr1 = smtk::mesh::Resource::create();
+  read(write_path, mr1);
+  test(!mr1->isModified(), "resource shouldn't be marked as modified");
+
+  //remove the file from disk
+  cleanup(write_path);
+
+  //verify the meshes
+  test(mr1->isValid(), "resource should be valid");
+  test(mr1->name() == mr->name());
+  test(mr1->numberOfMeshes() == mr->numberOfMeshes());
+  test(mr1->types() == mr->types());
+}
 }
 
 int UnitTestWriteMesh(int, char** const)
@@ -427,6 +479,8 @@ int UnitTestWriteMesh(int, char** const)
   verify_write_onlyDirichlet();
 
   verify_write_clears_modified_flag();
+
+  verify_write_operation();
 
   return 0;
 }

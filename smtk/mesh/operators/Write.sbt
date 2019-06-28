@@ -17,7 +17,7 @@
         the original mesh.
       </DetailedDescription>
       <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
-        <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
+        <Accepts><Resource Name="smtk::mesh::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
@@ -35,10 +35,6 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(write)" BaseType="result">
-      <ItemDefinitions>
-        <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(write)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>
