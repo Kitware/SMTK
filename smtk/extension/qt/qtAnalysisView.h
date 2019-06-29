@@ -17,6 +17,11 @@
 
 #include <set>
 
+namespace smtk
+{
+namespace extension
+{
+
 /**\brief Provides the QT UI for an Analysis View.
   *
   * An Analysis View is a specialized view for choosing the types of analyses the user wants to
@@ -32,6 +37,7 @@
   * is union of all of the selected Analyses' categories.
   *
   * The following is an example of a Analysis View:
+  *
   * <View Type="Analysis" Title="Analysis" AnalysisAttributeName="truchasAnalysis" AnalysisAttributeType="truchasAnalysisDefinition">
   * </View>
   *
@@ -43,11 +49,6 @@
   *
   * \sa qtBaseView
   */
-
-namespace smtk
-{
-namespace extension
-{
 class SMTKQTEXT_EXPORT qtAnalysisView : public qtBaseView
 {
   Q_OBJECT
