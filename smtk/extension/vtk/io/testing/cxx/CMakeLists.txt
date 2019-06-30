@@ -15,6 +15,7 @@ set(unit_tests
   )
 
 set(unit_tests_which_require_data
+  TestImportSTL.cxx
   UnitTestImportExportVTKData.cxx
   UnitTestMeshIOVTK.cxx
   ImportExportMeshWithCellField.cxx
