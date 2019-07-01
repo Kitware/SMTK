@@ -454,13 +454,16 @@ bool ReferenceItem::appendObjectValue(const PersistentObjectPtr& val)
 bool ReferenceItem::removeValue(std::size_t i)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
-  if (!def->isExtensible())
+  // If i < the required number of values this is the same as unset - else if
+  // its extensible remove it completely
+  if (i < def->numberOfRequiredValues())
   {
-    return false; // The number of values is fixed
+    this->unset(i);
+    return true;
   }
-  if (this->numberOfValues() <= def->numberOfRequiredValues())
+  if (i >= this->numberOfValues())
   {
-    return false; // min number of values reached
+    return false; // i can't be greater than the number of values
   }
   this->attribute()->links().removeLink(m_keys[i]);
   m_keys.erase(m_keys.begin() + i);

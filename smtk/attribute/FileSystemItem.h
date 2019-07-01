@@ -47,7 +47,7 @@ public:
   bool setValue(const std::string& val) { return this->setValue(0, val); }
   bool setValue(std::size_t element, const std::string& val);
   bool appendValue(const std::string& val);
-  bool removeValue(int element);
+  bool removeValue(std::size_t element);
   void reset() override;
   virtual bool setToDefault(std::size_t elementIndex = 0);
   // Returns true if there is a default defined and the item is curently set to it

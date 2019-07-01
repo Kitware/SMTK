@@ -204,20 +204,22 @@ bool FileSystemItem::appendValue(const std::string& val)
   return false;
 }
 
-bool FileSystemItem::removeValue(int element)
+bool FileSystemItem::removeValue(std::size_t i)
 {
-  //First - are we allowed to change the number of values?
-  if (!this->isExtensible())
+  // If i < the required number of values this is the same as unset - else if
+  // its extensible remove it completely
+  auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
+  if (i < def->numberOfRequiredValues())
   {
-    return false; // The number of values is fixed
+    this->unset(i);
+    return true;
   }
-  // Would removing teh value take us under the number of required values?
-  if (this->numberOfValues() <= this->numberOfRequiredValues())
+  if (i >= this->numberOfValues())
   {
-    return false;
+    return false; // i can't be greater than the number of values
   }
-  m_values.erase(m_values.begin() + element);
-  m_isSet.erase(m_isSet.begin() + element);
+  m_values.erase(m_values.begin() + i);
+  m_isSet.erase(m_isSet.begin() + i);
   return true;
 }
 
@@ -234,7 +236,7 @@ bool FileSystemItem::setNumberOfValues(std::size_t newSize)
   {
     return false;
   }
-  // Is the nre size smaller than the number of required values?
+  // Is the new size smaller than the number of required values?
   if (newSize < this->numberOfRequiredValues())
   {
     return false;

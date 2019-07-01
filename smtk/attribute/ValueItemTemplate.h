@@ -363,29 +363,31 @@ bool ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
 }
 
 template <typename DataT>
-bool ValueItemTemplate<DataT>::removeValue(std::size_t element)
+bool ValueItemTemplate<DataT>::removeValue(std::size_t i)
 {
-  //First - are we allowed to change the number of values?
   const DefType* def = static_cast<const DefType*>(this->definition().get());
-  if (!this->isExtensible())
+  // If i < the required number of values this is the same as unset - else if
+  // its extensible remove it completely
+  if (i < def->numberOfRequiredValues())
   {
-    return false; // The number of values is fixed
+    this->unset(i);
+    return true;
   }
-  if (this->numberOfValues() <= this->numberOfRequiredValues())
+  if (i >= this->numberOfValues())
   {
-    return false; // min number of values reached
+    return false; // i can't be greater than the number of values
   }
   if (def->allowsExpressions())
   {
-    assert(m_expressions.size() > element);
-    m_expressions[element]->detachOwningItem();
-    m_expressions.erase(m_expressions.begin() + element);
+    assert(m_expressions.size() > i);
+    m_expressions[i]->detachOwningItem();
+    m_expressions.erase(m_expressions.begin() + i);
   }
-  m_values.erase(m_values.begin() + element);
-  m_isSet.erase(m_isSet.begin() + element);
+  m_values.erase(m_values.begin() + i);
+  m_isSet.erase(m_isSet.begin() + i);
   if (def->isDiscrete())
   {
-    m_discreteIndices.erase(m_discreteIndices.begin() + element);
+    m_discreteIndices.erase(m_discreteIndices.begin() + i);
   }
   return true;
 }
