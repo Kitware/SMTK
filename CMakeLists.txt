@@ -324,6 +324,16 @@ if (NOT CMAKE_INSTALL_RPATH_USE_LINK_PATH AND NOT DEFINED conda_prefix)
 endif ()
 
 ################################################################################
+# LibArchive Related Settings
+################################################################################
+find_package(LibArchive REQUIRED)
+if (LibArchive_FOUND)
+  add_library(libarchive INTERFACE)
+  target_link_libraries(libarchive INTERFACE ${LibArchive_LIBRARIES})
+  target_include_directories(libarchive INTERFACE ${LibArchive_INCLUDE_DIRS})
+endif ()
+
+################################################################################
 # JSON Related Settings
 ################################################################################
 find_package(nlohmann_json REQUIRED)

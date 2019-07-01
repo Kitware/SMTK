@@ -31,6 +31,7 @@ endif()
 ################################################################################
 
 set(unit_tests
+  TestArchive.cxx
   UnitTestDateTime.cxx
   UnitTestDateTimeZonePair.cxx
   UnitTestLinks
@@ -39,9 +40,12 @@ set(unit_tests
   UnitTestThreadPool
 )
 
+set(unit_tests_which_require_data
+)
+
 smtk_unit_tests(
   Label "Common"
   SOURCES ${unit_tests}
+  SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES smtkCore ${Boost_LIBRARIES} Threads::Threads
-
 )
