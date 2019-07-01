@@ -26,6 +26,7 @@
 
 class vtkPolyData;
 class vtkPolyDataNormals;
+class vtkInformationStringKey;
 
 /**\brief A VTK source for exposing mesh geometry in SMTK Mesh Manager as multiblock data.
   *
@@ -53,7 +54,17 @@ public:
   smtk::mesh::ResourcePtr GetMeshResource();
   void SetMeshResource(smtk::mesh::ResourcePtr);
 
-  void GetMeshSet2BlockIdMap(std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2block);
+  /// Set the COMPID key on the given \a information object to \a uid.
+  static void SetDataObjectUUID(vtkInformation* information, const smtk::common::UUID& uid);
+
+  /**\brief Return a UUID for the data object, adding one if it was not present.
+    *
+    * UUIDs are stored in the vtkInformation object associated with each
+    * data object.
+    */
+  static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
+
+  void GetUUID2BlockIdMap(std::map<smtk::common::UUID, vtkIdType>& mesh2block);
   void Dirty();
 
   vtkGetMacro(AllowNormalGeneration, int);
@@ -83,7 +94,7 @@ protected:
 
   smtk::model::ResourcePtr m_modelResource;
   smtk::mesh::ResourcePtr m_meshResource;
-  std::map<smtk::mesh::MeshSet, vtkIdType> m_Meshset2BlockIdMap; // MeshSets to block index map
+  std::map<smtk::common::UUID, vtkIdType> m_UUID2BlockIdMap; // UUIDs to block index map
   vtkNew<vtkPolyDataNormals> m_normalGenerator;
 
   vtkMultiBlockDataSet* CachedOutput;

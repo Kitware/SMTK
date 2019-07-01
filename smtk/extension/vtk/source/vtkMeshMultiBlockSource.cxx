@@ -61,6 +61,7 @@ vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
   this->CachedOutput = NULL;
   this->ModelEntityID = NULL;
   this->AllowNormalGeneration = 0;
+  this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
   this->linkInstance();
 }
 
@@ -115,12 +116,21 @@ smtk::mesh::ResourcePtr vtkMeshMultiBlockSource::GetMeshResource()
   return m_meshResource;
 }
 
+void vtkMeshMultiBlockSource::SetDataObjectUUID(vtkInformation* info, const smtk::common::UUID& uid)
+{
+  vtkModelMultiBlockSource::SetDataObjectUUID(info, uid);
+}
+
+smtk::common::UUID vtkMeshMultiBlockSource::GetDataObjectUUID(vtkInformation* datainfo)
+{
+  return vtkModelMultiBlockSource::GetDataObjectUUID(datainfo);
+}
+
 /// Get the map from model entity UUID to the block index in multiblock output
-void vtkMeshMultiBlockSource::GetMeshSet2BlockIdMap(
-  std::map<smtk::mesh::MeshSet, vtkIdType>& uuid2mid)
+void vtkMeshMultiBlockSource::GetUUID2BlockIdMap(std::map<smtk::common::UUID, vtkIdType>& uuid2mid)
 {
   uuid2mid.clear();
-  uuid2mid.insert(m_Meshset2BlockIdMap.begin(), m_Meshset2BlockIdMap.end());
+  uuid2mid.insert(m_UUID2BlockIdMap.begin(), m_UUID2BlockIdMap.end());
 }
 
 /// Indicate that the model has changed and should have its VTK representation updated.
@@ -136,9 +146,9 @@ void vtkMeshMultiBlockSource::Dirty()
 /// Mapping from UUID to block id
 static void internal_AddBlockEntityInfo(const smtk::mesh::MeshSet& mesh,
   const smtk::model::EntityRef& entityref, const vtkIdType& blockId, vtkPolyData* poly,
-  std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2BlockId)
+  std::map<smtk::common::UUID, vtkIdType>& uuid2BlockId)
 {
-  mesh2BlockId[mesh] = static_cast<vtkIdType>(blockId);
+  uuid2BlockId[mesh.id()] = static_cast<vtkIdType>(blockId);
 
   // Add Entity UUID to fieldData
   vtkNew<vtkStringArray> uuidArray;
@@ -155,11 +165,11 @@ static void internal_AddBlockEntityInfo(const smtk::mesh::MeshSet& mesh,
 static void internal_AddBlockInfo(const smtk::mesh::ResourcePtr& meshcollect,
   const smtk::model::EntityRef& entityref, const smtk::mesh::MeshSet& blockmesh,
   const smtk::model::EntityRef& bordantCell, const vtkIdType& blockId, vtkPolyData* poly,
-  std::map<smtk::mesh::MeshSet, vtkIdType>& mesh2BlockId)
+  std::map<smtk::common::UUID, vtkIdType>& uuid2BlockId)
 {
   meshcollect->setIntegerProperty(blockmesh, "block_index", blockId);
 
-  internal_AddBlockEntityInfo(blockmesh, entityref, blockId, poly, mesh2BlockId);
+  internal_AddBlockEntityInfo(blockmesh, entityref, blockId, poly, uuid2BlockId);
 
   smtk::model::EntityRefs vols;
   if (bordantCell.isValid() && bordantCell.isVolume())
@@ -321,14 +331,15 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       mbds->SetBlock(i, poly.GetPointer());
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
+      this->SetDataObjectUUID(mbds->GetMetaData(i), cit->second.second.id());
       this->GenerateRepresentationForSingleMesh(
         cit->second.second, poly.GetPointer(), cit->first, modelRequiresNormals);
-      // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
+
       // as a convenient method to get the flat block index in multiblock
       if (!(cit->first.entity().isNull()))
       {
         internal_AddBlockInfo(m_meshResource, cit->first, cit->second.second, cit->second.first, i,
-          poly.GetPointer(), m_Meshset2BlockIdMap);
+          poly.GetPointer(), m_UUID2BlockIdMap);
       }
     }
 
@@ -355,6 +366,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       // for now, use "mesh (<cell type>) <index>" for name
       mbds->GetMetaData(static_cast<unsigned>(i))
         ->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
+      this->SetDataObjectUUID(mbds->GetMetaData(static_cast<unsigned>(i)), singleMesh.id());
       this->GenerateRepresentationForSingleMesh(
         singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
       mbds->SetBlock(static_cast<unsigned>(i), poly.GetPointer());
@@ -362,8 +374,12 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       bool validEnts = singleMesh.modelEntities(ents);
       if (validEnts && ents.size() > 0)
       {
+        internal_AddBlockEntityInfo(singleMesh, ents[0], i, poly.GetPointer(), m_UUID2BlockIdMap);
+      }
+      else
+      {
         internal_AddBlockEntityInfo(
-          singleMesh, ents[0], i, poly.GetPointer(), m_Meshset2BlockIdMap);
+          singleMesh, smtk::model::EntityRef(), i, poly.GetPointer(), m_UUID2BlockIdMap);
       }
     }
   }
@@ -373,7 +389,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
 int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
-  m_Meshset2BlockIdMap.clear();
+  m_UUID2BlockIdMap.clear();
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
   {

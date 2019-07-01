@@ -227,11 +227,11 @@ bool ComponentPhraseContent::editStringValue(ContentType attr, const std::string
       {
         op = opManager->create<smtk::mesh::SetMeshName>();
       }
-      else
+      if (op == nullptr)
       {
         op = smtk::mesh::SetMeshName::create();
       }
-      if (op->parameters()->associate(meshComp))
+      if (op && op->parameters()->associate(meshComp))
       {
         op->parameters()->findString("name")->setValue(val);
         auto res = op->operate();

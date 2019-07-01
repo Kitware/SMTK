@@ -50,49 +50,60 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
   bool didUpdate = false;
   int rval(0);
 
-  auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
-  if (ment && (ment->isModel() || ment->isGroup()))
+  if (auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp))
   {
-    int any = 0;
-    smtk::model::EntityIterator childIt;
-    smtk::model::EntityRef entRef = ment->template referenceAs<smtk::model::EntityRef>();
-    childIt.traverse(entRef, smtk::model::IteratorStyle::ITERATE_CHILDREN);
-    for (childIt.begin(); !childIt.isAtEnd(); ++childIt)
+    if (ment->isModel() || ment->isGroup())
     {
-      auto child = childIt.current().entityRecord();
-      int ok = smap->setVisibility(child, visible);
-      any |= ok;
-      visibleThings[child->id()] = visible;
-    }
-    rval = any;
-    if (any)
-    {
-      didUpdate = true;
-    }
-  }
-  else
-  {
-    // Composite auxliliary geometry condition
-    int any = 0;
-    smtk::model::AuxiliaryGeometry auxgeom =
-      ment->template referenceAs<smtk::model::AuxiliaryGeometry>();
-    auto auxgeomChildren = auxgeom.auxiliaryGeometries();
-    if (auxgeom && !auxgeomChildren.empty())
-    {
-      for (const auto& child : auxgeomChildren)
+      int any = 0;
+      smtk::model::EntityIterator childIt;
+      smtk::model::EntityRef entRef = ment->template referenceAs<smtk::model::EntityRef>();
+      childIt.traverse(entRef, smtk::model::IteratorStyle::ITERATE_CHILDREN);
+      for (childIt.begin(); !childIt.isAtEnd(); ++childIt)
       {
-        int ok = smap->setVisibility(child.component(), visible ? true : false);
+        auto child = childIt.current().entityRecord();
+        int ok = smap->setVisibility(child, visible);
         any |= ok;
-        visibleThings[child.entity()] = visible;
+        visibleThings[child->id()] = visible;
+      }
+      rval = any;
+      if (any)
+      {
+        didUpdate = true;
       }
     }
-    rval |= any;
+    else
+    {
+      // Composite auxliliary geometry condition
+      int any = 0;
+      smtk::model::AuxiliaryGeometry auxgeom =
+        ment->template referenceAs<smtk::model::AuxiliaryGeometry>();
+      auto auxgeomChildren = auxgeom.auxiliaryGeometries();
+      if (auxgeom && !auxgeomChildren.empty())
+      {
+        for (const auto& child : auxgeomChildren)
+        {
+          int ok = smap->setVisibility(child.component(), visible ? true : false);
+          any |= ok;
+          visibleThings[child.entity()] = visible;
+        }
+      }
+      rval |= any;
 
+      rval |= smap->setVisibility(comp, visible ? true : false) ? 1 : 0;
+      if (rval)
+      {
+        visibleThings[comp->id()] =
+          visible; // Should we set here or wait until we hear back from smap?
+        didUpdate = true;
+      }
+    }
+  }
+  else if (auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(comp))
+  {
     rval |= smap->setVisibility(comp, visible ? true : false) ? 1 : 0;
     if (rval)
     {
-      visibleThings[comp->id()] =
-        visible; // Should we set here or wait until we hear back from smap?
+      visibleThings[comp->id()] = visible;
       didUpdate = true;
     }
   }

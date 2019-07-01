@@ -23,6 +23,7 @@
 #include "smtk/mesh/operators/Import.h"
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
 #include "smtk/mesh/operators/Read.h"
+#include "smtk/mesh/operators/SetMeshName.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/mesh/operators/Write.h"
 
@@ -38,7 +39,7 @@ namespace mesh
 namespace
 {
 typedef std::tuple<DeleteMesh, ElevateMesh, Export, GenerateHotStartData, Import,
-  InterpolateOntoMesh, Read, UndoElevateMesh, Write>
+  InterpolateOntoMesh, Read, SetMeshName, UndoElevateMesh, Write>
   OperationList;
 }
 
