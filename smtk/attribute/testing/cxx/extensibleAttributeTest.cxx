@@ -446,14 +446,13 @@ int checkItem(T sitem, bool isExtensible)
       status = -1;
     }
     // Can we remove from the item?
-    if (!sitem->removeValue(0))
+    if (sitem->removeValue(0) && !sitem->isSet(0))
     {
-      std::cout << name << " did not allow remove op for a fixed length item - PASSED\n";
+      std::cout << name << " properly unset value 0 - PASSED\n";
     }
     else
     {
-      std::cout << name
-                << " allowed removing of  value for a fixed length item. RequiredSize:" << minN
+      std::cout << name << " did not properly unset value 0. RequiredSize:" << minN
                 << " Current Size: " << sitem->numberOfValues() << " - ERROR\n";
       status = -1;
     }
@@ -475,15 +474,15 @@ int checkItem(T sitem, bool isExtensible)
   if (minN)
   {
     // Can we delete below the required number of values?
-    if (sitem->removeValue(0))
+    if (sitem->removeValue(0) && sitem->isSet(0))
     {
-      std::cerr << name << " allowed deleting below min size. RequiredSize:" << minN
+      std::cerr << name << " did not unset value 0. RequiredSize:" << minN
                 << " Current Size: " << sitem->numberOfValues() << " - ERROR\n";
       status = -1;
     }
     else
     {
-      std::cout << name << " - attempting to delete below required size test - PASSED\n";
+      std::cout << name << " - attempting to unset value 0 for extensible item test - PASSED\n";
     }
   }
   else

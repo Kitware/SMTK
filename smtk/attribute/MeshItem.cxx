@@ -235,15 +235,19 @@ bool MeshItem::appendValues(const smtk::mesh::MeshSets& vals)
 bool MeshItem::removeValue(std::size_t i)
 {
   const MeshItemDefinition* def = static_cast<const MeshItemDefinition*>(this->definition().get());
-  if (!def->isExtensible())
-    return false;
-
-  if (i < m_meshValues.size())
+  // If i < the required number of values this is the same as unset - else if
+  // its extensible remove it completely
+  if (i < def->numberOfRequiredValues())
   {
-    m_meshValues.erase(m_meshValues.begin() + i);
+    this->unset(i);
     return true;
   }
-  return false;
+  if (i >= this->numberOfValues())
+  {
+    return false; // i can't be greater than the number of values
+  }
+  m_meshValues.erase(m_meshValues.begin() + i);
+  return true;
 }
 
 bool MeshItem::hasValue(const smtk::mesh::MeshSet& val) const
