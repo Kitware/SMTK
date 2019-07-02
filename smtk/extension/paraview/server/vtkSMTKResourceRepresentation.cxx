@@ -77,7 +77,7 @@ void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtk
   {
     atts->SetBlockOpacity(block, color[3]);
   }
-  else
+  else if (atts->HasBlockVisibility(block) == true)
   {
     atts->RemoveBlockOpacity(block);
   }
