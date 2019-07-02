@@ -177,7 +177,8 @@ int UnitTestOperationLauncher(int argc, char* argv[])
     new TestOperationLauncher(resourceManager, operationManager, &application);
 
   // Exit when the task signals finished
-  QObject::connect(testOperationLauncher, SIGNAL(finished()), &application, SLOT(quit()));
+  QObject::connect(testOperationLauncher, &TestOperationLauncher::finished,
+    [&application]() { QTimer::singleShot(0, &application, &QCoreApplication::quit); });
 
   // Run the task from the application event loop
   QTimer::singleShot(0, testOperationLauncher, SLOT(run()));
