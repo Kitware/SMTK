@@ -1661,16 +1661,16 @@
       </DoubleVectorProperty>
       <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Surface"
-                          text="Model Surface"/>
+                          text="Surface"/>
       <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Points"
-                          text="Model Points" />
+                          text="Points" />
       <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Wireframe"
-                          text="Model Wireframe" />
+                          text="Wireframe" />
       <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Surface With Edges"
-                          text="Model Surface With Edges" />
+                          text="Surface With Edges" />
       <RepresentationType subproxy="OutlineRepresentation"
                           text="Outline" />
       <StringVectorProperty command="GetRepresentationTypes"
@@ -1682,7 +1682,7 @@
         types available correctly.</Documentation>
       </StringVectorProperty>
       <StringVectorProperty command="SetActiveRepresentation"
-                            default_values="Model Surface"
+                            default_values="Surface"
                             name="Representation"
                             number_of_elements="1"
                             panel_visibility="default"
