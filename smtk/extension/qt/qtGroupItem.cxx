@@ -105,7 +105,7 @@ void qtGroupItem::createWidget()
     return;
   }
 
-  QString title = item->label().empty() ? item->name().c_str() : item->label().c_str();
+  QString title = item->label().c_str();
   QGroupBox* groupBox = new QGroupBox(title, m_itemInfo.parentWidget());
   m_widget = groupBox;
 

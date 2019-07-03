@@ -53,3 +53,9 @@ In the case of extensible Group Items, the item view style refers to subgroups. 
 
 ### Changes to qtUIManager
 * The set of categories is being passed to setToLevelCategories is now compared to what was already set.
+
+### Changes to qtAssociationWidget
+* Added the ability to ignore a resource when determining which objects can be associated with an attribute.  The main use case is when refreshing the widget because a resource is about to be removed from the system.  We don't want it to contribute to the calculation.
+
+### Bug Fixes
+* qtAnalysisView, qtAttributeView, qtInstancedView, qtModelEntityView and qtSelectorView now properly deletes any qtAttributes they create

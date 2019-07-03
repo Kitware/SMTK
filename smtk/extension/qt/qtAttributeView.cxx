@@ -63,6 +63,8 @@ using namespace smtk::extension;
 class qtAttributeViewInternals
 {
 public:
+  ~qtAttributeViewInternals() { delete this->CurrentAtt; }
+
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
     smtk::extension::qtUIManager* uiManager) const
   {
@@ -463,7 +465,7 @@ void qtAttributeView::onListBoxSelectionChanged()
   else
   {
     delete this->Internals->CurrentAtt;
-    this->Internals->CurrentAtt = NULL;
+    this->Internals->CurrentAtt = nullptr;
     this->updateAssociationEnableState(smtk::attribute::AttributePtr());
   }
 

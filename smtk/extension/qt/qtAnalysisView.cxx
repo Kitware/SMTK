@@ -46,15 +46,20 @@ qtBaseView* qtAnalysisView::createViewWidget(const ViewInfo& info)
 
 qtAnalysisView::qtAnalysisView(const ViewInfo& info)
   : qtBaseView(info)
+  , m_qtAnalysisAttribute(nullptr)
 {
 }
 
 qtAnalysisView::~qtAnalysisView()
 {
+  delete m_qtAnalysisAttribute;
 }
 
 void qtAnalysisView::createWidget()
 {
+  // If there is a previous qt analysis attribute delete it
+  delete m_qtAnalysisAttribute;
+
   smtk::view::ViewPtr view = this->getObject();
   if (!view)
   {
@@ -92,11 +97,11 @@ void qtAnalysisView::createWidget()
 
   this->setFixedLabelWidth(labelWidth);
   smtk::view::View::Component comp; // Right now not being used
-  auto analysisQtAttribute = new qtAttribute(m_analysisAttribute, comp, this->widget(), this);
-  analysisQtAttribute->createBasicLayout(true);
+  m_qtAnalysisAttribute = new qtAttribute(m_analysisAttribute, comp, this->widget(), this);
+  m_qtAnalysisAttribute->createBasicLayout(true);
   this->uiManager()->enableCategoryChecks();
-  layout->addWidget(analysisQtAttribute->widget());
-  QObject::connect(analysisQtAttribute, SIGNAL(modified()), this, SLOT(analysisChanged()));
+  layout->addWidget(m_qtAnalysisAttribute->widget());
+  QObject::connect(m_qtAnalysisAttribute, SIGNAL(modified()), this, SLOT(analysisChanged()));
   // OK - lets apply the initial state.
   this->analysisChanged();
 }

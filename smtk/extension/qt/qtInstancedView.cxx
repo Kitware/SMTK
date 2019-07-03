@@ -35,6 +35,14 @@ public:
   {
   }
 
+  ~qtInstancedViewInternals()
+  {
+    foreach (qtAttribute* qatt, this->AttInstances)
+    {
+      delete qatt;
+    }
+  }
+
   //QScrollArea *ScrollArea;
   QList<QPointer<qtAttribute> > AttInstances;
   bool m_isEmpty;

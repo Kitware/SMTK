@@ -13,7 +13,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
-#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtOperationLauncher.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
