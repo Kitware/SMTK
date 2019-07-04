@@ -291,6 +291,29 @@ void XmlDocV3Parser::processAssociationDef(xml_node& node, smtk::attribute::Defi
   {
     assocDef->setAcceptsEntries("smtk::model::Resource", mmask.text().as_string(), true);
   }
+
+  // We want the ability to restrict associations to only allow resources. This
+  // feature is unnecessary for reference items in general, since the same
+  // functionality can be achieved with a ResourceItem.
+  xml_attribute onlyResources = node.attribute("OnlyResources");
+  if (onlyResources.as_bool())
+  {
+    auto acceptableEntries = assocDef->acceptableEntries();
+
+    // First, let's remove all of the acceptable entries
+    for (auto& entry : acceptableEntries)
+    {
+      assocDef->setAcceptsEntries(entry.first, entry.second, false);
+    }
+
+    // Then, let's add them all back with a... magic... string.
+    for (auto& entry : acceptableEntries)
+    {
+      assocDef->setAcceptsEntries(
+        entry.first, smtk::attribute::ReferenceItemDefinition::only_resources, true);
+    }
+  }
+
   def->setLocalAssociationRule(assocDef);
 }
 

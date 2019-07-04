@@ -40,6 +40,11 @@ class SMTKCORE_EXPORT ReferenceItemDefinition : public ItemDefinition
 {
 public:
   using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
+
+  // When this string is used as the filter string for acceptable entries, only
+  // resources will be accepted.
+  static constexpr const char* const only_resources = "__only_resources";
+
   /// Construct an item definition given a name. Names should be unique and non-empty.
   smtkTypeMacro(ReferenceItemDefinition);
   smtkSuperclassMacro(ItemDefinition);

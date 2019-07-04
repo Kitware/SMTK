@@ -490,14 +490,34 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
 {
   auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");
+
+  // Because a) associations are reference items and b) associations need the
+  // ability to restrict queries to only accept resources, there is a reserved
+  // string (that is never written to file) to indicate the restriction of
+  // queries to resources. If we come across it, we replace it with the
+  // attribute "OnlyResources". This attribute is only deserialized by the
+  // association.
+  bool onlyResources = false;
+
   for (auto entry : acceptableEntries)
   {
     xml_node rsrcnode = accnode.append_child("Resource");
     rsrcnode.append_attribute("Name").set_value(entry.first.c_str());
     if (!entry.second.empty())
     {
-      rsrcnode.append_attribute("Filter").set_value(entry.second.c_str());
+      if (entry.second == smtk::attribute::ReferenceItemDefinition::only_resources)
+      {
+        onlyResources = true;
+      }
+      else
+      {
+        rsrcnode.append_attribute("Filter").set_value(entry.second.c_str());
+      }
     }
+  }
+  if (onlyResources)
+  {
+    node.append_attribute("OnlyResources") = true;
   }
 
   if (idef->lockType() != smtk::resource::LockType::Write)

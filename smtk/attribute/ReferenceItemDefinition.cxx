@@ -235,8 +235,11 @@ bool ReferenceItemDefinition::checkResource(smtk::resource::ConstResourcePtr rsr
   // For every element in the filter map...
   for (auto& acceptable : m_acceptable)
   {
-    // ...we check if the resource in question is of that type.
-    if (rsrc->isOfType(acceptable.first))
+    // ...we check if the resource in question is of that type. Acceptable
+    // entries for resources do not have a filter string, so we check that
+    // the filter string is empty.
+    if ((acceptable.second.empty() || acceptable.second == only_resources) &&
+      rsrc->isOfType(acceptable.first))
     {
       return true;
     }
@@ -269,9 +272,11 @@ bool ReferenceItemDefinition::checkComponent(smtk::resource::ConstComponentPtr c
   // For every element in the filter map...
   for (auto& acceptable : m_acceptable)
   {
-    // ...ask (a) if our resource is of that type, and (b) if its associated
-    // filter accepts the component.
-    if (rsrc->isOfType(acceptable.first) && rsrc->queryOperation(acceptable.second)(comp))
+    // ...ask (a) if the filter explicitly rejects components, (b) if our
+    // resource is of the right type, and (b) if its associated filter accepts
+    // the component.
+    if (acceptable.second != only_resources && rsrc->isOfType(acceptable.first) &&
+      rsrc->queryOperation(acceptable.second)(comp))
     {
       return true;
     }
