@@ -81,9 +81,7 @@ Export::Result Export::operateInternal()
 
   for (std::size_t i = 0; i < meshItem->numberOfValues(); i++)
   {
-    smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>(i);
-    smtk::mesh::ResourcePtr resource =
-      std::dynamic_pointer_cast<smtk::mesh::Resource>(meshComponent->resource());
+    smtk::mesh::ResourcePtr resource = meshItem->valueAs<smtk::mesh::Resource>(i);
     bool fileExportSuccess = false;
 
     if (resource)

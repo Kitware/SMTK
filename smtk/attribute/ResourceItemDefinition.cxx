@@ -22,6 +22,7 @@ using namespace smtk::attribute;
 ResourceItemDefinition::ResourceItemDefinition(const std::string& sname)
   : Superclass(sname)
 {
+  setOnlyResources(true);
 }
 
 /// Destructor.

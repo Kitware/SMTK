@@ -27,6 +27,7 @@ using namespace smtk::attribute;
 ComponentItemDefinition::ComponentItemDefinition(const std::string& sname)
   : Superclass(sname)
 {
+  setOnlyResources(false);
 }
 
 /// Destructor.

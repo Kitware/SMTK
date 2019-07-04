@@ -53,18 +53,10 @@ smtk::session::mesh::Export::Result Export::operateInternal()
 
   std::string filePath = filePathItem->value();
 
-  smtk::model::Models datasets = this->parameters()->associatedModelEntities<smtk::model::Models>();
-  if (datasets.empty())
-  {
-    smtkErrorMacro(this->log(), "No models to save.");
-    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-  }
-
-  smtk::model::Model dataset = datasets[0];
+  auto resourceItem = this->parameters()->associations();
 
   smtk::session::mesh::Resource::Ptr resource =
-    std::static_pointer_cast<smtk::session::mesh::Resource>(dataset.component()->resource());
-  smtk::session::mesh::Session::Ptr session = resource->session();
+    std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->objectValue());
 
   smtk::mesh::ResourcePtr meshResource = resource->resource();
 

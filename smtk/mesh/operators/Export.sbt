@@ -15,8 +15,9 @@
         mesh is not guaranteed to contain all of the information from
         the original mesh.
       </DetailedDescription>
-      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
-        <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1"
+                       Extensible="false" OnlyResources="true">
+        <Accepts><Resource Name="smtk::mesh::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"

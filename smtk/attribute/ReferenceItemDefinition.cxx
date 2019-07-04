@@ -37,6 +37,7 @@ ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
   m_lockType = smtk::resource::LockType::Write;
   m_role = smtk::attribute::Resource::ReferenceRole;
   m_holdReference = false;
+  m_onlyResources = false;
 }
 
 ReferenceItemDefinition::~ReferenceItemDefinition()
@@ -238,8 +239,7 @@ bool ReferenceItemDefinition::checkResource(smtk::resource::ConstResourcePtr rsr
     // ...we check if the resource in question is of that type. Acceptable
     // entries for resources do not have a filter string, so we check that
     // the filter string is empty.
-    if ((acceptable.second.empty() || acceptable.second == only_resources) &&
-      rsrc->isOfType(acceptable.first))
+    if ((acceptable.second.empty() || m_onlyResources == true) && rsrc->isOfType(acceptable.first))
     {
       return true;
     }
@@ -275,7 +275,7 @@ bool ReferenceItemDefinition::checkComponent(smtk::resource::ConstComponentPtr c
     // ...ask (a) if the filter explicitly rejects components, (b) if our
     // resource is of the right type, and (b) if its associated filter accepts
     // the component.
-    if (acceptable.second != only_resources && rsrc->isOfType(acceptable.first) &&
+    if (m_onlyResources == false && rsrc->isOfType(acceptable.first) &&
       rsrc->queryOperation(acceptable.second)(comp))
     {
       return true;

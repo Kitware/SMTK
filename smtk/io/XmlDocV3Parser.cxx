@@ -298,20 +298,7 @@ void XmlDocV3Parser::processAssociationDef(xml_node& node, smtk::attribute::Defi
   xml_attribute onlyResources = node.attribute("OnlyResources");
   if (onlyResources.as_bool())
   {
-    auto acceptableEntries = assocDef->acceptableEntries();
-
-    // First, let's remove all of the acceptable entries
-    for (auto& entry : acceptableEntries)
-    {
-      assocDef->setAcceptsEntries(entry.first, entry.second, false);
-    }
-
-    // Then, let's add them all back with a... magic... string.
-    for (auto& entry : acceptableEntries)
-    {
-      assocDef->setAcceptsEntries(
-        entry.first, smtk::attribute::ReferenceItemDefinition::only_resources, true);
-    }
+    assocDef->setOnlyResources(true);
   }
 
   def->setLocalAssociationRule(assocDef);

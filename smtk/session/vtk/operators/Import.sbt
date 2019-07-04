@@ -7,7 +7,8 @@
       <!-- Import operations can import a file into an existing
            resource (or an existing resource's session) if one is
            provided. Otherwise, a new resource is created -->
-      <AssociationsDef Name="import into" NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1">
+      <AssociationsDef Name="import into" NumberOfRequiredValues="0"
+                       Extensible="true" MaxNumberOfValues="1" OnlyResources="true">
         <Accepts><Resource Name="smtk::session::vtk::Resource"/></Accepts>
       </AssociationsDef>
 

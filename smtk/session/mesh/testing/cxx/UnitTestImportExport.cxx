@@ -126,7 +126,7 @@ int UnitTestImportExport(int argc, char* argv[])
     exportOp->parameters()->findFile("filename")->setValue(exportFilePath);
 
     // Set the entity association
-    exportOp->parameters()->associateEntity(model);
+    exportOp->parameters()->associate(model->resource());
 
     // Execute the operation
     smtk::operation::Operation::Result exportOpResult = exportOp->operate();

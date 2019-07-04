@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="write"
             Label="Attribute - Write Resource" BaseType="operation">
-      <AssociationsDef LockType="Read">
+      <AssociationsDef LockType="Read" OnlyResources="true">
         <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
       </AssociationsDef>
     </AttDef>

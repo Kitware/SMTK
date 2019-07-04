@@ -6,7 +6,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="export"
             Label="Attribute - Export" BaseType="operation">
-      <AssociationsDef LockType="Read">
+      <AssociationsDef LockType="Read" OnlyResources="true">
         <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
       </AssociationsDef>
      <ItemDefinitions>

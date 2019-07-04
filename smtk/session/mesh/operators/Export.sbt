@@ -4,8 +4,9 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="write" Label="Model - Export" BaseType="operation">
-      <AssociationsDef Name="Model(s)" NumberOfRequiredValues="1" Extensible="true" LockType="Read">
-        <Accepts><Resource Name="smtk::session::mesh::Resource" Filter="model"/></Accepts>
+      <AssociationsDef Name="Model(s)" NumberOfRequiredValues="1"
+                       Extensible="true" LockType="Read" OnlyResources="true">
+        <Accepts><Resource Name="smtk::session::mesh::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"
