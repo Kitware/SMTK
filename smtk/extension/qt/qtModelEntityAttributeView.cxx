@@ -113,6 +113,8 @@ void qModelEntityAttributeViewComboBoxItemDelegate::setModelData(
 class qtModelEntityAttributeViewInternals
 {
 public:
+  ~qtModelEntityAttributeViewInternals() { delete this->CurrentAtt; }
+
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
     smtk::extension::qtUIManager* uiManager) const
   {
@@ -418,6 +420,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
   {
     delete this->Internals->CurrentAtt;
+    this->Internals->CurrentAtt = nullptr;
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
@@ -626,6 +629,7 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
   {
     delete this->Internals->CurrentAtt;
+    this->Internals->CurrentAtt = nullptr;
   }
 
   if (att == nullptr)

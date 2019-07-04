@@ -13,7 +13,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"

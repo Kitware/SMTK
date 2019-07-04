@@ -40,10 +40,13 @@ using namespace smtk::extension;
 class qtSelectorViewInternals
 {
 public:
+  ~qtSelectorViewInternals() { delete this->m_qtSelectorAttribute; }
+
   QList<smtk::extension::qtBaseView*> ChildViews;
   std::vector<smtk::view::ViewPtr> m_views;
   QList<int> m_viewEnumIdices;
   smtk::attribute::AttributePtr m_selectorAttribute;
+  smtk::extension::qtAttribute* m_qtSelectorAttribute;
   smtk::attribute::ValueItemPtr m_selectorItem;
 };
 
@@ -140,11 +143,12 @@ bool qtSelectorView::createSelector()
 
   this->setFixedLabelWidth(labelWidth);
   smtk::view::View::Component comp; // Right now not being used
-  qtAttribute* attInstance =
+  this->Internals->m_qtSelectorAttribute =
     new qtAttribute(this->Internals->m_selectorAttribute, comp, this->widget(), this);
-  attInstance->createBasicLayout(true);
-  layout->addWidget(attInstance->widget());
-  QObject::connect(attInstance, SIGNAL(modified()), this, SLOT(selectionChanged()));
+  this->Internals->m_qtSelectorAttribute->createBasicLayout(true);
+  layout->addWidget(this->Internals->m_qtSelectorAttribute->widget());
+  QObject::connect(
+    this->Internals->m_qtSelectorAttribute, SIGNAL(modified()), this, SLOT(selectionChanged()));
   return true;
 }
 

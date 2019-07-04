@@ -20,17 +20,13 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
-#include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
 
-#include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 
 #include "smtk/view/Selection.h"
@@ -166,7 +162,7 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
   }
 }
 
-void qtAssociationWidget::refreshAssociations()
+void qtAssociationWidget::refreshAssociations(const smtk::common::UUID& ignoreResource)
 {
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
@@ -185,7 +181,7 @@ void qtAssociationWidget::refreshAssociations()
   attribute::DefinitionPtr attDef = theAttribute->definition();
 
   ResourcePtr attResource = attDef->resource();
-  auto objects = this->associatableObjects();
+  auto objects = this->associatableObjects(ignoreResource);
   smtk::attribute::DefinitionPtr preDef;
   smtk::attribute::AttributePtr conAtt;
   // Now lets see if the objects are associated with this attribute or can be
@@ -228,11 +224,11 @@ smtk::resource::PersistentObjectPtr qtAssociationWidget::selectedObject(QListWid
   return this->object(item);
 }
 
-std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableObjects() const
+std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableObjects(
+  const smtk::common::UUID& ignoreResource) const
 {
   std::set<smtk::resource::PersistentObjectPtr> result;
-  // First we need to determin if the attribute resource has resources associated with it
-  // if not we need to go to resource manager to get the information
+  smtk::resource::ResourceSet resources;
   auto theAttribute = this->Internals->currentAtt.lock();
   auto attResource = theAttribute->attributeResource();
   auto associationItem = theAttribute->associatedObjects();
@@ -242,9 +238,17 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   }
   auto assocMap = associationItem->acceptableEntries();
 
-  auto resources = attResource->associations();
-  if (!resources.empty())
+  // First we need to determin if the attribute resource has resources associated with it
+  // if not we need to go to resource manager to get the information
+  if (attResource->hasAssociations())
   {
+    resources = attResource->associations();
+    if (resources.empty())
+    {
+      // Ok - the attribute resource does has other resources associated with it
+      // but they are not in memory
+      return result;
+    }
     // Iterate over the acceptable entries
     decltype(assocMap.equal_range("")) range;
     for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
@@ -255,6 +259,10 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
       // Lets see if any of the resources match this type
       for (auto resource : resources)
       {
+        if (resource->id() == ignoreResource)
+        {
+          continue;
+        }
         if (resource->isOfType(i->first))
         {
           // We need to find all of the component types for
@@ -296,6 +304,10 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
       // Need to process all of these resources
       for (auto resource : resources)
       {
+        if (resource->id() == ignoreResource)
+        {
+          continue;
+        }
         // We need to find all of the component types for
         // this resource.  If a string is empty then the resource
         // itself can be associated with the attribute
@@ -547,11 +559,10 @@ int qtAssociationWidget::handleOperationEvent(smtk::operation::OperationPtr,
 void qtAssociationWidget::handleResourceEvent(
   const smtk::resource::Resource::Ptr& resource, smtk::resource::EventType event)
 {
-  (void)resource;
   if (event == smtk::resource::EventType::REMOVED)
   {
     // The simplest solution is just to refresh the widget
-    this->refreshAssociations();
+    this->refreshAssociations(resource->id());
   }
 }
 

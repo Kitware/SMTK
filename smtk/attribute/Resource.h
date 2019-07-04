@@ -173,16 +173,19 @@ public:
   std::vector<smtk::view::ViewPtr> findTopLevelViews() const;
   const std::map<std::string, smtk::view::ViewPtr>& views() const { return m_views; }
 
-  // Return a set of resources associated to this attribute resource.
+  /// \brief Return a set of resources associated to this attribute resource.
   smtk::resource::ResourceSet associations() const;
 
-  // Add a resource to the set of associated resources, and return true if the
-  // association is successful.
+  /// \brief Add a resource to the set of associated resources, and return true if the
+  /// association is successful.
   bool associate(const smtk::resource::ResourcePtr& resource);
 
-  // Remove a resource from the set of associated resources, and return true if
-  // the disassociation is successful.
+  /// \brief Remove a resource from the set of associated resources, and return true if
+  /// the disassociation is successful.
   bool disassociate(const smtk::resource::ResourcePtr& resource);
+
+  /// \brief Returns true if the attribute resource has other resources associated with it
+  bool hasAssociations() const;
 
   // Return the attributes that are associated on a PersistentObject
   std::set<AttributePtr> attributes(const smtk::resource::ConstPersistentObjectPtr& object) const;

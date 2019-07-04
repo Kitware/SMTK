@@ -35,7 +35,6 @@
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtModelPanel.h"
 #include "smtk/extension/qt/qtOperationDockWidget.h"
