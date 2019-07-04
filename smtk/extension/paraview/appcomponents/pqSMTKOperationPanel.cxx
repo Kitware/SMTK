@@ -151,6 +151,13 @@ void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer*)
     m_attrUIMgr = nullptr;
   }
   m_wrapper = wrapper;
+
+  // There is currently no easy way to tell the AvailableOperations instance to
+  // initialize, so for now we simly toggle the "useSelection" choice to
+  // populate the operation panel when a new server is connected.
+  bool useSelection = m_availableOperations->useSelection();
+  m_availableOperations->setUseSelection(!useSelection);
+  m_availableOperations->setUseSelection(useSelection);
 }
 
 void pqSMTKOperationPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqServer*)
