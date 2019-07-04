@@ -233,18 +233,16 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
           alg = alg->GetInputAlgorithm(0, 0);
         }
         // Now we have a resource:
-        smtk::model::ResourcePtr mResource = alg
-          ? std::dynamic_pointer_cast<smtk::model::Resource>(
-              dynamic_cast<vtkSMTKResourceSource*>(alg)->GetVTKResource()->GetResource())
+        smtk::resource::ResourcePtr resource = alg
+          ? dynamic_cast<vtkSMTKResourceSource*>(alg)->GetVTKResource()->GetResource()
           : nullptr;
         auto mit = mbdsThing->NewIterator();
         for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
         {
           if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
           {
-            auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
-              mResource, mit->GetCurrentMetaData());
-            auto cmp = ent.component();
+            auto cmp = resource->find(
+              vtkModelMultiBlockSource::GetDataObjectUUID(mit->GetCurrentMetaData()));
             if (cmp)
             {
               seln.insert(seln.end(), cmp);

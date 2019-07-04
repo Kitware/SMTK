@@ -21,6 +21,7 @@
 #include "smtk/mesh/resource/PropertyData.h"
 
 #include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Handle.h"
 #include "smtk/mesh/core/Interface.h"
 #include "smtk/mesh/core/MeshSet.h"
@@ -362,6 +363,11 @@ private:
   smtk::shared_ptr<MeshIntegerData> m_integerData;
 
   int m_nameCounter;
+
+  friend std::shared_ptr<Component> Component::create(
+    const ResourcePtr&, const smtk::common::UUID&);
+  friend std::shared_ptr<Component> Component::create(const MeshSet&);
+  std::map<smtk::common::UUID, Component::Ptr> m_componentMap;
 
   //holds a reference to the specific backend interface
   class InternalImpl;

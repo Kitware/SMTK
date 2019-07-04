@@ -21,6 +21,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/mesh/core/Component.h"
+
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
@@ -190,13 +192,17 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
   (void)server;
   if (!mgr)
   {
+#ifndef NDEBUG
     std::cout << "  filterSelectionOnServer: no mgr\n";
+#endif
     return;
   }
   if (pqLiveInsituManager::isInsituServer(server) ||
     pqLiveInsituManager::instance()->isDisplayServer(server))
   {
+#ifndef NDEBUG
     std::cout << "  server is catalyst connection... ignoring.\n";
+#endif
     return;
   }
   //auto seln = mgr->GetSelection();
@@ -204,7 +210,9 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
                 ->GetSelection(); // TODO: Only works on built-in server
   if (!seln)
   {
+#ifndef NDEBUG
     std::cout << "  filterSelectionOnServer: no seln\n";
+#endif
     return;
   }
 
@@ -216,7 +224,9 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
         << m_selection << " in favor of " << seln);
   }
 
+#ifndef NDEBUG
   std::cout << "  filter on s " << seln << " m_ " << m_selection << "\n";
+#endif
   m_selection = seln;
   this->installFilter();
 }
@@ -225,7 +235,9 @@ void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
   vtkSMSMTKWrapperProxy* mgr, pqServer* server)
 {
   (void)server;
+#ifndef NDEBUG
   std::cout << "  unfilterSelectionOnServer: " << server << "\n\n";
+#endif
 
   // Drop filtering on existing server.
   if (m_selection)
@@ -254,7 +266,9 @@ void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
 
 void pqSMTKSelectionFilterBehavior::installFilter()
 {
+#ifndef NDEBUG
   std::cout << "    Updating filter on " << m_selection << " " << m_modelFilterMask << "\n";
+#endif
   if (!m_selection)
   {
     return;
@@ -265,7 +279,14 @@ void pqSMTKSelectionFilterBehavior::installFilter()
 
   m_selection->setFilter([acceptMeshes, modelFlags](smtk::resource::PersistentObjectPtr comp,
     int value, smtk::view::Selection::SelectionMap& suggestions) {
-    (void)acceptMeshes; // meshes are not yet resource components.
+    if (acceptMeshes)
+    {
+      auto mesh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);
+      if (mesh != nullptr)
+      {
+        return true;
+      }
+    }
     if (modelFlags)
     {
       auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(comp);

@@ -53,8 +53,10 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
   pqServer* server, QObject* parent)
   : Superclass(regGroup, regName, proxy, server, parent)
 {
-  // I. Listen for PV selections and convert them to SMTK selections
+// I. Listen for PV selections and convert them to SMTK selections
+#ifndef NDEBUG
   std::cout << "pqResourceManager ctor " << parent << "\n";
+#endif
   bool listening = false;
   auto app = pqApplicationCore::instance();
   if (app)
@@ -297,9 +299,8 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
         //std::cout << " )\n";
         if (mbdsThing)
         {
-          smtk::model::ResourcePtr mResource = std::dynamic_pointer_cast<smtk::model::Resource>(
-            smtkThing->GetVTKResource()->GetResource());
-          if (mResource)
+          smtk::resource::ResourcePtr resource = smtkThing->GetVTKResource()->GetResource();
+          if (resource)
           {
             //std::cout << "  selected components:";
             auto mit = mbdsThing->NewIterator();
@@ -307,14 +308,13 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
             {
               if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
               {
-                auto ent = vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
-                  mResource, mit->GetCurrentMetaData());
-                auto cmp = ent.component();
+                auto cmp = resource->find(
+                  vtkModelMultiBlockSource::GetDataObjectUUID(mit->GetCurrentMetaData()));
                 if (cmp)
                 {
                   seln.insert(seln.end(), cmp);
                 }
-                //std::cout << ", " << ent.name();
+                //std::cout << ", " << cmp->name();
               }
             }
             //std::cout << "\n";

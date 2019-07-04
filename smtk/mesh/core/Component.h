@@ -17,14 +17,13 @@
 
 #include "smtk/resource/Component.h"
 
-#include "smtk/mesh/core/MeshSet.h"
-#include "smtk/mesh/core/Resource.h"
-
 namespace smtk
 {
 namespace mesh
 {
 class Component;
+class MeshSet;
+class Resource;
 
 typedef std::vector<smtk::mesh::Component> ComponentList;
 typedef std::set<smtk::mesh::Component> Components;
@@ -42,6 +41,11 @@ protected:
 public:
   smtkTypeMacro(Component);
   smtkSharedFromThisMacro(smtk::resource::Component);
+
+  // Comparison operators
+  bool operator==(const Component&) const;
+  bool operator!=(const Component&) const;
+  bool operator<(const Component&) const;
 
   /// Construct a mesh component corresponding to a meshset from the input
   /// resource and id. No checking is performed that the resource has a

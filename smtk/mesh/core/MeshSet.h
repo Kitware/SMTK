@@ -15,6 +15,7 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/mesh/core/CellSet.h"
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Handle.h"
 #include "smtk/mesh/core/PointSet.h"
 #include "smtk/mesh/core/QueryTypes.h"
@@ -29,6 +30,7 @@ namespace smtk
 namespace mesh
 {
 class CellField;
+class Component;
 class PointField;
 
 typedef std::vector<smtk::mesh::MeshSet> MeshList;
@@ -204,6 +206,10 @@ public:
   const smtk::mesh::ResourcePtr& resource() const;
 
 private:
+  friend std::shared_ptr<Component> Component::create(
+    const ResourcePtr&, const smtk::common::UUID&);
+  friend std::shared_ptr<Component> Component::create(const MeshSet&);
+
   smtk::mesh::ResourcePtr m_parent;
   smtk::mesh::Handle m_handle;
   smtk::mesh::HandleRange m_range; //range of entity sets
