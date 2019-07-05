@@ -40,6 +40,7 @@ class SMTKCORE_EXPORT ReferenceItemDefinition : public ItemDefinition
 {
 public:
   using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
+
   /// Construct an item definition given a name. Names should be unique and non-empty.
   smtkTypeMacro(ReferenceItemDefinition);
   smtkSuperclassMacro(ItemDefinition);
@@ -98,6 +99,13 @@ public:
   void setHoldReference(bool choice) { m_holdReference = choice; }
   bool holdReference() const { return m_holdReference; }
 
+  /// Set/Get a flag to determine whether the ReferenceItem should only hold
+  /// references. Currently, there is no convention for assigning a filter that
+  /// only accepts references. This feature is required when associations (which
+  /// cannot be subclassed to ResourceItems) must be restricted as such.
+  virtual void setOnlyResources(bool choice) { m_onlyResources = choice; }
+  bool onlyResources() const { return m_onlyResources; }
+
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(Item* owner, int itemPos, int subGroupPosition) const override;
 
@@ -134,6 +142,9 @@ protected:
   smtk::resource::LockType m_lockType;
   smtk::resource::Links::RoleType m_role;
   bool m_holdReference;
+
+private:
+  bool m_onlyResources;
 };
 
 } // namespace attribute

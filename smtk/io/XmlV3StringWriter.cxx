@@ -490,6 +490,7 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
 {
   auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");
+
   for (auto entry : acceptableEntries)
   {
     xml_node rsrcnode = accnode.append_child("Resource");
@@ -498,6 +499,11 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
     {
       rsrcnode.append_attribute("Filter").set_value(entry.second.c_str());
     }
+  }
+
+  if (idef->onlyResources())
+  {
+    node.append_attribute("OnlyResources") = true;
   }
 
   if (idef->lockType() != smtk::resource::LockType::Write)

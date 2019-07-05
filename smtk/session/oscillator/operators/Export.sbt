@@ -4,9 +4,10 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="export" Label="Oscillator - Export" BaseType="operation">
-      <AssociationsDef Name="simulation" NumberOfRequiredValues="1" Extensible="false">
+      <AssociationsDef Name="simulation" NumberOfRequiredValues="1"
+                       Extensible="false" OnlyResources="true">
         <Accepts>
-          <Resource Name="smtk::attribute::Resource" Filter=""/>
+          <Resource Name="smtk::attribute::Resource"/>
         </Accepts>
         <BriefDescription>
           Choose an oscillator simulation attribute-resource that has

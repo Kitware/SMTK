@@ -57,6 +57,9 @@ public:
 
 protected:
   ResourceItemDefinition(const std::string& myName);
+
+private:
+  void setOnlyResources(bool choice) final { ReferenceItemDefinition::setOnlyResources(choice); }
 };
 
 } // namespace attribute

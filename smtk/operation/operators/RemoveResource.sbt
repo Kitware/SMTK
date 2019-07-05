@@ -12,7 +12,8 @@
       <DetailedDecscription>
         Remove resources from its associated resource manager.
       </DetailedDecscription>
-      <AssociationsDef LockType="Write" HoldReference="true">
+      <AssociationsDef LockType="Write" HoldReference="true"
+                       OnlyResources="true">
         <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>

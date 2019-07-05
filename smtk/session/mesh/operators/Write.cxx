@@ -70,17 +70,6 @@ Write::Result Write::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  // Access the model associated with this resource
-  smtk::model::Models models =
-    resource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
-
-  if (models.size() < 1)
-  {
-    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-  }
-
-  smtk::model::Model model = models[0];
-
   std::string meshFilename = resource->resource()->location();
 
   if (meshFilename.empty())
@@ -107,7 +96,7 @@ Write::Result Write::operateInternal()
   exportOp->parameters()->findFile("filename")->setValue(meshFilename);
 
   // Set the entity association
-  exportOp->parameters()->associateEntity(model);
+  exportOp->parameters()->associate(resource);
 
   // Execute the operation
   smtk::operation::Operation::Result exportOpResult = exportOp->operate({});

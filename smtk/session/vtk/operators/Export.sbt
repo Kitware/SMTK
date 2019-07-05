@@ -5,7 +5,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="export" Label="Model - Export Resource" BaseType="operation">
       <AssociationsDef Name="Model(s)" NumberOfRequiredValues="1" Extensible="true">
-        <MembershipMask>model</MembershipMask>
+        <Accepts><Resource Name="smtk::session::vtk::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
         <File Name="filename" NumberOfRequiredValues="1"

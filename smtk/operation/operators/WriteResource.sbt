@@ -14,7 +14,7 @@
         Resources are written to their existing location unless
         the "filename" item is enabled and set to a valid value.
       </DetailedDecscription>
-      <AssociationsDef LockType="Read">
+      <AssociationsDef LockType="Read" OnlyResources="true">
         <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>

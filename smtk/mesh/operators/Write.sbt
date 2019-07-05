@@ -16,7 +16,8 @@
         mesh is guaranteed to contain all of the information from
         the original mesh.
       </DetailedDescription>
-      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1"
+                       Extensible="false" OnlyResources="true">
         <Accepts><Resource Name="smtk::mesh::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>

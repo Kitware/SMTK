@@ -4,7 +4,7 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="write" Label="Model - Write Resource" BaseType="operation">
-      <AssociationsDef>
+      <AssociationsDef OnlyResources="true">
         <Accepts><Resource Name="smtk::session::discrete::Resource"/></Accepts>
       </AssociationsDef>
     </AttDef>

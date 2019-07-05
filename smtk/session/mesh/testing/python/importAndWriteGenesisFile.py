@@ -14,6 +14,7 @@ import sys
 import unittest
 import smtk
 import smtk.common
+import smtk.io
 import smtk.mesh
 import smtk.model
 import smtk.operation
@@ -78,6 +79,7 @@ class ImportAndWriteGenesisFile(smtk.testing.TestCase):
         writeRes = writeOp.operate()
 
         if writeRes.findInt('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
+            print(writeOp.log().convertToString(True))
             raise RuntimeError
 
         if not os.path.isfile(filename):

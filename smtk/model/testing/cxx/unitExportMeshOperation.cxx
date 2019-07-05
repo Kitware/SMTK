@@ -108,8 +108,7 @@ int main(int argc, char* argv[])
   std::string export_path = std::string(write_root + "/testmesh.2dm");
   exportMeshOp->parameters()->findFile("filename")->setValue(export_path);
 
-  bool valueSet =
-    exportMeshOp->parameters()->associate(smtk::mesh::Component::create(meshResource->meshes()));
+  bool valueSet = exportMeshOp->parameters()->associate(meshResource);
 
   if (!valueSet)
   {
