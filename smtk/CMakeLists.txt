@@ -87,6 +87,7 @@ set(smtkCore_public_link_libraries
 
 set(smtkCore_private_link_libraries
   ${Boost_LIBRARIES}
+  libarchive
   )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)
