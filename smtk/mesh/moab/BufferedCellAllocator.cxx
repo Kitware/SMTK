@@ -151,6 +151,17 @@ smtk::mesh::HandleRange BufferedCellAllocator::cells()
 {
   return moabToSMTKRange(m_cells);
 }
+
+void BufferedCellAllocator::clear()
+{
+  m_firstCoordinate = 0;
+  m_nCoordinates = 0;
+  m_coordinateMemory.clear();
+  m_activeCellType = smtk::mesh::CellType_MAX;
+  m_nCoords = 0;
+  m_localConnectivity.clear();
+  m_cells.clear();
+}
 }
 }
 }

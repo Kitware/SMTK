@@ -271,6 +271,7 @@ smtk::mesh::BufferedCellAllocatorPtr Interface::bufferedCellAllocator()
 {
   //mark us as modified as the caller is going to add something to the database
   m_modified = true;
+  std::static_pointer_cast<smtk::mesh::moab::BufferedCellAllocator>(m_bcAlloc)->clear();
   return m_bcAlloc;
 }
 
