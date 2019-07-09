@@ -68,6 +68,8 @@ public:
 
   smtk::mesh::HandleRange cells() override;
 
+  void clear();
+
 protected:
   template <typename IntegerType>
   bool addCell(smtk::mesh::CellType ctype, IntegerType* pointIds, std::int64_t nCoordinates);
