@@ -83,28 +83,28 @@ if __name__ == '__main__':
 
     # Add explicit test for conditional children
     defn = test_resource.findDefinition('SecondConcrete')
-    if defn:
-        i = defn.findItemPosition('ConditionalSelectionList')
-        item = defn.itemDefinition(i)
-        if item:
-            string_item = item
+    assert(defn is not None)
 
-            list_one = string_item.conditionalItems('One')
-            if len(list_one) != 1:
-                msg = 'Expected \"One\" enum to have 1 conditional item, found %d' % \
-                    len(list_one)
-                logging.error(msg)
-                err_count += 1
+    # First selection list
+    i = defn.findItemPosition('SelectionList')
+    assert(i >= 0)
+    select_item_def = defn.itemDefinition(i)
+    assert(select_item_def.name() == 'SelectionList')
+    assert(select_item_def.isDiscrete())
+    assert(not select_item_def.hasDefault())
 
-            list_two = string_item.conditionalItems('Two')
-            if len(list_two) != 3:
-                msg = 'Expected \"Two\" enum to have 3 conditional items, found %d' % \
-                    len(list_two)
-                logging.error(msg)
-                err_count += 1
-        else:
-            logging.error('Did not find ConditionalSelectionList item')
-            err_count += 1
+    # Second selection list (with conditional children)
+    i = defn.findItemPosition('ConditionalSelectionList')
+    assert(i >= 0)
+    cond_item_def = defn.itemDefinition(i)
+    assert(cond_item_def is not None)
+    assert(cond_item_def.hasDefault())
+
+    list_one = cond_item_def.conditionalItems('One')
+    assert(len(list_one) == 1)
+
+    list_two = cond_item_def.conditionalItems('Two')
+    assert(len(list_two) == 3)
 
     # Note there is ALOT more that could & should be verified here
     logging.debug('Writing resource')

@@ -306,7 +306,10 @@ void ValueItemDefinitionTemplate<DataT>::copyTo(
       labelStr = m_discreteValueEnums[i];
       vdef->addDiscreteValue(value, labelStr);
     }
-    vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
+    if (this->hasDefault())
+    {
+      vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
+    }
   }
 
   // Copy superclass *after* our stuff, so that discrete values are set up
