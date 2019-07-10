@@ -31,6 +31,7 @@
 #include "smtk/model/Volume.h"
 
 // Client side
+#include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
 #include "pqLiveInsituManager.h"
 #include "pqOutputPort.h"
@@ -73,6 +74,30 @@ public:
   QWidget ActionsOwner;
 };
 
+// The functions in this namespace are from ParaView's pqStandardViewFrameActionsImplementation.cxx
+namespace
+{
+QAction* findActiveAction(const QString& name)
+{
+  pqView* activeView = pqActiveObjects::instance().activeView();
+  if (activeView && activeView->widget() && activeView->widget()->parentWidget() &&
+    activeView->widget()->parentWidget()->parentWidget())
+  {
+    return activeView->widget()->parentWidget()->parentWidget()->findChild<QAction*>(name);
+  }
+  return NULL;
+}
+
+void triggerAction(const QString& name)
+{
+  QAction* atcn = findActiveAction(name);
+  if (atcn)
+  {
+    atcn->trigger();
+  }
+}
+}
+
 pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   : Superclass(parent)
   , m_selection(nullptr)
@@ -97,6 +122,9 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   {
     this->addAction(m_p->ActionArray[ii]);
   }
+  this->addAction(m_p->Actions.actionStartSMTKSelection);
+
+  // Filters are not all mutually exclusive toggles:
   this->setExclusive(false);
   // By default, all the buttons are off. Set some for the initial filter settings:
   m_p->Actions.actionSelnAcceptModelVertices->setChecked(true);
@@ -107,6 +135,8 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   this->onFilterChanged(m_p->Actions.actionSelnAcceptModelVertices);
 
   QObject::connect(this, SIGNAL(triggered(QAction*)), this, SLOT(onFilterChanged(QAction*)));
+  QObject::connect(m_p->Actions.actionStartSMTKSelection, SIGNAL(triggered(bool)), this,
+    SLOT(startBlockSelectionInActiveView()));
 
   // Track server connects/disconnects
   auto rsrcBehavior = pqSMTKBehavior::instance();
@@ -184,6 +214,11 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
   m_modelFilterMask = modelFlags;
   m_acceptMeshes = acceptMesh;
   this->installFilter();
+}
+
+void pqSMTKSelectionFilterBehavior::startBlockSelectionInActiveView()
+{
+  triggerAction("actionSelectBlock");
 }
 
 void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(

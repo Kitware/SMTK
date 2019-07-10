@@ -12,5 +12,7 @@
     <file>Edges.png</file>
     <file>Edges@2x_Blue.png</file>
     <file>Vertices.png</file>
+    <file>SelectComponents.png</file>
+    <file>SelectComponents@2x.png</file>
   </qresource>
 </RCC>

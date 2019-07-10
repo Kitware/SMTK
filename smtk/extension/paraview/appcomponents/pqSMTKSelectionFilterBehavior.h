@@ -43,6 +43,7 @@ public:
 
 protected slots:
   virtual void onFilterChanged(QAction* a);
+  virtual void startBlockSelectionInActiveView();
   virtual void filterSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
   virtual void unfilterSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
 
