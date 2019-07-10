@@ -111,6 +111,21 @@
     <string>Should the selection be allowed to include auxiliary geometry entities?</string>
    </property>
   </action>
+  <!-- Now add an action to start selecting SMTK components (rather than cells/points) -->
+  <action name="actionStartSMTKSelection">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/SelectComponents.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Start selecting components</string>
+   </property>
+   <property name="toolTip">
+    <string>Start selecting components that will be filtered as shown to the left.</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="pqSMTKSelectionFilterBehavior.qrc"/>
