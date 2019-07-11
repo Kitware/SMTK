@@ -93,7 +93,7 @@ WriteResource::Result WriteResource::operateInternal()
         writeOp->parameters()->associateEntity(model);
 
         // Execute the operation
-        smtk::operation::Operation::Result writeOpResult = writeOp->operate();
+        smtk::operation::Operation::Result writeOpResult = writeOp->operate({});
 
         // Test for success
         ok &= (writeOpResult->findInt("outcome")->value() ==
