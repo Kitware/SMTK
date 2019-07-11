@@ -87,7 +87,7 @@ qtAttribute::~qtAttribute()
   // First Clear all the items
   for (int i = 0; i < m_internals->m_items.count(); i++)
   {
-    delete m_internals->m_items.value(i);
+    m_internals->m_items.value(i)->deleteLater();
   }
 
   m_internals->m_items.clear();

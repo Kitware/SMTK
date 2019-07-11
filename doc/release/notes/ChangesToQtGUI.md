@@ -40,6 +40,9 @@ In the case of extensible Group Items, the item view style refers to subgroups. 
 ### Changes to qtInputItem
 * Added a forceUpdate method - this always forces the object to act as if the underlying item was modified.  Used mainly by helper classes like qtDiscreteValueEditor.
 
+### Added qtReferenceItemComboBox
+This is a new type of qtItem used to create a simple ComboBox UI for setting a qtReferenceItem.  It also supports the ability to restrict its possible values to those objects associated with the item's attribute.
+
 ### Changes to qtDiscreteValueEditor
 * The modified signal from the corresponding qtInputItem is no longer sent when the underlying ValueItem is modified.  It is now sent after the Editor's internal widgets have been appropriately updated.
 

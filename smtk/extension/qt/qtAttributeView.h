@@ -70,6 +70,7 @@ public slots:
   void propertyFilterChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
   void childrenResized() override;
   void showAdvanceLevelOverlay(bool show) override;
+  void associationsChanged();
 
 signals:
   void numOfAttributesChanged();

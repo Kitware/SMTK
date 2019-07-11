@@ -158,7 +158,7 @@ void qtAssociationView::createWidget()
   this->Internals->mainLayout->addWidget(this->Internals->AssociationsWidget);
   // signals/slots
   QObject::connect(this->Internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,
-    SIGNAL(attAssociationChanged()));
+    SLOT(associationsChanged()));
 
   QObject::connect(this->Internals->attributes, SIGNAL(currentIndexChanged(int)), this,
     SLOT(onAttributeChanged(int)));
@@ -316,4 +316,17 @@ void qtAssociationView::getAllDefinitions()
 bool qtAssociationView::isEmpty() const
 {
   return this->Internals->currentDefsIsEmpty(this->uiManager());
+}
+
+void qtAssociationView::associationsChanged()
+{
+  int index = this->Internals->attributes->currentIndex();
+  auto att = this->getAttributeFromIndex(index);
+  if (att == nullptr)
+  {
+    return;
+  }
+
+  emit this->modified(att->associations());
+  emit this->attAssociationChanged();
 }

@@ -63,6 +63,7 @@ public slots:
   void onShowCategory() override;
   void updateModelAssociation() override;
   void onAttributeChanged(int);
+  void associationsChanged();
 
 signals:
   void attAssociationChanged();
