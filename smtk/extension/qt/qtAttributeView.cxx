@@ -348,7 +348,7 @@ void qtAttributeView::createWidget()
 
   // signals/slots
   QObject::connect(this->Internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,
-    SIGNAL(attAssociationChanged()));
+    SLOT(associationsChanged()));
 
   QObject::connect(
     this->Internals->ViewByCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
@@ -1520,4 +1520,15 @@ bool qtAttributeView::isEmpty() const
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     this->Internals->getCurrentDefs(this->uiManager());
   return currentDefs.isEmpty();
+}
+
+void qtAttributeView::associationsChanged()
+{
+  if (this->Internals->CurrentAtt == nullptr)
+  {
+    return;
+  }
+
+  emit this->modified(this->Internals->CurrentAtt->attribute()->associations());
+  emit this->attAssociationChanged();
 }

@@ -10,26 +10,18 @@
 #ifndef smtk_extension_qt_qtComponentItem_h
 #define smtk_extension_qt_qtComponentItem_h
 
-#include "smtk/extension/qt/qtReferenceItem.h"
-
-#include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
-
-class QBoxLayout;
-
+#include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtItem.h"
 namespace smtk
 {
 namespace extension
 {
 
-class SMTKQTEXT_EXPORT qtComponentItem : public qtReferenceItem
+class SMTKQTEXT_EXPORT qtComponentItem
 {
-  Q_OBJECT
-  using Superclass = qtReferenceItem;
 
 public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
-  qtComponentItem(const qtAttributeItemInfo& info);
-  virtual ~qtComponentItem();
 };
 }
 }

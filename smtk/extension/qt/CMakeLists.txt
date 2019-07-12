@@ -23,6 +23,7 @@ set(QAttrLibSrcs
   qtModelEntityAttributeView.cxx
   qtReferenceItem.cxx
   qtResourceItem.cxx
+  qtReferenceItemComboBox.cxx
   qtResourceBrowser.cxx
   qtResourceBrowserP.cxx
   qtOperationLauncher.cxx
@@ -91,6 +92,7 @@ set(QAttrLibMocHeaders
   qtInstancedView.h
   qtModelEntityAttributeView.h
   qtReferenceItem.h
+  qtReferenceItemComboBox.h
   qtReferenceItemData.h
   qtResourceItem.h
   qtResourceBrowser.h
