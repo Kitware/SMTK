@@ -106,7 +106,7 @@ void ValidateModelTopology(smtk::model::Model model)
 }
 }
 
-int UnitTestReadWrite(int argc, char* argv[])
+int TestMeshSessionReadWrite(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;

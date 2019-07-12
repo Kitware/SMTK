@@ -21,7 +21,7 @@ set (unit_tests_which_require_data
   UnitTestImportIntoResource.cxx
   UnitTestTopology.cxx
   UnitTestImportExport.cxx
-  UnitTestReadWrite.cxx)
+  TestMeshSessionReadWrite.cxx)
 
 set(external_libs ${Boost_LIBRARIES})
 
