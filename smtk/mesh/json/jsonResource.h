@@ -18,12 +18,9 @@ namespace smtk
 {
 namespace mesh
 {
-namespace json
-{
-void to_json(nlohmann::json&, const ResourcePtr&);
+SMTKCORE_EXPORT void to_json(nlohmann::json&, const ResourcePtr&);
 
-void from_json(const nlohmann::json&, ResourcePtr&);
-}
+SMTKCORE_EXPORT void from_json(const nlohmann::json&, ResourcePtr&);
 }
 }
 
