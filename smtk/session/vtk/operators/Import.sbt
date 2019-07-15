@@ -13,7 +13,7 @@
       </AssociationsDef>
 
       <ItemDefinitions>
-        <String Name="session only" Label="session" Advanced="1">
+        <String Name="session only" Label="session" AdvanceLevel="1">
           <DiscreteInfo DefaultIndex="0">
             <Structure>
               <Value Enum="this file">import into this file</Value>

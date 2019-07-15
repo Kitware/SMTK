@@ -22,7 +22,7 @@
            resource, this enumeration allows the user to select
            whether the model should simply use the resource's session
            or if the new model should be a part of the resource itself -->
-        <String Name="session only" Label="session" Advanced="1">
+        <String Name="session only" Label="session" AdvanceLevel="1">
           <DiscreteInfo DefaultIndex="0">
             <Structure>
               <Value Enum="this file">import into this file</Value>
