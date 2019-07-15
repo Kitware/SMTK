@@ -273,7 +273,19 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     {
       selectedIndex = this->Internals->comboBox->count();
     }
-    this->Internals->comboBox->addItem(obj->name().c_str(), vdata);
+    // TODO: right now the desciptive phrase stuff displays New Resource for
+    // unamed resources so we will do the same.  However, the code should be
+    // refactored so that the logic for calculating names resides in one place
+    // Also - the current approach doesn't work when there are more than 1
+    // unamed resources.
+    if (obj->name() == "")
+    {
+      this->Internals->comboBox->addItem("New Resource", vdata);
+    }
+    else
+    {
+      this->Internals->comboBox->addItem(obj->name().c_str(), vdata);
+    }
     this->m_mappedObjects[count++] = obj;
   }
   this->Internals->comboBox->setCurrentIndex(selectedIndex);
