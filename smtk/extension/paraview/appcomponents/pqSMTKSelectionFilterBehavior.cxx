@@ -64,6 +64,8 @@ using namespace smtk;
 
 #define NUM_ACTIONS 7
 
+#define DEBUG_FILTER 0
+
 static pqSMTKSelectionFilterBehavior* s_selectionFilter = nullptr;
 
 class pqSMTKSelectionFilterBehavior::pqInternal
@@ -227,7 +229,7 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
   (void)server;
   if (!mgr)
   {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_FILTER
     std::cout << "  filterSelectionOnServer: no mgr\n";
 #endif
     return;
@@ -235,7 +237,7 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
   if (pqLiveInsituManager::isInsituServer(server) ||
     pqLiveInsituManager::instance()->isDisplayServer(server))
   {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_FILTER
     std::cout << "  server is catalyst connection... ignoring.\n";
 #endif
     return;
@@ -245,7 +247,7 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
                 ->GetSelection(); // TODO: Only works on built-in server
   if (!seln)
   {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_FILTER
     std::cout << "  filterSelectionOnServer: no seln\n";
 #endif
     return;
@@ -259,7 +261,7 @@ void pqSMTKSelectionFilterBehavior::filterSelectionOnServer(
         << m_selection << " in favor of " << seln);
   }
 
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_FILTER
   std::cout << "  filter on s " << seln << " m_ " << m_selection << "\n";
 #endif
   m_selection = seln;
@@ -270,7 +272,7 @@ void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
   vtkSMSMTKWrapperProxy* mgr, pqServer* server)
 {
   (void)server;
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_FILTER
   std::cout << "  unfilterSelectionOnServer: " << server << "\n\n";
 #endif
 
@@ -301,7 +303,7 @@ void pqSMTKSelectionFilterBehavior::unfilterSelectionOnServer(
 
 void pqSMTKSelectionFilterBehavior::installFilter()
 {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_FILTER
   std::cout << "    Updating filter on " << m_selection << " " << m_modelFilterMask << "\n";
 #endif
   if (!m_selection)

@@ -18,6 +18,8 @@
 
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
+#define DEBUG_AVAILABLE_OPERATIONS 0
+
 using namespace smtk::view;
 
 AvailableOperations::AvailableOperations()
@@ -28,7 +30,7 @@ AvailableOperations::AvailableOperations()
   , m_workflowFilterObserverId()
 {
 // For debugging:
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_AVAILABLE_OPERATIONS
   this->observers().insert(
     [](AvailableOperations::Ptr self) {
       std::cout << "Available ops changed:\n";

@@ -48,6 +48,8 @@
 #include <algorithm>
 #include <sstream>
 
+#define DEBUG_REFERENCEITEM 0
+
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
@@ -90,7 +92,9 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
   auto uiManager = this->uiManager();
   if (uiManager == nullptr)
   {
+#if !defined(NDEBUG)
     std::cerr << "qtReferenceItemComboBox: Could not find UI Manager!\n";
+#endif
     return;
   }
 
@@ -109,7 +113,9 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
   }
   else
   {
+#if !defined(NDEBUG) && DEBUG_REFERENCEITEM
     std::cerr << "qtReferenceItemComboBox: Could not find Operation Manager!\n";
+#endif
   }
   auto resManager = uiManager->resourceManager();
   if (resManager != nullptr)
@@ -121,7 +127,9 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
   }
   else
   {
+#if !defined(NDEBUG) && DEBUG_REFERENCEITEM
     std::cerr << "qtReferenceItemComboBox: Could not find Resource Manager!\n";
+#endif
   }
   this->createWidget();
   this->highlightOnHoverChanged(uiManager->highlightOnHover());
@@ -292,23 +300,29 @@ smtk::resource::PersistentObjectPtr qtReferenceItemComboBox::object(int index)
   int val = this->Internals->comboBox->itemData(index).toInt(&ok);
   if (!ok)
   {
-    // There is a problem in that the item doesn't have a mapped value for us to look up
+// There is a problem in that the item doesn't have a mapped value for us to look up
+#if !defined(NDEBUG)
     std::cerr << "qtReferenceItemComboBox::object - can't get mapped id for index = " << index
               << "\n";
+#endif
     return nullptr;
   }
   auto findResult = m_mappedObjects.find(val);
   if (findResult == m_mappedObjects.end())
   {
-    // There is a problem in that the mapped value can't be found
+// There is a problem in that the mapped value can't be found
+#if !defined(NDEBUG)
     std::cerr << "qtReferenceItemComboBox::object - can't find mapped id\n";
+#endif
     return nullptr;
   }
   auto selectedObj = findResult->second.lock();
   if (selectedObj == nullptr)
   {
-    // There is a problem in that we can't get a persistent object from the weak pointer
+// There is a problem in that we can't get a persistent object from the weak pointer
+#if !defined(NDEBUG)
     std::cerr << "qtReferenceItemComboBox::object - can't get PersistentObject\n";
+#endif
     return nullptr;
   }
   return selectedObj;
@@ -347,8 +361,10 @@ void qtReferenceItemComboBox::highlightItem(int index)
   {
     // There is a problem in that we can't get a persistent object from the index
     selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
+#if !defined(NDEBUG)
     std::cerr << "qtReferenceItemComboBox::highlightItem - can't get PersistentObject for index: "
               << index << std::endl;
+#endif
     return;
   }
   // Add new hover state

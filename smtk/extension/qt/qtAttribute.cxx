@@ -39,6 +39,8 @@
 
 #include <stdlib.h> // for atexit()
 
+#define DEBUG_ATTRIBUTE 0
+
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
@@ -267,7 +269,7 @@ void qtAttribute::onItemModified()
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
       }
     }
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_ATTRIBUTE
     if (!didNotify)
     {
       static bool once = true;
