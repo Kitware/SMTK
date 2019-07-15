@@ -44,6 +44,12 @@ public:
     /// \brief Return the name associated with the Analysis
     const std::string& name() const { return m_name; }
 
+    /// \brief Return the string to represent the Analysis in UI's
+    const std::string& displayedName() const { return ((m_label == "") ? m_name : m_label); }
+    void setLabel(const std::string& analysisLabel) { m_label = analysisLabel; }
+    const std::string& label() const { return m_label; }
+    bool hasLabel() const { return m_label != ""; }
+
     /// @{
     /// \brief Methods to set and retrieve the categories locally associated with the Analysis
     void setLocalCategories(const std::set<std::string>& cats) { m_categories = cats; }
@@ -89,6 +95,7 @@ public:
     std::string m_name;                 ///< Name of the Analysis
     Analysis* m_parent;                 ///< Analysis' Parent
     bool m_exclusive;                   ///< Indicates if the Analysis' children are exclusive
+    std::string m_label;                ///< Optional label to be used for UIs
     std::set<std::string> m_categories; ///< Categories locally assigned to the analysis
     std::vector<Analysis*> m_children;  ///< Children of the Analysis
   };

@@ -49,7 +49,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   smtk::attribute::Analyses& analyses = res->analyses();
   if (analyses.size())
   {
-    std::map<std::string, std::string> pInfo;
+    std::map<std::string, std::string> pInfo, lInfo;
     std::vector<std::string> aNames;
     std::vector<std::string> eInfo;
     // we need this for backward compatibility
@@ -66,12 +66,20 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
       {
         eInfo.push_back(analysis->name());
       }
+      if (analysis->hasLabel())
+      {
+        lInfo[analysis->name()] = analysis->label();
+      }
     }
     j["Analyses"] = aInfo;
     j["AnalysesOrder"] = aNames;
     if (pInfo.size())
     {
       j["AnalysesParentInfo"] = pInfo;
+    }
+    if (lInfo.size())
+    {
+      j["AnalysesLabelInfo"] = lInfo;
     }
     if (eInfo.size())
     {
@@ -298,6 +306,24 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         {
           smtkErrorMacro(
             logger, "Could not find Analysis: " << name << " to set its exclusive property!");
+        }
+      }
+    }
+    // Do we have label infomation to deal with?
+    if (j.find("AnalysesLabelInfo") != j.end())
+    {
+      json labelInfo = j.at("AnalysesLabelInfo");
+      for (auto const& val : labelInfo.items())
+      {
+        auto a = analyses.find(val.key());
+        if (a != nullptr)
+        {
+          a->setLabel(val.value());
+        }
+        else
+        {
+          smtkErrorMacro(
+            logger, "Could not find Analysis: " << val.key() << " to set its label property!");
         }
       }
     }

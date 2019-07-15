@@ -563,6 +563,12 @@ void XmlDocV1Parser::process(xml_node& amnode)
       {
         analysis->setExclusive(true);
       }
+      // Does the analysis have a label?
+      xatt = anode.attribute("Label");
+      if (xatt)
+      {
+        analysis->setLabel(xatt.value());
+      }
     }
   }
 

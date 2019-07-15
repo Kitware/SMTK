@@ -81,7 +81,6 @@ set(QAttrLibMocHeaders
   qtCategorySelectorView.h
   qtCheckItemComboBox.h
   qtCollapsibleGroupWidget.h
-  qtComponentItem.h
   qtEmittingStringBuffer.h
   qtDescriptivePhraseDelegate.h
   qtDescriptivePhraseModel.h
