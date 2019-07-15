@@ -27,7 +27,6 @@ qtItem* qtComponentItem::createItemWidget(const qtAttributeItemInfo& info)
   {
     return nullptr;
   }
-
   // If we are dealing with a non-extensible item with only 1 required value lets
   // use a simple combobox UI else we will use the more advance UI.
   auto itemDef = item->definitionAs<smtk::attribute::ReferenceItemDefinition>();
@@ -35,7 +34,23 @@ qtItem* qtComponentItem::createItemWidget(const qtAttributeItemInfo& info)
   {
     return new qtReferenceItemComboBox(info);
   }
-  return new qtReferenceItem(info);
+  auto qi = new qtComponentItem(info);
+  // Unlike other classes, qtComponentItem does not call createWidget()
+  // in its constructor since the base class, qtReferenceItem, is
+  // concrete and cannot call virtual methods of subclases. So, for
+  // qtReferenceItem and its subclasses, we create the widget after
+  // constructing the item.
+  qi->createWidget();
+  return qi;
+}
+
+qtComponentItem::qtComponentItem(const qtAttributeItemInfo& info)
+  : qtReferenceItem(info)
+{
+}
+
+qtComponentItem::~qtComponentItem()
+{
 }
 }
 }

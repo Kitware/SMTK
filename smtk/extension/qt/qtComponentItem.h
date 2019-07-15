@@ -10,18 +10,22 @@
 #ifndef smtk_extension_qt_qtComponentItem_h
 #define smtk_extension_qt_qtComponentItem_h
 
+#include "smtk/extension/qt/qtReferenceItem.h"
+
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtItem.h"
 namespace smtk
 {
 namespace extension
 {
 
-class SMTKQTEXT_EXPORT qtComponentItem
+class SMTKQTEXT_EXPORT qtComponentItem : public qtReferenceItem
 {
+  Q_OBJECT
 
 public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
+  qtComponentItem(const qtAttributeItemInfo& info);
+  virtual ~qtComponentItem();
 };
 }
 }
