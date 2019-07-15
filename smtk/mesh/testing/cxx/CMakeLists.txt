@@ -44,6 +44,7 @@ set(unit_tests_which_require_data
   UnitTestPointField.cxx
   UnitTestPointLocator.cxx
   UnitTestPointSet.cxx
+  UnitTestReadWriteMeshResource.cxx
   UnitTestReclassifyEdges.cxx
   UnitTestRemoveMeshes.cxx
   UnitTestTypeSetFromData.cxx
