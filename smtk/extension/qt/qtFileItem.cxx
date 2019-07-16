@@ -332,8 +332,6 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
       QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)), this,
         SLOT(setActiveField(QWidget*)));
 
-      QObject::connect(this->Internals->fileExtCombo->lineEdit(),
-        SIGNAL(editTextChanged(const QString&)), this, SLOT(onInputValueChanged()));
       QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentIndexChanged(int)), this,
         SLOT(onInputValueChanged()));
     }
