@@ -49,12 +49,14 @@
 
 #include <iostream>
 
+#define DEBUG_WRAPPER 0
+
 pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vtkSMProxy* proxy,
   pqServer* server, QObject* parent)
   : Superclass(regGroup, regName, proxy, server, parent)
 {
 // I. Listen for PV selections and convert them to SMTK selections
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_WRAPPER
   std::cout << "pqResourceManager ctor " << parent << "\n";
 #endif
   bool listening = false;
@@ -111,7 +113,7 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
 
 pqSMTKWrapper::~pqSMTKWrapper()
 {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_WRAPPER
   std::cout << "pqResourceManager dtor\n";
 #endif
   if (!this->getServer())
@@ -120,7 +122,7 @@ pqSMTKWrapper::~pqSMTKWrapper()
     {
       if (rsrc)
       {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_WRAPPER
         std::cout << "  finalize " << rsrc << "\n";
 #endif
         rsrc->dropResource();
