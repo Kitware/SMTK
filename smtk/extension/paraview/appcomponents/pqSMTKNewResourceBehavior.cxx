@@ -79,6 +79,18 @@ void pqNewResourceReaction::newResource()
 
   // Create an operation view for the operation.
   smtk::view::ViewPtr view = uiManager->findOrCreateOperationView();
+
+  // Currently, creation operators all fallow the pattern of optionally creating
+  // an entity within an extant resource. Since this functionality doesn't make
+  // sense for a "New Resource" menu option, we flag the input items involved
+  // with that choice as advanced and disable the advanced items here. Since the
+  // choice of filtering by advance level is persistent for the operation, we
+  // unset the flag after the operation window returns.
+  std::string originalFilterByAdvanceLevel;
+  if (view->details().attribute("FilterByAdvanceLevel", originalFilterByAdvanceLevel))
+  {
+    view->details().setAttribute("FilterByAdvanceLevel", "false");
+  }
   smtk::extension::qtOperationView* opView = dynamic_cast<smtk::extension::qtOperationView*>(
     uiManager->setSMTKView(view, createDialog.data()));
 
@@ -113,6 +125,13 @@ void pqNewResourceReaction::newResource()
     vtkSMPropertyHelper(src->getProxy(), "Parameters").Set(parameters.c_str());
 
     pqSMTKRenderResourceBehavior::instance()->renderPipelineSource(src);
+  }
+
+  // Restore the original choice for filtering by advance level so it will be
+  // present when the operation is called from another code path.
+  if (view->details().attribute("FilterByAdvanceLevel"))
+  {
+    view->details().setAttribute("FilterByAdvanceLevel", originalFilterByAdvanceLevel);
   }
 }
 
