@@ -392,26 +392,27 @@ void qtReferenceItemComboBox::highlightItem(int index)
 
 void qtReferenceItemComboBox::selectItem(int index)
 {
-  auto uiManager = this->uiManager();
-  if (uiManager == nullptr)
-  {
-    return;
-  }
+  // Lets get the selection manager if possible since
+  // we want to clear anything being highlighted
 
-  auto selection = uiManager->selection();
-  if (selection == nullptr)
+  smtk::extension::qtUIManager* uiManager = this->uiManager();
+  smtk::view::SelectionPtr selection;
+  if (uiManager)
   {
-    return;
+    selection = uiManager->selection();
   }
-
-  selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
 
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
   if (item == nullptr)
   {
+    // Clear the selection if we can
+    if (selection)
+    {
+      selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
+    }
     return;
   }
-  // Is the "Please Select" option choosen?  If so then unset the item
+  // Is the "Please Select" option choosen?  If so then unset the item if needed
   if (index <= 0)
   {
     if (item->isSet())
@@ -419,24 +420,27 @@ void qtReferenceItemComboBox::selectItem(int index)
       item->unset();
       emit this->modified();
     }
-    return;
   }
   // Are we dealing with the create new option
-  if (m_okToCreate && (index == 1))
+  else if (m_okToCreate && (index == 1))
   {
-    return; // ToDo:  Implemented!
+    // ToDo:  Implemented!
   }
-  auto selectedObject = this->object(index);
-  if (selectedObject == nullptr)
+  else // Will this change the item?
   {
-    return;
+    auto selectedObject = this->object(index);
+    if (selectedObject && !(item->isSet() && (item->objectValue() == selectedObject)))
+    {
+      item->setObjectValue(selectedObject);
+      emit this->modified();
+    }
   }
-  if (item->isSet() && (item->objectValue() == selectedObject))
+
+  // Clear the selection if we can
+  if (selection)
   {
-    return;
+    selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
   }
-  item->setObjectValue(selectedObject);
-  emit this->modified();
 }
 
 std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associatableObjects(
