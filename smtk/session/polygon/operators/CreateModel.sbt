@@ -12,7 +12,8 @@
       <!-- A polygon model can be created within an existing
            resource (or an existing resource's session) if one is
            provided. Otherwise, a new resource is created -->
-      <AssociationsDef NumberOfRequiredValues="0" Extensible="true" MaxNumberOfValues="1">
+      <AssociationsDef NumberOfRequiredValues="0" Extensible="true"
+                       MaxNumberOfValues="1" AdvanceLevel="1">
         <Accepts><Resource Name="smtk::session::polygon::Resource" Filter="model"/></Accepts>
       </AssociationsDef>
 
@@ -172,4 +173,14 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+
+  <Views>
+    <View Type="Operation" Title="Model - Create"
+          FilterByAdvanceLevel="true" UseSelectionManager="true">
+      <InstancedAttributes>
+        <Att Type="create model"/>
+      </InstancedAttributes>
+    </View>
+  </Views>
+
 </SMTK_AttributeResource>

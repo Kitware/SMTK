@@ -6,7 +6,10 @@
       <BriefDescription>
         Edit a simulation domain that is a uniform grid
       </BriefDescription>
-      <AssociationsDef Name="input" Label="Input" NumberOfRequiredValues="0" MaximumNumberOfValues="1" Extensible="true">
+      <AssociationsDef Name="input" Label="Input"
+                       NumberOfRequiredValues="0"
+                       MaximumNumberOfValues="1" Extensible="true"
+                       AdvanceLevel="1">
         <Accepts>
           <!-- We create a new volume if a model is provided or
                edit an existing volume if a volume is provided. -->

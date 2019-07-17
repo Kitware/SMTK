@@ -122,4 +122,14 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
+
+  <Views>
+    <View Type="Operation" Title="Model - Create Uniform Grid"
+          FilterByAdvanceLevel="true" UseSelectionManager="true">
+      <InstancedAttributes>
+        <Att Type="createUniformGrid"/>
+      </InstancedAttributes>
+    </View>
+  </Views>
+
 </SMTK_AttributeResource>
