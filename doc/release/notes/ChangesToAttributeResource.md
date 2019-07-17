@@ -92,6 +92,8 @@ With the above changes also comes a way to indicate if an analysis' children rep
   </Analyses>
 
 ```
+### Analysis Labels
+As with other objects stored with an Attribute Resource, an Analysis can have an optional label associated with it.  Analysis::displayedName() will return the analysis' label if its label has been set, else it will return its name.  This method is used mainly for displaying the Analysis within a UI (such as an Analysis View).
 
 ### Change to RemoveValue Methods for Items Containing Values
 Prior to this release a removeValue method would return false if the code attempted to either remove a value from an non-extensible item or if removing a value below the item's required number of values.  The new behavior is as long as the index passed into the method is valid, the method will return true.  In the case the index is < the item's number of required values, the method acts as the item's unset method.  In the case the index >= number of required values but < the item's number of values, the storage for the value itself is removed and the number of values decreased.

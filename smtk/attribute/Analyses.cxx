@@ -28,6 +28,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
   {
     auto vitem = def->template addItemDefinition<VoidItemDefinition>(analysis->name());
     vitem->setIsOptional(true);
+    vitem->setLabel(analysis->displayedName());
     return;
   }
   // Exlcusive Analyses are represented as a String Item with Discrete Values
@@ -36,6 +37,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
   {
     auto sitem = def->template addItemDefinition<StringItemDefinition>(analysis->name());
     sitem->setIsOptional(true);
+    sitem->setLabel(analysis->displayedName());
     for (auto child : analysis->children())
     {
       child->buildAnalysisItem(sitem);
@@ -45,6 +47,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
   // Non Exclusive Analyses are represented as a Group Item
   auto gitem = def->template addItemDefinition<GroupItemDefinition>(analysis->name());
   gitem->setIsOptional(true);
+  gitem->setLabel(analysis->displayedName());
   for (auto child : analysis->children())
   {
     child->buildAnalysisItem(gitem);
@@ -143,6 +146,7 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
   if (m_exclusive)
   {
     auto sitem = pitem->addItemDefinition<StringItemDefinition>(m_name);
+    sitem->setLabel(this->displayedName());
     pitem->addConditionalItem(m_name, m_name);
     for (auto child : m_children)
     {
@@ -152,6 +156,7 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
   }
 
   auto gitem = pitem->addItemDefinition<GroupItemDefinition>(m_name);
+  gitem->setLabel(this->displayedName());
   pitem->addConditionalItem(m_name, m_name);
   for (auto child : m_children)
   {

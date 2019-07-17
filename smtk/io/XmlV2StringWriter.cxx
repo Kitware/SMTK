@@ -378,6 +378,10 @@ void XmlV2StringWriter::generateXml(Logger& logger)
       {
         anode.append_attribute("BaseType").set_value(parent->name().c_str());
       }
+      if (analysis->hasLabel())
+      {
+        anode.append_attribute("Label").set_value(analysis->label().c_str());
+      }
       // Add the analysis' children to be processed
       auto children = analysis->children();
       if (!children.empty())

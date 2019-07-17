@@ -38,6 +38,14 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
   smtkTest((a != nullptr), prefix << "Could not find a!");
   smtkTest((a1 != nullptr), prefix << "Could not find a1!");
   smtkTest((b != nullptr), prefix << "Could not find b!");
+  // Lets test label method
+  smtkTest(
+    (a->displayedName() == "a"), prefix << "a's label() = " << a->label() << ", it should be a!");
+  smtkTest((a1->displayedName() == "A1 Test Label"), prefix << "a1's label() = " << a1->label()
+                                                            << ", it should be A1 Test Label!");
+  smtkTest(
+    (b->displayedName() == "b"), prefix << "b's label() = " << b->label() << ", it should be b!");
+
   smtkTest((a1->parent() == a), prefix << "a1's parent not a")
     smtkTest((b->parent() == nullptr), prefix << "b has a parent")
 }
@@ -59,13 +67,15 @@ int unitAttributeAnalysis(int, char* [])
   analysis->setLocalCategories(cats);
   analysis = analyses.create("a1");
   analysis->setLocalCategories(cats);
+  // Give A1 a Label
+  analysis->setLabel("A1 Test Label");
 
   // We shouldn't be able to create 2 analyses with the same name
   analysis = analyses.create("a1");
-  smtkTest((analysis == nullptr), "Was able to create 2 analyses named a1")
+  smtkTest((analysis == nullptr), "Was able to create 2 analyses named a1");
 
-    // Lets try to set the parent to something that doesn't exists
-    smtkTest(!(analyses.setAnalysisParent("z", "x")), "Succeded in setting z's parent to x");
+  // Lets try to set the parent to something that doesn't exists
+  smtkTest(!(analyses.setAnalysisParent("z", "x")), "Succeded in setting z's parent to x");
   smtkTest(!(analyses.setAnalysisParent("z", "a")), "Succeded in setting z's parent to a");
   smtkTest(!(analyses.setAnalysisParent("a", "x")), "Succeded in setting a's parent to x");
   // This should work
