@@ -89,13 +89,13 @@
           </DiscreteInfo>
         </String>
 
-        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false" Advanced="1">
+        <Resource Name="resource" Label="Import into" Optional="true" IsEnabledByDefault="false" AdvanceLevel="1">
           <Accepts>
             <Resource Name="smtk::session::mesh::Resource"/>
           </Accepts>
         </Resource>
 
-        <String Name="session only" Label="session" Advanced="1">
+        <String Name="session only" Label="session" AdvanceLevel="1">
           <DiscreteInfo DefaultIndex="0">
             <Structure>
               <Value Enum="this file">import into this file </Value>
