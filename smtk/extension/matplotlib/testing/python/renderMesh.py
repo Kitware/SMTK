@@ -49,8 +49,8 @@ class RenderMesh(smtk.testing.TestCase):
 
         # Set the operator's parameters
         print renderMesh.parameters()
-        renderMesh.parameters().find(
-            'mesh').setValue(self.meshResource.meshes())
+        renderMesh.parameters().associate(
+            smtk.mesh.Component.create(self.meshResource.meshes()))
 
         self.outFile = os.path.join(
             smtk.testing.TEMP_DIR, str(smtk.common.UUID.random()) + '.png')
