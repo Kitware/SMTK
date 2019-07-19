@@ -237,12 +237,12 @@ void qtReferenceItemComboBox::updateItemData()
 
 void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreResource)
 {
-  this->Internals->comboBox->blockSignals(true);
-  this->m_mappedObjects.clear();
-  this->Internals->comboBox->clear();
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
   auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
   auto theAttribute = item->attribute();
+  this->Internals->comboBox->blockSignals(true);
+  this->m_mappedObjects.clear();
+  this->Internals->comboBox->clear();
   if (!item)
   {
     this->Internals->comboBox->blockSignals(false);

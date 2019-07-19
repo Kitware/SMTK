@@ -66,6 +66,15 @@ void qtItem::addChildItem(qtItem* child)
   }
 }
 
+void qtItem::removeChildItem(qtItem* child)
+{
+  // There should only be one instance of the child
+  if (m_childItems.removeOne(child))
+  {
+    child->deleteLater();
+  }
+}
+
 QList<qtItem*>& qtItem::childItems()
 {
   return m_childItems;
@@ -75,7 +84,7 @@ void qtItem::clearChildItems()
 {
   for (int i = 0; i < m_childItems.count(); i++)
   {
-    delete m_childItems.value(i);
+    m_childItems.value(i)->deleteLater();
   }
   m_childItems.clear();
 }
