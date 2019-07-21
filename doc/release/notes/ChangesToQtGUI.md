@@ -32,6 +32,8 @@ In the case of extensible Group Items, the item view style refers to subgroups. 
 
 ### Changes to qtItem
 * **Removed passAdvanceCheck method** - In the qtItem classes, to determine if an item should be viewed, the code was either calling qtBaseView::displayItem check or a combination of qtUIManager::passItemCategoryCheck and this method.  Since a view can have its own set of filtering rules, having this method just confuses the developer as to how to determine if the item should be displayed.
+* Added removedChildItem(..) method - this removes a child qtItem from the object and calls deleteLater() on it.
+* **addChildItem(..), clearChildItems() and childItems() methods are now protected.**  They use to be public which was a mistake.
 
 ### Changes to qtFileItem
 * Invalidity calculation now takes into consideration the ShouldExists hint associated with the item's definition.
@@ -62,3 +64,4 @@ This is a new type of qtItem used to create a simple ComboBox UI for setting a q
 
 ### Bug Fixes
 * qtAnalysisView, qtAttributeView, qtInstancedView, qtModelEntityView and qtSelectorView now properly deletes any qtAttributes they create
+* qtGroupItem now properly delete any children qtItems it creates.  It was only deleting children if it was extensible.

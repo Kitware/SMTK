@@ -72,10 +72,6 @@ public:
   QPointer<QWidget> widget() { return m_widget; }
   QPointer<QWidget> parentWidget() { return m_itemInfo.parentWidget(); }
 
-  virtual void addChildItem(qtItem*);
-  virtual void clearChildItems();
-  QList<qtItem*>& childItems();
-
   bool isLeafItem() { return m_isLeafItem; }
 
   virtual void setLabelVisible(bool) { ; }
@@ -105,6 +101,10 @@ protected slots:
 protected:
   virtual void createWidget() { ; }
   virtual void setAdvanceLevel(int level);
+  virtual void addChildItem(qtItem*);
+  virtual void removeChildItem(qtItem*);
+  virtual void clearChildItems();
+  QList<qtItem*>& childItems();
 
   QPointer<QWidget> m_widget;
   bool m_isLeafItem;

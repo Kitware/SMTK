@@ -65,14 +65,7 @@ qtGroupItem::qtGroupItem(const qtAttributeItemInfo& info)
 
 qtGroupItem::~qtGroupItem()
 {
-  for (auto& entry : this->Internals->ExtensibleMap)
-  {
-    for (auto qi : entry)
-    {
-      delete qi->widget();
-      delete qi;
-    }
-  }
+  this->clearChildItems();
   delete this->Internals;
 }
 
@@ -160,6 +153,7 @@ void qtGroupItem::setEnabledState(bool checked)
 
 void qtGroupItem::updateItemData()
 {
+  this->clearChildItems();
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
@@ -170,19 +164,6 @@ void qtGroupItem::updateItemData()
   if (item->isExtensible())
   {
     //clear mapping
-    QMapIterator<QToolButton*, QList<qtItem*> > mit(this->Internals->ExtensibleMap);
-    while (mit.hasNext())
-    {
-      mit.next();
-      QListIterator<qtItem*> lit(mit.value());
-      while (lit.hasNext())
-      {
-        qtItem* tmpItem = lit.next();
-        delete tmpItem->widget();
-        delete tmpItem;
-      }
-      delete mit.key();
-    }
     this->Internals->ExtensibleMap.clear();
     this->Internals->MinusButtonIndices.clear();
     if (this->Internals->ItemsTable)
@@ -315,6 +296,7 @@ void qtGroupItem::addSubGroup(int i)
     }
     if (childItem)
     {
+      this->addChildItem(childItem);
       subGroupLayout->addWidget(childItem->widget());
       itemList.push_back(childItem);
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
@@ -343,8 +325,8 @@ void qtGroupItem::onRemoveSubGroup()
 
   foreach (qtItem* qi, this->Internals->ExtensibleMap.value(minusButton))
   {
-    delete qi->widget();
-    delete qi;
+    // We need to remove the child from our list
+    this->removeChildItem(qi);
   }
   //  delete this->Internals->ExtensibleMap.value(minusButton).first;
   this->Internals->ExtensibleMap.remove(minusButton);
@@ -435,6 +417,7 @@ void qtGroupItem::addItemsToTable(int i)
     }
     if (childItem)
     {
+      this->addChildItem(childItem);
       if (added == 0)
       {
         this->Internals->ItemsTable->insertRow(numRows);
