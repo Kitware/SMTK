@@ -3,9 +3,7 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="editSource" Label="Model - Edit source" BaseType="operation">
-      <BriefDescription>
-        Create or edit a source term in the simulation.
-      </BriefDescription>
+      <BriefDescription>Create or edit a source term in the simulation.</BriefDescription>
       <AssociationsDef Name="input" Label="Input" NumberOfRequiredValues="1">
         <Accepts>
           <!-- We create a new source if a model is provided or

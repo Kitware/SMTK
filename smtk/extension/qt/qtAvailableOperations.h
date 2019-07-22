@@ -40,7 +40,8 @@ public:
 
   smtk::view::AvailableOperationsPtr operationSource() const { return m_operationSource; }
   void setOperationSource(smtk::view::AvailableOperationsPtr avail);
-
+  void setUseLabels(bool val) { m_useLabels = val; }
+  bool useLabels() const { return m_useLabels; }
   QListWidget* listWidget() const { return m_operationList; }
 
 signals:
@@ -53,6 +54,7 @@ protected:
   QVBoxLayout* m_layout;
   smtk::view::AvailableOperationsPtr m_operationSource;
   smtk::view::AvailableOperations::Observers::Key m_operationSourceObserverId;
+  bool m_useLabels;
 
   void updateList();
 };

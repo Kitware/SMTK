@@ -9,10 +9,9 @@
         <Accepts>
           <Resource Name="smtk::attribute::Resource"/>
         </Accepts>
-        <BriefDescription>
-          Choose an oscillator simulation attribute-resource that has
-          been linked to an oscillator simulation model-resource.
-          (The link is normally created for you during initialization.)
+        <BriefDescription>Choose an oscillator simulation attribute-resource that has
+been linked to an oscillator simulation model-resource.
+(The link is normally created for you during initialization.)
         </BriefDescription>
       </AssociationsDef>
       <ItemDefinitions>

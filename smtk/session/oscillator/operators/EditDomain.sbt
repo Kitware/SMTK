@@ -3,9 +3,7 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="editDomain" Label="Model - Edit domain" BaseType="operation">
-      <BriefDescription>
-        Edit a simulation domain that is a uniform grid
-      </BriefDescription>
+      <BriefDescription>Edit a simulation domain that is a uniform grid</BriefDescription>
       <AssociationsDef Name="input" Label="Input"
                        NumberOfRequiredValues="0"
                        MaximumNumberOfValues="1" Extensible="true"
