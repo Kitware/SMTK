@@ -1,9 +1,10 @@
 <RCC>
   <qresource prefix="/icons/attribute">
     <file alias = "edit.png">icons/edit.png</file>
+    <file alias = "errorAlert.png">icons/errorAlert.png</file>
     <file alias = "expand-up.png">icons/expand-up.png</file>
     <file alias = "expand-down.png">icons/expand-down.png</file>
-    <file alais = "lock.png">icons/lock.png</file>
+    <file alias = "lock.png">icons/lock.png</file>
     <file alias = "minus.png">icons/minus.png</file>
     <file alias = "plus.png">icons/plus.png</file>
     <file alias = "selLinkIn.png">icons/selLinkIn.png</file>

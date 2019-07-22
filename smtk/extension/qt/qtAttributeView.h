@@ -71,6 +71,7 @@ public slots:
   void childrenResized() override;
   void showAdvanceLevelOverlay(bool show) override;
   void associationsChanged();
+  void onItemChanged(qtItem* item);
 
 signals:
   void numOfAttributesChanged();
@@ -101,6 +102,8 @@ protected:
   void removeComparativeAttribute(smtk::attribute::AttributePtr att);
   void insertTableColumn(
     QTableWidget* wTable, int insertCol, const QString& title, int advancedlevel);
+  // Determines if an alert icon should be displayed next to the attribute in the list
+  void updateAttributeStatus(smtk::attribute::Attribute* att);
 
 private:
   qtAttributeViewInternals* Internals;

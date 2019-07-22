@@ -43,6 +43,8 @@ In the case of extensible Group Items, the item view style refers to subgroups. 
 ### Added qtReferenceItemComboBox
 This is a new type of qtItem used to create a simple ComboBox UI for setting a qtReferenceItem.  It also supports the ability to restrict its possible values to those objects associated with the item's attribute.
 
+* In the case that the item is not set, "Please Select" is now displayed in red.
+
 ### Changes to qtDiscreteValueEditor
 * The modified signal from the corresponding qtInputItem is no longer sent when the underlying ValueItem is modified.  It is now sent after the Editor's internal widgets have been appropriately updated.
 
@@ -54,11 +56,15 @@ This is a new type of qtItem used to create a simple ComboBox UI for setting a q
 * The order of displaying analyses is no longer resorted alphabetically and will be displayed in the order they were defined.
 * Overrides the categoryTest method to return always true since its data should never be filtered based on categories.
 
+### Changes to qtAttributeView
+* The view now displays an alert icon next to attributes that are in an invalid state
+
 ### Changes to qtUIManager
 * The set of categories is being passed to setToLevelCategories is now compared to what was already set.
 
 ### Changes to qtAssociationWidget
 * Added the ability to ignore a resource when determining which objects can be associated with an attribute.  The main use case is when refreshing the widget because a resource is about to be removed from the system.  We don't want it to contribute to the calculation.
+* The widget now shows an alert icon if the associations are not valid.
 
 ### Bug Fixes
 * qtAnalysisView, qtAttributeView, qtInstancedView, qtModelEntityView and qtSelectorView now properly deletes any qtAttributes they create

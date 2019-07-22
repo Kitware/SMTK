@@ -265,6 +265,7 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   // Lets set the comboBox
   // First add the please select option
   this->Internals->comboBox->addItem("Please Select");
+  this->Internals->comboBox->setItemData(0, QBrush(Qt::red), Qt::ForegroundRole);
   // Are we allowed to create an object?
   if (m_okToCreate)
   {
@@ -297,6 +298,17 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     this->m_mappedObjects[count++] = obj;
   }
   this->Internals->comboBox->setCurrentIndex(selectedIndex);
+  if (selectedIndex == 0)
+  {
+    QPalette comboboxPalette = this->Internals->comboBox->palette();
+    comboboxPalette.setColor(QPalette::Text, Qt::red);
+    comboboxPalette.setColor(QPalette::WindowText, Qt::red);
+    this->Internals->comboBox->setPalette(comboboxPalette);
+  }
+  else
+  {
+    this->Internals->comboBox->setPalette(this->Internals->comboBox->parentWidget()->palette());
+  }
   this->Internals->comboBox->blockSignals(false);
 }
 

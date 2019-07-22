@@ -51,6 +51,19 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
+          <widget class="QLabel" name="AlertLabel">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::RichText</enum>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="MoveToRight">
            <property name="font">
             <font>
