@@ -108,6 +108,8 @@ int unitAttributeAssociation(int, char* [])
     smtkTest(*(resptr->associations().begin()) == modelMgr,
       "Could not set attribute resource's model-resource.");
 
+    smtkTest(resptr->hasAssociations(),
+      "Attribute Resource::hasAssociations() did not return true after association");
     auto dissociateOperation = smtk::attribute::Dissociate::create();
 
     dissociateOperation->parameters()->associate(resptr);
@@ -124,6 +126,8 @@ int unitAttributeAssociation(int, char* [])
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
       "Dissociate operator failed");
 
+    smtkTest(!resptr->hasAssociations(),
+      "Attribute Resource::hasAssociations() did return true after disassociation");
     smtkTest(resptr->associations().empty() == true,
       "Could not dissociate model-resource from attribute resource.");
   }
