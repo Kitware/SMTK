@@ -68,6 +68,11 @@ This is a new type of qtItem used to create a simple ComboBox UI for setting a q
 * Added the ability to ignore a resource when determining which objects can be associated with an attribute.  The main use case is when refreshing the widget because a resource is about to be removed from the system.  We don't want it to contribute to the calculation.
 * The widget now shows an alert icon if the associations are not valid.
 
+### Displaying Operations in the Operation Manager
+* Operations will now always appear sorted
+* Operations will have a tooltip associated with it based on it's brief description
+
+
 ### Bug Fixes
 * qtAnalysisView, qtAttributeView, qtInstancedView, qtModelEntityView and qtSelectorView now properly deletes any qtAttributes they create
 * qtGroupItem now properly delete any children qtItems it creates.  It was only deleting children if it was extensible.

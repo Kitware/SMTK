@@ -10,6 +10,7 @@
 #include "smtk/extension/qt/qtAvailableOperations.h"
 
 #include "smtk/operation/MetadataContainer.h"
+#include "smtk/operation/SpecificationOps.h"
 #include "smtk/view/AvailableOperations.h"
 
 namespace smtk
@@ -23,6 +24,7 @@ qtAvailableOperations::qtAvailableOperations(QWidget* parent)
   , m_layout(nullptr)
   , m_operationSource(nullptr)
   , m_operationSourceObserverId()
+  , m_useLabels(false)
 {
   m_operationList = new QListWidget(this);
   m_layout = new QVBoxLayout(this);
@@ -73,6 +75,7 @@ void qtAvailableOperations::updateList()
     auto data = m_operationSource->operationData(op);
     std::string label;
     std::string icon;
+    std::string toolTip;
     if (data)
     {
       label = data->name;
@@ -85,13 +88,34 @@ void qtAvailableOperations::updateList()
       {
         continue;
       }
-      label = opMeta->typeName();
+      auto opDef =
+        smtk::operation::extractParameterDefinition(opMeta->specification(), opMeta->typeName());
+      if (opDef)
+      {
+        toolTip = opDef->briefDescription();
+        if (m_useLabels)
+        {
+          label = opDef->displayedTypeName();
+        }
+      }
+      if (!(m_useLabels && opDef))
+      {
+        label = opMeta->typeName();
+      }
     }
     auto item = new QListWidgetItem(m_operationList);
     item->setData(Qt::UserRole + 47, // TODO: why 47?
       QVariant::fromValue(op));      // Store the operation's index with the list item.
     item->setText(label.c_str());
+    if (toolTip != "")
+    {
+      item->setToolTip(toolTip.c_str());
+    }
     m_operationList->addItem(item);
+  }
+  if (!m_operationSource->workflowFilter())
+  {
+    m_operationList->sortItems();
   }
 }
 }
