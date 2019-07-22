@@ -396,20 +396,26 @@ void qtFileItem::onInputValueChanged()
         this->Internals->fileExtCombo->setCurrentIndex(filterId);
       }
     }
-
-    if (fSystemItemDef->isValueValid(value) || !this->Internals->fileExtCombo)
+    // Lets see if we need to append a suffix
+    if ((!fSystemItemDef->isValueValid(value)) && this->Internals->fileExtCombo)
     {
-      item->setValue(elementIdx, value);
+      value += this->Internals->fileExtensions.at(this->Internals->fileExtCombo->currentIndex())
+                 .toStdString();
+
+      // If the value is still not valid color the widget accordingly and just return
+      if (!fSystemItemDef->isValueValid(value))
+      {
+        m_itemInfo.uiManager()->setWidgetColorToInvalid(editBox);
+        return; // the value is not valid - nothing to set
+      }
     }
-    else
+    // Lets see if the value is different from the current one
+    if (item->value(elementIdx) == value)
     {
-      // the value does not have a suffix that matches our definition, so we
-      // set the extension according to the chosen filter.
-      item->setValue(elementIdx, value +
-          this->Internals->fileExtensions.at(this->Internals->fileExtCombo->currentIndex())
-            .toStdString());
+      return; // value hasn't changed
     }
 
+    item->setValue(elementIdx, value);
     emit this->modified();
 
     if (!this->isDirectory())
@@ -438,6 +444,10 @@ void qtFileItem::onInputValueChanged()
   }
   else
   {
+    if (!item->isSet(elementIdx))
+    {
+      return; // the value is already not set
+    }
     item->unset(elementIdx);
     m_itemInfo.uiManager()->setWidgetColorToInvalid(editBox);
     emit(modified());
