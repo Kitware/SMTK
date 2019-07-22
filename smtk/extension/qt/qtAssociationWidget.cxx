@@ -132,6 +132,8 @@ void qtAssociationWidget::initWidget()
   QString arrowLeft(":/icons/attribute/arrowLeft.png");
   this->Internals->MoveToRight->setIcon(QIcon(arrowRight));
   this->Internals->MoveToLeft->setIcon(QIcon(arrowLeft));
+  this->Internals->AlertLabel->setText("<img src=\":/icons/attribute/errorAlert.png\">");
+  this->Internals->AlertLabel->hide();
 
   // signals/slots
   QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
@@ -162,6 +164,49 @@ void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr th
   }
 }
 
+void qtAssociationWidget::updateAssociationStatus(const Attribute* attribute)
+{
+  auto assocItem = attribute->associatedObjects();
+  if (assocItem->isValid())
+  {
+    this->Internals->AlertLabel->hide();
+  }
+  else
+  {
+    this->Internals->AlertLabel->show();
+    // Lets update the tooltip to say why its not valid
+    if (assocItem->isExtensible())
+    {
+      // Remember that an item may have the correct number of values
+      // but they may not all be set
+      if (assocItem->numberOfValues() <= assocItem->numberOfRequiredValues())
+      {
+        QString reason("Attribute requires at least ");
+        QString count;
+        count.setNum(assocItem->numberOfRequiredValues());
+        reason.append(count).append(" objects associated to it");
+        this->Internals->AlertLabel->setToolTip(reason);
+      }
+      else
+      {
+        //Must have exceeded max number
+        QString reason("Attribute requires no more than ");
+        QString count;
+        count.setNum(assocItem->maxNumberOfValues());
+        reason.append(count).append(" objects associated to it");
+        this->Internals->AlertLabel->setToolTip(reason);
+      }
+    }
+    else
+    {
+      QString reason("Attribute requires ");
+      QString count;
+      count.setNum(assocItem->numberOfRequiredValues());
+      reason.append(count).append(" objects associated to it");
+      this->Internals->AlertLabel->setToolTip(reason);
+    }
+  }
+}
 void qtAssociationWidget::refreshAssociations(const smtk::common::UUID& ignoreResource)
 {
   this->Internals->CurrentList->blockSignals(true);
@@ -175,11 +220,13 @@ void qtAssociationWidget::refreshAssociations(const smtk::common::UUID& ignoreRe
   {
     this->Internals->CurrentList->blockSignals(false);
     this->Internals->AvailableList->blockSignals(false);
+    this->Internals->AlertLabel->hide();
     return;
   }
 
   attribute::DefinitionPtr attDef = theAttribute->definition();
-
+  // Lets see if the attribute's associations are currently valid
+  this->updateAssociationStatus(theAttribute.get());
   ResourcePtr attResource = attDef->resource();
   auto objects = this->associatableObjects(ignoreResource);
   smtk::attribute::DefinitionPtr preDef;
@@ -215,7 +262,7 @@ smtk::attribute::AttributePtr qtAssociationWidget::getSelectedAttribute(QListWid
 smtk::attribute::AttributePtr qtAssociationWidget::getAttribute(QListWidgetItem* item)
 {
   Attribute* rawPtr =
-    item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : NULL;
+    item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
 }
 
@@ -242,7 +289,6 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   // if not we need to go to resource manager to get the information
   if (attResource->hasAssociations())
   {
-    resources = attResource->associations();
     if (resources.empty())
     {
       // Ok - the attribute resource does has other resources associated with it
@@ -450,9 +496,10 @@ void qtAssociationWidget::onRemoveAssigned()
   if (selItem)
   {
     emit this->attAssociationChanged();
+    this->updateAssociationStatus(att.get());
     // highlight selected item in AvailableList
     this->updateListItemSelectionAfterChange(selItems, this->Internals->AvailableList);
-    this->Internals->CurrentList->setCurrentItem(NULL);
+    this->Internals->CurrentList->setCurrentItem(nullptr);
     this->Internals->CurrentList->clearSelection();
   }
 }
@@ -467,7 +514,7 @@ void qtAssociationWidget::onAddAvailable()
 
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
-  QListWidgetItem* selItem = NULL;
+  QListWidgetItem* selItem = nullptr;
   QListWidget* theList = this->Internals->AvailableList;
   QList<QListWidgetItem*> selItems = this->getSelectedItems(theList);
   foreach (QListWidgetItem* item, selItems)
@@ -493,10 +540,11 @@ void qtAssociationWidget::onAddAvailable()
   this->Internals->AvailableList->blockSignals(false);
   if (selItem)
   {
+    this->updateAssociationStatus(att.get());
     emit this->attAssociationChanged();
     // highlight selected item in CurrentList
     this->updateListItemSelectionAfterChange(selItems, this->Internals->CurrentList);
-    this->Internals->AvailableList->setCurrentItem(NULL);
+    this->Internals->AvailableList->setCurrentItem(nullptr);
     this->Internals->AvailableList->clearSelection();
   }
 }

@@ -57,6 +57,14 @@
 
 #include <iostream>
 #include <set>
+namespace
+{
+const int status_column = 0;
+const int name_column = 1;
+const int type_column = 2;
+const int color_column = 3;
+};
+
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
@@ -136,6 +144,7 @@ public:
   bool m_okToCreateModelEntities;
   smtk::model::BitFlags m_modelEntityMask;
   std::map<std::string, smtk::view::View::Component> m_attCompMap;
+  QString m_alertIconPath;
 };
 
 qtBaseView* qtAttributeView::createViewWidget(const ViewInfo& info)
@@ -149,6 +158,7 @@ qtAttributeView::qtAttributeView(const ViewInfo& info)
   : qtBaseView(info)
 {
   this->Internals = new qtAttributeViewInternals;
+  this->Internals->m_alertIconPath = ":/icons/attribute/errorAlert.png";
   smtk::view::ViewPtr view = this->getObject();
   m_hideAssociations = false;
   if (view)
@@ -421,8 +431,8 @@ smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 QTableWidgetItem* qtAttributeView::getSelectedItem()
 {
   return this->Internals->ListTable->selectedItems().count() > 0
-    ? this->Internals->ListTable->selectedItems().value(0)
-    : NULL;
+    ? this->Internals->ListTable->selectedItems().value(name_column)
+    : nullptr;
 }
 
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
@@ -782,7 +792,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
 
   int numRows = this->Internals->ListTable->rowCount();
   this->Internals->ListTable->setRowCount(++numRows);
-  this->Internals->ListTable->setItem(numRows - 1, 0, item);
+  this->Internals->ListTable->setItem(numRows - 1, name_column, item);
 
   // add the type column too.
   std::string txtDef = childData->definition()->displayedTypeName();
@@ -790,18 +800,27 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   QTableWidgetItem* defitem =
     new QTableWidgetItem(QString::fromUtf8(txtDef.c_str()), smtk_USER_DATA_TYPE);
   defitem->setFlags(nonEditableFlags);
-  this->Internals->ListTable->setItem(numRows - 1, 1, defitem);
+  this->Internals->ListTable->setItem(numRows - 1, type_column, defitem);
 
   // ToDo: Reactivate Color Option when we are ready to use it
   if (false)
   {
     QTableWidgetItem* colorItem = new QTableWidgetItem();
-    this->Internals->ListTable->setItem(numRows - 1, 2, colorItem);
+    this->Internals->ListTable->setItem(numRows - 1, color_column, colorItem);
     const double* rgba = childData->color();
     QBrush bgBrush(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
     colorItem->setBackground(bgBrush);
     colorItem->setFlags(Qt::ItemIsEnabled);
   }
+  // Lets see if we need to show an alert icon cause the attribute is not
+  // valid
+  if (!childData->isValid())
+  {
+    QTableWidgetItem* statusItem =
+      new QTableWidgetItem(QIcon(this->Internals->m_alertIconPath), "", smtk_USER_DATA_TYPE);
+    this->Internals->ListTable->setItem(numRows - 1, status_column, statusItem);
+  }
+
   return item;
 }
 
@@ -824,21 +843,23 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->ListTable->setRowCount(0);
 
   // ToDo: Reactivate Color Option when we are ready to use it
-  //int numCols = viewAtt ? 3 : 2;
-  int numCols = 2;
+  //int numCols = viewAtt ? 4 : 3;
+  int numCols = 3;
   this->Internals->ListTable->setColumnCount(numCols);
+  this->Internals->ListTable->setHorizontalHeaderItem(status_column, new QTableWidgetItem(""));
   this->Internals->ListTable->setHorizontalHeaderItem(
-    0, new QTableWidgetItem(viewAtt ? "Name" : "Property"));
-  this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
+    name_column, new QTableWidgetItem(viewAtt ? "Name" : "Property"));
+  this->Internals->ListTable->setHorizontalHeaderItem(type_column, new QTableWidgetItem("Type"));
   if (this->Internals->AllDefs.size() == 1)
   {
     // If there is only one attribute type then there is no reason to
     // show the type column
-    this->Internals->ListTable->setColumnHidden(1, true);
+    this->Internals->ListTable->setColumnHidden(type_column, true);
   }
-  if (numCols == 3)
+  if (numCols == 4)
   {
-    this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
+    this->Internals->ListTable->setHorizontalHeaderItem(
+      color_column, new QTableWidgetItem("Color"));
   }
   if (this->Internals->AllDefs.size() == 1)
   {
@@ -972,6 +993,8 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
   {
     this->Internals->AttFrame->layout()->addWidget(this->Internals->CurrentAtt->widget());
+    QObject::connect(this->Internals->CurrentAtt, SIGNAL(itemModified(qtItem*)), this,
+      SLOT(onItemChanged(qtItem*)), Qt::QueuedConnection);
     if (this->advanceLevelVisible())
     {
       this->Internals->CurrentAtt->showAdvanceLevelOverlay(true);
@@ -1528,7 +1551,58 @@ void qtAttributeView::associationsChanged()
   {
     return;
   }
-
+  this->updateAttributeStatus(this->Internals->CurrentAtt->attribute().get());
+  this->valueChanged(this->Internals->CurrentAtt->attribute()->associations());
   emit this->modified(this->Internals->CurrentAtt->attribute()->associations());
   emit this->attAssociationChanged();
+}
+
+void qtAttributeView::onItemChanged(qtItem* qitem)
+{
+  if (qitem == nullptr)
+  {
+    return;
+  }
+  auto item = qitem->item();
+  if (item == nullptr)
+  {
+    return;
+  }
+  auto attribute = item->attribute();
+  if (attribute == nullptr)
+  {
+    return;
+  }
+  this->updateAttributeStatus(attribute.get());
+  this->valueChanged(item);
+}
+void qtAttributeView::updateAttributeStatus(Attribute* att)
+{
+  if (att == nullptr)
+  {
+    return;
+  }
+  for (int i = 0; i < this->Internals->ListTable->rowCount(); i++)
+  {
+    QTableWidgetItem* item = this->Internals->ListTable->item(i, name_column);
+    Attribute* listAtt =
+      item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
+    if (listAtt == nullptr)
+    {
+      continue;
+    }
+    if (listAtt == att)
+    {
+      if (att->isValid())
+      {
+        this->Internals->ListTable->setItem(i, status_column, nullptr);
+      }
+      else
+      {
+        QTableWidgetItem* statusItem =
+          new QTableWidgetItem(QIcon(this->Internals->m_alertIconPath), "", smtk_USER_DATA_TYPE);
+        this->Internals->ListTable->setItem(i, status_column, statusItem);
+      }
+    }
+  }
 }
