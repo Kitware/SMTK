@@ -15,6 +15,7 @@
 
 #include "smtk/operation/MetadataContainer.h"
 #include "smtk/operation/Operation.h"
+#include "smtk/operation/groups/InternalGroup.h"
 
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
@@ -192,6 +193,8 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
   smtk::view::SelectionPtr selectionIn, int selectionMaskIn, bool exactSelectionIn,
   OperationIndexSet& workingSetOut)
 {
+  smtk::operation::InternalGroup internalOperations(operationsIn);
+
   workingSetOut.clear();
   if (selectionIn)
   {
@@ -273,7 +276,11 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
         if ((!extensible && numSel == numRequired) ||
           (extensible && numSel >= numRequired && (maxAllowed == 0 || numSel <= maxAllowed)))
         {
-          workingSetOut.insert(md.index());
+          // Do not present operations marked as internal
+          if (!internalOperations.has(md.index()))
+          {
+            workingSetOut.insert(md.index());
+          }
         }
       }
     }
@@ -282,7 +289,11 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
   {
     for (auto& md : operationsIn->metadata())
     {
-      workingSetOut.insert(md.index());
+      // Do not present operations marked as internal
+      if (!internalOperations.has(md.index()))
+      {
+        workingSetOut.insert(md.index());
+      }
     }
   }
 }

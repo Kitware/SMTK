@@ -23,6 +23,7 @@
 
 #include "smtk/operation/groups/ExporterGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/groups/InternalGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -50,6 +51,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
   smtk::operation::WriterGroup(operationManager)
     .registerOperation<smtk::attribute::Resource, smtk::attribute::Write>();
+
+  smtk::operation::InternalGroup(operationManager).registerOperation<smtk::attribute::Signal>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
@@ -61,6 +64,8 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
   smtk::operation::ImporterGroup(operationManager).unregisterOperation<smtk::attribute::Import>();
 
   smtk::operation::WriterGroup(operationManager).unregisterOperation<smtk::attribute::Write>();
+
+  smtk::operation::InternalGroup(operationManager).unregisterOperation<smtk::attribute::Signal>();
 
   operationManager->unregisterOperations<OperationList>();
 }
