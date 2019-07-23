@@ -161,6 +161,12 @@ std::string Paths::extension(const std::string& path)
   return boost::filesystem::path(path).extension().string();
 }
 
+/// Return the path with file extension replaced
+std::string Paths::replaceExtension(const std::string& path, const std::string& newExtension)
+{
+  return boost::filesystem::path(path).replace_extension(newExtension).string();
+}
+
 /**\brief Return the best guess at the directory containing the current process's executable.
   */
 std::string Paths::executableDirectory()

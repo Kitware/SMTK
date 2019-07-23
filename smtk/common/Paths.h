@@ -55,6 +55,7 @@ public:
   static std::string filename(const std::string& path);
   static std::string stem(const std::string& path);
   static std::string extension(const std::string& path);
+  static std::string replaceExtension(const std::string& path, const std::string& newExtension);
 
   std::string executableDirectory();
   std::string toplevelDirectory();

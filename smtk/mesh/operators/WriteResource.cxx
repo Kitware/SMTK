@@ -70,6 +70,7 @@ WriteResource::Result WriteResource::operateInternal()
   }
 
   std::string meshFilename = smtk::common::Paths::stem(resource->location()) + ".h5m";
+  std::string meshPath = smtk::common::Paths::replaceExtension(resource->location(), ".h5m");
 
   j["Mesh URL"] = meshFilename;
 
@@ -86,7 +87,7 @@ WriteResource::Result WriteResource::operateInternal()
 
   // Create a write operator
   smtk::mesh::Write::Ptr writeOp = smtk::mesh::Write::create();
-  writeOp->parameters()->findFile("filename")->setValue(meshFilename);
+  writeOp->parameters()->findFile("filename")->setValue(meshPath);
 
   // Set the entity association
   writeOp->parameters()->associate(resource);

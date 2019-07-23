@@ -17,6 +17,9 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
+#include "smtk/common/FileLocation.h"
+#include "smtk/common/Paths.h"
+
 #include "smtk/io/ReadMesh.h"
 
 #include "smtk/mesh/json/jsonResource.h"
@@ -63,10 +66,13 @@ ReadResource::Result ReadResource::operateInternal()
 
   std::string meshFilename = j.at("Mesh URL");
 
+  auto refDirectory = smtk::common::Paths::directory(filename);
+  smtk::common::FileLocation meshFileLocation(meshFilename, refDirectory);
+
   smtk::io::ReadMesh read;
   smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create();
   smtk::mesh::from_json(j, resource);
-  read(meshFilename, resource);
+  read(meshFileLocation.absolutePath(), resource);
   resource->setLocation(filename);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
