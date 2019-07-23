@@ -1042,8 +1042,7 @@ bool Resource::hasAssociations() const
 {
   // Get the data from the resource's links and see if it contains a link with the
   // association role
-  if (this->links().data().has<smtk::resource::Resource::Links::ResourceLinkData::Role>(
-        smtk::attribute::Resource::AssociationRole))
+  if (this->links().linkedTo(smtk::attribute::Resource::AssociationRole).empty() == false)
   {
     return true;
   }
