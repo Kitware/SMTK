@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
   }
 
   // Set the mesh to be rendered
-  op->parameters()->findMesh("mesh")->setValue(c->meshes());
+  op->parameters()->associate(smtk::mesh::Component::create(c->meshes()));
 
   // Set the file path for the rendered image
   std::string write_path(write_root);

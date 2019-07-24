@@ -6,8 +6,10 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="render mesh" Label="Mesh - Render" BaseType="operation">
       <BriefDescription>Render a 2-dimensional mesh using matplotlib.</BriefDescription>
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+        <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
+      </AssociationsDef>
       <ItemDefinitions>
-        <MeshEntity Name="mesh" NumberOfRequiredValues="1"/>
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
           FileFilters="Portable Network Graphics (*.png);;Portable Document Format (*.pdf)">
         </File>

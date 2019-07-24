@@ -39,7 +39,7 @@ if (SMTK_ENABLE_VTK_SUPPORT)
   set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
 # Do not enable VTK integration for testing
-#  target_compile_definitions(RenderMesh PRIVATE "USE_VTK=1")
+#target_compile_definitions(RenderMesh PRIVATE "USE_VTK=1")
 
   list(APPEND additional_libraries
     vtkRenderingGL2PSOpenGL2

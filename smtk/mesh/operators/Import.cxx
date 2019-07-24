@@ -102,9 +102,9 @@ Import::Specification Import::createSpecification()
   assert(fileItemDefinitions.size() == 1);
 
   std::stringstream fileFilters;
+  bool firstFormat = true;
   for (auto& ioType : smtk::io::ImportMesh::SupportedIOTypes())
   {
-    bool firstFormat = true;
     for (auto& format : ioType->FileFormats())
     {
       if (format.CanImport())

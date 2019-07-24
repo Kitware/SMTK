@@ -39,7 +39,8 @@ class RenderMesh(smtk.operation.Operation):
 
     def operateInternal(self):
         # Access the mesh and filename from the parameters
-        mesh = self.parameters().find('mesh').value(0)
+        mesh = smtk.mesh.Component.CastTo(
+            self.parameters().associations().objectValue(0)).mesh()
         filename = self.parameters().find('filename').value(0)
 
         # Collect point coordinates
