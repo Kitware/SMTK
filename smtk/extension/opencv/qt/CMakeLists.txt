@@ -20,15 +20,14 @@ add_library(smtkOpenCVQtExt
 target_include_directories(smtkOpenCVQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(smtkOpenCVQtExt LINK_PUBLIC
-  pqApplicationComponents
   smtkCore
-  smtkPQWidgetsExt
   vtkPolygonOperationsExt
   vtkSMTKSourceExt
-  vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
+  ParaView::pqApplicationComponents
   Qt5::Core
   Qt5::Widgets
+  VTK::DomainsChemistryOpenGL2
 LINK_PRIVATE
   ${VTK_LIBRARIES}
 )

@@ -34,8 +34,7 @@ target_link_libraries(smtkOpenCVPlugin
     smtkPolygonQtExt
     smtkPolygonSession
     smtkQtExt
-    smtkPQWidgetsExt
-    vtkPVServerManagerApplication
+    ParaView::ServerManagerApplication
   LINK_PRIVATE
     vtkPVServerManagerApplicationCS
     vtkSMTKWidgetsExtCS
