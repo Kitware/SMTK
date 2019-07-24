@@ -18,21 +18,14 @@ set(qtui
 #install the headers
 smtk_public_headers(smtkVXLOperationViewsExt ${hdrs})
 
-qt5_wrap_cpp(MOC_BUILT_SOURCES ${hdrs})
-qt5_wrap_ui(UI_BUILT_SOURCES ${qtui})
-
-source_group("Qt_Source" FILES ${srcs} ${qtui} )
-source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES})
-source_group("Qt_Header" FILES ${hdrs})
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTOUIC 1)
 
 add_library(smtkVXLOperationViewsExt
   ${srcs}
-  ${MOC_BUILT_SOURCES}
-  ${UI_BUILT_SOURCES}
+  ${hdrs}
+  ${qtui}
 )
-
-#we need to add the location of the moc files to the include dir for smtkVXLWidgetExt
-target_include_directories(smtkVXLOperationViewsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkVXLOperationViewsExt to publicly link to smtkCore
 target_link_libraries(smtkVXLOperationViewsExt
@@ -49,6 +42,8 @@ target_link_libraries(smtkVXLOperationViewsExt
 )
 
 smtk_export_header(smtkVXLOperationViewsExt Exports.h)
+
+unset(CMAKE_AUTOMOC)
 
 # Generate the ParaView plugin code for each view class
 # added to the smtkVXLOperationViewsExt library above:

@@ -26,13 +26,6 @@ set (qtui
 # Install the headers
 smtk_public_headers(smtkOscillatorSessionPlugin ${hdrs})
 
-# qt5_wrap_cpp(mocs ${hdrs})
-# qt5_wrap_ui(uisrc ${qtui})
-#
-# source_group("Qt_Source" FILES ${srcs} )
-# source_group("Qt_Generated" FILES ${mocs} ${uisrc})
-# source_group("Qt_Header" FILES ${hdrs})
-
 # We must add custom views in the plugin dir instead of qt dir
 # due to the fact that the add_smtk_ui_view macro assumes files
 # are in the same dir.

@@ -8,8 +8,6 @@ include(ParaViewPlugins)
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
 qt5_wrap_cpp(MOC_SRCS qtPolygonEdgeOperationView.h)
-#qt5_wrap_cpp(UI_SRCS qtPolygonEdgeOperationView.ui)
-
 ADD_SMTK_UI_VIEW(
   OUTIFACES
   OUTSRCS
@@ -18,7 +16,7 @@ ADD_SMTK_UI_VIEW(
   )
 
 set(GUI_SOURCES
-  ${OUTSRCS} ${OUTSRCS2} ${MOC_SRCS} ${UI_SRCS}
+  ${OUTSRCS} ${OUTSRCS2} ${MOC_SRCS} qtPolygonEdgeOperationView.h
   qtPolygonEdgeOperationView.cxx
 )
 
@@ -30,7 +28,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     CLASS_NAME qtExtractContoursView
     VIEW_NAME smtkPolygonContourView
     )
-  list(APPEND GUI_SOURCES ${OUTSRCS1} ${MOC_VTK_SRCS} qtExtractContoursView.cxx)
+  list(APPEND GUI_SOURCES ${OUTSRCS1} ${MOC_VTK_SRCS} qtExtractContoursView.h qtExtractContoursView.cxx)
 endif()
 
 add_smtk_plugin(

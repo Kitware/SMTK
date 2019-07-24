@@ -15,8 +15,6 @@ set(ui_files
   girderfilebrowser/ui/girderlogindialog.ui
 )
 
-qt5_wrap_ui(ui_srcs ${ui_files})
-
 set(src
   jobtablewidget.cxx
   jobview.cxx
@@ -42,13 +40,11 @@ set(src
 #add moc files
 set(mochdrs
   cumulusproxy.h
-  cumuluswidget.h
   girderrequest.h
   jobrequest.h
   jobtablemodel.h
   jobtablewidget.h
   jobview.h
-  logindialog.h
   mainwindow.h
   pqCumulusJobsPanel.h
   # Mandatory girder file browser files
@@ -59,26 +55,29 @@ set(mochdrs
   girderfilebrowser/girderauthenticator.h
   girderfilebrowser/ui/girderlogindialog.h
 )
-qt5_wrap_cpp(moc_srcs ${mochdrs})
 
 #resource files
 set(resources
  girderfilebrowser/resources.qrc
 )
-qt5_add_resources(res_srcs ${resources})
 
-#extension library
-add_library(smtkCumulusExt
- ${src}
- ${moc_srcs}
- ${ui_srcs}
- ${res_srcs}
-)
+set(CMAKE_AUTOUIC 1)
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTORCC 1)
+
 #install headers
 set(hdrs
   cumuluswidget.h
   job.h
   logindialog.h
+)
+#extension library
+add_library(smtkCumulusExt
+ ${src}
+ ${hdrs}
+ ${mochdrs}
+ ${ui_files}
+ ${resources}
 )
 smtk_public_headers(smtkCumulusExt ${hdrs})
 
@@ -124,6 +123,8 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
     )
   list(APPEND PLUGIN_DOCK_IFACES ${cumulusJobsPanelIfaces})
   list(APPEND PLUGIN_DOCK_IFACES_SRCS ${cumulusJobsPanelIfaceSrcs})
+
+  unset(CMAKE_AUTOMOC)
 
   add_paraview_plugin(
     smtkPQCumulusJobsPlugin "1.0"

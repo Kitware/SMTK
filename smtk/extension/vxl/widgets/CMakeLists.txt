@@ -15,18 +15,13 @@ set(VXLWidgetsUI
 #install the headers
 smtk_public_headers(smtkVXLWidgetsExt ${VXLWidgetsHeaders})
 
-qt5_wrap_cpp(MOC_BUILT_SOURCES ${VXLWidgetsHeaders})
-qt5_wrap_ui(UI_BUILT_SOURCES ${VXLWidgetsUI})
-
-source_group("Qt_Source" FILES ${VXLWidgetsSrcs} ${VXLWidgetsUI})
-source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
-source_group("Qt_Header" FILES ${VXLWidgetsMocHeaders})
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTOUIC 1)
 
 add_library(smtkVXLWidgetsExt
   ${VXLWidgetsSrcs}
-  ${MOC_BUILT_SOURCES}
-  ${UI_BUILT_SOURCES}
-  ${RCS_RESOURCES}
+  ${VXLWidgetsHeaders}
+  ${VXLWidgetsUI}
 )
 
 target_include_directories(smtkVXLWidgetsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

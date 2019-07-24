@@ -22,20 +22,16 @@ set(PQWidgetsMocHeaders
 #install the headers
 smtk_public_headers(smtkPolygonQtExt ${PQWidgetsMocHeaders} vtkPolygonArcInfo.h)
 
-qt5_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
-qt5_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
-qt5_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
-
-source_group("Qt_Source" FILES ${PQWidgetsSrcs} ${PQWidgetsUIs})
-source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
-source_group("Qt_Header" FILES ${PQWidgetsMocHeaders})
+set(CMAKE_AUTOUIC 1)
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTORCC 1)
 
 add_library(smtkPolygonQtExt
   ${PQWidgetsSrcs}
   vtkPolygonArcInfo.cxx
-  ${MOC_BUILT_SOURCES}
-  ${UI_BUILT_SOURCES}
-  ${RCS_RESOURCES}
+  ${PQWidgetsMocHeaders}
+  ${PQWidgetsUIs}
+  qtWidgetsIcons.qrc
 )
 
 # Need to add the location of the moc files to the include dirs:
