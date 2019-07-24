@@ -39,6 +39,8 @@
 
 #include <QObject>
 
+#define DEBUG_PQSMTKBEHAVIOR 0
+
 class pqSMTKBehavior::Internal
 {
 public:
@@ -194,7 +196,7 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
   auto app = pqApplicationCore::instance();
   if (!app)
   {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
     std::cout << "No PV application for SMTK!\n";
 #endif
     return;
@@ -220,7 +222,7 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
 
 void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
 {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
   std::cout << "Removing rsrc mgr from server: " << remote << "\n\n";
 #endif
   auto entry = m_p->Remotes.find(remote);

@@ -24,7 +24,9 @@
 
 #include "vtkSMSourceProxy.h"
 
-#ifndef NDEBUG
+#define DEBUG_PQSMTKRESOURCE 0
+
+#if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
 #include <iostream>
 #endif
 
@@ -33,7 +35,7 @@ pqSMTKResource::pqSMTKResource(
   : pqPipelineSource(name, proxy, server, parent)
 {
   (void)grp;
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
   std::cout << "Creating SMTKResource ( " << this << " )\n";
 #endif
   auto behavior = pqSMTKBehavior::instance();
@@ -101,7 +103,7 @@ pqSMTKResource::~pqSMTKResource()
       auto rsrcMgr = rsrcMgrPxy->smtkResourceManager();
       if (rsrcMgr)
       {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
         std::cout << "  Removing " << lastRsrc << " from mgr " << rsrcMgr << "\n";
 #endif
         rsrcMgr->remove(lastRsrc);
@@ -114,7 +116,7 @@ pqSMTKResource::~pqSMTKResource()
       }
     }
   }
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_PQSMTKRESOURCE
   std::cout << "Destroying SMTKResource " << this << " )\n";
 #endif
 }
