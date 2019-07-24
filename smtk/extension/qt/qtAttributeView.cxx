@@ -430,9 +430,16 @@ smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 
 QTableWidgetItem* qtAttributeView::getSelectedItem()
 {
-  return this->Internals->ListTable->selectedItems().count() > 0
-    ? this->Internals->ListTable->selectedItems().value(name_column)
-    : nullptr;
+  auto selectedItems = this->Internals->ListTable->selectedItems();
+  int n = selectedItems.count();
+  for (int i = 0; i < n; i++)
+  {
+    if (selectedItems.value(i)->column() == name_column)
+    {
+      return selectedItems.value(i);
+    }
+  }
+  return nullptr;
 }
 
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
