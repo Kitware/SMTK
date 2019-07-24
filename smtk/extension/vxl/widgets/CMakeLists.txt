@@ -24,10 +24,9 @@ add_library(smtkVXLWidgetsExt
 target_include_directories(smtkVXLWidgetsExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(smtkVXLWidgetsExt LINK_PUBLIC
-  pqApplicationComponents
   smtkCore
-  smtkPQWidgetsExt
   vtkSMTKSourceExt
+  ParaView::pqApplicationComponents
   Qt5::Core
   Qt5::Gui
   Qt5::Widgets
