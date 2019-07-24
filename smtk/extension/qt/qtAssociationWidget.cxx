@@ -48,6 +48,15 @@
 
 #include "ui_qtAttributeAssociation.h"
 
+namespace
+{
+// There seems to be a bug in Qt that causes a crash when
+// setting the background color of a list widget item when a
+// QLineEdit widget is firing a EditingCompleted signal.
+// This constant temporarily turns this capability off.
+
+const bool ALLOW_LIST_HIGHLIGHTING = false;
+}
 namespace Ui
 {
 class qtAttributeAssociation;
@@ -115,6 +124,13 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
     std::cerr << "qtAssociationWidget: Could not find Resource Manager!\n";
   }
   QObject::connect(this->Internals->view, SIGNAL(aboutToDestroy()), this, SLOT(removeObservers()));
+  QObject::connect(this->Internals->CurrentList,
+    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
+    SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)), Qt::QueuedConnection);
+
+  QObject::connect(this->Internals->AvailableList,
+    SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
+    SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)), Qt::QueuedConnection);
 
   this->Internals->lastHighlightedItem = nullptr;
 }
@@ -136,8 +152,10 @@ void qtAssociationWidget::initWidget()
   this->Internals->AlertLabel->hide();
 
   // signals/slots
-  QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
-  QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()));
+  QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()),
+    Qt::QueuedConnection);
+  QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()),
+    Qt::QueuedConnection);
   this->Internals->CurrentList->setMouseTracking(true);   // Needed to receive hover events.
   this->Internals->AvailableList->setMouseTracking(true); // Needed to receive hover events.
 }
@@ -623,6 +641,34 @@ void qtAssociationWidget::leaveEvent(QEvent* evt)
 
 void qtAssociationWidget::hoverRow(const QModelIndex& idx)
 {
+  QListWidget* const listWidget = qobject_cast<QListWidget*>(QObject::sender());
+  if (!listWidget)
+  {
+    return;
+  }
+
+  int row = idx.row();
+  QListWidgetItem *item, *curItem;
+  if (listWidget == this->Internals->CurrentList)
+  {
+    item = this->Internals->CurrentList->item(row);
+    curItem = this->Internals->CurrentList->currentItem();
+  }
+  else if (listWidget == this->Internals->AvailableList)
+  {
+    item = this->Internals->AvailableList->item(row);
+    curItem = this->Internals->AvailableList->currentItem();
+  }
+  else
+  {
+    return;
+  }
+
+  if ((item == this->Internals->lastHighlightedItem) || (item == curItem))
+  {
+    return;
+  }
+
   auto uiManager = this->Internals->view->uiManager();
   if (uiManager == nullptr)
   {
@@ -634,12 +680,12 @@ void qtAssociationWidget::hoverRow(const QModelIndex& idx)
   {
     return;
   }
-  int row = idx.row();
 
   // Lets create the hover background color;
   // If there was a previously highlighted item and it is still using the
   // hover color then reset its background;
-  if (this->Internals->lastHighlightedItem != nullptr)
+
+  if (ALLOW_LIST_HIGHLIGHTING && (this->Internals->lastHighlightedItem != nullptr))
   {
     this->Internals->lastHighlightedItem->setBackground(this->Internals->normalBackground);
   }
@@ -651,21 +697,7 @@ void qtAssociationWidget::hoverRow(const QModelIndex& idx)
     return;
   }
 
-  auto item = this->Internals->CurrentList->item(row);
-  if (item != nullptr)
-  {
-    auto iobj = item->data(Qt::UserRole).value<smtk::resource::PersistentObjectPtr>();
-    if (iobj != obj)
-    {
-      item = this->Internals->AvailableList->item(row);
-    }
-  }
-  else
-  {
-    item = this->Internals->AvailableList->item(row);
-  }
-
-  if (item)
+  if (ALLOW_LIST_HIGHLIGHTING && item)
   {
     item->setBackground(
       QBrush(this->Internals->CurrentList->palette().highlight().color().lighter(125)));
@@ -690,7 +722,7 @@ void qtAssociationWidget::resetHover()
     return;
   }
 
-  if (this->Internals->lastHighlightedItem != nullptr)
+  if (ALLOW_LIST_HIGHLIGHTING && (this->Internals->lastHighlightedItem != nullptr))
   {
     this->Internals->lastHighlightedItem->setBackground(this->Internals->normalBackground);
     this->Internals->lastHighlightedItem = nullptr;
@@ -708,9 +740,9 @@ void qtAssociationWidget::highlightOnHoverChanged(bool shouldHighlight)
   if (shouldHighlight)
   {
     QObject::connect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)));
+      SLOT(hoverRow(const QModelIndex&)), Qt::QueuedConnection);
     QObject::connect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
-      SLOT(hoverRow(const QModelIndex&)));
+      SLOT(hoverRow(const QModelIndex&)), Qt::QueuedConnection);
   }
   else
   {
@@ -719,5 +751,33 @@ void qtAssociationWidget::highlightOnHoverChanged(bool shouldHighlight)
     QObject::disconnect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
       SLOT(hoverRow(const QModelIndex&)));
     this->resetHover();
+  }
+}
+
+void qtAssociationWidget::onCurrentItemChanged(QListWidgetItem* item, QListWidgetItem* prevItem)
+{
+  // When something is selected we need to make sure that the
+  // previous selected item is no longer using the hover background color
+  // Also we need to make sure that the last highlighted item is set
+  // to null so the next time hover row is called it knows there is
+  // no item needing its background cleared.
+  if (item == this->Internals->lastHighlightedItem)
+  {
+    auto uiManager = this->Internals->view->uiManager();
+    if (uiManager == nullptr)
+    {
+      return;
+    }
+    if (ALLOW_LIST_HIGHLIGHTING && (prevItem != nullptr))
+    {
+      prevItem->setBackground(this->Internals->normalBackground);
+    }
+    this->Internals->lastHighlightedItem = nullptr;
+    auto selection = uiManager->selection();
+    if (selection == nullptr)
+    {
+      return;
+    }
+    selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
   }
 }
