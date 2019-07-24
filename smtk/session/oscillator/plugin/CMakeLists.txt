@@ -75,12 +75,6 @@ target_link_libraries(smtkOscillatorSessionPlugin
     vtkSMTKWidgetsExtCS
     vtkSMTKSourceExt
 )
-if (SMTK_ENABLE_TESTING)
-  target_link_libraries(TestBuild_smtk_session_oscillator_plugin
-    LINK_PUBLIC
-    smtkOscillatorSessionPlugin
-    )
-endif()
 
 smtk_export_header(smtkOscillatorSessionPlugin Exports.h)
 smtk_install_library(smtkOscillatorSessionPlugin)
