@@ -1500,7 +1500,7 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
 {
   if (this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
   {
-    bool isColor = item->column() == 2;
+    bool isColor = item->column() == color_column;
     if (isColor)
     {
       QTableWidgetItem* selItem = this->Internals->ListTable->item(item->row(), 0);
