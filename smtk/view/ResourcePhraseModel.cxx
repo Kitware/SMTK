@@ -93,7 +93,27 @@ bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, st
   return true;
 }
 
-void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event)
+int ResourcePhraseModel::handleOperationEvent(const smtk::operation::Operation::Ptr& op,
+  smtk::operation::EventType event, const smtk::operation::Operation::Result& res)
+{
+  auto resourcesAndLockTypes = smtk::operation::extractResourcesAndLockTypes(op->parameters());
+
+  for (auto& resourceAndLockType : resourcesAndLockTypes)
+  {
+    auto resource = resourceAndLockType.first.lock();
+    auto& lockType = resourceAndLockType.second;
+
+    if (resource != nullptr && lockType != smtk::resource::LockType::DoNotLock)
+    {
+      this->triggerModified(resource);
+    }
+  }
+
+  return PhraseModel::handleOperationEvent(op, event, res);
+}
+
+void ResourcePhraseModel::handleResourceEvent(
+  const Resource::Ptr& rsrc, smtk::resource::EventType event)
 {
   if (event == smtk::resource::EventType::MODIFIED)
   {
@@ -105,7 +125,7 @@ void ResourcePhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource
   }
 }
 
-void ResourcePhraseModel::processResource(Resource::Ptr rsrc, bool adding)
+void ResourcePhraseModel::processResource(const Resource::Ptr& rsrc, bool adding)
 {
   if (adding)
   {
