@@ -20,6 +20,7 @@
 #include "smtk/operation/Operation.h"
 #include "smtk/view/View.h"
 
+#include <QApplication>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -38,6 +39,7 @@ class qtOperationViewInternals
 public:
   qtOperationViewInternals()
     : m_instancedView(nullptr)
+    , m_activeOperations(0)
   {
   }
   smtk::operation::OperationPtr m_operator;
@@ -46,6 +48,7 @@ public:
   QPointer<QPushButton> m_applyButton;
   QPointer<QPushButton> m_infoButton;
   qtOperationLauncher* m_launcher;
+  std::atomic<std::size_t> m_activeOperations;
 };
 
 qtBaseView* qtOperationView::createViewWidget(const ViewInfo& info)
@@ -99,6 +102,8 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
     connect(this->Internals->m_launcher, &qtOperationLauncher::resultReady, this,
       &qtOperationView::operationExecuted);
   }
+
+  connect(this, &qtOperationView::operationExecuted, this, &qtOperationView::onOperationExecuted);
 }
 
 qtOperationView::~qtOperationView()
@@ -213,5 +218,20 @@ void qtOperationView::onOperate()
       this->Internals->m_applyButton->setEnabled(false);
     }
     m_applied = true;
+
+    if ((this->Internals->m_activeOperations)++ == 0)
+    {
+      QApplication::setOverrideCursor(Qt::BusyCursor);
+      QApplication::processEvents();
+    }
+  }
+}
+
+void qtOperationView::onOperationExecuted(const smtk::operation::Operation::Result&)
+{
+  if (--(this->Internals->m_activeOperations) == 0)
+  {
+    QApplication::restoreOverrideCursor();
+    QApplication::processEvents();
   }
 }

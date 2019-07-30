@@ -71,6 +71,7 @@ public slots:
   virtual void onModifiedParameters();
   virtual void onModifiedParameter(qtItem* item);
   virtual void onOperate();
+  void onOperationExecuted(const smtk::operation::Operation::Result& result);
 
 signals:
   void operationRequested(const smtk::operation::OperationPtr& brOp);
