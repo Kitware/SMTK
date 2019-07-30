@@ -178,8 +178,25 @@ void qtDescriptivePhraseDelegate::paint(
   }
 
   painter->save();
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
+
+  QIcon icon;
+  if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 0)
+  {
+    if (setBackground && background.lightness() >= 128)
+    {
+      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
+    }
+    else
+    {
+      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseInvertedIconRole));
+    }
+  }
+  else
+  {
+    icon = QIcon(":/icons/display/locked.png");
+  }
   QSize iconsize = icon.actualSize(option.decorationSize);
+
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
@@ -206,6 +223,11 @@ void qtDescriptivePhraseDelegate::paint(
   //std::cout << "Paint " << idx.internalPointer() << " " << idx.row() << " " << titleText.toStdString().c_str() << "\n";
   QColor swatchColor = qvariant_cast<QColor>(idx.data(qtDescriptivePhraseModel::PhraseColorRole));
 
+  if (!swatchColor.isValid())
+  {
+    swatchColor = background;
+  }
+
   QRect titleRect = option.rect;
   QRect subtitleRect = option.rect;
   QRect iconRect = option.rect;
@@ -216,8 +238,8 @@ void qtDescriptivePhraseDelegate::paint(
 
   colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
   colorRect.setRight(colorRect.left() + m_swatchSize - 1);
-  //  colorRect.setTop(colorRect.top() + 1);
-  colorRect.setTop(colorRect.top() + 2);
+  colorRect.setTop(colorRect.top() + 1);
+  // colorRect.setTop(colorRect.top() + 2);
   int swdelta = (colorRect.height() - m_swatchSize) / 2;
   swdelta = (swdelta < 0 ? 0 : swdelta);
   colorRect.adjust(0, swdelta, 0, -swdelta);
