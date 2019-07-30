@@ -37,6 +37,7 @@
 #endif
 
 #include "boost/filesystem.hpp"
+#include "boost/system/error_code.hpp"
 
 #include <algorithm> // for std::transform
 #include <exception>
@@ -118,7 +119,7 @@ bool Project::addModel(const std::string& location, const std::string& identifie
 
   // Create descriptor
   ResourceDescriptor modelDescriptor;
-  auto logger = smtk::io::Logger::instance();
+  auto& logger = smtk::io::Logger::instance();
   if (!this->importModel(location, copyNativeFile, modelDescriptor, useVTKSession, logger))
   {
     std::cerr << logger.convertToString() << std::endl;
@@ -453,7 +454,14 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   if (copyNativeModel)
   {
     auto copyPath = boostDirectory / boostImportPath.filename();
-    boost::filesystem::copy_file(importPath, copyPath);
+    boost::system::error_code errcode;
+    boost::filesystem::copy_file(
+      importPath, copyPath, boost::filesystem::copy_option::none, errcode);
+    if (errcode)
+    {
+      smtkErrorMacro(logger, errcode.message());
+      return false;
+    }
     descriptor.m_importLocation = copyPath.string();
 
     // And update the import path to use the copied file
