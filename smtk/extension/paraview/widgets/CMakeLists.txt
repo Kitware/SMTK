@@ -11,6 +11,7 @@ set(viewHdrs
 set(PQWidgetsSrcs
   pqConePropertyWidget.cxx
   pqGenerateContoursDialog.cxx
+  pqPointPropertyWidget.cxx
   pqSMTKAttributeItemWidget.cxx
   pqSMTKBoxItemWidget.cxx
   pqSMTKConeItemWidget.cxx
@@ -29,11 +30,13 @@ set(PQWidgetsUIs
   qtArcWidget.ui
   qtGenerateContoursDialog.ui
   resources/pqConePropertyWidget.ui
+  resources/pqPointPropertyWidget.ui
 )
 
 set(PQWidgetsMocHeaders
   pqConePropertyWidget.h
   pqGenerateContoursDialog.h
+  pqPointPropertyWidget.h
   pqSMTKAttributeItemWidget.h
   pqSMTKBoxItemWidget.h
   pqSMTKConeItemWidget.h

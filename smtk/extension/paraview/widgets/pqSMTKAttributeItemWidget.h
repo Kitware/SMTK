@@ -85,6 +85,7 @@ public:
 
   /// Subclasses must override this method to create the ParaView widget of their choice.
   virtual bool createProxyAndWidget(vtkSMProxy*& source, pqInteractivePropertyWidget*& widget) = 0;
+  pqInteractivePropertyWidget* propertyWidget();
 
 public slots:
   virtual void updateItemFromWidget() = 0;
