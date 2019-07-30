@@ -243,14 +243,14 @@ void PhraseModel::handleSelectionEvent(const std::string& src, Selection::Ptr se
   (void)seln;
 }
 
-void PhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event)
+void PhraseModel::handleResourceEvent(const Resource::Ptr& rsrc, smtk::resource::EventType event)
 {
   std::cout << "      phrase " << (event == smtk::resource::EventType::ADDED ? "add" : "del")
             << " rsrc " << rsrc << " " << rsrc->location() << "\n";
 }
 
 int PhraseModel::handleOperationEvent(
-  Operation::Ptr op, operation::EventType event, Operation::Result res)
+  const Operation::Ptr& op, operation::EventType event, const Operation::Result& res)
 {
   smtkDebugMacro(smtk::io::Logger::instance(), "      Phrase handler: op "
       << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << op);
@@ -285,7 +285,8 @@ void PhraseModel::removeChildren(const std::vector<int>& parentIdx, int childRan
   this->trigger(phr, PhraseModelEvent::REMOVE_FINISHED, parentIdx, parentIdx, removeRange);
 }
 
-void PhraseModel::handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
+void PhraseModel::handleExpunged(
+  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;
   (void)res;
@@ -330,7 +331,8 @@ void PhraseModel::handleExpunged(Operation::Ptr op, Operation::Result res, Compo
   }
 }
 
-void PhraseModel::handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
+void PhraseModel::handleModified(
+  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;
   (void)res;
@@ -361,7 +363,8 @@ void PhraseModel::handleModified(Operation::Ptr op, Operation::Result res, Compo
   }
 }
 
-void PhraseModel::handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
+void PhraseModel::handleCreated(
+  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;  // Ignore this in the general case but allow subclasses to special-case it.
   (void)res; // TODO: Different behavior when result is failure vs success?

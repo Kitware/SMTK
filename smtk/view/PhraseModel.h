@@ -171,7 +171,7 @@ protected:
   virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
 
   /// A method called when a resource manager adds or removes a resource.
-  virtual void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event);
+  virtual void handleResourceEvent(const Resource::Ptr& rsrc, smtk::resource::EventType event);
 
   /**\brief A method called when operators have modified one or more resources.
     *
@@ -181,7 +181,7 @@ protected:
     * is when you wish to respond to events other than Operation::DID_OPERATE.
     */
   virtual int handleOperationEvent(
-    Operation::Ptr op, operation::EventType e, Operation::Result res);
+    const Operation::Ptr& op, operation::EventType e, const Operation::Result& res);
 
   /**\brief Given the index of parent phrase and a range of its children, delete them.
     *
@@ -191,11 +191,14 @@ protected:
   void removeChildren(const std::vector<int>& parentIdx, int childRange[2]);
 
   /// Called to deal with resources/components being removed as a result of an operation.
-  virtual void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
+  virtual void handleExpunged(
+    const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data);
   /// Called to deal with resources/components marked as modified by the operation.
-  virtual void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
+  virtual void handleModified(
+    const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data);
   /// Called to deal with resources/components being created as a result of an operation.
-  virtual void handleCreated(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
+  virtual void handleCreated(
+    const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data);
 
   /** \brief Make changes to the phrase hierarchy.
     *

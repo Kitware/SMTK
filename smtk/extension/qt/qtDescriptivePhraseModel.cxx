@@ -31,6 +31,8 @@
 #include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/Resource.h"
 
+#include <QBitmap>
+
 #include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>
@@ -282,15 +284,23 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       {
         return QVariant(item->subtitle().c_str());
       }
-      else if (role == PhraseIconRole)
+      else if (role == PhraseIconRole || role == PhraseInvertedIconRole)
       {
         // get luminance
         QColor color;
         FloatList rgba = item->relatedColor();
         if (rgba.size() >= 4 && rgba[3] < 0)
         {
-          // return white by default
-          color = QColor(255, 255, 255, 255);
+          if (role == PhraseIconRole)
+          {
+            // return white by default
+            color = QColor(255, 255, 255, 255);
+          }
+          else
+          {
+            // return black by default
+            color = QColor(0, 0, 0, 255);
+          }
         }
         else
         {
@@ -361,8 +371,8 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
           }
           if (!gotColor)
           {
-            // return white by default
-            color = QColor(255, 255, 255, 255);
+            // return an invalid color by default
+            color = QColor();
           }
         }
         else
@@ -411,6 +421,18 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
           }
         }
         return QVariant(clean);
+      }
+      else if (role == PhraseLockRole)
+      {
+        int locked = 0;
+        auto rsrc = item->relatedResource();
+        auto comp = item->relatedComponent();
+        if (rsrc && !comp)
+        {
+          // Locked == 1, Free == 0
+          locked = rsrc->locked() == smtk::resource::LockType::Write ? 1 : 0;
+        }
+        return QVariant(locked);
       }
       else if (role == ModelActiveRole)
       {
@@ -547,7 +569,7 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
         resourceName << "aux_geom";
         break;
       case SESSION:
-        resourceName << "model"; //  every session has an model
+        resourceName << "model"; //  every session has a model
         break;
       default:
         // Sometimes group entities have other bits set.
@@ -562,16 +584,6 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
       resourceName << "_" << std::setbase(16) << std::fixed << std::setw(2) << std::setfill('0')
                    << (flags & ANY_DIMENSION);
     }
-
-    // lightness controls black/white ico
-    if (lightness >= 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
-    {
-      resourceName << "_b";
-    }
-    else if (lightness < 0.179 && ((flags & ENTITY_MASK) == CELL_ENTITY))
-    {
-      resourceName << "_w";
-    }
   }
   else if (attComp)
   {
@@ -580,15 +592,6 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   else if (meshComp)
   {
     resourceName << "meshset";
-    // lightness controls black/white ico
-    if (lightness >= 0.179)
-    {
-      resourceName << "_b";
-    }
-    else // if (lightness < 0.179)
-    {
-      resourceName << "_w";
-    }
   }
   else if (item->relatedComponent() == nullptr)
   {
@@ -616,12 +619,29 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
     resourceName << "invalid";
   }
 
+  // lightness controls black/white icon
+  if (lightness >= 0.179)
+  {
+    resourceName << "_b";
+  }
+  else // if (lightness < 0.179)
+  {
+    resourceName << "_w";
+  }
+
   resourceName << ".png";
 
   QFile rsrc(resourceName.str().c_str());
   if (!rsrc.exists())
   { // FIXME: Replace with the path of a "generic entity" or "invalid" icon.
-    return QIcon(":/icons/entityTypes/generic_entity.png");
+    if (lightness >= 0.179)
+    {
+      return QIcon(":/icons/entityTypes/generic_entity_b.png");
+    }
+    else
+    {
+      return QIcon(":/icons/entityTypes/generic_entity_w.png");
+    }
   }
   return QIcon(resourceName.str().c_str());
 }
@@ -685,7 +705,7 @@ view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& 
     if ((it = this->P->ptrs.find(phraseIdx)) == this->P->ptrs.end())
     {
       //std::cout << "  Missing index " << phraseIdx << "\n";
-      std::cout.flush();
+      // std::cout.flush();
       return m_model->root();
     }
     view::WeakDescriptivePhrasePtr weakPhrase = it->second;

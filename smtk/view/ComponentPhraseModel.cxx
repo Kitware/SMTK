@@ -90,7 +90,8 @@ bool ComponentPhraseModel::setComponentFilters(const std::multimap<std::string, 
   return true;
 }
 
-void ComponentPhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resource::EventType event)
+void ComponentPhraseModel::handleResourceEvent(
+  const Resource::Ptr& rsrc, smtk::resource::EventType event)
 {
   if (event != smtk::resource::EventType::MODIFIED)
   {
@@ -99,7 +100,7 @@ void ComponentPhraseModel::handleResourceEvent(Resource::Ptr rsrc, smtk::resourc
 }
 
 void ComponentPhraseModel::handleCreated(
-  Operation::Ptr op, Operation::Result res, ComponentItemPtr data)
+  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;
   if (!res || !data)

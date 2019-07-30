@@ -146,6 +146,9 @@ public:
   /// lock.
   Lock& lock(Key()) const { return m_lock; }
 
+  /// Anyone can query whether or not the resource is locked.
+  LockType locked() const { return m_lock.state(); }
+
 private:
   // Derived resources should inherit
   // smtk::resource::DerivedFrom<Self, smtk::resource::Resource>. Resource's

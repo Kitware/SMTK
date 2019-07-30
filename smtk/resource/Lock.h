@@ -25,7 +25,8 @@ namespace resource
 // Reference link: https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/dfSl9Ypdq6Y
 enum class LockType
 {
-  DoNotLock,
+  DoNotLock = 0,
+  Unlocked = 0,
   Read,
   Write,
 };
@@ -43,6 +44,8 @@ public:
 
   SMTKCORE_EXPORT void lock(LockType);
   SMTKCORE_EXPORT void unlock(LockType);
+
+  SMTKCORE_EXPORT LockType state() const;
 
 private:
   std::mutex m_mutex;
