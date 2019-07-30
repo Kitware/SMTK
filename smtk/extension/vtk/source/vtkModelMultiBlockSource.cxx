@@ -718,22 +718,58 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
   vtkPoints* pts = instancePoly->GetPoints();
   auto pd = instancePoly->GetPointData();
   // WARNING: Array indices are hardcoded here for speed. See PrepareInstanceOutput above.
-  auto orient = vtkDoubleArray::SafeDownCast(pd->GetArray(0));
-  auto scale = vtkDoubleArray::SafeDownCast(pd->GetArray(1));
-  auto prototype = vtkIdTypeArray::SafeDownCast(pd->GetArray(2));
-  auto mask = vtkUnsignedCharArray::SafeDownCast(pd->GetArray(3));
+  auto orientArray = vtkDoubleArray::SafeDownCast(pd->GetArray(0));
+  auto scaleArray = vtkDoubleArray::SafeDownCast(pd->GetArray(1));
+  auto prototypeArray = vtkIdTypeArray::SafeDownCast(pd->GetArray(2));
+  auto maskArray = vtkUnsignedCharArray::SafeDownCast(pd->GetArray(3));
 
   std::vector<double>::const_iterator pit = tess->coords().begin();
-  vtkIdType nptsThisInst = static_cast<vtkIdType>(tess->coords().size() / 3);
-  double ptOrient[3] = { 0, 0, 0 };
-  double ptScale[3] = { 1, 1, 1 };
-  for (vtkIdType ii = 0; ii < nptsThisInst; ++ii, pit += 3)
+  size_t nptsThisInst = static_cast<size_t>(tess->coords().size() / 3);
+
+  // First check if orient, scale, mask and color has been provided in the instance
+  const smtk::model::FloatList& orientations = inst.floatProperty(Instance::orientations);
+  bool hasOrientations =
+    (orientations.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+
+  const smtk::model::FloatList& scales = inst.floatProperty(Instance::scales);
+  bool hasScales = (scales.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+
+  const smtk::model::IntegerList& masks = inst.integerProperty(Instance::masks);
+  bool hasMasks = (masks.size() == nptsThisInst && inst.rule() == "tabular") ? true : false;
+
+  const smtk::model::IntegerList& colors = inst.integerProperty(Instance::colors);
+  bool hasColors = (colors.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+
+  double ptOrientDefault[3] = { 0, 0, 0 };
+  double ptScaleDefault[3] = { 1, 1, 1 };
+  vtkNew<vtkUnsignedCharArray> colorArray;
+  if (hasColors)
+  {
+    colorArray->SetName("colors");
+    colorArray->SetNumberOfComponents(3);
+    colorArray->Allocate(static_cast<vtkIdType>(nptsThisInst));
+  }
+  for (size_t ii = 0; ii < nptsThisInst; ++ii, pit += 3)
   {
     pts->InsertNextPoint(*pit, *(pit + 1), *(pit + 2));
-    prototype->InsertNextValue(it->second); // block ID
-    orient->InsertNextTuple(ptOrient);
-    scale->InsertNextTuple(ptScale);
-    mask->InsertNextValue(1);
+    prototypeArray->InsertNextValue(it->second); // block ID
+
+    orientArray->InsertNextTuple(hasOrientations ? &orientations[3 * ii] : ptOrientDefault);
+
+    scaleArray->InsertNextTuple(hasScales ? &scales[3 * ii] : ptScaleDefault);
+
+    maskArray->InsertNextValue(hasMasks ? static_cast<unsigned char>(masks[ii]) : 1);
+
+    if (hasColors)
+    {
+      colorArray->InsertNextTuple3(static_cast<unsigned char>(colors[3 * ii]),
+        static_cast<unsigned char>(colors[3 * ii] + 1),
+        static_cast<unsigned char>(colors[3 * ii] + 2));
+    }
+  }
+  if (hasColors)
+  {
+    pd->SetScalars(colorArray);
   }
 }
 

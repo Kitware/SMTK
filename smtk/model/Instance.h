@@ -24,6 +24,20 @@ class SMTKCORE_EXPORT Instance : public EntityRef
 {
 public:
   SMTK_ENTITYREF_CLASS(Instance, EntityRef, isInstance);
+  /// a string used to store/fetch placements.
+  static constexpr const char* const placements = "placements";
+  /// a string used to store/fetch orientation as float property
+  /// It will be retranscribed as vtkDoubleArray when passing into vtkGlyph3DMapper if specified.
+  static constexpr const char* const orientations = "orientations";
+  /// a string used to store/fetch scales as float property
+  /// It will be retranscribed as vtkDoubleArray when passing into vtkGlyph3DMapper if specified.
+  static constexpr const char* const scales = "scales";
+  /// a string used to store/fetch masks(AKA visibility) as int property
+  /// It will be retranscribed as vtkUnsignedCharArray when passing into vtkGlyph3DMapper if specified.
+  static constexpr const char* const masks = "masks";
+  /// a string used to store/fetch colors in rgb 0~255 as int property
+  /// It will be retranscribed as vtkUnsignedCharArray when passing into vtkGlyph3DMapper if specified.
+  static constexpr const char* const colors = "colors";
 
   EntityRef prototype() const;
 
