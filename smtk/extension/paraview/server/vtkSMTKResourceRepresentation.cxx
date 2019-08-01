@@ -651,6 +651,7 @@ void vtkSMTKResourceRepresentation::ConfigureGlyphMapper(vtkGlyph3DMapper* mappe
 
   mapper->SetScaleArray(VTK_INSTANCE_SCALE);
   mapper->SetScaling(true);
+  mapper->SetScaleModeToScaleByVectorComponents();
 
   mapper->SetOrientationArray(VTK_INSTANCE_ORIENTATION);
   mapper->SetOrientationMode(vtkGlyph3DMapper::ROTATION);
