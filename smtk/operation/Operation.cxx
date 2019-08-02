@@ -172,6 +172,7 @@ Operation::Result Operation::operate()
   auto manager = m_manager.lock();
   bool observePostOperation = manager != nullptr;
   Outcome outcome;
+  auto self = shared_from_this();
 
   // First, we check that the operation is able to operate.
   if (!this->ableToOperate())
@@ -182,7 +183,7 @@ Operation::Result Operation::operate()
     observePostOperation = false;
   }
   // Then, we check if any observers wish to cancel this operation.
-  else if (manager && manager->observers()(shared_from_this(), EventType::WILL_OPERATE, nullptr))
+  else if (manager && manager->observers()(self, EventType::WILL_OPERATE, nullptr))
   {
     outcome = Outcome::CANCELED;
     result = this->createResult(outcome);
