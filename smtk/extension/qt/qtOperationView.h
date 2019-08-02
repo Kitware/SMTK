@@ -18,7 +18,7 @@
 #include "smtk/operation/Operation.h"
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 #include <QPointer>
 #include <QThread>
@@ -51,7 +51,7 @@ public:
   smtk::operation::OperationPtr m_operator;
 };
 
-class SMTKQTEXT_EXPORT qtOperationView : public qtBaseView
+class SMTKQTEXT_EXPORT qtOperationView : public qtBaseAttributeView
 {
   Q_OBJECT
 

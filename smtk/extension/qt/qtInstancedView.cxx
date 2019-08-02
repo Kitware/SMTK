@@ -56,7 +56,7 @@ qtBaseView* qtInstancedView::createViewWidget(const ViewInfo& info)
 }
 
 qtInstancedView::qtInstancedView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtInstancedViewInternals;
 }
@@ -204,7 +204,7 @@ void qtInstancedView::showAdvanceLevelOverlay(bool show)
       att->showAdvanceLevelOverlay(show);
     }
   }
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 bool qtInstancedView::isValid() const

@@ -13,7 +13,7 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 #include <set>
 
@@ -47,9 +47,9 @@ namespace extension
   * AnalysisAttributeName is the name of the Attribute the view will create to represent the
   * Analysis  (if needed)
   *
-  * \sa qtBaseView
+  * \sa qtBaseAttributeView
   */
-class SMTKQTEXT_EXPORT qtAnalysisView : public qtBaseView
+class SMTKQTEXT_EXPORT qtAnalysisView : public qtBaseAttributeView
 {
   Q_OBJECT
 

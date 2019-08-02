@@ -12,7 +12,7 @@
 
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -147,7 +147,11 @@ void qtGroupItem::setEnabledState(bool checked)
   {
     item->setIsEnabled(checked);
     emit this->modified();
-    m_itemInfo.baseView()->valueChanged(item);
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
+    {
+      iview->valueChanged(item);
+    }
   }
 }
 
@@ -237,6 +241,11 @@ void qtGroupItem::addSubGroup(int i)
   {
     return;
   }
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (!iview)
+  {
+    return;
+  }
 
   const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
@@ -273,8 +282,8 @@ void qtGroupItem::addSubGroup(int i)
   }
   const int tmpLen = m_itemInfo.uiManager()->getWidthOfItemsMaxLabel(
     childDefs, m_itemInfo.uiManager()->advancedFont());
-  const int currentLen = m_itemInfo.baseView()->fixedLabelWidth();
-  m_itemInfo.baseView()->setFixedLabelWidth(tmpLen);
+  const int currentLen = iview->fixedLabelWidth();
+  iview->setFixedLabelWidth(tmpLen);
 
   for (std::size_t j = 0; j < numItems; j++)
   {
@@ -302,7 +311,7 @@ void qtGroupItem::addSubGroup(int i)
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
     }
   }
-  m_itemInfo.baseView()->setFixedLabelWidth(currentLen);
+  iview->setFixedLabelWidth(currentLen);
   frameLayout->addWidget(subGroupFrame);
   this->onChildWidgetSizeChanged();
 }

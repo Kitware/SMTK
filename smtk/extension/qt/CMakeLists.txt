@@ -8,6 +8,7 @@ set(QAttrLibSrcs
   qtAttribute.cxx
   qtAttributeDisplay.cxx
   qtAttributeItemInfo.cxx
+  qtBaseAttributeView.cxx
   qtBaseView.cxx
   qtCategorySelectorView.cxx
   qtCheckItemComboBox.cxx
@@ -77,6 +78,7 @@ set(QAttrLibMocHeaders
   qtUIManager.h
   qtAttribute.h
   qtAttributeDisplay.h
+  qtBaseAttributeView.h
   qtBaseView.h
   qtCategorySelectorView.h
   qtCheckItemComboBox.h

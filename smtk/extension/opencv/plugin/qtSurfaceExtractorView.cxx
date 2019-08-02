@@ -86,7 +86,7 @@ qtBaseView* qtSurfaceExtractorView::createViewWidget(const ViewInfo& info)
 }
 
 qtSurfaceExtractorView::qtSurfaceExtractorView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtSurfaceExtractorViewInternals;
   this->Internals->ExtractorWidget = NULL; // new imageFeatureExtractorWidget();
@@ -285,7 +285,7 @@ void qtSurfaceExtractorView::operationSelected(const smtk::operation::OperationP
 
 void qtSurfaceExtractorView::showAdvanceLevelOverlay(bool show)
 {
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 void qtSurfaceExtractorView::requestModelEntityAssociation()

@@ -15,12 +15,12 @@
 #ifndef qtExtractContoursView_h
 #define qtExtractContoursView_h
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 class qtExtractContoursViewInternals;
 class pqPipelineSource;
 
-class qtExtractContoursView : public smtk::extension::qtBaseView
+class qtExtractContoursView : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 

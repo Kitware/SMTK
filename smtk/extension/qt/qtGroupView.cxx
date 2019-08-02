@@ -153,7 +153,7 @@ qtBaseView* qtGroupView::createViewWidget(const ViewInfo& info)
 }
 
 qtGroupView::qtGroupView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtGroupViewInternals;
 }
@@ -495,7 +495,11 @@ void qtGroupView::updateModelAssociation()
 {
   foreach (qtBaseView* childView, this->Internals->m_ChildViews)
   {
-    childView->updateModelAssociation();
+    auto iview = dynamic_cast<qtBaseAttributeView*>(childView);
+    if (iview)
+    {
+      iview->updateModelAssociation();
+    }
   }
 }
 

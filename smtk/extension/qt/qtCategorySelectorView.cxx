@@ -54,7 +54,7 @@ qtBaseView* qtCategorySelectorView::createViewWidget(const ViewInfo& info)
 }
 
 qtCategorySelectorView::qtCategorySelectorView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtCategorySelectorViewInternals;
 }
@@ -215,7 +215,7 @@ void qtCategorySelectorView::onShowCategory()
       this->Internals->m_viewCategories.at(i) == currentCategory);
     this->Internals->ChildViews.at(i)->onShowCategory();
   }
-  this->qtBaseView::onShowCategory();
+  this->qtBaseAttributeView::onShowCategory();
 }
 
 void qtCategorySelectorView::showAdvanceLevelOverlay(bool show)
@@ -224,13 +224,17 @@ void qtCategorySelectorView::showAdvanceLevelOverlay(bool show)
   {
     childView->showAdvanceLevelOverlay(show);
   }
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 void qtCategorySelectorView::updateModelAssociation()
 {
   foreach (qtBaseView* childView, this->Internals->ChildViews)
   {
-    childView->updateModelAssociation();
+    auto iview = dynamic_cast<qtBaseAttributeView*>(childView);
+    if (iview)
+    {
+      iview->updateModelAssociation();
+    }
   }
 }

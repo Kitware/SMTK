@@ -131,7 +131,7 @@ public:
 };
 
 smtkAssignColorsView::smtkAssignColorsView(const OperationViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new smtkAssignColorsViewInternals;
   this->Internals->CurrentOp = info.m_operator;
@@ -148,7 +148,7 @@ bool smtkAssignColorsView::displayItem(smtk::attribute::ItemPtr item)
   {
     return false;
   }
-  return this->qtBaseView::displayItem(item);
+  return this->qtBaseAttributeView::displayItem(item);
 }
 
 qtBaseView* smtkAssignColorsView::createViewWidget(const ViewInfo& info)

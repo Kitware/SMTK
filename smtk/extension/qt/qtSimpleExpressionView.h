@@ -11,13 +11,13 @@
 // without function evaluation
 // .SECTION Description
 // .SECTION See Also
-// qtBaseView
+// qtBaseAttributeView
 
 #ifndef __smtk_extension_qtSimpleExpressionView_h
 #define __smtk_extension_qtSimpleExpressionView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 #include <vector>
 
@@ -34,7 +34,7 @@ namespace smtk
 namespace extension
 {
 class qtTableWidget;
-class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseView
+class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseAttributeView
 {
   class SMTKQTEXT_EXPORT qtSimpleExpressionViewInternals
   {

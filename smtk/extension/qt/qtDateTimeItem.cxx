@@ -10,7 +10,7 @@
 
 #include "smtk/extension/qt/qtDateTimeItem.h"
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtTimeZoneSelectWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -253,9 +253,10 @@ void qtDateTimeItem::setOutputOptional(int state)
   if (enable != item->isEnabled())
   {
     item->setIsEnabled(enable);
-    if (m_itemInfo.baseView())
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
     {
-      m_itemInfo.baseView()->valueChanged(item);
+      iview->valueChanged(item);
     }
     emit this->modified();
   }
@@ -344,7 +345,8 @@ void qtDateTimeItem::onTimeZoneRegion()
 void qtDateTimeItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -372,7 +374,8 @@ void qtDateTimeItem::loadInputValues()
 void qtDateTimeItem::updateUI()
 {
   auto dataObj = m_itemInfo.itemAs<smtk::attribute::DateTimeItem>();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -417,9 +420,9 @@ void qtDateTimeItem::updateUI()
   }
   QLabel* label = new QLabel(labelText, m_widget);
   label->setSizePolicy(sizeFixedPolicy);
-  if (m_itemInfo.baseView())
+  if (iview)
   {
-    label->setFixedWidth(m_itemInfo.baseView()->fixedLabelWidth() - padding);
+    label->setFixedWidth(iview->fixedLabelWidth() - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);

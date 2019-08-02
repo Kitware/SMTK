@@ -12,7 +12,7 @@
 #define __smtk_extension_qtCategorySelectorView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 /**\brief Provides the QT UI for a Category-based Selection View.
   *
@@ -43,7 +43,7 @@ namespace smtk
 {
 namespace extension
 {
-class SMTKQTEXT_EXPORT qtCategorySelectorView : public qtBaseView
+class SMTKQTEXT_EXPORT qtCategorySelectorView : public qtBaseAttributeView
 {
   Q_OBJECT
 

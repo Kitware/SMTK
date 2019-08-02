@@ -87,7 +87,7 @@ qtBaseView* qtSimpleExpressionView::createViewWidget(const ViewInfo& info)
 }
 
 qtSimpleExpressionView::qtSimpleExpressionView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtSimpleExpressionViewInternals;
 }
@@ -800,6 +800,6 @@ void qtSimpleExpressionView::getAllDefinitions(QList<smtk::attribute::Definition
 {
   if (this->Internals->m_attDefinition)
   {
-    this->qtBaseView::getDefinitions(this->Internals->m_attDefinition, defs);
+    this->qtBaseAttributeView::getDefinitions(this->Internals->m_attDefinition, defs);
   }
 }

@@ -461,11 +461,12 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
 
 void qtUIManager::updateModelViews()
 {
-  if (!m_topView)
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_topView);
+  if (!iview)
   {
     return;
   }
-  m_topView->updateModelAssociation();
+  iview->updateModelAssociation();
 }
 
 QColor qtUIManager::contrastWithText(const QColor& color)
@@ -928,7 +929,8 @@ qtItem* qtUIManager::createItem(const qtAttributeItemInfo& info)
   // If there is a View associated with the item - does it want it
   // displayed?
   auto item = info.item();
-  if (info.baseView() && (!info.baseView()->displayItem(item)))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(info.baseView().data());
+  if (iview && (!iview->displayItem(item)))
   {
     return nullptr;
   }

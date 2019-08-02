@@ -194,7 +194,7 @@ qtBaseView* qtModelEntityAttributeView::createViewWidget(const ViewInfo& info)
 }
 
 qtModelEntityAttributeView::qtModelEntityAttributeView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new qtModelEntityAttributeViewInternals;
 }
@@ -212,7 +212,7 @@ qtModelEntityAttributeView::~qtModelEntityAttributeView()
 
 void qtModelEntityAttributeView::buildUI()
 {
-  this->qtBaseView::buildUI();
+  this->qtBaseAttributeView::buildUI();
   std::ostringstream receiverSource;
   receiverSource << "qtModelEntityAttributeView" << this;
   this->Internals->m_selectionSourceName = receiverSource.str();
@@ -719,7 +719,7 @@ void qtModelEntityAttributeView::getAllDefinitions()
       continue;
     }
     this->Internals->m_attCompMap[defName] = attsComp.child(i);
-    this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
+    this->qtBaseAttributeView::getDefinitions(attDef, this->Internals->AllDefs);
     this->Internals->m_attDefinitions.push_back(attDef);
   }
 

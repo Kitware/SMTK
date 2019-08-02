@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/extension/qt/qtVoidItem.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include <QCheckBox>
@@ -62,7 +62,8 @@ void qtVoidItem::setLabelVisible(bool visible)
 void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = m_itemInfo.item();
-  if (!m_itemInfo.baseView()->displayItem(dataObj))
+  auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  if (iview && !iview->displayItem(dataObj))
   {
     return;
   }
@@ -117,7 +118,11 @@ void qtVoidItem::setOutputOptional(int state)
   if (enable != item->isEnabled())
   {
     item->setIsEnabled(enable);
-    m_itemInfo.baseView()->valueChanged(item);
+    auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
+    if (iview)
+    {
+      iview->valueChanged(item);
+    }
     emit this->modified();
   }
 }

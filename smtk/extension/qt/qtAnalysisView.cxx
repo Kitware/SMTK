@@ -45,7 +45,7 @@ qtBaseView* qtAnalysisView::createViewWidget(const ViewInfo& info)
 }
 
 qtAnalysisView::qtAnalysisView(const ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
   , m_qtAnalysisAttribute(nullptr)
 {
 }

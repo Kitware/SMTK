@@ -15,13 +15,13 @@
 #ifndef qtSurfaceExtractorView_h
 #define qtSurfaceExtractorView_h
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
 class qtSurfaceExtractorViewInternals;
 
-class qtSurfaceExtractorView : public smtk::extension::qtBaseView
+class qtSurfaceExtractorView : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 

@@ -23,7 +23,7 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 using namespace smtk::extension;
@@ -257,12 +257,17 @@ void qtDiscreteValueEditor::updateContents()
       }
     }
 
-    int currentLen = this->Internals->m_inputItem->m_itemInfo.baseView()->fixedLabelWidth();
+    auto iiview = dynamic_cast<qtBaseAttributeView*>(
+      this->Internals->m_inputItem->m_itemInfo.baseView().data());
+    int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
     if (this->Internals->m_inputItem->uiManager())
     {
       int tmpLen = this->Internals->m_inputItem->uiManager()->getWidthOfItemsMaxLabel(
         activeChildDefs, this->Internals->m_inputItem->uiManager()->advancedFont());
-      this->Internals->m_inputItem->m_itemInfo.baseView()->setFixedLabelWidth(tmpLen);
+      if (iiview)
+      {
+        iiview->setFixedLabelWidth(tmpLen);
+      }
     }
 
     for (i = 0; i < m; i++)
@@ -294,7 +299,10 @@ void qtDiscreteValueEditor::updateContents()
       }
     }
 
-    this->Internals->m_inputItem->m_itemInfo.baseView()->setFixedLabelWidth(currentLen);
+    if (iiview)
+    {
+      iiview->setFixedLabelWidth(currentLen);
+    }
     this->Internals->m_hintChildWidth = this->Internals->m_childrenFrame->width();
     this->Internals->m_hintChildHeight = this->Internals->m_childrenFrame->height();
     if (this->Internals->m_childrenLayout)

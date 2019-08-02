@@ -12,7 +12,7 @@
 #define __smtk_extension_qtSelectorView_h
 
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 
 /**\brief Provides the QT UI for a Selector View.
   *
@@ -46,7 +46,7 @@ namespace smtk
 {
 namespace extension
 {
-class SMTKQTEXT_EXPORT qtSelectorView : public qtBaseView
+class SMTKQTEXT_EXPORT qtSelectorView : public qtBaseAttributeView
 {
   Q_OBJECT
 

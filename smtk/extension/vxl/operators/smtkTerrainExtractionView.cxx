@@ -24,7 +24,7 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
@@ -79,7 +79,7 @@ public:
 };
 
 smtkTerrainExtractionView::smtkTerrainExtractionView(const smtk::extension::ViewInfo& info)
-  : qtBaseView(info)
+  : qtBaseAttributeView(info)
 {
   this->Internals = new smtkTerrainExtractionViewInternals;
   this->TerrainExtractionManager = new pqTerrainExtractionManager();
