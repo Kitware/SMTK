@@ -307,6 +307,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   // if not we need to go to resource manager to get the information
   if (attResource->hasAssociations())
   {
+    resources = attResource->associations();
     if (resources.empty())
     {
       // Ok - the attribute resource does has other resources associated with it
