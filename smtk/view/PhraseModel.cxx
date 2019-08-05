@@ -162,7 +162,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
   }
   auto rsrcHandle = rsrcMgr
     ? rsrcMgr->observers().insert(
-        [this](Resource::Ptr rsrc, resource::EventType event) {
+        [this](const Resource::Ptr& rsrc, const resource::EventType& event) {
           this->handleResourceEvent(rsrc, event);
           return 0;
         },
@@ -171,7 +171,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
     : smtk::resource::Observers::Key();
   auto operHandle = operMgr
     ? operMgr->observers().insert(
-        [this](Operation::Ptr op, operation::EventType event, Operation::Result res) {
+        [this](const Operation::Ptr& op, operation::EventType event, const Operation::Result& res) {
           this->handleOperationEvent(op, event, res);
           return 0;
         })
