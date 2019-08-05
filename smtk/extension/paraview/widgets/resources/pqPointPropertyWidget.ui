@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PointPropertyWidget</class>
+ <widget class="QWidget" name="PointPropertyWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>458</width>
+    <height>48</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="toolTip">
+   <string>Note: Use 'P' to pick a point on the surface under the cursor or 'Ctrl+P' to snap to the closest point used to define the underlying surface.</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="show3DWidget">
+     <property name="toolTip">
+      <string>Control whether the point handle is rendered and accepting keyboard shortcuts (P, Ctrl+P).</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="tristate">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="pqDoubleLineEdit" name="worldPositionX"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="pqDoubleLineEdit" name="worldPositionY"/>
+   </item>
+   <item row="0" column="3">
+    <widget class="pqDoubleLineEdit" name="worldPositionZ"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>pqDoubleLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>pqDoubleLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

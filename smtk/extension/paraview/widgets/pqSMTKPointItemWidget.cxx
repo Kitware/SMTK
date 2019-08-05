@@ -10,18 +10,20 @@
 #include "smtk/extension/paraview/widgets/pqSMTKPointItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/Logger.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
 #include "pqDataRepresentation.h"
-#include "pqHandlePropertyWidget.h"
 #include "pqImplicitPlanePropertyWidget.h"
 #include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"
+#include "pqPointPropertyWidget.h"
 #include "pqServer.h"
 #include "pqSpherePropertyWidget.h"
 #include "vtkPVXMLElement.h"
@@ -54,8 +56,10 @@ bool pqSMTKPointItemWidget::createProxyAndWidget(
   vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget)
 {
   // I. Reject items we can't map to a point:
+  ItemBindings binding;
   smtk::attribute::DoubleItemPtr pointItem;
-  if (!fetchPointItem(pointItem))
+  smtk::attribute::StringItemPtr controlItem;
+  if (!fetchPointItems(binding, pointItem, controlItem))
   {
     return false;
   }
@@ -70,7 +74,16 @@ bool pqSMTKPointItemWidget::createProxyAndWidget(
   {
     return false;
   }
-  widget = new pqHandlePropertyWidget(proxy, proxy->GetPropertyGroup(0));
+  auto ww = new pqPointPropertyWidget(proxy, proxy->GetPropertyGroup(0));
+  bool showControls = m_itemInfo.component().attributeAsBool("ShowControls");
+  ww->setControlVisibility(showControls);
+  if (binding == ItemBindings::PointCoordsAndControl)
+  {
+    ww->setControlState(controlItem->value());
+    this->connect(
+      ww, SIGNAL(controlStateChanged(const std::string&)), SLOT(updateItemFromWidget()));
+  }
+  widget = ww;
 
   // II. Initialize the properties.
   // For now, since we want to map this to a vector of 6 doubles,
@@ -89,8 +102,10 @@ bool pqSMTKPointItemWidget::createProxyAndWidget(
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
 void pqSMTKPointItemWidget::updateItemFromWidget()
 {
+  ItemBindings binding;
   smtk::attribute::DoubleItemPtr pointItem;
-  if (!fetchPointItem(pointItem))
+  smtk::attribute::StringItemPtr controlItem;
+  if (!fetchPointItems(binding, pointItem, controlItem))
   {
     return;
   }
@@ -104,19 +119,86 @@ void pqSMTKPointItemWidget::updateItemFromWidget()
     didChange |= (pointItem->value(i) != coord);
     pointItem->setValue(i, coord);
   }
+  if (binding == ItemBindings::PointCoordsAndControl)
+  {
+    auto ww = dynamic_cast<pqPointPropertyWidget*>(this->propertyWidget());
+    if (ww)
+    {
+      int oldIndex = controlItem->discreteIndex();
+      if (controlItem->setValue(ww->controlState()))
+      {
+        int newIndex = controlItem->discreteIndex();
+        didChange = (newIndex != oldIndex);
+      }
+    }
+  }
+
   if (didChange)
   {
     emit modified();
   }
 }
 
-bool pqSMTKPointItemWidget::fetchPointItem(smtk::attribute::DoubleItemPtr& pointItem)
+void pqSMTKPointItemWidget::updateWidgetFromItem()
 {
-  pointItem = m_itemInfo.itemAs<smtk::attribute::DoubleItem>();
-  if (!pointItem || pointItem->numberOfValues() != 3)
+  ItemBindings binding;
+  smtk::attribute::DoubleItemPtr pointItem;
+  smtk::attribute::StringItemPtr controlItem;
+  if (!fetchPointItems(binding, pointItem, controlItem))
   {
-    smtkErrorMacro(smtk::io::Logger::instance(), "Expected a double item with 3 values.");
-    return false;
+    return;
   }
-  return true;
+
+  vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
+  auto pw = dynamic_cast<pqPointPropertyWidget*>(m_p->m_pvwidget);
+  vtkSMPropertyHelper pointHelper(widget, "WorldPosition");
+  pointHelper.Set(&(*pointItem->begin()), 3);
+  if (binding == ItemBindings::PointCoordsAndControl && pw)
+  {
+    pw->setControlState(controlItem->value());
+  }
+}
+
+bool pqSMTKPointItemWidget::fetchPointItems(ItemBindings& binding,
+  smtk::attribute::DoubleItemPtr& coordItem, smtk::attribute::StringItemPtr& controlItem)
+{
+  coordItem = m_itemInfo.itemAs<smtk::attribute::DoubleItem>();
+  if (coordItem && coordItem->numberOfValues() == 3)
+  {
+    std::string controlItemPath;
+    m_itemInfo.component().attribute("Control", controlItemPath);
+    controlItem =
+      coordItem->attribute()->itemAtPathAs<smtk::attribute::StringItem>(controlItemPath);
+    binding = controlItem ? ItemBindings::PointCoordsAndControl : ItemBindings::PointCoords;
+    return true;
+  }
+
+  auto groupItem = m_itemInfo.itemAs<smtk::attribute::GroupItem>();
+  if (groupItem)
+  {
+    std::string coordItemName;
+    std::string controlItemName;
+    m_itemInfo.component().attribute("Coords", coordItemName);
+    m_itemInfo.component().attribute("Control", controlItemName);
+    coordItem = groupItem->findAs<smtk::attribute::DoubleItem>(0, coordItemName);
+    controlItem = groupItem->findAs<smtk::attribute::StringItem>(0, controlItemName);
+    // We must have coordinates as specified:
+    if (coordItem && coordItem->numberOfValues() == 3)
+    {
+      // TODO: Check discrete enumerants?
+      if (controlItem && controlItem->isDiscrete())
+      {
+        binding = ItemBindings::PointCoordsAndControl;
+      }
+      else
+      {
+        binding = ItemBindings::PointCoords;
+      }
+      return true;
+    }
+  }
+
+  binding = ItemBindings::Invalid;
+  smtkErrorMacro(smtk::io::Logger::instance(), "Expected a double item with 3 values.");
+  return false;
 }

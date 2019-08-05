@@ -221,6 +221,11 @@ pqSMTKAttributeItemWidget::~pqSMTKAttributeItemWidget()
   this->m_p = NULL;
 }
 
+pqInteractivePropertyWidget* pqSMTKAttributeItemWidget::propertyWidget()
+{
+  return m_p->m_pvwidget;
+}
+
 void pqSMTKAttributeItemWidget::setOutputOptional(int optionEnabled)
 {
   bool enabled = !!optionEnabled;
@@ -400,4 +405,6 @@ void pqSMTKAttributeItemWidget::createEditor()
   this->m_p->m_layout->addLayout(editorLayout, 0, 1);
   pvwidget->show();
   pvwidget->select();
+
+  this->updateWidgetFromItem();
 }
