@@ -35,7 +35,7 @@ public:
   /// a string used to store/fetch masks(AKA visibility) as int property
   /// It will be retranscribed as vtkUnsignedCharArray when passing into vtkGlyph3DMapper if specified.
   static constexpr const char* const masks = "masks";
-  /// a string used to store/fetch colors in rgb 0~255 as int property
+  /// a string used to store/fetch colors in rgb 0~255 as double property
   /// It will be retranscribed as vtkUnsignedCharArray when passing into vtkGlyph3DMapper if specified.
   static constexpr const char* const colors = "colors";
 

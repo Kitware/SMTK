@@ -737,7 +737,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
   const smtk::model::IntegerList& masks = inst.integerProperty(Instance::masks);
   bool hasMasks = (masks.size() == nptsThisInst && inst.rule() == "tabular") ? true : false;
 
-  const smtk::model::IntegerList& colors = inst.integerProperty(Instance::colors);
+  const smtk::model::FloatList& colors = inst.floatProperty(Instance::colors);
   bool hasColors = (colors.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
 
   double ptOrientDefault[3] = { 0, 0, 0 };
