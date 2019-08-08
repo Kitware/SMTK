@@ -114,11 +114,6 @@ qtBaseView* smtkTerrainExtractionView::createViewWidget(const smtk::extension::V
   return view;
 }
 
-Ui::TerrainExtractionParameters* smtkTerrainExtractionView::terrainExtractionParameterUI()
-{
-  return this->Internals;
-}
-
 void smtkTerrainExtractionView::attributeModified()
 {
   // Enable when user has picked a point cloud
