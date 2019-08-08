@@ -25,10 +25,9 @@ smtk_install_library(smtkRemusExt)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_library(smtkRemusExtPy MODULE smtkRemusExtPy.cxx)
-  target_include_directories(smtkRemusExtPy PRIVATE ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(smtkRemusExtPy
     smtkRemusExt
-    ${PYTHON_LIBRARIES}
+    Python${SMTK_PYTHON_VERSION}::Module
   )
   set_target_properties(smtkRemusExtPy PROPERTIES PREFIX "")
 
