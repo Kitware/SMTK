@@ -151,6 +151,11 @@ bool FileSystemItem::setValue(std::size_t element, const std::string& val)
 
 std::string FileSystemItem::valueAsString(std::size_t element, const std::string& format) const
 {
+  if (!this->isSet(element))
+  {
+    return "";
+  }
+
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
   assert(m_values.size() > element);
