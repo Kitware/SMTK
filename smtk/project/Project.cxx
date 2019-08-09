@@ -128,7 +128,7 @@ bool Project::addModel(const std::string& location, const std::string& identifie
   modelDescriptor.m_identifier = identifier;
   m_resourceDescriptors.push_back(modelDescriptor);
 
-  return true;
+  return this->save();
 }
 
 void Project::setCoreManagers(
