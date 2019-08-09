@@ -35,9 +35,9 @@ public:
       if (rit != m_ranges.end())
       {
         m_ranges[collapseTarget] = rit->second;
-        m_ranges.erase(rit);
         // The entry in m_collapse will now serve match it->second's range entry:
         m_collapse[rit->second + 1] = collapseTarget;
+        m_ranges.erase(rit);
       }
       else
       {
