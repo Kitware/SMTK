@@ -657,25 +657,6 @@ void Definition::updateDerivedDefinitions()
   }
 }
 
-void Definition::setCategories()
-{
-  if (m_baseDefinition)
-  {
-    m_categories = m_baseDefinition->m_categories;
-  }
-  else
-  {
-    m_categories.clear();
-  }
-  std::size_t i, n = m_itemDefs.size();
-  for (i = 0; i < n; i++)
-  {
-    m_itemDefs[i]->updateCategories();
-    const std::set<std::string>& itemCats = m_itemDefs[i]->categories();
-    m_categories.insert(itemCats.begin(), itemCats.end());
-  }
-}
-
 smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
 {
   // Is the item in this defintion?
@@ -749,4 +730,63 @@ std::set<AttributePtr> Definition::attributes(
     }
   }
   return atts;
+}
+
+void Definition::addLocalCategory(const std::string& category)
+{
+  m_localCategories.insert(category);
+}
+
+void Definition::removeLocalCategory(const std::string& category)
+{
+  m_localCategories.erase(category);
+}
+
+void Definition::applyCategories(std::set<std::string> inherited)
+{
+  // First append the def's categories to those we have inherited
+  // Note that we want to not modify the original list which is why
+  // its passed by value
+  inherited.insert(m_localCategories.begin(), m_localCategories.end());
+  std::set<std::string> itemsCats;
+
+  // Lets go to each item and process its categories
+  for (auto& item : m_itemDefs)
+  {
+    item->applyCategories(inherited, itemsCats);
+  }
+
+  // Now we need to assign the categories to the def itself.
+  // We start with all of the categories associated with the def's
+  // base definition - note that we assume that the inherited set passed
+  // in is contained within the base's categories
+  if (m_baseDefinition)
+  {
+    m_categories = m_baseDefinition->m_categories;
+  }
+  else
+  {
+    m_categories.clear();
+  }
+
+  // Next we add all local categories
+  m_categories.insert(m_localCategories.begin(), m_localCategories.end());
+
+  // We need to add all of the categories that were locally defined
+  // on the items contained within the definition
+  m_categories.insert(itemsCats.begin(), itemsCats.end());
+
+  // Finally we need to process all definitions that are derived from this one
+  auto attResource = m_resource.lock();
+  if (attResource == nullptr)
+  {
+    return; // Can't get the derived definitions
+  }
+
+  std::vector<DefinitionPtr> derivedDefs;
+  attResource->derivedDefinitions(this->shared_from_this(), derivedDefs);
+  for (auto& def : derivedDefs)
+  {
+    def->applyCategories(inherited);
+  }
 }

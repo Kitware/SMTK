@@ -240,8 +240,18 @@ void XmlDocV3Parser::processDefinitionInformation(xml_node& root)
 
 void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::DefinitionPtr def)
 {
-  // we just need to process Tags added in V3
+  //need to process Categories and Tags added in V3
   this->XmlDocV2Parser::processDefinition(defNode, def);
+
+  xml_node catNodes = defNode.child("Categories");
+  if (catNodes)
+  {
+    for (xml_node child = catNodes.first_child(); child; child = child.next_sibling())
+    {
+      def->addLocalCategory(child.text().get());
+    }
+  }
+
   xml_node tagsNode = defNode.child("Tags");
   if (tagsNode)
   {

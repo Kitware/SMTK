@@ -125,11 +125,11 @@ int main(int argc, char* argv[])
     iitemdef1->addDiscreteValue(2, "Hours");
     iitemdef1->addDiscreteValue(3, "Days");
     iitemdef1->setDefaultDiscreteIndex(0);
-    iitemdef1->addCategory("Time");
+    iitemdef1->addLocalCategory("Time");
     smtk::attribute::IntItemDefinitionPtr iitemdef2 =
       base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem2");
     iitemdef2->setDefaultValue(10);
-    iitemdef2->addCategory("Heat");
+    iitemdef2->addLocalCategory("Heat");
 
     smtk::attribute::DefinitionPtr def1 = resource.createDefinition("Derived1", "BaseDef");
     def1->setLocalAssociationMask(smtk::model::MODEL_ENTITY); // belongs on model
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
       def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
     // Allow this one to hold an expression
-    ditemdef->addCategory("Veg");
+    ditemdef->addLocalCategory("Veg");
     ditemdef->setExpressionDefinition(expDef);
     // Check to make sure we can use expressions
     if (!ditemdef->allowsExpressions())
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
     ditemdef2->setDefaultValue(-35.2);
     ditemdef2->setMinRange(-100, true);
     ditemdef2->setMaxRange(125.0, false);
-    ditemdef2->addCategory("Constituent");
+    ditemdef2->addLocalCategory("Constituent");
     smtk::attribute::VoidItemDefinitionPtr vdef =
       def1->addItemDefinition<smtk::attribute::VoidItemDefinitionPtr>("VoidItem");
     vdef->setIsOptional(true);
@@ -162,11 +162,11 @@ int main(int argc, char* argv[])
     smtk::attribute::StringItemDefinitionPtr sitemdef =
       def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");
     sitemdef->setIsMultiline(true);
-    sitemdef->addCategory("Flow");
+    sitemdef->addLocalCategory("Flow");
     smtk::attribute::StringItemDefinitionPtr sitemdef2 =
       def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem2");
     sitemdef2->setDefaultValue("Default");
-    sitemdef2->addCategory("General");
+    sitemdef2->addLocalCategory("General");
     smtk::attribute::DirectoryItemDefinitionPtr dirdef =
       def2->addItemDefinition<smtk::attribute::DirectoryItemDefinitionPtr>("DirectoryItem");
     dirdef->setShouldExist(true);
@@ -181,8 +181,8 @@ int main(int argc, char* argv[])
     smtk::attribute::StringItemDefinitionPtr sitemdef3 =
       gdef1->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("GroupString");
     sitemdef3->setDefaultValue("Something Cool");
-    sitemdef3->addCategory("General");
-    sitemdef3->addCategory("Flow");
+    sitemdef3->addLocalCategory("General");
+    sitemdef3->addLocalCategory("Flow");
 
     // Add in a Attribute definition with a reference to another attribute
     smtk::attribute::DefinitionPtr attrefdef = resource.createDefinition("AttributeReferenceDef");

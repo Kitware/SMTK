@@ -44,17 +44,17 @@ int main()
     // Lets add some item definitions
     smtk::attribute::IntItemDefinitionPtr iitemdef =
       base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem1");
-    iitemdef->addCategory("Flow");
+    iitemdef->addLocalCategory("Flow");
     iitemdef = base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem2");
     iitemdef->setDefaultValue(10);
-    iitemdef->addCategory("Heat");
+    iitemdef->addLocalCategory("Heat");
 
     smtk::attribute::DefinitionPtr def1 = resource.createDefinition("Derived1", "BaseDef");
     // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
       def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
     // Allow this one to hold an expression
-    ditemdef->addCategory("Veg");
+    ditemdef->addLocalCategory("Veg");
     ditemdef->setExpressionDefinition(expDef);
     // Check to make sure we can use expressions
     if (!ditemdef->allowsExpressions())
@@ -64,16 +64,16 @@ int main()
     }
     ditemdef = def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem2");
     ditemdef->setDefaultValue(-35.2);
-    ditemdef->addCategory("Constituent");
+    ditemdef->addLocalCategory("Constituent");
 
     smtk::attribute::DefinitionPtr def2 = resource.createDefinition("Derived2", "Derived1");
     // Lets add some item definitions
     smtk::attribute::StringItemDefinitionPtr sitemdef =
       def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");
-    sitemdef->addCategory("Flow");
+    sitemdef->addLocalCategory("Flow");
     sitemdef = def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem2");
     sitemdef->setDefaultValue("Default");
-    sitemdef->addCategory("General");
+    sitemdef->addLocalCategory("General");
 
     // Process Categories
     resource.updateCategories();
