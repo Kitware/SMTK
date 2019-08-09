@@ -128,8 +128,8 @@ int TestResourceManager(int, char** const)
   // Test that the observer can unregister itself while the observer is being called.
   auto removingObserver = [&handle, &resourceManager](
     const smtk::resource::Resource::Ptr&, smtk::resource::EventType) {
-    resourceManager->observers().erase(handle);
     std::cout << "Observer (" << handle.first << " " << handle.second << ") removing self\n";
+    resourceManager->observers().erase(handle);
   };
 
   handle = resourceManager->observers().insert(removingObserver);
