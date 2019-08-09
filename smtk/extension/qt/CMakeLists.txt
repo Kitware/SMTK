@@ -146,23 +146,17 @@ set(QAttrLibHeaders
 #install the headers
 smtk_public_headers(smtkQtExt ${QAttrLibHeaders})
 
-qt5_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibMocHeaders})
-qt5_wrap_ui(SMTKQTEXT_UI_BUILT_SOURCES ${QAttrLibUIs})
-qt5_add_resources(RCS_RESOURCES
-  qtDescriptivePhraseModelIcons.qrc
-  qtReferenceItemIcons.qrc
-  qtAttributeIcons.qrc
-)
-
-source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
-source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${SMTKQTEXT_UI_BUILT_SOURCES} ${RCS_RESOURCES})
-source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTOUIC 1)
+set(CMAKE_AUTORCC 1)
 
 add_library(smtkQtExt
   ${QAttrLibSrcs}
-  ${MOC_BUILT_SOURCES}
-  ${SMTKQTEXT_UI_BUILT_SOURCES}
-  ${RCS_RESOURCES}
+  ${QAttrLibMocHeaders}
+  ${QAttrLibUIs}
+  qtDescriptivePhraseModelIcons.qrc
+  qtReferenceItemIcons.qrc
+  qtAttributeIcons.qrc
 )
 
 #we need to add the location of the moc files to the include dir for qtsmtk

@@ -7,8 +7,6 @@ include(ParaViewPlugins)
 # not be found.
 list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
 
-qt5_wrap_cpp(MOC_SRCS qtSurfaceExtractorView.h)
-
 ADD_SMTK_UI_VIEW(
   OUTIFACES
   OUTSRCS
@@ -21,8 +19,9 @@ add_paraview_plugin(
   smtkOpenCVPlugin "1.0"
   SERVER_SOURCES sessionInit.cxx
   GUI_INTERFACES ${OUTIFACES}
-  GUI_SOURCES ${OUTSRCS} ${MOC_SRCS} ${UI_SRCS}
+  GUI_SOURCES ${OUTSRCS} ${UI_SRCS}
               ${OpenCVSrc}
+              qtSurfaceExtractorView.h
   CS_KITS
     vtkSMTKOpenCVExt
   )

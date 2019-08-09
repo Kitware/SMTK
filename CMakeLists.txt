@@ -139,7 +139,7 @@ cmake_dependent_option(SMTK_ENABLE_VXL_SUPPORT "Build VXL component" ON
   "SMTK_ENABLE_PARAVIEW_SUPPORT;SMTK_ENABLE_QT_SUPPORT;SMTK_ENABLE_VTK_SUPPORT" OFF)
 option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
-  SMTK_ENABLE_VTK_SUPPORT OFF)
+  "SMTK_ENABLE_VTK_SUPPORT;SMTK_ENABLE_QT_SUPPORT" OFF)
 
 cmake_dependent_option(SMTK_ENABLE_DISCRETE_SESSION "Build discrete model session components" OFF
   SMTK_ENABLE_VTK_SUPPORT OFF)

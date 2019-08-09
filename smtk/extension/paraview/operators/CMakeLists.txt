@@ -30,17 +30,13 @@ set(qtui
 #install the headers
 smtk_public_headers(smtkPQOperationViewsExt ${hdrs} ${unwrappedHdrs})
 
-qt5_wrap_cpp(mocs ${hdrs})
-qt5_wrap_ui(uisrc ${qtui})
-
-source_group("Qt_Source" FILES ${srcs} )
-source_group("Qt_Generated" FILES ${mocs} ${uisrc})
-source_group("Qt_Header" FILES ${hdrs})
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTOUIC 1)
 
 add_library(smtkPQOperationViewsExt
   ${srcs}
-  ${mocs}
-  ${uisrc}
+  ${hdrs}
+  ${qtui}
 )
 
 #we need to add the location of the moc files to the include dir for smtkPQWidgetExt
@@ -59,6 +55,8 @@ target_link_libraries(smtkPQOperationViewsExt
 )
 
 smtk_export_header(smtkPQOperationViewsExt Exports.h)
+
+unset(CMAKE_AUTOMOC)
 
 # Generate the ParaView plugin code for each view class
 # added to the smtkPQOperationViewsExt library above:

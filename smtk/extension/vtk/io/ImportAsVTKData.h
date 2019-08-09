@@ -16,6 +16,7 @@
 
 #include "smtk/extension/vtk/io/IOVTKExports.h"
 
+#include "vtkDataObject.h"
 #include "vtkSmartPointer.h"
 
 #include <algorithm>

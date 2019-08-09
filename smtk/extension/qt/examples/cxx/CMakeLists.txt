@@ -1,12 +1,12 @@
 ##
 ## Create browseModel to test browsing model entity tree:
 
-qt5_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
+set(CMAKE_AUTOUIC 1)
 
 add_executable(browseModel MACOSX_BUNDLE
   browseModel.cxx
   ModelBrowser.cxx
-  ${browseModel_UI_BUILT_SOURCES})
+  ModelBrowser.ui)
 target_link_libraries(browseModel
   smtkCore
   smtkCoreModelTesting

@@ -56,15 +56,17 @@ if (SMTK_ENABLE_MESH_SESSION)
     )
 endif ()
 
-qt5_wrap_cpp(unit_tests_headers_moc ${unit_tests_headers})
 if (SMTK_DATA_DIR)
-  qt5_wrap_cpp(unit_tests_headers_moc_data ${unit_tests_headers_data})
+  list(APPEND unit_tests_headers
+    ${unit_tests_headers_data})
 endif ()
+
+set(CMAKE_AUTOMOC 1)
 
 smtk_unit_tests(LABEL "qt"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-  EXTRA_SOURCES ${unit_tests_headers_moc} ${unit_tests_headers_moc_data}
+  EXTRA_SOURCES ${unit_tests_headers}
   LIBRARIES
   smtkQtExt
   smtkCore

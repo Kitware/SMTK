@@ -18,7 +18,6 @@
 
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/vxl/operators/Exports.h"
-#include "smtk/extension/vxl/operators/ui_smtkTerrainExtractionParameters.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
 #include <QtCore/QObject>
@@ -37,8 +36,6 @@ public:
   smtkTerrainExtractionView(const smtk::extension::ViewInfo& info);
   virtual ~smtkTerrainExtractionView();
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
-
-  Ui::TerrainExtractionParameters* terrainExtractionParameterUI();
 
   // virtual bool displayItem(smtk::attribute::ItemPtr);
 

@@ -59,19 +59,16 @@ set(PQWidgetsHeaders
 #install the headers
 smtk_public_headers(smtkPQWidgetsExt ${PQWidgetsHeaders})
 
-qt5_wrap_cpp(MOC_BUILT_SOURCES ${PQWidgetsMocHeaders})
-qt5_wrap_ui(UI_BUILT_SOURCES ${PQWidgetsUIs})
-qt5_add_resources(RCS_RESOURCES qtWidgetsIcons.qrc)
-
-source_group("Qt_Source" FILES ${PQWidgetsSrcs} ${PQWidgetsUIs})
-source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
-source_group("Qt_Header" FILES ${PQWidgetsMocHeaders})
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTORCC 1)
+set(CMAKE_AUTOUIC 1)
+set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
 add_library(smtkPQWidgetsExt
   ${PQWidgetsSrcs}
-  ${MOC_BUILT_SOURCES}
-  ${UI_BUILT_SOURCES}
-  ${RCS_RESOURCES}
+  ${PQWidgetsHeaders}
+  ${PQWidgetsUIs}
+  qtWidgetsIcons.qrc
 )
 
 # Need to add the location of the moc files to the include dirs:
@@ -89,6 +86,8 @@ target_link_libraries(smtkPQWidgetsExt LINK_PUBLIC
 )
 
 smtk_export_header(smtkPQWidgetsExt Exports.h)
+
+unset(CMAKE_AUTOMOC)
 
 set(viewInterfaces)
 set(viewSources)

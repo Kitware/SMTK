@@ -10,17 +10,13 @@ set(OpenCVOperationsUI imageFeatureExtractor.ui)
 #install the headers
 smtk_public_headers(smtkOpenCVQtExt ${OpenCVOperationsHeaders})
 
-qt5_wrap_cpp(MOC_BUILT_SOURCES ${OpenCVOperationsHeaders})
-qt5_wrap_ui(UI_BUILT_SOURCES ${OpenCVOperationsUI})
-
-source_group("Qt_Source" FILES ${OpenCVOperationsSrcs} ${OpenCVOperationsUI})
-source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
-source_group("Qt_Header" FILES ${OpenCVOperationsMocHeaders})
+set(CMAKE_AUTOMOC 1)
+set(CMAKE_AUTOUIC 1)
 
 add_library(smtkOpenCVQtExt
   ${OpenCVOperationsSrcs}
-  ${MOC_BUILT_SOURCES}
-  ${UI_BUILT_SOURCES}
+  ${OpenCVOperationsHeaders}
+  ${OpenCVOperationsUI}
   ${RCS_RESOURCES}
 )
 

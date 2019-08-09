@@ -19,54 +19,6 @@ function(smtk_get_kit_name kitvar)
   endif (${ARGC} GREATER 1)
 endfunction(smtk_get_kit_name)
 
-# Computes the name for the header Test Build cxx file given a header file. If
-# the operating system is Windows and if the include path is too long, a hash of
-# the path is used in the cxx name.
-function(smtk_header_test_cxx_name name header_name return_cxx_name)
-
-  set(max_len 100)
-  set(suffix ".cxx")
-  set(cxx_name ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername}${suffix})
-  string(LENGTH ${cxx_name} len)
-  if(len GREATER max_len AND WIN32)
-    string(MD5 hashed_cxx_name ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername})
-    set(cxx_name HT/TB_${hashed_cxx_name}${suffix})
-  endif()
-
-  set(${return_cxx_name} ${cxx_name} PARENT_SCOPE)
-
-endfunction(smtk_header_test_cxx_name header_name)
-
-# Builds a source file and an executable that does nothing other than
-# compile the given header files.
-function(smtk_add_header_test name dir_prefix lib)
-  set(hfiles ${ARGN})
-  set(cxxfiles)
-  foreach (header ${ARGN})
-    string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}" "" header "${header}")
-    get_filename_component(headername ${header} NAME_WE)
-    smtk_header_test_cxx_name(${name} ${headername} src)
-#    set(src ${CMAKE_CURRENT_BINARY_DIR}/TestBuild_${name}_${headername}${suffix})
-    configure_file(${smtk_cmake_dir}/TestBuild.cxx.in ${src} @ONLY)
-    set(cxxfiles ${cxxfiles} ${src})
-  endforeach (header)
-
-  add_library(TestBuild_${name} ${cxxfiles} ${hfiles})
-  # target_link_libraries(TestBuild_${name} sysTools)
-  set_source_files_properties(${hfiles}
-    PROPERTIES HEADER_FILE_ONLY TRUE
-    )
-
-  #include the build directory for the export header
-  target_include_directories(TestBuild_${name}
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-  #also link against the associated library so we build properly
-  target_link_libraries(TestBuild_${name}
-    PRIVATE ${lib})
-
-
-endfunction(smtk_add_header_test)
-
 # Declare a list of header files.  Will make sure the header files get
 # compiled and show up in an IDE. Also makes sure we install the headers
 # into the include folder
@@ -89,18 +41,12 @@ function(smtk_public_headers lib)
     endif ()
     install (FILES ${header} DESTINATION include/${PROJECT_NAME}/${PROJECT_VERSION}/${dir_prefix}${suffix})
   endforeach ()
-  if (BUILD_TESTING)
-    smtk_add_header_test("${name}" "${dir_prefix}" "${lib}" ${ARGN})
-  endif()
 endfunction(smtk_public_headers)
 
 # Declare a list of header files.  Will make sure the header files get
 # compiled and show up in an IDE.
 function(smtk_private_headers)
   smtk_get_kit_name(name dir_prefix)
-  if (BUILD_TESTING)
-    smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
-  endif()
 endfunction(smtk_private_headers)
 
 # Declare a library as needed to be installed
@@ -193,11 +139,13 @@ MACRO(ADD_SMTK_UI_VIEW OUTIFACES OUTSRCS)
   CONFIGURE_FILE(${smtk_cmake_dir}/qtSMTKViewImplementation.cxx.in
                  ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.cxx @ONLY)
 
-  if (SMTK_INCLUDE_DIRS)
-    qt5_wrap_cpp(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h
-      OPTIONS "-I ${SMTK_INCLUDE_DIRS}")
-  else ()
-    qt5_wrap_cpp(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h)
+  if (NOT CMAKE_AUTOMOC)
+    if (SMTK_INCLUDE_DIRS)
+      qt5_wrap_cpp(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h
+        OPTIONS "-I ${SMTK_INCLUDE_DIRS}")
+    else ()
+      qt5_wrap_cpp(VIEW_MOC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/${ARG_CLASS_NAME}Implementation.h)
+    endif ()
   endif ()
 
   SET(${OUTSRCS}
