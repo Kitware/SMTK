@@ -73,28 +73,24 @@ void GroupItemDefinition::buildGroup(GroupItem* groupItem, int subGroupPosition)
   }
 }
 
-void GroupItemDefinition::updateCategories()
+void GroupItemDefinition::applyCategories(
+  const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent)
 {
-  m_categories.clear();
-  std::size_t i, n = m_itemDefs.size();
-  for (i = 0; i < n; i++)
+  m_categories = m_localCategories;
+  if (m_isOkToInherit)
   {
-    m_itemDefs[i]->updateCategories();
-    const std::set<std::string>& itemCats = m_itemDefs[i]->categories();
-    m_categories.insert(itemCats.begin(), itemCats.end());
+    m_categories.insert(inheritedFromParent.begin(), inheritedFromParent.end());
   }
-}
 
-void GroupItemDefinition::addCategory(const std::string& /*category*/)
-{
-  std::cerr << "Cannot add categories to a group item definition. "
-            << "The name is " << this->name() << std::endl;
-}
+  std::set<std::string> myChildrenCats;
+  for (auto& item : m_itemDefs)
+  {
+    item->applyCategories(m_categories, myChildrenCats);
+  }
 
-void GroupItemDefinition::removeCategory(const std::string& /*category*/)
-{
-  std::cerr << "Cannot remove categories to a group item definition. "
-            << "The name is " << this->name() << std::endl;
+  m_categories.insert(myChildrenCats.begin(), myChildrenCats.end());
+  inheritedToParent.insert(m_localCategories.begin(), m_localCategories.end());
+  inheritedToParent.insert(myChildrenCats.begin(), myChildrenCats.end());
 }
 
 void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::string& elabel)

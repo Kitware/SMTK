@@ -126,8 +126,15 @@ public:
 
   bool isMemberOf(const std::vector<std::string>& categories) const;
 
+  ///\brief Returns the categories (both explicitly assigned and inherited) associated to the Definition
   const std::set<std::string>& categories() const { return m_categories; }
 
+  void addLocalCategory(const std::string& category);
+
+  void removeLocalCategory(const std::string& category);
+
+  ///\brief Returns the categories explicitly assigned to the Definition
+  const std::set<std::string>& localCategories() const { return m_localCategories; }
   /**
    * @brief Given a container, filter item definitions in the definition by a lambda function
    * @param values a container which holds definitions
@@ -145,7 +152,7 @@ public:
   int advanceLevel() const { return m_advanceLevel; }
   void setAdvanceLevel(int level) { m_advanceLevel = level; }
 
-  // Indicates if a persistent object  can have multiple attributes of this
+  // Indicates if a persistent object can have multiple attributes of this
   // type associated with it (true means it can not)
   bool isUnique() const { return m_isUnique; }
   // Setting isUnique to be true indicates that only one attribute of this
@@ -370,7 +377,9 @@ protected:
 
   void clearResource() { m_resource.reset(); }
 
-  void setCategories();
+  ///\brief apply the local categories of the definition and its items.
+  /// inherited is an initial set passed down from the definition's base.
+  void applyCategories(std::set<std::string> inherited);
 
   // This method updates derived definitions when this
   // definition's items have been changed
@@ -383,6 +392,7 @@ protected:
   std::string m_type;
   std::string m_label;
   bool m_isNodal;
+  std::set<std::string> m_localCategories;
   std::set<std::string> m_categories;
   int m_advanceLevel;
   WeakDefinitionSet m_exclusionDefs;

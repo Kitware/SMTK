@@ -435,40 +435,20 @@ void Resource::findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>& 
 
 void Resource::updateCategories()
 {
-  std::queue<attribute::DefinitionPtr> toBeProcessed;
-  // Insert all top most definitions into the queue
-  std::map<std::string, smtk::attribute::DefinitionPtr>::const_iterator it;
-  for (it = m_definitions.begin(); it != m_definitions.end(); it++)
+  // We need to process the definitions that don't have
+  // a base definition
+  std::vector<DefinitionPtr> baseDefs;
+  std::set<std::string> initialCats;
+  this->findBaseDefinitions(baseDefs);
+  // Lets apply their categories and their item definitions' categories
+  for (auto& def : baseDefs)
   {
-    if (!it->second->baseDefinition())
-    {
-      toBeProcessed.push(it->second);
-    }
-  }
-  // Now for each definition in the queue do the following:
-  // update its categories (which will be used by def derived from it
-  // Add all of its derived definitions into the queue
-  smtk::attribute::DefinitionPtr def;
-  while (!toBeProcessed.empty())
-  {
-    def = toBeProcessed.front();
-    def->setCategories();
-    // Does this definition have derived defs from it?
-    auto dit = m_derivedDefInfo.find(def);
-    if (dit != m_derivedDefInfo.end())
-    {
-      smtk::attribute::WeakDefinitionPtrSet::iterator ddit;
-      for (ddit = dit->second.begin(); ddit != dit->second.end(); ddit++)
-      {
-        toBeProcessed.push(ddit->lock());
-      }
-    }
-    toBeProcessed.pop();
+    def->applyCategories(initialCats);
   }
   // Now all of the definitions have been processed we need to combine all
-  // of their categories to form the Resources
+  // of their categories to form the Resource's categories
   m_categories.clear();
-  for (it = m_definitions.begin(); it != m_definitions.end(); it++)
+  for (auto it = m_definitions.begin(); it != m_definitions.end(); it++)
   {
     m_categories.insert(it->second->categories().begin(), it->second->categories().end());
   }
@@ -790,9 +770,8 @@ bool Resource::copyDefinitionImpl(
     }
   }
 
-  // Update categories
-  newDef->setCategories();
-
+  newDef->m_localCategories = sourceDef->m_localCategories;
+  newDef->m_categories = sourceDef->m_categories;
   // TODO Update CopyInfo to include set of categories in new attribute(s)
   // For now, use brute force to update
   this->updateCategories();

@@ -613,6 +613,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
     node.append_attribute("Label").set_value(idef->label().c_str());
   }
   node.append_attribute("Version") = idef->version();
+  node.append_attribute("OkToInheritCategories") = idef->isOkToInherit();
   if (idef->isOptional())
   {
     node.append_attribute("Optional").set_value("true");
@@ -638,14 +639,12 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
       }
     }
   }
-  if (idef->numberOfCategories() && (idef->type() != Item::GroupType))
+  if (!idef->localCategories().empty())
   {
     xml_node cnode, catNodes = node.append_child("Categories");
-    std::set<std::string>::const_iterator it;
-    const std::set<std::string>& cats = idef->categories();
-    for (it = cats.begin(); it != cats.end(); it++)
+    for (auto& str : idef->localCategories())
     {
-      catNodes.append_child("Cat").text().set(it->c_str());
+      catNodes.append_child("Cat").text().set(str.c_str());
     }
   }
   if (idef->briefDescription() != "")

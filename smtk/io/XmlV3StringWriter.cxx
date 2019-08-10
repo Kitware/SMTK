@@ -203,6 +203,16 @@ void XmlV3StringWriter::processDefinitionInternal(
       }
     }
   }
+
+  if (!def->localCategories().empty())
+  {
+    xml_node cnode, catNodes = definition.append_child("Categories");
+    for (auto& str : def->localCategories())
+    {
+      catNodes.append_child("Cat").text().set(str.c_str());
+    }
+  }
+
   XmlV2StringWriter::processDefinitionInternal(definition, def);
 }
 
