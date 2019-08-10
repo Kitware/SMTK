@@ -28,7 +28,6 @@ PySharedPtrClass< smtk::attribute::GroupItemDefinition, smtk::attribute::ItemDef
   instance
     .def(py::init<::smtk::attribute::GroupItemDefinition const &>())
     .def_static("New", &smtk::attribute::GroupItemDefinition::New, py::arg("myName"))
-    .def("addCategory", &smtk::attribute::GroupItemDefinition::addCategory, py::arg("category"))
     .def("addItemDefinition", (bool (smtk::attribute::GroupItemDefinition::*)(::smtk::attribute::ItemDefinitionPtr)) &smtk::attribute::GroupItemDefinition::addItemDefinition, py::arg("cdef"))
     .def("buildGroup", &smtk::attribute::GroupItemDefinition::buildGroup, py::arg("group"), py::arg("subGroupPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::GroupItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::GroupItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
@@ -41,7 +40,6 @@ PySharedPtrClass< smtk::attribute::GroupItemDefinition, smtk::attribute::ItemDef
     .def("maxNumberOfGroups", &smtk::attribute::GroupItemDefinition::maxNumberOfGroups)
     .def("numberOfItemDefinitions", &smtk::attribute::GroupItemDefinition::numberOfItemDefinitions)
     .def("numberOfRequiredGroups", &smtk::attribute::GroupItemDefinition::numberOfRequiredGroups)
-    .def("removeCategory", &smtk::attribute::GroupItemDefinition::removeCategory, py::arg("category"))
     .def("setCommonSubGroupLabel", &smtk::attribute::GroupItemDefinition::setCommonSubGroupLabel, py::arg("elabel"))
     .def("setIsExtensible", &smtk::attribute::GroupItemDefinition::setIsExtensible, py::arg("mode"))
     .def("setMaxNumberOfGroups", &smtk::attribute::GroupItemDefinition::setMaxNumberOfGroups, py::arg("esize"))

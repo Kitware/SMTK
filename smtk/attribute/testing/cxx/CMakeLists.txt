@@ -80,6 +80,7 @@ set(unit_tests
   unitAttributeAssociation
   unitAttributeAssociationConstraints
   unitAttributeAnalysis
+  unitCategories
   unitComponentItem.cxx
   unitDateTimeItem.cxx
   unitAttributeExclusiveAnalysis

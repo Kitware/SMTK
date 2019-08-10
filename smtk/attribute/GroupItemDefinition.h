@@ -105,15 +105,14 @@ public:
   smtk::attribute::ItemPtr buildItem(
     Item* owningItem, int position, int subGroupPosition) const override;
   void buildGroup(smtk::attribute::GroupItem* group, int subGroupPosition) const;
-  void addCategory(const std::string& category) override;
-  void removeCategory(const std::string& category) override;
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
 
 protected:
   GroupItemDefinition(const std::string& myname);
-  void updateCategories() override;
+  void applyCategories(const std::set<std::string>& inheritedFromParent,
+    std::set<std::string>& inheritedToParent) override;
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
   std::vector<std::string> m_labels;

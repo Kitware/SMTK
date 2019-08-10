@@ -87,6 +87,7 @@ public:
 
   std::size_t numberOfCategories() const { return m_categories.size(); }
 
+  ///\brief Returns the categories (both explicitly assigned and inherited) associated to the Definition
   const std::set<std::string>& categories() const { return m_categories; }
 
   bool isMemberOf(const std::string& category) const
@@ -96,9 +97,18 @@ public:
 
   bool isMemberOf(const std::vector<std::string>& categories) const;
 
-  virtual void addCategory(const std::string& category);
+  ///\brief Indicates if the Definition can inherit categories based on it's
+  /// parent Definition or its owning Attribute Definition.  The default is true.
+  bool isOkToInherit() const { return m_isOkToInherit; }
 
-  virtual void removeCategory(const std::string& category);
+  void setIsOkToInherit(bool isOkToInheritValue) { m_isOkToInherit = isOkToInheritValue; }
+
+  ///\brief Returns the categories explicitly assigned to the Definition
+  const std::set<std::string>& localCategories() const { return m_localCategories; }
+
+  virtual void addLocalCategory(const std::string& category);
+
+  virtual void removeLocalCategory(const std::string& category);
 
   //Get the item definition's advance level:
   //if mode is 1 then the write access level is returned;
@@ -129,12 +139,15 @@ protected:
   // in because that should never change.
   ItemDefinition(const std::string& myname);
   void copyTo(ItemDefinitionPtr def) const;
-  virtual void updateCategories();
+  virtual void applyCategories(
+    const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent);
   int m_version;
   bool m_isOptional;
   bool m_isEnabledByDefault;
+  bool m_isOkToInherit;
   std::string m_label;
   std::set<std::string> m_categories;
+  std::set<std::string> m_localCategories;
   std::string m_detailedDescription;
   std::string m_briefDescription;
 

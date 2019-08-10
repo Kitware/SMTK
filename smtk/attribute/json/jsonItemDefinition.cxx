@@ -58,11 +58,11 @@ SMTKCORE_EXPORT void to_json(
       }
     }
   }
-  if (itemDefPtr->numberOfCategories() && (itemDefPtr->type() != Item::GroupType))
+  if (!itemDefPtr->localCategories().empty())
   {
-    std::set<std::string> cats = itemDefPtr->categories();
-    j["Categories"] = itemDefPtr->categories();
+    j["Categories"] = itemDefPtr->localCategories();
   }
+  j["OkToInheritCategories"] = itemDefPtr->isOkToInherit();
   if (!itemDefPtr->briefDescription().empty())
   {
     j["BriefDescription"] = itemDefPtr->briefDescription();
@@ -133,19 +133,20 @@ SMTKCORE_EXPORT void from_json(
   catch (std::exception& /*e*/)
   {
   }
-  try
+
+  auto categories = j.find("Categories");
+  if (categories != j.end())
   {
-    std::vector<std::string> categories = j.at("Categories");
-    for (const auto& category : categories)
+    for (const auto& category : *categories)
     {
-      itemDefPtr->addCategory(category);
+      itemDefPtr->addLocalCategory(category);
     }
   }
-  catch (std::exception& /*e*/)
+  auto okToInherit = j.find("OkToInheritCategories");
+  if (okToInherit != j.end())
   {
+    itemDefPtr->setIsOkToInherit(*okToInherit);
   }
-  // TODO defaultCategories?
-  // Reference: XmlDocV1Parser::process L478
 }
 }
 }

@@ -221,12 +221,31 @@ std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string
   return citer->second;
 }
 
-void ValueItemDefinition::updateCategories()
+void ValueItemDefinition::applyCategories(
+  const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent)
 {
+  // Lets first determine the set of categories this item definition could inherit
+  m_categories = m_localCategories;
+  if (m_isOkToInherit)
+  {
+    m_categories.insert(inheritedFromParent.begin(), inheritedFromParent.end());
+  }
+
+  std::set<std::string> myChildrenCats;
+
+  // Now process the children item defs - this will also assembly the categories
+  // this item def will inherit from its children based on their local categories
   for (auto& i : m_itemDefs)
   {
-    i.second->updateCategories();
+    i.second->applyCategories(m_categories, myChildrenCats);
   }
+
+  // Add the children categories to this one
+  m_categories.insert(myChildrenCats.begin(), myChildrenCats.end());
+  // update the set of categories being inherited by the owning item/attribute
+  // definition
+  inheritedToParent.insert(m_localCategories.begin(), m_localCategories.end());
+  inheritedToParent.insert(myChildrenCats.begin(), myChildrenCats.end());
 }
 
 void ValueItemDefinition::setIsExtensible(bool mode)

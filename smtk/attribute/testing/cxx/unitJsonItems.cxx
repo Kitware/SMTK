@@ -130,10 +130,10 @@ int unitJsonItems(int argc, char* argv[])
   iitemdef->addDiscreteValue(2, "Hours");
   iitemdef->addDiscreteValue(3, "Days");
   iitemdef->setDefaultDiscreteIndex(0);
-  iitemdef->addCategory("Time");
+  iitemdef->addLocalCategory("Time");
   iitemdef = base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem2");
   iitemdef->setDefaultValue(10);
-  iitemdef->addCategory("Heat");
+  iitemdef->addLocalCategory("Heat");
 
   // Lets test creating an attribute by passing in the expression definition explicitly
   smtk::attribute::AttributePtr expAtt1 = resource.createAttribute("Exp1", expDef);

@@ -975,6 +975,11 @@ void XmlDocV1Parser::processItemDef(xml_node& node, smtk::attribute::ItemDefinit
     idef->setIsOptional(xatt.as_bool());
     idef->setIsEnabledByDefault(node.attribute("IsEnabledByDefault").as_bool());
   }
+  xatt = node.attribute("OkToInheritCategories");
+  if (xatt)
+  {
+    idef->setIsOkToInherit(xatt.as_bool());
+  }
   // If using AdvanceLevel then we are setting
   // both read and write
   xatt = node.attribute("AdvanceLevel");
@@ -1014,13 +1019,13 @@ void XmlDocV1Parser::processItemDef(xml_node& node, smtk::attribute::ItemDefinit
   {
     for (child = catNodes.first_child(); child; child = child.next_sibling())
     {
-      idef->addCategory(child.text().get());
+      idef->addLocalCategory(child.text().get());
     }
   }
   else if (m_defaultCategory != "" &&
     !smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef))
   { // group item definitions don't get categories
-    idef->addCategory(m_defaultCategory.c_str());
+    idef->addLocalCategory(m_defaultCategory.c_str());
   }
 }
 

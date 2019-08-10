@@ -20,6 +20,7 @@ ItemDefinition::ItemDefinition(const std::string& myName)
   m_advanceLevel[1] = 0;
   m_isOptional = false;
   m_isEnabledByDefault = false;
+  m_isOkToInherit = true;
 }
 
 ItemDefinition::~ItemDefinition()
@@ -39,18 +40,28 @@ bool ItemDefinition::isMemberOf(const std::vector<std::string>& inCategories) co
   return false;
 }
 
-void ItemDefinition::updateCategories()
+void ItemDefinition::applyCategories(
+  const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent)
 {
+  // The item's definition's categories are it's local categories and (if its ok to inherit
+  // categories from it's owning item definition/attribute definition) those inherited
+  // from its parent
+  m_categories = m_localCategories;
+  if (m_isOkToInherit)
+  {
+    m_categories.insert(inheritedFromParent.begin(), inheritedFromParent.end());
+  }
+  inheritedToParent.insert(m_localCategories.begin(), m_localCategories.end());
 }
 
-void ItemDefinition::addCategory(const std::string& category)
+void ItemDefinition::addLocalCategory(const std::string& category)
 {
-  m_categories.insert(category);
+  m_localCategories.insert(category);
 }
 
-void ItemDefinition::removeCategory(const std::string& category)
+void ItemDefinition::removeLocalCategory(const std::string& category)
 {
-  m_categories.erase(category);
+  m_localCategories.erase(category);
 }
 
 void ItemDefinition::setAdvanceLevel(int mode, int level)
@@ -74,11 +85,12 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
   def->setVersion(m_version);
   def->setIsOptional(m_isOptional);
   def->setIsEnabledByDefault(m_isEnabledByDefault);
+  def->setIsOkToInherit(m_isOkToInherit);
 
-  std::set<std::string>::const_iterator categoryIter = m_categories.begin();
-  for (; categoryIter != m_categories.end(); categoryIter++)
+  std::set<std::string>::const_iterator categoryIter = m_localCategories.begin();
+  for (; categoryIter != m_localCategories.end(); categoryIter++)
   {
-    def->addCategory(*categoryIter);
+    def->addLocalCategory(*categoryIter);
   }
 
   def->setAdvanceLevel(0, m_advanceLevel[0]);

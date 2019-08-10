@@ -74,6 +74,10 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
   {
     j["Nodal"] = true;
   }
+  if (!defPtr->localCategories().empty())
+  {
+    j["Categories"] = defPtr->localCategories();
+  }
   // Save Color Information
   if (defPtr->isNotApplicableColorSet())
   {
@@ -180,6 +184,16 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   catch (std::exception& /*e*/)
   {
   }
+
+  auto categories = j.find("Categories");
+  if (categories != j.end())
+  {
+    for (const auto& category : *categories)
+    {
+      defPtr->addLocalCategory(category);
+    }
+  }
+
   try
   {
     defPtr->setIsNodal(j.at("Nodal"));

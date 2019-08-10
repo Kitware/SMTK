@@ -163,7 +163,8 @@ public:
 
 protected:
   void copyTo(ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const;
-  void updateCategories() override;
+  void applyCategories(const std::set<std::string>& inheritedFromParent,
+    std::set<std::string>& inheritedToParent) override;
 
   virtual void updateDiscreteValue() = 0;
   bool m_hasDefault;
