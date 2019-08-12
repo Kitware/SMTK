@@ -30,6 +30,15 @@
 #include "smtk/model/Tessellation.h"
 
 namespace py = pybind11;
+void pybind11_init_smtk_model_Exclusions(py::module &m)
+{
+  py::enum_<smtk::model::Exclusions>(m, "Exclusions")
+    .value("Nothing", smtk::model::Exclusions::Nothing)
+    .value("Rendering", smtk::model::Exclusions::Rendering)
+    .value("ViewPresentation", smtk::model::Exclusions::ViewPresentation)
+    .value("Everything", smtk::model::Exclusions::Everything)
+    .export_values();
+}
 
 py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::module &m)
 {
@@ -95,6 +104,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("hasTessellation", &smtk::model::EntityRef::hasTessellation, py::return_value_policy::reference)
     .def("hasVisibility", &smtk::model::EntityRef::hasVisibility)
     .def("hash", &smtk::model::EntityRef::hash)
+    .def("exclusions", &smtk::model::EntityRef::exclusions, py::arg("mask") = smtk::model::Exclusions::Everything)
     .def("higherDimensionalBordants", &smtk::model::EntityRef::higherDimensionalBordants, py::arg("higherDimension"))
     .def("instances", [](const smtk::model::EntityRef& prototype) {
       auto result = prototype.instances<smtk::model::Instances>();
@@ -150,6 +160,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("setEntity", &smtk::model::EntityRef::setEntity, py::arg("entityId"))
     .def("setFloatProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::Float)) &smtk::model::EntityRef::setFloatProperty, py::arg("propName"), py::arg("propValue"))
     .def("setFloatProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::FloatList const &)) &smtk::model::EntityRef::setFloatProperty, py::arg("propName"), py::arg("propValue"))
+    .def("setExclusions", &smtk::model::EntityRef::setExclusions, py::arg("v"), py::arg("mask") = smtk::model::Exclusions::Everything)
     .def("setIntegerProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::Integer)) &smtk::model::EntityRef::setIntegerProperty, py::arg("propName"), py::arg("propValue"))
     .def("setIntegerProperty", (void (smtk::model::EntityRef::*)(::std::string const &, ::smtk::model::IntegerList const &)) &smtk::model::EntityRef::setIntegerProperty, py::arg("propName"), py::arg("propValue"))
     .def("setResource", &smtk::model::EntityRef::setResource, py::arg("resource"))

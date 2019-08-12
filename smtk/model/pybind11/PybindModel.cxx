@@ -84,6 +84,7 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   py::class_< smtk::model::AttributeAssignments > smtk_model_AttributeAssignments = pybind11_init_smtk_model_AttributeAssignments(model);
   py::class_< smtk::model::Entity > smtk_model_Entity = pybind11_init_smtk_model_Entity(model);
   py::class_< smtk::model::EntityIterator > smtk_model_EntityIterator = pybind11_init_smtk_model_EntityIterator(model);
+  pybind11_init_smtk_model_Exclusions(model);
   py::class_< smtk::model::EntityRef > smtk_model_EntityRef = pybind11_init_smtk_model_EntityRef(model);
   py::class_< smtk::model::EntityRefArrangementOps > smtk_model_EntityRefArrangementOps = pybind11_init_smtk_model_EntityRefArrangementOps(model);
   PySharedPtrClass< smtk::model::Resource > smtk_model_Resource = pybind11_init_smtk_model_Resource(model);

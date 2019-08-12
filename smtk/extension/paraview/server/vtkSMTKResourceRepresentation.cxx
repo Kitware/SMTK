@@ -267,10 +267,15 @@ int vtkSMTKResourceRepresentation::RequestData(
     this->GlyphMapper->SetInputData(instanceMultiBlock);
     this->GlyphMapper->SetSourceTableTree(protoTypeMultiBlock);
     this->ConfigureGlyphMapper(this->GlyphMapper.GetPointer());
+    // Use per point color to render the normal glyphs
+    this->GlyphMapper->SetScalarModeToUsePointFieldData();
+    this->GlyphMapper->SelectColorArray(VTK_INSTANCE_COLOR);
 
     this->SelectedGlyphMapper->SetInputData(instanceMultiBlock);
     this->SelectedGlyphMapper->SetSourceTableTree(protoTypeMultiBlock);
     this->ConfigureGlyphMapper(this->SelectedGlyphMapper.GetPointer());
+    // Use per block color to render the selected/hovered glyphs
+    this->SelectedGlyphMapper->SetScalarModeToUseCellData();
   }
   this->EntityCacheKeeper->Update();
 
