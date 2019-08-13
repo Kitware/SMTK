@@ -297,23 +297,20 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   auto theAttribute = this->Internals->currentAtt.lock();
   auto attResource = theAttribute->attributeResource();
   auto associationItem = theAttribute->associatedObjects();
+  auto resManager = this->Internals->view->uiManager()->resourceManager();
   if (associationItem == nullptr)
   {
     return result;
   }
   auto assocMap = associationItem->acceptableEntries();
 
-  // First we need to determin if the attribute resource has resources associated with it
+  // First we need to determine if the attribute resource has resources associated with it
   // if not we need to go to resource manager to get the information
-  if (attResource->hasAssociations())
+  if (attResource->hasAssociations() || (resManager == nullptr))
   {
     resources = attResource->associations();
-    if (resources.empty())
-    {
-      // Ok - the attribute resource does has other resources associated with it
-      // but they are not in memory
-      return result;
-    }
+    // we should always consider the attribute resource itself as well
+    resources.insert(attResource);
     // Iterate over the acceptable entries
     decltype(assocMap.equal_range("")) range;
     for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
@@ -351,13 +348,6 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   }
   else // we need to use the resource manager
   {
-    // Iterate over the acceptable entries
-    auto resManager = this->Internals->view->uiManager()->resourceManager();
-    if (resManager == nullptr)
-    {
-      return result;
-    }
-
     decltype(assocMap.equal_range("")) range;
     for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
     {
