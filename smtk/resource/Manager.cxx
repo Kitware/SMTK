@@ -446,7 +446,6 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
 
     // Tell observers we have yoinked it:
     m_observers(rsrc, smtk::resource::EventType::REMOVED);
-
     return true;
   }
 

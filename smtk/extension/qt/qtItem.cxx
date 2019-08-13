@@ -54,6 +54,11 @@ qtItem::~qtItem()
   }
 }
 
+void qtItem::markForDeletion()
+{
+  this->deleteLater();
+}
+
 void qtItem::updateItemData()
 {
 }
@@ -71,7 +76,7 @@ void qtItem::removeChildItem(qtItem* child)
   // There should only be one instance of the child
   if (m_childItems.removeOne(child))
   {
-    child->deleteLater();
+    child->markForDeletion();
   }
 }
 
@@ -84,7 +89,7 @@ void qtItem::clearChildItems()
 {
   for (int i = 0; i < m_childItems.count(); i++)
   {
-    m_childItems.value(i)->deleteLater();
+    m_childItems.value(i)->markForDeletion();
   }
   m_childItems.clear();
 }

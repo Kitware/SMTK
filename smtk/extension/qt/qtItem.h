@@ -80,6 +80,10 @@ public:
   bool useSelectionManager() const { return m_useSelectionManager; }
   void setReadOnly(bool mode) { m_readOnly = mode; }
   bool isReadOnly() const { return m_readOnly; }
+  ///\brief Indicates that the item should be deleted.  This is similar to Qt's
+  /// deleteLater() method (in fact it calls it); however, it also allows the qtItem to do some
+  /// cleanup such as stop observing SMTK "signals".
+  virtual void markForDeletion();
 
 public slots:
   // Controls whether the Selection Manager should be used for setting model

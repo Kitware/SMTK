@@ -55,6 +55,8 @@ public:
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
 
   virtual ~qtReferenceItemComboBox();
+  void markForDeletion() override;
+
   virtual std::string selectionSourceName() { return m_selectionSourceName; }
   void setDefinitionForCreation(smtk::attribute::DefinitionPtr& def);
   void setOkToCreate(bool val) { m_okToCreate = val; }
