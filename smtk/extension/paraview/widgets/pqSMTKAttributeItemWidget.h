@@ -113,6 +113,12 @@ protected:
   virtual void updateUI();
   virtual void createEditor();
 
+  /// Subclasses may call this to validate that a string item is
+  /// appropriate for controlling the interaction state of the
+  /// widget (i.e., the possibly tri-state checkbox that ParaView's
+  /// Qt widgets provide to control render-view widget visibility).
+  bool validateControlItem(const smtk::attribute::StringItemPtr& item);
+
   class Internal;
   Internal* m_p;
 };

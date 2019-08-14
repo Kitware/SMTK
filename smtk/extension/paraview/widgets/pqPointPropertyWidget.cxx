@@ -64,13 +64,13 @@ constexpr const char* tooltipVisible =
 constexpr const char* tooltipActive =
   "Edit point coordinates manually or drag the point in the render view. "
   "Type 'P' to pick a point on any surface under the cursor or "
-  "'Ctrl+P' to snap to the closest point used to define the underlying surface. "
+  "'Cmd+P' to snap to the closest point used to define the underlying surface. "
   "Click the checkbox to hide the 3-d widget.";
 #else
 constexpr const char* tooltipActive =
   "Edit point coordinates manually or drag the point in the render view. "
   "Type 'P' to pick a point on any surface under the cursor or "
-  "'Cmd+P' to snap to the closest point used to define the underlying surface. "
+  "'Ctrl+P' to snap to the closest point used to define the underlying surface. "
   "Click the checkbox to hide the 3-d widget.";
 #endif
 

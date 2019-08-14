@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/io/Logger.h"
 
@@ -33,6 +34,11 @@
 #include "vtkSMProxy.h"
 #include "vtkVector.h"
 #include "vtkVectorOperators.h"
+
+#include <QCheckBox>
+
+#include <algorithm>
+#include <cctype>
 
 using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;
@@ -58,7 +64,8 @@ bool pqSMTKBoxItemWidget::createProxyAndWidget(
 {
   ItemBindings binding;
   std::vector<smtk::attribute::DoubleItemPtr> items;
-  bool haveItems = this->fetchBoxItems(binding, items);
+  smtk::attribute::StringItemPtr control;
+  bool haveItems = this->fetchBoxItems(binding, items, control);
   if (!haveItems || binding == ItemBindings::Invalid)
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Could not find items for widget.");
@@ -90,6 +97,28 @@ bool pqSMTKBoxItemWidget::createProxyAndWidget(
   }
   widget = new pqBoxPropertyWidget(proxy, proxy->GetPropertyGroup(0));
 
+  // Unlike traditional boolean-valued XML attributes, ShowControls defaults
+  // to true (even when not present) to preserve existing behavior.
+  bool showControls;
+  bool haveShowControls = m_itemInfo.component().attributeAsBool("ShowControls", showControls);
+  showControls |= !haveShowControls; // when ShowControls not present, showControls should be true
+
+  auto visibility = widget->findChild<QCheckBox*>("show3DWidget");
+  if (showControls)
+  {
+    visibility->show();
+  }
+  else
+  {
+    visibility->hide();
+  }
+
+  if (control)
+  {
+    this->setControlState(control->value(), visibility);
+    this->connect(visibility, SIGNAL(toggled(bool)), SLOT(updateItemFromWidget()));
+  }
+
   // II. Initialize the properties.
   m_p->m_pvwidget = widget;
   this->updateWidgetFromItem();
@@ -104,12 +133,36 @@ void pqSMTKBoxItemWidget::updateItemFromWidget()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
+  smtk::attribute::StringItemPtr control;
   ItemBindings binding;
-  if (!this->fetchBoxItems(binding, items))
+  if (!this->fetchBoxItems(binding, items, control))
   {
     smtkErrorMacro(smtk::io::Logger::instance(),
       "Item widget has an update but the item(s) do not exist or are not sized properly.");
     return;
+  }
+
+  bool didChange = false;
+
+  if (control)
+  {
+    auto visibility = this->propertyWidget()->findChild<QCheckBox*>("show3DWidget");
+    std::string oldValue = control->value();
+    switch (visibility->checkState())
+    {
+      case Qt::Unchecked:
+        control->setValue("inactive");
+        break;
+      case Qt::PartiallyChecked:
+        control->setValue("visible");
+        break;
+      case Qt::Checked:
+        control->setValue("active");
+        break;
+      default:
+        break;
+    }
+    didChange |= (oldValue != control->value());
   }
 
   // Values held by widget
@@ -124,7 +177,6 @@ void pqSMTKBoxItemWidget::updateItemFromWidget()
   vtkVector3d center;
   vtkVector3d deltas;
   vtkVector3d point2;
-  bool didChange = false;
 
   // Current values held in items:
   vtkVector3d curAngles;
@@ -269,12 +321,23 @@ void pqSMTKBoxItemWidget::updateWidgetFromItem()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
+  smtk::attribute::StringItemPtr control;
   ItemBindings binding;
-  if (!this->fetchBoxItems(binding, items))
+  if (!this->fetchBoxItems(binding, items, control))
   {
     smtkErrorMacro(smtk::io::Logger::instance(),
       "Item signaled an update but the item(s) do not exist or are not sized properly.");
     return;
+  }
+
+  if (control)
+  {
+    auto pw = this->propertyWidget();
+    auto visibility = pw ? pw->findChild<QCheckBox*>("show3DWidget") : nullptr;
+    if (visibility)
+    {
+      this->setControlState(control->value(), visibility);
+    }
   }
 
   // Unlike updateItemFromWidget, we don't care if we cause ParaView an unnecessary update;
@@ -360,10 +423,11 @@ void pqSMTKBoxItemWidget::updateWidgetFromItem()
   }
 }
 
-bool pqSMTKBoxItemWidget::fetchBoxItems(
-  ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items)
+bool pqSMTKBoxItemWidget::fetchBoxItems(ItemBindings& binding,
+  std::vector<smtk::attribute::DoubleItemPtr>& items, smtk::attribute::StringItemPtr& control)
 {
   items.clear();
+  control = nullptr;
 
   // Check to see if item is a vector of doubles:
   auto doubleItem = m_itemInfo.itemAs<smtk::attribute::DoubleItem>();
@@ -387,6 +451,15 @@ bool pqSMTKBoxItemWidget::fetchBoxItems(
     smtkErrorMacro(
       smtk::io::Logger::instance(), "Expected a group item with 1 group of 2 or more items.");
     return false;
+  }
+
+  std::string controlItemName;
+  m_itemInfo.component().attribute("Control", controlItemName);
+  control = groupItem->findAs<smtk::attribute::StringItem>(0, controlItemName);
+  if (!this->validateControlItem(control))
+  {
+    // Do not accept an item without discrete values. TODO: Check discrete values.
+    control = nullptr;
   }
 
   // Find items in the group based on names in the configuration info:
@@ -483,4 +556,23 @@ bool pqSMTKBoxItemWidget::fetchBoxItems(
 
   binding = ItemBindings::Invalid;
   return false;
+}
+
+void pqSMTKBoxItemWidget::setControlState(const std::string& controlState, QCheckBox* controlWidget)
+{
+  std::string state = controlState;
+  std::transform(
+    state.begin(), state.end(), state.begin(), [](unsigned char c) { return std::tolower(c); });
+  if (state == "active")
+  {
+    controlWidget->setChecked(Qt::Checked);
+  }
+  else if (state == "visible")
+  {
+    controlWidget->setChecked(Qt::PartiallyChecked);
+  }
+  else if (state == "inactive")
+  {
+    controlWidget->setChecked(Qt::Unchecked);
+  }
 }

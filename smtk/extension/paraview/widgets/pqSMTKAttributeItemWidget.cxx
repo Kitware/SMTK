@@ -13,6 +13,8 @@
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/operators/Signal.h"
@@ -407,4 +409,26 @@ void pqSMTKAttributeItemWidget::createEditor()
   pvwidget->select();
 
   this->updateWidgetFromItem();
+}
+
+bool pqSMTKAttributeItemWidget::validateControlItem(const smtk::attribute::StringItemPtr& item)
+{
+  if (!item)
+  {
+    return false;
+  }
+  auto def =
+    smtk::dynamic_pointer_cast<const smtk::attribute::StringItemDefinition>(item->definition());
+  if (!def || !def->isDiscrete())
+  {
+    return false;
+  }
+  std::size_t index;
+  if ((!def->getEnumIndex("active", index) && !def->getEnumIndex("Active", index)) ||
+    // NB: Allow but do not require "visible" enum
+    (!def->getEnumIndex("inactive", index) && !def->getEnumIndex("Inactive", index)))
+  {
+    return false;
+  }
+  return true;
 }
