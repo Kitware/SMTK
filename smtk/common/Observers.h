@@ -13,6 +13,7 @@
 #include <functional>
 #include <limits>
 #include <map>
+#include <set>
 #include <type_traits>
 #include <utility>
 
@@ -78,10 +79,12 @@ public:
 
   Observers()
     : m_initializer()
+    , m_observing(false)
   {
   }
   Observers(Initializer&& initializer)
     : m_initializer(initializer)
+    , m_observing(false)
   {
   }
 
@@ -103,14 +106,30 @@ public:
   {
     decltype(std::declval<Observer>()(args...)) result = 0;
 
-    // This careful loop allows an observer to erase itself.
-    typename std::map<Key, Observer>::iterator entry = m_observers.begin();
-    typename std::map<Key, Observer>::iterator next;
-    for (next = entry; entry != m_observers.end(); entry = next)
+    // Toggle m_observing flag to enable caching of requests to erase observers.
+    m_observing = true;
+    for (auto& entry : m_observers)
     {
-      ++next;
-      result |= entry->second(std::forward<Types>(args)...);
+      // During iteration, some observers may have requested the erasure of
+      // other observers. Rather than directly remove them from the map and
+      // invalidate the iteration loop, we cache these requests and prevent
+      // these observers from being called (as though they were erased).
+      if (m_toErase.find(entry.first) == m_toErase.end())
+      {
+        result |= entry.second(std::forward<Types>(args)...);
+      }
     }
+    // Now that the iteration loop is complete, it is now safe to erase
+    // observers again.
+    m_observing = false;
+
+    // Remove observers that were marked for erasure during observation.
+    for (auto& toErase : m_toErase)
+    {
+      m_observers.erase(toErase);
+    }
+    m_toErase.clear();
+
     return result;
   }
 
@@ -121,14 +140,29 @@ public:
     typename std::enable_if<!std::is_integral<decltype(std::declval<Observer>()(args...))>::value,
       decltype(std::declval<Observer>()(args...))>::type
   {
-    // This careful loop allows an observer to erase itself.
-    typename std::map<Key, Observer>::iterator entry = m_observers.begin();
-    typename std::map<Key, Observer>::iterator next;
-    for (next = entry; entry != m_observers.end(); entry = next)
+    // Toggle m_observing flag to enable caching of requests to erase observers.
+    m_observing = true;
+    for (auto& entry : m_observers)
     {
-      ++next;
-      entry->second(std::forward<Types>(args)...);
+      // During iteration, some observers may have requested the erasure of
+      // other observers. Rather than directly remove them from the map and
+      // invalidate the iteration loop, we cache these requests and prevent
+      // these observers from being called (as though they were erased).
+      if (m_toErase.find(entry.first) == m_toErase.end())
+      {
+        entry.second(std::forward<Types>(args)...);
+      }
     }
+    // Now that the iteration loop is complete, it is now safe to erase
+    // observers again.
+    m_observing = false;
+
+    // Remove observers that were marked for erasure during observation.
+    for (auto& toErase : m_toErase)
+    {
+      m_observers.erase(toErase);
+    }
+    m_toErase.clear();
   }
 
   /// Ask to receive notification (and possibly a chance to respond to) events.
@@ -197,7 +231,15 @@ public:
 
   /// Indicate that an observer should no longer be called. Returns the number
   /// of remaining observers.
-  std::size_t erase(Key handle) { return m_observers.erase(handle); }
+  std::size_t erase(Key handle)
+  {
+    if (m_observing)
+    {
+      m_toErase.insert(handle);
+      return m_observers.size() - m_toErase.size();
+    }
+    return m_observers.erase(handle);
+  }
 
   /// Return the observer for the given key if one exists or nullptr otherwise.
   Observer find(Key handle) const
@@ -232,6 +274,10 @@ protected:
 
   // A functor to override the default initialize method.
   Initializer m_initializer;
+
+private:
+  bool m_observing;
+  std::set<Key> m_toErase;
 };
 }
 }
