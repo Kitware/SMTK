@@ -190,7 +190,7 @@ bool vtkSMTKResourceRepresentation::GetModelBounds()
 {
   // Entity tessellation bounds
   double entityBounds[6];
-  auto port = this->GetInternalOutputPort(0);
+  auto port = this->GetInternalOutputPort();
   if (port)
   {
     this->GetEntityBounds(port->GetProducer()->GetOutputDataObject(0), entityBounds,
@@ -246,18 +246,28 @@ int vtkSMTKResourceRepresentation::RequestData(
   if (inVec[0]->GetNumberOfInformationObjects() == 1)
   {
     vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
-    this->SetOutputExtent(this->GetInternalOutputPort(0), inInfo);
+    this->SetOutputExtent(this->GetInternalOutputPort(), inInfo);
 
     // Model entities
-    this->EntityCacheKeeper->SetInputConnection(this->GetInternalOutputPort(0));
+    auto port = this->GetInternalOutputPort();
+    vtkSmartPointer<vtkMultiBlockDataSet> mbds =
+      vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
+
+    vtkSmartPointer<vtkMultiBlockDataSet> modelMultiBlock =
+      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(0));
+    vtkSmartPointer<vtkMultiBlockDataSet> protoTypeMultiBlock =
+      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(1));
+    vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock =
+      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(2));
+    this->EntityCacheKeeper->SetInputData(modelMultiBlock);
 
     // Glyph points (2) and prototypes (1)
-    this->GlyphMapper->SetInputConnection(this->GetInternalOutputPort(2));
-    this->GlyphMapper->SetInputConnection(1, this->GetInternalOutputPort(1));
+    this->GlyphMapper->SetInputData(instanceMultiBlock);
+    this->GlyphMapper->SetSourceTableTree(protoTypeMultiBlock);
     this->ConfigureGlyphMapper(this->GlyphMapper.GetPointer());
 
-    this->SelectedGlyphMapper->SetInputConnection(this->GetInternalOutputPort(2));
-    this->SelectedGlyphMapper->SetInputConnection(1, this->GetInternalOutputPort(1));
+    this->SelectedGlyphMapper->SetInputData(instanceMultiBlock);
+    this->SelectedGlyphMapper->SetInputData(protoTypeMultiBlock);
     this->ConfigureGlyphMapper(this->SelectedGlyphMapper.GetPointer());
   }
   this->EntityCacheKeeper->Update();
@@ -321,33 +331,24 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
   }
   else if (request_type == vtkPVView::REQUEST_RENDER())
   {
-    // Update model entity and glyph attributes
-    // vtkDataObject* (blocks) in the multi-block may have changed after
-    // updating the pipeline, so UpdateEntityAttributes and UpdateInstanceAttributes
-    // are called here to ensure the block attributes are updated with the current
-    // block pointers. To do this, it uses the flat-index mapped attributes stored in
-    // this class.
-    auto modelEntityPort = this->GetInternalOutputPort(vtkModelMultiBlockSource::MODEL_ENTITY_PORT);
-    auto instancePort = this->GetInternalOutputPort(vtkModelMultiBlockSource::INSTANCE_PORT);
+    auto port = this->GetInternalOutputPort();
+    vtkSmartPointer<vtkMultiBlockDataSet> mbds =
+      vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
 
-    this->EntityMapper->SetInputConnection(0, modelEntityPort);
-    this->SelectedEntityMapper->SetInputConnection(0, modelEntityPort);
-    auto modelEntityProducer = modelEntityPort->GetProducer();
-    auto modelEntityData = modelEntityProducer->GetOutputDataObject(0);
-    this->UpdateColoringParameters(modelEntityData);
+    vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock =
+      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(0));
+    vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock =
+      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(2));
+
+    this->EntityMapper->SetInputDataObject(componentMultiBlock);
+    this->SelectedEntityMapper->SetInputDataObject(componentMultiBlock);
+    this->UpdateColoringParameters(componentMultiBlock);
     this->UpdateRepresentationSubtype();
 
-    // Entities
-    auto multiblockModel = vtkMultiBlockDataSet::SafeDownCast(modelEntityData);
-    // Glyphs
-    auto instanceProducer = instancePort->GetProducer();
-    auto instanceData = instanceProducer->GetOutputDataObject(0);
-    auto multiblockInstance = vtkMultiBlockDataSet::SafeDownCast(instanceData);
-
     // If the input has changed, update the map of polydata pointers in RenderableData:
-    this->UpdateRenderableData(multiblockModel, multiblockInstance);
+    this->UpdateRenderableData(componentMultiBlock, instanceMultiBlock);
     // If the selection has changed, update the visual properties of blocks:
-    this->UpdateDisplayAttributesFromSelection(multiblockModel, multiblockInstance);
+    this->UpdateDisplayAttributesFromSelection(componentMultiBlock, instanceMultiBlock);
   }
 
   return 1;
