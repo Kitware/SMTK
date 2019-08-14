@@ -95,9 +95,9 @@ bool testCategories(const ItemDefinitionPtr& idef, const std::string& prefix,
     auto videf = std::dynamic_pointer_cast<ValueItemDefinition>(idef);
     if (videf != nullptr)
     {
-      for (const auto& idef : videf->childrenItemDefinitions())
+      for (const auto& cidef : videf->childrenItemDefinitions())
       {
-        if (!testCategories(idef.second, prefix, answers))
+        if (!testCategories(cidef.second, prefix, answers))
         {
           status = false;
         }

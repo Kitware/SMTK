@@ -25,7 +25,7 @@ PySharedPtrClass< smtk::session::discrete::WriteOperation > pybind11_init_smtk_s
     .def_static("create", (std::shared_ptr<smtk::session::discrete::WriteOperation> (*)()) &smtk::session::discrete::WriteOperation::create)
     .def("ableToOperate", &smtk::session::discrete::WriteOperation::ableToOperate)
     ;
-  return instance;
+  return std::move(instance);
 }
 
 #endif
