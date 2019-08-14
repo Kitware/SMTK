@@ -63,14 +63,15 @@ unsigned int AttributeWriter::fileVersion() const
 bool AttributeWriter::write(
   const smtk::attribute::ResourcePtr resource, const std::string& filename, Logger& logger)
 {
-  logger.reset();
-  XmlStringWriter* theWriter = this->newXmlStringWriter(resource);
+  // Lets first clear the logger's error state
+  logger.clearErrors();
+  XmlStringWriter* theWriter = this->newXmlStringWriter(resource, logger);
   theWriter->includeDefinitions(m_includeDefinitions);
   theWriter->includeInstances(m_includeInstances);
   theWriter->includeViews(m_includeViews);
   theWriter->useDirectoryInfo(m_useDirectoryInfo);
 
-  std::string result = theWriter->convertToString(logger);
+  std::string result = theWriter->convertToString();
   if (m_useDirectoryInfo && (!logger.hasErrors()))
   {
     path p(filename);
@@ -128,29 +129,29 @@ bool AttributeWriter::write(
 bool AttributeWriter::writeContents(const smtk::attribute::ResourcePtr resource,
   std::string& filecontents, Logger& logger, bool no_declaration)
 {
-  logger.reset();
-  XmlStringWriter* theWriter = this->newXmlStringWriter(resource);
+  logger.clearErrors();
+  XmlStringWriter* theWriter = this->newXmlStringWriter(resource, logger);
   theWriter->includeDefinitions(m_includeDefinitions);
   theWriter->includeInstances(m_includeInstances);
   theWriter->includeViews(m_includeViews);
   theWriter->useDirectoryInfo(false);
-  filecontents = theWriter->convertToString(logger, no_declaration);
+  filecontents = theWriter->convertToString(no_declaration);
   delete theWriter;
   return logger.hasErrors();
 }
 
 XmlStringWriter* AttributeWriter::newXmlStringWriter(
-  const smtk::attribute::ResourcePtr resource) const
+  const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger) const
 {
   XmlStringWriter* writer = NULL;
   switch (m_fileVersion)
   {
     case 2:
-      writer = new XmlV2StringWriter(resource);
+      writer = new XmlV2StringWriter(resource, logger);
       break;
 
     case 3:
-      writer = new XmlV3StringWriter(resource);
+      writer = new XmlV3StringWriter(resource, logger);
       break;
 
     default:

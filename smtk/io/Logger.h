@@ -135,6 +135,7 @@ public:
   std::size_t numberOfRecords() const { return m_records.size(); }
 
   bool hasErrors() const { return m_hasErrors; }
+  void clearErrors() { m_hasErrors = false; }
 
   void addRecord(
     Severity s, const std::string& m, const std::string& fname = "", unsigned int line = 0);

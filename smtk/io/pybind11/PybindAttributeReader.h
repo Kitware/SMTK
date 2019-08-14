@@ -15,6 +15,9 @@
 
 #include "smtk/io/AttributeReader.h"
 
+#define PUGIXML_HEADER_ONLY
+#include "pugixml/src/pugixml.cpp"
+
 namespace py = pybind11;
 
 PySharedPtrClass< smtk::io::AttributeReader > pybind11_init_smtk_io_AttributeReader(py::module &m)

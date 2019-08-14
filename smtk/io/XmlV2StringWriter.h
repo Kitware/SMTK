@@ -40,13 +40,12 @@ namespace io
 class SMTKCORE_EXPORT XmlV2StringWriter : public XmlStringWriter
 {
 public:
-  XmlV2StringWriter(const smtk::attribute::ResourcePtr resource);
+  XmlV2StringWriter(const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   virtual ~XmlV2StringWriter();
-  std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) override;
+  std::string convertToString(bool no_declaration = false) override;
   virtual std::string getString(std::size_t ith, bool no_declaration = false) override;
 
-  void generateXml(smtk::io::Logger& logger) override;
-  const smtk::io::Logger& messageLog() const { return m_logger; }
+  void generateXml() override;
 
   template <typename Container>
   static std::string concatenate(

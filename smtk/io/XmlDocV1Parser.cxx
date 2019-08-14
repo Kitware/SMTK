@@ -378,9 +378,10 @@ void processDerivedValue(pugi::xml_node& node, ItemType item, attribute::Resourc
 }
 };
 
-XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::ResourcePtr myResource)
+XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::ResourcePtr myResource, smtk::io::Logger& logger)
   : m_reportAsError(true)
   , m_resource(myResource)
+  , m_logger(logger)
   , m_includeIndex(0)
 {
 }
@@ -484,9 +485,6 @@ void XmlDocV1Parser::process(xml_document& doc)
 
 void XmlDocV1Parser::process(xml_node& amnode)
 {
-  // Reset the message log
-  m_logger.reset();
-
   // Lets get the UUID of the resource if there is one
   auto idAtt = amnode.attribute("ID");
   if (idAtt)
@@ -501,7 +499,6 @@ void XmlDocV1Parser::process(xml_node& amnode)
   m_attRefDefInfo.clear();
   m_itemExpressionInfo.clear();
   m_attRefInfo.clear();
-  m_logger.reset();
   xml_node node, cnode;
 
   // Get the category information, starting with current set

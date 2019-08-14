@@ -33,11 +33,12 @@ namespace io
 class SMTKCORE_EXPORT XmlStringWriter
 {
 public:
-  XmlStringWriter(smtk::attribute::ResourcePtr resource)
+  XmlStringWriter(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger)
     : m_resource(resource)
     , m_includeDefinitions(true)
     , m_includeInstances(true)
     , m_includeViews(true)
+    , m_logger(logger)
   {
   }
 
@@ -48,12 +49,12 @@ public:
   virtual std::string rootNodeName() const = 0;
   virtual unsigned int fileVersion() const = 0;
 
-  virtual std::string convertToString(smtk::io::Logger& logger, bool no_declaration = false) = 0;
+  virtual std::string convertToString(bool no_declaration = false) = 0;
   // If using the resource's DirectoryInfo - return the ith string (NOTE - make use you have called
   // convertToString first!)
   virtual std::string getString(std::size_t ith, bool no_declaration = false) = 0;
 
-  virtual void generateXml(smtk::io::Logger& logger) = 0;
+  virtual void generateXml() = 0;
 
   //Control which sections of the attribute resource should be writtern out
   // By Default all sections are processed.  These are advance options!!
@@ -77,7 +78,7 @@ protected:
   bool m_includeViews;
   bool m_useDirectoryInfo;
 
-  smtk::io::Logger m_logger;
+  smtk::io::Logger& m_logger;
 };
 } // namespace io
 } // namespace smtk
