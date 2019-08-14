@@ -45,7 +45,6 @@ vtkStandardNewMacro(vtkSMTKResourceReader);
 vtkSMTKResourceReader::vtkSMTKResourceReader()
 {
   this->FileName = nullptr;
-  this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
   this->Modified();
 }

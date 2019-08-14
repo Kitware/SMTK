@@ -49,7 +49,6 @@ vtkSMTKResourceCreator::vtkSMTKResourceCreator()
 {
   this->TypeName = nullptr;
   this->Parameters = nullptr;
-  this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
 
   // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
   // results in the filter being updated:

@@ -24,7 +24,6 @@ smtkImplementTracksAllInstances(vtkAttributeMultiBlockSource);
 vtkAttributeMultiBlockSource::vtkAttributeMultiBlockSource()
 {
   this->SetNumberOfInputPorts(0);
-  this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
   this->linkInstance();
 }
 
