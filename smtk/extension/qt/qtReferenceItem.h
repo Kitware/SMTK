@@ -35,6 +35,7 @@ class SMTKQTEXT_EXPORT qtReferenceItem : public qtItem
 public:
   qtReferenceItem(const qtAttributeItemInfo& info);
   virtual ~qtReferenceItem();
+  void markForDeletion() override;
   static qtItem* createItemWidget(const qtAttributeItemInfo& info);
 
   enum AcceptsTypes
@@ -67,6 +68,7 @@ public:
 
 protected slots:
   void updateItemData() override;
+  void removeObservers();
 
   virtual void selectionLinkToggled(bool linked);
   virtual void setOutputOptional(int state);

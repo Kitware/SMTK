@@ -96,13 +96,24 @@ qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
 
 qtReferenceItem::~qtReferenceItem()
 {
+  this->removeObservers();
+  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
+  delete m_p;
+  m_p = nullptr;
+}
+
+void qtReferenceItem::markForDeletion()
+{
+  this->removeObservers();
+  qtItem::markForDeletion();
+}
+
+void qtReferenceItem::removeObservers()
+{
   if (m_p->m_phraseModel && m_p->m_modelObserverId.assigned())
   {
     m_p->m_phraseModel->observers().erase(m_p->m_modelObserverId);
   }
-  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
-  delete m_p;
-  m_p = nullptr;
 }
 
 qtReferenceItem::AcceptsTypes qtReferenceItem::acceptableTypes() const

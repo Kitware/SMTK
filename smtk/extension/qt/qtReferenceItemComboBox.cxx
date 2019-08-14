@@ -141,6 +141,12 @@ qtReferenceItemComboBox::~qtReferenceItemComboBox()
   delete this->Internals;
 }
 
+void qtReferenceItemComboBox::markForDeletion()
+{
+  this->removeObservers();
+  qtItem::markForDeletion();
+}
+
 void qtReferenceItemComboBox::createWidget()
 {
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
