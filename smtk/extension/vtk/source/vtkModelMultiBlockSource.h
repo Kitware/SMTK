@@ -142,8 +142,8 @@ protected:
 
   smtk::model::ResourcePtr ModelResource;
   vtkMultiBlockDataSet* CachedOutputMBDS;
-  vtkMultiBlockDataSet* CachedOutputInst;
   vtkMultiBlockDataSet* CachedOutputProto;
+  vtkMultiBlockDataSet* CachedOutputInst;
   double DefaultColor[4];
   int AllowNormalGeneration;
   int ShowAnalysisTessellation;

@@ -964,8 +964,8 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   }
 
   output->SetBlock(0, this->CachedOutputMBDS);
-  output->SetBlock(1, this->CachedOutputInst);
-  output->SetBlock(2, this->CachedOutputProto);
+  output->SetBlock(1, this->CachedOutputProto);
+  output->SetBlock(2, this->CachedOutputInst);
 
   return 1;
 }

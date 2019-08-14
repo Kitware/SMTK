@@ -248,18 +248,18 @@ int vtkSMTKResourceRepresentation::RequestData(
     vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
     this->SetOutputExtent(this->GetInternalOutputPort(), inInfo);
 
-    // Model entities
+    // Get each block from the top level multi block
     auto port = this->GetInternalOutputPort();
     vtkSmartPointer<vtkMultiBlockDataSet> mbds =
       vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
 
-    vtkSmartPointer<vtkMultiBlockDataSet> modelMultiBlock =
+    vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock =
       vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(0));
     vtkSmartPointer<vtkMultiBlockDataSet> protoTypeMultiBlock =
       vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(1));
     vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock =
       vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(2));
-    this->EntityCacheKeeper->SetInputData(modelMultiBlock);
+    this->EntityCacheKeeper->SetInputData(componentMultiBlock);
 
     // Glyph points (2) and prototypes (1)
     this->GlyphMapper->SetInputData(instanceMultiBlock);
@@ -267,7 +267,7 @@ int vtkSMTKResourceRepresentation::RequestData(
     this->ConfigureGlyphMapper(this->GlyphMapper.GetPointer());
 
     this->SelectedGlyphMapper->SetInputData(instanceMultiBlock);
-    this->SelectedGlyphMapper->SetInputData(protoTypeMultiBlock);
+    this->SelectedGlyphMapper->SetSourceTableTree(protoTypeMultiBlock);
     this->ConfigureGlyphMapper(this->SelectedGlyphMapper.GetPointer());
   }
   this->EntityCacheKeeper->Update();
