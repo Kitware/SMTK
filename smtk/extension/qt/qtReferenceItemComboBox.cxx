@@ -500,17 +500,15 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
   auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
   auto attResource = theAttribute->attributeResource();
   auto assocMap = item->acceptableEntries();
+  auto resManager = this->uiManager()->resourceManager();
 
-  // Are we dealing with the case the attribute resource has resources directly associated
-  // with it
-  if (attResource->hasAssociations())
+  // Are we dealing with the case where the attribute resource has resources directly associated
+  // with it (or if we don't have a resource manager)
+  if (attResource->hasAssociations() || (resManager == nullptr))
   {
     auto resources = attResource->associations();
-    if (resources.empty())
-    {
-      // Ok there are resources associated with it but they are not in memory
-      return result;
-    }
+    // we should always consider the attribute resource itself as well
+    resources.insert(attResource);
     // Iterate over the acceptable entries
     decltype(assocMap.equal_range("")) range;
     for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
@@ -549,13 +547,6 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
   }
   else // we need to use the resource manager
   {
-    // Iterate over the acceptable entries
-    auto resManager = this->uiManager()->resourceManager();
-    if (resManager == nullptr)
-    {
-      return result;
-    }
-
     decltype(assocMap.equal_range("")) range;
     for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
     {
