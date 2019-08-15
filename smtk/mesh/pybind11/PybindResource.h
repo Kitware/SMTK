@@ -113,7 +113,7 @@ PySharedPtrClass< smtk::mesh::Resource> pybind11_init_smtk_mesh_Resource(py::mod
         return std::dynamic_pointer_cast<smtk::mesh::Resource>(i);
       })
     ;
-  return instance;
+  return std::move(instance);
 }
 
 #endif

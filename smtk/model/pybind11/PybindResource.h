@@ -249,7 +249,7 @@ PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resource(py::m
         return std::dynamic_pointer_cast<smtk::model::Resource>(i);
       })
     ;
-  return instance;
+  return std::move(instance);
 }
 
 #endif
