@@ -90,7 +90,7 @@ PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resour
     .value("COPY_ASSOCIATIONS", smtk::attribute::Resource::CopyOptions::COPY_ASSOCIATIONS)
     .value("FORCE_COPY_ASSOCIATIONS", smtk::attribute::Resource::CopyOptions::FORCE_COPY_ASSOCIATIONS)
     .export_values();
-  return instance;
+  return std::move(instance);
 }
 
 #endif
