@@ -12,6 +12,8 @@
 
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
 
+class QCheckBox;
+
 /**\brief Display a 3-D box with draggable handles for editing a DoubleItem.
   *
   * For now, this code assumes that the DoubleItem has 6 entries and they
@@ -77,8 +79,18 @@ protected:
     * These are similar to Euler angles and sometimes called as such.
     * See https://en.wikipedia.org/wiki/Euler_angles#Intrinsic_rotations
     * for more information. VTK uses the Y_1 X_2 Z_3 ordering.
+    *
+    * Finally, the \a control parameter may be set to null or populated with
+    * a discrete-valued string item depending on whether the view configuration
+    * for the item specifies the name of an appropriate item.
+    * If non-null, the iteraction item will be tied to the "Show Box"
+    * checkbox of paraview's Qt widget. Its discrete values must be
+    * "active" and "inactive".
     */
-  bool fetchBoxItems(ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items);
+  bool fetchBoxItems(ItemBindings& binding, std::vector<smtk::attribute::DoubleItemPtr>& items,
+    smtk::attribute::StringItemPtr& control);
+
+  void setControlState(const std::string& controlState, QCheckBox* controlWidget);
 };
 
 #endif // smtk_extension_paraview_widgets_pqSMTKBoxItemWidget_h

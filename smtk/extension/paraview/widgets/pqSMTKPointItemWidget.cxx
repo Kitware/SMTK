@@ -169,7 +169,15 @@ bool pqSMTKPointItemWidget::fetchPointItems(ItemBindings& binding,
     m_itemInfo.component().attribute("Control", controlItemPath);
     controlItem =
       coordItem->attribute()->itemAtPathAs<smtk::attribute::StringItem>(controlItemPath);
-    binding = controlItem ? ItemBindings::PointCoordsAndControl : ItemBindings::PointCoords;
+    if (this->validateControlItem(controlItem))
+    {
+      binding = ItemBindings::PointCoordsAndControl;
+    }
+    else
+    {
+      controlItem = nullptr;
+      binding = ItemBindings::PointCoords;
+    }
     return true;
   }
 
