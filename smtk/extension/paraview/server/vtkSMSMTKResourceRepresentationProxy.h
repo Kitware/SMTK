@@ -12,9 +12,6 @@
  *
  * This is a proxy for a vtkPVCompositeRepresentation which parents a
  * vtkSMTKResourceRepresentation.
- *
- * Updates additional input properties of the representation
- * (GlyphPrototypes and GlyphPoints).
  */
 #ifndef smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
 #define smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
@@ -39,21 +36,6 @@ protected:
   ~vtkSMSMTKResourceRepresentationProxy() override;
 
   friend class pqSMTKResourceRepresentation;
-
-  /**
-   * Connects additional input ports required by the representation (instance
-   * placement inputs).
-   */
-  void ConnectAdditionalPorts();
-
-  /**
-   * Ensures that whenever the "Input" property changes, ConnectAdditionalPorts
-   * is called. This is critical in cases when pqSMTKResourceRepresentation has not
-   * been constructed (e.g. Python invocations of SMTKResourceRepresentation).
-   */
-  void SetPropertyModifiedFlag(const char* name, int flag) override;
-
-  bool InitializedInputs = false;
 
 private:
   vtkSMSMTKResourceRepresentationProxy(const vtkSMSMTKResourceRepresentationProxy&) = delete;

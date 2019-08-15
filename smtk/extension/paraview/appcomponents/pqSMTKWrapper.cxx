@@ -16,10 +16,6 @@
 #include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h" // TODO: remove need for me
-
-#include "smtk/view/Selection.h"
-
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Component.h"
@@ -39,14 +35,6 @@
 
 #include "vtkSMSourceProxy.h"
 
-// Server side (TODO: Remove need for me)
-#include "vtkCompositeDataIterator.h"
-#include "vtkMultiBlockDataSet.h"
-#include "vtkPVSelectionSource.h"
-#include "vtkSelection.h"
-#include "vtkSelectionNode.h"
-#include "vtkUnsignedIntArray.h"
-
 #include <iostream>
 
 #define DEBUG_WRAPPER 0
@@ -55,35 +43,14 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
   pqServer* server, QObject* parent)
   : Superclass(regGroup, regName, proxy, server, parent)
 {
-// I. Listen for PV selections and convert them to SMTK selections
 #if !defined(NDEBUG) && DEBUG_WRAPPER
   std::cout << "pqResourceManager ctor " << parent << "\n";
 #endif
-  bool listening = false;
-  auto app = pqApplicationCore::instance();
-  if (app)
-  {
-    auto pvSelnMgr = qobject_cast<pqSelectionManager*>(app->manager("SelectionManager"));
-    if (pvSelnMgr)
-    {
-      if (QObject::connect(pvSelnMgr, SIGNAL(selectionChanged(pqOutputPort*)), this,
-            SLOT(paraviewSelectionChanged(pqOutputPort*))))
-      {
-        listening = true;
-      }
-    }
-  }
-  if (!listening)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(),
-      "Could not connect SMTK resource manager to ParaView selection manager.");
-  }
-
-  // II. Listen for operation events and signal them.
-  //     Note that what we **should** be doing is listening for these
-  //     events on a client-side operation manager used to forward
-  //     operations to the server. What we in fact do only works for
-  //     the built-in mode. TODO: Fix this. Remove the need for me.
+  // I. Listen for operation events and signal them.
+  //    Note that what we **should** be doing is listening for these
+  //    events on a client-side operation manager used to forward
+  //    operations to the server. What we in fact do only works for
+  //    the built-in mode. TODO: Fix this. Remove the need for me.
   auto pxy = vtkSMSMTKWrapperProxy::SafeDownCast(this->getProxy());
   auto wrapper = vtkSMTKWrapper::SafeDownCast(pxy->GetClientSideObject());
   if (wrapper)
@@ -203,127 +170,5 @@ void pqSMTKWrapper::removeResource(pqSMTKResource* rsrc)
   {
     emit resourceRemoved(rsrc);
     pxy->RemoveResourceProxy(rsrc->getSourceProxy());
-  }
-}
-
-void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
-{
-  /* TODO: This needs to be completed to work with separate server processes.
-  auto pxy = this->wrapperProxy();
-  (void)pxy;
-  if (!port)
-  {
-    pxy->modifySelection(seln, m_selectionSource, m_selectedValue);
-    std::cout << "FIXME: Reset selection when port is null\n";
-    return;
-  }
-  // I. Get vtkSelection source proxy ID
-  auto dataInput = port->getSourceProxy();
-  auto selnInput = port->getSelectionInput();
-  // II. Set it as an input on the vtkSMTKWrapper's SelectionPort
-  pxy->SetSelectedPortProxy(dataInput);
-  pxy->SetSelectionObjProxy(selnInput);
-  // III. Send a JSON request to the vtkSMTKWrapper telling it to grab the selection.
-  pxy->FetchHardwareSelection();
-  // IV. Update the client-side selection.
-  // TODO
-  */
-  // TODO: This only works in built-in mode.
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(this->getProxy()->GetClientSideObject());
-  auto selnMgr = wrapper ? wrapper->GetSelection() : nullptr;
-  if (!selnMgr)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "No selection manager!");
-    return;
-  }
-  std::string selnSrc = wrapper->GetSelectionSource();
-  int selnVal = wrapper->GetSelectedValue();
-  std::set<smtk::resource::ComponentPtr> seln;
-  if (!port)
-  {
-    //std::cout << "Selection empty\n";
-    selnMgr->modifySelection(seln, selnSrc, selnVal);
-  }
-  else
-  {
-    auto dataInput = port->getSourceProxy();
-    auto dataThing = dataInput->GetClientSideObject();
-    auto smtkThing = dynamic_cast<vtkSMTKResourceSource*>(dataThing);
-    auto mbdsThing = smtkThing ? smtkThing->GetOutput() : nullptr;
-    auto selnInput = port->getSelectionInput();
-    vtkPVSelectionSource* selnThing =
-      selnInput ? dynamic_cast<vtkPVSelectionSource*>(selnInput->GetClientSideObject()) : nullptr;
-    if (selnThing)
-    {
-      selnThing->Update();
-    }
-    auto selnBlock = selnThing ? selnThing->GetOutput() : nullptr;
-    unsigned nn = selnBlock ? selnBlock->GetNumberOfNodes() : 0;
-    /*
-    std::cout
-      << "Selection input " << selnInput
-      << " client side " << selnThing
-      << " seln nodes " << nn
-      << " data thing " << dataThing << " " << dataThing->GetClassName()
-      << "\n";
-     */
-    for (unsigned ii = 0; ii < nn; ++ii)
-    {
-      auto selnNode = selnBlock->GetNode(ii);
-      if (selnNode->GetContentType() == vtkSelectionNode::BLOCKS)
-      {
-        //vtkIndent indent;
-        //selnNode->PrintSelf(std::cout, indent);
-        /*
-        auto selnInfo = selnNode->GetProperties();
-        auto selnProp = selnInfo->Has(vtkSelectionNode::vtkSelectionNode::PROP_ID()) ?
-          selnInfo->Get(vtkSelectionNode::PROP_ID()) : -2;
-        auto selnHLvl = selnInfo->Has(vtkSelectionNode::HIERARCHICAL_LEVEL()) ?
-           selnInfo->Get(vtkSelectionNode::HIERARCHICAL_LEVEL()) : -2;
-        auto selnHier = selnInfo->Has(vtkSelectionNode::HIERARCHICAL_INDEX()) ?
-           selnInfo->Get(vtkSelectionNode::HIERARCHICAL_INDEX()) : -2;
-        auto selnComp = selnInfo->Has(vtkSelectionNode::COMPOSITE_INDEX()) ?
-          selnInfo->Get(vtkSelectionNode::COMPOSITE_INDEX()) : -2;
-        auto selnSrcI = selnInfo->Has(vtkSelectionNode::SOURCE_ID()) ?
-          selnInfo->Get(vtkSelectionNode::SOURCE_ID()) : -2;
-        auto selnDObj = selnInfo->Get(vtkSelectionNode::SOURCE());
-        std::cout << "  seln prop id " << selnProp << " hier " << selnHLvl << " " << selnHier << " composite id " << selnComp << " src id " << selnSrcI << " data obj " << (selnDObj ? selnDObj->GetClassName() : "null") << "\n";
-        */
-        auto selnList = dynamic_cast<vtkUnsignedIntArray*>(selnNode->GetSelectionList());
-        unsigned mm = selnList->GetNumberOfValues();
-        //std::cout << "  seln list " << mm << " (";
-        std::set<unsigned> blockIds;
-        for (unsigned jj = 0; jj < mm; ++jj)
-        {
-          //std::cout << " " << selnList->GetValue(jj);
-          blockIds.insert(selnList->GetValue(jj));
-        }
-        //std::cout << " )\n";
-        if (mbdsThing)
-        {
-          smtk::resource::ResourcePtr resource = smtkThing->GetVTKResource()->GetResource();
-          if (resource)
-          {
-            //std::cout << "  selected components:";
-            auto mit = mbdsThing->NewIterator();
-            for (mit->InitTraversal(); !mit->IsDoneWithTraversal(); mit->GoToNextItem())
-            {
-              if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
-              {
-                auto cmp = resource->find(
-                  vtkModelMultiBlockSource::GetDataObjectUUID(mit->GetCurrentMetaData()));
-                if (cmp)
-                {
-                  seln.insert(seln.end(), cmp);
-                }
-                //std::cout << ", " << cmp->name();
-              }
-            }
-            //std::cout << "\n";
-            selnMgr->modifySelection(seln, selnSrc, selnVal);
-          }
-        }
-      }
-    }
   }
 }

@@ -91,9 +91,6 @@ signals:
   void operationEvent(smtk::operation::Operation::Ptr op, smtk::operation::EventType event,
     smtk::operation::Operation::Result result);
 
-protected slots:
-  virtual void paraviewSelectionChanged(pqOutputPort* port);
-
 protected:
   std::set<QPointer<pqSMTKResource> > m_resources;
 

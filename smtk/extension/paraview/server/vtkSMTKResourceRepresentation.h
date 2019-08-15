@@ -269,6 +269,7 @@ public:
   vtkGetObjectMacro(Wrapper, vtkSMTKWrapper);
 
   void SetResource(const smtk::resource::ResourcePtr& res);
+  smtk::resource::ResourcePtr GetResource() const;
 
   void GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata);
   bool SetEntityVisibility(smtk::resource::PersistentObjectPtr ent, bool visible);

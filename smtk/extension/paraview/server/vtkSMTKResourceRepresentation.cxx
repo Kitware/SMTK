@@ -892,6 +892,11 @@ void vtkSMTKResourceRepresentation::SetResource(const smtk::resource::ResourcePt
   this->Resource = res;
 }
 
+smtk::resource::ResourcePtr vtkSMTKResourceRepresentation::GetResource() const
+{
+  return this->Resource.lock();
+}
+
 void vtkSMTKResourceRepresentation::SetColorBy(const char* type)
 {
   if (vtksys::SystemTools::Strucmp(type, "Entity") == 0)

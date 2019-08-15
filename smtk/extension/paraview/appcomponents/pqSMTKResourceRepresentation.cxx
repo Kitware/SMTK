@@ -61,15 +61,6 @@ pqSMTKResourceRepresentation::~pqSMTKResourceRepresentation()
   }
 }
 
-void pqSMTKResourceRepresentation::initialize()
-{
-  auto proxy = vtkSMSMTKResourceRepresentationProxy::SafeDownCast(this->getProxy());
-  if (proxy)
-    proxy->ConnectAdditionalPorts();
-
-  pqPipelineRepresentation::initialize();
-}
-
 void pqSMTKResourceRepresentation::handleSMTKSelectionChange(
   const std::string& src, smtk::view::SelectionPtr seln)
 {

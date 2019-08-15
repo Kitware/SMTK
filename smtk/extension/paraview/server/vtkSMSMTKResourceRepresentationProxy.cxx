@@ -30,38 +30,7 @@ void vtkSMSMTKResourceRepresentationProxy::PrintSelf(ostream& os, vtkIndent inde
   this->Superclass::PrintSelf(os, indent);
 }
 
-void vtkSMSMTKResourceRepresentationProxy::ConnectAdditionalPorts()
-{
-  vtkSMPropertyHelper helper(this, "Input");
-  vtkSMSourceProxy* input = vtkSMSourceProxy::SafeDownCast(helper.GetAsProxy(0));
-  if (input)
-  {
-    auto source = vtkSMSourceProxy::SafeDownCast(input->GetTrueParentProxy());
-    if (source)
-    {
-      vtkSMProxy* repProxy = this->GetSubProxy("SMTKResourceRepresentation");
-      if (repProxy)
-      {
-        vtkSMPropertyHelper(repProxy, "GlyphPrototypes", true).Set(source, 1);
-        vtkSMPropertyHelper(repProxy, "GlyphPoints", true).Set(source, 2);
-        this->InitializedInputs = true;
-        repProxy->UpdateVTKObjects();
-      }
-    }
-  }
-}
-
 vtkSMProxy* vtkSMSMTKResourceRepresentationProxy::GetResourceRepresentationSubProxy()
 {
   return this->GetSubProxy("SMTKResourceRepresentation");
-}
-
-void vtkSMSMTKResourceRepresentationProxy::SetPropertyModifiedFlag(const char* name, int flag)
-{
-  if (!this->InitializedInputs && strcmp(name, "Input"))
-  {
-    this->ConnectAdditionalPorts();
-  }
-
-  this->Superclass::SetPropertyModifiedFlag(name, flag);
 }

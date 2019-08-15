@@ -16,12 +16,14 @@ set(serverXMLSrcs
 
 set(serverWrappedSrcs
   vtkPVModelSources.cxx
+  vtkSMTKCompositeRepresentation.cxx
   vtkSMTKResource.cxx
   vtkSMTKResourceCreator.cxx
   vtkSMTKResourceGenerator.cxx
   vtkSMTKResourceImporter.cxx
   vtkSMTKResourceReader.cxx
   vtkSMTKResourceSource.cxx
+  vtkSMTKSelectionRepresentation.cxx
   vtkSMTKSettings.cxx
   vtkSMSMTKWrapperProxy.cxx
   vtkSMTKWrapper.cxx
@@ -31,12 +33,14 @@ set(serverWrappedSrcs
 
 set(serverWrappedHdrs
   vtkPVModelSources.h
+  vtkSMTKCompositeRepresentation.h
   vtkSMTKResource.h
   vtkSMTKResourceCreator.h
   vtkSMTKResourceGenerator.h
   vtkSMTKResourceImporter.h
   vtkSMTKResourceReader.h
   vtkSMTKResourceSource.h
+  vtkSMTKSelectionRepresentation.h
   vtkSMTKSettings.h
   vtkSMSMTKWrapperProxy.h
   vtkSMTKWrapper.h
