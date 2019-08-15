@@ -107,9 +107,7 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
 
       <Hints>
         <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
@@ -133,9 +131,7 @@
         </Documentation>
       </StringVectorProperty>
 
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
@@ -166,9 +162,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
@@ -203,9 +197,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
 
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
@@ -283,9 +275,7 @@
         panel_visibility="never">
       </StringVectorProperty>
 
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
 
       <Hints>
         <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
@@ -303,9 +293,7 @@
                     panel_visibility="never" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
       <Hints>
         <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
@@ -331,9 +319,7 @@
           <Property name="FileName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
       <Hints>
         <ReaderFactory extensions="smtk" file_description="SMTK Files"/>
         <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
@@ -355,9 +341,7 @@
           <Property name="Parameters" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
       <Hints>
         <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
       </Hints>
@@ -378,9 +362,7 @@
           <Property name="ResourceName" />
         </ExposedProperties>
       </SubProxy>
-      <OutputPort index="0" name="components"/>
-      <OutputPort index="1" name="instance prototypes"/>
-      <OutputPort index="2" name="instance points"/>
+      <OutputPort index="0" name="SMTK Resource"/>
       <Hints>
         <Representation view="RenderView" type="SMTKResourceCompositeRepresentation" />
         <DefaultFileNameProperty name="FileName" />
@@ -1247,32 +1229,7 @@
         <DataTypeDomain name="input_type">
           <DataType value="vtkMultiBlockDataSet"/>
         </DataTypeDomain>
-          <Documentation>Model entity tessellations input. </Documentation>
-      </InputProperty>
-      <InputProperty command="SetInputConnection"
-                     label="Glyph prototypes"
-                     name="GlyphPrototypes"
-                     panel_visibility="never"
-                     port_index="1">
-        <DataTypeDomain name="input_type">
-          <DataType value="vtkDataObjectTree"/>
-        </DataTypeDomain>
-          <Documentation>Glyph vertices.</Documentation>
-      </InputProperty>
-      <InputProperty command="SetInputConnection"
-                     label="Glyph points"
-                     name="GlyphPoints"
-                     panel_visibility="never"
-                     port_index="2">
-        <Documentation>Glyph source objects.</Documentation>
-        <DataTypeDomain name="input_type">
-          <DataType value="vtkPolyData" />
-          <DataType value="vtkCompositeDataSet" />
-        </DataTypeDomain>
-        <Hints>
-          <ProxyPropertyWidget selected_proxy_panel_visibility="advanced" />
-          <!-- show the selected proxy's panel, only in advanced mode. -->
-        </Hints>
+          <Documentation>SMTK Resource input.</Documentation>
       </InputProperty>
       <StringVectorProperty command="SetInputArrayToProcess"
                             element_types="0 0 0 0 2"

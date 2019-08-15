@@ -45,13 +45,13 @@ class vtkTexture;
  *  \brief Representation of an SMTK Resource. Renders the outputs of
  *  vtkSMTKResourceReader.
  *
- *  Input data arrives through 3 ports:
+ *  Input data arrives as a multiblock with three blocks:
  *
- *  |       Input                 |    Mapper     |  Actor         |
- *  | :-------------------------- | :------------ | :------------- |
- *  |   Port 0: Components        |  EntityMapper | Entities       |
- *  |   Port 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities  |
- *  |   Port 2: Glyph points      |  GlyphMapper  | GlyphEntities  |
+ *  |       Block                  |    Mapper     |  Actor         |
+ *  | :--------------------------- | :------------ | :------------- |
+ *  |   Block 0: Components        |  EntityMapper | Entities       |
+ *  |   Block 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities  |
+ *  |   Block 2: Glyph points      |  GlyphMapper  | GlyphEntities  |
  *
  *  vtkSMSMTKResourceRepresentationProxy sets certain properties used as mapper
  *  inputs (GlyphPrototypes and GlyphPoints).
@@ -165,7 +165,7 @@ public:
 
   //@{
   /**
-   * Block properties for tessellation entities (Port 0: Components).
+   * Block properties for tessellation entities (Block 0: Components).
    */
   void SetBlockVisibility(unsigned int index, bool visible);
   bool GetBlockVisibility(unsigned int index) const;
@@ -199,7 +199,7 @@ public:
   //@}
 
   /**
-   * Block properties for instance placements (Port 2: Glyph Points).
+   * Block properties for instance placements (Block 2: Glyph Points).
    */
   //@{
   void SetInstanceVisibility(unsigned int index, bool visible);

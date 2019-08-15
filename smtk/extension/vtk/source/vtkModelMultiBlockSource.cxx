@@ -84,7 +84,6 @@ smtkImplementTracksAllInstances(vtkModelMultiBlockSource);
 vtkModelMultiBlockSource::vtkModelMultiBlockSource()
 {
   this->SetNumberOfInputPorts(0);
-  this->SetNumberOfOutputPorts(NUMBER_OF_OUTPUT_PORTS);
   this->CachedOutputMBDS = nullptr;
   this->CachedOutputInst = nullptr;
   this->CachedOutputProto = nullptr;
@@ -937,17 +936,10 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
   this->UUID2BlockIdMap.clear();
-  auto output = vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(MODEL_ENTITY_PORT));
-  auto instanceSource = vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(PROTOTYPE_PORT));
-  if (!output || !instanceSource)
+  auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
+  if (!output)
   {
     vtkErrorMacro("No output dataset");
-    return 0;
-  }
-  auto instancePlacement = vtkMultiBlockDataSet::GetData(outInfo, static_cast<int>(INSTANCE_PORT));
-  if (!instancePlacement)
-  {
-    vtkErrorMacro("No output instance-placement dataset");
     return 0;
   }
 
@@ -970,9 +962,11 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
       rep.GetPointer(), inst.GetPointer(), proto.GetPointer(), this->ModelResource);
     this->SetCachedOutput(rep.GetPointer(), inst.GetPointer(), proto.GetPointer());
   }
-  output->ShallowCopy(this->CachedOutputMBDS);
-  instancePlacement->ShallowCopy(this->CachedOutputInst);
-  instanceSource->ShallowCopy(this->CachedOutputProto);
+
+  output->SetBlock(0, this->CachedOutputMBDS);
+  output->SetBlock(1, this->CachedOutputProto);
+  output->SetBlock(2, this->CachedOutputInst);
+
   return 1;
 }
 

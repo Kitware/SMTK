@@ -44,14 +44,6 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent) override;
   vtkTypeMacro(vtkModelMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
 
-  enum OutputPorts
-  {
-    MODEL_ENTITY_PORT,
-    PROTOTYPE_PORT,
-    INSTANCE_PORT,
-    NUMBER_OF_OUTPUT_PORTS
-  };
-
   enum ToplevelBlockType
   {
     AUXILIARY_VOLUMES,
@@ -150,8 +142,8 @@ protected:
 
   smtk::model::ResourcePtr ModelResource;
   vtkMultiBlockDataSet* CachedOutputMBDS;
-  vtkMultiBlockDataSet* CachedOutputInst;
   vtkMultiBlockDataSet* CachedOutputProto;
+  vtkMultiBlockDataSet* CachedOutputInst;
   double DefaultColor[4];
   int AllowNormalGeneration;
   int ShowAnalysisTessellation;

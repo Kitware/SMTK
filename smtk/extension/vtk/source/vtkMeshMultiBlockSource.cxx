@@ -61,7 +61,6 @@ vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
   this->CachedOutput = NULL;
   this->ModelEntityID = NULL;
   this->AllowNormalGeneration = 0;
-  this->SetNumberOfOutputPorts(vtkModelMultiBlockSource::NUMBER_OF_OUTPUT_PORTS);
   this->linkInstance();
 }
 
@@ -407,6 +406,6 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     this->GenerateRepresentationFromMesh(rep.GetPointer());
     this->SetCachedOutput(rep.GetPointer());
   }
-  output->ShallowCopy(this->CachedOutput);
+  output->SetBlock(0, this->CachedOutput);
   return 1;
 }
