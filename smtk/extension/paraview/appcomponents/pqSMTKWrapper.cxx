@@ -46,11 +46,32 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
 #if !defined(NDEBUG) && DEBUG_WRAPPER
   std::cout << "pqResourceManager ctor " << parent << "\n";
 #endif
-  // I. Listen for operation events and signal them.
-  //    Note that what we **should** be doing is listening for these
-  //    events on a client-side operation manager used to forward
-  //    operations to the server. What we in fact do only works for
-  //    the built-in mode. TODO: Fix this. Remove the need for me.
+  // I. Listen for PV selections and convert them to SMTK selections
+  bool listening = false;
+  auto app = pqApplicationCore::instance();
+  if (app)
+  {
+    auto pvSelnMgr = qobject_cast<pqSelectionManager*>(app->manager("SelectionManager"));
+    if (pvSelnMgr)
+    {
+      if (QObject::connect(pvSelnMgr, SIGNAL(selectionChanged(pqOutputPort*)), this,
+            SLOT(paraviewSelectionChanged(pqOutputPort*))))
+      {
+        listening = true;
+      }
+    }
+  }
+  if (!listening)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Could not connect SMTK resource manager to ParaView selection manager.");
+  }
+
+  // II. Listen for operation events and signal them.
+  //     Note that what we **should** be doing is listening for these
+  //     events on a client-side operation manager used to forward
+  //     operations to the server. What we in fact do only works for
+  //     the built-in mode. TODO: Fix this. Remove the need for me.
   auto pxy = vtkSMSMTKWrapperProxy::SafeDownCast(this->getProxy());
   auto wrapper = vtkSMTKWrapper::SafeDownCast(pxy->GetClientSideObject());
   if (wrapper)
@@ -171,4 +192,15 @@ void pqSMTKWrapper::removeResource(pqSMTKResource* rsrc)
     emit resourceRemoved(rsrc);
     pxy->RemoveResourceProxy(rsrc->getSourceProxy());
   }
+}
+
+void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
+{
+  // When we support client/server separation, this is where client-side
+  // selection logic will go. Server-side selection logic is currently handled
+  // in vtkSMTKSelectionRepresentation.
+  //
+  // With the builtin server, the same smtk::view::Selection object is held by
+  // the wrapper proxy object and the server-side wrapper object. This will be
+  // different for remote servers and require synchronization in this method.
 }
