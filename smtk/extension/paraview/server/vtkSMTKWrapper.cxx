@@ -12,7 +12,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/view/Selection.h"
 
@@ -242,7 +242,7 @@ void vtkSMTKWrapper::FetchHardwareSelection(json& response)
           if (blockIds.find(mit->GetCurrentFlatIndex()) != blockIds.end())
           {
             auto cmp = resource->find(
-              vtkModelMultiBlockSource::GetDataObjectUUID(mit->GetCurrentMetaData()));
+              vtkResourceMultiBlockSource::GetDataObjectUUID(mit->GetCurrentMetaData()));
             if (cmp)
             {
               seln.insert(seln.end(), cmp);

@@ -1558,13 +1558,61 @@
     <!-- End of SMTKResourceRepresentation -->
     </RepresentationProxy>
 
+    <!-- ================================================================== -->
+    <RepresentationProxy class="vtkSMTKSelectionRepresentation"
+                         name="SMTKSelectionRepresentation"
+                         processes="client|renderserver|dataserver"
+                         si_class="vtkSIProxy">
+      <Documentation>Proxy to show a selection as geometry.</Documentation>
+      <InputProperty command="SetInputConnection"
+                     name="Input">
+        <InputArrayDomain name="input_array_any"></InputArrayDomain>
+      </InputProperty>
+      <Hints>
+        <ConnectToPortIndex value="2" />
+      </Hints>
+      <IntVectorProperty command="SetVisibility"
+                         default_values="1"
+                         name="Visibility"
+                         number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>Get/Set the visibility of the representation.</Documentation>
+      </IntVectorProperty>
+      <DoubleVectorProperty command="SetColor"
+                            default_values="1.0 1.0 0.0"
+                            name="Color"
+                            number_of_elements="3">
+        <DoubleRangeDomain max="1 1 1"
+                           min="0 0 0"
+                           name="range" />
+        <Hints>
+          <GlobalPropertyLink type="ColorPalette" property="SelectionColor" />
+        </Hints>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="SetLineWidth"
+                            default_values="2.0"
+                            name="LineWidth"
+                            number_of_elements="1">
+        <DoubleRangeDomain min="0"
+                           name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty command="SetPointSize"
+                            default_values="5.0"
+                            name="PointSize"
+                            number_of_elements="1">
+        <DoubleRangeDomain min="0"
+                           name="range" />
+      </DoubleVectorProperty>
+
+      <!-- End of SMTKSelectionRepresentation -->
+    </RepresentationProxy>
+
 <!-- ====================================================================== -->
     <SMTKResourceRepresentationProxy name="SMTKResourceCompositeRepresentation"
-                                  class="vtkPVCompositeRepresentation"
+                                  class="vtkSMTKCompositeRepresentation"
                                   processes="client|dataserver|renderserver">
       <Documentation>SMTK's default representation. It is a stripped down
-      version of PVRepresentationBase (selection is handled by
-      SMTKResourceRepresentation).</Documentation>
+      version of PVRepresentationBase.</Documentation>
 
       <InputProperty command="SetInputConnection"
                      name="Input">
@@ -1616,6 +1664,14 @@
         set. If ForcedCacheKey is true, it overrides UseCache and CacheKey.
         Instead, ForcedCacheKey is used.</Documentation>
       </DoubleVectorProperty>
+      <IntVectorProperty command="SetSelectionVisibility"
+                         default_values="1"
+                         name="SelectionVisibility"
+                         number_of_elements="1"
+                         panel_visibility="never">
+        <BooleanDomain name="bool" />
+        <Documentation>Set the visibility for the selection, if any.</Documentation>
+      </IntVectorProperty>
       <RepresentationType subproxy="SMTKResourceRepresentation"
                           subtype="Surface"
                           text="Surface"/>
@@ -1763,8 +1819,6 @@
                       panel_visibility="never" />
             <Property name="HoverColor"
                       panel_visibility="never" />
-            <Property name="SelectionColor"
-                      panel_visibility="never" />
             <Property name="DefaultFaceColor"
                       panel_visibility="never" />
             <Property name="DefaultEdgeColor"
@@ -1780,6 +1834,16 @@
           <Exception name="Input" />
           <Exception name="Visibility" />
         </ShareProperties>
+      </SubProxy>
+      <SubProxy command="SetSelectionRepresentation">
+        <Proxy name="SelectionRepresentation"
+               proxygroup="representations"
+               proxyname="SMTKSelectionRepresentation" />
+        <ExposedProperties>
+          <Property exposed_name="SelectionColor" name="Color" panel_visibility="never" />
+          <Property exposed_name="SelectionPointSize" name="PointSize" panel_visibility="never" />
+          <Property exposed_name="SelectionLineWidth" name="LineWidth" panel_visibility="never" />
+        </ExposedProperties>
       </SubProxy>
     </SMTKResourceRepresentationProxy>
 

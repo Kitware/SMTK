@@ -13,6 +13,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
 #include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 #include "smtk/model/CellEntity.h" // for CellEntities
 
@@ -36,13 +37,13 @@ class vtkInformationStringKey;
   * This filter generates a single block per UUID, for every UUID
   * in model resource with a tessellation entry.
   */
-class VTKSMTKSOURCEEXT_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTKSOURCEEXT_EXPORT vtkModelMultiBlockSource : public vtkResourceMultiBlockSource
 {
 public:
   smtkDeclareTracksAllInstances(vtkModelMultiBlockSource);
   static vtkModelMultiBlockSource* New();
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  vtkTypeMacro(vtkModelMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkModelMultiBlockSource, vtkResourceMultiBlockSource);
 
   enum ToplevelBlockType
   {
@@ -63,7 +64,7 @@ public:
   vtkGetObjectMacro(CachedOutputInst, vtkMultiBlockDataSet);
 
   smtk::model::ResourcePtr GetModelResource();
-  void SetModelResource(smtk::model::ResourcePtr);
+  void SetModelResource(const smtk::model::ResourcePtr&);
 
   void GetUUID2BlockIdMap(std::map<smtk::common::UUID, vtkIdType>& uuid2mid);
   void Dirty();
@@ -86,22 +87,10 @@ public:
   static const char* GetVolumeTagName() { return "Volume"; }
   static const char* GetAttributeTagName() { return "Attribute"; }
 
-  /// Key used to put entity UUID in the meta-data associated with a block.
-  static vtkInformationStringKey* ENTITYID();
-
-  /// Set the ENTITYID key on the given \a information object to \a uid.
-  static void SetDataObjectUUID(vtkInformation* information, const smtk::common::UUID& uid);
-
-  /**\brief Return a UUID for the data object, adding one if it was not present.
-    *
-    * UUIDs are stored in the vtkInformation object associated with each
-    * data object.
-    */
-  static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
   template <typename T>
   static T GetDataObjectEntityAs(smtk::model::ResourcePtr resource, vtkInformation* info)
   {
-    return T(resource, vtkModelMultiBlockSource::GetDataObjectUUID(info));
+    return T(resource, vtkResourceMultiBlockSource::GetDataObjectUUID(info));
   }
 
   static void AddPointsAsAttribute(vtkPolyData* data);
@@ -130,17 +119,17 @@ protected:
     std::map<smtk::model::EntityRef, vtkIdType>& instancePrototypes);
   void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds,
     vtkMultiBlockDataSet* instancePoly, vtkMultiBlockDataSet* protoBlocks,
-    smtk::model::ResourcePtr model);
+    const smtk::model::ResourcePtr& model);
   void GenerateRepresentationFromMeshTessellation(
     vtkPolyData* poly, const smtk::model::EntityRef& entity, bool genNormals);
-  void GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds, smtk::model::ResourcePtr model);
+  void GenerateRepresentationFromModel(
+    vtkMultiBlockDataSet* mbds, const smtk::model::ResourcePtr& model);
 
   int RequestData(
     vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
   void SetCachedOutput(vtkMultiBlockDataSet*, vtkMultiBlockDataSet*, vtkMultiBlockDataSet*);
 
-  smtk::model::ResourcePtr ModelResource;
   vtkMultiBlockDataSet* CachedOutputMBDS;
   vtkMultiBlockDataSet* CachedOutputProto;
   vtkMultiBlockDataSet* CachedOutputInst;

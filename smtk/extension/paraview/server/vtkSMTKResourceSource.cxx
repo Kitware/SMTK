@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
 
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-
 #include "vtkCompositeDataIterator.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"

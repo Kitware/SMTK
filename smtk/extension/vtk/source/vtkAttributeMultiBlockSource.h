@@ -13,10 +13,10 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
 #include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 #include "smtk/model/CellEntity.h" // for CellEntities
 
-#include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkNew.h"
 #include "vtkSmartPointer.h"
 
@@ -33,16 +33,16 @@ class vtkInformationStringKey;
   * attributes but for now it is just needed so that every SMTK resource
   * class can have a matching pqPipelineSource in ParaView.
   */
-class VTKSMTKSOURCEEXT_EXPORT vtkAttributeMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTKSOURCEEXT_EXPORT vtkAttributeMultiBlockSource : public vtkResourceMultiBlockSource
 {
 public:
   smtkDeclareTracksAllInstances(vtkAttributeMultiBlockSource);
   static vtkAttributeMultiBlockSource* New();
   void PrintSelf(ostream& os, vtkIndent indent) override;
-  vtkTypeMacro(vtkAttributeMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkAttributeMultiBlockSource, vtkResourceMultiBlockSource);
 
-  smtk::attribute::ResourcePtr GetResource();
-  void SetResource(smtk::attribute::ResourcePtr);
+  smtk::attribute::ResourcePtr GetAttributeResource();
+  void SetAttributeResource(const smtk::attribute::ResourcePtr&);
 
 protected:
   vtkAttributeMultiBlockSource();
@@ -50,8 +50,6 @@ protected:
 
   int RequestData(
     vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
-
-  smtk::attribute::ResourcePtr Resource;
 
 private:
   vtkAttributeMultiBlockSource(const vtkAttributeMultiBlockSource&); // Not implemented.

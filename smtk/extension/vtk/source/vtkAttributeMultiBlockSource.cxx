@@ -10,6 +10,8 @@
 #include "smtk/extension/vtk/source/vtkAttributeMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
+#include "smtk/attribute/Resource.h"
+
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
@@ -36,24 +38,19 @@ void vtkAttributeMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "Resource: " << this->Resource.get() << "\n";
+  os << indent << "Resource: " << this->GetResource().get() << "\n";
 }
 
 /// Set the SMTK model to be displayed.
-void vtkAttributeMultiBlockSource::SetResource(smtk::attribute::ResourcePtr attr)
+void vtkAttributeMultiBlockSource::SetAttributeResource(const smtk::attribute::ResourcePtr& attr)
 {
-  if (this->Resource == attr)
-  {
-    return;
-  }
-  this->Resource = attr;
-  this->Modified();
+  this->SetResource(attr);
 }
 
 /// Get the SMTK attribute being displayed.
-smtk::attribute::ResourcePtr vtkAttributeMultiBlockSource::GetResource()
+smtk::attribute::ResourcePtr vtkAttributeMultiBlockSource::GetAttributeResource()
 {
-  return this->Resource;
+  return std::dynamic_pointer_cast<smtk::attribute::Resource>(this->GetResource());
 }
 
 /// Do nothing.

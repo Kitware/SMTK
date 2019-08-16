@@ -46,8 +46,6 @@ protected slots:
 protected:
   virtual void handleSMTKSelectionChange(const std::string& src, smtk::view::SelectionPtr seln);
 
-  void initialize() override;
-
   smtk::view::WeakSelectionPtr m_seln;
   smtk::view::SelectionObservers::Key m_selnObserver;
 };

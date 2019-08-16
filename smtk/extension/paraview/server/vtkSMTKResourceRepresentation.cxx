@@ -38,6 +38,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ReferenceItem.h"
@@ -108,7 +109,7 @@ void AddRenderables(
   for (mbit->GoToFirstItem(); !mbit->IsDoneWithTraversal(); mbit->GoToNextItem())
   {
     auto obj = mbit->GetCurrentDataObject();
-    auto uid = vtkModelMultiBlockSource::GetDataObjectUUID(mbit->GetCurrentMetaData());
+    auto uid = vtkResourceMultiBlockSource::GetDataObjectUUID(mbit->GetCurrentMetaData());
     if (!obj || !uid)
     {
       continue;
@@ -248,18 +249,19 @@ int vtkSMTKResourceRepresentation::RequestData(
     vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
     this->SetOutputExtent(this->GetInternalOutputPort(), inInfo);
 
+    this->EntityCacheKeeper->SetInputConnection(this->GetInternalOutputPort());
+
     // Get each block from the top level multi block
     auto port = this->GetInternalOutputPort();
     vtkSmartPointer<vtkMultiBlockDataSet> mbds =
       vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
 
-    vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock =
-      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(0));
-    vtkSmartPointer<vtkMultiBlockDataSet> protoTypeMultiBlock =
-      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(1));
-    vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock =
-      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(2));
-    this->EntityCacheKeeper->SetInputData(componentMultiBlock);
+    vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
+      mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
+    vtkSmartPointer<vtkMultiBlockDataSet> protoTypeMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
+      mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Prototypes));
+    vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
+      mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Instances));
 
     // Glyph points (2) and prototypes (1)
     this->GlyphMapper->SetInputData(instanceMultiBlock);
@@ -823,7 +825,7 @@ vtkDataObject* vtkSMTKResourceRepresentation::FindNode(
   for (int index = 0; index < numBlocks; index++)
   {
     auto currentBlock = data->GetBlock(index);
-    auto currentId = vtkModelMultiBlockSource::GetDataObjectUUID(data->GetMetaData(index));
+    auto currentId = vtkResourceMultiBlockSource::GetDataObjectUUID(data->GetMetaData(index));
     if (currentId == uuid)
     {
       return currentBlock;
@@ -890,6 +892,11 @@ void vtkSMTKResourceRepresentation::ClearSelection(vtkMapper* mapper)
 void vtkSMTKResourceRepresentation::SetResource(const smtk::resource::ResourcePtr& res)
 {
   this->Resource = res;
+}
+
+smtk::resource::ResourcePtr vtkSMTKResourceRepresentation::GetResource() const
+{
+  return this->Resource.lock();
 }
 
 void vtkSMTKResourceRepresentation::SetColorBy(const char* type)
@@ -1279,7 +1286,7 @@ void vtkSMTKResourceRepresentation::ColorByEntity(vtkMultiBlockDataSet* data)
   while (!it->IsDoneWithTraversal())
   {
     auto dataObj = it->GetCurrentDataObject();
-    auto uuid = vtkModelMultiBlockSource::GetDataObjectUUID(data->GetMetaData(it));
+    auto uuid = vtkResourceMultiBlockSource::GetDataObjectUUID(data->GetMetaData(it));
     if (uuid)
     {
       auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(resource->find(uuid));
