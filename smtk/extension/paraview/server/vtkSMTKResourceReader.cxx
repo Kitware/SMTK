@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
 
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -18,11 +16,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
-
-#include "smtk/model/EntityRef.h"
-#include "smtk/model/Model.h"
-#include "smtk/model/Resource.h"
-#include "smtk/model/SessionRef.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/operators/ReadResource.h"

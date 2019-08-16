@@ -78,7 +78,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 using namespace smtk::model;
 
 vtkStandardNewMacro(vtkModelMultiBlockSource);
-vtkInformationKeyMacro(vtkModelMultiBlockSource, ENTITYID, String);
 smtkImplementTracksAllInstances(vtkModelMultiBlockSource);
 
 vtkModelMultiBlockSource::vtkModelMultiBlockSource()
@@ -106,7 +105,7 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "Model: " << this->ModelResource.get() << "\n";
+  os << indent << "Model: " << this->GetModelResource().get() << "\n";
   os << indent << "CachedOutputMBDS: " << this->CachedOutputMBDS << "\n";
   os << indent << "CachedOutputInst: " << this->CachedOutputInst << "\n";
   os << indent << "AllowNormalGeneration: " << (this->AllowNormalGeneration ? "ON" : "OFF") << "\n";
@@ -114,20 +113,15 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Set the SMTK model to be displayed.
-void vtkModelMultiBlockSource::SetModelResource(smtk::model::ResourcePtr model)
+void vtkModelMultiBlockSource::SetModelResource(const smtk::model::ResourcePtr& model)
 {
-  if (this->ModelResource == model)
-  {
-    return;
-  }
-  this->ModelResource = model;
-  this->Modified();
+  this->SetResource(model);
 }
 
 /// Get the SMTK model being displayed.
 smtk::model::ResourcePtr vtkModelMultiBlockSource::GetModelResource()
 {
-  return this->ModelResource;
+  return std::dynamic_pointer_cast<smtk::model::Resource>(this->GetResource());
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
@@ -144,30 +138,6 @@ void vtkModelMultiBlockSource::Dirty()
   // as modified so that RequestData() will run the next
   // time the representation is updated:
   this->SetCachedOutput(nullptr, nullptr, nullptr);
-}
-
-void vtkModelMultiBlockSource::SetDataObjectUUID(
-  vtkInformation* info, const smtk::common::UUID& uid)
-{
-  // FIXME: Eventually this should encode the UUID without string conversion
-  info->Set(vtkModelMultiBlockSource::ENTITYID(), uid.toString().c_str());
-}
-
-smtk::common::UUID vtkModelMultiBlockSource::GetDataObjectUUID(vtkInformation* datainfo)
-{
-  // FIXME: Eventually this should decode the UUID without string conversion
-  smtk::common::UUID uid;
-  if (!datainfo)
-  {
-    return uid;
-  }
-
-  const char* uuidChar = datainfo->Get(vtkModelMultiBlockSource::ENTITYID());
-  if (uuidChar)
-  {
-    uid = smtk::common::UUID(uuidChar);
-  }
-  return uid;
 }
 
 /*! \fn vtkModelMultiBlockSource::GetDefaultColor()
@@ -340,8 +310,9 @@ static bool AddColorWithDefault(
 /// Add customized block info.
 /// Mapping from UUID to block id
 /// 'Volume' field array to color by volume
-static void addBlockInfo(smtk::model::ResourcePtr resource, const smtk::model::EntityRef& entityref,
-  const smtk::model::EntityRef& bordantCell, const vtkIdType& blockId, vtkDataObject* dobj,
+static void addBlockInfo(const smtk::model::ResourcePtr& resource,
+  const smtk::model::EntityRef& entityref, const smtk::model::EntityRef& bordantCell,
+  const vtkIdType& blockId, vtkDataObject* dobj,
   std::map<smtk::common::UUID, vtkIdType>& uuid2BlockId)
 {
   resource->setIntegerProperty(entityref.entity(), "block_index", blockId);
@@ -702,7 +673,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
     !((proto = inst.prototype()).isValid()) // Does it have a prototype entity?
     )
   {
-    smtkWarningMacro(this->ModelResource->log(), "Instance "
+    smtkWarningMacro(this->GetModelResource()->log(), "Instance "
         << inst.entity() << " was invalid, has no tessellation, or has no prototype.");
     return;
   }
@@ -710,7 +681,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
     it->second < 0 // Does the prototype have a valid block ID (i.e., a tessellation)?
     )
   {
-    smtkWarningMacro(this->ModelResource->log(), "Prototype ("
+    smtkWarningMacro(this->GetModelResource()->log(), "Prototype ("
         << proto.name() << ") for instance (" << inst.name() << ") has no VTK dataset");
     return;
   }
@@ -775,7 +746,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
 /// Create a multiblock with the right structure, find entities with tessellations, and add them.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockDataSet* mbds,
   vtkMultiBlockDataSet* instanceBlocks, vtkMultiBlockDataSet* protoBlocks,
-  smtk::model::ResourcePtr resource)
+  const smtk::model::ResourcePtr& resource)
 {
   smtk::model::EntityRefArray blockEntities[NUMBER_OF_BLOCK_TYPES];
   std::vector<vtkSmartPointer<vtkDataObject> > blockDatasets[NUMBER_OF_BLOCK_TYPES];
@@ -943,7 +914,7 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     return 0;
   }
 
-  if (!this->ModelResource)
+  if (!this->GetModelResource())
   {
     vtkErrorMacro("No input model");
     return 0;
@@ -959,13 +930,13 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     vtkNew<vtkMultiBlockDataSet> proto;
     vtkNew<vtkMultiBlockDataSet> inst;
     this->GenerateRepresentationFromModel(
-      rep.GetPointer(), inst.GetPointer(), proto.GetPointer(), this->ModelResource);
+      rep.GetPointer(), inst.GetPointer(), proto.GetPointer(), this->GetModelResource());
     this->SetCachedOutput(rep.GetPointer(), inst.GetPointer(), proto.GetPointer());
   }
 
-  output->SetBlock(0, this->CachedOutputMBDS);
-  output->SetBlock(1, this->CachedOutputProto);
-  output->SetBlock(2, this->CachedOutputInst);
+  output->SetBlock(BlockId::Components, this->CachedOutputMBDS);
+  output->SetBlock(BlockId::Prototypes, this->CachedOutputProto);
+  output->SetBlock(BlockId::Instances, this->CachedOutputInst);
 
   return 1;
 }

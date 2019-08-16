@@ -12,6 +12,7 @@ set(VTKLibSrcs
   vtkMeshMultiBlockSource.cxx
   vtkModelAuxiliaryGeometry.cxx
   vtkModelMultiBlockSource.cxx
+  vtkResourceMultiBlockSource.cxx
 )
 
 set(VTKLibHeaders
@@ -30,6 +31,7 @@ set(VTKLibHeaders
   vtkModelAuxiliaryGeometry.h
   vtkModelAuxiliaryGeometry.txx
   vtkModelMultiBlockSource.h
+  vtkResourceMultiBlockSource.h
   vtkTracksAllInstances.h
 )
 

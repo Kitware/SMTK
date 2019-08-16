@@ -17,7 +17,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/mesh/core/Resource.h"
 
@@ -164,8 +164,8 @@ int vtkSMTKSelectionRepresentation::RequestData(
     vtkMultiBlockDataSet::SafeDownCast(resourceRepresentation->GetRenderedDataObject(0));
 
   // Access the multiblock dataset for the selected resource's components.
-  vtkMultiBlockDataSet* componentDataSet =
-    vtkMultiBlockDataSet::SafeDownCast(resourceDataSet->GetBlock(0));
+  vtkMultiBlockDataSet* componentDataSet = vtkMultiBlockDataSet::SafeDownCast(
+    resourceDataSet->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
 
   if (resource == nullptr || componentDataSet == nullptr)
   {
@@ -213,7 +213,7 @@ int vtkSMTKSelectionRepresentation::RequestData(
         {
           // ...find the the corresponding component by UUID.
           auto component = resource->find(
-            vtkModelMultiBlockSource::GetDataObjectUUID(blockIterator->GetCurrentMetaData()));
+            vtkResourceMultiBlockSource::GetDataObjectUUID(blockIterator->GetCurrentMetaData()));
 
           // If the component is found...
           if (component)

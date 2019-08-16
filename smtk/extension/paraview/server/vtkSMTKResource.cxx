@@ -11,7 +11,6 @@
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/extension/vtk/source/SourceGenerator.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/resource/Manager.h"
 

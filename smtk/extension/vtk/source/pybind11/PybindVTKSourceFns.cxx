@@ -41,8 +41,6 @@ PYBIND11_MODULE(_smtkPybindVTKSourceFns, source)
   source.def("_vtkModelMultiBlockSource_GetModelResource",[&](vtkModelMultiBlockSource* obj){ return obj->GetModelResource(); });
   source.def("_vtkModelMultiBlockSource_SetModelResource",[&](vtkModelMultiBlockSource* obj, smtk::model::ResourcePtr resource){ return obj->SetModelResource(resource); });
 
-  source.def("_vtkMeshMultiBlockSource_GetModelResource",[&](vtkMeshMultiBlockSource* obj){ obj->GetModelResource(); });
-  source.def("_vtkMeshMultiBlockSource_SetModelResource",[&](vtkMeshMultiBlockSource* obj, smtk::model::ResourcePtr resource){ return obj->SetModelResource(resource); });
   source.def("_vtkMeshMultiBlockSource_GetMeshResource",[&](vtkMeshMultiBlockSource* obj){ obj->GetMeshResource(); });
   source.def("_vtkMeshMultiBlockSource_SetMeshResource",[&](vtkMeshMultiBlockSource* obj, smtk::mesh::ResourcePtr resource){ return obj->SetMeshResource(resource); });
 

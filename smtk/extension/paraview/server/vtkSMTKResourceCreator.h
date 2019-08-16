@@ -12,8 +12,6 @@
 
 #include "smtk/extension/paraview/server/Exports.h"
 
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-
 #include "vtkSMTKResourceGenerator.h"
 
 class vtkSMTKWrapper;

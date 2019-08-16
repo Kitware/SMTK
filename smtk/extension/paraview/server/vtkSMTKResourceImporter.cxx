@@ -9,9 +9,6 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKResourceImporter.h"
 
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
-
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -20,11 +17,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
-
-#include "smtk/model/EntityRef.h"
-#include "smtk/model/Model.h"
-#include "smtk/model/Resource.h"
-#include "smtk/model/SessionRef.h"
 
 #include "smtk/operation/groups/ImporterGroup.h"
 
@@ -50,7 +42,7 @@ vtkSMTKResourceImporter::vtkSMTKResourceImporter()
   this->FileName = nullptr;
   this->ResourceName = nullptr;
 
-  // Ensure this object's MTime > this->ModelSource's MTime so first RequestData() call
+  // Ensure this object's MTime > this->ResourceSource's MTime so first RequestData() call
   // results in the filter being updated:
   this->Modified();
 }
