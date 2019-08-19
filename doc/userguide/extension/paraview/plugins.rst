@@ -33,3 +33,13 @@ Some notes about the plugins:
     * the :smtk:`pqSMTKColorByToolBar` class adds a tool bar to ParaView that allows users
       to choose how model entities should be colored (e.g., by their assigned color, by the
       assigned color of the volume they bound, by field values such as simulation results).
+    * the :smtk:`pqSMTKSubtractUI` class is a singleton that provides methods for
+      removing ParaView UI components (and restoring them if needed).
+      Your plugin may call methods on it to customize the application for
+      a particular workflow.
+      Note that many user interface components can only be removed after the event
+      loop has started; if you want to disable components from within a plugin's
+      start up, you should use a QTimer to schedule calls to the UI subtractor
+      once the event loop has started.
+      Dock-widget panels in particular require approximately a ~1 second delay in order
+      to be removed at application startup.
