@@ -128,7 +128,8 @@ int DescriptivePhrase::argFindChild(const DescriptivePhrase* child) const
   return -1;
 }
 
-int DescriptivePhrase::argFindChild(smtk::resource::ResourcePtr child, bool onlyResource) const
+int DescriptivePhrase::argFindChild(
+  const smtk::resource::ResourcePtr& child, bool onlyResource) const
 {
   int i = 0;
   DescriptivePhrases::const_iterator it;
@@ -144,7 +145,7 @@ int DescriptivePhrase::argFindChild(smtk::resource::ResourcePtr child, bool only
 }
 
 /// Return the index of the given Component pointer in this instance's subphrases (or -1).
-int DescriptivePhrase::argFindChild(smtk::resource::ComponentPtr child) const
+int DescriptivePhrase::argFindChild(const smtk::resource::ComponentPtr& child) const
 {
   int i = 0;
   DescriptivePhrases::const_iterator it;

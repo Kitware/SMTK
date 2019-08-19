@@ -103,7 +103,7 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   if (opManager != nullptr)
   {
     m_operationObserverKey = opManager->observers().insert(
-      [this](smtk::operation::Operation::Ptr oper, smtk::operation::EventType event,
+      [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         return this->handleOperationEvent(oper, event, result);
       });
@@ -116,7 +116,7 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   if (resManager != nullptr)
   {
     m_resourceObserverKey =
-      resManager->observers().insert([this](const smtk::resource::Resource::Ptr& resource,
+      resManager->observers().insert([this](const smtk::resource::Resource& resource,
         smtk::resource::EventType event) { this->handleResourceEvent(resource, event); });
   }
   else
@@ -593,7 +593,7 @@ void qtAssociationWidget::updateListItemSelectionAfterChange(
   list->blockSignals(false);
 }
 
-int qtAssociationWidget::handleOperationEvent(smtk::operation::OperationPtr,
+int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation&,
   smtk::operation::EventType event, smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
@@ -614,12 +614,12 @@ int qtAssociationWidget::handleOperationEvent(smtk::operation::OperationPtr,
 }
 
 void qtAssociationWidget::handleResourceEvent(
-  const smtk::resource::Resource::Ptr& resource, smtk::resource::EventType event)
+  const smtk::resource::Resource& resource, smtk::resource::EventType event)
 {
   if (event == smtk::resource::EventType::REMOVED)
   {
     // The simplest solution is just to refresh the widget
-    this->refreshAssociations(resource->id());
+    this->refreshAssociations(resource.id());
   }
 }
 

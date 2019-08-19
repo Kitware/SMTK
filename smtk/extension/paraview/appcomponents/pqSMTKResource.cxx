@@ -54,13 +54,13 @@ pqSMTKResource::pqSMTKResource(
   // window, a task which must be executed on the main program thread. We
   // therefore use this observer to emit a signal that is connected to a lambda
   // that has this class instance as its context.
-  m_key = rsrcMgr->smtkOperationManager()->observers().insert(
-    [&](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
-      smtk::operation::Operation::Result) {
+  m_key =
+    rsrcMgr->smtkOperationManager()->observers().insert([&](const smtk::operation::Operation& op,
+      smtk::operation::EventType event, smtk::operation::Operation::Result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
-        if (!std::dynamic_pointer_cast<smtk::attribute::Signal>(op) &&
-          !std::dynamic_pointer_cast<smtk::operation::MarkModified>(op))
+        if (!dynamic_cast<const smtk::attribute::Signal*>(&op) &&
+          !dynamic_cast<const smtk::operation::MarkModified*>(&op))
         {
           emit this->operationOccurred(QPrivateSignal());
         }

@@ -85,7 +85,7 @@ std::shared_ptr<Operation> Manager::create(const std::string& typeName)
     // Create the resource using its index
     op = metadata->create();
     op->m_manager = shared_from_this();
-    m_observers(op, smtk::operation::EventType::CREATED, nullptr);
+    m_observers(*op, smtk::operation::EventType::CREATED, nullptr);
   }
 
   return op;
@@ -102,7 +102,7 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
     // Create the resource with the appropriate UUID
     op = metadata->create();
     op->m_manager = shared_from_this();
-    m_observers(op, smtk::operation::EventType::CREATED, nullptr);
+    m_observers(*op, smtk::operation::EventType::CREATED, nullptr);
   }
 
   return op;
@@ -167,49 +167,48 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
     [&](const smtk::operation::Metadata& md) { resourceMetadataObserver(md, true); });
 
   // Define an observer that adds all created resources to the resource manager.
-  m_resourceObserver =
-    this->observers().insert([&, weakRMPtr](std::shared_ptr<smtk::operation::Operation>,
-      smtk::operation::EventType event, smtk::operation::Operation::Result result) {
-      auto rsrcManager = weakRMPtr.lock();
-      if (!rsrcManager)
-      {
-        // The underlying resource manager has expired, so we can remove this
-        // observer.
-        m_observers.erase(m_resourceObserver);
-        m_resourceObserver = Observers::Key();
-        return 0;
-      }
-
-      // We are only interested in collecting resources post-operation
-      if (event != smtk::operation::EventType::DID_OPERATE)
-      {
-        return 0;
-      }
-
-      // Gather all resource items
-      std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
-      std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
-        smtk::attribute::ResourceItemPtr) { return true; };
-      result->filterItems(resourceItems, filter);
-
-      // For each resource item found...
-      for (auto& resourceItem : resourceItems)
-      {
-        // ...for each resource in a resource item...
-        for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
-        {
-          // (no need to look at resources that cannot be resolved)
-          if (!resourceItem->isValid() || resourceItem->value(i) == nullptr)
-          {
-            continue;
-          }
-
-          // ...add the resource to the manager.
-          rsrcManager->add(resourceItem->value(i));
-        }
-      }
+  m_resourceObserver = this->observers().insert([&, weakRMPtr](const smtk::operation::Operation&,
+    smtk::operation::EventType event, smtk::operation::Operation::Result result) {
+    auto rsrcManager = weakRMPtr.lock();
+    if (!rsrcManager)
+    {
+      // The underlying resource manager has expired, so we can remove this
+      // observer.
+      m_observers.erase(m_resourceObserver);
+      m_resourceObserver = Observers::Key();
       return 0;
-    });
+    }
+
+    // We are only interested in collecting resources post-operation
+    if (event != smtk::operation::EventType::DID_OPERATE)
+    {
+      return 0;
+    }
+
+    // Gather all resource items
+    std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
+    std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
+      smtk::attribute::ResourceItemPtr) { return true; };
+    result->filterItems(resourceItems, filter);
+
+    // For each resource item found...
+    for (auto& resourceItem : resourceItems)
+    {
+      // ...for each resource in a resource item...
+      for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
+      {
+        // (no need to look at resources that cannot be resolved)
+        if (!resourceItem->isValid() || resourceItem->value(i) == nullptr)
+        {
+          continue;
+        }
+
+        // ...add the resource to the manager.
+        rsrcManager->add(resourceItem->value(i));
+      }
+    }
+    return 0;
+  });
 
   return m_resourceObserver.assigned();
 }

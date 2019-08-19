@@ -37,7 +37,7 @@ PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > pyb
     .def("log", &smtk::operation::Operation::log, pybind11::return_value_policy::reference)
     .def("specification", &smtk::operation::Operation::specification)
     .def("createBaseSpecification", static_cast<smtk::operation::Operation::Specification (smtk::operation::Operation::*)() const>(&smtk::operation::PyOperation::createBaseSpecification))
-    .def("_parameters", &smtk::operation::Operation::parameters)
+    .def("_parameters", (smtk::operation::Operation::Parameters (smtk::operation::Operation::*)()) &smtk::operation::Operation::parameters)
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)
     ;

@@ -233,9 +233,10 @@ public:
     * matches \a child but whose relatedComponent() is null (meaning that the phrase is
     * describing the resource rather than a component of the resource).
     */
-  virtual int argFindChild(smtk::resource::ResourcePtr child, bool onlyResource = true) const;
+  virtual int argFindChild(
+    const smtk::resource::ResourcePtr& child, bool onlyResource = true) const;
   /// Return the index of the given Component pointer in this instance's subphrases (or -1).
-  virtual int argFindChild(smtk::resource::ComponentPtr child) const;
+  virtual int argFindChild(const smtk::resource::ComponentPtr& child) const;
 
   /**\brief Return the index of the given property (name, type) in this instance's subphrases.
     *

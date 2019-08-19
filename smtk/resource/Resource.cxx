@@ -201,7 +201,7 @@ void Resource::setClean(bool state)
   auto mgr = this->manager();
   if (mgr)
   {
-    mgr->observers()(shared_from_this(), EventType::MODIFIED);
+    mgr->observers()(*this, EventType::MODIFIED);
   }
 }
 

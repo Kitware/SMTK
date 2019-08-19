@@ -49,13 +49,13 @@ public:
 protected slots:
   virtual void observeResourcesOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
   virtual void unobserveResourcesOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
-  virtual void handleResourceEvent(smtk::resource::ResourcePtr, smtk::resource::EventType);
+  virtual void handleResourceEvent(const smtk::resource::Resource&, smtk::resource::EventType);
   virtual void displayAttribute();
 
 protected:
   std::map<smtk::resource::ManagerPtr, smtk::resource::Observers::Key> m_resourceManagerObservers;
   pqSMTKAttributePanel* m_panel;
-  smtk::attribute::ResourcePtr m_attr;
+  std::weak_ptr<smtk::attribute::Resource> m_attr;
 
 private:
   Q_DISABLE_COPY(pqSMTKDisplayAttributeOnLoadBehavior);

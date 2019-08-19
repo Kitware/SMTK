@@ -102,7 +102,7 @@ protected:
   pqSMTKWrapper* m_wrapper; // TODO: Remove the need for me. This ties us to a single pqServer.
   smtk::operation::OperationPtr m_editing;
   smtk::extension::qtUIManager* m_attrUIMgr;
-  smtk::resource::ResourcePtr m_rsrc;
+  std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::AvailableOperationsPtr m_availableOperations;
   smtk::resource::Observers::Key m_observer;
 };

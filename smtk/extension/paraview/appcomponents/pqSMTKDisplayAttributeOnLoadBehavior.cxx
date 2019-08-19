@@ -42,7 +42,6 @@ static pqSMTKDisplayAttributeOnLoadBehavior* g_displayOnLoad = nullptr;
 pqSMTKDisplayAttributeOnLoadBehavior::pqSMTKDisplayAttributeOnLoadBehavior(QObject* parent)
   : Superclass(parent)
   , m_panel(nullptr)
-  , m_attr(nullptr)
 {
   if (!g_displayOnLoad)
   {
@@ -94,7 +93,7 @@ void pqSMTKDisplayAttributeOnLoadBehavior::observeResourcesOnServer(
   }
 
   smtk::resource::Observers::Key observerKey = rsrcMgr->observers().insert(
-    [this](const smtk::resource::ResourcePtr& rsrc, smtk::resource::EventType event) {
+    [this](const smtk::resource::Resource& rsrc, smtk::resource::EventType event) {
       this->handleResourceEvent(rsrc, event);
     },
     0,     // assign a neutral priority
@@ -125,9 +124,9 @@ void pqSMTKDisplayAttributeOnLoadBehavior::unobserveResourcesOnServer(
 }
 
 void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
-  smtk::resource::ResourcePtr rsrc, smtk::resource::EventType event)
+  const smtk::resource::Resource& rsrc, smtk::resource::EventType event)
 {
-  auto attr = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
+  auto attr = dynamic_cast<const smtk::attribute::Resource*>(&rsrc);
   if (attr)
   {
     // Find the attribute panel. For now, only deal with one;
@@ -158,13 +157,12 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
         // the attribute may exist but be empty because it is added
         // to the resource manager before the reader inserts data.
         // So, queue the slot to be invoked by a timer. Ugly!
-        m_attr = attr;
+        m_attr = const_cast<smtk::attribute::Resource*>(attr)->shared_from_this();
         m_panel = panel;
         QTimer::singleShot(0, this, SLOT(displayAttribute()));
         break;
       case smtk::resource::EventType::REMOVED:
         // TODO: Find another attribute to display
-        m_attr = nullptr;
         break;
     }
   }
@@ -172,10 +170,13 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
 
 void pqSMTKDisplayAttributeOnLoadBehavior::displayAttribute()
 {
-  if (m_panel && m_attr)
+  if (m_panel)
   {
-    m_panel->displayResourceOnServer(m_attr);
-    m_panel = nullptr;
-    m_attr = nullptr;
+    auto attributeResource = m_attr.lock();
+    if (attributeResource != nullptr)
+    {
+      m_panel->displayResourceOnServer(attributeResource);
+      m_panel = nullptr;
+    }
   }
 }

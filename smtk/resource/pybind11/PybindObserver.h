@@ -34,7 +34,7 @@ py::class_< smtk::resource::Observers > pybind11_init_smtk_resource_Observers(py
   instance
     .def(py::init<>())
     .def(py::init<::smtk::resource::Observers const &>())
-    .def("__call__", [](smtk::resource::Observers& observers, ::std::shared_ptr<smtk::resource::Resource> rsrc, ::smtk::resource::EventType eventType) { return observers(rsrc, eventType); })
+    .def("__call__", [](smtk::resource::Observers& observers, const smtk::resource::Resource& rsrc, ::smtk::resource::EventType eventType) { return observers(rsrc, eventType); })
     .def("__len__", &smtk::resource::Observers::size)
     .def("deepcopy", (smtk::resource::Observers & (smtk::resource::Observers::*)(::smtk::resource::Observers const &)) &smtk::resource::Observers::operator=)
     .def("erase", &smtk::resource::Observers::erase)

@@ -52,7 +52,7 @@ public slots:
     *
     * Look up \a rsrc's top-level view and call displayView() with it.
     */
-  virtual bool displayResource(smtk::attribute::ResourcePtr rsrc);
+  virtual bool displayResource(const smtk::attribute::ResourcePtr& rsrc);
   /**\brief Populate the attribute panel with data from \a rsrc.
     *
     * Look up \a rsrc's top-level view and call displayView() with it.
@@ -61,7 +61,7 @@ public slots:
     * and use it for selection as displayPipelineSource() does before
     * calling the plain displayResource() variant.
     */
-  virtual bool displayResourceOnServer(smtk::attribute::ResourcePtr rsrc);
+  virtual bool displayResourceOnServer(const smtk::attribute::ResourcePtr& rsrc);
   /**\brief Populate the attribute panel with the given view.
     *
     * Note that the \a view should describe an attribute resource.
@@ -93,7 +93,7 @@ protected slots:
 
 protected:
   smtk::extension::qtUIManager* m_attrUIMgr;
-  smtk::resource::ResourcePtr m_rsrc;
+  std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::SelectionPtr m_seln;
   smtk::operation::ManagerPtr m_opManager;
   smtk::resource::Observers::Key m_observer;

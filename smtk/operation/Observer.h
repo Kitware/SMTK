@@ -34,7 +34,7 @@ enum class EventType
   DID_OPERATE   //!< The operation has completed or been canceled.
 };
 
-typedef std::function<int(std::shared_ptr<Operation>, EventType, Operation::Result)> Observer;
+typedef std::function<int(const Operation&, EventType, Operation::Result)> Observer;
 
 typedef smtk::common::Observers<Observer> Observers;
 }

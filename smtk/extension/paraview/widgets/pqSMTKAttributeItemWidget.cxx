@@ -179,10 +179,10 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
   m_p->m_fallbackStrategy = pqSMTKAttributeItemWidget::FallbackStrategyConvert(fs);
   m_p->m_geometrySource = pqSMTKAttributeItemWidget::GeometrySourceConvert(gs);
   m_p->m_opObserver = info.baseView()->uiManager()->operationManager()->observers().insert(
-    [&](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
+    [&](const smtk::operation::Operation& op, smtk::operation::EventType event,
       smtk::operation::Operation::Result res) {
       if (event == smtk::operation::EventType::DID_OPERATE &&
-        std::dynamic_pointer_cast<smtk::attribute::Signal>(op) &&
+        dynamic_cast<const smtk::attribute::Signal*>(&op) &&
         res->findReference("modified")->contains(this->item()->attribute()))
       {
         this->updateWidgetFromItem();
@@ -197,10 +197,10 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr it
 {
   m_p = new Internal(itm, this->widget(), bview, orient);
   m_p->m_opObserver = bview->uiManager()->operationManager()->observers().insert(
-    [&](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
+    [&](const smtk::operation::Operation& op, smtk::operation::EventType event,
       smtk::operation::Operation::Result res) {
       if (event == smtk::operation::EventType::DID_OPERATE &&
-        std::dynamic_pointer_cast<smtk::attribute::Signal>(op) &&
+        dynamic_cast<const smtk::attribute::Signal*>(&op) &&
         res->findReference("modified")->contains(this->item()->attribute()))
       {
         this->updateWidgetFromItem();

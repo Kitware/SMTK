@@ -30,7 +30,7 @@ void InitializeObserver(Manager* mgr, Observer fn)
 
   for (auto rsrc : mgr->resources())
   {
-    fn(rsrc, smtk::resource::EventType::ADDED);
+    fn(*rsrc, smtk::resource::EventType::ADDED);
   }
 }
 }
@@ -80,7 +80,7 @@ void Manager::clear()
     Resource::Ptr resource = *resourceIt;
     resourceIt = m_resources.erase(resourceIt);
 
-    m_observers(resource, smtk::resource::EventType::REMOVED);
+    m_observers(*resource, smtk::resource::EventType::REMOVED);
   }
 }
 
@@ -423,7 +423,7 @@ bool Manager::add(const Resource::Index& index, const smtk::resource::ResourcePt
   }
 
   // Tell observers we just added a resource:
-  m_observers(resource, smtk::resource::EventType::ADDED);
+  m_observers(*resource, smtk::resource::EventType::ADDED);
 
   return true;
 }
@@ -445,7 +445,7 @@ bool Manager::remove(const smtk::resource::ResourcePtr& resource)
     rsrc->m_manager = Ptr();
 
     // Tell observers we have yoinked it:
-    m_observers(rsrc, smtk::resource::EventType::REMOVED);
+    m_observers(*rsrc, smtk::resource::EventType::REMOVED);
     return true;
   }
 

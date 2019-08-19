@@ -66,7 +66,7 @@ public:
   smtk::project::ManagerPtr smtkProjectManager() const;
 
   /// Return the pqSMTKResource which owns the given smtk::resource::ResourcePtr.
-  pqSMTKResource* getPVResource(smtk::resource::ResourcePtr rsrc) const;
+  pqSMTKResource* getPVResource(const smtk::resource::ResourcePtr& rsrc) const;
 
   /**\brief Invoke the \a visitor function on each pqSMTKResource attached to this manager.
     *
@@ -88,7 +88,7 @@ signals:
   /**\brief Signal that an operator \a op has been created, is about to run,
     *       or has run with the included \a result.
     */
-  void operationEvent(smtk::operation::Operation::Ptr op, smtk::operation::EventType event,
+  void operationEvent(const smtk::operation::Operation& op, smtk::operation::EventType event,
     smtk::operation::Operation::Result result);
 
 protected slots:
