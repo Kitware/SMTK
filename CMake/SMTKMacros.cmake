@@ -64,7 +64,6 @@ function(smtk_install_library target)
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-  export(TARGETS ${target} APPEND FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Targets.cmake)
 endfunction(smtk_install_library)
 
 #generate an export header and create an install target for it
