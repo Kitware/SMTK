@@ -203,4 +203,5 @@ void pqSMTKWrapper::paraviewSelectionChanged(pqOutputPort* port)
   // With the builtin server, the same smtk::view::Selection object is held by
   // the wrapper proxy object and the server-side wrapper object. This will be
   // different for remote servers and require synchronization in this method.
+  (void)port;
 }
