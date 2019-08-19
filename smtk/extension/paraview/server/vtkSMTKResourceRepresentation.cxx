@@ -337,12 +337,22 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
     vtkSmartPointer<vtkMultiBlockDataSet> mbds =
       vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
 
-    vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock =
-      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(0));
-    vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock =
-      vtkMultiBlockDataSet::SafeDownCast(mbds->GetBlock(2));
+    vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
+      mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
+    vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
+      mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Instances));
 
-    this->EntityMapper->SetInputDataObject(componentMultiBlock);
+    {
+      // In order to get consistent ordering for cell selection (and, therefore,
+      // point picking), we must construct a multiblock dataset that has the
+      // same hierarchical structure as the input data set. We don't want to
+      // have component or instance rendering from our entity mapper, though, so
+      // we simply leave those blocks out of our new dataset.
+      vtkNew<vtkMultiBlockDataSet> mbds2;
+      mbds2->SetBlock(vtkResourceMultiBlockSource::BlockId::Components, componentMultiBlock);
+      this->EntityMapper->SetInputDataObject(mbds2);
+    }
+
     this->SelectedEntityMapper->SetInputDataObject(componentMultiBlock);
     this->UpdateColoringParameters(componentMultiBlock);
     this->UpdateRepresentationSubtype();
