@@ -26,8 +26,7 @@ namespace view
 {
 
 ResourcePhraseContent::ResourcePhraseContent()
-  : m_resource(nullptr)
-  , m_mutability(0)
+  : m_mutability(0)
 {
 }
 
@@ -53,145 +52,137 @@ DescriptivePhrasePtr ResourcePhraseContent::createPhrase(
   return result;
 }
 
-std::string ResourcePhraseContent::stringValue(ContentType attr) const
+std::string ResourcePhraseContent::stringValue(ContentType contentType) const
 {
-  if (!m_resource)
+  if (auto resource = m_resource.lock())
   {
-    return std::string();
-  }
-
-  switch (attr)
-  {
-    case PhraseContent::TITLE:
+    switch (contentType)
     {
-      std::string name = m_resource->name();
-      std::string locn = m_resource->location();
-      std::string file = smtk::common::Paths::filename(locn);
-      std::string dir = smtk::common::Paths::directory(locn);
-      if (dir.empty())
+      case PhraseContent::TITLE:
       {
-        dir = smtk::common::Paths::currentDirectory();
+        std::string name = resource->name();
+        std::string locn = resource->location();
+        std::string file = smtk::common::Paths::filename(locn);
+        std::string dir = smtk::common::Paths::directory(locn);
+        if (dir.empty())
+        {
+          dir = smtk::common::Paths::currentDirectory();
+        }
+        if (name.empty())
+        {
+          name = "New Resource";
+        }
+        return name + " (" + (locn.empty() ? dir : locn) + ")";
       }
-      if (name.empty())
-      {
-        name = "New Resource";
-      }
-      return name + " (" + (locn.empty() ? dir : locn) + ")";
-    }
-    break;
-    case PhraseContent::SUBTITLE:
-      return m_resource->typeName();
       break;
+      case PhraseContent::SUBTITLE:
+        return resource->typeName();
+        break;
 
-    // We will not provide strings for these:
-    case PhraseContent::COLOR:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    default:
-      break;
+      // We will not provide strings for these:
+      case PhraseContent::COLOR:
+      case PhraseContent::VISIBILITY:
+      case PhraseContent::ICON:
+      default:
+        break;
+    }
   }
   return std::string();
 }
 
-int ResourcePhraseContent::flagValue(ContentType attr) const
+int ResourcePhraseContent::flagValue(ContentType contentType) const
 {
-  if (!m_resource)
+  if (auto resource = m_resource.lock())
   {
-    return -1;
-  }
-
-  switch (attr)
-  {
-    case PhraseContent::COLOR:
-    case PhraseContent::TITLE:
-    case PhraseContent::SUBTITLE:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    // This should return non-default values once we allow icons to be registered
-    // for components by their metadata.
-    default:
-      break;
+    switch (contentType)
+    {
+      case PhraseContent::COLOR:
+      case PhraseContent::TITLE:
+      case PhraseContent::SUBTITLE:
+      case PhraseContent::VISIBILITY:
+      case PhraseContent::ICON:
+      // This should return non-default values once we allow icons to be registered
+      // for components by their metadata.
+      default:
+        break;
+    }
   }
   return -1;
 }
 
-resource::FloatList ResourcePhraseContent::colorValue(ContentType attr) const
+resource::FloatList ResourcePhraseContent::colorValue(ContentType contentType) const
 {
-  if (!m_resource)
+  if (auto resource = m_resource.lock())
   {
-    return resource::FloatList({ 0., 0., 0., -1. });
-  }
-
-  switch (attr)
-  {
-    case PhraseContent::COLOR:
-      return smtk::resource::FloatList({ 0., 0., 0., -1. });
-      break;
-    case PhraseContent::TITLE:
-    case PhraseContent::SUBTITLE:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    default:
-      break;
+    switch (contentType)
+    {
+      case PhraseContent::COLOR:
+        return smtk::resource::FloatList({ 0., 0., 0., -1. });
+        break;
+      case PhraseContent::TITLE:
+      case PhraseContent::SUBTITLE:
+      case PhraseContent::VISIBILITY:
+      case PhraseContent::ICON:
+      default:
+        break;
+    }
   }
   smtk::resource::FloatList rgba({ 0., 0., 0., -1. });
   return rgba;
 }
 
-bool ResourcePhraseContent::editStringValue(ContentType attr, const std::string& val)
+bool ResourcePhraseContent::editStringValue(ContentType contentType, const std::string& val)
 {
-  if (!m_resource)
+  if (auto resource = m_resource.lock())
   {
-    return false;
-  }
+    switch (contentType)
+    {
+      case PhraseContent::TITLE:
+        return resource->setName(val);
+        break;
+      case PhraseContent::SUBTITLE:
+        return resource->setLocation(val);
+        break;
 
-  switch (attr)
-  {
-    case PhraseContent::TITLE:
-      return m_resource->setName(val);
-      break;
-    case PhraseContent::SUBTITLE:
-      return m_resource->setLocation(val);
-      break;
-
-    // We will not provide strings for these:
-    case PhraseContent::COLOR:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    default:
-      break;
+      // We will not provide strings for these:
+      case PhraseContent::COLOR:
+      case PhraseContent::VISIBILITY:
+      case PhraseContent::ICON:
+      default:
+        break;
+    }
   }
   return false;
 }
 
-bool ResourcePhraseContent::editFlagValue(ContentType attr, int val)
+bool ResourcePhraseContent::editFlagValue(ContentType contentType, int val)
 {
-  (void)attr;
+  (void)contentType;
   (void)val;
   return false;
 }
 
-bool ResourcePhraseContent::editColorValue(ContentType attr, const resource::FloatList& val)
+bool ResourcePhraseContent::editColorValue(ContentType contentType, const resource::FloatList& val)
 {
   // This should create and call a "set entity property" operator on the
-  // related component's color for attr == COLOR.
-  (void)attr;
+  // related component's color for contentType == COLOR.
+  (void)contentType;
   (void)val;
   return false;
 }
 
 smtk::resource::PersistentObjectPtr ResourcePhraseContent::relatedObject() const
 {
-  if (m_resource)
+  if (auto resource = this->relatedResource())
   {
-    return m_resource;
+    return resource;
   }
   return this->PhraseContent::relatedObject();
 }
 
 smtk::resource::ResourcePtr ResourcePhraseContent::relatedResource() const
 {
-  return m_resource;
+  return m_resource.lock();
 }
 
 void ResourcePhraseContent::setMutability(int whatsMutable)
