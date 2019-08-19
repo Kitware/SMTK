@@ -58,14 +58,5 @@ class OpenSMTKFileInParaView(smtk.testing.TestCase):
 
 
 if __name__ == '__main__':
-    print(
-        'This test has been disabled until smtk/extension/paraview/server is\n'
-        'python-wrapped. To do so, smtk/extension/paraview/server will need to\n'
-        'become a vtk module, and we must use vtk\'s python wrapping protocol to\n'
-        'expose vtkSMTKResource and vtkSMTKWrapper. This could be tricky because\n'
-        'these classes comprise the server plugin, and there is currently no\n'
-        'example where a vtk module is used as a paraview plugin.')
-    sys.exit(125)
-
     smtk.testing.process_arguments()
     unittest.main()
