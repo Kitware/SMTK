@@ -786,12 +786,6 @@ configure_file(
   ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   @ONLY)
 
-install(
-  EXPORT ${PROJECT_NAME}
-  DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
-  FILE ${PROJECT_NAME}Targets.cmake
-)
-
 ################################################################################
 # Create an install package configuration file
 #
