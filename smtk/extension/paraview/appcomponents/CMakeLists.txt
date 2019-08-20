@@ -44,6 +44,7 @@ set(PQComponentsSrcs
   pqSMTKSaveOnCloseResourceBehavior.cxx
   pqSMTKSaveResourceBehavior.cxx
   pqSMTKSelectionFilterBehavior.cxx
+  pqSMTKSubtractUI.cxx
   pqSMTKWrapper.cxx
 )
 
@@ -91,6 +92,7 @@ set(PQComponentsHeaders
   pqSMTKSaveOnCloseResourceBehavior.h
   pqSMTKSaveResourceBehavior.h
   pqSMTKSelectionFilterBehavior.h
+  pqSMTKSubtractUI.h
   pqSMTKWrapper.h
 )
 
