@@ -37,11 +37,6 @@ endif()
 include(CMake/smtkVersion.cmake)
 project(smtk VERSION ${SMTK_VERSION})
 
-# Remove smtkTargets.cmake at the beginning of each CMake run; each time
-# a library is declared below, the file is appended and we do not want
-# to keep appending over multiple runs
-file(REMOVE ${PROJECT_BINARY_DIR}/smtkTargets.cmake)
-
 #Add our Cmake directory to the module search path
 set (smtk_cmake_dir ${PROJECT_SOURCE_DIR}/CMake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${smtk_cmake_dir})
@@ -82,14 +77,14 @@ include(FindHashFunctor)
 
 # Force LIBRARY_OUTPUT_PATH to be a cache variable, whether it was already defined or not.
 if (NOT DEFINED LIBRARY_OUTPUT_PATH)
-  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "Directory for all libraries.")
+  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR} CACHE INTERNAL "Directory for all libraries.")
 else()
   set(LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH} CACHE INTERNAL "Directory for all libraries.")
 endif()
 # Set the directory where the binaries will be stored
-set(EXECUTABLE_OUTPUT_PATH         ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(EXECUTABLE_OUTPUT_PATH         ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 # Set the directory where cmake configuration files are installed. The
 # convention for this directory's location is OS-dependent. See
@@ -97,16 +92,13 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # Procedure" for more information.
 set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION})
 if (WIN32)
-  set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${PROJECT_VERSION}/cmake)
+  set(SMTK_INSTALL_CONFIG_DIR cmake/${PROJECT_NAME}/${PROJECT_VERSION})
 endif()
 
 # If SMTK_INSTALL_TESTING_DATA is set to ON, set the directory where smtk's data
 # directory is installed.
 if (SMTK_INSTALL_TESTING_DATA)
-  set(SMTK_INSTALL_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/${PROJECT_VERSION})
-  if (WIN32)
-    set(SMTK_INSTALL_DATA_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${PROJECT_VERSION})
-  endif()
+  set(SMTK_INSTALL_DATA_DIR share/${PROJECT_NAME}/${PROJECT_VERSION})
 endif()
 
 ################################################################################
@@ -733,7 +725,7 @@ install(
   FILE ${PROJECT_NAME}Targets.cmake
 )
 
-export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}/${PROJECT_NAME}Targets.cmake")
 
 ################################################################################
 # Create a build directory package configuration file
@@ -783,7 +775,7 @@ set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 get_property(SMTK_PLUGINS GLOBAL PROPERTY SMTK_PLUGINS)
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/${PROJECT_NAME}Config.cmake.in
-  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  ${SMTK_INSTALL_CONFIG_DIR}/${PROJECT_NAME}Config.cmake
   @ONLY)
 
 ################################################################################
