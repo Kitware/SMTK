@@ -20,9 +20,6 @@ set(${CMAKE_FIND_PACKAGE_NAME}_CMAKE_PREFIX_PATH_save "${CMAKE_PREFIX_PATH}")
 include("${CMAKE_CURRENT_LIST_DIR}/smtk-prefix.cmake")
 set("${CMAKE_FIND_PACKAGE_NAME}_PREFIX_PATH" "${_smtk_import_prefix}")
 unset(_smtk_import_prefix)
-# TODO: This should come from an included file.
-list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_PREFIX_PATH"
-  @smtk_prefix_paths@)
 list(INSERT CMAKE_PREFIX_PATH 0
   ${${CMAKE_FIND_PACKAGE_NAME}_PREFIX_PATH})
 

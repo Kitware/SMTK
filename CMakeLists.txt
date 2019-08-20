@@ -736,28 +736,6 @@ export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${SMTK_INSTALL_CONFIG_
 #
 # Required to happen before we include the docs directory
 
-# Set a prefix path that consuming projects can use to find smtk's dependencies
-set(smtk_prefix_path ${CMAKE_PREFIX_PATH})
-
-# Boost can be found by its BOOST_ROOT variable.
-list(APPEND smtk_prefix_path ${BOOST_ROOT})
-
-if (SMTK_ENABLE_REMUS_SUPPORT)
-  list(APPEND smtk_prefix_path ${Remus_DIR})
-endif()
-
-# Qt5 is primarily found by setting Qt5_DIR. We key off of this variable to
-# identify Qt5's prefix path
-if (SMTK_ENABLE_QT_SUPPORT)
-  list(APPEND smtk_prefix_path ${Qt5_DIR}/../../..)
-endif()
-
-# ParaView's SDK is still a WIP. Until it is in place, key off of the
-# ParaView_DIR (ParaView's build directory).
-if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  list(APPEND smtk_prefix_path ${ParaView_DIR})
-endif()
-
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   set(smtk_python_executable ${PYTHON_EXECUTABLE})
   set(smtk_python_library ${PYTHON_LIBRARIES})
