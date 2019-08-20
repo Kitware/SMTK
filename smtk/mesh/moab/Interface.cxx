@@ -938,6 +938,34 @@ bool Interface::mergeCoincidentContactPoints(
   return false;
 }
 
+smtk::mesh::HandleRange Interface::neighbors(const smtk::mesh::Handle& cellId) const
+{
+  int dimension = m_iface->dimension_from_handle(cellId);
+
+  // Access the cell's boundaries
+  std::vector< ::moab::EntityHandle> adjacencies;
+  m_iface->get_adjacencies(&cellId, 1, dimension - 1, true, adjacencies);
+
+  // Exit early if the cell's boundaries were not found
+  if (adjacencies.empty())
+  {
+    return smtk::mesh::HandleRange();
+  }
+
+  std::vector< ::moab::EntityHandle> neighbors;
+  m_iface->get_adjacencies(
+    &adjacencies[0], adjacencies.size(), dimension, true, neighbors, ::moab::Core::UNION);
+
+  smtk::mesh::HandleRange neighborsRange;
+  for (auto& neighbor : neighbors)
+  {
+    neighborsRange.insert(neighbor);
+  }
+  neighborsRange.erase(cellId);
+
+  return neighborsRange;
+}
+
 bool Interface::setDomain(
   const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Domain& domain) const
 {

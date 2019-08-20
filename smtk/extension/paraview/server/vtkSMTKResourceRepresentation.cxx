@@ -137,6 +137,10 @@ vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
   , SelectedEntities(vtkSmartPointer<vtkActor>::New())
   , GlyphEntities(vtkSmartPointer<vtkActor>::New())
   , SelectedGlyphEntities(vtkSmartPointer<vtkActor>::New())
+  , EntitiesActorPickId(-1)
+  , SelectedEntitiesActorPickId(-1)
+  , GlyphEntitiesActorPickId(-1)
+  , SelectedGlyphEntitiesActorPickId(-1)
   , ApplyStyle(ApplyDefaultStyle)
 {
   this->SetupDefaults();
@@ -386,12 +390,22 @@ bool vtkSMTKResourceRepresentation::AddToView(vtkView* view)
     rview->GetRenderer()->AddActor(this->SelectedEntities);
     rview->GetRenderer()->AddActor(this->SelectedGlyphEntities);
 
-    rview->RegisterPropForHardwareSelection(this, this->Entities);
-    rview->RegisterPropForHardwareSelection(this, this->GlyphEntities);
-    rview->RegisterPropForHardwareSelection(this, this->SelectedEntities);
-    rview->RegisterPropForHardwareSelection(this, this->SelectedGlyphEntities);
+    this->EntitiesActorPickId = rview->RegisterPropForHardwareSelection(this, this->Entities);
+    this->GlyphEntitiesActorPickId =
+      rview->RegisterPropForHardwareSelection(this, this->GlyphEntities);
+    this->SelectedEntitiesActorPickId =
+      rview->RegisterPropForHardwareSelection(this, this->SelectedEntities);
+    this->SelectedGlyphEntitiesActorPickId =
+      rview->RegisterPropForHardwareSelection(this, this->SelectedGlyphEntities);
 
     return Superclass::AddToView(view);
+  }
+  else
+  {
+    this->EntitiesActorPickId = -1;
+    this->GlyphEntitiesActorPickId = -1;
+    this->SelectedEntitiesActorPickId = -1;
+    this->SelectedGlyphEntitiesActorPickId = -1;
   }
   return false;
 }

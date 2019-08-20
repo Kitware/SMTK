@@ -13,5 +13,6 @@ These plugins form the core of the ModelBuilder application (version 6 and later
    plugins.rst
    lifecycle.rst
    representations.rst
+   selection.rst
    panels.rst
    widgets.rst

@@ -19,11 +19,14 @@
 #include "smtk/mesh/operators/DeleteMesh.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 #include "smtk/mesh/operators/Export.h"
+#include "smtk/mesh/operators/ExtractByDihedralAngle.h"
 #include "smtk/mesh/operators/GenerateHotStartData.h"
 #include "smtk/mesh/operators/Import.h"
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
+#include "smtk/mesh/operators/PrintMeshInformation.h"
 #include "smtk/mesh/operators/Read.h"
 #include "smtk/mesh/operators/ReadResource.h"
+#include "smtk/mesh/operators/SelectCells.h"
 #include "smtk/mesh/operators/SetMeshName.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/mesh/operators/Write.h"
@@ -31,6 +34,7 @@
 
 #include "smtk/operation/groups/ExporterGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
+#include "smtk/operation/groups/InternalGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -40,8 +44,9 @@ namespace mesh
 {
 namespace
 {
-typedef std::tuple<DeleteMesh, ElevateMesh, Export, GenerateHotStartData, Import,
-  InterpolateOntoMesh, Read, ReadResource, SetMeshName, UndoElevateMesh, Write, WriteResource>
+typedef std::tuple<DeleteMesh, ElevateMesh, Export, ExtractByDihedralAngle, GenerateHotStartData,
+  Import, InterpolateOntoMesh, PrintMeshInformation, Read, ReadResource, SelectCells, SetMeshName,
+  UndoElevateMesh, Write, WriteResource>
   OperationList;
 }
 
@@ -60,6 +65,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
   smtk::operation::WriterGroup(operationManager)
     .registerOperation<smtk::mesh::Resource, smtk::mesh::WriteResource>();
+
+  smtk::operation::InternalGroup(operationManager).registerOperation<smtk::mesh::SelectCells>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)

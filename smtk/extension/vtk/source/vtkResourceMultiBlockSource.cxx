@@ -12,6 +12,7 @@
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
 #include "vtkInformationVector.h"
+#include "vtkMultiBlockDataSet.h"
 
 vtkInformationKeyMacro(vtkResourceMultiBlockSource, COMPONENT_ID, String);
 
@@ -54,6 +55,27 @@ smtk::common::UUID vtkResourceMultiBlockSource::GetDataObjectUUID(vtkInformation
 }
 
 //----------------------------------------------------------------------------
+void vtkResourceMultiBlockSource::SetResourceId(
+  vtkMultiBlockDataSet* dataset, const smtk::common::UUID& uid)
+{
+  if (dataset->GetNumberOfBlocks() <= BlockId::Components)
+  {
+    dataset->SetNumberOfBlocks(BlockId::NumberOfBlocks);
+  }
+  vtkResourceMultiBlockSource::SetDataObjectUUID(dataset->GetMetaData(BlockId::Components), uid);
+}
+
+//----------------------------------------------------------------------------
+smtk::common::UUID vtkResourceMultiBlockSource::GetResourceId(vtkMultiBlockDataSet* dataset)
+{
+  if (dataset->GetNumberOfBlocks() <= BlockId::Components)
+  {
+    return smtk::common::UUID::null();
+  }
+  return vtkResourceMultiBlockSource::GetDataObjectUUID(dataset->GetMetaData(BlockId::Components));
+}
+
+//----------------------------------------------------------------------------
 smtk::resource::ComponentPtr vtkResourceMultiBlockSource::GetComponent(
   const smtk::resource::ResourcePtr& resource, vtkInformation* info)
 {
@@ -82,4 +104,39 @@ void vtkResourceMultiBlockSource::SetResource(const smtk::resource::ResourcePtr&
 {
   this->Resource = resource;
   this->Modified();
+}
+
+void vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(
+  vtkMultiBlockDataSet* dataset, int& counter, int indent)
+{
+  if (!dataset)
+  {
+    return;
+  }
+  int nb = dataset->GetNumberOfBlocks();
+  for (int ii = 0; ii < nb; ++ii)
+  {
+    std::cout << std::setfill(' ') << std::setw(indent) << " " << std::setfill(' ') << std::setw(4)
+              << ii << " " << std::setfill(' ') << std::setw(4) << (counter++) << " ";
+    smtk::common::UUID uid;
+    if (dataset->HasMetaData(ii))
+    {
+      uid = vtkResourceMultiBlockSource::GetDataObjectUUID(dataset->GetMetaData(ii));
+    }
+    if (uid)
+    {
+      std::cout << uid;
+    }
+    else
+    {
+      std::cout << " no uuid                            ";
+    }
+    auto block = dataset->GetBlock(ii);
+    std::cout << "  " << (block ? block->GetClassName() : "(null)") << "\n";
+    auto mbds = vtkMultiBlockDataSet::SafeDownCast(block);
+    if (mbds)
+    {
+      vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(mbds, counter, indent + 2);
+    }
+  }
 }

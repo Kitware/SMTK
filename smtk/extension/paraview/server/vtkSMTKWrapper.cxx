@@ -9,14 +9,21 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 #include "smtk/extension/paraview/pluginsupport/PluginManager.txx"
+#include "smtk/extension/paraview/server/RespondToVTKSelection.h"
+#include "smtk/extension/paraview/server/VTKSelectionResponderGroup.h"
 #include "smtk/extension/paraview/server/vtkSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
+
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
 
 #include "smtk/view/Selection.h"
 
 #include "smtk/common/json/jsonUUID.h"
+
 #include "smtk/io/json/jsonComponentSet.h"
 #include "smtk/io/json/jsonSelectionMap.h"
 
@@ -62,6 +69,7 @@
 using namespace nlohmann;
 
 vtkStandardNewMacro(vtkSMTKWrapper);
+vtkCxxSetObjectMacro(vtkSMTKWrapper, Representation, vtkPVDataRepresentation);
 
 vtkSMTKWrapper::vtkSMTKWrapper()
   : ActiveResource(nullptr)
@@ -341,9 +349,7 @@ vtkSMTKResource* vtkSMTKWrapper::GetVTKResource(vtkAlgorithm* algorithm)
   return vtkresource;
 }
 
-vtkCxxSetObjectMacro(vtkSMTKWrapper, Representation, vtkPVDataRepresentation)
-
-  vtkPVDataRepresentation* vtkSMTKWrapper::GetRepresentation()
+vtkPVDataRepresentation* vtkSMTKWrapper::GetRepresentation()
 {
   return this->Representation;
 }

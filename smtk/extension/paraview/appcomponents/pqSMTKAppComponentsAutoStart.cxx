@@ -25,10 +25,33 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveOnCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/vtkSMTKEncodeSelection.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #include "pqApplicationCore.h"
 #include "pqObjectBuilder.h"
+
+#include "vtkObjectFactory.h"
+#include "vtkVersion.h"
+
+namespace
+{
+class vtkSMTKAppComponentsFactory : public vtkObjectFactory
+{
+public:
+  static vtkSMTKAppComponentsFactory* New();
+  vtkTypeMacro(vtkSMTKAppComponentsFactory, vtkObjectFactory);
+  const char* GetDescription() override { return "SMTK app-components overrides."; }
+  const char* GetVTKSourceVersion() override { return VTK_SOURCE_VERSION; }
+  vtkSMTKAppComponentsFactory()
+  {
+    this->RegisterOverride("vtkPVEncodeSelectionForServer", "vtkSMTKEncodeSelection",
+      "Override ParaView selection processing for SMTK", 1,
+      []() -> vtkObject* { return vtkSMTKEncodeSelection::New(); });
+  }
+};
+vtkStandardNewMacro(vtkSMTKAppComponentsFactory);
+}
 
 pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   : Superclass(parent)
@@ -42,6 +65,9 @@ pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()
 
 void pqSMTKAppComponentsAutoStart::startup()
 {
+  vtkNew<vtkSMTKAppComponentsFactory> factory;
+  vtkObjectFactory::RegisterFactory(factory);
+
   auto rsrcMgr = pqSMTKBehavior::instance(this);
   auto renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
   auto closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);

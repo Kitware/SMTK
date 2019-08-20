@@ -24,6 +24,8 @@
 
 class pqOutputPort;
 class pqSMTKResource;
+class vtkSelection;
+class vtkSMSourceProxy;
 class vtkSMSMTKWrapperProxy;
 
 /**\brief A proxy for SMTK resource managers created when connecting to a new server.
@@ -90,9 +92,6 @@ signals:
     */
   void operationEvent(const smtk::operation::Operation& op, smtk::operation::EventType event,
     smtk::operation::Operation::Result result);
-
-protected slots:
-  virtual void paraviewSelectionChanged(pqOutputPort* port);
 
 protected:
   std::set<QPointer<pqSMTKResource> > m_resources;

@@ -200,10 +200,14 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
       DescriptivePhrasePtr child;
       if ((comp = obj->as<smtk::resource::Component>()))
       {
-        child =
-          ComponentPhraseContent::createPhrase(comp, MutabilityOfComponent(comp), actualParent);
-        this->decoratePhrase(child);
-        resultingPhrases.insert(std::make_pair(childPath, child));
+        // Only add components with valid ids
+        if (comp->id())
+        {
+          child =
+            ComponentPhraseContent::createPhrase(comp, MutabilityOfComponent(comp), actualParent);
+          this->decoratePhrase(child);
+          resultingPhrases.insert(std::make_pair(childPath, child));
+        }
       }
       else if ((rsrc = obj->as<smtk::resource::Resource>()))
       {

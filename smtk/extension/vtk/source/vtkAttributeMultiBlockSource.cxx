@@ -55,7 +55,21 @@ smtk::attribute::ResourcePtr vtkAttributeMultiBlockSource::GetAttributeResource(
 
 /// Do nothing.
 int vtkAttributeMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* vtkNotUsed(outInfo))
+  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
+  auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
+  if (!output)
+  {
+    vtkErrorMacro("No output dataset.");
+    return 0;
+  }
+
+  auto resource = this->GetAttributeResource();
+  if (!resource)
+  {
+    vtkErrorMacro("No input attribute.");
+    return 0;
+  }
+  this->SetResourceId(output, resource->id());
   return 1;
 }

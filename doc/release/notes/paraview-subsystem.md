@@ -23,3 +23,9 @@ Note that
   plugin, which disables the "Sources" and "Filters" menu
   items at startup but re-enables them when users enter
   post-processing mode.
+
+## Selection
+
+Operations are now used to translate VTK/ParaView selections
+into SMTK selections. See the user guide for details.
+This change was made to support mesh and instance subset selections.

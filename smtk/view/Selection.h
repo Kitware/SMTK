@@ -275,7 +275,8 @@ public:
     */
   template <typename T>
   bool modifySelection(const T& objects, const std::string& source, int value,
-    SelectionAction action = SelectionAction::DEFAULT, bool bitwise = false);
+    SelectionAction action = SelectionAction::DEFAULT, bool bitwise = false,
+    bool postponeNotification = false);
 
   /**\brief Reset values in the selection map so no entries contain the given bit \a value.
     *
@@ -430,8 +431,8 @@ T& Selection::currentSelectionByValue(T& selection, const std::string& valueLabe
 }
 
 template <typename T>
-bool Selection::modifySelection(
-  const T& objects, const std::string& source, int value, SelectionAction action, bool bitwise)
+bool Selection::modifySelection(const T& objects, const std::string& source, int value,
+  SelectionAction action, bool bitwise, bool postponeNotification)
 {
   bool modified = false;
   SelectionMap suggestions;
@@ -484,7 +485,7 @@ bool Selection::modifySelection(
   {
     modified |= this->performAction(object, value, action, suggestions, bitwise);
   }
-  if (modified)
+  if (modified && !postponeNotification)
   {
     this->observers()(source, shared_from_this());
   }

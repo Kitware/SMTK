@@ -223,6 +223,9 @@ public:
   bool mergeCoincidentContactPoints(
     const smtk::mesh::HandleRange& meshes, double tolerance) override;
 
+  //given a handle to a cell, return its dimension-equivalent neighbors.
+  virtual smtk::mesh::HandleRange neighbors(const smtk::mesh::Handle& cell) const override;
+
   bool setDomain(
     const smtk::mesh::HandleRange& meshsets, const smtk::mesh::Domain& domain) const override;
 

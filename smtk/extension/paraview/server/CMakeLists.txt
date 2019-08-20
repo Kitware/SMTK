@@ -3,10 +3,18 @@ include(ParaViewPlugins)
 
 # set up sources to build
 set(serverUnwrappedSrcs
+  Registrar.cxx
+  RespondToVTKSelection.cxx
+  VTKMeshCellSelection.cxx
+  VTKSelectionResponderGroup.cxx
   smtkModelEntityPointLocator.cxx
 )
 
 set(serverUnwrappedHdrs
+  Registrar.h
+  RespondToVTKSelection.h
+  VTKMeshCellSelection.h
+  VTKSelectionResponderGroup.h
   smtkModelEntityPointLocator.h
 )
 
@@ -16,14 +24,12 @@ set(serverXMLSrcs
 
 set(serverWrappedSrcs
   vtkPVModelSources.cxx
-  vtkSMTKCompositeRepresentation.cxx
   vtkSMTKResource.cxx
   vtkSMTKResourceCreator.cxx
   vtkSMTKResourceGenerator.cxx
   vtkSMTKResourceImporter.cxx
   vtkSMTKResourceReader.cxx
   vtkSMTKResourceSource.cxx
-  vtkSMTKSelectionRepresentation.cxx
   vtkSMTKSettings.cxx
   vtkSMSMTKWrapperProxy.cxx
   vtkSMTKWrapper.cxx
@@ -33,14 +39,12 @@ set(serverWrappedSrcs
 
 set(serverWrappedHdrs
   vtkPVModelSources.h
-  vtkSMTKCompositeRepresentation.h
   vtkSMTKResource.h
   vtkSMTKResourceCreator.h
   vtkSMTKResourceGenerator.h
   vtkSMTKResourceImporter.h
   vtkSMTKResourceReader.h
   vtkSMTKResourceSource.h
-  vtkSMTKSelectionRepresentation.h
   vtkSMTKSettings.h
   vtkSMSMTKWrapperProxy.h
   vtkSMTKWrapper.h
@@ -48,15 +52,19 @@ set(serverWrappedHdrs
   vtkSMTKResourceRepresentation.h
 )
 
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/RespondToVTKSelection.sbt" smtkPVServerOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/VTKMeshCellSelection.sbt" smtkPVServerOperationXML)
+
 # the server plugin adds vtkCMBGeometryReader as a source, so we need the
-# vtk module that contains it (vtkSMTKReaderExt) listed as add_paraview_plugin's
+# vtk module that contains it (vtkSMTKReaderExt) listed as add_smtk_plugin's
 # CS_KITS parameter. We also must link against the client-server wrapping
 # library for this module (vtkSMTKReaderExtCS).
 set(serverModules
   vtkSMTKReaderExt
   vtkSMTKSourceExt
   vtkSMTKWidgetsExt
-  )
+  vtkSMTKMeshingExt
+)
 
 set(serverModuleCSLibs)
 foreach (cslib IN LISTS serverModules)
@@ -78,18 +86,22 @@ target_link_libraries(smtkPVServerExt
     vtkSMTKSourceExt
     vtkSMTKReaderExt # vtkLIDARReader
     vtkSMTKFilterExt # vtkTerrainExtractionFilter, vtkLIDARElevationFilter
+    vtkSMTKMeshingExt
+    vtkSMTKOperationsExt
     ${serverModuleCSLibs}
 )
 target_include_directories(smtkPVServerExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-# Generate a ParaView plugin
-add_paraview_plugin(
+# Generate an SMTK+ParaView plugin
+add_smtk_plugin(
   smtkPVServerExtPlugin "1.0"
   REQUIRED_ON_SERVER
   REQUIRED_ON_CLIENT
   SERVER_MANAGER_SOURCES ${serverWrappedHdrs}
   SERVER_MANAGER_XML ${serverXMLSrcs}
   CS_KITS ${serverModules}
+  REGISTRAR smtk::extension::paraview::server::Registrar
+  MANAGERS smtk::operation::Manager smtk::resource::Manager
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPVServerExtPlugin")
 enable_smtk_plugin_by_default(smtkPVServerExtPlugin TRUE)

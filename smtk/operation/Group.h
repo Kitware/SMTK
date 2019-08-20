@@ -60,7 +60,7 @@ public:
 
   const std::string& name() const { return m_name; };
 
-  /// Register an operation identified by it's unique name and give it values.
+  /// Register an operation identified by its unique name and give it values.
   bool registerOperation(
     const std::string&, std::set<std::string> values = std::set<std::string>());
 

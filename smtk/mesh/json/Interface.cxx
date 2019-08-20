@@ -485,6 +485,11 @@ bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange&, dou
   return false;
 }
 
+smtk::mesh::HandleRange Interface::neighbors(const smtk::mesh::Handle& cellId) const
+{
+  return smtk::mesh::HandleRange();
+}
+
 bool Interface::setDomain(const smtk::mesh::HandleRange&, const smtk::mesh::Domain&) const
 {
   return false;

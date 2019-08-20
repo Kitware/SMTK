@@ -64,6 +64,30 @@
         default_values="0">
         <SimpleStringInformationHelper />
       </StringVectorProperty>
+      <StringVectorProperty
+        name="SelectionSource"
+        command="GetSelectionSource"
+        default_values="paraview"
+        information_only="1"
+        number_of_elements="1">
+        <SimpleStringInformationHelper/>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="SelectedValue"
+        command="GetSelectedValue"
+        information_only="1"
+        default_values="1"
+        number_of_elements="1">
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="HoveredValue"
+        command="GetHoveredValue"
+        information_only="1"
+        default_values="2"
+        number_of_elements="1">
+        <SimpleIntInformationHelper/>
+      </IntVectorProperty>
       <ProxyProperty command="SetRepresentation" name="Representation">
         <ProxyGroupDomain name="groups">
           <Group name="representations" />
@@ -1555,6 +1579,26 @@
         <Documentation>Use block attributes set through proxy properties.
         </Documentation>
       </IntVectorProperty>
+      <IntVectorProperty
+        name="EntitiesActorPickIdInfo"
+        command="GetEntitiesActorPickId"
+        information_only="1">
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="GlyphEntitiesActorPickIdInfo"
+        command="GetGlyphEntitiesActorPickId"
+        information_only="1">
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="SelectedEntitiesActorPickIdInfo"
+        command="GetSelectedEntitiesActorPickId"
+        information_only="1">
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="SelectedGlyphEntitiesActorPickIdInfo"
+        command="GetSelectedGlyphEntitiesActorPickId"
+        information_only="1">
+      </IntVectorProperty>
     <!-- End of SMTKResourceRepresentation -->
     </RepresentationProxy>
 
@@ -1609,10 +1653,11 @@
 
 <!-- ====================================================================== -->
     <SMTKResourceRepresentationProxy name="SMTKResourceCompositeRepresentation"
-                                  class="vtkSMTKCompositeRepresentation"
+                                  class="vtkPVCompositeRepresentation"
                                   processes="client|dataserver|renderserver">
       <Documentation>SMTK's default representation. It is a stripped down
-      version of PVRepresentationBase.</Documentation>
+      version of PVRepresentationBase (selection is handled internally by
+      SMTKResourceRepresentation).</Documentation>
 
       <InputProperty command="SetInputConnection"
                      name="Input">
@@ -1819,6 +1864,8 @@
                       panel_visibility="never" />
             <Property name="HoverColor"
                       panel_visibility="never" />
+            <Property name="SelectionColor"
+                      panel_visibility="never" />
             <Property name="DefaultFaceColor"
                       panel_visibility="never" />
             <Property name="DefaultEdgeColor"
@@ -1834,16 +1881,6 @@
           <Exception name="Input" />
           <Exception name="Visibility" />
         </ShareProperties>
-      </SubProxy>
-      <SubProxy command="SetSelectionRepresentation">
-        <Proxy name="SelectionRepresentation"
-               proxygroup="representations"
-               proxyname="SMTKSelectionRepresentation" />
-        <ExposedProperties>
-          <Property exposed_name="SelectionColor" name="Color" panel_visibility="never" />
-          <Property exposed_name="SelectionPointSize" name="PointSize" panel_visibility="never" />
-          <Property exposed_name="SelectionLineWidth" name="LineWidth" panel_visibility="never" />
-        </ExposedProperties>
       </SubProxy>
     </SMTKResourceRepresentationProxy>
 

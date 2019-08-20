@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/">
+    <file>Instances@2x.png</file>
+    <file>Instances.png</file>
     <file>Faces.png</file>
     <file>Faces@2x_Blue.png</file>
     <file>Meshes.png</file>
