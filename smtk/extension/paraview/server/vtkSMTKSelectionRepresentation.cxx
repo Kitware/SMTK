@@ -163,11 +163,7 @@ int vtkSMTKSelectionRepresentation::RequestData(
   vtkMultiBlockDataSet* resourceDataSet =
     vtkMultiBlockDataSet::SafeDownCast(resourceRepresentation->GetRenderedDataObject(0));
 
-  // Access the multiblock dataset for the selected resource's components.
-  vtkMultiBlockDataSet* componentDataSet = vtkMultiBlockDataSet::SafeDownCast(
-    resourceDataSet->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
-
-  if (resource == nullptr || componentDataSet == nullptr)
+  if (resource == nullptr || resourceDataSet == nullptr)
   {
     // We do not have enough information to proceed with processing the
     // selection.
@@ -204,7 +200,7 @@ int vtkSMTKSelectionRepresentation::RequestData(
 
       // For each block in the resource dataset, check if the block is in our
       // set of selected blocks.
-      auto blockIterator = componentDataSet->NewIterator();
+      auto blockIterator = resourceDataSet->NewIterator();
       for (blockIterator->InitTraversal(); !blockIterator->IsDoneWithTraversal();
            blockIterator->GoToNextItem())
       {
