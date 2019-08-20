@@ -59,13 +59,14 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
 
     // ...add an observer to its resource manager that destroys the pipeline
     // source associated with a resource removed from the manager.
-    wrapper->smtkResourceManager()->observers().insert([this](
-      const std::shared_ptr<smtk::resource::Resource>& rsrc, smtk::resource::EventType eventType) {
-      if (eventType == smtk::resource::EventType::REMOVED)
-      {
-        destroyPipelineSource(rsrc);
-      }
-    });
+    wrapper->smtkResourceManager()->observers().insert(
+      [this](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) {
+        if (eventType == smtk::resource::EventType::REMOVED)
+        {
+          auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
+          destroyPipelineSource(rsrc);
+        }
+      });
     return;
   };
 

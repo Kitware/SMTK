@@ -99,10 +99,10 @@ int TestResourceManager(int, char** const)
   // Observe resources being added
   int numResources = 0;
   auto countingObserver = [&numResources](
-    const smtk::resource::Resource::Ptr& rsrc, smtk::resource::EventType event) {
+    const smtk::resource::Resource& rsrc, smtk::resource::EventType event) {
     (void)rsrc;
     numResources += (event == smtk::resource::EventType::ADDED ? +1 : -1);
-    std::cout << "Resource count now " << numResources << " rsrc " << rsrc << "\n";
+    std::cout << "Resource count now " << numResources << " rsrc " << &rsrc << "\n";
   };
   auto handle = resourceManager->observers().insert(countingObserver);
   smtkTest(numResources == 1, "Did not observe new resource being added.");
@@ -127,7 +127,7 @@ int TestResourceManager(int, char** const)
 
   // Test that the observer can unregister itself while the observer is being called.
   auto removingObserver = [&handle, &resourceManager](
-    const smtk::resource::Resource::Ptr&, smtk::resource::EventType) {
+    const smtk::resource::Resource&, smtk::resource::EventType) {
     std::cout << "Observer (" << handle.first << " " << handle.second << ") removing self\n";
     resourceManager->observers().erase(handle);
   };

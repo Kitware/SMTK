@@ -233,7 +233,7 @@ extractResources(Operation::Result result)
   return resources;
 }
 
-ResourceAccessMap extractResourcesAndLockTypes(Operation::Parameters parameters)
+ResourceAccessMap extractResourcesAndLockTypes(const Operation::Parameters parameters)
 {
   ResourceAccessMap resourcesAndLockTypes;
 

@@ -134,6 +134,7 @@ public:
   // The parameters attribute is distinguished by its derivation from the
   // "operation" attribute.
   Parameters parameters();
+  Parameters parameters() const;
 
   // Create an attribute representing this operation's result type. The result
   // attribute is distinguished by its derivation from the "result" attribute.

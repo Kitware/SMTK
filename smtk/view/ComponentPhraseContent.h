@@ -34,16 +34,19 @@ public:
   static DescriptivePhrasePtr createPhrase(const smtk::resource::ComponentPtr& component,
     int mutability = 0, DescriptivePhrasePtr parent = DescriptivePhrasePtr());
 
-  bool displayable(ContentType attr) const override { return attr != VISIBILITY ? true : false; }
-  bool editable(ContentType attr) const override;
+  bool displayable(ContentType contentType) const override
+  {
+    return contentType != VISIBILITY ? true : false;
+  }
+  bool editable(ContentType contentType) const override;
 
-  std::string stringValue(ContentType attr) const override;
-  int flagValue(ContentType attr) const override;
-  resource::FloatList colorValue(ContentType attr) const override;
+  std::string stringValue(ContentType contentType) const override;
+  int flagValue(ContentType contentType) const override;
+  resource::FloatList colorValue(ContentType contentType) const override;
 
-  bool editStringValue(ContentType attr, const std::string& val) override;
-  bool editFlagValue(ContentType attr, int val) override;
-  bool editColorValue(ContentType attr, const resource::FloatList& val) override;
+  bool editStringValue(ContentType contentType, const std::string& val) override;
+  bool editFlagValue(ContentType contentType, int val) override;
+  bool editColorValue(ContentType contentType, const resource::FloatList& val) override;
 
   smtk::resource::PersistentObjectPtr relatedObject() const override;
   smtk::resource::ResourcePtr relatedResource() const override;
@@ -54,13 +57,14 @@ public:
   bool operator==(const PhraseContent& other) const override
   {
     return this->equalTo(other) &&
-      m_component == static_cast<const ComponentPhraseContent&>(other).m_component;
+      !(m_component.owner_before(static_cast<const ComponentPhraseContent&>(other).m_component)) &&
+      !(static_cast<const ComponentPhraseContent&>(other).m_component.owner_before(m_component));
   }
 
 protected:
   ComponentPhraseContent();
 
-  smtk::resource::ComponentPtr m_component;
+  std::weak_ptr<smtk::resource::Component> m_component;
   int m_mutability;
 };
 

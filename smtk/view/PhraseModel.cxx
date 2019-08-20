@@ -162,7 +162,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
   }
   auto rsrcHandle = rsrcMgr
     ? rsrcMgr->observers().insert(
-        [this](const Resource::Ptr& rsrc, const resource::EventType& event) {
+        [this](const Resource& rsrc, const resource::EventType& event) {
           this->handleResourceEvent(rsrc, event);
           return 0;
         },
@@ -171,7 +171,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
     : smtk::resource::Observers::Key();
   auto operHandle = operMgr
     ? operMgr->observers().insert(
-        [this](const Operation::Ptr& op, operation::EventType event, const Operation::Result& res) {
+        [this](const Operation& op, operation::EventType event, const Operation::Result& res) {
           this->handleOperationEvent(op, event, res);
           return 0;
         })
@@ -243,22 +243,18 @@ void PhraseModel::handleSelectionEvent(const std::string& src, Selection::Ptr se
   (void)seln;
 }
 
-void PhraseModel::handleResourceEvent(const Resource::Ptr& rsrc, smtk::resource::EventType event)
+void PhraseModel::handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event)
 {
   std::cout << "      phrase " << (event == smtk::resource::EventType::ADDED ? "add" : "del")
-            << " rsrc " << rsrc << " " << rsrc->location() << "\n";
+            << " rsrc " << &rsrc << " " << rsrc.location() << "\n";
 }
 
 int PhraseModel::handleOperationEvent(
-  const Operation::Ptr& op, operation::EventType event, const Operation::Result& res)
+  const Operation& op, operation::EventType event, const Operation::Result& res)
 {
   smtkDebugMacro(smtk::io::Logger::instance(), "      Phrase handler: op "
-      << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << op);
+      << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre") << " " << &op);
 
-  if (!op)
-  {
-    return 1;
-  } // Every event should have an operator
   if (!res)
   {
     return 0;
@@ -286,7 +282,7 @@ void PhraseModel::removeChildren(const std::vector<int>& parentIdx, int childRan
 }
 
 void PhraseModel::handleExpunged(
-  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
+  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;
   (void)res;
@@ -332,7 +328,7 @@ void PhraseModel::handleExpunged(
 }
 
 void PhraseModel::handleModified(
-  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
+  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;
   (void)res;
@@ -364,7 +360,7 @@ void PhraseModel::handleModified(
 }
 
 void PhraseModel::handleCreated(
-  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
+  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;  // Ignore this in the general case but allow subclasses to special-case it.
   (void)res; // TODO: Different behavior when result is failure vs success?

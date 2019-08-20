@@ -36,8 +36,7 @@ namespace view
 {
 
 ComponentPhraseContent::ComponentPhraseContent()
-  : m_component(nullptr)
-  , m_mutability(0)
+  : m_mutability(0)
 {
 }
 
@@ -64,181 +63,181 @@ DescriptivePhrasePtr ComponentPhraseContent::createPhrase(
   return result;
 }
 
-bool ComponentPhraseContent::editable(ContentType attr) const
+bool ComponentPhraseContent::editable(ContentType contentType) const
 {
-  if (m_mutability & static_cast<int>(attr))
+  if (m_mutability & static_cast<int>(contentType))
   {
-    if (attr == TITLE || attr == COLOR)
+    if (contentType == TITLE || contentType == COLOR)
     {
-      auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
-      auto meshComp = dynamic_pointer_cast<smtk::mesh::Component>(m_component);
-      // Models may be assigned a color and a name; meshes may be assigned a name.
-      return !!modelComp || (attr == TITLE && !!meshComp);
+      if (auto component = m_component.lock())
+      {
+        auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
+        auto meshComponent = dynamic_pointer_cast<smtk::mesh::Component>(component);
+        // Models may be assigned a color and a name; meshes may be assigned a name.
+        return !!modelComponent || (contentType == TITLE && !!meshComponent);
+      }
     }
   }
   return false;
 }
 
-std::string ComponentPhraseContent::stringValue(ContentType attr) const
+std::string ComponentPhraseContent::stringValue(ContentType contentType) const
 {
-  if (!m_component)
+  if (auto component = m_component.lock())
   {
-    return std::string();
-  }
-
-  switch (attr)
-  {
-    case PhraseContent::TITLE:
+    switch (contentType)
     {
-      return m_component->name();
-    }
-    break;
-    case PhraseContent::SUBTITLE:
-    {
-      auto modelComp = m_component->as<smtk::model::Entity>();
-      if (modelComp)
+      case PhraseContent::TITLE:
       {
-        return modelComp->flagSummary();
+        return component->name();
       }
-
-      auto attrComp = m_component->as<smtk::attribute::Attribute>();
-      if (attrComp)
-      {
-        return attrComp->type();
-      }
-
-      auto meshComp = m_component->as<smtk::mesh::Component>();
-      if (meshComp)
-      {
-        std::ostringstream meshSummary;
-        meshSummary << meshComp->mesh().cells().size() << " cells";
-        return meshSummary.str();
-      }
-      return std::string();
-    }
-    break;
-
-    // We will not provide strings for these:
-    case PhraseContent::COLOR:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    default:
       break;
+      case PhraseContent::SUBTITLE:
+      {
+        auto modelComponent = component->as<smtk::model::Entity>();
+        if (modelComponent)
+        {
+          return modelComponent->flagSummary();
+        }
+
+        auto attributeComponent = component->as<smtk::attribute::Attribute>();
+        if (attributeComponent)
+        {
+          return attributeComponent->type();
+        }
+
+        auto meshComponent = component->as<smtk::mesh::Component>();
+        if (meshComponent)
+        {
+          std::ostringstream meshSummary;
+          meshSummary << meshComponent->mesh().cells().size() << " cells";
+          return meshSummary.str();
+        }
+        return std::string();
+      }
+      break;
+
+      // We will not provide strings for these:
+      case PhraseContent::COLOR:
+      case PhraseContent::VISIBILITY:
+      case PhraseContent::ICON:
+      default:
+        break;
+    }
   }
   return std::string();
 }
 
-int ComponentPhraseContent::flagValue(ContentType attr) const
+int ComponentPhraseContent::flagValue(ContentType contentType) const
 {
-  if (!m_component)
+  if (auto component = m_component.lock())
   {
-    return -1;
-  }
-
-  switch (attr)
-  {
-    case PhraseContent::COLOR:
-    case PhraseContent::TITLE:
-    case PhraseContent::SUBTITLE:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    // This should return non-default values once we allow icons to be registered
-    // for components by their metadata.
-    default:
-      break;
+    switch (contentType)
+    {
+      case PhraseContent::COLOR:
+      case PhraseContent::TITLE:
+      case PhraseContent::SUBTITLE:
+      case PhraseContent::VISIBILITY:
+      case PhraseContent::ICON:
+      // This should return non-default values once we allow icons to be registered
+      // for components by their metadata.
+      default:
+        break;
+    }
   }
   return -1;
 }
 
-resource::FloatList ComponentPhraseContent::colorValue(ContentType attr) const
+resource::FloatList ComponentPhraseContent::colorValue(ContentType contentType) const
 {
-  if (!m_component)
+  if (auto component = m_component.lock())
   {
-    return resource::FloatList({ 0., 0., 0., -1.0 });
-  }
-
-  switch (attr)
-  {
-    case PhraseContent::COLOR:
+    switch (contentType)
     {
-      auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(m_component);
-      if (ent)
+      case PhraseContent::COLOR:
       {
-        return ent->referenceAs<smtk::model::EntityRef>().color();
+        auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(component);
+        if (ent)
+        {
+          return ent->referenceAs<smtk::model::EntityRef>().color();
+        }
       }
-    }
-    break;
-    case PhraseContent::TITLE:
-    case PhraseContent::SUBTITLE:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    default:
       break;
+      case PhraseContent::TITLE:
+      case PhraseContent::SUBTITLE:
+      case PhraseContent::VISIBILITY:
+      case PhraseContent::ICON:
+      default:
+        break;
+    }
   }
   smtk::resource::FloatList rgba({ 0., 0., 0., -1.0 });
   return rgba;
 }
 
-bool ComponentPhraseContent::editStringValue(ContentType attr, const std::string& val)
+bool ComponentPhraseContent::editStringValue(ContentType contentType, const std::string& val)
 {
-  // Lets try to get the local operation manager
-  auto dp = this->location();
-  smtk::operation::ManagerPtr opManager;
-  if (dp != nullptr)
+  if (auto component = m_component.lock())
   {
-    auto model = dp->phraseModel();
-    if (model != nullptr)
+    // Lets try to get the local operation manager
+    auto dp = this->location();
+    smtk::operation::ManagerPtr opManager;
+    if (dp != nullptr)
     {
-      opManager = model->operationManager();
+      auto model = dp->phraseModel();
+      if (model != nullptr)
+      {
+        opManager = model->operationManager();
+      }
     }
-  }
-  if (attr == TITLE)
-  {
-    auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
-    if (modelComp)
+    if (contentType == TITLE)
     {
-      smtk::model::SetProperty::Ptr op;
-      if (opManager)
+      auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
+      if (modelComponent)
       {
-        op = opManager->create<smtk::model::SetProperty>();
-      }
-      else
-      {
-        op = smtk::model::SetProperty::create();
-      }
-
-      if (op->parameters()->associate(modelComp))
-      {
-        op->parameters()->findString("name")->setValue("name");
-        op->parameters()->findString("string value")->appendValue(val);
-        auto res = op->operate();
-        if (res->findInt("outcome")->value() ==
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        smtk::model::SetProperty::Ptr op;
+        if (opManager)
         {
-          return true;
+          op = opManager->create<smtk::model::SetProperty>();
+        }
+        else
+        {
+          op = smtk::model::SetProperty::create();
+        }
+
+        if (op->parameters()->associate(modelComponent))
+        {
+          op->parameters()->findString("name")->setValue("name");
+          op->parameters()->findString("string value")->appendValue(val);
+          auto res = op->operate();
+          if (res->findInt("outcome")->value() ==
+            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+          {
+            return true;
+          }
         }
       }
-    }
-    auto meshComp = std::dynamic_pointer_cast<smtk::mesh::Component>(m_component);
-    if (meshComp)
-    {
-      smtk::mesh::SetMeshName::Ptr op;
-      if (opManager)
+      auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
+      if (meshComponent)
       {
-        op = opManager->create<smtk::mesh::SetMeshName>();
-      }
-      if (op == nullptr)
-      {
-        op = smtk::mesh::SetMeshName::create();
-      }
-      if (op && op->parameters()->associate(meshComp))
-      {
-        op->parameters()->findString("name")->setValue(val);
-        auto res = op->operate();
-        if (res->findInt("outcome")->value() ==
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        smtk::mesh::SetMeshName::Ptr op;
+        if (opManager)
         {
-          return true;
+          op = opManager->create<smtk::mesh::SetMeshName>();
+        }
+        if (op == nullptr)
+        {
+          op = smtk::mesh::SetMeshName::create();
+        }
+        if (op && op->parameters()->associate(meshComponent))
+        {
+          op->parameters()->findString("name")->setValue(val);
+          auto res = op->operate();
+          if (res->findInt("outcome")->value() ==
+            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+          {
+            return true;
+          }
         }
       }
     }
@@ -246,49 +245,52 @@ bool ComponentPhraseContent::editStringValue(ContentType attr, const std::string
   return false;
 }
 
-bool ComponentPhraseContent::editFlagValue(ContentType attr, int val)
+bool ComponentPhraseContent::editFlagValue(ContentType contentType, int val)
 {
-  (void)attr;
+  (void)contentType;
   (void)val;
   return false;
 }
 
-bool ComponentPhraseContent::editColorValue(ContentType attr, const resource::FloatList& val)
+bool ComponentPhraseContent::editColorValue(ContentType contentType, const resource::FloatList& val)
 {
-  // Lets try to get the local operation manager
-  auto dp = this->location();
-  smtk::operation::ManagerPtr opManager;
-  if (dp != nullptr)
+  if (auto component = m_component.lock())
   {
-    auto model = dp->phraseModel();
-    if (model != nullptr)
+    // Lets try to get the local operation manager
+    auto dp = this->location();
+    smtk::operation::ManagerPtr opManager;
+    if (dp != nullptr)
     {
-      opManager = model->operationManager();
+      auto model = dp->phraseModel();
+      if (model != nullptr)
+      {
+        opManager = model->operationManager();
+      }
     }
-  }
-  if (attr == COLOR)
-  {
-    auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(m_component);
-    if (modelComp)
+    if (contentType == COLOR)
     {
-      smtk::model::SetProperty::Ptr op;
-      if (opManager)
+      auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
+      if (modelComponent)
       {
-        op = opManager->create<smtk::model::SetProperty>();
-      }
-      else
-      {
-        op = smtk::model::SetProperty::create();
-      }
-      if (op->parameters()->associate(modelComp))
-      {
-        op->parameters()->findString("name")->setValue("color");
-        op->parameters()->findDouble("float value")->setValues(val.begin(), val.end());
-        auto res = op->operate();
-        if (res->findInt("outcome")->value() ==
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+        smtk::model::SetProperty::Ptr op;
+        if (opManager)
         {
-          return true;
+          op = opManager->create<smtk::model::SetProperty>();
+        }
+        else
+        {
+          op = smtk::model::SetProperty::create();
+        }
+        if (op->parameters()->associate(modelComponent))
+        {
+          op->parameters()->findString("name")->setValue("color");
+          op->parameters()->findDouble("float value")->setValues(val.begin(), val.end());
+          auto res = op->operate();
+          if (res->findInt("outcome")->value() ==
+            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+          {
+            return true;
+          }
         }
       }
     }
@@ -298,26 +300,26 @@ bool ComponentPhraseContent::editColorValue(ContentType attr, const resource::Fl
 
 smtk::resource::PersistentObjectPtr ComponentPhraseContent::relatedObject() const
 {
-  if (m_component)
+  if (auto component = this->relatedComponent())
   {
-    return m_component;
+    return component;
   }
   return this->PhraseContent::relatedObject();
 }
 
 smtk::resource::ResourcePtr ComponentPhraseContent::relatedResource() const
 {
-  if (!m_component)
+  if (auto component = this->relatedComponent())
   {
-    return nullptr;
+    return component->resource();
   }
 
-  return m_component->resource();
+  return nullptr;
 }
 
 smtk::resource::ComponentPtr ComponentPhraseContent::relatedComponent() const
 {
-  return m_component;
+  return m_component.lock();
 }
 
 void ComponentPhraseContent::setMutability(int whatsMutable)

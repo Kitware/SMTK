@@ -120,9 +120,9 @@ int unitOperation(int, char* [])
   std::shared_ptr<TestOp> testOp;
 
   smtk::operation::Observers::Key handleTmp = manager->observers().insert(
-    [&handleTmp, &manager](std::shared_ptr<smtk::operation::Operation> op,
-      smtk::operation::EventType event, smtk::operation::Operation::Result) -> int {
-      std::cout << "[x] " << op->typeName() << " event " << static_cast<int>(event)
+    [&handleTmp, &manager](const smtk::operation::Operation& op, smtk::operation::EventType event,
+      smtk::operation::Operation::Result) -> int {
+      std::cout << "[x] " << op.typeName() << " event " << static_cast<int>(event)
                 << " testing that an observer (" << handleTmp.first << " " << handleTmp.second
                 << ") can remove itself.\n";
       manager->observers().erase(handleTmp);
@@ -130,10 +130,10 @@ int unitOperation(int, char* [])
     });
 
   auto handle = manager->observers().insert(
-    [&testOp](std::shared_ptr<smtk::operation::Operation> op, smtk::operation::EventType event,
+    [&testOp](const smtk::operation::Operation& op, smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
       int outcome = -1;
-      std::cout << "[" << obs << "] " << op->typeName() << " event " << static_cast<int>(event)
+      std::cout << "[" << obs << "] " << op.typeName() << " event " << static_cast<int>(event)
                 << " result " << result;
       if (result && testOp)
       {
@@ -153,9 +153,9 @@ int unitOperation(int, char* [])
       return (obs == 4 ? 1 : 0);
     });
 
-  auto another = manager->observers().insert(
-    [](std::shared_ptr<smtk::operation::Operation>, smtk::operation::EventType,
-      smtk::operation::Operation::Result) -> int {
+  auto another =
+    manager->observers().insert([](const smtk::operation::Operation&, smtk::operation::EventType,
+                                  smtk::operation::Operation::Result) -> int {
       smtkTest(false, "This observer should never be called");
       return 1;
     });

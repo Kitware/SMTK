@@ -90,7 +90,7 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
     );
     */
     wrapper->GetOperationManager()->observers().insert(
-      [this](smtk::operation::Operation::Ptr oper, smtk::operation::EventType event,
+      [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         emit operationEvent(oper, event, result);
         return 0;
@@ -144,7 +144,7 @@ smtk::project::ManagerPtr pqSMTKWrapper::smtkProjectManager() const
   return this->smtkProxy() ? this->smtkProxy()->GetProjectManager() : nullptr;
 }
 
-pqSMTKResource* pqSMTKWrapper::getPVResource(smtk::resource::ResourcePtr rsrc) const
+pqSMTKResource* pqSMTKWrapper::getPVResource(const smtk::resource::ResourcePtr& rsrc) const
 {
   pqSMTKResource* result = nullptr;
   this->visitResources([&result, &rsrc](pqSMTKResource* pvrsrc) {

@@ -69,10 +69,10 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // Override the resource Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
   wrapper->smtkResourceManager()->observers().overrideWith(
-    [this](const smtk::resource::Resource::Ptr& rsrc, smtk::resource::EventType event) -> int {
-      m_activeResources[rsrc->id()] = rsrc;
+    [this](const smtk::resource::Resource& rsrc, smtk::resource::EventType event) -> int {
+      m_activeResources[rsrc.id()] = const_cast<smtk::resource::Resource&>(rsrc).shared_from_this();
       emit resourceEvent(
-        QString::fromStdString(rsrc->id().toString()), static_cast<int>(event), QPrivateSignal());
+        QString::fromStdString(rsrc.id().toString()), static_cast<int>(event), QPrivateSignal());
       return 0;
     });
 
@@ -90,7 +90,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
         if (auto manager = resourceManager.lock())
         {
           manager->observers().callObserversDirectly(
-            resource, static_cast<smtk::resource::EventType>(event));
+            *resource, static_cast<smtk::resource::EventType>(event));
         }
       }
       m_activeResources.erase(id);
@@ -99,10 +99,10 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // Override the operation Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
   wrapper->smtkOperationManager()->observers().overrideWith(
-    [this](smtk::operation::Operation::Ptr oper, smtk::operation::EventType event,
+    [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
       auto id = smtk::common::UUID::random();
-      m_activeOperations[id] = oper;
+      m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
       emit operationEvent(QString::fromStdString(id.toString()), static_cast<int>(event),
         result ? QString::fromStdString(result->name()) : QString(), QPrivateSignal());
       return 0;
@@ -124,7 +124,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
           att = operation->specification()->findAttribute(resultName.toStdString());
         }
         operation->manager()->observers().callObserversDirectly(
-          operation, static_cast<smtk::operation::EventType>(event), att);
+          *operation, static_cast<smtk::operation::EventType>(event), att);
       }
       m_activeOperations.erase(id);
     });

@@ -93,10 +93,10 @@ bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, st
   return true;
 }
 
-int ResourcePhraseModel::handleOperationEvent(const smtk::operation::Operation::Ptr& op,
+int ResourcePhraseModel::handleOperationEvent(const smtk::operation::Operation& op,
   smtk::operation::EventType event, const smtk::operation::Operation::Result& res)
 {
-  auto resourcesAndLockTypes = smtk::operation::extractResourcesAndLockTypes(op->parameters());
+  auto resourcesAndLockTypes = smtk::operation::extractResourcesAndLockTypes(op.parameters());
 
   for (auto& resourceAndLockType : resourcesAndLockTypes)
   {
@@ -113,8 +113,14 @@ int ResourcePhraseModel::handleOperationEvent(const smtk::operation::Operation::
 }
 
 void ResourcePhraseModel::handleResourceEvent(
-  const Resource::Ptr& rsrc, smtk::resource::EventType event)
+  const Resource& resource, smtk::resource::EventType event)
 {
+  // The PhraseModle system has been designed to handle shared pointers to
+  // non-const resources and components. We const-cast here to accommodate
+  // this pattern.
+  smtk::resource::ResourcePtr rsrc =
+    const_cast<smtk::resource::Resource&>(resource).shared_from_this();
+
   if (event == smtk::resource::EventType::MODIFIED)
   {
     this->triggerModified(rsrc);
@@ -125,17 +131,17 @@ void ResourcePhraseModel::handleResourceEvent(
   }
 }
 
-void ResourcePhraseModel::processResource(const Resource::Ptr& rsrc, bool adding)
+void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool adding)
 {
   if (adding)
   {
-    if (m_resourceIds.find(rsrc->id()) == m_resourceIds.end())
+    if (m_resourceIds.find(resource->id()) == m_resourceIds.end())
     {
       // Only attempt to filter resource out if there are filters defined.
       bool acceptable = m_resourceFilters.empty() ? true : false;
       for (auto filter : m_resourceFilters)
       {
-        if (rsrc->isOfType(filter.first))
+        if (resource->isOfType(filter.first))
         {
           acceptable = true;
           break;
@@ -147,10 +153,10 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& rsrc, bool adding
         return;
       }
 
-      m_resourceIds.insert(rsrc->id());
+      m_resourceIds.insert(resource->id());
       DescriptivePhrases children(m_root->subphrases());
       children.push_back(
-        smtk::view::ResourcePhraseContent::createPhrase(rsrc, m_mutableAspects, m_root));
+        smtk::view::ResourcePhraseContent::createPhrase(resource, m_mutableAspects, m_root));
       std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
       this->root()->findDelegate()->decoratePhrases(children);
       this->updateChildren(m_root, children, std::vector<int>());
@@ -158,14 +164,15 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& rsrc, bool adding
   }
   else
   {
-    auto it = m_resourceIds.find(rsrc->id());
+    auto it = m_resourceIds.find(resource->id());
     if (it != m_resourceIds.end())
     {
       m_resourceIds.erase(it);
       DescriptivePhrases children(m_root->subphrases());
+      std::weak_ptr<smtk::resource::Resource> weakResourcePtr = resource;
       children.erase(std::remove_if(children.begin(), children.end(),
-                       [&rsrc](const DescriptivePhrase::Ptr& phr) -> bool {
-                         return phr->relatedResource() == rsrc;
+                       [weakResourcePtr](const DescriptivePhrase::Ptr& phr) -> bool {
+                         return phr->relatedResource() == weakResourcePtr.lock();
                        }),
         children.end());
       this->updateChildren(m_root, children, std::vector<int>());
@@ -173,16 +180,13 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& rsrc, bool adding
   }
 }
 
-void ResourcePhraseModel::triggerModified(const Resource::Ptr& rsrc)
+void ResourcePhraseModel::triggerModified(const Resource::Ptr& resource)
 {
-  if (rsrc)
+  int childIndex = m_root->argFindChild(resource, true);
+  if (childIndex >= 0)
   {
-    int childIndex = m_root->argFindChild(rsrc, true);
-    if (childIndex >= 0)
-    {
-      std::vector<int> idx(1, childIndex);
-      std::vector<int> empty;
-      this->trigger(m_root, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, empty);
-    }
+    std::vector<int> idx(1, childIndex);
+    std::vector<int> empty;
+    this->trigger(m_root, PhraseModelEvent::PHRASE_MODIFIED, idx, idx, empty);
   }
 }

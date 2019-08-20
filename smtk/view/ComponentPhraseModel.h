@@ -100,15 +100,17 @@ protected:
   virtual void handleExpunged(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   virtual void handleModified(Operation::Ptr op, Operation::Result res, ComponentItemPtr data);
   */
-  void handleResourceEvent(const Resource::Ptr& rsrc, smtk::resource::EventType event) override;
+  void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event) override;
   void handleCreated(
-    const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data) override;
+    const Operation& op, const Operation::Result& res, const ComponentItemPtr& data) override;
 
-  virtual void processResource(Resource::Ptr rsrc, bool adding);
+  virtual void processResource(const Resource::Ptr& rsrc, bool adding);
   virtual void populateRoot();
 
   smtk::view::DescriptivePhrasePtr m_root;
-  std::set<smtk::resource::ResourcePtr> m_resources;
+  std::set<std::weak_ptr<smtk::resource::Resource>,
+    std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
+    m_resources;
   smtk::resource::ResourcePtr m_activeResource;
   bool m_onlyShowActiveResourceComponents;
   std::multimap<std::string, std::string> m_componentFilters;

@@ -91,16 +91,21 @@ bool ComponentPhraseModel::setComponentFilters(const std::multimap<std::string, 
 }
 
 void ComponentPhraseModel::handleResourceEvent(
-  const Resource::Ptr& rsrc, smtk::resource::EventType event)
+  const Resource& resource, smtk::resource::EventType event)
 {
   if (event != smtk::resource::EventType::MODIFIED)
   {
+    // The PhraseModle system has been designed to handle shared pointers to
+    // non-const resources and components. We const-cast here to accommodate
+    // this pattern.
+    smtk::resource::ResourcePtr rsrc =
+      const_cast<smtk::resource::Resource&>(resource).shared_from_this();
     this->processResource(rsrc, event == smtk::resource::EventType::ADDED);
   }
 }
 
 void ComponentPhraseModel::handleCreated(
-  const Operation::Ptr& op, const Operation::Result& res, const ComponentItemPtr& data)
+  const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   (void)op;
   if (!res || !data)
@@ -131,7 +136,7 @@ void ComponentPhraseModel::handleCreated(
   this->PhraseModel::handleCreated(op, res, data);
 }
 
-void ComponentPhraseModel::processResource(Resource::Ptr rsrc, bool adding)
+void ComponentPhraseModel::processResource(const smtk::resource::ResourcePtr& rsrc, bool adding)
 {
   if (adding)
   {
@@ -199,14 +204,20 @@ void ComponentPhraseModel::populateRoot()
   {
     for (auto rsrc : m_resources)
     {
+      auto resource = rsrc.lock();
+      if (resource == nullptr)
+      {
+        continue;
+      }
+
       for (auto filter : m_componentFilters)
       {
-        if (!rsrc->isOfType(filter.first))
+        if (!resource->isOfType(filter.first))
         {
           continue;
         }
 
-        auto entries = rsrc->find(filter.second);
+        auto entries = resource->find(filter.second);
         comps.insert(entries.begin(), entries.end());
       }
     }
