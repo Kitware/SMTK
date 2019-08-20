@@ -769,6 +769,11 @@ if (SMTK_DATA_DIR)
   set(smtk_data_dir ${SMTK_DATA_DIR})
 endif()
 
+set(smtk_cmake_dir "${CMAKE_CURRENT_LIST_DIR}/CMake")
+set(smtk_cmake_build_dir "${CMAKE_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}")
+set(smtk_cmake_destination "${SMTK_INSTALL_CONFIG_DIR}")
+include(SMTKInstallCMakePackage)
+
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
