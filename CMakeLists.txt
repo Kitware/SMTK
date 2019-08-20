@@ -39,7 +39,7 @@ project(smtk VERSION ${SMTK_VERSION})
 
 #Add our Cmake directory to the module search path
 set (smtk_cmake_dir ${PROJECT_SOURCE_DIR}/CMake)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${smtk_cmake_dir})
+list(APPEND CMAKE_MODULE_PATH ${smtk_cmake_dir})
 
 ################################################################################
 
