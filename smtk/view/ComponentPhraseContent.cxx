@@ -110,7 +110,11 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
         if (meshComponent)
         {
           std::ostringstream meshSummary;
-          meshSummary << meshComponent->mesh().cells().size() << " cells";
+          auto mesh = meshComponent->mesh();
+          if (mesh.isValid())
+          {
+            meshSummary << mesh.cells().size() << " cells";
+          }
           return meshSummary.str();
         }
         return std::string();

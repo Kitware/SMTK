@@ -133,7 +133,8 @@ const smtk::resource::ResourcePtr Component::resource() const
 
 std::string Component::name() const
 {
-  return this->mesh().name();
+  auto mesh = this->mesh();
+  return (mesh.isValid() ? mesh.name() : "");
 }
 
 const smtk::mesh::MeshSet Component::mesh() const
