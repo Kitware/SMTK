@@ -539,7 +539,7 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   resourceName << ":/icons/entityTypes/";
   if (item->phraseType() == smtk::view::DescriptivePhraseType::COMPONENT_LIST)
   {
-    resourceName << "list" << (lightness >= 0.179 ? "_b" : "_w");
+    resourceName << "list";
   }
   else if (modelComp)
   {

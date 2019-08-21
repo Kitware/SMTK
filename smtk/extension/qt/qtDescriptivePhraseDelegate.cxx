@@ -182,7 +182,8 @@ void qtDescriptivePhraseDelegate::paint(
   QIcon icon;
   if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 0)
   {
-    if (setBackground && background.lightness() >= 128)
+    if ((setBackground && background.lightness() >= 128) ||
+      (!setBackground && option.palette.color(QPalette::Background).lightness() >= 128))
     {
       icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
     }
