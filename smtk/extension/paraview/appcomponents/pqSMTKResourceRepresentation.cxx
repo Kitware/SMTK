@@ -93,7 +93,7 @@ bool pqSMTKResourceRepresentation::setVisibility(smtk::resource::ComponentPtr co
 {
   auto pxy = this->getProxy();
   auto mpr = pxy->GetClientSideObject(); // TODO: Remove the need for me.
-  auto cmp = vtkPVCompositeRepresentation::SafeDownCast(mpr);
+  auto cmp = vtkCompositeRepresentation::SafeDownCast(mpr);
   auto spx =
     cmp ? vtkSMTKResourceRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
   if (spx)
