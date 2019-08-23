@@ -13,4 +13,5 @@ paraview_plugin_build(
   AUTOLOAD ${paraview_plugins}
   INSTALL_EXPORT SMTKParaViewPlugins
   CMAKE_DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
+  ADD_INSTALL_RPATHS ON
   TARGET smtk_paraview_plugins)

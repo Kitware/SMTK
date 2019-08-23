@@ -72,6 +72,16 @@ include(Function)
 # Include mechanism for determining how to specialize hash<X>()
 include(FindHashFunctor)
 
+# Set up rpaths in the install so that libraries all reference each other using
+# their current location.
+if (APPLE)
+  list(APPEND CMAKE_INSTALL_RPATH
+    "@loader_path")
+elseif (UNIX)
+  list(APPEND CMAKE_INSTALL_RPATH
+    "$ORIGIN")
+endif ()
+
 ################################################################################
 ## Paths for output
 
