@@ -55,8 +55,11 @@ endfunction(smtk_private_headers)
 # which allows you to export a target that has dependencies
 function(smtk_install_library target)
   set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET hidden)
+  if (NOT SMTK_EXPORT_SET)
+    set(SMTK_EXPORT_SET "${PROJECT_NAME}")
+  endif ()
   install(TARGETS ${target}
-    EXPORT ${PROJECT_NAME}
+    EXPORT ${SMTK_EXPORT_SET}
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
