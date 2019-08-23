@@ -128,7 +128,7 @@ public:
   virtual bool registerPluginTo(const std::shared_ptr<Manager>&) = 0;
   virtual bool unregisterPluginFrom(const std::shared_ptr<Manager>&) = 0;
 
-private:
+protected:
   virtual smtk::common::RegistryBase* find(const std::shared_ptr<Manager>&) = 0;
 
   std::unordered_set<smtk::common::RegistryBase*> m_registries;
@@ -157,8 +157,6 @@ public:
 
 private:
   smtk::common::RegistryBase* find(const std::shared_ptr<Manager>&) override;
-
-  std::unordered_set<smtk::common::RegistryBase*> m_registries;
 };
 
 template <typename Registrar, typename Manager>
@@ -171,7 +169,7 @@ smtk::common::RegistryBase* PluginClient<Registrar, Manager>::find(
   // compositions of Registrar/Manager pairs, so a dynamic_cast to a Registry
   // that only contains the queried Manager will still succeed.
   typedef smtk::common::Registry<Registrar, Manager> QueriedRegistry;
-  for (auto base_registry : m_registries)
+  for (auto base_registry : PluginClientFor<Manager>::m_registries)
   {
     QueriedRegistry* registry = dynamic_cast<QueriedRegistry*>(base_registry);
 
@@ -195,7 +193,8 @@ bool PluginClient<Registrar, Manager>::registerPluginTo(const std::shared_ptr<Ma
   // manager. That way, Registrars only register themselves to a manager once.
   if (this->find(manager) == nullptr)
   {
-    auto val = m_registries.insert(new smtk::common::Registry<Registrar, Manager>(manager));
+    auto val = PluginClientFor<Manager>::m_registries.insert(
+      new smtk::common::Registry<Registrar, Manager>(manager));
     return val.second;
   }
   return false;
@@ -208,7 +207,7 @@ bool PluginClient<Registrar, Manager>::unregisterPluginFrom(const std::shared_pt
   // exists, we break the connection by deleting the registry.
   if (auto registry = this->find(manager))
   {
-    m_registries.erase(registry);
+    PluginClientFor<Manager>::m_registries.erase(registry);
     delete registry;
     return true;
   }
