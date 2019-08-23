@@ -9,12 +9,12 @@ set(classes
   vtkCUBITReader
   vtkExtractRegionEdges
   vtkGDALRasterPolydataWrapper
-  vtkGeoSphereTransformLegacy
-  vtkGlobeSourceLegacy
   vtkGMSSolidReader
   vtkGMSTINReader
-  vtkLASReader
-  vtkLIDARReader)
+  vtkGeoSphereTransformLegacy
+  vtkGlobeSourceLegacy
+  vtkLIDARReader
+  vtkSMTKLASReader)
 set(private_headers
   vtkCMBReaderHelperFunctions.h)
 

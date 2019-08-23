@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "vtkLASReader.h"
+#include "vtkSMTKLASReader.h"
 
 #include "smtk/extension/vtk/reader/vtkGeoSphereTransformLegacy.h"
 
@@ -44,9 +44,9 @@ enum FileReadingStatus
   READ_ABORT
 };
 
-vtkStandardNewMacro(vtkLASReader);
+vtkStandardNewMacro(vtkSMTKLASReader);
 
-vtkLASReader::vtkLASReader()
+vtkSMTKLASReader::vtkSMTKLASReader()
 {
   this->FileName = NULL;
   this->SetNumberOfInputPorts(0);
@@ -73,7 +73,7 @@ vtkLASReader::vtkLASReader()
   this->OutputDataTypeIsDouble = true;
 }
 
-vtkLASReader::~vtkLASReader()
+vtkSMTKLASReader::~vtkSMTKLASReader()
 {
   this->SetFileName(0);
   for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
@@ -82,7 +82,7 @@ vtkLASReader::~vtkLASReader()
   }
 }
 
-void vtkLASReader::SetConvertFromLatLongToXYZ(bool mode)
+void vtkSMTKLASReader::SetConvertFromLatLongToXYZ(bool mode)
 {
   if (this->ConvertFromLatLongToXYZ == mode)
   {
@@ -96,7 +96,7 @@ void vtkLASReader::SetConvertFromLatLongToXYZ(bool mode)
 }
 
 // vtkSetStringMacro except we clear some variables if we update the value
-void vtkLASReader::SetFileName(const char* filename)
+void vtkSMTKLASReader::SetFileName(const char* filename)
 {
   vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting FileName to " << filename);
   if (this->FileName == NULL && filename == NULL)
@@ -134,7 +134,7 @@ void vtkLASReader::SetFileName(const char* filename)
   this->Modified();
 }
 
-void vtkLASReader::AddRequestedClassificationForRead(int classification, int onRatio)
+void vtkSMTKLASReader::AddRequestedClassificationForRead(int classification, int onRatio)
 {
   if (classification >= 0 && classification < 128 && onRatio > 0)
   {
@@ -144,13 +144,13 @@ void vtkLASReader::AddRequestedClassificationForRead(int classification, int onR
   }
 }
 
-void vtkLASReader::RemoveAllRequestedReadClassifications()
+void vtkSMTKLASReader::RemoveAllRequestedReadClassifications()
 {
   this->RequestedReadClassifications.clear();
   this->Modified();
 }
 
-void vtkLASReader::SetTransform(int index, double elements[16])
+void vtkSMTKLASReader::SetTransform(int index, double elements[16])
 {
   if (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS)
   {
@@ -161,12 +161,12 @@ void vtkLASReader::SetTransform(int index, double elements[16])
   }
 }
 
-void vtkLASReader::SetTransform(double elements[17])
+void vtkSMTKLASReader::SetTransform(double elements[17])
 {
   this->SetTransform(static_cast<int>(elements[0]), elements + 1);
 }
 
-void vtkLASReader::SetTransform(int index, vtkTransform* transform)
+void vtkSMTKLASReader::SetTransform(int index, vtkTransform* transform)
 {
   if (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS && this->Transform[index] != transform)
   {
@@ -184,12 +184,12 @@ void vtkLASReader::SetTransform(int index, vtkTransform* transform)
   }
 }
 
-vtkTransform* vtkLASReader::GetTransform(int index)
+vtkTransform* vtkSMTKLASReader::GetTransform(int index)
 {
   return (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS) ? this->Transform[index] : 0;
 }
 
-int vtkLASReader::ReadHeaderBlock()
+int vtkSMTKLASReader::ReadHeaderBlock()
 {
   ifstream fin(this->FileName, ios::binary);
   if (!fin)
@@ -291,7 +291,7 @@ int vtkLASReader::ReadHeaderBlock()
   return READ_OK;
 }
 
-std::string vtkLASReader::GetHeaderInfo()
+std::string vtkSMTKLASReader::GetHeaderInfo()
 {
   if (this->ReadHeaderBlock() == READ_ERROR)
   {
@@ -305,7 +305,7 @@ std::string vtkLASReader::GetHeaderInfo()
   return ss.str();
 }
 
-int vtkLASReader::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkSMTKLASReader::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
 {
   // get the ouptut
@@ -335,7 +335,7 @@ int vtkLASReader::RequestData(vtkInformation* vtkNotUsed(request),
   return 1;
 }
 
-int vtkLASReader::ReadPoints(vtkMultiBlockDataSet* output)
+int vtkSMTKLASReader::ReadPoints(vtkMultiBlockDataSet* output)
 {
 
   struct LASPieceInfo
@@ -700,7 +700,7 @@ int vtkLASReader::ReadPoints(vtkMultiBlockDataSet* output)
   return READ_OK;
 }
 
-void vtkLASReader::AddClassificationFieldData(unsigned char classification, vtkPolyData* pD)
+void vtkSMTKLASReader::AddClassificationFieldData(unsigned char classification, vtkPolyData* pD)
 {
   // add some field data regarding the classification of this block
   vtkUnsignedCharArray* classificationFD = vtkUnsignedCharArray::New();
@@ -777,7 +777,7 @@ void vtkLASReader::AddClassificationFieldData(unsigned char classification, vtkP
   classificationNameFD->Delete();
 }
 
-void vtkLASReader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSMTKLASReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
@@ -786,7 +786,7 @@ void vtkLASReader::PrintSelf(ostream& os, vtkIndent indent)
      << "Convert From Lat/Long to xyz: " << (this->ConvertFromLatLongToXYZ ? "On" : "Off");
 }
 
-int vtkLASReader::RequestInformation(vtkInformation* vtkNotUsed(request),
+int vtkSMTKLASReader::RequestInformation(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
 {
   if (!this->FileName)
