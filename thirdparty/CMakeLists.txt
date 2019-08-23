@@ -27,7 +27,12 @@ endif()
 #  set(Delaunay_USE_VTK ON)
 #endif()
 
+set(CMAKE_INSTALL_CMAKEDIR
+  "${SMTK_INSTALL_CONFIG_DIR}/Delaunay")
+set(CMAKE_INSTALL_INCLUDEDIR
+  "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${PROJECT_VERSION}")
 add_subdirectory(delaunay)
+unset(CMAKE_INSTALL_CMAKEDIR)
 
 # disable warning flags for delaunay.
 option(SMTK_IGNORE_DELAUNAY_WARNINGS "disable warning flags for delaunay" ON)

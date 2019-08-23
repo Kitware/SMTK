@@ -48,6 +48,10 @@ endif ()
 
 # Required dependencies.
 
+# Delaunay is always embedded.
+set(Delaunay_DIR "${CMAKE_CURRENT_LIST_DIR}/Delaunay")
+find_package(Delaunay REQUIRED ${_smtk_find_quietly})
+
 find_package(Boost
   EXACT "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@"
   ${_smtk_find_quietly}
