@@ -158,6 +158,7 @@ pqSMTKSelectionFilterBehavior::~pqSMTKSelectionFilterBehavior()
   {
     s_selectionFilter = nullptr;
   }
+  delete m_p;
 }
 
 pqSMTKSelectionFilterBehavior* pqSMTKSelectionFilterBehavior::instance()

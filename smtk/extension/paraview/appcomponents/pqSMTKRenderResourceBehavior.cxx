@@ -99,6 +99,7 @@ pqSMTKRenderResourceBehavior::~pqSMTKRenderResourceBehavior()
   }
 
   QObject::disconnect(this);
+  delete m_p;
 }
 
 pqSMTKResource* pqSMTKRenderResourceBehavior::createPipelineSource(
