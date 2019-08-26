@@ -14,6 +14,8 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/operation/GroupObserver.h"
+
 #include "pqReaction.h"
 
 #include <QObject>
@@ -74,6 +76,8 @@ private:
   Q_DISABLE_COPY(pqSMTKNewResourceBehavior);
 
   QMenu* m_newMenu;
+
+  smtk::operation::GroupObservers::Key m_key;
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKNewResourceBehavior_h

@@ -192,7 +192,7 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
       pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
       if (wrapper != nullptr)
       {
-        wrapper->smtkOperationManager()->groupObservers().insert(
+        m_key = wrapper->smtkOperationManager()->groupObservers().insert(
           [this](const smtk::operation::Operation::Index&, const std::string& groupName, bool) {
             if (groupName == smtk::operation::CreatorGroup::type_name)
             {
@@ -333,6 +333,13 @@ pqSMTKNewResourceBehavior::~pqSMTKNewResourceBehavior()
 {
   if (g_instance == this)
   {
+    pqServer* server = pqActiveObjects::instance().activeServer();
+    pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
+    if (wrapper != nullptr)
+    {
+      wrapper->smtkOperationManager()->groupObservers().erase(m_key);
+    }
+
     g_instance = nullptr;
   }
 
