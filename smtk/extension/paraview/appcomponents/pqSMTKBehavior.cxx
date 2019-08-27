@@ -34,6 +34,7 @@
 #include "vtkSMParaViewPipelineControllerWithRendering.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxyDefinitionManager.h"
+#include "vtkSMSession.h"
 #include "vtkSMSessionProxyManager.h"
 #include "vtkSMSourceProxy.h"
 
@@ -217,6 +218,10 @@ void pqSMTKBehavior::addManagerOnServer(pqServer* server)
   auto rmpxy = dynamic_cast<vtkSMSMTKWrapperProxy*>(pxy);
   m_p->Remotes[server].first = rmpxy;
 
+  // Increase the shared pointer count to prevent the wrapper from being
+  // deleted until we explicitly delete it.
+  rmpxy->GetSession()->Register(nullptr);
+
   emit addedManagerOnServer(rmpxy, server);
 }
 
@@ -242,6 +247,9 @@ void pqSMTKBehavior::removeManagerFromServer(pqServer* remote)
 
   // Notify listeners that the server-side managers are going away
   emit removingManagerFromServer(entry->second.second, entry->first);
+
+  // Decrease the shared pointer count to allow the wrapper to go out of scope.
+  entry->second.first->GetSession()->UnRegister(nullptr);
 
   m_p->Remotes.erase(entry);
 }
