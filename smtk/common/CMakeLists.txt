@@ -10,6 +10,7 @@ set(commonSrcs
   json/jsonLinks.cxx
   json/jsonUUID.cxx
   Paths.cxx
+  Registry.cxx
   StringUtil.cxx
   TimeZone.cxx
   UUID.cxx

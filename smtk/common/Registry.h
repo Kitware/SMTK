@@ -12,11 +12,13 @@
 
 #include "smtk/common/CompilerInformation.h"
 
+#include "smtk/CoreExports.h"
 #include "smtk/TupleTraits.h"
 
 #include <map>
 #include <memory>
 #include <type_traits>
+#include <typeindex>
 #include <utility>
 #include <vector>
 
@@ -79,9 +81,31 @@ public:
   using type = decltype(testRegisterTo<Manager>(nullptr));
 };
 
+/// ManagerCount is a singleton map of Schwarz counters for pairs of Manager
+/// instances and Registrar types.
+class SMTKCORE_EXPORT ManagerCount
+{
+public:
+  static ManagerCount& instance() { return m_instance; }
+
+  template <typename Registrar, typename Manager>
+  std::size_t& operator[](Manager* manager)
+  {
+    return this->operator[](
+      std::make_pair(manager, std::type_index(typeid(Registrar)).hash_code()));
+  }
+
+private:
+  std::size_t& operator[](const std::pair<void*, std::size_t>& key) { return m_ManagerMap[key]; }
+
+  std::map<std::pair<void*, std::size_t>, std::size_t> m_ManagerMap;
+
+  static ManagerCount m_instance;
+};
+
 /// MaybeRegister accepts a Registrar, a Manager and a boolean type. If the
 /// boolean type is false, then the Registrar is not associated with the
-/// Manager and nothing happens. If the type is true, then a Schwartz counter
+/// Manager and nothing happens. If the type is true, then a Schwarz counter
 /// for each Manager is set up to call the Registrar exactly once when a
 /// Registry enters the program's scope and again when the Registry leaves
 /// scope.
@@ -103,13 +127,13 @@ public:
 };
 
 template <typename Registrar, typename Manager>
-class MaybeRegister<Registrar, Manager, std::true_type>
+class SMTK_ALWAYS_EXPORT MaybeRegister<Registrar, Manager, std::true_type>
 {
 public:
   MaybeRegister(const std::shared_ptr<Manager>& manager)
     : m_Manager(manager)
   {
-    if (managers()[m_Manager]++ == 0)
+    if (ManagerCount::instance().operator[]<Registrar, Manager>(manager.get())++ == 0)
     {
       Registrar().registerTo(manager);
     }
@@ -118,7 +142,7 @@ public:
   ~MaybeRegister()
   {
     std::shared_ptr<Manager> manager = m_Manager.lock();
-    if (manager && --managers()[m_Manager] == 0)
+    if (manager && --ManagerCount::instance().operator[]<Registrar, Manager>(manager.get()) == 0)
     {
       Registrar().unregisterFrom(manager);
     }
@@ -138,18 +162,7 @@ public:
 
 private:
   std::weak_ptr<Manager> m_Manager;
-  static std::map<std::weak_ptr<Manager>, std::size_t, std::owner_less<std::weak_ptr<Manager> > >&
-  managers();
 };
-
-template <typename Registrar, typename Manager>
-std::map<std::weak_ptr<Manager>, std::size_t, std::owner_less<std::weak_ptr<Manager> > >&
-MaybeRegister<Registrar, Manager, std::true_type>::managers()
-{
-  static std::map<std::weak_ptr<Manager>, std::size_t, std::owner_less<std::weak_ptr<Manager> > >
-    managers;
-  return managers;
-}
 
 /// Registrars may declare dependencies to other Registrars by defining a type
 /// "Dependencies" as a std::tuple of additional Registrars. This declaration is
@@ -260,7 +273,7 @@ protected:
 /// the managers passed to the Registry is then guaranteed to be at least as
 /// long as the lifetime of the Registry. Multiple Registries can exist with
 /// overlapping registration conditions; multiple registration and early
-/// unregistration are avoided via the use of Schwartz counters in
+/// unregistration are avoided via the use of Schwarz counters in
 /// MaybeRegister.
 ///
 /// Both gcc and clang are savvy to template class descriptions using parameter
