@@ -100,6 +100,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
   {
     return;
   }
+  std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
   auto temp = smtk::dynamic_pointer_cast<Item>(itemPtr);
   smtk::attribute::from_json(j, temp);
 
@@ -158,7 +159,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
               json itemValue = itemJson.at("ItemValue");
               auto groupItemPtr = itemPtr->item(groupIter, itemPGIter);
               smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-                itemValue, groupItemPtr, itemExpressionInfo, attRefInfo);
+                itemValue, groupItemPtr, itemExpressionInfo, attRefInfo, convertedAttDefs);
             }
           }
         }

@@ -17,7 +17,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/SearchStyle.h"
 
 namespace py = pybind11;

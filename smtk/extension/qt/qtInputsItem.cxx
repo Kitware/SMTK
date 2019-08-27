@@ -910,6 +910,17 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   QObject::connect(combo, SIGNAL(currentIndexChanged(int)), this,
     SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
 
+  // Find expression attributes of the appropriate type
+  auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
+  ResourcePtr lAttResource = inputitem->attribute()->attributeResource();
+  smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
+  std::vector<smtk::attribute::AttributePtr> result;
+  if (attDef)
+  {
+    lAttResource->findAttributes(attDef, result);
+  }
+  funCheck->setEnabled(true);
+
   // create line edit for expression which is a const value
   QWidget* valeditor = this->createEditBox(elementIdx, checkFrame);
 
@@ -960,7 +971,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     combo->blockSignals(true);
     combo->clear();
     auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
-    smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
+    smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
     QStringList attNames;
     if (attDef)
     {
@@ -981,10 +992,10 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     int setIndex = 0;
     if (inputitem->isExpression(elementIdx))
     {
-      smtk::attribute::RefItemPtr item = inputitem->expressionReference(elementIdx);
-      if (item && (item->definition() != nullptr))
+      smtk::attribute::AttributePtr att = inputitem->expression(elementIdx);
+      if (att != nullptr)
       {
-        setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
+        setIndex = attNames.indexOf(att->name().c_str());
       }
       else
       {
@@ -1030,7 +1041,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     // we want to save the value in case they change their minds later
     if (inputitem->isExpression(elementIdx))
     {
-      smtk::attribute::RefItemPtr item = inputitem->expressionReference(elementIdx);
+      smtk::attribute::ComponentItemPtr item = inputitem->expressionReference(elementIdx);
       QVariant prevExpression(item->valueAsString(elementIdx).c_str());
       combo->setProperty("PreviousValue", prevExpression);
     }
@@ -1056,7 +1067,7 @@ void qtInputsItem::onExpressionReferenceChanged()
   {
     return;
   }
-  smtk::attribute::RefItemPtr item = inputitem->expressionReference(elementIdx);
+  smtk::attribute::ComponentItemPtr item = inputitem->expressionReference(elementIdx);
   if (!item)
   {
     return;
@@ -1069,17 +1080,17 @@ void qtInputsItem::onExpressionReferenceChanged()
   }
   else if (curIdx == 1)
   {
+    smtk::attribute::ResourcePtr lAttResource = item->attribute()->attributeResource();
     auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
-    smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
-    auto attResource = attDef->resource();
-    smtk::attribute::AttributePtr newAtt = attResource->createAttribute(attDef->type());
+    smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition(lAttResource);
+    smtk::attribute::AttributePtr newAtt = lAttResource->createAttribute(attDef->type());
     auto editor =
       new smtk::extension::qtAttributeEditorDialog(newAtt, m_itemInfo.uiManager(), m_widget);
     auto status = editor->exec();
     QStringList itemsInComboBox;
     if (status == QDialog::Rejected)
     {
-      attResource->removeAttribute(newAtt);
+      lAttResource->removeAttribute(newAtt);
     }
     else
     {

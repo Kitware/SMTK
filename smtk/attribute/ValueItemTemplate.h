@@ -14,7 +14,7 @@
 #ifndef __smtk_attribute_ValueItemTemplate_h
 #define __smtk_attribute_ValueItemTemplate_h
 
-#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include <cassert>

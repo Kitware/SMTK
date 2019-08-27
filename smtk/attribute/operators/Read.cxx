@@ -58,6 +58,21 @@ Read::Result Read::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
+  // is the a supported version?  Should be 3.0 or 4.0
+  auto version = j.find("version");
+  if ((version == j.end()) || !((*version == "3.0") || (*version == "4.0")))
+  {
+    if (version == j.end())
+    {
+      smtkErrorMacro(log(), "Cannot read attribute file \"" << filename << "\" - Missing Version.");
+    }
+    else
+    {
+      smtkErrorMacro(log(), "Cannot read attribute file \""
+          << filename << "\" - Unsupported Version: " << *version << ".");
+    }
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
   // Create an attribute resource.
   smtk::attribute::Resource::Ptr resource = smtk::attribute::Resource::create();
 

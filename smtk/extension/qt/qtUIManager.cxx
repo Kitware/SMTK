@@ -12,7 +12,6 @@
 
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
-#include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtCategorySelectorView.h"
 #include "smtk/extension/qt/qtComponentItem.h"
@@ -70,8 +69,6 @@
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
-#include "smtk/attribute/RefItem.h"
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
@@ -169,7 +166,6 @@ void qtUIManager::commonConstructor()
 
   // Lets register some basic item constructors
   this->registerItemConstructor("Default", qtUIManager::defaultItemConstructor);
-  this->registerItemConstructor("qtAttributeRefItem", qtAttributeRefItem::createItemWidget);
   this->registerItemConstructor("qtComponentItem", qtComponentItem::createItemWidget);
   this->registerItemConstructor("qtDateTimeItem", qtDateTimeItem::createItemWidget);
   this->registerItemConstructor("qtDirectoryItem", qtDirectoryItem::createItemWidget);
@@ -1113,8 +1109,6 @@ qtItem* qtUIManager::defaultItemConstructor(const qtAttributeItemInfo& info)
   qtItem* aItem = nullptr;
   switch (item->type())
   {
-    case smtk::attribute::Item::AttributeRefType: // This is always inside valueItem ???
-      return qtAttributeRefItem::createItemWidget(info);
     case smtk::attribute::Item::ComponentType:
       return qtComponentItem::createItemWidget(info);
     case smtk::attribute::Item::DateTimeType:

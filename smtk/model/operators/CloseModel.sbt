@@ -29,7 +29,6 @@
       <!-- The close models are stored in the base result's "expunged" item. -->
       <ItemDefinitions>
         <Resource Name="resource modified" IsEnabledByDefault="true"></Resource>
-        <MeshEntity Name="mesh_expunged" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

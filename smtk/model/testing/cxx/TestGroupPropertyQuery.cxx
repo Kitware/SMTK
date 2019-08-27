@@ -13,7 +13,6 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -28,7 +27,11 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 
+#include "smtk/resource/Component.h"
+
 #include "smtk/common/testing/cxx/helpers.h"
+
+#include <array>
 
 namespace
 {

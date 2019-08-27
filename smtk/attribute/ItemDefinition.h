@@ -50,8 +50,6 @@ public:
     const smtk::attribute::Resource& ToResource;
     // List of ValueItemDefinitions that reference expressions not currently in this resource
     std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
-    // List of RefItemDefinitions that reference types not currently in this resource
-    std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
     CopyInfo(const smtk::attribute::ResourcePtr resource)
       : ToResource(*resource)
     {

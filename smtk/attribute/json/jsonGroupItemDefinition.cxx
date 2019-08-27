@@ -26,10 +26,6 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinitionPtr& defPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<ItemDefinition>(defPtr));
@@ -77,8 +73,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemDefinition
 }
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefinitionPtr& defPtr,
-  const smtk::attribute::ResourcePtr& resPtr, std::vector<ItemExpressionDefInfo>& expressionDefInfo,
-  std::vector<AttRefDefInfo>& attRefDefInfo)
+  const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -150,8 +145,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefiniti
     json childrenDefs = j.at("ItemDefinitions");
     for (json::iterator iter = childrenDefs.begin(); iter != childrenDefs.end(); iter++)
     {
-      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-        iter, defPtr, resPtr, expressionDefInfo, attRefDefInfo);
+      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(iter, defPtr, resPtr);
     }
   }
   catch (std::exception& /*e*/)

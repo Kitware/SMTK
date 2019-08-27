@@ -29,8 +29,7 @@ SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::StringItemDefinitionPtr& defPtr);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::StringItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo);
+  smtk::attribute::StringItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr);
 }
 }
 

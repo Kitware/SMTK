@@ -46,14 +46,8 @@ std::shared_ptr<HandlerItemDef> HandlerItemDef::create(const int type)
       return std::make_shared<HandlerFile>();
     case Item::DirectoryType:
       return std::make_shared<HandlerDirectory>();
-    case Item::MeshSelectionType:
-      return std::make_shared<HandlerMeshSelection>();
-    case Item::MeshEntityType:
-      return std::make_shared<HandlerMeshEntity>();
     case Item::DateTimeType:
       return std::make_shared<HandlerDateTime>();
-    case Item::AttributeRefType:
-      return std::make_shared<HandlerRef>();
     case Item::ComponentType:
       return std::make_shared<HandlerComponent>();
     case Item::ResourceType:

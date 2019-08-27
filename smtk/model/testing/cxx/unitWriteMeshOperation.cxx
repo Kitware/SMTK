@@ -10,7 +10,6 @@
 
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
 
 #include "smtk/io/ModelToMesh.h"
 #include "smtk/io/ReadMesh.h"

@@ -11,6 +11,7 @@
 #include "nlohmann/json.hpp"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonAttribute.h"
 #include "smtk/attribute/json/jsonDefinition.h"
@@ -27,19 +28,15 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 using json = nlohmann::json;
 
-/**\brief Provide a way to serialize Resource. It would stick with attribute
-  * V3 format
-  */
-/// Convert a SelectionManager's currentSelection() to JSON.
+/// \brief Provide a way to serialize an attribute::Resource. The current version is 4.0 but
+/// but can also read in a resource in version 3.0 format.
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 {
   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(res));
+  // Set the version to 4.0
+  j["version"] = "4.0";
   // Write out the category and analysis information
   if (res->numberOfCategories())
   {
@@ -233,8 +230,6 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 {
-  std::vector<smtk::attribute::ItemExpressionDefInfo> expressionDefInfo;
-  std::vector<smtk::attribute::AttRefDefInfo> attRefDefInfo;
   smtk::io::Logger logger;
   //TODO: v2Parser has a notion of rootName
   if (!res.get() || j.is_null())
@@ -371,6 +366,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   }
 
   // Process attribute info
+  std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
   try
   {
     json definitions = j.at("Definitions");
@@ -411,7 +407,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         // process the definition
         // Since definition is not default constructible, we have to call the
         // function directly
-        smtk::attribute::from_json(currentDef, def, expressionDefInfo, attRefDefInfo);
+        smtk::attribute::from_json(currentDef, def, convertedAttDefs);
       }
       catch (std::exception& /*e*/)
       {
@@ -424,39 +420,6 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   {
     std::cerr << "Failed to find definitions for resource " << res->name() << std::endl;
   }
-  // At this point we have all the definitions read in so lets
-  // fix up all of the attribute definition references
-  // Reference: XmlDovV1Parser::L575
-  smtk::attribute::DefinitionPtr def;
-  for (size_t i = 0; i < expressionDefInfo.size(); i++)
-  {
-    def = res->findDefinition(expressionDefInfo[i].second);
-    if (def)
-    {
-      expressionDefInfo[i].first->setExpressionDefinition(def);
-    }
-    else
-    {
-      std::cerr << "Referenced Item expression Definition: " << expressionDefInfo[i].second
-                << " is missing and required by Item Definition: "
-                << expressionDefInfo[i].first->name() << std::endl;
-    }
-  }
-  for (size_t i = 0; i < attRefDefInfo.size(); i++)
-  {
-    def = res->findDefinition(attRefDefInfo[i].second);
-    if (def)
-    {
-      attRefDefInfo[i].first->setAttributeDefinition(def);
-    }
-    else
-    {
-      std::cerr << "Referenced Attribute Definition: " << attRefDefInfo[i].second
-                << " is missing and required by Item Definition: " << attRefDefInfo[i].first->name()
-                << std::endl;
-    }
-  }
-
   // Check for Exclusions
   if (j.find("Exclusions") != j.end())
   {
@@ -466,6 +429,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       auto excObj = *excsInter; // Get the exclusion list
       // First lets convert the strings to definitions
       std::vector<smtk::attribute::DefinitionPtr> defs;
+      smtk::attribute::DefinitionPtr def;
       for (auto strIter = excObj.begin(); strIter != excObj.end(); strIter++)
       {
         def = res->findDefinition(strIter->get<std::string>());
@@ -494,6 +458,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   if (j.find("Prerequisites") != j.end())
   {
     auto presObj = j.at("Prerequisites");
+    smtk::attribute::DefinitionPtr def;
     for (auto presInter = presObj.begin(); presInter != presObj.end(); presInter++)
     {
       auto preObj = *presInter;
@@ -539,6 +504,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   try
   {
     json attributes = j.at("Attributes");
+    smtk::attribute::DefinitionPtr def;
     for (auto iter = attributes.begin(); iter != attributes.end(); iter++)
     { // Get/Create the attribute first
       std::string name, type;
@@ -608,7 +574,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
                   << "  - could not be created - is the name in use" << std::endl;
         continue;
       }
-      smtk::attribute::from_json(*iter, att, itemExpressionInfo, attRefInfo);
+      smtk::attribute::from_json(*iter, att, itemExpressionInfo, attRefInfo, convertedAttDefs);
     }
   }
   catch (std::exception& /*e*/)

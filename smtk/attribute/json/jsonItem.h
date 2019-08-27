@@ -28,7 +28,7 @@ namespace attribute
 
 struct AttRefInfo
 {
-  smtk::attribute::RefItemPtr item;
+  smtk::attribute::ComponentItemPtr item;
   int pos;
   std::string attName;
 };

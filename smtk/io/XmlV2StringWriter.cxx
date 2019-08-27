@@ -24,13 +24,8 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshItemDefinition.h"
-#include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Resource.h"
@@ -667,9 +662,6 @@ void XmlV2StringWriter::processItemDefinitionType(
 {
   switch (idef->type())
   {
-    case Item::AttributeRefType:
-      this->processRefDef(node, smtk::dynamic_pointer_cast<RefItemDefinition>(idef));
-      break;
     case Item::DoubleType:
       this->processDoubleDef(node, smtk::dynamic_pointer_cast<DoubleItemDefinition>(idef));
       break;
@@ -691,13 +683,6 @@ void XmlV2StringWriter::processItemDefinitionType(
     case Item::ModelEntityType:
       this->processModelEntityDef(
         node, smtk::dynamic_pointer_cast<ModelEntityItemDefinition>(idef));
-      break;
-    case Item::MeshSelectionType:
-      this->processMeshSelectionItemDef(
-        node, smtk::dynamic_pointer_cast<MeshSelectionItemDefinition>(idef));
-      break;
-    case Item::MeshEntityType:
-      this->processMeshEntityDef(node, smtk::dynamic_pointer_cast<MeshItemDefinition>(idef));
       break;
     case Item::VoidType:
       // Nothing to do!
@@ -782,35 +767,6 @@ void XmlV2StringWriter::processModelEntityDef(
   }
 }
 
-void XmlV2StringWriter::processMeshSelectionItemDef(
-  pugi::xml_node& node, smtk::attribute::MeshSelectionItemDefinitionPtr idef)
-{
-  // this->processItemDefinition(node, idef);
-  node.append_attribute("ModelEntityRef").set_value(idef->refModelEntityName().c_str());
-
-  smtk::model::BitFlags membershipMask = idef->membershipMask();
-  std::string membershipMaskStr = this->encodeModelEntityMask(membershipMask);
-  xml_node menode;
-  menode = node.append_child("MembershipMask");
-  menode.text().set(membershipMaskStr.c_str());
-}
-
-void XmlV2StringWriter::processMeshEntityDef(
-  pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef)
-{
-  node.append_attribute("NumberOfRequiredValues") =
-    static_cast<unsigned int>(idef->numberOfRequiredValues());
-  if (idef->isExtensible())
-  {
-    node.append_attribute("Extensible") = true;
-    if (idef->maxNumberOfValues())
-    {
-      node.append_attribute("MaxNumberOfValues") =
-        static_cast<unsigned int>(idef->maxNumberOfValues());
-    }
-  }
-}
-
 void XmlV2StringWriter::processValueDef(
   pugi::xml_node& node, smtk::attribute::ValueItemDefinitionPtr idef)
 {
@@ -847,7 +803,7 @@ void XmlV2StringWriter::processValueDef(
   }
   if (idef->allowsExpressions())
   {
-    attribute::DefinitionPtr exp = idef->expressionDefinition();
+    attribute::DefinitionPtr exp = idef->expressionDefinition(m_resource);
     if (exp)
     {
       xml_node enode = node.append_child("ExpressionType");
@@ -871,39 +827,6 @@ void XmlV2StringWriter::processValueDef(
     itemDefNode = itemDefNodes.append_child();
     itemDefNode.set_name(Item::type2String(iter->second->type()).c_str());
     this->processItemDefinition(itemDefNode, iter->second);
-  }
-}
-
-void XmlV2StringWriter::processRefDef(pugi::xml_node& node, attribute::RefItemDefinitionPtr idef)
-{
-  attribute::DefinitionPtr adp = idef->attributeDefinition();
-  if (adp)
-  {
-    xml_node anode;
-    anode = node.append_child("AttDef");
-    anode.text().set(adp->type().c_str());
-  }
-  node.append_attribute("NumberOfRequiredValues") =
-    static_cast<unsigned int>(idef->numberOfRequiredValues());
-  if (idef->hasValueLabels())
-  {
-    xml_node lnode = node.append_child();
-    lnode.set_name("ComponentLabels");
-    if (idef->usingCommonLabel())
-    {
-      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
-    }
-    else
-    {
-      size_t i, n = idef->numberOfRequiredValues();
-      xml_node ln;
-      for (i = 0; i < n; i++)
-      {
-        ln = lnode.append_child();
-        ln.set_name("Label");
-        ln.set_value(idef->valueLabel(i).c_str());
-      }
-    }
   }
 }
 
@@ -1094,9 +1017,6 @@ void XmlV2StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr
 {
   switch (item->type())
   {
-    case Item::AttributeRefType:
-      this->processRefItem(node, smtk::dynamic_pointer_cast<RefItem>(item));
-      break;
     case Item::DoubleType:
       this->processDoubleItem(node, smtk::dynamic_pointer_cast<DoubleItem>(item));
       break;
@@ -1120,12 +1040,6 @@ void XmlV2StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr
       break;
     case Item::VoidType:
       // Nothing to do!
-      break;
-    case Item::MeshSelectionType:
-      this->processMeshSelectionItem(node, smtk::dynamic_pointer_cast<MeshSelectionItem>(item));
-      break;
-    case Item::MeshEntityType:
-      this->processMeshEntityItem(node, smtk::dynamic_pointer_cast<MeshItem>(item));
       break;
     default:
       smtkErrorMacro(m_logger, "Unsupported Type: " << Item::type2String(item->type())
@@ -1244,105 +1158,6 @@ void XmlV2StringWriter::processModelEntityItem(
       val = values.append_child("Val");
       val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->value(i).entity().toString().c_str());
-    }
-    else
-    {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-    }
-  }
-}
-
-void XmlV2StringWriter::processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item)
-{
-  size_t i = 0, n = item->numberOfValues();
-  // we should always have "NumberOfValues" set
-  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
-
-  if (!n)
-  {
-    return;
-  }
-
-  xml_node values = node.append_child("Values");
-  smtk::attribute::MeshItem::const_mesh_it it;
-  xml_node val;
-  for (it = item->begin(); it != item->end(); ++it, ++i)
-  {
-    if (item->isSet(i))
-    {
-      val = values.append_child("Val");
-      val.append_attribute("collectionid").set_value(it->resource()->entity().toString().c_str());
-      nlohmann::json jrange = it->range();
-      val.text().set(jrange.dump().c_str());
-    }
-  }
-}
-
-void XmlV2StringWriter::processMeshSelectionItem(
-  pugi::xml_node& node, smtk::attribute::MeshSelectionItemPtr item)
-{
-  size_t n = item->numberOfValues();
-  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
-  xml_node val;
-  val = node.append_child("CtrlKey");
-  val.text().set(item->isCtrlKeyDown() ? 1 : 0);
-
-  val = node.append_child("MeshModifyMode");
-  val.text().set(MeshSelectionItem::modifyMode2String(item->modifyMode()).c_str());
-  if (!n)
-  {
-    return;
-  }
-
-  xml_node values, selValues = node.append_child("SelectionValues");
-  smtk::attribute::MeshSelectionItem::const_sel_map_it it;
-  for (it = item->begin(); it != item->end(); ++it)
-  {
-    values = selValues.append_child("Values");
-    values.append_attribute("EntityUUID").set_value(it->first.toString().c_str());
-    std::set<int>::const_iterator vit;
-    for (vit = it->second.begin(); vit != it->second.end(); ++vit)
-    {
-      val = values.append_child("Val");
-      val.text().set(*vit);
-    }
-  }
-}
-
-void XmlV2StringWriter::processRefItem(pugi::xml_node& node, attribute::RefItemPtr item)
-{
-  size_t i = 0, n = item->numberOfValues();
-  std::size_t numRequiredVals = item->numberOfRequiredValues();
-
-  xml_node val;
-  if (!n)
-  {
-    return;
-  }
-
-  if (!numRequiredVals)
-  {
-    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
-  }
-
-  if (numRequiredVals == 1)
-  {
-    if (item->isSet())
-    {
-      val = node.append_child("Val");
-      val.text().set(item->value(i)->name().c_str());
-    }
-    return;
-  }
-  xml_node values = node.append_child("Values");
-  for (i = 0; i < n; i++)
-  {
-    if (item->isSet(i))
-    {
-      val = values.append_child("Val");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      val.text().set(item->value(i)->name().c_str());
     }
     else
     {

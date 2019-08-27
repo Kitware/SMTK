@@ -20,7 +20,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -121,33 +120,8 @@ SetProperty::Result SetProperty::operateInternal()
     nameItem->value(0), integerItem, entities);
 
   // check whether there are mesh entities's properties need to be changed
-  smtk::attribute::MeshItemPtr meshItem = this->parameters()->findMesh("meshes");
-  smtk::mesh::MeshSets modifiedMeshes;
+  smtk::attribute::ComponentItemPtr meshItem = this->parameters()->findComponent("meshes");
   smtk::model::EntityRefs extraModifiedModels;
-  if (meshItem)
-  {
-    smtk::attribute::MeshItem::const_mesh_it it;
-    for (it = meshItem->begin(); it != meshItem->end(); ++it)
-    {
-      smtk::mesh::ResourcePtr c = it->resource();
-      if (!c)
-      {
-        continue;
-      }
-      SetMeshPropertyValue<String, StringList, StringData, StringItem>(
-        nameItem->value(0), stringItem, c, *it);
-      SetMeshPropertyValue<Float, FloatList, FloatData, DoubleItem>(
-        nameItem->value(0), floatItem, c, *it);
-      SetMeshPropertyValue<Integer, IntegerList, IntegerData, IntItem>(
-        nameItem->value(0), integerItem, c, *it);
-      modifiedMeshes.insert(*it);
-
-      // label the associated model as modified
-      smtk::common::UUID modid = c->associatedModel();
-      if (!modid.isNull())
-        extraModifiedModels.insert(smtk::model::Model(resource, modid));
-    }
-  }
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
@@ -168,18 +142,10 @@ SetProperty::Result SetProperty::operateInternal()
   // Return the list of entities that were potentially
   // modified so that remote sessions can track what records
   // need to be re-fetched.
-  smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
+  smtk::attribute::ComponentItemPtr modifiedItem = result->findComponent("modified");
   for (auto& m : entities)
   {
     modifiedItem->appendValue(m.component());
-  }
-
-  // Return the list of meshes that were potentially modified.
-  if (modifiedMeshes.size() > 0)
-  {
-    smtk::attribute::MeshItemPtr resultMeshes = result->findMesh("mesh_modified");
-    if (resultMeshes)
-      resultMeshes->appendValues(modifiedMeshes);
   }
 
   return result;

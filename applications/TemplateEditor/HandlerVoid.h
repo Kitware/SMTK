@@ -35,26 +35,6 @@ namespace Ui
 class ItemDefRefForm;
 }
 
-/**
- * \brief Generates a custom UI for a RefItemDefinition instance.
- */
-class HandlerRef : public HandlerItemDef
-{
-public:
-  HandlerRef();
-  ~HandlerRef();
-
-private:
-  HandlerRef(const HandlerRef&) = delete;
-  void operator=(const HandlerRef&) = delete;
-
-  smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
-  smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(QWidget* parent) override;
-
-  std::unique_ptr<Ui::ItemDefRefForm> Ui;
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \brief Generates a custom UI for a FileItemDefinition instance.
@@ -127,44 +107,6 @@ public:
 private:
   HandlerResource(const HandlerResource&) = delete;
   void operator=(const HandlerResource&) = delete;
-
-  smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
-  smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(QWidget* parent) override;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-/**
- * \brief Generates a custom UI for a MeshSelectionItemDef instance.
- */
-class HandlerMeshSelection : public HandlerItemDef
-{
-public:
-  HandlerMeshSelection() = default;
-  ~HandlerMeshSelection() = default;
-
-private:
-  HandlerMeshSelection(const HandlerMeshSelection&) = delete;
-  void operator=(const HandlerMeshSelection&) = delete;
-
-  smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
-  smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;
-  bool initialize_impl(QWidget* parent) override;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-/**
- * \brief Generates a custom UI for a MeshEntityItemDef instance.
- */
-class HandlerMeshEntity : public HandlerItemDef
-{
-public:
-  HandlerMeshEntity() = default;
-  ~HandlerMeshEntity() = default;
-
-private:
-  HandlerMeshEntity(const HandlerMeshEntity&) = delete;
-  void operator=(const HandlerMeshEntity&) = delete;
 
   smtk::attribute::ItemDefinitionPtr createItemDef_impl(const std::string& name) override;
   smtk::attribute::ItemDefinitionPtr updateItemDef_impl() override;

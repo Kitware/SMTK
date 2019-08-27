@@ -13,6 +13,7 @@
 #include "smtk/io/XmlDocV1Parser.h"
 #include "smtk/io/XmlDocV2Parser.h"
 #include "smtk/io/XmlDocV3Parser.h"
+#include "smtk/io/XmlDocV4Parser.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -116,6 +117,11 @@ pugi::xml_node AttributeReaderInternals::getRootNode(pugi::xml_document& doc)
   if (XmlDocV3Parser::canParse(doc))
   {
     return XmlDocV3Parser::getRootNode(doc);
+  }
+
+  if (XmlDocV4Parser::canParse(doc))
+  {
+    return XmlDocV4Parser::getRootNode(doc);
   }
 
   pugi::xml_node temp; // no node found
@@ -256,6 +262,13 @@ void AttributeReaderInternals::parseXml(
   else if (XmlDocV3Parser::canParse(root))
   {
     XmlDocV3Parser theReader(resource, logger);
+    theReader.setIncludeFileIndex(m_currentFileIndex);
+    theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
+    theReader.process(root);
+  }
+  else if (XmlDocV4Parser::canParse(root))
+  {
+    XmlDocV4Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);

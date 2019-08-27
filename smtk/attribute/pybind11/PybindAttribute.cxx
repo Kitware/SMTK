@@ -42,14 +42,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindIntItemDefinition.h"
 #include "PybindItem.h"
 #include "PybindItemDefinition.h"
-#include "PybindMeshItem.h"
-#include "PybindMeshItemDefinition.h"
-#include "PybindMeshSelectionItem.h"
-#include "PybindMeshSelectionItemDefinition.h"
 #include "PybindModelEntityItem.h"
 #include "PybindModelEntityItemDefinition.h"
-#include "PybindRefItem.h"
-#include "PybindRefItemDefinition.h"
 #include "PybindReferenceItem.h"
 #include "PybindReferenceItemDefinition.h"
 #include "PybindRegistrar.h"
@@ -83,17 +77,10 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
   PySharedPtrClass< smtk::attribute::Definition > smtk_attribute_Definition = pybind11_init_smtk_attribute_Definition(attribute);
   PySharedPtrClass< smtk::attribute::Item > smtk_attribute_Item = pybind11_init_smtk_attribute_Item(attribute);
   PySharedPtrClass< smtk::attribute::ItemDefinition > smtk_attribute_ItemDefinition = pybind11_init_smtk_attribute_ItemDefinition(attribute);
-  pybind11_init_smtk_attribute_MeshModifyMode(attribute);
   PySharedPtrClass< smtk::attribute::FileSystemItem, smtk::attribute::Item > smtk_attribute_FileSystemItem = pybind11_init_smtk_attribute_FileSystemItem(attribute);
   PySharedPtrClass< smtk::attribute::FileSystemItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_FileSystemItemDefinition = pybind11_init_smtk_attribute_FileSystemItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::GroupItem, smtk::attribute::Item > smtk_attribute_GroupItem = pybind11_init_smtk_attribute_GroupItem(attribute);
   PySharedPtrClass< smtk::attribute::GroupItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_GroupItemDefinition = pybind11_init_smtk_attribute_GroupItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::MeshItem, smtk::attribute::Item > smtk_attribute_MeshItem = pybind11_init_smtk_attribute_MeshItem(attribute);
-  PySharedPtrClass< smtk::attribute::MeshItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_MeshItemDefinition = pybind11_init_smtk_attribute_MeshItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::MeshSelectionItem, smtk::attribute::Item > smtk_attribute_MeshSelectionItem = pybind11_init_smtk_attribute_MeshSelectionItem(attribute);
-  PySharedPtrClass< smtk::attribute::MeshSelectionItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_MeshSelectionItemDefinition = pybind11_init_smtk_attribute_MeshSelectionItemDefinition(attribute);
-  PySharedPtrClass< smtk::attribute::RefItem, smtk::attribute::Item > smtk_attribute_RefItem = pybind11_init_smtk_attribute_RefItem(attribute);
-  PySharedPtrClass< smtk::attribute::RefItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_RefItemDefinition = pybind11_init_smtk_attribute_RefItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item > smtk_attribute_ReferenceItem = pybind11_init_smtk_attribute_ReferenceItem(attribute);
   PySharedPtrClass< smtk::attribute::ReferenceItemDefinition, smtk::attribute::ItemDefinition > smtk_attribute_ReferenceItemDefinition = pybind11_init_smtk_attribute_ReferenceItemDefinition(attribute);
   PySharedPtrClass< smtk::attribute::Resource> smtk_attribute_Resource = pybind11_init_smtk_attribute_Resource(attribute);

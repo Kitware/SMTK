@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 """
 Manual port of SMTK/smtk/attribute/Testing/basicAttributeXMLWriterTest.cxx
 For verifying python wrappers
@@ -155,11 +155,12 @@ if __name__ == '__main__':
     sitemdef.addLocalCategory('Flow')
 
     # Add in a Attribute definition with a reference to another attribute
-    attrefdef = resource.createDefinition('AttributeReferenceDef')
-    aritemdef = smtk.attribute.RefItemDefinition.New('BaseDefItem')
-    attrefdef.addItemDefinition(aritemdef)
-    aritemdef.setCommonValueLabel('A reference to another attribute')
-    aritemdef.setAttributeDefinition(base)
+    attcompdef = resource.createDefinition('AttributeComponentDef')
+    acitemdef = smtk.attribute.ComponentItemDefinition.New('BaseDefItem')
+    attcompdef.addItemDefinition(acitemdef)
+    acitemdef.setCommonValueLabel('A reference to another attribute')
+    queryString = smtk.attribute.Resource.createAttributeQuery(base)
+    acitemdef.setAcceptsEntries(resource.typeName(), queryString, True)
 
     # Process Categories
     resource.updateCategories()

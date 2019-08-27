@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -17,7 +18,6 @@
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
@@ -163,12 +163,14 @@ int main(int argc, char* argv[])
     sitemdef->addLocalCategory("Flow");
 
     // Add in a Attribute definition with a reference to another attribute
-    smtk::attribute::DefinitionPtr attrefdef = resource.createDefinition("AttributeReferenceDef");
-    smtk::attribute::RefItemDefinitionPtr aritemdef =
-      attrefdef->addItemDefinition<smtk::attribute::RefItemDefinitionPtr>("BaseDefItem");
-    aritemdef->setNumberOfRequiredValues(1);
-    aritemdef->setCommonValueLabel("A reference to another attribute");
-    aritemdef->setAttributeDefinition(base);
+    smtk::attribute::DefinitionPtr attcompdef = resource.createDefinition("AttributeComponentDef");
+    smtk::attribute::ComponentItemDefinitionPtr acitemdef =
+      attcompdef->addItemDefinition<smtk::attribute::ComponentItemDefinitionPtr>("BaseDefItem");
+    acitemdef->setNumberOfRequiredValues(1);
+    acitemdef->setCommonValueLabel("A reference to another attribute");
+    std::string attQuery = resource.createAttributeQuery(base);
+    acitemdef->setAcceptsEntries(
+      smtk::common::typeName<smtk::attribute::Resource>(), attQuery, true);
 
     // Process Categories
     resource.updateCategories();

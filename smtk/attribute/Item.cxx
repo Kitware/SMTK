@@ -12,7 +12,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include <iostream>
 using namespace smtk::attribute;
@@ -258,8 +257,6 @@ std::string Item::type2String(Item::Type t)
       return "Void";
     case ModelEntityType:
       return "ModelEntity";
-    case MeshSelectionType:
-      return "MeshSelection";
     case MeshEntityType:
       return "MeshEntity";
     case DateTimeType:
@@ -317,10 +314,6 @@ Item::Type Item::string2Type(const std::string& s)
   if (s == "ModelEntity")
   {
     return ModelEntityType;
-  }
-  if (s == "MeshSelection")
-  {
-    return MeshSelectionType;
   }
   if (s == "MeshEntity")
   {

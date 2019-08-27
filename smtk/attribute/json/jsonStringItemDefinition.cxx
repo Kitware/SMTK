@@ -42,8 +42,7 @@ SMTKCORE_EXPORT void to_json(
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::StringItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+  smtk::attribute::StringItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -51,7 +50,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
     return;
   }
   auto temp = smtk::dynamic_pointer_cast<ValueItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp, resPtr, expressionDefInfo, attRefDefInfo);
+  smtk::attribute::from_json(j, temp, resPtr);
   try
   {
     defPtr->setIsMultiline(j.at("MultipleLines"));
@@ -70,7 +69,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   }
 
   smtk::attribute::processDerivedValueDefFromJson<smtk::attribute::StringItemDefinitionPtr,
-    std::string>(j, defPtr, resPtr, expressionDefInfo, attRefDefInfo);
+    std::string>(j, defPtr, resPtr);
 }
 }
 }

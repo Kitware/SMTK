@@ -23,7 +23,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -177,24 +176,36 @@ SetProperty::Result SetProperty::operateInternal()
     this->setVisibility(integerItem->value(0), entities);
 
   // check whether there are mesh entities's properties need to be changed
-  smtk::attribute::MeshItemPtr meshItem = this->parameters()->findMesh("meshes");
-  smtk::mesh::MeshSets modifiedMeshes;
+  smtk::attribute::ComponentItemPtr meshItem = this->parameters()->findComponent("meshes");
   smtk::model::EntityRefs extraModifiedModels;
+  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  smtk::attribute::ComponentItemPtr resultMeshes = result->findComponent("mesh_modified");
+
   if (meshItem)
   {
-    smtk::attribute::MeshItem::const_mesh_it it;
-    for (it = meshItem->begin(); it != meshItem->end(); ++it)
+    for (std::size_t i = 0; i < meshItem->numberOfValues(); ++i)
     {
-      smtk::mesh::ResourcePtr c = it->resource();
+      auto meshEntity = dynamic_pointer_cast<smtk::mesh::Component>(meshItem->value(i));
+      // If we can't find the mesh entity - skip it
+      if (meshEntity == nullptr)
+      {
+        continue;
+      }
+      smtk::mesh::ResourcePtr c =
+        std::dynamic_pointer_cast<smtk::mesh::Resource>(meshEntity->resource());
       if (!c)
         continue;
       SetMeshPropertyValue<String, StringList, StringData, StringItem>(
-        nameItem->value(0), stringItem, c, *it);
+        nameItem->value(0), stringItem, c, meshEntity->mesh());
       SetMeshPropertyValue<Float, FloatList, FloatData, DoubleItem>(
-        nameItem->value(0), floatItem, c, *it);
+        nameItem->value(0), floatItem, c, meshEntity->mesh());
       SetMeshPropertyValue<Integer, IntegerList, IntegerData, IntItem>(
-        nameItem->value(0), integerItem, c, *it);
-      modifiedMeshes.insert(*it);
+        nameItem->value(0), integerItem, c, meshEntity->mesh());
+
+      if (resultMeshes != nullptr)
+      {
+        resultMeshes->appendValue(meshEntity);
+      }
 
       // label the associated model as modified
       smtk::common::UUID modid = c->associatedModel();
@@ -202,8 +213,6 @@ SetProperty::Result SetProperty::operateInternal()
         extraModifiedModels.insert(smtk::model::Model(c->modelResource(), modid));
     }
   }
-
-  Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   // if a model is in the changed entities and it is a submodel, we
   // want to label its parent model to be modified too.
@@ -226,14 +235,6 @@ SetProperty::Result SetProperty::operateInternal()
   for (auto m : entities)
   {
     modified->appendValue(m.component());
-  }
-
-  // Return the list of meshes that were potentially modified.
-  if (modifiedMeshes.size() > 0)
-  {
-    smtk::attribute::MeshItemPtr resultMeshes = result->findMesh("mesh_modified");
-    if (resultMeshes)
-      resultMeshes->appendValues(modifiedMeshes);
   }
 
   return result;

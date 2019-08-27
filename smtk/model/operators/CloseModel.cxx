@@ -16,11 +16,12 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
+#include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Resource.h"
+#include "smtk/resource/Component.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
-#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ResourceItem.h"
@@ -52,8 +53,7 @@ CloseModel::Result CloseModel::operateInternal()
   smtk::model::Resource::Ptr resource = std::static_pointer_cast<smtk::model::Resource>(
     std::static_pointer_cast<smtk::resource::Component>(modelItem->objectValue())->resource());
 
-  EntityRefArray expunged;
-  smtk::mesh::MeshSets expungedMeshes;
+  std::set<smtk::resource::ComponentPtr> expunged;
   bool success = true;
   for (auto it = modelItem->begin(); it != modelItem->end(); ++it)
   {
@@ -65,14 +65,17 @@ CloseModel::Result CloseModel::operateInternal()
     AuxiliaryGeometries auxs = model.auxiliaryGeometry();
     for (AuxiliaryGeometries::iterator ait = auxs.begin(); ait != auxs.end(); ++ait)
     {
-      expunged.push_back(*ait);
+      expunged.insert(ait->component());
     }
 
     // Similarly, meshes must be added to the "mesh_expunged" attribute.
     auto associatedMeshes = resource->links().linkedFrom(smtk::mesh::Resource::ClassificationRole);
     for (auto cit : associatedMeshes)
     {
-      expungedMeshes.insert(std::dynamic_pointer_cast<smtk::mesh::Resource>(cit)->meshes());
+      auto meshResource = std::dynamic_pointer_cast<smtk::resource::Resource>(cit);
+      smtk::resource::Component::Visitor temp = [&](
+        const smtk::resource::ComponentPtr& c) { expunged.insert(c); };
+      meshResource->visit(temp);
     }
 
     if (!resource->eraseModel(model))
@@ -93,10 +96,8 @@ CloseModel::Result CloseModel::operateInternal()
     smtk::attribute::ComponentItem::Ptr expungedItem = result->findComponent("expunged");
     for (auto& e : expunged)
     {
-      expungedItem->appendValue(e.component());
+      expungedItem->appendValue(e);
     }
-
-    result->findMesh("mesh_expunged")->appendValues(expungedMeshes);
   }
   return result;
 }

@@ -13,15 +13,12 @@
 #include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshItemDefinition.h"
-#include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/json/Interface.h"
@@ -346,7 +343,6 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
   xml_node val;
   std::size_t numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
-  AttRefInfo info;
   if (!numRequiredVals || item->isExtensible())
   {
     // The node should have an attribute indicating how many values are
@@ -417,148 +413,13 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
   }
 }
 
-void XmlDocV2Parser::processMeshSelectionItem(
-  pugi::xml_node& node, attribute::MeshSelectionItemPtr item)
-{
-  xml_node extraNode = node.child("CtrlKey");
-  item->setCtrlKeyDown(extraNode && extraNode.text().as_int() ? true : false);
-  extraNode = node.child("MeshModifyMode");
-  if (extraNode)
-    item->setModifyMode(attribute::MeshSelectionItem::string2ModifyMode(extraNode.text().get()));
-  xml_attribute xatt;
-  xatt = node.attribute("NumberOfValues");
-  if (!xatt || xatt.as_uint() == 0)
-    return;
-
-  xml_node selValsNode = node.child("SelectionValues");
-  if (selValsNode)
-  {
-    for (xml_node valsNode = selValsNode.child("Values"); valsNode;
-         valsNode = valsNode.next_sibling("Values"))
-    {
-      xatt = valsNode.attribute("EntityUUID");
-      if (xatt)
-      {
-        std::set<int> vals;
-        for (xml_node val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
-        {
-          vals.insert(val.text().as_int());
-        }
-        item->setValues(smtk::common::UUID(xatt.value()), vals);
-      }
-    }
-  }
-}
-
-void XmlDocV2Parser::processMeshEntityItem(
-  pugi::xml_node& /*node*/, attribute::MeshItemPtr /*item*/)
-{
-  // xml_attribute xatt;
-  // std::size_t n = item->numberOfValues();
-  // std::size_t numRequiredVals = item->numberOfRequiredValues();
-  // if (!numRequiredVals || item->isExtensible())
-  // {
-  //   // The node should have an attribute indicating how many values are
-  //   // associated with the item
-  //   xatt = node.attribute("NumberOfValues");
-  //   if (!xatt)
-  //   {
-  //     smtkErrorMacro(
-  //       m_logger, "XML Attribute NumberOfValues is missing for Item: " << item->name());
-  //     return;
-  //   }
-  //   n = xatt.as_uint();
-  //   // QUESTION: Should we set numberOfRequired value here?
-  // }
-
-  // if (!n)
-  // {
-  //   return;
-  // }
-
-  // smtk::common::UUID cid;
-  // smtk::model::ResourcePtr modelresource = m_resource->refModelResource();
-  // xml_node valsNode, val;
-
-  // std::size_t i = 0;
-  // valsNode = node.child("Values");
-  // if (valsNode)
-  // {
-  //   for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"), ++i)
-  //   {
-  //     xatt = val.attribute("collectionid");
-  //     if (!xatt)
-  //     {
-  //       smtkErrorMacro(
-  //         m_logger, "XML Attribute collectionid is missing for Item: " << item->name());
-  //       continue;
-  //     }
-  //     if (i >= n)
-  //     {
-  //       smtkErrorMacro(
-  //         m_logger, "The number of values: " << i << " is out of range for Item: " << item->name());
-  //       break;
-  //     }
-  //     cid = smtk::common::UUID(xatt.value());
-
-  //     //convert back to a handle
-  //     smtk::mesh::HandleRange hrange = nlohmann::json::parse(val.text().get());
-  //     smtk::mesh::ResourcePtr c = modelresource->meshes()->resource(cid);
-  //     if (!c)
-  //     {
-  //       std::cerr << "Expecting a valid resource for mesh item: " << item->name() << std::endl;
-  //       continue;
-  //     }
-  //     smtk::mesh::InterfacePtr interface = c->interface();
-
-  //     if (!interface)
-  //     {
-  //       std::cerr << "Expecting a valid mesh interface for mesh item: " << item->name()
-  //                 << std::endl;
-  //       continue;
-  //     }
-
-  //     item->appendValue(smtk::mesh::MeshSet(c, interface->getRoot(), hrange));
-  //   }
-  // }
-  // else
-  // {
-  //   smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
-  // }
-}
-
-void XmlDocV2Parser::processMeshSelectionDef(
-  pugi::xml_node& node, attribute::MeshSelectionItemDefinitionPtr idef)
-{
-  this->processItemDef(node, idef);
-
-  xml_attribute xatt;
-  xatt = node.attribute("ModelEntityRef");
-  if (xatt)
-  {
-    idef->setRefModelEntityName(xatt.value());
-  }
-  else
-  {
-    /*  // this should be optional
-    smtkErrorMacro(m_logger,
-                   "Missing XML Attribute ModelEntityRef for Item Definition : "
-                   << idef->name());
-*/
-  }
-
-  xml_node mmask = node.child("MembershipMask");
-  if (mmask)
-  {
-    idef->setMembershipMask(this->decodeModelEntityMask(mmask.text().as_string()));
-  }
-}
-
 void XmlDocV2Parser::processMeshEntityDef(
-  pugi::xml_node& node, attribute::MeshItemDefinitionPtr idef)
+  pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
 {
   xml_node child;
   xml_attribute xatt;
+
+  idef->setAcceptsEntries(smtk::common::typeName<mesh::Resource>(), "meshset", true);
 
   this->processItemDef(node, idef);
 

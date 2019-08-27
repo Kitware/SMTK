@@ -15,7 +15,6 @@
 #include "nlohmann/json.hpp"
 
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/RefItem.h"
 
 #include "smtk/attribute/json/jsonAttribute.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
@@ -29,14 +28,11 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
 
 SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::DefinitionPtr& defPtr);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::DefinitionPtr& defPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo);
+  std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs);
 }
 }
 

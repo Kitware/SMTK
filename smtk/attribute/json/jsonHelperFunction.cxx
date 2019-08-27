@@ -19,10 +19,7 @@
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/MeshItemDefinition.h"
-#include "smtk/attribute/MeshSelectionItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItemDefinition.h"
@@ -37,10 +34,7 @@
 #include "smtk/attribute/json/jsonGroupItem.h"
 #include "smtk/attribute/json/jsonIntItem.h"
 #include "smtk/attribute/json/jsonItem.h"
-#include "smtk/attribute/json/jsonMeshItem.h"
-#include "smtk/attribute/json/jsonMeshSelectionItem.h"
 #include "smtk/attribute/json/jsonModelEntityItem.h"
-#include "smtk/attribute/json/jsonRefItem.h"
 #include "smtk/attribute/json/jsonReferenceItem.h"
 #include "smtk/attribute/json/jsonResourceItem.h"
 #include "smtk/attribute/json/jsonStringItem.h"
@@ -56,10 +50,7 @@
 #include "smtk/attribute/json/jsonGroupItemDefinition.h"
 #include "smtk/attribute/json/jsonIntItemDefinition.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
-#include "smtk/attribute/json/jsonMeshItemDefinition.h"
-#include "smtk/attribute/json/jsonMeshSelectionItemDefinition.h"
 #include "smtk/attribute/json/jsonModelEntityItemDefinition.h"
-#include "smtk/attribute/json/jsonRefItemDefinition.h"
 #include "smtk/attribute/json/jsonReferenceItemDefinition.h"
 #include "smtk/attribute/json/jsonResourceItemDefinition.h"
 #include "smtk/attribute/json/jsonStringItemDefinition.h"
@@ -76,14 +67,10 @@
   */
 namespace
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 template <typename itemDefPtr>
 void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
-  const smtk::attribute::ResourcePtr& resPtr, std::vector<ItemExpressionDefInfo>& expressionDefInfo,
-  std::vector<AttRefDefInfo>& attRefDefInfo)
+  const smtk::attribute::ResourcePtr& resPtr,
+  std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 {
   //iter format: {type: [{def1}, {def2}] }
   json itemDef = *iter;
@@ -94,11 +81,13 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
   switch (citype)
   {
     case smtk::attribute::Item::AttributeRefType:
-      if ((cidef = idef->template addItemDefinition<smtk::attribute::RefItemDefinition>(citemName)))
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::ComponentItemDefinition>(
+             citemName)))
       {
-        smtk::attribute::RefItemDefinitionPtr temp =
-          smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp, resPtr, attRefDefInfo);
+        convertedAttDefs.insert(cidef.get());
+        smtk::attribute::ComponentItemDefinitionPtr temp =
+          smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef);
+        smtk::attribute::processFromRefItemDef(itemDef, temp);
       }
       break;
     case smtk::attribute::Item::DoubleType:
@@ -107,7 +96,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
       {
         smtk::attribute::DoubleItemDefinitionPtr temp =
           smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+        smtk::attribute::from_json(itemDef, temp, resPtr);
       }
       break;
     case smtk::attribute::Item::DirectoryType:
@@ -134,7 +123,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
       {
         smtk::attribute::GroupItemDefinitionPtr temp =
           smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+        smtk::attribute::from_json(itemDef, temp, resPtr);
       }
       break;
     case smtk::attribute::Item::IntType:
@@ -142,7 +131,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
       {
         smtk::attribute::IntItemDefinitionPtr temp =
           smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+        smtk::attribute::from_json(itemDef, temp, resPtr);
       }
       break;
     case smtk::attribute::Item::StringType:
@@ -151,7 +140,7 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
       {
         smtk::attribute::StringItemDefinitionPtr temp =
           smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp, resPtr, expressionDefInfo, attRefDefInfo);
+        smtk::attribute::from_json(itemDef, temp, resPtr);
       }
       break;
     case smtk::attribute::Item::ModelEntityType:
@@ -172,23 +161,12 @@ void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
         smtk::attribute::from_json(itemDef, temp);
       }
       break;
-    case smtk::attribute::Item::MeshSelectionType:
-      if ((cidef = idef->template addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(
+    case smtk::attribute::Item::MeshEntityType:
+      if ((cidef = idef->template addItemDefinition<smtk::attribute::ComponentItemDefinition>(
              citemName)))
       {
-        //QUESTION: When parsing, valueItemDef and groupItemDef treat it as a simple ItemDef in xml parser
-        smtk::attribute::MeshSelectionItemDefinitionPtr temp =
-          smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp);
-      }
-      break;
-    case smtk::attribute::Item::MeshEntityType:
-      if ((cidef =
-              idef->template addItemDefinition<smtk::attribute::MeshItemDefinition>(citemName)))
-      {
-        smtk::attribute::MeshItemDefinitionPtr temp =
-          smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(cidef);
-        smtk::attribute::from_json(itemDef, temp);
+        auto temp = smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef);
+        smtk::attribute::processFromMeshItemDef(itemDef, temp);
       }
       break;
     case smtk::attribute::Item::DateTimeType:
@@ -246,13 +224,6 @@ void JsonHelperFunction::processItemDefinitionTypeToJson(
 {
   switch (idef->type())
   {
-    case Item::AttributeRefType:
-    {
-      smtk::attribute::RefItemDefinitionPtr temp =
-        smtk::dynamic_pointer_cast<RefItemDefinition>(idef);
-      smtk::attribute::to_json(j, temp);
-    }
-    break;
     case Item::DoubleType:
     {
       smtk::attribute::DoubleItemDefinitionPtr temp =
@@ -302,20 +273,6 @@ void JsonHelperFunction::processItemDefinitionTypeToJson(
       smtk::attribute::to_json(j, temp);
     }
     break;
-    case Item::MeshSelectionType:
-    {
-      smtk::attribute::MeshSelectionItemDefinitionPtr temp =
-        smtk::dynamic_pointer_cast<MeshSelectionItemDefinition>(idef);
-      smtk::attribute::to_json(j, temp);
-    }
-    break;
-    case Item::MeshEntityType:
-    {
-      smtk::attribute::MeshItemDefinitionPtr temp =
-        smtk::dynamic_pointer_cast<MeshItemDefinition>(idef);
-      smtk::attribute::to_json(j, temp);
-    }
-    break;
     case Item::VoidType:
     {
       smtk::attribute::VoidItemDefinitionPtr temp =
@@ -357,38 +314,29 @@ void JsonHelperFunction::processItemDefinitionTypeToJson(
 
 void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
   DefinitionPtr& idef, const ResourcePtr& resPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+  std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 {
-  processItemDef<smtk::attribute::DefinitionPtr>(
-    iter, idef, resPtr, expressionDefInfo, attRefDefInfo);
+  processItemDef<smtk::attribute::DefinitionPtr>(iter, idef, resPtr, convertedAttDefs);
 }
 
-void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-  GroupItemDefinitionPtr& idef, const ResourcePtr& resPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+void JsonHelperFunction::processItemDefinitionTypeFromJson(
+  const nlohmann::json::iterator& iter, GroupItemDefinitionPtr& idef, const ResourcePtr& resPtr)
 {
-  processItemDef<smtk::attribute::GroupItemDefinitionPtr>(
-    iter, idef, resPtr, expressionDefInfo, attRefDefInfo);
+  std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
+  processItemDef<smtk::attribute::GroupItemDefinitionPtr>(iter, idef, resPtr, convertedAttDefs);
 }
 
-void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-  ValueItemDefinitionPtr& idef, const ResourcePtr& resPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+void JsonHelperFunction::processItemDefinitionTypeFromJson(
+  const nlohmann::json::iterator& iter, ValueItemDefinitionPtr& idef, const ResourcePtr& resPtr)
 {
-  processItemDef<smtk::attribute::ValueItemDefinitionPtr>(
-    iter, idef, resPtr, expressionDefInfo, attRefDefInfo);
+  std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
+  processItemDef<smtk::attribute::ValueItemDefinitionPtr>(iter, idef, resPtr, convertedAttDefs);
 }
 
 void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr& item)
 {
   switch (item->type())
   {
-    case Item::AttributeRefType:
-    {
-      smtk::attribute::RefItemPtr temp = smtk::dynamic_pointer_cast<RefItem>(item);
-      smtk::attribute::to_json(j, temp);
-    }
-    break;
     case Item::DoubleType:
     {
       smtk::attribute::DoubleItemPtr temp = smtk::dynamic_pointer_cast<DoubleItem>(item);
@@ -431,19 +379,6 @@ void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr&
       smtk::attribute::to_json(j, temp);
     }
     break;
-    case Item::MeshSelectionType:
-    {
-      smtk::attribute::MeshSelectionItemPtr temp =
-        smtk::dynamic_pointer_cast<MeshSelectionItem>(item);
-      smtk::attribute::to_json(j, temp);
-    }
-    break;
-    case Item::MeshEntityType:
-    {
-      smtk::attribute::MeshItemPtr temp = smtk::dynamic_pointer_cast<MeshItem>(item);
-      smtk::attribute::to_json(j, temp);
-    }
-    break;
     case Item::VoidType:
     {
       smtk::attribute::VoidItemPtr temp = smtk::dynamic_pointer_cast<VoidItem>(item);
@@ -479,17 +414,11 @@ void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr&
 }
 
 void JsonHelperFunction::processItemTypeFromJson(const nlohmann::json& j, ItemPtr& itemPtr,
-  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo)
+  std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo,
+  const std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 {
   switch (itemPtr->type())
   {
-    case smtk::attribute::Item::AttributeRefType:
-    {
-      smtk::attribute::RefItemPtr temp =
-        smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(itemPtr);
-      smtk::attribute::from_json(j, temp, attRefInfo);
-    }
-    break;
     case smtk::attribute::Item::DoubleType:
     {
       smtk::attribute::DoubleItemPtr temp =
@@ -539,20 +468,6 @@ void JsonHelperFunction::processItemTypeFromJson(const nlohmann::json& j, ItemPt
       smtk::attribute::from_json(j, temp);
     }
     break;
-    case smtk::attribute::Item::MeshSelectionType:
-    {
-      smtk::attribute::MeshSelectionItemPtr temp =
-        smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItem>(itemPtr);
-      smtk::attribute::from_json(j, temp);
-    }
-    break;
-    case smtk::attribute::Item::MeshEntityType:
-    {
-      smtk::attribute::MeshItemPtr temp =
-        smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(itemPtr);
-      smtk::attribute::from_json(j, temp);
-    }
-    break;
     case smtk::attribute::Item::DateTimeType:
     {
       smtk::attribute::DateTimeItemPtr temp =
@@ -578,7 +493,24 @@ void JsonHelperFunction::processItemTypeFromJson(const nlohmann::json& j, ItemPt
     {
       smtk::attribute::ComponentItemPtr temp =
         smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(itemPtr);
-      smtk::attribute::from_json(j, temp);
+
+      if (convertedAttDefs.find(itemPtr->definition().get()) != convertedAttDefs.end())
+      {
+        processFromRefItemSpec(j, temp, attRefInfo);
+      }
+      else
+      {
+        auto tj = j.find("Type");
+        if (tj != j.end() &&
+          (smtk::attribute::Item::string2Type(*tj) == smtk::attribute::Item::AttributeRefType))
+        {
+          processFromRefItemSpec(j, temp, attRefInfo);
+        }
+        else
+        {
+          smtk::attribute::from_json(j, temp);
+        }
+      }
     }
     break;
     case smtk::attribute::Item::VoidType:

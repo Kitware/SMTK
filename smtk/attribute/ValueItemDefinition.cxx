@@ -10,9 +10,9 @@
 
 #include <algorithm>
 
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/RefItem.h"
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
@@ -30,7 +30,7 @@ ValueItemDefinition::ValueItemDefinition(const std::string& myName)
   m_numberOfRequiredValues = 1;
   m_maxNumberOfValues = 0;
   m_isExtensible = false;
-  m_expressionDefinition = RefItemDefinition::New("expression");
+  m_expressionDefinition = ComponentItemDefinition::New("expression");
   m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
@@ -111,9 +111,9 @@ std::string ValueItemDefinition::valueLabel(std::size_t element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 
-bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) const
+bool ValueItemDefinition::isValidExpression(const smtk::attribute::AttributePtr& exp) const
 {
-  if (m_expressionDefinition->attributeDefinition() && m_expressionDefinition->isValueValid(exp))
+  if (this->allowsExpressions() && m_expressionDefinition->isValueValid(exp))
   {
     return true;
   }
@@ -122,26 +122,46 @@ bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) c
 
 bool ValueItemDefinition::allowsExpressions() const
 {
-  return m_expressionDefinition->attributeDefinition() ? true : false;
+  return (m_expressionType != "");
 }
 
-smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition() const
+void ValueItemDefinition::setExpressionDefinition(const smtk::attribute::DefinitionPtr& exp)
 {
-  return m_expressionDefinition->attributeDefinition();
+  if (exp == nullptr)
+  {
+    if (m_expressionType != "")
+    {
+      m_expressionType = "";
+      m_expressionDefinition->clearAcceptableEntries();
+    }
+  }
+  else if (exp->type() != m_expressionType)
+  {
+    m_expressionDefinition->clearAcceptableEntries();
+    std::string a = smtk::attribute::Resource::createAttributeQuery(exp);
+    m_expressionDefinition->setAcceptsEntries(
+      smtk::common::typeName<attribute::Resource>(), a, true);
+    m_expressionType = exp->type();
+  }
 }
 
-void ValueItemDefinition::setExpressionDefinition(smtk::attribute::DefinitionPtr exp)
+smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition(
+  const smtk::attribute::ResourcePtr& attResource) const
 {
-  m_expressionDefinition->setAttributeDefinition(exp);
+  if (m_expressionType == "")
+  {
+    return nullptr;
+  }
+  return attResource->findDefinition(m_expressionType);
 }
 
 void ValueItemDefinition::buildExpressionItem(ValueItem* vitem, int position) const
 {
-  smtk::attribute::RefItemPtr aref = smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(
+  auto expItem = smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(
     m_expressionDefinition->buildItem(vitem, position, -1));
-  aref->setDefinition(m_expressionDefinition);
+  expItem->setDefinition(m_expressionDefinition);
   assert(vitem->m_expressions.size() > static_cast<size_t>(position));
-  vitem->m_expressions[static_cast<size_t>(position)] = aref;
+  vitem->m_expressions[static_cast<size_t>(position)] = expItem;
 }
 
 void ValueItemDefinition::buildChildrenItems(ValueItem* vitem) const
@@ -280,17 +300,17 @@ void ValueItemDefinition::copyTo(
   if (this->allowsExpressions())
   {
     // Set expression definition (if possible)
-    std::string typeStr = this->expressionDefinition()->type();
-    smtk::attribute::DefinitionPtr exp = info.ToResource.findDefinition(typeStr);
+    smtk::attribute::DefinitionPtr exp = info.ToResource.findDefinition(m_expressionType);
     if (exp)
     {
       def->setExpressionDefinition(exp);
     }
     else
     {
-      std::cout << "Adding definition \"" << typeStr << "\" to copy-expression queue" << std::endl;
+      std::cout << "Adding definition \"" << m_expressionType << "\" to copy-expression queue"
+                << std::endl;
 
-      info.UnresolvedExpItems.push(std::make_pair(typeStr, def));
+      info.UnresolvedExpItems.push(std::make_pair(m_expressionType, def));
     }
   }
 

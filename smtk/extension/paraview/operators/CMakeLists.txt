@@ -6,15 +6,10 @@ include(ParaViewPlugins)
 # set up sources to build
 set(srcs
   smtkAssignColorsView.cxx
-  smtkSaveModelView.cxx
-  smtkExportModelView.cxx
 )
 
 set(hdrs
   smtkAssignColorsView.h
-  smtkModelIOView.h
-  smtkSaveModelView.h
-  smtkExportModelView.h
 )
 
 set(unwrappedHdrs
@@ -23,8 +18,6 @@ set(unwrappedHdrs
 
 set(qtui
   smtkAssignColorsParameters.ui
-  smtkSaveModelParameters.ui
-  smtkExportModelParameters.ui
 )
 
 #install the headers

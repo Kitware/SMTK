@@ -147,12 +147,15 @@ set(discreteSessionSrcs
   operators/ReadOperation.cxx
   operators/ReadResource.cxx
   operators/SplitFaceOperation.cxx
-  operators/GrowOperation.cxx
   operators/WriteOperation.cxx
   operators/WriteResource.cxx
   operators/RemoveModel.cxx
-  operators/EdgeOperation.cxx
   operators/SetProperty.cxx
+  # TODO: These operators use the old MeshSelectionItem
+  # and need to be updated in order to be used
+  # operators/EdgeOperation.cxx
+  # operators/GrowOperation.cxx
+
 )
 
 set(discreteSessionHeaders

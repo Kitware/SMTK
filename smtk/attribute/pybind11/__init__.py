@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 from ._smtkPybindAttribute import *
 
@@ -27,9 +27,7 @@ func_list = \
      (ValueItem, ValueItem._findChild, "findChild")]
 
 type_dict = \
-    {Item.AttributeRefType:
-     (RefItem, RefItemDefinition),
-     Item.DoubleType:
+    {Item.DoubleType:
      (DoubleItem, DoubleItemDefinition),
      Item.GroupType:
      (GroupItem, GroupItemDefinition),
@@ -47,10 +45,6 @@ type_dict = \
      (None, None),
      Item.ModelEntityType:
      (ModelEntityItem, ModelEntityItemDefinition),
-     Item.MeshEntityType:
-     (MeshItem, MeshItemDefinition),
-     Item.MeshSelectionType:
-     (MeshSelectionItem, MeshSelectionItemDefinition),
      Item.DateTimeType:
      (DateTimeItem, DateTimeItemDefinition),
      Item.ResourceType:
@@ -95,6 +89,7 @@ def get_wrapped_func(meth):
         return _to_concrete(meth(*args, **kwargs))
     return wrapped_func
 
+
 for (cls, meth, new_func_name) in func_list:
     setattr(cls, new_func_name, get_wrapped_func(meth))
 
@@ -106,5 +101,6 @@ def to_concrete_passthrough(item):
     warnings.warn(
         "%s:%d: Call to deprecated function \"to_concrete()\". As of 1.1, smtk.attribute methods return derived item types." % (caller.filename, caller.lineno))
     return item
+
 
 to_concrete = to_concrete_passthrough

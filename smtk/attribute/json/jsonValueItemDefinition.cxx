@@ -28,10 +28,6 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::ValueItemDefinitionPtr& defPtr)
 {
@@ -63,11 +59,7 @@ SMTKCORE_EXPORT void to_json(
   }
   if (defPtr->allowsExpressions())
   {
-    attribute::DefinitionPtr exp = defPtr->expressionDefinition();
-    if (exp)
-    {
-      j["ExpressionType"] = exp->type();
-    }
+    j["ExpressionType"] = defPtr->expressionType();
   }
   if (!defPtr->units().empty())
   {
@@ -92,8 +84,7 @@ SMTKCORE_EXPORT void to_json(
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -155,16 +146,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   try
   {
     std::string etype = j.at("ExpressionType");
-    DefinitionPtr adef = resPtr->findDefinition(etype);
-    if (adef)
-    {
-      defPtr->setExpressionDefinition(adef);
-    }
-    else
-    {
-      // We need to queue up this item to be assigned its definition later
-      expressionDefInfo.push_back(ItemExpressionDefInfo(defPtr, etype));
-    }
+    defPtr->setExpressionType(etype);
   }
   catch (std::exception& /*e*/)
   {
@@ -182,8 +164,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
     json childrenDefs = j.at("ChildrenDefinitions");
     for (json::iterator iter = childrenDefs.begin(); iter != childrenDefs.end(); iter++)
     {
-      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-        iter, defPtr, resPtr, expressionDefInfo, attRefDefInfo);
+      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(iter, defPtr, resPtr);
     }
   }
   catch (std::exception& /*e*/)

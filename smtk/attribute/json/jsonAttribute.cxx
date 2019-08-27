@@ -81,7 +81,8 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::AttributePtr& att)
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att,
   std::vector<smtk::attribute::ItemExpressionInfo>& itemExpressionInfo,
-  std::vector<smtk::attribute::AttRefInfo>& attRefInfo)
+  std::vector<smtk::attribute::AttRefInfo>& attRefInfo,
+  const std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 { // Follow the logic in XmlDocV1Parser::processAttribute::L1753
   try
   {
@@ -146,7 +147,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
           continue;
         }
         smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-          *itemIter, itemToProcess, itemExpressionInfo, attRefInfo);
+          *itemIter, itemToProcess, itemExpressionInfo, attRefInfo, convertedAttDefs);
       }
       catch (std::exception& /*e*/)
       {

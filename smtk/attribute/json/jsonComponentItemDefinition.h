@@ -31,6 +31,12 @@ SMTKCORE_EXPORT void to_json(
 
 SMTKCORE_EXPORT void from_json(
   const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr);
+
+SMTKCORE_EXPORT void processFromRefItemDef(
+  const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr);
+
+SMTKCORE_EXPORT void processFromMeshItemDef(
+  const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr);
 }
 }
 
