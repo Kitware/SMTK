@@ -141,7 +141,7 @@ Operation::Result Operation::operate()
     // locking. If you are working on an Operation and are trying to debug a
     // deadlock, consider calling operations using the following syntax:
     // $
-    // $ op->operate({});
+    // $ op->operate(Key());
     // $
     // This will avoid the inner Operation's resource locking and execute it
     // directly. Be sure to verify the operation's validity prior to execution

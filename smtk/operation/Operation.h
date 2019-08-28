@@ -179,13 +179,14 @@ protected:
   // method. It is up to the writer of the outer Operation to ensure that
   // Resources are accessed with appropriate lock types and that Operations
   // called in this manner have valid inputs.
-  class Key
+  struct Key
   {
-    Key() {}
+    explicit Key() {}
+    Key(std::initializer_list<int>) {}
   };
 
 public:
-  Result operate(Key()) { return operateInternal(); }
+  Result operate(Key) { return operateInternal(); }
 
 private:
   // Construct the operation's specification. This is typically done by reading

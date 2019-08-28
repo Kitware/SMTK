@@ -99,7 +99,7 @@ Write::Result Write::operateInternal()
   exportOp->parameters()->associate(resource);
 
   // Execute the operation
-  smtk::operation::Operation::Result exportOpResult = exportOp->operate({});
+  smtk::operation::Operation::Result exportOpResult = exportOp->operate(Key());
 
   // Test for success
   return (exportOpResult->findInt("outcome")->value() ==

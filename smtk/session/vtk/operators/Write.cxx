@@ -134,7 +134,7 @@ Write::Result Write::operateInternal()
 
       exportOp->parameters()->associate(dataset.entityRecord());
       exportOp->parameters()->findFile("filename")->setValue(modelFile);
-      Result exportOpResult = exportOp->operate({});
+      Result exportOpResult = exportOp->operate(Key());
 
       if (exportOpResult->findInt("outcome")->value() != static_cast<int>(Outcome::SUCCEEDED))
       {
