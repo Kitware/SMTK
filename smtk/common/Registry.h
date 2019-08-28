@@ -86,7 +86,7 @@ public:
 class SMTKCORE_EXPORT ManagerCount
 {
 public:
-  static ManagerCount& instance();
+  static ManagerCount& instance() { return m_instance; }
 
   template <typename Registrar, typename Manager>
   std::size_t& operator[](Manager* manager)
@@ -96,11 +96,15 @@ public:
   }
 
 private:
+  ManagerCount();
+  ~ManagerCount();
+
   std::size_t& operator[](const std::pair<void*, std::size_t>& key);
 
-  std::map<std::pair<void*, std::size_t>, std::size_t> m_ManagerMap;
-
   static ManagerCount m_instance;
+
+  struct Internals;
+  Internals* m_internals;
 };
 
 /// MaybeRegister accepts a Registrar, a Manager and a boolean type. If the
