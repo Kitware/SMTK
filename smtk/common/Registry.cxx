@@ -16,6 +16,16 @@ namespace common
 namespace detail
 {
 ManagerCount ManagerCount::m_instance;
+
+ManagerCount& ManagerCount::instance()
+{
+  return m_instance;
+}
+
+std::size_t& ManagerCount::operator[](const std::pair<void*, std::size_t>& key)
+{
+  return m_ManagerMap[key];
+}
 }
 }
 }
