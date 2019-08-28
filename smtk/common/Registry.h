@@ -96,11 +96,15 @@ public:
   }
 
 private:
-  std::size_t& operator[](const std::pair<void*, std::size_t>& key) { return m_ManagerMap[key]; }
+  ManagerCount();
+  ~ManagerCount();
 
-  std::map<std::pair<void*, std::size_t>, std::size_t> m_ManagerMap;
+  std::size_t& operator[](const std::pair<void*, std::size_t>& key);
 
   static ManagerCount m_instance;
+
+  struct Internals;
+  Internals* m_internals;
 };
 
 /// MaybeRegister accepts a Registrar, a Manager and a boolean type. If the

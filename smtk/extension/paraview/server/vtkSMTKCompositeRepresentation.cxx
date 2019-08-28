@@ -254,13 +254,13 @@ void vtkSMTKCompositeRepresentation::RemoveInputConnection(int port, int idx)
 }
 
 //----------------------------------------------------------------------------
-void vtkSMTKCompositeRepresentation::SetPointFieldDataArrayName(const char* val)
+void vtkSMTKCompositeRepresentation::SetPointFieldDataArrayName(const char*)
 {
   // this->SelectionRepresentation->SetPointFieldDataArrayName(val);
 }
 
 //----------------------------------------------------------------------------
-void vtkSMTKCompositeRepresentation::SetCellFieldDataArrayName(const char* val)
+void vtkSMTKCompositeRepresentation::SetCellFieldDataArrayName(const char*)
 {
   // this->SelectionRepresentation->SetCellFieldDataArrayName(val);
 }

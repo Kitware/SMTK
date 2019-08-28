@@ -16,6 +16,26 @@ namespace common
 namespace detail
 {
 ManagerCount ManagerCount::m_instance;
+
+struct ManagerCount::Internals
+{
+  std::map<std::pair<void*, std::size_t>, std::size_t> m_ManagerMap;
+};
+
+ManagerCount::ManagerCount()
+  : m_internals(new Internals())
+{
+}
+
+ManagerCount::~ManagerCount()
+{
+  delete m_internals;
+}
+
+std::size_t& ManagerCount::operator[](const std::pair<void*, std::size_t>& key)
+{
+  return m_internals->m_ManagerMap[key];
+}
 }
 }
 }
