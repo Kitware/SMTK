@@ -9,6 +9,9 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
+import sys
+sys.dont_write_bytecode = True
+
 import os
 import shutil
 import sys
