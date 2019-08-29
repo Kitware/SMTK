@@ -85,6 +85,18 @@ typedef std::set<EntityRef> EntityRefs;
 typedef std::vector<EntityRef> EntityRefArray;
 typedef std::vector<Group> Groups;
 
+/**\brief Indicate an entity is excluded from which parts in smtk
+ *
+ */
+enum Exclusions
+{
+  Nothing = 0,                 //!< This entity is excluded from nothing
+  Rendering = (1 << 1),        //!< This entity's tessellation will not be in model
+                               ///renderings(but may be used as a prototype for Instances).
+  ViewPresentation = (1 << 2), //!< This entity will never be presented to users.
+  Everything = (1 << 3) - 1    //!< All of the exclusions above apply (except Nothing).
+};
+
 /**\brief A lightweight entityref pointing to a model entity's resource.
   *
   * This class exposes methods from multiple members of the model
@@ -132,6 +144,16 @@ public:
   bool hasVisibility() const;
   bool visible() const;
   void setVisible(bool vis);
+
+  /// Set the exclusions. If the mask is not specified, it wil update the exclusions::Everything to the
+  /// provide value.
+  /// If the mask is specified, it will only updates the specified exclusion
+  void setExclusions(bool v, int mask = Exclusions::Everything);
+  /// Get the exclusions status. If the mask is not specified, it will return the aggregated status
+  /// of each exclusion
+  /// If the mask is specified, it will only return the status of the specified exclusion.
+  /// 1 -> hidden and 0 -> not hidden
+  int exclusions(int mask = Exclusions::Everything) const;
 
   FloatList color() const;
   bool hasColor() const;

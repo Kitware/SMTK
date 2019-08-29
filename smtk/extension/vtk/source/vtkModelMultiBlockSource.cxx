@@ -593,10 +593,34 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds
       smtk::model::EntityRef proto(this->GetModelResource(), uid);
       if (instancePrototypes.find(proto) != instancePrototypes.end())
       {
-        protoBlocks->SetBlock(nextProtoIndex, iter->GetCurrentDataObject());
+        protoBlocks->SetBlock(
+          static_cast<unsigned int>(nextProtoIndex), iter->GetCurrentDataObject());
         instancePrototypes[proto] = nextProtoIndex;
         ++nextProtoIndex;
       }
+    }
+  }
+  // Hidden entity's vtkDataObject is not added into mbds. Generate them here if it's used as a
+  // glyph prototype
+  for (auto ipIter : instancePrototypes)
+  {
+    if (ipIter.second == -1 && ipIter.first.isValid() &&
+      ipIter.first.exclusions(smtk::model::Exclusions::Rendering))
+    {
+      // Ask hidden entity's owning model for normal generation info
+      bool modelRequiresNormals = false;
+      if (ipIter.first.owningModel().hasIntegerProperty("generate normals"))
+      {
+        const IntegerList& prop(ipIter.first.owningModel().integerProperty("generate normals"));
+        if (!prop.empty() && prop[0])
+        {
+          modelRequiresNormals = true;
+        }
+      }
+      vtkSmartPointer<vtkDataObject> data =
+        this->GenerateRepresentationFromModel(ipIter.first, modelRequiresNormals);
+      protoBlocks->SetBlock(static_cast<unsigned int>(nextProtoIndex), data);
+      instancePrototypes[ipIter.first] = nextProtoIndex++;
     }
   }
   iter->Delete();
@@ -715,7 +739,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
   vtkNew<vtkUnsignedCharArray> colorArray;
   if (hasColors)
   {
-    colorArray->SetName("colors");
+    colorArray->SetName(VTK_INSTANCE_COLOR);
     colorArray->SetNumberOfComponents(3);
     colorArray->Allocate(static_cast<vtkIdType>(nptsThisInst));
   }
@@ -733,8 +757,8 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
     if (hasColors)
     {
       colorArray->InsertNextTuple3(static_cast<unsigned char>(colors[3 * ii]),
-        static_cast<unsigned char>(colors[3 * ii] + 1),
-        static_cast<unsigned char>(colors[3 * ii] + 2));
+        static_cast<unsigned char>(colors[3 * ii + 1]),
+        static_cast<unsigned char>(colors[3 * ii + 2]));
     }
   }
   if (hasColors)
@@ -850,7 +874,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
 
     vtkSmartPointer<vtkDataObject> data =
       this->GenerateRepresentationFromModel(eref, modelRequiresNormals);
-    if (data.GetPointer())
+    if (data.GetPointer() && !eref.exclusions(Exclusions::Rendering))
     {
       blockDatasets[bb].push_back(data);
       blockEntities[bb].push_back(eref);

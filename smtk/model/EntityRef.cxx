@@ -325,6 +325,41 @@ std::string EntityRef::assignDefaultName(bool overwrite)
   return overwrite ? mgr->assignDefaultName(m_entity) : mgr->assignDefaultNameIfMissing(m_entity);
 }
 
+void EntityRef::setExclusions(bool v, int mask)
+{
+  // Get curent hiddenOptions
+  int exclusionOps = this->hasIntegerProperty("exclusion") ? this->exclusions() : 0;
+  if (mask == Exclusions::Everything)
+  { // Either set every bits to 1 or 0
+    exclusionOps = v ? Exclusions::Everything : 0;
+  }
+  else
+  {
+    if (v)
+    {
+      exclusionOps |= mask;
+    }
+    else
+    {
+      exclusionOps &= ~mask;
+    }
+  }
+
+  this->setIntegerProperty("exclusion", exclusionOps);
+}
+
+int EntityRef::exclusions(int mask) const
+{
+  if (!this->hasIntegerProperty("exclusion") || this->integerProperty("exclusion").empty())
+  {
+    return 0;
+  }
+
+  const IntegerList& prop(this->integerProperty("exclusion"));
+  int value = prop.empty() ? 0 : (static_cast<int>(prop[0]) & mask);
+  return mask == Exclusions::Everything ? value : !!value;
+}
+
 /// Returns true if the "visible" integer-property exists.
 bool EntityRef::hasVisibility() const
 {

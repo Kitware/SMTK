@@ -381,6 +381,23 @@ int main(int argc, char* argv[])
 
     std::cout << entity << "\n";
 
+    // Test exclusion properties
+    test(
+      entity.exclusions() == Exclusions::Nothing, "Entity's exclusion status should be Nothing.");
+    entity.setExclusions(true); // Exclude it from everything
+    test(entity.exclusions() == Exclusions::Everything,
+      "Entity's exclusion status should be Everything");
+    entity.setExclusions(false); // Reset exclusion status
+    test(entity.exclusions() == Exclusions::Nothing, "Entity's exclusion status should be Nothing");
+    // Set excluded from tessellation generation
+    entity.setExclusions(true, Exclusions::Rendering);
+    test(entity.exclusions(Exclusions::Rendering) == 1, "Entity should be excluded"
+                                                        " from rendering");
+    // Set excluded from view representation
+    entity.setExclusions(true, Exclusions::ViewPresentation);
+    test(entity.exclusions(Exclusions::ViewPresentation) == 1, "Entity should be excluded"
+                                                               " from view presentation");
+
     // Test color/hasColor/setColor
     test(!entity.hasColor(), "Entity should not have had a color assigned to it.");
     smtk::model::FloatList rgba = entity.color();

@@ -755,14 +755,10 @@ void SubphraseGenerator::childrenOfModelAuxiliaryGeometry(
   }
 }
 
-void SubphraseGenerator::prototypeOfModelInstance(
-  DescriptivePhrase::Ptr src, const smtk::model::Instance& ent, DescriptivePhrases& result)
+void SubphraseGenerator::prototypeOfModelInstance(DescriptivePhrase::Ptr /*src*/,
+  const smtk::model::Instance& /*ent*/, DescriptivePhrases& /*result*/)
 {
-  auto instanceOf = ent.prototype();
-  if (instanceOf.isValid())
-  {
-    result.push_back(ComponentPhraseContent::createPhrase(instanceOf.component(), 0, src));
-  }
+  // For now do nothing here to prevent the generation of infinite nested prototype/glyph phrases.
 }
 
 void SubphraseGenerator::instancesOfModelEntity(
