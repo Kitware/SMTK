@@ -135,48 +135,50 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool ad
 {
   if (adding)
   {
-    if (m_resourceIds.find(resource->id()) == m_resourceIds.end())
+    // Only attempt to filter resource out if there are filters defined.
+    bool acceptable = m_resourceFilters.empty() ? true : false;
+    for (auto filter : m_resourceFilters)
     {
-      // Only attempt to filter resource out if there are filters defined.
-      bool acceptable = m_resourceFilters.empty() ? true : false;
-      for (auto filter : m_resourceFilters)
+      if (resource->isOfType(filter.first))
       {
-        if (resource->isOfType(filter.first))
-        {
-          acceptable = true;
-          break;
-        }
+        acceptable = true;
+        break;
       }
-
-      if (!acceptable)
-      {
-        return;
-      }
-
-      m_resourceIds.insert(resource->id());
-      DescriptivePhrases children(m_root->subphrases());
-      children.push_back(
-        smtk::view::ResourcePhraseContent::createPhrase(resource, m_mutableAspects, m_root));
-      std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
-      this->root()->findDelegate()->decoratePhrases(children);
-      this->updateChildren(m_root, children, std::vector<int>());
     }
+
+    if (!acceptable)
+    {
+      return;
+    }
+
+    const auto& subphrases(m_root->subphrases());
+    DescriptivePhrases::const_iterator it;
+    for (it = subphrases.begin(); it != subphrases.end(); ++it)
+    {
+      if ((*it)->relatedResource() && (*it)->relatedResource()->id() == resource->id())
+      {
+        return; // Already have the resource listed.
+      }
+    }
+
+    // Resource was not there; need to add it:
+    DescriptivePhrases children(subphrases);
+    children.push_back(
+      smtk::view::ResourcePhraseContent::createPhrase(resource, m_mutableAspects, m_root));
+    std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
+    this->root()->findDelegate()->decoratePhrases(children);
+    this->updateChildren(m_root, children, std::vector<int>());
   }
   else
   {
-    auto it = m_resourceIds.find(resource->id());
-    if (it != m_resourceIds.end())
-    {
-      m_resourceIds.erase(it);
-      DescriptivePhrases children(m_root->subphrases());
-      std::weak_ptr<smtk::resource::Resource> weakResourcePtr = resource;
-      children.erase(std::remove_if(children.begin(), children.end(),
-                       [weakResourcePtr](const DescriptivePhrase::Ptr& phr) -> bool {
-                         return phr->relatedResource() == weakResourcePtr.lock();
-                       }),
-        children.end());
-      this->updateChildren(m_root, children, std::vector<int>());
-    }
+    DescriptivePhrases children(m_root->subphrases());
+    std::weak_ptr<smtk::resource::Resource> weakResourcePtr = resource;
+    children.erase(std::remove_if(children.begin(), children.end(),
+                     [weakResourcePtr](const DescriptivePhrase::Ptr& phr) -> bool {
+                       return phr->relatedResource() == weakResourcePtr.lock();
+                     }),
+      children.end());
+    this->updateChildren(m_root, children, std::vector<int>());
   }
 }
 
