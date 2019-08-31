@@ -356,9 +356,9 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
       vtkNew<vtkMultiBlockDataSet> mbds2;
       mbds2->SetBlock(vtkResourceMultiBlockSource::BlockId::Components, componentMultiBlock);
       this->EntityMapper->SetInputDataObject(mbds2);
+      this->SelectedEntityMapper->SetInputDataObject(mbds2);
     }
 
-    this->SelectedEntityMapper->SetInputDataObject(componentMultiBlock);
     this->UpdateColoringParameters(componentMultiBlock);
     this->UpdateRepresentationSubtype();
 
