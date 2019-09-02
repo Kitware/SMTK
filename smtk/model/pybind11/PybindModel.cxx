@@ -65,6 +65,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAddAuxiliaryGeometry.h"
 #include "PybindCloseModel.h"
+#include "PybindCreateInstances.h"
 #include "PybindExportModelJSON.h"
 #include "PybindSetProperty.h"
 
@@ -152,6 +153,7 @@ PYBIND11_MODULE(_smtkPybindModel, model)
 
   PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperation > smtk_model_AddAuxiliaryGeometry = pybind11_init_smtk_model_AddAuxiliaryGeometry(model);
   PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation > smtk_model_CloseModel = pybind11_init_smtk_model_CloseModel(model);
+  PySharedPtrClass< smtk::model::CreateInstances, smtk::operation::XMLOperation > smtk_model_CreateInstances = pybind11_init_smtk_model_CreateInstances(model);
   PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > smtk_model_ExportModelJSON = pybind11_init_smtk_model_ExportModelJSON(model);
   PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperation > smtk_model_SetProperty = pybind11_init_smtk_model_SetProperty(model);
 
