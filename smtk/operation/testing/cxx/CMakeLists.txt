@@ -4,6 +4,7 @@ set(unit_tests
   TestMutexedOperation
   unitOperation
   TestOperationGroup
+  TestOperationLauncher
   TestRemoveResource
 )
 
