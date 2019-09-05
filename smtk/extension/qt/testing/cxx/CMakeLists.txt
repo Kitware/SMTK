@@ -43,17 +43,19 @@ if (SMTK_ENABLE_POLYGON_SESSION)
   set(unitQtComponentItem_EXTRA_ARGUMENTS "--exit")
 endif ()
 
-if (SMTK_ENABLE_MESH_SESSION)
-  list(APPEND unit_tests_headers
-    UnitTestOperationLauncher.h
-    )
-  list(APPEND unit_tests_which_require_data
-    UnitTestOperationLauncher.cxx
-    )
+if (SMTK_ENABLE_UNSTABLE_TESTS)
+  if (SMTK_ENABLE_MESH_SESSION)
+    list(APPEND unit_tests_headers
+      UnitTestOperationLauncher.h
+      )
+    list(APPEND unit_tests_which_require_data
+      UnitTestOperationLauncher.cxx
+      )
 
-  list(APPEND additional_libraries
-    smtkMeshSession
-    )
+    list(APPEND additional_libraries
+      smtkMeshSession
+      )
+  endif ()
 endif ()
 
 if (SMTK_DATA_DIR)
