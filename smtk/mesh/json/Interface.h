@@ -210,6 +210,9 @@ public:
   bool canonicalIndex(
     const smtk::mesh::Handle& cell, smtk::mesh::Handle& parent, int& index) const override;
 
+  //given a handle to a cell, return its dimension-equivalent neighbors.
+  smtk::mesh::HandleRange neighbors(const smtk::mesh::Handle& cell) const override;
+
   //merge any duplicate points used by the cells that have been passed
   bool mergeCoincidentContactPoints(
     const smtk::mesh::HandleRange& meshes, double tolerance) override;

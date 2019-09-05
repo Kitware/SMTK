@@ -46,6 +46,7 @@ public:
       Components,
       Prototypes,
       Instances,
+      NumberOfBlocks
     };
   };
 
@@ -58,6 +59,12 @@ public:
   /// Return a UUID for the data object.
   static smtk::common::UUID GetDataObjectUUID(vtkInformation*);
 
+  /// Store the resource UUID in the output dataset's top-level block metadata.
+  static void SetResourceId(vtkMultiBlockDataSet* dataset, const smtk::common::UUID&);
+
+  /// Fetch the resource UUID from a dataset's top-level block metadata.
+  static smtk::common::UUID GetResourceId(vtkMultiBlockDataSet* dataset);
+
   /// Return the component corresponding to the data object.
   static smtk::resource::ComponentPtr GetComponent(
     const smtk::resource::ResourcePtr&, vtkInformation*);
@@ -65,6 +72,16 @@ public:
 
   smtk::resource::ResourcePtr GetResource();
   void SetResource(const smtk::resource::ResourcePtr&);
+
+  /// A debug utility to print out the block structure of a multiblock dataset
+  /// annotated with UUIDs (where present) and data type.
+  static void DumpBlockStructureWithUUIDs(vtkMultiBlockDataSet* dataset, int indent = 0)
+  {
+    int counter = 1;
+    DumpBlockStructureWithUUIDsInternal(dataset, counter, indent);
+  }
+  static void DumpBlockStructureWithUUIDsInternal(
+    vtkMultiBlockDataSet* dataset, int& counter, int indent = 0);
 
 protected:
   vtkResourceMultiBlockSource();

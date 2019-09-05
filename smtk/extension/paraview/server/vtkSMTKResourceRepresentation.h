@@ -307,6 +307,17 @@ public:
   /// call SetEntityVisibility().
   const ComponentStateMap& GetComponentState() const { return this->ComponentState; }
 
+  /// Return the prop ID assigned to the actor that renders tessellated components.
+  int GetEntitiesActorPickId() const { return this->EntitiesActorPickId; }
+
+  /// Return the prop ID assigned to the actor that renders glyph components.
+  int GetGlyphEntitiesActorPickId() const { return this->GlyphEntitiesActorPickId; }
+
+  /// Return the prop ID assigned to the actor that renders selected tessellated components.
+  int GetSelectedEntitiesActorPickId() const { return this->SelectedEntitiesActorPickId; }
+
+  /// Return the prop ID assigned to the actor that renders selected glyph components.
+  int GetSelectedGlyphEntitiesActorPickId() const { return this->SelectedGlyphEntitiesActorPickId; }
 protected:
   vtkSMTKResourceRepresentation();
   ~vtkSMTKResourceRepresentation();
@@ -412,6 +423,12 @@ protected:
   vtkSmartPointer<vtkActor> SelectedEntities;
   vtkSmartPointer<vtkActor> GlyphEntities;
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
+
+  // IDs assigned by vtkPVRenderView for hardware picking:
+  int EntitiesActorPickId;
+  int SelectedEntitiesActorPickId;
+  int GlyphEntitiesActorPickId;
+  int SelectedGlyphEntitiesActorPickId;
 
   /**
    * Rendering properties shared between Entities and GlyphEntities

@@ -70,6 +70,7 @@ pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
       SLOT(addManagerOnServer(pqServer*)));
     QObject::connect(pqCore->getServerManagerModel(), SIGNAL(aboutToRemoveServer(pqServer*)), this,
       SLOT(removeManagerFromServer(pqServer*)));
+
     // TODO: Do we need to call serverReady manually if pqActiveObjects says there's already an active server?
   }
 
@@ -108,7 +109,7 @@ pqSMTKBehavior::~pqSMTKBehavior()
   delete m_p;
 }
 
-vtkSMSMTKWrapperProxy* pqSMTKBehavior::wrapperProxy(pqServer* remote)
+vtkSMSMTKWrapperProxy* pqSMTKBehavior::wrapperProxy(pqServer* remote) const
 {
   auto entry = remote ? m_p->Remotes.find(remote) : m_p->Remotes.begin();
   if (entry == m_p->Remotes.end())
@@ -118,7 +119,7 @@ vtkSMSMTKWrapperProxy* pqSMTKBehavior::wrapperProxy(pqServer* remote)
   return entry->second.first;
 }
 
-pqSMTKWrapper* pqSMTKBehavior::resourceManagerForServer(pqServer* remote)
+pqSMTKWrapper* pqSMTKBehavior::resourceManagerForServer(pqServer* remote) const
 {
   auto entry = remote ? m_p->Remotes.find(remote) : m_p->Remotes.begin();
   if (entry == m_p->Remotes.end())
@@ -164,7 +165,7 @@ pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr m
   return result;
 }
 
-pqSMTKResource* pqSMTKBehavior::getPVResource(const smtk::resource::ResourcePtr& resource)
+pqSMTKResource* pqSMTKBehavior::getPVResource(const smtk::resource::ResourcePtr& resource) const
 {
   pqSMTKResource* result = nullptr;
   this->visitResourceManagersOnServers([&result, &resource](pqSMTKWrapper* mos, pqServer*) {
@@ -307,6 +308,40 @@ bool pqSMTKBehavior::createRepresentation(pqSMTKResource* pvr, pqView* view)
     return true;
   }
   return false;
+}
+
+pqSMTKWrapper* pqSMTKBehavior::builtinOrActiveWrapper() const
+{
+  pqSMTKWrapper* builtin = nullptr;
+  pqSMTKWrapper* existing = nullptr;
+  this->visitResourceManagersOnServers(
+    [&builtin, &existing](pqSMTKWrapper* wrapper, pqServer* server) -> bool {
+      if (wrapper && !existing)
+      {
+        existing = wrapper;
+      }
+      if (server->getResource().scheme() == "builtin")
+      {
+        builtin = wrapper;
+        return true;
+      }
+      return false;
+    });
+
+  if (!builtin)
+  {
+    auto app = pqApplicationCore::instance();
+    pqServer* server = app->getActiveServer();
+    if (server)
+    {
+      builtin = this->resourceManagerForServer(server);
+    }
+    if (!builtin)
+    {
+      builtin = existing;
+    }
+  }
+  return builtin;
 }
 
 void pqSMTKBehavior::setDefaultRepresentationVisibility(pqOutputPort* pqPort, pqView* view)

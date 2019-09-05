@@ -37,6 +37,9 @@ class vtkInformationStringKey;
 class VTKSMTKSOURCEEXT_EXPORT vtkMeshMultiBlockSource : public vtkResourceMultiBlockSource
 {
 public:
+  static constexpr const char* const CellHandlesName = "cell handles";
+  static constexpr const char* const PointHandlesName = "point handles";
+
   smtkDeclareTracksAllInstances(vtkMeshMultiBlockSource);
   static vtkMeshMultiBlockSource* New();
   void PrintSelf(ostream& os, vtkIndent indent) override;

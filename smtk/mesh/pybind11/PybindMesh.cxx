@@ -44,6 +44,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindPointSet.h"
 #include "PybindQueryTypes.h"
 #include "PybindReclassify.h"
+#include "PybindSelection.h"
 #include "PybindTypeSet.h"
 
 #include "PybindPointCloud.h"
@@ -167,6 +168,7 @@ PYBIND11_MODULE(_smtkPybindMesh, mesh)
   PySharedPtrClass< smtk::mesh::UUIDTag > smtk_mesh_UUIDTag = pybind11_init_smtk_mesh_UUIDTag(mesh, smtk_mesh_OpaqueTag_16_);
   PySharedPtrClass< smtk::mesh::Model > smtk_mesh_Model = pybind11_init_smtk_mesh_Model(mesh, smtk_mesh_UUIDTag);
   PySharedPtrClass< smtk::mesh::Component > smtk_mesh_Component = pybind11_init_smtk_mesh_Component(mesh);
+  PySharedPtrClass< smtk::mesh::Selection > smtk_mesh_Selection = pybind11_init_smtk_mesh_Selection(mesh);
 
   PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > smtk_mesh_DeleteMesh = pybind11_init_smtk_mesh_DeleteMesh(mesh);
   PySharedPtrClass< smtk::mesh::ElevateMesh, smtk::operation::XMLOperation > smtk_mesh_ElevateMesh = pybind11_init_smtk_mesh_ElevateMesh(mesh);

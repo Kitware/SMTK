@@ -65,7 +65,7 @@ PySharedPtrClass< smtk::view::Selection > pybind11_init_smtk_view_Selection(py::
     .def("setDefaultActionToSubtraction", &smtk::view::Selection::setDefaultActionToSubtraction)
     .def("modifySelection", (bool
         (smtk::view::Selection::*)(const ::std::vector<smtk::resource::PersistentObject::Ptr>&,
-          const std::string&, int, smtk::view::SelectionAction, bool))
+          const std::string&, int, smtk::view::SelectionAction, bool, bool))
       &smtk::view::Selection::modifySelection)
     .def("resetSelectionBits", &smtk::view::Selection::resetSelectionBits)
     .def("visitSelection", (void (smtk::view::Selection::*)(::std::function<void (std::shared_ptr<smtk::resource::PersistentObject>, int)>)) &smtk::view::Selection::visitSelection, py::arg("visitor"))

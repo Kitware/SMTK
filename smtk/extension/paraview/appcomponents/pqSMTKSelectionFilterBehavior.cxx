@@ -26,6 +26,7 @@
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
+#include "smtk/model/Instance.h"
 #include "smtk/model/Model.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Volume.h"
@@ -62,7 +63,7 @@
 
 using namespace smtk;
 
-#define NUM_ACTIONS 7
+#define NUM_ACTIONS 8
 
 #define DEBUG_FILTER 0
 
@@ -114,6 +115,7 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   m_p->ActionArray[4] = m_p->Actions.actionSelnAcceptModelEdges;
   m_p->ActionArray[5] = m_p->Actions.actionSelnAcceptModelVertices;
   m_p->ActionArray[6] = m_p->Actions.actionSelnAcceptModelAuxGeoms;
+  m_p->ActionArray[7] = m_p->Actions.actionSelnAcceptModelInstances;
 
   if (!s_selectionFilter)
   {
@@ -133,6 +135,7 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   m_p->Actions.actionSelnAcceptModelEdges->setChecked(true);
   m_p->Actions.actionSelnAcceptModelFaces->setChecked(true);
   m_p->Actions.actionSelnAcceptModelAuxGeoms->setChecked(true);
+  m_p->Actions.actionSelnAcceptModelInstances->setChecked(true);
   // Now force the initial filter to get installed on the selection manager:
   this->onFilterChanged(m_p->Actions.actionSelnAcceptModelVertices);
 
@@ -182,35 +185,47 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
     {
       m_p->ActionArray[ii]->setChecked((a != m_p->ActionArray[ii]) ? false : true);
     }
-    modelFlags =
-      (m_p->Actions.actionSelnAcceptModels->isChecked() ? smtk::model::MODEL_ENTITY : 0) |
-      (m_p->Actions.actionSelnAcceptModelVolumes->isChecked() ? smtk::model::VOLUME : 0);
+    modelFlags = (m_p->Actions.actionSelnAcceptModels->isChecked() ? smtk::model::MODEL_ENTITY
+                                                                   : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelVolumes->isChecked() ? smtk::model::VOLUME
+                                                              : smtk::model::NOTHING);
   }
   else if ((a == m_p->Actions.actionSelnAcceptModelVertices && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelEdges && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelFaces && a->isChecked()) ||
-    (a == m_p->Actions.actionSelnAcceptModelAuxGeoms && a->isChecked()))
+    (a == m_p->Actions.actionSelnAcceptModelAuxGeoms && a->isChecked()) ||
+    (a == m_p->Actions.actionSelnAcceptModelInstances && a->isChecked()))
   {
     m_p->Actions.actionSelnAcceptMeshSets->setChecked(false);
     m_p->Actions.actionSelnAcceptModels->setChecked(false);
     m_p->Actions.actionSelnAcceptModelVolumes->setChecked(false);
     acceptMesh = false;
-    modelFlags =
-      (m_p->Actions.actionSelnAcceptModelVertices->isChecked() ? smtk::model::VERTEX : 0) |
-      (m_p->Actions.actionSelnAcceptModelEdges->isChecked() ? smtk::model::EDGE : 0) |
-      (m_p->Actions.actionSelnAcceptModelFaces->isChecked() ? smtk::model::FACE : 0) |
-      (m_p->Actions.actionSelnAcceptModelAuxGeoms->isChecked() ? smtk::model::AUX_GEOM_ENTITY : 0);
+    modelFlags = (m_p->Actions.actionSelnAcceptModelVertices->isChecked() ? smtk::model::VERTEX
+                                                                          : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelEdges->isChecked() ? smtk::model::EDGE
+                                                            : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelFaces->isChecked() ? smtk::model::FACE
+                                                            : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelAuxGeoms->isChecked() ? smtk::model::AUX_GEOM_ENTITY
+                                                               : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelInstances->isChecked() ? smtk::model::INSTANCE_ENTITY
+                                                                : smtk::model::NOTHING);
   }
   else
   { // Something was turned off, which will not require us to deactivate any other buttons
     acceptMesh = m_p->Actions.actionSelnAcceptMeshSets->isChecked();
-    modelFlags =
-      (m_p->Actions.actionSelnAcceptModels->isChecked() ? smtk::model::MODEL_ENTITY : 0) |
-      (m_p->Actions.actionSelnAcceptModelVolumes->isChecked() ? smtk::model::VOLUME : 0) |
-      (m_p->Actions.actionSelnAcceptModelVertices->isChecked() ? smtk::model::VERTEX : 0) |
-      (m_p->Actions.actionSelnAcceptModelEdges->isChecked() ? smtk::model::EDGE : 0) |
-      (m_p->Actions.actionSelnAcceptModelFaces->isChecked() ? smtk::model::FACE : 0) |
-      (m_p->Actions.actionSelnAcceptModelAuxGeoms->isChecked() ? smtk::model::AUX_GEOM_ENTITY : 0);
+    modelFlags = (m_p->Actions.actionSelnAcceptModels->isChecked() ? smtk::model::MODEL_ENTITY
+                                                                   : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelVolumes->isChecked() ? smtk::model::VOLUME
+                                                              : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelVertices->isChecked() ? smtk::model::VERTEX
+                                                               : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelEdges->isChecked() ? smtk::model::EDGE
+                                                            : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelFaces->isChecked() ? smtk::model::FACE
+                                                            : smtk::model::NOTHING) |
+      (m_p->Actions.actionSelnAcceptModelAuxGeoms->isChecked() ? smtk::model::AUX_GEOM_ENTITY
+                                                               : smtk::model::NOTHING);
   }
   // Rebuild the selection filter
   m_modelFilterMask = modelFlags;
@@ -378,6 +393,9 @@ void pqSMTKSelectionFilterBehavior::installFilter()
             case 2:
               vv = cell.as<smtk::model::Face>().volumes();
               break;
+            case 3:
+              vv.push_back(cell.as<smtk::model::Volume>());
+              break;
             default:
               break;
           }
@@ -395,6 +413,7 @@ void pqSMTKSelectionFilterBehavior::installFilter()
       {
         // Ensure the dimension is acceptable, too:
         return ((entBits & smtk::model::AUX_GEOM_ENTITY) ||
+                 (entBits & smtk::model::INSTANCE_ENTITY) ||
                  ((entBits & smtk::model::ANY_DIMENSION) &
                    (modelFlags & smtk::model::ANY_DIMENSION)))
           ? true

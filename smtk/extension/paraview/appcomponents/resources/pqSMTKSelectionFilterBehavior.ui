@@ -111,6 +111,20 @@
     <string>Should the selection be allowed to include auxiliary geometry entities?</string>
    </property>
   </action>
+  <action name="actionSelnAcceptModelInstances">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset><normalon>:/Instances.png</normalon></iconset>
+   </property>
+   <property name="text">
+    <string>Select instances</string>
+   </property>
+   <property name="toolTip">
+    <string>Should the selection be allowed to include instances (copies) of prototypes?</string>
+   </property>
+  </action>
   <!-- Now add an action to start selecting SMTK components (rather than cells/points) -->
   <action name="actionStartSMTKSelection">
    <property name="checkable">

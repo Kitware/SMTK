@@ -12,9 +12,11 @@ set(PLUGIN_DOCK_IFACES)
 set(PLUGIN_DOCK_IFACES_SRCS)
 
 set(PQComponentsUnwrappedSrcs
+  vtkSMTKEncodeSelection.cxx
 )
 
 set(PQComponentsUnwrappedHdrs
+  vtkSMTKEncodeSelection.h
 )
 
 find_package(Qt5 REQUIRED COMPONENTS Core)
@@ -322,7 +324,7 @@ list(APPEND PLUGIN_DOCK_IFACES ${operPanelIfaces})
 list(APPEND PLUGIN_DOCK_IFACES_SRCS ${operPanelIfaceSrcs})
 
 pv_qt_wrap_cpp(PLUGIN_MOC_SRCS ${PQComponentsPluginHdrs})
-add_paraview_plugin(
+add_smtk_plugin(
   smtkPQComponentsPlugin "1.0"
   GUI_INTERFACES
     ${PLUGIN_ACTION_IFACES}
@@ -337,6 +339,10 @@ add_paraview_plugin(
     ${PLUGIN_AUTOSTART_IFACE_SRCS}
     ${PLUGIN_PROXY_IFACE_SRCS}
     ${PLUGIN_DOCK_IFACES_SRCS}
+  REGISTRAR
+    smtk::extension::paraview::server::Registrar
+  MANAGERS
+    smtk::operation::Manager smtk::resource::Manager
 )
 set_property(GLOBAL APPEND PROPERTY SMTK_PLUGINS "smtkPQComponentsPlugin")
 enable_smtk_plugin_by_default(smtkPQComponentsPlugin TRUE)
@@ -344,6 +350,7 @@ enable_smtk_plugin_by_default(smtkPQComponentsPlugin TRUE)
 target_link_libraries(smtkPQComponentsPlugin
   LINK_PUBLIC
     smtkPQComponentsExt
+    vtkSMTKOperationsExt
 )
 smtk_export_header(smtkPQComponentsPlugin PluginExports.h)
 

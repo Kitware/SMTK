@@ -165,6 +165,7 @@ enum EntityTypeBits : BitFlags
   GROUP_CONSTRAINT_MASK= 0x0ff00000, //!< Must a group be homogenous, have no subgroups, be a partition or cover, be open/closed (i.e., include its closure, or be composed only of model bdy/domain entities?
   HALF_OPEN            = 0x00c00000, //!< A bit indicating that the entity should be regarded as half-open (or half-closed)
   HALF_CLOSED          = 0x00c00000, //!< A bit indicating that the entity should be regarded as half-open (or half-closed)
+  NOTHING              = 0x00000000, //!< A convenience to avoid explicit type conversion
   INVALID              = 0xffffffff  //!< The entity is invalid
 };
 // clang-format on

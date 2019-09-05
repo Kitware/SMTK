@@ -9,5 +9,6 @@ a spreadsheet view uses a different algorithm to prepare data for display
 than a 3-D render-view.
 Besides adaptations for different view types,
 representations may adapt different types of input datasets.
-SMTK provides representations that adapt models, meshes, and
-other resources for display in 3-D render views.
+SMTK provides a representation, :smtk:`vtkSMTKResourceRepresentation`, that
+adapts models, meshes, and other resources (any that provide tessllation data
+on their components) for display in 3-D render views.

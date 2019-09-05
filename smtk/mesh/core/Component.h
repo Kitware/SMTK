@@ -75,8 +75,8 @@ public:
   std::string name() const override;
 
   /// Access the meshset represented by this component.
-  const smtk::mesh::MeshSet mesh() const;
-  smtk::mesh::MeshSet mesh();
+  virtual const smtk::mesh::MeshSet mesh() const;
+  virtual smtk::mesh::MeshSet mesh();
 
 private:
   std::weak_ptr<smtk::mesh::Resource> m_resource;

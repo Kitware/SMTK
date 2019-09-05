@@ -42,17 +42,21 @@ set(meshSrcs
   operators/DeleteMesh.cxx
   operators/ElevateMesh.cxx
   operators/Export.cxx
+  operators/ExtractByDihedralAngle.cxx
   operators/GenerateHotStartData.cxx
   operators/Import.cxx
   operators/InterpolateOntoMesh.cxx
+  operators/PrintMeshInformation.cxx
   operators/Read.cxx
   operators/ReadResource.cxx
+  operators/SelectCells.cxx
   operators/SetMeshName.cxx
   operators/UndoElevateMesh.cxx
   operators/Write.cxx
   operators/WriteResource.cxx
 
   resource/Registrar.cxx
+  resource/Selection.cxx
 
   utility/ApplyToMesh.cxx
   utility/Create.cxx
@@ -104,11 +108,14 @@ set(meshHeaders
   operators/DeleteMesh.h
   operators/ElevateMesh.h
   operators/Export.h
+  operators/EtractByDihedralAngle.h
   operators/GenerateHotStartData.h
   operators/Import.h
   operators/InterpolateOntoMesh.h
+  operators/PrintMeshInformation.h
   operators/Read.h
   operators/ReadResource.h
+  operators/SelectCells.h
   operators/SetMeshName.h
   operators/UndoElevateMesh.h
   operators/Write.h
@@ -116,6 +123,7 @@ set(meshHeaders
 
   resource/PropertyData.h
   resource/Registrar.h
+  resource/Selection.h
 
   utility/ApplyToMesh.h
   utility/Create.h
@@ -129,11 +137,14 @@ set(meshHeaders
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ElevateMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractByDihedralAngle.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PrintMeshInformation.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SelectCells.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetMeshName.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoElevateMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)

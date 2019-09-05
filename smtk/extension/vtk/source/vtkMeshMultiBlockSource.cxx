@@ -363,6 +363,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
 int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
+  auto resource = this->GetResource();
   m_UUID2BlockIdMap.clear();
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
@@ -382,5 +383,6 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     this->SetCachedOutput(rep.GetPointer());
   }
   output->SetBlock(BlockId::Components, this->CachedOutput);
+  this->SetResourceId(output, resource->id());
   return 1;
 }

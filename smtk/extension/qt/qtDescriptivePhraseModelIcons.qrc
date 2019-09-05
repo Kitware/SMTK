@@ -29,6 +29,10 @@
     <file alias = "meshset_w.png">icons/meshset_w.png</file>
     <file alias = "meshResource_b.png">icons/meshResource_b.png</file>
     <file alias = "meshResource_w.png">icons/meshResource_w.png</file>
+    <file alias = "instance_b.png">icons/instance_b.png</file>
+    <file alias = "instance_b@2x.png">icons/instance_b@2x.png</file>
+    <file alias = "instance_w.png">icons/instance_w.png</file>
+    <file alias = "instance_w@2x.png">icons/instance_w@2x.png</file>
   </qresource>
 
   <qresource prefix="/icons/display">

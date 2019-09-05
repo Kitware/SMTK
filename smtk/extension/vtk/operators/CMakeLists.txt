@@ -1,12 +1,11 @@
+set(headers
+  vtkSMTKOperation.h
+  ExportEdgesToVTK.h
+)
 
 set(srcs
   vtkSMTKOperation.cxx
   ExportEdgesToVTK.cxx
-  )
-
-set(headers
-  vtkSMTKOperation.h
-  ExportEdgesToVTK.h
 )
 
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOperationXML)
@@ -14,7 +13,8 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOpe
 set_source_files_properties(
   ExportEdgesToVTK.cxx
   PROPERTIES
-    WRAP_EXCLUDE 1)
+    WRAP_EXCLUDE 1
+    WRAP_EXCLUDE_PYTHON 1)
 
 set(${vtk-module}_NO_HeaderTest 1)
 set(VTK_INSTALL_NO_HEADERS 1)

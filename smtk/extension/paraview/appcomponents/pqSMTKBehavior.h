@@ -55,9 +55,9 @@ public:
     */
   ///@{
   ///
-  vtkSMSMTKWrapperProxy* wrapperProxy(pqServer* server = nullptr);
+  vtkSMSMTKWrapperProxy* wrapperProxy(pqServer* server = nullptr) const;
   ///
-  pqSMTKWrapper* resourceManagerForServer(pqServer* server = nullptr);
+  pqSMTKWrapper* resourceManagerForServer(pqServer* server = nullptr) const;
   ///@}
 
   virtual void addPQProxy(pqSMTKWrapper* rsrcMgr);
@@ -66,7 +66,10 @@ public:
   pqSMTKWrapper* getPVResourceManager(smtk::resource::ManagerPtr rsrcMgr);
 
   /// Return the pqSMTKResource for a given smtk::resource::ResourcePtr.
-  pqSMTKResource* getPVResource(const smtk::resource::ResourcePtr& rsrc);
+  ///
+  /// Note that this is an O(N) operation (linear in the number of
+  /// resources loaded across all servers).
+  pqSMTKResource* getPVResource(const smtk::resource::ResourcePtr& rsrc) const;
 
   /**\brief Call a visitor function \a fn on each existing resource manager/server pair.
     *
@@ -84,6 +87,12 @@ public:
    * Create a pqDataRepresentation and set its default visibility value.
    */
   bool createRepresentation(pqSMTKResource* pvr, pqView* view);
+
+  /**\brief Return the SMTK wrapper serving the client process, or,
+   *        failing that, the active server's wrapper (or null if
+   *        none can be located).
+   */
+  pqSMTKWrapper* builtinOrActiveWrapper() const;
 
 signals:
   /// Called from within addManagerOnServer (in response to server becoming ready)

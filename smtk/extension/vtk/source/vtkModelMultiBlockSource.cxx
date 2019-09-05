@@ -931,6 +931,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
 int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
 {
+  auto resource = this->GetModelResource();
   this->UUID2BlockIdMap.clear();
   auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
@@ -939,7 +940,7 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     return 0;
   }
 
-  if (!this->GetModelResource())
+  if (!resource)
   {
     vtkErrorMacro("No input model");
     return 0;
@@ -955,13 +956,14 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     vtkNew<vtkMultiBlockDataSet> proto;
     vtkNew<vtkMultiBlockDataSet> inst;
     this->GenerateRepresentationFromModel(
-      rep.GetPointer(), inst.GetPointer(), proto.GetPointer(), this->GetModelResource());
+      rep.GetPointer(), inst.GetPointer(), proto.GetPointer(), resource);
     this->SetCachedOutput(rep.GetPointer(), inst.GetPointer(), proto.GetPointer());
   }
 
   output->SetBlock(BlockId::Components, this->CachedOutputMBDS);
   output->SetBlock(BlockId::Prototypes, this->CachedOutputProto);
   output->SetBlock(BlockId::Instances, this->CachedOutputInst);
+  this->SetResourceId(output, resource->id());
 
   return 1;
 }

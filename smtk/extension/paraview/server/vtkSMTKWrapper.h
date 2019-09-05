@@ -28,6 +28,11 @@
 #include <map>
 #include <set>
 
+class vtkMultiBlockDataSet;
+class vtkPVDataRepresentation;
+class vtkSMTKResource;
+class vtkSelection;
+
 /** \brief Server-side application state for ParaView-based SMTK apps.
   *
   * This object is instantiated on ParaView servers as they are connected and disconnected
@@ -41,16 +46,16 @@
   * Since ParaView has a single, application-wide selection, that design decision is
   * forced onto SMTK applications that use ParaView, hence the inclusion of a selection here.
   */
-
-class vtkPVDataRepresentation;
-class vtkSMTKResource;
-
 class SMTKPVSERVEREXT_EXPORT vtkSMTKWrapper : public vtkObject
 {
 public:
   using UUID = smtk::common::UUID;
   using UUIDs = smtk::common::UUIDs;
   using json = nlohmann::json;
+  /// A multiblock output from vtkResourceMultiBlockSource and a selection acting on it.
+  using SelectedResource = std::pair<vtkMultiBlockDataSet*, vtkSelection*>;
+  /// A subset of resources and selections that reside on the server holding this wrapper.
+  using SelectedResources = std::set<SelectedResource>;
 
   vtkTypeMacro(vtkSMTKWrapper, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;

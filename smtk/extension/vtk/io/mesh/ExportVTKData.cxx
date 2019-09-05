@@ -22,6 +22,8 @@
 #include "smtk/mesh/utility/ExtractMeshConstants.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
 
+#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+
 #include "vtkAOSDataArrayTemplate.h"
 #include "vtkCell.h"
 #include "vtkCellArray.h"
@@ -208,6 +210,42 @@ void ExportVTKData::operator()(
     deleteOldArrayIfNecessary(connectivityData_, connectivityData);
   }
 
+  std::int64_t* cellHandles_ = new std::int64_t[numberOfCells];
+  {
+    const smtk::mesh::HandleRange& range = cellset.range();
+    auto it = smtk::mesh::rangeElementsBegin(range);
+    auto end = smtk::mesh::rangeElementsEnd(range);
+    for (std::size_t counter = 0; it != end; ++it, ++counter)
+    {
+      cellHandles_[counter] = *it;
+    }
+  }
+  vtkIdType* cellHandles;
+  {
+    constructNewArrayIfNecessary(cellHandles_, cellHandles, numberOfCells);
+    transferDataIfNecessary(cellHandles_, cellHandles, numberOfCells);
+    deleteOldArrayIfNecessary(cellHandles_, cellHandles);
+  }
+
+  std::int64_t* pointHandles_ = new std::int64_t[numberOfPoints];
+  {
+    smtk::mesh::PointSet points = cellset.points();
+    const smtk::mesh::HandleRange& range = points.range();
+
+    auto it = smtk::mesh::rangeElementsBegin(range);
+    auto end = smtk::mesh::rangeElementsEnd(range);
+    for (std::size_t counter = 0; it != end; ++it, ++counter)
+    {
+      pointHandles_[counter] = *it;
+    }
+  }
+  vtkIdType* pointHandles;
+  {
+    constructNewArrayIfNecessary(pointHandles_, pointHandles, numberOfPoints);
+    transferDataIfNecessary(pointHandles_, pointHandles, numberOfPoints);
+    deleteOldArrayIfNecessary(pointHandles_, pointHandles);
+  }
+
   // create vtk data arrays to hold our data
   vtkNew<vtkDoubleArray> pointsArray;
   vtkNew<vtkIdTypeArray> connectivity;
@@ -238,6 +276,18 @@ void ExportVTKData::operator()(
   {
     pd->SetVerts(cells.GetPointer());
   }
+
+  vtkNew<vtkIdTypeArray> cellHandlesArray;
+  cellHandlesArray->SetName(vtkMeshMultiBlockSource::CellHandlesName);
+  cellHandlesArray->SetArray(
+    cellHandles, numberOfCells, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+  pd->GetCellData()->AddArray(cellHandlesArray.GetPointer());
+
+  vtkNew<vtkIdTypeArray> pointHandlesArray;
+  pointHandlesArray->SetName(vtkMeshMultiBlockSource::PointHandlesName);
+  pointHandlesArray->SetArray(
+    pointHandles, numberOfPoints, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
+  pd->GetPointData()->AddArray(pointHandlesArray.GetPointer());
 
   if (!domainPropertyName.empty())
   {
