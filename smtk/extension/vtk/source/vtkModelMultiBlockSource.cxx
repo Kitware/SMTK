@@ -732,7 +732,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
   bool hasMasks = (masks.size() == nptsThisInst && inst.rule() == "tabular") ? true : false;
 
   const smtk::model::FloatList& colors = inst.floatProperty(Instance::colors);
-  bool hasColors = (colors.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+  bool hasColors = (colors.size() == nptsThisInst * 4 && inst.rule() == "tabular") ? true : false;
 
   double ptOrientDefault[3] = { 0, 0, 0 };
   double ptScaleDefault[3] = { 1, 1, 1 };
@@ -740,7 +740,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
   if (hasColors)
   {
     colorArray->SetName(VTK_INSTANCE_COLOR);
-    colorArray->SetNumberOfComponents(3);
+    colorArray->SetNumberOfComponents(4);
     colorArray->Allocate(static_cast<vtkIdType>(nptsThisInst));
   }
   for (size_t ii = 0; ii < nptsThisInst; ++ii, pit += 3)
@@ -756,9 +756,10 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
 
     if (hasColors)
     {
-      colorArray->InsertNextTuple3(static_cast<unsigned char>(colors[3 * ii]),
-        static_cast<unsigned char>(colors[3 * ii + 1]),
-        static_cast<unsigned char>(colors[3 * ii + 2]));
+      colorArray->InsertNextTuple4(static_cast<unsigned char>(colors[4 * ii]),
+        static_cast<unsigned char>(colors[4 * ii + 1]),
+        static_cast<unsigned char>(colors[4 * ii + 2]),
+        static_cast<unsigned char>(colors[4 * ii + 3]));
     }
   }
   if (hasColors)
