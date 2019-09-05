@@ -11,7 +11,7 @@
 #define smtk_view_VTKSelectionResponderGroup_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/RespondToVTKSelection.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -27,6 +27,7 @@
 
 #include <set>
 #include <string>
+#include <type_traits>
 
 namespace smtk
 {
@@ -59,16 +60,6 @@ public:
   {
   }
 
-  /// Register an IO operation identified by it's unique name and the type of
-  /// resource it handles.
-  template <typename ResourceType>
-  bool registerOperation(const std::string&);
-
-  /// Register an IO operation identified by its type index and the type of
-  /// resource it handles.
-  template <typename ResourceType>
-  bool registerOperation(const Operation::Index&);
-
   /// Register an IO operation identified by its class type and the name of the
   /// resource it reads.
   template <typename ResourceType, typename OperationType>
@@ -90,21 +81,11 @@ protected:
   std::weak_ptr<smtk::resource::Manager> m_resourceManager;
 };
 
-template <typename ResourceType>
-bool VTKSelectionResponderGroup::registerOperation(const std::string& typeName)
-{
-  return Group::registerOperation(typeName, { smtk::common::typeName<ResourceType>() });
-}
-
-template <typename ResourceType>
-bool VTKSelectionResponderGroup::registerOperation(const Operation::Index& index)
-{
-  return Group::registerOperation(index, { smtk::common::typeName<ResourceType>() });
-}
-
 template <typename ResourceType, typename OperationType>
 bool VTKSelectionResponderGroup::registerOperation()
 {
+  static_assert(std::is_base_of<RespondToVTKSelection, OperationType>::value,
+    "Operations assigned to VTKSelectionResponderGroup must inherit RespondToVTKSelection");
   return Group::registerOperation(
     std::type_index(typeid(OperationType)).hash_code(), { smtk::common::typeName<ResourceType>() });
 }
