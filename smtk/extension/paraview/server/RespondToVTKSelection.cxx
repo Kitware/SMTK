@@ -176,6 +176,11 @@ bool RespondToVTKSelection::setSelectingBlocks(bool shouldSelectBlocks)
 bool RespondToVTKSelection::transcribeBlockSelection()
 {
   bool didModify = false;
+  if (!this->selectingBlocks())
+  {
+    return didModify;
+  }
+
   auto selnMgr = this->smtkSelection();
   auto selnBlock = this->vtkSelection();
   unsigned nn = selnBlock ? selnBlock->GetNumberOfNodes() : 0;

@@ -56,6 +56,10 @@ VTKMeshCellSelection::~VTKMeshCellSelection()
 bool VTKMeshCellSelection::transcribeCellIdSelection()
 {
   bool didModify = false;
+  if (this->selectingBlocks())
+  {
+    return didModify;
+  }
 
   auto assoc = this->parameters()->associations();
   smtk::resource::ResourcePtr resource = assoc->valueAs<smtk::resource::Resource>();
