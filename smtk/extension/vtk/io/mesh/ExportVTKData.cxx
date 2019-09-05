@@ -11,6 +11,7 @@
 //=============================================================================
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
+#include "smtk/extension/vtk/io/mesh/MeshIOVTK.h"
 
 #include "smtk/mesh/core/CellField.h"
 #include "smtk/mesh/core/CellSet.h"
@@ -278,13 +279,13 @@ void ExportVTKData::operator()(
   }
 
   vtkNew<vtkIdTypeArray> cellHandlesArray;
-  cellHandlesArray->SetName(vtkMeshMultiBlockSource::CellHandlesName);
+  cellHandlesArray->SetName(smtk::extension::vtk::io::mesh::MeshIOVTK::CellHandlesName);
   cellHandlesArray->SetArray(
     cellHandles, numberOfCells, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
   pd->GetCellData()->AddArray(cellHandlesArray.GetPointer());
 
   vtkNew<vtkIdTypeArray> pointHandlesArray;
-  pointHandlesArray->SetName(vtkMeshMultiBlockSource::PointHandlesName);
+  pointHandlesArray->SetName(smtk::extension::vtk::io::mesh::MeshIOVTK::PointHandlesName);
   pointHandlesArray->SetArray(
     pointHandles, numberOfPoints, false, vtkIdTypeArray::VTK_DATA_ARRAY_DELETE);
   pd->GetPointData()->AddArray(pointHandlesArray.GetPointer());

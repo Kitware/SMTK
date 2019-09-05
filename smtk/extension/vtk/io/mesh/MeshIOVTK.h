@@ -37,6 +37,9 @@ namespace mesh
 class SMTKIOVTK_EXPORT MeshIOVTK : public smtk::io::mesh::MeshIO
 {
 public:
+  static constexpr const char* const CellHandlesName = "cell handles";
+  static constexpr const char* const PointHandlesName = "point handles";
+
   // smtkAutoInitComponentMacro(smtk_extension_vtk_io_MeshIOVTK)
   MeshIOVTK();
 

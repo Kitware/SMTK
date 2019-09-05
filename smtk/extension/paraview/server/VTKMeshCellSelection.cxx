@@ -10,6 +10,8 @@
 #include "smtk/extension/paraview/server/VTKMeshCellSelection.h"
 #include "smtk/extension/paraview/server/VTKMeshCellSelection_xml.h"
 
+#include "smtk/extension/vtk/io/mesh/MeshIOVTK.h"
+
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
@@ -163,8 +165,9 @@ bool VTKMeshCellSelection::transcribeCellIdSelection()
           }
 
           // Then we access the mapping between VTK cells and SMTK cells.
-          vtkIdTypeArray* cellHandles = vtkIdTypeArray::SafeDownCast(
-            vtkMeshSet->GetCellData()->GetScalars(vtkMeshMultiBlockSource::CellHandlesName));
+          vtkIdTypeArray* cellHandles =
+            vtkIdTypeArray::SafeDownCast(vtkMeshSet->GetCellData()->GetScalars(
+              smtk::extension::vtk::io::mesh::MeshIOVTK::CellHandlesName));
 
           if (cellHandles == nullptr)
           {
