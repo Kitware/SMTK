@@ -108,7 +108,7 @@ set(meshHeaders
   operators/DeleteMesh.h
   operators/ElevateMesh.h
   operators/Export.h
-  operators/EtractByDihedralAngle.h
+  operators/ExtractByDihedralAngle.h
   operators/GenerateHotStartData.h
   operators/Import.h
   operators/InterpolateOntoMesh.h
