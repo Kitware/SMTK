@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/resource/Manager.h"
+#include "smtk/resource/GarbageCollector.h"
 
 #include "smtk/io/Logger.h"
 
@@ -37,6 +38,7 @@ void InitializeObserver(Manager* mgr, Observer fn)
 
 Manager::Manager()
   : m_observers(std::bind(InitializeObserver, this, std::placeholders::_1))
+  , m_garbageCollector(GarbageCollector::create())
 {
 }
 
