@@ -163,6 +163,33 @@ bool RespondToVTKSelection::setModifier(int modifier)
   return true;
 }
 
+smtk::view::SelectionAction RespondToVTKSelection::modifierAction() const
+{
+  SelectionAction action;
+  switch (m_modifier)
+  {
+    case pqView::SelectionModifier::PV_SELECTION_DEFAULT:
+    case pqView::SelectionModifier::PV_SELECTION_ADDITION:
+      action = SelectionAction::FILTERED_ADD;
+      break;
+    case pqView::SelectionModifier::PV_SELECTION_SUBTRACTION:
+      action = SelectionAction::FILTERED_SUBTRACT;
+      break;
+    case pqView::SelectionModifier::PV_SELECTION_TOGGLE:
+      // TODO: Handle PV_SELECTION_TOGGLE
+      action = SelectionAction::FILTERED_ADD;
+      smtkWarningMacro(
+        smtk::io::Logger::instance(), "Toggle selections are not supported by SMTK yet.");
+      break;
+    default:
+      action = SelectionAction::FILTERED_ADD;
+      smtkWarningMacro(
+        smtk::io::Logger::instance(), "Unknown ParaView selection modifier " << m_modifier << ".");
+      break;
+  }
+  return action;
+}
+
 bool RespondToVTKSelection::setSelectingBlocks(bool shouldSelectBlocks)
 {
   if (m_selectingBlocks == shouldSelectBlocks)
@@ -300,29 +327,7 @@ bool RespondToVTKSelection::transcribeBlockSelection()
     }
   }
 
-  SelectionAction action;
-  switch (m_modifier)
-  {
-    case pqView::SelectionModifier::PV_SELECTION_DEFAULT:
-    case pqView::SelectionModifier::PV_SELECTION_ADDITION:
-      action = SelectionAction::FILTERED_ADD;
-      break;
-    case pqView::SelectionModifier::PV_SELECTION_SUBTRACTION:
-      action = SelectionAction::FILTERED_SUBTRACT;
-      break;
-    case pqView::SelectionModifier::PV_SELECTION_TOGGLE:
-      // TODO: Handle PV_SELECTION_TOGGLE
-      action = SelectionAction::FILTERED_ADD;
-      smtkWarningMacro(
-        smtk::io::Logger::instance(), "Toggle selections are not supported by SMTK yet.");
-      break;
-    default:
-      action = SelectionAction::FILTERED_ADD;
-      smtkWarningMacro(
-        smtk::io::Logger::instance(), "Unknown ParaView selection modifier " << m_modifier << ".");
-      break;
-  }
-
+  SelectionAction action = this->modifierAction();
   if (!seln.empty())
   {
     // Always do a filtered-add to the selection; the behavior will have reset the selection

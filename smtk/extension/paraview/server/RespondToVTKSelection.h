@@ -14,6 +14,8 @@
 #include "smtk/extension/paraview/server/Exports.h" // For export macro
 #include "smtk/operation/XMLOperation.h"
 
+#include "smtk/view/Selection.h"
+
 class vtkSelection;
 class vtkMultiBlockDataSet;
 
@@ -89,6 +91,9 @@ public:
     */
   bool setModifier(int modifier);
   int modifier() const { return m_modifier; }
+
+  /// A convenience to return SMTK's equivalent of modifier()'s value.
+  smtk::view::SelectionAction modifierAction() const;
 
   /**\brief Set/get the selection block-mode.
     *
