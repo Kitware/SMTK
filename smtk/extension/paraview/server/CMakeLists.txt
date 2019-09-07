@@ -63,7 +63,8 @@ set(serverModules
   vtkSMTKReaderExt
   vtkSMTKSourceExt
   vtkSMTKWidgetsExt
-  vtkSMTKMeshingExt
+  vtkSMTKFilterExt
+  vtkSMTKOperationsExt
 )
 
 set(serverModuleCSLibs)
@@ -83,11 +84,7 @@ target_link_libraries(smtkPVServerExt
     smtkPluginSupport
     vtkPVClientServer
     vtkPVServerManager
-    vtkSMTKSourceExt
-    vtkSMTKReaderExt # vtkLIDARReader
-    vtkSMTKFilterExt # vtkTerrainExtractionFilter, vtkLIDARElevationFilter
-    vtkSMTKMeshingExt
-    vtkSMTKOperationsExt
+    ${serverModules}
     ${serverModuleCSLibs}
 )
 target_include_directories(smtkPVServerExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
