@@ -34,8 +34,15 @@ enum class EventType
   DID_OPERATE   //!< The operation has completed or been canceled.
 };
 
+/**\brief Signature for methods observing operations.
+  *
+  * Observers must not modify nor retain a pointer to the provided operation.
+  * Observers must return an integer. If the event type is WILL_OPERATE and
+  * the integer is non-zero, the operation will be canceled.
+  */
 typedef std::function<int(const Operation&, EventType, Operation::Result)> Observer;
 
+/// Operation observers are a specialization of the common SMTK observer pattern.
 typedef smtk::common::Observers<Observer> Observers;
 }
 }
