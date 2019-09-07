@@ -9,7 +9,7 @@
       <DetailedDescription>
         Permanently remove model entities (vertices, edges, faces) from a model.
       </DetailedDescription>
-      <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="yes">
+      <AssociationsDef Name="entities" NumberOfRequiredValues="1" Extensible="yes" HoldReference="true">
         <Accepts><Resource Name="smtk::model::Resource" Filter="cell|aux_geom|instance"/></Accepts>
         <BriefDescription>Model entities to delete.</BriefDescription>
         <DetailedDescription>

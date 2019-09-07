@@ -19,9 +19,11 @@
 #include "smtk/model/operators/CloseModel.h"
 #include "smtk/model/operators/CreateInstances.h"
 #include "smtk/model/operators/Delete.h"
+#include "smtk/model/operators/DivideInstance.h"
 #include "smtk/model/operators/EntityGroupOperation.h"
 #include "smtk/model/operators/ExportModelJSON.h"
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
+#include "smtk/model/operators/MergeInstances.h"
 #include "smtk/model/operators/SetInstancePrototype.h"
 #include "smtk/model/operators/SetProperty.h"
 #include "smtk/model/operators/TerrainExtraction.h"
@@ -37,8 +39,8 @@ namespace model
 namespace
 {
 typedef std::tuple<AddAuxiliaryGeometry, AddImage, AssignColors, CloseModel, CreateInstances,
-  Delete, EntityGroupOperation, ExportModelJSON, GroupAuxiliaryGeometry, SetInstancePrototype,
-  SetProperty, TerrainExtraction>
+  Delete, DivideInstance, EntityGroupOperation, ExportModelJSON, GroupAuxiliaryGeometry,
+  MergeInstances, SetInstancePrototype, SetProperty, TerrainExtraction>
   OperationList;
 }
 
