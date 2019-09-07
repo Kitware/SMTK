@@ -651,7 +651,7 @@ void SubphraseGenerator::childrenOfModelEntity(
   // Any entity may have instances
   this->instancesOfModelEntity(src, ref, result);
   // Any entity may have associated attributes
-  this->instancesOfModelEntity(src, ref, result);
+  // this->attributesOfModelEntity(src, ref, result);
 }
 
 void SubphraseGenerator::freeSubmodelsOfModel(
