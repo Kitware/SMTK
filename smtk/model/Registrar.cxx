@@ -18,11 +18,14 @@
 #include "smtk/model/operators/AssignColors.h"
 #include "smtk/model/operators/CloseModel.h"
 #include "smtk/model/operators/CreateInstances.h"
+#include "smtk/model/operators/Delete.h"
 #include "smtk/model/operators/EntityGroupOperation.h"
 #include "smtk/model/operators/ExportModelJSON.h"
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
 #include "smtk/model/operators/SetProperty.h"
 #include "smtk/model/operators/TerrainExtraction.h"
+
+#include "smtk/operation/groups/InternalGroup.h"
 
 #include <tuple>
 
@@ -33,18 +36,25 @@ namespace model
 namespace
 {
 typedef std::tuple<AddAuxiliaryGeometry, AddImage, AssignColors, CloseModel, CreateInstances,
-  EntityGroupOperation, ExportModelJSON, GroupAuxiliaryGeometry, SetProperty, TerrainExtraction>
+  Delete, EntityGroupOperation, ExportModelJSON, GroupAuxiliaryGeometry, SetProperty,
+  TerrainExtraction>
   OperationList;
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->registerOperations<OperationList>();
+
+  smtk::operation::InternalGroup internalGroup(operationManager);
+  internalGroup.registerOperation<Delete>();
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
   operationManager->unregisterOperations<OperationList>();
+
+  smtk::operation::InternalGroup internalGroup(operationManager);
+  internalGroup.unregisterOperation<Delete>();
 }
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)

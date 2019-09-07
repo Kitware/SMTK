@@ -6,6 +6,7 @@ set(modelOps
   CloseModel
   CompositeAuxiliaryGeometry
   CreateInstances
+  Delete
   EntityGroupOperation
   ExportModelJSON
   GroupAuxiliaryGeometry
