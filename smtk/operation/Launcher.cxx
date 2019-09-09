@@ -9,14 +9,58 @@
 //=========================================================================
 #include "smtk/operation/Launcher.h"
 
+#include "smtk/common/ThreadPool.h"
+
 #include "smtk/io/Logger.h"
 
+#include <functional>
 #include <thread>
 
 namespace
 {
 // Key corresponding to the default operation launch method
 smtk::operation::Launchers::LauncherMap::key_type default_key = "default";
+
+// The default launcher uses a thread pool and is copy-constructible (so it can
+// be placed in a map).
+class DefaultLauncher
+{
+public:
+  DefaultLauncher()
+    : m_pool(new smtk::common::ThreadPool<smtk::operation::Operation::Result>)
+  {
+  }
+
+  DefaultLauncher(const DefaultLauncher&)
+    : m_pool(new smtk::common::ThreadPool<smtk::operation::Operation::Result>)
+  {
+  }
+
+  DefaultLauncher(DefaultLauncher&& other)
+    : m_pool()
+  {
+    m_pool.swap(other.m_pool);
+  }
+
+  DefaultLauncher& operator=(DefaultLauncher&& other)
+  {
+    if (&other != this)
+    {
+      m_pool.swap(other.m_pool);
+    }
+    return *this;
+  }
+
+  std::future<smtk::operation::Operation::Result> operator()(
+    const smtk::operation::Operation::Ptr& operation)
+  {
+    return m_pool->operator()(
+      [](const smtk::operation::Operation::Ptr& op) { return op->operate(); }, operation);
+  }
+
+private:
+  std::unique_ptr<smtk::common::ThreadPool<smtk::operation::Operation::Result> > m_pool;
+};
 }
 
 namespace smtk
@@ -26,10 +70,7 @@ namespace operation
 
 Launchers::Launchers()
 {
-  // The default launch method uses an asynchronous thread.
-  this->insert(std::make_pair(default_key, [](const Operation::Ptr& op) {
-    return std::async(std::launch::async, [&]() { return op->operate(); });
-  }));
+  m_launchers[default_key] = DefaultLauncher();
 }
 
 Launchers::Launchers(const LauncherMap::mapped_type& m_type)
