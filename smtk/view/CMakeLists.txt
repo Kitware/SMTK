@@ -36,6 +36,7 @@ set(viewHeaders
   ResourcePhraseContent.h
   ResourcePhraseModel.h
   Selection.h
+  SelectionAction.h
   SelectionObserver.h
   SelectionPhraseModel.h
   SubphraseGenerator.h

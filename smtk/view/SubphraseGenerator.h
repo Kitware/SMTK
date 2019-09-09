@@ -179,9 +179,7 @@ protected:
   /// Add attributes associated with \a ent to \a result with \a src as their parent.
   /*
   void attributesOfModelEntity(
-    DescriptivePhrase::Ptr src,
-    const smtk::model::EntityRef& ent,
-    DescriptivePhrases& result);
+    DescriptivePhrase::Ptr src, const smtk::model::EntityRef& ent, DescriptivePhrases& result);
     */
 
   void cellOfModelUse(
