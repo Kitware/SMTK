@@ -152,6 +152,19 @@ static ArrangementKind ArrangementKindDualInstance[KINDS_OF_ARRANGEMENTS] = {
   INSTANCE_OF,           // dual of INSTANCED_BY
 };
 
+// Dual arrangement type when the source of the input arrangement is a use.
+static ArrangementKind ArrangementKindDualAuxGeom[KINDS_OF_ARRANGEMENTS] = {
+  EMBEDDED_IN,           // dual of INCLUDES
+  KINDS_OF_ARRANGEMENTS, // dual of HAS_CELL is invalid; auxiliary geometry does not have uses
+  KINDS_OF_ARRANGEMENTS, // dual of HAS_SHELL is invalid; auxiliary geometry is not a b-rep
+  KINDS_OF_ARRANGEMENTS, // dual of HAS_USE is invalid; a use may not have another use.
+  INCLUDES,              // dual of EMBEDDED_IN
+  SUPERSET_OF,           // dual of SUBSET_OF
+  SUBSET_OF,             // dual of SUPERSET_OF
+  KINDS_OF_ARRANGEMENTS, // dual of INSTANCE_OF is invalid; only instances may be instance_of
+  INSTANCE_OF,           // dual of INSTANCED_BY
+};
+
 // Dual arrangement type when the source of the input arrangement is a session.
 static ArrangementKind ArrangementKindDualSession[KINDS_OF_ARRANGEMENTS] = {
   KINDS_OF_ARRANGEMENTS, // dual of INCLUDES is invalid; a session does not include entities
@@ -183,6 +196,8 @@ ArrangementKind Dual(EntityTypeBits entType, ArrangementKind k)
         return ArrangementKindDualModel[k];
       case INSTANCE_ENTITY:
         return ArrangementKindDualInstance[k];
+      case AUX_GEOM_ENTITY:
+        return ArrangementKindDualAuxGeom[k];
       case SESSION:
         return ArrangementKindDualSession[k];
       default:
