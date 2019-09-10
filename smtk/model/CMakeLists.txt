@@ -10,6 +10,7 @@ set(modelOps
   EntityGroupOperation
   ExportModelJSON
   GroupAuxiliaryGeometry
+  SetInstancePrototype
   SetProperty
   TerrainExtraction
 )
