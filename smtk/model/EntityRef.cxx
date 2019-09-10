@@ -1589,6 +1589,20 @@ Groups EntityRef::containingGroups() const
   return result;
 }
 
+/**\brief Return true when this EntityRef has a SUPERSET_OF relationship with \a ent.
+  */
+bool EntityRef::isMember(const EntityRef& ent) const
+{
+  return EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, ent) >= 0;
+}
+
+/**\brief Return the first entity that this EntityRef has a SUBSET_OF relationship with.
+  */
+EntityRef EntityRef::memberOf() const
+{
+  return EntityRefArrangementOps::firstRelation<EntityRef>(*this, SUBSET_OF);
+}
+
 /// A comparator provided so that entityrefs may be included in ordered sets.
 bool EntityRef::operator==(const EntityRef& other) const
 {
@@ -1833,20 +1847,6 @@ EntityRef& EntityRef::addMemberEntity(const EntityRef& memberToAdd)
     mgr->trigger(event, *this, memberToAdd);
   }
   return *this;
-}
-
-/**\brief Return true when this EntityRef has a SUPERSET_OF relationship with \a ent.
-  */
-bool EntityRef::isMember(EntityRef& ent) const
-{
-  return EntityRefArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, ent) >= 0;
-}
-
-/**\brief Return the first entity that this EntityRef has a SUBSET_OF relationship with.
-  */
-EntityRef EntityRef::memberOf() const
-{
-  return EntityRefArrangementOps::firstRelation<EntityRef>(*this, SUBSET_OF);
 }
 
 /**\brief Remove the \a memberToRemove from this EntityRef.
