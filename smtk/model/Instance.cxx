@@ -26,6 +26,25 @@ EntityRef Instance::prototype() const
   return EntityRefArrangementOps::firstRelation<EntityRef>(*this, INSTANCE_OF);
 }
 
+bool Instance::setPrototype(const EntityRef& proto)
+{
+  EntityRef current = EntityRefArrangementOps::firstRelation<EntityRef>(*this, INSTANCE_OF);
+  if (proto == current)
+  {
+    return false;
+  }
+
+  auto rec = this->entityRecord();
+  auto arr = this->findArrangement(INSTANCE_OF, 0);
+  if (arr)
+  {
+    rec->unarrange(INSTANCE_OF, 0, true);
+  }
+  rec->modelResource()->addDualArrangement(
+    proto.entity(), this->entity(), INSTANCED_BY, 0, UNDEFINED);
+  return true;
+}
+
 static void GenerateTabularTessellation(Instance& inst, Tessellation* placements)
 {
   if (!inst.hasFloatProperties())

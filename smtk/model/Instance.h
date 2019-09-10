@@ -24,22 +24,27 @@ class SMTKCORE_EXPORT Instance : public EntityRef
 {
 public:
   SMTK_ENTITYREF_CLASS(Instance, EntityRef, isInstance);
-  /// a string used to store/fetch placements.
+  /// A string used to store/fetch placements.
   static constexpr const char* const placements = "placements";
-  /// a string used to store/fetch orientation as float property
+  /// A string used to store/fetch orientation as float property
   /// It will be retranscribed as vtkDoubleArray when passing into vtkGlyph3DMapper if specified.
   static constexpr const char* const orientations = "orientations";
-  /// a string used to store/fetch scales as float property
+  /// A string used to store/fetch scales as float property
   /// It will be retranscribed as vtkDoubleArray when passing into vtkGlyph3DMapper if specified.
   static constexpr const char* const scales = "scales";
-  /// a string used to store/fetch masks(AKA visibility) as int property
+  /// A string used to store/fetch masks(AKA visibility) as int property
   /// It will be retranscribed as vtkUnsignedCharArray when passing into vtkGlyph3DMapper if specified.
   static constexpr const char* const masks = "masks";
-  /// a string used to store/fetch colors in rgb 0~255 as double property
+  /// A string used to store/fetch colors in rgb 0~255 as double property
   /// It will be retranscribed as vtkUnsignedCharArray when passing into vtkGlyph3DMapper if specified.
   static constexpr const char* const colors = "colors";
 
+  /**\brief Return the model entity whose geometry serves
+    *       as the prototype for this instance's placements.
+    */
   EntityRef prototype() const;
+  /// Change source of geometry for this instance.
+  bool setPrototype(const EntityRef& prototype);
 
   /**\brief Apply rules (stored in properties) to recompute the tessellation for this instance.
     *
