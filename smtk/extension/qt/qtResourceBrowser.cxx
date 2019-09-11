@@ -241,7 +241,7 @@ void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
           self->sendSMTKSelectionToPanel(source, seln);
         }
       },
-      "Send selection to resource browser");
+      "qtResourceBrowser: Update from SMTK selection.");
   }
   m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);
 }

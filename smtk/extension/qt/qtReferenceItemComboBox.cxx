@@ -109,7 +109,7 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
         smtk::operation::Operation::Result result) -> int {
         return this->handleOperationEvent(oper, event, result);
       },
-      "Update reference combo box if an operation adds or removes resources");
+      "qtReferenceItemCombo: Update if an operation adds or removes entries.");
     this->Internals->operationManager = opManager;
   }
   else
@@ -125,7 +125,7 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
       [this](const smtk::resource::Resource& resource, smtk::resource::EventType event) {
         this->handleResourceEvent(resource, event);
       },
-      "Update reference combo box if a resource is added or removed");
+      "qtReferenceItemCombo: Update if a resource is added or removed.");
     this->Internals->resourceManager = resManager;
   }
   else

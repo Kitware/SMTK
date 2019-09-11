@@ -140,13 +140,17 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
   m_model = model;
   if (m_model)
   {
+    std::ostringstream modelDesc;
+    modelDesc << "qtDescriptivePhraseModel: Update phrases for " << m_model->typeName() << " @ "
+              << m_model;
+    std::string modelType = m_model->typeName();
     // Observe all changes to the model, which includes calling the observer on all
     // existing top-level phrases.
     m_modelObserver = m_model->observers().insert(
       [this](smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
         const std::vector<int>& src, const std::vector<int>& dst,
         const std::vector<int>& range) { this->updateObserver(phrase, event, src, dst, range); },
-      0, true, "Update descriptive phrase model");
+      0, true, modelDesc.str());
   }
 }
 

@@ -44,7 +44,7 @@ pqSMTKResourceRepresentation::pqSMTKResourceRepresentation(
       [this](const std::string src, smtk::view::SelectionPtr oseln) {
         this->handleSMTKSelectionChange(src, oseln);
       },
-      "Update representation to capture selection change");
+      "pqSMTKResourceRepresentation: Re-render upon a selection change.");
   }
 
   // Subscribe to settings updates...

@@ -130,7 +130,7 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
         }
       }
     },
-    "Update the pipeline selection to set the selected resource as active.");
+    "pqSMTKPipelineSelectionBehavior: Select ParaView pipeline representing SMTK selection.");
   m_selectionObservers[seln] = observerId;
 }
 

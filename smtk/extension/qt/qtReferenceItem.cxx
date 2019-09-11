@@ -439,7 +439,7 @@ void qtReferenceItem::updateUI()
       [this](smtk::view::DescriptivePhrasePtr phr, smtk::view::PhraseModelEvent evt,
         const std::vector<int>& src, const std::vector<int>& dst,
         const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); },
-      "Check for removed components");
+      "qtReferenceItem: Check for removed components.");
   }
 
   // Create a container for the item:

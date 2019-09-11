@@ -67,7 +67,7 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
           destroyPipelineSource(rsrc);
         }
       },
-      "If the resource has been removed, destroy its pipeline source");
+      "pqSMTKRenderResourceBehavior: Destroy pipeline sources when resource is removed.");
     return;
   };
 

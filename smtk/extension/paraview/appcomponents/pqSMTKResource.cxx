@@ -67,7 +67,7 @@ pqSMTKResource::pqSMTKResource(
       }
       return 0;
     },
-    "Emit a Qt signal that an operation has occurred");
+    "pqSMTKResource: Emit a Qt signal upon operation completion.");
 
   QObject::connect(this, &pqSMTKResource::operationOccurred, this, [&, proxy]() {
     this->getSourceProxy()->MarkDirty(proxy);

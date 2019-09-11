@@ -211,7 +211,7 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
           }
         }
       },
-      "Clear the attribute panel if the observed resource is removed and currently in display");
+      "pqSMTKAttributePanel: Clear panel if a removed resource is being displayed.");
   }
   return didDisplay;
 }

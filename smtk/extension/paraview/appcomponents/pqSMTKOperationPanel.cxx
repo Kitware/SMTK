@@ -324,8 +324,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
           m_attrUIMgr = nullptr;
         }
       },
-      "If the actively displayed operation's specification resource is removed, "
-      "clear the representation");
+      "pqSMTKOperationPanel: Clear panel if a removed operation specification is displayed.");
   }
   return didDisplay;
 }

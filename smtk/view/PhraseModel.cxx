@@ -160,6 +160,8 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
       return false; // Do not add what we already have
     }
   }
+  std::ostringstream description;
+  description << "PhraseModel " << this << ": ";
   auto rsrcHandle = rsrcMgr
     ? rsrcMgr->observers().insert(
         [this](const Resource& rsrc, const resource::EventType& event) {
@@ -168,7 +170,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         },
         0,    // assign a neutral priority
         true, // observeImmediately
-        "Redirect resource event to phrase model")
+        description.str() + "Update phrases when resources change.")
     : smtk::resource::Observers::Key();
   auto operHandle = operMgr
     ? operMgr->observers().insert(
@@ -176,7 +178,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
           this->handleOperationEvent(op, event, res);
           return 0;
         },
-        "Redirect operation event to phrase model")
+        description.str() + "Update phrases based on operation results.")
     : smtk::operation::Observers::Key();
   auto selnHandle = seln
     ? seln->observers().insert(
@@ -185,7 +187,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         },
         0,    // assign a neutral priority
         true, // observeImmediately
-        "Redirect selection event to phrase model")
+        description.str() + "Update phrases when selection changes.")
     : smtk::view::SelectionObservers::Key();
   m_sources.push_back(Source(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle));
   return true;

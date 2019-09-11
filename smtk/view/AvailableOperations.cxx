@@ -48,7 +48,7 @@ AvailableOperations::AvailableOperations()
     },
     0,     // assign a neutral priority
     false, // do not immediately invoke.
-    "Print available operations");
+    "AvailableOperations: Print available operations.");
 #endif
 }
 

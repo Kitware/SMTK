@@ -107,7 +107,7 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
         smtk::operation::Operation::Result result) -> int {
         return this->handleOperationEvent(oper, event, result);
       },
-      "Refresh association widget if any resources have been modified");
+      "qtAssociationWidget: Refresh widget when resources are modified.");
   }
   else
   {
@@ -120,7 +120,7 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
       [this](const smtk::resource::Resource& resource, smtk::resource::EventType event) {
         this->handleResourceEvent(resource, event);
       },
-      "Refresh association widget if any resources have been removed");
+      "qtAssociationWidget: Refresh widget when resources are removed.");
   }
   else
   {

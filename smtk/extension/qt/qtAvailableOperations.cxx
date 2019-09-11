@@ -54,7 +54,7 @@ void qtAvailableOperations::setOperationSource(smtk::view::AvailableOperationsPt
       [this](smtk::view::AvailableOperationsPtr) { this->updateList(); },
       0,    // assign a neutral priority
       true, // immediatelyInvoke
-      "Update list of available operations");
+      "qtAvailableOperations: Update list of available operations.");
   }
 }
 
