@@ -229,7 +229,7 @@ void qtModelEntityAttributeView::buildUI()
       [this](const std::string& selectionSource, smtk::view::SelectionPtr sp) {
         this->updateSelectedModelEntity(selectionSource, sp);
       },
-      0, true);
+      0, true, "qtModelEntityAttributeView: Change focus on selection.");
   }
 }
 

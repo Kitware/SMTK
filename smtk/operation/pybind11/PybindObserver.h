@@ -38,8 +38,8 @@ py::class_< smtk::operation::Observers > pybind11_init_smtk_operation_Observers(
     .def("__len__", &smtk::operation::Observers::size)
     .def("deepcopy", (smtk::operation::Observers & (smtk::operation::Observers::*)(::smtk::operation::Observers const &)) &smtk::operation::Observers::operator=)
     .def("erase", &smtk::operation::Observers::erase)
-    .def("insert", (smtk::operation::Observers::Key (smtk::operation::Observers::*)(smtk::operation::Observer)) &smtk::operation::Observers::insert, pybind11::keep_alive<1, 2>())
-    .def("insert", (smtk::operation::Observers::Key (smtk::operation::Observers::*)(smtk::operation::Observer, smtk::operation::Observers::Priority, bool)) &smtk::operation::Observers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::operation::Observers::Key (smtk::operation::Observers::*)(smtk::operation::Observer, std::string)) &smtk::operation::Observers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::operation::Observers::Key (smtk::operation::Observers::*)(smtk::operation::Observer, smtk::operation::Observers::Priority, bool, std::string)) &smtk::operation::Observers::insert, pybind11::keep_alive<1, 2>())
     ;
   py::class_< smtk::operation::Observers::Key >(instance, "Key")
     .def(py::init<>())

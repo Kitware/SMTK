@@ -96,36 +96,10 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   this->Selection->setDefaultAction(smtk::view::SelectionAction::FILTERED_REPLACE);
   this->SelectedValue = this->Selection->findOrCreateLabeledValue("selected");
   this->HoveredValue = this->Selection->findOrCreateLabeledValue("hovered");
-  this->SelectionListener = this->Selection->observers().insert(
-    [](const std::string& src, smtk::view::Selection::Ptr selnMgr) {
-      /*
-      std::cout << "--- RsrcManagerWrapper " << selnMgr << " src \"" << src << "\":\n";
-      selnMgr->visitSelection([](smtk::resource::ComponentPtr comp, int value) {
-        auto modelComp = smtk::dynamic_pointer_cast<smtk::model::Entity>(comp);
-        if (modelComp)
-        {
-          smtk::model::EntityRef ent(modelComp->modelResource(), modelComp->id());
-          std::cout << "  " << comp->id() << ": " << value << ",  " << ent.flagSummary() << ": "
-                    << ent.name() << "\n";
-        }
-        else
-        {
-          std::cout << "  " << comp->id() << ":  " << value << "\n";
-        }
-      });
-      std::cout << "----\n";
-      std::cout.flush();
-      */
-      (void)src;
-      (void)selnMgr;
-    },
-    0,     // assign a neutral priority
-    true); // immediatelyInvoke
 }
 
 vtkSMTKWrapper::~vtkSMTKWrapper()
 {
-  this->Selection->observers().erase(this->SelectionListener);
   this->SetJSONRequest(nullptr);
   this->SetJSONResponse(nullptr);
   this->SetActiveResource(nullptr);

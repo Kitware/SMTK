@@ -189,27 +189,29 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   if (rsrcMgr)
   {
     std::weak_ptr<smtk::resource::Manager> weakResourceManager = rsrcMgr;
-    m_observer = rsrcMgr->observers().insert([this, weakResourceManager](
-      const smtk::resource::Resource& attrRsrc, smtk::resource::EventType evnt) {
-      auto rsrc = m_rsrc.lock();
-      if (rsrc == nullptr ||
-        (evnt == smtk::resource::EventType::REMOVED && &attrRsrc == rsrc.get()))
-      {
-        // The application is removing the attribute resource we are viewing.
-        // Clear out the panel and unobserve the manager.
-        delete m_attrUIMgr;
-        m_attrUIMgr = nullptr;
-        m_seln = nullptr;
-        while (QWidget* w = this->widget()->findChild<QWidget*>())
+    m_observer = rsrcMgr->observers().insert(
+      [this, weakResourceManager](
+        const smtk::resource::Resource& attrRsrc, smtk::resource::EventType evnt) {
+        auto rsrc = m_rsrc.lock();
+        if (rsrc == nullptr ||
+          (evnt == smtk::resource::EventType::REMOVED && &attrRsrc == rsrc.get()))
         {
-          delete w;
+          // The application is removing the attribute resource we are viewing.
+          // Clear out the panel and unobserve the manager.
+          delete m_attrUIMgr;
+          m_attrUIMgr = nullptr;
+          m_seln = nullptr;
+          while (QWidget* w = this->widget()->findChild<QWidget*>())
+          {
+            delete w;
+          }
+          if (auto rsrcMgr = weakResourceManager.lock())
+          {
+            rsrcMgr->observers().erase(m_observer);
+          }
         }
-        if (auto rsrcMgr = weakResourceManager.lock())
-        {
-          rsrcMgr->observers().erase(m_observer);
-        }
-      }
-    });
+      },
+      "pqSMTKAttributePanel: Clear panel if a removed resource is being displayed.");
   }
   return didDisplay;
 }

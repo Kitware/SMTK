@@ -76,7 +76,8 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
         smtk::operation::Operation::Result result) -> int {
         emit operationEvent(oper, event, result);
         return 0;
-      });
+      },
+      "pqSMTKWrapper: Emit a Qt signal for each operation event.");
   }
   pqSMTKBehavior::instance()->addPQProxy(this);
 }

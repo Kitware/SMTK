@@ -188,7 +188,8 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
         this->updateWidgetFromItem();
       }
       return 0;
-    });
+    },
+    "pqSMTKAttributeItemWidget: Update widget from item when parent attribute is modified.");
 }
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr itm, QWidget* p,
@@ -206,7 +207,8 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr it
         this->updateWidgetFromItem();
       }
       return 0;
-    });
+    },
+    "pqSMTKAttributeItemWidget: Update widget from item when parent attribute is modified.");
   m_isLeafItem = true;
   this->createWidget();
 }

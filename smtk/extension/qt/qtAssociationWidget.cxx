@@ -106,7 +106,8 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
       [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         return this->handleOperationEvent(oper, event, result);
-      });
+      },
+      "qtAssociationWidget: Refresh widget when resources are modified.");
   }
   else
   {
@@ -115,9 +116,11 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   auto resManager = this->Internals->view->uiManager()->resourceManager();
   if (resManager != nullptr)
   {
-    m_resourceObserverKey =
-      resManager->observers().insert([this](const smtk::resource::Resource& resource,
-        smtk::resource::EventType event) { this->handleResourceEvent(resource, event); });
+    m_resourceObserverKey = resManager->observers().insert(
+      [this](const smtk::resource::Resource& resource, smtk::resource::EventType event) {
+        this->handleResourceEvent(resource, event);
+      },
+      "qtAssociationWidget: Refresh widget when resources are removed.");
   }
   else
   {

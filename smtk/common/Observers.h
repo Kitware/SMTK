@@ -14,8 +14,15 @@
 #include <limits>
 #include <map>
 #include <set>
+#include <string>
 #include <type_traits>
 #include <utility>
+
+#define DEBUG_OBSERVER 0
+
+#define ADD_OBSERVER(key, observers, observer, priority, initialize)                               \
+  key = observers->insert(observer, priority, initialize,                                          \
+    std::string(__FILE__) + std::string(": ") + std::to_string(__LINE__))
 
 namespace smtk
 {
@@ -150,6 +157,10 @@ public:
       // these observers from being called (as though they were erased).
       if (m_toErase.find(entry.first) == m_toErase.end())
       {
+#if !defined(NDEBUG) && DEBUG_OBSERVERS
+        std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
+                  << "): " << m_descriptions[entry.first];
+#endif
         entry.second(std::forward<Types>(args)...);
       }
     }
@@ -174,7 +185,7 @@ public:
   /// means to run the Observer functor retroactively on things already under
   /// observation). The return value is a handle that can be used to unregister
   /// the observer.
-  Key insert(Observer fn, Priority priority, bool initialize)
+  Key insert(Observer fn, Priority priority, bool initialize, std::string description = "")
   {
     // An observer's handle id (the second value in its key) defines the order
     // in which the observer is called at a specific priority level. We
@@ -224,10 +235,16 @@ public:
     {
       m_initializer(fn);
     }
+
+    m_descriptions.insert(std::make_pair(handle, description));
+
     return m_observers.insert(std::make_pair(handle, fn)).second ? handle : Key();
   }
 
-  Key insert(Observer fn) { return insert(fn, std::numeric_limits<Priority>::lowest(), true); }
+  Key insert(Observer fn, std::string description = "")
+  {
+    return insert(fn, std::numeric_limits<Priority>::lowest(), true, description);
+  }
 
   /// Indicate that an observer should no longer be called. Returns the number
   /// of remaining observers.
@@ -263,11 +280,18 @@ public:
 
   void setInitializer(Initializer fn) { m_initializer = fn; }
 
+  std::string description(Key handle) const { return m_descriptions[handle]; }
+
 protected:
   // A map of observers. The observers are held in a map so that they can be
   // referenced (and therefore removed) at a later time using the observer's
   // associated key.
   std::map<Key, Observer> m_observers;
+
+  // A map of descriptions. A descriptions can be manually added to an observer
+  // during its insertion, or it can automatically refer to the location of the
+  // observer's insertion in the source code if the ADD_OBSERVER macro is used.
+  std::map<Key, std::string> m_descriptions;
 
   // A functor to override the default behavior of the Observers' call method.
   Observer m_override;

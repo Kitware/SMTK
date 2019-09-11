@@ -127,7 +127,6 @@ protected:
   smtk::project::ManagerPtr ProjectManager;
   smtk::view::SelectionPtr Selection;
   std::string SelectionSource;
-  smtk::view::SelectionObservers::Key SelectionListener;
   int HoveredValue;
   int SelectedValue;
 

@@ -40,8 +40,11 @@ pqSMTKResourceRepresentation::pqSMTKResourceRepresentation(
   {
     auto seln = rsrcMgrPxy->smtkSelection();
     m_seln = seln;
-    m_selnObserver = seln->observers().insert([this](const std::string src,
-      smtk::view::SelectionPtr oseln) { this->handleSMTKSelectionChange(src, oseln); });
+    m_selnObserver = seln->observers().insert(
+      [this](const std::string src, smtk::view::SelectionPtr oseln) {
+        this->handleSMTKSelectionChange(src, oseln);
+      },
+      "pqSMTKResourceRepresentation: Re-render upon a selection change.");
   }
 
   // Subscribe to settings updates...

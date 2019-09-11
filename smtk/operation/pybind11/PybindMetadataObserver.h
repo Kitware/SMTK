@@ -28,8 +28,8 @@ py::class_< smtk::operation::MetadataObservers > pybind11_init_smtk_operation_Me
     .def("__call__", [](smtk::operation::MetadataObservers& obs, const smtk::operation::Metadata& md, bool adding){ obs(md, adding); })
     .def("__len__", &smtk::operation::MetadataObservers::size)
     .def("deepcopy", (smtk::operation::MetadataObservers & (smtk::operation::MetadataObservers::*)(::smtk::operation::MetadataObservers const &)) &smtk::operation::MetadataObservers::operator=)
-    .def("insert", (smtk::operation::MetadataObservers::Key (smtk::operation::MetadataObservers::*)(smtk::operation::MetadataObserver)) &smtk::operation::MetadataObservers::insert, pybind11::keep_alive<1, 2>())
-    .def("insert", (smtk::operation::MetadataObservers::Key (smtk::operation::MetadataObservers::*)(smtk::operation::MetadataObserver, smtk::operation::MetadataObservers::Priority, bool)) &smtk::operation::MetadataObservers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::operation::MetadataObservers::Key (smtk::operation::MetadataObservers::*)(smtk::operation::MetadataObserver, std::string)) &smtk::operation::MetadataObservers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::operation::MetadataObservers::Key (smtk::operation::MetadataObservers::*)(smtk::operation::MetadataObserver, smtk::operation::MetadataObservers::Priority, bool, std::string)) &smtk::operation::MetadataObservers::insert, pybind11::keep_alive<1, 2>())
     .def("erase", &smtk::operation::MetadataObservers::erase)
     ;
   py::class_< smtk::operation::MetadataObservers::Key >(instance, "Key")

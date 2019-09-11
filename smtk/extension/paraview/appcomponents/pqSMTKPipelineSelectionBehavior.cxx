@@ -102,8 +102,8 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
     return;
   }
 
-  auto observerId =
-    seln->observers().insert([&](const std::string& source, smtk::view::SelectionPtr selection) {
+  auto observerId = seln->observers().insert(
+    [&](const std::string& source, smtk::view::SelectionPtr selection) {
       int selnValue = selection->selectionValueFromLabel(m_selectionValue);
       if (source != "pqSMTKPipelineSelectionBehavior")
       {
@@ -129,7 +129,8 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
           }
         }
       }
-    });
+    },
+    "pqSMTKPipelineSelectionBehavior: Select ParaView pipeline representing SMTK selection.");
   m_selectionObservers[seln] = observerId;
 }
 

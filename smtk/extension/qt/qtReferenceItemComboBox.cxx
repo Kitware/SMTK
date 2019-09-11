@@ -108,7 +108,8 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
       [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         return this->handleOperationEvent(oper, event, result);
-      });
+      },
+      "qtReferenceItemCombo: Update if an operation adds or removes entries.");
     this->Internals->operationManager = opManager;
   }
   else
@@ -120,9 +121,11 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
   auto resManager = uiManager->resourceManager();
   if (resManager != nullptr)
   {
-    m_resourceObserverKey =
-      resManager->observers().insert([this](const smtk::resource::Resource& resource,
-        smtk::resource::EventType event) { this->handleResourceEvent(resource, event); });
+    m_resourceObserverKey = resManager->observers().insert(
+      [this](const smtk::resource::Resource& resource, smtk::resource::EventType event) {
+        this->handleResourceEvent(resource, event);
+      },
+      "qtReferenceItemCombo: Update if a resource is added or removed.");
     this->Internals->resourceManager = resManager;
   }
   else

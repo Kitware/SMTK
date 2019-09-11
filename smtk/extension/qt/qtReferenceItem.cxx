@@ -435,10 +435,11 @@ void qtReferenceItem::updateUI()
   if (m_p->m_phraseModel)
   {
     m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);
-    m_p->m_modelObserverId =
-      m_p->m_phraseModel->observers().insert([this](smtk::view::DescriptivePhrasePtr phr,
-        smtk::view::PhraseModelEvent evt, const std::vector<int>& src, const std::vector<int>& dst,
-        const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); });
+    m_p->m_modelObserverId = m_p->m_phraseModel->observers().insert(
+      [this](smtk::view::DescriptivePhrasePtr phr, smtk::view::PhraseModelEvent evt,
+        const std::vector<int>& src, const std::vector<int>& dst,
+        const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); },
+      "qtReferenceItem: Check for removed components.");
   }
 
   // Create a container for the item:

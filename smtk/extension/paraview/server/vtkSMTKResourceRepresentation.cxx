@@ -985,7 +985,8 @@ void vtkSMTKResourceRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
     auto newSeln = this->Wrapper->GetSelection();
     this->SelectionObserver = newSeln
       ? newSeln->observers().insert(
-          [this](const std::string&, smtk::view::Selection::Ptr) { this->SelectionModified(); })
+          [this](const std::string&, smtk::view::Selection::Ptr) { this->SelectionModified(); },
+          "vtkSMTKResourceRepresentation: Update visual properties to reflect selection change.")
       : smtk::view::SelectionObservers::Key();
   }
   this->Modified();
