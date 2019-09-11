@@ -658,6 +658,7 @@ void SubphraseGenerator::freeSubmodelsOfModel(
   DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
 {
   auto freeSubmodelsInModel = mod.submodels();
+  this->filterModelEntityPhraseCandidates(freeSubmodelsInModel);
   this->addModelEntityPhrases(freeSubmodelsInModel, src, this->directLimit(), result);
 }
 
@@ -665,6 +666,7 @@ void SubphraseGenerator::freeGroupsOfModel(
   DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
 {
   auto freeGroups = mod.groups();
+  this->filterModelEntityPhraseCandidates(freeGroups);
   this->addModelEntityPhrases(freeGroups, src, this->directLimit(), result);
 }
 
@@ -672,6 +674,7 @@ void SubphraseGenerator::freeCellsOfModel(
   DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
 {
   auto freeCellsInModel = mod.cells();
+  this->filterModelEntityPhraseCandidates(freeCellsInModel);
   this->addModelEntityPhrases(freeCellsInModel, src, this->directLimit(), result);
 }
 
@@ -679,6 +682,7 @@ void SubphraseGenerator::freeAuxiliaryGeometriesOfModel(
   DescriptivePhrase::Ptr src, const smtk::model::Model& mod, DescriptivePhrases& result)
 {
   auto freeAuxGeom = mod.auxiliaryGeometry();
+  this->filterModelEntityPhraseCandidates(freeAuxGeom);
   this->addModelEntityPhrases(freeAuxGeom, src, this->directLimit(), result);
 }
 
@@ -699,6 +703,7 @@ void SubphraseGenerator::boundingShellsOfModelUse(
 {
   smtk::model::ShellEntities boundingShells =
     ent.boundingShellEntities<smtk::model::ShellEntities>();
+  this->filterModelEntityPhraseCandidates(boundingShells);
   this->addModelEntityPhrases(boundingShells, src, this->directLimit(), result);
 }
 
@@ -706,6 +711,7 @@ void SubphraseGenerator::toplevelShellsOfModelUse(
   DescriptivePhrase::Ptr src, const smtk::model::UseEntity& ent, DescriptivePhrases& result)
 {
   auto toplevelShells = ent.shellEntities<smtk::model::ShellEntities>();
+  this->filterModelEntityPhraseCandidates(toplevelShells);
   this->addModelEntityPhrases(toplevelShells, src, this->directLimit(), result);
 }
 
@@ -713,6 +719,7 @@ void SubphraseGenerator::usesOfModelCell(
   DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result)
 {
   auto cellUses = ent.uses<smtk::model::UseEntities>();
+  this->filterModelEntityPhraseCandidates(cellUses);
   this->addModelEntityPhrases(cellUses, src, this->directLimit(), result);
 }
 
@@ -721,9 +728,10 @@ void SubphraseGenerator::inclusionsOfModelCell(
 {
   auto inclusions = ent.inclusions<smtk::model::EntityRefs>();
   auto boundingCells = ent.boundingCells();
-  smtk::model::EntityRefs strictInclusions;
+  smtk::model::EntityRefArray strictInclusions;
   std::set_difference(inclusions.begin(), inclusions.end(), boundingCells.begin(),
     boundingCells.end(), std::inserter(strictInclusions, strictInclusions.end()));
+  this->filterModelEntityPhraseCandidates(strictInclusions);
   this->addModelEntityPhrases(strictInclusions, src, this->directLimit(), result);
 }
 
@@ -731,6 +739,7 @@ void SubphraseGenerator::boundingCellsOfModelCell(
   DescriptivePhrase::Ptr src, const smtk::model::CellEntity& ent, DescriptivePhrases& result)
 {
   auto boundingCells = ent.boundingCells();
+  this->filterModelEntityPhraseCandidates(boundingCells);
   this->addModelEntityPhrases(boundingCells, src, this->directLimit(), result);
 }
 
@@ -738,6 +747,7 @@ void SubphraseGenerator::usesOfModelShell(
   DescriptivePhrase::Ptr src, const smtk::model::ShellEntity& ent, DescriptivePhrases& result)
 {
   auto shellUses = ent.uses<smtk::model::UseEntities>();
+  this->filterModelEntityPhraseCandidates(shellUses);
   this->addModelEntityPhrases(shellUses, src, this->directLimit(), result);
 }
 
@@ -745,6 +755,7 @@ void SubphraseGenerator::membersOfModelGroup(
   DescriptivePhrase::Ptr src, const smtk::model::Group& grp, DescriptivePhrases& result)
 {
   auto members = grp.members<smtk::model::EntityRefArray>();
+  this->filterModelEntityPhraseCandidates(members);
   this->addModelEntityPhrases(members, src, this->directLimit(), result);
   // TODO: Sort by entity type, name, etc.?
 }
@@ -769,6 +780,7 @@ void SubphraseGenerator::instancesOfModelEntity(
   DescriptivePhrase::Ptr src, const smtk::model::EntityRef& ent, DescriptivePhrases& result)
 {
   auto instances = ent.instances<smtk::model::InstanceEntities>();
+  this->filterModelEntityPhraseCandidates(instances);
   this->addModelEntityPhrases(instances, src, this->directLimit(), result);
 }
 

@@ -12,6 +12,8 @@
 
 #include "smtk/view/SubphraseGenerator.h"
 
+#include "smtk/model/EntityRef.h"
+
 #include "smtk/view/ComponentPhraseContent.h"
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/ResourcePhraseContent.h"
@@ -50,6 +52,22 @@ PhraseListContentPtr SubphraseGenerator::addComponentPhrases(const T& components
 }
 
 template <typename T>
+void SubphraseGenerator::filterModelEntityPhraseCandidates(T& ents)
+{
+  T filteredEntities;
+  filteredEntities.reserve(ents.size());
+  for (const auto& ent : ents)
+  {
+    bool isHidden = ent.exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+    if (!isHidden)
+    {
+      filteredEntities.push_back(ent);
+    }
+  }
+  filteredEntities.swap(ents);
+}
+
+template <typename T>
 PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(const T& ents,
   DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result, int mutability,
   bool decorate,
@@ -59,6 +77,11 @@ PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(const T& ents,
   {
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
+      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+      if (isHidden)
+      {
+        continue;
+      }
       result.push_back(ComponentPhraseContent::createPhrase(it->component(), mutability, parent));
     }
     if (comparator)
@@ -76,6 +99,11 @@ PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(const T& ents,
     DescriptivePhrases phrases;
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
+      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+      if (isHidden)
+      {
+        continue;
+      }
       phrases.push_back(
         ComponentPhraseContent::createPhrase(it->component(), mutability, listEntry));
     }
