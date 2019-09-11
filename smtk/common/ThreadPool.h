@@ -52,7 +52,7 @@ public:
     return appendToQueue(std::bind(function, std::forward<Types>(args)...));
   }
 
-private:
+protected:
   /// Append a functor with no inputs to the task queue. This is used in tandem
   /// with std::bind to construct the class's call method.
   std::future<ReturnType> appendToQueue(std::function<ReturnType()>&& task);
