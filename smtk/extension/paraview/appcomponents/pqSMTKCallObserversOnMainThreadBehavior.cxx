@@ -85,7 +85,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
     this, [this, resourceManager](QString resourceId, int event) {
       auto id = smtk::common::UUID(resourceId.toStdString());
       auto rsrc = m_activeResources[id];
-      if (auto resource = rsrc.lock())
+      if (auto resource = rsrc)
       {
         if (auto manager = resourceManager.lock())
         {
@@ -116,7 +116,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
     this, [this](QString operationId, int event, QString resultName) {
       auto id = smtk::common::UUID(operationId.toStdString());
       auto op = m_activeOperations[id];
-      if (auto operation = op.lock())
+      if (auto operation = op)
       {
         smtk::attribute::AttributePtr att;
         if (!resultName.isNull())
@@ -147,7 +147,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
     this, [this](QString selectionId, QString qstr) {
       auto id = smtk::common::UUID(selectionId.toStdString());
       auto sel = m_activeSelection[id];
-      if (auto selection = sel.lock())
+      if (auto selection = sel)
       {
         selection->observers().callObserversDirectly(qstr.toStdString(), selection);
       }
