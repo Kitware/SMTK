@@ -46,9 +46,9 @@ AvailableOperations::AvailableOperations()
         }
       }
     },
-    0,    // assign a neutral priority
-    false // do not immediately invoke.
-    );
+    0,     // assign a neutral priority
+    false, // do not immediately invoke.
+    "Print available operations");
 #endif
 }
 
@@ -81,9 +81,9 @@ void AvailableOperations::setSelection(SelectionPtr seln)
       [this](const std::string& src, smtk::view::Selection::Ptr seln) {
         this->selectionModified(src, seln);
       },
-      0,   // assign a neutral priority
-      true // immediately notify
-      );
+      0,    // assign a neutral priority
+      true, // immediately notify
+      "Update available operations list to reflect selection change");
   }
 }
 
@@ -121,7 +121,8 @@ void AvailableOperations::setOperationManager(smtk::operation::ManagerPtr mgr)
     m_operationManagerObserverId = m_operationManager->metadataObservers().insert(
       [this](const smtk::operation::Metadata& operMeta, bool adding) {
         this->operationMetadataChanged(operMeta, adding);
-      });
+      },
+      "Update available operations to reflect change in operation metadata");
   }
   else
   {
@@ -144,7 +145,8 @@ void AvailableOperations::setWorkflowFilter(OperationFilterSort wf)
   if (m_workflowFilter)
   {
     m_workflowFilterObserverId =
-      m_workflowFilter->observers().insert([this]() { this->workflowFilterModified(); });
+      m_workflowFilter->observers().insert([this]() { this->workflowFilterModified(); },
+        "Update available operations to reflect a change in the workflow filter");
   }
   else
   {

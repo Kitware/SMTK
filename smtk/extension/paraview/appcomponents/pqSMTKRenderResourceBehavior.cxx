@@ -66,7 +66,8 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
           auto rsrc = const_cast<smtk::resource::Resource&>(resource).shared_from_this();
           destroyPipelineSource(rsrc);
         }
-      });
+      },
+      "If the resource has been removed, destroy its pipeline source");
     return;
   };
 

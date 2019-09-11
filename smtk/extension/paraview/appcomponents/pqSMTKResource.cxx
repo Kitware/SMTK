@@ -54,9 +54,9 @@ pqSMTKResource::pqSMTKResource(
   // window, a task which must be executed on the main program thread. We
   // therefore use this observer to emit a signal that is connected to a lambda
   // that has this class instance as its context.
-  m_key =
-    rsrcMgr->smtkOperationManager()->observers().insert([&](const smtk::operation::Operation& op,
-      smtk::operation::EventType event, smtk::operation::Operation::Result) {
+  m_key = rsrcMgr->smtkOperationManager()->observers().insert(
+    [&](const smtk::operation::Operation& op, smtk::operation::EventType event,
+      smtk::operation::Operation::Result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
         if (!dynamic_cast<const smtk::attribute::Signal*>(&op) &&
@@ -66,7 +66,8 @@ pqSMTKResource::pqSMTKResource(
         }
       }
       return 0;
-    });
+    },
+    "Emit a Qt signal that an operation has occurred");
 
   QObject::connect(this, &pqSMTKResource::operationOccurred, this, [&, proxy]() {
     this->getSourceProxy()->MarkDirty(proxy);

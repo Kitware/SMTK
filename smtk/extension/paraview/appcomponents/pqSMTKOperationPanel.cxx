@@ -303,26 +303,29 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
     // If the operation's specification is destroyed, then
     // get rid of the UI.
     std::weak_ptr<smtk::resource::Manager> weakResourceManager = rsrcMgr;
-    m_observer = rsrcMgr->observers().insert([this, weakResourceManager](
-      const smtk::resource::Resource& attrRsrc, smtk::resource::EventType evnt) {
-      auto rsrc = m_rsrc.lock();
-      if (rsrc == nullptr ||
-        (evnt == smtk::resource::EventType::REMOVED && &attrRsrc == rsrc.get()))
-      {
-        // The application is removing the attribute resource we are viewing.
-        // Clear out the panel and unobserve the manager.
-        if (auto rsrcMgr = weakResourceManager.lock())
+    m_observer = rsrcMgr->observers().insert(
+      [this, weakResourceManager](
+        const smtk::resource::Resource& attrRsrc, smtk::resource::EventType evnt) {
+        auto rsrc = m_rsrc.lock();
+        if (rsrc == nullptr ||
+          (evnt == smtk::resource::EventType::REMOVED && &attrRsrc == rsrc.get()))
         {
-          rsrcMgr->observers().erase(m_observer);
+          // The application is removing the attribute resource we are viewing.
+          // Clear out the panel and unobserve the manager.
+          if (auto rsrcMgr = weakResourceManager.lock())
+          {
+            rsrcMgr->observers().erase(m_observer);
+          }
+          delete m_attrUIMgr;
+          while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
+          {
+            delete w;
+          }
+          m_attrUIMgr = nullptr;
         }
-        delete m_attrUIMgr;
-        while (QWidget* w = m_p->OperationEditor->findChild<QWidget*>())
-        {
-          delete w;
-        }
-        m_attrUIMgr = nullptr;
-      }
-    });
+      },
+      "If the actively displayed operation's specification resource is removed, "
+      "clear the representation");
   }
   return didDisplay;
 }

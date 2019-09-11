@@ -119,8 +119,9 @@ vtkSMTKWrapper::vtkSMTKWrapper()
       (void)src;
       (void)selnMgr;
     },
-    0,     // assign a neutral priority
-    true); // immediatelyInvoke
+    0,    // assign a neutral priority
+    true, // immediatelyInvoke
+    std::string(__FILE__) + ": " + std::to_string(__LINE__));
 }
 
 vtkSMTKWrapper::~vtkSMTKWrapper()

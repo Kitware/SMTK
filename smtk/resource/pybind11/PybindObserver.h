@@ -38,8 +38,8 @@ py::class_< smtk::resource::Observers > pybind11_init_smtk_resource_Observers(py
     .def("__len__", &smtk::resource::Observers::size)
     .def("deepcopy", (smtk::resource::Observers & (smtk::resource::Observers::*)(::smtk::resource::Observers const &)) &smtk::resource::Observers::operator=)
     .def("erase", &smtk::resource::Observers::erase)
-    .def("insert", (smtk::resource::Observers::Key (smtk::resource::Observers::*)(smtk::resource::Observer)) &smtk::resource::Observers::insert, pybind11::keep_alive<1, 2>())
-    .def("insert", (smtk::resource::Observers::Key (smtk::resource::Observers::*)(smtk::resource::Observer, smtk::resource::Observers::Priority, bool)) &smtk::resource::Observers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::resource::Observers::Key (smtk::resource::Observers::*)(smtk::resource::Observer, std::string)) &smtk::resource::Observers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::resource::Observers::Key (smtk::resource::Observers::*)(smtk::resource::Observer, smtk::resource::Observers::Priority, bool, std::string)) &smtk::resource::Observers::insert, pybind11::keep_alive<1, 2>())
     ;
   py::class_< smtk::resource::Observers::Key >(instance, "Key")
     .def(py::init<>())

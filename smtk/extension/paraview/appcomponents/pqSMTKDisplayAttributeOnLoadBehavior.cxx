@@ -96,8 +96,9 @@ void pqSMTKDisplayAttributeOnLoadBehavior::observeResourcesOnServer(
     [this](const smtk::resource::Resource& rsrc, smtk::resource::EventType event) {
       this->handleResourceEvent(rsrc, event);
     },
-    0,     // assign a neutral priority
-    true); // immediatelyNotify
+    0,    // assign a neutral priority
+    true, // immediatelyNotify
+    "Display newly loaded attribute resource");
   m_resourceManagerObservers[rsrcMgr] = observerKey;
 }
 

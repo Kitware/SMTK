@@ -146,7 +146,7 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
       [this](smtk::view::DescriptivePhrasePtr phrase, smtk::view::PhraseModelEvent event,
         const std::vector<int>& src, const std::vector<int>& dst,
         const std::vector<int>& range) { this->updateObserver(phrase, event, src, dst, range); },
-      0, true);
+      0, true, "Update descriptive phrase model");
   }
 }
 

@@ -29,8 +29,8 @@ py::class_< smtk::view::SelectionObservers > pybind11_init_smtk_view_SelectionOb
     .def("__len__", &smtk::view::SelectionObservers::size)
     .def("deepcopy", (smtk::view::SelectionObservers & (smtk::view::SelectionObservers::*)(::smtk::view::SelectionObservers const &)) &smtk::view::SelectionObservers::operator=)
     .def("erase", &smtk::view::SelectionObservers::erase)
-    .def("insert", (smtk::view::SelectionObservers::Key (smtk::view::SelectionObservers::*)(smtk::view::SelectionObserver)) &smtk::view::SelectionObservers::insert, pybind11::keep_alive<1, 2>())
-    .def("insert", (smtk::view::SelectionObservers::Key (smtk::view::SelectionObservers::*)(smtk::view::SelectionObserver, smtk::view::SelectionObservers::Priority, bool)) &smtk::view::SelectionObservers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::view::SelectionObservers::Key (smtk::view::SelectionObservers::*)(smtk::view::SelectionObserver, std::string)) &smtk::view::SelectionObservers::insert, pybind11::keep_alive<1, 2>())
+    .def("insert", (smtk::view::SelectionObservers::Key (smtk::view::SelectionObservers::*)(smtk::view::SelectionObserver, smtk::view::SelectionObservers::Priority, bool, std::string)) &smtk::view::SelectionObservers::insert, pybind11::keep_alive<1, 2>())
     .def("find", &smtk::view::SelectionObservers::find)
     ;
   py::class_< smtk::view::SelectionObservers::Key >(instance, "Key")

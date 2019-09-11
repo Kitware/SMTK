@@ -167,14 +167,16 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
           return 0;
         },
         0,    // assign a neutral priority
-        true) // observeImmediately
+        true, // observeImmediately
+        "Redirect resource event to phrase model")
     : smtk::resource::Observers::Key();
   auto operHandle = operMgr
     ? operMgr->observers().insert(
         [this](const Operation& op, operation::EventType event, const Operation::Result& res) {
           this->handleOperationEvent(op, event, res);
           return 0;
-        })
+        },
+        "Redirect operation event to phrase model")
     : smtk::operation::Observers::Key();
   auto selnHandle = seln
     ? seln->observers().insert(
@@ -182,7 +184,8 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
           this->handleSelectionEvent(src, seln);
         },
         0,    // assign a neutral priority
-        true) // observeImmediately
+        true, // observeImmediately
+        "Redirect selection event to phrase model")
     : smtk::view::SelectionObservers::Key();
   m_sources.push_back(Source(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle));
   return true;
