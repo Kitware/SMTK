@@ -498,8 +498,8 @@ void DescriptivePhrase::buildSubphrases()
     SubphraseGeneratorPtr delegate = this->findDelegate();
     if (delegate)
     {
-      auto next = delegate->subphrases(shared_from_this());
-      auto phraseModel = delegate->model();
+      DescriptivePhrases next = delegate->subphrases(shared_from_this());
+      PhraseModelPtr phraseModel = delegate->model();
       if (phraseModel)
       {
         phraseModel->updateChildren(shared_from_this(), next, this->index());

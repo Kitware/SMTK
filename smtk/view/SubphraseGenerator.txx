@@ -12,6 +12,8 @@
 
 #include "smtk/view/SubphraseGenerator.h"
 
+#include "smtk/model/EntityRef.h"
+
 #include "smtk/view/ComponentPhraseContent.h"
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/ResourcePhraseContent.h"
@@ -47,6 +49,22 @@ PhraseListContentPtr SubphraseGenerator::addComponentPhrases(const T& components
   }
   listEntry->manuallySetSubphrases(phrases, /* notify model: */ false);
   return content;
+}
+
+template <typename T>
+void SubphraseGenerator::filterModelEntityPhraseCandidates(T& ents)
+{
+  T filteredEntities;
+  filteredEntities.reserve(ents.size());
+  for (const auto& ent : ents)
+  {
+    bool isHidden = ent.exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+    if (!isHidden)
+    {
+      filteredEntities.push_back(ent);
+    }
+  }
+  filteredEntities.swap(ents);
 }
 
 template <typename T>
