@@ -48,7 +48,7 @@ public:
    * Return the MTime when also considering the internal resource.
    */
   vtkMTimeType GetMTime() override;
-
+  void Modified() override;
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
 
 protected:

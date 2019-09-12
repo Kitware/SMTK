@@ -52,6 +52,17 @@ vtkMTimeType vtkSMTKResourceSource::GetMTime()
   return std::max({ mTime, resource_mTime });
 }
 
+void vtkSMTKResourceSource::Modified()
+{
+  // Modifying this filter means marking its converter instance as modified
+  vtkAlgorithm* converter = this->VTKResource->GetConverter();
+  if (converter)
+  {
+    converter->Modified();
+  }
+  this->Superclass::Modified();
+}
+
 int vtkSMTKResourceSource::FillOutputPortInformation(int port, vtkInformation* info)
 {
   // We must have a resource to query for output port information.
@@ -97,7 +108,6 @@ int vtkSMTKResourceSource::RequestData(
     vtkDebugMacro("Could not create SMTK converter.");
     return 0;
   }
-  converter->Modified();
   converter->Update();
 
   // Grab the output from the converter and assign it as the output for this
