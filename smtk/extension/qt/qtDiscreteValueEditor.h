@@ -38,6 +38,7 @@ public:
 
 public slots:
   void onInputValueChanged();
+  virtual void updateItemData();
   // Indicates if it is possible use the Selection Manager
   // void setUseSelectionManager(bool mode) { m_useSelectionManager = mode; }
 
@@ -46,7 +47,6 @@ signals:
   void widgetSizeChanged();
 
 protected slots:
-  virtual void updateItemData();
 
 protected:
   virtual void createWidget();

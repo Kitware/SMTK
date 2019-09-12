@@ -34,8 +34,10 @@ public:
   virtual ~qtGroupItem();
   void setLabelVisible(bool) override;
 
-protected slots:
+public slots:
   void updateItemData() override;
+
+protected slots:
   virtual void setEnabledState(bool checked);
   virtual void onAddSubGroup();
   virtual void onRemoveSubGroup();

@@ -39,11 +39,11 @@ public:
 
 public slots:
   void setOutputOptional(int);
+  void updateItemData() override;
 
 signals:
 
 protected slots:
-  void updateItemData() override;
   void onChildWidgetSizeChanged() override;
   /* virtual void onAddNewValue(); */
   /* virtual void onRemoveValue(); */
