@@ -66,8 +66,10 @@ public:
   /// Return the paths to icons used to display the membership in the item.
   std::pair<std::string, std::string> selectionIconPaths() const;
 
-protected slots:
+public slots:
   void updateItemData() override;
+
+protected slots:
   void removeObservers();
 
   virtual void selectionLinkToggled(bool linked);

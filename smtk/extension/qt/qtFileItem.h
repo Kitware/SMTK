@@ -61,12 +61,12 @@ public slots:
   void setOutputOptional(int);
   virtual bool onLaunchFileBrowser();
   virtual void updateFileComboList(const QString&);
+  void updateItemData() override;
 
 signals:
   bool launchFileBrowser();
 
 protected slots:
-  void updateItemData() override;
   virtual void onAddNewValue();
   virtual void onRemoveValue();
   virtual void setActiveField(QWidget*);

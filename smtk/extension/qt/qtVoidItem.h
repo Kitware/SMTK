@@ -36,9 +36,9 @@ public:
 
 public slots:
   void setOutputOptional(int);
+  void updateItemData() override;
 
 protected slots:
-  void updateItemData() override;
 
 protected:
   void createWidget() override;

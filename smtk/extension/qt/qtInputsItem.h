@@ -56,10 +56,10 @@ public slots:
   void onInputValueChanged(QObject*);
   void doubleValueChanged(double newVal);
   void intValueChanged(int newVal);
+  void updateItemData() override;
   // void setUseSelectionManager(bool mode) override;
 
 protected slots:
-  void updateItemData() override;
   virtual void onAddNewValue();
   virtual void onRemoveValue();
   void displayExpressionWidget(bool checkstate);

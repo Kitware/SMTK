@@ -48,9 +48,9 @@ public slots:
   void onInputValueChanged();
   void onToggleAttributeWidgetVisibility();
   void onLaunchAttributeView();
+  void updateItemData() override;
 
 protected slots:
-  void updateItemData() override;
   virtual void setOutputOptional(int);
 
 protected:

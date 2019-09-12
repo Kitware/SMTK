@@ -91,6 +91,10 @@ public slots:
   // due to other criteria
   // virtual void setUseSelectionManager(bool mode) { m_useSelectionManager = mode; }
 
+  // Tell the qtItem to update itself based on changes to its underlying
+  // attribute item
+  virtual void updateItemData();
+
 signals:
   /// /brief Signal indicates that the underlying widget's size has been modified
   void widgetSizeChanged();
@@ -98,7 +102,6 @@ signals:
   void modified();
 
 protected slots:
-  virtual void updateItemData();
   virtual void onAdvanceLevelChanged(int levelIdx);
   virtual void onChildWidgetSizeChanged() { ; }
 
