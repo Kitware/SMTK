@@ -20,6 +20,7 @@
 #include "smtk/attribute/operators/Signal.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/SpecificationOps.h"
 #include "smtk/operation/operators/MarkModified.h"
 
 #include "vtkSMSourceProxy.h"
@@ -56,9 +57,15 @@ pqSMTKResource::pqSMTKResource(
   // that has this class instance as its context.
   m_key = rsrcMgr->smtkOperationManager()->observers().insert(
     [&](const smtk::operation::Operation& op, smtk::operation::EventType event,
-      smtk::operation::Operation::Result) {
+      smtk::operation::Operation::Result result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
+        auto effectedResources = smtk::operation::extractResources(result);
+        auto myResource = this->getResource();
+        if (effectedResources.find(myResource) == effectedResources.end())
+        {
+          return 0; // My resource is not being effected
+        }
         if (!dynamic_cast<const smtk::attribute::Signal*>(&op) &&
           !dynamic_cast<const smtk::operation::MarkModified*>(&op))
         {
