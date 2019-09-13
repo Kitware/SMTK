@@ -77,6 +77,11 @@ PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(const T& ents,
   {
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
+      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+      if (isHidden)
+      {
+        continue;
+      }
       result.push_back(ComponentPhraseContent::createPhrase(it->component(), mutability, parent));
     }
     if (comparator)
@@ -94,6 +99,11 @@ PhraseListContentPtr SubphraseGenerator::addModelEntityPhrases(const T& ents,
     DescriptivePhrases phrases;
     for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
     {
+      bool isHidden = it->exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
+      if (isHidden)
+      {
+        continue;
+      }
       phrases.push_back(
         ComponentPhraseContent::createPhrase(it->component(), mutability, listEntry));
     }
