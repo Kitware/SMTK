@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import smtk
 import smtk.attribute
 import smtk.session.polygon
@@ -107,7 +107,7 @@ class TestSelection(smtk.testing.TestCase):
         self.assertTrue(self.selnMgr, 'Unexpectedly null manager.')
         self.assertEqual(
             self.selnMgr, smtk.view.Selection.instance(),
-                        'Expected instance to match first selection manager.')
+            'Expected instance to match first selection manager.')
         self.selnMgr = None
         mgr = smtk.view.Selection.instance()
         self.assertTrue(
@@ -127,7 +127,7 @@ class TestSelection(smtk.testing.TestCase):
             eventCount += 1
 
         # Test that observer is called at proper times:
-        handle = mgr.observers().insert(observer, 0, True)
+        handle = mgr.observers().insert(observer, 0, True, 'Test selection observation.')
         self.assertTrue(
             handle.assigned(), 'Failed to register selection observer.')
         expectedEventCount = 1
@@ -240,7 +240,7 @@ class TestSelection(smtk.testing.TestCase):
             eventCount2 += 1
 
         # Test that observer is called at proper times:
-        handle = mgr.observers().insert(observer, 0, True)
+        handle = mgr.observers().insert(observer, 0, True, 'Test selection observation.')
 
         self.assertTrue(
             handle.assigned(), 'Failed to register selection observer.')
@@ -308,6 +308,7 @@ class TestSelection(smtk.testing.TestCase):
                          'Expected 0 cells in selection at this point.')
 
         print('')
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()
