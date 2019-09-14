@@ -55,7 +55,7 @@ vtkMTimeType vtkSMTKResourceSource::GetMTime()
 void vtkSMTKResourceSource::Modified()
 {
   // Modifying this filter means marking its converter instance as modified
-  vtkAlgorithm* converter = this->VTKResource->GetConverter();
+  vtkAlgorithm* converter = this->VTKResource ? this->VTKResource->GetConverter() : nullptr;
   if (converter)
   {
     converter->Modified();
