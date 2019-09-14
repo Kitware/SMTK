@@ -318,12 +318,14 @@ Delete::Result Delete::operateInternal()
   smtk::model::EntityRefs entitySet =
     this->parameters()->associatedModelEntities<smtk::model::EntityRefs>();
 
-  smtk::model::Resource::Ptr resource =
-    std::static_pointer_cast<smtk::model::Resource>(entitySet.begin()->component()->resource());
-
+  smtk::model::Resource::Ptr resource;
   smtk::model::EntityRefs::iterator eSit;
   for (eSit = entitySet.begin(); eSit != entitySet.end(); ++eSit)
   {
+    if (!resource)
+    {
+      resource = eSit->resource();
+    }
     if (eSit->isVertex())
     {
       vArray.push_back(*eSit);
@@ -349,6 +351,16 @@ Delete::Result Delete::operateInternal()
       smtkWarningMacro(
         this->log(), "Cannot delete non-cell entity " << (*eSit).name() << ". Skipping.");
     }
+  }
+  if (!resource)
+  {
+    // NB: If no entity has an owning resource, they have all been removed
+    //     prior to this operation.
+    if (!entitySet.empty())
+    {
+      smtkInfoMacro(this->log(), entitySet.size() << " entities already deleted.");
+    }
+    return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   }
   entities.reserve(vArray.size() + eArray.size() + fArray.size() + oArray.size());
   std::move(oArray.begin(), oArray.end(), std::back_inserter(entities));
