@@ -25,6 +25,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -139,7 +140,7 @@ bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
 
       selectCells->parameters()->associate(meshResource);
 
-      smtk::attribute::IntItem::Ptr cells = selectCells->parameters()->findInt("cell ids");
+      smtk::attribute::StringItem::Ptr cells = selectCells->parameters()->findString("cell ids");
 
       // TODO: is there no way to access the appropriate dataset by index
       // (as opposed to iterating the entire composite dataset)?
