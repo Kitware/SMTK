@@ -14,9 +14,10 @@
         given value.
       </BriefDescription>
       <ItemDefinitions>
-        <Double Name="dihedral angle" Label="Dihedral Angle" NumberOfRequiredValues="1">
+        <Double Name="dihedral angle" Label="Dihedral Angle"
+                Units="degrees" NumberOfRequiredValues="1">
           <BriefDescription>
-            The maximum accepted angle between the normals of two adjacent faces.
+            The maximum accepted angle (in degrees) between the normals of two adjacent faces.
           </BriefDescription>
           <DefaultValue>30.0</DefaultValue>
           <RangeInfo>
