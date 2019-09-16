@@ -42,8 +42,6 @@ public:
 
   ~SelectionContainer()
   {
-    std::cout << "delete container " << this << std::endl;
-    std::cout << "selection use count starts at " << m_selection.use_count() << std::endl;
     {
       smtk::mesh::DeleteMesh::Ptr deleteMesh;
       if (auto operationManager = m_weakManager.lock())
@@ -58,12 +56,7 @@ public:
         deleteMesh->parameters()->associate(m_selection);
         deleteMesh->operate();
       }
-
-      std::cout << "selection use count now " << m_selection.use_count() << std::endl;
     }
-    std::cout << "selection use count finally " << m_selection.use_count() << std::endl;
-    std::cout << "for the record, the selection's raw pointer is " << m_selection.get()
-              << std::endl;
   }
 
   const std::shared_ptr<smtk::mesh::Selection>& selection() const { return m_selection; }
@@ -87,7 +80,6 @@ Selection::Selection(const smtk::mesh::CellSet& cellset)
 
 Selection::~Selection()
 {
-  std::cout << "delete selection " << this << std::endl;
 }
 
 std::shared_ptr<Selection> Selection::create(const smtk::mesh::CellSet& cellset)
@@ -120,7 +112,7 @@ const smtk::mesh::MeshSet Selection::mesh() const
     if (smtk::mesh::Resource::Ptr resource =
           std::dynamic_pointer_cast<smtk::mesh::Resource>(this->resource()))
     {
-      return resource->createMesh(smtk::mesh::CellSet(resource, m_cells));
+      return resource->createMesh(smtk::mesh::CellSet(resource, m_cells), this->id());
     }
   }
   return meshSet;
