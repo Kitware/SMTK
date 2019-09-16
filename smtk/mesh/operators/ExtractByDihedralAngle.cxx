@@ -94,6 +94,7 @@ public:
 
   void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int nPoints) override
   {
+    (void)nPoints;
     assert(nPoints == 3);
     std::array<double, 3> normal = this->unitNormal();
     smtk::mesh::HandleRange neighborCells = m_interface->neighbors(cellId);

@@ -100,7 +100,7 @@ public:
     std::for_each(m_components.begin(), m_components.end(), visitor);
   }
 
-  bool erase(const ComponentA::Ptr& comp) { return m_components.erase(comp); }
+  bool erase(const ComponentA::Ptr& comp) { return m_components.erase(comp) > 0; }
 
   std::size_t size() const { return m_components.size(); }
 

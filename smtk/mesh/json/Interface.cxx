@@ -487,6 +487,7 @@ bool Interface::mergeCoincidentContactPoints(const smtk::mesh::HandleRange&, dou
 
 smtk::mesh::HandleRange Interface::neighbors(const smtk::mesh::Handle& cellId) const
 {
+  (void)cellId;
   return smtk::mesh::HandleRange();
 }
 
