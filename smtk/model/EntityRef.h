@@ -341,6 +341,9 @@ public:
   SessionRef owningSession() const;
   Groups containingGroups() const;
 
+  bool isMember(const EntityRef& entity) const;
+  EntityRef memberOf() const;
+
   bool operator==(const EntityRef& other) const;
   bool operator!=(const EntityRef& other) const;
   bool operator<(const EntityRef& other) const;
@@ -361,8 +364,6 @@ protected:
   EntityRef& addMemberEntity(const EntityRef& memberToAdd);
   template <typename T>
   EntityRef& addMemberEntities(T begin, T end);
-  bool isMember(EntityRef& entity) const;
-  EntityRef memberOf() const;
   EntityRef& removeMemberEntity(const EntityRef& memberToRemove);
   EntityRef& removeMemberEntity(int indexOfMemberToRemove);
   template <typename T>

@@ -7,9 +7,12 @@ set(modelOps
   CompositeAuxiliaryGeometry
   CreateInstances
   Delete
+  DivideInstance
   EntityGroupOperation
   ExportModelJSON
   GroupAuxiliaryGeometry
+  MergeInstances
+  SetInstancePrototype
   SetProperty
   TerrainExtraction
 )

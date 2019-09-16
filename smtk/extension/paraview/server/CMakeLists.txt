@@ -6,6 +6,7 @@ set(serverUnwrappedSrcs
   Registrar.cxx
   RespondToVTKSelection.cxx
   VTKMeshCellSelection.cxx
+  VTKModelInstancePlacementSelection.cxx
   VTKSelectionResponderGroup.cxx
   smtkModelEntityPointLocator.cxx
 )
@@ -14,6 +15,7 @@ set(serverUnwrappedHdrs
   Registrar.h
   RespondToVTKSelection.h
   VTKMeshCellSelection.h
+  VTKModelInstancePlacementSelection.h
   VTKSelectionResponderGroup.h
   smtkModelEntityPointLocator.h
 )
@@ -54,6 +56,7 @@ set(serverWrappedHdrs
 
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/RespondToVTKSelection.sbt" smtkPVServerOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/VTKMeshCellSelection.sbt" smtkPVServerOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/VTKModelInstancePlacementSelection.sbt" smtkPVServerOperationXML)
 
 # the server plugin adds vtkCMBGeometryReader as a source, so we need the
 # vtk module that contains it (vtkSMTKReaderExt) listed as add_smtk_plugin's

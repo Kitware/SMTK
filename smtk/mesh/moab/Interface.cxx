@@ -953,8 +953,8 @@ smtk::mesh::HandleRange Interface::neighbors(const smtk::mesh::Handle& cellId) c
   }
 
   std::vector< ::moab::EntityHandle> neighbors;
-  m_iface->get_adjacencies(
-    &adjacencies[0], adjacencies.size(), dimension, true, neighbors, ::moab::Core::UNION);
+  m_iface->get_adjacencies(&adjacencies[0], static_cast<int>(adjacencies.size()), dimension, true,
+    neighbors, ::moab::Core::UNION);
 
   smtk::mesh::HandleRange neighborsRange;
   for (auto& neighbor : neighbors)

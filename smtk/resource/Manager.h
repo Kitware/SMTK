@@ -34,9 +34,11 @@ namespace smtk
 {
 namespace resource
 {
+class GarbageCollector;
 class Manager;
+using GarbageCollectorPtr = std::shared_ptr<GarbageCollector>;
 
-/// A resource Manager is responsible for tracking currently allocaated
+/// A resource Manager is responsible for tracking currently allocated
 /// resources, creating new resources and serializing/deserializing resources
 /// to/from disk. Resource types must first be registered with the Manager
 /// before resources of they can be manipulated by the manager.
@@ -183,6 +185,9 @@ public:
   Metadata::Observers& metadataObservers() { return m_metadataObservers; }
   const Metadata::Observers& metadataObservers() const { return m_metadataObservers; }
 
+  /// Return a garbage collector used to clean up ephemeral objects after their use.
+  GarbageCollectorPtr garbageCollector() { return m_garbageCollector; }
+
 private:
   Manager();
 
@@ -204,6 +209,9 @@ private:
 
   /// A map connecting legacy resource names to legacy readers.
   std::map<std::string, std::function<ResourcePtr(const std::string&)> > m_legacyReaders;
+
+  /// A set of operations to delete ephemeral objects.
+  GarbageCollectorPtr m_garbageCollector;
 };
 
 template <typename ResourceType>

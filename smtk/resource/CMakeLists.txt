@@ -2,6 +2,7 @@
 set(resourceSrcs
   Component.cxx
   ComponentLinks.cxx
+  GarbageCollector.cxx
   Links.cxx
   Lock.cxx
   Manager.cxx
@@ -19,6 +20,7 @@ set(resourceHeaders
   Component.h
   ComponentLinks.h
   DerivedFrom.h
+  GarbageCollector.h
   Links.h
   Lock.h
   Manager.h

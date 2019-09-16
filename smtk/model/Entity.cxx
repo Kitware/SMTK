@@ -336,7 +336,28 @@ int Entity::findOrAppendRelation(const UUID& r)
       return static_cast<int>(i);
     }
   }
-  int idx = static_cast<int>(m_relations.size());
+  int idx;
+  if (m_firstInvalid >= 0)
+  {
+    m_relations[m_firstInvalid] = r;
+    idx = m_firstInvalid;
+    UUIDArray::size_type i = m_firstInvalid;
+    for (++i; i < m_relations.size(); ++i)
+    {
+      if (m_relations[i].isNull())
+      {
+        m_firstInvalid = static_cast<int>(i);
+        break;
+      }
+    }
+    if (i >= m_relations.size())
+    {
+      m_firstInvalid = -1;
+    }
+    return idx;
+  }
+
+  idx = static_cast<int>(m_relations.size());
   m_relations.push_back(r);
   return idx;
 }

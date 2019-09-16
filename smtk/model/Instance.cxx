@@ -26,6 +26,25 @@ EntityRef Instance::prototype() const
   return EntityRefArrangementOps::firstRelation<EntityRef>(*this, INSTANCE_OF);
 }
 
+bool Instance::setPrototype(const EntityRef& proto)
+{
+  EntityRef current = EntityRefArrangementOps::firstRelation<EntityRef>(*this, INSTANCE_OF);
+  if (proto == current)
+  {
+    return false;
+  }
+
+  auto rec = this->entityRecord();
+  auto arr = this->findArrangement(INSTANCE_OF, 0);
+  if (arr)
+  {
+    rec->unarrange(INSTANCE_OF, 0, true);
+  }
+  rec->modelResource()->addDualArrangement(
+    proto.entity(), this->entity(), INSTANCED_BY, 0, UNDEFINED);
+  return true;
+}
+
 static void GenerateTabularTessellation(Instance& inst, Tessellation* placements)
 {
   if (!inst.hasFloatProperties())
@@ -293,6 +312,108 @@ bool Instance::setSnapEntities(const EntityRefs& snapTo)
     }
     iprop->second = replacement;
   }
+  return true;
+}
+
+std::size_t Instance::numberOfPlacements()
+{
+  const Tessellation* tess = this->hasTessellation();
+  return tess ? tess->coords().size() / 3 : 0;
+}
+
+bool Instance::isClone() const
+{
+  // We could also check whether this instance has
+  // a SUBSET_OF relation to another instance:
+  return this->hasIntegerProperty(Instance::subset);
+}
+
+bool Instance::checkMergeable(const Instance& other) const
+{
+  // TODO: Expand this to include checks on properties like color, mask, scaling, ...
+  bool protoMatch = (other.prototype() == this->prototype());
+  bool snapsMatch = (other.snapEntities() == this->snapEntities());
+  return protoMatch && snapsMatch;
+  /*
+    (other.prototype() == this->prototype()) &&
+    (other.snapEntities() == this->snapEntities());
+    */
+}
+
+bool Instance::mergeInternal(const Instance& other)
+{
+  // I. Determine sizes (placements) of instances involved
+  auto& places = this->floatProperty(Instance::placements);
+  const Tessellation* otherTess = other.hasTessellation();
+  const auto& otherCoords = otherTess->coords();
+  std::size_t numOtherPlacements = otherCoords.size() / 3;
+  std::size_t numThisPlacements = places.size() / 3;
+
+  // II. Determine which optional tabular properties are present
+  //     on this instance and other.
+  bool hasOrientation = this->hasFloatProperty(Instance::orientations) &&
+    !this->floatProperty(Instance::orientations).empty();
+  bool hasScales =
+    this->hasFloatProperty(Instance::scales) && !this->floatProperty(Instance::scales).empty();
+  bool hasMasks =
+    this->hasFloatProperty(Instance::masks) && !this->floatProperty(Instance::masks).empty();
+  bool hasColors =
+    this->hasFloatProperty(Instance::colors) && !this->floatProperty(Instance::colors).empty();
+  bool otherHasOrientation = other.hasFloatProperty(Instance::orientations) &&
+    !other.floatProperty(Instance::orientations).empty();
+  bool otherHasScales =
+    other.hasFloatProperty(Instance::scales) && !other.floatProperty(Instance::scales).empty();
+  bool otherHasMasks =
+    other.hasFloatProperty(Instance::masks) && !other.floatProperty(Instance::masks).empty();
+  bool otherHasColors =
+    other.hasFloatProperty(Instance::colors) && !other.floatProperty(Instance::colors).empty();
+
+  // III. Append \a other's tessellation coordinates to this instance's placements.
+  //
+  // Note that this works out because _this_ is required to have its rule
+  // set to "tabular" while the _other_ instance may not but will always
+  // have coordinates in its tessellation. The other fields (orientation,
+  // masks, etc) are only present for tabular rules.
+  places.insert(places.end(), otherCoords.begin(), otherCoords.end());
+
+  // IV. Now pad this instance's properties as required to support those
+  //     which are present on the other instance but not this one:
+  if (!hasOrientation && otherHasOrientation)
+  {
+    // Pad this instance with default orientation data.
+    this->floatProperty(Instance::orientations).resize(numThisPlacements * 3, 0.0);
+  }
+  if (!hasScales && otherHasScales)
+  {
+    // Pad this instance with default scaling data.
+    this->floatProperty(Instance::scales).resize(numThisPlacements * 3, 1.0);
+  }
+  if (!hasMasks && otherHasMasks)
+  {
+    // Pad this instance with default masking data.
+    this->floatProperty(Instance::masks).resize(numThisPlacements, 0.0);
+  }
+  if (!hasColors && otherHasColors)
+  {
+    // Pad this instance with default scaling data.
+    this->floatProperty(Instance::colors).resize(numThisPlacements * 4, 1.0);
+  }
+
+  // V. Finally, append properties present from the other instance
+  //    or pad if they are needed but not present.
+  if (otherHasOrientation)
+  {
+    const FloatList& otherOrient(other.floatProperty(Instance::orientations));
+    FloatList& thisOrient = this->floatProperty(Instance::orientations);
+    thisOrient.insert(thisOrient.end(), otherOrient.begin(), otherOrient.end());
+  }
+  else if (hasOrientation)
+  {
+    FloatList otherOrient(numOtherPlacements * 3, 0.0);
+    FloatList& thisOrient = this->floatProperty(Instance::orientations);
+    thisOrient.insert(thisOrient.end(), otherOrient.begin(), otherOrient.end());
+  }
+
   return true;
 }
 

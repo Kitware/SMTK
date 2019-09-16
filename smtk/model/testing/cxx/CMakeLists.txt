@@ -62,7 +62,10 @@ if (SMTK_ENABLE_DISCRETE_SESSION)
 endif ()
 
 if (SMTK_ENABLE_POLYGON_SESSION)
-  list(APPEND unit_tests_which_require_data unitEntity.cxx)
+  list(APPEND unit_tests_which_require_data
+    unitEntity.cxx
+    unitInstance.cxx
+  )
   list(APPEND additional_libs smtkPolygonSession)
 endif ()
 
