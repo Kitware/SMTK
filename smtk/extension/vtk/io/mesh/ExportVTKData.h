@@ -57,8 +57,8 @@ public:
   bool operator()(const std::string& filename, const smtk::mesh::MeshSet& meshset,
     std::string domainPropertyName) const;
 
-  //Export the highest dimension cells of a mesh set to polydata (starting with
-  //Dims2).
+  //Export the highest dimension cells of a mesh set to polydata. If the highest
+  //dimension is Dims3, export its shell.
   void operator()(const smtk::mesh::MeshSet& meshset, vtkPolyData* pd,
     std::string domainPropertyName = std::string()) const;
 
