@@ -44,7 +44,7 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 
   smtk::view::VTKSelectionResponderGroup responders(operationManager, nullptr);
   responders.registerOperation<smtk::resource::Resource, smtk::view::RespondToVTKSelection>();
-  // responders.registerOperation<smtk::mesh::Resource, smtk::view::VTKMeshCellSelection>();
+  responders.registerOperation<smtk::mesh::Resource, smtk::view::VTKMeshCellSelection>();
   // responders.registerOperation<smtk::session::mesh::Resource, smtk::view::VTKMeshCellSelection>();
   responders
     .registerOperation<smtk::model::Resource, smtk::view::VTKModelInstancePlacementSelection>();
@@ -59,7 +59,7 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 {
   smtk::view::VTKSelectionResponderGroup responders(operationManager, nullptr);
   responders.unregisterOperation<smtk::view::RespondToVTKSelection>();
-  // responders.unregisterOperation<smtk::view::VTKMeshCellSelection>();
+  responders.unregisterOperation<smtk::view::VTKMeshCellSelection>();
   responders.unregisterOperation<smtk::view::VTKModelInstancePlacementSelection>();
 
   smtk::operation::InternalGroup internal(operationManager);
