@@ -178,10 +178,6 @@ int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Q
     ? std::dynamic_pointer_cast<smtk::mesh::Resource>(msh->resource())
     : (data ? std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc) : nullptr);
 
-  smtk::model::EntityRef entRef =
-    ent ? ent->referenceAs<smtk::model::EntityRef>() : smtk::model::EntityRef();
-  bool isHidden = entRef.exclusions(smtk::model::Exclusions::ViewPresentation) ? true : false;
-
   auto smtkBehavior = pqSMTKBehavior::instance();
 
   // If we are trying to get the value of a resource that has no pipeline
@@ -200,9 +196,7 @@ int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Q
   switch (qq)
   {
     case smtk::view::VisibilityContent::DISPLAYABLE:
-      return validView && ((ent && !isHidden) || (!ent && modelRsrc) || (msh || (!ent && meshRsrc)))
-        ? 1
-        : 0;
+      return validView && (ent || (!ent && modelRsrc) || (msh || (!ent && meshRsrc))) ? 1 : 0;
     case smtk::view::VisibilityContent::EDITABLE:
       return validView && (ent || (!ent && modelRsrc) || (msh || (!ent && meshRsrc))) ? 1 : 0;
     case smtk::view::VisibilityContent::GET_VALUE:

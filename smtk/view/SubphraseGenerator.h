@@ -229,6 +229,14 @@ protected:
     std::function<bool(const DescriptivePhrase::Ptr&, const DescriptivePhrase::Ptr&)> comparator =
       DescriptivePhrase::compareByTypeThenTitle);
 
+  /**\brief A template helper for filtering the model entity phrase candidates
+   * As a model entity could be marked as excluded from view presentation, this helper will
+   * update the container to respect this property.
+   * Assumption: Type T is std::vector holding smtk::model::EntityRef or its subclass type.
+   */
+  template <typename T>
+  void filterModelEntityPhraseCandidates(T& ents);
+
   /// A templated helper for the model-related utility methods.
   template <typename T>
   PhraseListContentPtr addModelEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent,

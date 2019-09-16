@@ -147,6 +147,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
       modelRsrc->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
     if (!models.empty())
     {
+      this->filterModelEntityPhraseCandidates(models);
       auto list =
         this->addModelEntityPhrases(models, src, 0, result, mutability, /*decorate*/ true);
       list->setCustomTitle(smtk::model::Entity::flagSummary(smtk::model::MODEL_ENTITY, 1));
@@ -156,6 +157,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
       modelRsrc->entitiesMatchingFlagsAs<smtk::model::Groups>(smtk::model::GROUP_ENTITY, false);
     if (!groups.empty())
     {
+      this->filterModelEntityPhraseCandidates(groups);
       auto list =
         this->addModelEntityPhrases(groups, src, 0, result, mutability, /*decorate*/ true);
       list->setCustomTitle(smtk::model::Entity::flagSummary(smtk::model::GROUP_ENTITY, 1));
@@ -166,6 +168,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
       smtk::model::AUX_GEOM_ENTITY, false);
     if (!auxGeoms.empty())
     {
+      this->filterModelEntityPhraseCandidates(auxGeoms);
       auto list =
         this->addModelEntityPhrases(auxGeoms, src, 0, result, mutability, /*decorate*/ true);
       list->setCustomTitle(smtk::model::Entity::flagSummary(smtk::model::AUX_GEOM_ENTITY, 1));
@@ -176,6 +179,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
       modelRsrc->entitiesMatchingFlagsAs<smtk::model::Volumes>(smtk::model::VOLUME, false);
     if (!volumes.empty())
     {
+      this->filterModelEntityPhraseCandidates(volumes);
       auto list =
         this->addModelEntityPhrases(volumes, src, 0, result, mutability, /*decorate*/ true);
       list->setCustomTitle(smtk::model::Entity::flagSummary(smtk::model::VOLUME, 1));
@@ -185,6 +189,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
     auto faces = modelRsrc->entitiesMatchingFlagsAs<smtk::model::Faces>(smtk::model::FACE, false);
     if (!faces.empty())
     {
+      this->filterModelEntityPhraseCandidates(faces);
       auto list = this->addModelEntityPhrases(faces, src, 0, result, mutability, /*decorate*/ true);
       list->setCustomTitle(smtk::model::Entity::flagSummary(smtk::model::FACE, 1));
       // list->setCustomTitle("faces");
@@ -193,6 +198,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
     auto edges = modelRsrc->entitiesMatchingFlagsAs<smtk::model::Edges>(smtk::model::EDGE, false);
     if (!edges.empty())
     {
+      this->filterModelEntityPhraseCandidates(edges);
       auto list = this->addModelEntityPhrases(edges, src, 0, result, mutability, /*decorate*/ true);
       list->setCustomTitle(smtk::model::Entity::flagSummary(smtk::model::EDGE, 1));
       // list->setCustomTitle("edges");
@@ -202,6 +208,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
       modelRsrc->entitiesMatchingFlagsAs<smtk::model::Vertices>(smtk::model::VERTEX, false);
     if (!vertices.empty())
     {
+      this->filterModelEntityPhraseCandidates(vertices);
       auto list =
         this->addModelEntityPhrases(vertices, src, 0, result, mutability, /*decorate*/ true);
       list->setCustomTitle(smtk::model::Entity::flagSummary(smtk::model::VERTEX, 1));
