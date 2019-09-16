@@ -23,6 +23,7 @@
 #include "smtk/mesh/operators/GenerateHotStartData.h"
 #include "smtk/mesh/operators/Import.h"
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
+#include "smtk/mesh/operators/MergeCoincidentPoints.h"
 #include "smtk/mesh/operators/PrintMeshInformation.h"
 #include "smtk/mesh/operators/Read.h"
 #include "smtk/mesh/operators/ReadResource.h"
@@ -45,8 +46,8 @@ namespace mesh
 namespace
 {
 typedef std::tuple<DeleteMesh, ElevateMesh, Export, ExtractByDihedralAngle, GenerateHotStartData,
-  Import, InterpolateOntoMesh, PrintMeshInformation, Read, ReadResource, SelectCells, SetMeshName,
-  UndoElevateMesh, Write, WriteResource>
+  Import, InterpolateOntoMesh, MergeCoincidentPoints, PrintMeshInformation, Read, ReadResource,
+  SelectCells, SetMeshName, UndoElevateMesh, Write, WriteResource>
   OperationList;
 }
 

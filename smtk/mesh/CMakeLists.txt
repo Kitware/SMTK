@@ -46,6 +46,7 @@ set(meshSrcs
   operators/GenerateHotStartData.cxx
   operators/Import.cxx
   operators/InterpolateOntoMesh.cxx
+  operators/MergeCoincidentPoints.cxx
   operators/PrintMeshInformation.cxx
   operators/Read.cxx
   operators/ReadResource.cxx
@@ -112,6 +113,7 @@ set(meshHeaders
   operators/GenerateHotStartData.h
   operators/Import.h
   operators/InterpolateOntoMesh.h
+  operators/MergeCoincidentPoints.h
   operators/PrintMeshInformation.h
   operators/Read.h
   operators/ReadResource.h
@@ -141,6 +143,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractByDihedralAngle
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeCoincidentPoints.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PrintMeshInformation.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defOpXML)
