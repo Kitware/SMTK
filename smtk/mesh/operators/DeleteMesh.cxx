@@ -27,6 +27,11 @@ namespace smtk
 namespace mesh
 {
 
+DeleteMesh::DeleteMesh()
+  : m_suppressOutput(false)
+{
+}
+
 smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
 {
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
@@ -58,6 +63,14 @@ smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
 const char* DeleteMesh::xmlDescription() const
 {
   return DeleteMesh_xml;
+}
+
+void DeleteMesh::generateSummary(smtk::operation::Operation::Result& result)
+{
+  if (m_suppressOutput == false)
+  {
+    smtk::operation::Operation::generateSummary(result);
+  }
 }
 
 } //namespace mesh

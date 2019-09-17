@@ -22,6 +22,7 @@
 
 #include "smtk/mesh/utility/ExtractMeshConstants.h"
 #include "smtk/mesh/utility/ExtractTessellation.h"
+#include "smtk/mesh/utility/Metrics.h"
 
 #include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 
@@ -168,21 +169,24 @@ void deleteOldArrayIfNecessary(T*& in, vtkIdType*&)
 void ExportVTKData::operator()(
   const smtk::mesh::MeshSet& meshset, vtkPolyData* pd, std::string domainPropertyName) const
 {
-  // We are only exporting the highest dimension cellset starting with 2
-  int dimension = 2;
-  smtk::mesh::TypeSet types = meshset.types();
-  while (dimension >= 0 && !types.hasDimension(static_cast<smtk::mesh::DimensionType>(dimension)))
-  {
-    --dimension;
-  }
+  // Determine the highest dimension
+  int dimension = smtk::mesh::utility::highestDimension(meshset);
 
   if (dimension < 0)
   {
-    // We have been passed a meshset with no elements of dimension 2 or lower.
+    // We have been passed a meshset with no elements of dimension 3 or lower.
     return;
   }
 
-  smtk::mesh::CellSet cellset = meshset.cells(static_cast<smtk::mesh::DimensionType>(dimension));
+  // To preserve the state of the mesh database, we track
+  // whether or not a new meshset was created to represent
+  // the 3d shell; if it was created, we delete it when we
+  // are finished with it.
+  bool shellCreated = false;
+  smtk::mesh::MeshSet toRender = (dimension == 3 ? meshset.extractShell(shellCreated) : meshset);
+
+  smtk::mesh::CellSet cellset =
+    toRender.cells(static_cast<smtk::mesh::DimensionType>(dimension == 3 ? 2 : dimension));
 
   std::int64_t connectivityLength = -1;
   std::int64_t numberOfCells = -1;
@@ -212,6 +216,22 @@ void ExportVTKData::operator()(
   }
 
   std::int64_t* cellHandles_ = new std::int64_t[numberOfCells];
+  if (dimension == 3)
+  {
+    auto interface = meshset.resource()->interface();
+
+    const smtk::mesh::HandleRange& range = cellset.range();
+    auto it = smtk::mesh::rangeElementsBegin(range);
+    auto end = smtk::mesh::rangeElementsEnd(range);
+    smtk::mesh::Handle parent;
+    int canonicalIndex;
+    for (std::size_t counter = 0; it != end; ++it, ++counter)
+    {
+      interface->canonicalIndex(*it, parent, canonicalIndex);
+      cellHandles_[counter] = parent;
+    }
+  }
+  else
   {
     const smtk::mesh::HandleRange& range = cellset.range();
     auto it = smtk::mesh::rangeElementsBegin(range);
@@ -265,7 +285,7 @@ void ExportVTKData::operator()(
   vtkNew<vtkCellArray> cells;
   cells->SetCells(numberOfCells, connectivity.GetPointer());
 
-  if (dimension == 2)
+  if (dimension == 3 || dimension == 2)
   {
     pd->SetPolys(cells.GetPointer());
   }
@@ -297,7 +317,7 @@ void ExportVTKData::operator()(
 
     //extract mesh constant information
     smtk::mesh::utility::PreAllocatedMeshConstants meshConstants(cellData_, pointData_);
-    smtk::mesh::utility::extractDomainMeshConstants(meshset, meshConstants);
+    smtk::mesh::utility::extractDomainMeshConstants(toRender, meshConstants);
 
     vtkIdType* cellData;
     {
@@ -329,7 +349,7 @@ void ExportVTKData::operator()(
   // required to be set on all of the cells/points in the meshset.
   {
     std::set<smtk::mesh::CellField> cellfields =
-      meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)).cellFields();
+      toRender.subset(static_cast<smtk::mesh::DimensionType>(dimension)).cellFields();
     for (auto& cellfield : cellfields)
     {
       if (cellfield.type() == smtk::mesh::FieldType::Double)
@@ -359,7 +379,7 @@ void ExportVTKData::operator()(
     }
 
     std::set<smtk::mesh::PointField> pointfields =
-      meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)).pointFields();
+      toRender.subset(static_cast<smtk::mesh::DimensionType>(dimension)).pointFields();
     for (auto& pointfield : pointfields)
     {
       if (pointfield.type() == smtk::mesh::FieldType::Double)
@@ -387,6 +407,11 @@ void ExportVTKData::operator()(
         pd->GetPointData()->AddArray(pointDataArray.GetPointer());
       }
     }
+  }
+
+  if (shellCreated)
+  {
+    toRender.resource()->removeMeshes(toRender);
   }
 }
 

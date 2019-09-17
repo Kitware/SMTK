@@ -4,7 +4,8 @@
   <Definitions>
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="delete mesh" BaseType="operation" Label="Mesh - Delete">
-      <AssociationsDef Name="mesh" NumberOfRequiredValues="1" Extensible="false">
+      <AssociationsDef Name="mesh" NumberOfRequiredValues="1"
+                       Extensible="false" HoldReference="1">
         <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
       </AssociationsDef>
       <BriefDescription>

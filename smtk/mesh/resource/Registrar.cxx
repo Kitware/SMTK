@@ -19,10 +19,13 @@
 #include "smtk/mesh/operators/DeleteMesh.h"
 #include "smtk/mesh/operators/ElevateMesh.h"
 #include "smtk/mesh/operators/Export.h"
+#include "smtk/mesh/operators/ExtractAdjacency.h"
 #include "smtk/mesh/operators/ExtractByDihedralAngle.h"
+#include "smtk/mesh/operators/ExtractSkin.h"
 #include "smtk/mesh/operators/GenerateHotStartData.h"
 #include "smtk/mesh/operators/Import.h"
 #include "smtk/mesh/operators/InterpolateOntoMesh.h"
+#include "smtk/mesh/operators/MergeCoincidentPoints.h"
 #include "smtk/mesh/operators/PrintMeshInformation.h"
 #include "smtk/mesh/operators/Read.h"
 #include "smtk/mesh/operators/ReadResource.h"
@@ -44,9 +47,10 @@ namespace mesh
 {
 namespace
 {
-typedef std::tuple<DeleteMesh, ElevateMesh, Export, ExtractByDihedralAngle, GenerateHotStartData,
-  Import, InterpolateOntoMesh, PrintMeshInformation, Read, ReadResource, SelectCells, SetMeshName,
-  UndoElevateMesh, Write, WriteResource>
+typedef std::tuple<DeleteMesh, ElevateMesh, Export, ExtractAdjacency, ExtractByDihedralAngle,
+  ExtractSkin, GenerateHotStartData, Import, InterpolateOntoMesh, MergeCoincidentPoints,
+  PrintMeshInformation, Read, ReadResource, SelectCells, SetMeshName, UndoElevateMesh, Write,
+  WriteResource>
   OperationList;
 }
 

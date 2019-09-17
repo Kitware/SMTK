@@ -13,7 +13,8 @@
         <Accepts><Resource Name="smtk::mesh::Resource"/></Accepts>
       </AssociationsDef>
       <ItemDefinitions>
-        <Int Name="cell ids" NumberOfRequiredValues="0" Extensible="true"/>
+        <!-- TODO: support 64-bit integers in the attribute system -->
+        <String Name="cell ids" NumberOfRequiredValues="0" Extensible="true"/>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

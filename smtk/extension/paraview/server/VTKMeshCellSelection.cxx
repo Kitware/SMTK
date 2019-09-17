@@ -25,6 +25,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -53,7 +54,7 @@ VTKMeshCellSelection::~VTKMeshCellSelection()
 {
 }
 
-bool VTKMeshCellSelection::transcribeCellIdSelection()
+bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
 {
   bool didModify = false;
   if (this->selectingBlocks())
@@ -139,7 +140,7 @@ bool VTKMeshCellSelection::transcribeCellIdSelection()
 
       selectCells->parameters()->associate(meshResource);
 
-      smtk::attribute::IntItem::Ptr cells = selectCells->parameters()->findInt("cell ids");
+      smtk::attribute::StringItem::Ptr cells = selectCells->parameters()->findString("cell ids");
 
       // TODO: is there no way to access the appropriate dataset by index
       // (as opposed to iterating the entire composite dataset)?
@@ -181,15 +182,18 @@ bool VTKMeshCellSelection::transcribeCellIdSelection()
           // Copy the mapped SMTK cells into a HandleRange.
           for (unsigned& vtkCell : selectedVTKCells)
           {
-            cells->appendValue(cellHandles->GetValue(vtkCell));
+            cells->appendValue(std::to_string(cellHandles->GetValue(vtkCell)));
           }
         }
-
-        smtk::operation::Operation::Result result = selectCells->operate(Key());
-        smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
-        selection.insert(created->value());
-        created->reset();
       }
+
+      smtk::operation::Operation::Result selectionResult = selectCells->operate(Key());
+      smtk::attribute::ComponentItem::Ptr created = selectionResult->findComponent("created");
+      selection.insert(created->value());
+      result->findComponent("created")->appendValue(created->value());
+
+      created->reset();
+
       didModify |= selnMgr->modifySelection(selection, m_smtkSelectionSource, m_smtkSelectionValue,
         SelectionAction::FILTERED_ADD, /* bitwise */ true, /* notify */ false);
 
@@ -210,9 +214,13 @@ bool VTKMeshCellSelection::transcribeCellIdSelection()
 
 VTKMeshCellSelection::Result VTKMeshCellSelection::operateInternal()
 {
-  bool worked = this->transcribeCellIdSelection();
-  auto result = this->createResult(worked ? smtk::operation::Operation::Outcome::SUCCEEDED
-                                          : smtk::operation::Operation::Outcome::FAILED);
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  bool worked = this->transcribeCellIdSelection(result);
+  if (!worked)
+  {
+    result->findInt("outcome")->setValue(
+      static_cast<int>(smtk::operation::Operation::Outcome::FAILED));
+  }
   return result;
 }
 

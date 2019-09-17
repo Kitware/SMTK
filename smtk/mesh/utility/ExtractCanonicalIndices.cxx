@@ -80,7 +80,10 @@ void extractCanonicalIndices(const smtk::mesh::MeshSet& ms, const smtk::mesh::Me
     // higher-dimension adjacencies of <ms>.
     int dimension = static_cast<int>(smtk::mesh::utility::highestDimension(ms)) + 1;
 
-    smtk::mesh::CellSet adjacencies = ms.extractAdjacenciesOfDimension(dimension).cells();
+    bool adjacencyMeshCreated = false;
+    smtk::mesh::MeshSet adjacencyMesh =
+      ms.extractAdjacenciesOfDimension(dimension, adjacencyMeshCreated);
+    smtk::mesh::CellSet adjacencies = adjacencyMesh.cells();
 
     // We then iterate over each of our reference cells, incrementing a counter
     // as we go.
@@ -94,6 +97,11 @@ void extractCanonicalIndices(const smtk::mesh::MeshSet& ms, const smtk::mesh::Me
       {
         cellMap[*it] = counter;
       }
+    }
+
+    if (adjacencyMeshCreated)
+    {
+      ms.resource()->removeMeshes(adjacencyMesh);
     }
   }
 

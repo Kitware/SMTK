@@ -11,6 +11,7 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -26,6 +27,7 @@
 #include "smtk/mesh/core/ForEachTypes.h"
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/operators/ExtractByDihedralAngle.h"
+#include "smtk/mesh/operators/ExtractSkin.h"
 #include "smtk/mesh/operators/Import.h"
 #include "smtk/mesh/resource/Selection.h"
 #include "smtk/mesh/utility/Create.h"
@@ -76,7 +78,17 @@ int TestExtractByDihedralAngle(int, char* [])
   // Extract the tetrahedra cube's shell and remove its tetrahedra
   {
     smtk::mesh::MeshSet tetrahedra = resource->meshes();
-    smtk::mesh::MeshSet triangles = tetrahedra.extractShell();
+    smtk::operation::Operation::Ptr extractSkin = smtk::mesh::ExtractSkin::create();
+    extractSkin->parameters()->associate(smtk::mesh::Component::create(tetrahedra));
+    smtk::operation::Operation::Result result = extractSkin->operate();
+    test(result->findInt("outcome")->value() ==
+        static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED),
+      "Extract skin failed");
+
+    auto trianglesComponent =
+      std::dynamic_pointer_cast<smtk::mesh::Component>(result->findComponent("created")->value());
+    smtk::mesh::MeshSet triangles = trianglesComponent->mesh();
+
     resource->removeMeshes(tetrahedra);
 
     test(resource->meshes().size() == 1);

@@ -16,6 +16,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/StringItem.h"
 
 #include "smtk/mesh/SelectCells_xml.h"
 #include "smtk/mesh/core/CellSet.h"
@@ -39,10 +40,10 @@ SelectCells::Result SelectCells::operateInternal()
   // Access the selected cell ids.
   smtk::mesh::HandleRange cells;
   {
-    smtk::attribute::IntItem::Ptr cellIdsItem = this->parameters()->findInt("cell ids");
+    smtk::attribute::StringItem::Ptr cellIdsItem = this->parameters()->findString("cell ids");
     for (auto cellIt = cellIdsItem->begin(); cellIt != cellIdsItem->end(); ++cellIt)
     {
-      cells.insert(*cellIt);
+      cells.insert(std::stol(*cellIt));
     }
   }
 
@@ -52,6 +53,10 @@ SelectCells::Result SelectCells::operateInternal()
   // Construct a mesh Selection from the cellset.
   smtk::mesh::Selection::Ptr meshSelection =
     smtk::mesh::Selection::create(cellset, this->m_manager);
+
+  // Access the selection's mesh (this registers the mesh with the underlying
+  // resource)
+  (void)meshSelection->mesh();
 
   // Create a new result
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

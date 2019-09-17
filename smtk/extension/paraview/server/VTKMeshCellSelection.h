@@ -45,7 +45,7 @@ protected:
     *
     * Note that the selection is filtered.
     */
-  bool transcribeCellIdSelection();
+  bool transcribeCellIdSelection(Result& result);
 
   /// Simply call transcribeCellIdSelection().
   Result operateInternal() override;
