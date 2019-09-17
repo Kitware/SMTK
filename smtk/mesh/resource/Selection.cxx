@@ -48,12 +48,14 @@ public:
       {
         deleteMesh = operationManager->create<smtk::mesh::DeleteMesh>();
         deleteMesh->parameters()->associate(m_selection);
+        deleteMesh->suppressOutput(true);
         operationManager->launchers()(deleteMesh);
       }
       else
       {
         deleteMesh = smtk::mesh::DeleteMesh::create();
         deleteMesh->parameters()->associate(m_selection);
+        deleteMesh->suppressOutput(true);
         deleteMesh->operate();
       }
     }

@@ -27,9 +27,16 @@ public:
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
 
+  void suppressOutput(bool choice) { m_suppressOutput = choice; }
+
 protected:
+  DeleteMesh();
   Result operateInternal() override;
   virtual const char* xmlDescription() const override;
+
+  void generateSummary(smtk::operation::Operation::Result&) override;
+
+  bool m_suppressOutput;
 };
 
 } //namespace mesh
