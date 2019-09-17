@@ -42,7 +42,9 @@ set(meshSrcs
   operators/DeleteMesh.cxx
   operators/ElevateMesh.cxx
   operators/Export.cxx
+  operators/ExtractAdjacency.cxx
   operators/ExtractByDihedralAngle.cxx
+  operators/ExtractSkin.cxx
   operators/GenerateHotStartData.cxx
   operators/Import.cxx
   operators/InterpolateOntoMesh.cxx
@@ -109,7 +111,9 @@ set(meshHeaders
   operators/DeleteMesh.h
   operators/ElevateMesh.h
   operators/Export.h
+  operators/ExtractAdjacency.h
   operators/ExtractByDihedralAngle.h
+  operators/ExtractSkin.h
   operators/GenerateHotStartData.h
   operators/Import.h
   operators/InterpolateOntoMesh.h
@@ -139,7 +143,9 @@ set(meshHeaders
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ElevateMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractAdjacency.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractByDihedralAngle.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractSkin.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
