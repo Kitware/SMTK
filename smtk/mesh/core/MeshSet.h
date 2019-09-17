@@ -168,7 +168,7 @@ public:
 
   //Extract the adjacency cells of this set of meshes for a given dimension.
   //This operation might create new cells if they do not already exist
-  //for the given meshset. he input field <created> is set to reflect
+  //for the given meshset. The input field <created> is set to reflect
   //whether or not the resulting meshset is added to the database.
   //Will return an empty set when no adjacencies can be found
   smtk::mesh::MeshSet extractAdjacenciesOfDimension(int dimension, bool& created) const;
