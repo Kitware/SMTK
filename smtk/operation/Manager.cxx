@@ -85,6 +85,15 @@ std::shared_ptr<Operation> Manager::create(const std::string& typeName)
     // Create the resource using its index
     op = metadata->create();
     op->m_manager = shared_from_this();
+
+    // Parameters are constructed lazily, allowing for RAII while having derived
+    // classes construct parameters that are tailored to their use. This can
+    // cause a race condition when observers that are called on a different
+    // thread access parameters at the same time as the thread that created the
+    // operation. Since only managed operations are observed, we can avoid this
+    // issue by accessing the parameters as they are created by the manager.
+    auto parameters = op->parameters();
+
     m_observers(*op, smtk::operation::EventType::CREATED, nullptr);
   }
 
@@ -102,6 +111,15 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
     // Create the resource with the appropriate UUID
     op = metadata->create();
     op->m_manager = shared_from_this();
+
+    // Parameters are constructed lazily, allowing for RAII while having derived
+    // classes construct parameters that are tailored to their use. This can
+    // cause a race condition when observers that are called on a different
+    // thread access parameters at the same time as the thread that created the
+    // operation. Since only managed operations are observed, we can avoid this
+    // issue by accessing the parameters as they are created by the manager.
+    auto parameters = op->parameters();
+
     m_observers(*op, smtk::operation::EventType::CREATED, nullptr);
   }
 
