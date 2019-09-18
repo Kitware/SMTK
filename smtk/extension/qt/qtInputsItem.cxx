@@ -904,6 +904,7 @@ QWidget* qtInputsItem::createDoubleWidget(
   int elementIdx, ValueItemPtr vitem, QWidget* pWidget, QString& tooltip)
 {
   auto dDef = vitem->definitionAs<DoubleItemDefinition>();
+  auto ditem = dynamic_pointer_cast<DoubleItem>(vitem);
   double minVal, maxVal, defVal;
 
   // Let get the range of the item
@@ -960,21 +961,48 @@ QWidget* qtInputsItem::createDoubleWidget(
 
   if (option == "LineEdit")
   {
-    qtDoubleLineEdit* editBox = new qtDoubleLineEdit(pWidget);
+    auto editBox = new qtDoubleLineEdit(pWidget);
+    editBox->setUseGlobalPrecisionAndNotation(false);
+    std::string notation("Mixed");
+    m_itemInfo.component().attribute("Notation", notation);
+    if (notation == "Fixed")
+    {
+      editBox->setNotation(qtDoubleLineEdit::FixedNotation);
+    }
+    else if (notation == "Scientific")
+    {
+      editBox->setNotation(qtDoubleLineEdit::ScientificNotation);
+    }
+
     qtDoubleValidator* validator = new qtDoubleValidator(this, elementIdx, editBox, pWidget);
 
     editBox->setValidator(validator);
     int widthValue = 100; // Default fixed width
+    int precision = 0;
     m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
     if (widthValue > 0)
     {
       editBox->setFixedWidth(widthValue);
     }
+    m_itemInfo.component().attributeAsInt("Precision", precision);
+    if (precision > 0)
+    {
+      editBox->setPrecision(precision);
+    }
     validator->setBottom(minVal);
     validator->setTop(maxVal);
     if (vitem->isSet(elementIdx))
     {
-      editBox->setText(vitem->valueAsString(elementIdx).c_str());
+      int editPrecision = 0;
+      m_itemInfo.component().attributeAsInt("EditPrecision", editPrecision);
+      if (editPrecision > 0)
+      {
+        editBox->setText(QString::number(ditem->value(elementIdx), 'f', editPrecision));
+      }
+      else
+      {
+        editBox->setText(vitem->valueAsString().c_str());
+      }
     }
     return editBox;
   }
@@ -982,7 +1010,6 @@ QWidget* qtInputsItem::createDoubleWidget(
   if (option == "SpinBox")
   {
     QDoubleSpinBox* spinbox = new QDoubleSpinBox(pWidget);
-    auto ditem = dynamic_pointer_cast<DoubleItem>(vitem);
     spinbox->setMaximum(maxVal);
     spinbox->setMinimum(minVal);
     double step;
