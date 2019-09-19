@@ -260,6 +260,10 @@ Operation::Parameters Operation::parameters()
   {
     auto specification = this->specification();
     smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Write);
+    if (m_parameters != nullptr)
+    {
+      return m_parameters;
+    }
     m_parameters = createParameters(
       specification, this->typeName(), this->typeName() + std::to_string(g_uniqueCounter++));
   }

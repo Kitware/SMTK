@@ -6,6 +6,7 @@ set(unit_tests
   TestOperationGroup
   TestOperationLauncher
   TestRemoveResource
+  TestThreadSafeLazyEvaluation
 )
 
 find_package(Threads REQUIRED)
