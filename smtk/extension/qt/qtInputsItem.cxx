@@ -91,7 +91,9 @@ void qtDoubleValidator::fixup(QString& input) const
   }
   else if (dDef->hasDefault())
   {
-    input = QString::number(dDef->defaultValue(m_elementIndex));
+    int defaultIdx =
+      static_cast<int>(dDef->defaultValues().size()) <= m_elementIndex ? 0 : m_elementIndex;
+    input = QString::number(dDef->defaultValue(defaultIdx));
   }
   else
   {
@@ -129,7 +131,9 @@ void qtIntValidator::fixup(QString& input) const
   }
   else if (dDef->hasDefault())
   {
-    input = QString::number(dDef->defaultValue(m_elementIndex));
+    int defaultIdx =
+      static_cast<int>(dDef->defaultValues().size()) <= m_elementIndex ? 0 : m_elementIndex;
+    input = QString::number(dDef->defaultValue(defaultIdx));
   }
   else
   {
@@ -929,7 +933,8 @@ QWidget* qtInputsItem::createDoubleWidget(
   // Lets get default info
   if (dDef->hasDefault())
   {
-    defVal = dDef->defaultValue(elementIdx);
+    int defaultIdx = static_cast<int>(dDef->defaultValues().size()) <= elementIdx ? 0 : elementIdx;
+    defVal = dDef->defaultValue(defaultIdx);
     if (!tooltip.isEmpty())
     {
       tooltip.append("; ");
@@ -1028,7 +1033,8 @@ QWidget* qtInputsItem::createIntWidget(
   // Lets get default info
   if (iDef->hasDefault())
   {
-    defVal = iDef->defaultValue(elementIdx);
+    int defaultIdx = static_cast<int>(iDef->defaultValues().size()) <= elementIdx ? 0 : elementIdx;
+    defVal = iDef->defaultValue(defaultIdx);
     if (!tooltip.isEmpty())
     {
       tooltip.append("; ");
@@ -1160,7 +1166,9 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
       inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
       if (sDef->hasDefault())
       {
-        tooltip.append("Default: ").append(sDef->defaultValue(elementIdx).c_str());
+        int defaultIdx =
+          static_cast<int>(sDef->defaultValues().size()) <= elementIdx ? 0 : elementIdx;
+        tooltip.append("Default: ").append(sDef->defaultValue(defaultIdx).c_str());
       }
       break;
     }
