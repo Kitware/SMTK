@@ -101,8 +101,8 @@ void unregister_dle_instance(qtDoubleLineEdit* dle)
 class qtDoubleLineEdit::qtInternals
 {
 public:
-  int Precision = 2;
-  qtDoubleLineEdit::RealNumberNotation Notation = qtDoubleLineEdit::FixedNotation;
+  int Precision = 6;
+  qtDoubleLineEdit::RealNumberNotation Notation = qtDoubleLineEdit::MixedNotation;
   bool UseGlobalPrecisionAndNotation = true;
   QPointer<QLineEdit> InactiveLineEdit = nullptr;
 
