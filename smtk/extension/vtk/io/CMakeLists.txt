@@ -36,6 +36,7 @@ target_link_libraries(smtkIOVTK
     vtkIOGeometry
     vtkIOImage
     vtkIOLegacy
+    vtkIONetCDF
     vtkIOPLY
     vtkIOXML
     vtkImagingCore
