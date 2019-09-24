@@ -79,6 +79,10 @@ protected:
   virtual QWidget* createInputWidget(int elementIdx, QLayout* childLayout);
   virtual QWidget* createEditBox(int elementIdx, QWidget* pWidget);
   virtual QWidget* createExpressionRefWidget(int elementIdx);
+  // Methods for updating widgets based on changes made to the underlying attribute item
+  void updateDoubleItemData(QWidget* iwidget, const smtk::attribute::DoubleItemPtr& ditem);
+  void updateIntItemData(QWidget* iwidget, const smtk::attribute::IntItemPtr& iitem);
+  void updateStringItemData(QWidget* iwidget, const smtk::attribute::StringItemPtr& sitem);
 
 private:
   qtInputsItemInternals* Internals;

@@ -35,3 +35,6 @@ Example SBT Code:
     </View>
 ```
 See [SMTK Issue 270 to see what the resulting UI looks like.](https://gitlab.kitware.com/cmb/smtk/issues/270)
+
+### Other Changes
+* qtItem::updateItemData has been made public so that qtItems can be undated when their underlying attribute items are external changed.
