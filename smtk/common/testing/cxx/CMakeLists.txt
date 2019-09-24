@@ -32,6 +32,7 @@ endif()
 
 set(unit_tests
   TestArchive.cxx
+  UnitTestDerivedThreadPool
   UnitTestDateTime.cxx
   UnitTestDateTimeZonePair.cxx
   UnitTestLinks

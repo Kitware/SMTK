@@ -41,7 +41,7 @@ class ThreadPool
 public:
   /// Initialize thread pool with <maxThreads> threads spawned to execute tasks.
   ThreadPool(unsigned int maxThreads = 0);
-  ~ThreadPool();
+  virtual ~ThreadPool();
 
   /// Add a task to be performed by the thread queue. Once a thread becomes
   /// available, it will pop the task from the queue and execute it. The return
@@ -58,7 +58,7 @@ protected:
   std::future<ReturnType> appendToQueue(std::function<ReturnType()>&& task);
 
   /// Run by a worker thread: poll the task queue for tasks to perform.
-  void exec();
+  virtual void exec();
 
   std::condition_variable m_condition;
   std::mutex m_queueMutex;
