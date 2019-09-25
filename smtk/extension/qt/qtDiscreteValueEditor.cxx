@@ -157,6 +157,11 @@ void qtDiscreteValueEditor::updateItemData()
   {
     setIndex = item->discreteIndex(elementIdx);
   }
+  // Is the item's value valid and the same as the combo's current value - if it is then just return
+  if ((setIndex >= 0) && (setIndex == combo->currentIndex()))
+  {
+    return;
+  }
   if (setIndex < 0 && itemDef->hasDefault() && itemDef->defaultDiscreteIndex() < combo->count())
   {
     setIndex = itemDef->defaultDiscreteIndex();

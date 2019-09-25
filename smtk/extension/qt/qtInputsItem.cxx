@@ -157,6 +157,7 @@ public:
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QList<QPointer<qtDiscreteValueEditor> > DiscreteEditors;
+  int m_editPrecision;
 };
 
 qtItem* qtInputsItem::createItemWidget(const qtAttributeItemInfo& info)
@@ -175,6 +176,10 @@ qtInputsItem::qtInputsItem(const qtAttributeItemInfo& info)
   this->Internals = new qtInputsItemInternals;
   m_isLeafItem = true;
   this->Internals->VectorItemOrient = Qt::Horizontal;
+  this->Internals->m_editPrecision = 0; // Use full precision by default
+  // See if we are suppose to override it
+  m_itemInfo.component().attributeAsInt("EditPrecision", this->Internals->m_editPrecision);
+
   this->createWidget();
 }
 
@@ -248,13 +253,207 @@ void qtInputsItem::createWidget()
   }
 
   this->clearChildWidgets();
-  this->updateItemData();
+  this->updateUI();
 }
 
 void qtInputsItem::updateItemData()
 {
-  this->updateUI();
+  auto valItem = m_itemInfo.itemAs<ValueItem>();
+  if (valItem == nullptr)
+  {
+    return;
+  }
+
+  if (valItem->isDiscrete())
+  {
+    // Ok we are dealing with discrete editors
+    foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+    {
+      qtDiscreteValueEditor* editor = qobject_cast<qtDiscreteValueEditor*>(cwidget);
+      if (editor != nullptr)
+      {
+        editor->updateItemData();
+      }
+    }
+    this->qtItem::updateItemData();
+    return;
+  }
+
+  auto doubleItem = m_itemInfo.itemAs<DoubleItem>();
+  if (doubleItem != nullptr)
+  {
+    foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+    {
+      this->updateDoubleItemData(cwidget, doubleItem);
+    }
+    this->qtItem::updateItemData();
+    return;
+  }
+  auto intItem = m_itemInfo.itemAs<IntItem>();
+  if (intItem != nullptr)
+  {
+    foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+    {
+      this->updateIntItemData(cwidget, intItem);
+    }
+    this->qtItem::updateItemData();
+    return;
+  }
+
+  auto stringItem = m_itemInfo.itemAs<StringItem>();
+  if (stringItem != nullptr)
+  {
+    foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+    {
+      this->updateStringItemData(cwidget, stringItem);
+    }
+    this->qtItem::updateItemData();
+    return;
+  }
   this->qtItem::updateItemData();
+}
+
+void qtInputsItem::updateDoubleItemData(
+  QWidget* iwidget, const smtk::attribute::DoubleItemPtr& ditem)
+{
+  int elementIdx = iwidget->property("ElementIndex").toInt();
+  QLineEdit* lineEdit = qobject_cast<QLineEdit*>(iwidget);
+  bool isValid = ditem->isSet(elementIdx);
+  bool isDefault = ditem->isUsingDefault(elementIdx);
+  if (lineEdit != nullptr)
+  {
+    QString ival;
+    if (isValid)
+    {
+      if (this->Internals->m_editPrecision > 0)
+      {
+        ival = QString::number(ditem->value(elementIdx), 'f', this->Internals->m_editPrecision);
+      }
+      else
+      {
+        ival = ditem->valueAsString(elementIdx).c_str();
+      }
+      if (lineEdit->text() != ival)
+      {
+        lineEdit->blockSignals(true);
+        lineEdit->setText(ival);
+        lineEdit->blockSignals(false);
+      }
+    }
+    else if (lineEdit->text() != "")
+    {
+      lineEdit->blockSignals(true);
+      lineEdit->setText("");
+      lineEdit->blockSignals(false);
+    }
+  }
+  else
+  {
+    QDoubleSpinBox* spinbox = qobject_cast<QDoubleSpinBox*>(iwidget);
+    if (spinbox == nullptr)
+    {
+      return; // Can't figure out the widget being used
+    }
+    if (isValid && (ditem->value(elementIdx) != spinbox->value()))
+    {
+      spinbox->blockSignals(true);
+      spinbox->setValue(ditem->value(elementIdx));
+      spinbox->blockSignals(false);
+    }
+  }
+  qtUIManager* uimanager = this->uiManager();
+  isDefault ? uimanager->setWidgetColorToDefault(iwidget)
+            : (isValid ? uimanager->setWidgetColorToNormal(iwidget)
+                       : uimanager->setWidgetColorToInvalid(iwidget));
+}
+
+void qtInputsItem::updateIntItemData(QWidget* iwidget, const smtk::attribute::IntItemPtr& iitem)
+{
+  int elementIdx = iwidget->property("ElementIndex").toInt();
+  QLineEdit* lineEdit = qobject_cast<QLineEdit*>(iwidget);
+  bool isValid = iitem->isSet(elementIdx);
+  bool isDefault = iitem->isUsingDefault(elementIdx);
+  if (lineEdit != nullptr)
+  {
+    if (isValid && (iitem->valueAsString(elementIdx).c_str() != lineEdit->text()))
+    {
+      lineEdit->blockSignals(true);
+      lineEdit->setText(iitem->valueAsString(elementIdx).c_str());
+      lineEdit->blockSignals(false);
+    }
+    else if ((!isValid) && (lineEdit->text() != ""))
+    {
+      lineEdit->blockSignals(true);
+      lineEdit->setText("");
+      lineEdit->blockSignals(false);
+    }
+  }
+  else
+  {
+    QSpinBox* spinbox = qobject_cast<QSpinBox*>(iwidget);
+    if (spinbox == nullptr)
+    {
+      return; // Can't figure out the widget being used
+    }
+    if (isValid && (iitem->value(elementIdx) != spinbox->value()))
+    {
+      spinbox->blockSignals(true);
+      spinbox->setValue(iitem->value(elementIdx));
+      spinbox->blockSignals(false);
+    }
+  }
+  qtUIManager* uimanager = this->uiManager();
+  isDefault ? uimanager->setWidgetColorToDefault(iwidget)
+            : (isValid ? uimanager->setWidgetColorToNormal(iwidget)
+                       : uimanager->setWidgetColorToInvalid(iwidget));
+}
+
+void qtInputsItem::updateStringItemData(
+  QWidget* iwidget, const smtk::attribute::StringItemPtr& sitem)
+{
+  int elementIdx = iwidget->property("ElementIndex").toInt();
+  QLineEdit* lineEdit = qobject_cast<QLineEdit*>(iwidget);
+  bool isValid = sitem->isSet(elementIdx);
+  bool isDefault = sitem->isUsingDefault(elementIdx);
+  if (lineEdit != nullptr)
+  {
+    if (isValid && (sitem->valueAsString(elementIdx).c_str() != lineEdit->text()))
+    {
+      lineEdit->blockSignals(true);
+      lineEdit->setText(sitem->valueAsString(elementIdx).c_str());
+      lineEdit->blockSignals(false);
+    }
+    else if ((!isValid) && (lineEdit->text() != ""))
+    {
+      lineEdit->blockSignals(true);
+      lineEdit->setText("");
+      lineEdit->blockSignals(false);
+    }
+  }
+  else
+  {
+    QTextEdit* textEdit = qobject_cast<QTextEdit*>(iwidget);
+    if (textEdit == nullptr)
+    {
+      return; // Can't figure out the widget being used
+    }
+    if (isValid && (sitem->value(elementIdx).c_str() != textEdit->toPlainText()))
+    {
+      textEdit->blockSignals(true);
+      textEdit->setText(sitem->value(elementIdx).c_str());
+      textEdit->blockSignals(false);
+    }
+    else if ((!isValid) && (textEdit->toPlainText() != ""))
+    {
+      textEdit->blockSignals(true);
+      textEdit->setText("");
+      textEdit->blockSignals(false);
+    }
+  }
+  qtUIManager* uimanager = this->uiManager();
+  isDefault ? uimanager->setWidgetColorToDefault(iwidget)
+            : (isValid ? uimanager->setWidgetColorToNormal(iwidget)
+                       : uimanager->setWidgetColorToInvalid(iwidget));
 }
 
 void qtInputsItem::addInputEditor(int i)
@@ -998,15 +1197,14 @@ QWidget* qtInputsItem::createDoubleWidget(
     validator->setTop(maxVal);
     if (vitem->isSet(elementIdx))
     {
-      int editPrecision = 0;
-      m_itemInfo.component().attributeAsInt("EditPrecision", editPrecision);
-      if (editPrecision > 0)
+      if (this->Internals->m_editPrecision > 0)
       {
-        editBox->setText(QString::number(ditem->value(elementIdx), 'f', editPrecision));
+        editBox->setText(
+          QString::number(ditem->value(elementIdx), 'f', this->Internals->m_editPrecision));
       }
       else
       {
-        editBox->setText(vitem->valueAsString().c_str());
+        editBox->setText(vitem->valueAsString(elementIdx).c_str());
       }
     }
     return editBox;
