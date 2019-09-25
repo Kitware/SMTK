@@ -237,8 +237,7 @@ bool Project::build(smtk::attribute::AttributePtr specification, smtk::io::Logge
 
     // Extract the name of the simulation code from attFilePath
     boost::filesystem::path attPath(attFileValue);
-    attPath.remove_filename();
-    auto simCode = attPath.filename().string();
+    auto simCode = attPath.stem().string();
     std::transform(simCode.begin(), simCode.end(), simCode.begin(), ::tolower);
     m_simulationCode = simCode;
 
