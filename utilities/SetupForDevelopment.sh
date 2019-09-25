@@ -11,6 +11,9 @@ utilities/gitsetup/SetupGitAliases.sh && echo &&
  echo 'Failed to setup GitLab.  Run this again to retry.') && echo &&
 utilities/gitsetup/tips
 
+echo "Initializing and updating git submodules..."
+git submodule update --init --recursive
+
 # Rebase master by default
 git config rebase.stat true
 git config branch.master.rebase true

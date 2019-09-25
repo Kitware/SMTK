@@ -33,6 +33,7 @@
 
 #include "vtkObjectFactory.h"
 #include "vtkVersion.h"
+#include "vtksys/SystemTools.hxx"
 
 namespace
 {
@@ -71,7 +72,6 @@ void pqSMTKAppComponentsAutoStart::startup()
   auto rsrcMgr = pqSMTKBehavior::instance(this);
   auto renderResourceBehavior = pqSMTKRenderResourceBehavior::instance(this);
   auto closeResourceBehavior = pqSMTKCloseResourceBehavior::instance(this);
-  auto saveOnCloseResourceBehavior = pqSMTKSaveOnCloseResourceBehavior::instance(this);
   auto callObserversOnMainThread = pqSMTKCallObserversOnMainThreadBehavior::instance(this);
   auto rsrcImportOpMgr = pqSMTKImportOperationBehavior::instance(this);
   auto rsrcExportSimMgr = pqSMTKExportSimulationBehavior::instance(this);
@@ -93,7 +93,12 @@ void pqSMTKAppComponentsAutoStart::startup()
   {
     pqCore->registerManager("smtk resource", rsrcMgr);
     pqCore->registerManager("smtk render resource", renderResourceBehavior);
-    pqCore->registerManager("smtk save on close resource", saveOnCloseResourceBehavior);
+    // If we are running inside CTest, don't pop up dialogs on close.
+    if (!vtksys::SystemTools::GetEnv("DASHBOARD_TEST_FROM_CTEST"))
+    {
+      auto saveOnCloseResourceBehavior = pqSMTKSaveOnCloseResourceBehavior::instance(this);
+      pqCore->registerManager("smtk save on close resource", saveOnCloseResourceBehavior);
+    }
     pqCore->registerManager("call observers on main thread", callObserversOnMainThread);
     pqCore->registerManager("smtk close resource", closeResourceBehavior);
     pqCore->registerManager("smtk import operation", rsrcImportOpMgr);
@@ -115,7 +120,10 @@ void pqSMTKAppComponentsAutoStart::shutdown()
   {
     pqCore->unRegisterManager("smtk resource");
     pqCore->unRegisterManager("smtk render resource");
-    pqCore->unRegisterManager("smtk save on close resource");
+    if (!vtksys::SystemTools::GetEnv("DASHBOARD_TEST_FROM_CTEST"))
+    {
+      pqCore->unRegisterManager("smtk save on close resource");
+    }
     pqCore->unRegisterManager("call observers on main thread");
     pqCore->unRegisterManager("smtk close resource");
     pqCore->unRegisterManager("smtk import operation");

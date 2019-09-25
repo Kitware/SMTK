@@ -96,7 +96,12 @@ vtkCMBParserBase* vtkCMBModelReadOperation::NewParser(vtkPolyData* MasterPoly)
   vtkIntArray* version =
     vtkIntArray::SafeDownCast(MasterPoly->GetFieldData()->GetArray(CMBFileVersionString));
 
-  if (!version || version->GetValue(0) == 1)
+  if (!version)
+  {
+    vtkErrorMacro("No Version in CMB file, unsupported.");
+    return NULL;
+  }
+  else if (version->GetValue(0) == 1)
   {
     vtkErrorMacro("Version 1 CMB file no longer supported.");
     return NULL;
