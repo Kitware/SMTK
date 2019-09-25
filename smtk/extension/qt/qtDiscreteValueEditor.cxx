@@ -72,6 +72,7 @@ qtDiscreteValueEditor::qtDiscreteValueEditor(
     item->m_itemInfo.createNewDictionary(this->Internals->m_itemViewMap);
   }
 
+  this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   this->createWidget();
 }
 
@@ -91,7 +92,6 @@ void qtDiscreteValueEditor::createWidget()
   this->Internals->clearChildItems();
   QBoxLayout* wlayout = new QVBoxLayout(this);
   wlayout->setMargin(0);
-
   if (!item || !item->isDiscrete())
   {
     return;
@@ -123,7 +123,6 @@ void qtDiscreteValueEditor::createWidget()
     combo->setToolTip(tooltip);
   }
   combo->addItems(discreteVals);
-  combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QObject::connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputValueChanged()),
     Qt::QueuedConnection);
   wlayout->addWidget(combo);
@@ -242,7 +241,7 @@ void qtDiscreteValueEditor::updateContents()
   {
     this->Internals->m_childrenFrame = new QFrame(this);
     this->Internals->m_childrenFrame->setObjectName("ChildItemsFrame");
-    QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     QVBoxLayout* clayout = new QVBoxLayout(this->Internals->m_childrenFrame);
     clayout->setMargin(3);
     this->Internals->m_childrenFrame->setSizePolicy(sizeFixedPolicy);
