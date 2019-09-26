@@ -34,15 +34,6 @@ target_link_libraries(displayModelToMesh
 # Only run tests if the data directory exists
 if (SMTK_DATA_DIR)
   add_test(
-    NAME displayMultiBlockModel-simple
-    COMMAND
-      $<TARGET_FILE:displayMultiBlockModel>
-      "${SMTK_DATA_DIR}/model/3d/smtk/simple.json"
-      -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/simple-with-colors.png"
-      -T "${CMAKE_CURRENT_BINARY_DIR}"
-  )
-
-  add_test(
     NAME displayMultiBlockModel-test2D
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
