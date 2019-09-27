@@ -243,6 +243,7 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
   if (m_newMenu != nullptr)
   {
     m_newMenu->clear();
+    m_newMenu->setObjectName("newResourceMenu");
 
     bool visible = false;
 
@@ -278,6 +279,7 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
         if (operationIndices.size() == 1)
         {
           QAction* newResourceAction = new QAction(label, m_newMenu);
+          newResourceAction->setObjectName(QString::fromStdString(resourceName));
           m_newMenu->addAction(newResourceAction);
 
           std::string operationName = creatorGroup.operationName(*operationIndices.begin());
@@ -303,6 +305,7 @@ void pqSMTKNewResourceBehavior::updateNewMenu()
             opLabel = *splitOpLabel.rbegin();
 
             QAction* newResourceAction = new QAction(opLabel, resourceMenu);
+            newResourceAction->setObjectName(QString::fromStdString(operationName));
             resourceMenu->addAction(newResourceAction);
 
             new pqNewResourceReaction(operationName, newResourceAction);
