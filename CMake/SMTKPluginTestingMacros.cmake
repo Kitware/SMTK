@@ -56,7 +56,10 @@ function(smtk_test_plugin test_plugin_file_url)
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       -Dsmtk_DIR=${PROJECT_BINARY_DIR}
       ${response_file}
-    )
+  )
+  # Plugin tests can take a little longer since they need to
+  # clone a repo and build a project.
+  set_tests_properties(${test_name} PROPERTIES TIMEOUT 600)
 
   # If on Windows, pass the environment PATH to the test.
   if (WIN32)

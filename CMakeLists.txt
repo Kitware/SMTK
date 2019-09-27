@@ -202,6 +202,7 @@ if (SMTK_ENABLE_TESTING)
   set(SMTK_PLUGIN_CONTRACT_FILE_URLS ""
     CACHE STRING "Local CMake file describing plugins as external projects for contract testing.")
 
+  # ++ contract-example ++
   if (SMTK_ENABLE_PARAVIEW_SUPPORT)
     set(local_url_prefix "file://")
     if (WIN32)
@@ -210,6 +211,7 @@ if (SMTK_ENABLE_TESTING)
     list(APPEND SMTK_PLUGIN_CONTRACT_FILE_URLS
       "${local_url_prefix}${CMAKE_CURRENT_SOURCE_DIR}/CMake/resource-manager-state.cmake")
   endif()
+  # -- contract-example --
 
   set(SMTK_COVERAGE_ENABLED OFF)
   if(SMTK_ENABLE_COVERAGE)

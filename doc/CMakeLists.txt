@@ -105,7 +105,14 @@ if (SPHINX_FOUND)
     userguide/attribute/index.rst
     userguide/attribute/file-syntax.rst
     userguide/attribute/concepts.rst
-    userguide/contributing.rst
+    userguide/contributing/documentation.rst
+    userguide/contributing/exposing.rst
+    userguide/contributing/extending.rst
+    userguide/contributing/index.rst
+    userguide/contributing/organization.rst
+    userguide/contributing/style.rst
+    userguide/contributing/testing.rst
+    userguide/contributing/todo.rst
     userguide/administration.rst
     userguide/obtain-build-install.rst
     userguide/simulation/index.rst
