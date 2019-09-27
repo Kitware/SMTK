@@ -144,7 +144,7 @@ void qtAttribute::createWidget()
 
   QVBoxLayout* layout = new QVBoxLayout(m_widget);
   layout->setMargin(3);
-  m_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+  m_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 }
 
 void qtAttribute::addItem(qtItem* child)

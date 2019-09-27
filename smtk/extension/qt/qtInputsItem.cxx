@@ -11,6 +11,7 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 
 #include "smtk/attribute/Definition.h"
+#include "smtk/extension/qt/qtAttributeEditorDialog.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtDiscreteValueEditor.h"
 #include "smtk/extension/qt/qtDoubleLineEdit.h"
@@ -909,18 +910,6 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   QObject::connect(combo, SIGNAL(currentIndexChanged(int)), this,
     SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
 
-  // check if there are attributes already created, if not
-  // disable the function checkbox
-  auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
-  smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
-  std::vector<smtk::attribute::AttributePtr> result;
-  if (attDef)
-  {
-    ResourcePtr lAttResource = attDef->resource();
-    lAttResource->findAttributes(attDef, result);
-  }
-  funCheck->setEnabled(result.size() > 0);
-
   // create line edit for expression which is a const value
   QWidget* valeditor = this->createEditBox(elementIdx, checkFrame);
 
@@ -958,6 +947,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     return;
   }
   QComboBox* combo = static_cast<QComboBox*>(funCheck->property("FuncCombo").value<void*>());
+  combo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
   QWidget* funcEditor = static_cast<QWidget*>(funCheck->property("FuncEditor").value<void*>());
 
   if (!combo || !funcEditor)
@@ -981,14 +971,14 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       {
         attNames.push_back((*it)->name().c_str());
       }
-      if (attNames.count() > 0)
-      {
-        attNames.sort();
-        combo->addItems(attNames);
-      }
+      attNames.sort();
+      // Now add Please Select and Create Options
+      attNames.insert(0, "Please Select");
+      attNames.insert(1, "Create...");
+      combo->addItems(attNames);
     }
 
-    int setIndex = -1;
+    int setIndex = 0;
     if (inputitem->isExpression(elementIdx))
     {
       smtk::attribute::RefItemPtr item = inputitem->expressionReference(elementIdx);
@@ -1000,6 +990,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       {
         // Not pointing to valid item - reset it
         this->unsetValue(elementIdx);
+        setIndex = 0;
       }
     }
     else
@@ -1020,11 +1011,13 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
         else
         {
           this->unsetValue(elementIdx);
+          setIndex = 0;
         }
       }
       else if (inputitem->isSet(elementIdx))
       {
         this->unsetValue(elementIdx);
+        setIndex = 0;
       }
     }
     combo->setCurrentIndex(setIndex);
@@ -1069,9 +1062,56 @@ void qtInputsItem::onExpressionReferenceChanged()
     return;
   }
 
-  if (curIdx >= 0)
+  if (curIdx == 0)
   {
-    ResourcePtr lAttResource = item->attribute()->attributeResource();
+    item->unset(elementIdx);
+    inputitem->unset(elementIdx);
+  }
+  else if (curIdx == 1)
+  {
+    auto valItemDef = inputitem->definitionAs<ValueItemDefinition>();
+    smtk::attribute::DefinitionPtr attDef = valItemDef->expressionDefinition();
+    auto attResource = attDef->resource();
+    smtk::attribute::AttributePtr newAtt = attResource->createAttribute(attDef->type());
+    auto editor =
+      new smtk::extension::qtAttributeEditorDialog(newAtt, m_itemInfo.uiManager(), m_widget);
+    auto status = editor->exec();
+    QStringList itemsInComboBox;
+    if (status == QDialog::Rejected)
+    {
+      attResource->removeAttribute(newAtt);
+    }
+    else
+    {
+      inputitem->setExpression(elementIdx, newAtt);
+      itemsInComboBox.append(newAtt->name().c_str());
+    }
+    for (int index = 2; index < comboBox->count(); index++)
+    {
+      itemsInComboBox << comboBox->itemText(index);
+    }
+    itemsInComboBox.sort();
+    // Now add Please Select and Create New Options
+    itemsInComboBox.insert(0, "Please Select");
+    itemsInComboBox.insert(1, "Create New");
+    comboBox->blockSignals(true);
+    comboBox->clear();
+    comboBox->addItems(itemsInComboBox);
+    auto expressionAtt = inputitem->expression();
+    if (expressionAtt == nullptr)
+    {
+      comboBox->setCurrentIndex(0);
+    }
+    else
+    {
+      auto index = itemsInComboBox.indexOf(expressionAtt->name().c_str());
+      comboBox->setCurrentIndex(index);
+    }
+    comboBox->blockSignals(false);
+  }
+  else
+  {
+    smtk::attribute::ResourcePtr lAttResource = item->attribute()->attributeResource();
     AttributePtr attPtr = lAttResource->findAttribute(comboBox->currentText().toStdString());
     if (elementIdx >= 0 && inputitem->isSet(elementIdx) &&
       attPtr == inputitem->expression(elementIdx))
@@ -1088,11 +1128,6 @@ void qtInputsItem::onExpressionReferenceChanged()
       item->unset(elementIdx);
       inputitem->unset(elementIdx);
     }
-  }
-  else
-  {
-    item->unset(elementIdx);
-    inputitem->unset(elementIdx);
   }
 
   auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());

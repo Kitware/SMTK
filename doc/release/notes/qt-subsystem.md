@@ -36,5 +36,12 @@ Example SBT Code:
 ```
 See [SMTK Issue 270 to see what the resulting UI looks like.](https://gitlab.kitware.com/cmb/smtk/issues/270)
 
+### Added qtAttributeEditorDialog class
+
+This class can be used to edit a single attribute and is used to create new expressions for ValueItems (using the qtInputsItem class.  Note that the current implementation does not undo changes made to the attribute using the dialog but does tell the caller the user requested a cancelation.  In the current use case this means to delete the newly created expression attribute.
+
+### Creating Expressions for ValueItems
+With the introduction of qtAttributeEditorDialogs, it is now possible to create new expression attributes without having to change Views.
+
 ### Other Changes
 * qtItem::updateItemData has been made public so that qtItems can be undated when their underlying attribute items are external changed.

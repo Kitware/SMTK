@@ -7,6 +7,7 @@ set(QAttrLibSrcs
   qtUIManager.cxx
   qtAttribute.cxx
   qtAttributeDisplay.cxx
+  qtAttributeEditorDialog.cxx
   qtAttributeItemInfo.cxx
   qtBaseAttributeView.cxx
   qtBaseView.cxx
@@ -64,6 +65,7 @@ set(QAttrLibSrcs
 set(QAttrLibUIs
   qtAssociationView.ui
   qtAttributeAssociation.ui
+  qtAttributeEditorWidget.ui
   qtCollapsibleGroupWidgetInternals.ui
   qtModelPanel.ui
   qtNewAttributeWidget.ui
@@ -78,6 +80,7 @@ set(QAttrLibMocHeaders
   qtUIManager.h
   qtAttribute.h
   qtAttributeDisplay.h
+  qtAttributeEditorDialog.h
   qtBaseAttributeView.h
   qtBaseView.h
   qtCategorySelectorView.h
