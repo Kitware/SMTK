@@ -1,6 +1,7 @@
 # Attributes used for formatting.
 [attr]our-c-style   whitespace=tab-in-indent  format.clang-format
 [attr]our-py-style  whitespace=tab-in-indent  format.autopep8
+[attr]our-rst-style conflict-marker-size=100
 
 *.cxx   our-c-style
 *.h     our-c-style
@@ -8,6 +9,8 @@
 *.txx   our-c-style
 
 *.py    our-py-style
+
+*.rst   our-rst-style
 
 thirdparty/**  -format.clang-format -format.autopep8
 **/pybind11/*  -format.clang-format

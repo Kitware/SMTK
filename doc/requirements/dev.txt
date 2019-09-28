@@ -1,6 +1,6 @@
-pyparsing==1.5.7
-Pygments==2.2.0
 Sphinx==1.6.3
+pyparsing==2.0.2
+Pygments==2.2.0
 actdiag==0.5.4
 blockdiag==1.5.3
 sphinxcontrib-actdiag==0.7.2

@@ -1,4 +1,4 @@
-.. _smtk-resource-sys:
+.. _smtk-operation-sys:
 
 -----------------------
 SMTK's Operation System

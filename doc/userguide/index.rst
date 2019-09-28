@@ -47,7 +47,7 @@ simulation domain.
    bindings/index.rst
    plugin/index.rst
    administration.rst
-   contributing.rst
+   contributing/index.rst
 
 .. role:: cxx(code)
    :language: c++
