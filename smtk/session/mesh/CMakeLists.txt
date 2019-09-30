@@ -6,8 +6,10 @@ set(meshSrcs
   Topology.cxx
   operators/CreateUniformGrid.cxx
   operators/EulerCharacteristicRatio.cxx
-  operators/Import.cxx
   operators/Export.cxx
+  operators/Import.cxx
+  operators/Merge.cxx
+  operators/Print.cxx
   operators/Read.cxx
   operators/Write.cxx
 )
@@ -20,8 +22,10 @@ set(meshHeaders
   Topology.h
   operators/CreateUniformGrid.h
   operators/EulerCharacteristicRatio.h
-  operators/Import.h
   operators/Export.h
+  operators/Import.h
+  operators/Merge.h
+  operators/Print.h
   operators/Read.h
   operators/Write.h
 )
@@ -47,8 +51,10 @@ smtk_install_library(smtkMeshSession)
 # the header in their implementations.
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateUniformGrid.sbt" meshOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristicRatio.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" meshOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" meshOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" meshOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Merge.sbt" meshOperationXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Print.sbt" meshOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" meshOperationXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" meshOperationXML)
 

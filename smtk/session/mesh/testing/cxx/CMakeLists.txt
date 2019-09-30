@@ -12,6 +12,7 @@
 
 set (unit_tests
   TestCreateUniformGridOp.cxx
+  TestMergeOp.cxx
 )
 
 set (unit_tests_which_require_data

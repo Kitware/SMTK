@@ -41,15 +41,18 @@ struct SMTKMESHSESSION_EXPORT Topology
 
   struct Element
   {
-    Element(const smtk::mesh::MeshSet& mesh, int dimension = -1)
+    Element(const smtk::mesh::MeshSet& mesh, const smtk::common::UUID& id, int dimension = -1)
       : m_mesh(mesh)
       , m_dimension(dimension)
+      , m_id(id)
     {
     }
 
     smtk::mesh::MeshSet m_mesh;
     int m_dimension;
-    smtk::common::UUIDArray m_children;
+    smtk::common::UUID m_id;
+    std::set<smtk::common::UUID> m_parents;
+    std::set<smtk::common::UUID> m_children;
   };
 
   smtk::mesh::ResourcePtr m_resource;

@@ -28,10 +28,12 @@ py::class_< smtk::session::mesh::Topology > pybind11_init_smtk_session_mesh_Topo
     .def("resource", [](const smtk::session::mesh::Topology& topology){ return topology.m_resource; })
     ;
   py::class_< smtk::session::mesh::Topology::Element >(instance, "Element")
-    .def(py::init<::smtk::mesh::MeshSet, int>())
+    .def(py::init<::smtk::mesh::MeshSet, smtk::common::UUID const &, int>())
     .def(py::init<::smtk::session::mesh::Topology::Element const &>())
     .def("deepcopy", (smtk::session::mesh::Topology::Element & (smtk::session::mesh::Topology::Element::*)(::smtk::session::mesh::Topology::Element const &)) &smtk::session::mesh::Topology::Element::operator=)
+    .def_readwrite("m_mesh", &smtk::session::mesh::Topology::Element::m_mesh)
     .def_readwrite("m_dimension", &smtk::session::mesh::Topology::Element::m_dimension)
+    .def_readwrite("m_parents", &smtk::session::mesh::Topology::Element::m_parents)
     .def_readwrite("m_children", &smtk::session::mesh::Topology::Element::m_children)
     ;
   return instance;

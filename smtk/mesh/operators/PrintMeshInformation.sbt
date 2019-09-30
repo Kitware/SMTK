@@ -5,7 +5,7 @@
     <include href="smtk/operation/Operation.xml"/>
     <AttDef Type="print mesh information" BaseType="operation" Label="Mesh - Print Information">
       <AssociationsDef Name="mesh" LockType="Read"
-                       NumberOfRequiredValues="1" Extensible="false" HoldReference="true">
+                       NumberOfRequiredValues="1" Extensible="true" HoldReference="true">
         <Accepts><Resource Name="smtk::mesh::Resource" Filter="meshset"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
