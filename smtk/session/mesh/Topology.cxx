@@ -65,14 +65,17 @@ public:
     }
 
     // add the unique id as a child of the model
-    m_root->m_children.push_back(id);
+    m_root->m_children.insert(id);
     // construct an element for the mesh, insert it into the topology's map
     // with its id as the key and, if requested, store its shell as a pair along
     // with a pointer to its associated Element (for use in extracting bound
     // elements).
     Topology::Element* element =
-      &m_topology->m_elements.insert(std::make_pair(id, Topology::Element(singleMesh, m_dimension)))
+      &m_topology->m_elements
+         .insert(std::make_pair(id, Topology::Element(singleMesh, id, m_dimension)))
          .first->second;
+    element->m_parents.insert(m_root->m_id);
+
     if (m_shells)
     {
       smtk::mesh::MeshSet shell = singleMesh.extractShell();
@@ -174,7 +177,9 @@ struct AddBoundElements
           }
 
           // Next, we remove the intersection from the contributing mesh sets
-          // and add the new id as a child of these sets.
+          // and add the new id as a child of these sets. We also record the
+          // sets' ids as parents of the new set.
+          smtk::common::UUIDArray parents;
           for (auto&& shell : activeShells)
           {
             if (activeShells.size() > 1)
@@ -184,15 +189,18 @@ struct AddBoundElements
               m_topology->m_resource->removeMeshes(shell->first);
               shell->first = tmp;
             }
-            shell->second->m_children.push_back(id);
+            shell->second->m_children.insert(id);
+            parents.push_back(shell->second->m_id);
           }
 
           // finally, we insert it as an element into the topology. If
           // necessary, we store its shell for the bound element calculation of
           // lower dimension
           Topology::Element* element =
-            &m_topology->m_elements.insert(std::make_pair(id, Topology::Element(m, m_dimension)))
+            &m_topology->m_elements
+               .insert(std::make_pair(id, Topology::Element(m, id, m_dimension)))
                .first->second;
+          element->m_parents.insert(parents.begin(), parents.end());
           if (m_shells)
           {
             m_shells->push_back(std::make_pair(m.extractShell(), element));
@@ -222,7 +230,8 @@ Topology::Topology(
   , m_modelId(modelId)
 {
   // Insert the mesh resource as the top-level element representing the model
-  Element* model = &(m_elements.insert(std::make_pair(modelId, Element(meshset))).first->second);
+  Element* model =
+    &(m_elements.insert(std::make_pair(modelId, Element(meshset, modelId))).first->second);
 
   if (constructHierarchy)
   {

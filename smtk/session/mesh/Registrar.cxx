@@ -15,6 +15,8 @@
 #include "smtk/session/mesh/operators/EulerCharacteristicRatio.h"
 #include "smtk/session/mesh/operators/Export.h"
 #include "smtk/session/mesh/operators/Import.h"
+#include "smtk/session/mesh/operators/Merge.h"
+#include "smtk/session/mesh/operators/Print.h"
 #include "smtk/session/mesh/operators/Read.h"
 #include "smtk/session/mesh/operators/Write.h"
 
@@ -34,8 +36,8 @@ namespace mesh
 
 namespace
 {
-typedef std::tuple<CreateUniformGrid, smtk::session::mesh::EulerCharacteristicRatio, Export, Import,
-  Read, Write>
+typedef std::tuple<CreateUniformGrid, EulerCharacteristicRatio, Export, Import, Merge, Print, Read,
+  Write>
   OperationList;
 }
 
