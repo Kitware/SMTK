@@ -36,7 +36,9 @@ public:
   smtkTypeMacro(smtk::attribute::MeshItem);
   ~MeshItem() override;
   Item::Type type() const override;
-  bool isValid() const override;
+
+  using Item::isValid;
+  bool isValid(const std::set<std::string>& cats) const override;
 
   std::size_t numberOfRequiredValues() const;
   bool isExtensible() const;

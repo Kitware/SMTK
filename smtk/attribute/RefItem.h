@@ -38,12 +38,14 @@ public:
   smtkTypeMacro(smtk::attribute::RefItem);
   ~RefItem() override;
   Item::Type type() const override;
+
   // A RefItem is valid if it is either no enabled or if all of
   // its values are set and the attributes it references exist
   // It does NOT check to see if the attribute(s) it refers to are
   // valid - the reason for this is to avoid infinite loops if 2
   // attributes contain items that reference each other.
-  bool isValid() const override;
+  using Item::isValid;
+  bool isValid(const std::set<std::string>& categories) const override;
 
   std::size_t numberOfValues() const { return m_values.size(); }
   bool setNumberOfValues(std::size_t newSize);

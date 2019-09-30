@@ -34,7 +34,6 @@ PySharedPtrClass< smtk::attribute::FileSystemItem, smtk::attribute::Item > pybin
     .def("isSet", &smtk::attribute::FileSystemItem::isSet, py::arg("element") = 0)
     .def("isUsingDefault", (bool (smtk::attribute::FileSystemItem::*)(::size_t) const) &smtk::attribute::FileSystemItem::isUsingDefault, py::arg("elementIndex"))
     .def("isUsingDefault", (bool (smtk::attribute::FileSystemItem::*)() const) &smtk::attribute::FileSystemItem::isUsingDefault)
-    .def("isValid", &smtk::attribute::FileSystemItem::isValid)
     .def("maxNumberOfValues", &smtk::attribute::FileSystemItem::maxNumberOfValues)
     .def("numberOfRequiredValues", &smtk::attribute::FileSystemItem::numberOfRequiredValues)
     .def("numberOfValues", &smtk::attribute::FileSystemItem::numberOfValues)

@@ -98,8 +98,17 @@ bool MeshItem::setNumberOfValues(std::size_t newSize)
   return true;
 }
 
-bool MeshItem::isValid() const
+bool MeshItem::isValid(const std::set<std::string>& cats) const
 {
+  // If we have been given categories we need to see if the item passes its
+  // category checks - if it doesn't it means its not be taken into account
+  // for validity checking so just return true
+
+  if (cats.size() && !this->passCategoryCheck(cats))
+  {
+    return true;
+  }
+
   // If the item is not enabled or if it contains atleast the number of
   // required values
   if (!this->isEnabled())

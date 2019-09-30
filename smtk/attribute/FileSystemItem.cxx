@@ -62,8 +62,17 @@ FileSystemItem::~FileSystemItem()
 {
 }
 
-bool FileSystemItem::isValid() const
+bool FileSystemItem::isValid(const std::set<std::string>& cats) const
 {
+  // If we have been given categories we need to see if the item passes its
+  // category checks - if it doesn't it means its not be taken into account
+  // for validity checking so just return true
+
+  if (cats.size() && !this->passCategoryCheck(cats))
+  {
+    return true;
+  }
+
   // If the item is not enabled or if all of its values are set then it is valid
   // else it is enabled and contains unset values making it invalid
   if (!this->isEnabled())

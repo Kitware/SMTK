@@ -21,6 +21,7 @@ ItemDefinition::ItemDefinition(const std::string& myName)
   m_isOptional = false;
   m_isEnabledByDefault = false;
   m_isOkToInherit = true;
+  m_categoryCheckMode = ItemDefinition::CategoryCheckMode::Any;
 }
 
 ItemDefinition::~ItemDefinition()
@@ -62,6 +63,60 @@ void ItemDefinition::addLocalCategory(const std::string& category)
 void ItemDefinition::removeLocalCategory(const std::string& category)
 {
   m_localCategories.erase(category);
+}
+
+bool ItemDefinition::passCategoryCheck(const std::string& category) const
+{
+  if (m_categories.empty() ||
+    ((m_categoryCheckMode == CategoryCheckMode::All) && (m_categories.size() != 1)))
+  {
+    return false;
+  }
+
+  if (m_categoryCheckMode == CategoryCheckMode::Any)
+  {
+    if (m_categories.find(category) != m_categories.end())
+    {
+      return true;
+    }
+    return false;
+  }
+  if (*(m_categories.begin()) == category)
+  {
+    return true;
+  }
+  return false;
+}
+
+bool ItemDefinition::passCategoryCheck(const std::set<std::string>& categories) const
+{
+  if (categories.empty())
+  {
+    return true;
+  }
+  if (m_categories.empty())
+  {
+    return false;
+  }
+  if (m_categoryCheckMode == CategoryCheckMode::Any)
+  {
+    for (auto cat : m_categories)
+    {
+      if (categories.find(cat) != categories.end())
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+  for (auto cat : m_categories)
+  {
+    if (categories.find(cat) == categories.end())
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 void ItemDefinition::setAdvanceLevel(int mode, int level)

@@ -229,9 +229,15 @@ smtk::attribute::ItemPtr Attribute::itemAtPath(
   */
 bool Attribute::isValid() const
 {
+  std::set<std::string> cats;
+  return this->isValid(cats);
+}
+
+bool Attribute::isValid(const std::set<std::string>& cats) const
+{
   for (auto it = m_items.begin(); it != m_items.end(); ++it)
   {
-    if (!(*it)->isValid())
+    if (!(*it)->isValid(cats))
     {
       return false;
     }

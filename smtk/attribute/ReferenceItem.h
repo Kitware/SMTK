@@ -124,7 +124,8 @@ public:
     * If the item is not enabled or if all of its values are set then it is valid.
     * If it is enabled and contains unset values then it is invalid.
     */
-  bool isValid() const override;
+  bool isValid(const std::set<std::string>& categories) const override;
+  using Item::isValid;
 
   /// Return the size of the item (number of entities associated with the item).
   std::size_t numberOfValues() const;

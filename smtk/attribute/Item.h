@@ -76,7 +76,18 @@ public:
   std::string name() const;
   std::string label() const;
   virtual Item::Type type() const = 0;
-  virtual bool isValid() const = 0;
+
+  /// @{
+  /// \brief tests the validity of an item
+  ///
+  /// Returns true if the item is considered valid.  If a non-empty
+  /// set of categories is passed into the method then they are used to
+  /// "filter" the item.  This means the item will check to see if it passes
+  /// its passCategoryCheck method and if it fails (indicating the item is to
+  /// be passed over) isValid will return true regardless of the item's contents.
+  bool isValid() const;
+  virtual bool isValid(const std::set<std::string>& categories) const = 0;
+  /// @}
 
   /// @{
   /// \brief return a child item that matches name and satisfies the SearchStyle
@@ -102,12 +113,12 @@ public:
     std::function<void(smtk::attribute::ItemPtr, bool)> /*visitor*/, bool /*activeChildren = true*/)
   {
   }
-  smtk::attribute::ConstItemDefinitionPtr definition() const { return m_definition; }
+  const smtk::attribute::ConstItemDefinitionPtr& definition() const { return m_definition; }
 
   template <typename DefType>
   std::shared_ptr<const DefType> definitionAs() const
   {
-    return std::dynamic_pointer_cast<const DefType>(this->definition());
+    return std::dynamic_pointer_cast<const DefType>(m_definition);
   }
 
   // Return the attribute that owns this item
@@ -136,6 +147,12 @@ public:
 
   bool isMemberOf(const std::string& category) const;
   bool isMemberOf(const std::vector<std::string>& categories) const;
+
+  /// @{
+  /// \brief Checks to see if the item passes it's definition's category checks.
+  bool passCategoryCheck(const std::string& category) const;
+  bool passCategoryCheck(const std::set<std::string>& categories) const;
+  /// @}
 
   //Get the item 's advance level:
   //if mode is 1 then the write access level is returned;

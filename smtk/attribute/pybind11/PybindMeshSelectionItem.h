@@ -43,7 +43,6 @@ PySharedPtrClass< smtk::attribute::MeshSelectionItem, smtk::attribute::Item > py
     .def("begin", &smtk::attribute::MeshSelectionItem::begin)
     .def("end", &smtk::attribute::MeshSelectionItem::end)
     .def("isCtrlKeyDown", &smtk::attribute::MeshSelectionItem::isCtrlKeyDown)
-    .def("isValid", &smtk::attribute::MeshSelectionItem::isValid)
     .def("modifyMode", &smtk::attribute::MeshSelectionItem::modifyMode)
     .def_static("modifyMode2String", &smtk::attribute::MeshSelectionItem::modifyMode2String, py::arg("m"))
     .def("numberOfValues", &smtk::attribute::MeshSelectionItem::numberOfValues)

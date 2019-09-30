@@ -265,6 +265,7 @@ public:
   void setAppliesToInteriorNodes(bool appliesValue) { m_appliesToInteriorNodes = appliesValue; }
 
   bool isValid() const;
+  bool isValid(const std::set<std::string>& categories) const;
 
   smtk::attribute::ResourcePtr attributeResource() const;
   const smtk::resource::ResourcePtr resource() const override;

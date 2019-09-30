@@ -31,7 +31,6 @@ PySharedPtrClass< smtk::attribute::RefItem, smtk::attribute::Item > pybind11_ini
     .def("begin", &smtk::attribute::RefItem::begin)
     .def("end", &smtk::attribute::RefItem::end)
     .def("isSet", &smtk::attribute::RefItem::isSet, py::arg("element") = 0)
-    .def("isValid", &smtk::attribute::RefItem::isValid)
     .def("numberOfRequiredValues", &smtk::attribute::RefItem::numberOfRequiredValues)
     .def("numberOfValues", &smtk::attribute::RefItem::numberOfValues)
     .def("removeValue", &smtk::attribute::RefItem::removeValue, py::arg("element"))

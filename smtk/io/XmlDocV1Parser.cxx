@@ -980,6 +980,19 @@ void XmlDocV1Parser::processItemDef(xml_node& node, smtk::attribute::ItemDefinit
   {
     idef->setIsOkToInherit(xatt.as_bool());
   }
+  xatt = node.attribute("CategoryCheckMode");
+  if (xatt)
+  {
+    std::string val = xatt.value();
+    if (val == "All")
+    {
+      idef->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::All);
+    }
+    else if (val == "Any")
+    {
+      idef->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::Any);
+    }
+  }
   // If using AdvanceLevel then we are setting
   // both read and write
   xatt = node.attribute("AdvanceLevel");

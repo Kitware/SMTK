@@ -49,7 +49,7 @@ Item::Type VoidItem::type() const
   return VoidType;
 }
 
-bool VoidItem::isValid() const
+bool VoidItem::isValid(const std::set<std::string>&) const
 {
   return true;
 }

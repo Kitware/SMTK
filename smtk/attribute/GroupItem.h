@@ -55,7 +55,10 @@ public:
   smtkTypeMacro(smtk::attribute::GroupItem);
   ~GroupItem() override;
   Item::Type type() const override;
-  bool isValid() const override;
+
+  using Item::isValid;
+  bool isValid(const std::set<std::string>& categories) const override;
+
   std::size_t numberOfRequiredGroups() const;
   std::size_t maxNumberOfGroups() const;
   /**

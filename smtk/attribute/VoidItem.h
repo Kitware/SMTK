@@ -32,7 +32,9 @@ public:
   smtkTypeMacro(smtk::attribute::VoidItem);
   ~VoidItem() override;
   Item::Type type() const override;
-  bool isValid() const override;
+
+  using Item::isValid;
+  bool isValid(const std::set<std::string>& categories) const override;
 
 protected:
   VoidItem(Attribute* owningAttribute, int itemPosition);
