@@ -36,7 +36,6 @@ PySharedPtrClass< smtk::attribute::MeshItem, smtk::attribute::Item > pybind11_in
     .def("hasValue", &smtk::attribute::MeshItem::hasValue, py::arg("arg0"))
     .def("isExtensible", &smtk::attribute::MeshItem::isExtensible)
     .def("isSet", &smtk::attribute::MeshItem::isSet, py::arg("element") = 0)
-    .def("isValid", &smtk::attribute::MeshItem::isValid)
     .def("numberOfRequiredValues", &smtk::attribute::MeshItem::numberOfRequiredValues)
     .def("numberOfValues", &smtk::attribute::MeshItem::numberOfValues)
     .def("removeValue", &smtk::attribute::MeshItem::removeValue, py::arg("element"))

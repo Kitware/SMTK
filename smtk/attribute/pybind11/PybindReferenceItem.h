@@ -34,7 +34,6 @@ PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item > pybind
     .def("has", (bool (smtk::attribute::ReferenceItem::*)(const ::smtk::resource::PersistentObjectPtr&) const) &smtk::attribute::ReferenceItem::has, py::arg("obj"))
     .def("isExtensible", &smtk::attribute::ReferenceItem::isExtensible)
     .def("isSet", &smtk::attribute::ReferenceItem::isSet, py::arg("i") = 0)
-    .def("isValid", &smtk::attribute::ReferenceItem::isValid)
     .def("lockType", &smtk::attribute::ReferenceItem::lockType)
     .def("maxNumberOfValues", &smtk::attribute::ReferenceItem::maxNumberOfValues)
     .def("numberOfRequiredValues", &smtk::attribute::ReferenceItem::numberOfRequiredValues)

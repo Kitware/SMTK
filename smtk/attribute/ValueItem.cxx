@@ -87,8 +87,17 @@ ValueItem::~ValueItem()
   }
 }
 
-bool ValueItem::isValid() const
+bool ValueItem::isValid(const std::set<std::string>& cats) const
 {
+  // If we have been given categories we need to see if the item passes its
+  // category checks - if it doesn't it means its not be taken into account
+  // for validity checking so just return true
+
+  if (cats.size() && !this->passCategoryCheck(cats))
+  {
+    return true;
+  }
+
   // If the item is not enabled or if all of its values are set then it is valid
   // else it is enabled and contains unset values making it invalid
   if (!this->isEnabled())
@@ -105,7 +114,7 @@ bool ValueItem::isValid() const
     // Is this using an expression?
     if (this->allowsExpressions() && (m_expressions[i]->value() != nullptr))
     {
-      if (!m_expressions[i]->isValid())
+      if (!m_expressions[i]->isValid(cats))
       {
         return false;
       }
@@ -114,7 +123,7 @@ bool ValueItem::isValid() const
   // Now we need to check the active items
   for (auto it = m_activeChildrenItems.begin(); it != m_activeChildrenItems.end(); ++it)
   {
-    if (!(*it)->isValid())
+    if (!(*it)->isValid(cats))
     {
       return false;
     }

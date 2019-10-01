@@ -504,7 +504,28 @@ bool qtUIManager::passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr
 
 bool qtUIManager::passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef)
 {
-  return this->passCategoryCheck(ItemDef->categories());
+  if (!m_categoryChecks)
+  {
+    // Been told not to filter on categories
+    return true;
+  }
+  else if (this->categoryEnabled())
+  {
+    return ItemDef->passCategoryCheck(this->currentCategory());
+  }
+  else if (!m_topLevelCategoriesSet)
+  {
+    // The top level view is not filtering on category and no one has
+    // explicilty specified a list categories that restricts what can be
+    // displayed
+    return true;
+  }
+  // If the set is empty then we always fail the test
+  if (m_topLevelCategories.empty())
+  {
+    return false;
+  }
+  return ItemDef->passCategoryCheck(m_topLevelCategories);
 }
 
 bool qtUIManager::passCategoryCheck(const std::set<std::string>& categories)
@@ -537,6 +558,29 @@ bool qtUIManager::passCategoryCheck(const std::set<std::string>& categories)
     }
   }
   return false;
+}
+
+bool qtUIManager::checkAttributeValidity(const smtk::attribute::Attribute* att)
+{
+  if (!m_categoryChecks)
+  {
+    // Been told not to filter on categories
+    return att->isValid();
+  }
+  else if (this->categoryEnabled())
+  {
+    std::set<std::string> temp;
+    temp.insert(this->currentCategory());
+    return att->isValid(temp);
+  }
+  else if (!m_topLevelCategoriesSet)
+  {
+    // The top level view is not filtering on category and no one has
+    // explicilty specified a list categories that restricts what can be
+    // displayed
+    return att->isValid();
+  }
+  return att->isValid(m_topLevelCategories);
 }
 
 QString qtUIManager::clipBoardText()

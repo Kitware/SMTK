@@ -29,7 +29,7 @@ SMTKCORE_EXPORT void to_json(
     { "Type", smtk::attribute::Item::type2String(itemDefPtr->type()) },
     { "Name", itemDefPtr->name() }, { "Version", itemDefPtr->version() },
   };
-  if (!itemDefPtr->label().empty())
+  if (itemDefPtr->label() != itemDefPtr->name())
   {
     j["Label"] = itemDefPtr->label();
   }
@@ -37,6 +37,14 @@ SMTKCORE_EXPORT void to_json(
   {
     j["Optional"] = true;
     j["isEnabledByDefault"] = itemDefPtr->isEnabledByDefault();
+  }
+  if (itemDefPtr->categoryCheckMode() == smtk::attribute::ItemDefinition::CategoryCheckMode::All)
+  {
+    j["categoryCheckMode"] = "All";
+  }
+  else
+  {
+    j["categoryCheckMode"] = "Any";
   }
   if (itemDefPtr->advanceLevel(0) || itemDefPtr->advanceLevel(1))
   {
@@ -81,12 +89,10 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  try
+  auto located = j.find("Label");
+  if (located != j.end())
   {
-    itemDefPtr->setLabel(j.at("Label"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    itemDefPtr->setLabel(*located);
   }
   try
   {
@@ -102,6 +108,18 @@ SMTKCORE_EXPORT void from_json(
   }
   catch (std::exception& /*e*/)
   {
+  }
+  located = j.find("categoryCheckMode");
+  if (located != j.end())
+  {
+    if (*located == "All")
+    {
+      itemDefPtr->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::All);
+    }
+    else
+    {
+      itemDefPtr->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::Any);
+    }
   }
   try
   {

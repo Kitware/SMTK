@@ -62,7 +62,7 @@ Item::Type MeshSelectionItem::type() const
   return Item::MeshEntityType;
 }
 
-bool MeshSelectionItem::isValid() const
+bool MeshSelectionItem::isValid(const std::set<std::string>&) const
 {
   return true;
 }

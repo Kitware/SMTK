@@ -85,6 +85,26 @@ public:
     m_isEnabledByDefault = isEnabledByDefaultValue;
   }
 
+  enum class CategoryCheckMode
+  {
+    Any = 0, //!< Check passes if any of the definition's categories are found (Default)
+    All = 1  //!< Check passes if all of the definition's categories are found
+  };
+
+  void setCategoryCheckMode(CategoryCheckMode mode) { m_categoryCheckMode = mode; }
+
+  CategoryCheckMode categoryCheckMode() const { return m_categoryCheckMode; }
+
+  /// @{
+  /// \brief Based on it's categoryCheckMode, checks to see if the definition's categories passes with respects to the input category/categories.
+  ///
+  /// If the mode is Any then if at least one of its categories is in the input then it passes, else if the mode is All then all of the
+  /// the definition's categories must be contained.  If the input set is empty then the check will always pass, else if the definition
+  /// has no categories then the check will always fail.
+  bool passCategoryCheck(const std::string& category) const;
+  bool passCategoryCheck(const std::set<std::string>& categories) const;
+  /// @}
+
   std::size_t numberOfCategories() const { return m_categories.size(); }
 
   ///\brief Returns the categories (both explicitly assigned and inherited) associated to the Definition
@@ -150,6 +170,7 @@ protected:
   std::set<std::string> m_localCategories;
   std::string m_detailedDescription;
   std::string m_briefDescription;
+  ItemDefinition::CategoryCheckMode m_categoryCheckMode;
 
 private:
   // constant value that should never be changed

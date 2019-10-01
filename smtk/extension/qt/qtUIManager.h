@@ -165,6 +165,8 @@ public:
   void enableCategoryChecks();
   void setToLevelCategories(const std::set<std::string>& categories);
 
+  bool checkAttributeValidity(const smtk::attribute::Attribute* att);
+
   const QFont& advancedFont() { return this->advFont; }
   int advanceLevel() const { return m_currentAdvLevel; }
   void initAdvanceLevels(QComboBox* combo);

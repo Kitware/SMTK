@@ -85,6 +85,7 @@ set(unit_tests
   unitDateTimeItem.cxx
   unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
+  unitPassCategories
   unitPathGrammar.cxx
 )
 

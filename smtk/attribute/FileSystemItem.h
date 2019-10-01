@@ -35,7 +35,10 @@ public:
   smtkTypeMacro(smtk::attribute::FileSystemItem);
   ~FileSystemItem() override;
   Item::Type type() const override = 0;
-  bool isValid() const override;
+
+  using Item::isValid;
+  bool isValid(const std::set<std::string>& categories) const override;
+
   bool shouldBeRelative() const;
   bool shouldExist() const;
   std::size_t numberOfValues() const { return m_values.size(); }

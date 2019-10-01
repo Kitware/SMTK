@@ -62,7 +62,8 @@ AttributePtr Item::attribute() const
 
 bool Item::isValid() const
 {
-  return true;
+  std::set<std::string> cats;
+  return this->isValid(cats);
 }
 
 std::string Item::name() const
@@ -221,6 +222,16 @@ bool Item::assign(ConstItemPtr& sourceItem, unsigned int)
     }
   } // for
   return true;
+}
+
+bool Item::passCategoryCheck(const std::string& category) const
+{
+  return m_definition->passCategoryCheck(category);
+}
+
+bool Item::Item::passCategoryCheck(const std::set<std::string>& categories) const
+{
+  return m_definition->passCategoryCheck(categories);
 }
 
 std::string Item::type2String(Item::Type t)

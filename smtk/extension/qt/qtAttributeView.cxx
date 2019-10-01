@@ -821,7 +821,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   }
   // Lets see if we need to show an alert icon cause the attribute is not
   // valid
-  if (!childData->isValid())
+  if (!this->uiManager()->checkAttributeValidity(childData.get()))
   {
     QTableWidgetItem* statusItem =
       new QTableWidgetItem(QIcon(this->Internals->m_alertIconPath), "", smtk_USER_DATA_TYPE);
@@ -1600,7 +1600,7 @@ void qtAttributeView::updateAttributeStatus(Attribute* att)
     }
     if (listAtt == att)
     {
-      if (att->isValid())
+      if (this->uiManager()->checkAttributeValidity(att))
       {
         this->Internals->ListTable->setItem(i, status_column, nullptr);
       }

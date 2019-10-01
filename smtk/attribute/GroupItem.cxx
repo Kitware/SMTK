@@ -52,7 +52,7 @@ Item::Type GroupItem::type() const
   return GroupType;
 }
 
-bool GroupItem::isValid() const
+bool GroupItem::isValid(const std::set<std::string>& cats) const
 {
   // If the item is not enabled or if all of its values are set then it is valid
   // else it is enabled and contains unset values making it invalid
@@ -64,7 +64,7 @@ bool GroupItem::isValid() const
   {
     for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
     {
-      if (!*it1 || !(*it1)->isValid())
+      if (!*it1 || !(*it1)->isValid(cats))
       {
         return false;
       }

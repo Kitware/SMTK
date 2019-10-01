@@ -227,8 +227,17 @@ ReferenceItem::~ReferenceItem()
   m_cache->clear();
 }
 
-bool ReferenceItem::isValid() const
+bool ReferenceItem::isValid(const std::set<std::string>& cats) const
 {
+  // If we have been given categories we need to see if the item passes its
+  // category checks - if it doesn't it means its not be taken into account
+  // for validity checking so just return true
+
+  if (cats.size() && !this->passCategoryCheck(cats))
+  {
+    return true;
+  }
+
   if (!this->isEnabled())
   {
     return true;

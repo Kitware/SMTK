@@ -619,6 +619,14 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
     node.append_attribute("Optional").set_value("true");
     node.append_attribute("IsEnabledByDefault") = idef->isEnabledByDefault();
   }
+  if (idef->categoryCheckMode() == smtk::attribute::ItemDefinition::CategoryCheckMode::All)
+  {
+    node.append_attribute("CategoryCheckMode").set_value("All");
+  }
+  else
+  {
+    node.append_attribute("CategoryCheckMode").set_value("Any");
+  }
   if (idef->advanceLevel(0) || idef->advanceLevel(1))
   {
     // OK - we have a non-zero advance level in either read or write

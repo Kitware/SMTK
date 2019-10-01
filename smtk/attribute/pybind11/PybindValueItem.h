@@ -45,7 +45,6 @@ PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pybind11_i
     .def("isSet", &smtk::attribute::ValueItem::isSet, py::arg("elementIndex") = 0)
     .def("isUsingDefault", (bool (smtk::attribute::ValueItem::*)(::size_t) const) &smtk::attribute::ValueItem::isUsingDefault, py::arg("elementIndex"))
     .def("isUsingDefault", (bool (smtk::attribute::ValueItem::*)() const) &smtk::attribute::ValueItem::isUsingDefault)
-    .def("isValid", &smtk::attribute::ValueItem::isValid)
     .def("maxNumberOfValues", &smtk::attribute::ValueItem::maxNumberOfValues)
     .def("numberOfActiveChildrenItems", &smtk::attribute::ValueItem::numberOfActiveChildrenItems)
     .def("numberOfChildrenItems", &smtk::attribute::ValueItem::numberOfChildrenItems)

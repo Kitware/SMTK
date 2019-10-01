@@ -36,7 +36,10 @@ public:
 
   ~ValueItem() override;
   virtual std::size_t numberOfValues() const { return m_isSet.size(); }
-  bool isValid() const override;
+
+  using Item::isValid;
+  bool isValid(const std::set<std::string>& categories) const override;
+
   std::size_t numberOfRequiredValues() const;
   std::size_t maxNumberOfValues() const;
 

@@ -46,7 +46,9 @@ public:
   smtkTypeMacro(smtk::attribute::MeshSelectionItem);
   ~MeshSelectionItem() override;
   Item::Type type() const override;
-  bool isValid() const override;
+
+  using Item::isValid;
+  bool isValid(const std::set<std::string>& cats) const override;
 
   void setValues(const smtk::common::UUID&, const std::set<int>&);
   void unionValues(const smtk::common::UUID&, const std::set<int>&);
