@@ -32,6 +32,16 @@
 using namespace smtk::model;
 using namespace smtk::common;
 
+namespace
+{
+// When entities are merged, a name for the resulting merged entity is created
+// by concatenating the merging entities with " & ". This quickly becomes
+// unwieldy when merging large numbers of entities. This value defines the
+// maximum number of entities to merge before switching to the naming convention
+// of "# entities".
+static constexpr const std::size_t DescriptionAppendLimit = 5;
+}
+
 namespace smtk
 {
 namespace session
@@ -172,11 +182,22 @@ Merge::Result Merge::operateInternal()
       modified->appendValue(childEntityRef.component());
     }
 
-    if (!name.empty())
+    // Construct a name for the resulting entity.
+    if (associations->numberOfValues() <= DescriptionAppendLimit)
     {
-      name += " & ";
+      if (!name.empty())
+      {
+        name += " & ";
+      }
+      name += eRef.name();
     }
-    name += eRef.name();
+    else
+    {
+      if (name.empty())
+      {
+        name = std::to_string(associations->numberOfValues()) + " entities";
+      }
+    }
 
     // Add the model entity to the list of expunged components.
     expunged->appendValue(std::static_pointer_cast<smtk::resource::Component>(*it));
