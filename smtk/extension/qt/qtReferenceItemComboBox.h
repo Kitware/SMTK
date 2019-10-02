@@ -61,7 +61,8 @@ public:
   void setDefinitionForCreation(smtk::attribute::DefinitionPtr& def);
   void setOkToCreate(bool val) { m_okToCreate = val; }
   smtk::resource::PersistentObjectPtr object(int index);
-
+  std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
+    const std::set<smtk::resource::PersistentObjectPtr>& objSet) const;
 public slots:
   void updateItemData() override;
   void highlightItem(int index);

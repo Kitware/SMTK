@@ -49,6 +49,9 @@ XmlDocV3Parser::~XmlDocV3Parser()
 void XmlDocV3Parser::process(pugi::xml_node& rootNode)
 {
   XmlDocV2Parser::process(rootNode);
+
+  this->getUniqueRoles(rootNode);
+
   auto associationsNode = rootNode.child("Associations");
   if (!associationsNode)
   {
@@ -134,6 +137,34 @@ void XmlDocV3Parser::process(xml_document& doc)
   }
 
   this->process(amnode);
+}
+
+void XmlDocV3Parser::getUniqueRoles(xml_node& rootNode)
+{
+  xml_node cnode, node = rootNode.child("UniqueRoles");
+  pugi::xml_attribute xatt;
+  int role = xatt.as_int();
+  std::string nodeName;
+
+  if (!node)
+  {
+    return;
+  }
+  for (cnode = node.first_child(); cnode; cnode = cnode.next_sibling())
+  {
+    nodeName = cnode.name();
+    if (nodeName != "Role")
+    {
+      continue;
+    }
+    xatt = cnode.attribute("ID");
+    if (!xatt)
+    {
+      continue;
+    }
+    role = xatt.as_int();
+    m_resource->addUniqueRole(role);
+  }
 }
 
 void XmlDocV3Parser::processExclusion(xml_node& excludeNode)
@@ -576,6 +607,12 @@ void XmlDocV3Parser::processReferenceDef(pugi::xml_node& node,
     }
   }
 
+  xatt = node.attribute("Role");
+  if (xatt)
+  {
+    idef->setRole(xatt.as_int());
+  }
+
   xatt = node.attribute("HoldReference");
   if (xatt)
   {
@@ -645,5 +682,11 @@ void XmlDocV3Parser::processComponentItem(
 void XmlDocV3Parser::processComponentDef(
   pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
 {
+  xml_attribute xatt;
+  xatt = node.attribute("Role");
+  if (xatt)
+  {
+    idef->setRole(xatt.as_int());
+  }
   this->processReferenceDef(node, idef, "ComponentLabels");
 }

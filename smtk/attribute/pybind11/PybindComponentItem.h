@@ -39,6 +39,8 @@ PySharedPtrClass< smtk::attribute::ComponentItem, smtk::attribute::ReferenceItem
     .def("has", (bool (smtk::attribute::ComponentItem::*)(const ::smtk::resource::PersistentObjectPtr&) const) &smtk::attribute::ComponentItem::has, py::arg("comp"))
     .def("isExtensible", &smtk::attribute::ComponentItem::isExtensible)
     .def("isSet", &smtk::attribute::ComponentItem::isSet, py::arg("i") = 0)
+    .def("isValueValid", (bool (smtk::attribute::ComponentItem::*)(const ::smtk::resource::ComponentPtr) const) &smtk::attribute::ComponentItem::isValueValid, py::arg("val"))
+    .def("isValueValid", (bool (smtk::attribute::ComponentItem::*)(::size_t, const ::smtk::resource::ComponentPtr) const) &smtk::attribute::ComponentItem::isValueValid, py::arg("i"), py::arg("val"))
     .def("numberOfRequiredValues", &smtk::attribute::ComponentItem::numberOfRequiredValues)
     .def("numberOfValues", &smtk::attribute::ComponentItem::numberOfValues)
     .def("removeValue", &smtk::attribute::ComponentItem::removeValue, py::arg("i"))

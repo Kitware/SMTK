@@ -93,6 +93,12 @@ public:
   /// smtk::attribute::Resource::ReferenceRole.
   smtk::resource::Links::RoleType role() const { return m_role; }
 
+  /// Set the reference's role when generating links between the containing
+  /// attribute and the reference item. By default, this value is set to
+  /// smtk::attribute::Resource::ReferenceRole.  Note that attribute::Definition needs to be able
+  /// call this method when this object is used for its association rule
+  void setRole(const smtk::resource::Links::RoleType& role) { m_role = role; }
+
   /// Set/Get a flag to determine whether the ReferenceItem should keep an
   /// assigned reference in memory (i.e. shared_ptr vs weak_ptr to the
   /// reference).
@@ -126,12 +132,6 @@ protected:
   bool checkResource(smtk::resource::ConstResourcePtr rsrc) const;
   /// Return whether a component is accepted by this definition. Used internally by isValueValid().
   bool checkComponent(smtk::resource::ConstComponentPtr comp) const;
-
-  /// Set the reference's role when generating links between the containing
-  /// attribute and the reference item. By default, this value is set to
-  /// smtk::attribute::Resource::ReferenceRole.  Note that attribute::Definition needs to be able
-  /// call this method when this object is used for its association rule
-  void setRole(const smtk::resource::Links::RoleType& role) { m_role = role; }
 
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;

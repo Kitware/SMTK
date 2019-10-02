@@ -82,6 +82,7 @@ set(unit_tests
   unitAttributeAnalysis
   unitCategories
   unitComponentItem.cxx
+  unitComponentItemConstraints
   unitDateTimeItem.cxx
   unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx

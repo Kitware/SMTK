@@ -65,6 +65,7 @@ SMTKCORE_EXPORT void to_json(
   {
     j["HoldReference"] = true;
   }
+  j["Role"] = defPtr->role();
 }
 
 SMTKCORE_EXPORT void from_json(
@@ -147,6 +148,11 @@ SMTKCORE_EXPORT void from_json(
   }
   catch (std::exception& /*e*/)
   {
+  }
+  auto locateRole = j.find("Role");
+  if (locateRole != j.end())
+  {
+    defPtr->setRole(*locateRole);
   }
 }
 }

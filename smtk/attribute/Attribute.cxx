@@ -59,7 +59,6 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
   , m_aboutToBeDeleted(false)
   , m_id(myId)
 {
-  m_definition->buildAttribute(this);
 }
 
 Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
@@ -73,7 +72,6 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
   , m_id(smtk::common::UUIDGenerator::instance().random())
   , m_includeIndex(0)
 {
-  m_definition->buildAttribute(this);
 }
 
 Attribute::~Attribute()
@@ -89,9 +87,26 @@ Attribute::~Attribute()
       it->first->unset(*sit);
     }
   }
+  // Detatch the association item
+  if (m_associatedObjects)
+  {
+    m_associatedObjects->detachOwningAttribute();
+  }
   this->removeAllItems();
 }
 
+// Though technically the attribute could be built within its constructor, this would
+// force a constraint that no underlying code could try to access the attribute's
+// shared pointer - for example an Item could not call its attribute() method without
+// dire consequences (since the attribute is not shared yet by its resource the call
+// would result in the attribute being deleted)
+void Attribute::build()
+{
+  if (m_definition != nullptr)
+  {
+    m_definition->buildAttribute(this);
+  }
+}
 void Attribute::removeAllItems()
 {
   // we need to detatch all items owned by this attribute

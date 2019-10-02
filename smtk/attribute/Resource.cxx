@@ -162,6 +162,7 @@ smtk::attribute::AttributePtr Resource::createAttribute(
     return smtk::attribute::AttributePtr();
   }
   a = Attribute::New(name, def);
+  a->build();
   m_attributeClusters[def->type()].insert(a);
   m_attributes[name] = a;
   m_attributeIdMap[a->id()] = a;
@@ -179,7 +180,7 @@ smtk::attribute::AttributePtr Resource::createAttribute(smtk::attribute::Definit
 smtk::attribute::AttributePtr Resource::createAttribute(const std::string& typeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
-  if (!def)
+  if (def == nullptr)
   {
     return smtk::attribute::AttributePtr();
   }
@@ -193,7 +194,7 @@ smtk::attribute::AttributePtr Resource::createAttribute(
   const std::string& name, const std::string& typeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
-  if (!def)
+  if ((def == nullptr) || def->isAbstract())
   {
     return smtk::attribute::AttributePtr();
   }
@@ -242,7 +243,13 @@ void Resource::attributes(std::vector<smtk::attribute::AttributePtr>& result) co
 smtk::attribute::AttributePtr Resource::createAttribute(
   const std::string& name, smtk::attribute::DefinitionPtr def, const smtk::common::UUID& id)
 {
-  // First we need to check to see if an attribute exists by the same name
+  // Lets make sure the definition is valid
+  if ((def == nullptr) || (def->resource() != shared_from_this()) || def->isAbstract())
+  {
+    return smtk::attribute::AttributePtr();
+  }
+
+  // We need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
   if (a)
   {
@@ -250,6 +257,7 @@ smtk::attribute::AttributePtr Resource::createAttribute(
   }
 
   a = Attribute::New(name, def, id);
+  a->build();
   m_attributeClusters[def->type()].insert(a);
   m_attributes[name] = a;
   m_attributeIdMap[id] = a;
@@ -259,25 +267,12 @@ smtk::attribute::AttributePtr Resource::createAttribute(
 smtk::attribute::AttributePtr Resource::createAttribute(
   const std::string& name, const std::string& typeName, const smtk::common::UUID& id)
 {
-  // First we need to check to see if an attribute exists by the same name
-  smtk::attribute::AttributePtr a = this->findAttribute(name);
-  if (a)
-  {
-    return smtk::attribute::AttributePtr();
-  }
-
-  // Second we need to find the definition that corresponds to the type and make sure it
-  // is not abstract
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
-  if (!def || def->isAbstract())
+  if (def == nullptr)
   {
     return smtk::attribute::AttributePtr();
   }
-  a = Attribute::New(name, def, id);
-  m_attributeClusters[typeName].insert(a);
-  m_attributes[name] = a;
-  m_attributeIdMap[id] = a;
-  return a;
+  return this->createAttribute(name, def, id);
 }
 
 bool Resource::removeAttribute(smtk::attribute::AttributePtr att)
@@ -319,6 +314,18 @@ void Resource::findDefinitions(
   }
 }
 
+smtk::attribute::AttributePtr Resource::findAttribute(
+  const smtk::resource::ComponentPtr& comp, const smtk::resource::Links::RoleType& role) const
+{
+  for (const auto& attInfo : m_attributes)
+  {
+    if (attInfo.second->links().isLinkedTo(comp, role))
+    {
+      return attInfo.second;
+    }
+  }
+  return smtk::attribute::AttributePtr();
+}
 void Resource::findAttributes(
   smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr>& result) const
 {
@@ -1026,4 +1033,24 @@ bool Resource::hasAssociations() const
     return true;
   }
   return false;
+}
+
+bool Resource::isRoleUnique(const smtk::resource::Links::RoleType& role) const
+{
+  return (m_roles.find(role) != m_roles.end());
+}
+
+void Resource::addUniqueRoles(const std::set<smtk::resource::Links::RoleType>& roles)
+{
+  m_roles.insert(roles.begin(), roles.end());
+}
+
+void Resource::addUniqueRole(const smtk::resource::Links::RoleType& role)
+{
+  m_roles.insert(role);
+}
+
+const std::set<smtk::resource::Links::RoleType>& Resource::uniqueRoles() const
+{
+  return m_roles;
 }

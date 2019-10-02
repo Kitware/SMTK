@@ -96,6 +96,13 @@ public:
   bool removeAttribute(smtk::attribute::AttributePtr att);
   smtk::attribute::AttributePtr findAttribute(const std::string& name) const;
   smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID& id) const;
+  smtk::attribute::AttributePtr findAttribute(
+    const smtk::resource::ComponentPtr& comp, const smtk::resource::Links::RoleType& role) const;
+
+  void addUniqueRoles(const std::set<smtk::resource::Links::RoleType>& roles);
+  void addUniqueRole(const smtk::resource::Links::RoleType& role);
+  const std::set<smtk::resource::Links::RoleType>& uniqueRoles() const;
+  bool isRoleUnique(const smtk::resource::Links::RoleType& role) const;
 
   // given a resource component's UUID, return the resource component.
   smtk::resource::ComponentPtr find(const smtk::common::UUID& id) const override;
@@ -249,6 +256,7 @@ protected:
   std::map<int, std::string> m_advLevels;
   std::map<int, std::vector<double> > m_advLevelColors;
   DirectoryInfo m_directoryInfo;
+  std::set<smtk::resource::Links::RoleType> m_roles;
 
 private:
 };

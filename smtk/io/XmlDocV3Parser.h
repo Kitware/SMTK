@@ -58,6 +58,7 @@ protected:
   void processComponentItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item) override;
   void processComponentDef(
     pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef) override;
+  void getUniqueRoles(pugi::xml_node& rootNode);
 
 private:
 };

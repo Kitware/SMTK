@@ -54,6 +54,9 @@ public:
   /// Return the type of storage used by the item.
   Item::Type type() const override;
 
+  virtual bool isValueValid(std::size_t ii, const ComponentPtr entity) const;
+  bool isValueValid(const ComponentPtr entity) const { return this->isValueValid(0, entity); }
+
   /// Return the \a i-th value as a component.
   ComponentPtr value(std::size_t ii = 0) const
   {
@@ -63,7 +66,7 @@ public:
   /// Set the \a i-th value as a component.
   bool setValue(ComponentPtr value) { return this->setValue(0, value); }
   /// Set the \a i-th value as a component.
-  bool setValue(std::size_t ii, ComponentPtr value) { return this->setObjectValue(ii, value); }
+  bool setValue(std::size_t ii, ComponentPtr value);
 
   /**\brief Append a value to the item if possible.
     *
