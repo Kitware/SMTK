@@ -12,6 +12,7 @@
 #ifndef __VTK_WRAP__
 
 #include "smtk/extension/paraview/server/RespondToVTKSelection.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h" // For export macro
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"

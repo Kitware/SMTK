@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKSettings_h
 #define smtk_extension_paraview_server_vtkSMTKSettings_h
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
 #include "vtkObject.h"
 #include "vtkSmartPointer.h"

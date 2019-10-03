@@ -11,7 +11,7 @@
 #define smtk_extension_paraview_server_Registrar_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
 #include "smtk/attribute/Registrar.h"
 #include "smtk/mesh/resource/Registrar.h"

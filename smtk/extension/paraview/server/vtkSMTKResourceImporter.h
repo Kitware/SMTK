@@ -10,6 +10,7 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKResourceImporter_h
 #define smtk_extension_paraview_server_vtkSMTKResourceImporter_h
 
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceGenerator.h"
 
 #include "smtk/PublicPointerDefs.h"

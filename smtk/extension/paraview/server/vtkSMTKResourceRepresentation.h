@@ -18,7 +18,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 #include "smtk/view/SelectionObserver.h"
 
 #include <array>

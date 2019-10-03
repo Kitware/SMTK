@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_server_vtkPVModelSources_h
 #define smtk_extension_paraview_server_vtkPVModelSources_h
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/model/EntityRef.h"

@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKResourceCreator_h
 #define smtk_extension_paraview_server_vtkSMTKResourceCreator_h
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
 #include "vtkSMTKResourceGenerator.h"
 

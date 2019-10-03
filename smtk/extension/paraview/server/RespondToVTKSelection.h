@@ -11,7 +11,7 @@
 #define smtk_view_RespondToVTKSelection_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/paraview/server/Exports.h" // For export macro
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h" // For export macro
 #include "smtk/operation/XMLOperation.h"
 
 #include "smtk/view/Selection.h"

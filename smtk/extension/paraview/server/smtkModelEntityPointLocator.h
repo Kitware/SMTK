@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_server_smtkModelEntityPointLocator_h
 #define smtk_extension_paraview_server_smtkModelEntityPointLocator_h
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 #include "smtk/model/PointLocatorExtension.h"
 
 /**\brief A class that provides point-location based on the VTK tessellation of entities.

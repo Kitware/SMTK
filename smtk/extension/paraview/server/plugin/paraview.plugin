@@ -1,0 +1,19 @@
+NAME
+  smtkPVServerExtPlugin
+DESCRIPTION
+  Server-side SMTK extensions for ParaView
+REQUIRES_MODULES
+  ParaView::ClientServer
+  ParaView::ClientServerCoreCore
+  ParaView::ClientServerCoreRendering
+  ParaView::ServerManagerCore
+  ParaView::ServerManagerRendering
+  ParaView::VTKExtensionsCore
+  ParaView::VTKExtensionsDefault
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::CommonMath
+  VTK::CommonTransforms
+  VTK::RenderingCore
+  VTK::RenderingOpenGL2
