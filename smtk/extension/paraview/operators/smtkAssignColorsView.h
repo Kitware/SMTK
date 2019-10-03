@@ -58,7 +58,6 @@ protected slots:
   virtual void processOpacityValue(double);
   virtual void removeColors();
   virtual void setDefaultPaletteAndApply();
-  virtual void resetPaletteChooser();
   // This slot is used to indicate that the underlying attribute
   // for the operation should be checked for validity
   virtual void attributeModified();

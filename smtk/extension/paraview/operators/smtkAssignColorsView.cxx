@@ -253,8 +253,6 @@ void smtkAssignColorsView::prepPaletteChooser()
   QObject::connect( // When the user has chosen a preference, remember and apply it.
     this->Internals->PaletteChooser, SIGNAL(applyPreset(const Json::Value&)), this,
     SLOT(setDefaultPaletteAndApply()));
-  QObject::connect( // When the user has cancel the dialog.
-    this->Internals->PaletteChooser, SIGNAL(rejected()), this, SLOT(resetPaletteChooser()));
 }
 
 void smtkAssignColorsView::createWidget()
@@ -441,12 +439,6 @@ void smtkAssignColorsView::applyDefaultColor()
   this->requestOperation(this->Internals->CurrentOp);
 }
 
-void smtkAssignColorsView::resetPaletteChooser()
-{
-  delete this->Internals->PaletteChooser;
-  this->prepPaletteChooser();
-}
-
 void smtkAssignColorsView::setDefaultPaletteAndApply()
 {
   const Json::Value& preset = this->Internals->PaletteChooser->currentPreset();
@@ -455,12 +447,12 @@ void smtkAssignColorsView::setDefaultPaletteAndApply()
   pqSettings* settings = pqApplicationCore::instance()->settings();
   settings->setValue("ModelBuilder/Operations/AssignColors/defaultPalette", name.c_str());
 
-  // There is a strange bug that seems to make QT treat the PaletteChooser as a modal
-  // dialog - the UI does not seem to respond after you set the default palette.
-  // One solution that seems to work is to destroy and recreate the dialog
-  this->Internals->PaletteChooser->hide();
-  this->Internals->PaletteChooser->deleteLater();
-  this->prepPaletteChooser();
+  // pqPresetDialog has a custom event filter in ParaView, disabling everything except
+  // the render window when opened.
+  // If we don't 'close', the UI does not seem to respond after you set the default palette.
+  // The close slot cleans up the custom event filter which blocks UI events.
+  // Also makes the dialog testable with recorded xml tests.
+  this->Internals->PaletteChooser->close();
 
   this->Internals->ApplyDefaultPaletteBtn->setText(QString::fromUtf8(name.c_str()));
   this->Internals->updatePaletteIcon(name);
