@@ -78,9 +78,6 @@ constexpr smtk::resource::Links::RoleType Resource::TessellationRole;
 Resource::Resource(smtk::resource::ManagerPtr mgr)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(mgr)
   , m_topology(new UUIDsToEntities)
-  , m_floatData(new UUIDsToFloatData)
-  , m_stringData(new UUIDsToStringData)
-  , m_integerData(new UUIDsToIntegerData)
   , m_tessellations(new UUIDsToTessellations)
   , m_analysisMesh(new UUIDsToTessellations)
   , m_attributeAssignments(new UUIDsToAttributeAssignments)
@@ -94,9 +91,6 @@ Resource::Resource(smtk::resource::ManagerPtr mgr)
 Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(uid, mgr)
   , m_topology(new UUIDsToEntities)
-  , m_floatData(new UUIDsToFloatData)
-  , m_stringData(new UUIDsToStringData)
-  , m_integerData(new UUIDsToIntegerData)
   , m_tessellations(new UUIDsToTessellations)
   , m_analysisMesh(new UUIDsToTessellations)
   , m_attributeAssignments(new UUIDsToAttributeAssignments)
@@ -113,9 +107,6 @@ Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTes
   const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(uid, mgr)
   , m_topology(inTopology)
-  , m_floatData(new UUIDsToFloatData)
-  , m_stringData(new UUIDsToStringData)
-  , m_integerData(new UUIDsToIntegerData)
   , m_tessellations(tess)
   , m_analysisMesh(analysismesh)
   , m_attributeAssignments(attribs)
@@ -206,9 +197,6 @@ smtk::mesh::ResourcePtr Resource::meshTessellations() const
 void Resource::clear()
 {
   m_topology->clear();
-  m_floatData->clear();
-  m_stringData->clear();
-  m_integerData->clear();
   m_tessellations->clear();
   m_analysisMesh->clear();
   {
@@ -314,15 +302,25 @@ SessionInfoBits Resource::erase(const UUID& uid, SessionInfoBits flags)
     this->elideEntityReferences(ent);
   }
 
+  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+
   // TODO: Notify observers of property removal?
   if (actual & SESSION_USER_DEFINED_PROPERTIES)
   {
     if (actual & SESSION_FLOAT_PROPERTIES)
-      m_floatData->erase(uid);
+    {
+      this->properties().data().eraseIdForType<FloatProperty>(uid);
+    }
     if (actual & SESSION_STRING_PROPERTIES)
-      m_stringData->erase(uid);
+    {
+      this->properties().data().eraseIdForType<StringProperty>(uid);
+    }
     if (actual & SESSION_INTEGER_PROPERTIES)
-      m_integerData->erase(uid);
+    {
+      this->properties().data().eraseIdForType<IntProperty>(uid);
+    }
   }
   else if (actual & SESSION_PROPERTIES)
   {
@@ -414,23 +412,26 @@ SessionInfoBits Resource::hardErase(const EntityRef& eref, SessionInfoBits flags
   {
     if (actual & SESSION_FLOAT_PROPERTIES)
     {
-      if (!m_floatData->erase(uid))
+      this->properties().data().eraseIdForType<std::vector<double> >(uid);
+      if (this->properties().data().hasPropertyType<std::vector<double> >())
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
     }
     if (actual & SESSION_STRING_PROPERTIES)
     {
-      if (!m_stringData->erase(uid))
+      this->properties().data().eraseIdForType<std::vector<std::string> >(uid);
+      if (this->properties().data().hasPropertyType<std::vector<std::string> >())
       {
-        actual &= ~SESSION_STRING_PROPERTIES;
+        actual &= ~SESSION_FLOAT_PROPERTIES;
       }
     }
     if (actual & SESSION_INTEGER_PROPERTIES)
     {
-      if (!m_integerData->erase(uid))
+      this->properties().data().eraseIdForType<std::vector<long> >(uid);
+      if (this->properties().data().hasPropertyType<std::vector<long> >())
       {
-        actual &= ~SESSION_INTEGER_PROPERTIES;
+        actual &= ~SESSION_FLOAT_PROPERTIES;
       }
     }
   }
@@ -1144,27 +1145,30 @@ void Resource::addToGroup(const UUID& groupId, const UUIDs& uids)
 void Resource::setFloatProperty(
   const UUID& entity, const std::string& propName, smtk::model::Float propValue)
 {
-  smtk::model::FloatList tmp;
-  tmp.push_back(propValue);
-  this->setFloatProperty(entity, propName, tmp);
+  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  if (!entity.isNull())
+  {
+    this->properties().data().get<FloatProperty>()[propName][entity] = { propValue };
+  }
 }
 
 void Resource::setFloatProperty(
   const UUID& entity, const std::string& propName, const smtk::model::FloatList& propValue)
 {
+  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
   if (!entity.isNull())
   {
-    (*m_floatData)[entity][propName] = propValue;
+    this->properties().data().get<FloatProperty>()[propName][entity] = propValue;
   }
 }
 
 smtk::model::FloatList const& Resource::floatProperty(
   const UUID& entity, const std::string& propName) const
 {
-  if (!entity.isNull())
+  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  if (!entity.isNull() && this->hasFloatProperty(entity, propName))
   {
-    FloatData& floats((*m_floatData)[entity]);
-    return floats[propName];
+    return this->properties().data().at<FloatProperty>(propName).at(entity);
   }
   static FloatList dummy;
   return dummy;
@@ -1172,10 +1176,10 @@ smtk::model::FloatList const& Resource::floatProperty(
 
 smtk::model::FloatList& Resource::floatProperty(const UUID& entity, const std::string& propName)
 {
-  if (!entity.isNull())
+  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  if (!entity.isNull() && this->hasFloatProperty(entity, propName))
   {
-    FloatData& floats((*m_floatData)[entity]);
-    return floats[propName];
+    return this->properties().data().at<FloatProperty>(propName).at(entity);
   }
   static FloatList dummy;
   return dummy;
@@ -1183,69 +1187,59 @@ smtk::model::FloatList& Resource::floatProperty(const UUID& entity, const std::s
 
 bool Resource::hasFloatProperty(const UUID& entity, const std::string& propName) const
 {
-  UUIDsToFloatData::const_iterator uit = m_floatData->find(entity);
-  if (uit == m_floatData->end())
+  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  if (!entity.isNull() && this->properties().data().has<FloatProperty>(propName))
   {
-    return false;
+    auto it = this->properties().data().at<FloatProperty>(propName).find(entity);
+    return (
+      it != this->properties().data().at<FloatProperty>(propName).end() && !it->second.empty());
   }
-  FloatData::const_iterator sit = uit->second.find(propName);
-  // when the array (*sit) is empty, we return true due to the fact that defing a dummy
-  // property should be considered ill formed
-  return sit == uit->second.end() ? false : !sit->second.empty();
+  return false;
 }
 
 bool Resource::removeFloatProperty(const UUID& entity, const std::string& propName)
 {
-  UUIDsToFloatData::iterator uit = m_floatData->find(entity);
-  if (uit == m_floatData->end())
+  typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+  if (!entity.isNull())
   {
-    return false;
+    auto& map = this->properties().data().at<FloatProperty>(propName);
+    auto it = map.find(entity);
+    if (it != map.end())
+    {
+      map.erase(it);
+      return true;
+    }
   }
-  FloatData::iterator sit = uit->second.find(propName);
-  if (sit == uit->second.end())
-  {
-    return false;
-  }
-  uit->second.erase(sit);
-  if (uit->second.empty())
-    m_floatData->erase(uit);
-  return true;
-}
-
-const UUIDWithFloatProperties Resource::floatPropertiesForEntity(const UUID& entity) const
-{
-  return m_floatData->find(entity);
-}
-
-UUIDWithFloatProperties Resource::floatPropertiesForEntity(const UUID& entity)
-{
-  return m_floatData->find(entity);
+  return false;
 }
 
 void Resource::setStringProperty(
   const UUID& entity, const std::string& propName, const smtk::model::String& propValue)
 {
-  smtk::model::StringList tmp;
-  tmp.push_back(propValue);
-  this->setStringProperty(entity, propName, tmp);
+  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  if (!entity.isNull())
+  {
+    this->properties().data().get<StringProperty>()[propName][entity] = { propValue };
+  }
 }
 
 void Resource::setStringProperty(
   const UUID& entity, const std::string& propName, const smtk::model::StringList& propValue)
 {
+  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
   if (!entity.isNull())
   {
-    (*m_stringData)[entity][propName] = propValue;
+    this->properties().data().get<StringProperty>()[propName][entity] = propValue;
   }
 }
 
 smtk::model::StringList const& Resource::stringProperty(
   const UUID& entity, const std::string& propName) const
 {
-  if (!entity.isNull())
+  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  if (!entity.isNull() && this->hasStringProperty(entity, propName))
   {
-    StringData& strings((*m_stringData)[entity]);
-    return strings[propName];
+    return this->properties().data().at<StringProperty>(propName).at(entity);
   }
   static StringList dummy;
   return dummy;
@@ -1253,10 +1247,10 @@ smtk::model::StringList const& Resource::stringProperty(
 
 smtk::model::StringList& Resource::stringProperty(const UUID& entity, const std::string& propName)
 {
-  if (!entity.isNull())
+  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  if (!entity.isNull() && this->hasStringProperty(entity, propName))
   {
-    StringData& strings((*m_stringData)[entity]);
-    return strings[propName];
+    return this->properties().data().at<StringProperty>(propName).at(entity);
   }
   static StringList dummy;
   return dummy;
@@ -1264,69 +1258,63 @@ smtk::model::StringList& Resource::stringProperty(const UUID& entity, const std:
 
 bool Resource::hasStringProperty(const UUID& entity, const std::string& propName) const
 {
-  UUIDsToStringData::const_iterator uit = m_stringData->find(entity);
-  if (uit == m_stringData->end())
+  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  if (!entity.isNull() && this->properties().data().has<StringProperty>(propName))
   {
-    return false;
+    auto it = this->properties().data().at<StringProperty>(propName).find(entity);
+    return (
+      it != this->properties().data().at<StringProperty>(propName).end() && !it->second.empty());
   }
-  StringData::const_iterator sit = uit->second.find(propName);
-  // when the array (*sit) is empty, we return true due to the fact that defing a dummy
-  // property should be considered ill formed
-  return sit == uit->second.end() ? false : !sit->second.empty();
+  return false;
 }
 
 bool Resource::removeStringProperty(const UUID& entity, const std::string& propName)
 {
-  UUIDsToStringData::iterator uit = m_stringData->find(entity);
-  if (uit == m_stringData->end())
+  typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+  if (!entity.isNull())
   {
-    return false;
+    auto& map = this->properties().data().at<StringProperty>(propName);
+    auto it = map.find(entity);
+    if (it != map.end())
+    {
+      map.erase(it);
+      return true;
+    }
   }
-  StringData::iterator sit = uit->second.find(propName);
-  if (sit == uit->second.end())
-  {
-    return false;
-  }
-  uit->second.erase(sit);
-  if (uit->second.empty())
-    m_stringData->erase(uit);
-  return true;
-}
-
-const UUIDWithStringProperties Resource::stringPropertiesForEntity(const UUID& entity) const
-{
-  return m_stringData->find(entity);
-}
-
-UUIDWithStringProperties Resource::stringPropertiesForEntity(const UUID& entity)
-{
-  return m_stringData->find(entity);
+  return false;
 }
 
 void Resource::setIntegerProperty(
   const UUID& entity, const std::string& propName, smtk::model::Integer propValue)
 {
-  smtk::model::IntegerList tmp;
-  tmp.push_back(propValue);
-  this->setIntegerProperty(entity, propName, tmp);
+  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  if (!entity.isNull())
+  {
+    // this->properties().data().get<IntProperty>()[propName]
+    //   .emplace(std::make_pair(entity, propValue));
+    this->properties().data().get<IntProperty>()[propName].emplace(
+      std::make_pair(smtk::common::UUID(entity), std::vector<long>(1, propValue)));
+    // this->properties().data().get<IntProperty>()[propName][entity] = { propValue };
+  }
 }
 
 void Resource::setIntegerProperty(
   const UUID& entity, const std::string& propName, const smtk::model::IntegerList& propValue)
 {
+  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
   if (!entity.isNull())
   {
-    (*m_integerData)[entity][propName] = propValue;
+    this->properties().data().get<IntProperty>()[propName][entity] = propValue;
   }
 }
 
 smtk::model::IntegerList const& Resource::integerProperty(
   const UUID& entity, const std::string& propName) const
 {
-  if (!entity.isNull())
+  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  if (!entity.isNull() && this->hasIntegerProperty(entity, propName))
   {
-    IntegerData& integers((*m_integerData)[entity]);
-    return integers[propName];
+    return this->properties().data().at<IntProperty>(propName).at(entity);
   }
   static IntegerList dummy;
   return dummy;
@@ -1334,10 +1322,10 @@ smtk::model::IntegerList const& Resource::integerProperty(
 
 smtk::model::IntegerList& Resource::integerProperty(const UUID& entity, const std::string& propName)
 {
-  if (!entity.isNull())
+  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  if (!entity.isNull() && this->hasIntegerProperty(entity, propName))
   {
-    IntegerData& integers((*m_integerData)[entity]);
-    return integers[propName];
+    return this->properties().data().at<IntProperty>(propName).at(entity);
   }
   static IntegerList dummy;
   return dummy;
@@ -1345,43 +1333,29 @@ smtk::model::IntegerList& Resource::integerProperty(const UUID& entity, const st
 
 bool Resource::hasIntegerProperty(const UUID& entity, const std::string& propName) const
 {
-  UUIDsToIntegerData::const_iterator uit = m_integerData->find(entity);
-  if (uit == m_integerData->end())
+  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  if (!entity.isNull() && this->properties().data().has<IntProperty>(propName))
   {
-    return false;
+    auto it = this->properties().data().at<IntProperty>(propName).find(entity);
+    return (it != this->properties().data().at<IntProperty>(propName).end() && !it->second.empty());
   }
-  IntegerData::const_iterator sit = uit->second.find(propName);
-  // when the array (*sit) is empty, we return true due to the fact that defing a dummy
-  // property should be considered ill formed
-  return sit == uit->second.end() ? false : !sit->second.empty();
+  return false;
 }
 
 bool Resource::removeIntegerProperty(const UUID& entity, const std::string& propName)
 {
-  UUIDsToIntegerData::iterator uit = m_integerData->find(entity);
-  if (uit == m_integerData->end())
+  typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+  if (!entity.isNull())
   {
-    return false;
+    auto& map = this->properties().data().at<IntProperty>(propName);
+    auto it = map.find(entity);
+    if (it != map.end())
+    {
+      map.erase(it);
+      return true;
+    }
   }
-  IntegerData::iterator sit = uit->second.find(propName);
-  if (sit == uit->second.end())
-  {
-    return false;
-  }
-  uit->second.erase(sit);
-  if (uit->second.empty())
-    m_integerData->erase(uit);
-  return true;
-}
-
-const UUIDWithIntegerProperties Resource::integerPropertiesForEntity(const UUID& entity) const
-{
-  return m_integerData->find(entity);
-}
-
-UUIDWithIntegerProperties Resource::integerPropertiesForEntity(const UUID& entity)
-{
-  return m_integerData->find(entity);
+  return false;
 }
 ///@}
 
@@ -1690,12 +1664,16 @@ bool Resource::unregisterSession(SessionPtr session, bool expungeSession)
   }
   else
   {
+    typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
+    typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
+    typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
+
     // Remove the session's entity record, properties, and such, but not
     // records, properties, etc. for entities the session owns.
     m_topology->erase(sessId);
-    m_floatData->erase(sessId);
-    m_stringData->erase(sessId);
-    m_integerData->erase(sessId);
+    this->properties().data().eraseIdForType<FloatProperty>(sessId);
+    this->properties().data().eraseIdForType<StringProperty>(sessId);
+    this->properties().data().eraseIdForType<IntProperty>(sessId);
     m_tessellations->erase(sessId);
     m_attributeAssignments->erase(sessId);
   }

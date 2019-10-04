@@ -143,6 +143,58 @@ struct remove_from_tuple<T, std::tuple<> >
 {
   using type = std::tuple<>;
 };
+
+/// Takes a type and a tuple of types and returns the index of the first
+/// instance of that type in the tuple.
+///
+/// Examples:
+///   tuple_index<bool, std::tuple<int, bool, float>>::value == 1
+template <class T, class Tuple>
+struct tuple_index;
+
+template <class T, class... Types>
+struct tuple_index<T, std::tuple<T, Types...> >
+{
+  constexpr static const std::size_t value = 0;
+};
+
+template <class T, class U, class... Types>
+struct tuple_index<T, std::tuple<U, Types...> >
+{
+  constexpr static const std::size_t value = 1 + tuple_index<T, std::tuple<Types...> >::value;
+};
+
+/// Takes a type and a tuple of types and returns a bool indicating whether or
+/// not the type is in the tuple.
+///
+/// Examples:
+///   tuple_has<bool, std::tuple<int, bool, float>>() == true
+///   tuple_has<bool, std::tuple<int, float>>() == false
+template <typename T, typename Tuple>
+struct tuple_has;
+
+template <typename T>
+struct tuple_has<T, std::tuple<> > : std::false_type
+{
+};
+
+template <typename T, typename U, typename... Ts>
+struct tuple_has<T, std::tuple<U, Ts...> > : tuple_has<T, std::tuple<Ts...> >
+{
+};
+
+template <typename T, typename... Ts>
+struct tuple_has<T, std::tuple<T, Ts...> > : std::true_type
+{
+};
+
+/// Embeds a type in another class so its type information can be passed as a
+/// parameter.
+template <typename T>
+struct identity
+{
+  typedef T type;
+};
 }
 
 #endif

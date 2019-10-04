@@ -14,6 +14,7 @@ set(unit_tests
   TestGarbageCollector.cxx
   TestResourceLinks.cxx
   TestResourceManager.cxx
+  TestResourceProperties.cxx
 )
 
 smtk_unit_tests(

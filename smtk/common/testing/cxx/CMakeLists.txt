@@ -37,6 +37,7 @@ set(unit_tests
   UnitTestDateTimeZonePair.cxx
   UnitTestLinks
   UnitTestObservers
+  UnitTestProperties
   UnitTestRegistry.cxx
   UnitTestThreadPool
 )

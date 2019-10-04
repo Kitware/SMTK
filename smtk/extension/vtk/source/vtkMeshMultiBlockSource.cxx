@@ -134,8 +134,7 @@ static void internal_AddBlockInfo(const smtk::mesh::ResourcePtr& meshcollect,
   const smtk::model::EntityRef& bordantCell, const vtkIdType& blockId, vtkPolyData* poly,
   std::map<smtk::common::UUID, vtkIdType>& uuid2BlockId)
 {
-  meshcollect->setIntegerProperty(blockmesh, "block_index", blockId);
-
+  (void)meshcollect;
   internal_AddBlockEntityInfo(blockmesh, entityref, blockId, poly, uuid2BlockId);
 
   smtk::model::EntityRefs vols;

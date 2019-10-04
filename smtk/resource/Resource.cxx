@@ -28,16 +28,13 @@ Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
   , m_location()
   , m_clean(false)
   , m_links(this)
+  , m_properties(this)
   , m_manager(manager)
 {
 }
 
 Resource::Resource(ManagerPtr manager)
-  : m_id(smtk::common::UUIDGenerator::instance().random())
-  , m_location()
-  , m_clean(false)
-  , m_links(this)
-  , m_manager(manager)
+  : Resource(smtk::common::UUIDGenerator::instance().random(), manager)
 {
 }
 

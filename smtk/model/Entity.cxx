@@ -1304,8 +1304,9 @@ Entity::QueryFunctor limitedQueryFunctor(
     {
       case smtk::resource::PropertyType::FLOAT_PROPERTY:
       {
-        auto props = modelRsrc->floatPropertiesForEntity(comp->id());
-        if (props == modelRsrc->floatProperties().end() || props->second.empty())
+        const smtk::resource::ConstPropertiesOfType<std::vector<double> > floatProperties =
+          comp->properties().get<std::vector<double> >();
+        if (floatProperties.empty())
         {
           return false;
         }
@@ -1313,8 +1314,7 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           return true;
         }
-        auto pit = props->second.find(clause.m_propName);
-        if (pit == props->second.end())
+        if (!floatProperties.has(clause.m_propName))
         {
           return false;
         }
@@ -1322,7 +1322,7 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           return true;
         }
-        if (pit->second != clause.m_propFloatValues)
+        if (clause.m_propFloatValues != floatProperties.at(clause.m_propName))
         {
           return false;
         }
@@ -1331,8 +1331,9 @@ Entity::QueryFunctor limitedQueryFunctor(
 
       case smtk::resource::PropertyType::STRING_PROPERTY:
       {
-        auto props = modelRsrc->stringPropertiesForEntity(comp->id());
-        if (props == modelRsrc->stringProperties().end() || props->second.empty())
+        const smtk::resource::ConstPropertiesOfType<std::vector<std::string> > stringProperties =
+          comp->properties().get<std::vector<std::string> >();
+        if (stringProperties.empty())
         {
           return false;
         }
@@ -1343,21 +1344,21 @@ Entity::QueryFunctor limitedQueryFunctor(
         StringData::const_iterator pit;
         if (!clause.m_propNameIsRegex)
         {
-          pit = props->second.find(clause.m_propName);
-          if (pit == props->second.end())
+          if (!stringProperties.has(clause.m_propName))
           {
             return false;
           }
-          return CheckPropStringValues(pit->second, clause);
+          return CheckPropStringValues(stringProperties.at(clause.m_propName), clause);
         }
         else
         {
           regex re(clause.m_propName);
-          for (pit = props->second.begin(); pit != props->second.end(); ++pit)
+          std::set<std::string> keys = stringProperties.keys();
+          for (auto& key : keys)
           {
-            if (regex_search(pit->first, re))
+            if (regex_search(key, re))
             {
-              if (CheckPropStringValues(pit->second, clause))
+              if (CheckPropStringValues(stringProperties.at(key), clause))
               {
                 return true;
               }
@@ -1371,8 +1372,9 @@ Entity::QueryFunctor limitedQueryFunctor(
 
       case smtk::resource::PropertyType::INTEGER_PROPERTY:
       {
-        auto props = modelRsrc->integerPropertiesForEntity(comp->id());
-        if (props == modelRsrc->integerProperties().end() || props->second.empty())
+        const smtk::resource::ConstPropertiesOfType<std::vector<long> > intProperties =
+          comp->properties().get<std::vector<long> >();
+        if (intProperties.empty())
         {
           return false;
         }
@@ -1380,8 +1382,7 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           return true;
         }
-        auto pit = props->second.find(clause.m_propName);
-        if (pit == props->second.end())
+        if (!intProperties.has(clause.m_propName))
         {
           return false;
         }
@@ -1389,7 +1390,7 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           return true;
         }
-        if (pit->second != clause.m_propIntValues)
+        if (clause.m_propIntValues != intProperties.at(clause.m_propName))
         {
           return false;
         }

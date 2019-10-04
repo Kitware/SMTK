@@ -17,6 +17,7 @@
 
 #include "smtk/common/UUID.h"
 #include "smtk/resource/Links.h"
+#include "smtk/resource/Properties.h"
 
 #include <string>
 
@@ -66,6 +67,9 @@ public:
 
   virtual smtk::resource::Links& links() = 0;
   virtual const smtk::resource::Links& links() const = 0;
+
+  virtual smtk::resource::Properties& properties() = 0;
+  virtual const smtk::resource::Properties& properties() const = 0;
 
 protected:
   PersistentObject();

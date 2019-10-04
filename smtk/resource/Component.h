@@ -18,6 +18,7 @@
 
 #include "smtk/resource/ComponentLinks.h"
 #include "smtk/resource/PersistentObject.h"
+#include "smtk/resource/Properties.h"
 
 #include <string>
 
@@ -34,6 +35,7 @@ class SMTKCORE_EXPORT Component : public PersistentObject
 public:
   typedef std::function<void(const ComponentPtr&)> Visitor;
   typedef detail::ComponentLinks Links;
+  typedef detail::ComponentProperties Properties;
 
   smtkTypeMacro(Component);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
@@ -45,11 +47,15 @@ public:
   Links& links() override { return m_links; }
   const Links& links() const override { return m_links; }
 
+  Properties& properties() override { return m_properties; }
+  const Properties& properties() const override { return m_properties; }
+
 protected:
   Component();
 
 private:
   Links m_links;
+  Properties m_properties;
 };
 }
 }

@@ -127,7 +127,6 @@ set(meshHeaders
   operators/Write.h
   operators/WriteResource.h
 
-  resource/PropertyData.h
   resource/Registrar.h
   resource/Selection.h
 

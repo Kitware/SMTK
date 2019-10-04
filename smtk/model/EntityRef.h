@@ -272,12 +272,6 @@ public:
 
   // For T = {IntegerData, FloatData, StringData}:
   template <typename T>
-  T* properties();
-  template <typename T>
-  T* hasProperties();
-  template <typename T>
-  const T* hasProperties() const;
-  template <typename T>
   bool removeProperty(const std::string& name);
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
@@ -288,8 +282,6 @@ public:
   bool removeFloatProperty(const std::string& propName);
   bool hasFloatProperties() const;
   std::set<std::string> floatPropertyNames() const;
-  FloatData& floatProperties();
-  FloatData const& floatProperties() const;
 
   void setStringProperty(const std::string& propName, const smtk::model::String& propValue);
   void setStringProperty(const std::string& propName, const smtk::model::StringList& propValue);
@@ -299,8 +291,6 @@ public:
   bool removeStringProperty(const std::string& propName);
   bool hasStringProperties() const;
   std::set<std::string> stringPropertyNames() const;
-  StringData& stringProperties();
-  StringData const& stringProperties() const;
 
   void setIntegerProperty(const std::string& propName, smtk::model::Integer propValue);
   void setIntegerProperty(const std::string& propName, const smtk::model::IntegerList& propValue);
@@ -310,8 +300,6 @@ public:
   bool removeIntegerProperty(const std::string& propName);
   bool hasIntegerProperties() const;
   std::set<std::string> integerPropertyNames() const;
-  IntegerData& integerProperties();
-  IntegerData const& integerProperties() const;
 
   int numberOfArrangementsOfKind(ArrangementKind k) const;
   Arrangement* findArrangement(ArrangementKind k, int index);

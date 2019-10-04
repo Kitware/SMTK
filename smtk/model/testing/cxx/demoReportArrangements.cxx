@@ -60,45 +60,6 @@ void ReportEntity(ResourcePtr sm, UUIDWithEntityPtr& eit)
       }
     }
   }
-  fpit = sm->floatPropertiesForEntity(eit->first);
-  if (fpit != sm->floatProperties().end())
-  {
-    PropertyNameWithFloats fpval;
-    std::cout << "        " << fpit->second.size() << " float properties:\n";
-    for (fpval = fpit->second.begin(); fpval != fpit->second.end(); ++fpval)
-    {
-      if (!fpval->second.empty())
-      {
-        std::cout << "          " << fpval->second.size() << " values for " << fpval->first << "\n";
-      }
-    }
-  }
-  spit = sm->stringPropertiesForEntity(eit->first);
-  if (spit != sm->stringProperties().end())
-  {
-    PropertyNameWithStrings spval;
-    std::cout << "        " << spit->second.size() << " string properties:\n";
-    for (spval = spit->second.begin(); spval != spit->second.end(); ++spval)
-    {
-      if (!spval->second.empty())
-      {
-        std::cout << "          " << spval->second.size() << " values for " << spval->first << "\n";
-      }
-    }
-  }
-  ipit = sm->integerPropertiesForEntity(eit->first);
-  if (ipit != sm->integerProperties().end())
-  {
-    PropertyNameWithIntegers ipval;
-    std::cout << "        " << ipit->second.size() << " integer properties:\n";
-    for (ipval = ipit->second.begin(); ipval != ipit->second.end(); ++ipval)
-    {
-      if (!ipval->second.empty())
-      {
-        std::cout << "          " << ipval->second.size() << " values for " << ipval->first << "\n";
-      }
-    }
-  }
 }
 
 int main(int argc, char* argv[])

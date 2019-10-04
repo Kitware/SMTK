@@ -84,11 +84,8 @@ int main(int argc, char* argv[])
   t.mark();
   nlohmann::json json = sm;
   deltaT = t.elapsed();
-  std::cout << deltaT << " seconds to export " << sm->topology().size() << " entity records, "
-            << sm->tessellations().size() << " tessellations, and "
-            << (sm->floatProperties().size() + sm->stringProperties().size() +
-                 sm->integerProperties().size())
-            << " properties.\n";
+  std::cout << deltaT << " seconds to export " << sm->topology().size() << " entity records and "
+            << sm->tessellations().size() << " tessellations.";
   t.mark();
 
   // ### Benchmark JSON import ###

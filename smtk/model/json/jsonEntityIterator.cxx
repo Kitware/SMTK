@@ -68,19 +68,6 @@ void to_json(json& j, const EntityIterator& iter)
         }
         jent["a"] = jarr;
       }
-      // Add string/float/int properties:
-      if (ent.hasStringProperties())
-      {
-        jent["s"] = ent.stringProperties();
-      }
-      if (ent.hasFloatProperties())
-      {
-        jent["f"] = ent.floatProperties();
-      }
-      if (ent.hasIntegerProperties())
-      {
-        jent["i"] = ent.integerProperties();
-      }
       /* Do not include tessellation here
         const Tessellation* tess;
         if ((tess = ent.hasTessellation()))

@@ -60,8 +60,14 @@ bool AuxiliaryGeometry::hasURL() const
   {
     return false;
   }
-  const StringData& sprops(this->stringProperties());
-  return (sprops.find("url") != sprops.end());
+
+  auto comp = this->component();
+  if (comp == nullptr)
+  {
+    return false;
+  }
+
+  return comp->properties().has<std::vector<std::string> >("url");
 }
 
 /**\brief Return the URL to external geometry if any exists, and an empty string otherwise.
@@ -74,13 +80,13 @@ std::string AuxiliaryGeometry::url() const
   {
     return std::string();
   }
-  const StringData& sprops(this->stringProperties());
-  StringData::const_iterator url = sprops.find("url");
-  if (url == sprops.end() || url->second.empty())
+  auto comp = this->component();
+  if (comp == nullptr || !comp->properties().has<std::vector<std::string> >("url") ||
+    comp->properties().at<std::vector<std::string> >("url").empty())
   {
     return std::string();
   }
-  return url->second[0];
+  return comp->properties().at<std::vector<std::string> >("url").at(0);
 }
 
 /**\brief Set the URL of external geometry referenced by this auxiliary geometry.

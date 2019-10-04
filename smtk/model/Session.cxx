@@ -393,16 +393,15 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to) const
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Split rule for integers: broadcast value to all.
-  const IntegerData& idata(from.integerProperties());
   for (unsigned i = 0; i < npc; ++i)
   {
-    IntegerData::const_iterator ipit;
-    if ((ipit = idata.find(intPropertyNamesToBroadcast[i])) != idata.end())
+    const std::vector<long>& prop = from.integerProperty(intPropertyNamesToBroadcast[i]);
+    if (!prop.empty())
     {
       for (EntityRefs::iterator oit = to.begin(); oit != to.end(); ++oit)
       {
         EntityRef mutableEnt(*oit);
-        mutableEnt.setIntegerProperty(intPropertyNamesToBroadcast[i], ipit->second);
+        mutableEnt.setIntegerProperty(intPropertyNamesToBroadcast[i], prop);
       }
     }
   }
@@ -411,30 +410,25 @@ bool Session::splitProperties(const EntityRef& from, const EntityRefs& to) const
   // Split rule for strings: broadcast value to one (the first by UUID).
   for (unsigned int ii = 0; ii < nps; ++ii)
   {
-    const StringData& sdata(from.stringProperties());
-    StringData::const_iterator spit;
-    if (!to.empty())
+    const std::vector<std::string>& prop = from.stringProperty(stringPropertyNamesToBroadcast[ii]);
+    if (!prop.empty())
     { // Copy name only to the first entity.
       EntityRef mutableEnt(*to.begin());
-      if ((spit = sdata.find(stringPropertyNamesToBroadcast[ii])) != sdata.end())
-      {
-        mutableEnt.setStringProperty(stringPropertyNamesToBroadcast[ii], spit->second);
-      }
+      mutableEnt.setStringProperty(stringPropertyNamesToBroadcast[ii], prop);
     }
   }
 
   // TODO: It should be possible to use different rules on a case-by-case basis:
   // Split rule for floats: broadcast value to all.
-  const FloatData& fdata(from.floatProperties());
   for (unsigned i = 0; i < npf; ++i)
   {
-    FloatData::const_iterator fpit;
-    if ((fpit = fdata.find(floatPropertyNamesToBroadcast[i])) != fdata.end())
+    const std::vector<double>& prop = from.floatProperty(floatPropertyNamesToBroadcast[i]);
+    if (!prop.empty())
     {
       for (EntityRefs::iterator oit = to.begin(); oit != to.end(); ++oit)
       {
         EntityRef mutableEnt(*oit);
-        mutableEnt.setFloatProperty(floatPropertyNamesToBroadcast[i], fpit->second);
+        mutableEnt.setFloatProperty(floatPropertyNamesToBroadcast[i], prop);
       }
     }
   }
@@ -477,19 +471,17 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
     EntityRefs::const_iterator eit;
     for (eit = from.begin(); eit != from.end(); ++eit)
     {
-      const IntegerData& values(eit->integerProperties());
-      IntegerData::const_iterator valueIt = values.find(intPropertyNamesToReduce[i]);
-      if (valueIt != values.end())
+      const std::vector<long>& prop = eit->integerProperty(intPropertyNamesToReduce[i]);
+      if (!prop.empty())
       {
-        imerged.insert(valueIt->second.begin(), valueIt->second.end());
+        imerged.insert(prop.begin(), prop.end());
       }
     }
     // Add values already present on the target:
-    const IntegerData& toVals(to.integerProperties());
-    IntegerData::const_iterator toValIt = toVals.find(intPropertyNamesToReduce[i]);
-    if (toValIt != toVals.end())
+    const std::vector<long>& prop = to.integerProperty(intPropertyNamesToReduce[i]);
+    if (!prop.empty())
     {
-      imerged.insert(toValIt->second.begin(), toValIt->second.end());
+      imerged.insert(prop.begin(), prop.end());
     }
     if (!imerged.empty())
     {
@@ -505,17 +497,16 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
   {
     bool haveString = false;
     EntityRefs::const_iterator eit;
-    const StringData* toVals = to.hasStringProperties() ? &to.stringProperties() : nullptr;
-    if (!toVals || toVals->find(stringPropertyNamesToReduce[ii]) == toVals->end())
+    const std::vector<std::string>& toprop = to.stringProperty(stringPropertyNamesToReduce[ii]);
+    if (toprop.empty())
     {
       for (eit = from.begin(); eit != from.end(); ++eit)
       {
-        const StringData& values(eit->stringProperties());
-        StringData::const_iterator valueIt = values.find(stringPropertyNamesToReduce[ii]);
-        if (valueIt != values.end())
+        const std::vector<std::string>& prop = eit->stringProperty(stringPropertyNamesToReduce[ii]);
+        if (!prop.empty())
         {
           haveString = true;
-          svalue.insert(svalue.end(), valueIt->second.begin(), valueIt->second.end());
+          svalue.insert(svalue.end(), prop.begin(), prop.end());
           break;
         }
       }
@@ -534,18 +525,16 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
   {
     bool haveFloat = false;
     EntityRefs::const_iterator eit;
-    const FloatData* toVals = to.hasFloatProperties() ? &to.floatProperties() : nullptr;
-    if (!toVals || toVals->find(floatPropertyNamesToReduce[ii]) == toVals->end())
+    const std::vector<double>& toprop = to.floatProperty(floatPropertyNamesToReduce[ii]);
+    if (toprop.empty())
     {
-      std::cout << to.name() << " needs " << floatPropertyNamesToReduce[ii] << "\n";
       for (eit = from.begin(); eit != from.end(); ++eit)
       {
-        const FloatData& values(eit->floatProperties());
-        FloatData::const_iterator valueIt = values.find(floatPropertyNamesToReduce[ii]);
-        if (valueIt != values.end())
+        const std::vector<double>& prop = eit->floatProperty(floatPropertyNamesToReduce[ii]);
+        if (!prop.empty())
         {
           haveFloat = true;
-          fvalue.insert(fvalue.end(), valueIt->second.begin(), valueIt->second.end());
+          fvalue.insert(fvalue.end(), prop.begin(), prop.end());
           break;
         }
       }

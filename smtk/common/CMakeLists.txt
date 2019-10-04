@@ -8,6 +8,7 @@ set(commonSrcs
   Extension.cxx
   FileLocation.cxx
   json/jsonLinks.cxx
+  json/jsonProperties.cxx
   json/jsonUUID.cxx
   Paths.cxx
   Registry.cxx
@@ -29,10 +30,12 @@ set(commonHeaders
   Generator.h
   GeometryUtilities.h
   json/jsonLinks.h
+  json/jsonProperties.h
   json/jsonUUID.h
   Links.h
   Observers.h
   Paths.h
+  Properties.h
   RangeDetector.h
   Registry.h
   Singleton.h

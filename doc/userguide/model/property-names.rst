@@ -4,10 +4,10 @@ Model Property System
 =====================
 
 In addition to associating modeling entities with attributes,
-SMTK's model manager can also store string, integer, and floating-point
-properties on model entities.
+SMTK's model resource uses the resource's properties mechanism to
+store string, integer, and floating-point properties on model entities.
 Unlike attributes that have a rigid format imposed by definitions,
-model properties are free-form: given any model entity UUID and a
+properties are free-form: given any model entity UUID and a
 property name, you may store any combination of string, integer, and
 floating-point values.
 

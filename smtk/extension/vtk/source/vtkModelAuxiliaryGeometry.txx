@@ -25,31 +25,31 @@ vtkSmartPointer<T> vtkModelAuxiliaryGeometry::ReadData(
   vtkSmartPointer<T> data = vtkSmartPointer<T>::New();
   if (auxGeom.hasFloatProperties())
   {
-    const smtk::model::FloatData& props(auxGeom.floatProperties());
     const char* propNames[3] = { "scale", "rotate", "translate" };
-    smtk::model::FloatData::const_iterator propIt;
     bool hasTransform = false;
     vtkNew<vtkTransform> tfm;
     //tfm->PostMultiply();
     for (int ii = 0; ii < 3; ++ii)
     {
-      propIt = props.find(propNames[ii]);
-      if (propIt != props.end())
+      if (auxGeom.hasFloatProperty(propNames[ii]))
       {
-        hasTransform = true;
-        switch (ii)
+        const smtk::model::FloatList& prop = auxGeom.floatProperty(propNames[ii]);
         {
-          case 0:
-            tfm->Scale(propIt->second[0], propIt->second[1], propIt->second[2]);
-            break;
-          case 1:
-            tfm->RotateX(propIt->second[0]);
-            tfm->RotateY(propIt->second[1]);
-            tfm->RotateZ(propIt->second[2]);
-            break;
-          case 2:
-            tfm->Translate(propIt->second[0], propIt->second[1], propIt->second[2]);
-            break;
+          hasTransform = true;
+          switch (ii)
+          {
+            case 0:
+              tfm->Scale(prop[0], prop[1], prop[2]);
+              break;
+            case 1:
+              tfm->RotateX(prop[0]);
+              tfm->RotateY(prop[1]);
+              tfm->RotateZ(prop[2]);
+              break;
+            case 2:
+              tfm->Translate(prop[0], prop[1], prop[2]);
+              break;
+          }
         }
       }
     }

@@ -84,8 +84,6 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("findEntitiesWithTessellation", &smtk::model::EntityRef::findEntitiesWithTessellation, py::arg("entityrefMap"), py::arg("touched"))
     .def("findOrAddRawRelation", &smtk::model::EntityRef::findOrAddRawRelation, py::arg("ent"))
     .def("flagSummary", &smtk::model::EntityRef::flagSummary, py::arg("form") = 0)
-    .def("floatProperties", (smtk::model::FloatData & (smtk::model::EntityRef::*)()) &smtk::model::EntityRef::floatProperties)
-    .def("floatProperties", (smtk::model::FloatData const & (smtk::model::EntityRef::*)() const) &smtk::model::EntityRef::floatProperties)
     .def("floatProperty", (smtk::model::FloatList const & (smtk::model::EntityRef::*)(::std::string const &) const) &smtk::model::EntityRef::floatProperty, py::arg("propName"))
     .def("floatProperty", (smtk::model::FloatList & (smtk::model::EntityRef::*)(::std::string const &)) &smtk::model::EntityRef::floatProperty, py::arg("propName"))
     .def("floatPropertyNames", &smtk::model::EntityRef::floatPropertyNames)
@@ -109,8 +107,6 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("instances", [](const smtk::model::EntityRef& prototype) {
       auto result = prototype.instances<smtk::model::Instances>();
       return result; })
-    .def("integerProperties", (smtk::model::IntegerData & (smtk::model::EntityRef::*)()) &smtk::model::EntityRef::integerProperties)
-    .def("integerProperties", (smtk::model::IntegerData const & (smtk::model::EntityRef::*)() const) &smtk::model::EntityRef::integerProperties)
     .def("integerProperty", (smtk::model::IntegerList const & (smtk::model::EntityRef::*)(::std::string const &) const) &smtk::model::EntityRef::integerProperty, py::arg("propName"))
     .def("integerProperty", (smtk::model::IntegerList & (smtk::model::EntityRef::*)(::std::string const &)) &smtk::model::EntityRef::integerProperty, py::arg("propName"))
     .def("integerPropertyNames", &smtk::model::EntityRef::integerPropertyNames)
@@ -170,8 +166,6 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("setTessellation", &smtk::model::EntityRef::setTessellation, py::arg("tess"), py::arg("analysisMesh") = 0, py::arg("updateBBox") = false)
     .def("setTessellationAndBoundingBox", &smtk::model::EntityRef::setTessellationAndBoundingBox, py::arg("tess"), py::arg("analysisMesh") = 0)
     .def("setVisible", &smtk::model::EntityRef::setVisible, py::arg("vis"))
-    .def("stringProperties", (smtk::model::StringData & (smtk::model::EntityRef::*)()) &smtk::model::EntityRef::stringProperties)
-    .def("stringProperties", (smtk::model::StringData const & (smtk::model::EntityRef::*)() const) &smtk::model::EntityRef::stringProperties)
     .def("stringProperty", (smtk::model::StringList const & (smtk::model::EntityRef::*)(::std::string const &) const) &smtk::model::EntityRef::stringProperty, py::arg("propName"))
     .def("stringProperty", (smtk::model::StringList & (smtk::model::EntityRef::*)(::std::string const &)) &smtk::model::EntityRef::stringProperty, py::arg("propName"))
     .def("stringPropertyNames", &smtk::model::EntityRef::stringPropertyNames)

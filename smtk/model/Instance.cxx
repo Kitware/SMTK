@@ -51,12 +51,11 @@ static void GenerateTabularTessellation(Instance& inst, Tessellation* placements
   {
     return;
   }
-  const FloatData& fprops(inst.floatProperties());
-  auto posn = fprops.find("placements");
-  int numPosn = static_cast<int>(posn->second.size() / 3);
+  const std::vector<double>& posn = inst.floatProperty(smtk::model::Instance::placements);
+  int numPosn = static_cast<int>(posn.size() / 3);
   for (int ii = 0; ii < numPosn; ++ii)
   {
-    placements->addPoint(&posn->second[3 * ii]);
+    placements->addPoint(&posn[3 * ii]);
   }
 }
 
@@ -66,29 +65,26 @@ static void GenerateRandomTessellation(Instance& inst, Tessellation* placements)
   {
     return;
   }
-  const FloatData& fprops(inst.floatProperties());
-  const IntegerData& iprops(inst.integerProperties());
-  auto numPts = iprops.find("sample size");
-  auto seed = iprops.find("seed");
-  auto voi = fprops.find("voi");
-  if (numPts == iprops.end() || numPts->second.size() != 1 || voi == fprops.end() ||
-    voi->second.size() != 6 || (seed != iprops.end() && seed->second.size() != 1))
+  const std::vector<long>& numPts = inst.integerProperty("sample size");
+  std::vector<long> seed = inst.integerProperty("seed");
+  const std::vector<double>& voi = inst.floatProperty("voi");
+  if (numPts.size() != 1 || voi.size() != 6 || seed.size() > 1)
   {
     return;
   }
-  if (seed == iprops.end())
+  if (seed.empty())
   {
     // Generate and store a seed
     std::random_device rd;
     inst.setIntegerProperty("seed", static_cast<IntegerList::value_type>(rd()));
-    seed = iprops.find("seed");
+    seed = inst.integerProperty("seed");
   }
-  int npts = numPts->second[0];
-  unsigned iseed = static_cast<unsigned>(seed->second[0]);
+  int npts = numPts[0];
+  unsigned iseed = static_cast<unsigned>(seed[0]);
   std::mt19937 gen(iseed);
-  std::uniform_real_distribution<> distribX(voi->second[0], voi->second[1]);
-  std::uniform_real_distribution<> distribY(voi->second[2], voi->second[3]);
-  std::uniform_real_distribution<> distribZ(voi->second[4], voi->second[5]);
+  std::uniform_real_distribution<> distribX(voi[0], voi[1]);
+  std::uniform_real_distribution<> distribY(voi[2], voi[3]);
+  std::uniform_real_distribution<> distribZ(voi[4], voi[5]);
   for (auto ii = 0; ii < npts; ++ii)
   {
     double pt[3] = { distribX(gen), distribY(gen), distribZ(gen) };
@@ -171,13 +167,18 @@ Tessellation* Instance::generateTessellation()
 
 std::string Instance::rule() const
 {
-  if (!this->hasStringProperties())
+  static const std::string rule = "rule";
+
+  auto comp = this->component();
+  if (!comp)
   {
     return "empty";
   }
-  const StringData& sprops(this->stringProperties());
-  auto rprop = sprops.find("rule");
-  return (rprop == sprops.end() || rprop->second.empty()) ? "empty" : rprop->second[0];
+
+  auto stringProperties = comp->properties().get<std::vector<std::string> >();
+  return (!stringProperties.has(rule) || stringProperties.at(rule).empty())
+    ? "empty"
+    : stringProperties.at(rule)[0];
 }
 
 bool Instance::setRule(const std::string& nextRule)
@@ -207,19 +208,23 @@ EntityRefs Instance::snapEntities() const
   EntityRefs result;
   // TODO: This is a total hack for now. We should use Arrangements but
   // there's not really a good one for this use case.
-  if (!this->hasIntegerProperties())
+  auto comp = this->component();
+  if (!comp)
   {
     return result;
   }
-  const IntegerData& iprops(this->integerProperties());
-  auto iprop = iprops.find("snap to entities");
-  if (iprop == iprops.end() || iprop->second.size() < 8)
+
+  auto intProperties = comp->properties().get<IntegerList>();
+  static const std::string snapToEntitiesStr = "snap to entities";
+  if (!intProperties.has(snapToEntitiesStr))
   {
     return result;
   }
+
+  const IntegerList& snapToEntities = intProperties.at(snapToEntitiesStr);
   smtk::model::Resource::Ptr resource = this->resource();
-  int numEnts = static_cast<int>(iprop->second.size() / 8);
-  IntegerList::const_iterator pit = iprop->second.begin();
+  int numEnts = static_cast<int>(snapToEntities.size() / 8);
+  IntegerList::const_iterator pit = snapToEntities.begin();
   for (int ii = 0; ii < numEnts; ++ii)
   {
     smtk::common::UUID::value_type data[smtk::common::UUID::SIZE];
@@ -272,20 +277,26 @@ bool Instance::setSnapEntities(const EntityRefs& snapTo)
   {
     return false;
   }
-  IntegerData& iprops(this->integerProperties());
-  auto iprop = iprops.find("snap to entities");
+  auto comp = this->component();
+  if (!comp)
+  {
+    return false;
+  }
+  auto intProperties = comp->properties().get<IntegerList>();
+  static const std::string snapToEntitiesStr = "snap to entities";
   if (snapTo.empty())
   {
-    if (iprop == iprops.end())
+    if (!intProperties.has(snapToEntitiesStr))
     {
       return false;
     }
     else
     {
-      iprops.erase("snap to entities");
+      intProperties.erase(snapToEntitiesStr);
       return true;
     }
   }
+
   IntegerList replacement;
   replacement.resize(8 * snapTo.size());
   int numEnts = static_cast<int>(snapTo.size());
@@ -300,17 +311,17 @@ bool Instance::setSnapEntities(const EntityRefs& snapTo)
       *rit = uit[2 * jj] + 256 * uit[2 * jj + 1];
     }
   }
-  if (iprop == iprops.end())
+  if (!intProperties.has(snapToEntitiesStr))
   {
-    iprops.insert(std::make_pair(std::string("snap to entities"), replacement));
+    intProperties[snapToEntitiesStr] = replacement;
   }
   else
   {
-    if (replacement == iprop->second)
+    if (intProperties[snapToEntitiesStr] == replacement)
     {
       return false;
     }
-    iprop->second = replacement;
+    intProperties[snapToEntitiesStr] = replacement;
   }
   return true;
 }
