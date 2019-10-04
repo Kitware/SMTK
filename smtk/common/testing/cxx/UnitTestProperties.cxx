@@ -52,7 +52,7 @@ int UnitTestProperties(int, char** const)
 {
   Properties properties;
 
-  test(properties.has<int>("foo") == false, "New instance should contain no values.");
+  test(properties.contains<int>("foo") == false, "New instance should contain no values.");
 
   try
   {

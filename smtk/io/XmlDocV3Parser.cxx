@@ -516,7 +516,7 @@ void XmlDocV3Parser::processReferenceItem(
       smtk::common::UUID surrogateId(surrogateNode.attribute("Id").as_string());
       std::string surrogateLocation(surrogateNode.attribute("Location").as_string());
 
-      if (!links.has(key.first))
+      if (!links.contains(key.first))
       {
         links.insert(smtk::resource::Surrogate(
                        surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),
@@ -551,7 +551,7 @@ void XmlDocV3Parser::processReferenceItem(
       smtk::common::UUID surrogateId(surrogateNode.attribute("Id").as_string());
       std::string surrogateLocation(surrogateNode.attribute("Location").as_string());
 
-      if (!links.has(key.first))
+      if (!links.contains(key.first))
       {
         links.insert(smtk::resource::Surrogate(
                        surrogateIndex, surrogateTypeName, surrogateId, surrogateLocation),

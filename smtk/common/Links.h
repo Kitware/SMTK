@@ -231,12 +231,12 @@ public:
   }
 
   /// Check if a link with the input id exists.
-  bool has(const id_type& key) const { return this->find(key) != this->end(); }
+  bool contains(const id_type& key) const { return this->find(key) != this->end(); }
 
   /// Check if a link with the input value matching the tagged search criterion
   /// exists.
   template <typename tag>
-  bool has(const typename LinkTraits<tag>::type&) const;
+  bool contains(const typename LinkTraits<tag>::type&) const;
 
   /// Return the number of links with the input value matching the tagged search
   /// criterion.
@@ -316,7 +316,7 @@ Links<id_type, left_type, right_type, role_type, base_type>::insert(base_type&& 
 template <typename id_type, typename left_type, typename right_type, typename role_type,
   typename base_type>
 template <typename tag>
-bool Links<id_type, left_type, right_type, role_type, base_type>::has(
+bool Links<id_type, left_type, right_type, role_type, base_type>::contains(
   const typename detail::LinkTraits<id_type, left_type, right_type, role_type, base_type,
     tag>::type& value) const
 {

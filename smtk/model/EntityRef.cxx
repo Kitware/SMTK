@@ -917,7 +917,7 @@ int EntityRef::tessellationGeneration() const
   if (comp != nullptr)
   {
     const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    if (!integerProperties.has(SMTK_TESS_GEN_PROP) ||
+    if (!integerProperties.contains(SMTK_TESS_GEN_PROP) ||
       integerProperties.at(SMTK_TESS_GEN_PROP).empty())
     {
       return -1;
@@ -1149,7 +1149,7 @@ smtk::model::FloatList const& EntityRef::floatProperty(const std::string& propNa
   if (comp != nullptr)
   {
     const auto& floatProperties = comp->properties().get<std::vector<double> >();
-    if (floatProperties.has(propName))
+    if (floatProperties.contains(propName))
     {
       return floatProperties.at(propName);
     }
@@ -1175,7 +1175,7 @@ bool EntityRef::hasFloatProperty(const std::string& propName) const
   if (comp != nullptr)
   {
     const auto& floatProperties = comp->properties().get<std::vector<double> >();
-    return floatProperties.has(propName);
+    return floatProperties.contains(propName);
   }
   return false;
 }
@@ -1186,7 +1186,7 @@ bool EntityRef::removeFloatProperty(const std::string& propName)
   if (comp != nullptr)
   {
     auto floatProperties = comp->properties().get<std::vector<double> >();
-    if (floatProperties.has(propName))
+    if (floatProperties.contains(propName))
     {
       floatProperties.erase(propName);
       return true;
@@ -1249,7 +1249,7 @@ smtk::model::StringList const& EntityRef::stringProperty(const std::string& prop
   if (comp != nullptr)
   {
     const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
-    if (stringProperties.has(propName))
+    if (stringProperties.contains(propName))
     {
       return stringProperties.at(propName);
     }
@@ -1275,7 +1275,7 @@ bool EntityRef::hasStringProperty(const std::string& propName) const
   if (comp != nullptr)
   {
     const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
-    return stringProperties.has(propName);
+    return stringProperties.contains(propName);
   }
   return false;
 }
@@ -1286,7 +1286,7 @@ bool EntityRef::removeStringProperty(const std::string& propName)
   if (comp != nullptr)
   {
     auto stringProperties = comp->properties().get<std::vector<std::string> >();
-    if (stringProperties.has(propName))
+    if (stringProperties.contains(propName))
     {
       stringProperties.erase(propName);
       return true;
@@ -1349,7 +1349,7 @@ smtk::model::IntegerList const& EntityRef::integerProperty(const std::string& pr
   if (comp != nullptr)
   {
     const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    if (integerProperties.has(propName))
+    if (integerProperties.contains(propName))
     {
       return integerProperties.at(propName);
     }
@@ -1375,7 +1375,7 @@ bool EntityRef::hasIntegerProperty(const std::string& propName) const
   if (comp != nullptr)
   {
     const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    return integerProperties.has(propName);
+    return integerProperties.contains(propName);
   }
   return false;
 }
@@ -1386,7 +1386,7 @@ bool EntityRef::removeIntegerProperty(const std::string& propName)
   if (comp != nullptr)
   {
     auto integerProperties = comp->properties().get<std::vector<long> >();
-    if (integerProperties.has(propName))
+    if (integerProperties.contains(propName))
     {
       integerProperties.erase(propName);
       return true;

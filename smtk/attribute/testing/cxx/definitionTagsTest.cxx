@@ -118,7 +118,7 @@ int main()
 
     for (std::size_t i = 0; i < 3; i++)
     {
-      if (!tag->has(value[i]))
+      if (!tag->contains(value[i]))
       {
         std::cerr << "Expected tag value not found: \"" << value[i] << "\"\n";
         std::cerr << logger.convertToString();

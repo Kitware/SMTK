@@ -124,7 +124,7 @@ public:
   virtual ~MaybeRegister() {}
 
   template <typename M>
-  bool has(const std::shared_ptr<M>&) const
+  bool contains(const std::shared_ptr<M>&) const
   {
     return false;
   }
@@ -153,12 +153,12 @@ public:
   }
 
   template <typename M>
-  bool has(const std::shared_ptr<M>&) const
+  bool contains(const std::shared_ptr<M>&) const
   {
     return false;
   }
 
-  bool has(const std::shared_ptr<Manager>& manager) const
+  bool contains(const std::shared_ptr<Manager>& manager) const
   {
     auto m = m_Manager.lock();
     return m && m == manager;
@@ -309,11 +309,11 @@ public:
   }
 
   template <typename M>
-  bool has(const std::shared_ptr<M>& m)
+  bool contains(const std::shared_ptr<M>& m)
   {
     auto tmp = dynamic_cast<
       detail::MaybeRegister<Registrar, M, typename detail::RegistersTo<Registrar, M>::type>*>(this);
-    return tmp != nullptr && tmp->has(m);
+    return tmp != nullptr && tmp->contains(m);
   }
 
   virtual ~Registry() {}
@@ -376,11 +376,11 @@ public:
   virtual ~Registry() {}
 
   template <typename M>
-  bool has(const std::shared_ptr<M>& m)
+  bool contains(const std::shared_ptr<M>& m)
   {
     auto tmp = dynamic_cast<
       detail::MaybeRegister<Registrar, M, typename detail::RegistersTo<Registrar, M>::type>*>(this);
-    return tmp != nullptr && tmp->has(m);
+    return tmp != nullptr && tmp->contains(m);
   }
 
   Registry(int, const std::shared_ptr<Manager>& manager, const std::shared_ptr<T>&... managers)

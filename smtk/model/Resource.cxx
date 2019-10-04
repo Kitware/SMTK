@@ -1188,7 +1188,7 @@ smtk::model::FloatList& Resource::floatProperty(const UUID& entity, const std::s
 bool Resource::hasFloatProperty(const UUID& entity, const std::string& propName) const
 {
   typedef resource::Properties::Indexed<std::vector<double> > FloatProperty;
-  if (!entity.isNull() && this->properties().data().has<FloatProperty>(propName))
+  if (!entity.isNull() && this->properties().data().contains<FloatProperty>(propName))
   {
     auto it = this->properties().data().at<FloatProperty>(propName).find(entity);
     return (
@@ -1259,7 +1259,7 @@ smtk::model::StringList& Resource::stringProperty(const UUID& entity, const std:
 bool Resource::hasStringProperty(const UUID& entity, const std::string& propName) const
 {
   typedef resource::Properties::Indexed<std::vector<std::string> > StringProperty;
-  if (!entity.isNull() && this->properties().data().has<StringProperty>(propName))
+  if (!entity.isNull() && this->properties().data().contains<StringProperty>(propName))
   {
     auto it = this->properties().data().at<StringProperty>(propName).find(entity);
     return (
@@ -1334,7 +1334,7 @@ smtk::model::IntegerList& Resource::integerProperty(const UUID& entity, const st
 bool Resource::hasIntegerProperty(const UUID& entity, const std::string& propName) const
 {
   typedef resource::Properties::Indexed<std::vector<long> > IntProperty;
-  if (!entity.isNull() && this->properties().data().has<IntProperty>(propName))
+  if (!entity.isNull() && this->properties().data().contains<IntProperty>(propName))
   {
     auto it = this->properties().data().at<IntProperty>(propName).find(entity);
     return (it != this->properties().data().at<IntProperty>(propName).end() && !it->second.empty());

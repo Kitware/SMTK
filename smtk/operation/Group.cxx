@@ -138,7 +138,7 @@ Operation::Specification Group::specification(const Operation::Index& index) con
   return getSpecification<Operation::Index>(index, m_manager);
 }
 
-bool Group::has(const std::string& typeName) const
+bool Group::contains(const std::string& typeName) const
 {
   // Access the operation's specification.
   Operation::Specification spec = getSpecification<std::string>(typeName, m_manager);
@@ -154,7 +154,7 @@ bool Group::has(const std::string& typeName) const
   return tagNames.find(name()) != tagNames.end();
 }
 
-bool Group::has(const Operation::Index& index) const
+bool Group::contains(const Operation::Index& index) const
 {
   // Access the operation's specification.
   Operation::Specification spec = getSpecification<Operation::Index>(index, m_manager);

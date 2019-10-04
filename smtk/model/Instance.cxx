@@ -176,7 +176,7 @@ std::string Instance::rule() const
   }
 
   auto stringProperties = comp->properties().get<std::vector<std::string> >();
-  return (!stringProperties.has(rule) || stringProperties.at(rule).empty())
+  return (!stringProperties.contains(rule) || stringProperties.at(rule).empty())
     ? "empty"
     : stringProperties.at(rule)[0];
 }
@@ -216,7 +216,7 @@ EntityRefs Instance::snapEntities() const
 
   auto intProperties = comp->properties().get<IntegerList>();
   static const std::string snapToEntitiesStr = "snap to entities";
-  if (!intProperties.has(snapToEntitiesStr))
+  if (!intProperties.contains(snapToEntitiesStr))
   {
     return result;
   }
@@ -286,7 +286,7 @@ bool Instance::setSnapEntities(const EntityRefs& snapTo)
   static const std::string snapToEntitiesStr = "snap to entities";
   if (snapTo.empty())
   {
-    if (!intProperties.has(snapToEntitiesStr))
+    if (!intProperties.contains(snapToEntitiesStr))
     {
       return false;
     }
@@ -311,7 +311,7 @@ bool Instance::setSnapEntities(const EntityRefs& snapTo)
       *rit = uit[2 * jj] + 256 * uit[2 * jj + 1];
     }
   }
-  if (!intProperties.has(snapToEntitiesStr))
+  if (!intProperties.contains(snapToEntitiesStr))
   {
     intProperties[snapToEntitiesStr] = replacement;
   }

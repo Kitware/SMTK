@@ -178,7 +178,7 @@ smtk::common::RegistryBase* PluginClient<Registrar, Manager>::find(
     // take as a template parameter a Manager that they do not support. Because
     // of this, we need to check if the accessed registry also supports the
     // Manager under query.
-    if (registry != nullptr && registry->has(manager))
+    if (registry != nullptr && registry->contains(manager))
     {
       return base_registry;
     }

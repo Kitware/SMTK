@@ -30,7 +30,7 @@ class Manager;
 class SMTKCORE_EXPORT InternalGroup : protected Group
 {
 public:
-  using Group::has;
+  using Group::contains;
   using Group::operations;
   using Group::operationNames;
   using Group::operationName;

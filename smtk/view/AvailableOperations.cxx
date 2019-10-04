@@ -279,7 +279,7 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
           (extensible && numSel >= numRequired && (maxAllowed == 0 || numSel <= maxAllowed)))
         {
           // Do not present operations marked as internal
-          if (!internalOperations.has(md.index()))
+          if (!internalOperations.contains(md.index()))
           {
             workingSetOut.insert(md.index());
           }
@@ -292,7 +292,7 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
     for (auto& md : operationsIn->metadata())
     {
       // Do not present operations marked as internal
-      if (!internalOperations.has(md.index()))
+      if (!internalOperations.contains(md.index()))
       {
         workingSetOut.insert(md.index());
       }

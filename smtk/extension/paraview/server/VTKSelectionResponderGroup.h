@@ -44,7 +44,7 @@ class SMTKPVSERVEREXT_EXPORT VTKSelectionResponderGroup : protected smtk::operat
 {
 public:
   using Operation = smtk::operation::Operation;
-  using smtk::operation::Group::has;
+  using smtk::operation::Group::contains;
   using smtk::operation::Group::operations;
   using smtk::operation::Group::operationNames;
   using smtk::operation::Group::operationName;

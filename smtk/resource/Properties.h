@@ -163,9 +163,9 @@ class ConstPropertiesOfType
 
 public:
   /// Check whether a property associated with <key> is present.
-  bool has(const std::string& key) const
+  bool contains(const std::string& key) const
   {
-    if (m_properties.has(key) == false)
+    if (m_properties.contains(key) == false)
     {
       return false;
     }
@@ -229,9 +229,9 @@ class PropertiesOfType
 
 public:
   /// Check whether a property associated with <key> is present.
-  bool has(const std::string& key) const
+  bool contains(const std::string& key) const
   {
-    if (m_properties.has(key) == false)
+    if (m_properties.contains(key) == false)
     {
       return false;
     }
@@ -303,7 +303,7 @@ private:
   }
   std::unordered_map<smtk::common::UUID, Type>& get(const std::string& key)
   {
-    if (m_properties.has(key) == false)
+    if (m_properties.contains(key) == false)
     {
       m_properties.emplace(key, typename detail::PropertiesOfType<IndexedType>::mapped_type());
     }
@@ -328,9 +328,9 @@ public:
 
   /// Check whether a property associated with <key> is present.
   template <typename Type>
-  bool has(const std::string& key) const
+  bool contains(const std::string& key) const
   {
-    return get<Type>().has(key);
+    return get<Type>().contains(key);
   }
 
   /// Insert (<key>, <value>) into the container.

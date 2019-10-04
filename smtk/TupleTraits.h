@@ -168,23 +168,23 @@ struct tuple_index<T, std::tuple<U, Types...> >
 /// not the type is in the tuple.
 ///
 /// Examples:
-///   tuple_has<bool, std::tuple<int, bool, float>>() == true
-///   tuple_has<bool, std::tuple<int, float>>() == false
+///   tuple_contains<bool, std::tuple<int, bool, float>>() == true
+///   tuple_contains<bool, std::tuple<int, float>>() == false
 template <typename T, typename Tuple>
-struct tuple_has;
+struct tuple_contains;
 
 template <typename T>
-struct tuple_has<T, std::tuple<> > : std::false_type
+struct tuple_contains<T, std::tuple<> > : std::false_type
 {
 };
 
 template <typename T, typename U, typename... Ts>
-struct tuple_has<T, std::tuple<U, Ts...> > : tuple_has<T, std::tuple<Ts...> >
+struct tuple_contains<T, std::tuple<U, Ts...> > : tuple_contains<T, std::tuple<Ts...> >
 {
 };
 
 template <typename T, typename... Ts>
-struct tuple_has<T, std::tuple<T, Ts...> > : std::true_type
+struct tuple_contains<T, std::tuple<T, Ts...> > : std::true_type
 {
 };
 

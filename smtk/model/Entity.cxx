@@ -1314,7 +1314,7 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           return true;
         }
-        if (!floatProperties.has(clause.m_propName))
+        if (!floatProperties.contains(clause.m_propName))
         {
           return false;
         }
@@ -1344,7 +1344,7 @@ Entity::QueryFunctor limitedQueryFunctor(
         StringData::const_iterator pit;
         if (!clause.m_propNameIsRegex)
         {
-          if (!stringProperties.has(clause.m_propName))
+          if (!stringProperties.contains(clause.m_propName))
           {
             return false;
           }
@@ -1382,7 +1382,7 @@ Entity::QueryFunctor limitedQueryFunctor(
         {
           return true;
         }
-        if (!intProperties.has(clause.m_propName))
+        if (!intProperties.contains(clause.m_propName))
         {
           return false;
         }

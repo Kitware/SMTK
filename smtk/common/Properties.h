@@ -69,7 +69,7 @@ public:
   PropertiesOfType& operator=(PropertiesOfType&&) = delete;
 
   /// Check whether a property associated with <key> is present.
-  bool has(const std::string& key) const { return (m_data.find(key) != m_data.end()); }
+  bool contains(const std::string& key) const { return (m_data.find(key) != m_data.end()); }
 
   /// Insert (<key>, <value>) into the container.
   bool insert(const std::string& key, const Type& value)
@@ -147,7 +147,7 @@ public:
   /// On average, this method has constant complexity and can therefore be used
   /// in conjunction with at() for conditional queries.
   template <typename Type>
-  bool has(const std::string& key) const
+  bool contains(const std::string& key) const
   {
     auto it = m_data.find(smtk::common::typeName<Type>());
     if (it == m_data.end())
@@ -155,7 +155,7 @@ public:
       return false;
     }
 
-    return static_cast<const PropertiesOfType<Type>&>(*it->second).has(key);
+    return static_cast<const PropertiesOfType<Type>&>(*it->second).contains(key);
   }
 
   /// Insert (<Type>, <key>, <value>) into the container.
@@ -182,7 +182,7 @@ public:
 
   /// Access property of type <Type> indexed by <key>.
   /// On average, this method has constant complexity and can therefore be used
-  /// in conjunction with has() for conditional queries.
+  /// in conjunction with contains() for conditional queries.
   template <typename Type>
   Type& at(const std::string& key)
   {
@@ -191,7 +191,7 @@ public:
 
   /// Access property of type <Type> indexed by <key>.
   /// On average, this method has constant complexity and can therefore be used
-  /// in conjunction with has() for conditional queries.
+  /// in conjunction with contains() for conditional queries.
   template <typename Type>
   const Type& at(const std::string& key) const
   {

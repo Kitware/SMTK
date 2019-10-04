@@ -72,7 +72,7 @@ bool ModelEntityItem::appendValue(const smtk::model::EntityRef& val)
 /**\brief
   *
   */
-bool ModelEntityItem::has(const smtk::model::EntityRef& entity) const
+bool ModelEntityItem::contains(const smtk::model::EntityRef& entity) const
 {
   return this->find(entity.entityRecord()) >= 0;
 }

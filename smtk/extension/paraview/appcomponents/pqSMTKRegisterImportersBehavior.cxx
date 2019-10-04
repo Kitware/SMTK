@@ -245,7 +245,7 @@ void pqSMTKRegisterImportersBehavior::constructImporters(pqSMTKWrapper* wrapper,
       if (groupName == smtk::operation::ImporterGroup::type_name)
       {
         auto importerGroup = smtk::operation::ImporterGroup(operationManager);
-        assert(importerGroup.has(index));
+        assert(importerGroup.contains(index));
         auto fileItemDef = importerGroup.fileItemDefinitionForOperation(index);
         registerSMTKImporter(
           server, importerGroup.resourceForOperation(index), fileItemDef->getFileFilters());
@@ -271,7 +271,7 @@ void pqSMTKRegisterImportersBehavior::constructImporters(pqSMTKWrapper* wrapper,
         if (groupName == smtk::operation::ImporterGroup::type_name)
         {
           auto importerGroup = smtk::operation::ImporterGroup(operationManager);
-          assert(importerGroup.has(index));
+          assert(importerGroup.contains(index));
           auto fileItemDef = importerGroup.fileItemDefinitionForOperation(index);
           unregisterSMTKImporter(server, importerGroup.resourceForOperation(index),
                                  fileItemDef->getFileFilters());

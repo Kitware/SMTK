@@ -116,9 +116,9 @@ void UnitTest()
   smtkTest(links.size() == 3, "Should have 3 links.");
   smtkTest(links.size<MyLinks::Role>(100) == 2, "Should have 2 links.");
 
-  smtkTest(links.has<MyLinks::Left>(4) == true, "Should have a left value of 4.");
-  smtkTest(links.has<MyLinks::Right>(1) == false, "Should not have a right value of 1.");
-  smtkTest(links.has(7) == true, "Should  have an id value of 7.");
+  smtkTest(links.contains<MyLinks::Left>(4) == true, "Should have a left value of 4.");
+  smtkTest(links.contains<MyLinks::Right>(1) == false, "Should not have a right value of 1.");
+  smtkTest(links.contains(7) == true, "Should  have an id value of 7.");
 
   // Erase all links associated with a "right" value of 5
   bool erased = links.erase_all<MyLinks::Right>(5);
@@ -231,9 +231,9 @@ void MoveOnlyTest()
   smtkTest(links.size() == 3, "Should have 3 links.");
   smtkTest(links.size<MyLinks::Role>(100) == 2, "Should have 2 links.");
 
-  smtkTest(links.has<MyLinks::Left>(4) == true, "Should have a left value of 4.");
-  smtkTest(links.has<MyLinks::Right>(1) == false, "Should not have a right value of 1.");
-  smtkTest(links.has(7) == true, "Should  have an id value of 7.");
+  smtkTest(links.contains<MyLinks::Left>(4) == true, "Should have a left value of 4.");
+  smtkTest(links.contains<MyLinks::Right>(1) == false, "Should not have a right value of 1.");
+  smtkTest(links.contains(7) == true, "Should  have an id value of 7.");
 
   // Erase all links associated with a "right" value of 5
   bool erased = links.erase_all<MyLinks::Right>(5);

@@ -117,8 +117,8 @@ int TestResourceProperties(int, char** const)
     test(resource->properties().get<long>()["foo"] == 2, "Value incorrectly assigned");
 
     // Test existence.
-    test(resource->properties().has<long>("foo") == true, "Value incorrectly assigned");
-    test(component->properties().has<long>("foo") == false, "Value incorrectly assigned");
+    test(resource->properties().contains<long>("foo") == true, "Value incorrectly assigned");
+    test(component->properties().contains<long>("foo") == false, "Value incorrectly assigned");
 
     try
     {
@@ -131,7 +131,7 @@ int TestResourceProperties(int, char** const)
     }
 
     component->properties().emplace<double>("foo", 2.3);
-    test(component->properties().has<double>("foo") == true, "Value incorrectly assigned");
+    test(component->properties().contains<double>("foo") == true, "Value incorrectly assigned");
     test(fabs(component->properties().at<double>("foo") - 2.3) < double_epsilon,
       "Value incorrectly emplaced");
 

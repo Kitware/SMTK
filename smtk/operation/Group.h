@@ -93,14 +93,14 @@ public:
   Operation::Specification specification() const;
 
   /// Check if an operation identified by it's unique name is in the group.
-  bool has(const std::string&) const;
+  bool contains(const std::string&) const;
 
   /// Check if an operation identified by its type index is in the group.
-  bool has(const Operation::Index&) const;
+  bool contains(const Operation::Index&) const;
 
   /// Check if an operation identified by its class type is in the group.
   template <typename OperationType>
-  bool has() const;
+  bool contains() const;
 
   /// Obtain values for an operation identified by it's unique name is in the
   /// group.
@@ -153,9 +153,9 @@ Operation::Specification Group::specification() const
 }
 
 template <typename OperationType>
-bool Group::has() const
+bool Group::contains() const
 {
-  return has(std::type_index(typeid(OperationType)).hash_code());
+  return contains(std::type_index(typeid(OperationType)).hash_code());
 }
 
 template <typename OperationType>

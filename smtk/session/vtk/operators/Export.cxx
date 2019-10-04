@@ -196,10 +196,10 @@ Export::Result Export::exportLabelMap()
   const smtk::resource::Component::Properties& properties = component->properties();
   const smtk::resource::ConstPropertiesOfType<StringList> stringProperties =
     properties.get<StringList>();
-  if (stringProperties.has("type") == false || stringProperties.at("type").empty() ||
+  if (stringProperties.contains("type") == false || stringProperties.at("type").empty() ||
     stringProperties.at("type").at(0) != "label map" ||
-    stringProperties.has("label array") == false || stringProperties.at("label array").empty() ||
-    stringProperties.at("label array").at(0).empty())
+    stringProperties.contains("label array") == false ||
+    stringProperties.at("label array").empty() || stringProperties.at("label array").at(0).empty())
   {
     smtkErrorMacro(this->log(), "Model is not a label map or has no label array.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);

@@ -145,6 +145,9 @@ public:
   /// Return true if the ReferenceItem contains a reference to the given object.
   bool contains(const smtk::resource::PersistentObjectPtr& obj) const;
 
+  /// Return true if the component is contained in this item; false otherwise.
+  bool contains(const smtk::common::UUID& compId) const;
+
   /**\brief Invoke a method on each value of this item.
     *
     * If the lambda returns false, iteration will terminate immediately.
@@ -272,11 +275,6 @@ public:
 
   /// A convenience method returning whether the item's definition is extensible.
   bool isExtensible() const;
-
-  /// Return true if the component is contained in this item; false otherwise.
-  bool has(const smtk::common::UUID& compId) const;
-  /// Return true if \a obj is contained in this item; false otherwise.
-  bool has(const PersistentObjectPtr& obj) const;
 
   /**\brief Return an iterator to the first model-entity value in this item.
     *

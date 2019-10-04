@@ -99,7 +99,7 @@ int TestOperationGroup(int, char** const)
   smtkTest(group.operations().size() == 1, "my group should have 1 tag");
 
   // Check if the operation is accessible by name
-  smtkTest(group.has("OperationA"), "Operation group should access OperationA by name");
+  smtkTest(group.contains("OperationA"), "Operation group should access OperationA by name");
 
   // Check if OperationA has any group values.
   auto values = group.values<OperationA>();
@@ -107,10 +107,10 @@ int TestOperationGroup(int, char** const)
 
   // Check if the operation is accessible by template parameter
   smtkTest(
-    group.has<OperationA>(), "Operation group should access OperationA by template parameter");
+    group.contains<OperationA>(), "Operation group should access OperationA by template parameter");
 
   // Check that OperationB is not in the group
-  smtkTest(!group.has("OperationB"), "Operation group should not access OperationB");
+  smtkTest(!group.contains("OperationB"), "Operation group should not access OperationB");
 
   // Create another instance of my group
   smtk::operation::Group sameGroup(group.name(), operationManager);
@@ -133,7 +133,7 @@ int TestOperationGroup(int, char** const)
     smtkTest(values.find("bar") != values.end(), "OperationB should have value \"bar\"")
 
     // Check that OperationB is in the group
-    smtkTest(group.has("OperationB"), "Operation group should access OperationB by name");
+    smtkTest(group.contains("OperationB"), "Operation group should access OperationB by name");
 
   // Check that my group now has two tags
   smtkTest(group.operations().size() == 2, "my group should have 2 tags");
@@ -150,10 +150,12 @@ int TestOperationGroup(int, char** const)
   smtkTest(group.operations().size() == 1, "my group should have 1 tag");
 
   // Check if the operation is accessible by name (should fail)
-  smtkTest(!group.has("OperationA"), "Operation group should not be able to access OperationA");
+  smtkTest(
+    !group.contains("OperationA"), "Operation group should not be able to access OperationA");
 
   // Check if the operation is accessible by template parameter (should fail)
-  smtkTest(!group.has<OperationA>(), "Operation group should not be able to access OperationA");
+  smtkTest(
+    !group.contains<OperationA>(), "Operation group should not be able to access OperationA");
 
   return 0;
 }
