@@ -35,20 +35,16 @@
 #include <vnl/vnl_matrix_fixed.h>
 #include <vnl/vnl_vector_fixed.h>
 
-#include <vcl_algorithm.h>
-#include <vcl_compiler.h>
-#include <vcl_cmath.h>
-#include <vcl_fstream.h>
-#include <vcl_list.h>
-#include <vcl_map.h>
-#include <vcl_memory.h>
-#include <vcl_string.h>
-#include <vcl_vector.h>
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <list>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <functional>
-
-template <typename T>
-using vcl_auto_ptr = std::unique_ptr<T>;
 
 template <unsigned int N>
 class rtvl_level_refine_quadtree;
@@ -80,15 +76,15 @@ public:
   };
 
   rtvl_tokens<N>* tokens;
-  vcl_vector<rtvl_tensor<N> >* calculate_tokens;
+  std::vector<rtvl_tensor<N> >* calculate_tokens;
   rtvl_level_refine_quadtree<N>* quad;      // quad that contains this refine_level
-  vcl_vector<unsigned int> selection; // samples selected to move to the next level;
+  std::vector<unsigned int> selection; // samples selected to move to the next level;
   bool* token_calculated; // instead can we just test if saliency is 0????  don't think so
   double scale;
   int index;
   // even if data not loaded we can know how many points, and thus esitimate memory usage
   unsigned int number_of_points;
-  vcl_string filename;
+  std::string filename;
 
   // a "temporary" variable for finding index of point within level based on an index
   // into points from many levels
@@ -114,7 +110,7 @@ public:
   };
   ~rtvl_level_refine_quadtree()
   {
-    typename vcl_vector<rtvl_level_refine_level<N>*>::const_iterator levels_iter = this->levels.begin();
+    typename std::vector<rtvl_level_refine_level<N>*>::const_iterator levels_iter = this->levels.begin();
     for (; levels_iter != this->levels.end(); levels_iter++)
     {
       delete *(levels_iter);
@@ -127,9 +123,9 @@ public:
   void init(int depth, double* bounds);
 
   void initialize_points(int depth, unsigned int i, unsigned int j, double scale,
-    vcl_vector<unsigned int> pointIndices, rgtl_object_array_points<N>& points);
+    std::vector<unsigned int> pointIndices, rgtl_object_array_points<N>& points);
   void add_selections_for_next_level(double scale, double scale_multiplier, int processLevel,
-    vcl_vector<rtvl_level_refine_level<N>*>& levels_subset);
+    std::vector<rtvl_level_refine_level<N>*>& levels_subset);
 
   rtvl_level_refine_quadtree<N>* find_quad_with_level(int level);
   void get_lengths(double* lengths)
@@ -140,13 +136,13 @@ public:
   rtvl_level_refine_quadtree<N>* get_quad(unsigned int depth, unsigned int i, unsigned int j);
   unsigned int get_number_of_points(int level);
   unsigned int gather_points(int level, double padLength,
-    vcl_vector<rtvl_level_refine_level<N>*>& levels_vector, rgtl_object_array_points<N>& points,
+    std::vector<rtvl_level_refine_level<N>*>& levels_vector, rgtl_object_array_points<N>& points,
     rtvl_level_refine_level<N>**(&pointsLevels), bool countOnly);
-  void gather_levels(int level, vcl_vector<rtvl_level_refine_level<N>*>& levels_vector);
+  void gather_levels(int level, std::vector<rtvl_level_refine_level<N>*>& levels_vector);
   void gather_levels_within_bounds(
-    int level, vcl_vector<rtvl_level_refine_level<N>*>& levels_vector, double required_bounds[4]);
+    int level, std::vector<rtvl_level_refine_level<N>*>& levels_vector, double required_bounds[4]);
   bool within_bounds(double required_bounds[4]);
-  void build_quad(vcl_list<rtvl_level_refine_quadtree<N>*>& quad_stack);
+  void build_quad(std::list<rtvl_level_refine_quadtree<N>*>& quad_stack);
 
   rtvl_level_refine_quadtree<N>* parent;
   // 2 3
@@ -158,15 +154,15 @@ public:
   rtvl_level_refine_quadtree<N>* quadRight;
   rtvl_level_refine_quadtree<N>* quadUp;
 
-  vcl_vector<rtvl_level_refine_level<N>*> levels;
+  std::vector<rtvl_level_refine_level<N>*> levels;
 };
 
 template <unsigned int N>
 void rtvl_level_refine_quadtree<N>::init(int depth, double* quad_bounds)
 {
-  vcl_list<rtvl_level_refine_quadtree<N>*> quad_stack;
+  std::list<rtvl_level_refine_quadtree<N>*> quad_stack;
 
-  vcl_memcpy(this->bounds, quad_bounds, sizeof(double) * 4);
+  std::memcpy(this->bounds, quad_bounds, sizeof(double) * 4);
   this->tree_depth = depth;
 
   quad_stack.push_back(this);
@@ -179,7 +175,7 @@ void rtvl_level_refine_quadtree<N>::init(int depth, double* quad_bounds)
 }
 
 template <unsigned int N>
-void rtvl_level_refine_quadtree<N>::build_quad(vcl_list<rtvl_level_refine_quadtree<N>*>& quad_stack)
+void rtvl_level_refine_quadtree<N>::build_quad(std::list<rtvl_level_refine_quadtree<N>*>& quad_stack)
 {
   if (this->tree_depth > 0)
   {
@@ -194,7 +190,7 @@ void rtvl_level_refine_quadtree<N>::build_quad(vcl_list<rtvl_level_refine_quadtr
       {
         child_bounds[j ? 3 : 2] = this->bounds[j ? 3 : 2];
         child_bounds[j ? 2 : 3] = (this->bounds[2] + this->bounds[3]) / 2.0;
-        vcl_memcpy(this->child[i + j].bounds, child_bounds, sizeof(double) * 4);
+        std::memcpy(this->child[i + j].bounds, child_bounds, sizeof(double) * 4);
         this->child[i + j].tree_depth = this->tree_depth - 1;
         this->child[i + j].parent = this;
         this->child[i + j].position = i + j;
@@ -223,7 +219,7 @@ void rtvl_level_refine_quadtree<N>::build_quad(vcl_list<rtvl_level_refine_quadtr
 
 template <unsigned int N>
 void rtvl_level_refine_quadtree<N>::initialize_points(int depth, unsigned int i, unsigned int j,
-  double scale, vcl_vector<unsigned int> indices, rgtl_object_array_points<N>& points)
+  double scale, std::vector<unsigned int> indices, rgtl_object_array_points<N>& points)
 {
   if (depth != 0)
   {
@@ -253,9 +249,9 @@ void rtvl_level_refine_quadtree<N>::initialize_points(int depth, unsigned int i,
 
 template <unsigned int N>
 void rtvl_level_refine_quadtree<N>::add_selections_for_next_level(double scale, double scale_multiplier,
-  int processLevel, vcl_vector<rtvl_level_refine_level<N>*>& levels_subset)
+  int processLevel, std::vector<rtvl_level_refine_level<N>*>& levels_subset)
 {
-  typename vcl_vector<rtvl_level_refine_level<N>*>::const_iterator levels_subset_iter =
+  typename std::vector<rtvl_level_refine_level<N>*>::const_iterator levels_subset_iter =
     levels_subset.begin();
   unsigned int total_points = 0;
   for (; levels_subset_iter != levels_subset.end(); levels_subset_iter++)
@@ -273,7 +269,7 @@ void rtvl_level_refine_quadtree<N>::add_selections_for_next_level(double scale, 
 
   // Initialize tokens in the next level with ball tensors, and (for purpose of next level)
   // not yet calculated (even though we may be moving some information from this level.
-  next_level->calculate_tokens = new vcl_vector<rtvl_tensor<N> >;
+  next_level->calculate_tokens = new std::vector<rtvl_tensor<N> >;
   next_level->calculate_tokens->resize(total_points);
   next_level->token_calculated = new bool[total_points];
   memset(next_level->token_calculated, false, total_points);
@@ -308,7 +304,7 @@ void rtvl_level_refine_quadtree<N>::add_selections_for_next_level(double scale, 
 template <unsigned int N>
 rtvl_level_refine_quadtree<N>* rtvl_level_refine_quadtree<N>::find_quad_with_level(int level)
 {
-  typename vcl_vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
+  typename std::vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
   for (; level_iter != this->levels.end(); level_iter++)
   {
     if ((*level_iter)->index == level)
@@ -340,7 +336,7 @@ rtvl_level_refine_quadtree<N>* rtvl_level_refine_quadtree<N>::get_quad(
 template <unsigned int N>
 unsigned int rtvl_level_refine_quadtree<N>::get_number_of_points(int level)
 {
-  typename vcl_vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
+  typename std::vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
   for (; level_iter != this->levels.end(); level_iter++)
   {
     if ((*level_iter)->index == level)
@@ -352,7 +348,7 @@ unsigned int rtvl_level_refine_quadtree<N>::get_number_of_points(int level)
   // do we have children?
   if (!this->child)
   {
-    vcl_cerr << "did get_number_of_points but level not found in quad\n";
+    std::cerr << "did get_number_of_points but level not found in quad\n";
     return 0;
   }
 
@@ -370,10 +366,10 @@ unsigned int rtvl_level_refine_quadtree<N>::get_number_of_points(int level)
 
 template <unsigned int N>
 void rtvl_level_refine_quadtree<N>::gather_levels(
-  int level, vcl_vector<rtvl_level_refine_level<N>*>& levels_vector)
+  int level, std::vector<rtvl_level_refine_level<N>*>& levels_vector)
 {
   // does this quad (itself, not child) contain the requested level?
-  typename vcl_vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
+  typename std::vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
   for (; level_iter != this->levels.end(); level_iter++)
   {
     if ((*level_iter)->index == level)
@@ -386,7 +382,7 @@ void rtvl_level_refine_quadtree<N>::gather_levels(
   // do we have children?
   if (!this->child)
   {
-    vcl_cerr << "did gather_levels but level not found in quad\n";
+    std::cerr << "did gather_levels but level not found in quad\n";
     return;
   }
 
@@ -402,7 +398,7 @@ void rtvl_level_refine_quadtree<N>::gather_levels(
 
 template <unsigned int N>
 void rtvl_level_refine_quadtree<N>::gather_levels_within_bounds(
-  int level, vcl_vector<rtvl_level_refine_level<N>*>& levels_vector, double required_bounds[4])
+  int level, std::vector<rtvl_level_refine_level<N>*>& levels_vector, double required_bounds[4])
 {
   // check the bounds
   if (!this->within_bounds(required_bounds))
@@ -411,7 +407,7 @@ void rtvl_level_refine_quadtree<N>::gather_levels_within_bounds(
   }
 
   // does this quad (itself, not child) contain the requested level?
-  typename vcl_vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
+  typename std::vector<rtvl_level_refine_level<N>*>::iterator level_iter = this->levels.begin();
   for (; level_iter != this->levels.end(); level_iter++)
   {
     if ((*level_iter)->index == level)
@@ -424,7 +420,7 @@ void rtvl_level_refine_quadtree<N>::gather_levels_within_bounds(
   // do we have children?
   if (!this->child)
   {
-    vcl_cerr << "did gather_levels_within_bounds but level not found in quad\n";
+    std::cerr << "did gather_levels_within_bounds but level not found in quad\n";
     return;
   }
 
@@ -440,7 +436,7 @@ void rtvl_level_refine_quadtree<N>::gather_levels_within_bounds(
 
 template <unsigned int N>
 unsigned int rtvl_level_refine_quadtree<N>::gather_points(int level, double padLength,
-  vcl_vector<rtvl_level_refine_level<N>*>& levels_vector, rgtl_object_array_points<N>& points,
+  std::vector<rtvl_level_refine_level<N>*>& levels_vector, rgtl_object_array_points<N>& points,
   rtvl_level_refine_level<N>**(&pointsLevels), bool countOnly)
 {
   levels_vector.clear(); // just in case reusing
@@ -479,7 +475,7 @@ unsigned int rtvl_level_refine_quadtree<N>::gather_points(int level, double padL
   }
 
   // so now should have all levels which contain the requested points... how many in all?
-  typename vcl_vector<rtvl_level_refine_level<N>*>::iterator level_iter = levels_vector.begin();
+  typename std::vector<rtvl_level_refine_level<N>*>::iterator level_iter = levels_vector.begin();
   unsigned int total_points = 0;
   for (; level_iter != levels_vector.end(); level_iter++)
   {
@@ -489,7 +485,7 @@ unsigned int rtvl_level_refine_quadtree<N>::gather_points(int level, double padL
   if (total_points == 0)
   {
     //RSB!!! can this happen and be correct result?
-    vcl_cerr << "did gather_points but got no points!\n";
+    std::cerr << "did gather_points but got no points!\n";
     return 0;
   }
 
@@ -517,7 +513,7 @@ unsigned int rtvl_level_refine_quadtree<N>::gather_points(int level, double padL
       memset((*level_iter)->token_calculated, false, (*level_iter)->number_of_points);
       if ((*level_iter)->calculate_tokens == 0)
       {
-        (*level_iter)->calculate_tokens = new vcl_vector<rtvl_tensor<N> >;
+        (*level_iter)->calculate_tokens = new std::vector<rtvl_tensor<N> >;
         (*level_iter)->calculate_tokens->resize((*level_iter)->number_of_points);
       }
     }
@@ -593,22 +589,22 @@ private:
   void setup_level();
   void refine_block(rgtl_object_array_points<N>& blockPoints, rtvl_level_refine_level<N>**(&pointsLevels),
     double refine_bounds[4]);
-  void select_block_samples(vcl_vector<rtvl_level_refine_level<N>*>& levels_vector,
+  void select_block_samples(std::vector<rtvl_level_refine_level<N>*>& levels_vector,
     rgtl_object_array_points<N>& blockPoints, rtvl_level_refine_level<N>**(&pointsLevels),
     double selection_bounds[4]);
 
   rtvl_level_refine<N>* external;
   double scale_multiplier;
   double mask_size;
-  vcl_auto_ptr<rtvl_level_refine_quadtree<N> > tree;
-  //vcl_auto_ptr< rtvl_tokens<N> > level;
-  vcl_auto_ptr<rgtl_octree_objects<N> > objects;
+  std::unique_ptr<rtvl_level_refine_quadtree<N> > tree;
+  //std::unique_ptr< rtvl_tokens<N> > level;
+  std::unique_ptr<rgtl_octree_objects<N> > objects;
   rgtl_octree_cell_bounds<N> bounds;
   unsigned int vote_count;
   double data_bounds[N * 2];
   int current_level;
   double current_scale;
-  vcl_vector<double> level_scale;
+  std::vector<double> level_scale;
   rtvl_level_refine_quadtree<N>* refine_quad_base;
   rtvl_level_refine_quadtree<N>* refine_quad_next;
   rgtl_object_array_points<N> points;
@@ -620,7 +616,7 @@ template <unsigned int N>
 rtvl_level_refine_internal<N>::rtvl_level_refine_internal(rtvl_level_refine<N>* e)
   : external(e)
 {
-  scale_multiplier = vcl_sqrt(2.0);
+  scale_multiplier = std::sqrt(2.0);
   mask_size = 1;
   vote_count = 0;
   current_level = 0;
@@ -631,7 +627,7 @@ rtvl_level_refine_internal<N>::rtvl_level_refine_internal(rtvl_level_refine<N>* 
 template <unsigned int N>
 void rtvl_level_refine_internal<N>::init(unsigned int num_points, double* points_in, double* bounds_in)
 {
-  vcl_memcpy(data_bounds, bounds_in, sizeof(double) * N * 2);
+  std::memcpy(data_bounds, bounds_in, sizeof(double) * N * 2);
 
   // Store points... released after building the tree
   this->points.set_number_of_points(num_points);
@@ -661,11 +657,11 @@ void rtvl_level_refine_internal<N>::build_tree()
   // ~10% more than if average
   int numberPerLeaf =
     (int)(1.1 * this->points.get_number_of_points() / (numberOfDivisions * numberOfDivisions));
-  vcl_vector<unsigned int>** treePoints;
-  treePoints = new vcl_vector<unsigned int>*[numberOfDivisions];
+  std::vector<unsigned int>** treePoints;
+  treePoints = new std::vector<unsigned int>*[numberOfDivisions];
   for (int i = 0; i < numberOfDivisions; i++)
   {
-    treePoints[i] = new vcl_vector<unsigned int>[numberOfDivisions];
+    treePoints[i] = new std::vector<unsigned int>[numberOfDivisions];
     for (int j = 0; j < numberOfDivisions; j++)
     {
       treePoints[i][j].reserve(numberPerLeaf);
@@ -789,7 +785,7 @@ void rtvl_level_refine_internal<N>::select_scale()
 
   // Compute the nearest point to every point.
   unsigned int n = this->points.get_number_of_points();
-  vcl_vector<double> distances(n, 0.0);
+  std::vector<double> distances(n, 0.0);
 
   for (unsigned int id = 0; id < n; ++id)
   {
@@ -799,13 +795,13 @@ void rtvl_level_refine_internal<N>::select_scale()
     int nc = objects->query_closest(p, k + 1, 0, squared_distances, 0);
     if (nc == (k + 1))
     {
-      distances[id] = vcl_sqrt(squared_distances[k]);
+      distances[id] = std::sqrt(squared_distances[k]);
     }
   }
 
   // Choose a scale based on an order-statistic.
   unsigned int nth = static_cast<unsigned int>(distances.size() / 10);
-  vcl_nth_element(distances.begin(), distances.begin() + nth, distances.end());
+  std::nth_element(distances.begin(), distances.begin() + nth, distances.end());
   this->current_scale = distances[nth];
 }
 
@@ -834,7 +830,7 @@ int rtvl_level_refine_internal<N>::initialize_refine_level(
   rtvl_level_refine_quadtree<N>* levelStartQuad = quad_with_level_data;
   unsigned int max_count = 0, current_count;
 
-  vcl_vector<rtvl_level_refine_level<N>*> levels_vector;
+  std::vector<rtvl_level_refine_level<N>*> levels_vector;
   rgtl_object_array_points<N> blockPoints;
   rtvl_level_refine_level<N>** pointsLevels;
   while (levelStartQuad && (this->tree->tree_depth - levelStartQuad->tree_depth) > 1 &&
@@ -923,7 +919,7 @@ int rtvl_level_refine_internal<N>::refine_next_block(const char* base_filename)
     return 0;
   }
 
-  vcl_vector<rtvl_level_refine_level<N>*> levels_vector;
+  std::vector<rtvl_level_refine_level<N>*> levels_vector;
   rgtl_object_array_points<N> blockPoints;
   rtvl_level_refine_level<N>** pointsLevels = 0;
   this->refine_quad_next->gather_points(this->current_level, 6.0 * this->current_scale,
@@ -946,9 +942,9 @@ int rtvl_level_refine_internal<N>::refine_next_block(const char* base_filename)
   this->refine_block(blockPoints, pointsLevels, refine_bounds);
 
   // free the tokens we used to calculate this levels tokens...
-  vcl_vector<rtvl_level_refine_level<N>*> refine_quad_levels_vector;
+  std::vector<rtvl_level_refine_level<N>*> refine_quad_levels_vector;
   this->refine_quad_next->gather_levels(this->current_level, refine_quad_levels_vector);
-  typename vcl_vector<rtvl_level_refine_level<N>*>::const_iterator levels_iter =
+  typename std::vector<rtvl_level_refine_level<N>*>::const_iterator levels_iter =
     refine_quad_levels_vector.begin();
   for (; levels_iter != refine_quad_levels_vector.end(); levels_iter++)
   {
@@ -992,7 +988,7 @@ int rtvl_level_refine_internal<N>::refine_next_block(const char* base_filename)
     char buf[20];
     sprintf(buf, "_%d.tvl", output_counter++);
     (*levels_iter)->filename += buf;
-    vcl_ofstream fout((*levels_iter)->filename.c_str(), vcl_ios::out | vcl_ios::binary);
+    std::ofstream fout((*levels_iter)->filename.c_str(), std::ios::out | std::ios::binary);
     rgtl_serialize_ostream saver(fout);
     saver << *(*levels_iter)->tokens;
     delete (*levels_iter)->tokens;
@@ -1018,7 +1014,7 @@ void rtvl_level_refine_internal<N>::refine_block(rgtl_object_array_points<N>& bl
 {
   unsigned int n = blockPoints.get_number_of_points();
   vnl_matrix_fixed<double, N, N> zero(0.0);
-  vcl_vector<vnl_matrix_fixed<double, N, N> > tensors;
+  std::vector<vnl_matrix_fixed<double, N, N> > tensors;
   tensors.resize(n, zero);
 
   rtvl_weight_smooth<N> tvw(this->current_scale);
@@ -1046,7 +1042,7 @@ void rtvl_level_refine_internal<N>::refine_block(rgtl_object_array_points<N>& bl
     pointsLevels[i]->token_calculated[i - pointsLevels[i]->offset] = true;
 
     // Lookup points within reach of the votee.
-    vcl_vector<int> voter_ids;
+    std::vector<int> voter_ids;
     int num_voters =
       objects->query_sphere(votee_location.data_block(), 3 * this->current_scale, voter_ids);
 
@@ -1071,7 +1067,7 @@ void rtvl_level_refine_internal<N>::refine_block(rgtl_object_array_points<N>& bl
 }
 
 template <unsigned int N>
-void rtvl_level_refine_internal<N>::select_block_samples(vcl_vector<rtvl_level_refine_level<N>*>& levels_vector,
+void rtvl_level_refine_internal<N>::select_block_samples(std::vector<rtvl_level_refine_level<N>*>& levels_vector,
   rgtl_object_array_points<N>& blockPoints, rtvl_level_refine_level<N>**(&pointsLevels),
   double selection_bounds[4])
 {
@@ -1081,9 +1077,9 @@ void rtvl_level_refine_internal<N>::select_block_samples(vcl_vector<rtvl_level_r
   // actually compute the number of tokens we have tokens for
 
   // Queue the tokens ordered from most to least salient.
-  typedef vcl_multimap<double, unsigned int, vcl_greater<double> > saliency_map_type;
+  typedef std::multimap<double, unsigned int, std::greater<double> > saliency_map_type;
   saliency_map_type saliency_map;
-  vcl_vector<saliency_map_type::iterator> saliency_map_index;
+  std::vector<saliency_map_type::iterator> saliency_map_index;
   saliency_map_index.resize(n, saliency_map.end());
   for (unsigned int i = 0; i < n; i++)
   {
@@ -1099,15 +1095,15 @@ void rtvl_level_refine_internal<N>::select_block_samples(vcl_vector<rtvl_level_r
   }
 
   // go through current list of quad "levels" and mask samples already selected
-  typename vcl_vector<rtvl_level_refine_level<N>*>::iterator level_iter = levels_vector.begin();
+  typename std::vector<rtvl_level_refine_level<N>*>::iterator level_iter = levels_vector.begin();
   for (; level_iter != levels_vector.end(); level_iter++)
   {
-    vcl_vector<unsigned int>::iterator selection_iter = (*level_iter)->selection.begin();
+    std::vector<unsigned int>::iterator selection_iter = (*level_iter)->selection.begin();
     for (; selection_iter != (*level_iter)->selection.end(); selection_iter++)
     {
       double p[N];
       (*level_iter)->tokens->points.get_point(*selection_iter, p);
-      vcl_vector<int> masked_ids;
+      std::vector<int> masked_ids;
       int num_masked = objects->query_sphere(p, this->current_scale * this->mask_size, masked_ids);
       // Remove the masked points.
       for (int i = 0; i < num_masked; i++)
@@ -1148,7 +1144,7 @@ void rtvl_level_refine_internal<N>::select_block_samples(vcl_vector<rtvl_level_r
     }
 
     // Lookup points covered by the masking sphere.
-    vcl_vector<int> masked_ids;
+    std::vector<int> masked_ids;
     int num_masked = objects->query_sphere(p, this->current_scale * this->mask_size, masked_ids);
 
     // Remove the masked points.
@@ -1167,14 +1163,14 @@ void rtvl_level_refine_internal<N>::select_block_samples(vcl_vector<rtvl_level_r
 
   // will now have all samples selected for this->refine_quad_next; now actually
   // collect the results, and place in the next level
-  vcl_vector<rtvl_level_refine_level<N>*> refine_quad_levels_vector;
+  std::vector<rtvl_level_refine_level<N>*> refine_quad_levels_vector;
   this->refine_quad_next->gather_levels(this->current_level, refine_quad_levels_vector);
 
-  typename vcl_vector<rtvl_level_refine_level<N>*>::const_iterator levels_iter =
+  typename std::vector<rtvl_level_refine_level<N>*>::const_iterator levels_iter =
     refine_quad_levels_vector.begin();
   for (; levels_iter != refine_quad_levels_vector.end(); levels_iter++)
   {
-    vcl_vector<rtvl_level_refine_level<N>*> levels_subset;
+    std::vector<rtvl_level_refine_level<N>*> levels_subset;
     levels_subset.push_back(*levels_iter);
     rtvl_level_refine_quadtree<N>* next_level_quad = (*levels_iter)->quad;
     if (this->save_next_level_samples_in_parent)
@@ -1187,12 +1183,12 @@ void rtvl_level_refine_internal<N>::select_block_samples(vcl_vector<rtvl_level_r
       levels_subset.push_back(*(++levels_iter));
       // temporary check
       //rtvl_level_refine_quadtree<N> *parent = next_level_quad->parent;
-      //vcl_vector< rtvl_level_refine_level<N>* >::const_iterator levels_subset_iter = levels_subset.begin();
+      //std::vector< rtvl_level_refine_level<N>* >::const_iterator levels_subset_iter = levels_subset.begin();
       //for (; levels_subset_iter != levels_subset.end(); levels_subset_iter++)
       //  {
       //  if ((*levels_subset_iter)->quad->parent != parent)
       //    {
-      //    vcl_cerr << "Parents don't match!!!!!!!\n";
+      //    std::cerr << "Parents don't match!!!!!!!\n";
       //    return;
       //    }
       //  }
@@ -1226,7 +1222,7 @@ template <unsigned int N>
 void rtvl_level_refine_internal<N>::extract_tokens(
   int level, double* bounds_in, rtvl_tokens<N>& out) const
 {
-  vcl_vector<rtvl_level_refine_level<N>*> levels_vector;
+  std::vector<rtvl_level_refine_level<N>*> levels_vector;
   if (!bounds_in)
   {
     // get entire level
@@ -1239,7 +1235,7 @@ void rtvl_level_refine_internal<N>::extract_tokens(
 
   // Count the salient tokens.
   unsigned int number_of_salient_points = 0;
-  typename vcl_vector<rtvl_level_refine_level<N>*>::iterator level_iter = levels_vector.begin();
+  typename std::vector<rtvl_level_refine_level<N>*>::iterator level_iter = levels_vector.begin();
   for (; level_iter != levels_vector.end(); level_iter++)
   {
     // if not loaded, load...
@@ -1248,11 +1244,11 @@ void rtvl_level_refine_internal<N>::extract_tokens(
       if ((*level_iter)->tokens == 0)
       {
         (*level_iter)->tokens = new rtvl_tokens<N>;
-        vcl_ifstream fin((*level_iter)->filename.c_str(), vcl_ios::in | vcl_ios::binary);
+        std::ifstream fin((*level_iter)->filename.c_str(), std::ios::in | std::ios::binary);
         rgtl_serialize_istream loader(fin);
         loader >> *(*level_iter)->tokens;
       }
-      vcl_vector<rtvl_tensor<N> >& tokens = (*level_iter)->tokens->tokens;
+      std::vector<rtvl_tensor<N> >& tokens = (*level_iter)->tokens->tokens;
       if (!bounds_in || ((*level_iter)->quad->bounds[0] >= bounds_in[0] &&
                           (*level_iter)->quad->bounds[1] <= bounds_in[1] &&
                           (*level_iter)->quad->bounds[2] >= bounds_in[2] &&
@@ -1301,7 +1297,7 @@ void rtvl_level_refine_internal<N>::extract_tokens(
         {
           out.scale = (*level_iter)->tokens->scale;
         }
-        vcl_vector<rtvl_tensor<N> >& tokens = (*level_iter)->tokens->tokens;
+        std::vector<rtvl_tensor<N> >& tokens = (*level_iter)->tokens->tokens;
         rgtl_object_array_points<N>& token_points = (*level_iter)->tokens->points;
         for (int i = 0; i < static_cast<int>(tokens.size()); i++)
         {
@@ -1340,7 +1336,7 @@ template <unsigned int N>
 rtvl_level_refine<N>::rtvl_level_refine(unsigned int num_points, double* points, double* bounds)
   : internal_(0)
 {
-  vcl_auto_ptr<internal_type> internal(new internal_type(this));
+  std::unique_ptr<internal_type> internal(new internal_type(this));
   internal->init(num_points, points, bounds);
   this->internal_ = internal.release();
 }
@@ -1364,7 +1360,7 @@ double rtvl_level_refine<N>::compute_scale() const
   // initial level
   if (this->internal_->get_current_scale() >= 0)
   {
-    vcl_cerr << "Scale can only be computed \"immediately\" after init\n";
+    std::cerr << "Scale can only be computed \"immediately\" after init\n";
     return -1;
   }
 
@@ -1377,7 +1373,7 @@ void rtvl_level_refine<N>::set_scale(double scale)
 {
   if (scale <= 0)
   {
-    vcl_cerr << "scale must be > 0!\n";
+    std::cerr << "scale must be > 0!\n";
     return;
   }
   this->internal_->set_scale(scale);

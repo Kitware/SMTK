@@ -36,9 +36,9 @@
 #include "rtvl_level_refine.hxx"
 #include <rgtl/rgtl_serialize_ostream.h>
 
-#include <vcl_fstream.h>
-#include <vcl_memory.h>
-#include <vcl_string.h>
+#include <fstream>
+#include <memory>
+#include <string>
 
 // extract
 #include <rgtl/rgtl_serialize_istream.h>
@@ -57,7 +57,7 @@
 #include <vnl/vnl_matrix_fixed.h>
 #include <vnl/vnl_vector_fixed.h>
 
-#include <vcl_map.h>
+#include <map>
 
 #include "smtk/extension/vtk/io/vtkLIDARPtsWriter.h"
 #include "smtk/extension/vtk/reader/vtkLIDARReader.h"
@@ -105,7 +105,7 @@ public:
   int NumberOfSubBlocks;
   int SplitLevel;
   TerrainLevelBlock*(SubBlock[4]);
-  vcl_vector<TerrainPoint> Terrain;
+  std::vector<TerrainPoint> Terrain;
   TerrainPoint& GetPoint(unsigned int i, unsigned int j) { return this->Terrain[j * this->Ni + i]; }
   TerrainPoint& GetPoint(unsigned int index[2])
   {
@@ -129,7 +129,7 @@ public:
       {
         if (tp.normal[2] < 0.01)
         {
-          vcl_cerr << "bad normal!!!" << vcl_endl << "  n = " << tp.normal << vcl_endl;
+          std::cerr << "bad normal!!!" << std::endl << "  n = " << tp.normal << std::endl;
           return;
         }
         double px = this->Origin[0] + this->Spacing[0] * (i + this->Offset[0]);
@@ -169,12 +169,12 @@ public:
   vtkTerrainExtractionInternal();
   ~vtkTerrainExtractionInternal();
 
-  vcl_vector<rtvl_tokens<3> > CachedTokens;
+  std::vector<rtvl_tokens<3> > CachedTokens;
 
   rtvl_level_refine<3>* Refine;
   rtvl_tokens<3> Tokens;
   unsigned int LevelIndex;
-  typedef vcl_multimap<double, int> SegmentVotersType;
+  typedef std::multimap<double, int> SegmentVotersType;
 
   struct ThreadSpecificData
   {
@@ -193,14 +193,14 @@ public:
 
   double TerrainOrigin[2];
 
-  void WritePoints(vcl_string fileName, int outputPtsFormat, vtkPolyData* outputPD);
-  vtkPolyData* Visualize(vcl_string& outFileName, int outputPtsFormat, bool cacheToDisk,
+  void WritePoints(std::string fileName, int outputPtsFormat, vtkPolyData* outputPD);
+  vtkPolyData* Visualize(std::string& outFileName, int outputPtsFormat, bool cacheToDisk,
     rtvl_tokens<3>& tokens, unsigned int level);
   void DetermineZRotation(vtkPolyData* data);
   bool TestRotatedBounds(vtkPolyData* data, double angle, double& bestArea);
   vtkTransform* Transform;
   vtkTransform* InverseTransform;
-  vcl_vector<vcl_string> TemporaryFiles;
+  std::vector<std::string> TemporaryFiles;
   void DeleteTemporaryFiles();
 
   unsigned int ComputeMemoryRequirement(
@@ -252,7 +252,7 @@ public:
   std::string OutputPath;
   int* OutputSplitCount;
   double* LevelScales;
-  vcl_string* OutputFileNameBase;
+  std::string* OutputFileNameBase;
   vtkUnsignedCharArray* InputRGBScalars;
   vtkUnsignedCharArray* RGBScalars;
   vtkFloatArray* InputIntensityArray;
@@ -309,7 +309,7 @@ vtkTerrainExtractionInternal::~vtkTerrainExtractionInternal()
 
 void vtkTerrainExtractionInternal::DeleteTemporaryFiles()
 {
-  vcl_vector<vcl_string>::iterator tempFileIter = this->TemporaryFiles.begin();
+  std::vector<std::string>::iterator tempFileIter = this->TemporaryFiles.begin();
   for (; tempFileIter != this->TemporaryFiles.end(); tempFileIter++)
   {
     vtksys::SystemTools::RemoveFile(tempFileIter->c_str());
@@ -386,7 +386,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
   vtkMultiBlockDataSet* output =
     vtkMultiBlockDataSet::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  vcl_string baseIntermediateFileName;
+  std::string baseIntermediateFileName;
   if (this->OutputPath)
   {
     this->Internal->OutputPath = this->OutputPath;
@@ -435,7 +435,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
         }
       }
     }
-    vcl_vector<double> points(n * 3);
+    std::vector<double> points(n * 3);
     int offset = 0;
     vtkBoundingBox bbox;
     for (vtkIdType i = 0; i < n; i++)
@@ -524,9 +524,9 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
       double totalLength = length[0] + length[1] + length[2];
       int totalDivisions = 50 * 50 * 50;
       int divisions[3];
-      divisions[0] = int(vcl_floor(pow(totalDivisions, length[0] / totalLength)));
-      divisions[1] = int(vcl_floor(pow(totalDivisions, length[1] / totalLength)));
-      divisions[2] = int(vcl_floor(pow(totalDivisions, length[2] / totalLength)));
+      divisions[0] = int(std::floor(pow(totalDivisions, length[0] / totalLength)));
+      divisions[1] = int(std::floor(pow(totalDivisions, length[1] / totalLength)));
+      divisions[2] = int(std::floor(pow(totalDivisions, length[2] / totalLength)));
       this->Internal->PointLocator->SetDivisions(divisions);
     }
   }
@@ -602,7 +602,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
 void vtkTerrainExtractionFilter::AppendOutputs()
 {
   double maxPoints = 1e7;
-  vcl_string fileExtension;
+  std::string fileExtension;
   vtkNew<vtkAppendPolyData> appendPolyData;
   if (this->GetOutputPtsFormat() == VTK_OUTPUT_TYPE_XML_PD)
   {
@@ -617,7 +617,7 @@ void vtkTerrainExtractionFilter::AppendOutputs()
     fileExtension += ".pts"; //always append .pts, regardless of ASCII or Binary
   }
 
-  vcl_string outputPath = vtksys::SystemTools::GetParentDirectory(
+  std::string outputPath = vtksys::SystemTools::GetParentDirectory(
     vtksys::SystemTools::GetFilenamePath(this->Internal->OutputFileNameBase[0]).c_str());
   outputPath += "/";
   for (int level = this->MinExtractLevel; level <= this->MaxExtractLevel; level++)
@@ -654,7 +654,7 @@ void vtkTerrainExtractionFilter::AppendOutputs()
     {
       for (int j = 0; j < this->Internal->OutputSplitCount[level]; j += blockSize)
       {
-        vcl_string outputFileName = outputPath +
+        std::string outputFileName = outputPath +
           vtksys::SystemTools::GetFilenameName(this->Internal->OutputFileNameBase[level]);
         appendPolyData->RemoveAllInputs();
 
@@ -663,7 +663,7 @@ void vtkTerrainExtractionFilter::AppendOutputs()
           for (int n = 0; n < blockSize; n++)
           {
             int index = (j + n) * this->Internal->OutputSplitCount[level] + (i + m);
-            vcl_string fileName = this->Internal->OutputFileNameBase[level];
+            std::string fileName = this->Internal->OutputFileNameBase[level];
             sprintf(buf, "_%d", index);
             fileName += buf + fileExtension;
             if (vtksys::SystemTools::FileExists(fileName.c_str()))
@@ -719,9 +719,9 @@ void vtkTerrainExtractionFilter::AppendOutputs()
 
     this->Internal->DeleteTemporaryFiles(); // clear any files we've combined into a larger file
     // cleanup the directory we created for the "small" output files
-    vcl_string originalOutputPath =
+    std::string originalOutputPath =
       vtksys::SystemTools::GetFilenamePath(this->Internal->OutputFileNameBase[level]);
-    vcl_string globString = originalOutputPath + "/*";
+    std::string globString = originalOutputPath + "/*";
     vtksys::Glob glob;
     glob.FindFiles(globString);
     if (glob.GetFiles().size() == 0)
@@ -758,14 +758,14 @@ void vtkTerrainExtractionFilter::TokenRefineAnalyze(
 
     for (int i = 0; i < numberOfBlocks; i++)
     {
-      vcl_string tvlBaseFileName = baseFileName;
+      std::string tvlBaseFileName = baseFileName;
       sprintf(buf, "_%02u_%d", level, i);
       tvlBaseFileName += buf;
       int numOutputs = this->Internal->Refine->refine_next_block(tvlBaseFileName.c_str());
       for (int j = 0; j < numOutputs; j++)
       {
         sprintf(buf, "_%d.tvl", j);
-        vcl_string tvlFileName = tvlBaseFileName + buf;
+        std::string tvlFileName = tvlBaseFileName + buf;
         this->Internal->TemporaryFiles.push_back(tvlFileName);
       }
 
@@ -788,7 +788,7 @@ void vtkTerrainExtractionFilter::TokenRefineAnalyze(
 }
 
 void vtkTerrainExtractionInternal::WritePoints(
-  vcl_string fileName, int outputPtsFormat, vtkPolyData* outputPD)
+  std::string fileName, int outputPtsFormat, vtkPolyData* outputPD)
 {
   if (outputPtsFormat == VTK_OUTPUT_TYPE_XML_PD)
   {
@@ -812,7 +812,7 @@ void vtkTerrainExtractionInternal::WritePoints(
   }
 }
 
-vtkPolyData* vtkTerrainExtractionInternal::Visualize(vcl_string& outFileName, int outputPtsFormat,
+vtkPolyData* vtkTerrainExtractionInternal::Visualize(std::string& outFileName, int outputPtsFormat,
   bool cacheToDisk, rtvl_tokens<3>& tokens, unsigned int /*level*/)
 {
   vtkIdType n = tokens.points.get_number_of_points();
@@ -961,9 +961,9 @@ bool vtkTerrainExtractionInternal::TerrainExtractSubLevel(
     double const factor = 1;
     levelBlock->Spacing[0] = levelBlock->Spacing[1] = scale * factor;
     levelBlock->Ni =
-      1 + int(vcl_ceil((this->InputBounds[1] - this->InputBounds[0]) / levelBlock->Spacing[0]));
+      1 + int(std::ceil((this->InputBounds[1] - this->InputBounds[0]) / levelBlock->Spacing[0]));
     levelBlock->Nj =
-      1 + int(vcl_ceil((this->InputBounds[3] - this->InputBounds[2]) / levelBlock->Spacing[1]));
+      1 + int(std::ceil((this->InputBounds[3] - this->InputBounds[2]) / levelBlock->Spacing[1]));
 
     this->Timer->StartTimer();
 
@@ -1100,29 +1100,29 @@ void vtkTerrainExtractionInternal::SetupBlockExtents(TerrainLevelBlock* childBlo
   {
     // instead of bounds should perhaps keep indices, but for now, Bounds work...
     childBlock->Offset[0] =
-      int(vcl_ceil((childBlock->Bounds[0] - this->InputBounds[0]) / childBlock->Spacing[0]));
+      int(std::ceil((childBlock->Bounds[0] - this->InputBounds[0]) / childBlock->Spacing[0]));
     childBlock->Offset[1] =
-      int(vcl_ceil((childBlock->Bounds[2] - this->InputBounds[2]) / childBlock->Spacing[1]));
+      int(std::ceil((childBlock->Bounds[2] - this->InputBounds[2]) / childBlock->Spacing[1]));
     if (childBlock->Bounds[1] == this->InputBounds[1])
     {
       maxIndex =
-        int(vcl_ceil((childBlock->Bounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]));
+        int(std::ceil((childBlock->Bounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]));
     }
     else
     {
       maxIndex =
-        int(vcl_floor((childBlock->Bounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]));
+        int(std::floor((childBlock->Bounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]));
     }
     childBlock->Ni = maxIndex - childBlock->Offset[0] + 1;
     if (childBlock->Bounds[3] == this->InputBounds[3])
     {
       maxIndex =
-        int(vcl_ceil((childBlock->Bounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]));
+        int(std::ceil((childBlock->Bounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]));
     }
     else
     {
       maxIndex =
-        int(vcl_floor((childBlock->Bounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]));
+        int(std::floor((childBlock->Bounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]));
     }
     childBlock->Nj = maxIndex - childBlock->Offset[1] + 1;
     return;
@@ -1139,25 +1139,25 @@ void vtkTerrainExtractionInternal::SetupBlockExtents(TerrainLevelBlock* childBlo
   }
 
   childBlock->Offset[0] =
-    int(vcl_floor(childBlock->SubBlock[0]->Spacing[0] * extent[0] / childBlock->Spacing[0]));
+    int(std::floor(childBlock->SubBlock[0]->Spacing[0] * extent[0] / childBlock->Spacing[0]));
   childBlock->Offset[1] =
-    int(vcl_floor(childBlock->SubBlock[0]->Spacing[1] * extent[2] / childBlock->Spacing[1]));
+    int(std::floor(childBlock->SubBlock[0]->Spacing[1] * extent[2] / childBlock->Spacing[1]));
 
   maxIndex =
-    int(vcl_ceil(childBlock->SubBlock[0]->Spacing[0] * extent[1] / childBlock->Spacing[0]));
+    int(std::ceil(childBlock->SubBlock[0]->Spacing[0] * extent[1] / childBlock->Spacing[0]));
   if (maxIndex >
-    int(vcl_ceil(this->InputBounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]))
+    int(std::ceil(this->InputBounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]))
   {
-    maxIndex = int(vcl_ceil(this->InputBounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]);
+    maxIndex = int(std::ceil(this->InputBounds[1] - this->InputBounds[0]) / childBlock->Spacing[0]);
   }
   childBlock->Ni = maxIndex - childBlock->Offset[0] + 1;
 
   maxIndex =
-    int(vcl_ceil(childBlock->SubBlock[0]->Spacing[1] * extent[3] / childBlock->Spacing[1]));
+    int(std::ceil(childBlock->SubBlock[0]->Spacing[1] * extent[3] / childBlock->Spacing[1]));
   if (maxIndex >
-    int(vcl_ceil(this->InputBounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]))
+    int(std::ceil(this->InputBounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]))
   {
-    maxIndex = int(vcl_ceil(this->InputBounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]);
+    maxIndex = int(std::ceil(this->InputBounds[3] - this->InputBounds[2]) / childBlock->Spacing[1]);
   }
   childBlock->Nj = maxIndex - childBlock->Offset[1] + 1;
 }
@@ -1182,7 +1182,7 @@ bool vtkTerrainExtractionFilter::TerrainExtract(
     this->Internal->OutputSplitCount[i] = 0;
     this->Internal->LevelScales[i] = this->Internal->Refine->get_level_scale(i);
   }
-  this->Internal->OutputFileNameBase = new vcl_string[this->MaxExtractLevel + 1];
+  this->Internal->OutputFileNameBase = new std::string[this->MaxExtractLevel + 1];
 
   // 1st thing we do is figure out the level (if any) that we start splitting at
   unsigned int maxMemoryMB = 400;
@@ -1237,8 +1237,8 @@ unsigned int vtkTerrainExtractionInternal::ComputeMemoryRequirement(
   double scale = this->LevelScales[level];
   if (!splitThisLevel || level < 2)
   {
-    double nX = (vcl_ceil(size[0] / scale) + 1.0) / 1024.0;
-    double nY = (vcl_ceil(size[1] / scale) + 1.0) / 1024.0;
+    double nX = (std::ceil(size[0] / scale) + 1.0) / 1024.0;
+    double nY = (std::ceil(size[1] / scale) + 1.0) / 1024.0;
     persistentMemory = static_cast<unsigned int>(nX * nY * memoryPerPoint);
     if (!splitThisLevel)
     {
@@ -1284,7 +1284,7 @@ vtkPolyData* vtkTerrainExtractionInternal::ExtractSave(TerrainLevelBlock* levelB
     polyData->GetPointData()->AddArray(this->IntensityArray);
   }
 
-  vcl_string levelFileName = this->OutputPath;
+  std::string levelFileName = this->OutputPath;
   char buf[16];
   if (levelSplit)
   {
@@ -1311,10 +1311,10 @@ vtkPolyData* vtkTerrainExtractionInternal::ExtractSave(TerrainLevelBlock* levelB
   if (levelSplit)
   {
     int col = int(
-      vcl_floor(((levelBlock->Bounds[1] + levelBlock->Bounds[0]) / 2.0 - levelBlock->Origin[0]) /
+      std::floor(((levelBlock->Bounds[1] + levelBlock->Bounds[0]) / 2.0 - levelBlock->Origin[0]) /
         (levelBlock->Bounds[1] - levelBlock->Bounds[0])));
     int row = int(
-      vcl_floor(((levelBlock->Bounds[3] + levelBlock->Bounds[2]) / 2.0 - levelBlock->Origin[1]) /
+      std::floor(((levelBlock->Bounds[3] + levelBlock->Bounds[2]) / 2.0 - levelBlock->Origin[1]) /
         (levelBlock->Bounds[3] - levelBlock->Bounds[2])));
     int splitCount = 0x01 << levelBlock->SplitLevel;
     int quadIndex = row * splitCount + col;
@@ -1350,7 +1350,7 @@ VTK_THREAD_RETURN_TYPE vtkExtract2DExecute(void* arg)
 
   // which rows does this thread work on
   unsigned int rowsPerThread = static_cast<int>(
-    vcl_ceil(static_cast<double>(td->LevelBlock->Nj) / static_cast<double>(threadCount)));
+    std::ceil(static_cast<double>(td->LevelBlock->Nj) / static_cast<double>(threadCount)));
   if (threadId * rowsPerThread >= td->LevelBlock->Nj)
   {
     // may end up with scenario where we have some threads with no work to do.
@@ -1482,7 +1482,7 @@ void vtkTerrainExtractionInternal::Extract2D(TerrainLevelBlock* levelBlock,
   unsigned int numberOfThreads = threader->GetGlobalDefaultNumberOfThreads();
   if (levelBlock->Nj < 4 * numberOfThreads)
   {
-    numberOfThreads = int(vcl_ceil(levelBlock->Nj / 4.0));
+    numberOfThreads = int(std::ceil(levelBlock->Nj / 4.0));
   }
   threader->SetNumberOfThreads(numberOfThreads);
 
@@ -1604,7 +1604,7 @@ bool vtkTerrainExtractionInternal::ExtractSegmentInit(
   }
 
   // Lookup voters that contribute to points on this line segment.
-  vcl_vector<int> voter_ids;
+  std::vector<int> voter_ids;
   int num_voters = objects2D.query_sphere(threadData.SegmentXY, 3 * this->Tokens.scale, voter_ids);
   for (int i = 0; i < num_voters; i++)
   {
@@ -1850,7 +1850,7 @@ bool vtkTerrainExtractionInternal::ExtractSegmentLocalMax(TerrainLevelBlock* lev
   double saliency = 0;
   double constraint = 10000;
   double const accuracy = this->Tokens.scale / 100;
-  while ((c.z - a.z > accuracy) && vcl_fabs(constraint) > 1e-8)
+  while ((c.z - a.z > accuracy) && std::fabs(constraint) > 1e-8)
   {
     // When the saliency is not high enough, we want to shrink the
     // window as quickly as possible to end early.
@@ -2004,8 +2004,8 @@ void vtkTerrainExtractionInternal::ExtractNextLevel(TerrainLevelBlock* levelBloc
         levelBlock->Origin[1] + levelBlock->Spacing[1] * (j + levelBlock->Offset[1]) };
       double prev_index[2] = { (p[0] - prevLevelBlock->Origin[0]) / prevLevelBlock->Spacing[0],
         (p[1] - prevLevelBlock->Origin[1]) / prevLevelBlock->Spacing[1] };
-      int prev_i = int(vcl_floor(prev_index[0]));
-      int prev_j = int(vcl_floor(prev_index[1]));
+      int prev_i = int(std::floor(prev_index[0]));
+      int prev_j = int(std::floor(prev_index[1]));
       double dx = prev_index[0] - prev_i;
       double dy = prev_index[1] - prev_j;
       double z = 0;
