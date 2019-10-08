@@ -12,6 +12,7 @@
 
   set(unit_tests_headers
     qtPrintLog.h
+    UnitTestEmittingStringBuffer.h
     )
 
   set(unit_tests_headers_data

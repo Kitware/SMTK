@@ -32,9 +32,18 @@ Logger::~Logger()
   }
 }
 
+Logger& Logger::operator=(const Logger& logger)
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  m_records = logger.m_records;
+  m_hasErrors = logger.m_hasErrors;
+  return *this;
+}
+
 void Logger::addRecord(
   Severity s, const std::string& m, const std::string& fname, unsigned int line)
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   if ((s == Logger::ERROR) || (s == Logger::FATAL))
   {
     m_hasErrors = true;
@@ -52,6 +61,7 @@ void Logger::append(const Logger& l)
     return;
   }
 
+  std::lock_guard<std::mutex> lock(m_mutex);
   m_records.insert(m_records.end(), l.m_records.begin(), l.m_records.end());
   if (l.m_hasErrors)
   {
@@ -63,6 +73,7 @@ void Logger::append(const Logger& l)
 
 void Logger::reset()
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   m_hasErrors = false;
   m_records.clear();
 }
@@ -107,6 +118,7 @@ std::string Logger::toString(const Logger::Record& record, bool includeSourceLoc
   */
 std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   return this->toString(m_records[i], includeSourceLoc);
 }
 
@@ -114,6 +126,12 @@ std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
   *
   */
 std::string Logger::toString(std::size_t i, std::size_t j, bool includeSourceLoc) const
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  return this->toStringInternal(i, j, includeSourceLoc);
+}
+
+std::string Logger::toStringInternal(std::size_t i, std::size_t j, bool includeSourceLoc) const
 {
   std::stringstream ss;
   for (; i < j; i++)
@@ -130,6 +148,7 @@ std::string Logger::toString(std::size_t i, std::size_t j, bool includeSourceLoc
 
 std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   std::stringstream ss;
   ss << "<table>";
   for (; i < j; i++)
@@ -180,6 +199,7 @@ std::string Logger::convertToHTML(bool includeSourceLog) const
   */
 void Logger::setFlushToStream(std::ostream* output, bool ownFile, bool includePast)
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
   if (m_ownStream)
     delete m_stream;
   m_stream = output;
@@ -260,7 +280,7 @@ void Logger::flushRecordsToStream(std::size_t beginRec, std::size_t endRec)
 {
   if (m_stream && beginRec < endRec && beginRec < numberOfRecords() && endRec <= numberOfRecords())
   {
-    (*m_stream) << this->toString(beginRec, endRec);
+    (*m_stream) << this->toStringInternal(beginRec, endRec);
     m_stream->flush();
   }
 }

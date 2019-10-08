@@ -12,11 +12,28 @@
 // .SECTION Description
 // .SECTION See Also
 
+#include "smtk/extension/qt/testing/cxx/UnitTestEmittingStringBuffer.h"
 #include "smtk/extension/qt/qtEmittingStringBuffer.h"
 
 #include "smtk/extension/qt/testing/cxx/qtPrintLog.h"
 
-int UnitTestEmittingStringBuffer(int, char** const)
+#include <QCoreApplication>
+#include <QTime>
+#include <QTimer>
+
+namespace
+{
+void flushEventQueue()
+{
+  QTime dieTime = QTime::currentTime().addMSecs(1);
+  while (QTime::currentTime() < dieTime)
+  {
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
+  }
+}
+}
+
+void TestEmittingStringBuffer::run()
 {
   // Create an instance of Logger
   smtk::io::Logger logger;
@@ -32,13 +49,35 @@ int UnitTestEmittingStringBuffer(int, char** const)
 
   // Create a PrintLogInstance to connect with our EmittingStringBuffer
   qtPrintLog printLog(logger);
-  QObject::connect(&stringbuf, SIGNAL(flush()), &printLog, SLOT(print()));
+  QObject::connect(&stringbuf, SIGNAL(flush()), &printLog, SLOT(print()), Qt::QueuedConnection);
 
   // Test the logger.
   smtkErrorMacro(logger, "this is an error no = " << 45 << " ERROR!");
+  flushEventQueue();
   smtkWarningMacro(logger, "this is a warning no = " << 10.1234 << " WARNING!");
+  flushEventQueue();
   smtkDebugMacro(logger, "this is a Debug no = " << 1 << " DEBUG!");
+  flushEventQueue();
   logger.addRecord(smtk::io::Logger::INFO, "Sample Info String\n");
+  flushEventQueue();
+  emit finished();
+}
+
+int UnitTestEmittingStringBuffer(int argc, char** const argv)
+{
+  QCoreApplication application(argc, argv);
+
+  // Create an instance of our test harness
+  TestEmittingStringBuffer* testEmittingStringBuffer = new TestEmittingStringBuffer(&application);
+
+  // Exit when the task signals finished
+  QObject::connect(testEmittingStringBuffer, &TestEmittingStringBuffer::finished,
+    [&application]() { QTimer::singleShot(0, &application, &QCoreApplication::quit); });
+
+  // Run the task from the application event loop
+  QTimer::singleShot(0, testEmittingStringBuffer, SLOT(run()));
+
+  return application.exec();
 
   return 0;
 }
