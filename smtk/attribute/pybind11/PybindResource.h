@@ -30,6 +30,8 @@ PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resour
   PySharedPtrClass< smtk::attribute::Resource, smtk::resource::Resource> instance(m, "Resource");
   instance
     .def("addAdvanceLevel", &smtk::attribute::Resource::addAdvanceLevel, py::arg("level"), py::arg("label"), py::arg("l_color") = 0)
+    .def("addUniqueRole", &smtk::attribute::Resource::addUniqueRoles, py::arg("role"))
+    .def("addUniqueRoles", &smtk::attribute::Resource::addUniqueRoles, py::arg("roles"))
     .def("addView", &smtk::attribute::Resource::addView, py::arg("arg0"))
     .def("advanceLevelColor", &smtk::attribute::Resource::advanceLevelColor, py::arg("level"))
     .def("advanceLevels", &smtk::attribute::Resource::advanceLevels)
@@ -72,11 +74,13 @@ PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resour
     .def("findViewByType", &smtk::attribute::Resource::findViewByType, py::arg("vtype"))
     .def("hasAttributes", (bool (smtk::attribute::Resource::*) () const) &smtk::attribute::Resource::hasAttributes)
     .def("hasAttributes", (bool (smtk::attribute::Resource::*) (const smtk::resource::ConstPersistentObjectPtr&) const) &smtk::attribute::Resource::hasAttributes, py::arg("object"))
+    .def("isRoleUnique", &smtk::attribute::Resource::isRoleUnique)
     .def("numberOfAdvanceLevels", &smtk::attribute::Resource::numberOfAdvanceLevels)
     .def("numberOfCategories", &smtk::attribute::Resource::numberOfCategories)
     .def("removeAttribute", &smtk::attribute::Resource::removeAttribute, py::arg("att"))
     .def("rename", &smtk::attribute::Resource::rename, py::arg("att"), py::arg("newName"))
     .def("setAdvanceLevelColor", &smtk::attribute::Resource::setAdvanceLevelColor, py::arg("level"), py::arg("l_color"))
+    .def("uniqueRoles", &smtk::attribute::Resource::uniqueRoles)
     .def("updateCategories", &smtk::attribute::Resource::updateCategories)
     .def("updateDerivedDefinitionIndexOffsets", &smtk::attribute::Resource::updateDerivedDefinitionIndexOffsets, py::arg("def"))
     .def("views", &smtk::attribute::Resource::views)

@@ -322,6 +322,11 @@ protected:
   Key linkTo(const PersistentObjectPtr& val);
 
   std::vector<Key> m_keys;
+  /// In order to clean up its links when being deleted the item needs to track its
+  /// referencing attribute.  During deletion, the attribute() call may return nullptr
+  /// not because the owning attribute is being deleted but because the owning item is
+  /// being deleted.
+  smtk::attribute::WeakAttributePtr m_referencedAttribute;
 
 private:
   void assignToCache(std::size_t i, const PersistentObjectPtr& obj) const;

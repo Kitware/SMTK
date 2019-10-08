@@ -55,17 +55,6 @@ public:
     return weakPersistentObject.lock();
   }
 };
-
-class remove_reference : public boost::static_visitor<>
-{
-public:
-  void operator()(std::shared_ptr<smtk::resource::PersistentObject>& persistentObject) const
-  {
-    persistentObject.reset();
-  }
-
-  void operator()(std::weak_ptr<smtk::resource::PersistentObject>&) const {}
-};
 }
 
 struct ReferenceItem::const_iterator::CacheIterator : ReferenceItem::Cache::const_iterator
@@ -193,18 +182,21 @@ bool operator!=(const ReferenceItem::const_iterator& it1, const ReferenceItem::c
 
 ReferenceItem::ReferenceItem(Attribute* owningAttribute, int itemPosition)
   : Item(owningAttribute, itemPosition)
+  , m_referencedAttribute(owningAttribute->shared_from_this())
   , m_cache(new Cache())
 {
 }
 
 ReferenceItem::ReferenceItem(Item* inOwningItem, int itemPosition, int mySubGroupPosition)
   : Item(inOwningItem, itemPosition, mySubGroupPosition)
+  , m_referencedAttribute(inOwningItem->attribute())
   , m_cache(new Cache())
 {
 }
 
 ReferenceItem::ReferenceItem(const ReferenceItem& referenceItem)
   : Item(referenceItem)
+  , m_referencedAttribute(referenceItem.m_referencedAttribute)
   , m_cache(new Cache(*referenceItem.m_cache))
 {
 }
@@ -212,19 +204,26 @@ ReferenceItem::ReferenceItem(const ReferenceItem& referenceItem)
 ReferenceItem& ReferenceItem::operator=(const ReferenceItem& referenceItem)
 {
   Item::operator=(referenceItem);
+  m_referencedAttribute = referenceItem.m_referencedAttribute;
   m_cache.reset(new ReferenceItem::Cache(*(referenceItem.m_cache)));
   return *this;
 }
 
 ReferenceItem::~ReferenceItem()
 {
-  // The unique_ptr for m_cache should handle all of this cleanup. Let's be
-  // sure, though.
-  for (auto it = m_cache->begin(); it != m_cache->end(); ++it)
+  // Lets make sure the resource's links are updated
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if (myAtt != nullptr)
   {
-    boost::apply_visitor(remove_reference(), *it);
+    std::size_t i, n = this->numberOfValues();
+    for (i = 0; i < n; i++)
+    {
+      if (this->isSet(i))
+      {
+        this->unset(i);
+      }
+    }
   }
-  m_cache->clear();
 }
 
 bool ReferenceItem::isValid(const std::set<std::string>& cats) const
@@ -356,9 +355,10 @@ smtk::attribute::ReferenceItem::Key ReferenceItem::objectKey(std::size_t i) cons
 
 bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::ReferenceItem::Key& key)
 {
-  if (i < m_cache->size())
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if ((myAtt != nullptr) && (i < m_cache->size()))
   {
-    this->attribute()->links().removeLink(m_keys[i]);
+    myAtt->links().removeLink(m_keys[i]);
     m_keys[i] = key;
     return true;
   }
@@ -387,16 +387,22 @@ bool ReferenceItem::setObjectValue(const PersistentObjectPtr& val)
 ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+
+  if (myAtt == nullptr)
+  {
+    return ReferenceItem::Key();
+  }
 
   // If the object is a component...
   if (auto component = std::dynamic_pointer_cast<smtk::resource::Component>(val))
   {
-    return this->attribute()->links().addLinkTo(component, def->role());
+    return myAtt->links().addLinkTo(component, def->role());
   }
   // If the object is a resource...
   else if (auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(val))
   {
-    return this->attribute()->links().addLinkTo(resource, def->role());
+    return myAtt->links().addLinkTo(resource, def->role());
   }
 
   // If the object cannot be cast to a resource or component, there's not much
@@ -407,9 +413,10 @@ ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
 bool ReferenceItem::setObjectValue(std::size_t i, const PersistentObjectPtr& val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
-  if (i < m_cache->size() && (val == nullptr || def->isValueValid(val)))
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if ((myAtt != nullptr) && (i < m_cache->size()) && (val == nullptr || def->isValueValid(val)))
   {
-    this->attribute()->links().removeLink(m_keys[i]);
+    myAtt->links().removeLink(m_keys[i]);
     m_keys[i] = this->linkTo(val);
     assignToCache(i, val);
     return true;
@@ -463,6 +470,11 @@ bool ReferenceItem::appendObjectValue(const PersistentObjectPtr& val)
 bool ReferenceItem::removeValue(std::size_t i)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if (myAtt == nullptr)
+  {
+    return false;
+  }
   // If i < the required number of values this is the same as unset - else if
   // its extensible remove it completely
   if (i < def->numberOfRequiredValues())
@@ -474,7 +486,7 @@ bool ReferenceItem::removeValue(std::size_t i)
   {
     return false; // i can't be greater than the number of values
   }
-  this->attribute()->links().removeLink(m_keys[i]);
+  myAtt->links().removeLink(m_keys[i]);
   m_keys.erase(m_keys.begin() + i);
   (*m_cache).erase((*m_cache).begin() + i);
   return true;
@@ -659,8 +671,14 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 
 smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceItem::Key& key) const
 {
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if (myAtt == nullptr)
+  {
+    return PersistentObjectPtr();
+  }
+
   // We first try to resolve the item as a component.
-  auto linkedObject = this->attribute()->links().linkedObject(key);
+  auto linkedObject = myAtt->links().linkedObject(key);
   if (linkedObject != nullptr)
   {
     // We can resolve the linked object.
@@ -669,10 +687,9 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
   // If we cannot resolve the linked object, let's check to see if the object
   // is held by the same resource as this ReferenceItem. There's no need for
   // resource management in this event.
-  else if (!key.first.isNull() &&
-    this->attribute()->resource()->links().resolve(this->attribute()->resource()))
+  else if (!key.first.isNull() && myAtt->resource()->links().resolve(myAtt->resource()))
   {
-    return this->attribute()->links().linkedObject(key);
+    return myAtt->links().linkedObject(key);
   }
   return PersistentObjectPtr();
 }
@@ -680,7 +697,11 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
 bool ReferenceItem::resolve() const
 {
   bool allResolved = true;
-
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if (myAtt == nullptr)
+  {
+    return false;
+  }
   // We treat keys and values as vectors in lockstep with each other. If they
   // are not, then something unexpected has occured.
   assert(m_keys.size() == m_cache->size());
@@ -703,7 +724,7 @@ bool ReferenceItem::resolve() const
     //       resource itself is being managed.
     // if (reference == nullptr)
     if ((reference == nullptr) ||
-      (!def->holdReference() && this->attribute()->resource()->manager() != nullptr))
+      (!def->holdReference() && myAtt->resource()->manager() != nullptr))
     {
       // ...set it equal to the object pointer accessed using its key.
       auto newValue = this->objectValue(*key);

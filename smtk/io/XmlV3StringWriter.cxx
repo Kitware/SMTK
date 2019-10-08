@@ -60,6 +60,19 @@ void XmlV3StringWriter::generateXml(smtk::io::Logger& logger)
 {
   XmlV2StringWriter::generateXml(logger);
   auto root = this->topRootNode();
+
+  // Do we have unique roles to save?
+  const std::set<smtk::resource::Links::RoleType>& roles = m_resource->uniqueRoles();
+  if (!roles.empty())
+  {
+    auto uNodes = root.append_child("UniqueRoles");
+    for (const auto& role : m_resource->uniqueRoles())
+    {
+      auto rNode = uNodes.append_child("Role");
+      rNode.append_attribute("ID").set_value(role);
+    }
+  }
+
   // Process Resource Association Info
   auto associations = m_resource->associations();
   // Find the XML to place this info
@@ -526,6 +539,8 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
   {
     node.append_attribute("HoldReference") = true;
   }
+
+  node.append_attribute("Role") = idef->role();
 
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());

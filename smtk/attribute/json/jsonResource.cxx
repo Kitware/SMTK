@@ -112,6 +112,12 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     j["AdvanceLevels"] = advanceLevelsObj;
   }
 
+  // Do we have unique roles to be saved?
+  const std::set<smtk::resource::Links::RoleType>& roles = res->uniqueRoles();
+  if (!roles.empty())
+  {
+    j["UniqueRoles"] = roles;
+  }
   // In Xml we have control over including definitions, instances,
   // modelInformation and views.
 
@@ -332,7 +338,15 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       analyses.setTopLevelExclusive(j.at("AnalysesTopLevelExclusive").get<bool>());
     }
   }
-
+  // Do we have unique roles?
+  auto uniqueRoles = j.find("UniqueRoles");
+  if (uniqueRoles != j.end())
+  {
+    for (auto role : *uniqueRoles)
+    {
+      res->addUniqueRole(role);
+    }
+  }
   //Process AdvanceLevel info
   try
   {

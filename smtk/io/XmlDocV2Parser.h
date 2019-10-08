@@ -26,8 +26,8 @@ class SMTKCORE_EXPORT XmlDocV2Parser : public XmlDocV1Parser
 public:
   XmlDocV2Parser(smtk::attribute::ResourcePtr resource);
   virtual ~XmlDocV2Parser();
+  using XmlDocV1Parser::process;
   void process(pugi::xml_document& doc) override;
-  void process(pugi::xml_node& rootNode) override { XmlDocV1Parser::process(rootNode); }
 
   static bool canParse(pugi::xml_node& node);
   static bool canParse(pugi::xml_document& doc);

@@ -20,6 +20,8 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
@@ -265,6 +267,15 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   // Lets get a set of possible candidates that could be assigned to the item
   auto objSet = this->associatableObjects(ignoreResource);
   std::vector<smtk::resource::PersistentObjectPtr> objects(objSet.begin(), objSet.end());
+  // In the case of the uniqueness condition, the componentItem's value itself may not be in the set
+  // returned (since adding that component would not be legal or perhaps an operation has assigned a
+  // component that would bypass the potential souurces of components.  For example, the component
+  // may have been assigned from a resource that was not directly associated to the attribute resource.
+  // Just to be safe lets add the item's current value (if set)
+  if (item->isSet())
+  {
+    objects.push_back(item->objectValue());
+  }
   smtk::resource::PersistentObjectPtr selectObj = item->objectValue();
   // Lets sort the list
   std::sort(std::begin(objects), std::end(objects),
@@ -468,12 +479,13 @@ void qtReferenceItemComboBox::selectItem(int index)
 std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associatableObjects(
   const smtk::common::UUID& ignoreResource) const
 {
-  std::set<smtk::resource::PersistentObjectPtr> result;
+  std::set<smtk::resource::PersistentObjectPtr> candidates;
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
   auto theAttribute = item->attribute();
+  auto attResource = theAttribute->attributeResource();
   if (item == nullptr)
   {
-    return result;
+    return candidates;
   }
 
   // There are 3 possible sources of Persistent Objects:
@@ -500,15 +512,14 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
       {
         if (auto object = associations->objectValue(i))
         {
-          result.insert(object);
+          candidates.insert(object);
         }
       }
     }
-    return result;
+    return this->checkUniquenessCondition(candidates);
   }
 
   auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
-  auto attResource = theAttribute->attributeResource();
   auto assocMap = item->acceptableEntries();
   auto resManager = this->uiManager()->resourceManager();
 
@@ -543,12 +554,12 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
           {
             if (j->second.empty())
             {
-              result.insert(resource);
+              candidates.insert(resource);
             }
             else
             {
               auto comps = resource->find(j->second);
-              result.insert(comps.begin(), comps.end());
+              candidates.insert(comps.begin(), comps.end());
             }
           }
         }
@@ -579,20 +590,53 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
         {
           if (j->second.empty())
           {
-            result.insert(resource);
+            candidates.insert(resource);
           }
           else
           {
             auto comps = resource->find(j->second);
-            result.insert(comps.begin(), comps.end());
+            candidates.insert(comps.begin(), comps.end());
           }
         }
       }
     }
   }
-  return result;
+  return this->checkUniquenessCondition(candidates);
 }
 
+std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::checkUniquenessCondition(
+  const std::set<smtk::resource::PersistentObjectPtr>& objSet) const
+{
+  auto compItem = m_itemInfo.itemAs<attribute::ComponentItem>();
+  auto theAttribute = compItem->attribute();
+  auto attResource = theAttribute->attributeResource();
+  if (compItem == nullptr)
+  {
+    return objSet;
+  }
+  auto compDef = compItem->definitionAs<ComponentItemDefinition>();
+  auto role = compDef->role();
+  if (!attResource->isRoleUnique(role))
+  {
+    return objSet;
+  }
+  std::set<smtk::resource::PersistentObjectPtr> result;
+  for (auto& obj : objSet)
+  {
+    auto comp = dynamic_pointer_cast<smtk::resource::Component>(obj);
+    if ((comp != nullptr) && compItem->isValueValid(comp))
+    {
+      result.insert(comp);
+    }
+    else if (comp != nullptr)
+    {
+      auto otherAtt = attResource->findAttribute(comp, compDef->role());
+      std::cerr << "comboBox - comp:" << comp->name()
+                << " is not allowed due to: " << otherAtt->name() << std::endl;
+    }
+  }
+  return result;
+}
 void qtReferenceItemComboBox::removeObservers()
 {
   if (m_operationObserverKey.assigned())

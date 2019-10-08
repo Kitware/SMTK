@@ -592,18 +592,26 @@ void Definition::buildAttribute(Attribute* att) const
   {
     // This is the "base definition" so first we should make sure the attribute
     // is "empty" of items and associations
+    if (att->m_associatedObjects)
+    {
+      att->m_associatedObjects->detachOwningAttribute();
+    }
     att->removeAllItems();
     att->m_associatedObjects = ReferenceItemPtr();
   }
 
   // If the definition allows associations, create an item to hold them,
   // overriding any rule from the base definition:
-  auto localRule = m_acceptsRules;
-  if (localRule)
+  if (m_acceptsRules)
   {
+    if (att->m_associatedObjects)
+    {
+      att->m_associatedObjects->detachOwningAttribute();
+    }
+
     att->m_associatedObjects =
-      smtk::dynamic_pointer_cast<ReferenceItem>(localRule->buildItem(att, -2));
-    att->m_associatedObjects->setDefinition(localRule);
+      smtk::dynamic_pointer_cast<ReferenceItem>(m_acceptsRules->buildItem(att, -2));
+    att->m_associatedObjects->setDefinition(m_acceptsRules);
   }
 
   // Next - for each item definition we have build and add the appropriate

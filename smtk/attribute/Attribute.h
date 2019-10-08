@@ -299,6 +299,9 @@ protected:
     const smtk::common::UUID& myId);
   Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition);
 
+  /// Constructs the attribute from its definition
+  void build();
+
   void removeAllItems();
   /// Used to disassociate an attribute from an object without checking constraints.
   /// Typical use is either when all attributes are being disassocaited from the same
