@@ -29,6 +29,7 @@ namespace attribute
 
 class Attribute;
 class ReferenceItemDefinition;
+class ValueItemDefinition;
 
 /**\brief Hold associations that link resources or components as an attribute value.
   *
@@ -301,6 +302,7 @@ public:
 
 protected:
   friend class ReferenceItemDefinition;
+  friend class ValueItemDefinition;
   friend class Definition;
 
   /// Construct an item given its owning attribute and location in the attribute.

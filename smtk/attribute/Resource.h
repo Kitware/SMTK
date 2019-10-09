@@ -122,7 +122,9 @@ public:
     */
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
     const std::string&) const override;
-
+  ///\brief Given an attribute definition, construct a valid query to retrive attributes of that type
+  static std::string createAttributeQuery(const smtk::attribute::DefinitionPtr& def);
+  static std::string createAttributeQuery(const std::string& defType);
   // visit all components in the resource.
   void visit(smtk::resource::Component::Visitor&) const override;
 

@@ -17,7 +17,6 @@ set(attributeTests
   extensibleAttributeCopyTest
   fileValidationTest
   attributeAutoNamingTest
-  attributeReferencingTest
   categoryTest
   referenceItemStorageTest
 )
@@ -32,7 +31,7 @@ foreach(tst ${attributeTests})
     ${Boost_LIBRARIES}
   )
   add_test(NAME ${tst} COMMAND ${tst} ${${tst}_ARGS})
-  set_tests_properties(${tst} PROPERTIES SKIP_RETURN_CODE 125)
+  set_tests_properties(${tst} PROPERTIES SKIP_RETURN_CODE 125 LABELS "Attribute")
 endforeach()
 
 ################################################################################
@@ -105,7 +104,7 @@ endif()
 
 
 smtk_unit_tests(
-  Label "Attribute"
+  LABEL "Attribute"
   SOURCES ${unit_tests}
   SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
   LIBRARIES

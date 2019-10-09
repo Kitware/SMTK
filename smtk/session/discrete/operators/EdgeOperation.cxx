@@ -16,7 +16,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
@@ -357,7 +356,7 @@ EdgeOperation::Result EdgeOperation::operateInternal()
         }
         if (modifiedMeshes.size() > 0)
         {
-          smtk::attribute::MeshItemPtr resultMeshes = result->findMesh("mesh_modified");
+          smtk::attribute::ComponentItemPtr resultMeshes = result->findMesh("mesh_modified");
           if (resultMeshes)
             resultMeshes->appendValues(modifiedMeshes);
         }

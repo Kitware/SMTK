@@ -32,7 +32,6 @@ namespace extension
 {
 class qtItem;
 class qtFileItem;
-class qtMeshSelectionItem;
 class qtModelEntityItem;
 class qtBaseView;
 class qtModelView;

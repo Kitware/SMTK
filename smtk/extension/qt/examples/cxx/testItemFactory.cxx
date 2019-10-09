@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeItemWidgetFactory.h"
-#include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtComponentItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
@@ -22,9 +21,7 @@
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
-#include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 

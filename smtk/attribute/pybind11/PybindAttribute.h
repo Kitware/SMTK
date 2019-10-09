@@ -24,10 +24,7 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/Resource.h"
@@ -81,14 +78,8 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("findGroup", (smtk::attribute::ConstGroupItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findGroup, py::arg("name"))
     .def("findInt", (smtk::attribute::IntItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findInt, py::arg("name"))
     .def("findInt", (smtk::attribute::ConstIntItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findInt, py::arg("name"))
-    .def("findMesh", (smtk::attribute::MeshItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findMesh, py::arg("name"))
-    .def("findMesh", (smtk::attribute::ConstMeshItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findMesh, py::arg("name"))
-    .def("findMeshSelection", (smtk::attribute::MeshSelectionItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findMeshSelection, py::arg("name"))
-    .def("findMeshSelection", (smtk::attribute::ConstMeshSelectionItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findMeshSelection, py::arg("name"))
     .def("findModelEntity", (smtk::attribute::ModelEntityItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findModelEntity, py::arg("name"))
     .def("findModelEntity", (smtk::attribute::ConstModelEntityItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findModelEntity, py::arg("name"))
-    .def("findRef", (smtk::attribute::RefItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findRef, py::arg("name"))
-    .def("findRef", (smtk::attribute::ConstRefItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findRef, py::arg("name"))
     .def("findResource", (smtk::attribute::ResourceItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findResource, py::arg("name"))
     .def("findResource", (smtk::attribute::ConstResourceItemPtr (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::findResource, py::arg("name"))
     .def("findString", (smtk::attribute::StringItemPtr (smtk::attribute::Attribute::*)(::std::string const &)) &smtk::attribute::Attribute::findString, py::arg("name"))
@@ -111,8 +102,6 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("_itemAtPath", (smtk::attribute::ItemPtr (smtk::attribute::Attribute::*)(::std::string const &, ::std::string const &, bool)) &smtk::attribute::Attribute::itemAtPath, py::arg("path"), py::arg("seps") = "/", py::arg("activeOnly") = false)
     .def("name", &smtk::attribute::Attribute::name)
     .def("numberOfItems", &smtk::attribute::Attribute::numberOfItems)
-    // .def("references", &smtk::attribute::Attribute::references, py::arg("list"))
-    .def("references", [](const smtk::attribute::Attribute &a) { std::vector<smtk::attribute::ItemPtr> v; a.references(v); return v; })
     .def("removeAllAssociations", &smtk::attribute::Attribute::removeAllAssociations)
     .def("setAppliesToBoundaryNodes", &smtk::attribute::Attribute::setAppliesToBoundaryNodes, py::arg("appliesValue"))
     .def("setAppliesToInteriorNodes", &smtk::attribute::Attribute::setAppliesToInteriorNodes, py::arg("appliesValue"))

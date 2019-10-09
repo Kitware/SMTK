@@ -13,10 +13,8 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAssociationWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtItem.h"
-#include "smtk/extension/qt/qtReferencesWidget.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtVoidItem.h"
@@ -26,7 +24,6 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
@@ -119,7 +116,6 @@ public:
   QLabel* PropDefLabel;
 
   QPointer<qtAssociationWidget> AssociationsWidget;
-  QPointer<qtReferencesWidget> ReferencesWidget;
 
   // <category, AttDefinitions>
   QMap<QString, QList<smtk::attribute::DefinitionPtr> > AttDefMap;
@@ -341,11 +337,9 @@ void qtAttributeView::createWidget()
   frame->addWidget(BottomFrame);
 
   // the association widget
-  this->Internals->ReferencesWidget = new qtReferencesWidget(frame);
   this->Internals->AssociationsWidget = new qtAssociationWidget(frame, this);
   this->updateAssociationEnableState(smtk::attribute::AttributePtr());
   BottomLayout->addWidget(this->Internals->AssociationsWidget);
-  BottomLayout->addWidget(this->Internals->ReferencesWidget);
 
   this->Internals->ListTable->horizontalHeader()->setSectionResizeMode(
     QHeaderView::ResizeToContents);
@@ -444,7 +438,7 @@ QTableWidgetItem* qtAttributeView::getSelectedItem()
 
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
 {
-  bool rvisible = false, avisible = false;
+  bool avisible = false;
   if (theAtt && (!m_hideAssociations))
   {
     if (theAtt->definition()->associationRule())
@@ -454,7 +448,6 @@ void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr
     }
   }
   this->Internals->AssociationsWidget->setVisible(avisible);
-  this->Internals->ReferencesWidget->setVisible(rvisible);
 }
 
 void qtAttributeView::onListBoxSelectionChanged()
@@ -1252,11 +1245,6 @@ void qtAttributeView::addComparativeAttribute(smtk::attribute::AttributePtr att)
         qtAttributeItemInfo info(attItem, comp, NULL, this);
         auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
-        qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);
-        if (arItem)
-        {
-          arItem->setAttributeWidgetVisible(false);
-        }
         vtWidget->setCellWidget(row, col, qItem->widget());
         vtWidget->setItem(row, col, new QTableWidgetItem());
         break;
@@ -1391,11 +1379,6 @@ void qtAttributeView::addComparativeProperty(
         qtAttributeItemInfo info(attItem, comp, NULL, this);
         auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
-        qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);
-        if (arItem)
-        {
-          arItem->setAttributeWidgetVisible(false);
-        }
         vtWidget->setCellWidget(insertRow, col, qItem->widget());
         vtWidget->setItem(insertRow, col, new QTableWidgetItem());
         break;

@@ -98,6 +98,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
   {
     return;
   }
+  std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
   auto temp = smtk::dynamic_pointer_cast<Item>(itemPtr);
   smtk::attribute::from_json(j, temp);
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
@@ -146,7 +147,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
         json itemValue = itemJson.at("ItemValue");
         smtk::attribute::ItemPtr subItemPtr = itemIter->second;
         smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-          itemValue, subItemPtr, itemExpressionInfo, attRefInfo);
+          itemValue, subItemPtr, itemExpressionInfo, attRefInfo, convertedAttDefs);
       }
       catch (std::exception& /*e*/)
       {

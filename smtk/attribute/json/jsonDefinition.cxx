@@ -13,7 +13,6 @@
 #include "nlohmann/json.hpp"
 
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Resource.h"
@@ -30,10 +29,6 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::DefinitionPtr& defPtr)
 {
   j["Type"] = defPtr->type();
@@ -124,7 +119,7 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::DefinitionPtr& defPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo)
+  std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 {
   // The caller should make sure that defPtr is valid since it's not default constructible
   if (!defPtr.get())
@@ -279,7 +274,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
       for (json::iterator iter = itemDefs.begin(); iter != itemDefs.end(); iter++)
       {
         smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-          iter, defPtr, resource, expressionDefInfo, attRefDefInfo);
+          iter, defPtr, resource, convertedAttDefs);
       }
     }
   }

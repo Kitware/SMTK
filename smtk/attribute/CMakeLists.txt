@@ -21,18 +21,12 @@ set(jsonAttributeHeaders
   json/jsonIntItemDefinition.h
   json/jsonItem.h
   json/jsonItemDefinition.h
-  json/jsonMeshItem.h
-  json/jsonMeshItemDefinition.h
-  json/jsonMeshSelectionItem.h
-  json/jsonMeshSelectionItemDefinition.h
   json/jsonModelEntityItem.h
   json/jsonModelEntityItemDefinition.h
   json/jsonStringItem.h
   json/jsonStringItemDefinition.h
   json/jsonReferenceItem.h
   json/jsonReferenceItemDefinition.h
-  json/jsonRefItem.h
-  json/jsonRefItemDefinition.h
   json/jsonResourceItem.h
   json/jsonResourceItemDefinition.h
   json/jsonValueItem.h
@@ -64,20 +58,14 @@ set(jsonAttributeSrcs
   json/jsonIntItemDefinition.cxx
   json/jsonItem.cxx
   json/jsonItemDefinition.cxx
-  json/jsonMeshItem.cxx
-  json/jsonMeshItemDefinition.cxx
-  json/jsonMeshSelectionItem.cxx
-  json/jsonMeshSelectionItemDefinition.cxx
   json/jsonModelEntityItem.cxx
   json/jsonModelEntityItemDefinition.cxx
   json/jsonStringItem.cxx
   json/jsonStringItemDefinition.cxx
   json/jsonReferenceItem.cxx
   json/jsonReferenceItemDefinition.cxx
-  json/jsonRefItem.cxx
   json/jsonResourceItem.cxx
   json/jsonResourceItemDefinition.cxx
-  json/jsonRefItemDefinition.cxx
   json/jsonValueItem.cxx
   json/jsonValueItemDefinition.cxx
   json/jsonVoidItem.cxx
@@ -109,17 +97,11 @@ set(attributeHeaders
   IntItemDefinition.h
   Item.h
   ItemDefinition.h
-  MeshItem.h
-  MeshItemDefinition.h
-  MeshSelectionItem.h
-  MeshSelectionItemDefinition.h
   ModelEntityItem.h
   ModelEntityItemDefinition.h
   PathGrammar.h
   ReferenceItem.h
   ReferenceItemDefinition.h
-  RefItem.h
-  RefItemDefinition.h
   Registrar.h
   ResourceItem.h
   ResourceItemDefinition.h
@@ -168,14 +150,8 @@ set(attributeSrcs
   IntItemDefinition.cxx
   Item.cxx
   ItemDefinition.cxx
-  MeshItem.cxx
-  MeshItemDefinition.cxx
-  MeshSelectionItem.cxx
-  MeshSelectionItemDefinition.cxx
   ModelEntityItem.cxx
   ModelEntityItemDefinition.cxx
-  RefItem.cxx
-  RefItemDefinition.cxx
   ReferenceItem.cxx
   ReferenceItemDefinition.cxx
   Registrar.cxx

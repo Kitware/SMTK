@@ -76,8 +76,6 @@ protected:
   virtual void processItemDefinitionType(
     pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
 
-  void processRefItem(pugi::xml_node& node, smtk::attribute::RefItemPtr item);
-  void processRefDef(pugi::xml_node& node, smtk::attribute::RefItemDefinitionPtr idef);
   void processDoubleItem(pugi::xml_node& node, smtk::attribute::DoubleItemPtr item);
   void processDoubleDef(pugi::xml_node& node, smtk::attribute::DoubleItemDefinitionPtr idef);
   void processDirectoryItem(pugi::xml_node& node, smtk::attribute::DirectoryItemPtr item);
@@ -96,11 +94,6 @@ protected:
   void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ModelEntityItemPtr item);
   void processModelEntityDef(
     pugi::xml_node& node, smtk::attribute::ModelEntityItemDefinitionPtr idef);
-  void processMeshSelectionItem(pugi::xml_node& node, smtk::attribute::MeshSelectionItemPtr item);
-  void processMeshSelectionItemDef(
-    pugi::xml_node& node, smtk::attribute::MeshSelectionItemDefinitionPtr idef);
-  void processMeshEntityItem(pugi::xml_node& node, smtk::attribute::MeshItemPtr item);
-  void processMeshEntityDef(pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef);
   void processValueItem(pugi::xml_node& node, smtk::attribute::ValueItemPtr item);
   void processDateTimeDef(pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);

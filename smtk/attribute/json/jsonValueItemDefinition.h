@@ -29,16 +29,11 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::ValueItemDefinitionPtr& defPtr);
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
-  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr,
-  std::vector<ItemExpressionDefInfo>& expressionDefInfo, std::vector<AttRefDefInfo>& attRefDefInfo);
+  smtk::attribute::ValueItemDefinitionPtr& defPtr, const smtk::attribute::ResourcePtr& resPtr);
 
 /**\ A helper function to process Derived type of valueItemDefinition and
    * covert it to json
@@ -113,10 +108,8 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
    * covert it to derived type of valueItemDefinition
    */
 template <typename ItemDefType, typename BasicType>
-static void processDerivedValueDefFromJson(const json& j, ItemDefType defPtr,
-  const smtk::attribute::ResourcePtr& /*resPtr*/,
-  std::vector<ItemExpressionDefInfo>& /*expressionDefInfo*/,
-  std::vector<AttRefDefInfo>& /*attRefDefInfo*/)
+static void processDerivedValueDefFromJson(
+  const json& j, ItemDefType defPtr, const smtk::attribute::ResourcePtr& /*resPtr*/)
 
 {
   json discreteInfo, valueAndStructure;

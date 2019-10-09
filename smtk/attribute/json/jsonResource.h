@@ -25,10 +25,6 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 using json = nlohmann::json;
 
 /**\brief Provide a way to serialize Resource. It would stick with attribute

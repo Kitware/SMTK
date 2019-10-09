@@ -60,7 +60,6 @@ PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute
     .def(py::init<::smtk::attribute::ItemDefinition::CopyInfo const &>())
     // .def_readwrite("ToResource", &smtk::attribute::ItemDefinition::CopyInfo::ToResource)
     .def_readwrite("UnresolvedExpItems", &smtk::attribute::ItemDefinition::CopyInfo::UnresolvedExpItems)
-    .def_readwrite("UnresolvedRefItems", &smtk::attribute::ItemDefinition::CopyInfo::UnresolvedRefItems)
     ;
   return instance;
 }

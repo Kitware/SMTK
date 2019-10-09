@@ -28,7 +28,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
-#include "smtk/attribute/MeshItem.h"
 #include "smtk/attribute/Resource.h"
 
 #include <QBitmap>

@@ -11,7 +11,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
 
 #include "smtk/io/ExportMesh.h"
 #include "smtk/io/ImportMesh.h"

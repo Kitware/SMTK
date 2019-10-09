@@ -26,7 +26,7 @@ namespace smtk
 namespace attribute
 {
 class Attribute;
-class RefItem;
+class ComponentItem;
 class ValueItemDefinition;
 class SMTKCORE_EXPORT ValueItem : public smtk::attribute::Item
 {
@@ -58,7 +58,7 @@ public:
   /**
    * @brief visitChildren Invoke a function on each (or, if \a findInActiveChildren
    * is true, each active) child item. If a subclass presents childern items(ValueItem,
-   * Group, RefItem, ...) then this function should be overriden.
+   * Group, ComponentItem, ...) then this function should be overriden.
    * @param visitor a lambda function which would be applied on children items
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
    */
@@ -102,7 +102,7 @@ public:
     return m_isSet[elementIndex];
   }
   virtual void unset(std::size_t elementIndex = 0) { m_isSet[elementIndex] = false; }
-  smtk::attribute::RefItemPtr expressionReference(std::size_t elementIndex = 0) const
+  smtk::attribute::ComponentItemPtr expressionReference(std::size_t elementIndex = 0) const
   {
     assert(m_expressions.size() > elementIndex);
     return m_expressions[elementIndex];
@@ -153,7 +153,7 @@ protected:
   virtual void updateActiveChildrenItems();
   std::vector<int> m_discreteIndices;
   std::vector<bool> m_isSet;
-  std::vector<smtk::attribute::RefItemPtr> m_expressions;
+  std::vector<smtk::attribute::ComponentItemPtr> m_expressions;
   std::map<std::string, smtk::attribute::ItemPtr> m_childrenItems;
   std::vector<smtk::attribute::ItemPtr> m_activeChildrenItems;
 

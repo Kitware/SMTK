@@ -42,13 +42,8 @@ protected:
   void processFileDef(pugi::xml_node& node, smtk::attribute::FileItemDefinitionPtr idef) override;
   void processModelEntityItem(
     pugi::xml_node& node, smtk::attribute::ComponentItemPtr item) override;
-  void processMeshSelectionItem(
-    pugi::xml_node& node, attribute::MeshSelectionItemPtr idef) override;
-  void processMeshSelectionDef(
-    pugi::xml_node& node, smtk::attribute::MeshSelectionItemDefinitionPtr idef) override;
-  void processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item) override;
   void processMeshEntityDef(
-    pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef) override;
+    pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef) override;
   void processStringDef(
     pugi::xml_node& node, smtk::attribute::StringItemDefinitionPtr idef) override;
   void processViews(pugi::xml_node& root) override;

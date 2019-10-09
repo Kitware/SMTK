@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 """
 Test smtk.attribute.Resource.copyDefinition() method
 
@@ -73,12 +73,21 @@ if __name__ == '__main__':
     test_resource.copyDefinition(source_def, 0)
     expected_types = [
         'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
-        'FirstConcrete', 'PolyLinearFunction'
+        'PolyLinearFunction'
     ]
     for def_type in expected_types:
         defn = test_resource.findDefinition(def_type)
         if defn is None:
             logging.error('Expected %s definition, found None' % def_type)
+            err_count += 1
+
+    not_expected_types = [
+        'FirstConcrete'
+    ]
+    for def_type in not_expected_types:
+        defn = test_resource.findDefinition(def_type)
+        if defn is not None:
+            logging.error('Not expected %s definition found' % def_type)
             err_count += 1
 
     # Add explicit test for conditional children

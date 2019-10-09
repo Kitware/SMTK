@@ -18,11 +18,8 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
@@ -77,16 +74,6 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
 Attribute::~Attribute()
 {
   m_aboutToBeDeleted = true;
-  // Clear all references to the attribute
-  std::map<smtk::attribute::RefItem*, std::set<std::size_t> >::iterator it;
-  for (it = m_references.begin(); it != m_references.end(); it++)
-  {
-    std::set<std::size_t>::iterator sit;
-    for (sit = it->second.begin(); sit != it->second.end(); sit++)
-    {
-      it->first->unset(*sit);
-    }
-  }
   // Detatch the association item
   if (m_associatedObjects)
   {
@@ -116,19 +103,6 @@ void Attribute::removeAllItems()
     m_items[i]->detachOwningAttribute();
   }
   m_items.clear();
-}
-
-void Attribute::references(std::vector<smtk::attribute::ItemPtr>& list) const
-{
-  list.clear();
-  std::map<smtk::attribute::RefItem*, std::set<std::size_t> >::const_iterator it;
-  for (it = m_references.begin(); it != m_references.end(); it++)
-  {
-    if (it->second.size())
-    {
-      list.push_back(it->first->shared_from_this());
-    }
-  }
 }
 
 const double* Attribute::color() const
@@ -785,15 +759,6 @@ smtk::attribute::ConstGroupItemPtr Attribute::findGroup(const std::string& nameS
   return smtk::dynamic_pointer_cast<const GroupItem>(this->find(nameStr));
 }
 
-smtk::attribute::RefItemPtr Attribute::findRef(const std::string& nameStr)
-{
-  return smtk::dynamic_pointer_cast<RefItem>(this->find(nameStr));
-}
-smtk::attribute::ConstRefItemPtr Attribute::findRef(const std::string& nameStr) const
-{
-  return smtk::dynamic_pointer_cast<const RefItem>(this->find(nameStr));
-}
-
 smtk::attribute::ModelEntityItemPtr Attribute::findModelEntity(const std::string& nameStr)
 {
   return smtk::dynamic_pointer_cast<ModelEntityItem>(this->find(nameStr));
@@ -811,25 +776,6 @@ smtk::attribute::VoidItemPtr Attribute::findVoid(const std::string& nameStr)
 smtk::attribute::ConstVoidItemPtr Attribute::findVoid(const std::string& nameStr) const
 {
   return smtk::dynamic_pointer_cast<const VoidItem>(this->find(nameStr));
-}
-
-smtk::attribute::MeshSelectionItemPtr Attribute::findMeshSelection(const std::string& nameStr)
-{
-  return smtk::dynamic_pointer_cast<MeshSelectionItem>(this->find(nameStr));
-}
-smtk::attribute::ConstMeshSelectionItemPtr Attribute::findMeshSelection(
-  const std::string& nameStr) const
-{
-  return smtk::dynamic_pointer_cast<const MeshSelectionItem>(this->find(nameStr));
-}
-
-smtk::attribute::MeshItemPtr Attribute::findMesh(const std::string& nameStr)
-{
-  return smtk::dynamic_pointer_cast<MeshItem>(this->find(nameStr));
-}
-smtk::attribute::ConstMeshItemPtr Attribute::findMesh(const std::string& nameStr) const
-{
-  return smtk::dynamic_pointer_cast<const MeshItem>(this->find(nameStr));
 }
 
 smtk::attribute::DateTimeItemPtr Attribute::findDateTime(const std::string& nameStr)

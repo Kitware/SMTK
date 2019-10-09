@@ -29,3 +29,10 @@ Note that
 Operations are now used to translate VTK/ParaView selections
 into SMTK selections. See the user guide for details.
 This change was made to support mesh and instance subset selections.
+
+## Operators
+### Deprecated Operatiors
+These ParaView operators are no longer supported:
+
+* smtkSaveModelView
+* smtkExportModelView

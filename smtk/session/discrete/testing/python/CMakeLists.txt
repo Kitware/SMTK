@@ -7,7 +7,7 @@ set(smtkDiscreteSessionPythonDataTests
   discreteCreateEdges
   discreteCreateAndSaveEdges
   discreteReadFile
-  discreteSplitEdge
+  #discreteSplitEdge - Uses old MeshSelectionItem - needs to be updated or removed
 )
 
 foreach (test ${smtkDiscreteSessionPythonTests})

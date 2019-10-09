@@ -58,6 +58,7 @@ public:
   virtual bool setAcceptsEntries(
     const std::string& typeName, const std::string& queryString, bool accept);
 
+  void clearAcceptableEntries() { m_acceptable.clear(); }
   virtual bool isValueValid(resource::ConstPersistentObjectPtr entity) const;
 
   /// Return the number of values required by this definition.

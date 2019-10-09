@@ -26,8 +26,6 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/common/UUID.h"
@@ -54,7 +52,6 @@
 #include "smtk/session/discrete/Registrar.h"
 #include "smtk/session/discrete/Resource.h"
 #include "smtk/session/discrete/Session.h"
-#include "smtk/session/discrete/operators/EdgeOperation.h"
 #include "smtk/session/discrete/operators/ImportOperation.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"

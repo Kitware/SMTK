@@ -116,7 +116,8 @@ smtk::resource::ResourcePtr vtkSMTKResourceCreator::GenerateResource() const
   auto parameters = oper->parameters();
   std::vector<smtk::attribute::ItemExpressionInfo> itemExpressionInfo;
   std::vector<smtk::attribute::AttRefInfo> attRefInfo;
-  smtk::attribute::from_json(j, parameters, itemExpressionInfo, attRefInfo);
+  std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
+  smtk::attribute::from_json(j, parameters, itemExpressionInfo, attRefInfo, convertedAttDefs);
 
   auto result = oper->operate();
   if (result->findInt("outcome")->value() !=

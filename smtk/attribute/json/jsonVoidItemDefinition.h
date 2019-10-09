@@ -24,7 +24,6 @@ namespace smtk
 {
 namespace attribute
 {
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
 SMTKCORE_EXPORT void to_json(
   nlohmann::json& j, const smtk::attribute::VoidItemDefinitionPtr& defPtr);
 

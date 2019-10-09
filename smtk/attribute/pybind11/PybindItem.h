@@ -70,7 +70,6 @@ PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::
     .value("DirectoryType", smtk::attribute::Item::Type::DirectoryType)
     .value("ColorType", smtk::attribute::Item::Type::ColorType)
     .value("ModelEntityType", smtk::attribute::Item::Type::ModelEntityType)
-    .value("MeshSelectionType", smtk::attribute::Item::Type::MeshSelectionType)
     .value("MeshEntityType", smtk::attribute::Item::Type::MeshEntityType)
     .value("DateTimeType", smtk::attribute::Item::Type::DateTimeType)
     .value("ReferenceType", smtk::attribute::Item::Type::ReferenceType)

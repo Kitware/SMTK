@@ -35,8 +35,6 @@ class xml_node;
 
 namespace smtk
 {
-typedef std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string> ItemExpressionDefInfo;
-typedef std::pair<smtk::attribute::RefItemDefinitionPtr, std::string> AttRefDefInfo;
 namespace io
 {
 // Class for recording problems
@@ -45,7 +43,7 @@ class Logger;
 // Helper struct needed for dealing with attribute references
 struct AttRefInfo
 {
-  smtk::attribute::RefItemPtr item;
+  smtk::attribute::ComponentItemPtr item;
   int pos;
   std::string attName;
 };
@@ -88,8 +86,8 @@ protected:
   void processAttribute(pugi::xml_node& attNode);
   void processItem(pugi::xml_node& node, smtk::attribute::ItemPtr item);
   virtual void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef);
-  void processRefItem(pugi::xml_node& node, smtk::attribute::RefItemPtr item);
-  void processRefDef(pugi::xml_node& node, smtk::attribute::RefItemDefinitionPtr idef);
+  void processRefItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
+  void processRefDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
   void processDoubleItem(pugi::xml_node& node, smtk::attribute::DoubleItemPtr item);
   void processDoubleDef(pugi::xml_node& node, smtk::attribute::DoubleItemDefinitionPtr idef);
   virtual void processDirectoryItem(pugi::xml_node& node, smtk::attribute::DirectoryItemPtr item);
@@ -107,12 +105,9 @@ protected:
   virtual void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item);
   void processModelEntityDef(
     pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef);
-  virtual void processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item);
+  virtual void processMeshEntityItem(pugi::xml_node& node, attribute::ComponentItemPtr item);
   virtual void processMeshEntityDef(
-    pugi::xml_node& node, smtk::attribute::MeshItemDefinitionPtr idef);
-  virtual void processMeshSelectionItem(pugi::xml_node& node, attribute::MeshSelectionItemPtr item);
-  virtual void processMeshSelectionDef(
-    pugi::xml_node& node, smtk::attribute::MeshSelectionItemDefinitionPtr idef);
+    pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef);
   virtual void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
   virtual void processDateTimeDef(
     pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef);
@@ -149,8 +144,6 @@ protected:
   static int decodeColorInfo(const std::string& s, double* color);
   bool m_reportAsError;
   smtk::attribute::ResourcePtr m_resource;
-  std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
-  std::vector<AttRefDefInfo> m_attRefDefInfo;
   std::vector<ItemExpressionInfo> m_itemExpressionInfo;
   std::vector<AttRefInfo> m_attRefInfo;
   std::string m_defaultCategory;

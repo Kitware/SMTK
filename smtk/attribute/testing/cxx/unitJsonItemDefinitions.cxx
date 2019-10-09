@@ -9,18 +9,18 @@
 //=========================================================================
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
+#include "smtk/attribute/json/jsonComponentItemDefinition.h"
 #include "smtk/attribute/json/jsonDoubleItemDefinition.h"
 #include "smtk/attribute/json/jsonModelEntityItemDefinition.h"
-#include "smtk/attribute/json/jsonRefItemDefinition.h"
 #include "smtk/attribute/json/jsonReferenceItemDefinition.h"
 
 #include "smtk/io/Logger.h"
@@ -39,9 +39,6 @@ int unitJsonItemDefinitions(int, char** const)
 
   smtk::attribute::DefinitionPtr def = resource.createDefinition("testDef");
   smtkTest(!!def, "Definition testDef not created.");
-
-  std::vector<ItemExpressionDefInfo> expressDefInfo;
-  std::vector<AttRefDefInfo> refDefInfo;
 
   /********************** ModelEntityItemDefinition ********************/
   smtk::attribute::ModelEntityItemDefinitionPtr meiDef = ModelEntityItemDefinition::New("mei-def");
@@ -84,27 +81,28 @@ int unitJsonItemDefinitions(int, char** const)
 
   test(riDefToJson == riDefFromJson, "Failed to serialize and deserialize ReferenceItemDef");
 
-  /********************** RefItemDefinition ********************/
-  smtk::attribute::RefItemDefinitionPtr refDef = RefItemDefinition::New("ref-def");
-  refDef->setNumberOfRequiredValues(2);
-  refDef->setIsOptional(true);
-  refDef->setValueLabel(0, "foo");
-  refDef->setValueLabel(1, "bar");
+  /********************** ComponentItemDefinition ********************/
+  smtk::attribute::ComponentItemDefinitionPtr compDef = ComponentItemDefinition::New("comp-def");
+  compDef->setNumberOfRequiredValues(2);
+  compDef->setIsOptional(true);
+  compDef->setValueLabel(0, "foo");
+  compDef->setValueLabel(1, "bar");
   // TODO: Test attribute definition
-  json refDefToJson = refDef;
-  //std::cout << " to_json result:\n" <<refDefToJson.dump(2) <<std::endl;
-  smtk::attribute::RefItemDefinitionPtr refDef2 = RefItemDefinition::New("ref-def");
-  smtk::attribute::from_json(refDefToJson, refDef2, resptr, refDefInfo);
-  json refDefFromJson = refDef2;
-  //std::cout << " from_json result:\n" <<refDefFromJson.dump(2) <<std::endl;
+  json compDefToJson = compDef;
+  //std::cout << " to_json result:\n" <<compDefToJson.dump(2) <<std::endl;
+  smtk::attribute::ComponentItemDefinitionPtr compDef2 = ComponentItemDefinition::New("comp-def");
+  smtk::attribute::from_json(compDefToJson, compDef2);
+  json compDefFromJson = compDef2;
+  //std::cout << " from_json result:\n" <<compDefFromJson.dump(2) <<std::endl;
 
-  test(refDefToJson == refDefFromJson, "Failed to serialize and deserialize RefItemDefinition");
+  test(compDefToJson == compDefFromJson,
+    "Failed to serialize and deserialize ComponentItemDefinition");
 
   /********************** DoubleItemDefinition ********************/
   smtk::attribute::DoubleItemDefinitionPtr doubleDef =
     smtk::attribute::DoubleItemDefinition::New("double-ref");
   // Default index is execlusive to default value
-  doubleDef->addChildItemDefinition(refDef);
+  doubleDef->addChildItemDefinition(compDef);
   /*******************************************/
   doubleDef->addChildItemDefinition(meiDef2);
   /*******************************************/
@@ -123,7 +121,7 @@ int unitJsonItemDefinitions(int, char** const)
   std::cout << "DoubleItem to_json result:\n" << doubleItemToJson.dump(2) << std::endl;
   smtk::attribute::DoubleItemDefinitionPtr doubleDef2 =
     smtk::attribute::DoubleItemDefinition::New("double-ref");
-  smtk::attribute::from_json(doubleItemToJson, doubleDef2, resptr, expressDefInfo, refDefInfo);
+  smtk::attribute::from_json(doubleItemToJson, doubleDef2, resptr);
   json doubleItemFromJson = doubleDef2;
   std::cout << "DoubleItem from_jsom result:\n" << doubleItemFromJson.dump(2) << std::endl;
   test(doubleItemToJson == doubleItemFromJson, "Failed to serialize and deserialize "

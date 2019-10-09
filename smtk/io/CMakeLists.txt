@@ -10,8 +10,10 @@ set(ioSrcs
   XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
   XmlDocV3Parser.cxx
+  XmlDocV4Parser.cxx
   XmlV2StringWriter.cxx
   XmlV3StringWriter.cxx
+  XmlV4StringWriter.cxx
 )
 
 set(ioHeaders
@@ -22,11 +24,14 @@ set(ioHeaders
   json/jsonSelectionMap.h
   Logger.h
   ModelToMesh.h
-  #XmlDocV1Parser.h
+  XmlDocV1Parser.h
   XmlDocV2Parser.h
+  XmlDocV3Parser.h
+  XmlDocV4Parser.h
   XmlStringWriter.h
   XmlV2StringWriter.h
   XmlV3StringWriter.h
+  XmlV4StringWriter.h
 )
 
 # mesh-related I/O

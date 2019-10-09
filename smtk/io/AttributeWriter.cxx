@@ -11,13 +11,12 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 #include "smtk/io/XmlStringWriter.h"
-#include "smtk/io/XmlV2StringWriter.h"
-#include "smtk/io/XmlV3StringWriter.h"
+#include "smtk/io/XmlV4StringWriter.h"
 #include <cassert>
 #include <fstream>
 
-#define DEFAULT_FILE_VERSION 3
-#define MAX_FILE_VERSION 3
+#define DEFAULT_FILE_VERSION 4
+#define MAX_FILE_VERSION 4
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
@@ -40,7 +39,7 @@ AttributeWriter::AttributeWriter()
 bool AttributeWriter::setFileVersion(unsigned int version)
 {
   // Validate input
-  if ((version >= 2) && (version <= MAX_FILE_VERSION))
+  if ((version >= 3) && (version <= MAX_FILE_VERSION))
   {
     m_fileVersion = version;
     return true;
@@ -146,12 +145,9 @@ XmlStringWriter* AttributeWriter::newXmlStringWriter(
   XmlStringWriter* writer = NULL;
   switch (m_fileVersion)
   {
-    case 2:
-      writer = new XmlV2StringWriter(resource, logger);
-      break;
-
     case 3:
-      writer = new XmlV3StringWriter(resource, logger);
+    case 4:
+      writer = new XmlV4StringWriter(resource, logger);
       break;
 
     default:

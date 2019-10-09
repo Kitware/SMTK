@@ -36,8 +36,6 @@ namespace smtk
 namespace attribute
 {
 class Attribute;
-class AttributeRefItem;
-class AttributeRefItemDefinition;
 class Cluster;
 class ValueItem;
 class SMTKCORE_EXPORT ValueItemDefinition : public smtk::attribute::ItemDefinition
@@ -62,9 +60,12 @@ public:
   void setDefaultDiscreteIndex(int discreteIndex);
 
   bool allowsExpressions() const;
-  bool isValidExpression(smtk::attribute::AttributePtr exp) const;
-  smtk::attribute::DefinitionPtr expressionDefinition() const;
-  void setExpressionDefinition(smtk::attribute::DefinitionPtr exp);
+  bool isValidExpression(const smtk::attribute::AttributePtr& exp) const;
+  std::string expressionType() const { return m_expressionType; }
+  void setExpressionType(const std::string& etype) { m_expressionType = etype; }
+  void setExpressionDefinition(const smtk::attribute::DefinitionPtr& exp);
+  smtk::attribute::DefinitionPtr expressionDefinition(
+    const smtk::attribute::ResourcePtr& attResource) const;
   // Should only be called internally by the ValueItem
   void buildExpressionItem(ValueItem* vitem, int position) const;
   void buildChildrenItems(ValueItem* vitem) const;
@@ -176,7 +177,8 @@ protected:
   std::size_t m_maxNumberOfValues;
   bool m_isExtensible;
   std::string m_units;
-  smtk::attribute::RefItemDefinitionPtr m_expressionDefinition;
+  std::string m_expressionType;
+  smtk::attribute::ComponentItemDefinitionPtr m_expressionDefinition;
   std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, std::set<std::string> > m_itemToValueAssociations;
   std::map<std::string, std::vector<std::string> > m_valueToItemAssociations;

@@ -13,7 +13,6 @@
 #include "smtk/extension/qt/qtActiveObjects.h"
 #include "smtk/extension/qt/qtAssociationWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtReferencesWidget.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 

@@ -12,6 +12,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/json/jsonItem.h"
 
 #include "nlohmann/json.hpp"
 
@@ -29,6 +30,9 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ComponentItemPtr& itemPtr);
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr& itemPtr);
+
+SMTKCORE_EXPORT void processFromRefItemSpec(
+  const json& j, smtk::attribute::ComponentItemPtr& itemPtr, std::vector<AttRefInfo>& attRefInfos);
 }
 }
 

@@ -35,7 +35,6 @@ class Model;
 
 namespace attribute
 {
-class RefItem;
 class Item;
 class Resource;
 
@@ -46,7 +45,6 @@ class SMTKCORE_EXPORT Attribute : public resource::Component
 {
   friend class smtk::attribute::Definition;
   friend class smtk::attribute::Resource;
-  friend class smtk::attribute::RefItem;
 
 public:
   smtkTypeMacro(smtk::attribute::Attribute);
@@ -184,9 +182,6 @@ public:
   GroupItemPtr findGroup(const std::string& name);
   ConstGroupItemPtr findGroup(const std::string& name) const;
 
-  RefItemPtr findRef(const std::string& name);
-  ConstRefItemPtr findRef(const std::string& name) const;
-
   ModelEntityItemPtr findModelEntity(const std::string& name);
   ConstModelEntityItemPtr findModelEntity(const std::string& name) const;
 
@@ -206,8 +201,6 @@ public:
 
   ComponentItemPtr findComponent(const std::string& name);
   ConstComponentItemPtr findComponent(const std::string& name) const;
-
-  void references(std::vector<smtk::attribute::ItemPtr>& list) const;
 
   ConstReferenceItemPtr associatedObjects() const { return m_associatedObjects; }
   ReferenceItemPtr associatedObjects() { return m_associatedObjects; }
@@ -251,11 +244,6 @@ public:
    * (then operator widget should update its UI)
    */
   bool removeExpungedEntities(const smtk::model::EntityRefs& expungedEnts);
-
-  MeshSelectionItemPtr findMeshSelection(const std::string& name);
-  ConstMeshSelectionItemPtr findMeshSelection(const std::string& name) const;
-  MeshItemPtr findMesh(const std::string& name);
-  ConstMeshItemPtr findMesh(const std::string& name) const;
 
   // These methods only applies to Attributes whose
   // definition returns true for isNodal()
@@ -310,23 +298,10 @@ protected:
   void addItem(smtk::attribute::ItemPtr& iPtr) { m_items.push_back(iPtr); }
   void setName(const std::string& newname) { m_name = newname; }
 
-  void addReference(smtk::attribute::RefItem* attRefItem, std::size_t pos)
-  {
-    m_references[attRefItem].insert(pos);
-  }
-  // This removes a specific ref item
-  void removeReference(smtk::attribute::RefItem* attRefItem, std::size_t pos)
-  {
-    m_references[attRefItem].erase(pos);
-  }
-  // This removes all references to a specific Ref Item
-  void removeReference(smtk::attribute::RefItem* attRefItem) { m_references.erase(attRefItem); }
-
   std::string m_name;
   std::vector<smtk::attribute::ItemPtr> m_items;
   ReferenceItemPtr m_associatedObjects;
   smtk::attribute::DefinitionPtr m_definition;
-  std::map<smtk::attribute::RefItem*, std::set<std::size_t> > m_references;
   bool m_appliesToBoundaryNodes;
   bool m_appliesToInteriorNodes;
   bool m_isColorSet;

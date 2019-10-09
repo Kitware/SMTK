@@ -11,7 +11,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonItem.h"
 
@@ -28,40 +28,8 @@ namespace smtk
 {
 namespace attribute
 {
-SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::RefItemPtr& itemPtr)
-{
-  smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<Item>(itemPtr));
-  size_t i(0), nRV = itemPtr->numberOfRequiredValues(), nV = itemPtr->numberOfValues();
-  if (!itemPtr->numberOfValues())
-  {
-    return;
-  }
-  if (nRV == 1)
-  {
-    if (itemPtr->isSet())
-    {
-      j["Val"] = itemPtr->value(i)->name();
-    }
-    return;
-  }
-
-  json values;
-  for (i = 0; i < nV; i++)
-  {
-    if (itemPtr->isSet(i))
-    {
-      values.push_back(itemPtr->value(i)->name());
-    }
-    else
-    {
-      values.push_back(nullptr);
-    }
-  }
-  j["Values"] = values;
-}
-
-SMTKCORE_EXPORT void from_json(
-  const json& j, smtk::attribute::RefItemPtr& itemPtr, std::vector<AttRefInfo>& attRefInfos)
+SMTKCORE_EXPORT void processFromRefItem(
+  const json& j, smtk::attribute::ComponentItemPtr& itemPtr, std::vector<AttRefInfo>& attRefInfos)
 {
   // The caller should make sure that itemPtr is valid since it's not default constructible
   if (!itemPtr.get())

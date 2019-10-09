@@ -11,7 +11,6 @@
 #include "smtk/extension/qt/qtGroupItem.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
-#include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -440,11 +439,6 @@ void qtGroupItem::addItemsToTable(int i)
           numCols + 1, new QTableWidgetItem(strItemLabel.c_str()));
       }
       childItem->setLabelVisible(false);
-      qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(childItem);
-      if (arItem)
-      {
-        arItem->setAttributeWidgetVisible(false);
-      }
       this->Internals->ItemsTable->setCellWidget(numRows, added + 1, childItem->widget());
       itemList.push_back(childItem);
       connect(childItem, SIGNAL(widgetSizeChanged()), this, SLOT(onChildWidgetSizeChanged()),

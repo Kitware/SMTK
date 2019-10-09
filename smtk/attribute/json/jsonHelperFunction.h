@@ -12,7 +12,6 @@
 
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/json/jsonItem.h"
@@ -27,10 +26,6 @@ namespace smtk
 {
 namespace attribute
 {
-using ItemExpressionDefInfo = std::pair<smtk::attribute::ValueItemDefinitionPtr, std::string>;
-
-using AttRefDefInfo = std::pair<smtk::attribute::RefItemDefinitionPtr, std::string>;
-
 class SMTKCORE_EXPORT JsonHelperFunction
 {
 public:
@@ -47,19 +42,14 @@ public:
    * given a json iterator
    */
   static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-    ValueItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr,
-    std::vector<ItemExpressionDefInfo>& expressionDefInfo,
-    std::vector<AttRefDefInfo>& attRefDefInfo);
+    ValueItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
 
   static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
     DefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr,
-    std::vector<ItemExpressionDefInfo>& expressionDefInfo,
-    std::vector<AttRefDefInfo>& attRefDefInfo);
+    std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs);
 
   static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-    GroupItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr,
-    std::vector<ItemExpressionDefInfo>& expressionDefInfo,
-    std::vector<AttRefDefInfo>& attRefDefInfo);
+    GroupItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
 
   /**
    * @brief A helper function to dispatch itemPtr process based on its type
@@ -70,8 +60,8 @@ public:
    * @brief A helper function to fill an itemPtr given json
    */
   static void processItemTypeFromJson(const nlohmann::json& j, ItemPtr& itemPtr,
-    std::vector<smtk::attribute::ItemExpressionInfo>& itemExpressionInfo,
-    std::vector<smtk::attribute::AttRefInfo>& attRefInfo);
+    std::vector<ItemExpressionInfo>& itemExpressionInfo, std::vector<AttRefInfo>& attRefInfo,
+    const std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs);
 };
 }
 }

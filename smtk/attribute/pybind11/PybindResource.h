@@ -84,6 +84,8 @@ PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resour
     .def("updateCategories", &smtk::attribute::Resource::updateCategories)
     .def("updateDerivedDefinitionIndexOffsets", &smtk::attribute::Resource::updateDerivedDefinitionIndexOffsets, py::arg("def"))
     .def("views", &smtk::attribute::Resource::views)
+    .def_static("createAttributeQuery",  [](const smtk::attribute::DefinitionPtr& def){ return smtk::attribute::Resource::createAttributeQuery(def); }, py::arg("def"))
+    .def_static("createAttributeQuery",  [](const std::string& str){ return smtk::attribute::Resource::createAttributeQuery(str); }, py::arg("def"))
     .def_static("New", [](){ return smtk::attribute::Resource::create(); }, py::return_value_policy::take_ownership)
     .def_static("create", [](){ return smtk::attribute::Resource::create(); }, py::return_value_policy::take_ownership)
     .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Resource> i) {

@@ -11,6 +11,10 @@
 #ifndef pybind_smtk_io_AttributeReader_h
 #define pybind_smtk_io_AttributeReader_h
 
+#define PUGIXML_HEADER_ONLY
+#include "pugixml/src/pugixml.cpp"
+
+
 #include <pybind11/pybind11.h>
 
 #include "smtk/io/AttributeReader.h"

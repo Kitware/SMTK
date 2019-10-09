@@ -20,8 +20,6 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshSelectionItem.h"
 #include "smtk/attribute/PathGrammar.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ValueItem.h"

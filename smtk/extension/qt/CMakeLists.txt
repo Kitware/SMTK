@@ -30,15 +30,12 @@ set(QAttrLibSrcs
   qtResourceBrowserP.cxx
   qtOperationLauncher.cxx
   qtOperationView.cxx
-  #qtModelView.cxx
   qtSelectorView.cxx
   qtSimpleExpressionView.cxx
   qtViewInfoDialog.cxx
   qtFileItem.cxx
-  qtAttributeRefItem.cxx
   qtTableWidget.cxx
   qtAssociationWidget.cxx
-  qtReferencesWidget.cxx
   qtColorButton.cxx
   qtLineEdit.cxx
   qtDoubleLineEdit.cxx
@@ -108,10 +105,8 @@ set(QAttrLibMocHeaders
   qtSimpleExpressionView.h
   qtViewInfoDialog.h
   qtFileItem.h
-  qtAttributeRefItem.h
   qtTableWidget.h
   qtAssociationWidget.h
-  qtReferencesWidget.h
   qtColorButton.h
   qtLineEdit.h
   qtDoubleLineEdit.h

@@ -12,9 +12,9 @@
 #include "smtk/session/discrete/Registrar.h"
 
 #include "smtk/session/discrete/operators/CreateEdgesOperation.h"
-#include "smtk/session/discrete/operators/EdgeOperation.h"
+//#include "smtk/session/discrete/operators/EdgeOperation.h"
 #include "smtk/session/discrete/operators/EntityGroupOperation.h"
-#include "smtk/session/discrete/operators/GrowOperation.h"
+//#include "smtk/session/discrete/operators/GrowOperation.h"
 #include "smtk/session/discrete/operators/ImportOperation.h"
 #include "smtk/session/discrete/operators/LegacyReadResource.h"
 #include "smtk/session/discrete/operators/MergeOperation.h"
@@ -41,7 +41,8 @@ namespace discrete
 
 namespace
 {
-typedef std::tuple<CreateEdgesOperation, EdgeOperation, EntityGroupOperation, GrowOperation,
+// Commented out operations use MeshSelecttionItems and need to be updated
+typedef std::tuple<CreateEdgesOperation, /*EdgeOperation,*/ EntityGroupOperation, /*GrowOperation,*/
   ImportOperation, LegacyReadResource, MergeOperation, ReadOperation, ReadResource, RemoveModel,
   SetProperty, SplitFaceOperation, WriteOperation, WriteResource>
   OperationList;

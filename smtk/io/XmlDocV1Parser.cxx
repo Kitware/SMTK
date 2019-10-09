@@ -31,16 +31,9 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/MeshItem.h"
-#include "smtk/attribute/MeshItemDefinition.h"
-#include "smtk/attribute/MeshSelectionItem.h"
-#include "smtk/attribute/MeshSelectionItemDefinition.h"
-#include "smtk/attribute/Resource.h"
-//#include "smtk/attribute/ModelEntityItem.h"
-//#include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
+#include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
@@ -495,8 +488,6 @@ void XmlDocV1Parser::process(xml_node& amnode)
   }
 
   // Clear the vectors for dealing with attribute references
-  m_itemExpressionDefInfo.clear();
-  m_attRefDefInfo.clear();
   m_itemExpressionInfo.clear();
   m_attRefInfo.clear();
   xml_node node, cnode;
@@ -621,45 +612,11 @@ void XmlDocV1Parser::process(xml_node& amnode)
 void XmlDocV1Parser::processDefinitionInformation(xml_node& root)
 {
   xml_node child, node = root.child("Definitions");
-  std::size_t i;
   if (node)
   {
     for (child = node.first_child(); child; child = child.next_sibling())
     {
       this->createDefinition(child);
-    }
-
-    // At this point we have all the definitions read in so lets
-    // fix up all of the attribute definition references
-    attribute::DefinitionPtr def;
-    for (i = 0; i < m_itemExpressionDefInfo.size(); i++)
-    {
-      def = m_resource->findDefinition(m_itemExpressionDefInfo[i].second);
-      if (def)
-      {
-        m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
-      }
-      else
-      {
-        smtkErrorMacro(m_logger, "Referenced Attribute Definition: "
-            << m_itemExpressionDefInfo[i].second << " is missing and required by Item Definition: "
-            << m_itemExpressionDefInfo[i].first->name());
-      }
-    }
-
-    for (i = 0; i < m_attRefDefInfo.size(); i++)
-    {
-      def = m_resource->findDefinition(m_attRefDefInfo[i].second);
-      if (def)
-      {
-        m_attRefDefInfo[i].first->setAttributeDefinition(def);
-      }
-      else
-      {
-        smtkErrorMacro(m_logger, "Referenced Attribute Definition: "
-            << m_attRefDefInfo[i].second
-            << " is missing and required by Item Definition: " << m_attRefDefInfo[i].first->name());
-      }
     }
   }
 }
@@ -855,9 +812,9 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
     switch (itype)
     {
       case smtk::attribute::Item::AttributeRefType:
-        idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         this->processRefDef(
-          node, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(idef));
+          node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DoubleType:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
@@ -898,15 +855,10 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         this->processItemDef(node, idef);
         break;
-      case smtk::attribute::Item::MeshSelectionType:
-        idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
-        this->processMeshSelectionDef(
-          node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItemDefinition>(idef));
-        break;
       case smtk::attribute::Item::MeshEntityType:
-        idef = def->addItemDefinition<smtk::attribute::MeshItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         this->processMeshEntityDef(
-          node, smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(idef));
+          node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DateTimeType:
         idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
@@ -1119,17 +1071,8 @@ void XmlDocV1Parser::processModelEntityDef(
   }
 }
 
-void XmlDocV1Parser::processMeshSelectionDef(
-  pugi::xml_node& node, attribute::MeshSelectionItemDefinitionPtr idef)
-{
-  (void)node;
-  smtkWarningMacro(
-    m_logger, "The Mesh Selection defs should only be availabe starting Attribute Version 2 Format"
-      << idef->name());
-}
-
 void XmlDocV1Parser::processMeshEntityDef(
-  pugi::xml_node& node, attribute::MeshItemDefinitionPtr idef)
+  pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
 {
   (void)node;
   smtkWarningMacro(
@@ -1239,18 +1182,8 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
   child = node.child("ExpressionType");
   if (child)
   {
-    // Is the attribute definition already in the resource?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = m_resource->findDefinition(etype);
-    if (adef)
-    {
-      idef->setExpressionDefinition(adef);
-    }
-    else
-    {
-      // We need to queue up this item to be assigned its definition later
-      m_itemExpressionDefInfo.push_back(ItemExpressionDefInfo(idef, etype));
-    }
+    idef->setExpressionType(etype);
   }
   xatt = node.attribute("Units");
   if (xatt)
@@ -1270,10 +1203,10 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
     switch (citype)
     {
       case smtk::attribute::Item::AttributeRefType:
-        if ((cidef = idef->addItemDefinition<smtk::attribute::RefItemDefinition>(citemName)))
+        if ((cidef = idef->addItemDefinition<smtk::attribute::ComponentItemDefinition>(citemName)))
         {
           this->processRefDef(
-            cinode, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef));
+            cinode, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef));
         }
         else
         {
@@ -1367,22 +1300,11 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
           smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
         }
         break;
-      case smtk::attribute::Item::MeshSelectionType:
-        if ((cidef =
-                idef->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(citemName)))
-        {
-          this->processItemDef(cinode, cidef);
-        }
-        else
-        {
-          smtkErrorMacro(m_logger, "Item definition " << citemName << " already exists");
-        }
-        break;
       case smtk::attribute::Item::MeshEntityType:
-        if ((cidef = idef->addItemDefinition<smtk::attribute::MeshItemDefinition>(citemName)))
+        if ((cidef = idef->addItemDefinition<smtk::attribute::ComponentItemDefinition>(citemName)))
         {
           this->processMeshEntityDef(
-            cinode, smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(cidef));
+            cinode, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef));
         }
         else
         {
@@ -1418,7 +1340,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
   }
 }
 
-void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::RefItemDefinitionPtr idef)
+void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::ComponentItemDefinitionPtr idef)
 {
   xml_node labels, child;
   xml_attribute xatt;
@@ -1429,18 +1351,9 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node& node, attribute::RefItemDefin
   child = node.child("AttDef");
   if (child)
   {
-    // Is the attribute definition already in the resource?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = m_resource->findDefinition(etype);
-    if (adef)
-    {
-      idef->setAttributeDefinition(adef);
-    }
-    else
-    {
-      // We need to queue up this item to be assigned its definition later
-      m_attRefDefInfo.push_back(AttRefDefInfo(idef, etype));
-    }
+    std::string a = smtk::attribute::Resource::createAttributeQuery(etype);
+    idef->setAcceptsEntries(smtk::common::typeName<attribute::Resource>(), a, true);
   }
 
   xatt = node.attribute("NumberOfRequiredValues");
@@ -1638,7 +1551,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
     switch (itype)
     {
       case smtk::attribute::Item::AttributeRefType:
-        idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         if (!idef)
         {
           smtkErrorMacro(m_logger, "Failed to create Ref Item definition Type: "
@@ -1646,7 +1559,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
           continue;
         }
         this->processRefDef(
-          child, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(idef));
+          child, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DoubleType:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
@@ -1735,26 +1648,16 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         }
         this->processItemDef(child, idef);
         break;
-      case smtk::attribute::Item::MeshSelectionType:
-        idef = def->addItemDefinition<smtk::attribute::MeshSelectionItemDefinition>(itemName);
-        if (!idef)
-        {
-          smtkErrorMacro(m_logger, "Failed to create Mesh Selection Item definition Type: "
-              << child.name() << " needed to create Group Definition: " << def->name());
-          continue;
-        }
-        this->processItemDef(child, idef);
-        break;
       case smtk::attribute::Item::MeshEntityType:
-        idef = def->addItemDefinition<smtk::attribute::MeshItemDefinition>(itemName);
+        idef = def->addItemDefinition<smtk::attribute::ComponentItemDefinition>(itemName);
         if (!idef)
         {
-          smtkErrorMacro(m_logger, "Failed to create Mesh Entity Item definition Type: "
+          smtkErrorMacro(m_logger, "Failed to create Component Item definition Type: "
               << child.name() << " needed to create Group Definition: " << def->name());
           continue;
         }
         this->processMeshEntityDef(
-          child, smtk::dynamic_pointer_cast<smtk::attribute::MeshItemDefinition>(idef));
+          child, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DateTimeType:
         idef = def->addItemDefinition<smtk::attribute::DateTimeItemDefinition>(itemName);
@@ -1985,7 +1888,7 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
   switch (item->type())
   {
     case smtk::attribute::Item::AttributeRefType:
-      this->processRefItem(node, smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(item));
+      this->processRefItem(node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(item));
       break;
     case smtk::attribute::Item::DoubleType:
       this->processDoubleItem(node, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(item));
@@ -2010,13 +1913,9 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
       this->processModelEntityItem(
         node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(item));
       break;
-    case smtk::attribute::Item::MeshSelectionType:
-      this->processMeshSelectionItem(
-        node, smtk::dynamic_pointer_cast<smtk::attribute::MeshSelectionItem>(item));
-      break;
     case smtk::attribute::Item::MeshEntityType:
       this->processMeshEntityItem(
-        node, smtk::dynamic_pointer_cast<smtk::attribute::MeshItem>(item));
+        node, smtk::dynamic_pointer_cast<smtk::attribute::ComponentItem>(item));
       break;
     case smtk::attribute::Item::DateTimeType:
       this->processDateTimeItem(
@@ -2164,7 +2063,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
   smtkErrorMacro(m_logger, "Missing Discrete Values for Item: " << item->name());
 }
 
-void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::RefItemPtr item)
+void XmlDocV1Parser::processRefItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
 {
   xml_attribute xatt;
   xml_node valsNode;
@@ -2338,19 +2237,11 @@ void XmlDocV1Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
   return;
 }
 
-void XmlDocV1Parser::processMeshSelectionItem(
-  pugi::xml_node& node, attribute::MeshSelectionItemPtr item)
+void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node& node, attribute::ComponentItemPtr item)
 {
   (void)node;
   smtkWarningMacro(m_logger,
-    "All Mesh Selection Items will be ignored for Attribute Version 1 Format" << item->name());
-}
-
-void XmlDocV1Parser::processMeshEntityItem(pugi::xml_node& node, attribute::MeshItemPtr item)
-{
-  (void)node;
-  smtkWarningMacro(m_logger, "All Mesh Entity Items will be ignored for Attribute Version 1 Format"
-      << item->name());
+    "All Mesh Entity Items will be ignored for Attribute Version 1, 2, & 3 Format" << item->name());
 }
 
 void XmlDocV1Parser::processDateTimeItem(pugi::xml_node& node, attribute::DateTimeItemPtr item)

@@ -22,7 +22,6 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
-
 #include "PybindFormat.h"
 #include "PybindMeshIO.h"
 #include "PybindMeshIOMoab.h"

@@ -458,7 +458,6 @@ void XmlDocV3Parser::processReferenceItem(
   xml_node val;
   std::size_t numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
-  AttRefInfo info;
   if (!numRequiredVals || item->isExtensible())
   {
     // The node should have an attribute indicating how many values are
@@ -676,12 +675,26 @@ void XmlDocV3Parser::processResourceDef(
 void XmlDocV3Parser::processComponentItem(
   pugi::xml_node& node, smtk::attribute::ComponentItemPtr item)
 {
+  // Is the node using the older AttRefItem format?
+  std::string attRefNodeName("AttributeRef");
+  if (attRefNodeName == node.name())
+  {
+    this->processRefItem(node, item);
+    return;
+  }
   this->processReferenceItem(node, item);
 }
 
 void XmlDocV3Parser::processComponentDef(
   pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
 {
+  // Is the node using the older AttRefItem format?
+  std::string attRefNodeName("AttributeRef");
+  if (attRefNodeName == node.name())
+  {
+    this->processRefDef(node, idef);
+    return;
+  }
   xml_attribute xatt;
   xatt = node.attribute("Role");
   if (xatt)

@@ -10,8 +10,8 @@
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/RefItem.h"
-#include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
@@ -200,7 +200,7 @@ smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
     if (def->allowsExpressions())
     {
       assert(m_expressions.size() > element);
-      return m_expressions[element]->value();
+      return dynamic_pointer_cast<smtk::attribute::Attribute>(m_expressions[element]->value());
     }
   }
   return smtk::attribute::AttributePtr();
