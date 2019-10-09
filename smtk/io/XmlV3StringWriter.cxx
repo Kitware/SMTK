@@ -32,8 +32,9 @@ namespace smtk
 namespace io
 {
 
-XmlV3StringWriter::XmlV3StringWriter(const attribute::ResourcePtr myResource)
-  : XmlV2StringWriter(myResource)
+XmlV3StringWriter::XmlV3StringWriter(
+  const attribute::ResourcePtr myResource, smtk::io::Logger& logger)
+  : XmlV2StringWriter(myResource, logger)
 {
 }
 
@@ -56,9 +57,9 @@ std::string XmlV3StringWriter::rootNodeName() const
   return std::string("SMTK_AttributeResource");
 }
 
-void XmlV3StringWriter::generateXml(smtk::io::Logger& logger)
+void XmlV3StringWriter::generateXml()
 {
-  XmlV2StringWriter::generateXml(logger);
+  XmlV2StringWriter::generateXml();
   auto root = this->topRootNode();
 
   // Do we have unique roles to save?

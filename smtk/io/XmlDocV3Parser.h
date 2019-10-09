@@ -25,7 +25,7 @@ namespace io
 class SMTKCORE_EXPORT XmlDocV3Parser : public XmlDocV2Parser
 {
 public:
-  XmlDocV3Parser(smtk::attribute::ResourcePtr resource);
+  XmlDocV3Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   virtual ~XmlDocV3Parser();
   void process(pugi::xml_document& doc) override;
   void process(pugi::xml_node& rootNode) override;

@@ -63,7 +63,8 @@ public:
 protected:
   // Instantiates internal writer
   // Caller is responsible for deleting the instance
-  XmlStringWriter* newXmlStringWriter(const smtk::attribute::ResourcePtr resource) const;
+  XmlStringWriter* newXmlStringWriter(
+    const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger) const;
 
 private:
   unsigned int m_fileVersion;

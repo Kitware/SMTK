@@ -226,8 +226,9 @@ struct XmlV2StringWriter::Internals
   std::vector<xml_node> m_roots, m_defs, m_atts, m_views;
 };
 
-XmlV2StringWriter::XmlV2StringWriter(const attribute::ResourcePtr myResource)
-  : XmlStringWriter(myResource)
+XmlV2StringWriter::XmlV2StringWriter(
+  const attribute::ResourcePtr myResource, smtk::io::Logger& logger)
+  : XmlStringWriter(myResource, logger)
 {
   m_internals = new Internals();
 }
@@ -252,7 +253,7 @@ unsigned int XmlV2StringWriter::fileVersion() const
   return 2;
 }
 
-std::string XmlV2StringWriter::convertToString(Logger& logger, bool no_declaration)
+std::string XmlV2StringWriter::convertToString(bool no_declaration)
 {
   // Initialize the xml document(s)
   std::size_t i, num = 1;
@@ -294,7 +295,7 @@ std::string XmlV2StringWriter::convertToString(Logger& logger, bool no_declarati
   }
 
   // Generate the element tree
-  this->generateXml(logger);
+  this->generateXml();
 
   // Serialize the result
   oss.clear();
@@ -322,11 +323,8 @@ std::string XmlV2StringWriter::getString(std::size_t i, bool no_declaration)
   return result;
 }
 
-void XmlV2StringWriter::generateXml(Logger& logger)
+void XmlV2StringWriter::generateXml()
 {
-  // Reset the message log
-  m_logger.reset();
-
   auto uuidName = m_resource->id().toString();
   xml_node& root(m_internals->m_roots.at(0));
   root.append_attribute("ID").set_value(uuidName.c_str());
@@ -435,7 +433,6 @@ void XmlV2StringWriter::generateXml(Logger& logger)
   {
     this->processViews();
   }
-  logger = m_logger;
 }
 
 void XmlV2StringWriter::processAttributeInformation()

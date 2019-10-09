@@ -60,14 +60,13 @@ struct ItemExpressionInfo
 class SMTKCORE_EXPORT XmlDocV1Parser
 {
 public:
-  XmlDocV1Parser(smtk::attribute::ResourcePtr resource);
+  XmlDocV1Parser(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger);
   virtual ~XmlDocV1Parser();
   virtual void process(pugi::xml_document& doc);
   virtual void process(pugi::xml_node& rootNode);
 
   // This function has no implementation!
   static void convertStringToXML(std::string& str);
-  const smtk::io::Logger& messageLog() const { return m_logger; }
 
   void setReportDuplicateDefinitionsAsErrors(bool mode) { m_reportAsError = mode; }
 
@@ -155,7 +154,7 @@ protected:
   std::vector<ItemExpressionInfo> m_itemExpressionInfo;
   std::vector<AttRefInfo> m_attRefInfo;
   std::string m_defaultCategory;
-  smtk::io::Logger m_logger;
+  smtk::io::Logger& m_logger;
   std::size_t m_includeIndex;
 
 private:

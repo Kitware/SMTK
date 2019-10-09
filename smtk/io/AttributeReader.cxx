@@ -241,27 +241,24 @@ void AttributeReaderInternals::parseXml(
   // Lets see if any of the parsers can process the node
   if (XmlDocV1Parser::canParse(root))
   {
-    XmlDocV1Parser theReader(resource);
+    XmlDocV1Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
-    logger.append(theReader.messageLog());
   }
   else if (XmlDocV2Parser::canParse(root))
   {
-    XmlDocV2Parser theReader(resource);
+    XmlDocV2Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
-    logger.append(theReader.messageLog());
   }
   else if (XmlDocV3Parser::canParse(root))
   {
-    XmlDocV3Parser theReader(resource);
+    XmlDocV3Parser theReader(resource, logger);
     theReader.setIncludeFileIndex(m_currentFileIndex);
     theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
     theReader.process(root);
-    logger.append(theReader.messageLog());
   }
   else
   {

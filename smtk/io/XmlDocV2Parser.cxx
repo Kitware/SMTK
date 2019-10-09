@@ -37,8 +37,8 @@ using namespace pugi;
 using namespace smtk::io;
 using namespace smtk;
 
-XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::ResourcePtr myResource)
-  : XmlDocV1Parser(myResource)
+XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::ResourcePtr myResource, smtk::io::Logger& logger)
+  : XmlDocV1Parser(myResource, logger)
 {
 }
 
