@@ -21,18 +21,22 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   auto phraseModel = smtk::view::ResourcePhraseModel::create();
   std::string modelViewName = "";
   auto qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
+  smtk::view::ViewPtr newResView(new smtk::view::View("Resource", "Resource View"));
+  smtk::extension::ResourceViewInfo resinfo(
+    newResView, phraseModel, modelViewName, qtPhraseModel, this);
   // NB: We could call
   //     qtSMTKUtilities::registerModelViewConstructor(modelViewName, ...);
   // here to ensure a Qt model-view class in the same plugin is
   // registered before telling the pqSMTKResourceBrowser to use it.
 
-  m_browser = new pqSMTKResourceBrowser(phraseModel, modelViewName, qtPhraseModel, this);
-  m_browser->setObjectName("pqSMTKResourceBrowser");
+  m_browser = new pqSMTKResourceBrowser(resinfo);
+  m_browser->widget()->setObjectName("pqSMTKResourceBrowser");
   this->setWindowTitle("Resources");
-  this->setWidget(m_browser);
+  this->setWidget(m_browser->widget());
 }
 
 pqSMTKResourcePanel::~pqSMTKResourcePanel()
 {
-  // deletion of m_browser is handled when parent widget is deleted.
+  delete m_browser;
+  // deletion of m_browser->widget() is handled when parent widget is deleted.
 }

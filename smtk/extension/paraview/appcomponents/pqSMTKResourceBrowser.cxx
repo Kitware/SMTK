@@ -115,9 +115,8 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
   return rval;
 }
 
-pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel,
-  const std::string& modelViewName, QAbstractItemModel* model, QWidget* parent)
-  : Superclass(phraseModel, modelViewName, model, parent)
+pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::extension::ResourceViewInfo& info)
+  : Superclass(info)
 {
   // The superclass has initialized m_p;
   // now we must add ParaView-specific configuration:
@@ -274,7 +273,6 @@ void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer*
   {
     return;
   }
-
   this->removeSource(mgr->smtkResourceManager(), mgr->smtkOperationManager(), mgr->smtkSelection());
 }
 

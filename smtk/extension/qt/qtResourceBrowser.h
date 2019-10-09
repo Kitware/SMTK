@@ -11,6 +11,7 @@
 #define smtk_extension_qtResourceBrowser_h
 
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtBaseView.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -24,15 +25,35 @@ namespace smtk
 {
 namespace extension
 {
+class SMTKQTEXT_EXPORT ResourceViewInfo : public ViewInfo
+{
+public:
+  ResourceViewInfo(smtk::view::ViewPtr view,
+    const smtk::view::PhraseModelPtr& phraseModel = smtk::view::PhraseModelPtr(),
+    const std::string& modelViewName = "", QAbstractItemModel* qmodel = nullptr,
+    QWidget* parent = nullptr, qtUIManager* uiman = nullptr)
+    : ViewInfo(view, parent, uiman)
+    , m_phraseModel(phraseModel)
+    , m_modelViewName(modelViewName)
+    , m_qmodel(qmodel)
+  {
+  }
+
+  ResourceViewInfo() {}
+  virtual ~ResourceViewInfo() {}
+  smtk::view::PhraseModelPtr m_phraseModel;
+  std::string m_modelViewName;
+  QAbstractItemModel* m_qmodel;
+};
 
 class qtDescriptivePhraseModel;
 
 /**\brief A panel that displays SMTK resources available to the application/user.
   *
-  * This is a Qt widget that displays a tree or list view holding an SMTK
+  * This contains Qt widget that displays a tree or list view holding an SMTK
   * descriptive phrase model.
   *
-  * Its constructor accepts
+  * Its ViewInfo initializer accepts
   * (1) an smtk::view::PhraseModel that you have configured,
   * (2) the string name registered to a QAbstractItemView subclass constructor,
   * (3) a QAbstactItemModel implementing qtDescriptivePhraseModel model index queries, and
@@ -45,19 +66,18 @@ class qtDescriptivePhraseModel;
   * that can be used by a qtDescriptivePhraseDelegate instance, which this
   * class creates and owns to control how the tree rows are rendered.
   */
-class SMTKQTEXT_EXPORT qtResourceBrowser : public QWidget
+class SMTKQTEXT_EXPORT qtResourceBrowser : public qtBaseView
 {
   Q_OBJECT
-  typedef QWidget Superclass;
+  typedef smtk::extension::qtBaseView Superclass;
 
 public:
-  qtResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel = smtk::view::PhraseModelPtr(),
-    const std::string& modelViewName = "", QAbstractItemModel* model = nullptr,
-    QWidget* parent = nullptr);
+  static qtBaseView* createViewWidget(const ViewInfo& info);
+  qtResourceBrowser(const ResourceViewInfo& info);
   ~qtResourceBrowser() override;
 
   static QTreeView* createDefaultView(QWidget* parent);
-  QTreeView* view() const;
+  // QTreeView* view() const;
 
   smtk::view::PhraseModelPtr phraseModel() const;
   void setPhraseModel(const smtk::view::PhraseModelPtr&);
@@ -68,7 +88,7 @@ public:
   bool highlightOnHover() const;
   void setHighlightOnHover(bool highlight);
 
-  void leaveEvent(QEvent*) override;
+  // void leaveEvent(QEvent*);
 
 public slots:
   virtual void sendPanelSelectionToSMTK(
@@ -91,6 +111,7 @@ protected slots:
   virtual void editObjectColor(const QModelIndex&);
 
 protected:
+  // void createWidget() override;
   virtual void resetHover(smtk::resource::ComponentSet& add, smtk::resource::ComponentSet& del);
   bool eventFilter(QObject*, QEvent*) override;
 

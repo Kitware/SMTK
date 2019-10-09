@@ -60,7 +60,9 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   {
     ctor = qtResourceBrowser::createDefaultView;
   }
-  m_layout = new QVBoxLayout(m_self);
+  m_container = new QWidget(parent);
+  m_container->setObjectName("qtResourceBrowser");
+  m_layout = new QVBoxLayout(m_container);
   m_layout->setObjectName("m_layout");
   m_view = ctor(parent);
   m_layout->addWidget(m_view);

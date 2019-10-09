@@ -27,6 +27,7 @@
 #include "smtk/extension/qt/qtModelEntityAttributeView.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperationView.h"
+#include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtResourceItem.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtSelectorView.h"
@@ -163,6 +164,7 @@ void qtUIManager::commonConstructor()
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
   this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
   this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
+  this->registerViewConstructor("Resource", qtResourceBrowser::createViewWidget);
 
   // Lets register some basic item constructors
   this->registerItemConstructor("Default", qtUIManager::defaultItemConstructor);

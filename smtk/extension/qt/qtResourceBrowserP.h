@@ -41,6 +41,7 @@ public:
 
   smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
 
+  QWidget* m_container;
   QVBoxLayout* m_layout;
   QTreeView* m_view;
   QPointer<qtResourceBrowser> m_self;

@@ -41,12 +41,24 @@
 
 using namespace smtk::extension;
 
-qtResourceBrowser::qtResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel,
-  const std::string& modelViewName, QAbstractItemModel* qmodel, QWidget* parent)
-  : Superclass(parent)
+qtBaseView* qtResourceBrowser::createViewWidget(const ViewInfo& info)
+{
+  const ResourceViewInfo* resinfo = dynamic_cast<const ResourceViewInfo*>(&info);
+  if (!resinfo)
+  {
+    return NULL;
+  }
+  qtResourceBrowser* view = new qtResourceBrowser(*resinfo);
+  view->buildUI();
+  return view;
+}
+
+qtResourceBrowser::qtResourceBrowser(const ResourceViewInfo& info)
+  : qtBaseView(info)
 {
   m_p = new Internal;
-  m_p->setup(this, phraseModel, modelViewName, qmodel, parent);
+  m_p->setup(this, info.m_phraseModel, info.m_modelViewName, info.m_qmodel, info.m_parent);
+  this->Widget = m_p->m_container;
 }
 
 qtResourceBrowser::~qtResourceBrowser()
@@ -67,10 +79,10 @@ QTreeView* qtResourceBrowser::createDefaultView(QWidget* parent)
   return view;
 }
 
-QTreeView* qtResourceBrowser::view() const
-{
-  return m_p->m_view;
-}
+// QTreeView* qtResourceBrowser::view() const
+// {
+//   return m_p->m_view;
+// }
 
 smtk::view::PhraseModelPtr qtResourceBrowser::phraseModel() const
 {
@@ -136,12 +148,12 @@ void qtResourceBrowser::setHighlightOnHover(bool highlight)
   m_p->m_delegate->setHighlightOnHover(highlight);
 }
 
-void qtResourceBrowser::leaveEvent(QEvent* evt)
-{
-  this->resetHover();
-  // Now let the superclass do what it wants:
-  Superclass::leaveEvent(evt);
-}
+// void qtResourceBrowser::leaveEvent(QEvent* evt)
+// {
+//   this->resetHover();
+//   // Now let the superclass do what it wants:
+//   Superclass::leaveEvent(evt);
+// }
 
 void qtResourceBrowser::sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)
 {
@@ -361,8 +373,9 @@ void qtResourceBrowser::editObjectColor(const QModelIndex& idx)
       currentColor.setAlpha(255);
     }
 
-    QColor nextColor = QColorDialog::getColor(currentColor, this, dialogInstructions.c_str(),
-      QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+    QColor nextColor =
+      QColorDialog::getColor(currentColor, this->m_p->m_container, dialogInstructions.c_str(),
+        QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
     bool canceled = !nextColor.isValid();
     if (!canceled)
     {
@@ -418,6 +431,10 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
         return true;
       }
     }
+  }
+  if (obj == m_p->m_view && evnt->type() == QEvent::Leave)
+  {
+    this->resetHover();
   }
   return this->Superclass::eventFilter(obj, evnt);
 }
