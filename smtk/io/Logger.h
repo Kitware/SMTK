@@ -15,6 +15,7 @@
 #include "smtk/SystemConfig.h"
 #include <functional>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -120,7 +121,17 @@ public:
     , m_ownStream(false)
   {
   }
+
+  Logger(const Logger& logger)
+    : m_hasErrors(logger.m_hasErrors)
+    , m_records(logger.m_records)
+    , m_ownStream(false)
+  {
+  }
+
   virtual ~Logger();
+
+  Logger& operator=(const Logger& logger);
   std::size_t numberOfRecords() const { return m_records.size(); }
 
   bool hasErrors() const { return m_hasErrors; }
@@ -155,15 +166,17 @@ public:
 
 protected:
   void flushRecordsToStream(std::size_t beginRec, std::size_t endRec);
+  std::string toStringInternal(std::size_t i, std::size_t j, bool includeSourceLoc = false) const;
 
-  std::vector<Record> m_records;
   bool m_hasErrors;
+  std::vector<Record> m_records;
   std::ostream* m_stream;
   bool m_ownStream;
   std::function<void()> m_callback;
 
 private:
   static Logger m_instance;
+  mutable std::mutex m_mutex;
 };
 
 template <typename J>

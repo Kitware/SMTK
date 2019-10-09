@@ -7,32 +7,27 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_RedirectOutput_h
-#define __smtk_extension_RedirectOutput_h
 
-#include "smtk/PublicPointerDefs.h"
+#ifndef __smtk_extension_qt_testing_cxx_UnitTestEmittingStringBuffer_h
+#define __smtk_extension_qt_testing_cxx_UnitTestEmittingStringBuffer_h
 
-#include "smtk/extension/qt/Exports.h"
 #include <QObject>
-namespace smtk
-{
-namespace io
-{
-class Logger;
-}
-}
 
-namespace smtk
+class TestEmittingStringBuffer : public QObject
 {
-namespace extension
-{
-namespace qt
-{
+  Q_OBJECT
 
-//Redirect the output from smtk::io::Logger to Qt's messaging stream.
-SMTKQTEXT_EXPORT void RedirectOutputToQt(QObject* context, smtk::io::Logger& log);
-}
-}
-}
+public:
+  TestEmittingStringBuffer(QObject* parent)
+    : QObject(parent)
+  {
+  }
+
+signals:
+  void finished();
+
+public slots:
+  void run();
+};
 
 #endif

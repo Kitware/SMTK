@@ -7,32 +7,31 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_extension_RedirectOutput_h
-#define __smtk_extension_RedirectOutput_h
 
-#include "smtk/PublicPointerDefs.h"
+// .NAME Logger.h -
+// .SECTION Description
+// .SECTION See Also
 
-#include "smtk/extension/qt/Exports.h"
-#include <QObject>
-namespace smtk
-{
-namespace io
-{
-class Logger;
-}
-}
+#include "smtk/io/Logger.h"
+#include <chrono>
+#include <iostream>
+#include <thread>
 
-namespace smtk
+void foo(int i)
 {
-namespace extension
+  smtkErrorMacro(smtk::io::Logger::instance(), "Hey I'm running in a thread! - i = " << i);
+}
+int main()
 {
-namespace qt
-{
+  std::vector<std::thread> threads;
+  for (int i = 0; i < 10; i++)
+  {
+    threads.emplace_back(std::thread(foo, i));
+  }
 
-//Redirect the output from smtk::io::Logger to Qt's messaging stream.
-SMTKQTEXT_EXPORT void RedirectOutputToQt(QObject* context, smtk::io::Logger& log);
+  for (auto& th : threads)
+  {
+    th.join();
+  }
+  return 0;
 }
-}
-}
-
-#endif

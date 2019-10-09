@@ -23,7 +23,7 @@ namespace extension
 namespace qt
 {
 
-void RedirectOutputToQt(smtk::io::Logger& log)
+void RedirectOutputToQt(QObject* context, smtk::io::Logger& log)
 {
   qtEmittingStringBuffer* stringBuf = new qtEmittingStringBuffer();
   std::ostream* stream = new std::ostream(stringBuf);
@@ -36,33 +36,35 @@ void RedirectOutputToQt(smtk::io::Logger& log)
   // Connect to the emitting string buffer's flush signal. Since the emitting
   // string buffer is local to the logger and is scoped by its lifetime, we do
   // not need to guard against the logger being out of scope.
-  QObject::connect(stringBuf, &qtEmittingStringBuffer::flush, [&]() {
-    QLoggingCategory smtkCategory("SMTK", QtInfoMsg);
-    for (auto& record : log.records())
-    {
-      switch (record.severity)
+  QObject::connect(stringBuf, &qtEmittingStringBuffer::flush, context,
+    [&]() {
+      QLoggingCategory smtkCategory("SMTK", QtInfoMsg);
+      for (auto& record : log.records())
       {
-        case smtk::io::Logger::DEBUG:
-          qCDebug(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
-          break;
-        case smtk::io::Logger::INFO:
-          qCInfo(smtkCategory) << smtk::io::Logger::toString(record, false).c_str();
-          break;
-        case smtk::io::Logger::WARNING:
-          qCWarning(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
-          break;
-        case smtk::io::Logger::ERROR:
-          qCCritical(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
-          break;
-        case smtk::io::Logger::FATAL:
-        default:
-          qFatal("%s", smtk::io::Logger::toString(record, true).c_str());
-          break;
+        switch (record.severity)
+        {
+          case smtk::io::Logger::DEBUG:
+            qCDebug(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
+            break;
+          case smtk::io::Logger::INFO:
+            qCInfo(smtkCategory) << smtk::io::Logger::toString(record, false).c_str();
+            break;
+          case smtk::io::Logger::WARNING:
+            qCWarning(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
+            break;
+          case smtk::io::Logger::ERROR:
+            qCCritical(smtkCategory) << smtk::io::Logger::toString(record, true).c_str();
+            break;
+          case smtk::io::Logger::FATAL:
+          default:
+            qFatal("%s", smtk::io::Logger::toString(record, true).c_str());
+            break;
+        }
       }
-    }
 
-    log.reset();
-  });
+      log.reset();
+    },
+    Qt::QueuedConnection);
 
   log.setFlushToStream(stream, false, false);
   log.setCallback(cleanup);

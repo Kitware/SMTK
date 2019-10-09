@@ -76,7 +76,7 @@ pqSMTKBehavior::pqSMTKBehavior(QObject* parent)
 
   // Redirect the singleton smtk::io::Logger::instance() to Qt's I/O stream,
   // which in turn is picked up by ParaView's output widget.
-  smtk::extension::qt::RedirectOutputToQt(smtk::io::Logger::instance());
+  smtk::extension::qt::RedirectOutputToQt(this, smtk::io::Logger::instance());
 }
 
 pqSMTKBehavior* pqSMTKBehavior::instance(QObject* parent)
