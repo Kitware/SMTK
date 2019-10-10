@@ -27,7 +27,6 @@
 #include <vtkTransform.h>
 #include <vtksys/SystemTools.hxx>
 
-#include <vtkPVCacheKeeper.h>
 #include <vtkPVRenderView.h>
 #include <vtkPVTrivialProducer.h>
 
@@ -130,7 +129,6 @@ vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
   , SelectionObserver()
   , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
-  , EntityCacheKeeper(vtkSmartPointer<vtkPVCacheKeeper>::New())
   , GlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , SelectedGlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
   , Entities(vtkSmartPointer<vtkActor>::New())
@@ -195,36 +193,30 @@ bool vtkSMTKResourceRepresentation::GetModelBounds()
 {
   // Entity tessellation bounds
   double entityBounds[6];
-  auto port = this->GetInternalOutputPort();
-  if (port)
+  this->GetEntityBounds(
+    this->CurrentData, entityBounds, this->EntityMapper->GetCompositeDataDisplayAttributes());
+
+  // Instance placement bounds
+  double* instanceBounds = this->GlyphMapper->GetBounds();
+
+  vtkBoundingBox bbox;
+  if (vtkBoundingBox::IsValid(entityBounds))
   {
-    this->GetEntityBounds(port->GetProducer()->GetOutputDataObject(0), entityBounds,
-      this->EntityMapper->GetCompositeDataDisplayAttributes());
-
-    // Instance placement bounds
-    double* instanceBounds = this->GlyphMapper->GetBounds();
-
-    vtkBoundingBox bbox;
-    if (vtkBoundingBox::IsValid(entityBounds))
-    {
-      bbox.AddPoint(entityBounds[0], entityBounds[2], entityBounds[4]);
-      bbox.AddPoint(entityBounds[1], entityBounds[3], entityBounds[5]);
-    }
-
-    if (vtkBoundingBox::IsValid(instanceBounds))
-    {
-      bbox.AddPoint(instanceBounds[0], instanceBounds[2], instanceBounds[4]);
-      bbox.AddPoint(instanceBounds[1], instanceBounds[3], instanceBounds[5]);
-    }
-
-    if (bbox.IsValid())
-    {
-      bbox.GetBounds(this->DataBounds);
-      return true;
-    }
+    bbox.AddPoint(entityBounds[0], entityBounds[2], entityBounds[4]);
+    bbox.AddPoint(entityBounds[1], entityBounds[3], entityBounds[5]);
   }
 
-  vtkMath::UninitializeBounds(this->DataBounds);
+  if (vtkBoundingBox::IsValid(instanceBounds))
+  {
+    bbox.AddPoint(instanceBounds[0], instanceBounds[2], instanceBounds[4]);
+    bbox.AddPoint(instanceBounds[1], instanceBounds[3], instanceBounds[5]);
+  }
+
+  if (bbox.IsValid())
+  {
+    bbox.GetBounds(this->DataBounds);
+    return true;
+  }
   return false;
 }
 
@@ -247,18 +239,16 @@ bool vtkSMTKResourceRepresentation::GetEntityBounds(
 int vtkSMTKResourceRepresentation::RequestData(
   vtkInformation* request, vtkInformationVector** inVec, vtkInformationVector* outVec)
 {
-  this->EntityCacheKeeper->RemoveAllCaches();
+  this->CurrentData->Initialize();
   if (inVec[0]->GetNumberOfInformationObjects() == 1)
   {
     vtkInformation* inInfo = inVec[0]->GetInformationObject(0);
     this->SetOutputExtent(this->GetInternalOutputPort(), inInfo);
 
-    this->EntityCacheKeeper->SetInputConnection(this->GetInternalOutputPort());
-
     // Get each block from the top level multi block
     auto port = this->GetInternalOutputPort();
-    vtkSmartPointer<vtkMultiBlockDataSet> mbds =
-      vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
+    auto mbds = vtkMultiBlockDataSet::SafeDownCast(port->GetProducer()->GetOutputDataObject(0));
+    this->CurrentData->ShallowCopy(mbds);
 
     vtkSmartPointer<vtkMultiBlockDataSet> componentMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
@@ -281,7 +271,6 @@ int vtkSMTKResourceRepresentation::RequestData(
     // Use per block color to render the selected/hovered glyphs
     this->SelectedGlyphMapper->SetScalarModeToUseCellData();
   }
-  this->EntityCacheKeeper->Update();
 
   this->EntityMapper->Modified();
   this->GlyphMapper->Modified();
@@ -310,7 +299,7 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
     // to provide a place-holder dataset of the right type. This is essential
     // since the vtkPVRenderView uses the type specified to decide on the
     // delivery mechanism, among other things.
-    vtkPVRenderView::SetPiece(inInfo, this, this->EntityCacheKeeper->GetOutputDataObject(0), 0, 0);
+    vtkPVRenderView::SetPiece(inInfo, this, this->CurrentData, 0, 0);
 
     // Since we are rendering polydata, it can be redistributed when ordered
     // compositing is needed. So let the view know that it can feel free to
