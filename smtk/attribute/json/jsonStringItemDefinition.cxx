@@ -51,21 +51,17 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   }
   auto temp = smtk::dynamic_pointer_cast<ValueItemDefinition>(defPtr);
   smtk::attribute::from_json(j, temp, resPtr);
-  try
+
+  auto result = j.find("MultipleLines");
+  if (result != j.end())
   {
-    defPtr->setIsMultiline(j.at("MultipleLines"));
+    defPtr->setIsMultiline(*result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("Secure");
+  if (result != j.end())
   {
-  }
-  try
-  {
-    // QUESTION: xml parser does not care about it
-    // XmlDocV1Parser::L958
-    defPtr->setIsSecure(j.at("Secure"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setIsSecure(*result);
   }
 
   smtk::attribute::processDerivedValueDefFromJson<smtk::attribute::StringItemDefinitionPtr,

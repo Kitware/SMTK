@@ -50,45 +50,39 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
+  auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, itemDef);
 
-  try
+  auto result = j.find("NumberOfRequiredValues");
+  if (result != j.end())
   {
-    defPtr->setNumberOfRequiredValues(j.at("NumberOfRequiredValues"));
+    defPtr->setNumberOfRequiredValues(*result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("DisplayFormat");
+  if (result != j.end())
   {
+    defPtr->setDisplayFormat(*result);
   }
-  try
+
+  result = j.find("ShowTimeZone");
+  if (result != j.end())
   {
-    defPtr->setDisplayFormat(j.at("DisplayFormat"));
+    defPtr->setUseTimeZone(*result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("ShowCalendarPopup");
+  if (result != j.end())
   {
+    defPtr->setEnableCalendarPopup(*result);
   }
-  try
-  {
-    defPtr->setUseTimeZone(j.at("ShowTimeZone"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setEnableCalendarPopup(j.at("ShowCalendarPopup"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
+
+  result = j.find("DefaultValue");
+  if (result != j.end())
   {
     ::smtk::common::DateTimeZonePair dtz;
-    dtz.deserialize(j.at("DefaultValue"));
+    dtz.deserialize(*result);
     defPtr->setDefaultValue(dtz);
-  }
-  catch (std::exception& /*e*/)
-  {
   }
 }
 }

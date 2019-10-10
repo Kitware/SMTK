@@ -12,6 +12,8 @@
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Entity.h"
 
@@ -76,83 +78,77 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
-  try
+  auto basicItem = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, basicItem);
+  auto accept = j.find("Accepts");
+  if (accept == j.end())
   {
-    nlohmann::json accept = j.at("Accepts");
-    for (auto iterator = accept.begin(); iterator != accept.end(); ++iterator)
-    {
-      auto acc1 = (*iterator).get<std::string>();
-      ++iterator;
-      auto acc2 = (*iterator).get<std::string>();
-      defPtr->setAcceptsEntries(acc1, acc2, true);
-    }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setNumberOfRequiredValues(j.at("NumberOfRequiredValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setIsExtensible(j.at("Extensible"));
-    defPtr->setMaxNumberOfValues(j.at("MaxNumberOfValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Can not find Accept key for ReferenceItemDefinition:" << defPtr->name());
+    return;
   }
 
-  nlohmann::json clabels;
-  try
+  for (auto iterator = accept->begin(); iterator != accept->end(); ++iterator)
   {
-    clabels = j.at("ReferenceLabels");
-    if (!clabels.is_null())
+    auto acc1 = (*iterator).get<std::string>();
+    ++iterator;
+    auto acc2 = (*iterator).get<std::string>();
+    defPtr->setAcceptsEntries(acc1, acc2, true);
+  }
+
+  auto numberOfRequiredValues = j.find("NumberOfRequiredValues");
+  if (numberOfRequiredValues == j.end())
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Can not find NumberOfRequiredValues key for ReferenceItemDefinition:" << defPtr->name());
+    return;
+  }
+  defPtr->setNumberOfRequiredValues(*numberOfRequiredValues);
+
+  auto result = j.find("Extensible");
+  if (result != j.end())
+  {
+    defPtr->setIsExtensible(*result);
+  }
+
+  result = j.find("MaxNumberOfValues");
+  if (result != j.end())
+  {
+    defPtr->setMaxNumberOfValues(*result);
+  }
+
+  result = j.find("HoldReference");
+  if (result != j.end())
+  {
+    defPtr->setHoldReference(*result);
+  }
+
+  result = j.find("Role");
+  if (result != j.end())
+  {
+    defPtr->setRole(*result);
+  }
+
+  result = j.find("ReferenceLabels");
+  if (result != j.end())
+  {
+    auto common = result->find("CommonLabel");
+    if (common != result->end())
     {
-      // Nested try/catch
-      try
+      defPtr->setCommonValueLabel(*common);
+    }
+    else
+    {
+      auto labels = result->find("Label");
+      int i(0);
+      if (labels != result->end())
       {
-        defPtr->setCommonValueLabel(clabels.at("CommonLabel"));
-      }
-      catch (std::exception& /*e*/)
-      {
+        for (auto iterator = labels->begin(); iterator != labels->end(); iterator++, i++)
+        {
+          defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        }
       }
     }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!clabels.is_null())
-  {
-    try
-    {
-      nlohmann::json labels = clabels.at("Label");
-      size_t i(0);
-      for (auto iterator = labels.begin(); iterator != labels.end(); iterator++, i++)
-      {
-        defPtr->setValueLabel(i, (*iterator).get<std::string>());
-      }
-    }
-    catch (std::exception& /*e*/)
-    {
-    }
-  }
-  try
-  {
-    defPtr->setHoldReference(j.at("HoldReference"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  auto locateRole = j.find("Role");
-  if (locateRole != j.end())
-  {
-    defPtr->setRole(*locateRole);
   }
 }
 }

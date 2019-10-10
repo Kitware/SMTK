@@ -15,6 +15,8 @@
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
 
+#include "smtk/io/Logger.h"
+
 #include "nlohmann/json.hpp"
 
 #include <exception>
@@ -105,13 +107,11 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
   std::size_t i = 0, n = itemPtr->numberOfValues();
   if (itemPtr->isExtensible())
   {
-    try
+    auto numberOfValues = j.find("NumberOfValues");
+    if (numberOfValues != j.end())
     {
-      n = j.at("NumberOfValues");
+      n = *numberOfValues;
       itemPtr->setNumberOfValues(n);
-    }
-    catch (std::exception& /*e*/)
-    {
     }
   }
 
@@ -121,15 +121,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
   }
 
   // OK Time to process the children items of this Discrete Item
-  json childrenItemsJson;
-  try
-  {
-    childrenItemsJson = j.at("ChildrenItems");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!childrenItemsJson.is_null())
+  auto childrenItemsJson = j.find("ChildrenItems");
+  if (!((childrenItemsJson == j.end()) || childrenItemsJson->is_null()))
   {
     std::map<std::string, smtk::attribute::ItemPtr>::const_iterator itemIter;
     // Process each child item in ChildrenItems
@@ -141,17 +134,23 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
       // they have the same index in the each lists. Add a index check or name search
       // for different indexes condition
       std::string childItemName = "Index " + std::to_string(index);
-      try
+      auto itemJson = childrenItemsJson->find(childItemName);
+      if (itemJson == childrenItemsJson->end())
       {
-        json itemJson = childrenItemsJson.at(childItemName);
-        json itemValue = itemJson.at("ItemValue");
-        smtk::attribute::ItemPtr subItemPtr = itemIter->second;
-        smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-          itemValue, subItemPtr, itemExpressionInfo, attRefInfo, convertedAttDefs);
+        smtkErrorMacro(smtk::io::Logger::instance(),
+          "Can not find Child Item: " << childItemName << " for Value Item: " << itemPtr->name());
+        continue;
       }
-      catch (std::exception& /*e*/)
+      auto itemValue = itemJson->find("ItemValue");
+      if (itemValue == itemJson->end())
       {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Can not find Child Item: "
+            << childItemName << "'s ItemValue' for Value Item: " << itemPtr->name());
+        continue;
       }
+      smtk::attribute::ItemPtr subItemPtr = itemIter->second;
+      smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
+        *itemValue, subItemPtr, itemExpressionInfo, attRefInfo, convertedAttDefs);
     }
   }
   if (!n)
@@ -162,17 +161,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
   // and a special compact one that could be used for n == 1
   // Lets check the general one first - note we only need to process the values
   // that have been set
-  json discreteValuesJson;
-  try
+  auto discreteValuesJson = j.find("DiscreteValues");
+  if (discreteValuesJson != j.end())
   {
-    discreteValuesJson = j.at("DiscreteValues");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!discreteValuesJson.is_null())
-  {
-    for (auto iter = discreteValuesJson.begin(); iter != discreteValuesJson.end(); iter++, i++)
+    for (auto iter = discreteValuesJson->begin(); iter != discreteValuesJson->end(); iter++, i++)
     {
       if (i >= n || iter->is_null())
       {
@@ -182,14 +174,13 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ValueItemPtr& ite
     }
     return;
   }
+
   if (numRequiredVals == 1) // Special Common Case
   {
-    try
+    auto index = j.find("DiscreteIndex");
+    if (index != j.end())
     {
-      itemPtr->setDiscreteIndex(j.at("DiscreteIndex"));
-    }
-    catch (std::exception& /*e*/)
-    {
+      itemPtr->setDiscreteIndex(*index);
     }
   }
 }

@@ -41,15 +41,13 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  try
+  auto result = j.find("FileFilters");
+  if (result != j.end())
   {
-    defPtr->setFileFilters(j.at("FileFilters"));
+    defPtr->setFileFilters(*result);
   }
-  catch (std::exception& /*e*/)
-  {
-  }
-  auto temp = smtk::dynamic_pointer_cast<FileSystemItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
+  auto fsysDef = smtk::dynamic_pointer_cast<FileSystemItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, fsysDef);
 }
 }
 }

@@ -80,76 +80,57 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemDefiniti
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
+  auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, itemDef);
 
-  try
+  auto result = j.find("NumberOfRequiredGroups");
+  if (result != j.end())
   {
-    defPtr->setNumberOfRequiredGroups(j.at("NumberOfRequiredGroups"));
+    defPtr->setNumberOfRequiredGroups(*result);
   }
-  catch (const std::exception&)
+
+  result = j.find("Extensible");
+  if (result != j.end())
   {
+    defPtr->setIsExtensible(*result);
   }
-  try
+
+  result = j.find("MaxNumberOfGroups");
+  if (result != j.end())
   {
-    defPtr->setIsExtensible(j.at("Extensible"));
+    defPtr->setMaxNumberOfGroups(*result);
   }
-  catch (const std::exception&)
+
+  result = j.find("ComponentLabels");
+  if (result != j.end())
   {
-  }
-  try
-  {
-    defPtr->setMaxNumberOfGroups(j.at("MaxNumberOfGroups"));
-  }
-  catch (const std::exception&)
-  {
-  }
-  json clabels;
-  try
-  {
-    clabels = j.at("ComponentLabels");
-    if (!clabels.is_null())
+    auto common = result->find("CommonLabel");
+    if (common != result->end())
     {
-      // Nested try/catch
-      try
-      {
-        defPtr->setCommonSubGroupLabel(clabels.at("CommonLabel"));
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
+      defPtr->setCommonSubGroupLabel(*common);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!clabels.is_null())
-  {
-    try
+    else
     {
-      json labels = clabels.at("Label");
+      auto labels = result->find("Label");
       int i(0);
-      for (auto iterator = labels.begin(); iterator != labels.end(); iterator++, i++)
+      if (labels != result->end())
       {
-        defPtr->setSubGroupLabel(i, (*iterator).get<std::string>());
+        for (auto iterator = labels->begin(); iterator != labels->end(); iterator++, i++)
+        {
+          defPtr->setSubGroupLabel(i, (*iterator).get<std::string>());
+        }
       }
-    }
-    catch (std::exception& /*e*/)
-    {
     }
   }
 
   // Now let's process its children items
-  try
+  result = j.find("ItemDefinitions");
+  if (result != j.end())
   {
-    json childrenDefs = j.at("ItemDefinitions");
-    for (json::iterator iter = childrenDefs.begin(); iter != childrenDefs.end(); iter++)
+    for (auto& jIdef : *result)
     {
-      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(iter, defPtr, resPtr);
+      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(jIdef, defPtr, resPtr);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
   }
 }
 }

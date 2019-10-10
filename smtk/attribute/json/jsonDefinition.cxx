@@ -130,54 +130,39 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
     std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
   if (colPtr == nullptr)
   {
-    std::cerr << "When converting json, definition " << defPtr->label()
-              << " has an invalid resourcePtr" << std::endl;
+    smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+        << defPtr->label() << " has an invalid resourcePtr");
     return;
   }
   // Same logic in XmlDocV1Parser::processDefinition
-  try
+  auto result = j.find("Label");
+  if (result != j.end())
   {
-    if (!j.at("Label").is_null())
-    {
-      defPtr->setLabel(j.at("Label"));
-    }
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setLabel(*result);
   }
 
-  try
+  result = j.find("Version");
+  if (result != j.end())
   {
-    if (!j.at("Version").is_null())
-    {
-      defPtr->setVersion(j.at("Version"));
-    }
+    defPtr->setVersion(*result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("Abstract");
+  if (result != j.end())
   {
+    defPtr->setIsAbstract(*result);
   }
-  // Nlohmann would thow an exception if the key does not exist. Using []
-  // would cause underfined behavior
-  try
+
+  result = j.find("AdvanceLevel");
+  if (result != j.end())
   {
-    defPtr->setIsAbstract(j.at("Abstract"));
+    defPtr->setAdvanceLevel(*result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("Unique");
+  if (result != j.end())
   {
-  }
-  try
-  {
-    defPtr->setAdvanceLevel(j.at("AdvanceLevel"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setIsUnique(j.at("Unique"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setIsUnique(*result);
   }
 
   auto categories = j.find("Categories");
@@ -189,104 +174,87 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
     }
   }
 
-  try
+  result = j.find("Nodal");
+  if (result != j.end())
   {
-    defPtr->setIsNodal(j.at("Nodal"));
+    defPtr->setIsNodal(*result);
   }
-  catch (std::exception& /*e*/)
-  {
-  }
+
   // Read old-style association mask first.  Note that the association is set
   // as extensible.
   // It will be overwritten if a new-style AssociationsDef
   // is also provided.
   // Reference: XmlDocV1Parser:: L744
-  try
+
+  result = j.find("Associations");
+  if (result != j.end())
   {
-    nlohmann::json associations = j.at("Associations");
-    if (!associations.is_null())
+    smtk::model::BitFlags mask = smtk::model::Entity::specifierStringToFlag(*result);
+    defPtr->setLocalAssociationMask(mask);
+    defPtr->localAssociationRule()->setIsExtensible(true);
+  }
+
+  result = j.find("NotApplicableColor");
+  if ((result != j.end()) && (result->size() == 4))
+  {
+    defPtr->setNotApplicableColor((*result)[0], (*result)[1], (*result)[2], (*result)[3]);
+  }
+
+  result = j.find("DefaultColor");
+  if ((result != j.end()) && (result->size() == 4))
+  {
+    defPtr->setDefaultColor((*result)[0], (*result)[1], (*result)[2], (*result)[3]);
+  }
+
+  result = j.find("BriefDescription");
+  if (result != j.end())
+  {
+    defPtr->setBriefDescription(*result);
+  }
+
+  result = j.find("DetailedDescription");
+  if (result != j.end())
+  {
+    defPtr->setDetailedDescription(*result);
+  }
+
+  result = j.find("AssociationsDef");
+  if (result != j.end())
+  {
+    // TODO: Check XmlDocV1Parser 789
+    std::string aname;
+    auto assocName = result->find("Name");
+    if (assocName != result->end())
     {
-      smtk::model::BitFlags mask = smtk::model::Entity::specifierStringToFlag(associations);
-      defPtr->setLocalAssociationMask(mask);
-      defPtr->localAssociationRule()->setIsExtensible(true);
+      aname = *assocName;
+    }
+    else
+    {
+      aname = defPtr->type() + "Associations";
+    }
+
+    auto assocRule = smtk::attribute::ReferenceItemDefinition::New(aname);
+    smtk::attribute::from_json(*result, assocRule);
+    defPtr->setLocalAssociationRule(assocRule);
+  }
+
+  result = j.find("ItemDefinitions");
+  if (result != j.end())
+  {
+    smtk::attribute::ResourcePtr resource =
+      std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
+    // Reference: Check XmlDocV1Parser 789
+    for (auto& idef : *result)
+    {
+      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
+        idef, defPtr, resource, convertedAttDefs);
     }
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("RootName");
+  if (result != j.end())
   {
-  }
-  try
-  {
-    std::vector<double> rgba = j.at("NotApplicableColor");
-    defPtr->setNotApplicableColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    std::vector<double> rgba = j.at("DefaultColor");
-    defPtr->setDefaultColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setBriefDescription(j.at("BriefDescription"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setDetailedDescription(j.at("DetailedDescription"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    nlohmann::json associationsDef = j.at("AssociationsDef");
-    if (!associationsDef.is_null())
-    {
-      // TODO: Check XmlDocV1Parser 789
-      std::string assocName = associationsDef.at("Name");
-      if (assocName.empty())
-      {
-        assocName = defPtr->type() + "Associations";
-      }
-      auto assocRule = smtk::attribute::ReferenceItemDefinition::New(assocName);
-      smtk::attribute::from_json(associationsDef, assocRule);
-      defPtr->setLocalAssociationRule(assocRule);
-    }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    nlohmann::json itemDefs = j.at("ItemDefinitions");
-    if (!itemDefs.is_null())
-    {
-      smtk::attribute::ResourcePtr resource =
-        std::dynamic_pointer_cast<smtk::attribute::Resource>(defPtr->resource());
-      // Reference: Check XmlDocV1Parser 789
-      for (json::iterator iter = itemDefs.begin(); iter != itemDefs.end(); iter++)
-      {
-        smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(
-          iter, defPtr, resource, convertedAttDefs);
-      }
-    }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setRootName(j.at("RootName"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setRootName(*result);
   }
 }
 }

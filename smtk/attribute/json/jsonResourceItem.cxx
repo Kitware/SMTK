@@ -42,8 +42,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourceItemPtr& 
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ReferenceItem>(itemPtr);
-  smtk::attribute::from_json(j, temp);
+  auto refItem = smtk::dynamic_pointer_cast<ReferenceItem>(itemPtr);
+  smtk::attribute::from_json(j, refItem);
 }
 }
 }

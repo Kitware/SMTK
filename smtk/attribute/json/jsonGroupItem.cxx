@@ -12,6 +12,7 @@
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItem.h"
+#include "smtk/io/Logger.h"
 
 #include "nlohmann/json.hpp"
 
@@ -109,21 +110,17 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
   m = itemPtr->numberOfItemsPerGroup();
   if (itemPtr->isExtensible())
   {
-    // If node has no children, then number of groups is zero
-    if (j.is_null())
+    auto numberOfGroups = j.find("NumberOfGroups");
+    if (numberOfGroups != j.end())
     {
-      n = 0;
+      n = *numberOfGroups;
+      itemPtr->setNumberOfGroups(n);
     }
     else
     {
-      try
-      {
-        n = j.at("NumberOfGroups");
-        itemPtr->setNumberOfGroups(n);
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
+      smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing NumberOfGroups "
+          << "for extensible group item:" << itemPtr->name());
+      return;
     }
   }
   if (!n) // There are no sub-groups for this item
@@ -132,40 +129,39 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
   }
   // There are 2 formats - one is for any number of sub groups and the other
   // is a custon case is for 1 subGroup. They share the same logic here
-  json groupClusters;
-  try
-  {
-    groupClusters = j.at("GroupClusters");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!groupClusters.is_null())
+  auto groupClusters = j.find("GroupClusters");
+  if (groupClusters != j.end())
   {
     for (size_t groupIter = 0; groupIter < n; groupIter++)
     {
       std::string clusterName = "Cluster " + std::to_string(groupIter);
-      try
+      auto cluster = groupClusters->find(clusterName);
+      if (cluster == groupClusters->end())
       {
-        json cluster = groupClusters.at(clusterName);
-        if (!cluster.is_null())
-        {
-          for (size_t itemPGIter = 0; itemPGIter < m; itemPGIter++)
-          {
-            std::string itemName = "Index " + std::to_string(itemPGIter);
-            json itemJson = cluster.at(itemName);
-            if (!itemJson.is_null())
-            {
-              json itemValue = itemJson.at("ItemValue");
-              auto groupItemPtr = itemPtr->item(groupIter, itemPGIter);
-              smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-                itemValue, groupItemPtr, itemExpressionInfo, attRefInfo, convertedAttDefs);
-            }
-          }
-        }
+        smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing "
+            << clusterName << "for group item:" << itemPtr->name());
+        continue;
       }
-      catch (std::exception& /*e*/)
+      for (size_t itemPGIter = 0; itemPGIter < m; itemPGIter++)
       {
+        std::string itemName = "Index " + std::to_string(itemPGIter);
+        auto itemJson = cluster->find(itemName);
+        if (itemJson == cluster->end())
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing index:"
+              << itemName << "for cluster:" << clusterName << "for group item:" << itemPtr->name());
+          continue;
+        }
+        auto itemValue = itemJson->find("ItemValue");
+        if (itemValue == itemJson->end())
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing ItemValue for index:"
+              << itemName << "for cluster:" << clusterName << "for group item:" << itemPtr->name());
+          continue;
+        }
+        auto groupItemPtr = itemPtr->item(groupIter, itemPGIter);
+        smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
+          *itemValue, groupItemPtr, itemExpressionInfo, attRefInfo, convertedAttDefs);
       }
     }
   }

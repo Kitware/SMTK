@@ -36,8 +36,8 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<FileSystemItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
+  auto fsysDef = smtk::dynamic_pointer_cast<FileSystemItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, fsysDef);
   //QUESTION: xml parser does not serialize default value and extensibility
 }
 }

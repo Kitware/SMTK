@@ -51,41 +51,23 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ItemPtr& itemPtr)
   }
   if (itemPtr->isOptional())
   {
-    try
+    auto enabled = j.find("Enabled");
+    if (enabled != j.end())
     {
-      itemPtr->setIsEnabled(j.at("Enabled"));
-    }
-    catch (std::exception& /*e*/)
-    {
+      itemPtr->setIsEnabled(*enabled);
     }
   }
 
-  json advanceLevel;
-  try
+  auto result = j.find("AdvanceReadLevel");
+  if (result != j.end())
   {
-    advanceLevel = j.at("AdvanceLevel");
-    itemPtr->setAdvanceLevel(0, j.at("AdvanceLevel"));
-    itemPtr->setAdvanceLevel(1, j.at("AdvanceLevel"));
+    itemPtr->setAdvanceLevel(0, *result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("AdvanceWriteLevel");
+  if (result != j.end())
   {
-  }
-  if (advanceLevel.is_null())
-  {
-    try
-    {
-      itemPtr->setAdvanceLevel(0, j.at("AdvanceReadLevel"));
-    }
-    catch (std::exception& /*e*/)
-    {
-    }
-    try
-    {
-      itemPtr->setAdvanceLevel(1, j.at("AdvanceWriteLevel"));
-    }
-    catch (std::exception& /*e*/)
-    {
-    }
+    itemPtr->setAdvanceLevel(1, *result);
   }
 }
 }

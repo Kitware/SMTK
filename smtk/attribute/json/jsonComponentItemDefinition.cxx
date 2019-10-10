@@ -41,8 +41,8 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ReferenceItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
+  auto refItemDef = smtk::dynamic_pointer_cast<ReferenceItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, refItemDef);
 }
 SMTKCORE_EXPORT void processFromRefItemDef(
   const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr)
@@ -57,59 +57,42 @@ SMTKCORE_EXPORT void processFromRefItemDef(
   // Has the attribute definition been set?
   // Handle at at constuction time since definition knows about resource
   // Reference: XmlDocV1Parser: L1308
-  try
+  auto result = j.find("AttDef");
+  if (result != j.end())
   {
-    std::string etype = j.at("AttDef");
-    std::string qstring = smtk::attribute::Resource::createAttributeQuery(etype);
+    std::string qstring = smtk::attribute::Resource::createAttributeQuery(*result);
     defPtr->setAcceptsEntries(smtk::common::typeName<smtk::attribute::Resource>(), qstring, true);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("NumberOfRequiredValues");
+  if (result != j.end())
   {
+    defPtr->setNumberOfRequiredValues(*result);
   }
 
-  try
+  result = j.find("ComponentLabels");
+  if (result != j.end())
   {
-    defPtr->setNumberOfRequiredValues(j.at("NumberOfRequiredValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-
-  nlohmann::json clabels;
-  try
-  {
-    clabels = j.at("ComponentLabels");
-    if (!clabels.is_null())
+    auto common = result->find("CommonLabel");
+    if (common != result->end())
     {
-      // Nested try/catch
-      try
-      {
-        defPtr->setCommonValueLabel(clabels.at("CommonLabel"));
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
+      defPtr->setCommonValueLabel(*common);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!clabels.is_null())
-  {
-    try
+    else
     {
-      nlohmann::json labels = clabels.at("Label");
+      auto labels = result->find("Label");
       int i(0);
-      for (auto iterator = labels.begin(); iterator != labels.end(); iterator++, i++)
+      if (labels != result->end())
       {
-        defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        for (auto iterator = labels->begin(); iterator != labels->end(); iterator++, i++)
+        {
+          defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        }
       }
-    }
-    catch (std::exception& /*e*/)
-    {
     }
   }
 }
+
 SMTKCORE_EXPORT void processFromMeshItemDef(
   const nlohmann::json& j, smtk::attribute::ComponentItemDefinitionPtr& defPtr)
 {
@@ -121,22 +104,25 @@ SMTKCORE_EXPORT void processFromMeshItemDef(
   // Create the appropriate query for mesh sets
   defPtr->setAcceptsEntries(smtk::common::typeName<smtk::mesh::Resource>(), "meshset", true);
 
-  auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
-  try
+  auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, itemDef);
+
+  auto result = j.find("NumberOfRequiredValues");
+  if (result != j.end())
   {
-    defPtr->setNumberOfRequiredValues(j.at("NumberOfRequiredValues"));
+    defPtr->setNumberOfRequiredValues(*result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("Extensible");
+  if (result != j.end())
   {
+    defPtr->setIsExtensible(*result);
   }
-  try
+
+  result = j.find("MaxNumberOfValues");
+  if (result != j.end())
   {
-    defPtr->setIsExtensible(j.at("Extensible"));
-    defPtr->setMaxNumberOfValues(j.at("MaxNumberOfValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setMaxNumberOfValues(*result);
   }
 }
 }

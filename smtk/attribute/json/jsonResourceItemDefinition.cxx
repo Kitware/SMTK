@@ -38,8 +38,8 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ReferenceItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
+  auto refDef = smtk::dynamic_pointer_cast<ReferenceItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, refDef);
 }
 }
 }

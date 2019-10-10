@@ -41,18 +41,16 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileItemPtr& item
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<FileSystemItem>(itemPtr);
-  smtk::attribute::from_json(j, temp);
-  try
+  auto fsysItem = smtk::dynamic_pointer_cast<FileSystemItem>(itemPtr);
+  smtk::attribute::from_json(j, fsysItem);
+
+  auto recentVs = j.find("RecentValues");
+  if (recentVs != j.end())
   {
-    std::vector<std::string> recentVs = j.at("RecentValues");
-    for (const auto& recentV : recentVs)
+    for (const auto& recentV : *recentVs)
     {
       itemPtr->addRecentValue(recentV);
     }
-  }
-  catch (const std::exception&)
-  {
   }
 }
 }
