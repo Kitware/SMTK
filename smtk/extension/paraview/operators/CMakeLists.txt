@@ -13,7 +13,6 @@ set(hdrs
 )
 
 set(unwrappedHdrs
-  PrepareToSave.h
 )
 
 set(qtui
