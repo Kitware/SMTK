@@ -44,7 +44,8 @@ class GroupItemDefinition;
   *     g->findAs<StringItem>(ii, "key")->setValue(keyNames[ii]);
   *     g->findAs<DoubleItem>(ii, "value")->setValue(0.5 * ii);
   *   }
-  */
+  * ```
+ */
 class SMTKCORE_EXPORT GroupItem : public Item
 {
   friend class GroupItemDefinition;

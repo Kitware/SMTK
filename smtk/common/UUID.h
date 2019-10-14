@@ -38,6 +38,7 @@ namespace common
 class SMTKCORE_EXPORT UUID
 {
 public:
+  static constexpr const char* const type_name = "uuid";
   typedef ::boost::uint8_t value_type;
   typedef ::boost::uint8_t* iterator;
   typedef ::boost::uint8_t const* const_iterator;

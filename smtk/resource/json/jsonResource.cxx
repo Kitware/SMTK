@@ -12,6 +12,7 @@
 #include "smtk/resource/json/jsonLinkBase.h"
 
 #include "smtk/common/json/jsonLinks.h"
+#include "smtk/common/json/jsonProperties.h"
 #include "smtk/common/json/jsonUUID.h"
 
 // Define how resources are serialized.
@@ -25,6 +26,7 @@ void to_json(json& j, const ResourcePtr& resource)
   j["version"] = "3.0";
   j["type"] = resource->typeName();
   j["links"] = resource->links().data();
+  j["properties"] = resource->properties().data();
   if (resource->isNameSet())
   {
     j["name"] = resource->name();
@@ -43,6 +45,14 @@ void from_json(const json& j, ResourcePtr& resource)
   if (j.find("links") != j.end())
   {
     resource->links().data() = j.at("links");
+  }
+
+  // For backwards compatibility, do not require "properties" json item.
+  if (j.find("properties") != j.end())
+  {
+    // Call the serialization method directly so the custom constructor for
+    // m_data in smtk::resource::Properties::Properties() is used.
+    smtk::common::from_json(j.at("properties"), resource->properties().data());
   }
 
   if (j.find("name") != j.end())

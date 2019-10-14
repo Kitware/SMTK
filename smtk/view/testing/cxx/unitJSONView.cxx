@@ -21,8 +21,6 @@
 #include <iostream>
 #include <string>
 
-using namespace nlohmann;
-
 int unitJSONView(int argc, char* argv[])
 {
   bool ok = true;
@@ -40,12 +38,12 @@ int unitJSONView(int argc, char* argv[])
   std::cout << (readFilePath + jsonFile) << "\n";
   std::ifstream file(argc > 1 ? argv[1] : (readFilePath + jsonFile).c_str());
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
-  json j = json::parse(data);
+  nlohmann::json j = nlohmann::json::parse(data);
   int numJSONViews = 0;
   for (auto view : j["Views"])
   {
     smtk::view::ViewPtr test = view;
-    json jtmp = test;
+    nlohmann::json jtmp = test;
     std::cout << "jtemp:\n" << jtmp.dump(2) << std::endl;
     auto xit = rsrc->views().find(test->name());
     if (xit == rsrc->views().end())
@@ -63,7 +61,7 @@ int unitJSONView(int argc, char* argv[])
       }
       else
       {
-        json urk = xit->second;
+        nlohmann::json urk = xit->second;
         std::cerr << "different from baseline:\n" << urk.dump(2) << "\n";
         smtkErrorMacro(smtk::io::Logger::instance(), "Views did not match");
         ok = false;

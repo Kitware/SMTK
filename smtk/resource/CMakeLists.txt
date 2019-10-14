@@ -7,6 +7,7 @@ set(resourceSrcs
   Lock.cxx
   Manager.cxx
   PersistentObject.cxx
+  Properties.cxx
   Resource.cxx
   ResourceLinks.cxx
   Set.cxx
@@ -29,6 +30,7 @@ set(resourceHeaders
   MetadataObserver.h
   Observer.h
   PersistentObject.h
+  Properties.h
   PropertyType.h
   Registrar.h
   Resource.h

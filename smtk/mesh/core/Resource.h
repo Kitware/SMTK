@@ -18,8 +18,6 @@
 #include "smtk/common/FileLocation.h"
 #include "smtk/common/UUID.h"
 
-#include "smtk/mesh/resource/PropertyData.h"
-
 #include "smtk/mesh/core/CellSet.h"
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Handle.h"
@@ -294,48 +292,6 @@ public:
   void setModelResource(smtk::model::ResourcePtr resource) { m_modelResource = resource; }
   smtk::model::ResourcePtr modelResource() const { return m_modelResource.lock(); }
 
-  // Float, String, Integer properties for a meshset given its handle range.
-  void setFloatProperty(
-    const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Float propValue);
-  void setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-    const smtk::model::FloatList& propValue);
-  smtk::model::FloatList const& floatProperty(
-    const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  smtk::model::FloatList& floatProperty(
-    const smtk::mesh::MeshSet& meshset, const std::string& propName);
-  bool hasFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  bool removeFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
-
-  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-    const smtk::model::String& propValue);
-  void setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-    const smtk::model::StringList& propValue);
-  smtk::model::StringList const& stringProperty(
-    const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  smtk::model::StringList& stringProperty(
-    const smtk::mesh::MeshSet& meshset, const std::string& propName);
-  bool hasStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  bool removeStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
-
-  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-    smtk::model::Integer propValue);
-  void setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-    const smtk::model::IntegerList& propValue);
-  smtk::model::IntegerList const& integerProperty(
-    const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  smtk::model::IntegerList& integerProperty(
-    const smtk::mesh::MeshSet& meshset, const std::string& propName);
-  bool hasIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName) const;
-  bool removeIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName);
-  // For T = {MeshIntegerData, MeshFloatData, MeshStringData}:
-  template <typename T>
-  T* properties();
-  // For T = {IntegerData, FloatData, StringData}:
-  template <typename T>
-  T* meshProperties(const smtk::mesh::MeshSet& meshset);
-  template <typename T>
-  bool removeProperty(const smtk::mesh::MeshSet& meshset, const std::string& name);
-
 private:
   Resource(const Resource& other);            //blank since we are used by shared_ptr
   Resource& operator=(const Resource& other); //blank since we are used by shared_ptr
@@ -358,9 +314,6 @@ private:
   smtk::common::FileLocation m_writeLocation;
 
   smtk::model::WeakResourcePtr m_modelResource;
-  smtk::shared_ptr<MeshFloatData> m_floatData;
-  smtk::shared_ptr<MeshStringData> m_stringData;
-  smtk::shared_ptr<MeshIntegerData> m_integerData;
 
   int m_nameCounter;
 

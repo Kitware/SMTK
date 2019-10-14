@@ -7,30 +7,23 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Component.cxx - Abstract base class for CMB Resource Components
-// .SECTION Description
-// .SECTION See Also
+#ifndef smtk_common_json_jsonProperties_h
+#define smtk_common_json_jsonProperties_h
 
-#include "smtk/resource/Component.h"
+#include "smtk/CoreExports.h"
 
-#include "smtk/resource/Resource.h"
+#include "smtk/common/Properties.h"
 
-#include <cassert>
+#include "nlohmann/json.hpp"
 
+// Define how properties are serialized.
 namespace smtk
 {
-namespace resource
+namespace common
 {
-
-Component::Component()
-  : m_links(this)
-  , m_properties(this)
-{
+SMTKCORE_EXPORT void to_json(nlohmann::json& j, const PropertiesContainer& properties);
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j, PropertiesContainer& properties);
+}
 }
 
-Component::~Component()
-{
-}
-
-} // namespace resource
-} // namespace smtk
+#endif

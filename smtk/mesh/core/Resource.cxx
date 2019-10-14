@@ -50,9 +50,6 @@ Resource::Resource()
       smtk::common::UUIDGenerator::instance().random())
   , m_readLocation()
   , m_writeLocation()
-  , m_floatData(new MeshFloatData)
-  , m_stringData(new MeshStringData)
-  , m_integerData(new MeshIntegerData)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
@@ -62,9 +59,6 @@ Resource::Resource(const smtk::common::UUID& resourceID)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
   , m_readLocation()
   , m_writeLocation()
-  , m_floatData(new MeshFloatData)
-  , m_stringData(new MeshStringData)
-  , m_integerData(new MeshIntegerData)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
@@ -75,9 +69,6 @@ Resource::Resource(smtk::mesh::InterfacePtr interface)
       smtk::common::UUIDGenerator::instance().random())
   , m_readLocation()
   , m_writeLocation()
-  , m_floatData(new MeshFloatData)
-  , m_stringData(new MeshStringData)
-  , m_integerData(new MeshIntegerData)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
@@ -87,9 +78,6 @@ Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePt
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
   , m_readLocation()
   , m_writeLocation()
-  , m_floatData(new MeshFloatData)
-  , m_stringData(new MeshStringData)
-  , m_integerData(new MeshIntegerData)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
@@ -656,306 +644,6 @@ bool Resource::setNeumannOnMeshes(const smtk::mesh::MeshSet& meshes, const smtk:
     return iface->setNeumann(meshes.m_range, n);
   }
   return false;
-}
-
-/** @name Model property accessors.
-  *
-  */
-///@{
-void Resource::setFloatProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Float propValue)
-{
-  smtk::model::FloatList tmp;
-  tmp.push_back(propValue);
-  this->setFloatProperty(meshset, propName, tmp);
-}
-
-void Resource::setFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-  const smtk::model::FloatList& propValue)
-{
-  if (meshset.size() > 0)
-  {
-    (*m_floatData)[meshset][propName] = propValue;
-  }
-}
-
-smtk::model::FloatList const& Resource::floatProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName) const
-{
-  if (meshset.size() > 0)
-  {
-    smtk::model::FloatData& floats((*m_floatData)[meshset]);
-    return floats[propName];
-  }
-  static smtk::model::FloatList dummy;
-  return dummy;
-}
-
-smtk::model::FloatList& Resource::floatProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName)
-{
-  if (meshset.size() > 0)
-  {
-    smtk::model::FloatData& floats((*m_floatData)[meshset]);
-    return floats[propName];
-  }
-  static smtk::model::FloatList dummy;
-  return dummy;
-}
-
-bool Resource::hasFloatProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName) const
-{
-  smtk::mesh::MeshFloatData::const_iterator uit = m_floatData->find(meshset);
-  if (uit == m_floatData->end())
-  {
-    return false;
-  }
-  smtk::model::FloatData::const_iterator sit = uit->second.find(propName);
-  // FIXME: Should we return true even when the array (*sit) is empty?
-  return sit == uit->second.end() ? false : true;
-}
-
-bool Resource::removeFloatProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName)
-{
-  smtk::mesh::MeshFloatData::iterator uit = m_floatData->find(meshset);
-  if (uit == m_floatData->end())
-  {
-    return false;
-  }
-  smtk::model::FloatData::iterator sit = uit->second.find(propName);
-  if (sit == uit->second.end())
-  {
-    return false;
-  }
-  uit->second.erase(sit);
-  if (uit->second.empty())
-    m_floatData->erase(uit);
-  return true;
-}
-
-void Resource::setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-  const smtk::model::String& propValue)
-{
-  smtk::model::StringList tmp;
-  tmp.push_back(propValue);
-  this->setStringProperty(meshset, propName, tmp);
-}
-
-void Resource::setStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-  const smtk::model::StringList& propValue)
-{
-  if (meshset.size() > 0)
-  {
-    (*m_stringData)[meshset][propName] = propValue;
-  }
-}
-
-smtk::model::StringList const& Resource::stringProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName) const
-{
-  if (meshset.size() > 0)
-  {
-    smtk::model::StringData& strings((*m_stringData)[meshset]);
-    return strings[propName];
-  }
-  static smtk::model::StringList dummy;
-  return dummy;
-}
-
-smtk::model::StringList& Resource::stringProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName)
-{
-  if (meshset.size() > 0)
-  {
-    smtk::model::StringData& strings((*m_stringData)[meshset]);
-    return strings[propName];
-  }
-  static smtk::model::StringList dummy;
-  return dummy;
-}
-
-bool Resource::hasStringProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName) const
-{
-  smtk::mesh::MeshStringData::const_iterator uit = m_stringData->find(meshset);
-  if (uit == m_stringData->end())
-  {
-    return false;
-  }
-  smtk::model::StringData::const_iterator sit = uit->second.find(propName);
-  // FIXME: Should we return true even when the array (*sit) is empty?
-  return sit == uit->second.end() ? false : true;
-}
-
-bool Resource::removeStringProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName)
-{
-  smtk::mesh::MeshStringData::iterator uit = m_stringData->find(meshset);
-  if (uit == m_stringData->end())
-  {
-    return false;
-  }
-  smtk::model::StringData::iterator sit = uit->second.find(propName);
-  if (sit == uit->second.end())
-  {
-    return false;
-  }
-  uit->second.erase(sit);
-  if (uit->second.empty())
-    m_stringData->erase(uit);
-  return true;
-}
-
-void Resource::setIntegerProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName, smtk::model::Integer propValue)
-{
-  smtk::model::IntegerList tmp;
-  tmp.push_back(propValue);
-  this->setIntegerProperty(meshset, propName, tmp);
-}
-
-void Resource::setIntegerProperty(const smtk::mesh::MeshSet& meshset, const std::string& propName,
-  const smtk::model::IntegerList& propValue)
-{
-  if (meshset.size() > 0)
-  {
-    (*m_integerData)[meshset][propName] = propValue;
-  }
-}
-
-smtk::model::IntegerList const& Resource::integerProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName) const
-{
-  if (meshset.size() > 0)
-  {
-    smtk::model::IntegerData& integers((*m_integerData)[meshset]);
-    return integers[propName];
-  }
-  static smtk::model::IntegerList dummy;
-  return dummy;
-}
-
-smtk::model::IntegerList& Resource::integerProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName)
-{
-  if (meshset.size() > 0)
-  {
-    smtk::model::IntegerData& integers((*m_integerData)[meshset]);
-    return integers[propName];
-  }
-  static smtk::model::IntegerList dummy;
-  return dummy;
-}
-
-bool Resource::hasIntegerProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName) const
-{
-  smtk::mesh::MeshIntegerData::const_iterator uit = m_integerData->find(meshset);
-  if (uit == m_integerData->end())
-  {
-    return false;
-  }
-  smtk::model::IntegerData::const_iterator sit = uit->second.find(propName);
-  // FIXME: Should we return true even when the array (*sit) is empty?
-  return sit == uit->second.end() ? false : true;
-}
-
-bool Resource::removeIntegerProperty(
-  const smtk::mesh::MeshSet& meshset, const std::string& propName)
-{
-  smtk::mesh::MeshIntegerData::iterator uit = m_integerData->find(meshset);
-  if (uit == m_integerData->end())
-  {
-    return false;
-  }
-  smtk::model::IntegerData::iterator sit = uit->second.find(propName);
-  if (sit == uit->second.end())
-  {
-    return false;
-  }
-  uit->second.erase(sit);
-  if (uit->second.empty())
-    m_integerData->erase(uit);
-  return true;
-}
-/*! \fn Resource::properties<T>()
- *  \brief Return a pointer to the properties of the resource.
- *
- * This templated version exists for use in functions where the
- * property type is a template parameter.
- */
-template <>
-SMTKCORE_EXPORT smtk::mesh::MeshStringData* Resource::properties<smtk::mesh::MeshStringData>()
-{
-  return &(*m_stringData);
-}
-
-template <>
-SMTKCORE_EXPORT smtk::mesh::MeshFloatData* Resource::properties<smtk::mesh::MeshFloatData>()
-{
-  return &(*m_floatData);
-}
-
-template <>
-SMTKCORE_EXPORT smtk::mesh::MeshIntegerData* Resource::properties<smtk::mesh::MeshIntegerData>()
-{
-  return &(*m_integerData);
-}
-
-/*! \fn Resource::meshProperties<T>(const smtk::mesh::MeshSet& meshset)
- *  \brief Return a pointer to the properties of an \a meshset in the resource.
- *
- * This templated version exists for use in functions where the
- * property type is a template parameter.
- */
-template <>
-SMTKCORE_EXPORT smtk::model::StringData* Resource::meshProperties<smtk::model::StringData>(
-  const smtk::mesh::MeshSet& meshset)
-{
-  return &(*m_stringData)[meshset];
-}
-
-template <>
-SMTKCORE_EXPORT smtk::model::FloatData* Resource::meshProperties<smtk::model::FloatData>(
-  const smtk::mesh::MeshSet& meshset)
-{
-  return &(*m_floatData)[meshset];
-}
-
-template <>
-SMTKCORE_EXPORT smtk::model::IntegerData* Resource::meshProperties<smtk::model::IntegerData>(
-  const smtk::mesh::MeshSet& meshset)
-{
-  return &(*m_integerData)[meshset];
-}
-
-/*! \fn EntityRef::removeProperty<T>(const std::string& name)
- *  \brief Remove the property of type \a T with the given \a name, returning true on success.
- *
- * False is returned if the property did not exist for the given entity.
- *
- * This templated version exists for use in functions where the
- * property type is a template parameter.
- */
-template <>
-SMTKCORE_EXPORT bool Resource::removeProperty<smtk::model::StringData>(
-  const smtk::mesh::MeshSet& meshset, const std::string& pname)
-{
-  return this->removeStringProperty(meshset, pname);
-}
-
-template <>
-SMTKCORE_EXPORT bool Resource::removeProperty<smtk::model::FloatData>(
-  const smtk::mesh::MeshSet& meshset, const std::string& pname)
-{
-  return this->removeFloatProperty(meshset, pname);
-}
-
-template <>
-SMTKCORE_EXPORT bool Resource::removeProperty<smtk::model::IntegerData>(
-  const smtk::mesh::MeshSet& meshset, const std::string& pname)
-{
-  return this->removeIntegerProperty(meshset, pname);
 }
 }
 }

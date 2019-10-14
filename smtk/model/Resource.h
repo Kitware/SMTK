@@ -219,10 +219,6 @@ public:
     const smtk::common::UUID& entity, const std::string& propName);
   bool hasFloatProperty(const smtk::common::UUID& entity, const std::string& propName) const;
   bool removeFloatProperty(const smtk::common::UUID& entity, const std::string& propName);
-  const UUIDWithFloatProperties floatPropertiesForEntity(const smtk::common::UUID& entity) const;
-  UUIDWithFloatProperties floatPropertiesForEntity(const smtk::common::UUID& entity);
-  UUIDsToFloatData& floatProperties() { return *m_floatData; }
-  UUIDsToFloatData const& floatProperties() const { return *m_floatData; }
 
   void setStringProperty(const smtk::common::UUID& entity, const std::string& propName,
     const smtk::model::String& propValue);
@@ -234,10 +230,6 @@ public:
     const smtk::common::UUID& entity, const std::string& propName);
   bool hasStringProperty(const smtk::common::UUID& entity, const std::string& propName) const;
   bool removeStringProperty(const smtk::common::UUID& entity, const std::string& propName);
-  const UUIDWithStringProperties stringPropertiesForEntity(const smtk::common::UUID& entity) const;
-  UUIDWithStringProperties stringPropertiesForEntity(const smtk::common::UUID& entity);
-  UUIDsToStringData& stringProperties() { return *m_stringData; }
-  UUIDsToStringData const& stringProperties() const { return *m_stringData; }
 
   void setIntegerProperty(
     const smtk::common::UUID& entity, const std::string& propName, smtk::model::Integer propValue);
@@ -249,11 +241,6 @@ public:
     const smtk::common::UUID& entity, const std::string& propName);
   bool hasIntegerProperty(const smtk::common::UUID& entity, const std::string& propName) const;
   bool removeIntegerProperty(const smtk::common::UUID& entity, const std::string& propName);
-  const UUIDWithIntegerProperties integerPropertiesForEntity(
-    const smtk::common::UUID& entity) const;
-  UUIDWithIntegerProperties integerPropertiesForEntity(const smtk::common::UUID& entity);
-  UUIDsToIntegerData& integerProperties() { return *m_integerData; }
-  UUIDsToIntegerData const& integerProperties() const { return *m_integerData; }
 
   smtk::common::UUID modelOwningEntity(const smtk::common::UUID& uid) const;
   smtk::common::UUID sessionOwningEntity(const smtk::common::UUID& uid) const;
@@ -279,18 +266,43 @@ public:
   EntityRefArray findEntitiesByProperty(const std::string& pname, const StringList& pval);
   EntityRefArray findEntitiesOfType(BitFlags flags, bool exactMatch = true);
 
+  template <typename Collection, typename Type>
+  Collection findEntitiesByTypeAndPropertyAs(const std::string& pname, const Type& pval);
+  template <typename Collection, typename Type>
+  Collection findEntitiesByTypeAndPropertyAs(
+    const std::string& pname, const std::vector<Type>& pval);
+
   template <typename Collection>
-  Collection findEntitiesByPropertyAs(const std::string& pname, Integer pval);
+  Collection findEntitiesByPropertyAs(const std::string& pname, long pval)
+  {
+    return findEntitiesByTypeAndPropertyAs<Collection, long>(pname, pval);
+  }
   template <typename Collection>
-  Collection findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval);
+  Collection findEntitiesByPropertyAs(const std::string& pname, const std::vector<long>& pval)
+  {
+    return findEntitiesByTypeAndPropertyAs<Collection, long>(pname, pval);
+  }
   template <typename Collection>
-  Collection findEntitiesByPropertyAs(const std::string& pname, Float pval);
+  Collection findEntitiesByPropertyAs(const std::string& pname, Float pval)
+  {
+    return findEntitiesByTypeAndPropertyAs<Collection, double>(pname, pval);
+  }
   template <typename Collection>
-  Collection findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval);
+  Collection findEntitiesByPropertyAs(const std::string& pname, const std::vector<double>& pval)
+  {
+    return findEntitiesByTypeAndPropertyAs<Collection, double>(pname, pval);
+  }
   template <typename Collection>
-  Collection findEntitiesByPropertyAs(const std::string& pname, const std::string& pval);
+  Collection findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
+  {
+    return findEntitiesByTypeAndPropertyAs<Collection, std::string>(pname, pval);
+  }
   template <typename Collection>
-  Collection findEntitiesByPropertyAs(const std::string& pname, const StringList& pval);
+  Collection findEntitiesByPropertyAs(
+    const std::string& pname, const std::vector<std::string>& pval)
+  {
+    return findEntitiesByTypeAndPropertyAs<Collection, std::string>(pname, pval);
+  }
   template <typename Collection>
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
@@ -480,9 +492,6 @@ protected:
 
   // Below are all the different things that can be mapped to a UUID:
   smtk::shared_ptr<UUIDsToEntities> m_topology;
-  smtk::shared_ptr<UUIDsToFloatData> m_floatData;
-  smtk::shared_ptr<UUIDsToStringData> m_stringData;
-  smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
   smtk::shared_ptr<UUIDsToTessellations> m_tessellations;
   smtk::shared_ptr<UUIDsToTessellations> m_analysisMesh;
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
@@ -501,126 +510,43 @@ protected:
   std::set<OneToManyTrigger> m_oneToManyTriggers;
 };
 
-template <typename Collection>
-Collection Resource::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
+template <typename Collection, typename Type>
+Collection Resource::findEntitiesByTypeAndPropertyAs(const std::string& pname, const Type& pval)
 {
   Collection collection;
-  UUIDWithIntegerProperties pit;
-  for (pit = m_integerData->begin(); pit != m_integerData->end(); ++pit)
+  auto& uuidsToValues =
+    this->properties().data().at<std::unordered_map<smtk::common::UUID, std::vector<Type> > >(
+      pname);
+  for (auto it = uuidsToValues.begin(); it != uuidsToValues.end(); ++it)
   {
-    PropertyNameWithIntegers it;
-    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+    if (it->second.size() == 1 && it->second.at(0) == pval)
     {
-      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
+      typename Collection::value_type entry(shared_from_this(), it->first);
+      if (entry.isValid())
       {
-        typename Collection::value_type entry(shared_from_this(), pit->first);
-        if (entry.isValid())
-          collection.insert(collection.end(), entry);
+        collection.insert(collection.end(), entry);
       }
     }
   }
   return collection;
 }
 
-template <typename Collection>
-Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval)
+template <typename Collection, typename Type>
+Collection Resource::findEntitiesByTypeAndPropertyAs(
+  const std::string& pname, const std::vector<Type>& pval)
 {
   Collection collection;
-  UUIDWithIntegerProperties pit;
-  for (pit = m_integerData->begin(); pit != m_integerData->end(); ++pit)
+  auto& uuidsToValues =
+    this->properties().data().at<std::unordered_map<smtk::common::UUID, std::vector<Type> > >(
+      pname);
+  for (auto it = uuidsToValues.begin(); it != uuidsToValues.end(); ++it)
   {
-    PropertyNameWithIntegers it;
-    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+    if (it->second == pval)
     {
-      if (it->first == pname && it->second == pval)
+      typename Collection::value_type entry(shared_from_this(), it->first);
+      if (entry.isValid())
       {
-        typename Collection::value_type entry(shared_from_this(), pit->first);
-        if (entry.isValid())
-          collection.insert(collection.end(), entry);
-      }
-    }
-  }
-  return collection;
-}
-
-template <typename Collection>
-Collection Resource::findEntitiesByPropertyAs(const std::string& pname, Float pval)
-{
-  Collection collection;
-  UUIDWithFloatProperties pit;
-  for (pit = m_floatData->begin(); pit != m_floatData->end(); ++pit)
-  {
-    PropertyNameWithFloats it;
-    for (it = pit->second.begin(); it != pit->second.end(); ++it)
-    {
-      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
-      {
-        typename Collection::value_type entry(shared_from_this(), pit->first);
-        if (entry.isValid())
-          collection.insert(collection.end(), entry);
-      }
-    }
-  }
-  return collection;
-}
-
-template <typename Collection>
-Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
-{
-  Collection collection;
-  UUIDWithFloatProperties pit;
-  for (pit = m_floatData->begin(); pit != m_floatData->end(); ++pit)
-  {
-    PropertyNameWithFloats it;
-    for (it = pit->second.begin(); it != pit->second.end(); ++it)
-    {
-      if (it->first == pname && it->second == pval)
-      {
-        typename Collection::value_type entry(shared_from_this(), pit->first);
-        if (entry.isValid())
-          collection.insert(collection.end(), entry);
-      }
-    }
-  }
-  return collection;
-}
-
-template <typename Collection>
-Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
-{
-  Collection collection;
-  UUIDWithStringProperties pit;
-  for (pit = m_stringData->begin(); pit != m_stringData->end(); ++pit)
-  {
-    PropertyNameWithStrings it;
-    for (it = pit->second.begin(); it != pit->second.end(); ++it)
-    {
-      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
-      {
-        typename Collection::value_type entry(shared_from_this(), pit->first);
-        if (entry.isValid())
-          collection.insert(collection.end(), entry);
-      }
-    }
-  }
-  return collection;
-}
-
-template <typename Collection>
-Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
-{
-  Collection collection;
-  UUIDWithStringProperties pit;
-  for (pit = m_stringData->begin(); pit != m_stringData->end(); ++pit)
-  {
-    PropertyNameWithStrings it;
-    for (it = pit->second.begin(); it != pit->second.end(); ++it)
-    {
-      if (it->first == pname && it->second == pval)
-      {
-        typename Collection::value_type entry(shared_from_this(), pit->first);
-        if (entry.isValid())
-          collection.insert(collection.end(), entry);
+        collection.insert(collection.end(), entry);
       }
     }
   }

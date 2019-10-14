@@ -50,6 +50,8 @@ void to_json(json& j, const ResourcePtr& mresource)
 {
   smtk::resource::to_json(j, smtk::static_pointer_cast<smtk::resource::Resource>(mresource));
 
+  j["version"] = "3.1";
+
   using smtk::model::AbbreviationForArrangementKind;
   json jmodels = json::object();
 
@@ -78,19 +80,6 @@ void to_json(json& j, const ResourcePtr& mresource)
             jarr[AbbreviationForArrangementKind(ktoa.first)] = ktoa.second;
           }
           jent["a"] = jarr;
-        }
-        // Add string/float/int properties:
-        if (ent.hasStringProperties())
-        {
-          jent["s"] = ent.stringProperties();
-        }
-        if (ent.hasFloatProperties())
-        {
-          jent["f"] = ent.floatProperties();
-        }
-        if (ent.hasIntegerProperties())
-        {
-          jent["i"] = ent.integerProperties();
         }
         /* Do not include tessellation here
           const Tessellation* tess;
@@ -189,12 +178,14 @@ void from_json(const json& j, ResourcePtr& mresource)
         json stringDataJ = jEntity.at("s");
         // Nlohmann json does not support complicated map conversion, we need
         // to do it manually
-        StringData stringData;
         for (auto sdIt = stringDataJ.begin(); sdIt != stringDataJ.end(); sdIt++)
         {
-          stringData[sdIt.key()] = sdIt.value().get<StringList>();
+          auto& stringProperties =
+            mresource->properties()
+              .data()
+              .get<std::unordered_map<smtk::common::UUID, std::vector<std::string> > >();
+          stringProperties[sdIt.key()][eid] = sdIt.value().get<StringList>();
         }
-        mresource->stringProperties()[eid] = stringData;
       }
       catch (std::exception&)
       {
@@ -204,12 +195,14 @@ void from_json(const json& j, ResourcePtr& mresource)
         json floatDataJ = jEntity.at("f");
         // Nlohmann json does not support complicated map conversion, we need
         // to do it manually
-        FloatData floatData;
         for (auto sdIt = floatDataJ.begin(); sdIt != floatDataJ.end(); sdIt++)
         {
-          floatData[sdIt.key()] = sdIt.value().get<FloatList>();
+          auto& floatProperties =
+            mresource->properties()
+              .data()
+              .get<std::unordered_map<smtk::common::UUID, std::vector<double> > >();
+          floatProperties[sdIt.key()][eid] = sdIt.value().get<FloatList>();
         }
-        mresource->floatProperties()[eid] = floatData;
       }
       catch (std::exception&)
       {
@@ -219,12 +212,14 @@ void from_json(const json& j, ResourcePtr& mresource)
         json intDataJ = jEntity.at("i");
         // Nlohmann json does not support complicated map conversion, we need
         // to do it manually
-        IntegerData intData;
         for (auto sdIt = intDataJ.begin(); sdIt != intDataJ.end(); sdIt++)
         {
-          intData[sdIt.key()] = sdIt.value().get<IntegerList>();
+          auto& intProperties =
+            mresource->properties()
+              .data()
+              .get<std::unordered_map<smtk::common::UUID, std::vector<long> > >();
+          intProperties[sdIt.key()][eid] = sdIt.value().get<IntegerList>();
         }
-        mresource->integerProperties()[eid] = intData;
       }
       catch (std::exception&)
       {

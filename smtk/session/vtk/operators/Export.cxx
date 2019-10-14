@@ -192,16 +192,19 @@ Export::Result Export::exportLabelMap()
   }
 
   smtk::model::Model dataset = datasets[0];
-  std::string labelStr;
-  StringData const& stringProps(dataset.stringProperties());
-  StringData::const_iterator sit;
-  if ((sit = stringProps.find("type")) == stringProps.end() || sit->second.empty() ||
-    sit->second[0] != "label map" || (sit = stringProps.find("label array")) == stringProps.end() ||
-    sit->second.empty() || (labelStr = sit->second[0]).empty())
+  const smtk::resource::Component::Ptr component = dataset.component();
+  const smtk::resource::Component::Properties& properties = component->properties();
+  const smtk::resource::ConstPropertiesOfType<StringList> stringProperties =
+    properties.get<StringList>();
+  if (stringProperties.has("type") == false || stringProperties.at("type").empty() ||
+    stringProperties.at("type").at(0) != "label map" ||
+    stringProperties.has("label array") == false || stringProperties.at("label array").empty() ||
+    stringProperties.at("label array").at(0).empty())
   {
     smtkErrorMacro(this->log(), "Model is not a label map or has no label array.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+  std::string labelStr = stringProperties.at("label array").at(0);
 
   auto resource =
     std::static_pointer_cast<smtk::session::vtk::Resource>(dataset.component()->resource());

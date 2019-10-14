@@ -53,7 +53,7 @@ void SetProperty::setPropertyValue(
     // if they had the property in the first place.
     for (it = entities.begin(); it != entities.end(); ++it)
     {
-      it->removeProperty<VD>(pname);
+      it->component()->properties().erase<VL>(pname);
     }
   }
   else
@@ -66,7 +66,7 @@ void SetProperty::setPropertyValue(
 
     // Add or overwrite the property with the values.
     for (it = entities.begin(); it != entities.end(); ++it)
-      (*it->properties<VD>())[pname] = values;
+      it->component()->properties().at<VL>(pname) = values;
   }
 }
 
@@ -74,6 +74,12 @@ template <typename V, typename VL, typename VD, typename VI>
 void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item, smtk::mesh::ResourcePtr c,
   const smtk::mesh::MeshSet& mesh)
 {
+  (void)name;
+  (void)item;
+  (void)c;
+  (void)mesh;
+
+  /*
   EntityRefArray::iterator it;
   if (!item || item->numberOfValues() == 0)
   {
@@ -92,6 +98,7 @@ void SetMeshPropertyValue(const std::string& name, typename VI::Ptr item, smtk::
     // Add or overwrite the property with the values.
     (*c->meshProperties<VD>(mesh))[name] = values;
   }
+*/
 }
 
 void SetProperty::setName(const std::string& pname, smtk::model::EntityRefArray& entities)

@@ -913,13 +913,19 @@ bool EntityRef::removeTessellation(bool removeGen)
   */
 int EntityRef::tessellationGeneration() const
 {
-  IntegerData const& iprops(this->integerProperties());
-  IntegerData::const_iterator pit = iprops.find(SMTK_TESS_GEN_PROP);
-  if (pit == iprops.end() || pit->second.empty())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    return -1;
+    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    if (!integerProperties.has(SMTK_TESS_GEN_PROP) ||
+      integerProperties.at(SMTK_TESS_GEN_PROP).empty())
+    {
+      return -1;
+    }
+    return integerProperties.at(SMTK_TESS_GEN_PROP)[0];
   }
-  return pit->second[0];
+
+  return -1;
 }
 
 /**\brief Set the bounding box of the entity.
@@ -1119,53 +1125,72 @@ smtk::attribute::Attributes EntityRef::attributes() const
 
 void EntityRef::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    rsrc->setFloatProperty(m_entity, propName, propValue);
+    comp->properties().get<std::vector<double> >()[propName] = { propValue };
   }
 }
 
 void EntityRef::setFloatProperty(
   const std::string& propName, const smtk::model::FloatList& propValue)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    rsrc->setFloatProperty(m_entity, propName, propValue);
+    comp->properties().get<std::vector<double> >()[propName] = propValue;
   }
 }
 
 smtk::model::FloatList const& EntityRef::floatProperty(const std::string& propName) const
 {
   static smtk::model::FloatList dummy;
-  ResourcePtr rsrc = m_resource.lock();
-  return rsrc ? rsrc->floatProperty(m_entity, propName) : dummy;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    if (floatProperties.has(propName))
+    {
+      return floatProperties.at(propName);
+    }
+  }
+  return dummy;
 }
 
 smtk::model::FloatList& EntityRef::floatProperty(const std::string& propName)
 {
   static smtk::model::FloatList dummy;
-  ResourcePtr rsrc = m_resource.lock();
-  return rsrc ? rsrc->floatProperty(m_entity, propName) : dummy;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    auto floatProperties = comp->properties().get<std::vector<double> >();
+    return floatProperties[propName];
+  }
+  return dummy;
 }
 
 bool EntityRef::hasFloatProperty(const std::string& propName) const
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    return rsrc->hasFloatProperty(m_entity, propName);
+    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    return floatProperties.has(propName);
   }
   return false;
 }
 
 bool EntityRef::removeFloatProperty(const std::string& propName)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    return rsrc->removeFloatProperty(m_entity, propName);
+    auto floatProperties = comp->properties().get<std::vector<double> >();
+    if (floatProperties.has(propName))
+    {
+      floatProperties.erase(propName);
+      return true;
+    }
   }
   return false;
 }
@@ -1177,99 +1202,95 @@ bool EntityRef::removeFloatProperty(const std::string& propName)
   */
 bool EntityRef::hasFloatProperties() const
 {
-  ResourcePtr rsrc = m_resource.lock();
-  return !rsrc || rsrc->floatProperties().find(m_entity) == rsrc->floatProperties().end() ? false
-                                                                                          : true;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    return (floatProperties.empty() == false);
+  }
+  return false;
 }
 
 /// Return the names of all the floating-point properties.
 std::set<std::string> EntityRef::floatPropertyNames() const
 {
-  std::set<std::string> pnames;
-  if (this->hasFloatProperties())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    const FloatData& props(this->floatProperties());
-    for (FloatData::const_iterator it = props.begin(); it != props.end(); ++it)
-    {
-      pnames.insert(it->first);
-    }
+    const auto& floatProperties = comp->properties().get<std::vector<double> >();
+    floatProperties.keys();
   }
-  return pnames;
-}
-
-FloatData& EntityRef::floatProperties()
-{
-  ResourcePtr rsrc = m_resource.lock();
-  auto pit = rsrc->floatProperties().find(m_entity);
-  if (pit == rsrc->floatProperties().end())
-  {
-    auto blank = std::make_pair(m_entity, FloatData());
-    pit = rsrc->floatProperties().insert(blank).first;
-  }
-  return pit->second;
-}
-
-FloatData const& EntityRef::floatProperties() const
-{
-  ResourcePtr rsrc = m_resource.lock();
-  auto pit = rsrc->floatProperties().find(m_entity);
-  if (pit == rsrc->floatProperties().end())
-  {
-    auto blank = std::make_pair(m_entity, FloatData());
-    pit = rsrc->floatProperties().insert(blank).first;
-  }
-  return pit->second;
+  return std::set<std::string>();
 }
 
 void EntityRef::setStringProperty(const std::string& propName, const smtk::model::String& propValue)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    rsrc->setStringProperty(m_entity, propName, propValue);
+    comp->properties().get<std::vector<std::string> >()[propName] = { propValue };
   }
 }
 
 void EntityRef::setStringProperty(
   const std::string& propName, const smtk::model::StringList& propValue)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    rsrc->setStringProperty(m_entity, propName, propValue);
+    comp->properties().get<std::vector<std::string> >()[propName] = propValue;
   }
 }
 
 smtk::model::StringList const& EntityRef::stringProperty(const std::string& propName) const
 {
   static smtk::model::StringList dummy;
-  ResourcePtr rsrc = m_resource.lock();
-  return rsrc ? rsrc->stringProperty(m_entity, propName) : dummy;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    if (stringProperties.has(propName))
+    {
+      return stringProperties.at(propName);
+    }
+  }
+  return dummy;
 }
 
 smtk::model::StringList& EntityRef::stringProperty(const std::string& propName)
 {
   static smtk::model::StringList dummy;
-  ResourcePtr rsrc = m_resource.lock();
-  return rsrc ? rsrc->stringProperty(m_entity, propName) : dummy;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    auto stringProperties = comp->properties().get<std::vector<std::string> >();
+    return stringProperties[propName];
+  }
+  return dummy;
 }
 
 bool EntityRef::hasStringProperty(const std::string& propName) const
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    return rsrc->hasStringProperty(m_entity, propName);
+    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    return stringProperties.has(propName);
   }
   return false;
 }
 
 bool EntityRef::removeStringProperty(const std::string& propName)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    return rsrc->removeStringProperty(m_entity, propName);
+    auto stringProperties = comp->properties().get<std::vector<std::string> >();
+    if (stringProperties.has(propName))
+    {
+      stringProperties.erase(propName);
+      return true;
+    }
   }
   return false;
 }
@@ -1281,99 +1302,95 @@ bool EntityRef::removeStringProperty(const std::string& propName)
   */
 bool EntityRef::hasStringProperties() const
 {
-  ResourcePtr rsrc = m_resource.lock();
-  return !rsrc || rsrc->stringProperties().find(m_entity) == rsrc->stringProperties().end() ? false
-                                                                                            : true;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    return (stringProperties.empty() == false);
+  }
+  return false;
 }
 
 /// Return the names of all the string properties.
 std::set<std::string> EntityRef::stringPropertyNames() const
 {
-  std::set<std::string> pnames;
-  if (this->hasStringProperties())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    const StringData& props(this->stringProperties());
-    for (StringData::const_iterator it = props.begin(); it != props.end(); ++it)
-    {
-      pnames.insert(it->first);
-    }
+    const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
+    stringProperties.keys();
   }
-  return pnames;
-}
-
-StringData& EntityRef::stringProperties()
-{
-  ResourcePtr rsrc = m_resource.lock();
-  auto pit = rsrc->stringProperties().find(m_entity);
-  if (pit == rsrc->stringProperties().end())
-  {
-    auto blank = std::make_pair(m_entity, StringData());
-    pit = rsrc->stringProperties().insert(blank).first;
-  }
-  return pit->second;
-}
-
-StringData const& EntityRef::stringProperties() const
-{
-  ResourcePtr rsrc = m_resource.lock();
-  auto pit = rsrc->stringProperties().find(m_entity);
-  if (pit == rsrc->stringProperties().end())
-  {
-    auto blank = std::make_pair(m_entity, StringData());
-    pit = rsrc->stringProperties().insert(blank).first;
-  }
-  return pit->second;
+  return std::set<std::string>();
 }
 
 void EntityRef::setIntegerProperty(const std::string& propName, smtk::model::Integer propValue)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    rsrc->setIntegerProperty(m_entity, propName, propValue);
+    comp->properties().get<std::vector<long> >()[propName] = { propValue };
   }
 }
 
 void EntityRef::setIntegerProperty(
   const std::string& propName, const smtk::model::IntegerList& propValue)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    rsrc->setIntegerProperty(m_entity, propName, propValue);
+    comp->properties().get<std::vector<long> >()[propName] = propValue;
   }
 }
 
 smtk::model::IntegerList const& EntityRef::integerProperty(const std::string& propName) const
 {
   static smtk::model::IntegerList dummy;
-  ResourcePtr rsrc = m_resource.lock();
-  return rsrc ? rsrc->integerProperty(m_entity, propName) : dummy;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    if (integerProperties.has(propName))
+    {
+      return integerProperties.at(propName);
+    }
+  }
+  return dummy;
 }
 
 smtk::model::IntegerList& EntityRef::integerProperty(const std::string& propName)
 {
   static smtk::model::IntegerList dummy;
-  ResourcePtr rsrc = m_resource.lock();
-  return rsrc ? rsrc->integerProperty(m_entity, propName) : dummy;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    auto integerProperties = comp->properties().get<std::vector<long> >();
+    return integerProperties[propName];
+  }
+  return dummy;
 }
 
 bool EntityRef::hasIntegerProperty(const std::string& propName) const
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    return rsrc->hasIntegerProperty(m_entity, propName);
+    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    return integerProperties.has(propName);
   }
   return false;
 }
 
 bool EntityRef::removeIntegerProperty(const std::string& propName)
 {
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    return rsrc->removeIntegerProperty(m_entity, propName);
+    auto integerProperties = comp->properties().get<std::vector<long> >();
+    if (integerProperties.has(propName))
+    {
+      integerProperties.erase(propName);
+      return true;
+    }
   }
   return false;
 }
@@ -1385,49 +1402,25 @@ bool EntityRef::removeIntegerProperty(const std::string& propName)
   */
 bool EntityRef::hasIntegerProperties() const
 {
-  ResourcePtr rsrc = m_resource.lock();
-  return !rsrc || rsrc->integerProperties().find(m_entity) == rsrc->integerProperties().end()
-    ? false
-    : true;
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    return (integerProperties.empty() == false);
+  }
+  return false;
 }
 
 /// Return the names of all the integer properties.
 std::set<std::string> EntityRef::integerPropertyNames() const
 {
-  std::set<std::string> pnames;
-  if (this->hasIntegerProperties())
+  auto comp = this->component();
+  if (comp != nullptr)
   {
-    const IntegerData& props(this->integerProperties());
-    for (IntegerData::const_iterator it = props.begin(); it != props.end(); ++it)
-    {
-      pnames.insert(it->first);
-    }
+    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    integerProperties.keys();
   }
-  return pnames;
-}
-
-IntegerData& EntityRef::integerProperties()
-{
-  ResourcePtr rsrc = m_resource.lock();
-  auto pit = rsrc->integerProperties().find(m_entity);
-  if (pit == rsrc->integerProperties().end())
-  {
-    auto blank = std::make_pair(m_entity, IntegerData());
-    pit = rsrc->integerProperties().insert(blank).first;
-  }
-  return pit->second;
-}
-
-IntegerData const& EntityRef::integerProperties() const
-{
-  ResourcePtr rsrc = m_resource.lock();
-  auto pit = rsrc->integerProperties().find(m_entity);
-  if (pit == rsrc->integerProperties().end())
-  {
-    auto blank = std::make_pair(m_entity, IntegerData());
-    pit = rsrc->integerProperties().insert(blank).first;
-  }
-  return pit->second;
+  return std::set<std::string>();
 }
 
 /// Return the number of arrangements of the given kind \a k.
@@ -1694,116 +1687,6 @@ std::size_t entityrefHash(const EntityRef& c)
 /*! \fn EntityRef::instances() const
  * \brief Return all the instances this object serves as a prototype for.
  */
-
-/*! \fn EntityRef::properties<T>()
- *  \brief Return a pointer to the properties of the entity, creating an entry as required.
- *
- * Unlike the hasProperties() method, this will return a valid pointer as long as the
- * resource and entity of the entityref are valid.
- * If the entity does not already have any properties of the given type, a new
- * StringData, FloatData, or IntegerData instance is created and added to the
- * appropriate map.
- *
- * This templated version exists for use in functions where the
- * property type is a template parameter.
- */
-template <>
-SMTKCORE_EXPORT StringData* EntityRef::properties<StringData>()
-{
-  if (!this->hasStringProperties())
-  {
-    if (!this->resource() || !this->entity())
-      return NULL;
-    StringData blank;
-    this->resource()->stringProperties().insert(std::pair<UUID, StringData>(this->entity(), blank));
-  }
-  return &(this->stringProperties());
-}
-
-template <>
-SMTKCORE_EXPORT FloatData* EntityRef::properties<FloatData>()
-{
-  if (!this->hasFloatProperties())
-  {
-    if (!this->resource() || !this->entity())
-      return NULL;
-    FloatData blank;
-    this->resource()->floatProperties().insert(std::pair<UUID, FloatData>(this->entity(), blank));
-  }
-  return &(this->floatProperties());
-}
-
-template <>
-SMTKCORE_EXPORT IntegerData* EntityRef::properties<IntegerData>()
-{
-  if (!this->hasIntegerProperties())
-  {
-    if (!this->resource() || !this->entity())
-      return NULL;
-    IntegerData blank;
-    this->resource()->integerProperties().insert(
-      std::pair<UUID, IntegerData>(this->entity(), blank));
-  }
-  return &(this->integerProperties());
-}
-
-/*! \fn EntityRef::hasProperties<T>() const
- *! \fn EntityRef::hasProperties<T>()
- *  \brief Return a pointer to the properties of the entity or null if none exist.
- *
- * Unlike the properties() method, this will return a NULL pointer
- * if the entity does not already have any properties of the given type.
- *
- * This templated version exists for use in functions where the
- * property type is a template parameter.
- */
-template <>
-SMTKCORE_EXPORT StringData* EntityRef::hasProperties<StringData>()
-{
-  if (this->hasStringProperties())
-    return &(this->stringProperties());
-  return NULL;
-}
-
-template <>
-SMTKCORE_EXPORT const StringData* EntityRef::hasProperties<StringData>() const
-{
-  if (this->hasStringProperties())
-    return &(this->stringProperties());
-  return NULL;
-}
-
-template <>
-SMTKCORE_EXPORT FloatData* EntityRef::hasProperties<FloatData>()
-{
-  if (this->hasFloatProperties())
-    return &(this->floatProperties());
-  return NULL;
-}
-
-template <>
-SMTKCORE_EXPORT const FloatData* EntityRef::hasProperties<FloatData>() const
-{
-  if (this->hasFloatProperties())
-    return &(this->floatProperties());
-  return NULL;
-}
-
-template <>
-SMTKCORE_EXPORT IntegerData* EntityRef::hasProperties<IntegerData>()
-{
-  if (this->hasIntegerProperties())
-    return &(this->integerProperties());
-  return NULL;
-}
-
-template <>
-SMTKCORE_EXPORT const IntegerData* EntityRef::hasProperties<IntegerData>() const
-{
-  if (this->hasIntegerProperties())
-    return &(this->integerProperties());
-  return NULL;
-}
 
 /*! \fn EntityRef::removeProperty<T>(const std::string& name)
  *  \brief Remove the property of type \a T with the given \a name, returning true on success.

@@ -54,6 +54,7 @@ public:
   typedef std::size_t Index;
   typedef smtk::resource::Metadata Metadata;
   typedef detail::ResourceLinks Links;
+  typedef detail::ResourceProperties Properties;
 
   friend class Manager;
 
@@ -142,6 +143,9 @@ public:
   Links& links() override { return m_links; }
   const Links& links() const override { return m_links; }
 
+  Properties& properties() override { return m_properties; }
+  const Properties& properties() const override { return m_properties; }
+
   /// classes that are granted permission to the key may retrieve the resource's
   /// lock.
   Lock& lock(Key()) const { return m_lock; }
@@ -163,6 +167,7 @@ private:
   bool m_clean;
 
   Links m_links;
+  Properties m_properties;
   mutable Lock m_lock;
 
   WeakManagerPtr m_manager;

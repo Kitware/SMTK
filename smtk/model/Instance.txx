@@ -34,7 +34,7 @@ Instance Instance::clonePlacements(I begin, I end, bool relate)
   }
 
   std::ostringstream name;
-  const auto sourceTess = this->hasTessellation();
+  const auto& sourceTess = this->hasTessellation();
   name << this->name();
   if (this->name().rfind("subset") == std::string::npos)
   {

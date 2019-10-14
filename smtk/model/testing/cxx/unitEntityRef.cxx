@@ -109,36 +109,6 @@ void testComplexVertexChain()
   test(eun.vertexUses() == rvu, "Complex chain traversal failed (reversed).");
 }
 
-template <typename D, typename T>
-void templatedPropertyTest(smtk::model::EntityRef entity, T*& data, const std::string& tname, D val)
-{
-  data = entity.hasProperties<T>();
-  test(data == NULL, std::string("Expected new entity to not have ") + tname);
-  data = entity.properties<T>();
-  test(data != NULL, std::string("Expected properties<") + tname + "> to create data");
-  (*data)["foo"] = typename T::mapped_type(1, val);
-  test(entity.removeProperty<T>("foo"),
-    std::string("Expected removeProperty<") + tname + "> to remove entry");
-  test(!entity.removeProperty<T>("bar"),
-    std::string("Expected removeProperty<") + tname + "> to not remove missing entry");
-  test(entity.hasProperties<T>() == NULL,
-    std::string("Expected removing only ") + tname + " entry to remove map");
-}
-
-void testTemplatedPropertyMethods()
-{
-  ResourcePtr sm = Resource::create();
-  Vertex vert = sm->addVertex();
-
-  StringData* sd;
-  FloatData* fd;
-  IntegerData* id;
-
-  templatedPropertyTest<String, StringData>(vert, sd, "StringData", "string");
-  templatedPropertyTest<Float, FloatData>(vert, fd, "FloatData", 0.0);
-  templatedPropertyTest<Integer, IntegerData>(vert, id, "IntegerData", 0);
-}
-
 void testMiscConstructionMethods()
 {
   ResourcePtr sm = Resource::create();
@@ -578,7 +548,6 @@ int main(int argc, char* argv[])
 
     testComplexVertexChain();
     testMiscConstructionMethods();
-    testTemplatedPropertyMethods();
     testVolumeEntityRef();
     testModelMethods();
     testResourceComponentConversion();
