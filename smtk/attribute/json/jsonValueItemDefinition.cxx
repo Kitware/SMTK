@@ -91,84 +91,68 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
-  try
+  auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, itemDef);
+  auto result = j.find("NumberOfRequiredValues");
+  if (result != j.end())
   {
-    defPtr->setNumberOfRequiredValues(j.at("NumberOfRequiredValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setIsExtensible(j.at("Extensible"));
-    defPtr->setMaxNumberOfValues(j.at("MaxNumberOfValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setNumberOfRequiredValues(*result);
   }
 
-  json clabels;
-  try
+  result = j.find("Extensible");
+  if (result != j.end())
   {
-    clabels = j.at("ComponentLabels");
-    if (!clabels.is_null())
+    defPtr->setIsExtensible(*result);
+  }
+
+  result = j.find("MaxNumberOfValues");
+  if (result != j.end())
+  {
+    defPtr->setMaxNumberOfValues(*result);
+  }
+
+  result = j.find("ComponentLabels");
+  if (result != j.end())
+  {
+    auto common = result->find("CommonLabel");
+    if (common != result->end())
     {
-      // Nested try/catch
-      try
-      {
-        defPtr->setCommonValueLabel(clabels.at("CommonLabel"));
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
+      defPtr->setCommonValueLabel(*common);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!clabels.is_null())
-  {
-    try
+    else
     {
-      json labels = clabels.at("Label");
+      auto labels = result->find("Label");
       int i(0);
-      for (auto iterator = labels.begin(); iterator != labels.end(); iterator++, i++)
+      if (labels != result->end())
       {
-        defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        for (auto iterator = labels->begin(); iterator != labels->end(); iterator++, i++)
+        {
+          defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        }
       }
     }
-    catch (std::exception& /*e*/)
-    {
-    }
   }
-  try
+
+  result = j.find("ExpressionType");
+  if (result != j.end())
   {
-    std::string etype = j.at("ExpressionType");
-    defPtr->setExpressionType(etype);
+    defPtr->setExpressionType(*result);
   }
-  catch (std::exception& /*e*/)
+
+  result = j.find("Units");
+  if (result != j.end())
   {
+    defPtr->setUnits(*result);
   }
-  try
-  {
-    defPtr->setUnits(j.at("Units"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
+
   // Now let's process its children items
-  try
+  result = j.find("ChildrenDefinitions");
+  if (result != j.end())
   {
-    json childrenDefs = j.at("ChildrenDefinitions");
-    for (json::iterator iter = childrenDefs.begin(); iter != childrenDefs.end(); iter++)
+    for (auto& jIdef : *result)
     {
-      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(iter, defPtr, resPtr);
+      smtk::attribute::JsonHelperFunction::processItemDefinitionTypeFromJson(jIdef, defPtr, resPtr);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
   }
 }
 }

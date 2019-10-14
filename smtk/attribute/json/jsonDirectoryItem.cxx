@@ -37,8 +37,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::DirectoryItemPtr&
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<FileSystemItem>(itemPtr);
-  smtk::attribute::from_json(j, temp);
+  auto fsysItem = smtk::dynamic_pointer_cast<FileSystemItem>(itemPtr);
+  smtk::attribute::from_json(j, fsysItem);
 }
 }
 }

@@ -40,8 +40,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::StringItemPtr& it
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ValueItem>(itemPtr);
-  smtk::attribute::from_json(j, temp, itemExpressionInfo, attRefInfo);
+  auto valItem = smtk::dynamic_pointer_cast<ValueItem>(itemPtr);
+  smtk::attribute::from_json(j, valItem, itemExpressionInfo, attRefInfo);
   smtk::attribute::processDerivedValueFromJson<smtk::attribute::StringItemPtr, std::string>(
     j, itemPtr, itemExpressionInfo, attRefInfo);
 }

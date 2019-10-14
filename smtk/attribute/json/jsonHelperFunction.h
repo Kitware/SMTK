@@ -41,14 +41,14 @@ public:
    * @brief A helper function to add an item definition into the itemDefinitionPtr
    * given a json iterator
    */
-  static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
+  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
     ValueItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
 
-  static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
-    DefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr,
+  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef, DefinitionPtr& idef,
+    const smtk::attribute::ResourcePtr& resPtr,
     std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs);
 
-  static void processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
+  static void processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
     GroupItemDefinitionPtr& idef, const smtk::attribute::ResourcePtr& resPtr);
 
   /**

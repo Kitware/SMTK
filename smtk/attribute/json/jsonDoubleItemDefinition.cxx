@@ -40,8 +40,8 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j,
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ValueItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp, resPtr);
+  auto valDef = smtk::dynamic_pointer_cast<ValueItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, valDef, resPtr);
   smtk::attribute::processDerivedValueDefFromJson<smtk::attribute::DoubleItemDefinitionPtr, double>(
     j, defPtr, resPtr);
 }

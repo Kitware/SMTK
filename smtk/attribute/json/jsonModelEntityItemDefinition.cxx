@@ -12,6 +12,7 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Entity.h"
@@ -66,67 +67,63 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemDe
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
-  try
+  auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, itemDef);
+  auto result = j.find("MembershipMask");
+  if (result == j.end())
   {
-    std::string mmask = j.at("MembershipMask");
-    if (!mmask.empty())
+    smtkErrorMacro(smtk::io::Logger::instance(), "JSON MembershipMask missing "
+        << "for ModelEntityDefinition:" << defPtr->type());
+    return;
+  }
+  else
+  {
+    smtk::model::BitFlags flags = smtk::model::Entity::specifierStringToFlag(*result);
+    defPtr->setMembershipMask(flags);
+  }
+
+  result = j.find("NumberOfRequriedValues");
+  if (result == j.end())
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "JSON NumberOfRequriedValues missing "
+        << "for ModelEntityDefinition:" << defPtr->type());
+    return;
+  }
+  else
+  {
+    defPtr->setNumberOfRequiredValues(*result);
+  }
+
+  result = j.find("Extensible");
+  if (result != j.end())
+  {
+    defPtr->setIsExtensible(*result);
+  }
+  result = j.find("MaxNumberOfValues");
+  if (result != j.end())
+  {
+    defPtr->setMaxNumberOfValues(*result);
+  }
+
+  result = j.find("ComponentLabels");
+  if (result != j.end())
+  {
+    auto common = result->find("CommonLabel");
+    if (common != result->end())
     {
-      smtk::model::BitFlags flags = smtk::model::Entity::specifierStringToFlag(mmask);
-      defPtr->setMembershipMask(flags);
+      defPtr->setCommonValueLabel(*common);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setNumberOfRequiredValues(j.at("NumberOfRequriedValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setIsExtensible(j.at("Extensible"));
-    defPtr->setMaxNumberOfValues(j.at("MaxNumberOfValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  json clabels;
-  try
-  {
-    clabels = j.at("ComponentLabels");
-    if (!clabels.is_null())
+    else
     {
-      // Nested try/catch
-      try
-      {
-        defPtr->setCommonValueLabel(clabels.at("CommonLabel"));
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
-    }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!clabels.is_null())
-  {
-    try
-    {
-      json labels = clabels.at("Label");
+      auto labels = result->find("Label");
       int i(0);
-      for (auto iterator = labels.begin(); iterator != labels.end(); iterator++, i++)
+      if (labels != result->end())
       {
-        defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        for (auto iterator = labels->begin(); iterator != labels->end(); iterator++, i++)
+        {
+          defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        }
       }
-    }
-    catch (std::exception& /*e*/)
-    {
     }
   }
 }

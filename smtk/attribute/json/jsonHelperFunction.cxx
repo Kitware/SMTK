@@ -68,12 +68,11 @@
 namespace
 {
 template <typename itemDefPtr>
-void processItemDef(const nlohmann::json::iterator& iter, itemDefPtr& idef,
+void processItemDef(const nlohmann::json& itemDef, itemDefPtr& idef,
   const smtk::attribute::ResourcePtr& resPtr,
   std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 {
   //iter format: {type: [{def1}, {def2}] }
-  json itemDef = *iter;
   smtk::attribute::Item::Type citype = smtk::attribute::Item::string2Type(itemDef.at("Type"));
   std::string citemName = itemDef.at("Name");
   smtk::attribute::ItemDefinitionPtr cidef;
@@ -312,25 +311,25 @@ void JsonHelperFunction::processItemDefinitionTypeToJson(
   }
 }
 
-void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json::iterator& iter,
+void JsonHelperFunction::processItemDefinitionTypeFromJson(const nlohmann::json& jItemDef,
   DefinitionPtr& idef, const ResourcePtr& resPtr,
   std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 {
-  processItemDef<smtk::attribute::DefinitionPtr>(iter, idef, resPtr, convertedAttDefs);
+  processItemDef<smtk::attribute::DefinitionPtr>(jItemDef, idef, resPtr, convertedAttDefs);
 }
 
 void JsonHelperFunction::processItemDefinitionTypeFromJson(
-  const nlohmann::json::iterator& iter, GroupItemDefinitionPtr& idef, const ResourcePtr& resPtr)
+  const nlohmann::json& jItemDef, GroupItemDefinitionPtr& gdef, const ResourcePtr& resPtr)
 {
   std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
-  processItemDef<smtk::attribute::GroupItemDefinitionPtr>(iter, idef, resPtr, convertedAttDefs);
+  processItemDef<smtk::attribute::GroupItemDefinitionPtr>(jItemDef, gdef, resPtr, convertedAttDefs);
 }
 
 void JsonHelperFunction::processItemDefinitionTypeFromJson(
-  const nlohmann::json::iterator& iter, ValueItemDefinitionPtr& idef, const ResourcePtr& resPtr)
+  const nlohmann::json& jItemDef, ValueItemDefinitionPtr& idef, const ResourcePtr& resPtr)
 {
   std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
-  processItemDef<smtk::attribute::ValueItemDefinitionPtr>(iter, idef, resPtr, convertedAttDefs);
+  processItemDef<smtk::attribute::ValueItemDefinitionPtr>(jItemDef, idef, resPtr, convertedAttDefs);
 }
 
 void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr& item)

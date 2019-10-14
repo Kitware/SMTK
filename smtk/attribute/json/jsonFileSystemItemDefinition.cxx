@@ -11,6 +11,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
+#include "smtk/io/Logger.h"
 
 #include "nlohmann/json.hpp"
 
@@ -72,78 +73,67 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileSystemItemDef
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, temp);
-  try
+  auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
+  smtk::attribute::from_json(j, itemDef);
+  auto result = j.find("NumberOfRequiredValues");
+  if (result == j.end())
   {
-    defPtr->setNumberOfRequiredValues(j.at("NumberOfRequiredValues"));
+    smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing NumberOfRequiredValues"
+        << "for FileSystemItemDefinition:" << defPtr->name());
+    return;
   }
-  catch (std::exception& /*e*/)
+  defPtr->setNumberOfRequiredValues(*result);
+
+  result = j.find("Extensible");
+  if (result != j.end())
   {
-  }
-  try
-  {
-    defPtr->setIsExtensible(j.at("Extensible"));
-    defPtr->setMaxNumberOfValues(j.at("MaxNumberOfValues"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setShouldExist(j.at("ShouldExit"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    defPtr->setShouldBeRelative(j.at("ShouldBeRelative"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setIsExtensible(*result);
   }
 
-  json clabels;
-  try
+  result = j.find("MaxNumberOfValues");
+  if (result != j.end())
   {
-    clabels = j.at("ComponentLabels");
-    if (!clabels.is_null())
+    defPtr->setMaxNumberOfValues(*result);
+  }
+
+  result = j.find("ShouldExit");
+  if (result != j.end())
+  {
+    defPtr->setShouldExist(*result);
+  }
+
+  result = j.find("ShouldBeRelative");
+  if (result != j.end())
+  {
+    defPtr->setShouldBeRelative(*result);
+  }
+
+  result = j.find("ComponentLabels");
+  if (result != j.end())
+  {
+    auto common = result->find("CommonLabel");
+    if (common != result->end())
     {
-      // Nested try/catch
-      try
-      {
-        defPtr->setCommonValueLabel(clabels.at("CommonLabel"));
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
+      defPtr->setCommonValueLabel(*common);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!clabels.is_null())
-  {
-    try
+    else
     {
-      json labels = clabels.at("Label");
+      auto labels = result->find("Label");
       int i(0);
-      for (auto iterator = labels.begin(); iterator != labels.end(); iterator++, i++)
+      if (labels != result->end())
       {
-        defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        for (auto iterator = labels->begin(); iterator != labels->end(); iterator++, i++)
+        {
+          defPtr->setValueLabel(i, (*iterator).get<std::string>());
+        }
       }
     }
-    catch (std::exception& /*e*/)
-    {
-    }
   }
-  try
+
+  result = j.find("DefaultValue");
+  if (result != j.end())
   {
-    defPtr->setDefaultValue(j.at("DefaultValue"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    defPtr->setDefaultValue(*result);
   }
 }
 }

@@ -84,89 +84,58 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
   std::vector<smtk::attribute::AttRefInfo>& attRefInfo,
   const std::set<const smtk::attribute::ItemDefinition*>& convertedAttDefs)
 { // Follow the logic in XmlDocV1Parser::processAttribute::L1753
-  try
+  auto result = j.find("OnInteriorNodes");
+  if (result != j.end())
   {
-    att->setAppliesToInteriorNodes(j.at("OnInteriorNodes"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    att->setAppliesToBoundaryNodes(j.at("OnBoundaryNodes"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    std::vector<double> colorV = j.at("Color");
-    double color[4];
-    for (int i = 0; i < 4; i++)
-    {
-      color[i] = colorV[i];
-    }
-    att->setColor(color);
-  }
-  catch (std::exception& /*e*/)
-  {
+    att->setAppliesToInteriorNodes(*result);
   }
 
-  try
+  result = j.find("OnBoundaryNodes");
+  if (result != j.end())
   {
-    std::vector<double> colorV = j.at("Color");
+    att->setAppliesToBoundaryNodes(*result);
+  }
+
+  result = j.find("Color");
+  if ((result != j.end()) && (result->size() == 4))
+  {
     double color[4];
-    for (int i = 0; i < 4; i++)
-    {
-      color[i] = colorV[i];
-    }
+    color[0] = (*result)[0];
+    color[1] = (*result)[1];
+    color[2] = (*result)[2];
+    color[3] = (*result)[3];
     att->setColor(color);
   }
-  catch (std::exception& /*e*/)
-  {
-  }
+
   // Process items
-  json items;
-  try
+  result = j.find("Items");
+  if (result != j.end())
   {
-    items = j.at("Items");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!items.is_null())
-  {
-    int i = 0;
-    for (auto itemIter = items.begin(); itemIter != items.end(); itemIter++, i++)
+    for (auto& item : *result)
     {
-      try
+      auto itemName = item.find("Name");
+      if (itemName == item.end())
       {
-        auto itemToProcess = att->find(itemIter->at("Name"));
-        if (!itemToProcess)
-        {
-          continue;
-        }
-        smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
-          *itemIter, itemToProcess, itemExpressionInfo, attRefInfo, convertedAttDefs);
+        smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing attribute Item Name");
+        continue;
       }
-      catch (std::exception& /*e*/)
+      auto attItem = att->find(*itemName);
+      if (attItem == nullptr)
       {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "Could not find attribute Item  with name:" << *itemName);
+        continue;
       }
+      smtk::attribute::JsonHelperFunction::processItemTypeFromJson(
+        item, attItem, itemExpressionInfo, attRefInfo, convertedAttDefs);
     }
   }
-  // Process items
-  json association;
-  try
-  {
-    association = j.at("Associations");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!association.is_null())
+  // Process associations
+  result = j.find("Associations");
+  if (result != j.end())
   {
     auto assocItem = att->associations();
-    smtk::attribute::from_json(association, assocItem);
+    smtk::attribute::from_json(*result, assocItem);
   }
 }
 }

@@ -40,8 +40,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ModelEntityItemPt
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ComponentItem>(itemPtr);
-  smtk::attribute::from_json(j, temp);
+  auto compItem = smtk::dynamic_pointer_cast<ComponentItem>(itemPtr);
+  smtk::attribute::from_json(j, compItem);
 }
 }
 }

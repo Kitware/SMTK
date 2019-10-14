@@ -69,32 +69,17 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileSystemItemPtr
   smtk::attribute::from_json(j, temp);
   std::size_t n = itemPtr->numberOfValues();
   std::size_t numRequiredVals = itemPtr->numberOfRequiredValues();
-  json values;
-  try
+  auto values = j.find("Values");
+  if (values != j.end())
   {
-    values = j.at("Values");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!numRequiredVals)
-  {
-    // The node should have an attribute indicating how many values are
-    // associated with the item
-    if (values.is_array() && (values.size() > 0))
+    if (itemPtr->isExtensible() && values->is_array() && (values->size() > 0))
     {
-      n = values.size();
-      itemPtr->setNumberOfValues(values.size());
+      n = values->size();
+      itemPtr->setNumberOfValues(n);
     }
-  }
-  if (!n)
-  {
-    return;
-  }
-  if (!values.is_null())
-  {
+
     size_t i(0);
-    for (auto iter = values.begin(); iter != values.end(); iter++, i++)
+    for (auto iter = values->begin(); iter != values->end(); iter++, i++)
     {
       if (i >= n)
       {
@@ -108,12 +93,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileSystemItemPtr
   }
   else if (numRequiredVals == 1)
   {
-    try
+    auto value = j.find("Value");
+    if (value != j.end())
     {
-      itemPtr->setValue(j.at("Value"));
-    }
-    catch (std::exception& /*e*/)
-    {
+      itemPtr->setValue(*value);
     }
   }
 }

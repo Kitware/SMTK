@@ -230,7 +230,6 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
 
 SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
 {
-  smtk::io::Logger logger;
   //TODO: v2Parser has a notion of rootName
   if (!res.get() || j.is_null())
   {
@@ -238,23 +237,23 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     res = smtk::attribute::Resource::create();
   }
 
-  auto temp = std::static_pointer_cast<smtk::resource::Resource>(res);
-  smtk::resource::from_json(j, temp);
+  auto resource = std::static_pointer_cast<smtk::resource::Resource>(res);
+  smtk::resource::from_json(j, resource);
 
   // Process Analysis Info
-  // nlohmman's get function does not support nested map, so iterator is used
-  if (j.find("Analyses") != j.end())
+  auto result = j.find("Analyses");
+  if (result != j.end())
   {
     smtk::attribute::Analyses& analyses = res->analyses();
-    json jAnalyses = j.at("Analyses");
     std::vector<std::string> eInfo;
     // we need this for backward compatibility
-    auto aInfo = j.at("Analyses").get<std::map<std::string, std::set<std::string> > >();
+    auto aInfo = result->get<std::map<std::string, std::set<std::string> > >();
 
     // Get the order of analysis creation if it exists
-    if (j.find("AnalysesOrder") != j.end())
+    auto analysesOrder = j.find("AnalysesOrder");
+    if (analysesOrder != j.end())
     {
-      auto aNames = j.at("AnalysesOrder").get<std::vector<std::string> >();
+      auto aNames = analysesOrder->get<std::vector<std::string> >();
       for (auto const& name : aNames)
       {
         // Lets find its local categories
@@ -266,7 +265,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(logger, "Analysis: " << name << " missing local categories!");
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Analysis: " << name << " missing local categories!");
         }
       }
     }
@@ -280,22 +280,23 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       }
     }
     // Do we have parent infomation to deal with?
-    if (j.find("AnalysesParentInfo") != j.end())
+    auto analysesParentInfo = j.find("AnalysesParentInfo");
+    if (analysesParentInfo != j.end())
     {
-      json parentInfo = j.at("AnalysesParentInfo");
-      for (auto const& val : parentInfo.items())
+      for (auto const& val : analysesParentInfo->items())
       {
         if (!analyses.setAnalysisParent(val.key(), val.value()))
         {
-          smtkErrorMacro(
-            logger, "Analsis: " << val.key() << " could not set parent to: " << val.value() << "!");
+          smtkErrorMacro(smtk::io::Logger::instance(),
+            "Analysis: " << val.key() << " could not set parent to: " << val.value() << "!");
         }
       }
     }
     // What about Exclusive Info?
-    if (j.find("AnalysesExclusiveInfo") != j.end())
+    auto analysesExclusiveInfo = j.find("AnalysesExclusiveInfo");
+    if (analysesExclusiveInfo != j.end())
     {
-      auto eNames = j.at("AnalysesExclusiveInfo").get<std::vector<std::string> >();
+      auto eNames = analysesExclusiveInfo->get<std::vector<std::string> >();
       for (auto const& name : eNames)
       {
         auto a = analyses.find(name);
@@ -305,16 +306,16 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(
-            logger, "Could not find Analysis: " << name << " to set its exclusive property!");
+          smtkErrorMacro(smtk::io::Logger::instance(),
+            "Could not find Analysis: " << name << " to set its exclusive property!");
         }
       }
     }
+    auto analysesLabelInfo = j.find("AnalysesLabelInfo");
     // Do we have label infomation to deal with?
-    if (j.find("AnalysesLabelInfo") != j.end())
+    if (analysesLabelInfo != j.end())
     {
-      json labelInfo = j.at("AnalysesLabelInfo");
-      for (auto const& val : labelInfo.items())
+      for (auto const& val : analysesLabelInfo->items())
       {
         auto a = analyses.find(val.key());
         if (a != nullptr)
@@ -323,14 +324,15 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         }
         else
         {
-          smtkErrorMacro(
-            logger, "Could not find Analysis: " << val.key() << " to set its label property!");
+          smtkErrorMacro(smtk::io::Logger::instance(),
+            "Could not find Analysis: " << val.key() << " to set its label property!");
         }
       }
     }
-    if (j.find("AnalysesTopLevelExclusive") != j.end())
+    auto analysesTopLevelExclusive = j.find("AnalysesTopLevelExclusive");
+    if (analysesTopLevelExclusive != j.end())
     {
-      analyses.setTopLevelExclusive(j.at("AnalysesTopLevelExclusive").get<bool>());
+      analyses.setTopLevelExclusive(analysesTopLevelExclusive->get<bool>());
     }
   }
   // Do we have unique roles?
@@ -343,106 +345,98 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
   }
   //Process AdvanceLevel info
-  try
+  auto advanceLevels = j.find("AdvanceLevels");
+  if (advanceLevels != j.end())
   {
-    json advanceLevels = j.at("AdvanceLevels");
-    for (auto iterAdv = advanceLevels.begin(); iterAdv != advanceLevels.end(); iterAdv++)
+    //    for (auto& levelInfo : *advanceLevels)
+    for (auto levelInfo = advanceLevels->begin(); levelInfo != advanceLevels->end(); levelInfo++)
     {
-      int level = std::stoi(iterAdv.key());
-      json levelObj = iterAdv.value();
-      std::vector<double> rgba = levelObj.at("Color");
-      std::string label = levelObj.at("Label");
-      double color[4];
-      for (int i = 0; i < 4; i++)
+      int level = std::stoi(levelInfo.key());
+      json levelObj = levelInfo.value();
+      auto color = levelObj.find("Color");
+      if ((color != levelObj.end()) && (color->size() == 4))
       {
-        color[i] = rgba[i];
+        double rgba[4];
+        rgba[0] = (*color)[0];
+        rgba[1] = (*color)[1];
+        rgba[2] = (*color)[2];
+        rgba[3] = (*color)[3];
+        res->setAdvanceLevelColor(level, rgba);
       }
-      res->addAdvanceLevel(level, label);
-      res->setAdvanceLevelColor(level, color);
+      auto label = levelObj.find("Label");
+      if (label != levelObj.end())
+      {
+        res->addAdvanceLevel(level, *label);
+      }
     }
-  }
-  catch (std::exception& /*e*/)
-  {
   }
 
-  // Process attribute info
+  // Process Definiiton info
   std::set<const smtk::attribute::ItemDefinition*> convertedAttDefs;
-  try
+  auto definitions = j.find("Definitions");
+  if (definitions != j.end())
   {
-    json definitions = j.at("Definitions");
-    for (auto iterDef = definitions.begin(); iterDef != definitions.end(); iterDef++)
+    smtk::attribute::DefinitionPtr def, baseDef;
+    for (auto& currentDef : *definitions)
     {
-      try
+      auto type = currentDef.find("Type");
+      if (type == currentDef.end())
       {
-        smtk::attribute::DefinitionPtr def, baseDef;
-        json currentDef = *iterDef;
-        // Get type and baseDef info
-        std::string type = currentDef.at("Type");
-        if (type.empty())
+        smtkErrorMacro(smtk::io::Logger::instance(), "Definition missing Type Key");
+        continue;
+      }
+      auto baseType = currentDef.find("BaseType");
+      if ((baseType == currentDef.end()) || (*baseType == ""))
+      {
+        baseDef = nullptr;
+      }
+      else
+      {
+        baseDef = res->findDefinition(*baseType);
+        if (!baseDef)
         {
-          smtkErrorMacro(logger, "Definition missing Type Key");
+          smtkErrorMacro(smtk::io::Logger::instance(), "Could not find Base Definition: "
+              << *baseType << " needed to create Definition: " << *type);
           continue;
         }
-        std::string baseType = currentDef.at("BaseType").is_null() ? "" : currentDef.at("BaseType");
-        if (!baseType.empty())
-        {
-          baseDef = res->findDefinition(baseType);
-          if (!baseDef)
-          {
-            smtkErrorMacro(logger, "Could not find Base Definition: "
-                << baseType << " needed to create Definition: " << type);
-            continue;
-          }
-          def = res->createDefinition(type, baseDef);
-        }
-        else
-        {
-          def = res->createDefinition(type);
-        }
-        if (!def)
-        {
-          smtkWarningMacro(logger, "Definition: " << type << " already exists in the Resource");
-          continue;
-        }
-        // process the definition
-        // Since definition is not default constructible, we have to call the
-        // function directly
-        smtk::attribute::from_json(currentDef, def, convertedAttDefs);
       }
-      catch (std::exception& /*e*/)
+      def = res->createDefinition(*type, baseDef);
+      if (!def)
       {
-        std::cerr << "Failed to find type of a definition for resource " << res->name()
-                  << std::endl;
+        smtkWarningMacro(smtk::io::Logger::instance(),
+          "Definition: " << *type << " already exists in the Resource");
+        continue;
       }
+      // process the definition
+      // Since definition is not default constructible, we have to call the
+      // function directly
+      smtk::attribute::from_json(currentDef, def, convertedAttDefs);
     }
   }
-  catch (std::exception& /*e*/)
-  {
-    std::cerr << "Failed to find definitions for resource " << res->name() << std::endl;
-  }
+
   // Check for Exclusions
-  if (j.find("Exclusions") != j.end())
+  auto exclusions = j.find("Exclusions");
+  if (exclusions != j.end())
   {
-    auto excsObj = j.at("Exclusions");
-    for (auto excsInter = excsObj.begin(); excsInter != excsObj.end(); excsInter++)
+    for (auto& exclusion : *exclusions)
     {
-      auto excObj = *excsInter; // Get the exclusion list
       // First lets convert the strings to definitions
       std::vector<smtk::attribute::DefinitionPtr> defs;
       smtk::attribute::DefinitionPtr def;
-      for (auto strIter = excObj.begin(); strIter != excObj.end(); strIter++)
+      for (auto& defName : exclusion)
       {
-        def = res->findDefinition(strIter->get<std::string>());
+        def = res->findDefinition(defName);
         if (def)
         {
           defs.push_back(def);
         }
         else
         {
-          std::cerr << "Cannot find exclusion definiion: " << strIter->get<std::string>()
-                    << std::endl;
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Cannot find exclusion definiion: " << defName);
         }
       }
+      // Now create the exclusions
       auto defsSize = defs.size();
       for (size_t i = 0; i < defsSize; i++)
       {
@@ -455,43 +449,48 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   }
 
   // Check for Prerequisites
-  if (j.find("Prerequisites") != j.end())
+  auto prerequisites = j.find("Prerequisites");
+  if (prerequisites != j.end())
   {
-    auto presObj = j.at("Prerequisites");
-    smtk::attribute::DefinitionPtr def;
-    for (auto presInter = presObj.begin(); presInter != presObj.end(); presInter++)
+    for (auto& pInfo : *prerequisites)
     {
-      auto preObj = *presInter;
-      if (preObj.find("Type") == preObj.end())
+      auto type = pInfo.find("Type");
+      if (type == pInfo.end())
       {
-        std::cerr << "Cannot find Type Key - Skipping Prerequisite\n";
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "Cannot find Type Key - Skipping Prerequisite");
         continue;
       }
-      if (preObj.find("Prerequisite") == preObj.end())
-      {
-        std::cerr << "Cannot find Prerequisite Key - Skipping Prerequisite\n";
-        continue;
-      }
-      std::string tname = preObj.at("Type").get<std::string>();
       // Lets find the target definition
-      auto tdef = res->findDefinition(tname);
+      auto tdef = res->findDefinition(*type);
       if (!tdef)
       {
-        std::cerr << "Cannot find target definition: " << tname << std::endl;
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "Cannot find Prerequisite target definition: " << *type);
         continue;
       }
-      auto preDefs = preObj.at("Prerequisite");
-      for (auto strIter = preDefs.begin(); strIter != preDefs.end(); strIter++)
+
+      auto prerequisite = pInfo.find("Prerequisite");
+      if (prerequisite == pInfo.end())
       {
-        def = res->findDefinition(strIter->get<std::string>());
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "Cannot find Prerequisite Key - Skipping Prerequisite");
+        continue;
+      }
+
+      // OK now lets add the prerequisites to the definition
+      smtk::attribute::DefinitionPtr def;
+      for (auto& defName : *prerequisite)
+      {
+        def = res->findDefinition(defName);
         if (def)
         {
           tdef->addPrerequisite(def);
         }
         else
         {
-          std::cerr << "Cannot find prerequisite definiion: " << strIter->get<std::string>()
-                    << " for Definition: " << tname << std::endl;
+          smtkErrorMacro(smtk::io::Logger::instance(),
+            "Cannot find prerequisite definiion: " << defName << " for Definition: " << *type);
         }
       }
     }
@@ -501,85 +500,62 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   std::vector<ItemExpressionInfo> itemExpressionInfo;
   std::vector<AttRefInfo> attRefInfo;
   smtk::attribute::AttributePtr att;
-  try
+  auto attributes = j.find("Attributes");
+  if (attributes != j.end())
   {
-    json attributes = j.at("Attributes");
-    smtk::attribute::DefinitionPtr def;
-    for (auto iter = attributes.begin(); iter != attributes.end(); iter++)
-    { // Get/Create the attribute first
-      std::string name, type;
-      try
+    for (auto& jAtt : *attributes)
+    {
+      auto name = jAtt.find("Name");
+      if (name == jAtt.end())
       {
-        name = iter->at("Name");
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
-
-      if (name.empty())
-      {
-        std::cerr << "Invalid Attribute! - Missing json Attribute Name" << std::endl;
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "Invalid Attribute! - Missing json Attribute Name");
         continue;
       }
-      try
+      // Lets get the defintion for the attribute
+      auto type = jAtt.find("Type");
+      if (type == jAtt.end())
       {
-        type = iter->at("Type");
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
-      if (type.empty())
-      {
-        std::cerr << "Invalid Attribute! - Missing json Attribute type" << std::endl;
+        smtkErrorMacro(smtk::io::Logger::instance(),
+          "Invalid Attribute! - Missing Type for attribute:" << *name);
         continue;
       }
-      smtk::common::UUID uuid = smtk::common::UUID::null();
-      try
+      smtk::attribute::DefinitionPtr def = res->findDefinition(*type);
+      if (def == nullptr)
       {
-        std::string uuidString = iter->at("ID");
-        uuid = smtk::common::UUID(uuidString);
-      }
-      catch (std::exception& /*e*/)
-      {
-      };
-      def = res->findDefinition(type);
-      if (!def)
-      {
-        std::cerr << "Attribute: " << name << " of Type: " << type
-                  << "  - can not find attribute definition" << std::endl;
+        smtkErrorMacro(smtk::io::Logger::instance(),
+          "Invalid Attribute! - Cannot find Definition of Type:" << *type
+                                                                 << " for attribute:" << *name);
         continue;
       }
-
       // Is the definition abstract?
       if (def->isAbstract())
       {
-        std::cerr << "Attribute: " << name << " of Type: " << type
-                  << "  - is based on an abstract definition" << std::endl;
+        smtkErrorMacro(smtk::io::Logger::instance(), "Attribute: "
+            << *name << " of Type: " << *type << "  - is based on an abstract definition");
         continue;
       }
 
-      if (uuid.isNull())
+      auto id = jAtt.find("ID");
+      if (id == jAtt.end())
       {
-        std::cerr << "uuid is null for Attribute " << name << std::endl;
+        smtkErrorMacro(smtk::io::Logger::instance(),
+          "Invalid Attribute! - Missing ID for attribute:" << *name << " of type:" << *type);
         continue;
       }
-      else
-      {
-        att = res->createAttribute(name, def, uuid);
-      }
+      smtk::common::UUID uuid(id->get<std::string>());
 
-      if (!att)
+      // Ok we can now create the attribute
+      att = res->createAttribute(*name, def, uuid);
+
+      if (att == nullptr)
       {
-        std::cerr << "Attribute: " << name << " of Type: " << type
-                  << "  - could not be created - is the name in use" << std::endl;
+        smtkErrorMacro(smtk::io::Logger::instance(), "Attribute: "
+            << *name << " of Type: " << *type << "  - could not be created - is the name in use?");
         continue;
       }
-      smtk::attribute::from_json(*iter, att, itemExpressionInfo, attRefInfo, convertedAttDefs);
+      smtk::attribute::from_json(jAtt, att, itemExpressionInfo, attRefInfo, convertedAttDefs);
     }
-  }
-  catch (std::exception& /*e*/)
-  {
-    std::cerr << "Failed to find attributes for resource " << res->name() << std::endl;
   }
   // At this point we have all the attributes read in so lets
   // fix up all of the attribute references
@@ -592,9 +568,9 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
     else
     {
-      std::cerr << "Expression Attribute: " << itemExpressionInfo[i].expName
-                << " is missing and required by Item : " << itemExpressionInfo[i].item->name()
-                << std::endl;
+      smtkErrorMacro(smtk::io::Logger::instance(), "Expression Attribute: "
+          << itemExpressionInfo[i].expName
+          << " is missing and required by Item : " << itemExpressionInfo[i].item->name());
     }
   }
   for (size_t i = 0; i < attRefInfo.size(); i++)
@@ -606,25 +582,22 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
     else
     {
-      std::cerr << "Referenced Attribute: " << attRefInfo[i].attName
-                << " is missing and required by Item: " << attRefInfo[i].item->name() << std::endl;
+      smtkErrorMacro(smtk::io::Logger::instance(), "Referenced Attribute: "
+          << attRefInfo[i].attName
+          << " is missing and required by Item: " << attRefInfo[i].item->name());
     }
   }
 
   // Proces view info
-  try
+  auto views = j.find("Views");
+  if (views != j.end())
   {
-    json views = j.at("Views");
-    for (auto iterView = views.begin(); iterView != views.end(); iterView++)
+    for (auto& jView : *views)
     {
-      smtk::view::ViewPtr view = *iterView;
+      smtk::view::ViewPtr view = jView;
       res->addView(view);
     }
   }
-  catch (std::exception& /*e*/)
-  {
-  }
-  // Process model info
 
   // Update category infomration
   res->updateCategories();

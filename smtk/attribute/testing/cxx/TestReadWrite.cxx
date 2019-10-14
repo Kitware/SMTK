@@ -160,6 +160,12 @@ int main(int argc, char** argv)
         cleanup(smtkFileName);
         return -2;
       }
+      else if (smtk::io::Logger::instance().numberOfRecords())
+      {
+        std::cerr << "Log after Read Operation:\n";
+        std::cerr << smtk::io::Logger::instance().convertToString();
+        smtk::io::Logger::instance().reset();
+      }
 
       copiedResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
         result->findResource("resource")->objectValue());
@@ -182,6 +188,12 @@ int main(int argc, char** argv)
         std::cerr << "Encountered Errors while writing " << sbi2FileName << "\n";
         std::cerr << logger.convertToString();
         return -2;
+      }
+      else if (smtk::io::Logger::instance().numberOfRecords())
+      {
+        std::cerr << "Log after Write Operation:\n";
+        std::cerr << smtk::io::Logger::instance().convertToString();
+        smtk::io::Logger::instance().reset();
       }
     }
 

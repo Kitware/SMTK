@@ -78,51 +78,34 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::DateTimeItemPtr& 
   auto temp = smtk::dynamic_pointer_cast<Item>(itemPtr);
   smtk::attribute::from_json(j, temp);
 
-  json numberOfValues;
-  try
+  auto numberOfValues = j.find("NumberOfValues");
+  if (numberOfValues == j.end())
   {
-    numberOfValues = j.at("NumberOfValues");
-  }
-  catch (const std::exception&)
-  {
-  }
-
-  if (numberOfValues.is_null())
-  { // Single value
+    // Single Value
     itemPtr->setNumberOfValues(1);
-    try
+    auto value = j.find("Value");
+    if (value != j.end())
     {
-      std::string value = j.at("Value");
-      if (value != "UnsetVal")
+      if (*value != "UnsetVal")
       {
         ::smtk::common::DateTimeZonePair dtz;
-        dtz.deserialize(value);
+        dtz.deserialize(*value);
         itemPtr->setValue(dtz);
       }
-    }
-    catch (const std::exception&)
-    {
     }
   }
   else
   {
     // Multiple values
-    std::size_t n = numberOfValues;
+    std::size_t n = *numberOfValues;
     if (n > 1)
     {
       itemPtr->setNumberOfValues(n);
-      json values;
-      try
-      {
-        values = j.at("Values");
-      }
-      catch (const std::exception&)
-      {
-      }
-      if (!values.is_null())
+      auto values = j.find("Values");
+      if (values != j.end())
       {
         int i(0);
-        for (auto iter = values.begin(); iter != values.end(); iter++, i++)
+        for (auto iter = values->begin(); iter != values->end(); iter++, i++)
         {
           if (iter->is_null())
           {

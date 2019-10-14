@@ -89,30 +89,30 @@ SMTKCORE_EXPORT void from_json(
   {
     return;
   }
-  auto located = j.find("Label");
-  if (located != j.end())
+  auto result = j.find("Label");
+  if (result != j.end())
   {
-    itemDefPtr->setLabel(*located);
+    itemDefPtr->setLabel(*result);
   }
-  try
+  result = j.find("Version");
+  if (result != j.end())
   {
-    itemDefPtr->setVersion(j.at("Version"));
+    itemDefPtr->setVersion(*result);
   }
-  catch (std::exception& /*e*/)
+  result = j.find("Optional");
+  if (result != j.end())
   {
+    itemDefPtr->setIsOptional(*result);
   }
-  try
+  result = j.find("isEnabledByDefault");
+  if (result != j.end())
   {
-    itemDefPtr->setIsOptional(j.at("Optional"));
-    itemDefPtr->setIsEnabledByDefault(j.at("isEnabledByDefault"));
+    itemDefPtr->setIsEnabledByDefault(*result);
   }
-  catch (std::exception& /*e*/)
+  result = j.find("categoryCheckMode");
+  if (result != j.end())
   {
-  }
-  located = j.find("categoryCheckMode");
-  if (located != j.end())
-  {
-    if (*located == "All")
+    if (*result == "All")
     {
       itemDefPtr->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::All);
     }
@@ -121,37 +121,36 @@ SMTKCORE_EXPORT void from_json(
       itemDefPtr->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::Any);
     }
   }
-  try
+  result = j.find("AdvanceLevel");
+  if (result != j.end())
   {
-    itemDefPtr->setAdvanceLevel(0, j.at("AdvanceLevel"));
-    itemDefPtr->setAdvanceLevel(1, j.at("AdvanceLevel"));
+    itemDefPtr->setAdvanceLevel(0, *result);
+    itemDefPtr->setAdvanceLevel(1, *result);
   }
-  catch (std::exception& /*e*/)
+  else
   {
-  }
-  try
-  {
-    itemDefPtr->setAdvanceLevel(0, j.at("AdvanceReadLevel"));
-    itemDefPtr->setAdvanceLevel(1, j.at("AdvanceWriteLevel"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    itemDefPtr->setBriefDescription(j.at("BriefDescription"));
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  try
-  {
-    itemDefPtr->setDetailedDescription(j.at("DetailedDescription"));
-  }
-  catch (std::exception& /*e*/)
-  {
+    auto val = j.find("AdvanceReadLevel");
+    if (val != j.end())
+    {
+      itemDefPtr->setAdvanceLevel(0, *val);
+    }
+    val = j.find("AdvanceWriteLevel");
+    if (val != j.end())
+    {
+      itemDefPtr->setAdvanceLevel(1, *val);
+    }
   }
 
+  result = j.find("BriefDescription");
+  if (result != j.end())
+  {
+    itemDefPtr->setBriefDescription(*result);
+  }
+  result = j.find("DetailedDescription");
+  if (result != j.end())
+  {
+    itemDefPtr->setDetailedDescription(*result);
+  }
   auto categories = j.find("Categories");
   if (categories != j.end())
   {

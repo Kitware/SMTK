@@ -62,52 +62,50 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ReferenceItemPtr&
   {
     return;
   }
-  auto temp = std::static_pointer_cast<Item>(itemPtr);
-  smtk::attribute::from_json(j, temp);
-
-  json values;
-  try
-  {
-    values = j.at("Values");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
+  auto basicItem = std::static_pointer_cast<Item>(itemPtr);
+  smtk::attribute::from_json(j, basicItem);
 
   std::size_t i(0), n = itemPtr->numberOfValues();
-  if (values.is_array() && (values.size() > 0))
+  auto values = j.find("Values");
+  if (values != j.end())
   {
-    n = values.size();
-    if (!itemPtr->setNumberOfValues(values.size()))
+    if (!values->is_array())
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "Unable to set the number of values on "
-          << itemPtr->name() << " to " << n);
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "Values is not an array for item:" << itemPtr->name());
+      return;
+    }
+    if (itemPtr->isExtensible())
+    {
+      n = values->size();
+      if (!itemPtr->setNumberOfValues(n))
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Unable to set the number of values on "
+            << itemPtr->name() << " to " << n);
+      }
     }
   }
   if (!n)
   {
     return;
   }
-  if (values.is_array())
+  for (auto iter = values->begin(); iter != values->end(); iter++, i++)
   {
-    for (auto iter = values.begin(); iter != values.end(); iter++, i++)
+    json val = *iter;
+    if (val.is_null())
     {
-      try
-      {
-        json val = *iter;
-        if (val.is_null())
-        {
-          continue;
-        }
-        smtk::common::UUID ruid = val[0];
-        smtk::common::UUID cuid = val[1];
-        ReferenceItem::Key key = std::make_pair(ruid, cuid);
-        itemPtr->setObjectKey(i, key);
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
+      continue;
     }
+    if ((!val.is_array()) || (val.size() != 2))
+    {
+      smtkErrorMacro(smtk::io::Logger::instance(), "The "
+          << i << "-th value for item:" << itemPtr->name() << " is not the correct size");
+      continue;
+    }
+    smtk::common::UUID ruid = val[0];
+    smtk::common::UUID cuid = val[1];
+    ReferenceItem::Key key = std::make_pair(ruid, cuid);
+    itemPtr->setObjectKey(i, key);
   }
 }
 }

@@ -13,6 +13,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/json/jsonReferenceItem.h"
+#include "smtk/io/Logger.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -42,8 +43,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ComponentItemPtr&
   {
     return;
   }
-  auto temp = smtk::dynamic_pointer_cast<ReferenceItem>(itemPtr);
-  smtk::attribute::from_json(j, temp);
+  auto refItem = smtk::dynamic_pointer_cast<ReferenceItem>(itemPtr);
+  smtk::attribute::from_json(j, refItem);
 }
 
 SMTKCORE_EXPORT void processFromRefItemSpec(
@@ -64,65 +65,53 @@ SMTKCORE_EXPORT void processFromRefItemSpec(
   attribute::AttributePtr att;
   AttRefInfo info;
 
-  json values;
-  try
+  auto values = j.find("Values");
+  if (values != j.end())
   {
-    values = j.at("Values");
-  }
-  catch (std::exception& /*e*/)
-  {
-  }
-  if (!numRequiredVals)
-  {
-    if (values.is_array() && (values.size() > 0))
+    if (itemPtr->isExtensible() && values->is_array())
     {
-      n = values.size();
-      itemPtr->setNumberOfValues(values.size());
-    }
-  }
-
-  if (!n)
-  {
-    return;
-  }
-  if (!values.is_null())
-  {
-    size_t i(0);
-    for (auto iter = values.begin(); iter != values.end(); iter++, i++)
-    {
-      try
+      n = values->size();
+      if (!itemPtr->setNumberOfValues(n))
       {
-        if (i >= n)
-        {
-          continue;
-        }
-        if (!iter->is_null())
-        {
-          attName = *iter;
-          att = resPtr->findAttribute(attName);
-          if (!att)
-          {
-            info.item = itemPtr;
-            info.pos = static_cast<int>(i);
-            info.attName = attName;
-            attRefInfos.push_back(info);
-          }
-          else
-          {
-            itemPtr->setValue(i, att);
-          }
-        }
+        smtkErrorMacro(smtk::io::Logger::instance(), "Unable to set the number of values on "
+            << itemPtr->name() << " to " << n);
       }
-      catch (std::exception& /*e*/)
+    }
+
+    if (!n)
+    {
+      return;
+    }
+
+    size_t i(0);
+    for (auto iter = values->begin(); iter != values->end(); iter++, i++)
+    {
+      if ((i >= n) || iter->is_null())
       {
+        continue;
+      }
+
+      attName = *iter;
+      att = resPtr->findAttribute(attName);
+      if (att == nullptr)
+      {
+        info.item = itemPtr;
+        info.pos = static_cast<int>(i);
+        info.attName = attName;
+        attRefInfos.push_back(info);
+      }
+      else
+      {
+        itemPtr->setValue(i, att);
       }
     }
   }
   else if (numRequiredVals == 1)
   {
-    try
+    auto val = j.find("Val");
+    if (val != j.end())
     {
-      attName = j.at("Val");
+      attName = *val;
       att = resPtr->findAttribute(attName);
       if (!att)
       {
@@ -135,9 +124,6 @@ SMTKCORE_EXPORT void processFromRefItemSpec(
       {
         itemPtr->setValue(att);
       }
-    }
-    catch (std::exception& /*e*/)
-    {
     }
   }
 }
