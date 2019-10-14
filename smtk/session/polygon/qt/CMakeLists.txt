@@ -6,9 +6,12 @@ set(PQWidgetsSrcs
   pqArcWidgetPanel.cxx
   pqPolygonArc.cxx
   pqSplitEdgeWidget.cxx
+  qtArcWidget.cxx
+  qtInteractionWidget.cxx
 )
 
 set(PQWidgetsUIs
+  qtArcWidget.ui
   qtArcWidgetPanel.ui
 )
 
@@ -17,6 +20,8 @@ set(PQWidgetsMocHeaders
   pqArcWidgetPanel.h
   pqPolygonArc.h
   pqSplitEdgeWidget.h
+  qtArcWidget.h
+  qtInteractionWidget.h
 )
 
 #install the headers

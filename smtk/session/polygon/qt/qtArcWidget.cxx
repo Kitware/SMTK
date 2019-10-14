@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/qtArcWidget.h"
+#include "smtk/session/polygon/qt/qtArcWidget.h"
 #include "ui_qtArcWidget.h"
 
 #include <QDoubleValidator>

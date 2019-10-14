@@ -25,14 +25,9 @@ set(sources
   pqSMTKSplineItemWidget.cxx
   pqSMTKSplineItemWidget.h
   pqSMTKWidgetsAutoStart.cxx
-  pqSMTKWidgetsAutoStart.h
-  qtArcWidget.cxx
-  qtArcWidget.h
-  qtInteractionWidget.cxx
-  qtInteractionWidget.h)
+  pqSMTKWidgetsAutoStart.h)
 
 set(ui_files
-  qtArcWidget.ui
   qtGenerateContoursDialog.ui
   resources/pqConePropertyWidget.ui
   resources/pqPointPropertyWidget.ui)

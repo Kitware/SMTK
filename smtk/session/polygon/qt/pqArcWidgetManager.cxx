@@ -14,9 +14,9 @@
 
 #include "smtk/session/polygon/qt/pqArcWidgetManager.h"
 
-#include "smtk/extension/paraview/widgets/qtArcWidget.h"
 #include "smtk/session/polygon/qt/pqArcWidgetPanel.h"
 #include "smtk/session/polygon/qt/pqPolygonArc.h"
+#include "smtk/session/polygon/qt/qtArcWidget.h"
 
 #include "pqRenderView.h"
 #include "pqServer.h"
