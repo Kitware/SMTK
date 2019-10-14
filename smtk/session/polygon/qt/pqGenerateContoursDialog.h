@@ -15,6 +15,7 @@
 #define __smtk_pq_GenerateContoursDialog_h
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/session/polygon/qt/Exports.h"
 #include <QDialog>
 #include <QDoubleValidator>
 
@@ -30,7 +31,7 @@ namespace Ui
 class qtGenerateContoursDialog;
 };
 
-class pqGenerateContoursDialog : public QDialog
+class SMTKPOLYGONQTEXT_EXPORT pqGenerateContoursDialog : public QDialog
 {
   Q_OBJECT
 public:

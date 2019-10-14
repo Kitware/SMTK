@@ -1,8 +1,6 @@
 set(sources
   pqConePropertyWidget.cxx
   pqConePropertyWidget.h
-  pqGenerateContoursDialog.cxx
-  pqGenerateContoursDialog.h
   pqPointPropertyWidget.cxx
   pqPointPropertyWidget.h
   pqSMTKAttributeItemWidget.cxx
@@ -28,7 +26,6 @@ set(sources
   pqSMTKWidgetsAutoStart.h)
 
 set(ui_files
-  qtGenerateContoursDialog.ui
   resources/pqConePropertyWidget.ui
   resources/pqPointPropertyWidget.ui)
 set(CMAKE_AUTOUIC_SEARCH_PATHS

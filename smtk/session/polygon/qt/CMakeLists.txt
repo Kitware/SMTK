@@ -4,6 +4,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 set(PQWidgetsSrcs
   pqArcWidgetManager.cxx
   pqArcWidgetPanel.cxx
+  pqGenerateContoursDialog.cxx
   pqPolygonArc.cxx
   pqSplitEdgeWidget.cxx
   qtArcWidget.cxx
@@ -13,11 +14,13 @@ set(PQWidgetsSrcs
 set(PQWidgetsUIs
   qtArcWidget.ui
   qtArcWidgetPanel.ui
+  qtGenerateContoursDialog.ui
 )
 
 set(PQWidgetsMocHeaders
   pqArcWidgetManager.h
   pqArcWidgetPanel.h
+  pqGenerateContoursDialog.h
   pqPolygonArc.h
   pqSplitEdgeWidget.h
   qtArcWidget.h
