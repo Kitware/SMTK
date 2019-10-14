@@ -323,7 +323,7 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
     // that the bounds we report include the transformation as well.
     vtkNew<vtkMatrix4x4> matrix;
     this->Entities->GetMatrix(matrix.GetPointer());
-    vtkPVRenderView::SetGeometryBounds(inInfo, this->DataBounds, matrix.GetPointer());
+    vtkPVRenderView::SetGeometryBounds(inInfo, this, this->DataBounds, matrix.GetPointer());
   }
   else if (request_type == vtkPVView::REQUEST_UPDATE_LOD())
   {
