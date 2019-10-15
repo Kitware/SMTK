@@ -357,12 +357,12 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
 
 bool Attribute::isObjectAssociated(const smtk::common::UUID& entity) const
 {
-  return m_associatedObjects ? m_associatedObjects->has(entity) : false;
+  return m_associatedObjects ? m_associatedObjects->contains(entity) : false;
 }
 
 bool Attribute::isObjectAssociated(const smtk::resource::PersistentObjectPtr& comp) const
 {
-  return m_associatedObjects ? m_associatedObjects->has(comp) : false;
+  return m_associatedObjects ? m_associatedObjects->contains(comp) : false;
 }
 
 /**\brief Is the model \a entity associated with this attribute?
@@ -379,7 +379,7 @@ bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
 bool Attribute::isEntityAssociated(const smtk::model::EntityRef& entityref) const
 {
   auto comp = entityref.component();
-  return (comp && m_associatedObjects) ? m_associatedObjects->has(comp) : false;
+  return (comp && m_associatedObjects) ? m_associatedObjects->contains(comp) : false;
 }
 
 /**\brief Return the associated model entities as a set of UUIDs.

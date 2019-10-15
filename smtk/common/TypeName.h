@@ -92,7 +92,7 @@ public:
 template <typename T>
 struct is_pod
 {
-  using type = typename smtk::tuple_has<T, PODs>::type;
+  using type = typename smtk::tuple_contains<T, PODs>::type;
 };
 
 // A compile-time test to check whether or not a class has a create() method.

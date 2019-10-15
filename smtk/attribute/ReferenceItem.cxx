@@ -321,18 +321,14 @@ std::size_t ReferenceItem::maxNumberOfValues() const
   return def->maxNumberOfValues();
 }
 
-bool ReferenceItem::contains(const smtk::resource::PersistentObjectPtr& obj) const
+bool ReferenceItem::contains(const smtk::common::UUID& entity) const
 {
-  bool doesContain = false;
-  this->visit([&](const PersistentObjectPtr& other) {
-    if (other == obj)
-    {
-      doesContain = true;
-      return false; // stop iterating
-    }
-    return true; // keep iterating
-  });
-  return doesContain;
+  return this->find(entity) >= 0;
+}
+
+bool ReferenceItem::contains(const PersistentObjectPtr& entity) const
+{
+  return this->find(entity) >= 0;
 }
 
 void ReferenceItem::visit(std::function<bool(const PersistentObjectPtr&)> visitor) const
@@ -579,16 +575,6 @@ bool ReferenceItem::isExtensible() const
   if (!def)
     return false;
   return def->isExtensible();
-}
-
-bool ReferenceItem::has(const smtk::common::UUID& entity) const
-{
-  return this->find(entity) >= 0;
-}
-
-bool ReferenceItem::has(const PersistentObjectPtr& entity) const
-{
-  return this->find(entity) >= 0;
 }
 
 ReferenceItem::const_iterator ReferenceItem::begin() const

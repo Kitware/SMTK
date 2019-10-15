@@ -151,7 +151,7 @@ Links::Key Links::addLinkTo(Resource* lhs1, const smtk::common::UUID& lhs2, cons
     resourceLinkId = smtk::common::UUID::random();
 
     // Keep spinning uuids until one is accepted.
-    while (resourceLinkData.has(resourceLinkId))
+    while (resourceLinkData.contains(resourceLinkId))
     {
       resourceLinkId = smtk::common::UUID::random();
     }
@@ -175,7 +175,7 @@ Links::Key Links::addLinkTo(Resource* lhs1, const smtk::common::UUID& lhs2, cons
   smtk::common::UUID componentLinkId = smtk::common::UUID::random();
 
   // Keep spinning uuids until one is accepted.
-  while (componentLinkData->has(componentLinkId))
+  while (componentLinkData->contains(componentLinkId))
   {
     componentLinkId = smtk::common::UUID::random();
   }
@@ -296,7 +296,7 @@ bool Links::removeLink(Resource* lhs1, const Links::Key& key)
 {
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
   ResourceLinkData& resourceLinkData = lhs1->links().data();
-  if (resourceLinkData.has(key.first) == false)
+  if (resourceLinkData.contains(key.first) == false)
   {
     return false;
   }
@@ -345,7 +345,7 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
 {
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
   const ResourceLinkData& resourceLinkData = lhs1->links().data();
-  if (resourceLinkData.has(key.first) == false)
+  if (resourceLinkData.contains(key.first) == false)
   {
     return std::make_pair(ResourcePtr(), Component::Links::Data::undefinedRole);
   }

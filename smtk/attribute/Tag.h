@@ -55,7 +55,7 @@ public:
 
   bool remove(const std::string& value) { return m_values.erase(value) > 0; }
 
-  bool has(const std::string& value) const { return m_values.find(value) != m_values.end(); }
+  bool contains(const std::string& value) const { return m_values.find(value) != m_values.end(); }
 
   bool operator<(const Tag& rhs) const { return m_name < rhs.m_name; }
 

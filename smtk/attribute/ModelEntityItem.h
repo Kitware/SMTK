@@ -65,7 +65,7 @@ public:
 
   bool appendValue(const smtk::model::EntityRef& val);
 
-  bool has(const smtk::model::EntityRef& entity) const;
+  bool contains(const smtk::model::EntityRef& entity) const;
 
   std::ptrdiff_t find(const smtk::model::EntityRef& entity) const;
 
