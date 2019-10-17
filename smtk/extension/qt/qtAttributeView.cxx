@@ -70,9 +70,17 @@ class qtAttributeViewInternals
 public:
   ~qtAttributeViewInternals() { delete this->CurrentAtt; }
 
+  // Return a list of categories based on the current settings
+  // of the UI Manager and whether the View is to ignore
+  // categories
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
-    smtk::extension::qtUIManager* uiManager) const
+    smtk::extension::qtUIManager* uiManager, bool ignoreCategories) const
   {
+    if (ignoreCategories)
+    {
+      return AllDefs;
+    }
+
     if (uiManager->categoryEnabled())
     {
       auto currentCat = uiManager->currentCategory();
@@ -701,7 +709,8 @@ void qtAttributeView::onCreateNew()
   {
     strDef = this->Internals->DefsCombo->currentText();
   }
-  foreach (attribute::DefinitionPtr attDef, this->Internals->getCurrentDefs(this->uiManager()))
+  foreach (attribute::DefinitionPtr attDef,
+    this->Internals->getCurrentDefs(this->uiManager(), m_ignoreCategories))
   {
     std::string txtDef = attDef->displayedTypeName();
     if (strDef == QString::fromUtf8(txtDef.c_str()))
@@ -832,7 +841,7 @@ void qtAttributeView::onViewBy(int viewBy)
   }
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager());
+    this->Internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
   this->Internals->AddButton->setEnabled(currentDefs.count() > 0);
 
   bool viewAtt = (viewBy == VIEWBY_Attribute);
@@ -900,7 +909,11 @@ void qtAttributeView::onViewBy(int viewBy)
     }
   }
   this->Internals->ListTable->blockSignals(false);
-  this->Internals->ListTable->resizeColumnsToContents();
+  // Only resize the table if we are showing the type column
+  if (this->Internals->AllDefs.size() != 1)
+  {
+    this->Internals->ListTable->resizeColumnsToContents();
+  }
 
   QSplitter* frame = qobject_cast<QSplitter*>(this->Widget);
   if (viewAtt)
@@ -1531,7 +1544,7 @@ void qtAttributeView::showAdvanceLevelOverlay(bool show)
 bool qtAttributeView::isEmpty() const
 {
   QList<smtk::attribute::DefinitionPtr> currentDefs =
-    this->Internals->getCurrentDefs(this->uiManager());
+    this->Internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
   return currentDefs.isEmpty();
 }
 

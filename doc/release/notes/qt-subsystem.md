@@ -1,10 +1,51 @@
 ## Changes to the View System and Qt Extensions
 
-### Changes to qtBaseView
+### Changes to qtBaseView (and Introducing qtBaseAttributeView class)
 
 * The qtBaseView class has been split into qtBaseView and qtBaseAttributeView.
   All of the existing qtBaseView subclasses now instead inherit qtBaseAttributeView.
 * The displayItem test now calls 2 new methods categoryTest and advanceLevelTest.  This makes it easier for derived classes to override the filtering behavior
+
+### Changes to qtBaseAttributeView
+#### IgnoreCategory Mechanism
+Added an ignoreCategories mechanism so that designers have the option to have Views not filter base on categories as shown below:
+
+```xml
+   <View Type="Attribute" Title="Configurations" IgnoreCategories="true">
+      <AttributeTypes>
+        <Att Type="Analysis" />
+      </AttributeTypes>
+    </View>
+```
+#### Added the concept of Configurations for Top Level Views
+Similar to the Analysis View, Configurations provide a mechanism to define a set of categories to filter information defined in the Views.  To use Configurations, specify **UseConfigurations** in the top level view.  **ConfigurationType** is used to define the Attribute Definition Type name for configuration attributes.  Unlike an Analysis View which represents a single configuration, the configuration mechanism supports multiple configurations.
+
+Configurations are displayed as a combobox.  Configurations can be created during run time using the **CreateConfigurations** View attribute.  **ConfigurationLabel** can be used to define the label displayed next to the configuration combobox.  The selected configuration is represented as a long Property named **_selectedConfiguration** assigned to the attribute with a value of 1. Below is an example top-level view using Configurations:
+
+```xml
+    <View Type="Group" Title="TopLevel" TopLevel="true" TabPosition="North"
+      FilterByAdvanceLevel="true" UseConfigurations="true" ConfigurationType="Analysis"
+      ConfigurationLabel="My Configurations:" CreateConfigurations="true">
+      <Views>
+        <View Title="Test" />
+        <View Title="Configurations" />
+      </Views>
+    </View>
+```
+
+You can use an Attribute View to edit existing Configurations by setting the attribute view type to the same as the ConfigurationType:
+
+```xml
+   <View Type="Attribute" Title="Configurations" IgnoreCategories="true">
+      <AttributeTypes>
+        <Att Type="Analysis" />
+      </AttributeTypes>
+    </View>
+```
+See **data/attribute/attribute_collection/ConfigurationTest.sbt** as an example template file.
+
+##### Current Limitations
+* When using an Attribute View to define and edit Configuration Attributes, if the user only creates an attribute using the Attribute View and does not edit any of its items, it will not be automatically added to the configuration combobox.
 
 ### Changes to displaying double items
 Using ItemViews you can now control how the double value item is displayed based using the following "attributes":

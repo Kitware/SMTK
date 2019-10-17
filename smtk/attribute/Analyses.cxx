@@ -10,9 +10,12 @@
 
 #include "smtk/attribute/Analyses.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 
 using namespace smtk::attribute;
@@ -276,4 +279,79 @@ DefinitionPtr Analyses::buildAnalysesDefinition(
     }
   }
   return def;
+}
+
+void Analyses::getAnalysisItemCategories(ConstItemPtr item, std::set<std::string>& cats)
+{
+  // If the item is not active there is nothing to do
+  if (!item->isEnabled())
+  {
+    return;
+  }
+
+  // Are we dealing with a string item - in that case the value of the string
+  // is the analysis and we need to process it's active children.  Else
+  // the item's name is the analysis and we need to see if its a group
+  auto sitem = std::dynamic_pointer_cast<const StringItem>(item);
+  if (sitem != nullptr)
+  {
+    // If the item is not set we can just return (nothing to process)
+    if (!sitem->isSet())
+    {
+      return;
+    }
+
+    auto analysis = this->find(sitem->value());
+    if (analysis != nullptr)
+    {
+      auto myCats = analysis->localCategories();
+      cats.insert(myCats.begin(), myCats.end());
+    }
+    else
+    {
+      std::cerr << "Could not find Analysis: " << sitem->value() << std::endl;
+    }
+    // Lets check its active children
+    int i, n = static_cast<int>(sitem->numberOfActiveChildrenItems());
+    for (i = 0; i < n; i++)
+    {
+      this->getAnalysisItemCategories(sitem->activeChildItem(i), cats);
+    }
+    return;
+  }
+
+  // If we are here then we are dealing with an item
+  // representing the actual analysis
+  auto analysis = this->find(item->name());
+  if (analysis != nullptr)
+  {
+    auto myCats = analysis->localCategories();
+    cats.insert(myCats.begin(), myCats.end());
+  }
+  else
+  {
+    std::cerr << "Could not find Analysis: " << item->name() << std::endl;
+  }
+
+  auto gitem = std::dynamic_pointer_cast<const GroupItem>(item);
+  if (gitem == nullptr)
+  {
+    return;
+  }
+
+  std::size_t i, n = gitem->numberOfItemsPerGroup();
+  for (i = 0; i < n; i++)
+  {
+    this->getAnalysisItemCategories(gitem->item(i), cats);
+  }
+}
+
+void Analyses::getAnalysisAttributeCategories(
+  ConstAttributePtr attribute, std::set<std::string>& cats)
+{
+  int i, n = static_cast<int>(attribute->numberOfItems());
+  for (i = 0; i < n; i++)
+  {
+    this->getAnalysisItemCategories(attribute->item(i), cats);
+  }
 }

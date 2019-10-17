@@ -1102,9 +1102,9 @@ void qtInputsItem::onExpressionReferenceChanged()
       itemsInComboBox << comboBox->itemText(index);
     }
     itemsInComboBox.sort();
-    // Now add Please Select and Create New Options
+    // Now add Please Select and Create Options
     itemsInComboBox.insert(0, "Please Select");
-    itemsInComboBox.insert(1, "Create New");
+    itemsInComboBox.insert(1, "Create...");
     comboBox->blockSignals(true);
     comboBox->clear();
     comboBox->addItems(itemsInComboBox);

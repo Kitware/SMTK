@@ -56,6 +56,10 @@ public:
   // behavior is to return false
   bool isEmpty() const override;
 
+  // Provide a mechanism to by-pass category filtering
+  void setIgnoreCategories(bool mode);
+  bool ignoreCategories() const { return m_ignoreCategories; }
+
 signals:
   void modified(smtk::attribute::ItemPtr);
 
@@ -83,6 +87,7 @@ public slots:
 protected slots:
   virtual void updateAttributeData() { ; }
   virtual void onAdvanceLevelChanged(int levelIdx);
+  void onConfigurationChanged(int levelIdx);
 
 protected:
   /// Create the UI related to the view and assigns it to the parent widget.
@@ -98,8 +103,18 @@ protected:
   /// Returns true if the item's advance level pass
   virtual bool advanceLevelTest(smtk::attribute::ItemPtr);
 
+  void topLevelPrepCategories(
+    const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource);
+  void topLevelPrepConfigurations(
+    const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource);
+  void topLevelPrepAdvanceLevels(const smtk::view::ViewPtr& view);
+  void prepConfigurationComboBox(const std::string& newConfigurationName);
+  void checkConfigurations(smtk::attribute::ItemPtr& item);
   QScrollArea* m_ScrollArea;
   bool m_topLevelInitialized;
+  bool m_topLevelCanCreateConfigurations;
+  smtk::attribute::WeakDefinitionPtr m_topLevelConfigurationDef;
+  bool m_ignoreCategories;
 
 private:
   int m_fixedLabelWidth;

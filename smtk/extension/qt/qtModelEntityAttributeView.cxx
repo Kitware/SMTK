@@ -483,7 +483,7 @@ void qtModelEntityAttributeView::updateModelEntities()
     ++rcount;
   }
   this->Internals->ListTable->setSortingEnabled(true);
-  this->Internals->ListTable->sortByColumn(Qt::AscendingOrder);
+  this->Internals->ListTable->sortByColumn(0, Qt::AscendingOrder);
   this->Internals->ListTable->blockSignals(false);
   this->Internals->ListTable->sortItems(0);
 }
