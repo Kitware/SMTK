@@ -11,6 +11,7 @@
 #define smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include <QDockWidget>
 
@@ -28,8 +29,14 @@ public:
   pqSMTKResourcePanel(QWidget* parent = nullptr);
   ~pqSMTKResourcePanel() override;
 
+protected slots:
+  virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
+  virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);
+
 protected:
   pqSMTKResourceBrowser* m_browser;
+  smtk::view::ViewPtr m_view;
+  smtk::extension::qtUIManager* m_viewUIMgr;
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h

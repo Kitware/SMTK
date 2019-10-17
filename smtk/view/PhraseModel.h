@@ -64,11 +64,11 @@ public:
   using Resource = smtk::resource::Resource;
   using Selection = smtk::view::Selection;
 
-  static bool registerModelType(const std::string& typeName, ModelConstructor);
-  static bool unregisterModelType(const std::string& typeName);
-  static PhraseModelPtr create(const smtk::view::ViewPtr& viewSpec);
+  static PhraseModelPtr create(
+    const smtk::view::ViewPtr& viewSpec, const smtk::view::ManagerPtr& manager);
 
-  smtkTypeMacroBase(PhraseModel);
+  smtkTypeMacroBase(smtk::view::PhraseModel);
+  smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
   virtual ~PhraseModel();
 
   /** \brief Manage sources of information to display as phrases.
@@ -163,6 +163,10 @@ public:
     */
   int mutableAspects() const { return m_mutableAspects; }
 
+  /// PhraseModels that are managed have a non-null pointer to their manager.
+  ManagerPtr manager() const { return m_manager.lock(); }
+  friend Manager;
+
 protected:
   friend class VisibilityContent;
   PhraseModel();
@@ -242,7 +246,7 @@ protected:
 
   int m_mutableAspects;
 
-  static std::map<std::string, ModelConstructor> s_modelTypes;
+  WeakManagerPtr m_manager;
 };
 }
 }

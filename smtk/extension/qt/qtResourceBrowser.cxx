@@ -43,21 +43,26 @@ using namespace smtk::extension;
 
 qtBaseView* qtResourceBrowser::createViewWidget(const ViewInfo& info)
 {
-  const ResourceViewInfo* resinfo = dynamic_cast<const ResourceViewInfo*>(&info);
-  if (!resinfo)
-  {
-    return NULL;
-  }
-  qtResourceBrowser* view = new qtResourceBrowser(*resinfo);
+  qtResourceBrowser* view = new qtResourceBrowser(info);
   view->buildUI();
   return view;
 }
 
-qtResourceBrowser::qtResourceBrowser(const ResourceViewInfo& info)
+qtResourceBrowser::qtResourceBrowser(const ViewInfo& info)
   : qtBaseView(info)
 {
   m_p = new Internal;
-  m_p->setup(this, info.m_phraseModel, info.m_modelViewName, info.m_qmodel, info.m_parent);
+  smtk::view::PhraseModelPtr phraseModel;
+  std::string modelViewName;
+  QAbstractItemModel* qtPhraseModel = nullptr;
+  if (m_viewInfo.m_view)
+  {
+    modelViewName = m_viewInfo.m_view->name();
+    smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
+    phraseModel = smtk::view::PhraseModel::create(m_viewInfo.m_view, manager);
+    qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
+  }
+  m_p->setup(this, phraseModel, modelViewName, qtPhraseModel, m_viewInfo.m_parent);
   this->Widget = m_p->m_container;
 }
 
@@ -237,8 +242,10 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
 }
 
 void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
+  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
+  smtk::view::SelectionPtr seln)
 {
+  // if (m_p->m_viewInfo)
   m_p->m_seln = seln;
   if (m_p->m_seln)
   {

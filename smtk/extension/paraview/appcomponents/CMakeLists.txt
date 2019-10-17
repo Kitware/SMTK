@@ -111,6 +111,9 @@ set(PQComponentsResources
   resources/pqSMTKSelectionFilterBehavior.qrc
 )
 
+# put contents of this file in a string in a header. It's not xml, but it still works.
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json" smtkResourcePanelJSON)
+
 #install the headers
 smtk_public_headers(
   smtkPQComponentsExt

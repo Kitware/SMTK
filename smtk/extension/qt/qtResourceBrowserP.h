@@ -56,6 +56,7 @@ public:
   std::string m_selnSource; // TODO: This assumes there is only 1 panel (or that all should share)
   std::string m_selnLabel;
   std::string m_hoverLabel;
+  std::string m_viewName;
   std::map<smtk::common::UUID, int> m_visibleThings;
   int m_resourceTreeStyle; // Which subphrase generator should be used?
 

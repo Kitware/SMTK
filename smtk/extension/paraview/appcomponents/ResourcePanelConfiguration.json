@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "Resource",
+    "Type": "Phrase",
+    "Component": {
+      "Name": "Details",
+      "Attributes": {
+        "Title": "Resource Panel",
+        "TopLevel": true
+      },
+      "Children": [
+        {
+          "Name": "Model",
+          "Attributes": {
+            "Type": "smtk::view::ResourcePhraseModel",
+            "Widget": "Tree"
+          },
+          "Children": [
+            {
+              "Name": "SubphraseGenerator",
+              "Attributes": {
+                "Type": "smtk::view::SubphraseGenerator"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

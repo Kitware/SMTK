@@ -60,6 +60,8 @@ public:
   qtUIManager(const smtk::attribute::ResourcePtr& resource);
   qtUIManager(const smtk::operation::OperationPtr& operation,
     const smtk::resource::ManagerPtr& resourceManager = nullptr);
+  qtUIManager(
+    const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager);
   virtual ~qtUIManager();
 
   void initializeUI(QWidget* pWidget, bool useInternalFileBrowser = false);
@@ -83,6 +85,9 @@ public:
 
   smtk::operation::ManagerPtr operationManager() const { return m_operationManager; }
   void setOperationManager(smtk::operation::ManagerPtr mgr) { m_operationManager = mgr; }
+
+  smtk::view::ManagerPtr viewManager() const { return m_viewManager; }
+  void setViewManager(smtk::view::ManagerPtr mgr) { m_viewManager = mgr; }
 
   smtk::attribute::ResourcePtr attResource() const { return m_attResource.lock(); }
 
@@ -285,6 +290,7 @@ private:
   smtk::resource::ManagerPtr m_resourceManager;
   smtk::operation::ManagerPtr m_operationManager;
   smtk::operation::OperationPtr m_operation;
+  smtk::view::ManagerPtr m_viewManager;
   bool m_useInternalFileBrowser;
 
   int m_maxValueLabelLength;

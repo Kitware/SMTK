@@ -6,12 +6,12 @@ by instances of the :smtk:`Operator <smtk::operation::Operator>` class.
 Each operation is a subclass that contains the code to perform the
 operation by overriding the operate() and ableToOperate() methods.
 These subclasses register themselves (via SMTK's auto-init macros)
-with an :smtk:`Manager <smtk::operation::Manager>`.
+with a :smtk:`Manager <smtk::operation::Manager>`.
 
 .. todo:: Describe SMTK's auto-init macros.
 
 The next sections describe in detail: first, how operators specify the inputs they require
-and outputs they produce; and second, how operators register themselves for intropspection.
+and outputs they produce; and second, how operators register themselves for introspection.
 
 Inputs and Outputs
 ------------------

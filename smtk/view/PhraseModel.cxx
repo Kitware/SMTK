@@ -10,6 +10,7 @@
 #include "smtk/view/PhraseModel.h"
 
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/View.h"
@@ -95,23 +96,6 @@ class PhraseDeltas : public std::set<std::vector<int>, PathComp>
 {
 };
 
-std::map<std::string, PhraseModel::ModelConstructor> PhraseModel::s_modelTypes;
-
-bool PhraseModel::registerModelType(const std::string& typeName, ModelConstructor ctor)
-{
-  if (typeName.empty() || !ctor || s_modelTypes.find(typeName) != s_modelTypes.end())
-  {
-    return false;
-  }
-  s_modelTypes[typeName] = ctor;
-  return true;
-}
-
-bool PhraseModel::unregisterModelType(const std::string& typeName)
-{
-  return s_modelTypes.erase(typeName) > 0;
-}
-
 // Returns the operation manager - right now it assumes the first source
 // TODO: figure out the proper behavior when there is more
 // than one source
@@ -124,18 +108,24 @@ smtk::operation::ManagerPtr PhraseModel::operationManager() const
   return nullptr;
 }
 
-PhraseModelPtr PhraseModel::create(const smtk::view::ViewPtr& viewSpec)
+PhraseModelPtr PhraseModel::create(
+  const smtk::view::ViewPtr& viewSpec, const smtk::view::ManagerPtr& manager)
 {
-  if (!viewSpec || viewSpec->type().empty())
+  if (!manager || !viewSpec || viewSpec->type().empty() || viewSpec->type() != "Phrase")
   {
     return nullptr;
   }
-  auto entry = s_modelTypes.find(viewSpec->type());
-  if (entry == s_modelTypes.end())
+  // Look at viewSpec child, should be "Model", look for its Type attribute
+  std::string typeName;
+  if ((viewSpec->details().numberOfChildren() != 1) ||
+    (viewSpec->details().child(0).name() != "Model"))
   {
     return nullptr;
   }
-  return entry->second(viewSpec);
+  viewSpec->details().child(0).attribute("Type", typeName);
+
+  // find things that match the Type, and create one.
+  return manager->create(typeName);
 }
 
 PhraseModel::PhraseModel()

@@ -132,6 +132,20 @@ qtUIManager::qtUIManager(
   this->commonConstructor();
 }
 
+qtUIManager::qtUIManager(
+  const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
+  : m_parentWidget(nullptr)
+  , m_resourceManager(resourceManager)
+  , m_viewManager(viewManager)
+{
+  if (!m_resourceManager || !m_viewManager)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Asked to create an browser view with missing resource or view manager.");
+  }
+  this->commonConstructor();
+}
+
 void qtUIManager::commonConstructor()
 {
   m_useInternalFileBrowser = true;

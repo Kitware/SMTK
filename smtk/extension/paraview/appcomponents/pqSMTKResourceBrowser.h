@@ -46,7 +46,7 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceBrowser : public smtk::extension:
   typedef smtk::extension::qtResourceBrowser Superclass;
 
 public:
-  pqSMTKResourceBrowser(const smtk::extension::ResourceViewInfo& info);
+  pqSMTKResourceBrowser(const smtk::extension::ViewInfo& info);
   ~pqSMTKResourceBrowser() override;
 
   /// This method may be used by other ParaView plugins that wish to expose

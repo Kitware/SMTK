@@ -25,26 +25,6 @@ namespace smtk
 {
 namespace extension
 {
-class SMTKQTEXT_EXPORT ResourceViewInfo : public ViewInfo
-{
-public:
-  ResourceViewInfo(smtk::view::ViewPtr view,
-    const smtk::view::PhraseModelPtr& phraseModel = smtk::view::PhraseModelPtr(),
-    const std::string& modelViewName = "", QAbstractItemModel* qmodel = nullptr,
-    QWidget* parent = nullptr, qtUIManager* uiman = nullptr)
-    : ViewInfo(view, parent, uiman)
-    , m_phraseModel(phraseModel)
-    , m_modelViewName(modelViewName)
-    , m_qmodel(qmodel)
-  {
-  }
-
-  ResourceViewInfo() {}
-  virtual ~ResourceViewInfo() {}
-  smtk::view::PhraseModelPtr m_phraseModel;
-  std::string m_modelViewName;
-  QAbstractItemModel* m_qmodel;
-};
 
 class qtDescriptivePhraseModel;
 
@@ -53,7 +33,7 @@ class qtDescriptivePhraseModel;
   * This contains Qt widget that displays a tree or list view holding an SMTK
   * descriptive phrase model.
   *
-  * Its ViewInfo initializer accepts
+  * Its ViewInfo should be initialized with json/xml that contains:
   * (1) an smtk::view::PhraseModel that you have configured,
   * (2) the string name registered to a QAbstractItemView subclass constructor,
   * (3) a QAbstactItemModel implementing qtDescriptivePhraseModel model index queries, and
@@ -73,7 +53,7 @@ class SMTKQTEXT_EXPORT qtResourceBrowser : public qtBaseView
 
 public:
   static qtBaseView* createViewWidget(const ViewInfo& info);
-  qtResourceBrowser(const ResourceViewInfo& info);
+  qtResourceBrowser(const ViewInfo& info);
   ~qtResourceBrowser() override;
 
   static QTreeView* createDefaultView(QWidget* parent);
@@ -96,7 +76,7 @@ public slots:
   virtual void sendSMTKSelectionToPanel(const std::string& src, smtk::view::SelectionPtr seln);
 
   virtual void addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::SelectionPtr seln);
+    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
   virtual void removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
     smtk::view::SelectionPtr seln);
 

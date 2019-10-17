@@ -61,6 +61,9 @@ public:
   /// Return the client-side project manager (mirrored on the server via this proxy).
   smtk::project::ManagerPtr GetProjectManager() const;
 
+  /// Return the client-side view manager (mirrored on the server via this proxy).
+  smtk::view::ManagerPtr GetViewManager() const;
+
   /// Call this to indicate which PV data has the active PV selection.
   void SetSelectedPortProxy(vtkSMSourceProxy* pxy);
 
@@ -108,9 +111,11 @@ protected:
   void JSONRPCNotification(const json& note);
   void JSONRPCNotification(const std::string& note);
 
-  smtk::resource::ManagerPtr Manager;
-  smtk::view::SelectionPtr Selection;
-  smtk::operation::ManagerPtr OperationManager;
+  // smtk::resource::ManagerPtr Manager;
+  // smtk::view::SelectionPtr Selection;
+  // smtk::operation::ManagerPtr OperationManager;
+  // smtk::property::ManagerPtr PropertyManager;
+  // smtk::view::ManagerPtr ViewManager;
 
 private:
   vtkSMSMTKWrapperProxy(const vtkSMSMTKWrapperProxy&) = delete;

@@ -26,9 +26,9 @@ public:
   using Observer = std::function<void(DescriptivePhrasePtr, PhraseModelEvent, int, int)>;
   using Operation = smtk::operation::Operation;
 
-  smtkTypeMacro(SelectionPhraseModel);
-  smtkSuperclassMacro(PhraseModel);
-  smtkSharedPtrCreateMacro(PhraseModel);
+  smtkTypeMacro(smtk::view::SelectionPhraseModel);
+  smtkSuperclassMacro(smtk::view::PhraseModel);
+  smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
   static PhraseModelPtr create(const ViewPtr& view);
   virtual ~SelectionPhraseModel();
 
