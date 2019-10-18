@@ -14,6 +14,7 @@ set(commonSrcs
   Registry.cxx
   StringUtil.cxx
   TimeZone.cxx
+  timezonespec.cxx
   UUID.cxx
   UUIDGenerator.cxx
 )
@@ -42,6 +43,7 @@ set(commonHeaders
   StringUtil.h
   ThreadPool.h
   TimeZone.h
+  timezonespec.h
   TypeName.h
   UUID.h
   UUIDGenerator.h
