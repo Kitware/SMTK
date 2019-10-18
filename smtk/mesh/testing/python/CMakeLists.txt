@@ -13,6 +13,7 @@ set(smtkMeshPythonDataTests
 if(SMTK_ENABLE_MESH_SESSION AND SMTK_ENABLE_VTK_SUPPORT)
 list(APPEND smtkMeshPythonDataTests
   elevateMeshOnStructuredGrid
+  snapPointsToSurface
   )
 endif()
 

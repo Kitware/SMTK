@@ -37,7 +37,7 @@ public:
   typedef detail::ComponentLinks Links;
   typedef detail::ComponentProperties Properties;
 
-  smtkTypeMacro(Component);
+  smtkTypeMacro(smtk::resource::Component);
   smtkSuperclassMacro(smtk::resource::PersistentObject);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
