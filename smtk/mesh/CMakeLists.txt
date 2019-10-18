@@ -35,6 +35,7 @@ set(meshSrcs
   moab/Interface.cxx
   moab/ConnectivityStorage.cxx
   moab/MergeMeshVertices.cxx
+  moab/ModelEntityPointLocator.cxx
   moab/PointLocatorImpl.cxx
   moab/Readers.cxx
   moab/Writers.cxx
@@ -107,6 +108,7 @@ set(meshHeaders
 
   moab/HandleRangeToRange.h
   moab/Interface.h
+  moab/ModelEntityPointLocator.h
 
   operators/DeleteMesh.h
   operators/ElevateMesh.h
