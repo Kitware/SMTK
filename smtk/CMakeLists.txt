@@ -72,6 +72,7 @@ set(smtkCore_public_include_directories
   )
 
 set(smtkCore_private_include_directories
+  ${LibArchive_INCLUDE_DIRS}
   )
 
 set(moab_libs ${MOAB_LIBRARIES})
@@ -87,7 +88,7 @@ set(smtkCore_public_link_libraries
 
 set(smtkCore_private_link_libraries
   ${Boost_LIBRARIES}
-  libarchive
+  ${LibArchive_LIBRARIES}
   )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)
