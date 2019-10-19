@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
+#include "smtk/attribute/Analyses.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
@@ -19,6 +20,7 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/extension/qt/qtAttributeEditorDialog.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/View.h"
@@ -58,6 +60,7 @@ public:
     this->deleteWidget(this->FilterByCategory);
     this->deleteWidget(this->AdvLevelEditButton);
     this->deleteWidget(this->AdvLevelLabel);
+    this->deleteWidget(this->m_configurationCombo);
     if (this->TopLevelLayout)
     {
       delete this->TopLevelLayout;
@@ -71,15 +74,19 @@ public:
   QPointer<QLabel> AdvLevelLabel;
   QPointer<QToolButton> AdvLevelEditButton;
   QPointer<QHBoxLayout> TopLevelLayout;
+  QPointer<QComboBox> m_configurationCombo;
+  QPointer<QLabel> m_configurationLabel;
 };
 
 qtBaseAttributeView::qtBaseAttributeView(const ViewInfo& info)
   : qtBaseView(info)
+  , m_topLevelCanCreateConfigurations(false)
 {
   this->Internals = new qtBaseAttributeViewInternals;
   m_ScrollArea = nullptr;
   m_fixedLabelWidth = m_viewInfo.m_UIManager->maxValueLabelLength();
   m_topLevelInitialized = false;
+  m_ignoreCategories = m_viewInfo.m_view->details().attributeAsBool("IgnoreCategories");
 }
 
 qtBaseAttributeView::~qtBaseAttributeView()
@@ -121,7 +128,7 @@ bool qtBaseAttributeView::displayItem(smtk::attribute::ItemPtr item)
 
 bool qtBaseAttributeView::categoryTest(smtk::attribute::ItemPtr item)
 {
-  return this->uiManager()->passItemCategoryCheck(item->definition());
+  return m_ignoreCategories || this->uiManager()->passItemCategoryCheck(item->definition());
 }
 
 bool qtBaseAttributeView::advanceLevelTest(smtk::attribute::ItemPtr item)
@@ -129,8 +136,35 @@ bool qtBaseAttributeView::advanceLevelTest(smtk::attribute::ItemPtr item)
   return this->uiManager()->passAdvancedCheck(item->advanceLevel());
 }
 
+void qtBaseAttributeView::setIgnoreCategories(bool mode)
+{
+  m_ignoreCategories = mode;
+}
+
+void qtBaseAttributeView::checkConfigurations(smtk::attribute::ItemPtr& item)
+{
+  // Could this be a configuration?
+  if (this->Internals->m_configurationCombo != nullptr)
+  {
+    auto att = item->attribute();
+    if (att != nullptr)
+    {
+      auto def = att->definition();
+      if ((def != nullptr) && (def == m_topLevelConfigurationDef.lock()))
+      {
+        this->prepConfigurationComboBox("");
+      }
+    }
+  }
+}
+
 void qtBaseAttributeView::valueChanged(smtk::attribute::ItemPtr item)
 {
+  auto* topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
+  if (topView != nullptr)
+  {
+    topView->checkConfigurations(item);
+  }
   emit this->modified(item);
   this->uiManager()->onViewUIModified(this, item);
 }
@@ -245,17 +279,8 @@ void qtBaseAttributeView::setInitialCategory()
   }
 }
 
-void qtBaseAttributeView::makeTopLevel()
+void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::ViewPtr& view)
 {
-  // Use the parent implementation to set up the UI manager from the view
-  this->qtBaseView::makeTopLevel();
-  m_topLevelInitialized = true;
-
-  smtk::view::ViewPtr view = this->getObject();
-
-  this->Internals->clearWidgets();
-  const attribute::ResourcePtr attResource = this->uiManager()->attResource();
-
   bool flag;
   // Do we need to provide advance level filtering? - this is on by default
   if ((!view->details().attributeAsBool("FilterByAdvanceLevel", flag)) || flag)
@@ -280,7 +305,12 @@ void qtBaseAttributeView::makeTopLevel()
     connect(editButton, SIGNAL(toggled(bool)), this, SLOT(showAdvanceLevelOverlay(bool)));
     this->Internals->AdvLevelEditButton = editButton;
   }
+}
 
+void qtBaseAttributeView::topLevelPrepCategories(
+  const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource)
+{
+  bool flag;
   // Do we need to provide category filtering - this is on by default
   if ((!view->details().attributeAsBool("FilterByCategory", flag)) || flag)
   {
@@ -310,20 +340,85 @@ void qtBaseAttributeView::makeTopLevel()
     }
     this->Internals->ShowCategoryCombo->setEnabled(fbcm == "alwaysOn");
   }
+}
+
+void qtBaseAttributeView::topLevelPrepConfigurations(
+  const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource)
+{
+  bool flag;
+  // Do we need to provide category filtering - this is off by default
+  if (!(view->details().attributeAsBool("UseConfigurations", flag) && flag))
+  {
+    return;
+  }
+
+  // First lets see if the definition information was set
+  std::string configDefType;
+  if ((!view->details().attribute("ConfigurationType", configDefType)) || (configDefType == ""))
+  {
+    std::cerr << "Could not find ConfigurationType: " << configDefType << "\n";
+    return;
+  }
+
+  // Either find or create the definition
+  smtk::attribute::DefinitionPtr configDef = attResource->findDefinition(configDefType);
+  if (configDef == nullptr)
+  {
+    smtk::attribute::Analyses& analyses = attResource->analyses();
+    // Was a definition label specified?
+    std::string configDefLabel;
+    if ((!view->details().attribute("ConfigurationTypeLabel", configDefLabel)) ||
+      (configDefLabel == ""))
+    {
+      configDef = analyses.buildAnalysesDefinition(attResource, configDefType);
+    }
+    else
+    {
+      configDef = analyses.buildAnalysesDefinition(attResource, configDefType, configDefLabel);
+    }
+  }
+  m_topLevelConfigurationDef = configDef;
+  // Prep the combobox
+  this->Internals->m_configurationCombo = new QComboBox(this->parentWidget());
+  view->details().attributeAsBool("CreateConfigurations", m_topLevelCanCreateConfigurations);
+  // Build the combobox without any prefered configuration.  If there is an attribute
+  // marked as the current configuration then use it.
+  this->prepConfigurationComboBox("");
+  std::string configLabel("Configuration: ");
+  view->details().attribute("ConfigurationLabel", configLabel);
+  this->Internals->m_configurationLabel = new QLabel(this->parentWidget());
+  this->Internals->m_configurationLabel->setText(configLabel.c_str());
+  this->Internals->m_configurationLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+}
+
+void qtBaseAttributeView::makeTopLevel()
+{
+  // Use the parent implementation to set up the UI manager from the view
+  this->qtBaseView::makeTopLevel();
+  m_topLevelInitialized = true;
+
+  smtk::view::ViewPtr view = this->getObject();
+
+  this->Internals->clearWidgets();
+  const attribute::ResourcePtr attResource = this->uiManager()->attResource();
+
+  this->topLevelPrepAdvanceLevels(view);
+  this->topLevelPrepConfigurations(view, attResource);
+  if (this->Internals->m_configurationCombo == nullptr)
+  {
+    this->topLevelPrepCategories(view, attResource);
+  }
 
   this->Internals->TopLevelLayout = new QHBoxLayout();
-  if (this->Internals->AdvLevelEditButton)
+  if (this->Internals->m_configurationCombo)
   {
-    this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelEditButton);
+    this->Internals->TopLevelLayout->addWidget(this->Internals->m_configurationLabel);
+    this->Internals->TopLevelLayout->addWidget(this->Internals->m_configurationCombo);
+
+    QObject::connect(this->Internals->m_configurationCombo, SIGNAL(currentIndexChanged(int)), this,
+      SLOT(onConfigurationChanged(int)));
   }
-  if (this->Internals->AdvLevelLabel)
-  {
-    this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelLabel);
-    this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelCombo);
-    QObject::connect(this->Internals->AdvLevelCombo, SIGNAL(currentIndexChanged(int)), this,
-      SLOT(onAdvanceLevelChanged(int)));
-  }
-  if (this->Internals->ShowCategoryCombo)
+  else if (this->Internals->ShowCategoryCombo)
   {
     if (this->Internals->FilterByCategory)
     {
@@ -341,6 +436,17 @@ void qtBaseAttributeView::makeTopLevel()
       SLOT(onShowCategory()));
   }
 
+  if (this->Internals->AdvLevelEditButton)
+  {
+    this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelEditButton);
+  }
+  if (this->Internals->AdvLevelLabel)
+  {
+    this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelLabel);
+    this->Internals->TopLevelLayout->addWidget(this->Internals->AdvLevelCombo);
+    QObject::connect(this->Internals->AdvLevelCombo, SIGNAL(currentIndexChanged(int)), this,
+      SLOT(onAdvanceLevelChanged(int)));
+  }
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*>(this->parentWidget()->layout());
   parentlayout->setAlignment(Qt::AlignTop);
   parentlayout->addLayout(this->Internals->TopLevelLayout);
@@ -477,4 +583,126 @@ void qtBaseAttributeView::setTopLevelCategories(const std::set<std::string>& cat
     this->Internals->ShowCategoryCombo->setCurrentIndex(0);
   }
   this->onShowCategory();
+}
+
+void qtBaseAttributeView::onConfigurationChanged(int index)
+{
+  std::set<std::string> cats;
+  smtk::attribute::ResourcePtr attRes = this->uiManager()->attResource();
+  smtk::attribute::AttributePtr att;
+  std::string attName;
+
+  if ((this->Internals->m_configurationCombo == nullptr) || (attRes == nullptr))
+  {
+    return; // there is nothing to do
+  }
+
+  if (index == -1)
+  {
+    // Nothing is selected so clear it
+    this->uiManager()->setTopLevelCategories(cats);
+    return;
+  }
+
+  // Are we dealing with the ability to create new configurations and did the
+  // user pick the create option?
+  if (m_topLevelCanCreateConfigurations &&
+    (index == (this->Internals->m_configurationCombo->count() - 1)))
+  {
+    smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+    if (def == nullptr)
+    {
+      std::cerr << "qtBaseAttributeView::onConfigurationChanged - "
+                << "Could not retrieve Analysis Definition\n";
+      return;
+    }
+    att = attRes->createAttribute(def);
+    // Tell the uiManager we don't want to filter on categories
+    this->uiManager()->disableCategoryChecks();
+    auto editor =
+      new smtk::extension::qtAttributeEditorDialog(att, this->uiManager(), this->widget());
+    auto status = editor->exec();
+    this->uiManager()->enableCategoryChecks();
+    if (status == QDialog::Rejected)
+    {
+      attRes->removeAttribute(att);
+      // Reset the combo box to its original configuration
+      this->prepConfigurationComboBox("");
+    }
+    else
+    {
+      // Set the combobox to the new configuration
+      this->prepConfigurationComboBox(att->name());
+    }
+    return;
+  }
+  else
+  {
+    attName = this->Internals->m_configurationCombo->currentText().toStdString();
+    this->prepConfigurationComboBox(attName);
+  }
+}
+
+void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfigurationName)
+{
+  std::set<std::string> cats;
+  smtk::attribute::ResourcePtr attRes = this->uiManager()->attResource();
+  smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+  if (def == nullptr)
+  {
+    std::cerr
+      << "qtBaseAttributeView::prepConfigurationComboBox - configuration definition is null!\n";
+    return;
+  }
+
+  std::vector<smtk::attribute::AttributePtr> atts;
+  attRes->findAttributes(def, atts);
+  QStringList attNames;
+  std::string currentConfig = newConfigurationName;
+  for (auto& att : atts)
+  {
+    attNames.push_back(att->name().c_str());
+
+    if ((att->properties().get<long>().contains("_selectedConfiguration")) &&
+      (att->properties().get<long>()["_selectedConfiguration"] == 1))
+    {
+      // If the current config name is not set then record this as the
+      // current configuration
+      if (currentConfig == "")
+      {
+        currentConfig = att->name();
+        attRes->analyses().getAnalysisAttributeCategories(att, cats);
+      }
+      else if (att->name() != currentConfig)
+      {
+        // This attribute was a previous configuration
+        att->properties().get<long>().erase("_selectedConfiguration");
+      }
+      else
+      {
+        // The current configuration is also the previously selected one
+        attRes->analyses().getAnalysisAttributeCategories(att, cats);
+      }
+    }
+    else if (att->name() == currentConfig)
+    {
+      // Set this as the new current configuration
+      att->properties().get<long>()["_selectedConfiguration"] = 1;
+      attRes->analyses().getAnalysisAttributeCategories(att, cats);
+    }
+  }
+
+  attNames.sort();
+  if (m_topLevelCanCreateConfigurations)
+  {
+    attNames.push_back("Create...");
+  }
+  this->Internals->m_configurationCombo->blockSignals(true);
+  this->Internals->m_configurationCombo->clear();
+  this->Internals->m_configurationCombo->addItems(attNames);
+  int index;
+  index = this->Internals->m_configurationCombo->findText(currentConfig.c_str());
+  this->Internals->m_configurationCombo->setCurrentIndex(index);
+  this->uiManager()->setTopLevelCategories(cats);
+  this->Internals->m_configurationCombo->blockSignals(false);
 }

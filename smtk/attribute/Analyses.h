@@ -141,10 +141,16 @@ public:
   DefinitionPtr buildAnalysesDefinition(smtk::attribute::ResourcePtr resource,
     const std::string& type, const std::string& label = "Analysis") const;
 
+  /// \brief Calculate the set of categories associated with an Analysis Attribute's settings.
+  void getAnalysisAttributeCategories(
+    smtk::attribute::ConstAttributePtr attribute, std::set<std::string>& cats);
   /// \brief Destroys the Instance and deletes all Analysis Instances contained within.
   ~Analyses();
 
 protected:
+  /// \brief Calculate the set of categories associated with an Analysis Attribute's Item.
+  void getAnalysisItemCategories(ConstItemPtr item, std::set<std::string>& cats);
+
   bool m_topLevelExclusive; ///< Indicates if the top level Analysis Instances are exclusive
   std::vector<Analysis*> m_analyses; ///< Analysis Instances managed by the Analyses Instance
 };

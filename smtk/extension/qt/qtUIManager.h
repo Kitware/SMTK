@@ -162,7 +162,7 @@ public:
   bool passCategoryCheck(const std::set<std::string>& categories);
   void disableCategoryChecks();
   void enableCategoryChecks();
-  void setToLevelCategories(const std::set<std::string>& categories);
+  void setTopLevelCategories(const std::set<std::string>& categories);
 
   bool checkAttributeValidity(const smtk::attribute::Attribute* att);
 

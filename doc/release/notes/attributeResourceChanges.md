@@ -78,6 +78,7 @@ The following API have been added/changed to support this feature:
 * When Attribute::Attribute(...) no longer creates the attribute's items.  This is now done using the new Attribute::build() method - this allows Items to access the attribute's shared pointer when they are constructed.
 * ReferenceItem now unsets it's values when being deleted so the corresponding links are removed from the resource.
 	* In order for ReferenceItem to unset its values, it now holds onto a weak pointer to the attribute rather than using the attribute() method.  The reason is that Items that are owned by other Items lose their connection to the attribute when being deleted.  This ensures that the ReferenceItem will be able to access the attribute.
+* Functionality for calculating the set of categories represented by an Analysis Attribute has been moved from qtAnalysisView to the Analyses class.
 
 ### Bug Fixes
 * Attributes where not properly release it's association information when being deleted or when updating it's association information during Definition::buildAttribute

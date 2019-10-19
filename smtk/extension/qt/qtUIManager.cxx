@@ -1026,7 +1026,7 @@ int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
 
   this->Def2LongLabel[def] = text;
   QFontMetrics fontsize(font);
-  return fontsize.width(text.c_str());
+  return fontsize.horizontalAdvance(text.c_str());
 }
 
 void qtUIManager::findDefinitionLongLabel(
@@ -1072,7 +1072,7 @@ int qtUIManager::getWidthOfItemsMaxLabel(
   std::string text;
   this->getItemsLongLabel(itemDefs, text);
   QFontMetrics fontsize(font);
-  return fontsize.width(text.c_str());
+  return fontsize.horizontalAdvance(text.c_str());
 }
 
 void qtUIManager::findDefinitionsLongLabels()
@@ -1146,7 +1146,7 @@ void qtUIManager::enableCategoryChecks()
 {
   m_categoryChecks = true;
 }
-void qtUIManager::setToLevelCategories(const std::set<std::string>& categories)
+void qtUIManager::setTopLevelCategories(const std::set<std::string>& categories)
 {
   // Check to see if we need to update anything
   if (m_topLevelCategoriesSet && (m_topLevelCategories == categories))
