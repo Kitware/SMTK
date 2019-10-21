@@ -75,7 +75,8 @@ public slots:
   /// Invoke the Signal dummy operation to indicate an attribute has been created.
   virtual void attributeCreated(const smtk::attribute::AttributePtr&);
   /// Invoke the Signal dummy operation to indicate an attribute has been changed (renamed).
-  virtual void attributeChanged(const smtk::attribute::AttributePtr&);
+  virtual void attributeChanged(const smtk::attribute::AttributePtr&,
+    std::vector<std::string> items = std::vector<std::string>());
   /// Invoke the Signal dummy operation to indicate an attribute has been removed.
   virtual void attributeRemoved(const smtk::attribute::AttributePtr&);
   void showAdvanceLevel(int i) override;
