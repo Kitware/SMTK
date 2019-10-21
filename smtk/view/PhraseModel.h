@@ -62,7 +62,6 @@ public:
   using ComponentItemPtr = smtk::attribute::ComponentItemPtr;
 
   using Resource = smtk::resource::Resource;
-  using Selection = smtk::view::Selection;
 
   static PhraseModelPtr create(
     const smtk::view::ViewPtr& viewSpec, const smtk::view::ManagerPtr& manager);
@@ -172,7 +171,7 @@ protected:
   PhraseModel();
 
   /// A method called when a selection is modified.
-  virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
+  virtual void handleSelectionEvent(const std::string& src, smtk::view::SelectionPtr seln);
 
   /// A method called when a resource manager adds or removes a resource.
   virtual void handleResourceEvent(const Resource& rsrc, smtk::resource::EventType event);

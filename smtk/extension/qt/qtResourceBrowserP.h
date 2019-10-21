@@ -58,7 +58,8 @@ public:
   std::string m_hoverLabel;
   std::string m_viewName;
   std::map<smtk::common::UUID, int> m_visibleThings;
-  int m_resourceTreeStyle; // Which subphrase generator should be used?
+  std::string m_resourceTreeType; // "default" or specific type.
+  int m_resourceTreeStyle;        // Which default subphrase generator should be used?
 
   // Set to true when inside sendSMTKSelectionToPanel.
   // Used to avoid updating the SMTK selection from the panel while

@@ -19,7 +19,7 @@
             {
               "Name": "SubphraseGenerator",
               "Attributes": {
-                "Type": "smtk::view::SubphraseGenerator"
+                "Type": "default"
               }
             }
           ]

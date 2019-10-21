@@ -23,8 +23,9 @@ namespace view
 class SMTKCORE_EXPORT TwoLevelSubphraseGenerator : public SubphraseGenerator
 {
 public:
-  smtkTypeMacro(TwoLevelSubphraseGenerator);
-  smtkCreateMacro(TwoLevelSubphraseGenerator);
+  smtkTypeMacro(smtk::view::TwoLevelSubphraseGenerator);
+  smtkSuperclassMacro(smtk::view::SubphraseGenerator);
+  smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
   virtual ~TwoLevelSubphraseGenerator();
 
   /**\brief Return a list of descriptive phrases that elaborate upon \a src.

@@ -12,9 +12,12 @@
 #include "smtk/view/Registrar.h"
 
 #include "smtk/view/ComponentPhraseModel.h"
+#include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SelectionPhraseModel.h"
+#include "smtk/view/SubphraseGenerator.h"
+#include "smtk/view/TwoLevelSubphraseGenerator.h"
 
 #include <tuple>
 
@@ -26,17 +29,20 @@ namespace
 {
 typedef std::tuple<PhraseModel, ResourcePhraseModel, ComponentPhraseModel, SelectionPhraseModel>
   PhraseModelList;
+typedef std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator, EmptySubphraseGenerator>
+  SubphraseGeneratorList;
 }
-// TODO subphraseGenerators
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->registerPhraseModels<PhraseModelList>();
+  viewManager->registerSubphraseGenerators<SubphraseGeneratorList>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->unregisterPhraseModels<PhraseModelList>();
+  viewManager->unregisterSubphraseGenerators<SubphraseGeneratorList>();
 }
 }
 }

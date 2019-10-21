@@ -72,6 +72,9 @@ protected slots:
 
   /// Called when vtkSMTKSettings is modified, indicating highlight-on-hover behavior may change.
   virtual void updateSettings();
+
+protected:
+  void initSubphraseGenerator();
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKResourceBrowser_h

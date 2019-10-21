@@ -22,6 +22,7 @@
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/TwoLevelSubphraseGenerator.h"
@@ -133,7 +134,7 @@ pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::extension::ViewInfo& in
   // II. Prepare the subphrase generator.
   //     This is important since otherwise m_p->m_phraseModel will
   //     not be set properly and the decorator will not be invoked.
-  this->updateSettings();
+  this->initSubphraseGenerator();
 
   // III. Ensure the phrase model is configured to listen to the proper managers.
   // Listen for resources on current connections:
@@ -153,6 +154,8 @@ pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::extension::ViewInfo& in
   QObject::connect(&act, SIGNAL(viewChanged(pqView*)), this, SLOT(activeViewChanged(pqView*)));
   // Now call immediately, since in at least some circumstances, a view may already be active.
   this->activeViewChanged(act.activeView());
+
+  this->updateSettings();
 }
 
 pqSMTKResourceBrowser::~pqSMTKResourceBrowser()
@@ -360,33 +363,57 @@ void pqSMTKResourceBrowser::componentVisibilityChanged(
   m_p->m_phraseModel->triggerDataChangedFor(comp);
 }
 
-void pqSMTKResourceBrowser::updateSettings()
+void pqSMTKResourceBrowser::initSubphraseGenerator()
 {
+  std::string subphraseViewType = smtk::view::SubphraseGenerator::getType(m_viewInfo.m_view);
   auto smtkSettings = vtkSMTKSettings::GetInstance();
-  this->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
 
   int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();
+  std::string defaultSubphraseType;
   if (resourceTreeStyle != m_p->m_resourceTreeStyle)
   {
     smtk::view::SubphraseGenerator::Ptr spg = nullptr;
     switch (resourceTreeStyle)
     {
       case vtkSMTKSettings::HierarchicalStyle:
-        spg = smtk::view::SubphraseGenerator::create();
+        defaultSubphraseType = "smtk::view::SubphraseGenerator";
         break;
       case vtkSMTKSettings::TwoLevelStyle:
-        spg = smtk::view::TwoLevelSubphraseGenerator::create();
+        defaultSubphraseType = "smtk::view::TwoLevelSubphraseGenerator";
         break;
       default:
         smtkWarningMacro(
           smtk::io::Logger::instance(), "Unsupported resource tree style. Resetting to default.");
-        spg = smtk::view::SubphraseGenerator::create();
+        defaultSubphraseType = "smtk::view::SubphraseGenerator";
         break;
     }
+  }
+  if (m_p->m_resourceTreeType.empty() || m_p->m_resourceTreeType != subphraseViewType ||
+    (subphraseViewType == "default" && resourceTreeStyle != m_p->m_resourceTreeStyle))
+  {
+    smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
+    smtk::view::SubphraseGenerator::Ptr spg = smtk::view::SubphraseGenerator::create(
+      subphraseViewType == "default" ? defaultSubphraseType : subphraseViewType, manager);
     if (spg)
     {
-      m_p->m_resourceTreeStyle = resourceTreeStyle;
+      m_p->m_resourceTreeType = subphraseViewType;
+      if (subphraseViewType == "default")
+      {
+        m_p->m_resourceTreeStyle = resourceTreeStyle;
+      }
       this->setPhraseGenerator(spg);
     }
+  }
+}
+
+void pqSMTKResourceBrowser::updateSettings()
+{
+  auto smtkSettings = vtkSMTKSettings::GetInstance();
+  this->setHighlightOnHover(smtkSettings->GetHighlightOnHover());
+
+  int resourceTreeStyle = smtkSettings->GetResourceTreeStyle();
+  if (resourceTreeStyle != m_p->m_resourceTreeStyle && m_p->m_resourceTreeType == "default")
+  {
+    this->initSubphraseGenerator();
   }
 }

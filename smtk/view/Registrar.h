@@ -22,8 +22,6 @@ namespace view
 class SMTKCORE_EXPORT Registrar
 {
 public:
-  // using Dependencies = std::tuple<attribute::Registrar>;
-
   static void registerTo(const smtk::view::Manager::Ptr&);
   static void unregisterFrom(const smtk::view::Manager::Ptr&);
 };
