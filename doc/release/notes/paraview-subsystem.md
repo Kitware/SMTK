@@ -2,6 +2,9 @@
 
 ### Widgets
 
+Now, all of the 3-d widgets will be hidden when their Qt partner-widget
+is not visible (and visibility will be restored when this changes).
+
 The box widget (pqSMTKBoxItemWidget) now supports a binding that allows
 the visibility of the widget to be mapped to a discrete-valued string
 item with enumerants "active" and "inactive".

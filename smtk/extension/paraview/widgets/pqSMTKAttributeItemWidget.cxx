@@ -262,6 +262,30 @@ void pqSMTKAttributeItemWidget::acceptWidgetValues()
   this->m_p->m_pvwidget->apply();
 }
 
+bool pqSMTKAttributeItemWidget::eventFilter(QObject* obj, QEvent* event)
+{
+  if (obj != this)
+  {
+    bool isHide = event && event->type() == QEvent::Hide;
+    bool isShow = event && event->type() == QEvent::Show;
+    pqInteractivePropertyWidget* ww = this->propertyWidget();
+    if (obj == ww && (isHide || isShow))
+    {
+      this->update3DWidgetVisibility(isShow);
+    }
+  }
+  return this->qtItem::eventFilter(obj, event);
+}
+
+void pqSMTKAttributeItemWidget::update3DWidgetVisibility(bool visible)
+{
+  pqInteractivePropertyWidget* ww = this->propertyWidget();
+  if (ww)
+  {
+    ww->setWidgetVisible(visible);
+  }
+}
+
 /// Initialize Qt widgets used to represent our smtk::attribute::Item.
 void pqSMTKAttributeItemWidget::createWidget()
 {
@@ -405,12 +429,19 @@ void pqSMTKAttributeItemWidget::createEditor()
   // When the active view changes, move the widget to that view.
   QObject::connect(&actives, SIGNAL(viewChanged(pqView*)), pvwidget, SLOT(setView(pqView*)));
 
+  // Install an event filter on the widget to detect visibility changes so
+  // we can give 3-d widgets the opportunity to hide themselves when the Qt
+  // widget is hidden.
+  pvwidget->installEventFilter(this);
+
   editorLayout->addWidget(pvwidget);
   this->m_p->m_layout->addLayout(editorLayout, 0, 1);
   pvwidget->show();
   pvwidget->select();
 
   this->updateWidgetFromItem();
+  // Finally, hide widgets not in currently-displayed tabs
+  this->update3DWidgetVisibility(pvwidget->isVisible());
 }
 
 bool pqSMTKAttributeItemWidget::validateControlItem(const smtk::attribute::StringItemPtr& item)

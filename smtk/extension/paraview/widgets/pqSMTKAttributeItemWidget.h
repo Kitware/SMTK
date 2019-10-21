@@ -108,6 +108,16 @@ protected slots:
   virtual void acceptWidgetValues();
 
 protected:
+  /// An event filter that watches for the associated Qt widget to be hidden
+  /// or shown. When this happens, update3DWidgetVisibility() is invoked.
+  bool eventFilter(QObject* obj, QEvent* event) override;
+  /// Hide 3-d widgets when the Qt widget is hidden, show the widget when
+  /// the Qt widget reappears.
+  ///
+  /// Subclasses may override update3DWidgetVisibility() if they do not
+  /// want to inherit the default behavior.
+  virtual void update3DWidgetVisibility(bool visible);
+
   void createWidget() override;
   virtual void clearChildWidgets();
   virtual void updateUI();
