@@ -57,7 +57,6 @@ public:
   ~qtResourceBrowser() override;
 
   static QTreeView* createDefaultView(QWidget* parent);
-  // QTreeView* view() const;
 
   smtk::view::PhraseModelPtr phraseModel() const;
   void setPhraseModel(const smtk::view::PhraseModelPtr&);
@@ -67,8 +66,6 @@ public:
 
   bool highlightOnHover() const;
   void setHighlightOnHover(bool highlight);
-
-  // void leaveEvent(QEvent*);
 
 public slots:
   virtual void sendPanelSelectionToSMTK(
@@ -91,7 +88,6 @@ protected slots:
   virtual void editObjectColor(const QModelIndex&);
 
 protected:
-  // void createWidget() override;
   virtual void resetHover(smtk::resource::ComponentSet& add, smtk::resource::ComponentSet& del);
   bool eventFilter(QObject*, QEvent*) override;
 

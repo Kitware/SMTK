@@ -141,7 +141,7 @@ qtUIManager::qtUIManager(
   if (!m_resourceManager || !m_viewManager)
   {
     smtkErrorMacro(smtk::io::Logger::instance(),
-      "Asked to create an browser view with missing resource or view manager.");
+      "Asked to create a browser view with missing resource or view manager.");
   }
   this->commonConstructor();
 }

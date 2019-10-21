@@ -29,6 +29,9 @@ public:
   pqSMTKResourcePanel(QWidget* parent = nullptr);
   ~pqSMTKResourcePanel() override;
 
+  /// Let the panel display a custom view config, from json or xml.
+  void setView(const smtk::view::ViewPtr& view);
+
 protected slots:
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);

@@ -28,15 +28,9 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
 {
   // Parse a json representation of our default config, save it.
   nlohmann::json j = nlohmann::json::parse(ResourcePanelConfiguration_xml);
-  m_view = j[0];
+  this->setView(j[0]);
 
-  // Retrieve the ViewManager from the wrapper, and trigger the default browser.
   auto smtkBehavior = pqSMTKBehavior::instance();
-
-  smtkBehavior->visitResourceManagersOnServers([this](pqSMTKWrapper* r, pqServer* s) {
-    this->resourceManagerAdded(r, s);
-    return false;
-  });
   // Now listen for future connections.
   QObject::connect(smtkBehavior, SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)), this,
     SLOT(resourceManagerAdded(pqSMTKWrapper*, pqServer*)));
@@ -48,6 +42,18 @@ pqSMTKResourcePanel::~pqSMTKResourcePanel()
 {
   delete m_browser;
   // deletion of m_browser->widget() is handled when parent widget is deleted.
+}
+
+void pqSMTKResourcePanel::setView(const smtk::view::ViewPtr& view)
+{
+  m_view = view;
+
+  auto smtkBehavior = pqSMTKBehavior::instance();
+
+  smtkBehavior->visitResourceManagersOnServers([this](pqSMTKWrapper* r, pqServer* s) {
+    this->resourceManagerAdded(r, s);
+    return false;
+  });
 }
 
 void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* server)
@@ -66,12 +72,10 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   if (m_viewUIMgr)
   {
     delete m_viewUIMgr;
-    // m_browser needs to take care of child widgets.
-    // while (QWidget* w = this->widget()->findChild<QWidget*>())
-    // {
-    //   delete w;
-    // }
+    m_viewUIMgr = nullptr;
+    // m_browser deletes the container, which deletes child QWidgets.
     delete m_browser;
+    m_browser = nullptr;
   }
 
   m_viewUIMgr = new smtk::extension::qtUIManager(rsrcMgr, viewMgr);
@@ -85,7 +89,6 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   // here to ensure a Qt model-view class in the same plugin is
   // registered before telling the pqSMTKResourceBrowser to use it.
 
-  // TODO handle setting a second time.
   m_browser = new pqSMTKResourceBrowser(resinfo);
   m_browser->widget()->setObjectName("pqSMTKResourceBrowser");
   this->setWindowTitle("Resources");

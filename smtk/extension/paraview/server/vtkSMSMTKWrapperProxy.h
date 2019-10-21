@@ -111,12 +111,6 @@ protected:
   void JSONRPCNotification(const json& note);
   void JSONRPCNotification(const std::string& note);
 
-  // smtk::resource::ManagerPtr Manager;
-  // smtk::view::SelectionPtr Selection;
-  // smtk::operation::ManagerPtr OperationManager;
-  // smtk::property::ManagerPtr PropertyManager;
-  // smtk::view::ManagerPtr ViewManager;
-
 private:
   vtkSMSMTKWrapperProxy(const vtkSMSMTKWrapperProxy&) = delete;
   void operator=(const vtkSMSMTKWrapperProxy&) = delete;

@@ -40,6 +40,9 @@ qtResourceBrowser::Internal::~Internal()
 {
   // Unregister our decorator before we become invalid.
   m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
+  delete m_view;
+  m_view = nullptr;
+  delete m_container;
 }
 
 void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
@@ -47,6 +50,12 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   QAbstractItemModel* qmodel, QWidget* parent)
 {
   m_self = self;
+  if (m_container)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "qtResourceBrowser internal setup called more than once.");
+    return;
+  }
 
   // Keep or create a phrase model to present to users:
   m_phraseModel = phraseModel ? phraseModel : smtk::view::ResourcePhraseModel::create();
@@ -63,28 +72,16 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   {
     ctor = qtResourceBrowser::createDefaultView;
   }
-  if (!m_container)
-  {
-    m_container = new QWidget(parent);
-    m_container->setObjectName("qtResourceBrowser");
-  }
-  if (!m_layout)
-  {
-    m_layout = new QVBoxLayout(m_container);
-    m_layout->setObjectName("m_layout");
-  }
-  bool viewChanged = false;
-  if (m_view && viewName != m_viewName)
-  {
-    // TODO tear down the old m_view, we need to replace it.
-  }
-  if (!m_view)
-  {
-    viewChanged = true;
-    m_view = ctor(parent);
-    m_layout->addWidget(m_view);
-    m_view->installEventFilter(self);
-  }
+  m_container = new QWidget(parent);
+  m_container->setObjectName("qtResourceBrowser");
+  m_layout = new QVBoxLayout(m_container);
+  m_layout->setObjectName("m_layout");
+
+  m_view = ctor(parent);
+
+  m_layout->addWidget(m_view);
+  m_view->installEventFilter(self);
+  m_viewName = viewName;
 
   // Keep or create a QAbstractItemModel subclass (which had better be
   // related somehow to a qtDescriptivePhraseModel).
@@ -102,31 +99,26 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   }
 
   // Create a default item delegate for rendering rows from m_model into m_view:
-  if (!m_delegate)
-  {
-    m_delegate = new smtk::extension::qtDescriptivePhraseDelegate;
-    m_delegate->setTextVerticalPad(6);
-    m_delegate->setTitleFontWeight(1);
-    m_delegate->setDrawSubtitle(false);
-  }
-  if (viewChanged)
-  {
-    m_view->setModel(m_model);
-    m_view->setItemDelegate(m_delegate);
-    m_view->setMouseTracking(true); // Needed to receive hover events.
-    // Connect signals
-    if (dpmodel)
-    {
-      QObject::connect(m_delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), dpmodel,
-        SLOT(toggleVisibility(const QModelIndex&)));
-    }
-    QObject::connect(m_delegate, SIGNAL(requestColorChange(const QModelIndex&)), m_self,
-      SLOT(editObjectColor(const QModelIndex&)));
+  m_delegate = new smtk::extension::qtDescriptivePhraseDelegate;
+  m_delegate->setTextVerticalPad(6);
+  m_delegate->setTitleFontWeight(1);
+  m_delegate->setDrawSubtitle(false);
 
-    QObject::connect(m_view->selectionModel(),
-      SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_self,
-      SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
+  m_view->setModel(m_model);
+  m_view->setItemDelegate(m_delegate);
+  m_view->setMouseTracking(true); // Needed to receive hover events.
+  // Connect signals
+  if (dpmodel)
+  {
+    QObject::connect(m_delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), dpmodel,
+      SLOT(toggleVisibility(const QModelIndex&)));
   }
+  QObject::connect(m_delegate, SIGNAL(requestColorChange(const QModelIndex&)), m_self,
+    SLOT(editObjectColor(const QModelIndex&)));
+
+  QObject::connect(m_view->selectionModel(),
+    SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_self,
+    SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
 }
 
 qtDescriptivePhraseModel* qtResourceBrowser::Internal::descriptivePhraseModel() const
