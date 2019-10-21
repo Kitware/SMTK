@@ -608,12 +608,14 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::checkUniq
   const std::set<smtk::resource::PersistentObjectPtr>& objSet) const
 {
   auto compItem = m_itemInfo.itemAs<attribute::ComponentItem>();
-  auto theAttribute = compItem->attribute();
-  auto attResource = theAttribute->attributeResource();
+  // Uniqueness condition only applies to component items (not resource items)
   if (compItem == nullptr)
   {
     return objSet;
   }
+
+  auto theAttribute = compItem->attribute();
+  auto attResource = theAttribute->attributeResource();
   auto compDef = compItem->definitionAs<ComponentItemDefinition>();
   auto role = compDef->role();
   if (!attResource->isRoleUnique(role))
