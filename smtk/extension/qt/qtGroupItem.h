@@ -49,6 +49,8 @@ protected:
   virtual void addSubGroup(int i);
   virtual void updateExtensibleState();
   virtual void addItemsToTable(int i);
+  // Calculate the height of the table of sub groups
+  void calculateTableHeight();
 
 private:
   qtGroupItemInternals* Internals;

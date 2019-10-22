@@ -26,6 +26,7 @@
 #include <QLabel>
 #include <QMap>
 #include <QPointer>
+#include <QScrollBar>
 #include <QTableWidget>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -310,6 +311,7 @@ void qtGroupItem::addSubGroup(int i)
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
     }
   }
+  this->calculateTableHeight();
   iview->setFixedLabelWidth(currentLen);
   frameLayout->addWidget(subGroupFrame);
   this->onChildWidgetSizeChanged();
@@ -358,6 +360,7 @@ void qtGroupItem::onRemoveSubGroup()
   }
   this->Internals->MinusButtonIndices.removeOne(minusButton);
   delete minusButton;
+  this->calculateTableHeight();
   this->updateExtensibleState();
   emit this->modified();
 }
@@ -467,6 +470,7 @@ void qtGroupItem::addItemsToTable(int i)
   this->Internals->MinusButtonIndices.push_back(minusButton);
   this->updateExtensibleState();
 
+  this->calculateTableHeight();
   this->Internals->ItemsTable->blockSignals(false);
   this->onChildWidgetSizeChanged();
 }
@@ -485,4 +489,21 @@ void qtGroupItem::onChildWidgetSizeChanged()
 void qtGroupItem::onChildItemModified()
 {
   emit this->modified();
+}
+
+void qtGroupItem::calculateTableHeight()
+{
+  if (this->Internals->ItemsTable == nullptr)
+  {
+    return;
+  }
+
+  int n = this->Internals->ItemsTable->verticalHeader()->count();
+  int totalHeight = this->Internals->ItemsTable->horizontalScrollBar()->height() +
+    this->Internals->ItemsTable->horizontalHeader()->height();
+  for (int i = 0; i < n; i++)
+  {
+    totalHeight += this->Internals->ItemsTable->verticalHeader()->sectionSize(i);
+  }
+  this->Internals->ItemsTable->setMinimumHeight(totalHeight);
 }
