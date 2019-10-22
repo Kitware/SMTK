@@ -86,3 +86,4 @@ With the introduction of qtAttributeEditorDialogs, it is now possible to create 
 
 ### Other Changes
 * qtItem::updateItemData has been made public so that qtItems can be undated when their underlying attribute items are external changed.
+* qtGroupItem will now adjust the subgroup table's height based on the number of rows it contains.
