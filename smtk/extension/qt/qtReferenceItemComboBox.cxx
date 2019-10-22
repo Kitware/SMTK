@@ -266,7 +266,7 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   ResourcePtr attResource = attDef->resource();
   // Lets get a set of possible candidates that could be assigned to the item
   auto objSet = this->associatableObjects(ignoreResource);
-  std::vector<smtk::resource::PersistentObjectPtr> objects(objSet.begin(), objSet.end());
+
   // In the case of the uniqueness condition, the componentItem's value itself may not be in the set
   // returned (since adding that component would not be legal or perhaps an operation has assigned a
   // component that would bypass the potential souurces of components.  For example, the component
@@ -274,8 +274,10 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   // Just to be safe lets add the item's current value (if set)
   if (item->isSet())
   {
-    objects.push_back(item->objectValue());
+    objSet.insert(item->objectValue());
   }
+
+  std::vector<smtk::resource::PersistentObjectPtr> objects(objSet.begin(), objSet.end());
   smtk::resource::PersistentObjectPtr selectObj = item->objectValue();
   // Lets sort the list
   std::sort(std::begin(objects), std::end(objects),
@@ -608,12 +610,14 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::checkUniq
   const std::set<smtk::resource::PersistentObjectPtr>& objSet) const
 {
   auto compItem = m_itemInfo.itemAs<attribute::ComponentItem>();
-  auto theAttribute = compItem->attribute();
-  auto attResource = theAttribute->attributeResource();
+  // Uniqueness condition only applies to component items (not resource items)
   if (compItem == nullptr)
   {
     return objSet;
   }
+
+  auto theAttribute = compItem->attribute();
+  auto attResource = theAttribute->attributeResource();
   auto compDef = compItem->definitionAs<ComponentItemDefinition>();
   auto role = compDef->role();
   if (!attResource->isRoleUnique(role))
