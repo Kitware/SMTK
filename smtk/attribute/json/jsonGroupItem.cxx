@@ -34,10 +34,6 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemPtr& itemP
   std::size_t numRequiredGroups = itemPtr->numberOfRequiredGroups();
   n = itemPtr->numberOfGroups();
   m = itemPtr->numberOfItemsPerGroup();
-  if (!n)
-  {
-    return;
-  }
 
   // If the group can have variable number of subgroups then store how many
   //  it has
@@ -46,8 +42,13 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemPtr& itemP
     j["NumberOfGroups"] = n;
   }
 
+  if (!n)
+  {
+    return;
+  }
+
   // Optimize for number of required groups = 1
-  else if (numRequiredGroups == 1)
+  if (numRequiredGroups == 1)
   {
     json groupClusters, cluster;
     for (size_t itemPGIter = 0; itemPGIter < m; itemPGIter++)
