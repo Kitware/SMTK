@@ -312,7 +312,7 @@ void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::ViewPtr& v
 }
 
 void qtBaseAttributeView::topLevelPrepCategories(
-  const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource)
+  const smtk::view::ViewPtr& view, const smtk::attribute::ResourcePtr& attResource)
 {
   bool flag;
   // Do we need to provide category filtering - this is on by default
@@ -347,7 +347,7 @@ void qtBaseAttributeView::topLevelPrepCategories(
 }
 
 void qtBaseAttributeView::topLevelPrepConfigurations(
-  const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource)
+  const smtk::view::ViewPtr& view, const smtk::attribute::ResourcePtr& attResource)
 {
   bool flag;
   // Do we need to provide category filtering - this is off by default

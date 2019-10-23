@@ -105,9 +105,9 @@ protected:
   virtual bool advanceLevelTest(smtk::attribute::ItemPtr);
 
   void topLevelPrepCategories(
-    const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource);
+    const smtk::view::ViewPtr& view, const smtk::attribute::ResourcePtr& attResource);
   void topLevelPrepConfigurations(
-    const smtk::view::ViewPtr& view, const attribute::ResourcePtr& attResource);
+    const smtk::view::ViewPtr& view, const smtk::attribute::ResourcePtr& attResource);
   void topLevelPrepAdvanceLevels(const smtk::view::ViewPtr& view);
   void prepConfigurationComboBox(const std::string& newConfigurationName);
   void checkConfigurations(smtk::attribute::ItemPtr& item);
