@@ -78,6 +78,7 @@ public:
   bool setNumberOfGroups(std::size_t newSize);
   std::size_t numberOfItemsPerGroup() const;
   bool appendGroup();
+  bool prependGroup();
   bool removeGroup(std::size_t element);
 
   /// Return the i-th item in the first entry of the group.

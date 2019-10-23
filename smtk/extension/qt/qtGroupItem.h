@@ -52,6 +52,8 @@ protected:
   // Calculate the height of the table of sub groups
   void calculateTableHeight();
 
+  bool m_prependMode;
+
 private:
   qtGroupItemInternals* Internals;
 

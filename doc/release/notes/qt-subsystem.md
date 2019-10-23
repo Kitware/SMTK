@@ -87,3 +87,13 @@ With the introduction of qtAttributeEditorDialogs, it is now possible to create 
 ### Other Changes
 * qtItem::updateItemData has been made public so that qtItems can be undated when their underlying attribute items are external changed.
 * qtGroupItem will now adjust the subgroup table's height based on the number of rows it contains.
+* qtGroupItem now supports attribute::GroupItem::prepend method. This is controlled by specifying InsertMode="Prepend" attribute in the appropriate ItemView as shown below:
+
+```xml
+        <Att Name="numerics-att" Type="numerics">
+          <ItemViews>
+            <View Item="velocity-group" Type="Default" InsertMode="Prepend"/>
+         </ItemViews>
+		</Att
+```
+For a complete example see data/attribute/attribute_collection/ConfigurationTest.sbt.
