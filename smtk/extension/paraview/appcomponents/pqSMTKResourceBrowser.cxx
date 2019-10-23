@@ -116,6 +116,14 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
   return rval;
 }
 
+smtk::extension::qtBaseView* pqSMTKResourceBrowser::createViewWidget(
+  const smtk::extension::ViewInfo& info)
+{
+  pqSMTKResourceBrowser* view = new pqSMTKResourceBrowser(info);
+  view->buildUI();
+  return view;
+}
+
 pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::extension::ViewInfo& info)
   : Superclass(info)
 {
@@ -266,8 +274,8 @@ void pqSMTKResourceBrowser::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServe
   {
     return;
   }
-  this->addSource(wrapper->smtkResourceManager(), wrapper->smtkOperationManager(),
-    wrapper->smtkViewManager(), wrapper->smtkSelection());
+  this->addSource(
+    wrapper->smtkResourceManager(), wrapper->smtkOperationManager(), wrapper->smtkSelection());
 }
 
 void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server)

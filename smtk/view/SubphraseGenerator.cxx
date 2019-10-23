@@ -42,13 +42,13 @@ namespace view
 std::string SubphraseGenerator::getType(const smtk::view::ViewPtr& viewSpec)
 {
   std::string typeName;
-  if (!viewSpec || viewSpec->type().empty() || viewSpec->type() != "Phrase")
+  if (!viewSpec || viewSpec->name().empty() || viewSpec->name() != "ResourceBrowser")
   {
     return typeName;
   }
-  // Look at viewSpec child, should be "Model", look for its child
+  // Look at viewSpec child, should be "PhraseModel", look for its child
   if ((viewSpec->details().numberOfChildren() != 1) ||
-    (viewSpec->details().child(0).name() != "Model"))
+    (viewSpec->details().child(0).name() != "PhraseModel"))
   {
     return typeName;
   }

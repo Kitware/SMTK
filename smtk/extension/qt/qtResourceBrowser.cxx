@@ -237,8 +237,7 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
 }
 
 void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
-  smtk::view::SelectionPtr seln)
+  smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
 {
   // if (m_p->m_viewInfo)
   m_p->m_seln = seln;

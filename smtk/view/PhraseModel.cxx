@@ -111,14 +111,14 @@ smtk::operation::ManagerPtr PhraseModel::operationManager() const
 PhraseModelPtr PhraseModel::create(
   const smtk::view::ViewPtr& viewSpec, const smtk::view::ManagerPtr& manager)
 {
-  if (!manager || !viewSpec || viewSpec->type().empty() || viewSpec->type() != "Phrase")
+  if (!manager || !viewSpec || viewSpec->name().empty() || viewSpec->name() != "ResourceBrowser")
   {
     return nullptr;
   }
-  // Look at viewSpec child, should be "Model", look for its Type attribute
+  // Look at viewSpec child, should be "PhraseModel", look for its Type attribute
   std::string typeName;
   if ((viewSpec->details().numberOfChildren() != 1) ||
-    (viewSpec->details().child(0).name() != "Model"))
+    (viewSpec->details().child(0).name() != "PhraseModel"))
   {
     return nullptr;
   }

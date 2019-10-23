@@ -15,6 +15,8 @@
 
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/json/jsonView.h"
 
@@ -23,8 +25,8 @@
 
 pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   : Superclass(parent)
-  , m_viewUIMgr(nullptr)
   , m_browser(nullptr)
+  , m_viewUIMgr(nullptr)
 {
   // Parse a json representation of our default config, save it.
   nlohmann::json j = nlohmann::json::parse(ResourcePanelConfiguration_xml);
@@ -84,12 +86,15 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   // m_viewUIMgr->setSelectionBit(1);               // ToDo: should be set ?
 
   smtk::extension::ViewInfo resinfo(m_view, this, m_viewUIMgr);
-  // NB: We could call
-  //     qtSMTKUtilities::registerModelViewConstructor(modelViewName, ...);
-  // here to ensure a Qt model-view class in the same plugin is
-  // registered before telling the pqSMTKResourceBrowser to use it.
 
-  m_browser = new pqSMTKResourceBrowser(resinfo);
+  // the top-level "Type" in m_view should be pqSMTKResourceBrowser or compatible.
+  auto baseview = m_viewUIMgr->setSMTKView(resinfo);
+  m_browser = dynamic_cast<pqSMTKResourceBrowser*>(baseview);
+  if (!m_browser)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Unsupported resource browser type.");
+    return;
+  }
   m_browser->widget()->setObjectName("pqSMTKResourceBrowser");
   this->setWindowTitle("Resources");
   this->setWidget(m_browser->widget());

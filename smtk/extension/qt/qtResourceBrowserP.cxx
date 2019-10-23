@@ -25,14 +25,15 @@
 using namespace smtk::extension;
 
 qtResourceBrowser::Internal::Internal()
-  : m_selnSource("resource panel")
+  : m_container(nullptr)
+  , m_layout(nullptr)
+  , m_view(nullptr)
+  , m_selnSource("resource panel")
   , m_selnLabel("selected")
   , m_hoverLabel("hovered")
   , m_resourceTreeStyle(-1)
   , m_updatingPanelSelectionFromSMTK(false)
-  , m_container(nullptr)
-  , m_layout(nullptr)
-  , m_view(nullptr)
+
 {
 }
 

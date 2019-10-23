@@ -48,7 +48,7 @@ public:
     const std::string& typeName, const smtk::view::ManagerPtr& manager);
 
   smtkTypeMacroBase(smtk::view::SubphraseGenerator);
-  smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
+  smtkCreateMacro(smtk::view::SubphraseGenerator);
   virtual ~SubphraseGenerator() {}
 
   using Path = std::vector<int>;

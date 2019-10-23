@@ -67,7 +67,7 @@ public:
     const smtk::view::ViewPtr& viewSpec, const smtk::view::ManagerPtr& manager);
 
   smtkTypeMacroBase(smtk::view::PhraseModel);
-  smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
+  smtkCreateMacro(smtk::view::PhraseModel);
   virtual ~PhraseModel();
 
   /** \brief Manage sources of information to display as phrases.

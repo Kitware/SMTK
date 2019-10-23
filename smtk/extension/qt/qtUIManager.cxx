@@ -178,7 +178,7 @@ void qtUIManager::commonConstructor()
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
   this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
   this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
-  this->registerViewConstructor("Resource", qtResourceBrowser::createViewWidget);
+  this->registerViewConstructor("ResourceBrowser", qtResourceBrowser::createViewWidget);
 
   // Lets register some basic item constructors
   this->registerItemConstructor("Default", qtUIManager::defaultItemConstructor);

@@ -1,7 +1,7 @@
 [
   {
-    "Name": "Resource",
-    "Type": "Phrase",
+    "Name": "ResourceBrowser",
+    "Type": "pqSMTKResourceBrowser",
     "Component": {
       "Name": "Details",
       "Attributes": {
@@ -10,7 +10,7 @@
       },
       "Children": [
         {
-          "Name": "Model",
+          "Name": "PhraseModel",
           "Attributes": {
             "Type": "smtk::view::ResourcePhraseModel",
             "Widget": "Tree"
