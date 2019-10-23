@@ -634,9 +634,11 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::checkUniq
     }
     else if (comp != nullptr)
     {
+#if !defined(NDEBUG)
       auto otherAtt = attResource->findAttribute(comp, compDef->role());
       std::cerr << "comboBox - comp:" << comp->name()
                 << " is not allowed due to: " << otherAtt->name() << std::endl;
+#endif
     }
   }
   return result;

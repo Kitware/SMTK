@@ -60,6 +60,15 @@ qtGroupItem::qtGroupItem(const qtAttributeItemInfo& info)
   this->Internals = new qtGroupItemInternals;
   m_itemInfo.createNewDictionary(this->Internals->m_itemViewMap);
   m_isLeafItem = true;
+  std::string insertMode;
+  auto item = m_itemInfo.itemAs<attribute::GroupItem>();
+
+  // We support prepending subgroups iff the group is extensible and
+  // the insertion mode is set to prepend
+  m_prependMode =
+    (item->isExtensible() && m_itemInfo.component().attribute("InsertMode", insertMode) &&
+      ((insertMode == "prepend") || (insertMode == "Prepend")));
+
   this->createWidget();
 }
 
@@ -218,19 +227,31 @@ void qtGroupItem::onAddSubGroup()
   {
     return;
   }
-  if (item->appendGroup())
+  if (m_prependMode)
   {
-    int subIdx = static_cast<int>(item->numberOfGroups()) - 1;
-    if (item->isExtensible())
+    if (item->prependGroup())
     {
-      this->addItemsToTable(subIdx);
+      this->addItemsToTable(0);
+      emit this->widgetSizeChanged();
+      emit this->modified();
     }
-    else
+  }
+  else
+  {
+    if (item->appendGroup())
     {
-      this->addSubGroup(subIdx);
+      int subIdx = static_cast<int>(item->numberOfGroups()) - 1;
+      if (item->isExtensible())
+      {
+        this->addItemsToTable(subIdx);
+      }
+      else
+      {
+        this->addSubGroup(subIdx);
+      }
+      emit this->widgetSizeChanged();
+      emit this->modified();
     }
-    emit this->widgetSizeChanged();
-    emit this->modified();
   }
 }
 
@@ -384,7 +405,7 @@ void qtGroupItem::updateExtensibleState()
   }
 }
 
-void qtGroupItem::addItemsToTable(int i)
+void qtGroupItem::addItemsToTable(int index)
 {
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || !item->isExtensible())
@@ -407,10 +428,9 @@ void qtGroupItem::addItemsToTable(int i)
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QList<qtItem*> itemList;
   int added = 0;
-  int numRows = this->Internals->ItemsTable->rowCount();
   for (j = 0; j < m; j++)
   {
-    auto citem = item->item(i, static_cast<int>(j));
+    auto citem = item->item(index, static_cast<int>(j));
     auto it = Internals->m_itemViewMap.find(citem->name());
     qtItem* childItem;
     if (it != Internals->m_itemViewMap.end())
@@ -431,7 +451,7 @@ void qtGroupItem::addItemsToTable(int i)
       this->addChildItem(childItem);
       if (added == 0)
       {
-        this->Internals->ItemsTable->insertRow(numRows);
+        this->Internals->ItemsTable->insertRow(index);
       }
       int numCols = this->Internals->ItemsTable->columnCount() - 1;
       if (added >= numCols)
@@ -442,7 +462,7 @@ void qtGroupItem::addItemsToTable(int i)
           numCols + 1, new QTableWidgetItem(strItemLabel.c_str()));
       }
       childItem->setLabelVisible(false);
-      this->Internals->ItemsTable->setCellWidget(numRows, added + 1, childItem->widget());
+      this->Internals->ItemsTable->setCellWidget(index, added + 1, childItem->widget());
       itemList.push_back(childItem);
       connect(childItem, SIGNAL(widgetSizeChanged()), this, SLOT(onChildWidgetSizeChanged()),
         Qt::QueuedConnection);
@@ -463,11 +483,11 @@ void qtGroupItem::addItemsToTable(int i)
     //QVariant vdata(static_cast<int>(i));
     //minusButton->setProperty("SubgroupIndex", vdata);
     connect(minusButton, SIGNAL(clicked()), this, SLOT(onRemoveSubGroup()));
-    this->Internals->ItemsTable->setCellWidget(numRows, 0, minusButton);
+    this->Internals->ItemsTable->setCellWidget(index, 0, minusButton);
 
     this->Internals->ExtensibleMap[minusButton] = itemList;
   }
-  this->Internals->MinusButtonIndices.push_back(minusButton);
+  this->Internals->MinusButtonIndices.insert(index, minusButton);
   this->updateExtensibleState();
 
   this->calculateTableHeight();

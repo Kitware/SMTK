@@ -210,6 +210,27 @@ bool GroupItem::appendGroup()
   return true;
 }
 
+bool GroupItem::prependGroup()
+{
+  if (!this->isExtensible())
+  {
+    return false;
+  }
+
+  const GroupItemDefinition* def =
+    static_cast<const GroupItemDefinition*>(this->definition().get());
+  std::size_t maxN = def->maxNumberOfGroups(), n = this->numberOfGroups();
+  if (maxN && (n >= maxN))
+  {
+    // max number of groups reached
+    return false;
+  }
+  std::vector<smtk::attribute::ItemPtr> placeHolder;
+  m_items.insert(m_items.begin(), placeHolder);
+  def->buildGroup(this, 0);
+  return true;
+}
+
 bool GroupItem::removeGroup(std::size_t element)
 {
   if (!this->isExtensible())

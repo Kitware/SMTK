@@ -79,6 +79,7 @@ The following API have been added/changed to support this feature:
 * ReferenceItem now unsets it's values when being deleted so the corresponding links are removed from the resource.
 	* In order for ReferenceItem to unset its values, it now holds onto a weak pointer to the attribute rather than using the attribute() method.  The reason is that Items that are owned by other Items lose their connection to the attribute when being deleted.  This ensures that the ReferenceItem will be able to access the attribute.
 * Functionality for calculating the set of categories represented by an Analysis Attribute has been moved from qtAnalysisView to the Analyses class.
+* Added GroupItem::prepend method that can add subGroups at the beginning instead of appending at the end of the subGroup vector.
 
 ### Bug Fixes
 * Attributes where not properly release it's association information when being deleted or when updating it's association information during Definition::buildAttribute
