@@ -102,7 +102,9 @@ class SnapPointsToSurface(smtk.testing.TestCase):
         op.parameters().find('volume of interest').item(2, 0).setValue(0, 0.1)
         op.parameters().find('volume of interest').item(2, 0).setValue(1, 0.2)
         op.parameters().find('sample size').setValue(10)
-        op.parameters().find('snap to entity').setValue(self.face.component())
+        op.parameters().find('snap to entity').setIsEnabled(True)
+        op.parameters().find('snap to entity').setDiscreteIndex(1)
+        op.parameters().find('entity').setValue(self.face.component())
 
         res = op.operate()
 

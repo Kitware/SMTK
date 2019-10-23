@@ -25,7 +25,7 @@ public:
 
   /// Overwrites \a closestPoints with points on \a entity closest to \a sourcePoints.
   bool closestPointOn(const smtk::model::EntityRef& entity, std::vector<double>& closestPoints,
-    const std::vector<double>& sourcePoints) override;
+    const std::vector<double>& sourcePoints, bool snapToPoint) override;
 
 protected:
   smtkModelEntityPointLocator();

@@ -27,8 +27,12 @@ smtkModelEntityPointLocator::~smtkModelEntityPointLocator()
 }
 
 bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
-  std::vector<double>& closestPoints, const std::vector<double>& sourcePoints)
+  std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
 {
+  if (snapToPoint == false)
+  {
+    return false;
+  }
   vtkSmartPointer<vtkDataObject> cachedAuxData; // Keep here so it stays in scope
   // TODO: Handle composite data, not just vtkPointSet data.
   vtkPointSet* pdata = vtkPointSet::SafeDownCast(vtkPVModelSources::findModelEntity(entity));

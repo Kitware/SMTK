@@ -32,9 +32,12 @@ public:
   smtkSharedFromThisMacro(smtk::common::Extension);
   virtual ~PointLocatorExtension();
 
-  /// Overwrites \a closestPoints with points on \a entity closest to \a sourcePoints.
+  /// Overwrites \a closestPoints with points on \a entity closest to
+  /// \a sourcePoints. If \a snapToPoint, the nearest point explicitly defined
+  /// in the entity is returned. Otherwise, the nearest point on the entity's
+  /// surface is returned.
   virtual bool closestPointOn(const EntityRef& entity, std::vector<double>& closestPoints,
-    const std::vector<double>& sourcePoints) = 0;
+    const std::vector<double>& sourcePoints, bool snapToPoint) = 0;
 
 protected:
   PointLocatorExtension();
