@@ -1026,7 +1026,11 @@ int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
 
   this->Def2LongLabel[def] = text;
   QFontMetrics fontsize(font);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
   return fontsize.horizontalAdvance(text.c_str());
+#else
+  return fontsize.width(text.c_str());
+#endif
 }
 
 void qtUIManager::findDefinitionLongLabel(
@@ -1072,7 +1076,11 @@ int qtUIManager::getWidthOfItemsMaxLabel(
   std::string text;
   this->getItemsLongLabel(itemDefs, text);
   QFontMetrics fontsize(font);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
   return fontsize.horizontalAdvance(text.c_str());
+#else
+  return fontsize.width(text.c_str());
+#endif
 }
 
 void qtUIManager::findDefinitionsLongLabels()
