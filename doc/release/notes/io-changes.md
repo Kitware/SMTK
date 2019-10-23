@@ -2,6 +2,9 @@
 
 ### smtk::io::Logger is now thread-safe
 The class now does a mutex lock when modifying or accessing its records or its underlying stream.  Care must be taking when redirecting the logger's stream to avoid deadlocks.  For example using smtk::extension::qtEmittingStringBuffer, you should make sure to use Qt::QueuedConnection when doing a QObject::connect to the buffer's flush signal.  See smtk/extension/qt/cxx/testing/UnitTestEmittingStringBuffer.{h,cxx} for an example.
+#### Changes to Logger API
+* **Logger::records() has been changed to return a copy of the Logger's records instead of a const reference to them which is not thread safe.**
+* **Logger::record(int i) now returns a copy of the ith record instead of a const reference to it.**
 
 ### New Attribute Resource and SBT formats (4.0)
 We have now create version 4.0 for both attribute SBT and attribute SMTK files.  This will now be the default in terms of writing out attribute information.  SMTK will still support reading in Versions 1, 2, and 3.
