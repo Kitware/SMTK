@@ -223,8 +223,8 @@ Operation::Result Operation::operate()
     if (logEnd > logStart)
     {
       // Serialize relevant log records to a json-formatted string.
-      nlohmann::json j = std::vector<smtk::io::Logger::Record>(
-        this->log().records().begin() + logStart, this->log().records().end());
+      auto records = this->log().records();
+      nlohmann::json j = records;
       result->findString("log")->appendValue(j.dump());
     }
   }

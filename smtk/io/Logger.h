@@ -140,8 +140,13 @@ public:
   void addRecord(
     Severity s, const std::string& m, const std::string& fname = "", unsigned int line = 0);
 
-  const std::vector<Record>& records() const { return m_records; }
-  const Record& record(std::size_t i) const { return m_records[i]; }
+  ///\brief Return a copy of all the records contained within the Logger
+  ///
+  /// Note - the reason a copy of the records is returned instead of a reference is to make
+  /// the call threadsafe
+  std::vector<Record> records() const;
+  ///\brief Return a copy of the ith record in the logger
+  Record record(std::size_t i) const;
 
   static std::string toString(const Record& record, bool includeSourceLoc = false);
   std::string toString(std::size_t i, bool includeSourceLoc = false) const;

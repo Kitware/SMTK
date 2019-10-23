@@ -78,6 +78,18 @@ void Logger::reset()
   m_records.clear();
 }
 
+std::vector<Logger::Record> Logger::records() const
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  return m_records;
+}
+
+Logger::Record Logger::record(std::size_t i) const
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  return m_records[i];
+}
+
 std::string Logger::severityAsString(Severity s)
 {
   switch (s)
