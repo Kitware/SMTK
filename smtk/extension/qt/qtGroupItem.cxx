@@ -158,6 +158,7 @@ void qtGroupItem::setEnabledState(bool checked)
 void qtGroupItem::updateItemData()
 {
   this->clearChildItems();
+  qDeleteAll(this->Internals->ChildrensFrame->findChildren<QWidget*>("groupitem_frame"));
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
@@ -250,6 +251,7 @@ void qtGroupItem::addSubGroup(int i)
   const std::size_t numItems = item->numberOfItemsPerGroup();
   QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(this->Internals->ChildrensFrame->layout());
   QFrame* subGroupFrame = new QFrame(this->Internals->ChildrensFrame);
+  subGroupFrame->setObjectName("groupitem_frame");
   QBoxLayout* subGroupLayout = new QVBoxLayout(subGroupFrame);
   if (item->numberOfGroups() == 1)
   {
@@ -397,6 +399,7 @@ void qtGroupItem::addItemsToTable(int i)
   if (!this->Internals->ItemsTable)
   {
     this->Internals->ItemsTable = new qtTableWidget(this->Internals->ChildrensFrame);
+    this->Internals->ItemsTable->horizontalHeader()->setStretchLastSection(true);
     this->Internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     this->Internals->ItemsTable->setColumnCount(1); // for minus button
