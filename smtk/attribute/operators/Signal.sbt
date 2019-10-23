@@ -17,15 +17,21 @@
         <Component Name="modified" Extensible="true" NumberOfRequiredValues="0">
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
+        <String Name="items" Extensible="true" NumberOfRequiredValues="0" Optional="true"/>
         <Component Name="expunged" Extensible="true" NumberOfRequiredValues="0">
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
+        <Void Name="update" Optional="True" IsEnableByDefault="false"/>
       </ItemDefinitions>
     </AttDef>
 
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(signal)" BaseType="result"/>
-
+    <AttDef Type="result(signal)" BaseType="result">
+        <ItemDefinitions>
+          <String Name="items" Extensible="true" NumberOfRequiredValues="0"/>
+          <Void Name="update" IsEnableByDefault="false"/>
+        </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeResource>

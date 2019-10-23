@@ -47,6 +47,9 @@ See **data/attribute/attribute_collection/ConfigurationTest.sbt** as an example 
 ##### Current Limitations
 * When using an Attribute View to define and edit Configuration Attributes, if the user only creates an attribute using the Attribute View and does not edit any of its items, it will not be automatically added to the configuration combobox.
 
+#### Added Item names to attributeChanged method
+The names of the items being modified are now returned by the Signal operator. This is now used by the AttributeView class.
+
 ### Changes to displaying double items
 Using ItemViews you can now control how the double value item is displayed based using the following "attributes":
 

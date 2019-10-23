@@ -14,6 +14,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/operators/Signal.h"
 
 #include "smtk/operation/Manager.h"
@@ -173,7 +174,8 @@ namespace
 {
 
 static void signalAttribute(smtk::extension::qtUIManager* uiManager,
-  const smtk::attribute::AttributePtr& attr, const char* itemName)
+  const smtk::attribute::AttributePtr& attr, const char* itemName,
+  std::vector<std::string> items = std::vector<std::string>())
 {
   if (attr && uiManager && itemName && itemName[0])
   {
@@ -187,6 +189,7 @@ static void signalAttribute(smtk::extension::qtUIManager* uiManager,
       if (markModified)
       {
         didNotify = markModified->parameters()->findComponent(itemName)->appendObjectValue(attr);
+        markModified->parameters()->findString("items")->setValues(items.begin(), items.end());
         auto result = markModified->operate();
         didNotify &= result->findInt("outcome")->value() ==
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
@@ -211,9 +214,10 @@ void qtBaseAttributeView::attributeCreated(const smtk::attribute::AttributePtr& 
   signalAttribute(this->uiManager(), attr, "created");
 }
 
-void qtBaseAttributeView::attributeChanged(const smtk::attribute::AttributePtr& attr)
+void qtBaseAttributeView::attributeChanged(
+  const smtk::attribute::AttributePtr& attr, std::vector<std::string> items)
 {
-  signalAttribute(this->uiManager(), attr, "modified");
+  signalAttribute(this->uiManager(), attr, "modified", items);
 }
 
 void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& attr)

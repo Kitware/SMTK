@@ -1558,6 +1558,9 @@ void qtAttributeView::associationsChanged()
   this->valueChanged(this->Internals->CurrentAtt->attribute()->associations());
   emit this->modified(this->Internals->CurrentAtt->attribute()->associations());
   emit this->attAssociationChanged();
+  std::vector<std::string> items;
+  items.push_back("_associations");
+  this->attributeChanged(this->Internals->CurrentAtt->attribute(), items);
 }
 
 void qtAttributeView::onItemChanged(qtItem* qitem)
@@ -1578,6 +1581,9 @@ void qtAttributeView::onItemChanged(qtItem* qitem)
   }
   this->updateAttributeStatus(attribute.get());
   this->valueChanged(item);
+  std::vector<std::string> items;
+  items.push_back(item->name());
+  this->attributeChanged(attribute, items);
 }
 void qtAttributeView::updateAttributeStatus(Attribute* att)
 {
