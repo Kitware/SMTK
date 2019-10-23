@@ -61,4 +61,25 @@ if (SMTK_DATA_DIR)
         -T "${CMAKE_CURRENT_BINARY_DIR}"
     )
   endif()
+
+  if(SMTK_ENABLE_MESH_SESSION)
+    add_executable(displayAuxiliaryGeometry MACOSX_BUNDLE displayAuxiliaryGeometry.cxx)
+    target_link_libraries(displayAuxiliaryGeometry
+      smtkCore
+      smtkMeshSession
+      vtkRenderingGL2PSOpenGL2
+      vtkSMTKSourceExt
+      vtkTestingRendering
+    )
+
+    add_test(
+      NAME displayAuxiliaryGeometry
+      COMMAND
+        $<TARGET_FILE:displayAuxiliaryGeometry>
+        "${SMTK_DATA_DIR}/model/3d/obj/cone.obj"
+        -V "${SMTK_DATA_DIR}/baseline/smtk/vtk/auxiliaryGeometry.png"
+        -T "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+  endif()
+
 endif()

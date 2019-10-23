@@ -56,7 +56,7 @@
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
 #include "vtkTransform.h"
-#include "vtkTransformPolyDataFilter.h"
+#include "vtkTransformFilter.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkXMLImageDataReader.h"
 #include "vtkXMLMultiBlockDataReader.h"
@@ -383,7 +383,48 @@ vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::readFromFile(
   std::string fileType = vtkAuxiliaryGeometryExtension::getAuxiliaryFileType(auxGeom);
 
   smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
-  return importAsVTKData(std::make_pair(fileType, auxGeom.url()));
+  vtkSmartPointer<vtkDataObject> data = importAsVTKData(std::make_pair(fileType, auxGeom.url()));
+
+  smtk::resource::Component::Ptr component = auxGeom.component();
+  if (component->properties().contains<std::vector<double> >("rotate") ||
+    component->properties().contains<std::vector<double> >("translate") ||
+    component->properties().contains<std::vector<double> >("scale"))
+  {
+    vtkNew<vtkTransform> transform;
+    if (component->properties().contains<std::vector<double> >("scale"))
+    {
+      const std::vector<double>& scale =
+        component->properties().get<std::vector<double> >()["scale"];
+      transform->Scale(scale[0], scale[1], scale[2]);
+    }
+    if (component->properties().contains<std::vector<double> >("translate"))
+    {
+      const std::vector<double>& translate =
+        component->properties().get<std::vector<double> >()["translate"];
+      transform->Translate(translate[0], translate[1], translate[2]);
+    }
+    if (component->properties().contains<std::vector<double> >("rotate"))
+    {
+      const std::vector<double>& rotate =
+        component->properties().get<std::vector<double> >()["rotate"];
+
+      // From https://en.wikipedia.org/wiki/Euler_angles#Intrinsic_rotations :
+      // VTK uses Tait-Bryan Y_1 X_2 Z_3 angles to store orientation;
+      // This is the corresponding direction cosine matrix (DCM) for
+      // theta = X, phi = Y, psi = Z:
+      transform->RotateY(rotate[1]);
+      transform->RotateX(rotate[0]);
+      transform->RotateZ(rotate[2]);
+    }
+
+    vtkSmartPointer<vtkTransformFilter> transformFilter =
+      vtkSmartPointer<vtkTransformFilter>::New();
+    transformFilter->SetInputData(data);
+    transformFilter->SetTransform(transform);
+    transformFilter->Update();
+    data = transformFilter->GetOutput();
+  }
+  return data;
 }
 
 vtkSmartPointer<vtkDataObject> vtkAuxiliaryGeometryExtension::createHierarchy(
