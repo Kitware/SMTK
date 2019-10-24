@@ -126,7 +126,7 @@ int TestResourceProperties(int, char** const)
       test(false, "An \"out of range\" exception should have been thrown.");
       (void)i;
     }
-    catch (const std::out_of_range& e)
+    catch (const std::out_of_range&)
     {
     }
 

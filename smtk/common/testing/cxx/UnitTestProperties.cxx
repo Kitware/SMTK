@@ -90,12 +90,12 @@ int UnitTestProperties(int, char** const)
 
   smtk::common::PropertiesOfType<float>& floatProperties = properties.get<float>();
 
-  floatProperties["foo"] = 2.3;
+  floatProperties["foo"] = 2.3f;
 
-  test(fabs(floatProperties.at("foo") - 2.3) < float_epsilon,
+  test(fabs(floatProperties.at("foo") - 2.3f) < float_epsilon,
     "Assignment should be accessible via specialized interface.");
 
-  test(fabs(properties.at<float>("foo") - 2.3) < float_epsilon,
+  test(fabs(properties.at<float>("foo") - 2.3f) < float_epsilon,
     "Assigned values should be accessible via generalized interface.");
 
   typedef std::unordered_map<smtk::common::UUID, std::vector<std::string> > StringMap;
