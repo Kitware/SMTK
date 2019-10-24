@@ -13,6 +13,8 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/SystemConfig.h"
+
 #include "smtk/common/CompilerInformation.h"
 #include "smtk/common/TypeName.h"
 
