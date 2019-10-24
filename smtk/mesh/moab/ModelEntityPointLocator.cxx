@@ -40,8 +40,13 @@ ModelEntityPointLocator::~ModelEntityPointLocator()
 }
 
 bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
-  std::vector<double>& closestPoints, const std::vector<double>& sourcePoints)
+  std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
 {
+  if (snapToPoint == true)
+  {
+    return false;
+  }
+
   // Attempt to access the entity's mesh tessellation
   smtk::mesh::MeshSet meshTessellation = entity.meshTessellation();
 
@@ -81,6 +86,6 @@ bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entit
 }
 
 smtkDeclareExtension(
-  SMTKCORE_EXPORT, model_entity_point_locator, smtk::mesh::moab::ModelEntityPointLocator);
+  SMTKCORE_EXPORT, moab_model_entity_point_locator, smtk::mesh::moab::ModelEntityPointLocator);
 
-smtkComponentInitMacro(smtk_model_entity_point_locator_extension);
+smtkComponentInitMacro(smtk_moab_model_entity_point_locator_extension);

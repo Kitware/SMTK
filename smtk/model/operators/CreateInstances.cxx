@@ -79,20 +79,13 @@ void CreateInstances::addUniformRandomRule(Instance& instance, const EntityRef& 
 void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef& prototype)
 {
   (void)prototype;
-  auto snapItem = this->parameters()->findComponent("snap to entity");
-  if (snapItem->isEnabled())
+  auto snapItem = this->parameters()->findString("snap to entity");
+  if (snapItem && snapItem->isEnabled())
   {
-    // TODO? Check whether extension is available?
-    // auto ext = smtk::common::Extension::findAs<PointLocatorExtension>(
-    //   "model_entity_point_locator");
-    // Also, if we allow snapping to mesh sets, we should create a different extension.
-    // Finally, if we want to allow multiple extensions that perform the same kind of snapping
-    // (e.g., when VTK isn't present, some other library might provide point location), we need
-    // to handle multiple extensions with either the same name or a way to iterate over extensions
-    // by type alone.
-    instance.setStringProperty("snap rule", "model_entity_point_locator");
+    instance.setStringProperty("snap rule", snapItem->value());
+    auto snapEntityItem = this->parameters()->findComponent("entity");
     EntityRefs snapTo;
-    for (auto it = snapItem->begin(); it != snapItem->end(); ++it)
+    for (auto it = snapEntityItem->begin(); it != snapEntityItem->end(); ++it)
     {
       snapTo.insert(
         std::static_pointer_cast<smtk::model::Entity>(*it)->referenceAs<smtk::model::EntityRef>());

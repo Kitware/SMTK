@@ -186,7 +186,9 @@ int TestSnapPointsToSurface(int argc, char* argv[])
     zAxis->setValue(0, 0.1);
     zAxis->setValue(1, 0.2);
     createInstances->parameters()->findInt("sample size")->setValue(10);
-    createInstances->parameters()->findComponent("snap to entity")->setValue(face.component());
+    createInstances->parameters()->findString("snap to entity")->setIsEnabled(true);
+    createInstances->parameters()->findString("snap to entity")->setDiscreteIndex(1);
+    createInstances->parameters()->findComponent("entity")->setValue(face.component());
 
     smtk::operation::Operation::Result result = createInstances->operate();
     if (result->findInt("outcome")->value() !=

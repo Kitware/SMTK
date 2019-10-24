@@ -68,15 +68,32 @@
             </Structure>
           </DiscreteInfo>
         </String>
-        <Component Name="snap to entity"
-          Optional="true" IsEnabledByDefault="true"
-          NumberOfRequiredValues="1" Extensible="true">
-          <Accepts><Resource Name="smtk::model::Resource" Filter="cell|aux_geom"/></Accepts>
+        <String Name="snap to entity" Optional="true" IsEnabledByDefault="true"
+                NumberOfRequiredValues="1">
           <BriefDescription>
             If enabled, instance placements will be snapped to the nearest
-            point on the tessellation of the given entities.
+            point on or in the tessellation of the given entities.
           </BriefDescription>
-        </Component>
+          <ChildrenDefinitions>
+            <Component Name="entity" NumberOfRequiredValues="1">
+              <Accepts><Resource Name="smtk::model::Resource" Filter="cell|aux_geom"/></Accepts>
+            </Component>
+          </ChildrenDefinitions>
+          <DiscreteInfo DefaultIndex="0">
+	    <Structure>
+            <Value Enum="snap to point">snap to point</Value>
+	      <Items>
+	        <Item>entity</Item>
+	      </Items>
+	    </Structure>
+	    <Structure>
+            <Value Enum="snap to surface">snap to surface</Value>
+	      <Items>
+	        <Item>entity</Item>
+	      </Items>
+	    </Structure>
+          </DiscreteInfo>
+        </String>
 
         <!-- TODO: Add support for masking placements -->
       </ItemDefinitions>

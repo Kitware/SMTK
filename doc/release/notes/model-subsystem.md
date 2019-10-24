@@ -8,3 +8,9 @@ In addition to creating instances, it is now possible to
 + change an instance's prototype;
 + merge multiple instances with the same prototype into a
   single tabular instance.
+
+### Instance placement
+
+When snapping to entities with mesh tessellations, support has been
+added to snap to the nearest point on the entity's surface (rather
+than the nearest point explicitly defined in the tessellation).

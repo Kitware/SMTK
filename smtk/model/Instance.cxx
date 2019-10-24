@@ -115,14 +115,23 @@ static void SnapPlacementsTo(const Instance& inst, const EntityRefs& snaps, Tess
     smtkWarningMacro(inst.resource()->log(), "No rule for how to perform snap.");
     return;
   }
-  auto snapper = smtk::common::Extension::findAs<PointLocatorExtension>(snapRule);
-  if (!snapper)
+  bool snapToPoint = false;
+  if (snapRule == "snap to point")
   {
-    smtkErrorMacro(inst.resource()->log(), "Could not create object (" << snapRule << ")"
-                                                                       << " to perform snapping.");
-    return;
+    snapToPoint = true;
   }
-  snapper->closestPointOn(*snaps.begin(), tess->coords(), tess->coords());
+  smtk::common::Extension::visitAll(
+    [&](const std::string&, smtk::common::Extension::Ptr extension) {
+      bool success = false;
+      auto snapper = smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
+
+      if (snapper != nullptr)
+      {
+        success =
+          snapper->closestPointOn(*snaps.begin(), tess->coords(), tess->coords(), snapToPoint);
+      }
+      return std::make_pair(success, success);
+    });
 }
 
 static void ComputeBounds(Tessellation* tess, const std::vector<double>& pbox, double bbox[6])
