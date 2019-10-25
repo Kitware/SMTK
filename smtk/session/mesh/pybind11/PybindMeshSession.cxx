@@ -25,6 +25,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSession.h"
 #include "PybindTopology.h"
 
+#include "PybindCreateUniformGrid.h"
 #include "PybindImport.h"
 #include "PybindExport.h"
 #include "PybindRead.h"
@@ -50,6 +51,7 @@ PYBIND11_MODULE(_smtkPybindMeshSession, mesh)
   PySharedPtrClass< smtk::session::mesh::Session, smtk::model::Session > smtk_session_mesh_Session = pybind11_init_smtk_session_mesh_Session(mesh);
   PySharedPtrClass< smtk::session::mesh::Resource> smtk_session_mesh_Resource = pybind11_init_smtk_session_mesh_Resource(mesh);
 
+  PySharedPtrClass< smtk::session::mesh::CreateUniformGrid, smtk::operation::XMLOperation > smtk_session_mesh_CreateUniformGrid = pybind11_init_smtk_session_mesh_CreateUniformGrid(mesh);
   PySharedPtrClass< smtk::session::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > smtk_session_mesh_EulerCharacteristicRatio = pybind11_init_smtk_session_mesh_EulerCharacteristicRatio(mesh);
   PySharedPtrClass< smtk::session::mesh::Import, smtk::operation::XMLOperation > smtk_session_mesh_Import = pybind11_init_smtk_session_mesh_Import(mesh);
   PySharedPtrClass< smtk::session::mesh::Export, smtk::operation::XMLOperation > smtk_session_mesh_Export = pybind11_init_smtk_session_mesh_Export(mesh);
