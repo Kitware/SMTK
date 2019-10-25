@@ -102,7 +102,9 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
     [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
       smtk::operation::Operation::Result result) -> int {
       auto id = smtk::common::UUID::random();
+      m_activeOperationMutex.lock();
       m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
+      m_activeOperationMutex.unlock();
       emit operationEvent(QString::fromStdString(id.toString()), static_cast<int>(event),
         result ? QString::fromStdString(result->name()) : QString(), QPrivateSignal());
       return 0;
@@ -115,6 +117,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
       pqSMTKCallObserversOnMainThreadBehavior::operationEvent,
     this, [this](QString operationId, int event, QString resultName) {
       auto id = smtk::common::UUID(operationId.toStdString());
+      m_activeOperationMutex.lock();
       auto op = m_activeOperations[id];
       if (auto operation = op)
       {
@@ -127,6 +130,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
           *operation, static_cast<smtk::operation::EventType>(event), att);
       }
       m_activeOperations.erase(id);
+      m_activeOperationMutex.unlock();
     });
 
   // Override the selection Observers' call method to emit a private signal

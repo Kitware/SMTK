@@ -19,6 +19,8 @@
 
 #include <QObject>
 
+#include <mutex>
+
 class pqServer;
 class pqSMTKWrapper;
 
@@ -77,6 +79,9 @@ private:
   std::map<smtk::common::UUID, std::shared_ptr<smtk::resource::Resource> > m_activeResources;
   std::map<smtk::common::UUID, std::shared_ptr<smtk::operation::Operation> > m_activeOperations;
   std::map<smtk::common::UUID, std::shared_ptr<smtk::view::Selection> > m_activeSelection;
+
+  // A mutex to make access to m_activeOperations thread-safe
+  std::mutex m_activeOperationMutex;
 
   Q_DISABLE_COPY(pqSMTKCallObserversOnMainThreadBehavior);
 };
