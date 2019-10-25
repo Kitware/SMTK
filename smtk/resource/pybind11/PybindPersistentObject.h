@@ -25,6 +25,7 @@ PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_resource
     .def("typeName", &smtk::resource::PersistentObject::typeName)
     .def("id", &smtk::resource::PersistentObject::id)
     .def("setId", &smtk::resource::PersistentObject::setId, py::arg("myID"))
+    .def("name", &smtk::resource::PersistentObject::name)
     ;
   return instance;
 }
