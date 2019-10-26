@@ -928,6 +928,34 @@ int EntityRef::tessellationGeneration() const
   return -1;
 }
 
+/**\brief Set the tessellation generation number.
+  *
+  * This method is intended for use by mesh resources.
+  * Other resources should use resetTessellation() or setTessellation()
+  * to automatically advance the generation number.
+  *
+  * Returns true when the generation number is set and
+  * false otherwise (invalid component or out-of-order generation number).
+  */
+bool EntityRef::setTessellationGeneration(int gen)
+{
+  auto comp = this->component();
+  if (comp != nullptr)
+  {
+    const auto& integerProperties = comp->properties().get<std::vector<long> >();
+    if (integerProperties.contains(SMTK_TESS_GEN_PROP) &&
+      !integerProperties.at(SMTK_TESS_GEN_PROP).empty() &&
+      integerProperties.at(SMTK_TESS_GEN_PROP)[0] >= gen)
+    {
+      return false;
+    }
+    comp->properties().get<std::vector<long> >()[SMTK_TESS_GEN_PROP] = std::vector<long>(1, gen);
+    return true;
+  }
+
+  return false;
+}
+
 /**\brief Set the bounding box of the entity.
   *
   * This should not be called outside of an operator.
