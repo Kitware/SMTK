@@ -349,14 +349,36 @@ static void addBlockInfo(const smtk::model::ResourcePtr& resource,
 vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   const smtk::model::EntityRef& entity, bool genNormals)
 {
+  vtkSmartPointer<vtkDataObject> obj;
+  SequenceType gen = this->GetCachedDataSequenceNumber(entity.entity());
+  if (entity.hasIntegerProperty(SMTK_TESS_GEN_PROP) &&
+    entity.integerProperty(SMTK_TESS_GEN_PROP)[0] <= gen)
+  {
+    obj = this->GetCachedDataObject(entity.entity());
+    return obj;
+  }
+
+  // We are going to cache what we create. Find out the cache sequence number to use.
+  int sequence = entity.hasIntegerProperty(SMTK_TESS_GEN_PROP)
+    ? entity.integerProperty(SMTK_TESS_GEN_PROP)[0]
+    : 0;
+  if (sequence < 0)
+  {
+    sequence = 0;
+  }
   const smtk::model::Tessellation* tess;
   if ((tess = entity.hasTessellation()))
   {
-    return this->GenerateRepresentationFromTessellation(entity, tess, genNormals);
+    obj = this->GenerateRepresentationFromTessellation(entity, tess, genNormals);
+    this->SetCachedData(entity.entity(), obj, sequence);
+    return obj;
   }
   else if (!entity.meshTessellation().is_empty())
   {
-    return this->GenerateRepresentationFromMeshTessellation(entity, genNormals);
+    obj = this->GenerateRepresentationFromMeshTessellation(entity, genNormals);
+    entity.as<EntityRef>().setIntegerProperty(SMTK_TESS_GEN_PROP, 1);
+    this->SetCachedData(entity.entity(), obj, sequence);
+    return obj;
   }
 
   smtk::model::AuxiliaryGeometry aux(entity);
@@ -384,6 +406,7 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
           }
           return std::make_pair(false, false);
         });
+      this->SetCachedData(entity.entity(), cgeom, sequence);
       return cgeom;
     }
   }
@@ -955,9 +978,11 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     vtkNew<vtkMultiBlockDataSet> rep;
     vtkNew<vtkMultiBlockDataSet> proto;
     vtkNew<vtkMultiBlockDataSet> inst;
+    this->Visited.clear();
     this->GenerateRepresentationFromModel(
       rep.GetPointer(), inst.GetPointer(), proto.GetPointer(), resource);
     this->SetCachedOutput(rep.GetPointer(), inst.GetPointer(), proto.GetPointer());
+    this->RemoveCacheEntriesExcept(this->Visited);
   }
 
   output->SetBlock(BlockId::Components, this->CachedOutputMBDS);

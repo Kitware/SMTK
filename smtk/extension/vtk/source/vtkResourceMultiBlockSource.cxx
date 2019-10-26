@@ -14,13 +14,19 @@
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
 
+using UUID = smtk::common::UUID;
+using SequenceType = vtkResourceMultiBlockSource::SequenceType;
+
 vtkInformationKeyMacro(vtkResourceMultiBlockSource, COMPONENT_ID, String);
 
 //----------------------------------------------------------------------------
 vtkResourceMultiBlockSource::vtkResourceMultiBlockSource() = default;
 
 //----------------------------------------------------------------------------
-vtkResourceMultiBlockSource::~vtkResourceMultiBlockSource() = default;
+vtkResourceMultiBlockSource::~vtkResourceMultiBlockSource()
+{
+  this->ClearCache();
+}
 
 //----------------------------------------------------------------------------
 void vtkResourceMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
@@ -29,18 +35,17 @@ void vtkResourceMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-void vtkResourceMultiBlockSource::SetDataObjectUUID(
-  vtkInformation* info, const smtk::common::UUID& id)
+void vtkResourceMultiBlockSource::SetDataObjectUUID(vtkInformation* info, const UUID& id)
 {
   // FIXME: Eventually this should encode the UUID without string conversion
   info->Set(vtkResourceMultiBlockSource::COMPONENT_ID(), id.toString().c_str());
 }
 
 //----------------------------------------------------------------------------
-smtk::common::UUID vtkResourceMultiBlockSource::GetDataObjectUUID(vtkInformation* datainfo)
+UUID vtkResourceMultiBlockSource::GetDataObjectUUID(vtkInformation* datainfo)
 {
   // FIXME: Eventually this should decode the UUID without string conversion
-  smtk::common::UUID id;
+  UUID id;
   if (!datainfo)
   {
     return id;
@@ -49,14 +54,13 @@ smtk::common::UUID vtkResourceMultiBlockSource::GetDataObjectUUID(vtkInformation
   const char* uuidChar = datainfo->Get(vtkResourceMultiBlockSource::COMPONENT_ID());
   if (uuidChar)
   {
-    id = smtk::common::UUID(uuidChar);
+    id = UUID(uuidChar);
   }
   return id;
 }
 
 //----------------------------------------------------------------------------
-void vtkResourceMultiBlockSource::SetResourceId(
-  vtkMultiBlockDataSet* dataset, const smtk::common::UUID& uid)
+void vtkResourceMultiBlockSource::SetResourceId(vtkMultiBlockDataSet* dataset, const UUID& uid)
 {
   if (dataset->GetNumberOfBlocks() <= BlockId::Components)
   {
@@ -66,11 +70,11 @@ void vtkResourceMultiBlockSource::SetResourceId(
 }
 
 //----------------------------------------------------------------------------
-smtk::common::UUID vtkResourceMultiBlockSource::GetResourceId(vtkMultiBlockDataSet* dataset)
+UUID vtkResourceMultiBlockSource::GetResourceId(vtkMultiBlockDataSet* dataset)
 {
   if (dataset->GetNumberOfBlocks() <= BlockId::Components)
   {
-    return smtk::common::UUID::null();
+    return UUID::null();
   }
   return vtkResourceMultiBlockSource::GetDataObjectUUID(dataset->GetMetaData(BlockId::Components));
 }
@@ -118,7 +122,7 @@ void vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(
   {
     std::cout << std::setfill(' ') << std::setw(indent) << " " << std::setfill(' ') << std::setw(4)
               << ii << " " << std::setfill(' ') << std::setw(4) << (counter++) << " ";
-    smtk::common::UUID uid;
+    UUID uid;
     if (dataset->HasMetaData(ii))
     {
       uid = vtkResourceMultiBlockSource::GetDataObjectUUID(dataset->GetMetaData(ii));
@@ -139,4 +143,87 @@ void vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(
       vtkResourceMultiBlockSource::DumpBlockStructureWithUUIDsInternal(mbds, counter, indent + 2);
     }
   }
+}
+
+bool vtkResourceMultiBlockSource::SetCachedData(
+  const UUID& uid, vtkDataObject* data, int sequenceNumber)
+{
+  if (!data)
+  {
+    return false;
+  }
+  CacheEntry entry{ data, sequenceNumber };
+  auto it = this->Cache.find(uid);
+  bool exists = (it != this->Cache.end());
+  if (!exists || it->second.SequenceNumber < sequenceNumber)
+  {
+    if (exists)
+    { // Release the existing entry's data.
+      it->second.Data->UnRegister(this);
+    }
+    this->Cache[uid] = entry;
+    data->Register(this);
+    return true;
+  }
+  return false;
+}
+
+SequenceType vtkResourceMultiBlockSource::GetCachedDataSequenceNumber(const UUID& uid) const
+{
+  auto it = this->Cache.find(uid);
+  if (it == this->Cache.end())
+  {
+    return static_cast<SequenceType>(-1);
+  }
+  return it->second.SequenceNumber;
+}
+
+vtkDataObject* vtkResourceMultiBlockSource::GetCachedDataObject(const UUID& uid)
+{
+  auto it = this->Cache.find(uid);
+  if (it == this->Cache.end())
+  {
+    return nullptr;
+  }
+  return it->second.Data;
+}
+
+bool vtkResourceMultiBlockSource::RemoveCacheEntry(const UUID& uid)
+{
+  auto it = this->Cache.find(uid);
+  if (it == this->Cache.end())
+  {
+    return false;
+  }
+  it->second.Data->UnRegister(this);
+  this->Cache.erase(it);
+  return true;
+}
+
+bool vtkResourceMultiBlockSource::RemoveCacheEntriesExcept(const std::set<UUID>& exceptions)
+{
+  bool didRemove = false;
+  for (auto it = this->Cache.begin(); it != this->Cache.end(); /* do nothing */)
+  {
+    if (exceptions.find(it->first) == exceptions.end())
+    {
+      it->second.Data->UnRegister(this);
+      didRemove = true;
+      it = this->Cache.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+  return didRemove;
+}
+
+void vtkResourceMultiBlockSource::ClearCache()
+{
+  for (auto& entry : this->Cache)
+  {
+    entry.second.Data->UnRegister(this);
+  }
+  this->Cache.clear();
 }
