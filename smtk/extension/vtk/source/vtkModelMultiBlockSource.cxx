@@ -90,7 +90,7 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
   {
     this->DefaultColor[i] = 1.;
   }
-  this->AllowNormalGeneration = 0;
+  this->AllowNormalGeneration = 1;
   this->ShowAnalysisTessellation = 0;
   this->linkInstance();
 }
