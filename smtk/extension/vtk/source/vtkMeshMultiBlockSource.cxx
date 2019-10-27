@@ -183,16 +183,39 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
 {
   if (!meshes.is_empty())
   {
-    smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
-    exportVTKData(meshes, pd);
+    UUID uid = entityref.entity();
+    if (!uid)
+    {
+      uid = meshes.id();
+    }
+    SequenceType curr = static_cast<SequenceType>(entityref.tessellationGeneration());
+    SequenceType prev = this->GetCachedDataSequenceNumber(uid);
+    if (curr > prev || prev == vtkResourceMultiBlockSource::InvalidSequence)
+    {
+      smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
+      exportVTKData(meshes, pd);
 
-    this->GenerateNormals(pd, entityref, genNormals);
+      this->GenerateNormals(pd, entityref, genNormals);
 
-    // Point-coordinates attribute
-    vtkNew<vtkDoubleArray> pointCoords;
-    pointCoords->ShallowCopy(pd->GetPoints()->GetData());
-    pointCoords->SetName("PointCoordinates");
-    pd->GetPointData()->AddArray(pointCoords.GetPointer());
+      // Point-coordinates attribute
+      vtkNew<vtkDoubleArray> pointCoords;
+      pointCoords->ShallowCopy(pd->GetPoints()->GetData());
+      pointCoords->SetName("PointCoordinates");
+      pd->GetPointData()->AddArray(pointCoords.GetPointer());
+
+      if (curr == vtkResourceMultiBlockSource::InvalidSequence)
+      {
+        entityref.as<smtk::model::EntityRef>().setTessellationGeneration(0);
+        curr = 0;
+      }
+      this->SetCachedData(uid, pd, curr);
+    }
+    else
+    {
+      vtkDataObject* cachedData = this->GetCachedDataObject(uid);
+      pd->ShallowCopy(cachedData);
+    }
+    this->Visited.insert(uid);
   }
 }
 
@@ -356,9 +379,13 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
 
   if (!this->CachedOutput)
   { // Populate a polydata with tessellation information from the model.
+    this->Visited.clear();
     vtkNew<vtkMultiBlockDataSet> rep;
     this->GenerateRepresentationFromMesh(rep.GetPointer());
     this->SetCachedOutput(rep.GetPointer());
+    // Clear entries from our parent-class' cache that were not visited.
+    // Otherwise, deleted mesh-set tessellations will be cached forever.
+    this->RemoveCacheEntriesExcept(this->Visited);
   }
   output->SetBlock(BlockId::Components, this->CachedOutput);
   this->SetResourceId(output, resource->id());

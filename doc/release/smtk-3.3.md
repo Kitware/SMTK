@@ -571,6 +571,14 @@ instance placements via a single port as a multiblock with three
 blocks. The consuming representation now extracts each of the three
 blocks and renders them appropriately.
 
+### Cache VTK data objects for improved performance
+
+The tessellation generation number (stored as an integer property) is
+now used to determine whether a cached VTK data object can be used
+instead of generating a new one from a model tessellation or mesh set.
+This reduces the time between operation completion and rendering for
+large geometries.
+
 ## Test Changes
 
 - Removed one problematic test, `displayMultiBlockModel-simple`, that used an outdated input file and rendered differently on some dashboard systems.
