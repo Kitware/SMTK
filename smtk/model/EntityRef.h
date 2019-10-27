@@ -238,6 +238,7 @@ public:
     std::map<smtk::model::EntityRef, smtk::model::EntityRef>& entityrefMap,
     std::set<smtk::model::EntityRef>& touched) const;
   int tessellationGeneration() const;
+  bool setTessellationGeneration(int gen);
   void setBoundingBox(const double bbox[6]);
 
   bool hasAttributes() const;

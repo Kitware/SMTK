@@ -1,3 +1,21 @@
+set(unit_tests
+  unitResourceMultiBlockSource.cxx
+)
+set(unit_tests_which_require_data
+)
+
+smtk_unit_tests(
+  LABEL "VTK"
+  SOURCES ${unit_tests}
+  # SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
+  LIBRARIES
+    smtkCore
+    smtkCoreModelTesting
+    vtkSMTKSourceExt
+    ${extra_libs}
+    ${Boost_LIBRARIES}
+)
+
 add_executable(displayConeFrustum MACOSX_BUNDLE displayConeFrustum.cxx)
 target_link_libraries(displayConeFrustum
   smtkCore
