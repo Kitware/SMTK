@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="294.73032mm"
+   height="205.44995mm"
+   viewBox="0 0 294.73032 205.44995"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="widget-gallery.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.83236964"
+     inkscape:cx="402.82935"
+     inkscape:cy="367.72555"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="2"
+     fit-margin-left="2"
+     fit-margin-right="2"
+     fit-margin-bottom="2"
+     inkscape:window-width="1680"
+     inkscape:window-height="1005"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(103.01727,77.930756)">
+    <image
+       sodipodi:absref="widget-cone-3d-face-move.png"
+       y="55.492809"
+       x="94.815819"
+       id="image957"
+       xlink:href="widget-cone-3d-face-move.png"
+       preserveAspectRatio="none"
+       height="67.73333"
+       width="94.897217" />
+    <image
+       sodipodi:absref="widget-cone-qt.png"
+       y="53.199749"
+       x="-101.01727"
+       id="image1789"
+       xlink:href="widget-cone-qt.png"
+       preserveAspectRatio="none"
+       height="72.31945"
+       width="184.50278" />
+    <image
+       sodipodi:absref="widget-line-3d.png"
+       y="-5.9319019"
+       x="95.10347"
+       id="image1985"
+       xlink:href="widget-line-3d.png"
+       preserveAspectRatio="none"
+       height="31.044443"
+       width="90.311111" />
+    <image
+       sodipodi:absref="widget-line-qt.png"
+       y="-27.233582"
+       x="-101.01727"
+       id="image1996"
+       xlink:href="widget-line-qt.png"
+       preserveAspectRatio="true"
+       height="69.849998"
+       width="192.2639" />
+    <image
+       sodipodi:absref="widget-point-qt.png"
+       y="-67.287697"
+       x="-98.748985"
+       id="image2093"
+       xlink:href="widget-point-qt.png"
+       preserveAspectRatio="none"
+       height="18.344444"
+       width="173.91943" />
+    <image
+       sodipodi:absref="widget-point-3d.png"
+       y="-75.930756"
+       x="114.04221"
+       id="image2104"
+       xlink:href="widget-point-3d.png"
+       preserveAspectRatio="none"
+       height="35.630558"
+       width="56.444443" />
+  </g>
+</svg>

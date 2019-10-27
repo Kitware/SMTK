@@ -2,6 +2,8 @@
 [attr]our-c-style   whitespace=tab-in-indent  format.clang-format
 [attr]our-py-style  whitespace=tab-in-indent  format.autopep8
 [attr]our-rst-style conflict-marker-size=100
+# Attributes for binary and/or large files
+[attr]lfs       filter=lfs diff=lfs merge=lfs -text
 
 *.cxx   our-c-style
 *.h     our-c-style
@@ -15,7 +17,7 @@
 thirdparty/**  -format.clang-format -format.autopep8
 **/pybind11/*  -format.clang-format
 
-[attr]lfs       filter=lfs diff=lfs merge=lfs -text
+doc/**/*.png    lfs
 
 data/**         lfs -format.autopep8
 data/**/*.md   -lfs
