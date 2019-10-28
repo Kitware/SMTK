@@ -10,6 +10,7 @@
 
 #include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModel.h"
+#include "smtk/view/QueryFilterSubphraseGenerator.h"
 #include "smtk/view/SubphraseGenerator.h"
 
 namespace smtk

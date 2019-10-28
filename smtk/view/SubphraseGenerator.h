@@ -215,6 +215,13 @@ protected:
 
   void prototypeOfModelInstance(
     DescriptivePhrase::Ptr src, const smtk::model::Instance& ent, DescriptivePhrases& result);
+
+  template <typename T>
+  void PreparePath(T& result, const T& parentPath, int childIndex);
+
+  template <typename T>
+  int IndexFromTitle(const std::string& title, const T& phrases);
+
   ///@}
 
   /**\brief A templated helper for creating lists of components as subphrases.

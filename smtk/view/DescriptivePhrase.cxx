@@ -104,6 +104,11 @@ PhraseContentPtr DescriptivePhrase::content() const
   return m_content;
 }
 
+PhraseContentPtr DescriptivePhrase::undecoratedContent() const
+{
+  return m_content->undecoratedContent();
+}
+
 DescriptivePhrases& DescriptivePhrase::subphrases()
 {
   this->buildSubphrases();
@@ -486,7 +491,10 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const Desc
 
 bool DescriptivePhrase::operator==(const DescriptivePhrase& other) const
 {
-  return *m_content.get() == *other.m_content.get() &&
+  smtk::view::PhraseContent* c0 = this->undecoratedContent().get();
+  smtk::view::PhraseContent* c1 = other.undecoratedContent().get();
+  bool same = (*c0 == *c1);
+  return same &&
     // You wouldn't think typeid(baseClassReference) would work, but it does virtual lookup:
     typeid(*this) == typeid(other) && m_parent.lock() == other.m_parent.lock() &&
     m_type == other.m_type && m_delegate == other.m_delegate;

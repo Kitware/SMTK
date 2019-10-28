@@ -56,6 +56,9 @@ public:
   using ModelConstructor = std::function<PhraseModelPtr(const ViewPtr&)>;
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
+  /// Subclasses (and others) may wish to invoke functions on the sources of data for the phrases.
+  using SourceVisitor = std::function<bool(const smtk::resource::ManagerPtr&,
+    const smtk::operation::ManagerPtr&, const smtk::view::SelectionPtr&)>;
 
   using Operation = smtk::operation::Operation;
   using OperationPtr = smtk::operation::Operation::Ptr;
@@ -88,6 +91,8 @@ public:
     smtk::view::SelectionPtr seln);
   /// Stop listening for changes from all sources.
   bool resetSources();
+  /// Invoke the visitor on each source that has been added to the model.
+  void visitSources(SourceVisitor visitor);
   ///@}
 
   /// Return the root phrase of the hierarchy.
@@ -202,6 +207,20 @@ protected:
   /// Called to deal with resources/components being created as a result of an operation.
   virtual void handleCreated(
     const Operation& op, const Operation::Result& res, const ComponentItemPtr& data);
+
+  /**\brief Un-decorate and re-decorate every phrase in the current hierarchy.
+    *
+    * This is called by setDecorator() to ensure that phrases which were
+    * prepared before the current decorator are properly prepared.
+    *
+    * To un-decorate, all but the final PhraseContent object are popped from
+    * each phrase. Then, the phrase-model's current decorator is invoked on
+    * every phrase.
+    *
+    * This process assumes that if you have multiple decorator functions,
+    * they chain each other.
+    */
+  virtual void redecorate();
 
   /** \brief Make changes to the phrase hierarchy.
     *

@@ -24,6 +24,32 @@ namespace smtk
 {
 namespace view
 {
+template <typename T>
+void SubphraseGenerator::PreparePath(T& result, const T& parentPath, int childIndex)
+{
+  result.reserve(parentPath.size() + 1);
+  for (auto idx : parentPath)
+  {
+    result.push_back(idx);
+  }
+  result.push_back(childIndex);
+}
+
+template <typename T>
+int SubphraseGenerator::IndexFromTitle(const std::string& title, const T& phrases)
+{
+  // TODO: Use bisection to speed this up.
+  int ii = 0;
+  for (auto phrase : phrases)
+  {
+    if (title < phrase->title())
+    {
+      return ii;
+    }
+    ++ii;
+  }
+  return ii;
+}
 
 template <typename T>
 PhraseListContentPtr SubphraseGenerator::addComponentPhrases(const T& components,

@@ -14,6 +14,7 @@
 #include "smtk/view/ComponentPhraseModel.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/PhraseModel.h"
+#include "smtk/view/QueryFilterSubphraseGenerator.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SelectionPhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
@@ -29,7 +30,8 @@ namespace
 {
 typedef std::tuple<PhraseModel, ResourcePhraseModel, ComponentPhraseModel, SelectionPhraseModel>
   PhraseModelList;
-typedef std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator, EmptySubphraseGenerator>
+typedef std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator, EmptySubphraseGenerator,
+  QueryFilterSubphraseGenerator>
   SubphraseGeneratorList;
 }
 
