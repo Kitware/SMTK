@@ -24,8 +24,11 @@
 #include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"
 #include "pqServer.h"
+#include "pqSettings.h"
+#include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
 #include "vtkSMProxyManager.h"
+#include "vtkSMSessionProxyManager.h"
 
 // One feature of pqSMTKSaveOnCloseResourceBehavior is the construction of a
 // prompt to save all resources upon closing the main window. This feature uses
@@ -40,9 +43,12 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/resource/Manager.h"
 
 #include <QApplication>
+#include <QCheckBox>
+#include <QCloseEvent>
 
 static pqSMTKSaveOnCloseResourceBehavior* g_instance = nullptr;
 
@@ -76,13 +82,8 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
           smtk::resource::ResourcePtr resource = smtkResource->getResource();
           if (resource && resource->clean() == false)
           {
-            QMessageBox msgBox;
-            msgBox.setText("The resource has been modified.");
-            msgBox.setInformativeText("Do you want to save your changes?");
-            msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
-            msgBox.setDefaultButton(QMessageBox::Save);
-
-            int ret = msgBox.exec();
+            int ret = QMessageBox::Discard;
+            ret = pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(1, false);
 
             if (ret == QMessageBox::Save)
             {
@@ -115,21 +116,9 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
         });
         if (numberOfUnsavedResources > 0)
         {
-          QMessageBox msgBox;
-          if (numberOfUnsavedResources == 1)
-          {
-            msgBox.setText("The resource has been modified.");
-          }
-          else
-          {
-            msgBox.setText(
-              QString::number(numberOfUnsavedResources) + " resources have been modified.");
-          }
-          msgBox.setInformativeText("Do you want to save your changes?");
-          msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
-          msgBox.setDefaultButton(QMessageBox::Save);
-
-          int ret = msgBox.exec();
+          int ret = QMessageBox::Discard;
+          ret =
+            pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(numberOfUnsavedResources, false);
 
           if (ret == QMessageBox::Save)
           {
@@ -176,22 +165,8 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
           int ret = QMessageBox::Discard;
           if (numberOfUnsavedResources > 0)
           {
-            QMessageBox msgBox;
-            if (numberOfUnsavedResources == 1)
-            {
-              msgBox.setText("A resource has been modified.");
-            }
-            else
-            {
-              msgBox.setText(
-                QString::number(numberOfUnsavedResources) + " resources have been modified.");
-            }
-            msgBox.setInformativeText("Do you want to save your changes?");
-            msgBox.setStandardButtons(
-              QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-            msgBox.setDefaultButton(QMessageBox::Save);
-
-            ret = msgBox.exec();
+            ret = pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(
+              numberOfUnsavedResources, true);
 
             if (ret == QMessageBox::Save)
             {
@@ -206,6 +181,9 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
                     // the action as though the user had pressed "Cancel" at
                     // the first step. This behavior is in keeping with other
                     // document-based applications.
+                    // If the user has set the DontShowAndSave preference,
+                    // there's no way to exit the app with a modified resource -
+                    // they must explicitly close and discard each modified resource.
                     if (state == pqSaveResourceReaction::State::Aborted)
                     {
                       ret = QMessageBox::Cancel;
@@ -222,6 +200,83 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
 #endif
     }
   });
+}
+
+int pqSMTKSaveOnCloseResourceBehavior::showDialog(
+  bool& cbChecked, int numberOfUnsavedResources, bool showCancel)
+{
+  QMessageBox msgBox;
+  QCheckBox* cb = new QCheckBox("Set default and don't show again.");
+  if (numberOfUnsavedResources == 1)
+  {
+    msgBox.setText("A resource has been modified.");
+  }
+  else
+  {
+    msgBox.setText(QString::number(numberOfUnsavedResources) + " resources have been modified.");
+  }
+  msgBox.setInformativeText("Do you want to save your changes?");
+  auto buttons = QMessageBox::Save | QMessageBox::Discard;
+  if (showCancel)
+  {
+    buttons |= QMessageBox::Cancel;
+  }
+  msgBox.setStandardButtons(buttons);
+  msgBox.setDefaultButton(QMessageBox::Save);
+  msgBox.setCheckBox(cb);
+
+  int ret = msgBox.exec();
+  cbChecked = cb->isChecked();
+  return ret;
+}
+
+int pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(
+  int numberOfUnsavedResources, bool showCancel)
+{
+  int ret = QMessageBox::Discard;
+  auto settings = vtkSMTKSettings::GetInstance();
+  int showSave = settings->GetShowSaveResourceOnClose();
+  bool cbChecked = false;
+  if (showSave == vtkSMTKSettings::AskUser)
+  {
+    ret = pqSMTKSaveOnCloseResourceBehavior::showDialog(
+      cbChecked, numberOfUnsavedResources, showCancel);
+  }
+  else if (showSave == vtkSMTKSettings::DontShowAndSave)
+  {
+    ret = QMessageBox::Save;
+  }
+  // only true if messagebox was shown and user checked - save settings.
+  if (cbChecked && ret != QMessageBox::Cancel)
+  {
+    // set preference in settings.
+    showSave = ret == QMessageBox::Discard ? vtkSMTKSettings::DontShowAndDiscard
+                                           : vtkSMTKSettings::DontShowAndSave;
+    // save on server, too, so they persist. From pqWelcomeDialog
+    pqServer* server = pqApplicationCore::instance()->getActiveServer();
+    if (server)
+    {
+      vtkSMSessionProxyManager* pxm = server->proxyManager();
+      if (pxm)
+      {
+        vtkSMProxy* proxy = pxm->GetProxy("settings", "SMTKSettings");
+        if (proxy)
+        {
+          const char* pname = "ShowSaveResourceOnClose";
+          vtkSMPropertyHelper(proxy, pname).Set(showSave);
+          proxy->UpdateVTKObjects();
+          // Force a save, otherwise change won't persist across restarts.
+          // From pqSettingsDialog::onAccepted()
+          pqSettings* qSettings = pqApplicationCore::instance()->settings();
+          vtkSMProperty* smproperty = proxy->GetProperty(pname);
+          QString key = QString("%1.%2").arg(proxy->GetXMLName()).arg(pname);
+          qSettings->saveInQSettings(key.toLocal8Bit().data(), smproperty);
+        }
+      }
+    }
+  }
+
+  return ret;
 }
 
 pqSMTKSaveOnCloseResourceBehavior* pqSMTKSaveOnCloseResourceBehavior::instance(QObject* parent)

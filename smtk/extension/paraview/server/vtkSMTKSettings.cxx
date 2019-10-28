@@ -23,6 +23,7 @@ vtkSMTKSettings* vtkSMTKSettings::New()
 
 vtkSMTKSettings::vtkSMTKSettings()
   : HighlightOnHover(true)
+  , ShowSaveResourceOnClose(AskUser)
   , SelectionRenderStyle(SolidSelectionStyle)
   , ResourceTreeStyle(HierarchicalStyle)
   , WorkflowsFolder(nullptr)
@@ -40,6 +41,7 @@ void vtkSMTKSettings::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "HighlightOnHover: " << this->HighlightOnHover << "\n";
+  os << indent << "ShowSaveResourceOnClose: " << this->ShowSaveResourceOnClose << "\n";
   os << indent << "SelectionRenderStyle: " << this->SelectionRenderStyle << "\n";
   os << indent << "ResourceTreeStyle: " << this->ResourceTreeStyle << "\n";
   os << indent << "WorkflowsFolder: \"" << this->WorkflowsFolder << "\"\n";

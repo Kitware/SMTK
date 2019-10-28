@@ -2116,6 +2116,33 @@
       </IntVectorProperty>
 
       <IntVectorProperty
+        name="ShowSaveResourceOnClose"
+        number_of_elements="1"
+        default_values="0"
+        command="SetShowSaveResourceOnClose"
+        information_property="ShowSaveResourceOnCloseInfo"
+        panel_visibility="default">
+        <Documentation>
+          Show a dialog asking to save or discard changes to a resource,
+          when closing a modified resource.
+        </Documentation>
+        <EnumerationDomain name="enum">
+          <Entry text="Ask each time" value="0"/>
+          <Entry text="Don't ask and save resource" value="1"/>
+          <Entry text="Don't ask and discard changes" value="2"/>
+        </EnumerationDomain>
+        <Hints>
+          <SaveInQSettings both="1"/>
+        </Hints>
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="ShowSaveResourceOnCloseInfo"
+        command="GetShowSaveResourceOnClose"
+        information_only="1">
+        <SimpleIntInformationHelper />
+      </IntVectorProperty>
+
+      <IntVectorProperty
         name="SelectionRenderStyle"
         number_of_elements="1"
         default_values="0"
