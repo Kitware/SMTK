@@ -7,7 +7,7 @@ also accessible in Python, whose instances perform the following functions:
 :smtk:`Resource <smtk::model::Resource>`
   instances contain model topology and geometry.
   All of the model entities such as faces, edges, and vertices are
-  assigned a UUID by SMTK.
+  assigned a :smtk:`UUID <smtk::common::UUID>` by SMTK.
   You can think of the resource as a key-value store from UUID values to
   model entities, their properties, their arrangement with other entities,
   their ties to the attribute resource, and their tessellations.
@@ -16,58 +16,40 @@ also accessible in Python, whose instances perform the following functions:
   instances relate entries in a model Resource to a solid modeling kernel.
   You can think of the entities in a model Resource as being "backed" by
   a solid modeling kernel; the session provides a way to synchronize
-  the representations in the Resource and the modeling kernel.
+  the representations SMTK keeps in a Resource and their native representation
+  in the modeling kernel SMTK is interfacing with.
 
-
-:smtk:`Operator <smtk::model::Operator>`
-  instances represent modeling operations that a modeling kernel
-  provides for marking up, modifying, or even generating modeling entities
-  from scratch.
-  Operators usually require the entries in the model Resource to be
-  updated after they are executed (in the solid modeling kernel).
-  Each operator implements a method to invoke its operation in the modeling kernel
-  and owns an attribute resource Attribute instance (its *specification*) to store
-  the parameters required by the operation.
-  SMTK expects the primary operand of an operator (e.g., a set of edge entities
-  in the model resource to be swept into a face) to be model entities
-  **associated** with the operator's specification.
-  Other operands (e.g., the geometric path along which to sweep a set of edges)
-  are stored as key-value Items in the specification.
+:smtk:`Entity <smtk::model::Entity>`
+  is a subclass of :smtk:`Component <smtk::resource::Component>` specific to
+  the model resource.
+  The resource holds an Entity record for each vertex, edge, face, etc. since
+  the types of information stored for geometric entities is similar.
+  Methods that are specific to the type of geometry embodied by the entity
+  are defined via the EntityRef class and its subclasses below.
 
 :smtk:`EntityRef <smtk::model::EntityRef>`
-  instances are lightweight references into a model Resource's storage
-  that represent a single entity (e.g., a vertex, edge, face, or volume)
+  instances are lightweight references into the Entity records held by a
+  model Resource's storage.
+  Each represents a single entity (e.g., a vertex, edge, face, or volume)
   and provide methods for easily accessing related entities, properties,
   tessellation data, and attributes associated with that entity.
   They also provide methods for manipulating the model Resource's storage
-  but *these methods should not be used directly*; instead use an Operator
-  instance to modify the model so that the modeling kernel and model resource
+  but *these methods should not be used directly*; instead use an Operation
+  to modify the model so that the modeling kernel and model resource
   stay in sync.
   EntityRef subclasses include Vertex, Edge, Face, Volume, Model,
   Group, UseEntity, Loop, Shell, and so on. These are discussed
   in detail in `Model Entities`_ below.
 
-:smtk:`DescriptivePhrase <smtk::model::DescriptivePhrase>`
-  instances provide a uniform way to present model entities and the information
-  associated with those entities to users.
-  There are several subclasses of this class that present an entity,
-  a set of entities, an entity's property, and a set of entity properties.
-  Each phrase may have 1 parent and multiple children;
-  thus, phrases can be arranged into a tree structure.
-
-:smtk:`SubphraseGenerator <smtk::model::SubphraseGenerator>`
-  instances accept a DescriptivePhrase instance and enumerate its children.
-  This functionality is separated from the DescriptivePhrase class so that
-  different user-interface components can use the same set of phrases but
-  arrange them in different ways.
-  For example, a model-overview widget might subclass the subphrase generator
-  to only enumerate sub-models and sub-groups of the entity in its input
-  DescriptivePhrase; while a model-detail widget might include volumes, faces,
-  edges, and vertices when passed a DescriptivePhrase for a model.
-
-
 Model Entities
 ==============
+
+This section covers two aspects of SMTK's model entities:
+the implementation details such as the organization of the class hierarchy;
+and the principles and governing philosophy that the model entities embody.
+
+Implementation
+--------------
 
 As mentioned above, the model :smtk:`Resource <smtk::model::Resource>` class
 is the only place where model topology and geometry are stored in SMTK.
@@ -83,6 +65,69 @@ These classes are organized like so:
 
 Each relationship shown in the figure above has a corresponding
 method in the EntityRef subclasses for accessing the related entities.
+
+Organizing Principles
+---------------------
+
+Model components are geometric entities;
+they represent geometric features that simulations use to specify the
+problem domain and geometric constraints on the problem due to physical
+phenomena, natural conditions, engineered behavior, and variations over time.
+Most of the entities that SMTK provides are related to boundary-representation_
+(B-Rep) models, where a domain is specified by its boundary (and the boundary
+entities are specified by their boundaries, decreasing in dimension to
+vertices). Thus B-Rep models specify volumes via bounding faces, faces via
+bounding edges, and edges by vertices. Not every entity necessarily has a
+lower-dimensional boundary: an edge may be periodic and thus not need a
+vertex as its boundary, or infinite in extent (although usually, those are
+represented by a vertex placed "at infinity" via homogeneous coordinates).
+Similarly, faces and volumes may be unbounded due to periodicity or
+infinite extent.
+
+The other common feature in most B-Rep models are *use-records*,
+which impart sense and orientation to geometric entities.
+Geometric entities such as faces are generally considered either
+topologically (i.e., an entity is a single thing (a set) given a name
+inside a collection of other things) or geometrically (i.e., an entity
+is a locus of points in space, and those points have features such as
+a measure that identifies the dimensionality of the locus).
+Neither of these approaches (topological or geometric) imply
+*orientation* or *sense*.
+
+Orientation is a binary indicator (positive/negative, inside/outside, or
+forward/backward) associated with an entity.
+Occasionally, people may also consider it a tertiary indicator:
+inside/outside/on.
+
+Similarly, the "sense" of an entity is the notion of how the entity
+is being employed to compose the model.
+
+To understand how sense and orientation are distinct from one another,
+consider an edge in a 3-dimensional model that bounds 2 or more faces.
+Edges have both an orientation, which is the direction along the edge
+considered forward.
+The sense identifies which face a pair of oppositely-oriented "uses" bound.
+Since the same edge may bound arbitrarily-many faces in 3 dimensions,
+SMTK uses an integer to identify the sense.
+
+Faces (in 3-dimensional models) always have 2 orientations and
+may partition volumes to either side.
+Because a face only has 2 sides, faces may bound at most two volume regions.
+This means that for faces, the sense may always be taken to be 0 without
+loss of generality.
+
+Vertices are not considered to have an orientation but do have a
+non-trivial sense: consider the model vertex at the point where two conical surfaces meet.
+The vertex is used in a different sense by each cone; a different vertex-use record
+(if vertex uses are tracked by the modeling kernel) will be created for each
+volume bounded by the vertex when those volumes share no other points
+in the immediate neighborhood of the vertex.
+
+Beyond geometric entities and use-records, SMTK also offers model entities
+for less formal models: groups, auxiliary geometry, geometric instances,
+models, and concepts.
+
+.. _boundary-representation: https://en.wikipedia.org/wiki/Boundary_representation
 
 Filtering and Searching
 =======================
