@@ -490,6 +490,9 @@ bool vtkSMTKResourceRepresentation::SetEntityVisibility(
       // Mark the mappers as modified or the new visibility info will not be updated:
       this->EntityMapper->Modified();
       this->GlyphMapper->Modified();
+      // mark the selection modified, so UpdateDisplayAttributesFromSelection will fix
+      // the selection visibility
+      this->SelectionModified();
     }
   }
   return didChange;
