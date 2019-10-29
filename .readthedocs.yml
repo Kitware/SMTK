@@ -1,3 +1,8 @@
+version: 2
+
+formats: all
+
 python:
   version: 2.7
-requirements_file: doc/requirements/dev.txt
+  install:
+    - requirements: doc/requirements/dev.txt
