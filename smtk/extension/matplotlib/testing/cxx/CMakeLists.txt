@@ -42,12 +42,12 @@ if (SMTK_ENABLE_VTK_SUPPORT)
 #target_compile_definitions(RenderMesh PRIVATE "USE_VTK=1")
 
   list(APPEND additional_libraries
-    vtkRenderingGL2PSOpenGL2
+    VTK::RenderingGL2PSOpenGL2
+    VTK::IOImage
+    VTK::InteractionImage
+    VTK::TestingRendering
     vtkSMTKSourceExt
     vtkSMTKReaderExt
-    vtkIOImage
-    vtkInteractionImage
-    vtkTestingRendering
     )
 endif()
 

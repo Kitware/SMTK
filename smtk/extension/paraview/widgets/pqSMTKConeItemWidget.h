@@ -36,7 +36,7 @@
   * on the operation to contextually place the widget based on
   * associations.
   */
-class SMTKPQWIDGETSEXT_EXPORT pqSMTKConeItemWidget : public pqSMTKAttributeItemWidget
+class pqSMTKConeItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:

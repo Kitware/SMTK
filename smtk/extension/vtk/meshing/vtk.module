@@ -1,0 +1,15 @@
+NAME
+  vtkSMTKMeshingExt
+CONDITION
+  SMTK_ENABLE_REMUS_SUPPORT
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::FiltersGeneral
+PRIVATE_DEPENDS
+  VTK::CommonMisc
+  VTK::CommonSystem
+  VTK::FiltersCore
+  VTK::IOXML
+  VTK::vtksys

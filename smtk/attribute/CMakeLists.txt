@@ -186,13 +186,8 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
 smtk_public_headers(smtkCore ${attributeHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_smtk_plugin(
-    smtkAttributePlugin "1.0"
-    ENABLED_BY_DEFAULT
-    REGISTRAR smtk::attribute::Registrar
-    MANAGERS smtk::operation::Manager smtk::resource::Manager
-    LIBRARIES smtkCore)
-  smtk_install_library(smtkAttributePlugin)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

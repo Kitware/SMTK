@@ -30,7 +30,7 @@
 #ifndef __smtk_vtkGeoSphereTransformLegacy_h
 #define __smtk_vtkGeoSphereTransformLegacy_h
 
-#include "smtk/extension/vtk/reader/Exports.h" // For export macro
+#include "smtk/extension/vtk/reader/vtkSMTKReaderExtModule.h" // For export macro
 
 #include "vtkAbstractTransform.h"
 

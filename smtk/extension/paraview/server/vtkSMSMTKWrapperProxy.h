@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_appcomponents_vtkSMSMTKWrapperProxy_h
 #define smtk_extension_paraview_appcomponents_vtkSMSMTKWrapperProxy_h
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
 #include "smtk/resource/Manager.h"
 

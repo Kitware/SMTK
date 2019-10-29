@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKPipelineSelectionBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKPipelineSelectionBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/EntityTypeBits.h"
 
@@ -32,7 +30,7 @@ class pqServer;
   * Similarly, when pipeline sources in ParaView are selected, replace
   * the SMTK selection with the related resources.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKPipelineSelectionBehavior : public QObject
+class pqSMTKPipelineSelectionBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

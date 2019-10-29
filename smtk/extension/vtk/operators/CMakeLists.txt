@@ -1,53 +1,31 @@
-set(headers
-  vtkSMTKOperation.h
-  ExportEdgesToVTK.h
-)
-
-set(srcs
-  vtkSMTKOperation.cxx
-  ExportEdgesToVTK.cxx
-)
+set(classes
+  ExportEdgesToVTK
+  vtkSMTKOperation)
 
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOperationXML)
 
-set_source_files_properties(
-  ExportEdgesToVTK.cxx
-  PROPERTIES
-    WRAP_EXCLUDE 1
-    WRAP_EXCLUDE_PYTHON 1)
-
-set(${vtk-module}_NO_HeaderTest 1)
-set(VTK_INSTALL_NO_HEADERS 1)
-vtk_module_library(${vtk-module} ${srcs})
-target_link_libraries(${vtk-module}
-      LINK_PUBLIC smtkCore smtkIOVTK vtksys)
-
-target_include_directories(${vtk-module}
+vtk_module_add_module(vtkSMTKOperationsExt
+  CLASSES ${classes})
+vtk_module_link(vtkSMTKOperationsExt
   PUBLIC
-    $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
-
-# ... and make header compilation tests link properly:
-smtk_install_library(${vtk-module})
-
-# ... and install the export header
-#has to be after the vtk_module_library
-smtk_export_header(${vtk-module} Exports.h)
+    smtkCore
+    smtkIOVTK)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  vtk_add_cs_wrapping(${vtk-module})
-  smtk_install_library(${vtk-module}CS)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif ()
 
-add_subdirectory(plugin)
-smtk_public_headers(${vtk-module} ${headers})
+# The list of public headers for a VTK module are stored as a "module property"
+# (which is just a namespaced CMake TARGET property with some extra support for
+# being different at install time). Ask for the headers and replace any
+# in-source absolute paths with relative paths.
+_vtk_module_get_module_property(vtkSMTKOperationsExt
+  PROPERTY headers
+  VARIABLE vtk_headers)
+string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" vtk_headers "${vtk_headers}")
+smtk_public_headers(vtkSMTKOperationsExt ${vtk_headers})
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()
-# Potentially wrap in Python using VTK's wrapping methods.
-# This makes the filters available for use with other VTK-wrapped filters.
-#if (SMTK_ENABLE_PYTHON_WRAPPING AND VTK_WRAP_PYTHON)
-# vtk_smtk_wrap_module_python3(${vtk-module} "${headers}")
-#endif()

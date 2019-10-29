@@ -1,0 +1,19 @@
+NAME
+  smtkPVServerExt
+DEPENDS
+  ParaView::ClientServerCoreRendering
+  ParaView::ServerManagerCore
+  ParaView::ServerManagerRendering
+  VTK::CommonCore
+  VTK::CommonExecutionModel
+  VTK::RenderingCore
+PRIVATE_DEPENDS
+  ParaView::ClientServer
+  ParaView::ClientServerCoreCore
+  ParaView::VTKExtensionsCore
+  ParaView::VTKExtensionsDefault
+  VTK::CommonDataModel
+  VTK::CommonMath
+  VTK::CommonTransforms
+  VTK::RenderingOpenGL2
+  vtkSMTKSourceExt

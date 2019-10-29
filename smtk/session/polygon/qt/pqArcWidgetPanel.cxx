@@ -36,13 +36,13 @@
 #include "vtkUnsignedIntArray.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/extension/paraview/widgets/qtArcWidget.h"
 #include "smtk/extension/vtk/widgets/vtkSMTKArcRepresentation.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Resource.h"
 #include "smtk/operation/Operation.h"
 #include "smtk/session/polygon/qt/pqArcWidgetManager.h"
 #include "smtk/session/polygon/qt/pqPolygonArc.h"
+#include "smtk/session/polygon/qt/qtArcWidget.h"
 #include "smtk/session/polygon/qt/vtkPolygonArcInfo.h"
 #include <QtDebug>
 

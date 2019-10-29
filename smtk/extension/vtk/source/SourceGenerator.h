@@ -15,7 +15,7 @@
 
 #include "smtk/common/Generator.h"
 
-#include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 
 #include "vtkAlgorithm.h"
 #include "vtkSmartPointer.h"

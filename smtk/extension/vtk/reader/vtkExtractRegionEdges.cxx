@@ -132,7 +132,7 @@ void vtkExtractRegionEdges::vtkInternal::BuildRegionEdges(vtkPolyData* linePolyD
     vtkIdType currentPtId = outerLoopSegmentIter->EndPts[1];
     vtkIdType currentCellId = outerLoopSegmentIter->LineId;
     vtkIdType* cellIds;
-    unsigned short nCells;
+    vtkIdType nCells;
     size_t lastSize = 0;
     while (edge->size() != lastSize)
     {

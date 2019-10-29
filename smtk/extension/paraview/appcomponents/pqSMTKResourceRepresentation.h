@@ -12,13 +12,11 @@
 
 #include "pqPipelineRepresentation.h"
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/view/SelectionObserver.h"
 
 #include "smtk/PublicPointerDefs.h"
 
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceRepresentation : public pqPipelineRepresentation
+class pqSMTKResourceRepresentation : public pqPipelineRepresentation
 {
   Q_OBJECT
   typedef pqPipelineRepresentation Superclass;

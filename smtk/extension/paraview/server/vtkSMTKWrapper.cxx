@@ -14,7 +14,6 @@
 #include "smtk/extension/paraview/server/vtkSMTKResource.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceSource.h"
-
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/attribute/Attribute.h"

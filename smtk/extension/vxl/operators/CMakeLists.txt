@@ -31,49 +31,21 @@ add_library(smtkVXLOperationViewsExt
 target_link_libraries(smtkVXLOperationViewsExt
   LINK_PUBLIC
     smtkQtExt
-    pqApplicationComponents
     smtkCore
+    ParaView::pqApplicationComponents
     Qt5::Core
     Qt5::Gui
     Qt5::Widgets
   LINK_PRIVATE
     smtkVXLWidgetsExt
-    smtkPQWidgetsExt
 )
 
 smtk_export_header(smtkVXLOperationViewsExt Exports.h)
 
-unset(CMAKE_AUTOMOC)
-
-# Generate the ParaView plugin code for each view class
-# added to the smtkVXLOperationViewsExt library above:
-set(viewInterfaces)
-set(viewSources)
-foreach(src ${srcs})
-  string(REPLACE ".cxx" "" srcClass ${src})
-  set(vitmp)
-  set(vstmp)
-  add_smtk_ui_view(
-    vitmp
-    vstmp
-    CLASS_NAME ${srcClass}
-    VIEW_NAME ${srcClass}
-  )
-  list(APPEND viewInterfaces ${vitmp})
-  list(APPEND viewSources ${vstmp})
-endforeach()
-
-add_paraview_plugin(
-  smtkVXLOperationViewsPlugin "1.0"
-  #SERVER_MANAGER_XML smconfig.xml
-  GUI_INTERFACES ${viewInterfaces}
-  GUI_SOURCES ${viewSources}
-)
-target_link_libraries(smtkVXLOperationViewsPlugin
-  LINK_PUBLIC
-    smtkVXLOperationViewsExt
-)
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif()
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkVXLOperationViewsExt)
-smtk_install_library(smtkVXLOperationViewsPlugin)

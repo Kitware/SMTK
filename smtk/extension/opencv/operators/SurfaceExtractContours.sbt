@@ -58,11 +58,11 @@
 
   <Views>
      <!-- The customized view "Type" needs to be the the same as in plugin macro
-      ADD_SMTK_UI_VIEW(
-        OUTIFACES
-        OUTSRCS
+      smtk_plugin_add_ui_view(
         CLASS_NAME qtExtractContoursView
         VIEW_NAME smtkPolygonContourView
+        INTERFACES OUTIFACES
+        SOURCES OUTSRCS
         )
       -->
     <View Type="smtkSurfaceExtractorView" Title="Extract Surface Edges" FilterByCategory="false" UseSelectionManager="true">

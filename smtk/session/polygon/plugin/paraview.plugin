@@ -1,0 +1,6 @@
+NAME
+  smtkPolygonSessionPlugin
+DESCRIPTION
+  SMTK polygon session for ParaView
+REQUIRES_MODULES
+  vtkSMTKOperationsExt

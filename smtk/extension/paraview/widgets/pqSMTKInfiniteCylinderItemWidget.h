@@ -29,7 +29,7 @@
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
-class SMTKPQWIDGETSEXT_EXPORT pqSMTKInfiniteCylinderItemWidget : public pqSMTKAttributeItemWidget
+class pqSMTKInfiniteCylinderItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:

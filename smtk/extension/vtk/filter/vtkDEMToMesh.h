@@ -10,7 +10,7 @@
 #ifndef __smtk_vtk_DEMToMesh_h
 #define __smtk_vtk_DEMToMesh_h
 
-#include "smtk/extension/vtk/filter/Exports.h" // For export macro
+#include "smtk/extension/vtk/filter/vtkSMTKFilterExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
 class VTKSMTKFILTEREXT_EXPORT vtkDEMToMesh : public vtkPolyDataAlgorithm

@@ -44,7 +44,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define pqPointPropertyWidget_h
 
 #include "pqInteractivePropertyWidget.h"
-#include "smtk/extension/paraview/widgets/Exports.h"
 
 class QCheckBox;
 class pqPointPickingHelper;
@@ -61,7 +60,7 @@ class pqPointPickingHelper;
 * \li \c Input: (optional) a vtkSMInputProperty that is used to get data
 * information for bounds when placing/resetting the widget.
 */
-class SMTKPQWIDGETSEXT_EXPORT pqPointPropertyWidget : public pqInteractivePropertyWidget
+class pqPointPropertyWidget : public pqInteractivePropertyWidget
 {
   Q_OBJECT
   typedef pqInteractivePropertyWidget Superclass;

@@ -17,8 +17,8 @@
 #define __smtk_vtk_cmbUniquePointSet_
 #ifndef __VTK_WRAP__
 
-#include "smtk/common/CompilerInformation.h"    //needed for SMTK_MSVC flag
-#include "smtk/extension/vtk/meshing/Exports.h" // For export macro
+#include "smtk/common/CompilerInformation.h"                    //needed for SMTK_MSVC flag
+#include "smtk/extension/vtk/meshing/vtkSMTKMeshingExtModule.h" // For export macro
 
 #include "vtkABI.h"
 #include "vtkType.h"

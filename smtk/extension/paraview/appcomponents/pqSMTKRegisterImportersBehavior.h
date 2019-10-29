@@ -10,7 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKRegisterImportersBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKRegisterImportersBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
 #include <QObject>
 
 class pqServer;
@@ -21,7 +20,7 @@ class pqSMTKWrapper;
   * This instance will construct server manager configuration input to register
   * a reader for each resource type.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKRegisterImportersBehavior : public QObject
+class pqSMTKRegisterImportersBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

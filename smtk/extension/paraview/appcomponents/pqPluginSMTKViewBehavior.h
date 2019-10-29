@@ -10,15 +10,13 @@
 #ifndef __smtk_pq_PluginSMTKViewBehavior_h
 #define __smtk_pq_PluginSMTKViewBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include <QObject>
 
 /// @ingroup Behaviors
 /// pqPluginSMTKViewBehavior adds support for loading user-fined views from
 /// plugins. In other words, it adds support customized ui for views created using
-/// ADD_SMTK_UI_VIEW.
-class SMTKPQCOMPONENTSEXT_EXPORT pqPluginSMTKViewBehavior : public QObject
+/// smtk_plugin_add_ui_view.
+class pqPluginSMTKViewBehavior : public QObject
 {
   Q_OBJECT
   typedef QObject Superclass;

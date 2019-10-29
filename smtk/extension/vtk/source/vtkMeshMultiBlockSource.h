@@ -10,8 +10,8 @@
 #ifndef __smtk_vtk_MeshMultiBlockSource_h
 #define __smtk_vtk_MeshMultiBlockSource_h
 
-#include "smtk/extension/vtk/source/Exports.h"
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 #include "smtk/mesh/core/MeshSet.h" // for MeshSet
 #include "smtk/model/CellEntity.h"  // for CellEntities

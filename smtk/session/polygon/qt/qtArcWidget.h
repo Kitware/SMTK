@@ -17,12 +17,12 @@
 /// Developer notes: most this class is simply a modified version of
 /// pqArcWidget. SMTK developers should look into cleaning up the API as needed.
 
-#include "smtk/extension/paraview/widgets/qtInteractionWidget.h"
+#include "smtk/session/polygon/qt/qtInteractionWidget.h"
 #include <QScopedPointer>
 
 class vtkSMProxy;
 
-class SMTKPQWIDGETSEXT_EXPORT qtArcWidget : public qtInteractionWidget
+class qtArcWidget : public qtInteractionWidget
 {
   Q_OBJECT;
   typedef qtInteractionWidget Superclass;

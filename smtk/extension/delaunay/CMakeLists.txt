@@ -29,13 +29,9 @@ smtk_public_headers(smtkDelaunayExt ${headers})
 smtk_install_library(smtkDelaunayExt)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_smtk_plugin(
-    smtkDelaunayPlugin "1.0"
-    REGISTRAR smtk::extension::delaunay::Registrar
-    MANAGERS smtk::operation::Manager
-    LIBRARIES smtkCore smtkDelaunayExt)
-  smtk_install_library(smtkDelaunayPlugin)
-endif()
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif ()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)

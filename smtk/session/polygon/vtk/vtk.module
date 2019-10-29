@@ -1,0 +1,9 @@
+NAME
+  vtkPolygonOperationsExt
+DEPENDS
+  VTK::CommonExecutionModel
+PRIVATE_DEPENDS
+  vtkSMTKOperationsExt
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::InteractionWidgets

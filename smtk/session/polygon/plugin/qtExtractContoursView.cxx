@@ -14,12 +14,12 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/extension/paraview/widgets/pqGenerateContoursDialog.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/operation/Manager.h"
+#include "smtk/session/polygon/qt/pqGenerateContoursDialog.h"
 #include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"

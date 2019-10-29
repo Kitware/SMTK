@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 #include <vtkMultiBlockDataSetAlgorithm.h>
 #include <vtkSmartPointer.h>
 

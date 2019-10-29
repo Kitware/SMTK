@@ -15,7 +15,7 @@
 
 #include "smtk/model/AuxiliaryGeometryExtension.h"
 
-#include "smtk/extension/vtk/source/Exports.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 
 #include "vtkSmartPointer.h"
 

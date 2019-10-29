@@ -1,0 +1,16 @@
+NAME
+  vtkSMTKVXLExt
+CONDITION
+  SMTK_ENABLE_VXL_SUPPORT
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonExecutionModel
+PRIVATE_DEPENDS
+  VTK::CommonDataModel
+  VTK::CommonSystem
+  VTK::CommonTransforms
+  VTK::FiltersCore
+  VTK::FiltersGeneral
+  VTK::IOXML
+  VTK::vtksys
+  vtkSMTKReaderExt

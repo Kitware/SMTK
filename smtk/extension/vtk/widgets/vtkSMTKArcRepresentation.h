@@ -20,7 +20,7 @@
 #ifndef __smtk_vtk_SMTKArcRepresentation_h
 #define __smtk_vtk_SMTKArcRepresentation_h
 
-#include "smtk/extension/vtk/widgets/Exports.h" // For export macro
+#include "smtk/extension/vtk/widgets/vtkSMTKWidgetsExtModule.h" // For export macro
 
 #include "vtkOrientedGlyphContourRepresentation.h"
 

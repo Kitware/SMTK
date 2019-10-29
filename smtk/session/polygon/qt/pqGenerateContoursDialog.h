@@ -15,7 +15,7 @@
 #define __smtk_pq_GenerateContoursDialog_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/paraview/widgets/Exports.h"
+#include "smtk/session/polygon/qt/Exports.h"
 #include <QDialog>
 #include <QDoubleValidator>
 
@@ -31,7 +31,7 @@ namespace Ui
 class qtGenerateContoursDialog;
 };
 
-class SMTKPQWIDGETSEXT_EXPORT pqGenerateContoursDialog : public QDialog
+class SMTKPOLYGONQTEXT_EXPORT pqGenerateContoursDialog : public QDialog
 {
   Q_OBJECT
 public:
@@ -82,7 +82,7 @@ protected:
 };
 
 //need a sublcass validator, since QDoubleValidator is really shitty
-class SMTKPQWIDGETSEXT_EXPORT InternalDoubleValidator : public QDoubleValidator
+class InternalDoubleValidator : public QDoubleValidator
 {
   Q_OBJECT
 public:

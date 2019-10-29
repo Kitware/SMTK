@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-// .NAME vtkLASReader - Reader for LIDAR point files
+// .NAME vtkSMTKLASReader - Reader for LIDAR point files
 // .SECTION Description
 // Reader for binary and ascii LIDAR files.  If ascii format, the file MAY contain
 // rgb information for each vertex.  The format, ascii or Binary, must be
@@ -16,11 +16,13 @@
 //
 // It is possible to only load every nth (OnRatio) point and also, individual pieces
 // can be read and appended as a single dataset.
+//
+// TODO: Investigate if VTK's VTK::IOLAS module makes this unnecessary.
 
-#ifndef __smtk_vtk_LASReader_h
-#define __smtk_vtk_LASReader_h
+#ifndef __smtk_vtk_SMTKLASReader_h
+#define __smtk_vtk_SMTKLASReader_h
 
-#include "smtk/extension/vtk/reader/Exports.h" // For export macro
+#include "smtk/extension/vtk/reader/vtkSMTKReaderExtModule.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "vtkSmartPointer.h"
 
@@ -37,11 +39,11 @@ class vtkGeoSphereTransformLegacy;
 
 #define NUMBER_OF_CLASSIFICATIONS 32
 
-class VTKSMTKREADEREXT_EXPORT vtkLASReader : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTKREADEREXT_EXPORT vtkSMTKLASReader : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkLASReader* New();
-  vtkTypeMacro(vtkLASReader, vtkMultiBlockDataSetAlgorithm);
+  static vtkSMTKLASReader* New();
+  vtkTypeMacro(vtkSMTKLASReader, vtkMultiBlockDataSetAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   // Description:
@@ -123,8 +125,8 @@ public:
   std::string GetHeaderInfo();
 
 protected:
-  vtkLASReader();
-  ~vtkLASReader();
+  vtkSMTKLASReader();
+  ~vtkSMTKLASReader();
 
   int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
@@ -136,8 +138,8 @@ protected:
   void AddClassificationFieldData(unsigned char classification, vtkPolyData* pD);
 
 private:
-  vtkLASReader(const vtkLASReader&);   // Not implemented.
-  void operator=(const vtkLASReader&); // Not implemented.
+  vtkSMTKLASReader(const vtkSMTKLASReader&); // Not implemented.
+  void operator=(const vtkSMTKLASReader&);   // Not implemented.
 
   struct Header
   {

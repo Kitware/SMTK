@@ -1,8 +1,5 @@
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 
-find_package( VTK REQUIRED )
-include_directories(${VTK_INCLUDE_DIRS})
-
 set(OpenCVOperationsHeaders imageFeatureExtractorWidget.h)
 set(OpenCVOperationsSrcs imageFeatureExtractorWidget.cxx)
 set(OpenCVOperationsUI imageFeatureExtractor.ui)
@@ -23,15 +20,14 @@ add_library(smtkOpenCVQtExt
 target_include_directories(smtkOpenCVQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(smtkOpenCVQtExt LINK_PUBLIC
-  pqApplicationComponents
   smtkCore
-  smtkPQWidgetsExt
   vtkPolygonOperationsExt
   vtkSMTKSourceExt
-  vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
+  ParaView::pqApplicationComponents
   Qt5::Core
   Qt5::Widgets
+  VTK::DomainsChemistryOpenGL2
 LINK_PRIVATE
   ${VTK_LIBRARIES}
 )

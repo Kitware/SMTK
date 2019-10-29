@@ -10,7 +10,7 @@
 #ifndef vtkImplicitConeFrustum_h
 #define vtkImplicitConeFrustum_h
 
-#include "smtk/extension/vtk/source/Exports.h" // For export macro
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h" // For export macro
 #include "vtkImplicitBoolean.h"
 #include "vtkNew.h"
 #include "vtkVector.h"

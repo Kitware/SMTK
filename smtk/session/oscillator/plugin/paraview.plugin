@@ -1,0 +1,6 @@
+NAME
+  smtkOscillatorSessionPlugin
+DESCRIPTION
+  SMTK oscillator session for ParaView
+REQUIRES_MODULES
+  vtkSMTKSourceExt

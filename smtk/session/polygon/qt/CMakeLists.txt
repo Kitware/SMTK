@@ -4,19 +4,27 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 set(PQWidgetsSrcs
   pqArcWidgetManager.cxx
   pqArcWidgetPanel.cxx
+  pqGenerateContoursDialog.cxx
   pqPolygonArc.cxx
   pqSplitEdgeWidget.cxx
+  qtArcWidget.cxx
+  qtInteractionWidget.cxx
 )
 
 set(PQWidgetsUIs
+  qtArcWidget.ui
   qtArcWidgetPanel.ui
+  qtGenerateContoursDialog.ui
 )
 
 set(PQWidgetsMocHeaders
   pqArcWidgetManager.h
   pqArcWidgetPanel.h
+  pqGenerateContoursDialog.h
   pqPolygonArc.h
   pqSplitEdgeWidget.h
+  qtArcWidget.h
+  qtInteractionWidget.h
 )
 
 #install the headers
@@ -39,21 +47,32 @@ target_include_directories(smtkPolygonQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #set smtkPolygonQtExt to publicly link to smtkCore
 target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
-  pqApplicationComponents
   smtkCore
-  smtkPQWidgetsExt
   smtkQtExt
   vtkPolygonOperationsExt
   vtkSMTKSourceExt
-  vtkDomainsChemistryOpenGL2
   vtkSMTKFilterExt
+  ParaView::ClientServerCoreCore
+  ParaView::pqApplicationComponents
   Qt5::Core
   Qt5::Widgets
+  VTK::CommonCore
+  VTK::DomainsChemistryOpenGL2
 LINK_PRIVATE
-  ${VTK_LIBRARIES}
+  ParaView::ClientServer
+  ParaView::ClientServerCoreRendering
+  ParaView::ServerManagerCore
+  ParaView::ServerManagerDefault
+  ParaView::ServerManagerRendering
+  ParaView::VTKExtensionsCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::InteractionWidgets
+  VTK::RenderingCore
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree
+set(PROJECT_NAME SMTKPolygonModules)
 smtk_install_library(smtkPolygonQtExt)

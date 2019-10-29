@@ -52,7 +52,7 @@
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
-class SMTKPQWIDGETSEXT_EXPORT pqSMTKPointItemWidget : public pqSMTKAttributeItemWidget
+class pqSMTKPointItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:

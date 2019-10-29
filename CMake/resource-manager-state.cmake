@@ -8,14 +8,6 @@ project(resource-manager-state)
 
 include(ExternalProject)
 
-# If on Windows, force response file usage. The command line gets way too long
-# on Windows without this. Once VTK_USE_FILE and PARAVIEW_USE_FILE are gone,
-# this can be removed.
-set(response_file)
-if (WIN32)
-  set(response_file -DCMAKE_NINJA_FORCE_RESPONSE_FILE:BOOL=ON)
-endif ()
-
 ExternalProject_Add(resource-manager-state
   GIT_REPOSITORY "https://gitlab.kitware.com/cmb/plugins/read-and-write-resource-manager-state.git"
   GIT_TAG "origin/master"

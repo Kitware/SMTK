@@ -24,9 +24,6 @@ set (unit_tests_which_require_data
 set (unit_tests_helpers
   smtkRegressionTestImage)
 
-# Add compile definitions to force linking to implementation modules
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
-
 smtk_unit_tests(
   LABEL "vtk"
   SOURCES ${unit_tests}
@@ -34,8 +31,21 @@ smtk_unit_tests(
   EXTRA_SOURCES ${unit_tests_helpers}
   LIBRARIES
     smtkCore
-    vtkRenderingGL2PSOpenGL2
-    vtkSMTKSourceExt
     vtkSMTKReaderExt
-    vtkTestingRendering
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::RenderingCore
+    VTK::RenderingOpenGL2
+    VTK::TestingRendering
 )
+
+# This is required in order to get VTK's object factories hooked up.
+vtk_module_autoinit(
+  TARGETS UnitTests_smtk_extension_vtk_reader_testing_cxx
+  MODULES
+    vtkSMTKReaderExt
+    VTK::CommonCore
+    VTK::CommonDataModel
+    VTK::RenderingCore
+    VTK::RenderingOpenGL2
+    VTK::TestingRendering)

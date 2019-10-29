@@ -1,6 +1,6 @@
 set(library_name "_smtkPybindIOVTK")
 set(module_path "io/vtk")
-set(build_path "${CMAKE_BINARY_DIR}/smtk/${module_path}")
+set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
 pybind11_add_module(${library_name} PybindIOVTK.cxx)
@@ -8,7 +8,7 @@ target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
 target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkIOVTK
-  vtkCommonCore vtkWrappingPythonCore )
+  VTK::CommonCore VTK::WrappingPythonCore )
 set_target_properties(${library_name}
   PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${build_path}"

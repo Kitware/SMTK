@@ -14,59 +14,9 @@ endif()
 # Add operators that use Delaunay 2d meshing
 add_subdirectory(delaunay)
 
-# Add VTK library to render SMTK geometry and interact with ParaView-based apps if enabled.
-if(SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_PARAVIEW_SUPPORT)
-  # Only include the ParaView use-file in subdirectories
-  # that require ParaView include paths.
-  find_package(ParaView COMPONENTS vtkIOGDAL REQUIRED)
-  include("${PARAVIEW_USE_FILE}")
-  include (vtkClientServerWrapping)
-elseif(SMTK_ENABLE_VTK_SUPPORT)
-  # Only include the VTK use-file in subdirectories
-  # that require VTK include paths. Otherwise, command
-  # lines get too long on some platforms.
-
-  # We need the COMPONENTS argument so that this will work
-  # with both standalone VTK or Paraview-VTK
-  set(__required_vtk_modules
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkCommonExecutionModel
-    vtkRenderingCore
-    vtkInteractionStyle
-    vtkViewsCore
-    vtkViewsInfovis
-    vtkIOGDAL
-    vtkIOGeometry
-    vtkIOPLY
-    vtkIOXML
-    vtkIOLegacy
-    vtkInteractionStyle
-    vtkRenderingFreeType
-    vtkRenderingOpenGL2
-    vtkRenderingVolumeOpenGL2
-    )
-
-  if (SMTK_ENABLE_TESTING)
-    list(APPEND __required_vtk_modules vtkTestingRendering)
-  endif()
-  find_package( VTK REQUIRED COMPONENTS ${__required_vtk_modules} )
-
-  include("${VTK_USE_FILE}")
-  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-endif()
-
 set(SMTK_VTK_SUPPORT_ENABLED "False")
 
 if (SMTK_ENABLE_VTK_SUPPORT)
-  # Don't add the VTK or other subdirectories as they use the
-  # vtk_module_library() macro and vtk/module.cmake file.
-  # The pv_process_modules() macro finds all subdirectories
-  # containing a module.cmake file automatically.
-  include (smtkVTKModules)
-  vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
-  vtk_smtk_process_modules()
-
   set(SMTK_VTK_SUPPORT_ENABLED "True")
   add_subdirectory(vtk)
 

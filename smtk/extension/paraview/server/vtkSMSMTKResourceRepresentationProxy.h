@@ -16,7 +16,7 @@
 #ifndef smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
 #define smtk_extension_paraview_representation_vtkSMSMTKResourceRepresentationProxy_h
 
-#include "smtk/extension/paraview/server/Exports.h" //needed for exports
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h" //needed for exports
 #include "vtkSMPVRepresentationProxy.h"
 
 class vtkSMTKResourceRepresentation;

@@ -1,9 +1,3 @@
-# Only include the VTK use-file in subdirectories
-# that require VTK include paths. Otherwise, command
-# lines get too long on some platforms.
-include("${VTK_USE_FILE}")
-list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-
 set(multiscaleSrcs
   Registrar.cxx
   Resource.cxx
@@ -32,14 +26,14 @@ target_link_libraries(smtkMultiscaleSession
     smtkCore
     smtkMeshSession
     smtkIOVTK
-    vtkCommonDataModel
-    vtkPythonInterpreter
+    VTK::CommonDataModel
+    VTK::PythonInterpreter
   LINK_PRIVATE
-    vtkIOXdmf2
-    vtkImagingCore
-    vtkFiltersGeneral
-    vtkFiltersGeometry
-    vtkFiltersModeling
+    VTK::IOXdmf2
+    VTK::ImagingCore
+    VTK::FiltersGeneral
+    VTK::FiltersGeometry
+    VTK::FiltersModeling
     ${Boost_LIBRARIES}
 )
 smtk_export_header(smtkMultiscaleSession Exports.h)

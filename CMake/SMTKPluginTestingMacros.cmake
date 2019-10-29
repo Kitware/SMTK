@@ -12,14 +12,6 @@
 # plugin file.
 function(smtk_test_plugin test_plugin_file_url)
 
-  # If on Windows, force response file usage. The command line gets way too long
-  # on Windows without this. Once VTK_USE_FILE and PARAVIEW_USE_FILE are gone,
-  # this can be removed.
-  set(response_file)
-  if (WIN32)
-    set(response_file -DCMAKE_NINJA_FORCE_RESPONSE_FILE:BOOL=ON)
-  endif ()
-
   # Create a testing directory for the plugin based off of its hashed file name.
   string(MD5 hashed_test_dir ${test_plugin_file_url})
   string(SUBSTRING ${hashed_test_dir} 0 8 hashed_test_dir)
@@ -55,7 +47,6 @@ function(smtk_test_plugin test_plugin_file_url)
       -DENABLE_TESTING=ON
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       -Dsmtk_DIR=${PROJECT_BINARY_DIR}
-      ${response_file}
   )
   # Plugin tests can take a little longer since they need to
   # clone a repo and build a project.

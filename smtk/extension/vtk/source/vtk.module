@@ -1,0 +1,20 @@
+NAME
+  vtkSMTKSourceExt
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::CommonExecutionModel
+  VTK::ViewsInfovis
+PRIVATE_DEPENDS
+  vtkSMTKFilterExt
+  VTK::CommonTransforms
+  VTK::FiltersCore
+  VTK::FiltersGeneral
+  VTK::IOGDAL
+  VTK::IOGeometry
+  VTK::IOImage
+  VTK::IOPLY
+  VTK::IOXML
+  VTK::ImagingCore
+  VTK::RenderingCore
+  VTK::vtksys

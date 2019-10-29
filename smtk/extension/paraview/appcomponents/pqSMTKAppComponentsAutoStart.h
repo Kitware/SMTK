@@ -10,14 +10,12 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKAppComponentsAutoStart_h
 #define smtk_extension_paraview_appcomponents_pqSMTKAppComponentsAutoStart_h
 
-#include "smtk/extension/paraview/appcomponents/PluginExports.h"
-
 #include <QObject>
 
 class vtkSMProxy;
 class pqPluginSMTKViewBehavior;
 
-class SMTKPQCOMPONENTSPLUGIN_EXPORT pqSMTKAppComponentsAutoStart : public QObject
+class pqSMTKAppComponentsAutoStart : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

@@ -1,0 +1,15 @@
+NAME
+  vtkSMTKWidgetsExt
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
+  VTK::InteractionWidgets
+PRIVATE_DEPENDS
+  vtkSMTKSourceExt
+  VTK::CommonMisc
+  VTK::CommonTransforms
+  VTK::FiltersCore
+  VTK::FiltersGeneral
+  VTK::FiltersModeling
+  VTK::FiltersSources
+  VTK::RenderingCore

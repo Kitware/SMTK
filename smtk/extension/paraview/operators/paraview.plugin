@@ -1,0 +1,6 @@
+NAME
+  smtkPQOperationViewsPlugin
+DESCRIPTION
+  SMTK operation views for ParaView
+REQUIRES_MODULES
+  VTK::jsoncpp

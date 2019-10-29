@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKSubtractUI_h
 #define smtk_extension_paraview_appcomponents_pqSMTKSubtractUI_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include <QObject>
@@ -33,7 +31,7 @@ class pqView;
   * + toolbar buttons
   * + dock widgets (panels)
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKSubtractUI : public QObject
+class pqSMTKSubtractUI : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

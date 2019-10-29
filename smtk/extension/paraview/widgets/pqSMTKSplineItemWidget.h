@@ -17,7 +17,7 @@ class vtkEventQtSlotConnect;
 /**\brief Display an editable planar spline in 3-D with draggable handles
   *       for editing a GroupItem containing a number of DoubleItem points.
   */
-class SMTKPQWIDGETSEXT_EXPORT pqSMTKSplineItemWidget : public pqSMTKAttributeItemWidget
+class pqSMTKSplineItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:

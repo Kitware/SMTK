@@ -1,103 +1,193 @@
-#------------------------------------------------------------------------------
-# Update CMAKE_PREFIX_PATH locally when SMTK_RELOCATABLE_INSTALL=OFF
-#------------------------------------------------------------------------------
+#[==[.md
+# smtk-config.cmake
 
-set(SMTK_PREFIX_PATH "@smtk_prefix_path@")
-set(CMAKE_PREFIX_PATH_save "${CMAKE_PREFIX_PATH}")
-list(APPEND CMAKE_PREFIX_PATH ${SMTK_PREFIX_PATH})
+This file is used by CMake when finding SMTK.
 
-#Set up the CMake module paths
-list(APPEND CMAKE_MODULE_PATH "@SMTK_MODULE_DIR@;@SMTK_VTK_MODULE_DIR@")
-set(smtk_module_dir "@SMTK_VTK_MODULE_DIR@/Modules")
-if(IS_DIRECTORY "${smtk_module_dir}")
-  list(APPEND CMAKE_MODULE_PATH "${smtk_module_dir}")
-  file(GLOB config_files RELATIVE "${smtk_module_dir}" "${smtk_module_dir}/*.cmake")
-  foreach (_file IN LISTS config_files)
-    if (NOT _file MATCHES "[^\\-]+-[a-zA-Z]+\\.cmake")
-      string(REGEX REPLACE "\\.cmake$" "" _module "${_file}")
-      list(APPEND VTK_MODULES_ENABLED "${_module}")
-    endif()
-  endforeach()
-endif()
-unset(smtk_module_dir)
+The following variables are provided by this module:
 
-set(smtk_cmake_dir @SMTK_MODULE_DIR@)
+  * `smtk_PREFIX_PATH`: Install prefixes for SMTK. May include
+    additional paths for other prefixes of dependencies.
+  * `smtk_VERSION`: The version of SMTK found.
+  * `SMTK_ENABLE_PARAVIEW_SUPPORT`: Whether ParaView support is available or
+    not.
+  * `SMTK_ENABLE_PYTHON_WRAPPING`: Whether Python wrapping is available or not.
+  * `SMTK_ENABLE_QT_SUPPORT`: Whether Qt support is available or not.
+  * `SMTK_ENABLE_REMUS_SUPPORT`: Whether Remus support is available or not.
+  * `SMTK_ENABLE_VTK_SUPPORT`: Whether VTK support is available or not.
+#]==]
 
-set(SMTK_DATA_DIR @smtk_data_dir@)
+set(${CMAKE_FIND_PACKAGE_NAME}_CMAKE_PREFIX_PATH_save "${CMAKE_PREFIX_PATH}")
+include("${CMAKE_CURRENT_LIST_DIR}/smtk-prefix.cmake")
+set("${CMAKE_FIND_PACKAGE_NAME}_PREFIX_PATH" "${_smtk_import_prefix}")
+unset(_smtk_import_prefix)
+list(INSERT CMAKE_PREFIX_PATH 0
+  ${${CMAKE_FIND_PACKAGE_NAME}_PREFIX_PATH})
 
-#When building documentation internally we re-import ourselves, which
-#doesnt work and generates CMake warnings. So we will only look for SMTK
-#if the smtkCore target doesn't already exist
-if(TARGET smtkCore)
-else()
+set("${CMAKE_FIND_PACKAGE_NAME}_VERSION" "@SMTK_VERSION@")
 
-  find_package(Boost @SMTK_MINIMUM_BOOST_VERSION@
-             COMPONENTS @required_boost_components@ REQUIRED)
-  find_package(nlohmann_json REQUIRED)
-  find_package(pegtl REQUIRED)
-  find_package(MOAB REQUIRED)
+unset("${CMAKE_FIND_PACKAGE_NAME}_FOUND")
 
-  set(SMTK_ENABLE_QT_SUPPORT @SMTK_ENABLE_QT_SUPPORT@)
-  if(SMTK_ENABLE_QT_SUPPORT)
-    find_package(Qt5 REQUIRED COMPONENTS Core OpenGL Widgets)
-  endif()
+include("${CMAKE_CURRENT_LIST_DIR}/SMTKMacros.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/SMTKPluginMacros.cmake")
 
-  set(SMTK_ENABLE_PARAVIEW_SUPPORT @SMTK_ENABLE_PARAVIEW_SUPPORT@)
-  if(SMTK_ENABLE_PARAVIEW_SUPPORT)
-    find_package(Qt5 REQUIRED COMPONENTS OpenGL)
-    find_package(ParaView)
-  endif()
+include("${CMAKE_CURRENT_LIST_DIR}/${CMAKE_FIND_PACKAGE_NAME}Targets.cmake")
 
-  set(SMTK_ENABLE_VTK_SUPPORT @SMTK_ENABLE_VTK_SUPPORT@)
-  if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
-    find_package(VTK REQUIRED)
-  endif()
+set(SMTK_ENABLE_PARAVIEW_SUPPORT "@SMTK_ENABLE_PARAVIEW_SUPPORT@")
+set(SMTK_ENABLE_PYTHON_WRAPPING "@SMTK_ENABLE_PYTHON_WRAPPING@")
+set(SMTK_ENABLE_QT_SUPPORT "@SMTK_ENABLE_QT_SUPPORT@")
+set(SMTK_ENABLE_REMUS_SUPPORT "@SMTK_ENABLE_REMUS_SUPPORT@")
+set(SMTK_ENABLE_VTK_SUPPORT "@SMTK_ENABLE_VTK_SUPPORT@")
 
-  set(SMTK_ENABLE_REMUS_SUPPORT @SMTK_ENABLE_REMUS_SUPPORT@)
-  if(SMTK_ENABLE_REMUS_SUPPORT)
-    find_package(Remus REQUIRED)
-  endif()
+set(_smtk_find_package_variables)
+include("${CMAKE_CURRENT_LIST_DIR}/smtk-find-package-helpers.cmake" OPTIONAL)
 
-  # if SMTK has python bindings enabled and is non-relocatable (i.e. this is
-  # SMTK's build directory or SMTK was configured with SMTK_RELOCATABLE_INSTALL
-  # set to False), and if there are no preexisting hint variables for finding
-  # a python library/include dir/executable, we use the python SMTK found to
-  # seed the python hint variables. We do not call find_package() for PythonLibs
-  # or PythonInterp, however, since the consuming program should do that (and
-  # things get all weird when they are called repeatedly).
-  set(SMTK_ENABLE_PYTHON_WRAPPING @SMTK_ENABLE_PYTHON_WRAPPING@)
-  if(SMTK_ENABLE_PYTHON_WRAPPING)
+set(_smtk_find_quietly)
+if (${CMAKE_FIND_PACKAGE_NAME}_FIND_QUIETLY)
+  set(_smtk_find_quietly QUIET)
+endif ()
 
-    set(SMTK_PYTHON_EXECUTABLE "@smtk_python_executable@")
-    set(SMTK_PYTHON_LIBRARY "@smtk_python_library@")
-    set(SMTK_PYTHON_INCLUDE_DIR "@smtk_python_include_dir@")
-    # SMTK_PYTHON_MDOULEDIR is the location of the smtk python module relative
-    # to the location of this file.
-    set(SMTK_PYTHON_MODULEDIR "@smtk_python_moduledir@")
+# Required dependencies.
 
-    if (SMTK_PYTHON_EXECUTABLE AND NOT PYTHON_EXECUTABLE)
-      set(PYTHON_EXECUTABLE ${SMTK_PYTHON_EXECUTABLE})
+# Delaunay is always embedded.
+set(Delaunay_DIR "${CMAKE_CURRENT_LIST_DIR}/Delaunay")
+find_package(Delaunay REQUIRED ${_smtk_find_quietly})
+
+find_package(Boost
+  EXACT "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@"
+  ${_smtk_find_quietly}
+  COMPONENTS
+    @required_boost_components@)
+if (NOT Boost_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "Boost dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif ()
+
+find_package(nlohmann_json ${_smtk_find_quietly})
+if (NOT nlohmann_json_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "nlohmann_json dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif ()
+
+find_package(pegtl ${_smtk_find_quietly})
+if (NOT pegtl_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "pegtl dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif ()
+
+find_package(MOAB ${_smtk_find_quietly})
+if (NOT MOAB_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "MOAB dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif ()
+
+if (SMTK_ENABLE_QT_SUPPORT)
+  find_package(Qt5 ${_smtk_find_quietly}
+    COMPONENTS Core OpenGL Widgets)
+  if (NOT Qt5_FOUND)
+    list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+      "Qt5 dependency not found")
+    set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+  endif ()
+endif ()
+
+# ParaView is found first; if we have it, it will be finding VTK for us.
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  find_package(ParaView ${_smtk_find_quietly})
+  if (NOT ParaView_FOUND)
+    list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+      "ParaView dependency not found")
+    set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+  endif ()
+endif ()
+
+if (SMTK_ENABLE_VTK_SUPPORT)
+  # ParaView finds VTK for us.
+  if (NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
+    find_package(VTK ${_smtk_find_quietly})
+    if (NOT VTK_FOUND)
+      list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+        "VTK dependency not found")
+      set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
     endif ()
+  endif ()
 
-    if (SMTK_PYTHON_LIBRARY AND NOT PYTHON_LIBRARY)
-      set(PYTHON_LIBRARY ${SMTK_PYTHON_LIBRARY})
-    endif ()
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKVTKModules-targets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKVTKModules-vtk-module-properties.cmake")
 
-    if (SMTK_PYTHON_INCLUDE_DIR AND NOT PYTHON_INCLUDE_DIR)
-      set(PYTHON_INCLUDE_DIR ${SMTK_PYTHON_INCLUDE_DIR})
-    endif ()
+  if (@SMTK_ENABLE_VTK_SESSION@) # SMTK_ENABLE_VTK_SESSION
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVTKSession-targets.cmake")
+  endif ()
 
-    find_package(pybind11 @pybind11_VERSION@)
-  endif()
+  if (@SMTK_ENABLE_PARAVIEW_SUPPORT@) # SMTK_ENABLE_PARAVIEW_SUPPORT
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewVTKModules-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewVTKModules-vtk-module-properties.cmake")
+  endif ()
 
-  set(SMTK_PLUGINS @SMTK_PLUGINS@)
+  if (@SMTK_ENABLE_VXL_SUPPORT@) # SMTK_ENABLE_VXL_SUPPORT
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-vtk-module-properties.cmake")
+  endif ()
 
-  include("@SMTK_CONFIG_DIR@/smtkTargets.cmake")
-endif()
+  if (@SMTK_ENABLE_VXL_SUPPORT@) # SMTK_ENABLE_VXL_SUPPORT
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKVXLExt-vtk-module-properties.cmake")
+  endif ()
 
-#------------------------------------------------------------------------------
-# restore CMAKE_PREFIX_PATH
-#------------------------------------------------------------------------------
+  if (@SMTK_ENABLE_POLYGON_SESSION@) # SMTK_ENABLE_POLYGON_SESSION
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKPolygonExt-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKPolygonExt-vtk-module-properties.cmake")
+  endif ()
 
-set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH_save}")
-unset(CMAKE_PREFIX_PATH_save)
+  if (@SMTK_ENABLE_DISCRETE_SESSION@) # SMTK_ENABLE_DISCRETE_SESSION
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKDiscreteModules-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKDiscreteModules-vtk-module-properties.cmake")
+  endif ()
+endif ()
+
+# Now include the ParaView-specific targets and information.
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionPlugins-smtk_paraview_extension_plugin-targets-depends.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionPlugins-targets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewExtensionPlugins-paraview-plugin-properties.cmake")
+
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewPlugins-smtk_paraview_plugins-targets-depends.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewPlugins-targets.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/SMTKParaViewPlugins-paraview-plugin-properties.cmake")
+endif ()
+
+if (SMTK_ENABLE_REMUS_SUPPORT)
+  find_package(Remus ${_smtk_find_quietly})
+  if (NOT Remus_FOUND)
+    list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+      "Remus dependency not found")
+    set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+  endif ()
+endif ()
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  find_package(pybind11 ${_smtk_find_quietly})
+  if (NOT pybind11_FOUND)
+    list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+      "pybind11 dependency not found")
+    set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+  endif ()
+endif ()
+
+unset(_smtk_find_quietly)
+
+foreach (_smtk_find_package_variable IN LISTS _smtk_find_package_variables)
+  unset("${_smtk_find_package_variable}")
+endforeach ()
+unset(_smtk_find_package_variable)
+unset(_smtk_find_package_variables)
+
+set(CMAKE_PREFIX_PATH "${${CMAKE_FIND_PACKAGE_NAME}_CMAKE_PREFIX_PATH_save}")
+unset("${CMAKE_FIND_PACKAGE_NAME}_CMAKE_PREFIX_PATH_save")
+
+if (NOT DEFINED "${CMAKE_FIND_PACKAGE_NAME}_FOUND")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 1)
+endif ()

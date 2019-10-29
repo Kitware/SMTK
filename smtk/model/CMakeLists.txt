@@ -127,13 +127,8 @@ endforeach()
 smtk_public_headers(smtkCore ${modelHeaders})
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_smtk_plugin(
-    smtkModelPlugin "1.0"
-    ENABLED_BY_DEFAULT
-    REGISTRAR smtk::model::Registrar
-    MANAGERS smtk::operation::Manager smtk::resource::Manager
-    LIBRARIES smtkCore)
-  smtk_install_library(smtkModelPlugin)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

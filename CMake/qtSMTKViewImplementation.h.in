@@ -10,25 +10,25 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef _@ARG_CLASS_NAME@Implementation_h
-#define _@ARG_CLASS_NAME@Implementation_h
+#ifndef @_smtk_ui_view_CLASS_NAME@Implementation_h
+#define @_smtk_ui_view_CLASS_NAME@Implementation_h
 
 #include "smtk/extension/qt/qtViewInterface.h"
 #include <QObject>
 
 /// interface class for plugins that create QActionGroups
 /// for adding actions to menus and toolbars
-class @ARG_CLASS_NAME@Implementation : public QObject, public smtk::extension::qtViewInterface
+class @_smtk_ui_view_CLASS_NAME@Implementation : public QObject, public smtk::extension::qtViewInterface
 {
   Q_OBJECT
   Q_INTERFACES(smtk::extension::qtViewInterface)
 public:
-  @ARG_CLASS_NAME@Implementation(QObject* p);
-  ~@ARG_CLASS_NAME@Implementation();
+  @_smtk_ui_view_CLASS_NAME@Implementation(QObject* p);
+  ~@_smtk_ui_view_CLASS_NAME@Implementation();
 
   QString viewName() const override;
 
-  /// return a static constructor for derived class of qtBaseView 
+  /// return a static constructor for derived class of qtBaseView
   qtSMTKViewConstructor viewConstructor() override;
 
 protected:

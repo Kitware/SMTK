@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKNewResourceBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKNewResourceBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/operation/GroupObserver.h"
@@ -53,7 +51,7 @@ private:
 /// modal dialog with the create operation's parameters. These parameters are
 /// then serialized to a json string, and a server-side operation is created and
 /// executed using the deserialized parameters.
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKNewResourceBehavior : public QObject
+class pqSMTKNewResourceBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

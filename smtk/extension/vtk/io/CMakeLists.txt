@@ -27,24 +27,50 @@ target_link_libraries(smtkIOVTK
     smtkCore
     vtkSMTKFilterExt
     vtkSMTKReaderExt
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkFiltersGeneral
-    vtkIOCore
-    vtkIOGDAL
-    vtkInteractionStyle
-    vtkIOGeometry
-    vtkIOImage
-    vtkIOLegacy
-    vtkIONetCDF
-    vtkIOPLY
-    vtkIOXML
-    vtkImagingCore
-    vtkRenderingFreeType
-    vtkRenderingOpenGL2
-    vtksys
-    vtkFiltersCore
-)
+    VTK::CommonCore
+    VTK::IOCore
+  LINK_PRIVATE
+    VTK::CommonDataModel
+    VTK::CommonExecutionModel
+    VTK::FiltersCore
+    VTK::FiltersGeneral
+    VTK::IOGDAL
+    VTK::IOGeometry
+    VTK::IOImage
+    VTK::IOLAS
+    VTK::IOLegacy
+    VTK::IONetCDF
+    VTK::IOPLY
+    VTK::IOXML
+    VTK::ImagingCore
+    VTK::InteractionStyle
+    VTK::RenderingCore
+    VTK::RenderingFreeType
+    VTK::RenderingOpenGL2
+    VTK::vtksys)
+vtk_module_autoinit(
+  TARGETS smtkIOVTK
+  MODULES VTK::CommonCore
+          vtkSMTKFilterExt
+          vtkSMTKReaderExt
+          VTK::IOCore
+          VTK::CommonDataModel
+          VTK::CommonExecutionModel
+          VTK::FiltersCore
+          VTK::FiltersGeneral
+          VTK::IOGDAL
+          VTK::IOGeometry
+          VTK::IOImage
+          VTK::IOLAS
+          VTK::IOLegacy
+          VTK::IONetCDF
+          VTK::IOPLY
+          VTK::IOXML
+          VTK::ImagingCore
+          VTK::InteractionStyle
+          VTK::RenderingCore
+          VTK::RenderingFreeType
+          VTK::RenderingOpenGL2)
 
 smtk_export_header(smtkIOVTK IOVTKExports.h)
 
@@ -56,7 +82,9 @@ target_include_directories(smtkIOVTK
 
 #install the headers
 smtk_public_headers(smtkIOVTK ${headers})
-# ... and make header compilation tests link properly:
+
+# add to the VTK module export set
+set(PROJECT_NAME SMTKVTKModules)
 smtk_install_library(smtkIOVTK)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

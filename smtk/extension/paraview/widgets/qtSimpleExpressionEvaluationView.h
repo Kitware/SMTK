@@ -16,11 +16,9 @@
 #ifndef __smtk_extension_qtSimpleExpressionEvaluationView_h
 #define __smtk_extension_qtSimpleExpressionEvaluationView_h
 
-#include "smtk/extension/paraview/widgets/Exports.h"
 #include "smtk/extension/qt/qtSimpleExpressionView.h"
 
-class SMTKPQWIDGETSEXT_EXPORT qtSimpleExpressionEvaluationView
-  : public smtk::extension::qtSimpleExpressionView
+class qtSimpleExpressionEvaluationView : public smtk::extension::qtSimpleExpressionView
 {
   Q_OBJECT
 public:

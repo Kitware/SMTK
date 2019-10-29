@@ -14,14 +14,11 @@
 
 #include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
 
-#include "smtk/session/oscillator/plugin/Exports.h"
-
 #include "vtkSmartPointer.h"
 
 class vtkDataObject;
 
-class SMTKOSCILLATORSESSIONPLUGIN_EXPORT oscillatorAuxiliaryGeometryExtension
-  : public vtkAuxiliaryGeometryExtension
+class oscillatorAuxiliaryGeometryExtension : public vtkAuxiliaryGeometryExtension
 {
 public:
   smtkTypeMacro(oscillatorAuxiliaryGeometryExtension);

@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_server_vtkSMTKWrapper_h
 #define smtk_extension_paraview_server_vtkSMTKWrapper_h
 
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
 #include "smtk/common/UUID.h"
 

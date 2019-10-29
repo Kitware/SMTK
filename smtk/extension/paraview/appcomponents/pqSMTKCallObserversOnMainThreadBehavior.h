@@ -10,8 +10,6 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKCallObserversOnMainThreadBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKCallObserversOnMainThreadBehavior_h
 
-#include "smtk/extension/paraview/appcomponents/Exports.h"
-
 #include "smtk/common/UUID.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
@@ -41,7 +39,7 @@ class pqSMTKWrapper;
   * Qt's signal/slot relay, we instead hold a map of calling Operations and
   * Resources and pass an associated unique id between threads.
   */
-class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKCallObserversOnMainThreadBehavior : public QObject
+class pqSMTKCallObserversOnMainThreadBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

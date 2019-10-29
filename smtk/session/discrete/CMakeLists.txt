@@ -1,34 +1,11 @@
-if(SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_PARAVIEW_SUPPORT)
-  #if using paraview we need to explicitly look for vtkIOGDAL
-  find_package(ParaView COMPONENTS vtkIOGDAL REQUIRED)
-endif()
-
-# Only include the VTK use-file in subdirectories
-# that require VTK include paths. Otherwise, command
-# lines get too long on some platforms.
-include("${VTK_USE_FILE}")
-list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-
 include_directories(
     "${CMAKE_CURRENT_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/operators"
     "${CMAKE_CURRENT_SOURCE_DIR}/operation"
-    "${CMAKE_CURRENT_SOURCE_DIR}/kernel"
-    "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Model"
-    "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Serialize"
     "${CMAKE_CURRENT_BINARY_DIR}/operation"
-    "${CMAKE_CURRENT_BINARY_DIR}/kernel"
     "${CMAKE_CURRENT_BINARY_DIR}/extension"
 )
-
-# Don't add the VTK or other subdirectories as they use the
-# vtk_module_library() macro and vtk/module.cmake file.
-# The pv_process_modules() macro finds all subdirectories
-# containing a module.cmake file automatically.
-include (smtkVTKModules)
-vtk_smtk_setup_module_environment(${PROJECT_NAME} ${PROJECT_VERSION})
-vtk_smtk_process_modules()
 
 # Build vtk moab reader before session
 if(SMTK_ENABLE_MOAB_DISCRETE_READER)
@@ -198,36 +175,54 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" unitO
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
 
+set (__public_dependencies)
 set (__private_dependencies)
 
 if (VTK_WRAP_PYTHON)
-  list(APPEND __private_dependencies vtkPythonInterpreter)
+  list(APPEND __public_dependencies VTK::PythonUsed)
+  list(APPEND __private_dependencies VTK::PythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
 if(SMTK_ENABLE_MOAB_DISCRETE_READER)
   list(APPEND __private_dependencies vtkDiscreteMoabReader)
 endif()
 
+vtk_module_scan(
+  MODULE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/kernel/vtk.module"
+  PROVIDES_MODULES vtk_modules
+  HIDE_MODULES_FROM_CACHE ON
+  WANT_BY_DEFAULT ON)
+vtk_module_build(
+  MODULES ${vtk_modules}
+  PACKAGE SMTKDiscreteModules
+  INSTALL_EXPORT SMTKDiscreteModules
+  CMAKE_DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
+  TEST_DIRECTORY_NAME "NONE"
+  # Handled by SMTK macros. Used in preference to VTK's since SMTK also adds
+  # unit tests for each public header.
+  INSTALL_HEADERS OFF)
+
 #set smtkDiscreteSession to publicly link to smtkCore and privately to vtkSMTKDiscreteModel
 target_link_libraries(smtkDiscreteSession
   LINK_PUBLIC
     smtkCore
     smtkIOVTK
+    ${__public_dependencies}
   LINK_PRIVATE
   ${Boost_LIBRARIES}
-    vtkCommonExecutionModel
-    vtkFiltersCore
-    vtkFiltersGeometry
-    vtkFiltersSources
-    vtkGeovisCore
-    vtkIOGDAL
-    vtkIOParallel
-    vtkRenderingCore
-    vtkRenderingFreeType
-    vtkRenderingGL2PSOpenGL2
-    vtkRenderingContextOpenGL2
-    vtkRenderingOpenGL2
-    vtksys
+    VTK::CommonExecutionModel
+    VTK::FiltersCore
+    VTK::FiltersGeometry
+    VTK::FiltersSources
+    VTK::GeovisCore
+    VTK::IOGDAL
+    VTK::IOParallel
+    VTK::RenderingCore
+    VTK::RenderingFreeType
+    VTK::RenderingGL2PSOpenGL2
+    VTK::RenderingContextOpenGL2
+    VTK::RenderingOpenGL2
+    VTK::vtksys
     ${__private_dependencies}
     vtkSMTKReaderExt
     vtkSMTKDiscreteModel
@@ -247,15 +242,12 @@ smtk_export_header(smtkDiscreteSession Exports.h)
 smtk_public_headers(smtkDiscreteSession ${discreteSessionHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
+set(PROJECT_NAME SMTKDiscreteModules)
 smtk_install_library(smtkDiscreteSession)
 
-if(SMTK_ENABLE_PARAVIEW_SUPPORT AND SMTK_ENABLE_DISCRETE_SESSION)
-  add_smtk_plugin(
-    smtkDiscreteSessionPlugin "1.0"
-    REGISTRAR smtk::session::discrete::Registrar
-    MANAGERS smtk::operation::Manager smtk::resource::Manager
-    LIBRARIES smtkCore smtkDiscreteSession)
-  smtk_install_library(smtkDiscreteSessionPlugin)
+if(SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

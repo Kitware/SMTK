@@ -10,8 +10,6 @@
 #ifndef __smtk_qt_InteractionWidget_h
 #define __smtk_qt_InteractionWidget_h
 
-#include "smtk/extension/paraview/widgets/Exports.h"
-
 #include <QPointer>
 #include <QWidget>
 #include <vtkNew.h>
@@ -24,7 +22,7 @@ class vtkEventQtSlotConnect;
 /// qtInteractionWidget is a base class for QWidgets that use a
 /// vtkAbstractWidget/vtkWidgetRepresentation subclasses (via Proxy's of course)
 /// to let user interactive setup parameters.
-class SMTKPQWIDGETSEXT_EXPORT qtInteractionWidget : public QWidget
+class qtInteractionWidget : public QWidget
 {
   Q_OBJECT;
   typedef QWidget Superclass;

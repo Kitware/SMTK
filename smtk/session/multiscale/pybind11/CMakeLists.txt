@@ -1,6 +1,6 @@
 set(library_name "_smtkPybindMultiscaleSession")
 set(module_path "session/multiscale")
-set(build_path "${CMAKE_BINARY_DIR}/smtk/${module_path}")
+set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/${module_path}")
 
 pybind11_add_module(${library_name} PybindMultiscaleSession.cxx)

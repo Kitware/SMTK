@@ -1,0 +1,7 @@
+NAME
+  vtkSMTKOperationsExt
+DEPENDS
+  VTK::CommonCore
+PRIVATE_DEPENDS
+  VTK::CommonDataModel
+  VTK::IOXML

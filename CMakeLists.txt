@@ -37,14 +37,9 @@ endif()
 include(CMake/smtkVersion.cmake)
 project(smtk VERSION ${SMTK_VERSION})
 
-# Remove smtkTargets.cmake at the beginning of each CMake run; each time
-# a library is declared below, the file is appended and we do not want
-# to keep appending over multiple runs
-file(REMOVE ${PROJECT_BINARY_DIR}/smtkTargets.cmake)
-
 #Add our Cmake directory to the module search path
 set (smtk_cmake_dir ${PROJECT_SOURCE_DIR}/CMake)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${smtk_cmake_dir})
+list(APPEND CMAKE_MODULE_PATH ${smtk_cmake_dir})
 
 ################################################################################
 
@@ -77,19 +72,29 @@ include(Function)
 # Include mechanism for determining how to specialize hash<X>()
 include(FindHashFunctor)
 
+# Set up rpaths in the install so that libraries all reference each other using
+# their current location.
+if (APPLE)
+  list(APPEND CMAKE_INSTALL_RPATH
+    "@loader_path")
+elseif (UNIX)
+  list(APPEND CMAKE_INSTALL_RPATH
+    "$ORIGIN")
+endif ()
+
 ################################################################################
 ## Paths for output
 
 # Force LIBRARY_OUTPUT_PATH to be a cache variable, whether it was already defined or not.
 if (NOT DEFINED LIBRARY_OUTPUT_PATH)
-  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE INTERNAL "Directory for all libraries.")
+  set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR} CACHE INTERNAL "Directory for all libraries.")
 else()
   set(LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH} CACHE INTERNAL "Directory for all libraries.")
 endif()
 # Set the directory where the binaries will be stored
-set(EXECUTABLE_OUTPUT_PATH         ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(EXECUTABLE_OUTPUT_PATH         ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 # Set the directory where cmake configuration files are installed. The
 # convention for this directory's location is OS-dependent. See
@@ -97,16 +102,13 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # Procedure" for more information.
 set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/${PROJECT_VERSION})
 if (WIN32)
-  set(SMTK_INSTALL_CONFIG_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${PROJECT_VERSION}/cmake)
+  set(SMTK_INSTALL_CONFIG_DIR cmake/${PROJECT_NAME}/${PROJECT_VERSION})
 endif()
 
 # If SMTK_INSTALL_TESTING_DATA is set to ON, set the directory where smtk's data
 # directory is installed.
 if (SMTK_INSTALL_TESTING_DATA)
-  set(SMTK_INSTALL_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/${PROJECT_VERSION})
-  if (WIN32)
-    set(SMTK_INSTALL_DATA_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/${PROJECT_VERSION})
-  endif()
+  set(SMTK_INSTALL_DATA_DIR share/${PROJECT_NAME}/${PROJECT_VERSION})
 endif()
 
 ################################################################################
@@ -364,7 +366,12 @@ find_package(MOAB REQUIRED)
 
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   # include ParaView and ensure it is using the OpenGL2 backend
-  find_package(ParaView)
+  find_package(ParaView REQUIRED)
+  if (SMTK_ENABLE_PYTHON_SUPPORT AND NOT PARAVIEW_ENABLE_PYTHON)
+    message(FATAL_ERROR
+      "SMTK with Python and ParaView support requires that ParaView also be "
+      "built with Python support.")
+  endif ()
 endif()
 
 ################################################################################
@@ -377,18 +384,12 @@ find_package(Threads REQUIRED)
 ################################################################################
 
 if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
-  # Find the package here so environment variables are set, but
-  # be careful not to include the VTK_USE_FILE until inside
-  # a subdirectory that requires it; otherwise the list of include
-  # paths can become too long for some platforms.
   find_package(VTK REQUIRED)
-endif()
-
-if (SMTK_ENABLE_PARAVIEW_SUPPORT OR SMTK_ENABLE_VTK_SUPPORT)
-  if(NOT VTK_RENDERING_BACKEND STREQUAL "OpenGL2")
+  if (SMTK_ENABLE_PYTHON_SUPPORT AND NOT VTK_WRAP_PYTHON)
     message(FATAL_ERROR
-      "SMTK requires that VTK be built with the OpenGL2 Rendering backend.")
-  endif()
+      "SMTK with Python and VTK support requires that VTK also be built with "
+      "Python support.")
+  endif ()
 endif()
 
 ################################################################################
@@ -474,15 +475,13 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     elseif (SMTK_ENABLE_VTK_SUPPORT)
       list(APPEND required_python_modules
         vtk)
-      # TODO: VTK needs to export a variable for this
       set(vtk_PYTHONPATH
-        "${VTK_INSTALL_PREFIX}/lib/python2.7/site-packages"
-        "${VTK_INSTALL_PREFIX}/lib"
-        "${VTK_INSTALL_PREFIX}/lib64/python2.7/site-packages"
-        "${VTK_INSTALL_PREFIX}/lib64")
+        "${VTK_PYTHONPATH}")
+      list(GET VTK_PREFIX_PATH 0
+        vtk_prefix)
       set(vtk_libpath
-        "${VTK_INSTALL_PREFIX}/lib"
-        "${VTK_INSTALL_PREFIX}/lib64")
+        "${VTK_PREFIX_PATH}/lib"
+        "${VTK_PREFIX_PATH}/lib64")
     endif ()
 
     set(envsep ":")
@@ -565,7 +564,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     # the other directories (since the other directories will likely include the
     # location of the module's install).
     list(INSERT smtk_pythonpaths 0
-      "${CMAKE_BINARY_DIR}${envsep}${CMAKE_BINARY_DIR}/lib")
+      "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}${envsep}${CMAKE_BINARY_DIR}/lib")
     list(INSERT smtk_libpaths 0
       "${CMAKE_BINARY_DIR}/lib")
     if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
@@ -736,7 +735,7 @@ install(
   FILE ${PROJECT_NAME}Targets.cmake
 )
 
-export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}/${PROJECT_NAME}Targets.cmake")
 
 ################################################################################
 # Create a build directory package configuration file
@@ -746,28 +745,6 @@ export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets
 # build version of smtk
 #
 # Required to happen before we include the docs directory
-
-# Set a prefix path that consuming projects can use to find smtk's dependencies
-set(smtk_prefix_path ${CMAKE_PREFIX_PATH})
-
-# Boost can be found by its BOOST_ROOT variable.
-list(APPEND smtk_prefix_path ${BOOST_ROOT})
-
-if (SMTK_ENABLE_REMUS_SUPPORT)
-  list(APPEND smtk_prefix_path ${Remus_DIR})
-endif()
-
-# Qt5 is primarily found by setting Qt5_DIR. We key off of this variable to
-# identify Qt5's prefix path
-if (SMTK_ENABLE_QT_SUPPORT)
-  list(APPEND smtk_prefix_path ${Qt5_DIR}/../../..)
-endif()
-
-# ParaView's SDK is still a WIP. Until it is in place, key off of the
-# ParaView_DIR (ParaView's build directory).
-if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  list(APPEND smtk_prefix_path ${ParaView_DIR})
-endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   set(smtk_python_executable ${PYTHON_EXECUTABLE})
@@ -780,20 +757,19 @@ if (SMTK_DATA_DIR)
   set(smtk_data_dir ${SMTK_DATA_DIR})
 endif()
 
+set(smtk_cmake_dir "${CMAKE_CURRENT_LIST_DIR}/CMake")
+set(smtk_cmake_build_dir "${CMAKE_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}")
+set(smtk_cmake_destination "${SMTK_INSTALL_CONFIG_DIR}")
+include(SMTKInstallCMakePackage)
+
 set(SMTK_VTK_MODULE_DIR "${CMAKE_BINARY_DIR}/lib/cmake/${PROJECT_NAME}/${PROJECT_VERSION}")
 set(SMTK_MODULE_DIR "${PROJECT_SOURCE_DIR}/CMake")
 set(SMTK_CONFIG_DIR "${PROJECT_BINARY_DIR}")
 get_property(SMTK_PLUGINS GLOBAL PROPERTY SMTK_PLUGINS)
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/${PROJECT_NAME}Config.cmake.in
-  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  ${SMTK_INSTALL_CONFIG_DIR}/${PROJECT_NAME}Config.cmake
   @ONLY)
-
-install(
-  EXPORT ${PROJECT_NAME}
-  DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
-  FILE ${PROJECT_NAME}Targets.cmake
-)
 
 ################################################################################
 # Create an install package configuration file

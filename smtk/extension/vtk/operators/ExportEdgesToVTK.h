@@ -11,7 +11,7 @@
 #define __smtk_model_ExportEdgesToVTK_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/vtk/operators/Exports.h" // For export macro
+#include "smtk/extension/vtk/operators/vtkSMTKOperationsExtModule.h" // For export macro
 #include "smtk/operation/XMLOperation.h"
 
 namespace smtk

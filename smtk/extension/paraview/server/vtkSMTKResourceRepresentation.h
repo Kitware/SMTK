@@ -18,7 +18,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/common/UUID.h"
-#include "smtk/extension/paraview/server/Exports.h"
+#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 #include "smtk/view/SelectionObserver.h"
 
 #include <array>
@@ -29,7 +29,6 @@
 class vtkSMTKWrapper;
 
 class vtkActor;
-class vtkPVCacheKeeper;
 class vtkCompositeDataSet;
 class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
@@ -412,9 +411,9 @@ protected:
   bool UpdateColorBy = false;
   bool UseInternalAttributes = false;
 
+  vtkNew<vtkMultiBlockDataSet> CurrentData;
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
   vtkSmartPointer<vtkCompositePolyDataMapper2> SelectedEntityMapper;
-  vtkSmartPointer<vtkPVCacheKeeper> EntityCacheKeeper;
 
   vtkSmartPointer<vtkGlyph3DMapper> GlyphMapper;
   vtkSmartPointer<vtkGlyph3DMapper> SelectedGlyphMapper;

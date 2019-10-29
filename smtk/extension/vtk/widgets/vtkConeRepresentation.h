@@ -10,7 +10,7 @@
 #ifndef vtkConeRepresentation_h
 #define vtkConeRepresentation_h
 
-#include "smtk/extension/vtk/widgets/Exports.h" // For export macro
+#include "smtk/extension/vtk/widgets/vtkSMTKWidgetsExtModule.h" // For export macro
 #include "vtkNew.h"
 #include "vtkVector.h"
 #include "vtkWidgetRepresentation.h"

@@ -57,7 +57,8 @@ smtk_public_headers(smtkOscillatorSession ${oscillatorHeaders})
 #  add_subdirectory(qt)
 #endif()
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_subdirectory(plugin)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

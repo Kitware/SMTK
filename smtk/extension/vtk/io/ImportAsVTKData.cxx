@@ -17,7 +17,7 @@
 #include "smtk/extension/vtk/filter/vtkImageDual.h"
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
-#include "smtk/extension/vtk/reader/vtkLASReader.h"
+#include "smtk/extension/vtk/reader/vtkSMTKLASReader.h"
 
 #include "vtkAppendFilter.h"
 #include "vtkAppendPoints.h"
@@ -365,7 +365,7 @@ ImportAsVTKData_las::ImportAsVTKData_las()
 vtkSmartPointer<vtkDataObject> ImportAsVTKData_las::operator()(
   const std::pair<std::string, std::string>& fileInfo)
 {
-  vtkNew<vtkLASReader> reader;
+  vtkNew<vtkSMTKLASReader> reader;
   reader->SetFileName(fileInfo.second.c_str());
   reader->Update();
 

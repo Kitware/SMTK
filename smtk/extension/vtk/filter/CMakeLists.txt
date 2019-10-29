@@ -1,68 +1,45 @@
 option(SMTK_ENABLE_OPENCV "Enable OpenCV" OFF)
 
-set( openCVFilterSource )
-set( openCVFilterHeader )
+set(classes
+  vtkCleanPolylines
+  vtkDEMToMesh
+  vtkExtractImageBlock
+  vtkExtractLine
+  vtkImageDual
+  vtkImageSpacingFlip
+  vtkLIDARElevationFilter
+  vtkPolyDataStatsFilter)
+set(private_headers)
 
 if(SMTK_ENABLE_OPENCV)
   find_package(OpenCV REQUIRED)
 
-  set( openCVFilterSource
-        vtkGrabCutFilter.cxx
-        vtkImageClassFilter.cxx
-        vtkWatershedFilter.cxx )
-  set( openCVFilterHeader
-        vtkGrabCutFilter.h
-        vtkImageClassFilter.h
-        vtkOpenCVHelper.h
-        vtkWatershedFilter.h )
+  list(APPEND classes
+    vtkGrabCutFilter
+    vtkImageClassFilter
+    vtkWatershedFilter)
+  list(APPEND private_headers
+    vtkOpenCVHelper.h)
 endif()
 
-set(srcs
-   vtkCleanPolylines.cxx
-   vtkDEMToMesh.cxx
-   vtkExtractImageBlock.cxx
-   vtkExtractLine.cxx
-   vtkImageDual.cxx
-   vtkImageSpacingFlip.cxx
-   vtkLIDARElevationFilter.cxx
-   vtkPolyDataStatsFilter.cxx
-   ${openCVFilterSource}
-  )
-
-set(headers
-   vtkCleanPolylines.h
-   vtkDEMToMesh.h
-   vtkExtractImageBlock.h
-   vtkExtractLine.h
-   vtkImageDual.h
-   vtkImageSpacingFlip.h
-   vtkLIDARElevationFilter.h
-   vtkPolyDataStatsFilter.h
-   ${openCVFilterHeader}
-)
-
-set(${vtk-module}_NO_HeaderTest 1)
-set(VTK_INSTALL_NO_HEADERS 1)
-vtk_module_library(${vtk-module} ${srcs})
-target_include_directories(${vtk-module}
-  PUBLIC
-    $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>)
-
-# ... and make header compilation tests link properly:
-smtk_install_library(${vtk-module})
-
-# ... and install the export header
-#has to be after the vtk_module_library
-smtk_export_header(${vtk-module} Exports.h)
-
-if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  vtk_add_cs_wrapping(${vtk-module})
-  smtk_install_library(${vtk-module}CS)
-endif ()
+vtk_module_add_module(vtkSMTKFilterExt
+  CLASSES ${classes}
+  PRIVATE_HEADERS ${private_headers})
 
 if(SMTK_ENABLE_OPENCV)
-  target_link_libraries(${vtk-module} LINK_PRIVATE vtkIOImage ${OpenCV_LIBS})
+  vtk_module_link(vtkSMTKFilterExt
+    PRIVATE
+      VTK::IOImage
+      # TODO: Use imported targets for OpenCV rather than a variable.
+      ${OpenCV_LIBS})
 endif()
-smtk_public_headers(${vtk-module} ${headers})
+
+# The list of public headers for a VTK module are stored as a "module property"
+# (which is just a namespaced CMake TARGET property with some extra support for
+# being different at install time). Ask for the headers and replace any
+# in-source absolute paths with relative paths.
+_vtk_module_get_module_property(vtkSMTKFilterExt
+  PROPERTY headers
+  VARIABLE vtk_headers)
+string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" vtk_headers "${vtk_headers}")
+smtk_public_headers(vtkSMTKFilterExt ${vtk_headers})

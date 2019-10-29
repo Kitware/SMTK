@@ -88,13 +88,8 @@ install(
   )
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-  add_smtk_plugin(
-    smtkOperationPlugin "1.0"
-    ENABLED_BY_DEFAULT
-    REGISTRAR smtk::operation::Registrar
-    MANAGERS smtk::operation::Manager smtk::resource::Manager
-    LIBRARIES smtkCore)
-  smtk_install_library(smtkOperationPlugin)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
 endif()
 
 if (SMTK_ENABLE_TESTING)
