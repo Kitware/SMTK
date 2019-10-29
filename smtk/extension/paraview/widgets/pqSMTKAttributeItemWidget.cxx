@@ -42,6 +42,8 @@
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
 
+#include <QEvent>
+
 using namespace smtk::attribute;
 using qtItem = smtk::extension::qtItem;
 
