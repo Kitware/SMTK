@@ -40,12 +40,14 @@ smtk_unit_tests(
 )
 
 # This is required in order to get VTK's object factories hooked up.
-vtk_module_autoinit(
-  TARGETS UnitTests_smtk_extension_vtk_reader_testing_cxx
-  MODULES
-    vtkSMTKReaderExt
-    VTK::CommonCore
-    VTK::CommonDataModel
-    VTK::RenderingCore
-    VTK::RenderingOpenGL2
-    VTK::TestingRendering)
+if (TARGET UnitTests_smtk_extension_vtk_reader_testing_cxx)
+  vtk_module_autoinit(
+    TARGETS UnitTests_smtk_extension_vtk_reader_testing_cxx
+    MODULES
+      vtkSMTKReaderExt
+      VTK::CommonCore
+      VTK::CommonDataModel
+      VTK::RenderingCore
+      VTK::RenderingOpenGL2
+      VTK::TestingRendering)
+endif ()
