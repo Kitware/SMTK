@@ -57,12 +57,16 @@ public:
   ~qtResourceBrowser() override;
 
   static QTreeView* createDefaultView(QWidget* parent);
+  QTreeView* view() const;
 
   smtk::view::PhraseModelPtr phraseModel() const;
   void setPhraseModel(const smtk::view::PhraseModelPtr&);
 
   smtk::view::SubphraseGeneratorPtr phraseGenerator() const;
   void setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg);
+
+  smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
+  void setDescriptivePhraseModel(QAbstractItemModel* qmodel);
 
   bool highlightOnHover() const;
   void setHighlightOnHover(bool highlight);

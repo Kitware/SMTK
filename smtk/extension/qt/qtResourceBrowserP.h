@@ -40,6 +40,7 @@ public:
     const std::string& viewName, QAbstractItemModel* qmodel, QWidget* parent);
 
   smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
+  void setDescriptivePhraseModel(QAbstractItemModel* qmodel);
 
   QWidget* m_container;
   QVBoxLayout* m_layout;

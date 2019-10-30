@@ -135,3 +135,8 @@ qtDescriptivePhraseModel* qtResourceBrowser::Internal::descriptivePhraseModel() 
   }
   return dpmodel;
 }
+
+void qtResourceBrowser::Internal::setDescriptivePhraseModel(QAbstractItemModel* qmodel)
+{
+  m_model = qmodel;
+}

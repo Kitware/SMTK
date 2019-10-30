@@ -84,6 +84,11 @@ QTreeView* qtResourceBrowser::createDefaultView(QWidget* parent)
   return view;
 }
 
+QTreeView* qtResourceBrowser::view() const
+{
+  return m_p->m_view;
+}
+
 smtk::view::PhraseModelPtr qtResourceBrowser::phraseModel() const
 {
   return m_p->m_phraseModel;
@@ -119,6 +124,16 @@ void qtResourceBrowser::setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg
     spg->setModel(m_p->m_phraseModel);
   }
   root->setDelegate(spg);
+}
+
+smtk::extension::qtDescriptivePhraseModel* qtResourceBrowser::descriptivePhraseModel() const
+{
+  return m_p->descriptivePhraseModel();
+}
+
+void qtResourceBrowser::setDescriptivePhraseModel(QAbstractItemModel* qmodel)
+{
+  m_p->setDescriptivePhraseModel(qmodel);
 }
 
 bool qtResourceBrowser::highlightOnHover() const
