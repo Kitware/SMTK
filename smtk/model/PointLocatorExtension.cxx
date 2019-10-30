@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/model/PointLocatorExtension.h"
 
+#include <random>
+
 namespace smtk
 {
 namespace model
@@ -20,6 +22,13 @@ PointLocatorExtension::PointLocatorExtension()
 
 PointLocatorExtension::~PointLocatorExtension()
 {
+}
+
+bool PointLocatorExtension::randomPoint(
+  const EntityRef& entity, std::size_t nPoints, std::vector<double>& points)
+{
+  std::random_device rd;
+  return this->randomPoint(entity, nPoints, points, rd());
 }
 }
 }

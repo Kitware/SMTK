@@ -72,6 +72,7 @@ endif()
 
 if(SMTK_ENABLE_MESH_SESSION)
   list(APPEND unit_tests_which_require_data
+       TestSamplePointsOnSurface.cxx
        TestSnapPointsToSurface.cxx
        )
   if (SMTK_ENABLE_VTK_SUPPORT)

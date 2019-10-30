@@ -49,6 +49,9 @@
               </BriefDescription>
               <Min>1</Min>
             </Int>
+            <Component Name="surface" NumberOfRequiredValues="1">
+              <Accepts><Resource Name="smtk::model::Resource" Filter="face"/></Accepts>
+            </Component>
           </ChildrenDefinitions>
           <DiscreteInfo DefaultIndex="0">
             <!-- Option 0: an explicit table of instance placements -->
@@ -63,6 +66,14 @@
               <Value Enum="uniform random">uniform random</Value>
               <Items>
                 <Item>volume of interest</Item>
+                <Item>sample size</Item>
+              </Items>
+            </Structure>
+            <!-- Option 2: uniform random placements on a model surface -->
+            <Structure>
+              <Value Enum="uniform random on surface">uniform random on surface</Value>
+              <Items>
+                <Item>surface</Item>
                 <Item>sample size</Item>
               </Items>
             </Structure>

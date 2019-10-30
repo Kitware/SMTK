@@ -31,6 +31,7 @@ protected:
 
   void addTabularRule(Instance& instance, const EntityRef& prototype);
   void addUniformRandomRule(Instance& instance, const EntityRef& prototype);
+  void addUniformRandomOnSurfaceRule(Instance& instance, const EntityRef& prototype);
   void addSnappingConstraints(Instance& instance, const EntityRef& prototype);
 };
 
