@@ -100,7 +100,7 @@ bool pqSMTKPointItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKPointItemWidget::updateItemFromWidget()
+void pqSMTKPointItemWidget::updateItemFromWidgetInternal()
 {
   ItemBindings binding;
   smtk::attribute::DoubleItemPtr pointItem;
@@ -139,7 +139,7 @@ void pqSMTKPointItemWidget::updateItemFromWidget()
   }
 }
 
-void pqSMTKPointItemWidget::updateWidgetFromItem()
+void pqSMTKPointItemWidget::updateWidgetFromItemInternal()
 {
   ItemBindings binding;
   smtk::attribute::DoubleItemPtr pointItem;

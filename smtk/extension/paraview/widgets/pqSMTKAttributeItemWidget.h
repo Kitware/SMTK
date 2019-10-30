@@ -88,8 +88,8 @@ public:
   pqInteractivePropertyWidget* propertyWidget();
 
 public slots:
-  virtual void updateItemFromWidget() = 0;
-  virtual void updateWidgetFromItem() {}
+  virtual void updateItemFromWidget();
+  virtual void updateWidgetFromItem();
 
   /**\brief Change whether the item is enabled (and thus the widget active).
     *
@@ -106,6 +106,8 @@ public slots:
 protected slots:
   void updateItemData() override;
   virtual void acceptWidgetValues();
+  virtual void updateItemFromWidgetInternal() = 0;
+  virtual void updateWidgetFromItemInternal() {}
 
 protected:
   /// An event filter that watches for the associated Qt widget to be hidden
