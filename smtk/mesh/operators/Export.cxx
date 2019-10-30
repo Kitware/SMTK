@@ -129,9 +129,9 @@ Export::Specification Export::createSpecification()
   assert(fileItemDefinitions.size() == 1);
 
   std::stringstream fileFilters;
+  bool firstFormat = true;
   for (auto& ioType : smtk::io::ExportMesh::SupportedIOTypes())
   {
-    bool firstFormat = true;
     for (auto& format : ioType->FileFormats())
     {
       if (format.CanExport())
