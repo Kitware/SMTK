@@ -133,9 +133,9 @@ Write::Specification Write::createSpecification()
   assert(fileItemDefinitions.size() == 1);
 
   std::stringstream fileFilters;
+  bool firstFormat = true;
   for (auto& ioType : smtk::io::WriteMesh::SupportedIOTypes())
   {
-    bool firstFormat = true;
     for (auto& format : ioType->FileFormats())
     {
       if (format.CanWrite())
