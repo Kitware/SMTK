@@ -13,10 +13,6 @@ get_target_property(SMTK_INCLUDE_DIR smtkCore INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(SMTK_LIB_DIR smtkCore LOCATION)
 get_filename_component(SMTK_LIB_DIR ${SMTK_LIB_DIR} DIRECTORY)
 
-include(SMTKMacros)
-# ++ 1 ++
-include(SMTKOperationXML) # defines smtk_operation_xml()
-
 # The smtk_operation_xml() function writes a file to the current
 # binary directory sharing the same name as the input file
 # but with "_xml.h" replacing the file extension. For this
@@ -32,6 +28,7 @@ smtk_operation_xml(
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # -- 1 --
 
+include(CTest)
 enable_testing()
 
 add_executable(implement_an_operator implement_an_operator.cxx)

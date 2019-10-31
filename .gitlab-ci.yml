@@ -1,0 +1,119 @@
+# CI strategy for SMTK.
+#
+# Builders:
+#
+# - Fedora 31 (ci/docker/fedora31)
+#   - "simple" superbuild as dependency provider
+#   - no VTK/ParaView
+#   - Python 2.7
+#
+# Wanted test sets:
+#
+# - OS
+#   - Windows
+#   - macOS
+# - Compilers
+#   - Ubuntu LTS
+#   - CentOS
+# - Features
+#   - without Python
+#   - Python 3 (minimum supported and latest)
+# - Documentation
+# - Coverage
+# - Contract testing
+#   - Perform an installation (from the build stage), make it an artifact, and
+#     run external projects against it.
+# - GUI testing
+#   - Need to figure out how it works with gitlab-runner.
+#   - Is offscreen rendering suitable?
+
+# Tags to ensure we run on SMTK-allowable runners.
+.smtk_sb_tags: &smtk_sb_tags
+    - docker
+    - cmb
+    - linux
+
+.fedora31: &fedora31
+    image: "kitware/cmb:ci-smtk-latest"
+    tags: *smtk_sb_tags
+
+    variables:
+        GIT_SUBMODULE_STRATEGY: recursive
+        CMAKE: cmake
+        CTEST: ctest
+        CMAKE_VARIABLES: >
+            -C /root/misc/root/smtk-deps/smtk-developer-config.cmake
+            -DSMTK_ENABLE_TESTING:BOOL=ON
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache
+        SCCACHE_REDIS: redis://minmus:6379
+
+.cmake_build_unix: &cmake_build_unix
+    stage: build
+
+    script:
+        - mkdir build
+        - cd build
+        - sccache --start-server
+        - sccache --show-stats
+        - "$CMAKE --version"
+        - "$LAUNCHER $CMAKE -GNinja $CMAKE_VARIABLES .."
+        - "$LAUNCHER $CMAKE --build . -j`nproc`"
+        - sccache --show-stats
+
+    artifacts:
+        expire_in: 1d
+        paths:
+            # The artifacts of the build.
+            - build/bin/
+            - build/lib/
+            # Generated headers.
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/smtk/*.h
+            - build/smtk/*/*.h
+            - build/smtk/*/*/*.h
+            - build/smtk/*/*/*/*.h
+            - build/smtk/*/*/*/*/*.h
+            - build/smtk/*/*/*/*/*/*.h
+
+            # CTest files.
+            - build/CTestCustom*.cmake
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/CTestTestfile.cmake
+            - build/*/CTestTestfile.cmake
+            - build/*/*/CTestTestfile.cmake
+            - build/*/*/*/CTestTestfile.cmake
+            - build/*/*/*/*/CTestTestfile.cmake
+
+            # CDash files.
+            - build/DartConfiguration.tcl
+    interruptible: true
+
+.cmake_test: &cmake_test
+    stage: test
+
+    script:
+        - cd build
+        - "$CTEST -j`nproc` --output-on-failure"
+
+    interruptible: true
+
+stages:
+    - build
+    - test
+
+build:fedora31:
+    <<:
+        - *fedora31
+        - *cmake_build_unix
+
+test:fedora31:
+    <<:
+        - *fedora31
+        - *cmake_test
+    dependencies:
+        - build:fedora31
+    needs:
+        - build:fedora31

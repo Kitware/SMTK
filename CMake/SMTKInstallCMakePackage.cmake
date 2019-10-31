@@ -109,7 +109,9 @@ install(
   DESTINATION "${smtk_cmake_destination}"
   COMPONENT   "development")
 
-vtk_module_export_find_packages(
-  CMAKE_DESTINATION "${smtk_cmake_destination}"
-  FILE_NAME         "smtk-vtk-module-find-packages.cmake"
-  MODULES           ${smtk_modules})
+if (SMTK_ENABLE_VTK_SUPPORT)
+  vtk_module_export_find_packages(
+    CMAKE_DESTINATION "${smtk_cmake_destination}"
+    FILE_NAME         "smtk-vtk-module-find-packages.cmake"
+    MODULES           ${smtk_modules})
+endif ()

@@ -136,9 +136,11 @@ target_link_libraries(smtkPolygonSession
     ${import_vtk_depends}
     ${Boost_LIBRARIES}
   )
-vtk_module_autoinit(
-  TARGETS smtkPolygonSession
-  MODULES ${import_vtk_depends})
+if (SMTK_ENABLE_VTK_SUPPORT)
+  vtk_module_autoinit(
+    TARGETS smtkPolygonSession
+    MODULES ${import_vtk_depends})
+endif ()
 
 smtk_export_header(smtkPolygonSession Exports.h)
 

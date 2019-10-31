@@ -23,9 +23,11 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     )
 endif()
 target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkPolygonSession LINK_PRIVATE ${import_vtk_depends} ${Boost_LIBRARIES})
-vtk_module_autoinit(
-  TARGETS ${library_name}
-  MODULES ${import_vtk_depends})
+if(SMTK_ENABLE_VTK_SUPPORT)
+  vtk_module_autoinit(
+    TARGETS ${library_name}
+    MODULES ${import_vtk_depends})
+endif ()
 if(SMTK_ENABLE_VTK_SUPPORT)
   target_compile_definitions(${library_name} PUBLIC VTK_SUPPORT)
 endif()

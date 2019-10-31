@@ -3,17 +3,8 @@
 # To build an smtk-dependent cxx project, the following variables are used to
 # find smtk and its dependent packages
 set(build_options
-  -Dsmtk_DIR:PATH=${PROJECT_BINARY_DIR}
-  -Dpybind11_DIR:PATH=${pybind11_DIR}
-  -DMOAB_DIR:PATH=${MOAB_DIR}
+  -Dsmtk_DIR:PATH=${CMAKE_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}
 )
-
-if (SMTK_ENABLE_REMUS_SUPPORT)
-  list(APPEND build_options
-    -DRemus_DIR:PATH=${Remus_DIR}
-    -DZeroMQ_ROOT_DIR:PATH=${ZeroMQ_ROOT_DIR}
-  )
-endif()
 
 if(NOT WIN32)
   add_test(NAME cxx_first_steps
