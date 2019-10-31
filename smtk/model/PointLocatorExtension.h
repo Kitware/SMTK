@@ -39,6 +39,14 @@ public:
   virtual bool closestPointOn(const EntityRef& entity, std::vector<double>& closestPoints,
     const std::vector<double>& sourcePoints, bool snapToPoint) = 0;
 
+  /// Generate \nPoints random points on \a entity and store the results in
+  /// \a points. Return true if successful.
+  virtual bool randomPoint(const EntityRef& entity, std::size_t nPoints,
+    std::vector<double>& points, const std::size_t seed) = 0;
+
+  /// Same as above, but seeded with a hardware-supplied random integer.
+  bool randomPoint(const EntityRef& entity, std::size_t nPoints, std::vector<double>& points);
+
 protected:
   PointLocatorExtension();
 };

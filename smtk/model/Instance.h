@@ -62,6 +62,9 @@ public:
   std::string rule() const;
   bool setRule(const std::string& nextRule);
 
+  bool setSampleSurface(const EntityRef& surface);
+  EntityRef sampleSurface() const;
+
   EntityRefs snapEntities() const;
   bool addSnapEntity(const EntityRef& snapTo);
   bool removeSnapEntity(const EntityRef& snapTo);

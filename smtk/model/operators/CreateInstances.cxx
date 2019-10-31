@@ -76,6 +76,18 @@ void CreateInstances::addUniformRandomRule(Instance& instance, const EntityRef& 
   // TODO: Should we accept a seed here as a super-advanced option?
 }
 
+void CreateInstances::addUniformRandomOnSurfaceRule(Instance& instance, const EntityRef& prototype)
+{
+  (void)prototype;
+  instance.setRule("uniform random on surface");
+  instance.setIntegerProperty("sample size", this->parameters()->findInt("sample size")->value(0));
+  auto sampleSurfaceItem = this->parameters()->findComponent("surface");
+  instance.setSampleSurface(
+    std::dynamic_pointer_cast<smtk::model::Entity>(sampleSurfaceItem->value())
+      ->referenceAs<smtk::model::EntityRef>());
+  // TODO: Should we accept a seed here as a super-advanced option?
+}
+
 void CreateInstances::addSnappingConstraints(Instance& instance, const EntityRef& prototype)
 {
   (void)prototype;
@@ -126,6 +138,10 @@ CreateInstances::Result CreateInstances::operateInternal()
       else if (rule == "uniform random")
       {
         this->addUniformRandomRule(instance, prototype);
+      }
+      else if (rule == "uniform random on surface")
+      {
+        this->addUniformRandomOnSurfaceRule(instance, prototype);
       }
       this->addSnappingConstraints(instance, prototype);
       // Now that the instance is fully specified, generate
