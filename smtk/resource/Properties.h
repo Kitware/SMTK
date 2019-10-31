@@ -75,7 +75,7 @@ public:
 /// Properties is a generalized container for storing and accessing data using a
 /// std::string key. This Properties differs from its equivalently named class
 /// in smtk::common by constructing custom PropertiesOfType<> that are tailored
-/// for use with addition UUID indexing.
+/// for use with additional UUID indexing.
 class SMTKCORE_EXPORT Properties : public smtk::common::PropertiesContainer
 {
 public:
@@ -108,7 +108,9 @@ public:
     dynamic_cast<PropertiesBase&>(this->get<Type>()).eraseId(id);
   }
 
-protected:
+  // TODO: Putting the following two methods in the public API breaks RAII.
+  // There needs to be a way for a derived resource to augment its types of
+  // properties, though.
   template <typename Type>
   void insertPropertyType()
   {
@@ -411,6 +413,15 @@ class SMTKCORE_EXPORT ResourceProperties : public smtk::resource::Properties
 public:
   ResourcePropertiesData& data() { return m_data; }
   const ResourcePropertiesData& data() const { return m_data; }
+
+  // TODO: Putting the following method in the public API breaks RAII. There
+  // needs to be a way for a derived resource to augment its types of
+  // properties, though.
+  template <typename Type>
+  void insertPropertyType()
+  {
+    m_data.insertPropertyType<Indexed<Type> >();
+  }
 
 private:
   ResourceProperties(Resource* resource);

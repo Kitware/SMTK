@@ -61,6 +61,17 @@ bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& e
   return false;
 }
 
+bool smtkModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
+  const std::size_t nPoints, std::vector<double>& points, const std::size_t seed)
+{
+  // TODO: fill me in!
+  (void)entity;
+  (void)nPoints;
+  (void)points;
+  (void)seed;
+  return false;
+}
+
 smtkDeclareExtension(
   SMTKPVSERVEREXT_EXPORT, model_entity_point_locator, smtkModelEntityPointLocator);
 

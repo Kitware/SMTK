@@ -92,6 +92,50 @@ static void GenerateRandomTessellation(Instance& inst, Tessellation* placements)
   }
 }
 
+static void GenerateRandomOnSurfaceTessellation(Instance& inst, Tessellation* placements)
+{
+  if (!inst.hasIntegerProperties())
+  {
+    return;
+  }
+  const std::vector<long>& numPts = inst.integerProperty("sample size");
+  std::vector<long> seed = inst.integerProperty("seed");
+  EntityRef sampleSurface = inst.sampleSurface();
+  if (numPts.size() != 1 || seed.size() > 1 || !sampleSurface.isValid())
+  {
+    return;
+  }
+  if (seed.empty())
+  {
+    // Generate and store a seed
+    std::random_device rd;
+    inst.setIntegerProperty("seed", static_cast<IntegerList::value_type>(rd()));
+    seed = inst.integerProperty("seed");
+  }
+  std::size_t npts = numPts[0];
+  unsigned iseed = static_cast<unsigned>(seed[0]);
+
+  std::vector<double> points;
+
+  smtk::common::Extension::visitAll(
+    [&](const std::string&, smtk::common::Extension::Ptr extension) {
+      bool success = false;
+      auto snapper = smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
+
+      if (snapper != nullptr)
+      {
+        success = snapper->randomPoint(sampleSurface, npts, points, iseed);
+        success &= (points.size() == npts);
+      }
+      return std::make_pair(success, success);
+    });
+
+  for (std::size_t i = 0; i < npts; ++i)
+  {
+    placements->addPoint(&points[3 * i]);
+  }
+}
+
 static void SnapPlacementsTo(const Instance& inst, const EntityRefs& snaps, Tessellation* tess)
 {
   if (snaps.empty() || !snaps.begin()->isValid() || !inst.isValid())
@@ -163,6 +207,10 @@ Tessellation* Instance::generateTessellation()
   {
     GenerateRandomTessellation(*this, tess);
   }
+  else if (rule == "uniform random on surface")
+  {
+    GenerateRandomOnSurfaceTessellation(*this, tess);
+  }
 
   EntityRefs snaps = this->snapEntities();
   SnapPlacementsTo(*this, snaps, tess);
@@ -193,7 +241,8 @@ std::string Instance::rule() const
 bool Instance::setRule(const std::string& nextRule)
 {
   // Only accept valid rules:
-  if (nextRule != "tabular" && nextRule != "uniform random")
+  if (nextRule != "tabular" && nextRule != "uniform random" &&
+    nextRule != "uniform random on surface")
   {
     return false;
   }
@@ -210,6 +259,42 @@ bool Instance::setRule(const std::string& nextRule)
     return true;
   }
   return false;
+}
+
+namespace
+{
+static const std::string sampleSurfaceStr = "sample surface";
+}
+
+bool Instance::setSampleSurface(const EntityRef& surface)
+{
+  if (!this->isValid() || !surface.isValid())
+  {
+    return false;
+  }
+  auto comp = this->component();
+  if (!comp)
+  {
+    return false;
+  }
+  comp->properties().get<smtk::common::UUID>()[sampleSurfaceStr] = surface.entity();
+  return true;
+}
+
+EntityRef Instance::sampleSurface() const
+{
+  EntityRef result;
+  // TODO: This is a total hack for now. We should use Arrangements but
+  // there's not really a good one for this use case.
+  auto comp = this->component();
+  if (!comp)
+  {
+    return result;
+  }
+
+  smtk::common::UUID id = comp->properties().get<smtk::common::UUID>().at(sampleSurfaceStr);
+  smtk::model::Resource::Ptr resource = this->resource();
+  return EntityRef(resource, id);
 }
 
 EntityRefs Instance::snapEntities() const
