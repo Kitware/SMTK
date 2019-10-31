@@ -35,6 +35,13 @@
 class pqSMTKAttributeItemWidget::Internal
 {
 public:
+  enum class State
+  {
+    Idle,                 //!< Widget is not being manipulated by attribute system or user
+    UpdatingFromUI,       //!< Widget is being manipulated by user.
+    UpdatingFromAttribute //!< Widget is being manipulated by attribute system.
+  };
+
   Internal(smtk::attribute::ItemPtr itm, QWidget* p, smtk::extension::qtBaseView* bview,
     Qt::Orientation orient)
     : m_orientation(orient)
@@ -42,6 +49,7 @@ public:
     , m_geometrySource(GeometrySource::BestGuess)
     , m_fallbackStrategy(FallbackStrategy::Hide)
     , m_opObserver()
+    , m_state(State::Idle)
   {
     (void)itm;
     (void)p;
@@ -63,4 +71,5 @@ public:
   QMap<QWidget*, QPair<QLayout*, QWidget*> > m_children;
 
   smtk::operation::Observers::Key m_opObserver;
+  State m_state;
 };

@@ -126,7 +126,7 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKSplineItemWidget::updateItemFromWidget()
+void pqSMTKSplineItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr pointsItem;
   smtk::attribute::VoidItemPtr closedItem;

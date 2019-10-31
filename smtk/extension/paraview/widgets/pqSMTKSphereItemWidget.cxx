@@ -89,7 +89,7 @@ bool pqSMTKSphereItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKSphereItemWidget::updateItemFromWidget()
+void pqSMTKSphereItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr centerItem;
   smtk::attribute::DoubleItemPtr radiusItem;
@@ -123,7 +123,7 @@ void pqSMTKSphereItemWidget::updateItemFromWidget()
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKSphereItemWidget::updateWidgetFromItem()
+void pqSMTKSphereItemWidget::updateWidgetFromItemInternal()
 {
   smtk::attribute::DoubleItemPtr centerItem;
   smtk::attribute::DoubleItemPtr radiusItem;

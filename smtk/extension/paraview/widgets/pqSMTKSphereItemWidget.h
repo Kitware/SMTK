@@ -31,8 +31,10 @@ public:
 
   static qtItem* createSphereItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
-  void updateItemFromWidget() override;
-  void updateWidgetFromItem() override;
+
+protected slots:
+  void updateItemFromWidgetInternal() override;
+  void updateWidgetFromItemInternal() override;
 
 protected:
   /**\brief Starting with the widget's assigned item (which must

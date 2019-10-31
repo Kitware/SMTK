@@ -41,10 +41,12 @@ public:
 
   static qtItem* createBoxItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
+
+protected slots:
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-  void updateItemFromWidget() override;
+  void updateItemFromWidgetInternal() override;
   /// Retrieve property values from the attribute's Item and update the ParaView proxy.
-  void updateWidgetFromItem() override;
+  void updateWidgetFromItemInternal() override;
 
 protected:
   /// Describe how an attribute's items specify a bounding box.
