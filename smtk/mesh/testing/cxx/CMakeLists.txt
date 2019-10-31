@@ -81,6 +81,7 @@ if(SMTK_ENABLE_MESH_SESSION)
     if (SMTK_ENABLE_UNSTABLE_TESTS)
       list(APPEND unit_tests_which_require_data
          TestExtractByDihedralAngle.cxx
+         TestSubtract.cxx
        )
     endif()
     list(APPEND extra_libs

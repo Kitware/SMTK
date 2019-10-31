@@ -31,6 +31,7 @@
 #include "smtk/mesh/operators/ReadResource.h"
 #include "smtk/mesh/operators/SelectCells.h"
 #include "smtk/mesh/operators/SetMeshName.h"
+#include "smtk/mesh/operators/Subtract.h"
 #include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/mesh/operators/Write.h"
 #include "smtk/mesh/operators/WriteResource.h"
@@ -49,8 +50,8 @@ namespace
 {
 typedef std::tuple<DeleteMesh, ElevateMesh, Export, ExtractAdjacency, ExtractByDihedralAngle,
   ExtractSkin, GenerateHotStartData, Import, InterpolateOntoMesh, MergeCoincidentPoints,
-  PrintMeshInformation, Read, ReadResource, SelectCells, SetMeshName, UndoElevateMesh, Write,
-  WriteResource>
+  PrintMeshInformation, Read, ReadResource, SelectCells, SetMeshName, Subtract, UndoElevateMesh,
+  Write, WriteResource>
   OperationList;
 }
 
