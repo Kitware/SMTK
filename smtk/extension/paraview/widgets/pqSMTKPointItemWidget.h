@@ -62,8 +62,10 @@ public:
 
   static qtItem* createPointItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
-  void updateItemFromWidget() override;
-  void updateWidgetFromItem() override;
+
+protected slots:
+  void updateItemFromWidgetInternal() override;
+  void updateWidgetFromItemInternal() override;
 
 protected:
   /// SMTK attribute items to which the widget's values are bound.

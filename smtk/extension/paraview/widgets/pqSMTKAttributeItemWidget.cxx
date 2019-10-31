@@ -230,6 +230,34 @@ pqInteractivePropertyWidget* pqSMTKAttributeItemWidget::propertyWidget()
   return m_p->m_pvwidget;
 }
 
+void pqSMTKAttributeItemWidget::updateItemFromWidget()
+{
+  if (m_p->m_state == Internal::State::Idle)
+  {
+    m_p->m_state = Internal::State::UpdatingFromAttribute;
+    this->updateItemFromWidgetInternal();
+
+    // Only return to idle after event queue is processed
+    // since the "modified()" signal's connected slots must
+    // be allowed to run before changing state.
+    QTimer::singleShot(1, [this]() { m_p->m_state = Internal::State::Idle; });
+  }
+}
+
+void pqSMTKAttributeItemWidget::updateWidgetFromItem()
+{
+  if (m_p->m_state == Internal::State::Idle)
+  {
+    m_p->m_state = Internal::State::UpdatingFromUI;
+    this->updateWidgetFromItemInternal();
+
+    // Only return to idle after event queue is processed
+    // since the "modified()" signal's connected slots must
+    // be allowed to run before changing state.
+    QTimer::singleShot(1, [this]() { m_p->m_state = Internal::State::Idle; });
+  }
+}
+
 void pqSMTKAttributeItemWidget::setOutputOptional(int optionEnabled)
 {
   bool enabled = !!optionEnabled;

@@ -97,7 +97,7 @@ bool pqSMTKConeItemWidget::createProxyAndWidget(
   return widget != nullptr;
 }
 
-void pqSMTKConeItemWidget::updateItemFromWidget()
+void pqSMTKConeItemWidget::updateItemFromWidgetInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -176,7 +176,7 @@ void pqSMTKConeItemWidget::updateItemFromWidget()
   }
 }
 
-void pqSMTKConeItemWidget::updateWidgetFromItem()
+void pqSMTKConeItemWidget::updateWidgetFromItemInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;

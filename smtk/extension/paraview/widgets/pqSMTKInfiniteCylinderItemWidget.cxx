@@ -87,7 +87,7 @@ bool pqSMTKInfiniteCylinderItemWidget::createProxyAndWidget(
   return widget != nullptr;
 }
 
-void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidget()
+void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidgetInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;
@@ -146,7 +146,7 @@ void pqSMTKInfiniteCylinderItemWidget::updateItemFromWidget()
   }
 }
 
-void pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItem()
+void pqSMTKInfiniteCylinderItemWidget::updateWidgetFromItemInternal()
 {
   vtkSMNewWidgetRepresentationProxy* widget = m_p->m_pvwidget->widgetProxy();
   std::vector<smtk::attribute::DoubleItemPtr> items;

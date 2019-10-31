@@ -89,7 +89,7 @@ bool pqSMTKPlaneItemWidget::createProxyAndWidget(
 }
 
 /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-void pqSMTKPlaneItemWidget::updateItemFromWidget()
+void pqSMTKPlaneItemWidget::updateItemFromWidgetInternal()
 {
   smtk::attribute::DoubleItemPtr originItem;
   smtk::attribute::DoubleItemPtr normalItem;

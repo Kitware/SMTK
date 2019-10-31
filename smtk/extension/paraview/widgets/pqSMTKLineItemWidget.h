@@ -38,7 +38,9 @@ public:
 
   static qtItem* createLineItemWidget(const qtAttributeItemInfo& info);
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
-  void updateItemFromWidget() override;
+
+protected slots:
+  void updateItemFromWidgetInternal() override;
 
 protected:
   /**\brief Starting with the widget's assigned item (which must

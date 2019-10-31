@@ -50,10 +50,12 @@ public:
   static qtItem* createCylinderItemWidget(const qtAttributeItemInfo& info);
 
   bool createProxyAndWidget(vtkSMProxy*& proxy, pqInteractivePropertyWidget*& widget) override;
+
+protected slots:
   /// Retrieve property values from ParaView proxy and store them in the attribute's Item.
-  void updateItemFromWidget() override;
+  void updateItemFromWidgetInternal() override;
   /// Retrieve property values from the attribute's Item and update the ParaView proxy.
-  void updateWidgetFromItem() override;
+  void updateWidgetFromItemInternal() override;
 
 public slots:
   /**\brief Change the user interface so that only cylinders are accepted (when passed true).
