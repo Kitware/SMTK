@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,13 +8,22 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 from . import _smtkPybindVTKSourceFns as _srcfns
 import vtkSMTKSourceExtPython
 
 
 class vtkMeshMultiBlockSource(vtkSMTKSourceExtPython.vtkMeshMultiBlockSource):
+
+    def GetDataObjectUUID(self, info):
+        return _srcfns._vtkMeshMultiBlockSource_GetDataObjectUUID(self, info)
+
+    def SetDataObjectUUID(self, info, uuid):
+        return _srcfns._vtkMeshMultiBlockSource_SetDataObjectUUID(self, info, uuid)
+
+    def GetComponent(self, info):
+        return _srcfns._vtkMeshMultiBlockSource_GetComponent(self, info)
 
     def GetModelResource(self):
         return _srcfns._vtkMeshMultiBlockSource_GetModelResource(self)
@@ -30,6 +39,15 @@ class vtkMeshMultiBlockSource(vtkSMTKSourceExtPython.vtkMeshMultiBlockSource):
 
 
 class vtkModelMultiBlockSource(vtkSMTKSourceExtPython.vtkModelMultiBlockSource):
+
+    def GetDataObjectUUID(self, info):
+        return _srcfns._vtkModelMultiBlockSource_GetDataObjectUUID(self, info)
+
+    def SetDataObjectUUID(self, info, uuid):
+        return _srcfns._vtkModelMultiBlockSource_SetDataObjectUUID(self, info, uuid)
+
+    def GetComponent(self, info):
+        return _srcfns._vtkModelMultiBlockSource_GetComponent(self, info)
 
     def GetModelResource(self):
         return _srcfns._vtkModelMultiBlockSource_GetModelResource(self)
