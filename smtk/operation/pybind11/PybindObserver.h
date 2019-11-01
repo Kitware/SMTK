@@ -22,7 +22,6 @@ namespace py = pybind11;
 void pybind11_init_smtk_operation_EventType(py::module &m)
 {
   py::enum_<smtk::operation::EventType>(m, "EventType")
-    .value("CREATED", smtk::operation::EventType::CREATED)
     .value("WILL_OPERATE", smtk::operation::EventType::WILL_OPERATE)
     .value("DID_OPERATE", smtk::operation::EventType::DID_OPERATE)
     .export_values();

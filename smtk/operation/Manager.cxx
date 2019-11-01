@@ -93,8 +93,6 @@ std::shared_ptr<Operation> Manager::create(const std::string& typeName)
     // operation. Since only managed operations are observed, we can avoid this
     // issue by accessing the parameters as they are created by the manager.
     auto parameters = op->parameters();
-
-    m_observers(*op, smtk::operation::EventType::CREATED, nullptr);
   }
 
   return op;
@@ -119,8 +117,6 @@ std::shared_ptr<Operation> Manager::create(const Operation::Index& index)
     // operation. Since only managed operations are observed, we can avoid this
     // issue by accessing the parameters as they are created by the manager.
     auto parameters = op->parameters();
-
-    m_observers(*op, smtk::operation::EventType::CREATED, nullptr);
   }
 
   return op;
