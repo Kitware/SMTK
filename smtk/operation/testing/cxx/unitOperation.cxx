@@ -94,7 +94,6 @@ struct
   bool haveResult;
   int outcome;
 } expectedObservations[] = {
-  { smtk::operation::EventType::CREATED, false, -1 },
   { smtk::operation::EventType::WILL_OPERATE, false, -1 },
   { smtk::operation::EventType::DID_OPERATE, true, 2 },
   { smtk::operation::EventType::WILL_OPERATE, false, -1 },
@@ -150,7 +149,7 @@ int unitOperation(int, char* [])
       ++obs;
       // On the penultimate WILL_OPERATE, return a non-zero value to cancel the operation;
       // otherwise return 0. Note that obs has been incremented already, hence 4 not 3:
-      return (obs == 4 ? 1 : 0);
+      return (obs == 3 ? 1 : 0);
     });
 
   auto another =

@@ -117,15 +117,18 @@ int TestThreadSafeLazyEvaluation(int, char** const)
 
     // Add an observer that accesses the operation's parameters from a separate
     // thread.
-    smtk::operation::Operation::Parameters parametersFromObserver;
+    smtk::operation::Operation::Parameters parametersFromObserver = nullptr;
     operationManager->observers().insert(
-      [&](const smtk::operation::Operation& op, smtk::operation::EventType,
+      [&](const smtk::operation::Operation& op, smtk::operation::EventType eventType,
         smtk::operation::Operation::Result) -> int {
-        std::thread t([&]() {
-          std::this_thread::sleep_for(std::chrono::microseconds(i));
-          parametersFromObserver = op.parameters();
-        });
-        t.detach();
+        if (eventType == smtk::operation::EventType::WILL_OPERATE)
+        {
+          std::thread t([&]() {
+            std::this_thread::sleep_for(std::chrono::microseconds(i));
+            parametersFromObserver = op.parameters();
+          });
+          t.detach();
+        }
         return 0;
       });
 
@@ -134,6 +137,7 @@ int TestThreadSafeLazyEvaluation(int, char** const)
 
     // Construct an instance of MyOperation
     smtk::operation::Operation::Ptr myOperation = operationManager->create<MyOperation>();
+    myOperation->operate();
 
     // Immediately access its parameters
     auto parametersFromMainThread = myOperation->parameters();

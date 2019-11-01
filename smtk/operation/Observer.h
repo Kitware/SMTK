@@ -29,7 +29,6 @@ namespace operation
  */
 enum class EventType
 {
-  CREATED,      //!< An instance of the Operation class has been created.
   WILL_OPERATE, //!< The operation will commence if no observers cancel it.
   DID_OPERATE   //!< The operation has completed or been canceled.
 };
