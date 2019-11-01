@@ -16,7 +16,11 @@ smtk_unit_tests(
     ${Boost_LIBRARIES}
 )
 
+set(additional_source_tests
+)
+
 add_executable(displayConeFrustum MACOSX_BUNDLE displayConeFrustum.cxx)
+list(APPEND additional_source_tests displayConeFrustum)
 target_link_libraries(displayConeFrustum
   smtkCore
   vtkSMTKSourceExt
@@ -32,6 +36,7 @@ target_link_libraries(displayConeFrustum
 )
 
 add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
+list(APPEND additional_source_tests displayMultiBlockModel)
 target_link_libraries(displayMultiBlockModel
   smtkCore
   vtkSMTKSourceExt
@@ -45,6 +50,7 @@ target_link_libraries(displayMultiBlockModel
 )
 
 add_executable(displayMultiBlockMesh MACOSX_BUNDLE displayMultiBlockMesh.cxx)
+list(APPEND additional_source_tests displayMultiBlockMesh)
 target_link_libraries(displayMultiBlockMesh
   smtkCore
   vtkSMTKSourceExt
@@ -58,6 +64,7 @@ target_link_libraries(displayMultiBlockMesh
 )
 
 add_executable(displayModelToMesh MACOSX_BUNDLE displayModelToMesh.cxx)
+list(APPEND additional_source_tests displayModelToMesh)
 target_link_libraries(displayModelToMesh
   smtkCore
   vtkSMTKSourceExt
@@ -103,12 +110,13 @@ if (SMTK_DATA_DIR)
 
   if(SMTK_ENABLE_MESH_SESSION)
     add_executable(displayAuxiliaryGeometry MACOSX_BUNDLE displayAuxiliaryGeometry.cxx)
+    list(APPEND additional_source_tests displayAuxiliaryGeometry)
     target_link_libraries(displayAuxiliaryGeometry
       smtkCore
       smtkMeshSession
-      vtkRenderingGL2PSOpenGL2
       vtkSMTKSourceExt
-      vtkTestingRendering
+      VTK::RenderingGL2PSOpenGL2
+      VTK::TestingRendering
     )
 
     add_test(
@@ -122,3 +130,16 @@ if (SMTK_DATA_DIR)
   endif()
 
 endif()
+
+vtk_module_autoinit(
+  TARGETS UnitTests_smtk_extension_vtk_source_testing_cxx
+          ${additional_source_tests}
+  MODULES VTK::CommonCore
+          VTK::CommonDataModel
+          VTK::FiltersSources
+          VTK::InteractionStyle
+          VTK::IOXML
+          VTK::RenderingCore
+          VTK::RenderingOpenGL2
+          VTK::TestingRendering
+          vtkSMTKSourceExt)
