@@ -427,18 +427,28 @@ void qtReferenceItem::updateUI()
   m_p->m_qtDelegate->setVisibilityMode(true);
   if (m_p->m_phraseModel)
   {
-    m_p->m_phraseModel->setDecorator(
-      [this](smtk::view::DescriptivePhrasePtr phr) { this->decorateWithMembership(phr); });
+    QPointer<qtReferenceItem> guardedObject(this);
+    m_p->m_phraseModel->setDecorator([guardedObject](smtk::view::DescriptivePhrasePtr phr) {
+      if (guardedObject)
+      {
+        guardedObject->decorateWithMembership(phr);
+      }
+    });
   }
   m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL.c_str());
   m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL.c_str());
   if (m_p->m_phraseModel)
   {
     m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);
+    QPointer<qtReferenceItem> guardedObject(this);
     m_p->m_modelObserverId = m_p->m_phraseModel->observers().insert(
-      [this](smtk::view::DescriptivePhrasePtr phr, smtk::view::PhraseModelEvent evt,
-        const std::vector<int>& src, const std::vector<int>& dst,
-        const std::vector<int>& refs) { this->checkRemovedComponents(phr, evt, src, dst, refs); },
+      [guardedObject](smtk::view::DescriptivePhrasePtr phr, smtk::view::PhraseModelEvent evt,
+        const std::vector<int>& src, const std::vector<int>& dst, const std::vector<int>& refs) {
+        if (guardedObject)
+        {
+          guardedObject->checkRemovedComponents(phr, evt, src, dst, refs);
+        }
+      },
       "qtReferenceItem: Check for removed components.");
   }
 

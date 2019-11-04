@@ -178,14 +178,16 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
   m_p->m_overrideWhen = pqSMTKAttributeItemWidget::OverrideWhenConvert(ow);
   m_p->m_fallbackStrategy = pqSMTKAttributeItemWidget::FallbackStrategyConvert(fs);
   m_p->m_geometrySource = pqSMTKAttributeItemWidget::GeometrySourceConvert(gs);
+  QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
   m_p->m_opObserver = info.baseView()->uiManager()->operationManager()->observers().insert(
-    [&](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [guardedObject](const smtk::operation::Operation& op, smtk::operation::EventType event,
       smtk::operation::Operation::Result res) {
       if (event == smtk::operation::EventType::DID_OPERATE &&
-        dynamic_cast<const smtk::attribute::Signal*>(&op) &&
-        res->findReference("modified")->contains(this->item()->attribute()))
+        dynamic_cast<const smtk::attribute::Signal*>(&op) && guardedObject &&
+        guardedObject->item() &&
+        res->findReference("modified")->contains(guardedObject->item()->attribute()))
       {
-        this->updateWidgetFromItem();
+        guardedObject->updateWidgetFromItem();
       }
       return 0;
     },
@@ -197,14 +199,16 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr it
   : qtItem(smtk::extension::qtAttributeItemInfo(itm, smtk::view::View::Component(), p, bview))
 {
   m_p = new Internal(itm, this->widget(), bview, orient);
+  QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
   m_p->m_opObserver = bview->uiManager()->operationManager()->observers().insert(
-    [&](const smtk::operation::Operation& op, smtk::operation::EventType event,
+    [guardedObject](const smtk::operation::Operation& op, smtk::operation::EventType event,
       smtk::operation::Operation::Result res) {
       if (event == smtk::operation::EventType::DID_OPERATE &&
-        dynamic_cast<const smtk::attribute::Signal*>(&op) &&
-        res->findReference("modified")->contains(this->item()->attribute()))
+        dynamic_cast<const smtk::attribute::Signal*>(&op) && guardedObject &&
+        guardedObject->item() &&
+        res->findReference("modified")->contains(guardedObject->item()->attribute()))
       {
-        this->updateWidgetFromItem();
+        guardedObject->updateWidgetFromItem();
       }
       return 0;
     },
@@ -240,7 +244,13 @@ void pqSMTKAttributeItemWidget::updateItemFromWidget()
     // Only return to idle after event queue is processed
     // since the "modified()" signal's connected slots must
     // be allowed to run before changing state.
-    QTimer::singleShot(1, [this]() { m_p->m_state = Internal::State::Idle; });
+    QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
+    QTimer::singleShot(1, [guardedObject]() {
+      if (guardedObject)
+      {
+        guardedObject->m_p->m_state = Internal::State::Idle;
+      }
+    });
   }
 }
 
@@ -254,7 +264,13 @@ void pqSMTKAttributeItemWidget::updateWidgetFromItem()
     // Only return to idle after event queue is processed
     // since the "modified()" signal's connected slots must
     // be allowed to run before changing state.
-    QTimer::singleShot(1, [this]() { m_p->m_state = Internal::State::Idle; });
+    QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
+    QTimer::singleShot(1, [guardedObject]() {
+      if (guardedObject)
+      {
+        guardedObject->m_p->m_state = Internal::State::Idle;
+      }
+    });
   }
 }
 

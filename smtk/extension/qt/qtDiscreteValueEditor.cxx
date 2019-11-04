@@ -123,7 +123,16 @@ void qtDiscreteValueEditor::createWidget()
     combo->setToolTip(tooltip);
   }
   combo->addItems(discreteVals);
-  QObject::connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputValueChanged()),
+  QPointer<qtDiscreteValueEditor> guardedObject(this);
+  //QObject::connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputValueChanged()),
+  //  Qt::QueuedConnection);
+  QObject::connect(combo, (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged, this,
+    [guardedObject]() {
+      if (guardedObject)
+      {
+        guardedObject->onInputValueChanged();
+      }
+    },
     Qt::QueuedConnection);
   wlayout->addWidget(combo);
   this->Internals->m_combo = combo;
@@ -180,6 +189,11 @@ void qtDiscreteValueEditor::onInputValueChanged()
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
 
   // If the current selection matches the current value of the item then we can just return
+  if (item == nullptr)
+  {
+    return;
+  }
+
   if (item->isSet(this->Internals->m_elementIndex) &&
     (curIdx == item->discreteIndex(this->Internals->m_elementIndex)))
   {
