@@ -106,10 +106,15 @@ qtReferenceItemComboBox::qtReferenceItemComboBox(const qtAttributeItemInfo& info
   auto opManager = uiManager->operationManager();
   if (opManager != nullptr)
   {
+    QPointer<qtReferenceItemComboBox> guardedObject(this);
     m_operationObserverKey = opManager->observers().insert(
-      [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
-        return this->handleOperationEvent(oper, event, result);
+        if (guardedObject)
+        {
+          return guardedObject->handleOperationEvent(oper, event, result);
+        }
+        return 0;
       },
       "qtReferenceItemCombo: Update if an operation adds or removes entries.");
     this->Internals->operationManager = opManager;
@@ -250,8 +255,6 @@ void qtReferenceItemComboBox::updateItemData()
 void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreResource)
 {
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
-  auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
-  auto theAttribute = item->attribute();
   this->Internals->comboBox->blockSignals(true);
   this->m_mappedObjects.clear();
   this->Internals->comboBox->clear();
@@ -260,6 +263,8 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     this->Internals->comboBox->blockSignals(false);
     return;
   }
+  auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
+  auto theAttribute = item->attribute();
 
   attribute::DefinitionPtr attDef = theAttribute->definition();
 
@@ -272,7 +277,7 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   // component that would bypass the potential souurces of components.  For example, the component
   // may have been assigned from a resource that was not directly associated to the attribute resource.
   // Just to be safe lets add the item's current value (if set)
-  if (item->isSet())
+  if (item->isSet() && item->objectValue())
   {
     objSet.insert(item->objectValue());
   }
@@ -561,7 +566,14 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
             else
             {
               auto comps = resource->find(j->second);
-              candidates.insert(comps.begin(), comps.end());
+              for (auto comp = comps.begin(); comp != comps.end(); ++comp)
+              {
+                if (*comp)
+                {
+                  candidates.insert(*comp);
+                }
+              }
+              //candidates.insert(comps.begin(), comps.end());
             }
           }
         }

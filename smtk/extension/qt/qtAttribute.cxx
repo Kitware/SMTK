@@ -263,9 +263,10 @@ void qtAttribute::onItemModified()
       if (markModified)
       {
         didNotify = markModified->parameters()->associations()->appendObjectValue(attr);
-        auto result = markModified->operate();
-        didNotify &= result->findInt("outcome")->value() ==
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+        //auto result = markModified->operate();
+        //didNotify &= result->findInt("outcome")->value() ==
+        //  static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+        opManager->launchers()(markModified);
       }
     }
 #if !defined(NDEBUG) && DEBUG_ATTRIBUTE
