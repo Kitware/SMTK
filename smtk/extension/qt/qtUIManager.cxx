@@ -180,6 +180,9 @@ void qtUIManager::commonConstructor()
   this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
   this->registerViewConstructor("ResourceBrowser", qtResourceBrowser::createViewWidget);
 
+  qtSMTKUtilities::registerModelViewConstructor(
+    "ResourceTree", qtResourceBrowser::createDefaultView);
+
   // Lets register some basic item constructors
   this->registerItemConstructor("Default", qtUIManager::defaultItemConstructor);
   this->registerItemConstructor("qtComponentItem", qtComponentItem::createItemWidget);

@@ -96,7 +96,9 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
     return;
   }
   m_browser->widget()->setObjectName("pqSMTKResourceBrowser");
-  this->setWindowTitle("Resources");
+  std::string title;
+  m_view->details().attribute("Title", title);
+  this->setWindowTitle(title.empty() ? "Resources" : title.c_str());
   this->setWidget(m_browser->widget());
 }
 

@@ -5,15 +5,15 @@
     "Component": {
       "Name": "Details",
       "Attributes": {
-        "Title": "Resource Panel",
-        "TopLevel": true
+        "Title": "Resources",
+        "TopLevel": true,
+        "Widget": "ResourceTree"
       },
       "Children": [
         {
           "Name": "PhraseModel",
           "Attributes": {
-            "Type": "smtk::view::ResourcePhraseModel",
-            "Widget": "Tree"
+            "Type": "smtk::view::ResourcePhraseModel"
           },
           "Children": [
             {

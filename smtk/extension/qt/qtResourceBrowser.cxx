@@ -53,16 +53,18 @@ qtResourceBrowser::qtResourceBrowser(const ViewInfo& info)
 {
   m_p = new Internal;
   smtk::view::PhraseModelPtr phraseModel;
-  std::string modelViewName;
+  std::string modelViewType;
   QAbstractItemModel* qtPhraseModel = nullptr;
   if (m_viewInfo.m_view)
   {
-    modelViewName = m_viewInfo.m_view->name();
+    // modelViewName = m_viewInfo.m_view->name();
+    // empty Widget attribute is OK, will use default.
+    m_viewInfo.m_view->details().attribute("Widget", modelViewType);
     smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
     phraseModel = smtk::view::PhraseModel::create(m_viewInfo.m_view, manager);
     qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
   }
-  m_p->setup(this, phraseModel, modelViewName, qtPhraseModel, m_viewInfo.m_parent);
+  m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, m_viewInfo.m_parent);
   this->Widget = m_p->m_container;
 }
 
