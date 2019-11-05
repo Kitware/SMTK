@@ -27,6 +27,8 @@ class pqSMTKWrapper;
 class pqView;
 class vtkSMSMTKWrapperProxy;
 
+class pqSMTKAppComponentsAutoStart;
+
 /** \brief Create and synchronize smtk manager instances on the client and server.
   *
   * This instance will watch for server connection/disconnection events.
@@ -43,6 +45,9 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;
+
+  // Allow this plugin's AutoStart to register an active server, if there is one.
+  friend class pqSMTKAppComponentsAutoStart;
 
 public:
   static pqSMTKBehavior* instance(QObject* parent = nullptr);

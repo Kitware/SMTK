@@ -109,6 +109,13 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk register importers", registerImportersBehavior);
     pqCore->registerManager("smtk pipeline selection sync", pipelineSync);
     pqCore->registerManager("smtk display attribute on load", displayOnLoad);
+
+    // If there is already an active server, create a wrapper for it.
+    auto server = pqCore->getActiveServer();
+    if (server)
+    {
+      rsrcMgr->addManagerOnServer(server);
+    }
   }
   (void)rsrcMgr;
 }

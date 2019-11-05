@@ -18,7 +18,7 @@ set(_smtk_cmake_dir "${CMAKE_CURRENT_LIST_DIR}")
 function (smtk_add_plugin name)
   set(_smtk_plugin_name "${name}")
   cmake_parse_arguments(_smtk_plugin
-    ""
+    "_SKIP_DEPENDENCIES"
     "REGISTRAR;REGISTRAR_HEADER"
     "MANAGERS;PARAVIEW_PLUGIN_ARGS"
     ${ARGN})
@@ -38,6 +38,8 @@ function (smtk_add_plugin name)
     message(FATAL_ERROR
       "The `MANAGERS` argument is required.")
   endif ()
+
+  string(TOLOWER "${_smtk_plugin__SKIP_DEPENDENCIES}" _smtk_plugin__SKIP_DEPENDENCIES)
 
   if (NOT DEFINED _smtk_plugin_REGISTRAR_HEADER)
     string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
