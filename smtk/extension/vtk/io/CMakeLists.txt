@@ -84,8 +84,10 @@ target_include_directories(smtkIOVTK
 smtk_public_headers(smtkIOVTK ${headers})
 
 # add to the VTK module export set
+set(PROJECT_NAME_save "${PROJECT_NAME}")
 set(PROJECT_NAME SMTKVTKModules)
 smtk_install_library(smtkIOVTK)
+set(PROJECT_NAME "${PROJECT_NAME_save}")
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
