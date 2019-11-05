@@ -459,29 +459,23 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   if (PYTHONINTERP_FOUND AND SMTK_ENABLE_TESTING)
     set(required_python_modules)
 
+    # Add the path to the build tree's compiled modules, prioritizing it over
+    # the other directories (since the other directories will likely include the
+    # location of the module's install).
+    set(smtk_pythonpaths
+      "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}")
+    set(smtk_libpaths)
+
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
-
-      # find PARAVIEW_PYTHONPATH by querying pvpython, rather than relying on it
-      # to be set by ParaView.
-      include(CMake/FindPVPythonEnvironment.cmake)
-
-      list(APPEND required_python_modules
-        paraview)
-      set(paraview_PYTHONPATH
-        "${PARAVIEW_PYTHONPATH}"
-        "${PARAVIEW_PYTHONPATH}/vtkmodules")
+      list(APPEND smtk_pythonpaths
+        "${ParaView_PREFIX_PATH}/${PARAVIEW_PYTHONPATH}")
       set(paraview_libpath
-        "${PARAVIEW_RUNTIME_DIRS}")
+        "${ParaView_PREFIX_PATH}/${CMAKE_INSTALL_BINDIR}")
     elseif (SMTK_ENABLE_VTK_SUPPORT)
-      list(APPEND required_python_modules
-        vtk)
-      set(vtk_PYTHONPATH
-        "${VTK_PYTHONPATH}")
-      list(GET VTK_PREFIX_PATH 0
-        vtk_prefix)
+      list(APPEND smtk_pythonpaths
+        "${VTK_PREFIX_PATH}/${VTK_PYTHONPATH}")
       set(vtk_libpath
-        "${VTK_PREFIX_PATH}/lib"
-        "${VTK_PREFIX_PATH}/lib64")
+        "${VTK_PREFIX_PATH}/${CMAKE_INSTALL_BINDIR}")
     endif ()
 
     set(envsep ":")
@@ -492,84 +486,6 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     set(libpath_envvar)
     if (WIN32)
       set(libpath_envvar "PATH")
-    elseif (APPLE)
-      set(libpath_envvar "DYLD_FALLBACK_LIBRARY_PATH")
-    elseif (UNIX)
-      set(libpath_envvar "LD_LIBRARY_PATH")
-    else ()
-      message(WARNING "Unknown platform loader path environment variable.")
-    endif ()
-
-    function (smtk_test_python_module output_python output_lib module pythonpath libpath)
-      string(REPLACE ";" "${envsep}" pythonpath_env "${pythonpath}")
-
-      if (DEFINED ENV{PYTHONPATH})
-        set(pythonpath_env
-          "${pythonpath_env}${envsep}$ENV{PYTHONPATH}")
-      endif ()
-
-      string(REPLACE ";" "${envsep}" libpath_env "${libpath}")
-
-      if (DEFINED ENV{${libpath_envvar}})
-        set(libpath_env
-          "${libpath_env}${envsep}$ENV{${libpath_envvar}}")
-      endif ()
-
-      # Test the PYTHONPATH passed in.
-      execute_process(
-        COMMAND "${CMAKE_COMMAND}"
-                -E env
-                "PYTHONPATH=${pythonpath_env}"
-                "${libpath_envvar}=${libpath_env}"
-                "${PYTHON_EXECUTABLE}"
-                -c "import ${module}"
-        RESULT_VARIABLE res
-        OUTPUT_VARIABLE out
-        ERROR_VARIABLE  err)
-
-      if (res)
-        message(SEND_ERROR
-          "Failed to import the ${module} Python module. The attempted "
-          "PYTHONPATH was '${pythonpath_env}' and ${libpath_envvar} set to "
-          "'${libpath_env}', but it still failed. Please set the PYTHONPATH "
-          "environment to make the ${module} module successfully import. The "
-          "error message was '${err}'.")
-
-        return ()
-      endif ()
-
-      # Add to the list of paths required for modules.
-      set("${output_python}"
-        ${${output_python}}
-        "${pythonpath}"
-        PARENT_SCOPE)
-
-      # Add to the list of paths required for modules.
-      set("${output_lib}"
-        ${${output_lib}}
-        "${libpath}"
-        PARENT_SCOPE)
-    endfunction ()
-
-    set(smtk_pythonpaths
-      "$ENV{PYTHONPATH}")
-    set(smtk_libpaths
-      "$ENV{${libpath_envvar}}")
-    foreach (module IN LISTS required_python_modules)
-      smtk_test_python_module(smtk_pythonpaths smtk_libpaths
-        "${module}" "${${module}_PYTHONPATH}" "${${module}_libpath}")
-    endforeach ()
-
-    # Add the path to the build tree's compiled modules, prioritizing it over
-    # the other directories (since the other directories will likely include the
-    # location of the module's install).
-    list(INSERT smtk_pythonpaths 0
-      "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}${envsep}${CMAKE_BINARY_DIR}/lib")
-    list(INSERT smtk_libpaths 0
-      "${CMAKE_BINARY_DIR}/lib")
-    if (CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-      list(INSERT smtk_libpaths 0
-        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
     endif ()
 
     # Remove duplicates.
@@ -584,8 +500,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     string(REPLACE ";" "\;" smtk_pythonpath_env "${smtk_pythonpath_env}")
     string(REPLACE ";" "\;" smtk_libpath_env "${smtk_libpath_env}")
     set(smtk_python_test_environment
-      "PYTHONPATH=${smtk_pythonpath_env}${envsep}${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-      "${libpath_envvar}=${smtk_libpath_env}")
+      "PYTHONPATH=${smtk_pythonpath_env}${envsep}${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
+    if (libpath_envvar)
+      list(APPEND smtk_python_test_environment
+        "${libpath_envvar}=${smtk_libpath_env}")
+    endif ()
 
     function (smtk_add_test_python name file)
       add_test(
