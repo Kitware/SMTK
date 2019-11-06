@@ -20,6 +20,7 @@
 #include "smtk/extension/qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
@@ -28,7 +29,11 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
+#include "smtk/attribute/operators/Signal.h"
 
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Observer.h"
+#include "smtk/operation/Operation.h"
 #include "smtk/view/View.h"
 
 #include <QBrush>
@@ -70,7 +75,7 @@ class qtAttributeViewInternals
 public:
   ~qtAttributeViewInternals() { delete this->CurrentAtt; }
 
-  // Return a list of categories based on the current settings
+  // Return a list of definitions based on the current settings
   // of the UI Manager and whether the View is to ignore
   // categories
   const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
@@ -149,6 +154,8 @@ public:
   smtk::model::BitFlags m_modelEntityMask;
   std::map<std::string, smtk::view::View::Component> m_attCompMap;
   QString m_alertIconPath;
+
+  smtk::operation::Observers::Key m_observerKey;
 };
 
 qtBaseView* qtAttributeView::createViewWidget(const ViewInfo& info)
@@ -173,6 +180,14 @@ qtAttributeView::qtAttributeView(const ViewInfo& info)
 
 qtAttributeView::~qtAttributeView()
 {
+  if (this->Internals->m_observerKey.assigned())
+  {
+    auto opManager = this->uiManager()->operationManager();
+    if (opManager != nullptr)
+    {
+      opManager->observers().erase(this->Internals->m_observerKey);
+    }
+  }
   delete this->Internals;
 }
 
@@ -397,6 +412,22 @@ void qtAttributeView::createWidget()
   this->Widget = frame;
 
   this->updateModelAssociation();
+
+  auto opManager = uiManager()->operationManager();
+  QPointer<qtAttributeView> guardedObject(this);
+  if (opManager != nullptr)
+  {
+    this->Internals->m_observerKey = opManager->observers().insert(
+      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+        smtk::operation::Operation::Result result) -> int {
+        if (guardedObject == nullptr)
+        {
+          return 0;
+        }
+        return guardedObject->handleOperationEvent(oper, event, result);
+      },
+      "qtInstancedView: Refresh qtAttributeView when components are modified.");
+  }
 }
 
 void qtAttributeView::updateModelAssociation()
@@ -404,15 +435,25 @@ void qtAttributeView::updateModelAssociation()
   this->onShowCategory();
 }
 
+smtk::attribute::Attribute* qtAttributeView::getRawAttributeFromItem(QTableWidgetItem* item)
+{
+  if (this->Internals->ViewByCombo->currentIndex() != VIEWBY_Attribute)
+  {
+    return nullptr;
+  }
+
+  return (item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr);
+}
+
 smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(QTableWidgetItem* item)
 {
-  if (this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
+  smtk::attribute::Attribute* raw = this->getRawAttributeFromItem(item);
+  if (raw == nullptr)
   {
-    Attribute* rawPtr =
-      item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : NULL;
-    return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
+    return smtk::attribute::AttributePtr();
   }
-  return smtk::attribute::AttributePtr();
+
+  return raw->shared_from_this();
 }
 
 smtk::attribute::ItemPtr qtAttributeView::getAttributeItemFromItem(QTableWidgetItem* item)
@@ -692,34 +733,38 @@ void qtAttributeView::updateItemWidgetsEnableState(
   }
 }
 
-void qtAttributeView::onCreateNew()
+smtk::attribute::DefinitionPtr qtAttributeView::getCurrentDef() const
 {
   if (!this->Internals->m_attDefinitions.size())
   {
-    return;
+    return nullptr;
   }
-  attribute::DefinitionPtr newAttDef = this->Internals->AllDefs[0];
-
-  QString strDef;
   if (this->Internals->AllDefs.size() == 1)
   {
-    strDef = this->Internals->AllDefs[0]->type().c_str();
+    return this->Internals->AllDefs[0];
   }
-  else
-  {
-    strDef = this->Internals->DefsCombo->currentText();
-  }
+
+  QString strDef = this->Internals->DefsCombo->currentText();
+
   foreach (attribute::DefinitionPtr attDef,
     this->Internals->getCurrentDefs(this->uiManager(), m_ignoreCategories))
   {
     std::string txtDef = attDef->displayedTypeName();
     if (strDef == QString::fromUtf8(txtDef.c_str()))
     {
-      newAttDef = attDef;
-      break;
+      return attDef;
     }
   }
-  this->createNewAttribute(newAttDef);
+  return nullptr;
+}
+
+void qtAttributeView::onCreateNew()
+{
+  smtk::attribute::DefinitionPtr newAttDef = this->getCurrentDef();
+  if (newAttDef != nullptr)
+  {
+    this->createNewAttribute(newAttDef);
+  }
 }
 
 void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
@@ -1614,4 +1659,96 @@ void qtAttributeView::updateAttributeStatus(Attribute* att)
       }
     }
   }
+}
+
+int qtAttributeView::handleOperationEvent(const smtk::operation::Operation& op,
+  smtk::operation::EventType event, smtk::operation::Operation::Result result)
+{
+  if (event != smtk::operation::EventType::DID_OPERATE)
+  {
+    return 0;
+  }
+
+  // Since the Signal Operation originates from a Qt Signal
+  // being fired we can ignore this
+  if (op.typeName() == smtk::common::typeName<smtk::attribute::Signal>())
+  {
+    return 0;
+  }
+
+  //In the case of modified components we only need to look at the
+  // current attribute being displayed
+  smtk::attribute::ComponentItemPtr compItem;
+  std::size_t i, n;
+  if (this->Internals->CurrentAtt != nullptr)
+  {
+    compItem = result->findComponent("modified");
+    n = compItem->numberOfValues();
+    for (i = 0; i < n; i++)
+    {
+      if (compItem->isSet(i) && (compItem->value(i) == this->Internals->CurrentAtt->attribute()))
+      {
+        // Update the attribute's items
+        auto items = this->Internals->CurrentAtt->items();
+        for (auto item : items)
+        {
+          item->updateItemData();
+        }
+        break; // we don't have to keep looking for this ComponentPtr
+      }
+    }
+  }
+
+  // Check for expunged components - this case we need to look at all of the attributes
+  // in the table and remove any that have been expunged
+  compItem = result->findComponent("expunged");
+  n = compItem->numberOfValues();
+  if (n)
+  {
+    for (i = 0; i < n; i++)
+    {
+      if (compItem->isSet(i))
+      {
+        int row, numRows = this->Internals->ListTable->rowCount();
+        for (row = 0; row < numRows; ++row)
+        {
+          QTableWidgetItem* item = this->Internals->ListTable->item(row, name_column);
+          smtk::attribute::Attribute* att = this->getRawAttributeFromItem(item);
+          if (compItem->value(i).get() == att)
+          {
+            this->Internals->ListTable->removeRow(row);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // In the case of created components we need to see if anything would
+  // cause us to reset the list view
+  smtk::attribute::DefinitionPtr currentDef = this->getCurrentDef();
+  if (currentDef == nullptr)
+  {
+    return 0; // nothing to do
+  }
+
+  compItem = result->findComponent("created");
+  n = compItem->numberOfValues();
+  for (i = 0; i < n; i++)
+  {
+    if (compItem->isSet(i))
+    {
+      auto att = dynamic_pointer_cast<smtk::attribute::Attribute>(compItem->value(i));
+      if (att == nullptr)
+      {
+        continue;
+      }
+      smtk::attribute::DefinitionPtr attDef = att->definition();
+      if (attDef->isA(currentDef))
+      {
+        this->addAttributeListItem(att);
+      }
+    }
+  }
+  return 0;
 }

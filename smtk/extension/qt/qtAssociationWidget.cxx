@@ -100,12 +100,17 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
     uiManager, SIGNAL(highlightOnHoverChanged(bool)), this, SLOT(highlightOnHoverChanged(bool)));
 
   auto opManager = uiManager->operationManager();
+  QPointer<qtAssociationWidget> guardedObject(this);
   if (opManager != nullptr)
   {
     m_operationObserverKey = opManager->observers().insert(
-      [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
-        return this->handleOperationEvent(oper, event, result);
+        if (guardedObject == nullptr)
+        {
+          return 0;
+        }
+        return guardedObject->handleOperationEvent(oper, event, result);
       },
       "qtAssociationWidget: Refresh widget when resources are modified.");
   }
@@ -117,8 +122,12 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
   if (resManager != nullptr)
   {
     m_resourceObserverKey = resManager->observers().insert(
-      [this](const smtk::resource::Resource& resource, smtk::resource::EventType event) {
-        this->handleResourceEvent(resource, event);
+      [guardedObject](const smtk::resource::Resource& resource, smtk::resource::EventType event) {
+        if (guardedObject == nullptr)
+        {
+          return 0;
+        }
+        return guardedObject->handleResourceEvent(resource, event);
       },
       "qtAssociationWidget: Refresh widget when resources are removed.");
   }
@@ -616,7 +625,7 @@ int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation&,
   return 0;
 }
 
-void qtAssociationWidget::handleResourceEvent(
+int qtAssociationWidget::handleResourceEvent(
   const smtk::resource::Resource& resource, smtk::resource::EventType event)
 {
   if (event == smtk::resource::EventType::REMOVED)
@@ -624,6 +633,7 @@ void qtAssociationWidget::handleResourceEvent(
     // The simplest solution is just to refresh the widget
     this->refreshAssociations(resource.id());
   }
+  return 0;
 }
 
 void qtAssociationWidget::leaveEvent(QEvent* evt)
