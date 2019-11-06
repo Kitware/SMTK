@@ -31,7 +31,6 @@
 #include "pqCoreUtilities.h"
 #include "pqPipelineSource.h"
 
-#include "vtkSMGlobalPropertiesProxy.h"
 #include "vtkSMProperty.h"
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
@@ -150,9 +149,7 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   // Start watching the resource's associate PV server for user preference changes.
   pqServer* server = pqActiveObjects::instance().activeServer();
   vtkSMSessionProxyManager* pxm = server ? server->proxyManager() : nullptr;
-  auto paletteProxy = pxm
-    ? vtkSMGlobalPropertiesProxy::SafeDownCast(pxm->GetProxy("global_properties", "ColorPalette"))
-    : nullptr;
+  auto paletteProxy = pxm ? pxm->GetProxy("settings", "ColorPalette") : nullptr;
   auto defaultValueColorProp =
     paletteProxy ? paletteProxy->GetProperty("SMTKDefaultValueBackground") : nullptr;
   auto invalidValueColorProp =
