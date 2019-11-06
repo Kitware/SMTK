@@ -44,6 +44,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
+#include "smtk/io/Logger.h"
 #include "smtk/resource/Manager.h"
 
 #include <QApplication>
@@ -186,6 +187,16 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
                     // they must explicitly close and discard each modified resource.
                     if (state == pqSaveResourceReaction::State::Aborted)
                     {
+                      // explain to the user what's happening if the pref is set.
+                      auto settings = vtkSMTKSettings::GetInstance();
+                      int showSave = settings->GetShowSaveResourceOnClose();
+                      if (showSave == vtkSMTKSettings::DontShowAndSave)
+                      {
+                        smtkInfoMacro(smtk::io::Logger::instance(),
+                          "Your preference is set to save modified resources when they are closed. "
+                          "Please choose \"File .. Close Resource\" and cancel the save if you "
+                          "wish to discard changes before exiting.");
+                      }
                       ret = QMessageBox::Cancel;
                       return true;
                     }
@@ -203,7 +214,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
 }
 
 int pqSMTKSaveOnCloseResourceBehavior::showDialog(
-  bool& cbChecked, int numberOfUnsavedResources, bool showCancel)
+  bool& cbChecked, std::size_t numberOfUnsavedResources, bool showCancel)
 {
   QMessageBox msgBox;
   QCheckBox* cb = new QCheckBox("Set default and don't show again.");
@@ -231,7 +242,7 @@ int pqSMTKSaveOnCloseResourceBehavior::showDialog(
 }
 
 int pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(
-  int numberOfUnsavedResources, bool showCancel)
+  std::size_t numberOfUnsavedResources, bool showCancel)
 {
   int ret = QMessageBox::Discard;
   auto settings = vtkSMTKSettings::GetInstance();

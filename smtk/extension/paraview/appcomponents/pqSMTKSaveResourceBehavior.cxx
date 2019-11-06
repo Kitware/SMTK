@@ -129,9 +129,12 @@ pqSaveResourceReaction::State pqSaveResourceAsReaction::saveResourceAs()
   smtk::resource::ResourcePtr resource = smtkResource->getResource();
 
   QString filters("Simulation Modeling Toolkit Resource files (*.smtk)");
+  QString title(tr("Save File: "));
+  // add a name so user can tell which resource is being saved.
+  title += resource->name().c_str();
 
   pqFileDialog fileDialog(
-    server, pqCoreUtilities::mainWidget(), tr("Save File:"),
+    server, pqCoreUtilities::mainWidget(), title,
     (resource->location().empty()
         ? QString()
         : QFileInfo(QString::fromStdString(resource->location())).absoluteDir().absolutePath()),
