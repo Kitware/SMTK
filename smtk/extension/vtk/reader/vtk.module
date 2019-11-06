@@ -1,7 +1,5 @@
 NAME
   vtkSMTKReaderExt
-CONDITION
-  SMTK_ENABLE_REMUS_SUPPORT
 DEPENDS
   VTK::CommonCore
   VTK::CommonDataModel
@@ -20,4 +18,5 @@ PRIVATE_DEPENDS
   VTK::IOXML
   VTK::InfovisLayout
   VTK::vtksys
+OPTIONAL_DEPENDS
   vtkSMTKMeshingExt
