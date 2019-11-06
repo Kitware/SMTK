@@ -1346,12 +1346,17 @@ void vtkSMTKResourceRepresentation::ApplyInternalBlockAttributes()
     this->BlockAttrChanged = false;
   }
 
-  data = this->GetInternalOutputPort(2)->GetProducer()->GetOutputDataObject(0);
-  if (this->InstanceAttributeTime < data->GetMTime() || this->InstanceAttrChanged)
+  auto outPort = this->GetInternalOutputPort(2);
+  // some representations don't use output port 2 - avoid a crash.
+  if (outPort)
   {
-    this->ApplyGlyphBlockAttributes(this->GlyphMapper.GetPointer());
-    this->InstanceAttributeTime.Modified();
-    this->InstanceAttrChanged = false;
+    data = outPort->GetProducer()->GetOutputDataObject(0);
+    if (this->InstanceAttributeTime < data->GetMTime() || this->InstanceAttrChanged)
+    {
+      this->ApplyGlyphBlockAttributes(this->GlyphMapper.GetPointer());
+      this->InstanceAttributeTime.Modified();
+      this->InstanceAttrChanged = false;
+    }
   }
 }
 
