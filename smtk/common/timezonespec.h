@@ -18,9 +18,9 @@ namespace smtk
 namespace common
 {
 
-// From boost 1.60:
+// Derived from boost, see cxx:
 SMTKCORE_EXPORT
-extern const char timezonespec_csv[35855];
+extern const char timezonespec_csv[35854];
 
 } // namespace common
 } // namespace smtk
