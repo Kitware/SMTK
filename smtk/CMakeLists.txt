@@ -113,6 +113,15 @@ target_link_libraries(smtkCore
   LINK_PUBLIC ${smtkCore_public_link_libraries}
   LINK_PRIVATE ${smtkCore_private_link_libraries})
 
+if (WIN32)
+  # Boost 1.70 and above have CMake configuration provided by upstream. Usage
+  # requirements are not quite resolved yet.
+  # https://github.com/boostorg/boost_install/issues/18
+  target_compile_definitions(smtkCore
+    PRIVATE
+      BOOST_UUID_FORCE_AUTO_LINK)
+endif ()
+
 smtk_export_header(smtkCore CoreExports.h)
 if (NOT BUILD_SHARED_LIBS AND SMTK_ENABLE_PYTHON_WRAPPING)
   # Set position-independent flag when other project libs are shared.
