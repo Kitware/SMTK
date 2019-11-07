@@ -64,7 +64,6 @@ set(smtk_srcs
 )
 
 set(smtkCore_public_include_directories
-  ${Boost_INCLUDE_DIRS}
   ${MOAB_INCLUDE_DIRS}
   $<BUILD_INTERFACE:${smtk_SOURCE_DIR}>
   $<BUILD_INTERFACE:${smtk_BINARY_DIR}>
@@ -87,7 +86,10 @@ set(smtkCore_public_link_libraries
   )
 
 set(smtkCore_private_link_libraries
-  ${Boost_LIBRARIES}
+  Boost::boost
+  Boost::date_time
+  Boost::filesystem
+  Boost::system
   ${LibArchive_LIBRARIES}
   )
 
