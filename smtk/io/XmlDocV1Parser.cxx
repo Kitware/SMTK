@@ -551,6 +551,11 @@ void XmlDocV1Parser::process(xml_node& amnode)
       {
         analysis->setExclusive(true);
       }
+      xatt = anode.attribute("Required");
+      if (xatt && xatt.as_bool())
+      {
+        analysis->setRequired(true);
+      }
       // Does the analysis have a label?
       xatt = anode.attribute("Label");
       if (xatt)
