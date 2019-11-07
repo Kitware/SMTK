@@ -73,6 +73,17 @@ public:
     bool isExclusive() const { return m_exclusive; }
     /// @}
 
+    /// @{
+    /// \brief Methods to set and retrieve an Analysis' required property.
+    ///
+    /// If an Analysis is required with respects to its parent then it will not
+    /// appear with an optional checkbox.
+    /// Note that if an Analysis' parent has isExclusive=true then this property is
+    /// ignored
+    void setRequired(bool mode) { m_required = mode; }
+    bool isRequired() const { return m_required; }
+    /// @}
+
     /// \brief Returns the children Analyses of this Analysis
     const std::vector<Analysis*>& children() const { return m_children; }
 
@@ -88,6 +99,7 @@ public:
       : m_name(name)
       , m_parent(nullptr)
       , m_exclusive(false)
+      , m_required(false)
     {
     }
     ~Analysis() {}
@@ -95,6 +107,7 @@ public:
     std::string m_name;                 ///< Name of the Analysis
     Analysis* m_parent;                 ///< Analysis' Parent
     bool m_exclusive;                   ///< Indicates if the Analysis' children are exclusive
+    bool m_required;                    ///< Indicates if the Analysis is required
     std::string m_label;                ///< Optional label to be used for UIs
     std::set<std::string> m_categories; ///< Categories locally assigned to the analysis
     std::vector<Analysis*> m_children;  ///< Children of the Analysis
@@ -149,7 +162,12 @@ public:
 
 protected:
   /// \brief Calculate the set of categories associated with an Analysis Attribute's Item.
-  void getAnalysisItemCategories(ConstItemPtr item, std::set<std::string>& cats);
+  ///
+  /// itemNotAnalysis indicates if the item does not represent an analysis itself.
+  /// This occurs only when processing the top level item and m_topLevelExclusive
+  /// is true.
+  void getAnalysisItemCategories(
+    ConstItemPtr item, std::set<std::string>& cats, bool itemNotAnalysis);
 
   bool m_topLevelExclusive; ///< Indicates if the top level Analysis Instances are exclusive
   std::vector<Analysis*> m_analyses; ///< Analysis Instances managed by the Analyses Instance

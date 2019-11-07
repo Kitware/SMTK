@@ -49,6 +49,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     std::map<std::string, std::string> pInfo, lInfo;
     std::vector<std::string> aNames;
     std::vector<std::string> eInfo;
+    std::vector<std::string> rInfo;
     // we need this for backward compatibility
     std::map<std::string, std::set<std::string> > aInfo;
     for (auto analysis : analyses.analyses())
@@ -62,6 +63,10 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
       if (analysis->isExclusive())
       {
         eInfo.push_back(analysis->name());
+      }
+      if (analysis->isRequired())
+      {
+        rInfo.push_back(analysis->name());
       }
       if (analysis->hasLabel())
       {
@@ -81,6 +86,10 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     if (eInfo.size())
     {
       j["AnalysesExclusiveInfo"] = eInfo;
+    }
+    if (rInfo.size())
+    {
+      j["AnalysesRequiredInfo"] = rInfo;
     }
     if (analyses.areTopLevelExclusive())
     {
@@ -308,6 +317,25 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         {
           smtkErrorMacro(smtk::io::Logger::instance(),
             "Could not find Analysis: " << name << " to set its exclusive property!");
+        }
+      }
+    }
+    // What about Required Info?
+    auto analysesRequiredInfo = j.find("AnalysesRequiredInfo");
+    if (analysesRequiredInfo != j.end())
+    {
+      auto rNames = analysesRequiredInfo->get<std::vector<std::string> >();
+      for (auto const& name : rNames)
+      {
+        auto a = analyses.find(name);
+        if (a != nullptr)
+        {
+          a->setRequired(true);
+        }
+        else
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(),
+            "Could not find Analysis: " << name << " to set its required property!");
         }
       }
     }

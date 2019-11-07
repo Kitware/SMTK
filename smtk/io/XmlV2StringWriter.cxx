@@ -360,6 +360,10 @@ void XmlV2StringWriter::generateXml()
       {
         anode.append_attribute("Exclusive").set_value(true);
       }
+      if (analysis->isRequired())
+      {
+        anode.append_attribute("Required").set_value(true);
+      }
       auto aCats = analysis->localCategories();
       for (auto acat : aCats)
       {

@@ -50,6 +50,8 @@ py::class_< smtk::attribute::Analyses > pybind11_init_smtk_attribute_Analyses(py
     .def("setParent", &smtk::attribute::Analyses::Analysis::setParent, py::arg("p"))
     .def("setExclusive", &smtk::attribute::Analyses::Analysis::setExclusive, py::arg("mode"))
     .def("isExclusive", &smtk::attribute::Analyses::Analysis::isExclusive)
+    .def("setRequired", &smtk::attribute::Analyses::Analysis::setRequired, py::arg("mode"))
+    .def("isRequired", &smtk::attribute::Analyses::Analysis::isRequired)
     .def("children", &smtk::attribute::Analyses::Analysis::children)
     .def("buildAnalysisItem", (void (smtk::attribute::Analyses::Analysis::*)(::smtk::attribute::DefinitionPtr &) const) &smtk::attribute::Analyses::Analysis::buildAnalysisItem, py::arg("sitem"))
     .def("buildAnalysisItem", (void (smtk::attribute::Analyses::Analysis::*)(::smtk::attribute::GroupItemDefinitionPtr &) const) &smtk::attribute::Analyses::Analysis::buildAnalysisItem, py::arg("gitem"))
