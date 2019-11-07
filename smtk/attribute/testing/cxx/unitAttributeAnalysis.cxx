@@ -36,7 +36,9 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
   auto a1 = analyses.find("a1");
   auto b = analyses.find("b");
   smtkTest((a != nullptr), prefix << "Could not find a!");
+  smtkTest((a->isRequired()), prefix << "a is not Required!");
   smtkTest((a1 != nullptr), prefix << "Could not find a1!");
+  smtkTest((!a1->isRequired()), prefix << "a1 is Required!");
   smtkTest((b != nullptr), prefix << "Could not find b!");
   // Lets test label method
   smtkTest(
@@ -60,6 +62,8 @@ int unitAttributeAnalysis(int, char* [])
   std::set<std::string> cats;
   cats.insert("foo");
   auto analysis = analyses.create("a");
+  // Set a to be required
+  analysis->setRequired(true);
   analysis->setLocalCategories(cats);
   analysis = analyses.create("b");
   analysis->setLocalCategories(cats);
@@ -90,6 +94,7 @@ int unitAttributeAnalysis(int, char* [])
   auto gitem =
     std::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(def->itemDefinition(pos));
   smtkTest((gitem != nullptr), "a is not a group item");
+  smtkTest((!gitem->isOptional()), "a's group item is optional (aka a is not Required");
   pos = def->findItemPosition("b");
   smtkTest(pos > -1, "Could not find item b");
   auto vitem =

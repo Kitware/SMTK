@@ -30,7 +30,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
   if (!analysis->children().size())
   {
     auto vitem = def->template addItemDefinition<VoidItemDefinition>(analysis->name());
-    vitem->setIsOptional(true);
+    vitem->setIsOptional(!analysis->isRequired());
     vitem->setLabel(analysis->displayedName());
     return;
   }
@@ -39,7 +39,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
   if (analysis->isExclusive())
   {
     auto sitem = def->template addItemDefinition<StringItemDefinition>(analysis->name());
-    sitem->setIsOptional(true);
+    sitem->setIsOptional(!analysis->isRequired());
     sitem->setLabel(analysis->displayedName());
     for (auto child : analysis->children())
     {
@@ -49,7 +49,7 @@ void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrTy
   }
   // Non Exclusive Analyses are represented as a Group Item
   auto gitem = def->template addItemDefinition<GroupItemDefinition>(analysis->name());
-  gitem->setIsOptional(true);
+  gitem->setIsOptional(!analysis->isRequired());
   gitem->setLabel(analysis->displayedName());
   for (auto child : analysis->children())
   {
@@ -140,17 +140,22 @@ void Analyses::Analysis::buildAnalysisItem(GroupItemDefinitionPtr& pitem) const
 
 void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
 {
-  pitem->addDiscreteValue(m_name);
+  pitem->addDiscreteValue(m_name, this->displayedName());
   if (!m_children.size())
   {
     return;
   }
 
+  if (m_required)
+  {
+    std::cerr << "Warning: Analysis: " << m_name << " is marked Required but is part of an analysis"
+              << " whose children are Exclusive - The Required property will be ignored!\n";
+  }
   if (m_exclusive)
   {
     auto sitem = pitem->addItemDefinition<StringItemDefinition>(m_name);
     sitem->setLabel(this->displayedName());
-    pitem->addConditionalItem(m_name, m_name);
+    pitem->addConditionalItem(this->displayedName(), m_name);
     for (auto child : m_children)
     {
       child->buildAnalysisItem(sitem);
@@ -256,9 +261,15 @@ DefinitionPtr Analyses::buildAnalysesDefinition(
   }
 
   // Ok lets build a definition with the following rules:
-  // 1. All items are optional and each respresents an Analysis
-  // 2. An Analysis with no children is a void item
-  // 3. An Analsyis with children is a group item
+  // 1. Each item respresents an Analysis except in the case when
+  //    m_topLevelExclusive is true.  In that situtation the string item
+  //    itself does not represent an analysis but it's value does
+  // 2. An Analysis with non-exclusive children is a group item
+  // 3. An Analysis with exclusive children is a string item whose value
+  //    also represents an analysis
+  // 4. A non-exclusive Analysis with no children is a void item
+  // 5. An exclusive Analysis with no children is a discrete value
+  // 6. An exclusive Analysis with children is a child item of a string item
 
   def = resource->createDefinition(type);
   auto topAnalyses = this->topLevel();
@@ -281,7 +292,8 @@ DefinitionPtr Analyses::buildAnalysesDefinition(
   return def;
 }
 
-void Analyses::getAnalysisItemCategories(ConstItemPtr item, std::set<std::string>& cats)
+void Analyses::getAnalysisItemCategories(
+  ConstItemPtr item, std::set<std::string>& cats, bool itemNotAnalysis)
 {
   // If the item is not active there is nothing to do
   if (!item->isEnabled())
@@ -289,7 +301,22 @@ void Analyses::getAnalysisItemCategories(ConstItemPtr item, std::set<std::string
     return;
   }
 
-  // Are we dealing with a string item - in that case the value of the string
+  if (!itemNotAnalysis)
+  {
+    // Add this analysis's categories
+    auto analysis = this->find(item->name());
+    if (analysis != nullptr)
+    {
+      auto myCats = analysis->localCategories();
+      cats.insert(myCats.begin(), myCats.end());
+    }
+    else
+    {
+      std::cerr << "Could not find Analysis: " << item->name() << std::endl;
+    }
+  }
+
+  // Are we dealing with a string item? - in that case the value of the string
   // is the analysis and we need to process it's active children.  Else
   // the item's name is the analysis and we need to see if its a group
   auto sitem = std::dynamic_pointer_cast<const StringItem>(item);
@@ -315,22 +342,9 @@ void Analyses::getAnalysisItemCategories(ConstItemPtr item, std::set<std::string
     int i, n = static_cast<int>(sitem->numberOfActiveChildrenItems());
     for (i = 0; i < n; i++)
     {
-      this->getAnalysisItemCategories(sitem->activeChildItem(i), cats);
+      this->getAnalysisItemCategories(sitem->activeChildItem(i), cats, false);
     }
     return;
-  }
-
-  // If we are here then we are dealing with an item
-  // representing the actual analysis
-  auto analysis = this->find(item->name());
-  if (analysis != nullptr)
-  {
-    auto myCats = analysis->localCategories();
-    cats.insert(myCats.begin(), myCats.end());
-  }
-  else
-  {
-    std::cerr << "Could not find Analysis: " << item->name() << std::endl;
   }
 
   auto gitem = std::dynamic_pointer_cast<const GroupItem>(item);
@@ -342,7 +356,7 @@ void Analyses::getAnalysisItemCategories(ConstItemPtr item, std::set<std::string
   std::size_t i, n = gitem->numberOfItemsPerGroup();
   for (i = 0; i < n; i++)
   {
-    this->getAnalysisItemCategories(gitem->item(i), cats);
+    this->getAnalysisItemCategories(gitem->item(i), cats, false);
   }
 }
 
@@ -352,6 +366,6 @@ void Analyses::getAnalysisAttributeCategories(
   int i, n = static_cast<int>(attribute->numberOfItems());
   for (i = 0; i < n; i++)
   {
-    this->getAnalysisItemCategories(attribute->item(i), cats);
+    this->getAnalysisItemCategories(attribute->item(i), cats, m_topLevelExclusive);
   }
 }
