@@ -299,7 +299,14 @@ void pqSMTKAttributeItemWidget::setOutputOptional(int optionEnabled)
 /// Create Qt widgets as required (may be called multiple times if Item is reconfigured).
 void pqSMTKAttributeItemWidget::updateItemData()
 {
-  this->updateUI();
+  if (m_widget == nullptr)
+  {
+    this->updateUI();
+  }
+  else
+  {
+    this->updateWidgetFromItem();
+  }
   this->qtItem::updateItemData();
 }
 
