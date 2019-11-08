@@ -66,6 +66,7 @@
         paths:
             # The artifacts of the build.
             - build/bin/
+            - build/include/
             - build/lib/
             # Generated headers.
             # XXX(globbing): Can be simplified with support from
