@@ -1449,7 +1449,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <GlobalPropertyLink type="ColorPalette" property="EdgeColor"/>
+          <PropertyLink group="settings" type="ColorPalette" property="EdgeColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <DoubleVectorProperty command="SetDefaultFaceColor"
@@ -1461,7 +1461,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <GlobalPropertyLink type="ColorPalette" property="DefaultFaceColor"/>
+          <PropertyLink group="settings" type="ColorPalette" property="DefaultFaceColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <DoubleVectorProperty command="SetSelectionColor"
@@ -1473,7 +1473,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <GlobalPropertyLink type="ColorPalette" property="SelectionColor"/>
+          <PropertyLink group="settings" type="ColorPalette" property="SelectionColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <DoubleVectorProperty command="SetHoverColor"
@@ -1485,7 +1485,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <GlobalPropertyLink type="ColorPalette" property="SMTKHighlightColor"/>
+          <PropertyLink group="settings" type="ColorPalette" property="SMTKHighlightColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <IntVectorProperty command="SetPickable"
@@ -1624,7 +1624,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <GlobalPropertyLink type="ColorPalette" property="SelectionColor" />
+          <PropertyLink group="settings" type="ColorPalette" property="SelectionColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <DoubleVectorProperty command="SetLineWidth"
@@ -1921,7 +1921,7 @@
   </ProxyGroup>
 
   <!-- Expose user preferences -->
-  <ProxyGroup name="misc">
+  <ProxyGroup name="settings">
 
     <Extension name="ColorPalette">
 
