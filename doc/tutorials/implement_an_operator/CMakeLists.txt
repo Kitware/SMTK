@@ -7,12 +7,6 @@ set(CMAKE_CXX_EXTENSIONS False)
 
 find_package(smtk)
 
-# this is probably not the right way to do this, but we need the path to SMTK's
-# include directory so EncodeStringFunctions.cmake finds things.
-get_target_property(SMTK_INCLUDE_DIR smtkCore INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(SMTK_LIB_DIR smtkCore LOCATION)
-get_filename_component(SMTK_LIB_DIR ${SMTK_LIB_DIR} DIRECTORY)
-
 # The smtk_operation_xml() function writes a file to the current
 # binary directory sharing the same name as the input file
 # but with "_xml.h" replacing the file extension. For this
