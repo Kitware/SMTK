@@ -86,6 +86,12 @@ install(
   FILES ${operationXML}
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/smtk/${SMTK_VERSION}/smtk/operation
   )
+foreach (operation_xml IN LISTS operationXML)
+  configure_file(
+    "${operation_xml}"
+    "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_INCLUDEDIR}/smtk/${SMTK_VERSION}/smtk/operation/${operation_xml}"
+    COPYONLY)
+endforeach ()
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   set_property(GLOBAL APPEND
