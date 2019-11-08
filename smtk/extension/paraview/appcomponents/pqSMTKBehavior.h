@@ -10,6 +10,8 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKBehavior_h
 
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
 #include "smtk/PublicPointerDefs.h"
 
 #include <QObject>
@@ -37,7 +39,7 @@ class vtkSMSMTKWrapperProxy;
   * It should eventually deal with synchronization issues as stated above, but
   * SMTK's resource manager doesn't deal with remote resources yet.
   */
-class pqSMTKBehavior : public QObject
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;

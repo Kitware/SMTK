@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKSubtractUI.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKSubtractUI.h"
 
 #include "smtk/io/Logger.h"
 

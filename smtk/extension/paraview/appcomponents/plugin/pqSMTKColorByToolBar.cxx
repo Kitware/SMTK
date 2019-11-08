@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKColorByToolBar.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKColorByWidget.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKColorByToolBar.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKColorByWidget.h"
 
 // Client side
 #include "pqActiveObjects.h"

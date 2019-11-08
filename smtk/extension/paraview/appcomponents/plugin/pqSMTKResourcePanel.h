@@ -10,7 +10,7 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h
 #define smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h
 
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKResourceBrowser.h"
 
 #include <QDockWidget>
 

@@ -10,6 +10,8 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKRenderResourceBehavior_h
 #define smtk_extension_paraview_appcomponents_pqSMTKRenderResourceBehavior_h
 
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 
 #include "smtk/resource/Resource.h"
@@ -32,7 +34,7 @@
 /// The destruction of a pipeline source can be safely connected to a resource
 /// manager's signal of a removed resource because we do not need to guard
 /// against ParaView's pipeline removal logic.
-class pqSMTKRenderResourceBehavior : public QObject
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKRenderResourceBehavior : public QObject
 {
   Q_OBJECT
   using Superclass = QObject;
