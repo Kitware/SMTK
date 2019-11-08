@@ -168,6 +168,7 @@ pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::extension::ViewInfo& in
 
 pqSMTKResourceBrowser::~pqSMTKResourceBrowser()
 {
+  QObject::disconnect(this);
 }
 
 int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Query qq, int val,
@@ -380,7 +381,6 @@ void pqSMTKResourceBrowser::initSubphraseGenerator()
   std::string defaultSubphraseType;
   if (resourceTreeStyle != m_p->m_resourceTreeStyle)
   {
-    smtk::view::SubphraseGenerator::Ptr spg = nullptr;
     switch (resourceTreeStyle)
     {
       case vtkSMTKSettings::HierarchicalStyle:

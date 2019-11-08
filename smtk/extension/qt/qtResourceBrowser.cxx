@@ -125,7 +125,10 @@ void qtResourceBrowser::setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg
   {
     spg->setModel(m_p->m_phraseModel);
   }
-  root->setDelegate(spg);
+  if (root)
+  {
+    root->setDelegate(spg);
+  }
 }
 
 smtk::extension::qtDescriptivePhraseModel* qtResourceBrowser::descriptivePhraseModel() const
@@ -222,21 +225,23 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
   auto qmodel = m_p->descriptivePhraseModel();
   auto root = m_p->m_phraseModel->root();
   QItemSelection qseln;
-  root->visitChildren(
-    [&qmodel, &qseln, &seln](smtk::view::DescriptivePhrasePtr phrase, std::vector<int>& path) {
-      smtk::resource::PersistentObjectPtr obj = phrase->relatedObject();
-      if (obj)
-      {
-        auto it = seln->currentSelection().find(obj);
-        if (it != seln->currentSelection().end() && (it->second & 0x01))
+  if (root)
+  {
+    root->visitChildren(
+      [&qmodel, &qseln, &seln](smtk::view::DescriptivePhrasePtr phrase, std::vector<int>& path) {
+        smtk::resource::PersistentObjectPtr obj = phrase->relatedObject();
+        if (obj)
         {
-          auto qidx = qmodel->indexFromPath(path);
-          qseln.select(qidx, qidx);
+          auto it = seln->currentSelection().find(obj);
+          if (it != seln->currentSelection().end() && (it->second & 0x01))
+          {
+            auto qidx = qmodel->indexFromPath(path);
+            qseln.select(qidx, qidx);
+          }
         }
-      }
-      return 0;
-    });
-
+        return 0;
+      });
+  }
   auto smodel = dynamic_cast<QAbstractProxyModel*>(qview->selectionModel()->model());
   // If our top-level model is a proxy model, map the selected
   // indices from the descriptive phrase space into the proxy's

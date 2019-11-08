@@ -30,7 +30,9 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
 {
   // Parse a json representation of our default config, save it.
   nlohmann::json j = nlohmann::json::parse(ResourcePanelConfiguration_xml);
-  this->setView(j[0]);
+  smtk::view::ViewPtr config = j[0];
+  // config->details().child(0).setAttribute("Type", "smtk::view::ComponentPhraseModel");
+  this->setView(config);
 
   auto smtkBehavior = pqSMTKBehavior::instance();
   // Now listen for future connections.
@@ -38,11 +40,20 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
     SLOT(resourceManagerAdded(pqSMTKWrapper*, pqServer*)));
   QObject::connect(smtkBehavior, SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)), this,
     SLOT(resourceManagerRemoved(pqSMTKWrapper*, pqServer*)));
+
+  // TMP DBG TESTING
+  // nlohmann::json j2 = nlohmann::json::parse(ResourcePanelConfiguration_xml);
+  // config = j2[0];
+  // config->details().child(0).setAttribute("Type", "smtk::view::ResourcePhraseModel");
+  // config->details().child(0).child(0).setAttribute("Type", "smtk::view::TwoLevelSubphraseGenerator");
+
+  // this->setView(config);
 }
 
 pqSMTKResourcePanel::~pqSMTKResourcePanel()
 {
-  delete m_browser;
+  delete m_viewUIMgr;
+  // m_viewUIMgr deletes m_browser
   // deletion of m_browser->widget() is handled when parent widget is deleted.
 }
 
@@ -75,8 +86,7 @@ void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer*
   {
     delete m_viewUIMgr;
     m_viewUIMgr = nullptr;
-    // m_browser deletes the container, which deletes child QWidgets.
-    delete m_browser;
+    // m_viewUIMgr deletes m_browser, which deletes the container, which deletes child QWidgets.
     m_browser = nullptr;
   }
 
