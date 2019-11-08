@@ -1921,7 +1921,7 @@
   </ProxyGroup>
 
   <!-- Expose user preferences -->
-  <ProxyGroup name="misc">
+  <ProxyGroup name="settings">
 
     <Extension name="ColorPalette">
 
