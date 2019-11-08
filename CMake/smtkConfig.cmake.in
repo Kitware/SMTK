@@ -5,8 +5,7 @@ This file is used by CMake when finding SMTK.
 
 The following variables are provided by this module:
 
-  * `smtk_PREFIX_PATH`: Install prefixes for SMTK. May include
-    additional paths for other prefixes of dependencies.
+  * `smtk_PREFIX_PATH`: Install prefix for SMTK.
   * `smtk_VERSION`: The version of SMTK found.
   * `SMTK_ENABLE_PARAVIEW_SUPPORT`: Whether ParaView support is available or
     not.
