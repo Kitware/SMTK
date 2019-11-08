@@ -84,7 +84,7 @@ smtk_public_headers(smtkCore ${operationHeaders})
 #also install the xml files
 install(
   FILES ${operationXML}
-  DESTINATION include/smtk/${SMTK_VERSION}/smtk/operation
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/smtk/${SMTK_VERSION}/smtk/operation
   )
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
