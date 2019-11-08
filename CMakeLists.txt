@@ -489,8 +489,12 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     endif ()
 
     # Remove duplicates.
-    list(REMOVE_DUPLICATES smtk_pythonpaths)
-    list(REMOVE_DUPLICATES smtk_libpaths)
+    if (smtk_pythonpaths)
+      list(REMOVE_DUPLICATES smtk_pythonpaths)
+    endif ()
+    if (smtk_libpaths)
+      list(REMOVE_DUPLICATES smtk_libpaths)
+    endif ()
 
     string(REPLACE ";" "${envsep}" smtk_pythonpath_env "${smtk_pythonpaths}")
     string(REPLACE ";" "${envsep}" smtk_libpath_env "${smtk_libpaths}")
