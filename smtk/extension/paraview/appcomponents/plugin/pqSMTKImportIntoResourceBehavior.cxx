@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKCloseResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKImportIntoResourceBehavior.h"
 
 // Client side
 #include "pqActiveObjects.h"
@@ -24,20 +24,18 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/json/jsonResource.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKOperationPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKOperationPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Manager.h"
-#include "smtk/operation/groups/CreatorGroup.h"
-#include "smtk/resource/Manager.h"
-#include "smtk/view/Selection.h"
+#include "smtk/operation/groups/ImporterGroup.h"
 
 #include <QAction>
 #include <QApplication>
@@ -49,12 +47,11 @@
 #include <QPushButton>
 #include <QSharedPointer>
 
-void initCloseResourceBehaviorResources()
-{
-  Q_INIT_RESOURCE(pqSMTKCloseResourceBehavior);
-}
+#include "nlohmann/json.hpp"
 
-pqCloseResourceReaction::pqCloseResourceReaction(QAction* parentObject)
+using json = nlohmann::json;
+
+pqImportIntoResourceReaction::pqImportIntoResourceReaction(QAction* parentObject)
   : Superclass(parentObject)
 {
   pqActiveObjects* activeObjects = &pqActiveObjects::instance();
@@ -65,78 +62,102 @@ pqCloseResourceReaction::pqCloseResourceReaction(QAction* parentObject)
   this->updateEnableState();
 }
 
-void pqCloseResourceReaction::updateEnableState()
+void pqImportIntoResourceReaction::updateEnableState()
 {
+  this->parentAction()->setEnabled(false);
+
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
+
   // TODO: also is there's a pending accept.
-  bool enable_state =
-    (activeObjects.activeServer() != NULL && activeObjects.activeSource() != NULL &&
-      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != NULL);
-  this->parentAction()->setEnabled(enable_state);
-}
-
-void pqCloseResourceReaction::closeResource()
-{
-  pqActiveObjects& activeObjects = pqActiveObjects::instance();
-  pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(activeObjects.activeSource());
-
-  // Access the active resource
-  smtk::resource::ResourcePtr resource = smtkResource->getResource();
-
-  int ret = QMessageBox::Discard;
-
-  if (resource && resource->clean() == false)
+  bool enable_state = activeObjects.activeServer() != NULL && activeObjects.activeSource() != NULL;
+  if (enable_state == false)
   {
-    QMessageBox msgBox;
-    msgBox.setText("The resource has been modified.");
-    msgBox.setInformativeText("Do you want to save your changes?");
-    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Save);
-
-    ret = msgBox.exec();
-
-    if (ret == QMessageBox::Save)
-    {
-      activeObjects.setActiveSource(smtkResource);
-      pqSaveResourceReaction::State state = pqSaveResourceReaction::saveResource();
-      if (state == pqSaveResourceReaction::State::Aborted)
-      {
-        ret = QMessageBox::Cancel;
-      }
-    }
-    else if (ret == QMessageBox::Discard)
-    {
-      // Mark the resource as clean, even though it hasn't been saved. This way,
-      // other listeners will not prompt the user to save the resource.
-      resource->setClean(true);
-    }
+    return;
   }
 
-  if (ret != QMessageBox::Cancel)
+  pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(activeObjects.activeSource());
+  if (smtkResource == nullptr)
   {
-    // Remove it from its manager
-    if (smtk::resource::Manager::Ptr manager = resource->manager())
+    return;
+  }
+
+  // TODO: there should be a check here that the active resource type has an
+  // associated import operation, but when this is called the active resource is
+  // not accessible.
+
+  this->parentAction()->setEnabled(true);
+}
+
+void pqImportIntoResourceReaction::importIntoResource()
+{
+  // Access the active server
+  pqServer* server = pqActiveObjects::instance().activeServer();
+  pqSMTKWrapper* wrapper = pqSMTKBehavior::instance()->resourceManagerForServer(server);
+
+  // Access the active resource
+  pqActiveObjects& activeObjects = pqActiveObjects::instance();
+
+  pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(activeObjects.activeSource());
+  smtk::resource::ResourcePtr resource = smtkResource->getResource();
+
+  // Access the importer group.
+  auto importerGroup = smtk::operation::ImporterGroup(wrapper->smtkOperationManager());
+
+  // Access the operations that import into the active resource type.
+  auto operationIndices = importerGroup.operationsForResource(resource->typeName());
+
+  // TODO: handle the selection of import operations more intelligently.
+  if (operationIndices.empty())
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "No import operation registered to resource type <"
+        << resource->typeName() << ">.");
+    return;
+  }
+  auto operationIndex = *operationIndices.begin();
+
+  // Construct an import operation.
+  auto importIntoOp = wrapper->smtkOperationManager()->create(operationIndex);
+
+  // Associate the active resource to the operation's parameters
+  if (importIntoOp->parameters()->associate(resource) == false)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Import operation for resource type <"
+        << resource->typeName() << "> is not configured for importing into an extant resource.");
+    return;
+  }
+
+  // Access the file item definition associated with the import operation.
+  auto fileItemDef = importerGroup.fileItemDefinitionForOperation(operationIndex);
+
+  // Construct a file dialog to let the user select the file to import.
+  pqFileDialog fileDialog(server, pqCoreUtilities::mainWidget(), tr("Import File:"), QString(),
+    QString::fromStdString(fileItemDef->getFileFilters()));
+  fileDialog.setObjectName("FileSaveDialog");
+  fileDialog.setFileMode(pqFileDialog::ExistingFiles);
+
+  if (fileDialog.exec() == QDialog::Accepted)
+  {
+    QList<QStringList> files = fileDialog.getAllSelectedFiles();
+    for (auto cit = files.constBegin(); cit != files.constEnd(); ++cit)
     {
-      manager->remove(resource);
+      importIntoOp->parameters()->findFile(fileItemDef->name())->setValue((*cit)[0].toStdString());
+
+      // Execute the import operation.
+      auto result = importIntoOp->operate();
     }
 
-    // Remove it from the active selection
-    {
-      smtk::view::Selection::SelectionMap& selections =
-        const_cast<smtk::view::Selection::SelectionMap&>(
-          smtk::view::Selection::instance()->currentSelection());
-      selections.erase(resource);
-    }
+    // Render the resource (also resets "Apply")
+    pqSMTKRenderResourceBehavior::instance()->renderPipelineSource(smtkResource);
   }
 }
 
 namespace
 {
-QAction* findSaveStateAction(QMenu* menu)
+QAction* findSaveAction(QMenu* menu)
 {
   foreach (QAction* action, menu->actions())
   {
-    if (action->text().contains("save state", Qt::CaseInsensitive))
+    if (action->text().contains("save resource", Qt::CaseInsensitive))
     {
       return action;
     }
@@ -160,24 +181,19 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
 }
 }
 
-static pqSMTKCloseResourceBehavior* g_instance = nullptr;
+static pqSMTKImportIntoResourceBehavior* g_instance = nullptr;
 
-pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
+pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* parent)
   : Superclass(parent)
-  , m_newMenu(nullptr)
 {
-  initCloseResourceBehaviorResources();
-
   // Wait until the event loop starts, ensuring that the main window will be
   // accessible.
   QTimer::singleShot(0, this, [this]() {
     auto pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
-      QAction* closeResourceAction =
-        new QAction(QPixmap(":/CloseResourceBehavior/Close22.png"), tr("&Close Resource"), this);
-      closeResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
-      closeResourceAction->setObjectName("closeResource");
+      QAction* importIntoResourceAction = new QAction(tr("&Import Into Resource..."), this);
+      importIntoResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
 
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
 
@@ -206,11 +222,11 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
         // key off of their location to make the menu look better.
         QMetaObject::Connection* connection = new QMetaObject::Connection;
         *connection = QObject::connect(menu, &QMenu::aboutToShow, [=]() {
-          QAction* saveAction = findSaveStateAction(menu);
+          QAction* saveAction = findSaveAction(menu);
 
+          menu->insertAction(saveAction, importIntoResourceAction);
           menu->insertSeparator(saveAction);
-          menu->insertAction(saveAction, closeResourceAction);
-          menu->insertSeparator(closeResourceAction);
+          menu->insertSeparator(importIntoResourceAction);
 
           // Remove this connection.
           QObject::disconnect(*connection);
@@ -226,20 +242,20 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
         // Create new menu.
         menu = new QMenu("File", mainWindow);
         menu->setObjectName("File");
-        menu->addAction(closeResourceAction);
+        menu->addAction(importIntoResourceAction);
         // insert new menus before the Help menu is possible.
         mainWindow->menuBar()->insertMenu(::findHelpMenuAction(mainWindow->menuBar()), menu);
       }
-      new pqCloseResourceReaction(closeResourceAction);
+      new pqImportIntoResourceReaction(importIntoResourceAction);
     }
   });
 }
 
-pqSMTKCloseResourceBehavior* pqSMTKCloseResourceBehavior::instance(QObject* parent)
+pqSMTKImportIntoResourceBehavior* pqSMTKImportIntoResourceBehavior::instance(QObject* parent)
 {
   if (!g_instance)
   {
-    g_instance = new pqSMTKCloseResourceBehavior(parent);
+    g_instance = new pqSMTKImportIntoResourceBehavior(parent);
   }
 
   if (g_instance->parent() == nullptr && parent)
@@ -250,7 +266,7 @@ pqSMTKCloseResourceBehavior* pqSMTKCloseResourceBehavior::instance(QObject* pare
   return g_instance;
 }
 
-pqSMTKCloseResourceBehavior::~pqSMTKCloseResourceBehavior()
+pqSMTKImportIntoResourceBehavior::~pqSMTKImportIntoResourceBehavior()
 {
   if (g_instance == this)
   {

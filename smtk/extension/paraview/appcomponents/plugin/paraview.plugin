@@ -1,0 +1,8 @@
+NAME
+  smtkPQComponentsPlugin
+DESCRIPTION
+  SMTK Qt components for ParaView
+REQUIRES_MODULES
+  ParaView::pqApplicationComponents
+  smtkPQComponentsExt
+  vtkSMTKOperationsExt

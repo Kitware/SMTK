@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKAttributePanel.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKAttributePanel.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"

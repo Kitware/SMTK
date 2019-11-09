@@ -10,6 +10,8 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKResource_h
 #define smtk_extension_paraview_appcomponents_pqSMTKResource_h
 
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
 #include "pqPipelineSource.h"
 
 #include "smtk/operation/Observer.h"
@@ -25,7 +27,7 @@
   * In general, a user-facing SMTK resource should never exist without
   * a pqSMTKResource counterpart, though.
   */
-class pqSMTKResource : public pqPipelineSource
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResource : public pqPipelineSource
 {
   Q_OBJECT
   typedef pqPipelineSource Superclass;

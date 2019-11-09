@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKDisplayAttributeOnLoadBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKDisplayAttributeOnLoadBehavior.h"
 
 // SMTK
-#include "smtk/extension/paraview/appcomponents/pqSMTKAttributePanel.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKAttributePanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"

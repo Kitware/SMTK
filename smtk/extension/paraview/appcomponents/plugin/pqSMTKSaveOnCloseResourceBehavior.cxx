@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKSaveOnCloseResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKSaveOnCloseResourceBehavior.h"
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -28,9 +28,9 @@
 #include "vtkSMProxy.h"
 #include "vtkSMProxyManager.h"
 
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/resource/Manager.h"
 

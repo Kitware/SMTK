@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKImportOperationBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKImportOperationBehavior.h"
 
 // Client side
 #include "pqActiveObjects.h"

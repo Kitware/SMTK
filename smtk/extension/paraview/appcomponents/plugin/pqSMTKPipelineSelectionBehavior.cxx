@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKPipelineSelectionBehavior.h"
 
 // SMTK
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"

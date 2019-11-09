@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqPluginSMTKViewBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqPluginSMTKViewBehavior.h"
 
 #include "pqApplicationCore.h"
 #include "pqInterfaceTracker.h"

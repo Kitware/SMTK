@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/pqSMTKExportSimulationBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKExportSimulationBehavior.h"
 
 // Client side
 #include "pqActiveObjects.h"
@@ -20,8 +20,8 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKOperationPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKOperationPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
