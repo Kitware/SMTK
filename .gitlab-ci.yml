@@ -34,7 +34,7 @@
     - linux
 
 .fedora31: &fedora31
-    image: "kitware/cmb:ci-smtk-latest"
+    image: "kitware/cmb:ci-smtk-fedora31-latest"
     tags: *smtk_sb_tags
 
     variables:
