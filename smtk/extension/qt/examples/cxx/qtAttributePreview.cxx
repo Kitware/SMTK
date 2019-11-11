@@ -36,6 +36,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFileInfo>
 #include <QFrame>
 #include <QString>
 #include <QStringList>
@@ -109,24 +110,38 @@ int main(int argc, char* argv[])
   if (parser.isSet("model-file"))
   {
     QString modelFile = parser.value("model-file");
-    qInfo() << "Importing model file" << modelFile;
+    qInfo() << "Loading model file" << modelFile;
 
-    smtk::session::vtk::Import::Ptr importOp = smtk::session::vtk::Import::create();
-    if (importOp == nullptr)
+    smtk::operation::Operation::Ptr loadOp;
+
+    // If model file is resource (.smtk), use read operator; otherwise use load operator
+    QFileInfo fi(modelFile);
+    QString ext = fi.suffix();
+    if (ext == "smtk")
     {
-      qCritical("No vtk::import operator");
+      qDebug() << "Using Read operator";
+      loadOp = smtk::session::vtk::Read::create();
+    }
+    else
+    {
+      loadOp = smtk::session::vtk::Import::create();
+    }
+
+    if (loadOp == nullptr)
+    {
+      qCritical("No vtk model-input operator");
       return 1;
     }
 
-    importOp->parameters()->findFile("filename")->setValue(modelFile.toStdString());
+    loadOp->parameters()->findFile("filename")->setValue(modelFile.toStdString());
 
     // Execute the operation
-    smtk::operation::Operation::Result importOpResult = importOp->operate();
+    smtk::operation::Operation::Result loadOpResult = loadOp->operate();
 
     // Retrieve the resulting resource
     smtk::attribute::ResourceItemPtr resourceItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-        importOpResult->findResource("resource"));
+        loadOpResult->findResource("resource"));
 
     modelResource = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->value());
 
