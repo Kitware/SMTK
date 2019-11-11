@@ -20,16 +20,13 @@
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/json/jsonView.h"
 
-// cmake puts the .json file contents into a static string, named _xml
-#include "smtk/extension/paraview/appcomponents/ResourcePanelConfiguration_xml.h"
-
 pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   : Superclass(parent)
   , m_browser(nullptr)
   , m_viewUIMgr(nullptr)
 {
   // Parse a json representation of our default config, save it.
-  nlohmann::json j = nlohmann::json::parse(ResourcePanelConfiguration_xml);
+  nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
   smtk::view::ViewPtr config = j[0];
   // config->details().child(0).setAttribute("Type", "smtk::view::ComponentPhraseModel");
   this->setView(config);

@@ -14,6 +14,8 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+// cmake puts the .json file contents into a static string, named _xml
+#include "smtk/extension/paraview/appcomponents/ResourcePanelConfiguration_xml.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h" // FIXME: Remove the need for me
@@ -115,6 +117,8 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
   }
   return rval;
 }
+
+std::string pqSMTKResourceBrowser::s_configurationJSON = ResourcePanelConfiguration_xml;
 
 smtk::extension::qtBaseView* pqSMTKResourceBrowser::createViewWidget(
   const smtk::extension::ViewInfo& info)
