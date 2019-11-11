@@ -19,11 +19,18 @@ set_target_properties(
 
 ##
 ## Create an application to test attribute editing
-
-#add in the attribute preview executable
 add_executable(qtAttributePreview MACOSX_BUNDLE qtAttributePreview.cxx)
+
+# If VTK session enabled, add settings to load model files
+set(vtk_session_lib)
+if (SMTK_ENABLE_VTK_SUPPORT)
+  target_compile_definitions(qtAttributePreview PRIVATE VTK_SESSION)
+  set(vtk_session_lib "smtkVTKSession")
+endif()
+
 target_link_libraries(qtAttributePreview
   smtkQtExt
+  ${vtk_session_lib}
 )
 
 ##
