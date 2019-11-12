@@ -27,38 +27,31 @@
 #   - Need to figure out how it works with gitlab-runner.
 #   - Is offscreen rendering suitable?
 
-# Tags to ensure we run on SMTK-allowable runners.
-.smtk_sb_tags: &smtk_sb_tags
-    - docker
-    - cmb
-    - linux
-
 .fedora31: &fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-latest"
-    tags: *smtk_sb_tags
+    image: "kitware/cmb:ci-smtk-fedora31-20191112"
+    tags:
+        - docker
+        - cmb
+        - linux
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
         CMAKE: cmake
         CTEST: ctest
-        CMAKE_VARIABLES: >
-            -C /root/misc/root/smtk-deps/smtk-developer-config.cmake
-            -DSMTK_ENABLE_TESTING:BOOL=ON
-            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
-            -DCMAKE_C_COMPILER_LAUNCHER=sccache
+        CMAKE_CONFIGURATION: fedora31
         SCCACHE_REDIS: redis://minmus:6379
 
 .cmake_build_unix: &cmake_build_unix
     stage: build
 
     script:
-        - mkdir build
-        - cd build
+        - .gitlab/ci/sccache.sh
+        - export PATH=$PATH:$PWD/.gitlab
         - sccache --start-server
         - sccache --show-stats
         - "$CMAKE --version"
-        - "$LAUNCHER $CMAKE -GNinja $CMAKE_VARIABLES .."
-        - "$LAUNCHER $CMAKE --build . -j`nproc`"
+        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_configure.cmake"
+        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_build.cmake"
         - sccache --show-stats
 
     artifacts:
@@ -87,17 +80,17 @@
             - build/*/*/CTestTestfile.cmake
             - build/*/*/*/CTestTestfile.cmake
             - build/*/*/*/*/CTestTestfile.cmake
+            - build/Testing/
 
             # CDash files.
             - build/DartConfiguration.tcl
     interruptible: true
 
-.cmake_test: &cmake_test
+.cmake_test_unix: &cmake_test_unix
     stage: test
 
     script:
-        - cd build
-        - "$CTEST -j`nproc` --output-on-failure"
+        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_test.cmake"
 
     interruptible: true
 
@@ -113,7 +106,7 @@ build:fedora31:
 test:fedora31:
     <<:
         - *fedora31
-        - *cmake_test
+        - *cmake_test_unix
     dependencies:
         - build:fedora31
     needs:

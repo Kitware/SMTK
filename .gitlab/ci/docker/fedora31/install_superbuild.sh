@@ -15,9 +15,9 @@ cmake -GNinja \
     -DENABLE_smtkresourcemanagerstate:BOOL=OFF \
     -DSUPPRESS_szip_OUTPUT:BOOL=OFF \
     -DUSE_SYSTEM_qt5:BOOL=ON \
-    "-D__BUILDBOT_INSTALL_LOCATION:PATH=$HOME/misc/root/smtk-deps" \
+    "-D__BUILDBOT_INSTALL_LOCATION:PATH=$SUPERBUILD_PREFIX" \
     "$workdir/src-sb"
 ninja
-cp smtk-developer-config.cmake "$HOME/misc/root/smtk-deps"
+cp smtk-developer-config.cmake "$SUPERBUILD_PREFIX"
 
 rm -rf "$workdir"
