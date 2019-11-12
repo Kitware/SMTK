@@ -1,0 +1,30 @@
+[
+  {
+    "Name": "ResourceBrowser",
+    "Type": "pqSMTKResourceBrowser",
+    "Component": {
+      "Name": "Details",
+      "Attributes": {
+        "Title": "Resources",
+        "TopLevel": true,
+        "Widget": "ResourceTree"
+      },
+      "Children": [
+        {
+          "Name": "PhraseModel",
+          "Attributes": {
+            "Type": "smtk::view::ResourcePhraseModel"
+          },
+          "Children": [
+            {
+              "Name": "SubphraseGenerator",
+              "Attributes": {
+                "Type": "default"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

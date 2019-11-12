@@ -28,9 +28,9 @@ public:
   using Observer = std::function<void(DescriptivePhrasePtr, PhraseModelEvent, int, int)>;
   using Operation = smtk::operation::Operation;
 
-  smtkTypeMacro(ResourcePhraseModel);
-  smtkSuperclassMacro(PhraseModel);
-  smtkSharedPtrCreateMacro(PhraseModel);
+  smtkTypeMacro(smtk::view::ResourcePhraseModel);
+  smtkSuperclassMacro(smtk::view::PhraseModel);
+  smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
   virtual ~ResourcePhraseModel();
 
   /// Return the root phrase of the hierarchy.

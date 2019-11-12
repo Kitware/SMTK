@@ -41,12 +41,31 @@
 
 using namespace smtk::extension;
 
-qtResourceBrowser::qtResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel,
-  const std::string& modelViewName, QAbstractItemModel* qmodel, QWidget* parent)
-  : Superclass(parent)
+qtBaseView* qtResourceBrowser::createViewWidget(const ViewInfo& info)
+{
+  qtResourceBrowser* view = new qtResourceBrowser(info);
+  view->buildUI();
+  return view;
+}
+
+qtResourceBrowser::qtResourceBrowser(const ViewInfo& info)
+  : qtBaseView(info)
 {
   m_p = new Internal;
-  m_p->setup(this, phraseModel, modelViewName, qmodel, parent);
+  smtk::view::PhraseModelPtr phraseModel;
+  std::string modelViewType;
+  QAbstractItemModel* qtPhraseModel = nullptr;
+  if (m_viewInfo.m_view)
+  {
+    // modelViewName = m_viewInfo.m_view->name();
+    // empty Widget attribute is OK, will use default.
+    m_viewInfo.m_view->details().attribute("Widget", modelViewType);
+    smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
+    phraseModel = smtk::view::PhraseModel::create(m_viewInfo.m_view, manager);
+    qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
+  }
+  m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, m_viewInfo.m_parent);
+  this->Widget = m_p->m_container;
 }
 
 qtResourceBrowser::~qtResourceBrowser()
@@ -106,7 +125,20 @@ void qtResourceBrowser::setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg
   {
     spg->setModel(m_p->m_phraseModel);
   }
-  root->setDelegate(spg);
+  if (root)
+  {
+    root->setDelegate(spg);
+  }
+}
+
+smtk::extension::qtDescriptivePhraseModel* qtResourceBrowser::descriptivePhraseModel() const
+{
+  return m_p->descriptivePhraseModel();
+}
+
+void qtResourceBrowser::setDescriptivePhraseModel(QAbstractItemModel* qmodel)
+{
+  m_p->setDescriptivePhraseModel(qmodel);
 }
 
 bool qtResourceBrowser::highlightOnHover() const
@@ -136,12 +168,12 @@ void qtResourceBrowser::setHighlightOnHover(bool highlight)
   m_p->m_delegate->setHighlightOnHover(highlight);
 }
 
-void qtResourceBrowser::leaveEvent(QEvent* evt)
-{
-  this->resetHover();
-  // Now let the superclass do what it wants:
-  Superclass::leaveEvent(evt);
-}
+// void qtResourceBrowser::leaveEvent(QEvent* evt)
+// {
+//   this->resetHover();
+//   // Now let the superclass do what it wants:
+//   Superclass::leaveEvent(evt);
+// }
 
 void qtResourceBrowser::sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)
 {
@@ -193,21 +225,23 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
   auto qmodel = m_p->descriptivePhraseModel();
   auto root = m_p->m_phraseModel->root();
   QItemSelection qseln;
-  root->visitChildren(
-    [&qmodel, &qseln, &seln](smtk::view::DescriptivePhrasePtr phrase, std::vector<int>& path) {
-      smtk::resource::PersistentObjectPtr obj = phrase->relatedObject();
-      if (obj)
-      {
-        auto it = seln->currentSelection().find(obj);
-        if (it != seln->currentSelection().end() && (it->second & 0x01))
+  if (root)
+  {
+    root->visitChildren(
+      [&qmodel, &qseln, &seln](smtk::view::DescriptivePhrasePtr phrase, std::vector<int>& path) {
+        smtk::resource::PersistentObjectPtr obj = phrase->relatedObject();
+        if (obj)
         {
-          auto qidx = qmodel->indexFromPath(path);
-          qseln.select(qidx, qidx);
+          auto it = seln->currentSelection().find(obj);
+          if (it != seln->currentSelection().end() && (it->second & 0x01))
+          {
+            auto qidx = qmodel->indexFromPath(path);
+            qseln.select(qidx, qidx);
+          }
         }
-      }
-      return 0;
-    });
-
+        return 0;
+      });
+  }
   auto smodel = dynamic_cast<QAbstractProxyModel*>(qview->selectionModel()->model());
   // If our top-level model is a proxy model, map the selected
   // indices from the descriptive phrase space into the proxy's
@@ -227,6 +261,7 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
 void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
   smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
 {
+  // if (m_p->m_viewInfo)
   m_p->m_seln = seln;
   if (m_p->m_seln)
   {
@@ -361,8 +396,9 @@ void qtResourceBrowser::editObjectColor(const QModelIndex& idx)
       currentColor.setAlpha(255);
     }
 
-    QColor nextColor = QColorDialog::getColor(currentColor, this, dialogInstructions.c_str(),
-      QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
+    QColor nextColor =
+      QColorDialog::getColor(currentColor, this->m_p->m_container, dialogInstructions.c_str(),
+        QColorDialog::DontUseNativeDialog | QColorDialog::ShowAlphaChannel);
     bool canceled = !nextColor.isValid();
     if (!canceled)
     {
@@ -418,6 +454,10 @@ bool qtResourceBrowser::eventFilter(QObject* obj, QEvent* evnt)
         return true;
       }
     }
+  }
+  if (obj == m_p->m_view && evnt->type() == QEvent::Leave)
+  {
+    this->resetHover();
   }
   return this->Superclass::eventFilter(obj, evnt);
 }

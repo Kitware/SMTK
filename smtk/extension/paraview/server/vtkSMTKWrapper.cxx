@@ -19,8 +19,6 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/view/Selection.h"
-
 #include "smtk/common/json/jsonUUID.h"
 
 #include "smtk/io/json/jsonComponentSet.h"
@@ -31,6 +29,9 @@
 #include "smtk/operation/Manager.h"
 
 #include "smtk/project/Manager.h"
+
+#include "smtk/view/Manager.h"
+#include "smtk/view/Selection.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
@@ -87,6 +88,9 @@ vtkSMTKWrapper::vtkSMTKWrapper()
 
   this->ProjectManager =
     smtk::project::Manager::create(this->ResourceManager, this->OperationManager);
+
+  this->ViewManager = smtk::view::Manager::create();
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->ViewManager);
 
   // NB: this->Selection may never be overwritten with a different instance
   //     of smtk::view::Selection once a wrapper is created; consumers of the

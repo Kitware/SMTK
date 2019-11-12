@@ -52,7 +52,7 @@ public:
   using QueryFunctor = std::function<bool(const smtk::resource::ConstComponentPtr&)>;
   //using ResourcePtr = smtk::resource::ResourcePtr;
 
-  smtkTypeMacro(Entity);
+  smtkTypeMacro(smtk::model::Entity);
   smtkSharedPtrCreateMacro(smtk::resource::Component);
   virtual ~Entity();
 

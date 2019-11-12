@@ -66,6 +66,8 @@ public:
   smtk::view::SelectionPtr smtkSelection() const;
   /// Return the client-side project manager which mirrors the server version.
   smtk::project::ManagerPtr smtkProjectManager() const;
+  /// Return the client-side view manager which mirrors the server version.
+  smtk::view::ManagerPtr smtkViewManager() const;
 
   /// Return the pqSMTKResource which owns the given smtk::resource::ResourcePtr.
   pqSMTKResource* getPVResource(const smtk::resource::ResourcePtr& rsrc) const;

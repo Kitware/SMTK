@@ -27,6 +27,7 @@
 #include "smtk/extension/qt/qtModelEntityAttributeView.h"
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtOperationView.h"
+#include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtResourceItem.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
 #include "smtk/extension/qt/qtSelectorView.h"
@@ -131,6 +132,20 @@ qtUIManager::qtUIManager(
   this->commonConstructor();
 }
 
+qtUIManager::qtUIManager(
+  const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
+  : m_parentWidget(nullptr)
+  , m_resourceManager(resourceManager)
+  , m_viewManager(viewManager)
+{
+  if (!m_resourceManager || !m_viewManager)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(),
+      "Asked to create a browser view with missing resource or view manager.");
+  }
+  this->commonConstructor();
+}
+
 void qtUIManager::commonConstructor()
 {
   m_useInternalFileBrowser = true;
@@ -163,6 +178,10 @@ void qtUIManager::commonConstructor()
   this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
   this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
   this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
+  this->registerViewConstructor("ResourceBrowser", qtResourceBrowser::createViewWidget);
+
+  qtSMTKUtilities::registerModelViewConstructor(
+    "ResourceTree", qtResourceBrowser::createDefaultView);
 
   // Lets register some basic item constructors
   this->registerItemConstructor("Default", qtUIManager::defaultItemConstructor);

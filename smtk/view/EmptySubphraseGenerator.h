@@ -23,9 +23,9 @@ namespace view
 class SMTKCORE_EXPORT EmptySubphraseGenerator : public SubphraseGenerator
 {
 public:
-  smtkTypeMacro(EmptySubphraseGenerator);
-  smtkSuperclassMacro(SubphraseGenerator);
-  smtkCreateMacro(EmptySubphraseGenerator);
+  smtkTypeMacro(smtk::view::EmptySubphraseGenerator);
+  smtkSuperclassMacro(smtk::view::SubphraseGenerator);
+  smtkSharedPtrCreateMacro(smtk::view::SubphraseGenerator);
   virtual ~EmptySubphraseGenerator() {}
 
   /**\brief Return a list of descriptive phrases that elaborate upon \a src.

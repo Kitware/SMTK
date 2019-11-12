@@ -10,6 +10,7 @@
 #include "smtk/view/SubphraseGenerator.h"
 
 #include "smtk/view/ComponentPhraseContent.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/ResourcePhraseContent.h"
 
@@ -37,6 +38,44 @@ namespace smtk
 {
 namespace view
 {
+
+std::string SubphraseGenerator::getType(const smtk::view::ViewPtr& viewSpec)
+{
+  std::string typeName;
+  if (!viewSpec || viewSpec->name().empty() || viewSpec->name() != "ResourceBrowser")
+  {
+    return typeName;
+  }
+  // Look at viewSpec child, should be "PhraseModel", look for its child
+  if ((viewSpec->details().numberOfChildren() != 1) ||
+    (viewSpec->details().child(0).name() != "PhraseModel"))
+  {
+    return typeName;
+  }
+  auto model = viewSpec->details().child(0);
+  if (model.numberOfChildren() == 0)
+  {
+    typeName = "default";
+  }
+  else if ((model.numberOfChildren() != 1) || (model.child(0).name() != "SubphraseGenerator"))
+  {
+    return typeName;
+  }
+  model.child(0).attribute("Type", typeName);
+  return typeName;
+}
+
+SubphraseGeneratorPtr SubphraseGenerator::create(
+  const std::string& typeName, const smtk::view::ManagerPtr& manager)
+{
+  if (!manager || typeName.empty())
+  {
+    return nullptr;
+  }
+
+  // find things that match the typeName, and create one.
+  return manager->createSubphrase(typeName);
+}
 
 SubphraseGenerator::SubphraseGenerator()
 {

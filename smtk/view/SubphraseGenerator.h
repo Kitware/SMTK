@@ -43,8 +43,12 @@ namespace view
 class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerator)
 {
 public:
-  smtkTypeMacroBase(SubphraseGenerator);
-  smtkCreateMacro(SubphraseGenerator);
+  static std::string getType(const smtk::view::ViewPtr& viewSpec);
+  static SubphraseGeneratorPtr create(
+    const std::string& typeName, const smtk::view::ManagerPtr& manager);
+
+  smtkTypeMacroBase(smtk::view::SubphraseGenerator);
+  smtkCreateMacro(smtk::view::SubphraseGenerator);
   virtual ~SubphraseGenerator() {}
 
   using Path = std::vector<int>;
@@ -128,6 +132,10 @@ public:
   virtual void setSkipAttributes(bool val);
   virtual bool skipAttributes() const;
   ///@}
+
+  /// SubphraseGenerators that are managed have a non-null pointer to their manager.
+  ManagerPtr manager() const { return m_manager.lock(); }
+  friend Manager;
 
 protected:
   SubphraseGenerator();
@@ -291,6 +299,7 @@ protected:
   bool m_skipAttributes;
   bool m_skipProperties;
   WeakPhraseModelPtr m_model;
+  WeakManagerPtr m_manager;
 };
 
 } // namespace view
