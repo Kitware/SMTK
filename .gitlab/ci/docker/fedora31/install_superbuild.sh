@@ -2,8 +2,13 @@
 
 set -e
 
+readonly superbuild_ref="$1"
+shift
+
 readonly workdir="$HOME/code/cmb"
 git clone --recursive https://gitlab.kitware.com/cmb/cmb-superbuild.git "$workdir/src-sb"
+git -C "$workdir/src-sb" checkout "$superbuild_ref"
+git -C "$workdir/src-sb" submodule update --recursive --init
 mkdir -p "$workdir/build-sb"
 cd "$workdir/build-sb"
 
