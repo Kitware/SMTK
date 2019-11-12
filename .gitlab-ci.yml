@@ -28,7 +28,7 @@
 #   - Is offscreen rendering suitable?
 
 .fedora31: &fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-latest"
+    image: "kitware/cmb:ci-smtk-fedora31-20191112"
     tags:
         - docker
         - cmb
@@ -45,6 +45,8 @@
     stage: build
 
     script:
+        - .gitlab/ci/sccache.sh
+        - export PATH=$PATH:$PWD/.gitlab
         - sccache --start-server
         - sccache --show-stats
         - "$CMAKE --version"
