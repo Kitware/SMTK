@@ -29,10 +29,6 @@
 
 .fedora31: &fedora31
     image: "kitware/cmb:ci-smtk-fedora31-20191112"
-    tags:
-        - docker
-        - cmb
-        - linux
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -43,6 +39,11 @@
 
 .cmake_build_unix: &cmake_build_unix
     stage: build
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
 
     script:
         - .gitlab/ci/sccache.sh
@@ -88,6 +89,11 @@
 
 .cmake_test_unix: &cmake_test_unix
     stage: test
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
 
     script:
         - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_test.cmake"
