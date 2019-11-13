@@ -27,12 +27,13 @@
 #   - Need to figure out how it works with gitlab-runner.
 #   - Is offscreen rendering suitable?
 
+.only_settings: &only_settings
+    - merge_requests
+    - branches@cmb/smtk
+    - tags@cmb/smtk
+
 .fedora31: &fedora31
     image: "kitware/cmb:ci-smtk-fedora31-20191112"
-    tags:
-        - docker
-        - cmb
-        - linux
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -43,6 +44,12 @@
 
 .cmake_build_unix: &cmake_build_unix
     stage: build
+    only: *only_settings
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
 
     script:
         - .gitlab/ci/sccache.sh
@@ -88,6 +95,12 @@
 
 .cmake_test_unix: &cmake_test_unix
     stage: test
+    only: *only_settings
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
 
     script:
         - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_test.cmake"
