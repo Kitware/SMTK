@@ -27,6 +27,11 @@
 #   - Need to figure out how it works with gitlab-runner.
 #   - Is offscreen rendering suitable?
 
+.only_settings: &only_settings
+    - merge_requests
+    - branches@cmb/smtk
+    - tags@cmb/smtk
+
 .fedora31: &fedora31
     image: "kitware/cmb:ci-smtk-fedora31-20191112"
 
@@ -39,6 +44,7 @@
 
 .cmake_build_unix: &cmake_build_unix
     stage: build
+    only: *only_settings
     tags:
         - build
         - cmb
@@ -89,6 +95,7 @@
 
 .cmake_test_unix: &cmake_test_unix
     stage: test
+    only: *only_settings
     tags:
         - build
         - cmb
