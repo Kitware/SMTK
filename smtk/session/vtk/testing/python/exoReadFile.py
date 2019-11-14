@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 import os
 import smtk
 import smtk.model
@@ -114,7 +114,7 @@ class TestVTKSession(smtk.testing.TestCase):
 
         # Verify that the cell names match those from the Exodus file.
         nameset = {
-            'Unnamed block ID: 1 Type: HEX8': '#5a5255',
+            'Unnamed block ID: 1':            '#5a5255',
             'Unnamed set ID: 1':              '#ae5a41',
             'Unnamed set ID: 2':              '#559e83',
             'Unnamed set ID: 3':              '#c3cb71',
