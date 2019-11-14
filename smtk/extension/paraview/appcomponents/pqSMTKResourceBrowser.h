@@ -46,16 +46,17 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceBrowser : public smtk::extension:
   typedef smtk::extension::qtResourceBrowser Superclass;
 
 public:
-  pqSMTKResourceBrowser(
-    const smtk::view::PhraseModelPtr& phraseModel = smtk::view::PhraseModelPtr(),
-    const std::string& modelViewName = "", QAbstractItemModel* model = nullptr,
-    QWidget* parent = nullptr);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
+  pqSMTKResourceBrowser(const smtk::extension::ViewInfo& info);
   ~pqSMTKResourceBrowser() override;
 
   /// This method may be used by other ParaView plugins that wish to expose
   /// per-active-view visibility decorations on qtResourceBrowser widgets.
   static int panelPhraseDecorator(smtk::view::VisibilityContent::Query qq, int val,
     smtk::view::ConstPhraseContentPtr data, std::map<smtk::common::UUID, int>& visibleThings);
+
+  /// Return the string that represents the configuration for browser components
+  static const std::string& getJSONConfiguration() { return s_configurationJSON; }
 
 protected slots:
   virtual void searchTextChanged(const QString& searchText);
@@ -75,6 +76,10 @@ protected slots:
 
   /// Called when vtkSMTKSettings is modified, indicating highlight-on-hover behavior may change.
   virtual void updateSettings();
+
+protected:
+  void initSubphraseGenerator();
+  static std::string s_configurationJSON;
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKResourceBrowser_h

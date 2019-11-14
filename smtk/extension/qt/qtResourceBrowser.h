@@ -11,6 +11,7 @@
 #define smtk_extension_qtResourceBrowser_h
 
 #include "smtk/extension/qt/Exports.h"
+#include "smtk/extension/qt/qtBaseView.h"
 
 #include "smtk/PublicPointerDefs.h"
 
@@ -29,10 +30,10 @@ class qtDescriptivePhraseModel;
 
 /**\brief A panel that displays SMTK resources available to the application/user.
   *
-  * This is a Qt widget that displays a tree or list view holding an SMTK
+  * This contains Qt widget that displays a tree or list view holding an SMTK
   * descriptive phrase model.
   *
-  * Its constructor accepts
+  * Its ViewInfo should be initialized with json/xml that contains:
   * (1) an smtk::view::PhraseModel that you have configured,
   * (2) the string name registered to a QAbstractItemView subclass constructor,
   * (3) a QAbstactItemModel implementing qtDescriptivePhraseModel model index queries, and
@@ -45,15 +46,14 @@ class qtDescriptivePhraseModel;
   * that can be used by a qtDescriptivePhraseDelegate instance, which this
   * class creates and owns to control how the tree rows are rendered.
   */
-class SMTKQTEXT_EXPORT qtResourceBrowser : public QWidget
+class SMTKQTEXT_EXPORT qtResourceBrowser : public qtBaseView
 {
   Q_OBJECT
-  typedef QWidget Superclass;
+  typedef smtk::extension::qtBaseView Superclass;
 
 public:
-  qtResourceBrowser(const smtk::view::PhraseModelPtr& phraseModel = smtk::view::PhraseModelPtr(),
-    const std::string& modelViewName = "", QAbstractItemModel* model = nullptr,
-    QWidget* parent = nullptr);
+  static qtBaseView* createViewWidget(const ViewInfo& info);
+  qtResourceBrowser(const ViewInfo& info);
   ~qtResourceBrowser() override;
 
   static QTreeView* createDefaultView(QWidget* parent);
@@ -65,10 +65,11 @@ public:
   smtk::view::SubphraseGeneratorPtr phraseGenerator() const;
   void setPhraseGenerator(smtk::view::SubphraseGeneratorPtr spg);
 
+  smtk::extension::qtDescriptivePhraseModel* descriptivePhraseModel() const;
+  void setDescriptivePhraseModel(QAbstractItemModel* qmodel);
+
   bool highlightOnHover() const;
   void setHighlightOnHover(bool highlight);
-
-  void leaveEvent(QEvent*) override;
 
 public slots:
   virtual void sendPanelSelectionToSMTK(

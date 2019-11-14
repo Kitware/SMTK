@@ -23,10 +23,13 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKPipelineSelectionBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRegisterImportersBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveOnCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/vtkSMTKEncodeSelection.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
+
+#include "smtk/extension/qt/qtSMTKUtilities.h"
 
 #include "pqApplicationCore.h"
 #include "pqObjectBuilder.h"
@@ -111,6 +114,10 @@ void pqSMTKAppComponentsAutoStart::startup()
     pqCore->registerManager("smtk display attribute on load", displayOnLoad);
   }
   (void)rsrcMgr;
+
+  // Dynamic creation of the resource browser
+  qtSMTKUtilities::registerViewConstructor(
+    "pqSMTKResourceBrowser", pqSMTKResourceBrowser::createViewWidget);
 }
 
 void pqSMTKAppComponentsAutoStart::shutdown()

@@ -25,11 +25,15 @@
 using namespace smtk::extension;
 
 qtResourceBrowser::Internal::Internal()
-  : m_selnSource("resource panel")
+  : m_container(nullptr)
+  , m_layout(nullptr)
+  , m_view(nullptr)
+  , m_selnSource("resource panel")
   , m_selnLabel("selected")
   , m_hoverLabel("hovered")
   , m_resourceTreeStyle(-1)
   , m_updatingPanelSelectionFromSMTK(false)
+
 {
 }
 
@@ -37,6 +41,9 @@ qtResourceBrowser::Internal::~Internal()
 {
   // Unregister our decorator before we become invalid.
   m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
+  delete m_view;
+  m_view = nullptr;
+  delete m_container;
 }
 
 void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
@@ -44,6 +51,12 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   QAbstractItemModel* qmodel, QWidget* parent)
 {
   m_self = self;
+  if (m_container)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "qtResourceBrowser internal setup called more than once.");
+    return;
+  }
 
   // Keep or create a phrase model to present to users:
   m_phraseModel = phraseModel ? phraseModel : smtk::view::ResourcePhraseModel::create();
@@ -60,11 +73,16 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   {
     ctor = qtResourceBrowser::createDefaultView;
   }
-  m_layout = new QVBoxLayout(m_self);
+  m_container = new QWidget(parent);
+  m_container->setObjectName("qtResourceBrowser");
+  m_layout = new QVBoxLayout(m_container);
   m_layout->setObjectName("m_layout");
+
   m_view = ctor(parent);
+
   m_layout->addWidget(m_view);
   m_view->installEventFilter(self);
+  m_viewName = viewName;
 
   // Keep or create a QAbstractItemModel subclass (which had better be
   // related somehow to a qtDescriptivePhraseModel).
@@ -90,7 +108,6 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   m_view->setModel(m_model);
   m_view->setItemDelegate(m_delegate);
   m_view->setMouseTracking(true); // Needed to receive hover events.
-
   // Connect signals
   if (dpmodel)
   {
@@ -117,4 +134,10 @@ qtDescriptivePhraseModel* qtResourceBrowser::Internal::descriptivePhraseModel() 
     }
   }
   return dpmodel;
+}
+
+void qtResourceBrowser::Internal::setDescriptivePhraseModel(QAbstractItemModel* qmodel)
+{
+  m_model = qmodel;
+  m_view->setModel(m_model);
 }

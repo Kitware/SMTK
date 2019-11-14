@@ -35,9 +35,9 @@ public:
   using Observer = std::function<void(DescriptivePhrasePtr, PhraseModelEvent, int, int)>;
   using Operation = smtk::operation::Operation;
 
-  smtkTypeMacro(ComponentPhraseModel);
-  smtkSuperclassMacro(PhraseModel);
-  smtkSharedPtrCreateMacro(PhraseModel);
+  smtkTypeMacro(smtk::view::ComponentPhraseModel);
+  smtkSuperclassMacro(smtk::view::PhraseModel);
+  smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
   virtual ~ComponentPhraseModel();
 
   /// Return the root phrase of the hierarchy.
