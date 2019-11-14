@@ -1,5 +1,5 @@
-set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/extension/vtk")
-set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/extension/vtk")
+set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/extension/vtk/_modules")
+set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/extension/vtk/_modules")
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
@@ -10,5 +10,3 @@ install(
   FILES "${build_path}/__init__.py"
   DESTINATION "${install_path}"
   )
-
-add_subdirectory(modules)
