@@ -401,7 +401,7 @@ bool DescriptivePhrase::compareByTypeThenTitle(
     }
     else // (!rpb || (!rpa && !rpb))
     {
-      return true;
+      return false;
     }
   }
 
@@ -442,10 +442,22 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const Desc
 {
   std::string ta(a->title());
   std::string tb(b->title());
-  if (ta.empty())
-    return true;
-  if (tb.empty())
+
+  if (ta.empty() && tb.empty())
+  {
     return false;
+  }
+
+  if (ta.empty())
+  {
+    return true;
+  }
+
+  if (tb.empty())
+  {
+    return false;
+  }
+
   std::string::size_type minlen = ta.size() < tb.size() ? ta.size() : tb.size();
   std::string::size_type i;
   for (i = 0; i < minlen; ++i)
