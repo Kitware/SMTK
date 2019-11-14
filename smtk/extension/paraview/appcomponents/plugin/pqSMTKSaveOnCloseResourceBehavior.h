@@ -34,6 +34,9 @@ public:
   static pqSMTKSaveOnCloseResourceBehavior* instance(QObject* parent = nullptr);
   ~pqSMTKSaveOnCloseResourceBehavior() override;
 
+  static int showDialog(bool& cbChecked, std::size_t numberOfUnsavedResources, bool showCancel);
+  static int showDialogWithPrefs(std::size_t numberOfUnsavedResources, bool showCancel);
+
 protected:
   pqSMTKSaveOnCloseResourceBehavior(QObject* parent = nullptr);
 

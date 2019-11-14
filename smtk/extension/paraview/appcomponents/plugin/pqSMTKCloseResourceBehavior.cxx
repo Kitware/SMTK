@@ -27,11 +27,13 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/json/jsonResource.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKOperationPanel.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKSaveOnCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKSaveResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Manager.h"
@@ -40,14 +42,9 @@
 #include "smtk/view/Selection.h"
 
 #include <QAction>
-#include <QApplication>
-#include <QDialog>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
-#include <QObject>
-#include <QPushButton>
-#include <QSharedPointer>
 
 void initCloseResourceBehaviorResources()
 {
@@ -87,13 +84,7 @@ void pqCloseResourceReaction::closeResource()
 
   if (resource && resource->clean() == false)
   {
-    QMessageBox msgBox;
-    msgBox.setText("The resource has been modified.");
-    msgBox.setInformativeText("Do you want to save your changes?");
-    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Save);
-
-    ret = msgBox.exec();
+    ret = pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(1, true);
 
     if (ret == QMessageBox::Save)
     {
@@ -101,10 +92,15 @@ void pqCloseResourceReaction::closeResource()
       pqSaveResourceReaction::State state = pqSaveResourceReaction::saveResource();
       if (state == pqSaveResourceReaction::State::Aborted)
       {
-        ret = QMessageBox::Cancel;
+        // If user pref is DontShowAndSave, an Aborted save dialog must mean
+        // Discard, otherwise there's no way to discard a modified resource.
+        auto settings = vtkSMTKSettings::GetInstance();
+        int showSave = settings->GetShowSaveResourceOnClose();
+        ret =
+          showSave == vtkSMTKSettings::DontShowAndSave ? QMessageBox::Discard : QMessageBox::Cancel;
       }
     }
-    else if (ret == QMessageBox::Discard)
+    if (ret == QMessageBox::Discard)
     {
       // Mark the resource as clean, even though it hasn't been saved. This way,
       // other listeners will not prompt the user to save the resource.
