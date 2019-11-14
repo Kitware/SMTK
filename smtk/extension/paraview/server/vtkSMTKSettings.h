@@ -38,6 +38,17 @@ public:
   vtkGetMacro(HighlightOnHover, bool);
   vtkSetMacro(HighlightOnHover, bool);
 
+  /**\brief Indicate whether a dialog is shown to save a modified resource when closing.
+    *
+    * By default, this is enabled.
+    * Checking a box in the dialog will disable it, and set a default behavior.
+    */
+  vtkGetMacro(ShowSaveResourceOnClose, int);
+  vtkSetMacro(ShowSaveResourceOnClose, int);
+  static constexpr int AskUser = 0;
+  static constexpr int DontShowAndSave = 1;
+  static constexpr int DontShowAndDiscard = 2;
+
   /**\brief Choose how selections should be rendered.
     *
     * See the server-manager XML for details.
@@ -74,6 +85,7 @@ protected:
   vtkSMTKSettings();
 
   bool HighlightOnHover;
+  int ShowSaveResourceOnClose;
   int SelectionRenderStyle;
   int ResourceTreeStyle;
   char* WorkflowsFolder;
