@@ -48,7 +48,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 
   option(SMTK_ENABLE_MATPLOTLIB "Enable matplotlib" OFF)
   set(SMTK_MATPLOTLIB_SUPPORT_ENABLED "False")
-  if(SMTK_ENABLE_MATPLOTLIB)
+  if(FALSE AND SMTK_ENABLE_MATPLOTLIB) # Issue #292
     set(SMTK_MATPLOTLIB_SUPPORT_ENABLED "True")
     add_subdirectory(matplotlib)
   endif()
