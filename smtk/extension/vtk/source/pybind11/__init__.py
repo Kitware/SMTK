@@ -11,10 +11,10 @@
 # =============================================================================
 
 from . import _smtkPybindVTKSourceFns as _srcfns
-import vtkSMTKSourceExtPython
+from .._modules import vtkSMTKSourceExt
 
 
-class vtkMeshMultiBlockSource(vtkSMTKSourceExtPython.vtkMeshMultiBlockSource):
+class vtkMeshMultiBlockSource(vtkSMTKSourceExt.vtkMeshMultiBlockSource):
 
     def GetDataObjectUUID(self, info):
         return _srcfns._vtkMeshMultiBlockSource_GetDataObjectUUID(self, info)
@@ -38,7 +38,7 @@ class vtkMeshMultiBlockSource(vtkSMTKSourceExtPython.vtkMeshMultiBlockSource):
         return _srcfns._vtkMeshMultiBlockSource_SetMeshResource(self, resource)
 
 
-class vtkModelMultiBlockSource(vtkSMTKSourceExtPython.vtkModelMultiBlockSource):
+class vtkModelMultiBlockSource(vtkSMTKSourceExt.vtkModelMultiBlockSource):
 
     def GetDataObjectUUID(self, info):
         return _srcfns._vtkModelMultiBlockSource_GetDataObjectUUID(self, info)

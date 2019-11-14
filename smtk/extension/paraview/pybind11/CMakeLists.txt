@@ -1,4 +1,4 @@
-set(build_path "${CMAKE_BINARY_DIR}/smtk/extension/paraview")
+set(build_path "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}/smtk/extension/paraview")
 set(install_path "${SMTK_PYTHON_MODULEDIR}/smtk/extension/paraview")
 
 configure_file(
