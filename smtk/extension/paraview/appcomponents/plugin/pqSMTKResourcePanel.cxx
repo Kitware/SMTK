@@ -11,28 +11,109 @@
 
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKResourceBrowser.h"
 
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/view/ResourcePhraseModel.h"
+#include "smtk/view/json/jsonView.h"
 
 pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   : Superclass(parent)
+  , m_browser(nullptr)
+  , m_viewUIMgr(nullptr)
 {
-  auto phraseModel = smtk::view::ResourcePhraseModel::create();
-  std::string modelViewName = "";
-  auto qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
-  // NB: We could call
-  //     qtSMTKUtilities::registerModelViewConstructor(modelViewName, ...);
-  // here to ensure a Qt model-view class in the same plugin is
-  // registered before telling the pqSMTKResourceBrowser to use it.
+  // Parse a json representation of our default config, save it.
+  nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
+  smtk::view::ViewPtr config = j[0];
+  // config->details().child(0).setAttribute("Type", "smtk::view::ComponentPhraseModel");
+  this->setView(config);
 
-  m_browser = new pqSMTKResourceBrowser(phraseModel, modelViewName, qtPhraseModel, this);
-  m_browser->setObjectName("pqSMTKResourceBrowser");
-  this->setWindowTitle("Resources");
-  this->setWidget(m_browser);
+  auto smtkBehavior = pqSMTKBehavior::instance();
+  // Now listen for future connections.
+  QObject::connect(smtkBehavior, SIGNAL(addedManagerOnServer(pqSMTKWrapper*, pqServer*)), this,
+    SLOT(resourceManagerAdded(pqSMTKWrapper*, pqServer*)));
+  QObject::connect(smtkBehavior, SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)), this,
+    SLOT(resourceManagerRemoved(pqSMTKWrapper*, pqServer*)));
+
+  // TMP DBG TESTING
+  // nlohmann::json j2 = nlohmann::json::parse(ResourcePanelConfiguration_xml);
+  // config = j2[0];
+  // config->details().child(0).setAttribute("Type", "smtk::view::ResourcePhraseModel");
+  // config->details().child(0).child(0).setAttribute("Type", "smtk::view::TwoLevelSubphraseGenerator");
+
+  // this->setView(config);
 }
 
 pqSMTKResourcePanel::~pqSMTKResourcePanel()
 {
-  // deletion of m_browser is handled when parent widget is deleted.
+  delete m_viewUIMgr;
+  // m_viewUIMgr deletes m_browser
+  // deletion of m_browser->widget() is handled when parent widget is deleted.
+}
+
+void pqSMTKResourcePanel::setView(const smtk::view::ViewPtr& view)
+{
+  m_view = view;
+
+  auto smtkBehavior = pqSMTKBehavior::instance();
+
+  smtkBehavior->visitResourceManagersOnServers([this](pqSMTKWrapper* r, pqServer* s) {
+    this->resourceManagerAdded(r, s);
+    return false;
+  });
+}
+
+void pqSMTKResourcePanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* server)
+{
+  if (!wrapper || !server)
+  {
+    return;
+  }
+
+  smtk::resource::ManagerPtr rsrcMgr = wrapper->smtkResourceManager();
+  smtk::view::ManagerPtr viewMgr = wrapper->smtkViewManager();
+  if (!rsrcMgr || !viewMgr)
+  {
+    return;
+  }
+  if (m_viewUIMgr)
+  {
+    delete m_viewUIMgr;
+    m_viewUIMgr = nullptr;
+    // m_viewUIMgr deletes m_browser, which deletes the container, which deletes child QWidgets.
+    m_browser = nullptr;
+  }
+
+  m_viewUIMgr = new smtk::extension::qtUIManager(rsrcMgr, viewMgr);
+  m_viewUIMgr->setOperationManager(wrapper->smtkOperationManager());
+  m_viewUIMgr->setSelection(wrapper->smtkSelection());
+  // m_viewUIMgr->setSelectionBit(1);               // ToDo: should be set ?
+
+  smtk::extension::ViewInfo resinfo(m_view, this, m_viewUIMgr);
+
+  // the top-level "Type" in m_view should be pqSMTKResourceBrowser or compatible.
+  auto baseview = m_viewUIMgr->setSMTKView(resinfo);
+  m_browser = dynamic_cast<pqSMTKResourceBrowser*>(baseview);
+  if (!m_browser)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Unsupported resource browser type.");
+    return;
+  }
+  m_browser->widget()->setObjectName("pqSMTKResourceBrowser");
+  std::string title;
+  m_view->details().attribute("Title", title);
+  this->setWindowTitle(title.empty() ? "Resources" : title.c_str());
+  this->setWidget(m_browser->widget());
+}
+
+void pqSMTKResourcePanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server)
+{
+  if (!mgr || !server)
+  {
+    return;
+  }
 }

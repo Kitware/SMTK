@@ -143,8 +143,11 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   m_attrUIMgr->setSelectionBit(1);               // ToDo: should be set by application
 
   // Find or Create a value for highlight on hover
-  auto hoverBit = m_seln->findOrCreateLabeledValue("hovered");
-  m_attrUIMgr->setHoverBit(hoverBit);
+  if (m_seln)
+  {
+    int hoverBit = m_seln->findOrCreateLabeledValue("hovered");
+    m_attrUIMgr->setHoverBit(hoverBit);
+  }
 
   // Start watching the resource's associate PV server for user preference changes.
   pqServer* server = pqActiveObjects::instance().activeServer();

@@ -7,8 +7,10 @@ set(viewSrcs
   DescriptivePhrase.cxx
   EmptySubphraseGenerator.cxx
   json/jsonView.cxx
+  Manager.cxx
   PhraseListContent.cxx
   PhraseModel.cxx
+  Registrar.cxx
   ResourcePhraseContent.cxx
   ResourcePhraseModel.cxx
   Selection.cxx
@@ -29,10 +31,12 @@ set(viewHeaders
   #ComponentsByTypeGenerator.h
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
+  Manager.h
   PhraseListContent.h
   PhraseContent.h
   PhraseModel.h
   PhraseModelObserver.h
+  Registrar.h
   ResourcePhraseContent.h
   ResourcePhraseModel.h
   Selection.h
@@ -53,6 +57,11 @@ endif()
 
 #install the headers
 smtk_public_headers(smtkCore ${viewHeaders})
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
