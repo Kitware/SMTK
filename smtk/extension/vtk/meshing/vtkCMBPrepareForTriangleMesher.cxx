@@ -13,6 +13,7 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkFieldData.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkObjectFactory.h"
@@ -424,7 +425,8 @@ void vtkCMBPrepareForTriangleMesher::GetArc(vtkIdType requestedArcId, vtkPolyDat
   //Traverse all cells in arc and add them to output
   if (lines)
   {
-    vtkIdType *pts, npts;
+    vtkIdType npts{ 0 };
+    const vtkIdType* pts{ nullptr };
     lines->SetTraversalLocation(cellStart);
     while (lines->GetTraversalLocation() <
         (cellArraySize + cellStart) && /*Check The lines are within bounds*/

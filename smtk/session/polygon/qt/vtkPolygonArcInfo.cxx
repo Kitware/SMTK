@@ -121,7 +121,8 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
   if (numCells == 0)
     return;
   double p1[3], p2[3];
-  vtkIdType *pts, npts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   lines->GetCell(0, npts, pts);
   if (npts == 0)
     return;

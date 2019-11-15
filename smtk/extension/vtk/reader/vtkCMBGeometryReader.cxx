@@ -12,6 +12,7 @@
 
 #include "vtkAppendPolyData.h"
 #include "vtkCellData.h"
+#include "vtkCellTypes.h"
 #include "vtkCleanPolyData.h"
 #include "vtkDataSetRegionSurfaceFilter.h"
 #include "vtkErrorCode.h"

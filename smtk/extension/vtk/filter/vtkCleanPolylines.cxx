@@ -73,7 +73,8 @@ int vtkCleanPolylines::RequestData(vtkInformation* vtkNotUsed(request),
 
   double minimumPolylineLength = this->MinimumLineLength;
   double l;
-  vtkIdType npts, *ptIds, i, n = lengths1->GetNumberOfTuples();
+  vtkIdType npts, i, n = lengths1->GetNumberOfTuples();
+  const vtkIdType* ptIds = nullptr;
   if (this->UseRelativeLineLength)
   {
     double sum = 0;
@@ -223,7 +224,8 @@ void vtkCleanPolylines::TraverseLine(vtkIdType startPid, vtkIdType startCellId, 
 {
   vtkIdType pid, lastPid, cell, *pntCells;
   vtkIdType nCells;
-  vtkIdType nPnts, *cellPnts;
+  vtkIdType nPnts;
+  const vtkIdType* cellPnts = nullptr;
   double p0[3], p1[3];
   *length = 0.0;
   ids->Reset();
@@ -300,7 +302,8 @@ void vtkCleanPolylines::RemoveNonManifoldFeatures(
   result->SetLines(plines.GetPointer());
   vtkIdType nCells;
   // Scan each point in the input for a cell count not equal to 2 (non-manifold point)
-  vtkIdType *pCells, cell, nPts, *cPnts;
+  vtkIdType *pCells, cell, nPts;
+  const vtkIdType* cPnts = nullptr;
   unsigned short i, j;
   double l;
   double cellLengths[2];
@@ -440,7 +443,8 @@ void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCell
   vtkIdType pid, lastPid, cell, *pntCells;
   vtkIdType nCells;
   int i;
-  vtkIdType nPnts, *cellPnts;
+  vtkIdType nPnts;
+  const vtkIdType* cellPnts = nullptr;
   *length = 0.0;
   ids->Reset();
   ids->InsertNextId(startPid);

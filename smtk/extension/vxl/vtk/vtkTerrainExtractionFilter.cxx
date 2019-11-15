@@ -24,6 +24,7 @@
 #include "vtkPointLocator.h"
 #include "vtkPolyData.h"
 #include "vtkTimerLog.h"
+#include "vtkUnsignedCharArray.h"
 #include "vtkXMLPolyDataReader.h"
 #include "vtkXMLPolyDataWriter.h"
 

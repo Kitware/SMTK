@@ -23,6 +23,7 @@
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkStringArray.h"
+#include "vtkUnsignedCharArray.h"
 
 #include <string>
 #include <sys/stat.h>

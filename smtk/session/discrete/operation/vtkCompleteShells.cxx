@@ -14,6 +14,7 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkCellLocator.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMath.h"
@@ -265,7 +266,8 @@ void vtkCompleteShells::FindRegionEdge(vtkPolyData* input, vtkDataArray* cellNor
   }
 
   int otherPtIndex;
-  vtkIdType npts, *pts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   vtkSmartPointer<vtkIdList> neighborIds = vtkSmartPointer<vtkIdList>::New();
   vtkIdType currentCellId;
   while (cellSearchList.size())
@@ -357,7 +359,8 @@ void vtkCompleteShells::FindRegionEdge(vtkPolyData* input, vtkDataArray* cellNor
 }
 
 vtkIdType vtkCompleteShells::FindHoleFillingModelFace(vtkPolyData* input, vtkDataArray* cellNormals,
-  vtkIdType currentCellId, vtkIdList* neighborIds, vtkIdType* pts, int ptIndex, int otherPtIndex)
+  vtkIdType currentCellId, vtkIdList* neighborIds, const vtkIdType* pts, int ptIndex,
+  int otherPtIndex)
 {
   double cellOrigin[3], cellNormal[3] /*, testCross[3]*/;
   cellNormals->GetTuple(currentCellId, cellNormal);
@@ -384,7 +387,8 @@ vtkIdType vtkCompleteShells::FindHoleFillingModelFace(vtkPolyData* input, vtkDat
   for (int j = 0; j < neighborIds->GetNumberOfIds(); j++)
   {
     // find pt id != to our edge
-    vtkIdType neighborNPts, *neighborPts;
+    vtkIdType neighborNPts{ 0 };
+    const vtkIdType* neighborPts{ nullptr };
     input->GetCellPoints(neighborIds->GetId(j), neighborNPts, neighborPts);
     for (int i = 0; i < neighborNPts; i++)
     {
@@ -466,7 +470,8 @@ void vtkCompleteShells::FindClosestEnclosingRegion(int regionId, vtkIdType model
 
   vtkIdType cellDataIndex = input->GetNumberOfVerts() + input->GetNumberOfLines();
   vtkCellArray* inputPolys = input->GetPolys();
-  vtkIdType npts, *pts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   for (inputPolys->InitTraversal(); inputPolys->GetNextCell(npts, pts); cellDataIndex++)
   {
     if (regionArray->GetValue(cellDataIndex) == regionId)

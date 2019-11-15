@@ -409,7 +409,8 @@ void vtkCMBIncorporateMeshOperation::AddSolidFaceCells(vtkDiscreteModel* meshMod
   const DiscreteMesh& meshMaster = meshModel->GetMesh();
 
   vtkIdType numCells = facePoly->GetNumberOfCells();
-  vtkIdType npts, *pts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   vtkNew<vtkIdList> newPtsList;
   for (vtkIdType i = 0; i < numCells; i++)
   {

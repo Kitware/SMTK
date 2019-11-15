@@ -19,6 +19,7 @@
 
 #include "vtkAppendPolyData.h"
 #include "vtkCellArray.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMath.h"
@@ -28,6 +29,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkTransform.h"
+#include "vtkUnsignedCharArray.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <vtksys/SystemTools.hxx>

@@ -182,10 +182,10 @@ T MultiplyAdd(const T& a, const T& b, double s)
 }
 
 template <int dim>
-bool EstimateNormal(vtkPoints* pts, vtkIdType npts, vtkIdType* conn, vec3d& norm);
+bool EstimateNormal(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, vec3d& norm);
 
 template <>
-bool EstimateNormal<2>(vtkPoints* pts, vtkIdType npts, vtkIdType* conn, vec3d& norm)
+bool EstimateNormal<2>(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, vec3d& norm)
 {
   if (npts < 2)
   {
@@ -202,7 +202,7 @@ bool EstimateNormal<2>(vtkPoints* pts, vtkIdType npts, vtkIdType* conn, vec3d& n
 }
 
 template <>
-bool EstimateNormal<3>(vtkPoints* pts, vtkIdType npts, vtkIdType* conn, vec3d& norm)
+bool EstimateNormal<3>(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, vec3d& norm)
 {
   if (npts < 3)
   {
@@ -230,7 +230,7 @@ bool EstimateNormal<3>(vtkPoints* pts, vtkIdType npts, vtkIdType* conn, vec3d& n
   return false;
 }
 
-static bool SpliceFaceIntoHood(vtkIdType faceId, vtkIdType npts, vtkIdType* conn,
+static bool SpliceFaceIntoHood(vtkIdType faceId, vtkIdType npts, const vtkIdType* conn,
   vtkIdType vtkNotUsed(edge), bool sense, Edgerhoods::iterator hood, vtkPoints* pts,
   double vtkNotUsed(tol))
 {
@@ -321,7 +321,7 @@ int SpliceEdgeIntoVertex(vtkIdType edgeId, vtkIdType& idA, vtkIdType& idB, bool 
   return 0;
 }
 
-int SpliceCellIntoHood(vtkIdType edgeId, vtkIdType* conn, vtkIdType i, vtkIdType npts,
+int SpliceCellIntoHood(vtkIdType edgeId, const vtkIdType* conn, vtkIdType i, vtkIdType npts,
   vtkPoints* pts, Vertexhoods& hoods, double tol)
 {
   vtkIdType idA = conn[i];
@@ -345,7 +345,7 @@ int SpliceCellIntoHood(vtkIdType edgeId, vtkIdType* conn, vtkIdType i, vtkIdType
   return 0;
 }
 
-int SpliceCellIntoHood(vtkIdType faceId, vtkIdType* conn, vtkIdType i, vtkIdType npts,
+int SpliceCellIntoHood(vtkIdType faceId, const vtkIdType* conn, vtkIdType i, vtkIdType npts,
   vtkPoints* pts, Edgerhoods& hoods, double tol)
 {
   vtkIdType idA = conn[i];
@@ -411,8 +411,8 @@ static void BuildNeighborhoods(vtkPolyData* pd, H& hoods)
   // Now traverse all (dim-1)-boundaries of all cells and insert the cell into
   // each (dim-1)-neighborhood (vertex neighborhoods for edge cells in 2-D,
   // edge neighborhoods for face cells in 3-D).
-  vtkIdType npts;
-  vtkIdType* conn;
+  vtkIdType npts{ 0 };
+  const vtkIdType* conn{ nullptr };
   vtkIdType cellId =
     (dim == 2 ? pd->GetNumberOfVerts() : pd->GetNumberOfVerts() + pd->GetNumberOfLines());
   for (cells->InitTraversal(); cells->GetNextCell(npts, conn); ++cellId)
@@ -786,8 +786,8 @@ bool IntersectWithRay(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell2face
     if (cell->IntersectWithLine(basePoint.GetData(), p2.GetData(), 1e-8 * diam, hit.T,
           hit.X.GetData(), hit.S.GetData(), dummySubId))
     {
-      vtkIdType npts;
-      vtkIdType* conn;
+      vtkIdType npts{ 0 };
+      const vtkIdType* conn{ nullptr };
       vec3d norm;
       pdIn->GetCellPoints(hit.CellId, npts, conn);
       EstimateNormal<N::Dimension>(pts, npts, conn, norm);
@@ -910,8 +910,8 @@ void FindPointsInRegions(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell2f
   std::map<vtkIdType, vtkVector3d> pointsByRegion;
 
   vtkPoints* pts = pdIn->GetPoints();
-  vtkIdType npts;  // number of points in one cell (not pts)
-  vtkIdType* conn; // cell connectivity
+  vtkIdType npts{ 0 };              // number of points in one cell (not pts)
+  const vtkIdType* conn{ nullptr }; // cell connectivity
 
   // Iterate over the shells
   for (shellIt = shells.begin(); shellIt != shells.end(); ++shellIt)
@@ -1070,8 +1070,8 @@ vtkIdType DiscoverNestings(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell
   //     Merge the regions for the co-face of F and the co-face of I that face each other.
 
   vtkPoints* pts = pdIn->GetPoints();
-  vtkIdType npts;  // number of points in one cell (not pts)
-  vtkIdType* conn; // cell connectivity
+  vtkIdType npts{ 0 };              // number of points in one cell (not pts)
+  const vtkIdType* conn{ nullptr }; // cell connectivity
 
   // Get a list of shells:
   std::set<vtkIdType> shells = regions.Sets.Roots();
@@ -1497,8 +1497,8 @@ void PrepareOutput(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell2facet,
   vtkIdType polyRegions[3];
   vtkCellArray* cells = (N::Dimension == 2 ? pdIn->GetLines() : pdIn->GetPolys());
   cells->InitTraversal();
-  vtkIdType npts;
-  vtkIdType* conn;
+  vtkIdType npts{ 0 };
+  const vtkIdType* conn{ nullptr };
   vtkIdType connOffset = 0;
   // Prepare a per-cell region array and flip cells
   // that have the "exterior" region on their backface.

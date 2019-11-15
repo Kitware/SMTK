@@ -12,6 +12,7 @@
 
 #include "vtkBoundingBox.h"
 #include "vtkCellArray.h"
+#include "vtkCellArrayIterator.h"
 #include "vtkCellData.h"
 #include "vtkCleanPolyData.h"
 #include "vtkDoubleArray.h"
@@ -25,6 +26,7 @@
 #include "vtkStringArray.h"
 #include "vtkStripper.h"
 #include "vtkTimerLog.h"
+#include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
 #include <deque>
 #include <map>
@@ -425,7 +427,8 @@ void vtkExtractRegionEdges::ExtractRegionEdgeSegments(
   // visit every polygon
   vtkCellArray* polys = input->GetPolys();
   polys->InitTraversal();
-  vtkIdType npts, *pts;
+  const vtkIdType* pts{ nullptr };
+  vtkIdType npts{ 0 };
   IdTypePair key;
   int regions[2];
 
@@ -546,27 +549,24 @@ void vtkExtractRegionEdges::ConvertInputToPolyData(
   polyData->SetPolys(newPolys);
   newPolys->FastDelete();
   newPolys->Allocate(numCells);
-  vtkIdType *ids, cellId;
-  vtkIdType* cellPointer;
-  int cellType, numCellPts;
+  int cellType;
+  vtkIdType cellId{ 0 };
   unsigned char* cellTypes = input->GetCellTypesArray()->GetPointer(0);
 
   // initialize the pointer to the cells for fast traversal.
-  cellPointer = input->GetCells()->GetPointer();
   vtkIdType numberOfNewCells = 0;
-  for (cellId = 0; cellId < numCells; cellId++)
+  auto cellIter = vtk::TakeSmartPointer(input->GetCells()->NewIterator());
+  for (cellIter->GoToFirstCell(); !cellIter->IsDoneWithTraversal(); cellIter->GoToNextCell())
   {
-    // Direct access to cells.
-    cellType = cellTypes[cellId];
-    numCellPts = cellPointer[0];
-    ids = cellPointer + 1;
-    // Move to the next cell.
-    cellPointer += (1 + *cellPointer);
+    vtkIdList* cell = cellIter->GetCurrentCell();
+    cellType = cellTypes[cellIter->GetCurrentCellId()];
+    vtkIdType numCellPts = cell->GetNumberOfIds();
+    vtkIdType* ids = cell->GetPointer(0);
 
     if (cellType == VTK_TRIANGLE || cellType == VTK_QUAD || cellType == VTK_POLYGON)
     {
       newPolys->InsertNextCell(numCellPts, ids);
-      outputCD->CopyData(inputCD, cellId, numberOfNewCells++);
+      outputCD->CopyData(inputCD, cellId++, numberOfNewCells++);
     }
     else
     {
@@ -593,7 +593,8 @@ void vtkExtractRegionEdges::UpdateRegionIdentifiersIfNecessary(vtkPolyData* outp
 
   int regionId = 1; // start at 1 because fortran isn't going to like 0
   polys->InitTraversal();
-  vtkIdType npts, *pts;
+  const vtkIdType* pts{ nullptr };
+  vtkIdType npts{ 0 };
   std::vector<vtkIdType> processStack;
   processStack.reserve(outputPD->GetNumberOfPolys());
   for (vtkIdType cellIndex = outputPD->GetNumberOfLines(); cellIndex < outputPD->GetNumberOfCells();

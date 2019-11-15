@@ -15,6 +15,7 @@
 #include "vtkCellData.h"
 #include "vtkDoubleArray.h"
 #include "vtkErrorCode.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkIntArray.h"

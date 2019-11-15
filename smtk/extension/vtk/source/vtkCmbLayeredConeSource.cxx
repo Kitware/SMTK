@@ -360,7 +360,7 @@ void vtkCmbLayeredConeSource::TriangulateEnd(const int innerRes, const int outer
     tri->InitTraversal();
 
     vtkIdType npts;
-    vtkIdType* tmppts;
+    const vtkIdType* tmppts = nullptr;
     while (tri->GetNextCell(npts, tmppts))
     {
       assert(npts == 3);

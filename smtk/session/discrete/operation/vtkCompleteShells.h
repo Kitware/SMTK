@@ -87,7 +87,8 @@ private:
     vtkIdTypeArray* modelFaceArray, vtkIdType cellIndex, char* visited);
 
   vtkIdType FindHoleFillingModelFace(vtkPolyData* input, vtkDataArray* cellNormals,
-    vtkIdType currentCellId, vtkIdList* neighborIds, vtkIdType* pts, int ptIndex, int otherPtIndex);
+    vtkIdType currentCellId, vtkIdList* neighborIds, const vtkIdType* pts, int ptIndex,
+    int otherPtIndex);
 
   void FindClosestEnclosingRegion(int regionId, vtkIdType modelFaceId, vtkPolyData* input,
     vtkDataArray* cellNormals, vtkIntArray* regionArray, vtkIdTypeArray* modelFaceArray,

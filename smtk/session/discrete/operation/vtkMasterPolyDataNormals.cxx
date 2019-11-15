@@ -14,6 +14,7 @@
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkFloatArray.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkIntArray.h"
@@ -155,7 +156,8 @@ int vtkMasterPolyDataNormals::RequestData(vtkInformation* vtkNotUsed(request),
   memset(visited, false, numPolys * sizeof(bool));
   vtkIdType* cellIndex = new vtkIdType[numPolys];
 
-  vtkIdType polyIndex, npts, *pts;
+  vtkIdType polyIndex, npts{ 0 };
+  const vtkIdType* pts{ nullptr };
 
   // setup temporary working polydata and polys
   vtkNew<vtkPolyData> tmpPolyData;

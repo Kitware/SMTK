@@ -682,7 +682,8 @@ void vtkCMBModelBuilder::ComputePointInsideForRegion(
     vtkDiscreteModelFace* modeFace = vtkDiscreteModelFace::SafeDownCast(faces->GetCurrentItem());
     vtkPolyData* faceGeometry = vtkPolyData::SafeDownCast(modeFace->GetGeometry());
     vtkCellArray* polys = faceGeometry->GetPolys();
-    vtkIdType numPts, *pts;
+    vtkIdType numPts{ 0 };
+    const vtkIdType* pts{ nullptr };
     vtkIdType cellIndex = 0;
     for (polys->InitTraversal(); polys->GetNextCell(numPts, pts); cellIndex++)
     {
@@ -695,7 +696,7 @@ void vtkCMBModelBuilder::ComputePointInsideForRegion(
       }
       else
       {
-        ptIdsArray->SetArray(pts, numPts, 1);
+        ptIdsArray->SetArray(const_cast<vtkIdType*>(pts), numPts, 1);
         vtkPolygon::ComputeCentroid(ptIdsArray, faceGeometry->GetPoints(), centroid);
       }
 
@@ -752,7 +753,7 @@ void vtkCMBModelBuilder::ComputePointInsideForRegion(
   faces->Delete();
 }
 
-bool vtkCMBModelBuilder::IsPolygonConcave(vtkPoints* points, vtkIdType npts, vtkIdType* pts)
+bool vtkCMBModelBuilder::IsPolygonConcave(vtkPoints* points, vtkIdType npts, const vtkIdType* pts)
 {
   // look for flip of cross product (direction) between adjacent sets of three points
   double v1[3], v2[3], pt[3][3], cross[2][3];

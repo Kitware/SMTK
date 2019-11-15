@@ -437,7 +437,8 @@ bool DiscreteMesh::EdgeExists(EdgePointIds& e, vtkIdType& edgeId) const
   vtkIdType foundEdgeId = 0;
 
   vtkCellArray* lines = this->EdgeData->GetLines();
-  vtkIdType npts, *pts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   for (lines->InitTraversal(); lines->GetNextCell(npts, pts); ++foundEdgeId)
   {
     found = (e.first == pts[0] && e.second == pts[1]) || (e.first == pts[1] && e.second == pts[0]);
@@ -481,7 +482,8 @@ vtkIdType DiscreteMesh::AddEdgeIfNotExisting(
   const vtkIdType location = (realEdgeId * 3);
 
   //get the cell at that location
-  vtkIdType npts, *pts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   this->EdgeData->GetLines()->GetCell(location, npts, pts);
 
   //if the first point id in the line is equal to our first point id,

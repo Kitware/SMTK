@@ -492,8 +492,8 @@ SessionInfoBits Session::transcribeInternal(
 static void AddCellsToTessellation(vtkPoints* pts, vtkCellArray* cells, smtkCellTessRole role,
   std::map<vtkIdType, int>& vertMap, smtk::model::Tessellation& tess)
 {
-  vtkIdType npts;
-  vtkIdType* conn;
+  vtkIdType npts{ 0 };
+  const vtkIdType* conn{ nullptr };
   std::vector<int> tconn;
   std::map<vtkIdType, int>::iterator pit;
   for (cells->InitTraversal(); cells->GetNextCell(npts, conn);)

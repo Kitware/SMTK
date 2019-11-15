@@ -73,7 +73,8 @@ int vtkPolyDataStatsFilter::RequestData(vtkInformation* vtkNotUsed(request),
   this->BuildTime.Modified();
 
   double np[3], area, *pnt;
-  vtkIdType i, j, n, *pntIds;
+  vtkIdType i, j, n;
+  const vtkIdType* pntIds = nullptr;
   vtkBoundingBox bbox;
   vtkPoints* tPnts = vtkPoints::New();
   this->NumberOfPoints = input->GetNumberOfPoints();

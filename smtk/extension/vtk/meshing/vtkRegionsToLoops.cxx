@@ -99,7 +99,7 @@ public:
   IdMapType Containers; // maps set IDs to other set IDs which contain them.
 
   void AddCoedge(
-    vtkIdType cellId, vtkIdType* conn, vtkIdType npts, bool sense, vtkIdType pedigreeId)
+    vtkIdType cellId, const vtkIdType* conn, vtkIdType npts, bool sense, vtkIdType pedigreeId)
   {
     if (npts < 2)
     {
@@ -168,8 +168,8 @@ public:
     tri->SetLauncher(lau);
 
     this->CellsOut->InitTraversal();
-    vtkIdType npts;
-    vtkIdType* conn;
+    const vtkIdType* conn{ nullptr };
+    vtkIdType npts{ 0 };
     //vtkIdType offset = 0;
     IdMapType polyToPedigree;
     //vtkIdType polygon = 0;
@@ -354,7 +354,7 @@ public:
       it->second.AddContainerInfo(containedCells[i], containerCells[i]);
     }
   }
-  void AddCoedgeToRegion(vtkIdType cellId, vtkIdType* conn, vtkIdType npts, bool sense,
+  void AddCoedgeToRegion(vtkIdType cellId, const vtkIdType* conn, vtkIdType npts, bool sense,
     vtkIdType pedigreeId, vtkIdType region)
   {
     iterator it = this->find(region);
@@ -412,8 +412,8 @@ int vtkRegionsToLoops::RequestData(vtkInformation* vtkNotUsed(request),
   // list of connected components.
   // We build up an array of snippets for each region and maps to the head
   // and tail of each free snippet.
-  vtkIdType* conn;
-  vtkIdType npts;
+  const vtkIdType* conn{ nullptr };
+  vtkIdType npts{ 0 };
   vtkIdType numCells = pdIn->GetNumberOfLines();
   vtkCellArray* cells = pdIn->GetLines();
   vtkIdType cellStart = pdIn->GetNumberOfVerts();

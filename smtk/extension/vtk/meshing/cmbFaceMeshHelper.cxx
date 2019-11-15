@@ -227,7 +227,8 @@ void ModelEdgeRep::setMeshPoints(vtkPolyData* mesh, vtkIdType offset /*=0*/, vtk
   double p[3];
   if (lines)
   {
-    vtkIdType *pts, npts;
+    vtkIdType npts{ 0 };
+    const vtkIdType* pts = nullptr;
     //
     for (lines->SetTraversalLocation(offset); lines->GetNextCell(npts, pts);)
     {
@@ -1146,7 +1147,8 @@ bool ModelFaceRep::RelateMeshCellsToModel(vtkPolyData* mesh, const vtkIdType& fa
   //data structs needed inside loops
   int numCanMove = 0;
   int indices[4] = { 0, 1, 2, 0 }; //used for cell point indexes
-  vtkIdType *pts, npts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts = nullptr;
   cells->InitTraversal();
   while (cells->GetNextCell(npts, pts))
   {
