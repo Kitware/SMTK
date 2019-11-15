@@ -53,8 +53,9 @@ public:
   static int panelPhraseDecorator(smtk::view::VisibilityContent::Query qq, int val,
     smtk::view::ConstPhraseContentPtr data, std::map<smtk::common::UUID, int>& visibleThings);
 
-  /// Return the string that represents the configuration for browser components
-  static const std::string& getJSONConfiguration() { return s_configurationJSON; }
+  /// Return the string that represents the configuration for browser components,
+  /// specialized from qtResourceBrowser version.
+  static const std::string getJSONConfiguration();
 
 protected slots:
   virtual void searchTextChanged(const QString& searchText);
@@ -77,7 +78,6 @@ protected slots:
 
 protected:
   void initSubphraseGenerator();
-  static std::string s_configurationJSON;
 };
 
 #endif // smtk_extension_paraview_appcomponents_pqSMTKResourceBrowser_h

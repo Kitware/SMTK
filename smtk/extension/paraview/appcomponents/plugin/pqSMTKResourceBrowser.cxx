@@ -10,8 +10,6 @@
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKResourceBrowser.h"
 
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKResourceRepresentation.h"
-// cmake puts the .json file contents into a static string, named _xml
-#include "smtk/extension/paraview/appcomponents/plugin/ResourcePanelConfiguration_xml.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
@@ -45,6 +43,8 @@
 #include "vtkCompositeRepresentation.h"
 
 #include "smtk/extension/qt/qtResourceBrowserP.h"
+
+#include <regex>
 
 template <typename T, typename U>
 int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& comp, int visible,
@@ -118,7 +118,12 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
   return rval;
 }
 
-std::string pqSMTKResourceBrowser::s_configurationJSON = ResourcePanelConfiguration_xml;
+const std::string pqSMTKResourceBrowser::getJSONConfiguration()
+{
+  // we want to use the base config, but use our type instead of qtResourceBrowser.
+  std::string baseConfig = smtk::extension::qtResourceBrowser::getJSONConfiguration();
+  return std::regex_replace(baseConfig, std::regex("qtResourceBrowser"), "pqSMTKResourceBrowser");
+}
 
 smtk::extension::qtBaseView* pqSMTKResourceBrowser::createViewWidget(
   const smtk::extension::ViewInfo& info)

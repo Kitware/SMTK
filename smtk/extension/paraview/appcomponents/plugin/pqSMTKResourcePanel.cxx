@@ -29,7 +29,6 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
   // Parse a json representation of our default config, save it.
   nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
   smtk::view::ViewPtr config = j[0];
-  // config->details().child(0).setAttribute("Type", "smtk::view::ComponentPhraseModel");
   this->setView(config);
 
   auto smtkBehavior = pqSMTKBehavior::instance();
@@ -38,14 +37,6 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
     SLOT(resourceManagerAdded(pqSMTKWrapper*, pqServer*)));
   QObject::connect(smtkBehavior, SIGNAL(removingManagerFromServer(pqSMTKWrapper*, pqServer*)), this,
     SLOT(resourceManagerRemoved(pqSMTKWrapper*, pqServer*)));
-
-  // TMP DBG TESTING
-  // nlohmann::json j2 = nlohmann::json::parse(ResourcePanelConfiguration_xml);
-  // config = j2[0];
-  // config->details().child(0).setAttribute("Type", "smtk::view::ResourcePhraseModel");
-  // config->details().child(0).child(0).setAttribute("Type", "smtk::view::TwoLevelSubphraseGenerator");
-
-  // this->setView(config);
 }
 
 pqSMTKResourcePanel::~pqSMTKResourcePanel()

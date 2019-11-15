@@ -12,6 +12,8 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
+// cmake puts the .json file contents into a static string, named _xml
+#include "smtk/extension/qt/ResourcePanelConfiguration_xml.h"
 
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/ResourcePhraseModel.h"
@@ -41,6 +43,8 @@
 
 using namespace smtk::extension;
 
+std::string qtResourceBrowser::s_configurationJSON = ResourcePanelConfiguration_xml;
+
 qtBaseView* qtResourceBrowser::createViewWidget(const ViewInfo& info)
 {
   qtResourceBrowser* view = new qtResourceBrowser(info);
@@ -57,7 +61,6 @@ qtResourceBrowser::qtResourceBrowser(const ViewInfo& info)
   QAbstractItemModel* qtPhraseModel = nullptr;
   if (m_viewInfo.m_view)
   {
-    // modelViewName = m_viewInfo.m_view->name();
     // empty Widget attribute is OK, will use default.
     m_viewInfo.m_view->details().attribute("Widget", modelViewType);
     smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
@@ -168,13 +171,6 @@ void qtResourceBrowser::setHighlightOnHover(bool highlight)
   m_p->m_delegate->setHighlightOnHover(highlight);
 }
 
-// void qtResourceBrowser::leaveEvent(QEvent* evt)
-// {
-//   this->resetHover();
-//   // Now let the superclass do what it wants:
-//   Superclass::leaveEvent(evt);
-// }
-
 void qtResourceBrowser::sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)
 {
   if (!m_p->m_seln)
@@ -190,7 +186,6 @@ void qtResourceBrowser::sendPanelSelectionToSMTK(const QItemSelection&, const QI
     return;
   }
 
-  //smtk::view::Selection::SelectionMap selnMap;
   std::set<smtk::resource::PersistentObject::Ptr> selnSet;
   auto selected = m_p->m_view->selectionModel()->selection();
   for (auto qslist : selected.indexes())
@@ -261,7 +256,6 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
 void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
   smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
 {
-  // if (m_p->m_viewInfo)
   m_p->m_seln = seln;
   if (m_p->m_seln)
   {

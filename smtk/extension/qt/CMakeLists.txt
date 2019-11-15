@@ -157,6 +157,9 @@ add_library(smtkQtExt
   qtAttributeIcons.qrc
 )
 
+# put contents of this file in a string in a header. It's not xml, but it still works.
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json" qtResourcePanelJSON)
+
 #we need to add the location of the moc files to the include dir for qtsmtk
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
