@@ -67,7 +67,7 @@ namespace polygon
 
 int polyLines2modelEdges(vtkPolyData* mesh, smtk::operation::Operation::Ptr edgeOp,
   smtk::model::EntityRefArray& createdEds, smtk::attribute::DoubleItem::Ptr pointsItem,
-  vtkIdType* pts, vtkIdType npts, smtk::io::Logger& logger)
+  const vtkIdType* pts, vtkIdType npts, smtk::io::Logger& logger)
 {
   double p[3];
   // create edge for current line cell
@@ -104,7 +104,8 @@ int Import::taggedPolyData2PolygonModelEntities(smtk::session::polygon::Resource
   vtkPoints* points = pdata->GetPoints();
   vtkCellArray* verts = pdata->GetVerts();
   std::vector<double> pcoords;
-  vtkIdType *pts, npts;
+  const vtkIdType* pts{ nullptr };
+  vtkIdType npts{ 0 };
   double pnt[3];
   int numEnts = 0;
   vtkIdType linesOffset, n = 0;
@@ -213,7 +214,8 @@ int Import::basicPolyData2PolygonModelEntities(smtk::session::polygon::Resource:
   internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
   vtkPoints* points = pdata->GetPoints();
   std::vector<double> pcoords;
-  vtkIdType *pts, npts;
+  const vtkIdType* pts{ nullptr };
+  vtkIdType npts{ 0 };
   double pnt[3];
   int numEnts = 0;
   vtkIdType n, i, j;
@@ -278,7 +280,8 @@ int polyLines2modelEdgesAndFaces(
       }
 */
     vtkIdType pidx = 0;
-    vtkIdType *pts, npts;
+    const vtkIdType* pts{ nullptr };
+    vtkIdType npts{ 0 };
     for (lines->SetTraversalLocation(0); lines->GetNextCell(npts, pts); ++pidx)
     {
       std::vector<int>

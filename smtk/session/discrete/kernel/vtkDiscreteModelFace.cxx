@@ -338,7 +338,8 @@ void vtkDiscreteModelFace::ExtractEdges(vtkPolyData* result)
   vtkIdTypeArray* masterGeometryCellIndex = this->GetReverseClassificationArray();
 
   // Iterate over all of the cells of the face and find any boundary edge
-  vtkIdType cellId, npts, *pts, i, linePts[2];
+  vtkIdType cellId, npts, i, linePts[2];
+  const vtkIdType* pts{ nullptr };
   vtkNew<vtkIdList> neighbors;
   vtkCellArray* facePolys = grid->GetPolys();
   neighbors->Allocate(VTK_CELL_SIZE);
@@ -873,7 +874,8 @@ void vtkDiscreteModelFace::SplitEdges(
     vtkDiscreteModelEdge* splitEdge = vtkDiscreteModelEdge::SafeDownCast(*eit);
     vtkPolyData* grid = vtkPolyData::SafeDownCast(splitEdge->GetGeometry());
     vtkCellArray* lines = grid->GetLines();
-    vtkIdType npts, *pts;
+    vtkIdType npts{ 0 };
+    const vtkIdType* pts{ nullptr };
     int nids;
     vtkNew<vtkIdList> cellIds;
     bool newFace1, newFace2;

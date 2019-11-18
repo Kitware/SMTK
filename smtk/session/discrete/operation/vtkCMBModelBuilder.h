@@ -49,7 +49,7 @@ protected:
 
   /// copied from vtkTriangulateConcavePolysFilter in CMB/VTKExtension.
   // Tests whether the cell is concave
-  static bool IsPolygonConcave(vtkPoints* points, vtkIdType npts, vtkIdType* pts);
+  static bool IsPolygonConcave(vtkPoints* points, vtkIdType npts, const vtkIdType* pts);
 
 private:
   // Description:

@@ -48,7 +48,8 @@ int vtkExtractLine::RequestData(vtkInformation* vtkNotUsed(request),
     return 1;
   }
 
-  vtkIdType npts = 0, *pts = NULL;
+  vtkIdType npts = 0;
+  const vtkIdType* pts = nullptr;
 
   vtkCellArray* inputLines = input->GetLines();
   inputLines->InitTraversal();

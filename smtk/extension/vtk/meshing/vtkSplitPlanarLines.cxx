@@ -75,8 +75,8 @@ void IntersectSegments(vtkPolyData* input, vtkIdType cellId, vtkRayIntersectionL
   HitList& hits, vtkPolyData* output, vtkIncrementalOctreePointLocator* plocator,
   vtkIdTypeArray* pedigreeIds)
 {
-  vtkIdType npts;
-  vtkIdType* conn;
+  const vtkIdType* conn{ nullptr };
+  vtkIdType npts{ 0 };
   input->GetCellPoints(cellId, npts, conn);
   if (npts < 2)
   {

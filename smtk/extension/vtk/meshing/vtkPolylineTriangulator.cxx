@@ -32,6 +32,7 @@
 
 #include <map>
 #include <sstream>
+#include <vector>
 
 typedef vtkVector2d vec2d;
 typedef vtkVector3d vec3d;
@@ -45,7 +46,7 @@ struct FacetLoops
   vec3d Binormal;
   // The following vectors are all the same length
   // (one entry per loop of the facet):
-  std::vector<vtkIdType*> Conn;
+  std::vector<const vtkIdType*> Conn;
   std::vector<vtkIdType> Length;
   std::vector<vtkIdType> PolygonId;
   std::vector<vtkIdType> OriginalId;
@@ -115,7 +116,7 @@ struct vtkPolylineTriangulatorOneFacetPerPoly
   vtkIdType operator()(vtkIdType poly) const { return poly; }
 };
 
-static bool EstimateNormal(vtkPoints* pts, vtkIdType npts, vtkIdType* conn, vec3d& norm)
+static bool EstimateNormal(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, vec3d& norm)
 {
   if (npts < 3)
   {
@@ -144,7 +145,7 @@ static bool EstimateNormal(vtkPoints* pts, vtkIdType npts, vtkIdType* conn, vec3
 }
 
 bool InitializeFacet(
-  vtkPoints* pts, vtkIdType faceId, FacetLoops& facet, vtkIdType npts, vtkIdType* conn)
+  vtkPoints* pts, vtkIdType faceId, FacetLoops& facet, vtkIdType npts, const vtkIdType* conn)
 {
   (void)faceId;
   facet.Points = pts;
@@ -218,7 +219,7 @@ void DumpLoop(vtkIdType facetId, FacetLoops& facet)
   cout << "-----\n";
 }
 
-void AddLoopToFacet(vtkPoints* pts, FacetSourceType& facets, vtkIdType npts, vtkIdType* conn,
+void AddLoopToFacet(vtkPoints* pts, FacetSourceType& facets, vtkIdType npts, const vtkIdType* conn,
   vtkIdType fid, vtkIdType c)
 {
   //cout << "Add loop " << c << " to " << fid << "\n";
@@ -253,8 +254,8 @@ void GroupLoops(vtkPolyData* pdIn, FacetSourceType& facets, T& poly2facet)
   vtkPoints* pts = pdIn->GetPoints();
   vtkCellArray* polylines = pdIn->GetLines();
   vtkIdType c = pdIn->GetNumberOfVerts();
-  vtkIdType npts;
-  vtkIdType* conn;
+  vtkIdType npts{ 0 };
+  const vtkIdType* conn{ nullptr };
   for (polylines->InitTraversal(); polylines->GetNextCell(npts, conn); ++c)
   {
     // Some polyfiles have line segments in them. We do not want to
@@ -596,7 +597,7 @@ static void TriangulateATriangle(vtkPolyData* pdIn, vtkIdType modelFaceId,
   vtkCellArray* dstPolys = pdOut->GetPolys();
   vtkCellData* srcAttr = pdIn->GetCellData();
   vtkCellData* dstAttr = pdOut->GetCellData();
-  vtkIdType* conn = facet.Conn[0];
+  const vtkIdType* conn = facet.Conn[0];
   vtkIdType npts = facet.Length[0] - 1;
   vtkIdType dstCellId = dstPolys->InsertNextCell(npts, conn);
   dstAttr->CopyData(srcAttr, facet.OriginalId[0], dstCellId);
@@ -725,12 +726,15 @@ static void TriangulateFacet(vtkPolyData* pdIn, vtkIdType modelFaceId, vtkIdType
   loc->SetDataSet(fpoly.GetPointer());
   bool locatorBuilt = false;
 
-  vtkIdType* conn;
-  vtkIdType npts;
+  const vtkIdType* conn{ nullptr };
+  vtkIdType npts{ 0 };
   for (srcPolys->InitTraversal(); srcPolys->GetNextCell(npts, conn);)
   {
     if (npts < 3 || (npts == 3 && (conn[0] == conn[1] || conn[1] == conn[2] || conn[2] == conn[0])))
+    {
       continue;
+    }
+    std::vector<vtkIdType> connVector;
     for (vtkIdType i = 0; i < npts; ++i)
     {
       vtkIdType searchPt;
@@ -789,11 +793,12 @@ static void TriangulateFacet(vtkPolyData* pdIn, vtkIdType modelFaceId, vtkIdType
       cout.width(5); cout << searchPt;
       cout << pout << " ?\n";
       */
-      conn[i] = searchPt; // pit->second;
+      connVector.push_back(searchPt); // pit->second;
     }
-    if (npts == 3 && (conn[0] == conn[1] || conn[1] == conn[2] || conn[2] == conn[0]))
+    if (npts == 3 && (connVector[0] == connVector[1] || connVector[1] == connVector[2] ||
+                       connVector[2] == connVector[0]))
       continue;
-    vtkIdType dstCellId = dstPolys->InsertNextCell(npts, conn);
+    vtkIdType dstCellId = dstPolys->InsertNextCell(npts, connVector.data());
     dstAttr->CopyData(srcAttr, srcCellId, dstCellId);
     pedigreeIds->InsertNextValue(modelFaceId);
   }

@@ -81,7 +81,8 @@ smtk::operation::Operation::Result vtkPolygonContourOperation::Operate()
 
   double p[3];
   int numPoints = 0;
-  vtkIdType *pts, npts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   vtkCellArray* lines = this->ContourInput->GetLines();
   lines->InitTraversal();
   std::vector<int> offsets;

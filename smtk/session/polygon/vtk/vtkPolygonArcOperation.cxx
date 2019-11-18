@@ -98,7 +98,8 @@ smtk::operation::Operation::Result vtkPolygonArcOperation::Operate()
 
   double p[3];
   int numPoints = 0;
-  vtkIdType *pts, npts;
+  vtkIdType npts{ 0 };
+  const vtkIdType* pts{ nullptr };
   lines->InitTraversal();
   while (lines->GetNextCell(npts, pts))
   {

@@ -24,6 +24,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkTransform.h"
+#include "vtkUnsignedCharArray.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <vtksys/SystemTools.hxx>

@@ -19,6 +19,7 @@
 #include "vtkErrorCode.h"
 #include "vtkFloatArray.h"
 #include "vtkIdList.h"
+#include "vtkIdTypeArray.h"
 #include "vtkInformationVector.h"
 #include "vtkMath.h"
 #include "vtkNew.h"
