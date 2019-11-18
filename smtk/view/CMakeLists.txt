@@ -8,8 +8,10 @@ set(viewSrcs
   EmptySubphraseGenerator.cxx
   json/jsonView.cxx
   Manager.cxx
+  ObjectGroupPhraseContent.cxx
   PhraseListContent.cxx
   PhraseModel.cxx
+  QueryFilterSubphraseGenerator.cxx
   Registrar.cxx
   ResourcePhraseContent.cxx
   ResourcePhraseModel.cxx
@@ -32,10 +34,12 @@ set(viewHeaders
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
   Manager.h
+  ObjectGroupPhraseContent.h
   PhraseListContent.h
   PhraseContent.h
   PhraseModel.h
   PhraseModelObserver.h
+  QueryFilterSubphraseGenerator.h
   Registrar.h
   ResourcePhraseContent.h
   ResourcePhraseModel.h

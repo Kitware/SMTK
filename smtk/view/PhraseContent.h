@@ -92,6 +92,15 @@ public:
   /// Return the content which this instance decorates (or a nullptr).
   Ptr peek() const { return m_decorator; }
 
+  /// Return the original content without any decoration
+  Ptr undecoratedContent()
+  {
+    Ptr content = shared_from_this();
+    for (; content->peek(); content = content->peek())
+      ;
+    return content;
+  }
+
   /// Should \a attr be present in the visual display of the phrase?
   virtual bool displayable(ContentType attr) const
   {

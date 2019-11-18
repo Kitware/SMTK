@@ -314,6 +314,10 @@ void pqSMTKResourceBrowser::activeViewChanged(pqView* view)
   for (auto rsrcPhrase : rsrcPhrases)
   {
     auto rsrc = rsrcPhrase->relatedResource();
+    if (!rsrc)
+    {
+      continue;
+    }
     auto pvr = behavior->getPVResource(rsrc);
     auto rep = pvr ? pvr->getRepresentation(view) : nullptr;
     // TODO: At a minimum, we can update the representation's visibility now

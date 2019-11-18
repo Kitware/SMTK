@@ -227,6 +227,17 @@ bool PhraseModel::resetSources()
   return removedAny;
 }
 
+void PhraseModel::visitSources(SourceVisitor visitor)
+{
+  for (auto src : m_sources)
+  {
+    if (!visitor(src.m_rsrcMgr, src.m_operMgr, src.m_seln))
+    {
+      break;
+    }
+  }
+}
+
 DescriptivePhrasePtr PhraseModel::root() const
 {
   return DescriptivePhrasePtr();
@@ -406,6 +417,20 @@ void PhraseModel::handleCreated(
   }
 }
 
+void PhraseModel::redecorate()
+{
+  this->root()->visitChildren([this](DescriptivePhrasePtr phr, std::vector<int>&) -> int {
+    PhraseContentPtr topContent = phr->content();
+    PhraseContentPtr content = topContent->undecoratedContent();
+    if (content != topContent)
+    {
+      phr->setContent(content);
+    }
+    this->decoratePhrase(phr);
+    return 0; // Continue iterating, incl. children.
+  });
+}
+
 void PhraseModel::updateChildren(
   smtk::view::DescriptivePhrasePtr src, DescriptivePhrases& next, const std::vector<int>& idx)
 {
@@ -443,10 +468,11 @@ void PhraseModel::updateChildren(
       // but identical in that they refer to the same component/resource/etc.,
       // hence the second test in the conditional below:
       bool preexist = false;
+      DescriptivePhrase* nval = it->get();
       for (auto it2 = orig.begin(); it2 != orig.end(); ++it2)
       {
-        if ((it->get() == it2->get()) ||
-          (it->get()->relatedObject() == it2->get()->relatedObject()))
+        if ((*nval == *it2->get()) ||
+          (nval && nval->relatedObject() && nval->relatedObject() == it2->get()->relatedObject()))
         {
           *it = *it2;
           unused.erase(lkup[*it2]);
@@ -578,9 +604,11 @@ bool PhraseModel::setDecorator(const PhraseDecorator& phraseDecorator)
     return false;
   }
 
-  // TODO: Add warning if we already have phrases? Un-decorate and re-decorate?
-
   m_decorator = phraseDecorator;
+
+  // We should un-decorate and re-decorate.
+  this->redecorate();
+
   return true;
 }
 

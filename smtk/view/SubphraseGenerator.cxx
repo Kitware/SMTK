@@ -11,6 +11,7 @@
 
 #include "smtk/view/ComponentPhraseContent.h"
 #include "smtk/view/Manager.h"
+#include "smtk/view/ObjectGroupPhraseContent.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/ResourcePhraseContent.h"
 
@@ -93,7 +94,21 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
     if (!comp)
     {
       auto rsrc = src->relatedResource();
-      if (rsrc)
+      if (!rsrc)
+      {
+        PhraseContentPtr content = src->content();
+        if (content)
+        {
+          // Find the original content without any decoration
+          content = content->undecoratedContent();
+        }
+        auto ogpc = std::dynamic_pointer_cast<smtk::view::ObjectGroupPhraseContent>(content);
+        if (ogpc)
+        {
+          ogpc->children(result);
+        }
+      }
+      else
       {
         SubphraseGenerator::componentsOfResource(src, rsrc, result);
       }
@@ -328,33 +343,6 @@ bool SubphraseGenerator::skipAttributes() const
 void SubphraseGenerator::setSkipAttributes(bool val)
 {
   m_skipAttributes = val;
-}
-
-template <typename T>
-void PreparePath(T& result, const T& parentPath, int childIndex)
-{
-  result.reserve(parentPath.size() + 1);
-  for (auto idx : parentPath)
-  {
-    result.push_back(idx);
-  }
-  result.push_back(childIndex);
-}
-
-template <typename T>
-int IndexFromTitle(const std::string& title, const T& phrases)
-{
-  // TODO: Use bisection to speed this up.
-  int ii = 0;
-  for (auto phrase : phrases)
-  {
-    if (title < phrase->title())
-    {
-      return ii;
-    }
-    ++ii;
-  }
-  return ii;
 }
 
 SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(

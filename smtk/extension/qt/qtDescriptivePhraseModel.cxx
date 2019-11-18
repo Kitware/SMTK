@@ -540,7 +540,8 @@ QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
   auto meshComp = dynamic_pointer_cast<smtk::mesh::Component>(item->relatedComponent());
   std::ostringstream resourceName;
   resourceName << ":/icons/entityTypes/";
-  if (item->phraseType() == smtk::view::DescriptivePhraseType::COMPONENT_LIST)
+  if (item->phraseType() == smtk::view::DescriptivePhraseType::COMPONENT_LIST ||
+    item->phraseType() == smtk::view::DescriptivePhraseType::LIST)
   {
     resourceName << "list";
   }
