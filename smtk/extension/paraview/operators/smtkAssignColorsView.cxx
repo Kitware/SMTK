@@ -248,11 +248,11 @@ void smtkAssignColorsView::prepPaletteChooser()
   this->Internals->PaletteChooser->setCustomizableLoadAnnotations(true);
   // Signals and slots related to palette mode (this->Internals->PaletteChooser):
   QObject::connect( // Allow the user to choose a new preference.
-    this->Internals->ChoosePaletteBtn, SIGNAL(released()), this->Internals->PaletteChooser,
-    SLOT(show()));
+    this->Internals->ChoosePaletteBtn, &QToolButton::released, this->Internals->PaletteChooser,
+    &pqPresetDialog::show);
   QObject::connect( // When the user has chosen a preference, remember and apply it.
-    this->Internals->PaletteChooser, SIGNAL(applyPreset(const Json::Value&)), this,
-    SLOT(setDefaultPaletteAndApply()));
+    this->Internals->PaletteChooser, &pqPresetDialog::applyPreset, this,
+    &smtkAssignColorsView::setDefaultPaletteAndApply);
 }
 
 void smtkAssignColorsView::createWidget()
