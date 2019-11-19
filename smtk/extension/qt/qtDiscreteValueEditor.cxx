@@ -291,6 +291,10 @@ void qtDiscreteValueEditor::updateContents()
     for (i = 0; i < m; i++)
     {
       auto citem = item->activeChildItem(static_cast<int>(i));
+      if (iiview && !iiview->displayItem(citem))
+      {
+        continue; // This child does not pass display checks so skip it
+      }
       auto it = Internals->m_itemViewMap.find(citem->name());
       qtItem* childItem;
       if (it != Internals->m_itemViewMap.end())
