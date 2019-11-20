@@ -10,9 +10,20 @@ ctest_start(APPEND)
 include(ProcessorCount)
 ProcessorCount(nproc)
 
+set(test_exclusions
+  # Issue #296.
+  "elevateMeshOnStructuredGridPy"
+  "pv.OpenExodusFile"
+)
+string(REPLACE ";" "|" test_exclusions "${test_exclusions}")
+if (test_exclusions)
+  set(test_exclusions "(${test_exclusions})")
+endif ()
+
 ctest_test(
   PARALLEL_LEVEL "${nproc}"
-  RETURN_VALUE test_result)
+  RETURN_VALUE test_result
+  EXCLUDE "${test_exclusions}")
 ctest_submit_multi(PARTS Test)
 
 if (test_result)

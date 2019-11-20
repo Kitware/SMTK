@@ -2,10 +2,16 @@
 #
 # Builders:
 #
-# - Fedora 31 (ci/docker/fedora31)
-#   - "simple" superbuild as dependency provider
-#   - no VTK/ParaView
-#   - Python 2.7
+# - Fedora 31
+#   * ci/docker/fedora31
+#     - no VTK/ParaView
+#     - Python 2.7
+#   * ci/docker/fedora31-vtk
+#     - VTK only, no ParaView
+#     - Python 2.7
+#   * ci/docker/fedora31
+#     - ParaView
+#     - Python 2.7
 #
 # Wanted test sets:
 #
@@ -33,7 +39,7 @@
     - tags@cmb/smtk
 
 .fedora31: &fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-20191112"
+    image: "kitware/cmb:ci-smtk-fedora31-20191119"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -41,6 +47,14 @@
         CTEST: ctest
         CMAKE_CONFIGURATION: fedora31
         SCCACHE_REDIS: redis://minmus:6379
+
+.fedora31_vtk: &fedora31_vtk
+    extends: .fedora31
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-20191119"
+
+.fedora31_paraview: &fedora31_paraview
+    extends: .fedora31_vtk
+    image: "kitware/cmb:ci-smtk-fedora31-paraview-20191119"
 
 .cmake_build_unix: &cmake_build_unix
     stage: build
@@ -68,6 +82,8 @@
             - build/bin/
             - build/include/
             - build/lib/
+            - build/smtkConfig.cmake
+            - build/smtkConfigVersion.cmake
             # Generated headers.
             # XXX(globbing): Can be simplified with support from
             # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
@@ -79,6 +95,8 @@
             - build/smtk/*/*/*/*/*/*.h
 
             # CTest files.
+            - build/PluginTests/
+            - build/smtk/extension/paraview/*/testing/python/*.py
             - build/CTestCustom*.cmake
             # XXX(globbing): Can be simplified with support from
             # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
@@ -87,6 +105,8 @@
             - build/*/*/CTestTestfile.cmake
             - build/*/*/*/CTestTestfile.cmake
             - build/*/*/*/*/CTestTestfile.cmake
+            - build/*/*/*/*/*/CTestTestfile.cmake
+            - build/*/*/*/*/*/*/CTestTestfile.cmake
             - build/Testing/
 
             # CDash files.
@@ -107,6 +127,14 @@
 
     interruptible: true
 
+.cmake_test_unix_x11: &cmake_test_unix_x11
+    <<: *cmake_test_unix
+    tags:
+        - cmb
+        - docker
+        - linux
+        - x11
+
 stages:
     - build
     - test
@@ -124,3 +152,31 @@ test:fedora31:
         - build:fedora31
     needs:
         - build:fedora31
+
+build:fedora31-vtk:
+    <<:
+        - *fedora31_vtk
+        - *cmake_build_unix
+
+test:fedora31-vtk:
+    <<:
+        - *fedora31_vtk
+        - *cmake_test_unix_x11
+    dependencies:
+        - build:fedora31-vtk
+    needs:
+        - build:fedora31-vtk
+
+build:fedora31-paraview:
+    <<:
+        - *fedora31_paraview
+        - *cmake_build_unix
+
+test:fedora31-paraview:
+    <<:
+        - *fedora31_paraview
+        - *cmake_test_unix_x11
+    dependencies:
+        - build:fedora31-paraview
+    needs:
+        - build:fedora31-paraview
