@@ -52,9 +52,10 @@ public:
   const char* GetHostName() const { return HostName.c_str(); }
 
   //get the port of the server we created
-  vtkGetMacro(PortNumber, int)
+  vtkGetMacro(PortNumber, int);
 
-    protected : vtkCMBMeshServerLauncher();
+protected:
+  vtkCMBMeshServerLauncher();
   ~vtkCMBMeshServerLauncher();
 
 private:

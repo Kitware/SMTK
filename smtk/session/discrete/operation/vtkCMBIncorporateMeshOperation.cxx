@@ -189,7 +189,8 @@ bool vtkCMBIncorporateMeshOperation::SplitMeshRegion(
       vtkDiscreteModelFace::SafeDownCast(iterMeshFace->GetCurrentItem());
     if (!meshFace)
     {
-      vtkWarningMacro("Not a valid model face ??") continue;
+      vtkWarningMacro("Not a valid model face ??");
+      continue;
     }
     std::map<vtkDiscreteModelRegion*, vtkSmartPointer<vtkIdList> > SolidRegionMeshCellsMap;
     vtkPolyData* meshPoly = vtkPolyData::SafeDownCast(meshFace->GetGeometry());
@@ -311,7 +312,8 @@ bool vtkCMBIncorporateMeshOperation::CreateNewMeshRegions(vtkDiscreteModel* soli
       vtkDiscreteModelRegion::SafeDownCast(iterSolReg->GetCurrentItem());
     if (!entRegion)
     {
-      vtkWarningMacro("Not a valid model region in solid ??") continue;
+      vtkWarningMacro("Not a valid model region in solid ??");
+      continue;
     }
     vtkModelMaterial* newMaterial = meshModel->BuildMaterial();
     std::vector<vtkModelFace*> Faces;
@@ -339,7 +341,8 @@ bool vtkCMBIncorporateMeshOperation::CreateNewMeshRegions(vtkDiscreteModel* soli
         vtkDiscreteModelFace::SafeDownCast(iterFace->GetCurrentItem());
       if (!faceEntity)
       {
-        vtkWarningMacro("Not a valid model face ??") continue;
+        vtkWarningMacro("Not a valid model face ??");
+        continue;
       }
       vtkDiscreteModelFace* newFace = NULL;
       if (UsedSolidFaces.find(faceEntity) == UsedSolidFaces.end())
@@ -390,7 +393,7 @@ bool vtkCMBIncorporateMeshOperation::CreateNewMeshRegions(vtkDiscreteModel* soli
     }
     else
     {
-      vtkWarningMacro("There is no face in this solid region ??")
+      vtkWarningMacro("There is no face in this solid region ??");
     }
   }
   iterSolReg->Delete();
