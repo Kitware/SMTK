@@ -115,9 +115,9 @@ smoab::CellSets extractShells(const smoab::Interface& interface, smoab::Tag* she
 }
 }
 
-vtkStandardNewMacro(vtkCmbMoabReader)
+vtkStandardNewMacro(vtkCmbMoabReader);
 
-  vtkCmbMoabReader::vtkCmbMoabReader()
+vtkCmbMoabReader::vtkCmbMoabReader()
   : FileName(NULL)
 {
   this->SetNumberOfInputPorts(0);

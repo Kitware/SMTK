@@ -69,7 +69,8 @@ public:
    * It must be non-negative.
    * It may be 0, but not when the TopRadius is also 0.
    */
-  vtkSetClampMacro(BottomRadius, double, 0.0, VTK_DOUBLE_MAX) vtkGetMacro(BottomRadius, double);
+  vtkSetClampMacro(BottomRadius, double, 0.0, VTK_DOUBLE_MAX);
+  vtkGetMacro(BottomRadius, double);
   //@}
 
   //@{
@@ -79,7 +80,8 @@ public:
    * It must be non-negative.
    * It may be 0, but not when the BottomRadius is also 0.
    */
-  vtkSetClampMacro(TopRadius, double, 0.0, VTK_DOUBLE_MAX) vtkGetMacro(TopRadius, double);
+  vtkSetClampMacro(TopRadius, double, 0.0, VTK_DOUBLE_MAX);
+  vtkGetMacro(TopRadius, double);
   //@}
 
   //@{
@@ -106,7 +108,8 @@ public:
    *
    * This defaults to 16 and has a minimum of 3.
    */
-  vtkSetClampMacro(Resolution, int, 3, VTK_CELL_SIZE) vtkGetMacro(Resolution, int);
+  vtkSetClampMacro(Resolution, int, 3, VTK_CELL_SIZE);
+  vtkGetMacro(Resolution, int);
   //@}
 
   //@{
