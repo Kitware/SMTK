@@ -45,7 +45,7 @@
         GIT_SUBMODULE_STRATEGY: recursive
         CMAKE: cmake
         CTEST: ctest
-        CMAKE_CONFIGURATION: fedora31
+        CMAKE_CONFIGURATION: fedora31_plain
         SCCACHE_REDIS: redis://minmus:6379
 
 .fedora31_vtk: &fedora31_vtk
