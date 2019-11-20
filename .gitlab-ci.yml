@@ -33,7 +33,7 @@
     - tags@cmb/smtk
 
 .fedora31: &fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-20191112"
+    image: "kitware/cmb:ci-smtk-fedora31-20191119"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
