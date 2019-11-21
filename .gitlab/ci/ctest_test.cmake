@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.8)
+
 include("${CMAKE_CURRENT_LIST_DIR}/gitlab_ci.cmake")
 
 # Read the files from the build directory.
@@ -14,6 +16,7 @@ set(test_exclusions
   # Issue #296.
   "elevateMeshOnStructuredGridPy"
   "pv.OpenExodusFile"
+  "TestReadWrite"
 )
 string(REPLACE ";" "|" test_exclusions "${test_exclusions}")
 if (test_exclusions)

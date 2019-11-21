@@ -62,6 +62,15 @@
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
 
+.fedora31_coverage: &fedora31_coverage
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_BUILD_TYPE: Debug
+        CMAKE_CONFIGURATION: fedora31_coverage
+        CTEST_COVERAGE: 1
+        CMAKE_GENERATOR: Unix Makefiles
+
 .cmake_build_unix: &cmake_build_unix
     stage: build
     only: *only_settings
@@ -115,6 +124,24 @@
             - build/*/*/*/*/*/*/CTestTestfile.cmake
             - build/Testing/
 
+            # CTest coverage files.
+            - build/CMakeFiles/TargetDirectories.txt
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/*/*/*/*.gcno
+            - build/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*/*.gcno
+            - build/smtk/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*/*.h
+            - build/smtk/extension/*/CMakeFiles/*.cxx
+
             # CDash files.
             - build/DartConfiguration.tcl
     interruptible: true
@@ -141,9 +168,25 @@
         - linux
         - x11
 
+.cmake_coverage: &cmake_coverage
+    stage: analyze
+    only: *only_settings
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
+
+    script:
+        - "$LAUNCHER $CTEST -V -S .gitlab/ci/ctest_coverage.cmake"
+    coverage: '/Percentage Coverage: \d+.\d+%/'
+
+    interruptible: true
+
 stages:
     - build
     - test
+    - analyze
 
 build:fedora31:
     <<:
@@ -186,3 +229,69 @@ test:fedora31-paraview:
         - build:fedora31-paraview
     needs:
         - build:fedora31-paraview
+
+build:fedora31-coverage:
+    <<:
+        - *fedora31_coverage
+        - *cmake_build_unix
+
+test:fedora31-coverage:
+    <<:
+        - *fedora31_coverage
+        - *cmake_test_unix_x11
+    artifacts:
+        expire_in: 1d
+        paths:
+            # Generated headers.
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/smtk/*.h
+            - build/smtk/*/*.h
+            - build/smtk/*/*/*.h
+            - build/smtk/*/*/*/*.h
+            - build/smtk/*/*/*/*/*.h
+            - build/smtk/*/*/*/*/*/*.h
+
+            # CTest files.
+            - build/CTestCustom*.cmake
+            - build/Testing/
+
+            # CTest coverage files.
+            - build/CMakeFiles/TargetDirectories.txt
+            # XXX(globbing): Can be simplified with support from
+            # https://gitlab.com/gitlab-org/gitlab-runner/issues/4840
+            - build/*/*/*/*.gcno
+            - build/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*/*/*/*/*/*.gcno
+            - build/*/*/*/*.gcda
+            - build/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*/*/*.gcda
+            - build/*/*/*/*/*/*/*/*/*.gcda
+            - build/smtk/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*.cxx
+            - build/smtk/*/*/*/*/*/*/*.cpp
+            - build/smtk/*/*/*/*/*/*/*.h
+            - build/smtk/extension/*/CMakeFiles/*.cxx
+
+            # CDash files.
+            - build/DartConfiguration.tcl
+    dependencies:
+        - build:fedora31-coverage
+    needs:
+        - build:fedora31-coverage
+
+analyze:fedora31-coverage:
+    <<:
+        - *fedora31_coverage
+        - *cmake_coverage
+    dependencies:
+        - test:fedora31-coverage
+    needs:
+        - test:fedora31-coverage
