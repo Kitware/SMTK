@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.8)
+
 include("${CMAKE_CURRENT_LIST_DIR}/gitlab_ci.cmake")
 
 # Read the files from the build directory.
@@ -6,6 +8,12 @@ include("${CMAKE_CURRENT_LIST_DIR}/ctest_submit_multi.cmake")
 
 # Pick up from where the configure left off.
 ctest_start(APPEND)
+
+if (CTEST_CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+  include(ProcessorCount)
+  ProcessorCount(nproc)
+  set(CTEST_BUILD_FLAGS "-j${nproc}")
+endif ()
 
 ctest_build(
   RETURN_VALUE build_result)
