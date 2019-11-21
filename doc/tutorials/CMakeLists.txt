@@ -1,5 +1,11 @@
 # Now add tutorial directories
 
+# If building with coverage, the tutorials will fail to build because they
+# don't know to use the coverage flags.
+if (SMTK_ENABLE_COVERAGE)
+  return ()
+endif ()
+
 # To build an smtk-dependent cxx project, the following variables are used to
 # find smtk and its dependent packages
 set(build_options
