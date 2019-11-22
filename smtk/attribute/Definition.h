@@ -147,10 +147,32 @@ public:
   template <typename T>
   void filterItemDefinitions(T& values, std::function<bool(typename T::value_type)> test);
 
-  // Description:
-  // The attributes advance level. 0 is the simplest.
-  int advanceLevel() const { return m_advanceLevel; }
-  void setAdvanceLevel(int level) { m_advanceLevel = level; }
+  /// \brief Get the Definition 's advance level
+  ///
+  /// if mode is 1 then the write access level is returned;
+  /// else the read access level is returned
+  /// The information can either be specificied directly to the definition
+  /// using setLocalAdvanceLevel() or from the definition's base definition.
+  /// If the definition does not have either a local advance level or a
+  /// base definition, then 0 is returned.
+  /// NOTE: This information is used in GUI only
+  unsigned int advanceLevel(int mode = 0) const;
+  void setLocalAdvanceLevel(int mode, unsigned int level);
+  void setLocalAdvanceLevel(unsigned int level);
+  unsigned int localAdvanceLevel(int mode = 0) const
+  {
+    return (mode == 1 ? m_localAdvanceLevel[1] : m_localAdvanceLevel[0]);
+  }
+  // unsetLocalAdvanceLevel causes the definition to return its
+  // base definition advance level information for the specified mode when calling
+  // the advanceLevel(mode) method or 0 if there is no base definition
+  void unsetLocalAdvanceLevel(int mode = 0);
+  // Returns true if the definition is returning its local
+  // advance level information
+  bool hasLocalAdvanceLevelInfo(int mode = 0) const
+  {
+    return (mode == 1 ? m_hasLocalAdvanceLevelInfo[1] : m_hasLocalAdvanceLevelInfo[0]);
+  }
 
   // Indicates if a persistent object can have multiple attributes of this
   // type associated with it (true means it can not)
@@ -385,6 +407,12 @@ protected:
   // definition's items have been changed
   void updateDerivedDefinitions();
 
+  ///\brief update the advance level information of the definition and its items.
+  /// readLevelFromParent and writeLevelFromParent are the advance level information coming
+  /// from the Definition's Base Definition.  The Definition's advance level member are set
+  /// to these values if the Definition does not have local versions set.
+  virtual void applyAdvanceLevels(
+    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent);
   smtk::attribute::WeakResourcePtr m_resource;
   int m_version;
   bool m_isAbstract;
@@ -394,7 +422,9 @@ protected:
   bool m_isNodal;
   std::set<std::string> m_localCategories;
   std::set<std::string> m_categories;
-  int m_advanceLevel;
+  bool m_hasLocalAdvanceLevelInfo[2];
+  unsigned int m_localAdvanceLevel[2];
+  unsigned int m_advanceLevel[2];
   WeakDefinitionSet m_exclusionDefs;
   WeakDefinitionSet m_prerequisiteDefs;
   /// Used to keep track of how many definitions are using this one as a prerequisite

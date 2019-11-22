@@ -16,8 +16,9 @@ ItemDefinition::ItemDefinition(const std::string& myName)
   : m_name(myName)
 {
   m_version = 0;
-  m_advanceLevel[0] = 0;
-  m_advanceLevel[1] = 0;
+  m_advanceLevel[0] = m_advanceLevel[1] = 0;
+  m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
+  m_hasLocalAdvanceLevelInfo[0] = m_hasLocalAdvanceLevelInfo[1] = false;
   m_isOptional = false;
   m_isEnabledByDefault = false;
   m_isOkToInherit = true;
@@ -119,21 +120,43 @@ bool ItemDefinition::passCategoryCheck(const std::set<std::string>& categories) 
   return true;
 }
 
-void ItemDefinition::setAdvanceLevel(int mode, int level)
+void ItemDefinition::setLocalAdvanceLevel(int mode, unsigned int level)
 {
   if ((mode < 0) || (mode > 1))
   {
     return;
   }
-  m_advanceLevel[mode] = level;
+  m_hasLocalAdvanceLevelInfo[mode] = true;
+  m_localAdvanceLevel[mode] = m_advanceLevel[mode] = level;
 }
 
-void ItemDefinition::setAdvanceLevel(int level)
+void ItemDefinition::setLocalAdvanceLevel(unsigned int level)
 {
-  m_advanceLevel[0] = level;
-  m_advanceLevel[1] = level;
+  m_hasLocalAdvanceLevelInfo[0] = m_hasLocalAdvanceLevelInfo[1] = true;
+  m_advanceLevel[0] = m_advanceLevel[1] = m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = level;
 }
 
+void ItemDefinition::unsetLocalAdvanceLevel(int mode)
+{
+  if ((mode < 0) || (mode > 1))
+  {
+    return;
+  }
+  m_hasLocalAdvanceLevelInfo[mode] = false;
+}
+
+void ItemDefinition::applyAdvanceLevels(
+  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+{
+  if (!m_hasLocalAdvanceLevelInfo[0])
+  {
+    m_advanceLevel[0] = readLevelFromParent;
+  }
+  if (!m_hasLocalAdvanceLevelInfo[1])
+  {
+    m_advanceLevel[1] = writeLevelFromParent;
+  }
+}
 void ItemDefinition::copyTo(ItemDefinitionPtr def) const
 {
   def->setLabel(m_label);
@@ -148,8 +171,15 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
     def->addLocalCategory(*categoryIter);
   }
 
-  def->setAdvanceLevel(0, m_advanceLevel[0]);
-  def->setAdvanceLevel(1, m_advanceLevel[1]);
+  if (m_hasLocalAdvanceLevelInfo[0])
+  {
+    def->setLocalAdvanceLevel(0, m_localAdvanceLevel[0]);
+  }
+
+  if (m_hasLocalAdvanceLevelInfo[1])
+  {
+    def->setLocalAdvanceLevel(1, m_localAdvanceLevel[1]);
+  }
 
   def->setDetailedDescription(m_detailedDescription);
   def->setBriefDescription(m_briefDescription);

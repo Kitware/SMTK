@@ -187,7 +187,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   E->addLocalCategory("E");
   DefinitionPtr F = attRes->createDefinition("F");
   vItemDef = F->addItemDefinition<VoidItemDefinition>("v4");
-  attRes->updateCategories();
+  attRes->finalizeDefinitions();
 }
 }
 

@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 """
 Manual port of SMTK/smtk/attribute/Testing/categoryTest.cxx
 For verifying python wrappers
@@ -74,8 +74,8 @@ if __name__ == '__main__':
     sitemdef.setDefaultValue("Default")
     sitemdef.addLocalCategory("General")
 
-    # Process Categories
-    resource.updateCategories()
+    # Process Definition Information
+    resource.finalizeDefinitions()
     # Lets see what categories the attribute definitions think they are
     if expDef.numberOfCategories() != 0:
         categories = expDef.categories()

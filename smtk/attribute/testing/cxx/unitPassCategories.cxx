@@ -206,7 +206,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   sItemDef2->addLocalCategory("a");
   sItemDef2->addLocalCategory("b");
   sItemDef2->setCategoryCheckMode(ItemDefinition::CategoryCheckMode::All);
-  attRes->updateCategories();
+  attRes->finalizeDefinitions();
   attRes->createAttribute("TestAtt", "A");
 }
 }

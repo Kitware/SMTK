@@ -46,25 +46,13 @@ SMTKCORE_EXPORT void to_json(
   {
     j["categoryCheckMode"] = "Any";
   }
-  if (itemDefPtr->advanceLevel(0) || itemDefPtr->advanceLevel(1))
+  if (itemDefPtr->hasLocalAdvanceLevelInfo(0))
   {
-    // OK - we have a non-zero advance level in either read or write
-    // if they are both set the same use the AdvanceLevel xml attribute
-    if (itemDefPtr->advanceLevel(0) == itemDefPtr->advanceLevel(1))
-    {
-      j["AdvanceLevel"] = itemDefPtr->advanceLevel(0);
-    }
-    else
-    {
-      if (itemDefPtr->advanceLevel(0))
-      {
-        j["AdvanceReadLevel"] = itemDefPtr->advanceLevel(0);
-      }
-      if (itemDefPtr->advanceLevel(1))
-      {
-        j["AdvanceWriteLevel"] = itemDefPtr->advanceLevel(1);
-      }
-    }
+    j["AdvanceReadLevel"] = itemDefPtr->localAdvanceLevel(0);
+  }
+  if (itemDefPtr->hasLocalAdvanceLevelInfo(1))
+  {
+    j["AdvanceWriteLevel"] = itemDefPtr->localAdvanceLevel(1);
   }
   if (!itemDefPtr->localCategories().empty())
   {
@@ -124,20 +112,20 @@ SMTKCORE_EXPORT void from_json(
   result = j.find("AdvanceLevel");
   if (result != j.end())
   {
-    itemDefPtr->setAdvanceLevel(0, *result);
-    itemDefPtr->setAdvanceLevel(1, *result);
+    itemDefPtr->setLocalAdvanceLevel(0, *result);
+    itemDefPtr->setLocalAdvanceLevel(1, *result);
   }
   else
   {
     auto val = j.find("AdvanceReadLevel");
     if (val != j.end())
     {
-      itemDefPtr->setAdvanceLevel(0, *val);
+      itemDefPtr->setLocalAdvanceLevel(0, *val);
     }
     val = j.find("AdvanceWriteLevel");
     if (val != j.end())
     {
-      itemDefPtr->setAdvanceLevel(1, *val);
+      itemDefPtr->setLocalAdvanceLevel(1, *val);
     }
   }
 

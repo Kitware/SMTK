@@ -76,7 +76,7 @@ int main()
     sitemdef->addLocalCategory("General");
 
     // Process Categories
-    resource.updateCategories();
+    resource.finalizeDefinitions();
     // Lets see what categories the attribute definitions think they are
     if (expDef->numberOfCategories())
     {

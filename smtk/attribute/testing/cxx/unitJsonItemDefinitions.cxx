@@ -78,6 +78,7 @@ int unitJsonItemDefinitions(int, char** const)
   smtk::attribute::ReferenceItemDefinitionPtr riDef2 = ReferenceItemDefinition::New("ri-def");
   smtk::attribute::from_json(riDefToJson, riDef2);
   json riDefFromJson = riDef2;
+  std::cout << "\nReferenceItem from_json result:\n" << riDefFromJson.dump(2) << "\n\n";
 
   test(riDefToJson == riDefFromJson, "Failed to serialize and deserialize ReferenceItemDef");
 

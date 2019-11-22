@@ -63,6 +63,18 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::AttributePtr& att)
     rgbaV.push_back(rgba[3]);
     j["Color"] = rgbaV;
   }
+  // Does the Attribute have explicit advance level information
+  if (att->hasLocalAdvanceLevelInfo(0))
+  {
+    j["AdvanceReadLevel"] = att->localAdvanceLevel(0);
+  }
+
+  if (att->hasLocalAdvanceLevelInfo(1))
+  {
+    j["AdvanceWriteLevel"] = att->localAdvanceLevel(1);
+  }
+
+  // Process its Items
   int i, n = static_cast<int>(att->numberOfItems());
   if (n)
   {
@@ -105,6 +117,18 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::AttributePtr& att
     color[2] = (*result)[2];
     color[3] = (*result)[3];
     att->setColor(color);
+  }
+
+  // Process local advance level info
+  result = j.find("AdvanceReadLevel");
+  if (result != j.end())
+  {
+    att->setLocalAdvanceLevel(0, *result);
+  }
+  result = j.find("AdvanceWriteLevel");
+  if (result != j.end())
+  {
+    att->setLocalAdvanceLevel(1, *result);
   }
 
   // Process items

@@ -112,8 +112,8 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
       if (rgba)
       {
         intLevelObj["Color"] = { rgba[0], rgba[1], rgba[2], rgba[3] };
-        advanceLevelsObj[std::to_string(intLevel)] = intLevelObj;
       }
+      advanceLevelsObj[std::to_string(intLevel)] = intLevelObj;
     }
     j["AdvanceLevels"] = advanceLevelsObj;
   }
@@ -627,8 +627,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
     }
   }
 
-  // Update category infomration
-  res->updateCategories();
+  // Update definition infomration
+  res->finalizeDefinitions();
 }
 }
 }

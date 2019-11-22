@@ -153,22 +153,31 @@ public:
   bool passCategoryCheck(const std::set<std::string>& categories) const;
   /// @}
 
-  //Get the item 's advance level:
-  //if mode is 1 then the write access level is returned;
-  //else the read access level is returned
-  //NOTE: if the advance level was not explicitly set then the item's
-  //definition's advance level is returned
-  int advanceLevel(int mode = 0) const;
-  void setAdvanceLevel(int mode, int level);
+  /// \brief Get the item 's advance level
+  ///
+  /// if mode is 1 then the write access level is returned;
+  /// else the read access level is returned
+  /// The information can either be specificied directly to the item
+  /// using setLocalAdvanceLevel() or from the item's definition.
+  /// If this item is not owned by another item or attribute the value
+  /// is simply returned.  Else the max of the value and that of its
+  /// owner is returned.
+  /// NOTE: This information is used in GUI only
+  unsigned int advanceLevel(int mode = 0) const;
+  void setLocalAdvanceLevel(int mode, unsigned int level);
+  unsigned int localAdvanceLevel(int mode = 0) const
+  {
+    return (mode == 1 ? m_localAdvanceLevel[1] : m_localAdvanceLevel[0]);
+  }
   // unsetAdvanceLevel causes the item to return its
   // definition advance level information for the specified mode when calling
   // the advanceLevel(mode) method
-  void unsetAdvanceLevel(int mode = 0);
-  // Returns true if the item is returning its Definition's
+  void unsetLocalAdvanceLevel(int mode = 0);
+  // Returns true if the item is returning its local
   // advance level information
-  bool usingDefinitionAdvanceLevel(int mode = 0) const
+  bool hasLocalAdvanceLevelInfo(int mode = 0) const
   {
-    return (mode == 1 ? m_usingDefAdvanceLevelInfo[1] : m_usingDefAdvanceLevelInfo[0]);
+    return (mode == 1 ? m_hasLocalAdvanceLevelInfo[1] : m_hasLocalAdvanceLevelInfo[0]);
   }
 
   void setUserData(const std::string& key, smtk::simulation::UserDataPtr value)
@@ -220,8 +229,8 @@ protected:
   std::map<std::string, smtk::simulation::UserDataPtr> m_userData;
 
 private:
-  bool m_usingDefAdvanceLevelInfo[2];
-  int m_advanceLevel[2];
+  bool m_hasLocalAdvanceLevelInfo[2];
+  unsigned int m_localAdvanceLevel[2];
 };
 
 inline smtk::simulation::UserDataPtr Item::userData(const std::string& key) const

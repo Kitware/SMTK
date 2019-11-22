@@ -79,7 +79,7 @@ public:
   void showAdvanceLevelOverlay(bool);
   bool useSelectionManager() const { return m_useSelectionManager; }
   void setReadOnly(bool mode) { m_readOnly = mode; }
-  bool isReadOnly() const { return m_readOnly; }
+  bool isReadOnly() const;
   ///\brief Indicates that the item should be deleted.  This is similar to Qt's
   /// deleteLater() method (in fact it calls it); however, it also allows the qtItem to do some
   /// cleanup such as stop observing SMTK "signals".
@@ -107,7 +107,7 @@ protected slots:
 
 protected:
   virtual void createWidget() { ; }
-  virtual void setAdvanceLevel(int level);
+  virtual void setLocalAdvanceLevel(unsigned int level);
   virtual void addChildItem(qtItem*);
   virtual void removeChildItem(qtItem*);
   virtual void clearChildItems();

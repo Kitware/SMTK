@@ -162,8 +162,8 @@ if __name__ == '__main__':
     queryString = smtk.attribute.Resource.createAttributeQuery(base)
     acitemdef.setAcceptsEntries(resource.typeName(), queryString, True)
 
-    # Process Categories
-    resource.updateCategories()
+    # Process Definition Information
+    resource.finalizeDefinitions()
     # Lets test creating an attribute by passing in the expression definition
     # explicitly
     expAtt = resource.createAttribute('Exp1', expDef)

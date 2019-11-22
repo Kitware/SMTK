@@ -438,7 +438,11 @@ void Resource::findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr>& 
   }
 }
 
-void Resource::updateCategories()
+/// This method updates information passed down to Attribute and Item Definitions.
+/// It should be called whenever shared information such as local categories and
+/// local advance information is changed.
+/// Note that this method can be called multiple times without issue.
+void Resource::finalizeDefinitions()
 {
   // We need to process the definitions that don't have
   // a base definition
@@ -449,6 +453,7 @@ void Resource::updateCategories()
   for (auto& def : baseDefs)
   {
     def->applyCategories(initialCats);
+    def->applyAdvanceLevels(0, 0);
   }
   // Now all of the definitions have been processed we need to combine all
   // of their categories to form the Resource's categories
@@ -701,7 +706,14 @@ bool Resource::copyDefinitionImpl(
   newDef->setLabel(sourceDef->label());
   newDef->setVersion(sourceDef->version());
   newDef->setIsAbstract(sourceDef->isAbstract());
-  newDef->setAdvanceLevel(sourceDef->advanceLevel());
+  if (sourceDef->hasLocalAdvanceLevelInfo(0))
+  {
+    newDef->setLocalAdvanceLevel(0, sourceDef->localAdvanceLevel(0));
+  }
+  if (sourceDef->hasLocalAdvanceLevelInfo(1))
+  {
+    newDef->setLocalAdvanceLevel(1, sourceDef->localAdvanceLevel(1));
+  }
   newDef->setIsUnique(sourceDef->isUnique());
   newDef->setIsNodal(sourceDef->isNodal());
   newDef->setDetailedDescription(sourceDef->detailedDescription());
@@ -735,7 +747,7 @@ bool Resource::copyDefinitionImpl(
   newDef->m_categories = sourceDef->m_categories;
   // TODO Update CopyInfo to include set of categories in new attribute(s)
   // For now, use brute force to update
-  this->updateCategories();
+  this->finalizeDefinitions();
 
   return true;
 }

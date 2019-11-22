@@ -132,9 +132,14 @@ bool qtBaseAttributeView::categoryTest(smtk::attribute::ItemPtr item)
   return m_ignoreCategories || this->uiManager()->passItemCategoryCheck(item->definition());
 }
 
+bool qtBaseAttributeView::isItemWriteable(smtk::attribute::ItemPtr item)
+{
+  return this->uiManager()->passAdvancedCheck(item->advanceLevel(1));
+}
+
 bool qtBaseAttributeView::advanceLevelTest(smtk::attribute::ItemPtr item)
 {
-  return this->uiManager()->passAdvancedCheck(item->advanceLevel());
+  return this->uiManager()->passAdvancedCheck(item->advanceLevel(0));
 }
 
 void qtBaseAttributeView::setIgnoreCategories(bool mode)

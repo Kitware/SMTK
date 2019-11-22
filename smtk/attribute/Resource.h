@@ -158,7 +158,7 @@ public:
   smtk::attribute::Analyses& analyses() { return m_analyses; }
 
   std::size_t numberOfAdvanceLevels() const { return m_advLevels.size(); }
-  void addAdvanceLevel(int level, std::string label, const double* l_color = 0);
+  void addAdvanceLevel(int level, std::string label, const double* l_color = nullptr);
   const std::map<int, std::string>& advanceLevels() const { return m_advLevels; }
   // the color is expected in the format of double[4] - rgba
   const double* advanceLevelColor(int level) const;
@@ -171,7 +171,7 @@ public:
     const std::string& name, attribute::DefinitionPtr def, const smtk::common::UUID& id);
   std::string createUniqueName(const std::string& type) const;
 
-  void updateCategories();
+  void finalizeDefinitions();
   std::size_t numberOfCategories() const { return m_categories.size(); }
   const std::set<std::string>& categories() const { return m_categories; }
 

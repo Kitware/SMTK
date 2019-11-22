@@ -387,7 +387,6 @@ void XmlV2StringWriter::generateXml()
       }
     }
   }
-
   // Write out the advance levels information
   if (m_resource->numberOfAdvanceLevels())
   {
@@ -526,9 +525,15 @@ void XmlV2StringWriter::processDefinitionInternal(
   {
     definition.append_attribute("Abstract").set_value("true");
   }
-  if (def->advanceLevel())
+  // Does the definition have explicit advance level information
+  if (def->hasLocalAdvanceLevelInfo(0))
   {
-    definition.append_attribute("AdvanceLevel") = def->advanceLevel();
+    definition.append_attribute("AdvanceReadLevel") = def->localAdvanceLevel(0);
+  }
+
+  if (def->hasLocalAdvanceLevelInfo(1))
+  {
+    definition.append_attribute("AdvanceWriteLevel") = def->localAdvanceLevel(1);
   }
   if (def->isUnique())
   { // false is the default
@@ -623,25 +628,13 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
   {
     node.append_attribute("CategoryCheckMode").set_value("Any");
   }
-  if (idef->advanceLevel(0) || idef->advanceLevel(1))
+  if (idef->hasLocalAdvanceLevelInfo(0))
   {
-    // OK - we have a non-zero advance level in either read or write
-    // if they are both set the same use the AdvanceLevel xml attribute
-    if (idef->advanceLevel(0) == idef->advanceLevel(1))
-    {
-      node.append_attribute("AdvanceLevel") = idef->advanceLevel(0);
-    }
-    else
-    {
-      if (idef->advanceLevel(0))
-      {
-        node.append_attribute("AdvanceReadLevel") = idef->advanceLevel(0);
-      }
-      if (idef->advanceLevel(1))
-      {
-        node.append_attribute("AdvanceWriteLevel") = idef->advanceLevel(1);
-      }
-    }
+    node.append_attribute("AdvanceReadLevel") = idef->localAdvanceLevel(0);
+  }
+  if (idef->hasLocalAdvanceLevelInfo(1))
+  {
+    node.append_attribute("AdvanceWriteLevel") = idef->localAdvanceLevel(1);
   }
   if (!idef->localCategories().empty())
   {
@@ -978,6 +971,16 @@ void XmlV2StringWriter::processAttribute(xml_node& attributes, attribute::Attrib
     s = this->encodeColor(att->color());
     node.append_child("Color").text().set(s.c_str());
   }
+  // Does the attribute have explicit advance level information
+  if (att->hasLocalAdvanceLevelInfo(0))
+  {
+    node.append_attribute("AdvanceReadLevel") = att->localAdvanceLevel(0);
+  }
+
+  if (att->hasLocalAdvanceLevelInfo(1))
+  {
+    node.append_attribute("AdvanceWriteLevel") = att->localAdvanceLevel(1);
+  }
   int i, n = static_cast<int>(att->numberOfItems());
   if (n)
   {
@@ -1006,14 +1009,14 @@ void XmlV2StringWriter::processItemAttributes(xml_node& node, smtk::attribute::I
   }
 
   // Does the item have explicit advance level information
-  if (!item->usingDefinitionAdvanceLevel(0))
+  if (item->hasLocalAdvanceLevelInfo(0))
   {
-    node.append_attribute("AdvanceReadLevel") = item->advanceLevel(0);
+    node.append_attribute("AdvanceReadLevel") = item->localAdvanceLevel(0);
   }
 
-  if (!item->usingDefinitionAdvanceLevel(1))
+  if (item->hasLocalAdvanceLevelInfo(1))
   {
-    node.append_attribute("AdvanceWriteLevel") = item->advanceLevel(1);
+    node.append_attribute("AdvanceWriteLevel") = item->localAdvanceLevel(1);
   }
 }
 

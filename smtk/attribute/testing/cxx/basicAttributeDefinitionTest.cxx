@@ -39,13 +39,13 @@ int main()
     // Lets add some item definitions
     smtk::attribute::IntItemDefinitionPtr icompdef =
       smtk::attribute::IntItemDefinition::New("IntComp1");
-    icompdef->setAdvanceLevel(1);
+    icompdef->setLocalAdvanceLevel(1);
     def->addItemDefinition(icompdef);
     smtk::attribute::IntItemDefinitionPtr icompdef2 =
       smtk::attribute::IntItemDefinition::New("IntComp2");
     icompdef2->setDefaultValue(10);
-    icompdef2->setAdvanceLevel(0, 3);
-    icompdef2->setAdvanceLevel(1, 4);
+    icompdef2->setLocalAdvanceLevel(0, 3);
+    icompdef2->setLocalAdvanceLevel(1, 4);
 
     def->addItemDefinition(icompdef2);
     smtk::attribute::DefinitionPtr def1 = resource.createDefinition("testDef");
@@ -92,18 +92,18 @@ int main()
       icptr = smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(att->item(0));
       // Lets make sure the advance level information is correct! - first the
       // item should be using the definition's advance level information
-      if ((!icptr->usingDefinitionAdvanceLevel(0)) || (!icptr->usingDefinitionAdvanceLevel(1)))
+      if ((icptr->hasLocalAdvanceLevelInfo(0)) || (icptr->hasLocalAdvanceLevelInfo(1)))
       {
         std::cout
-          << "ERROR: IntComp1 did not return the proper usingDefinitionAdvanceLevel Information\n";
-        std::cout << "\tusingDefinitionAdvanceLevel(0) = " << icptr->usingDefinitionAdvanceLevel(0)
-                  << " usingDefinitionAdvanceLevel(1) = " << icptr->usingDefinitionAdvanceLevel(1)
+          << "ERROR: IntComp1 did not return the proper hasLocalAdvanceLevelInfo Information\n";
+        std::cout << "\thasLocalAdvanceLevelInfo(0) = " << icptr->hasLocalAdvanceLevelInfo(0)
+                  << " hasLocalAdvanceLevelInfo(1) = " << icptr->hasLocalAdvanceLevelInfo(1)
                   << "\n";
         status = -1;
       }
       else
       {
-        std::cout << "IntComp1 did return the proper usingDefinitionAdvanceLevel Information\n";
+        std::cout << "IntComp1 did return the proper hasLocalAdvanceLevelInfo Information\n";
       }
       if ((icptr->advanceLevel(0) != 1) || (icptr->advanceLevel(1) != 1))
       {
@@ -118,32 +118,31 @@ int main()
       }
 
       //Lets try changing the read and write values
-      icptr->setAdvanceLevel(0, 10);
-      icptr->setAdvanceLevel(1, 20);
-      if (!(icptr->usingDefinitionAdvanceLevel(0)) && icptr->usingDefinitionAdvanceLevel(1))
+      icptr->setLocalAdvanceLevel(0, 10);
+      icptr->setLocalAdvanceLevel(1, 20);
+      if (!(icptr->hasLocalAdvanceLevelInfo(0)) && icptr->hasLocalAdvanceLevelInfo(1))
       {
         std::cout << "ERROR: Pass 2: IntComp1 did not return the proper "
-                     "usingDefinitionAdvanceLevel Information\n";
-        std::cout << "\tusingDefinitionAdvanceLevel(0) = " << icptr->usingDefinitionAdvanceLevel(0)
-                  << " usingDefinitionAdvanceLevel(1) = " << icptr->usingDefinitionAdvanceLevel(1)
+                     "hasLocalAdvanceLevelInfo Information\n";
+        std::cout << "\thasLocalAdvanceLevelInfo(0) = " << icptr->hasLocalAdvanceLevelInfo(0)
+                  << " hasLocalAdvanceLevelInfo(1) = " << icptr->hasLocalAdvanceLevelInfo(1)
                   << "\n";
         status = -1;
       }
       else
       {
-        std::cout
-          << "Pass2: IntComp1 did return the proper usingDefinitionAdvanceLevel Information\n";
+        std::cout << "Pass2: IntComp1 did return the proper hasLocalAdvanceLevelInfo Information\n";
       }
       if ((icptr->advanceLevel(0) != 10) || (icptr->advanceLevel(1) != 20))
       {
-        std::cout << "ERROR: IntComp1 did not return the proper advanceLevel Information\n";
+        std::cout << "ERROR: Pass2: IntComp1 did not return the proper advanceLevel Information\n";
         std::cout << "\tadvanceLevel(0) = " << icptr->advanceLevel(0)
                   << " advanceLevel(1) = " << icptr->advanceLevel(1) << "\n";
         status = -1;
       }
       else
       {
-        std::cout << "IntComp1 did return the proper advanceLevel Information\n";
+        std::cout << "Pass2: IntComp1 did return the proper advanceLevel Information\n";
       }
 
       std::cout << "Found IntComp1 - value = " << icptr->valueAsString() << std::endl;

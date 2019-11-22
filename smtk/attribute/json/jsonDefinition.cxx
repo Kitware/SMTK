@@ -49,9 +49,15 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
   {
     j["Abstract"] = true;
   }
-  if (defPtr->advanceLevel())
+  // Does the Definition have explicit advance level information
+  if (defPtr->hasLocalAdvanceLevelInfo(0))
   {
-    j["AdvanceLevel"] = defPtr->advanceLevel();
+    j["AdvanceReadLevel"] = defPtr->localAdvanceLevel(0);
+  }
+
+  if (defPtr->hasLocalAdvanceLevelInfo(1))
+  {
+    j["AdvanceWriteLevel"] = defPtr->localAdvanceLevel(1);
   }
   if (defPtr->isUnique())
   { // true is the defPtrault
@@ -156,7 +162,20 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   result = j.find("AdvanceLevel");
   if (result != j.end())
   {
-    defPtr->setAdvanceLevel(*result);
+    defPtr->setLocalAdvanceLevel(*result);
+  }
+  else
+  {
+    result = j.find("AdvanceReadLevel");
+    if (result != j.end())
+    {
+      defPtr->setLocalAdvanceLevel(0, *result);
+    }
+    result = j.find("AdvanceWriteLevel");
+    if (result != j.end())
+    {
+      defPtr->setLocalAdvanceLevel(1, *result);
+    }
   }
 
   result = j.find("Unique");

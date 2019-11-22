@@ -56,6 +56,9 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
   , m_aboutToBeDeleted(false)
   , m_id(myId)
 {
+  m_hasLocalAdvanceLevelInfo[0] = false;
+  m_hasLocalAdvanceLevelInfo[1] = false;
+  m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
 }
 
 Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
@@ -69,6 +72,9 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
   , m_id(smtk::common::UUIDGenerator::instance().random())
   , m_includeIndex(0)
 {
+  m_hasLocalAdvanceLevelInfo[0] = false;
+  m_hasLocalAdvanceLevelInfo[1] = false;
+  m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
 }
 
 Attribute::~Attribute()
@@ -148,6 +154,45 @@ bool Attribute::isMemberOf(const std::string& category) const
 bool Attribute::isMemberOf(const std::vector<std::string>& categories) const
 {
   return m_definition->isMemberOf(categories);
+}
+
+void Attribute::setLocalAdvanceLevel(int mode, unsigned int level)
+{
+  if ((mode < 0) || (mode > 1))
+  {
+    return;
+  }
+  m_hasLocalAdvanceLevelInfo[mode] = true;
+  m_localAdvanceLevel[mode] = level;
+}
+
+void Attribute::unsetLocalAdvanceLevel(int mode)
+{
+  if ((mode < 0) || (mode > 1))
+  {
+    return;
+  }
+  m_hasLocalAdvanceLevelInfo[mode] = false;
+}
+
+unsigned int Attribute::advanceLevel(int mode) const
+{
+  // Any invalid mode returns mode = 0
+  if ((mode < 0) || (mode > 1))
+  {
+    mode = 0;
+  }
+  if (m_hasLocalAdvanceLevelInfo[mode])
+  {
+    return m_localAdvanceLevel[mode];
+  }
+
+  if (m_definition)
+  {
+    return m_definition->advanceLevel(mode);
+  }
+
+  return 0;
 }
 
 /**\brief Return an item given a string specifying a path to it.
