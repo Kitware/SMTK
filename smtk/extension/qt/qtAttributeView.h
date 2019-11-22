@@ -18,6 +18,9 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
+#include "smtk/operation/Observer.h"
+#include "smtk/operation/Operation.h"
+
 #include <QMap>
 #include <QModelIndex>
 
@@ -45,6 +48,8 @@ public:
   int currentViewBy();
   virtual void createNewAttribute(smtk::attribute::DefinitionPtr attDef);
   bool isEmpty() const override;
+
+  smtk::attribute::DefinitionPtr getCurrentDef() const;
 
   enum enumViewBy
   {
@@ -81,6 +86,7 @@ signals:
 protected:
   void createWidget() override;
   smtk::attribute::AttributePtr getAttributeFromItem(QTableWidgetItem* item);
+  smtk::attribute::Attribute* getRawAttributeFromItem(QTableWidgetItem* item);
   smtk::attribute::ItemPtr getAttributeItemFromItem(QTableWidgetItem* item);
 
   smtk::attribute::AttributePtr getSelectedAttribute();
@@ -104,6 +110,10 @@ protected:
     QTableWidget* wTable, int insertCol, const QString& title, int advancedlevel);
   // Determines if an alert icon should be displayed next to the attribute in the list
   void updateAttributeStatus(smtk::attribute::Attribute* att);
+  // This View needs to handle changes made to resources as a result of an operation.
+  // This method is used by the observation mechanism to address these changes
+  virtual int handleOperationEvent(const smtk::operation::Operation& op,
+    smtk::operation::EventType event, smtk::operation::Operation::Result result);
 
 private:
   qtAttributeViewInternals* Internals;

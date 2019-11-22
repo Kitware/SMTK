@@ -225,9 +225,13 @@ void qtModelEntityAttributeView::buildUI()
       smtkErrorMacro(smtk::io::Logger::instance(), "register selection source "
           << this->Internals->m_selectionSourceName << "failed. Already existed!");
     }
+    QPointer<qtModelEntityAttributeView> guardedObject(this);
     this->Internals->m_selectionObserverId = sel->observers().insert(
-      [this](const std::string& selectionSource, smtk::view::SelectionPtr sp) {
-        this->updateSelectedModelEntity(selectionSource, sp);
+      [guardedObject](const std::string& selectionSource, smtk::view::SelectionPtr sp) {
+        if (guardedObject != nullptr)
+        {
+          guardedObject->updateSelectedModelEntity(selectionSource, sp);
+        }
       },
       0, true, "qtModelEntityAttributeView: Change focus on selection.");
   }
