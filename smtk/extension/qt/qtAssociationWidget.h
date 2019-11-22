@@ -105,7 +105,7 @@ protected:
 
   // This widget needs to handle changes made to resources as a result of resources being removed.
   // This method is used by the observation mechanism to address this via the resource manager
-  void handleResourceEvent(
+  int handleResourceEvent(
     const smtk::resource::Resource& resource, smtk::resource::EventType event);
   // Used to determine if an alert icon should be displayed and why
   void updateAssociationStatus(const smtk::attribute::Attribute* att);

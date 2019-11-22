@@ -185,7 +185,8 @@ void qtGroupItem::updateItemData()
       this->Internals->ItemsTable->blockSignals(true);
       this->Internals->ItemsTable->clear();
       this->Internals->ItemsTable->setRowCount(0);
-      this->Internals->ItemsTable->setColumnCount(0);
+      this->Internals->ItemsTable->setColumnCount(1);
+      this->Internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
       this->Internals->ItemsTable->blockSignals(false);
     }
 
@@ -424,6 +425,7 @@ void qtGroupItem::addItemsToTable(int index)
     this->Internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     this->Internals->ItemsTable->setColumnCount(1); // for minus button
+    this->Internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
     frameLayout->addWidget(this->Internals->ItemsTable);
   }
 

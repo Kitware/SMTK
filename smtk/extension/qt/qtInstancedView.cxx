@@ -11,8 +11,13 @@
 #include "smtk/extension/qt/qtInstancedView.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/operators/Signal.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Observer.h"
+#include "smtk/operation/Operation.h"
 #include "smtk/view/View.h"
 
 #include <QCheckBox>
@@ -46,6 +51,7 @@ public:
   //QScrollArea *ScrollArea;
   QList<QPointer<qtAttribute> > AttInstances;
   bool m_isEmpty;
+  smtk::operation::Observers::Key m_observerKey;
 };
 
 qtBaseView* qtInstancedView::createViewWidget(const ViewInfo& info)
@@ -63,6 +69,14 @@ qtInstancedView::qtInstancedView(const ViewInfo& info)
 
 qtInstancedView::~qtInstancedView()
 {
+  if (this->Internals->m_observerKey.assigned())
+  {
+    auto opManager = this->uiManager()->operationManager();
+    if (opManager != nullptr)
+    {
+      opManager->observers().erase(this->Internals->m_observerKey);
+    }
+  }
   delete this->Internals;
 }
 
@@ -89,6 +103,22 @@ void qtInstancedView::createWidget()
   this->Widget->setLayout(layout);
 
   this->updateAttributeData();
+
+  auto opManager = uiManager()->operationManager();
+  QPointer<qtInstancedView> guardedObject(this);
+  if (opManager != nullptr)
+  {
+    this->Internals->m_observerKey = opManager->observers().insert(
+      [guardedObject](const smtk::operation::Operation& oper, smtk::operation::EventType event,
+        smtk::operation::Operation::Result result) -> int {
+        if (guardedObject == nullptr)
+        {
+          return 0;
+        }
+        return guardedObject->handleOperationEvent(oper, event, result);
+      },
+      "qtInstancedView: Refresh qtInstancedView when components are modified.");
+  }
 }
 
 void qtInstancedView::updateAttributeData()
@@ -190,6 +220,16 @@ void qtInstancedView::updateAttributeData()
         QObject::connect(attInstance, SIGNAL(modified()), this, SIGNAL(modified()));
         QObject::connect(
           attInstance, SIGNAL(itemModified(qtItem*)), this, SIGNAL(itemModified(qtItem*)));
+
+        QPointer<qtInstancedView> guardedObject(this);
+        connect(attInstance, &qtAttribute::itemModified, [guardedObject](qtItem* item) {
+          if (guardedObject != nullptr)
+          {
+            std::vector<std::string> items;
+            items.push_back(item->item()->name());
+            guardedObject->attributeChanged(item->item()->attribute(), items);
+          }
+        });
       }
     }
   }
@@ -222,4 +262,43 @@ bool qtInstancedView::isValid() const
 bool qtInstancedView::isEmpty() const
 {
   return this->Internals->m_isEmpty;
+}
+
+int qtInstancedView::handleOperationEvent(const smtk::operation::Operation& op,
+  smtk::operation::EventType event, smtk::operation::Operation::Result result)
+{
+  if (event != smtk::operation::EventType::DID_OPERATE)
+  {
+    return 0;
+  }
+
+  // Since the Signal Operation originates from a Qt Signal
+  // being fired we can ignore this
+  if (op.typeName() == smtk::common::typeName<smtk::attribute::Signal>())
+  {
+    return 0;
+  }
+
+  auto compItem = result->findComponent("modified");
+  std::size_t i, n = compItem->numberOfValues();
+  for (i = 0; i < n; i++)
+  {
+    if (compItem->isSet(i))
+    {
+      for (qtAttribute* qatt : this->Internals->AttInstances)
+      {
+        if (qatt->attribute() == compItem->value(i))
+        {
+          // Update the attribute's items
+          auto items = qatt->items();
+          for (auto item : items)
+          {
+            item->updateItemData();
+          }
+          break; // we don't have to keep looking for this ComponentPtr
+        }
+      }
+    }
+  }
+  return 0;
 }
