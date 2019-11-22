@@ -117,6 +117,7 @@ public:
   std::string label() const;
 
   const std::string& type() const { return m_type; }
+  void setType(const std::string& type) { m_type = type; }
 
   const std::string& iconName() const { return m_iconName; }
   void setIconName(const std::string& iname) { m_iconName = iname; }

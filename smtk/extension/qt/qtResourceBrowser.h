@@ -71,6 +71,9 @@ public:
   bool highlightOnHover() const;
   void setHighlightOnHover(bool highlight);
 
+  /// Return the string that represents the configuration for browser components
+  static const std::string& getJSONConfiguration() { return s_configurationJSON; }
+
 public slots:
   virtual void sendPanelSelectionToSMTK(
     const QItemSelection& selected, const QItemSelection& deselected);
@@ -97,6 +100,7 @@ protected:
 
   class Internal;
   Internal* m_p;
+  static std::string s_configurationJSON;
 };
 }
 }

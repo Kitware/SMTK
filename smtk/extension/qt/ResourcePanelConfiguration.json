@@ -1,7 +1,7 @@
 [
   {
     "Name": "ResourceBrowser",
-    "Type": "pqSMTKResourceBrowser",
+    "Type": "qtResourceBrowser",
     "Component": {
       "Name": "Details",
       "Attributes": {

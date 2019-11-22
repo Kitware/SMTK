@@ -143,9 +143,6 @@ list(APPEND sources
   ${resource_dock_sources}
   ${operation_dock_sources})
 
-# put contents of this file in a string in a header. It's not xml, but it still works.
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json" smtkResourcePanelJSON)
-
 smtk_add_plugin(smtkPQComponentsPlugin
   REGISTRAR
     smtk::extension::paraview::server::Registrar
