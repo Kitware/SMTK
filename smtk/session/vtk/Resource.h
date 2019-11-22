@@ -38,8 +38,8 @@ public:
   void setSession(const Session::Ptr&);
 
 protected:
-  Resource(const smtk::common::UUID&, smtk::resource::Manager::Ptr manager = nullptr);
-  Resource(smtk::resource::Manager::Ptr manager = nullptr);
+  Resource(const smtk::common::UUID&, smtk::resource::ManagerPtr manager = nullptr);
+  Resource(smtk::resource::ManagerPtr manager = nullptr);
 
   Session::Ptr m_session;
 };

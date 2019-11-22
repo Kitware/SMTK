@@ -29,9 +29,9 @@ namespace mesh
    This class is a facade for describing external data sets that consist of
    unstructured points and associated scalar values. While there is convenience
    API for converting arrays of coordinates and data into this format, the
-   general use of this class is to pass it a size <nPoints> and two functors
-   <coordinates> and <data>. <coordinates> is an I->R^3 function for accessing
-   the ith coordinate of the data set, and <data> is an I->R function for
+   general use of this class is to pass it a size \a nPoints and two functors
+   \a coordinates and \a data. \a coordinates is an I->R^3 function for accessing
+   the ith coordinate of the data set, and \a data is an I->R function for
    accessing the scalar value associated with the ith point.
   */
 class SMTKCORE_EXPORT PointCloud
@@ -47,7 +47,7 @@ public:
   {
   }
 
-  // Returns an invalid PointCloud.
+  /// Returns an invalid PointCloud.
   PointCloud()
     : PointCloud(0,
         [](std::size_t) {
@@ -59,7 +59,7 @@ public:
   {
   }
 
-  // Constructs a PointCloud with no blanking (all points are considered valid).
+  /// Constructs a PointCloud with no blanking (all points are considered valid).
   PointCloud(std::size_t nPoints,
     const std::function<std::array<double, 3>(std::size_t)>& coordinates,
     const std::function<double(std::size_t)>& data)
@@ -70,8 +70,8 @@ public:
   {
   }
 
-  // Constructs a PointCloud from arrays of coordinates and data. The arrays
-  // must remain in scope for the lifetime of the PointCloud.
+  /// Constructs a PointCloud from arrays of coordinates and data. The arrays
+  /// must remain in scope for the lifetime of the PointCloud.
   PointCloud(std::size_t nPoints, const double* const coordinates, const double* const data)
     : PointCloud(nPoints,
         [=](std::size_t i) {
@@ -82,8 +82,8 @@ public:
   {
   }
 
-  // Constructs a PointCloud from arrays of coordinates and data. The arrays
-  // must remain in scope for the lifetime of the PointCloud.
+  /// Constructs a PointCloud from arrays of coordinates and data. The arrays
+  /// must remain in scope for the lifetime of the PointCloud.
   PointCloud(std::size_t nPoints, const float* const coordinates, const float* const data)
     : PointCloud(nPoints,
         [=](std::size_t i) {
@@ -124,7 +124,7 @@ private:
   };
 
 public:
-  // Constructs a PointCloud from vectors of coordinates and data.
+  /// Constructs a PointCloud from vectors of coordinates and data.
   PointCloud(std::vector<double>&& coordinates, std::vector<double>&& data)
     : PointCloud(
         data.size(), Coordinates(coordinates), Data(data), [](std::size_t) { return true; })
@@ -141,8 +141,8 @@ public:
   }
   const std::function<double(std::size_t)>& data() const { return m_data; }
 
-  // Given an index into the structured data, determine whether or not the point
-  // is valid.
+  /// Given an index into the structured data, determine whether or not the point
+  /// is valid.
   bool containsIndex(std::size_t i) const { return m_valid(i); }
 
 protected:

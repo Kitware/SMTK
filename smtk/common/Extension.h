@@ -45,7 +45,7 @@
   *     AuxGeomFileTestExtension);
   * </pre>
   * Then, inside an executable, we can place: <pre>
-  *   #include "smtk/AutoInit.h"
+  *   \#include "smtk/AutoInit.h"
   *   smtkAutoInit(aux_geom_file_test_extension);
   * </pre>
   * and be guaranteed that the extension will be registered.

@@ -134,27 +134,39 @@ namespace io
 {
 }
 
-/**\brief Sessions to solid modeling kernels.
+/**\brief Sessions for solid modeling kernels.
   *
   */
 namespace session
 {
-/**\brief A session using the Common Geometry Module (Argonne).
+/**\brief A session for discrete.
   *
   */
-namespace cgm
+namespace discrete
 {
 }
-/**\brief A session that imports Exodus meshes.
+/**\brief A session that imports meshes.
   *
   */
-namespace exodus
+namespace mesh
 {
 }
-/**\brief A forwarding session that uses Remus.
+/**\brief A session for multiscale.
   *
   */
-namespace remote
+namespace multiscale
+{
+}
+/**\brief A session for gaussian oscillators in a volume.
+  *
+  */
+namespace oscillator
+{
+}
+/**\brief A session for planar polygonal model geometry.
+  *
+  */
+namespace polygon
 {
 }
 }
@@ -167,19 +179,60 @@ namespace remote
 namespace extension
 {
 
+/**\brief Access the cloud using cumulus.
+  *
+  */
+namespace cumulus
+{
+}
 /**\brief A simple mesh generator.
   *
   */
 namespace delaunay
 {
 }
-}
-
-/**\brief Representations of SMTK components in user interfaces.
+/**\brief matplotlib.
   *
   */
-namespace view
+namespace matplotlib
 {
+}
+/**\brief Expose algorithms for creating models from image data.
+  *
+  */
+namespace opencv
+{
+}
+/**\brief Extensions that expose SMTK data in ParaView.
+  *
+  */
+namespace paraview
+{
+}
+/**\brief Extensions that expose SMTK data in Qt UI components.
+  *
+  */
+namespace qt
+{
+}
+/**\brief Remote meshing via interprocess communication.
+  *
+  */
+namespace remus
+{
+}
+/**\brief Use VTK instead of ParaView.
+  *
+  */
+namespace vtk
+{
+}
+/**\brief Expose algorithms for creating models from image data.
+  *
+  */
+namespace vxl
+{
+}
 }
 }
 

@@ -18,12 +18,12 @@ namespace session
 namespace discrete
 {
 
-Resource::Resource(const smtk::common::UUID& id, resource::Manager::Ptr manager)
+Resource::Resource(const smtk::common::UUID& id, smtk::resource::Manager::Ptr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::model::Resource>(id, manager)
 {
 }
 
-Resource::Resource(resource::Manager::Ptr manager)
+Resource::Resource(smtk::resource::Manager::Ptr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::model::Resource>(manager)
 {
 }

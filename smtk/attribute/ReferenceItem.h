@@ -249,7 +249,7 @@ public:
   virtual std::string valueAsString() const;
   /**\brief Return the value of the \a i-th component as a string.
     *
-    * This returns a string of the form "[" <UUID> "," <UUID> "]" where
+    * This returns a string of the form "[" {UUID} "," {UUID} "]" where
     * the first UUID is the component's resource and the second UUID is
     * the component's.
     */

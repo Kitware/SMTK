@@ -29,7 +29,8 @@ Session::Session()
 {
 }
 
-void Session::addTopology(const smtk::session::mesh::Resource::Ptr& modelResource, Topology t)
+void Session::addTopology(
+  const std::shared_ptr<smtk::session::mesh::Resource>& modelResource, Topology t)
 {
   std::vector<Topology>::iterator it =
     find_if(m_topologies.begin(), m_topologies.end(), [&](const Topology& t) {
@@ -47,7 +48,7 @@ void Session::addTopology(const smtk::session::mesh::Resource::Ptr& modelResourc
   }
 }
 
-Topology* Session::topology(const smtk::session::mesh::Resource::Ptr& modelResource)
+Topology* Session::topology(const std::shared_ptr<smtk::session::mesh::Resource>& modelResource)
 {
   std::vector<Topology>::iterator it =
     find_if(m_topologies.begin(), m_topologies.end(), [&](const Topology& t) {
@@ -57,7 +58,8 @@ Topology* Session::topology(const smtk::session::mesh::Resource::Ptr& modelResou
   return (it == m_topologies.end() ? nullptr : &(*it));
 }
 
-Topology* Session::topology(const std::shared_ptr<const Resource>& modelResource)
+Topology* Session::topology(
+  const std::shared_ptr<const smtk::session::mesh::Resource>& modelResource)
 {
   return this->topology(std::const_pointer_cast<Resource>(modelResource));
 }

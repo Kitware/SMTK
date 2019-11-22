@@ -40,9 +40,9 @@ public:
   virtual ~Session() {}
 
   void addTopology(Topology t) { m_topologies.push_back(t); }
-  void addTopology(const std::shared_ptr<Resource>& modelResource, Topology t);
-  Topology* topology(const std::shared_ptr<Resource>& modelResource);
-  Topology* topology(const std::shared_ptr<const Resource>& modelResource);
+  void addTopology(const std::shared_ptr<smtk::session::mesh::Resource>& modelResource, Topology t);
+  Topology* topology(const std::shared_ptr<smtk::session::mesh::Resource>& modelResource);
+  Topology* topology(const std::shared_ptr<const smtk::session::mesh::Resource>& modelResource);
 
   std::string defaultFileExtension(const smtk::model::Model&) const override { return ""; }
 

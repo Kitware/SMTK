@@ -9,7 +9,7 @@
 //=========================================================================
 // .NAME Component.h - Abstract base class for SMTK Resource Components
 // .SECTION Description
-//   A SMTK Component is a peice of a Resource such as an Attribute, ModelEntity,
+//   A SMTK Component is a piece of a Resource such as an Attribute, ModelEntity,
 //  or MeshEntity
 // .SECTION See Also
 

@@ -571,7 +571,6 @@ smtk::attribute::ConstItemPtr ValueItem::findInternal(
   * any of *this* item's children that are ValueItems
   * will be asked to search their children recursively.
   */
-///@{
 smtk::attribute::ItemPtr ValueItem::findChild(const std::string& cname, SearchStyle style)
 {
   return this->findInternal(cname, style);
@@ -582,4 +581,3 @@ smtk::attribute::ConstItemPtr ValueItem::findChild(
 {
   return this->findInternal(cname, style);
 }
-///@}

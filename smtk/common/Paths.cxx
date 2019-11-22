@@ -119,13 +119,13 @@ std::vector<std::string> Paths::pruneInvalidDirectories(const std::vector<std::s
   return result;
 }
 
-/// Return the directory containing the library that describes <func>.
+/// Return the directory containing the library that describes \a func.
 std::string Paths::pathToLibraryContainingFunction(void (*func)(void))
 {
   return boost::dll::symbol_location(*func).parent_path().string();
 }
 
-// Return the directory containing this library.
+/// Return the directory containing this library.
 std::string Paths::pathToThisLibrary()
 {
   return boost::dll::symbol_location(smtk::common::Paths::pathToThisLibrary).parent_path().string();
@@ -233,7 +233,6 @@ bool Paths::update()
 // Paths' static-member cache directories themselves.
 #if !defined(_WIN32) || defined(__CYGWIN__)
     PathsHelperUnix unixHelper;
-#include "smtk/common/PathsHelperUnix.h"
 #ifdef __APPLE__
     PathsHelperMacOSX macOSXHelper;
 #endif

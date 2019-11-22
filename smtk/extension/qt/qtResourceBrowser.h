@@ -98,6 +98,7 @@ protected:
   virtual void resetHover(smtk::resource::ComponentSet& add, smtk::resource::ComponentSet& del);
   bool eventFilter(QObject*, QEvent*) override;
 
+  /// Internal in @file qtResourceBrowserP.h
   class Internal;
   Internal* m_p;
   static std::string s_configurationJSON;

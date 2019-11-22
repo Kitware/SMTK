@@ -42,22 +42,24 @@ public:
   Launchers(const LauncherMap::mapped_type&);
 
   /// Add a method for launching operations, paired with its associated key.
-  std::pair<LauncherMap::iterator, bool> insert(const LauncherMap::value_type&);
+  std::pair<Launchers::LauncherMap::iterator, bool> insert(
+    const Launchers::LauncherMap::value_type&);
 
   /// Add a method for launching operations, paired with its associated key.
-  std::pair<LauncherMap::iterator, bool> emplace(LauncherMap::value_type&&);
+  std::pair<Launchers::LauncherMap::iterator, bool> emplace(Launchers::LauncherMap::value_type&&);
 
   /// Access a method for launching operations via its associated key.
-  LauncherMap::mapped_type& operator[](const LauncherMap::key_type&);
+  Launchers::LauncherMap::mapped_type& operator[](const Launchers::LauncherMap::key_type&);
 
   /// Remove a method for launching operations via its associated key.
-  LauncherMap::size_type erase(const LauncherMap::key_type&);
+  Launchers::LauncherMap::size_type erase(const Launchers::LauncherMap::key_type&);
 
   /// Launch an operation using the default launch method.
   std::future<Operation::Result> operator()(const Operation::Ptr&);
 
   /// Launch an operation using the launch method associated to the input key.
-  std::future<Operation::Result> operator()(const Operation::Ptr&, const LauncherMap::key_type&);
+  std::future<Operation::Result> operator()(
+    const Operation::Ptr&, const Launchers::LauncherMap::key_type&);
 
 protected:
   LauncherMap m_launchers;

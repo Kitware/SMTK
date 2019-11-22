@@ -49,7 +49,7 @@ public:
   bool insert(const std::string& filePath, const std::string& archivedPath);
 
   /// Serialize the files that comprise the archive to a contiguous block of
-  /// memory on disk (located at <archivePath>). Return true upon success.
+  /// memory on disk (located at \a archivePath ). Return true upon success.
   bool archive() const;
 
   /// Deserialize the files that comprise the archive into a temporary

@@ -93,7 +93,7 @@ std::size_t DateTimeItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 
-bool DateTimeItem::setValue(size_t element, const ::smtk::common::DateTimeZonePair& value)
+bool DateTimeItem::setValue(std::size_t element, const ::smtk::common::DateTimeZonePair& value)
 {
   ConstDateTimeItemDefinitionPtr def = this->itemDefinition();
   if (def->isValueValid(value))

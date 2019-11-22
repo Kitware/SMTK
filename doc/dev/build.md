@@ -20,7 +20,7 @@ In order to build SMTK you must have
 + A modern C++ compiler  that supports C++11 features
  + gcc 4.8 or newer
  + Xcode 7.1 or newer
- + Visual Studio 2013 64 bit or newer  
+ + Visual Studio 2013 64 bit or newer
 + [CMake](http://cmake.org) 3.5 or newer
 + [Boost](http://boost.org) 1.60.0 or newer
 
@@ -57,7 +57,10 @@ If you want to build the documentation you will need
 + [breathe](http://breathe.readthedocs.org/en/latest/) version 3.1 or newer,
 + [doxylink](https://pypi.python.org/pypi/sphinxcontrib-doxylink) version 1.3 or newer,
 + [actdiag](https://pypi.python.org/pypi/sphinxcontrib-actdiag) version 1.0 or newer, and
-+ optionally [sphinx_rtd_theme](https://docs.readthedocs.org/en/latest/theme.html) for a much-improved appearance.
++ optionally [sphinx_rtd_theme](https://pypi.org/project/sphinx-rtd-theme/) for a much-improved appearance.
++ Ubuntu:
+  + `sudo apt-get install doxygen graphviz`
+  + `pip install -U Sphinx Pygments breathe sphinxcontrib-doxylink sphinxcontrib-actdiag sphinx-rtd-theme`
 
 In order to obtain the testing data used by SMTK's data directory, you will
 need to use [git-lfs](https://git-lfs.github.com/). Once you have it available

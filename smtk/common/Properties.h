@@ -70,31 +70,31 @@ public:
   PropertiesOfType& operator=(const PropertiesOfType&) = delete;
   PropertiesOfType& operator=(PropertiesOfType&&) = delete;
 
-  /// Check whether a property associated with <key> is present.
+  /// Check whether a property associated with \a key is present.
   bool contains(const std::string& key) const { return (m_data.find(key) != m_data.end()); }
 
-  /// Insert (<key>, <value>) into the container.
+  /// Insert (\a key, \a value ) into the container.
   bool insert(const std::string& key, const Type& value)
   {
     return m_data.insert(std::make_pair(key, value)).second;
   }
 
-  /// Emplace (<key>, <value>) into the container.
+  /// Emplace (\a key, \a value ) into the container.
   bool emplace(const std::string& key, Type&& value)
   {
     return m_data.emplace(std::make_pair(key, std::move(value))).second;
   }
 
-  /// Erase property indexed by <key> from the container.
+  /// Erase property indexed by \a key from the container.
   void erase(const std::string& key) { m_data.erase(key); }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   Type& operator[](const std::string& key) { return m_data[key]; }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   Type& at(const std::string& key) { return m_data.at(key); }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   const Type& at(const std::string& key) const { return m_data.at(key); }
 
   /// Access the class's underlying data.
@@ -145,7 +145,7 @@ class SMTKCORE_EXPORT PropertiesContainer
 public:
   virtual ~PropertiesContainer() = 0;
 
-  /// Check whether a property of type <Type> associated with <key> is present.
+  /// Check whether a property of type \a Type associated with \a key is present.
   /// On average, this method has constant complexity and can therefore be used
   /// in conjunction with at() for conditional queries.
   template <typename Type>
@@ -160,21 +160,21 @@ public:
     return static_cast<const PropertiesOfType<Type>&>(*it->second).contains(key);
   }
 
-  /// Insert (<Type>, <key>, <value>) into the container.
+  /// Insert (\a Type, \a key, \a value ) into the container.
   template <typename Type>
   bool insert(const std::string& key, const Type& value)
   {
     return get<Type>().insert(key, value);
   }
 
-  /// Emplace (<Type>, <key>, <value>) into the container.
+  /// Emplace (\a Type, \a key, \a value ) into the container.
   template <typename Type>
   bool emplace(const std::string& key, Type&& value)
   {
     return get<Type>().emplace(key, std::move(value));
   }
 
-  /// Erase property of type <Type> indexed by <key> from the container.
+  /// Erase property of type \a Type indexed by \a key from the container.
   template <typename Type>
   void erase(const std::string& key)
   {
@@ -182,7 +182,7 @@ public:
     property.erase(key);
   }
 
-  /// Access property of type <Type> indexed by <key>.
+  /// Access property of type \a Type indexed by \a key.
   /// On average, this method has constant complexity and can therefore be used
   /// in conjunction with contains() for conditional queries.
   template <typename Type>
@@ -191,7 +191,7 @@ public:
     return get<Type>().at(key);
   }
 
-  /// Access property of type <Type> indexed by <key>.
+  /// Access property of type \a Type indexed by \a key.
   /// On average, this method has constant complexity and can therefore be used
   /// in conjunction with contains() for conditional queries.
   template <typename Type>
@@ -200,7 +200,7 @@ public:
     return get<Type>().at(key);
   }
 
-  /// Access properties of type <Type>.
+  /// Access properties of type \a Type.
   template <typename Type>
   PropertiesOfType<Type>& get()
   {
@@ -214,7 +214,7 @@ public:
     return static_cast<PropertiesOfType<Type>&>(*it->second);
   }
 
-  /// Access properties of type <Type>.
+  /// Access properties of type \a Type.
   template <typename Type>
   const PropertiesOfType<Type>& get() const
   {
@@ -227,7 +227,7 @@ public:
     return static_cast<const PropertiesOfType<Type>&>(*it->second);
   }
 
-  /// Check whether property type <Type> is supported.
+  /// Check whether property type \a Type is supported.
   template <typename Type>
   bool hasPropertyType() const
   {

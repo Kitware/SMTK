@@ -29,7 +29,7 @@ namespace common
 {
 /// A basic thread pool that executes functors in separate threads. It accepts
 /// the number of threads to build at construction, and waits for all tasks to
-/// complete before being destroyed. The <ReturnType> is a default-constructible
+/// complete before being destroyed. The \a ReturnType is a default-constructible
 /// type that tasks return via std::future.
 template <typename ReturnType = void>
 class ThreadPool
@@ -39,7 +39,7 @@ class ThreadPool
     "Templated return type must be void or a default constructible type");
 
 public:
-  /// Initialize thread pool with <maxThreads> threads spawned to execute tasks.
+  /// Initialize thread pool with \a maxThreads threads spawned to execute tasks.
   ThreadPool(unsigned int maxThreads = 0);
   virtual ~ThreadPool();
 

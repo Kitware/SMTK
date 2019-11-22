@@ -37,10 +37,10 @@ namespace extension
   * is union of all of the selected Analyses' categories.
   *
   * The following is an example of a Analysis View:
-  *
+  * ```
   * <View Type="Analysis" Title="Analysis" AnalysisAttributeName="truchasAnalysis" AnalysisAttributeType="truchasAnalysisDefinition">
   * </View>
-  *
+  * ```
   * AnalysisAttributeType is the name of the Attribute Definition the view will create to represent the
   * Analysis Structure (if needed)
   *

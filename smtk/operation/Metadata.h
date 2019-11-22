@@ -25,9 +25,11 @@ namespace smtk
 {
 namespace operation
 {
-/// Operations are registered to an operation manager at runtime with an instance
-/// of smtk::operation::Metadata. Instances of this class must provide
-/// <typeName>, a unique (to the manager) string used to describe the operation
+/// @brief Operations are registered to an operation manager at runtime with an instance
+/// of smtk::operation::Metadata.
+///
+/// Instances of this class must provide
+/// \a typeName, a unique (to the manager) string used to describe the operation
 /// within the manager. They must also provide a functor for the creation of the
 /// operation.
 class SMTKCORE_EXPORT Metadata

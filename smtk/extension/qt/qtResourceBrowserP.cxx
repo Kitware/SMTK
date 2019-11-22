@@ -24,6 +24,7 @@
 
 using namespace smtk::extension;
 
+/// @relates smtk::extension::qtResourceBrowser::Internal
 qtResourceBrowser::Internal::Internal()
   : m_container(nullptr)
   , m_layout(nullptr)
@@ -37,6 +38,7 @@ qtResourceBrowser::Internal::Internal()
 {
 }
 
+/// @relates smtk::extension::qtResourceBrowser::Internal
 qtResourceBrowser::Internal::~Internal()
 {
   // Unregister our decorator before we become invalid.
@@ -46,6 +48,7 @@ qtResourceBrowser::Internal::~Internal()
   delete m_container;
 }
 
+/// @relates smtk::extension::qtResourceBrowser::Internal
 void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   const smtk::view::PhraseModelPtr& phraseModel, const std::string& viewName,
   QAbstractItemModel* qmodel, QWidget* parent)
@@ -122,6 +125,7 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
     SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));
 }
 
+/// @relates smtk::extension::qtResourceBrowser::Internal
 qtDescriptivePhraseModel* qtResourceBrowser::Internal::descriptivePhraseModel() const
 {
   auto dpmodel = dynamic_cast<qtDescriptivePhraseModel*>(m_model.data());
@@ -136,6 +140,7 @@ qtDescriptivePhraseModel* qtResourceBrowser::Internal::descriptivePhraseModel() 
   return dpmodel;
 }
 
+/// @relates smtk::extension::qtResourceBrowser::Internal
 void qtResourceBrowser::Internal::setDescriptivePhraseModel(QAbstractItemModel* qmodel)
 {
   m_model = qmodel;

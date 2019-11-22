@@ -43,7 +43,7 @@ XmlDocV2Parser::~XmlDocV2Parser()
 {
 }
 
-bool XmlDocV2Parser::canParse(xml_document& doc)
+bool XmlDocV2Parser::canParse(pugi::xml_document& doc)
 {
   // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeSystem");
@@ -67,7 +67,7 @@ bool XmlDocV2Parser::canParse(xml_document& doc)
   return true;
 }
 
-bool XmlDocV2Parser::canParse(xml_node& node)
+bool XmlDocV2Parser::canParse(pugi::xml_node& node)
 {
   // Check the name of the node
   std::string name = node.name();
@@ -91,13 +91,13 @@ bool XmlDocV2Parser::canParse(xml_node& node)
   return true;
 }
 
-xml_node XmlDocV2Parser::getRootNode(xml_document& doc)
+pugi::xml_node XmlDocV2Parser::getRootNode(pugi::xml_document& doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeSystem");
   return amnode;
 }
 
-void XmlDocV2Parser::process(xml_document& doc)
+void XmlDocV2Parser::process(pugi::xml_document& doc)
 {
   // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeSystem");

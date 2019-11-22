@@ -39,7 +39,7 @@ to be `priority:low`.
 `component:...`
 ---------------
 
-SMTK is composed of several different components. These labels are associated with Issues to identify the SMTK component associated with the issue.  For example `component:attribute_resource refers to SMTK's attribute resource while component:gui would refers to SMTK's Qt GUI extensions.
+SMTK is composed of several different components. These labels are associated with Issues to identify the SMTK component associated with the issue.  For example `component:attribute_resource` refers to SMTK's attribute resource while `component:gui` would refers to SMTK's Qt GUI extensions.
 
 `triage:...`
 --------------

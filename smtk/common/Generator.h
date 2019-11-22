@@ -23,24 +23,26 @@ namespace smtk
 namespace common
 {
 
-/// Given an input type <Input> and a desired output type <Output>, the
-/// following class templates describe a class Generator<Input, Output> for
+///@file Generator.h @brief Generator templates.
+///
+/// Given an input type `<Input>` and a desired output type `<Output>`, the
+/// following class templates describe a class `Generator<Input, Output>` for
 /// generating an instance of the Output type given the Input type. The output
 /// type must have a default constructor; this value will be returned when no
 /// conditions for generation have been satisfied. Here is an example of an
 /// implementation that accepts std::string and outputs type Foo:
 ///
 /// (GenerateFoo_1.h)
-///
+/// ```
 /// class GenerateFoo_1 : public GeneratorType<std::string, Foo, GenerateFoo_1>
 /// {
 /// public:
 ///   bool valid(const std::string&) const override;
 ///   Foo operator()(const std::string&) override;
 /// };
-///
+/// ```
 /// (GenerateFoo_1.cxx)
-///
+/// ```
 /// namespace
 /// {
 /// static bool registered_Foo_1 = GenerateFoo_1::registerClass();
@@ -55,9 +57,9 @@ namespace common
 /// {
 ///   return <a generated Foo>
 /// }
-///
+/// ```
 /// (GenerateFoo.h)
-///
+/// ```
 /// #ifndef EXPORT
 /// extern
 /// #endif
@@ -68,22 +70,23 @@ namespace common
 /// public:
 ///   virtual ~GenerateFoo();
 /// };
-///
+/// ```
 /// (GenerateFoo.cxx)
-///
+/// ```
 /// template class Generator<std::string, Foo>;
 ///
 /// GenerateFoo::~GenerateFoo()
 /// {
 /// }
-///
+/// ```
 /// (Implementation.cxx)
-///
+/// ```
 /// ...
 /// std::string foo_string = <input for GenerateFoo_1>;
 /// GenerateFoo generateFoo;
 /// Foo foo = generateFoo(foo_string);
 /// ...
+/// ```
 
 namespace detail
 {
@@ -92,7 +95,9 @@ struct NullGeneratorBase
 };
 }
 
-/// Base for all generators. Describes the two methods used for generator
+///@brief Base for all generators.
+///
+/// Describes the two methods used for generator
 /// selection and object generation.
 template <class Input, class Output, class Base = detail::NullGeneratorBase>
 class GeneratorBase : public Base
@@ -120,7 +125,9 @@ public:
   virtual Output operator()(const Input&) = 0;
 };
 
-/// Interface generator class. Implements the base methods valid() and the
+///@brief Interface generator class.
+///
+/// Implements the base methods valid() and the
 /// function call operator as a loop over the registered GeneratorTypes. Also
 /// contains the static set of generator types.
 template <class Input, class Output, class Base = detail::NullGeneratorBase>
@@ -140,10 +147,10 @@ public:
   /// valid() calls return true; otherwise, return false.
   bool valid(const Input&) const override;
 
-  /// Loop over registered generators and return an Output instance from the
+  /// Loop over registered generators and return an \a Output instance from the
   /// first generator (a) whose valid() call returns true, and (b) that
   /// successfully creates an
-  /// instance of Output (without throwing).
+  /// instance of \a Output (without throwing).
   Output operator()(const Input&) override;
 
 protected:
@@ -215,8 +222,9 @@ Output Generator<Input, Output, Base>::operator()(const Input& input)
   return output;
 }
 
-/// Base class for specific generator types. Uses CRTP to simplify the process
-/// of registration to the interface class.
+/// @brief Base class for specific generator types.
+///
+/// Uses CRTP to simplify the process of registration to the interface class.
 template <class Input, class Output, class Self, class Base = detail::NullGeneratorBase>
 class GeneratorType : public GeneratorBase<Input, Output, Base>
 {

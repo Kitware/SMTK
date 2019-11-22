@@ -22,9 +22,11 @@ namespace smtk
 {
 namespace io
 {
+/// Mesh IO
 namespace mesh
 {
 
+/// Mesh subset types
 enum class Subset : unsigned int
 {
   EntireResource,

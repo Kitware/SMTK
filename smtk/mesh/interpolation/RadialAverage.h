@@ -30,7 +30,7 @@ class StructuredGrid;
 
    Given an external data set of either structured or unstructured data, this
    functor is a continuous function from R^3->R whose values are computed as the
-   average of the points in the data set within a cylinder of radius <radius>
+   average of the points in the data set within a cylinder of radius \a radius
    axis-aligned with the z axis and centered at the input point. Values from the
    input data set can be masked using the prefilter functor.
   */

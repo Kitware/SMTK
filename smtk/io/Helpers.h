@@ -30,7 +30,7 @@ public:
   /**\brief Given 2 directories (which may not yet exist), determine
     * as far as the filesystem will let us whether \a dirB is a subdirectory of \a dirA.
     *
-    * When returning true, \a bRelativeToA is set to the relative path of \bb.
+    * When returning true, \a bRelativeToA is set to the relative path of \a dirB.
     */
   static bool isDirectoryASubdirectory(
     const std::string& dirA, const std::string& dirB, std::string& bRelativeToA);

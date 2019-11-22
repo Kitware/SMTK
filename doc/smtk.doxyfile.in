@@ -627,7 +627,7 @@ WARNINGS               = YES
 # for undocumented members. If EXTRACT_ALL is set to YES then this flag will
 # automatically be disabled.
 
-WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_UNDOCUMENTED   = NO
 
 # If WARN_IF_DOC_ERROR is set to YES, doxygen will generate warnings for
 # potential errors in the documentation, such as not documenting some
@@ -671,37 +671,70 @@ WARN_LOGFILE           =
 INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk" \
   "@smtk_SOURCE_DIR@/smtk/attribute" \
-  "@smtk_SOURCE_DIR@/smtk/session" \
-  "@smtk_SOURCE_DIR@/smtk/session/exodus" \
-  "@smtk_SOURCE_DIR@/smtk/session/remote" \
-  "@smtk_SOURCE_DIR@/smtk/session/cgm" \
-  "@smtk_SOURCE_DIR@/smtk/session/discrete" \
-  "@smtk_SOURCE_DIR@/smtk/session/discrete/operation" \
-  "@smtk_SOURCE_DIR@/smtk/session/discrete/kernel" \
+  "@smtk_SOURCE_DIR@/smtk/attribute/operators" \
   "@smtk_SOURCE_DIR@/smtk/common" \
   "@smtk_SOURCE_DIR@/smtk/common/testing/cxx" \
-  "@smtk_SOURCE_DIR@/smtk/mesh" \
-  "@smtk_SOURCE_DIR@/smtk/model" \
-  "@smtk_SOURCE_DIR@/smtk/model/testing/cxx" \
-  "@smtk_SOURCE_DIR@/smtk/operation" \
-  "@smtk_SOURCE_DIR@/smtk/resource" \
+  "@smtk_SOURCE_DIR@/smtk/extension/cumulus" \
+  "@smtk_SOURCE_DIR@/smtk/extension/cumulus/girderfilebrowser" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/io" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/worker" \
+  "@smtk_SOURCE_DIR@/smtk/extension/matplotlib" \
+  "@smtk_SOURCE_DIR@/smtk/extension/opencv/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/opencv/qt" \
+  "@smtk_SOURCE_DIR@/smtk/extension/opencv/vtk" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/server" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/appcomponents" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/operators" \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
   "@smtk_SOURCE_DIR@/smtk/extension/qt" \
+  "@smtk_SOURCE_DIR@/smtk/extension/qt/examples/cxx" \
+  "@smtk_SOURCE_DIR@/smtk/extension/remus" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vxl/operators" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vxl/vtk" \
+  "@smtk_SOURCE_DIR@/smtk/extension/vxl/widgets" \
   "@smtk_SOURCE_DIR@/smtk/io" \
   "@smtk_SOURCE_DIR@/smtk/io/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/core" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/interpolation" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/moab" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/operators" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/resource" \
+  "@smtk_SOURCE_DIR@/smtk/mesh/utility" \
+  "@smtk_SOURCE_DIR@/smtk/model" \
+  "@smtk_SOURCE_DIR@/smtk/model/operators" \
+  "@smtk_SOURCE_DIR@/smtk/model/testing/cxx" \
+  "@smtk_SOURCE_DIR@/smtk/operation" \
+  "@smtk_SOURCE_DIR@/smtk/operation/groups" \
+  "@smtk_SOURCE_DIR@/smtk/operation/operators" \
+  "@smtk_SOURCE_DIR@/smtk/project" \
+  "@smtk_SOURCE_DIR@/smtk/resource" \
+  "@smtk_SOURCE_DIR@/smtk/session" \
+  "@smtk_SOURCE_DIR@/smtk/session/discrete" \
+  "@smtk_SOURCE_DIR@/smtk/session/discrete/operation" \
+  "@smtk_SOURCE_DIR@/smtk/session/discrete/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/discrete/kernel" \
+  "@smtk_SOURCE_DIR@/smtk/session/mesh" \
+  "@smtk_SOURCE_DIR@/smtk/session/mesh/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/multiscale" \
+  "@smtk_SOURCE_DIR@/smtk/session/multiscale/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/oscillator" \
+  "@smtk_SOURCE_DIR@/smtk/session/oscillator/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/polygon" \
+  "@smtk_SOURCE_DIR@/smtk/session/polygon/operators" \
+  "@smtk_SOURCE_DIR@/smtk/session/vtk" \
+  "@smtk_SOURCE_DIR@/smtk/session/vtk/operators" \
   "@smtk_SOURCE_DIR@/smtk/simulation" \
   "@smtk_SOURCE_DIR@/smtk/view" \
+  "@smtk_SOURCE_DIR@/smtk/workflow" \
   "@smtk_BINARY_DIR@/smtk" \
   "@smtk_BINARY_DIR@/smtk/attribute" \
-  "@smtk_BINARY_DIR@/smtk/cgm" \
-  "@smtk_BINARY_DIR@/smtk/mesh" \
-  "@smtk_BINARY_DIR@/smtk/model" \
-  "@smtk_BINARY_DIR@/smtk/model/testing" \
+  "@smtk_BINARY_DIR@/smtk/common" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/server" \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/appcomponents" \
@@ -709,10 +742,10 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
   "@smtk_BINARY_DIR@/smtk/extension/qt" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk" \
-  "@smtk_BINARY_DIR@/smtk/remote" \
-  "@smtk_BINARY_DIR@/smtk/common" \
   "@smtk_BINARY_DIR@/smtk/io" \
-  "@smtk_BINARY_DIR@/smtk/io/mesh" \
+  "@smtk_BINARY_DIR@/smtk/mesh" \
+  "@smtk_BINARY_DIR@/smtk/model" \
+  "@smtk_BINARY_DIR@/smtk/model/testing" \
   "@smtk_BINARY_DIR@/smtk/operation" \
   "@smtk_BINARY_DIR@/smtk/resource" \
   "@smtk_BINARY_DIR@/smtk/simulation" \

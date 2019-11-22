@@ -31,6 +31,7 @@ namespace model
 using namespace tao::pegtl;
 
 // clang-format off
+/// @cond dox_ignore
 // -----
 // This fragment schnorked shamelessly from PEGTL's example double:
 // Copyright (c) 2014-2018 Dr. Colin Hirsch and Daniel Frey
@@ -293,9 +294,10 @@ struct SMTKCORE_EXPORT FilterGrammar :
     >
   > {};
 
+/// @endcond
 // clang-format on
 
-// Actions on the state in response to encountered grammar.
+/// Actions on the state in response to encountered grammar.
 template <typename Rule>
 struct SMTKCORE_EXPORT FilterAction : nothing<Rule>
 {

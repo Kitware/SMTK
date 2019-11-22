@@ -115,13 +115,13 @@ public:
   template <typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const std::string&) const;
 
-  /// Returns a set of resources that have a given type name <typeName>.
+  /// Returns a set of resources that have a given type name.
   std::set<ResourcePtr> find(const std::string&);
 
   /// Returns a set of resources that have a given type index..
   std::set<ResourcePtr> find(const Resource::Index&);
 
-  /// Returns a set of resources that are of the type <ResourceType>.
+  /// Returns a set of resources that are of the type \a ResourceType.
   template <typename ResourceType>
   std::set<smtk::shared_ptr<ResourceType> > find();
 

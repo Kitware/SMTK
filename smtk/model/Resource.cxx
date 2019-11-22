@@ -1820,7 +1820,7 @@ EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, const 
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
-/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const std::vector< double >& pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
@@ -1828,7 +1828,7 @@ EntityRefArray Resource::findEntitiesByProperty(const std::string& pname, const 
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 
-/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
+/*! \fn template<typename Collection> Collection Resource::findEntitiesByPropertyAs(const std::string& pname, const std::vector< std::string >& pval)
  * \brief Return entities with a property named \a pname whose values match the given \a pval.
  */
 //@}

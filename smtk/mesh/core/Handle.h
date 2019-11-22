@@ -53,7 +53,7 @@ SMTKCORE_EXPORT const_element_iterator rangeElementsBegin(const HandleRange&);
 /// Return an iterator to the last element in the range
 SMTKCORE_EXPORT const_element_iterator rangeElementsEnd(const HandleRange&);
 
-/// Given a handle range and an index <i>, return the i-th handle in the range
+/// Given a handle range and an index \a i, return the i-th handle in the range
 SMTKCORE_EXPORT Handle rangeElement(const HandleRange&, std::size_t);
 
 /// Return true if the handle is contained within the handle range

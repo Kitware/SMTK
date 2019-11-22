@@ -149,7 +149,7 @@ bool ValueItemTemplate<DataT>::setDefinition(smtk::attribute::ConstItemDefinitio
 }
 
 template <typename DataT>
-bool ValueItemTemplate<DataT>::setValue(size_t element, const DataT& val)
+bool ValueItemTemplate<DataT>::setValue(std::size_t element, const DataT& val)
 {
   const DefType* def = static_cast<const DefType*>(this->definition().get());
   if (def->isDiscrete())

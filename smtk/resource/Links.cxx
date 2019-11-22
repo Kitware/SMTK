@@ -223,7 +223,7 @@ PersistentObjectSet Links::linkedTo(
   return objectSet;
 }
 
-PersistentObjectSet Links::linkedFrom(const Resource::Ptr& lhs1, const Resource* rhs1,
+PersistentObjectSet Links::linkedFrom(const ResourcePtr& lhs1, const Resource* rhs1,
   const smtk::common::UUID& rhs2, const RoleType& role) const
 {
   PersistentObjectSet objectSet;
