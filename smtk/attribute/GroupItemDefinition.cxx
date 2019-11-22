@@ -93,6 +93,16 @@ void GroupItemDefinition::applyCategories(
   inheritedToParent.insert(myChildrenCats.begin(), myChildrenCats.end());
 }
 
+void GroupItemDefinition::applyAdvanceLevels(
+  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+{
+  ItemDefinition::applyAdvanceLevels(readLevelFromParent, writeLevelFromParent);
+  for (auto& item : m_itemDefs)
+  {
+    item->applyAdvanceLevels(m_advanceLevel[0], m_advanceLevel[1]);
+  }
+}
+
 void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::string& elabel)
 {
   if (m_isExtensible)

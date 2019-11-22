@@ -598,10 +598,12 @@ void XmlDocV1Parser::process(xml_node& amnode)
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
 
-  // Now we need to check to see if there are any categories in the resource
-  // that were not explicitly listed in the categories section - first update categories
-  m_resource->updateCategories();
+  // Let's finalize the definition information so local categories,
+  // local advance levels, etc. get properly propigated.
+  m_resource->finalizeDefinitions();
 
+  // Now we need to check to see if there are any categories in the resource
+  // that were not explicitly listed in the categories section
   std::set<std::string>::const_iterator it;
   const std::set<std::string>& cats = m_resource->categories();
   for (it = cats.begin(); it != cats.end(); it++)
@@ -747,7 +749,20 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
   xatt = defNode.attribute("AdvanceLevel");
   if (xatt)
   {
-    def->setAdvanceLevel(xatt.as_int());
+    def->setLocalAdvanceLevel(xatt.as_uint());
+  }
+  else
+  {
+    xatt = defNode.attribute("AdvanceReadLevel");
+    if (xatt)
+    {
+      def->setLocalAdvanceLevel(0, xatt.as_uint());
+    }
+    xatt = defNode.attribute("AdvanceWriteLevel");
+    if (xatt)
+    {
+      def->setLocalAdvanceLevel(1, xatt.as_uint());
+    }
   }
 
   xatt = defNode.attribute("Unique");
@@ -952,20 +967,20 @@ void XmlDocV1Parser::processItemDef(xml_node& node, smtk::attribute::ItemDefinit
   xatt = node.attribute("AdvanceLevel");
   if (xatt)
   {
-    idef->setAdvanceLevel(0, xatt.as_int());
-    idef->setAdvanceLevel(1, xatt.as_int());
+    idef->setLocalAdvanceLevel(0, xatt.as_uint());
+    idef->setLocalAdvanceLevel(1, xatt.as_uint());
   }
   else
   {
     xatt = node.attribute("AdvanceReadLevel");
     if (xatt)
     {
-      idef->setAdvanceLevel(0, xatt.as_int());
+      idef->setLocalAdvanceLevel(0, xatt.as_uint());
     }
     xatt = node.attribute("AdvanceWriteLevel");
     if (xatt)
     {
-      idef->setAdvanceLevel(1, xatt.as_int());
+      idef->setLocalAdvanceLevel(1, xatt.as_uint());
     }
   }
 
@@ -1793,6 +1808,27 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
     att->setColor(color);
   }
 
+  // If using AdvanceLevel then we are setting
+  // both read and write
+  xatt = attNode.attribute("AdvanceLevel");
+  if (xatt)
+  {
+    att->setLocalAdvanceLevel(0, xatt.as_uint());
+    att->setLocalAdvanceLevel(1, xatt.as_uint());
+  }
+  else
+  {
+    xatt = attNode.attribute("AdvanceReadLevel");
+    if (xatt)
+    {
+      att->setLocalAdvanceLevel(0, xatt.as_uint());
+    }
+    xatt = attNode.attribute("AdvanceWriteLevel");
+    if (xatt)
+    {
+      att->setLocalAdvanceLevel(1, xatt.as_uint());
+    }
+  }
   itemsNode = attNode.child("Items");
   if (itemsNode)
   {
@@ -1873,20 +1909,20 @@ void XmlDocV1Parser::processItem(xml_node& node, smtk::attribute::ItemPtr item)
   xatt = node.attribute("AdvanceLevel");
   if (xatt)
   {
-    item->setAdvanceLevel(0, xatt.as_int());
-    item->setAdvanceLevel(1, xatt.as_int());
+    item->setLocalAdvanceLevel(0, xatt.as_uint());
+    item->setLocalAdvanceLevel(1, xatt.as_uint());
   }
   else
   {
     xatt = node.attribute("AdvanceReadLevel");
     if (xatt)
     {
-      item->setAdvanceLevel(0, xatt.as_int());
+      item->setLocalAdvanceLevel(0, xatt.as_uint());
     }
     xatt = node.attribute("AdvanceWriteLevel");
     if (xatt)
     {
-      item->setAdvanceLevel(1, xatt.as_int());
+      item->setLocalAdvanceLevel(1, xatt.as_uint());
     }
   }
 

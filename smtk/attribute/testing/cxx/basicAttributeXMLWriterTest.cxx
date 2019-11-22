@@ -176,8 +176,8 @@ int main(int argc, char* argv[])
   std::string attQuery = resource.createAttributeQuery(base);
   acitemdef->setAcceptsEntries(smtk::common::typeName<smtk::attribute::Resource>(), attQuery, true);
 
-  // Process Categories
-  resource.updateCategories();
+  // Process Definition Information
+  resource.finalizeDefinitions();
   // Lets test creating an attribute by passing in the expression definition explicitly
   smtk::attribute::AttributePtr expAtt = resource.createAttribute("Exp1", expDef);
   smtk::attribute::AttributePtr att = resource.createAttribute("testAtt", "Derived2");

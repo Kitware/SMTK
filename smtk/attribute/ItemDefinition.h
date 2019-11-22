@@ -131,14 +131,28 @@ public:
   //Get the item definition's advance level:
   //if mode is 1 then the write access level is returned;
   //else the read access level is returned
-  int advanceLevel(int mode = 0) const
+  unsigned int advanceLevel(int mode = 0) const
   {
     return (mode == 1 ? m_advanceLevel[1] : m_advanceLevel[0]);
   }
-  void setAdvanceLevel(int mode, int level);
+  unsigned int localAdvanceLevel(int mode = 0) const
+  {
+    return (mode == 1 ? m_localAdvanceLevel[1] : m_localAdvanceLevel[0]);
+  }
+  void setLocalAdvanceLevel(int mode, unsigned int level);
   // Convinence Method that sets both read and write to the same value
-  void setAdvanceLevel(int level);
+  void setLocalAdvanceLevel(unsigned int level);
 
+  // unsetAdvanceLevel causes the item to return its
+  // definition advance level information for the specified mode when calling
+  // the advanceLevel(mode) method
+  void unsetLocalAdvanceLevel(int mode = 0);
+  // Returns true if the item is returning its local
+  // advance level information
+  bool hasLocalAdvanceLevelInfo(int mode = 0) const
+  {
+    return (mode == 1 ? m_hasLocalAdvanceLevelInfo[1] : m_hasLocalAdvanceLevelInfo[0]);
+  }
   const std::string& detailedDescription() const { return m_detailedDescription; }
   void setDetailedDescription(const std::string& text) { m_detailedDescription = text; }
 
@@ -159,6 +173,8 @@ protected:
   void copyTo(ItemDefinitionPtr def) const;
   virtual void applyCategories(
     const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent);
+  virtual void applyAdvanceLevels(
+    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent);
   int m_version;
   bool m_isOptional;
   bool m_isEnabledByDefault;
@@ -169,11 +185,13 @@ protected:
   std::string m_detailedDescription;
   std::string m_briefDescription;
   ItemDefinition::CategoryCheckMode m_categoryCheckMode;
+  bool m_hasLocalAdvanceLevelInfo[2];
+  unsigned int m_localAdvanceLevel[2];
+  unsigned int m_advanceLevel[2];
 
 private:
   // constant value that should never be changed
   const std::string m_name;
-  int m_advanceLevel[2];
 };
 }
 }

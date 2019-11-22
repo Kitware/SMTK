@@ -192,8 +192,8 @@ int main(int argc, char* argv[])
     acitemdef->setAcceptsEntries(
       smtk::common::typeName<smtk::attribute::Resource>(), attQuery, true);
 
-    // Process Categories
-    resource.updateCategories();
+    // Process Definition Information
+    resource.finalizeDefinitions();
     std::cout << "categories original size: " << resource.numberOfCategories() << std::endl;
     // Lets test creating an attribute by passing in the expression definition explicitly
     smtk::attribute::AttributePtr expAtt = resource.createAttribute("Exp1", expDef);
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
     {
       auto inputColPtr = smtk::attribute::Resource::create();
       inputColPtr = j;
-      inputColPtr->updateCategories();
+      inputColPtr->finalizeDefinitions();
       std::cout << "categories size: " << inputColPtr->numberOfCategories() << std::endl;
       std::cout << "number of itemDefs: "
                 << inputColPtr->findDefinition("ExpDef")->numberOfItemDefinitions() << std::endl;

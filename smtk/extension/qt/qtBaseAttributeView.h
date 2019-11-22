@@ -38,6 +38,8 @@ public:
 
   /// Determines if an item should be displayed
   virtual bool displayItem(smtk::attribute::ItemPtr);
+  /// Determines if an item can be modified
+  virtual bool isItemWriteable(smtk::attribute::ItemPtr);
   virtual void getDefinitions(
     smtk::attribute::DefinitionPtr attDef, QList<smtk::attribute::DefinitionPtr>& defs);
   int fixedLabelWidth() { return m_fixedLabelWidth; }
