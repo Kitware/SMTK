@@ -12,6 +12,7 @@ The following variables are provided by this module:
   * `SMTK_ENABLE_PARAVIEW_SUPPORT`: Whether ParaView support is available or
     not.
   * `SMTK_ENABLE_PYTHON_WRAPPING`: Whether Python wrapping is available or not.
+  * `SMTK_PYTHONPATH`: The path to smtk python.
   * `SMTK_ENABLE_QT_SUPPORT`: Whether Qt support is available or not.
   * `SMTK_ENABLE_REMUS_SUPPORT`: Whether Remus support is available or not.
   * `SMTK_ENABLE_VTK_SUPPORT`: Whether VTK support is available or not.
@@ -178,6 +179,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
       "pybind11 dependency not found")
     set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
   endif ()
+  set(SMTK_PYTHONPATH "@SMTK_PYTHON_MODULEDIR@")
 endif ()
 
 unset(_smtk_find_quietly)
