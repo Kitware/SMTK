@@ -145,6 +145,8 @@ int unitJsonItems(int argc, char* argv[])
   smtk::attribute::from_json(jsonExpSToJ, expressionString1);
   json jsonExpSFromJ = expressionString1;
   // After deserialization, json should match the orignal state and differ with the changed state
+  std::cout << "\nExpression String to_json result:\n" << jsonExpSToJ.dump(2) << "\n\n";
+  std::cout << "\nExpression String from_json result:\n" << jsonExpSFromJ.dump(2) << "\n\n";
   test(jsonExpSFromJ == jsonExpSToJ, "Failed to serialize and deserialize "
                                      "item");
   test(jsonExpSFromJ != jsonExpSToJFalse, "Failed to serialize and deserialize "
@@ -188,8 +190,10 @@ int unitJsonItems(int argc, char* argv[])
             << jsonRefItm1.dump(2) << "\n\nAfter\n"
             << jsonRefItm2.dump(2) << "\n\n";
   // After deserialization, json should match the orignal state and differ with the changed state
-  test(jsonRefItm3 == jsonRefItm2, "Failed to serialize and deserialize ReferenceItem");
-  test(jsonRefItm1 != jsonRefItm2, "Failed to serialize and deserialize ReferenceItem");
+  test(jsonRefItm3 == jsonRefItm2,
+    "Failed to serialize and deserialize ReferenceItem - They don't match");
+  test(jsonRefItm1 != jsonRefItm2,
+    "Failed to serialize and deserialize ReferenceItem - They do match");
 
   while (!dataArgs.empty())
   {

@@ -166,6 +166,8 @@ protected:
   void copyTo(ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const;
   void applyCategories(const std::set<std::string>& inheritedFromParent,
     std::set<std::string>& inheritedToParent) override;
+  void applyAdvanceLevels(
+    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent) override;
 
   virtual void updateDiscreteValue() = 0;
   bool m_hasDefault;

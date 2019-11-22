@@ -81,7 +81,7 @@ PySharedPtrClass< smtk::attribute::Resource> pybind11_init_smtk_attribute_Resour
     .def("rename", &smtk::attribute::Resource::rename, py::arg("att"), py::arg("newName"))
     .def("setAdvanceLevelColor", &smtk::attribute::Resource::setAdvanceLevelColor, py::arg("level"), py::arg("l_color"))
     .def("uniqueRoles", &smtk::attribute::Resource::uniqueRoles)
-    .def("updateCategories", &smtk::attribute::Resource::updateCategories)
+    .def("finalizeDefinitions", &smtk::attribute::Resource::finalizeDefinitions)
     .def("updateDerivedDefinitionIndexOffsets", &smtk::attribute::Resource::updateDerivedDefinitionIndexOffsets, py::arg("def"))
     .def("views", &smtk::attribute::Resource::views)
     .def_static("createAttributeQuery",  [](const smtk::attribute::DefinitionPtr& def){ return smtk::attribute::Resource::createAttributeQuery(def); }, py::arg("def"))

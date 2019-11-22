@@ -37,7 +37,9 @@ Definition::Definition(
   m_version = 0;
   m_isAbstract = false;
   m_isNodal = false;
-  m_advanceLevel = 0;
+  m_hasLocalAdvanceLevelInfo[0] = m_hasLocalAdvanceLevelInfo[1] = false;
+  m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
+  m_advanceLevel[0] = m_advanceLevel[1] = 0;
   m_isUnique = false;
   m_isRequired = false;
   m_isNotApplicableColorSet = false;
@@ -796,5 +798,72 @@ void Definition::applyCategories(std::set<std::string> inherited)
   for (auto& def : derivedDefs)
   {
     def->applyCategories(inherited);
+  }
+}
+
+void Definition::setLocalAdvanceLevel(int mode, unsigned int level)
+{
+  if ((mode < 0) || (mode > 1))
+  {
+    return;
+  }
+  m_hasLocalAdvanceLevelInfo[mode] = true;
+  m_advanceLevel[mode] = m_localAdvanceLevel[mode] = level;
+}
+
+void Definition::setLocalAdvanceLevel(unsigned int level)
+{
+  m_hasLocalAdvanceLevelInfo[0] = m_hasLocalAdvanceLevelInfo[1] = true;
+  m_advanceLevel[0] = m_advanceLevel[1] = m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = level;
+}
+
+void Definition::unsetLocalAdvanceLevel(int mode)
+{
+  if ((mode < 0) || (mode > 1))
+  {
+    return;
+  }
+  m_hasLocalAdvanceLevelInfo[mode] = false;
+}
+
+unsigned int Definition::advanceLevel(int mode) const
+{
+  // Any invalid mode returns mode = 0
+  if ((mode < 0) || (mode > 1))
+  {
+    mode = 0;
+  }
+  return m_advanceLevel[mode];
+}
+
+void Definition::applyAdvanceLevels(
+  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+{
+  if (!m_hasLocalAdvanceLevelInfo[0])
+  {
+    m_advanceLevel[0] = readLevelFromParent;
+  }
+  if (!m_hasLocalAdvanceLevelInfo[1])
+  {
+    m_advanceLevel[1] = writeLevelFromParent;
+  }
+
+  // Lets go to each item and process its categories
+  for (auto& item : m_itemDefs)
+  {
+    item->applyAdvanceLevels(m_advanceLevel[0], m_advanceLevel[1]);
+  }
+
+  auto attResource = m_resource.lock();
+  if (attResource == nullptr)
+  {
+    return; // Can't get the derived definitions
+  }
+
+  std::vector<DefinitionPtr> derivedDefs;
+  attResource->derivedDefinitions(this->shared_from_this(), derivedDefs);
+  for (auto& def : derivedDefs)
+  {
+    def->applyAdvanceLevels(m_advanceLevel[0], m_advanceLevel[1]);
   }
 }

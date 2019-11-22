@@ -268,6 +268,16 @@ void ValueItemDefinition::applyCategories(
   inheritedToParent.insert(myChildrenCats.begin(), myChildrenCats.end());
 }
 
+void ValueItemDefinition::applyAdvanceLevels(
+  const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent)
+{
+  ItemDefinition::applyAdvanceLevels(readLevelFromParent, writeLevelFromParent);
+  for (auto& item : m_itemDefs)
+  {
+    item.second->applyAdvanceLevels(m_advanceLevel[0], m_advanceLevel[1]);
+  }
+}
+
 void ValueItemDefinition::setIsExtensible(bool mode)
 {
   m_isExtensible = mode;

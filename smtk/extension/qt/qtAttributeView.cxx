@@ -951,7 +951,7 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
-  if (result.size() && viewBy == VIEWBY_Attribute)
+  if (result.size())
   {
     std::vector<smtk::attribute::AttributePtr>::iterator it;
     for (it = result.begin(); it != result.end(); ++it)
@@ -1003,15 +1003,20 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
   // takes care of it
   this->Internals->CurrentAtt->createBasicLayout(false);
   this->setFixedLabelWidth(currentLen);
-  if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
+  if (this->Internals->CurrentAtt)
   {
-    this->Internals->AttFrame->layout()->addWidget(this->Internals->CurrentAtt->widget());
-    QObject::connect(this->Internals->CurrentAtt, SIGNAL(itemModified(qtItem*)), this,
-      SLOT(onItemChanged(qtItem*)), Qt::QueuedConnection);
-    if (this->advanceLevelVisible())
+    if (this->Internals->CurrentAtt->widget())
     {
-      this->Internals->CurrentAtt->showAdvanceLevelOverlay(true);
+      this->Internals->AttFrame->layout()->addWidget(this->Internals->CurrentAtt->widget());
+      QObject::connect(this->Internals->CurrentAtt, SIGNAL(itemModified(qtItem*)), this,
+        SLOT(onItemChanged(qtItem*)), Qt::QueuedConnection);
+      if (this->advanceLevelVisible())
+      {
+        this->Internals->CurrentAtt->showAdvanceLevelOverlay(true);
+      }
     }
+    this->Internals->DeleteButton->setEnabled(
+      this->uiManager()->passAdvancedCheck(att->advanceLevel(1)));
   }
 }
 

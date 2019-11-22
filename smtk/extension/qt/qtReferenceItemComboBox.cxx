@@ -255,6 +255,13 @@ void qtReferenceItemComboBox::updateItemData()
 void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreResource)
 {
   auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
+  // If there is no combox being displayed there is nothing to be done/
+  // This can occur if the parent widget has been deleted (which means this
+  // instance will be deleted shortly)
+  if (this->Internals->comboBox == nullptr)
+  {
+    return;
+  }
   this->Internals->comboBox->blockSignals(true);
   this->m_mappedObjects.clear();
   this->Internals->comboBox->clear();

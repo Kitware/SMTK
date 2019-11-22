@@ -113,6 +113,8 @@ protected:
   GroupItemDefinition(const std::string& myname);
   void applyCategories(const std::set<std::string>& inheritedFromParent,
     std::set<std::string>& inheritedToParent) override;
+  void applyAdvanceLevels(
+    const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent) override;
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
   std::vector<std::string> m_labels;

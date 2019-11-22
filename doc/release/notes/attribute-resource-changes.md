@@ -13,3 +13,6 @@ The following is a example setting an Analysis to be required via a sbt file:
 See smtk/data/attribute/attribute_collection/SimpleAnalysisTest.sbt for a complete example.
 
 **Note** that an Analysis's parent has Exclusive Children then the Analysis' required property is ignored.
+
+### Replacing updateCategories method
+The new method is now called finalizeDefinitions since it now does more including updating advance level information.

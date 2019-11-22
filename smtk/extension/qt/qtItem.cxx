@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/extension/qt/qtItem.h"
 
-#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseAttributeView.h"
 #include "smtk/extension/qt/qtOverlay.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -106,7 +106,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     this->Internals->AdvLevelCombo = new QComboBox(this->Internals->advOverlay->overlay());
     this->Internals->advOverlay->overlay()->addOverlayWidget(this->Internals->AdvLevelCombo);
     m_itemInfo.uiManager()->initAdvanceLevels(this->Internals->AdvLevelCombo);
-    int mylevel = this->item()->advanceLevel(0);
+    int mylevel = this->item()->localAdvanceLevel(0);
     bool foundLevel = false;
     std::set<int> levels;
     for (int i = 0; i < this->Internals->AdvLevelCombo->count(); i++)
@@ -158,15 +158,15 @@ void qtItem::showAdvanceLevelOverlay(bool show)
 
 void qtItem::onAdvanceLevelChanged(int levelIdx)
 {
-  int level = this->Internals->AdvLevelCombo->itemData(levelIdx).toInt();
-  this->setAdvanceLevel(level);
+  unsigned int level = this->Internals->AdvLevelCombo->itemData(levelIdx).toUInt();
+  this->setLocalAdvanceLevel(level);
 }
 
-void qtItem::setAdvanceLevel(int l)
+void qtItem::setLocalAdvanceLevel(unsigned int l)
 {
   auto item = m_itemInfo.item();
-  item->setAdvanceLevel(0, l);
-  item->setAdvanceLevel(1, l);
+  item->setLocalAdvanceLevel(0, l);
+  item->setLocalAdvanceLevel(1, l);
   if (this->Internals->advOverlay)
   {
     const double* rgba = m_itemInfo.uiManager()->attResource()->advanceLevelColor(l);
@@ -177,4 +177,12 @@ void qtItem::setAdvanceLevel(int l)
       this->Internals->advOverlay->overlay()->repaint();
     }
   }
+}
+
+bool qtItem::isReadOnly() const
+{
+  auto item = m_itemInfo.item();
+  auto view = dynamic_cast<smtk::extension::qtBaseAttributeView*>(m_itemInfo.baseView().data());
+  return (
+    (m_readOnly || (item == nullptr) || (view == nullptr)) ? true : !view->isItemWriteable(item));
 }

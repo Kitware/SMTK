@@ -24,9 +24,9 @@ Item::Item(Attribute* owningAttribute, int itemPosition)
   , m_isEnabled(true)
   , m_definition()
 {
-  m_usingDefAdvanceLevelInfo[0] = true;
-  m_usingDefAdvanceLevelInfo[1] = true;
-  m_advanceLevel[0] = m_advanceLevel[1] = 0;
+  m_hasLocalAdvanceLevelInfo[0] = false;
+  m_hasLocalAdvanceLevelInfo[1] = false;
+  m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
 }
 
 Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
@@ -37,9 +37,9 @@ Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
   , m_isEnabled(true)
   , m_definition()
 {
-  m_usingDefAdvanceLevelInfo[0] = true;
-  m_usingDefAdvanceLevelInfo[1] = true;
-  m_advanceLevel[0] = m_advanceLevel[1] = 0;
+  m_hasLocalAdvanceLevelInfo[0] = false;
+  m_hasLocalAdvanceLevelInfo[1] = false;
+  m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
 }
 
 Item::~Item()
@@ -176,37 +176,52 @@ bool Item::rotate(std::size_t fromPosition, std::size_t toPosition)
   return false;
 }
 
-void Item::setAdvanceLevel(int mode, int level)
+void Item::setLocalAdvanceLevel(int mode, unsigned int level)
 {
   if ((mode < 0) || (mode > 1))
   {
     return;
   }
-  m_usingDefAdvanceLevelInfo[mode] = false;
-  m_advanceLevel[mode] = level;
+  m_hasLocalAdvanceLevelInfo[mode] = true;
+  m_localAdvanceLevel[mode] = level;
 }
 
-void Item::unsetAdvanceLevel(int mode)
+void Item::unsetLocalAdvanceLevel(int mode)
 {
   if ((mode < 0) || (mode > 1))
   {
     return;
   }
-  m_usingDefAdvanceLevelInfo[mode] = true;
+  m_hasLocalAdvanceLevelInfo[mode] = false;
 }
 
-int Item::advanceLevel(int mode) const
+unsigned int Item::advanceLevel(int mode) const
 {
   // Any invalid mode returns mode = 0
   if ((mode < 0) || (mode > 1))
   {
     mode = 0;
   }
-  if (m_definition && m_usingDefAdvanceLevelInfo[mode])
+  unsigned int level = 0;
+  if (m_hasLocalAdvanceLevelInfo[mode])
   {
-    return m_definition->advanceLevel(mode);
+    level = m_localAdvanceLevel[mode];
   }
-  return m_advanceLevel[mode];
+  else if (m_definition)
+  {
+    level = m_definition->advanceLevel(mode);
+  }
+
+  if (m_owningItem)
+  {
+    return std::max(m_owningItem->advanceLevel(mode), level);
+  }
+
+  if (m_attribute)
+  {
+    return std::max(m_attribute->advanceLevel(mode), level);
+  }
+  return level;
 }
 
 bool Item::assign(ConstItemPtr& sourceItem, unsigned int)
@@ -215,9 +230,9 @@ bool Item::assign(ConstItemPtr& sourceItem, unsigned int)
   m_isEnabled = sourceItem->isEnabled();
   for (unsigned i = 0; i < 2; ++i)
   {
-    if (!sourceItem->usingDefinitionAdvanceLevel(i))
+    if (sourceItem->hasLocalAdvanceLevelInfo(i))
     {
-      this->setAdvanceLevel(i, sourceItem->advanceLevel(i));
+      this->setLocalAdvanceLevel(i, sourceItem->localAdvanceLevel(i));
     }
   } // for
   return true;

@@ -31,14 +31,14 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ItemPtr& itemPtr)
     j["Enabled"] = itemPtr->isEnabled();
   }
   // Does the item have explicit advance level information
-  if (!itemPtr->usingDefinitionAdvanceLevel(0))
+  if (itemPtr->hasLocalAdvanceLevelInfo(0))
   {
-    j["AdvanceReadLevel"] = itemPtr->advanceLevel(0);
+    j["AdvanceReadLevel"] = itemPtr->localAdvanceLevel(0);
   }
 
-  if (!itemPtr->usingDefinitionAdvanceLevel(1))
+  if (itemPtr->hasLocalAdvanceLevelInfo(1))
   {
-    j["AdvanceWriteLevel"] = itemPtr->advanceLevel(1);
+    j["AdvanceWriteLevel"] = itemPtr->localAdvanceLevel(1);
   }
 }
 
@@ -61,13 +61,13 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ItemPtr& itemPtr)
   auto result = j.find("AdvanceReadLevel");
   if (result != j.end())
   {
-    itemPtr->setAdvanceLevel(0, *result);
+    itemPtr->setLocalAdvanceLevel(0, *result);
   }
 
   result = j.find("AdvanceWriteLevel");
   if (result != j.end())
   {
-    itemPtr->setAdvanceLevel(1, *result);
+    itemPtr->setLocalAdvanceLevel(1, *result);
   }
 }
 }

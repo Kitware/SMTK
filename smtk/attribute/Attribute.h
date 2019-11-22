@@ -112,6 +112,30 @@ public:
   bool isMemberOf(const std::string& category) const;
   bool isMemberOf(const std::vector<std::string>& categories) const;
 
+  /// \brief Get the Attribute 's advance level
+  ///
+  /// if mode is 1 then the write access level is returned;
+  /// else the read access level is returned
+  /// The information can either be specificied directly to the attribute
+  /// using setLocalAdvanceLevel() or from the attributes's definition.
+  /// NOTE: This information is used in GUI only
+  unsigned int advanceLevel(int mode = 0) const;
+  void setLocalAdvanceLevel(int mode, unsigned int level);
+  unsigned int localAdvanceLevel(int mode = 0) const
+  {
+    return (mode == 1 ? m_localAdvanceLevel[1] : m_localAdvanceLevel[0]);
+  }
+  // unsetLocalAdvanceLevel causes the attribute to return its
+  // definition advance level information for the specified mode when calling
+  // the advanceLevel(mode) method
+  void unsetLocalAdvanceLevel(int mode = 0);
+  // Returns true if the attribute is returning its local
+  // advance level information
+  bool hasLocalAdvanceLevelInfo(int mode = 0) const
+  {
+    return (mode == 1 ? m_hasLocalAdvanceLevelInfo[1] : m_hasLocalAdvanceLevelInfo[0]);
+  }
+
   smtk::attribute::ItemPtr item(int ith) const
   {
     return (ith < 0)
@@ -313,6 +337,8 @@ protected:
   double m_color[4];
   smtk::common::UUID m_id;
   std::size_t m_includeIndex;
+  bool m_hasLocalAdvanceLevelInfo[2];
+  unsigned int m_localAdvanceLevel[2];
 };
 
 inline smtk::simulation::UserDataPtr Attribute::userData(const std::string& key) const
