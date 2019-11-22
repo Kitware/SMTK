@@ -7,12 +7,12 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKResourceBrowser.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"

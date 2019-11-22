@@ -10,7 +10,9 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h
 #define smtk_extension_paraview_appcomponents_pqSMTKResourcePanel_h
 
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKResourceBrowser.h"
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include <QDockWidget>
@@ -20,7 +22,7 @@ class pqSMTKResourceBrowser;
 /**\brief A panel that displays SMTK resources available to the application/user.
   *
   */
-class pqSMTKResourcePanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourcePanel : public QDockWidget
 {
   Q_OBJECT
   typedef QDockWidget Superclass;

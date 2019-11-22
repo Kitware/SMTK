@@ -29,12 +29,6 @@ set(sources
   pqSMTKPipelineSelectionBehavior.h
   pqSMTKRegisterImportersBehavior.cxx
   pqSMTKRegisterImportersBehavior.h
-  pqSMTKResourceBrowser.cxx
-  pqSMTKResourceBrowser.h
-  pqSMTKResourcePanel.cxx
-  pqSMTKResourcePanel.h
-  pqSMTKResourceRepresentation.cxx
-  pqSMTKResourceRepresentation.h
   pqSMTKSaveOnCloseResourceBehavior.cxx
   pqSMTKSaveOnCloseResourceBehavior.h
   pqSMTKSaveResourceBehavior.cxx

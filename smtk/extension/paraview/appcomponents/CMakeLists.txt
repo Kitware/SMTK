@@ -2,7 +2,10 @@ set(classes
   pqSMTKBehavior
   pqSMTKRenderResourceBehavior
   pqSMTKResource
-  pqSMTKWrapper)
+  pqSMTKWrapper
+  pqSMTKResourceBrowser
+  pqSMTKResourceRepresentation
+  pqSMTKResourcePanel)
 
 set(CMAKE_AUTOMOC 1)
 

@@ -10,13 +10,15 @@
 #ifndef smtk_extension_paraview_appcomponents_pqSMTKResourceRepresentation_h
 #define smtk_extension_paraview_appcomponents_pqSMTKResourceRepresentation_h
 
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
 #include "pqPipelineRepresentation.h"
 
 #include "smtk/view/SelectionObserver.h"
 
 #include "smtk/PublicPointerDefs.h"
 
-class pqSMTKResourceRepresentation : public pqPipelineRepresentation
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceRepresentation : public pqPipelineRepresentation
 {
   Q_OBJECT
   typedef pqPipelineRepresentation Superclass;
