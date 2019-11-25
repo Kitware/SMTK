@@ -39,7 +39,7 @@
     - tags@cmb/smtk
 
 .fedora31: &fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-20191119"
+    image: "kitware/cmb:ci-smtk-fedora31-20191125"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -50,14 +50,14 @@
 
 .fedora31_vtk: &fedora31_vtk
     extends: .fedora31
-    image: "kitware/cmb:ci-smtk-fedora31-vtk-20191119"
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-20191125"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_vtk
 
 .fedora31_paraview: &fedora31_paraview
     extends: .fedora31_vtk
-    image: "kitware/cmb:ci-smtk-fedora31-paraview-20191119"
+    image: "kitware/cmb:ci-smtk-fedora31-paraview-20191125"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
