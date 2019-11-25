@@ -31,5 +31,7 @@ if(@SMTK_COVERAGE_ENABLED@)
     "testing"
     "pybind11"
     "qt"
+    "autogen"
+    "CMakeFiles"
     )
 endif()
