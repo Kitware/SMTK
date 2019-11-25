@@ -137,6 +137,11 @@ int TestResourceProperties(int, char** const)
 
     test(resource->properties().get<std::vector<std::string> >()["bar"].empty() == true,
       "Array-style access should implicitly create property type");
+
+    resource->properties().erase<double>("bar"); // Try to erase a value not present.
+    resource->properties().erase<double>("foo");
+    test(
+      !resource->properties().contains<double>("foo"), "Previously erased value still accessible.");
   }
 
   std::cout << "destructor works" << std::endl;
