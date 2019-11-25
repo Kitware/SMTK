@@ -62,6 +62,13 @@
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
 
+.fedora31_vtk_python2: &fedora31_vtk_python2
+    extends: .fedora31
+    image: "kitware/cmb:ci-smtk-fedora31-vtk-python2-20191125"
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_vtk_python2
+
 .fedora31_coverage: &fedora31_coverage
     extends: .fedora31_paraview
 
@@ -229,6 +236,20 @@ test:fedora31-paraview:
         - build:fedora31-paraview
     needs:
         - build:fedora31-paraview
+
+build:fedora31-vtk-python2:
+    <<:
+        - *fedora31_vtk_python2
+        - *cmake_build_unix
+
+test:fedora31-vtk-python2:
+    <<:
+        - *fedora31_vtk_python2
+        - *cmake_test_unix_x11
+    dependencies:
+        - build:fedora31-vtk-python2
+    needs:
+        - build:fedora31-vtk-python2
 
 build:fedora31-coverage:
     <<:
