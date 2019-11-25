@@ -25,7 +25,6 @@
 #   - without Python
 #   - Python 3 (minimum supported and latest)
 # - Documentation
-# - Coverage
 # - Contract testing
 #   - Perform an installation (from the build stage), make it an artifact, and
 #     run external projects against it.
