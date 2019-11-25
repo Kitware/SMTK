@@ -32,5 +32,6 @@ if(@SMTK_COVERAGE_ENABLED@)
     "pybind11"
     "qt"
     "autogen"
+    "CMakeFiles"
     )
 endif()
