@@ -1,7 +1,14 @@
 #
 set (sim_tests
-  TestSimExportOmega3P_01
 )
+
+if (SMTK_PYTHON_VERSION STREQUAL "2")
+  # The ACE3P workflow doesn't yet support Python3.
+  # https://gitlab.kitware.com/cmb/simulation-workflows/issues/2
+  list(APPEND sim_tests
+    TestSimExportOmega3P_01
+  )
+endif ()
 
 # All simulation tests require simulation-workflows in SMTK_DATA_DIR
 if (SMTK_DATA_DIR)

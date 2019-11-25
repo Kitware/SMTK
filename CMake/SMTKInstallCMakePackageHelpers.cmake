@@ -26,6 +26,7 @@ set(_smtk_packages
   MOAB
   Qt5
   ParaView
+  Python${SMTK_PYTHON_VERSION}
   VTK
   Remus
   ZeroMQ # for Remus

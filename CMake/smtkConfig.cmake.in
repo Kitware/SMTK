@@ -172,6 +172,14 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
 endif ()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
+  find_package(Python@SMTK_PYTHON_VERSION@ ${_smtk_find_quietly}
+    COMPONENTS Development)
+  if (NOT Python@SMTK_PYTHON_VERSION@_FOUND)
+    list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+      "Python@SMTK_PYTHON_VERSION@ dependency not found")
+    set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+  endif ()
+
   find_package(pybind11 ${_smtk_find_quietly})
   if (NOT pybind11_FOUND)
     list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"

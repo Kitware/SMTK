@@ -21,14 +21,14 @@ endif()
 add_executable(RenderMesh RenderMesh.cxx ${additional_sources})
 
 # Include pybind and python directories
-target_include_directories(RenderMesh PRIVATE ${PYBIND11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS})
+target_include_directories(RenderMesh PRIVATE ${PYBIND11_INCLUDE_DIR})
 
 # Add hooks to the data and scratch directories
 target_compile_definitions(RenderMesh PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")
 target_compile_definitions(RenderMesh PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 
 set(additional_libraries
-  ${PYTHON_LIBRARIES}
+  Python${SMTK_PYTHON_VERSION}::Python
   ${Boost_LIBRARIES}
   )
 

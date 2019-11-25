@@ -35,7 +35,7 @@ find_package(PackageHandleStandardArgs)
 if (WIN32)
   find_package(PythonInterp 2.7)
   if(PYTHONINTERP_FOUND)
-    set(PYTHON_WINDOWS_ONLY ${PYTHON_EXECUTABLE})
+    set(PYTHON_WINDOWS_ONLY ${Python2_EXECUTABLE})
   endif()
 endif()
 

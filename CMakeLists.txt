@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8.2)
+cmake_minimum_required(VERSION 3.12)
 
 cmake_policy(SET CMP0012 NEW)
 cmake_policy(SET CMP0020 NEW)
@@ -416,8 +416,19 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     set(PYTHON_MODULE_EXTENSION ".so")
   endif()
 
-  find_package(PythonInterp 2.7 REQUIRED)
-  find_package(PythonLibs REQUIRED)
+  set(SMTK_PYTHON_VERSION "2"
+    CACHE STRING "Major version of Python to use")
+  set_property(CACHE SMTK_PYTHON_VERSION
+    PROPERTY
+      STRINGS "2;3")
+  if (SMTK_ENABLE_VTK_SUPPORT OR SMTK_ENABLE_PARAVIEW_SUPPORT)
+    if (NOT SMTK_PYTHON_VERSION STREQUAL VTK_PYTHON_VERSION)
+      message(FATAL_ERROR
+        "SMTK and VTK must agree on a Python major version.")
+    endif ()
+  endif ()
+  find_package("Python${SMTK_PYTHON_VERSION}" REQUIRED
+    COMPONENTS Interpreter)
 
   # Initialize SMTK_PYTHON_MODULEDIR.
   # This stores the location where we'll install SMTK's Python modules.
@@ -427,7 +438,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
         execute_process(
           COMMAND
-          ${PYTHON_EXECUTABLE}
+          "$<TARGET_FILE:Python${SMTK_PYTHON_VERSION}::Interpreter>"
           -c "import site; print(site.getsitepackages())[-1]"
           RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
           )
@@ -436,7 +447,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
           "bin/Lib/site-packages")
     else()
         set(SMTK_PYTHON_MODULEDIR
-          "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages")
+          "${CMAKE_INSTALL_LIBDIR}/python${Python${SMTK_PYTHON_VERSION}_VERSION_MAJOR}.${Python${SMTK_PYTHON_VERSION}_VERSION_MINOR}/site-packages")
     endif()
   endif()
 
@@ -514,7 +525,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     function (smtk_add_test_python name file)
       add_test(
         NAME    "${name}"
-        COMMAND "${PYTHON_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
+        COMMAND "$<TARGET_FILE:Python${SMTK_PYTHON_VERSION}::Interpreter>" "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
                 ${ARGN})
       set_tests_properties("${name}"
         PROPERTIES
@@ -524,7 +535,7 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     function (smtk_add_test_python_full_path name file)
       add_test(
         NAME    "${name}"
-        COMMAND "${PYTHON_EXECUTABLE}" "${file}"
+        COMMAND "$<TARGET_FILE:Python${SMTK_PYTHON_VERSION}::Interpreter>" "${file}"
                 ${ARGN})
       set_tests_properties("${name}"
         PROPERTIES
@@ -707,25 +718,7 @@ configure_file(
 # package configuration file
 if (SMTK_RELOCATABLE_INSTALL)
   set(smtk_prefix_path)
-
-  if (SMTK_ENABLE_PYTHON_WRAPPING)
-    set(smtk_python_executable)
-    set(smtk_python_library)
-    set(smtk_python_include_dir)
-  endif ()
 endif()
-
-if (SMTK_ENABLE_PYTHON_WRAPPING)
-  # Get absolute path to CMAKE_INSTALL_PREFIX
-  set(cmake_install_path ${CMAKE_INSTALL_PREFIX})
-  if (NOT IS_ABSOLUTE cmake_install_path)
-    set(cmake_install_path "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_PREFIX}")
-  endif()
-
-  file(RELATIVE_PATH smtk_python_moduledir
-    ${cmake_install_path}/${SMTK_INSTALL_CONFIG_DIR}
-    ${cmake_install_path}/${SMTK_PYTHON_MODULEDIR})
-endif ()
 
 if (SMTK_INSTALL_TESTING_DATA)
   set(smtk_data_dir ${SMTK_INSTALL_DATA_DIR}/data)
