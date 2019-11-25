@@ -224,7 +224,6 @@ protected:
   int m_position;
   int m_subGroupPosition;
   bool m_isEnabled;
-  mutable std::string m_tempString;
   smtk::attribute::ConstItemDefinitionPtr m_definition;
   std::map<std::string, smtk::simulation::UserDataPtr> m_userData;
 
