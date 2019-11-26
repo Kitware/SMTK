@@ -66,6 +66,7 @@
 
     variables:
         CMAKE_CONFIGURATION: fedora31_tidy
+        CTEST_NO_WARNINGS_ALLOWED: 1
 
 .fedora31_vtk_python2: &fedora31_vtk_python2
     extends: .fedora31
