@@ -25,7 +25,7 @@ XmlDocV4Parser::~XmlDocV4Parser()
 {
 }
 
-bool XmlDocV4Parser::canParse(xml_document& doc)
+bool XmlDocV4Parser::canParse(pugi::xml_document& doc)
 {
   // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeResource");
@@ -49,7 +49,7 @@ bool XmlDocV4Parser::canParse(xml_document& doc)
   return true;
 }
 
-bool XmlDocV4Parser::canParse(xml_node& node)
+bool XmlDocV4Parser::canParse(pugi::xml_node& node)
 {
   // Check the name of the node
   std::string name = node.name();
@@ -73,7 +73,7 @@ bool XmlDocV4Parser::canParse(xml_node& node)
   return true;
 }
 
-xml_node XmlDocV4Parser::getRootNode(xml_document& doc)
+pugi::xml_node XmlDocV4Parser::getRootNode(pugi::xml_document& doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeResource");
   return amnode;

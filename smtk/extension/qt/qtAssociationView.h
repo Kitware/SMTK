@@ -39,12 +39,13 @@ namespace extension
   * related information.
   *
   * Here is an example XML
+  * ```
   *   <View Type="Associations" Title="Material Assignment" Label="Assignment">
   *    <AttributeTypes>
   *      <Att Type="material"/>
   *    </AttributeTypes>
   *  </View>
-  *
+  * ```
   */
 class SMTKQTEXT_EXPORT qtAssociationView : public qtBaseAttributeView
 {

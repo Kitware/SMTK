@@ -17,6 +17,14 @@
 
 #include <string>
 
+/// Used by smtkTypeMacro()
+#define smtkTypedefs(...)                                                                          \
+  typedef __VA_ARGS__ SelfType;                                                                    \
+  typedef smtk::shared_ptr<__VA_ARGS__> Ptr;                                                       \
+  typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
+  typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
+  typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr
+///@{
 /**\brief Add typedefs to a class for identifcation.
   *
   * This macro takes a single parameter naming the
@@ -40,12 +48,6 @@
   * These types are useful when dealing with shared pointers
   * in a class hierarchy.
   */
-#define smtkTypedefs(...)                                                                          \
-  typedef __VA_ARGS__ SelfType;                                                                    \
-  typedef smtk::shared_ptr<__VA_ARGS__> Ptr;                                                       \
-  typedef smtk::shared_ptr<const __VA_ARGS__> ConstPtr;                                            \
-  typedef smtk::weak_ptr<__VA_ARGS__> WeakPtr;                                                     \
-  typedef smtk::weak_ptr<const __VA_ARGS__> WeakConstPtr
 #define smtkTypeMacro(...)                                                                         \
   smtkTypedefs(__VA_ARGS__);                                                                       \
   static constexpr const char* const type_name = #__VA_ARGS__;                                     \
@@ -54,14 +56,15 @@
   smtkTypedefs(__VA_ARGS__);                                                                       \
   static constexpr const char* const type_name = #__VA_ARGS__;                                     \
   virtual std::string typeName() const { return type_name; }
+///@}
 
 /**\brief Add a typedef to the superclass of this class.
   *
-  * This adds typedefs named Superclass and SuperclassPtr
+  * This adds typedefs named `Superclass` and `SuperclassPtr`
   * (i.e., a shared pointer to the superclass) to the
   * class.
   *
-  * Unlike VTK's type macro, it is separate from smtkTypeMacro
+  * Unlike VTK's type macro, it is separate from smtkTypeMacro()
   * in order to support classes with multiple template
   * parameters, since preprocessor macros do not properly
   * handle commas inside template parameter lists.
@@ -75,8 +78,9 @@
   * This macro takes a single parameter naming either
   * the class of interest (if no ancestor classes use
   * enable_shared_from_this() or smtk::EnableSharedPtr())
-  * or the first -- and only -- ancestor class that inherits
-  * enable_shared_from_this() or smtk::EnableSharedPtr().
+  * or the first -- and only -- ancestor class that uses
+  * smtkEnableSharedPtr() (i.e. inherits
+  * enable_shared_from_this() or smtk::EnableSharedPtr()).
   *
   * This macro also requires the use of smtkTypeMacro()
   * as it needs SelfType defined.
@@ -106,7 +110,7 @@
 
 /**\brief An abbreviation for enabling shared pointers.
   *
-  * Use like so:<pre>
+  * Use on the base class like so:<pre>
   * class X : smtkEnableSharedPtr(X)
   * {
   * public:
@@ -114,6 +118,9 @@
   *   smtkCreateMacro(X);
   * };
   * </pre>
+  * Don't use on derived classes, use smtkSharedFromThisMacro() or
+  * smtkSharedPtrCreateMacro() instead.
+  *
   * Note that this may be complicated on some systems by the
   * C preprocessor's inability to handle macros whose arguments
   * include a multiple-parameter template. (The comma separating
@@ -147,6 +154,7 @@ public                                                                          
   * public:
   *   smtkTypeMacro(Y);
   *   smtkSharedFromThisMacro(X);
+  *   // smtkSharedPtrCreateMacro(X); // preferred convenience, see below.
   *   ...
   *   Y::Ptr method()
   *     {
@@ -203,7 +211,7 @@ public                                                                          
   * </pre>
   *
   * It is important to use this method in classes derived
-  * from those that use smtkEnabledSharedPtr rather than
+  * from those that use smtkEnabledSharedPtr() rather than
   * naively constructing a shared pointer of the proper type,
   * since that will likely result in an exception being thrown;
   * the path must be from Y* to shared_ptr<X> to shared_ptr<Y>,

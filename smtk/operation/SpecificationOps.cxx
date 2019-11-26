@@ -374,6 +374,8 @@ std::set<std::string> extractTagNames(Operation::Specification specification)
   return tagNames;
 }
 
+/// @cond dox_ignore
+/// (quiet Doxygen warnings from Action enum)
 namespace
 {
 enum class Action
@@ -448,6 +450,7 @@ bool actOnTag(Operation::Specification specification, const std::string& tagName
   return modified;
 }
 }
+/// @endcond
 
 bool addTag(Operation::Specification specification, const std::string& tagName)
 {

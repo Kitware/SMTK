@@ -164,7 +164,7 @@ class ConstPropertiesOfType
   }
 
 public:
-  /// Check whether a property associated with <key> is present.
+  /// Check whether a property associated with \a key is present.
   bool contains(const std::string& key) const
   {
     if (m_properties.contains(key) == false)
@@ -175,7 +175,7 @@ public:
     return (data.find(m_id) != data.end());
   }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   const Type& at(const std::string& key) const { return get(key).at(m_id); }
 
   /// Check if any properties of this type are associated with m_id.
@@ -230,7 +230,7 @@ class PropertiesOfType
   }
 
 public:
-  /// Check whether a property associated with <key> is present.
+  /// Check whether a property associated with \a key is present.
   bool contains(const std::string& key) const
   {
     if (m_properties.contains(key) == false)
@@ -241,19 +241,19 @@ public:
     return (data.find(m_id) != data.end());
   }
 
-  /// Insert (<key>, <value>) into the container.
+  /// Insert (\a key, \a value ) into the container.
   bool insert(const std::string& key, const Type& value)
   {
     return get(key).insert(std::make_pair(m_id, value)).second;
   }
 
-  /// Emplace (<key>, <value>) into the container.
+  /// Emplace (\a key, \a value ) into the container.
   bool emplace(const std::string& key, Type&& value)
   {
     return get(key).emplace(std::make_pair(m_id, std::move(value))).second;
   }
 
-  /// Erase property indexed by <key> from the container.
+  /// Erase property indexed by \a key from the container.
   void erase(const std::string& key)
   {
     get(key).erase(m_id);
@@ -263,13 +263,13 @@ public:
     }
   }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   Type& operator[](const std::string& key) { return get(key)[m_id]; }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   Type& at(const std::string& key) { return get(key).at(m_id); }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   const Type& at(const std::string& key) const { return get(key).at(m_id); }
 
   /// Check if any properties of this type are associated with m_id.
@@ -328,49 +328,49 @@ public:
   template <typename Type>
   using Indexed = std::unordered_map<smtk::common::UUID, Type>;
 
-  /// Check whether a property associated with <key> is present.
+  /// Check whether a property associated with \a key is present.
   template <typename Type>
   bool contains(const std::string& key) const
   {
     return get<Type>().contains(key);
   }
 
-  /// Insert (<key>, <value>) into the container.
+  /// Insert (\a key, \a value ) into the container.
   template <typename Type>
   bool insert(const std::string& key, const Type& value)
   {
     return get<Type>().insert(key, value);
   }
 
-  /// Emplace (<key>, <value>) into the container.
+  /// Emplace (\a key, \a value ) into the container.
   template <typename Type>
   bool emplace(const std::string& key, Type&& value)
   {
     return get<Type>().emplace(key, std::forward<Type>(value));
   }
 
-  /// Erase property indexed by <key> from the container.
+  /// Erase property indexed by \a key from the container.
   template <typename Type>
   void erase(const std::string& key)
   {
     return get<Type>().erase(key);
   }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   template <typename Type>
   Type& at(const std::string& key)
   {
     return get<Type>().at(key);
   }
 
-  /// Access property indexed by <key>.
+  /// Access property indexed by \a key.
   template <typename Type>
   const Type& at(const std::string& key) const
   {
     return get<Type>().at(key);
   }
 
-  /// Access properties of type <Type>.
+  /// Access properties of type \a Type.
   template <typename Type>
   PropertiesOfType<Type> get()
   {
@@ -378,7 +378,7 @@ public:
       static_cast<detail::PropertiesOfType<Indexed<Type> >&>(properties().get<Indexed<Type> >()));
   }
 
-  /// Access properties of type <Type>.
+  /// Access properties of type \a Type.
   template <typename Type>
   const ConstPropertiesOfType<Type> get() const
   {

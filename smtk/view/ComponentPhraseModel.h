@@ -83,7 +83,7 @@ public:
     *
     * The function \a fn is called with each entry in m_componentFilters, with a resource's
     * unique name as the first argument and the component filter as the second argument.
-    * If \a fn returns a non-zero value, then the visitation terminates early and \fn will
+    * If \a fn returns a non-zero value, then the visitation terminates early and \a fn will
     * not be called again.
     * Otherwise, iteration continues.
     */

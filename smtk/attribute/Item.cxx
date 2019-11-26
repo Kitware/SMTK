@@ -243,7 +243,7 @@ bool Item::passCategoryCheck(const std::string& category) const
   return m_definition->passCategoryCheck(category);
 }
 
-bool Item::Item::passCategoryCheck(const std::set<std::string>& categories) const
+bool Item::passCategoryCheck(const std::set<std::string>& categories) const
 {
   return m_definition->passCategoryCheck(categories);
 }

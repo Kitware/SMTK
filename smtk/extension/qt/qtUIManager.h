@@ -95,7 +95,7 @@ public:
   smtk::extension::qtModelView* activeModelView();
 
   // Description:
-  // Set/Get the color used for indicating items with default values
+  /// Set/Get the color used for indicating items with default values
   void setDefaultValueColor(const QColor& color);
   void setDefaultValueColorRgbF(const QVariantList& color);
   QColor defaultValueColor() const { return this->DefaultValueColor; }
@@ -107,7 +107,7 @@ public:
   QVariantList invalidValueColorRgbF() const;
 
   // Description:
-  // Set the advanced values font to be bold and/or italic
+  /// Set the advanced values font to be bold and/or italic
   void setAdvanceFontStyleBold(bool val);
   bool advanceFontStyleBold() const;
   void setAdvanceFontStyleItalic(bool val);
@@ -119,17 +119,17 @@ public:
   bool advancedItalic() { return this->AdvancedItalic; }
 
   //Description:
-  // Set and Get Value Label Lengths
+  /// Set and Get Value Label Lengths
   int maxValueLabelLength() const { return m_maxValueLabelLength; }
   void setMaxValueLabelLength(int w) { m_maxValueLabelLength = w; }
   int minValueLabelLength() const { return m_minValueLabelLength; }
   void setMinValueLabelLength(int w) { m_minValueLabelLength = w; }
 
   //Description:
-  // Registers a view construction function with a view type string
+  /// Registers a view construction function with a view type string
   void registerViewConstructor(const std::string& vtype, widgetConstructor f);
   //Description:
-  // Check if view type string has a registered view construction function
+  /// Check if view type string has a registered view construction function
   bool hasViewConstructor(const std::string& vtype) const
   {
     return m_constructors.find(vtype) != m_constructors.end();
@@ -138,7 +138,7 @@ public:
   // Registers a qtItem construction function with a qtItem type string
   void registerItemConstructor(const std::string& vtype, qtItemConstructor f);
   //Description:
-  // Check if view type string has a registered view construction function
+  /// Check if view type string has a registered view construction function
   bool hasItemConstructor(const std::string& vtype) const
   {
     return m_itemConstructors.find(vtype) != m_itemConstructors.end();
@@ -151,9 +151,9 @@ public:
   bool categoryEnabled();
   void clearRoot();
 
-  // The default colors defined in smtk::attribute::Definition presuppose the
-  // use of a dark font. This method tests the font lightness and, if the font
-  // color is light, it adapts the input color to contrast with it.
+  /// The default colors defined in smtk::attribute::Definition presuppose the
+  /// use of a dark font. This method tests the font lightness and, if the font
+  /// color is light, it adapts the input color to contrast with it.
   //
   // TODO: We may not want to define color in smtk::core. Instead, we may want
   //       to use Qt's convention of naming entities within a color palette
@@ -195,13 +195,13 @@ public:
   virtual int getWidthOfItemsMaxLabel(
     const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, const QFont& font);
 
-  //Mechanism for creating new GUI view based on registered factory functions
+  ///Mechanism for creating new GUI view based on registered factory functions
   qtBaseView* createView(const ViewInfo& info);
 
-  //Mechanism for creating new GUI item based on registered factory functions
+  ///Mechanism for creating new GUI item based on registered factory functions
   qtItem* createItem(const qtAttributeItemInfo& info);
 
-  // Methods for dealing with selection process
+  /// Methods for dealing with selection process
   smtk::view::SelectionPtr selection() const { return m_selection; }
 
   void setSelection(smtk::view::SelectionPtr newSel) { m_selection = newSel; }
@@ -212,10 +212,10 @@ public:
   int hoverBit() const { return m_hoverBit; }
   void setHoverBit(int val) { m_hoverBit = val; }
 
-  // See if we are dealing with a subset of categories
+  /// See if we are dealing with a subset of categories
   bool topLevelCategoriesSet() const { return m_topLevelCategoriesSet; }
 
-  //methods for saving/retrieving the active tab in a group view
+  ///methods for saving/retrieving the active tab in a group view
   void setActiveTabInfo(const std::string& groupViewName, const std::string& activeTabName);
   std::string activeTabInfo(const std::string& groupViewName) const;
 

@@ -109,8 +109,10 @@ public:
    * @param activeChildren a flag indicating whether it should be applied to active children only or not
    */
   virtual void visitChildren(
-    std::function<void(smtk::attribute::ItemPtr, bool)> /*visitor*/, bool /*activeChildren = true*/)
+    std::function<void(smtk::attribute::ItemPtr, bool)> visitor, bool activeChildren = true)
   {
+    (void)visitor;
+    (void)activeChildren;
   }
   const smtk::attribute::ConstItemDefinitionPtr& definition() const { return m_definition; }
 
@@ -120,27 +122,27 @@ public:
     return std::dynamic_pointer_cast<const DefType>(m_definition);
   }
 
-  // Return the attribute that owns this item
+  /// Return the attribute that owns this item
   smtk::attribute::AttributePtr attribute() const;
   smtk::attribute::ItemPtr owningItem() const
   {
     return (m_owningItem ? m_owningItem->shared_from_this() : smtk::attribute::ItemPtr());
   }
-  //Position is the item's location w/r to the owning item if not null
-  // or the owning attribute. Currently the only items that can own other items are
-  // GroupItem and ValueItem (for expressions)
+  /// Position is the item's location w/r to the owning item if not null
+  /// or the owning attribute. Currently the only items that can own other items are
+  /// GroupItem and ValueItem (for expressions)
   int position() const { return m_position; }
 
   int subGroupPosition() const { return m_subGroupPosition; }
 
-  // Returns true if the item is optional
+  /// Returns true if the item is optional
   bool isOptional() const;
 
-  // An item is enabled under the following coditions:
-  // 1. If it is not owned by another item (such as a group), and either
-  // it is not optional or it has been explicitly enabled
-  // 2. If it's owning item is enabled and  either
-  // it is not optional or it has been explicitly enabled
+  /// An item is enabled under the following coditions:
+  /// 1. If it is not owned by another item (such as a group), and either
+  /// it is not optional or it has been explicitly enabled
+  /// 2. If it's owning item is enabled and  either
+  /// it is not optional or it has been explicitly enabled
   bool isEnabled() const;
   void setIsEnabled(bool isEnabledValue) { m_isEnabled = isEnabledValue; }
 
@@ -148,7 +150,7 @@ public:
   bool isMemberOf(const std::vector<std::string>& categories) const;
 
   /// @{
-  /// \brief Checks to see if the item passes it's definition's category checks.
+  /// \brief Checks to see if the item passes its definition's category checks.
   bool passCategoryCheck(const std::string& category) const;
   bool passCategoryCheck(const std::set<std::string>& categories) const;
   /// @}
@@ -194,14 +196,14 @@ public:
   /// Default behavior here is no-op (returns false).
   virtual bool rotate(std::size_t fromPosition, std::size_t toPosition);
 
-  //This should be used only by attributes
+  /// This should be used only by attributes
   void detachOwningAttribute() { m_attribute = NULL; }
-  //This should only be called by the item that owns
-  // this one
+  /// This should only be called by the item that owns
+  /// this one
   void detachOwningItem() { m_owningItem = NULL; }
 
-  // Assigns this item to be equivalent to another.  Options are processed by derived item classes
-  // Returns true if success and false if a problem occured
+  /// Assigns this item to be equivalent to another.  Options are processed by derived item classes
+  /// Returns true if success and false if a problem occured
   virtual bool assign(smtk::attribute::ConstItemPtr& sourceItem, unsigned int options = 0);
 
   static std::string type2String(Item::Type t);

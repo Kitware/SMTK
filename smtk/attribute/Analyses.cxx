@@ -111,7 +111,6 @@ std::set<std::string> Analyses::Analysis::categories() const
   return result;
 }
 
-/// @{
 /// If the Item is being added either to a Attribute Definition or to a GroupItemDefinition then:
 /// * if the Analysis has no children - an optional VoidItemDefinition is created
 /// * else if its Exclusive Property is true - an optional StringItemDefinition is created
@@ -171,7 +170,7 @@ void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
     child->buildAnalysisItem(gitem);
   }
 }
-///@}
+
 Analyses::~Analyses()
 {
   // Delete all analyses contained

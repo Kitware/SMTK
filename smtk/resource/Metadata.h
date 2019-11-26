@@ -27,12 +27,14 @@ namespace resource
 {
 class Manager;
 
-/// Resources are registered to a resource manager at runtime with an instance
-/// of smtk::resource::Metadata. Instances of this class must provide
-/// <typeName>, a unique (to the manager) string used to describe the resource
+/// @brief Resources are registered to a resource manager at runtime with an instance
+/// of smtk::resource::Metadata.
+///
+/// Instances of this class must provide
+/// \a typeName, a unique (to the manager) string used to describe the resource
 /// within the manager. They may also provide functors for the creation and
-/// serialization/deserialization of the resource to/from disk (<create>,
-/// <write> and <read>, respectively).
+/// serialization/deserialization of the resource to/from disk (\a create,
+/// \a write and \a read, respectively).
 class Metadata
 {
   friend class Manager;

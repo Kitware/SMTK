@@ -413,7 +413,7 @@ void XmlDocV1Parser::getCategories(
   }
 }
 
-bool XmlDocV1Parser::canParse(xml_document& doc)
+bool XmlDocV1Parser::canParse(pugi::xml_document& doc)
 {
   // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeManager");
@@ -437,7 +437,7 @@ bool XmlDocV1Parser::canParse(xml_document& doc)
   return true;
 }
 
-bool XmlDocV1Parser::canParse(xml_node& node)
+bool XmlDocV1Parser::canParse(pugi::xml_node& node)
 {
   // Check the name of the node
   std::string name = node.name();
@@ -461,7 +461,7 @@ bool XmlDocV1Parser::canParse(xml_node& node)
   return true;
 }
 
-void XmlDocV1Parser::process(xml_document& doc)
+void XmlDocV1Parser::process(pugi::xml_document& doc)
 {
   // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeManager");
@@ -476,7 +476,7 @@ void XmlDocV1Parser::process(xml_document& doc)
   this->process(amnode);
 }
 
-void XmlDocV1Parser::process(xml_node& amnode)
+void XmlDocV1Parser::process(pugi::xml_node& amnode)
 {
   // Lets get the UUID of the resource if there is one
   auto idAtt = amnode.attribute("ID");

@@ -77,6 +77,7 @@ def configFile(srcdir, blddir, templateFile, outputFile, keywords):
     ofile.write(data)
     ofile.close()
 
+
 if readTheDocs or localReadTheDocs:
     """Configure files and run Doxygen ourselves"""
     # Configure some files
@@ -150,6 +151,7 @@ def readVersionInfo(srcdir):
     # The full version, including alpha/beta/rc tags.
     release = vinfo
     return (version, release)
+
 
 version, release = readVersionInfo(sourcedir)
 
@@ -349,13 +351,13 @@ htmlhelp_basename = 'SMTKdoc'
 
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
-    #'papersize': 'letterpaper',
+    # 'papersize': 'letterpaper',
 
     # The font size ('10pt', '11pt' or '12pt').
-    #'pointsize': '10pt',
+    # 'pointsize': '10pt',
 
     # Additional stuff for the LaTeX preamble.
-    #'preamble': '',
+    # 'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -429,7 +431,7 @@ texinfo_documents = [
 epub_title = u'SMTK: Simulation Modeling Tool Kit'
 epub_author = u'Kitware, Inc.'
 epub_publisher = u'Kitware, Inc.'
-epub_copyright = u'2014, Kitware, Inc.'
+epub_copyright = copyright
 
 # The basename for the epub file. It defaults to the project name.
 # epub_basename = u'SMTK'

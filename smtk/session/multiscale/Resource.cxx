@@ -18,12 +18,12 @@ namespace session
 namespace multiscale
 {
 
-Resource::Resource(const smtk::common::UUID& id, resource::Manager::Ptr manager)
+Resource::Resource(const smtk::common::UUID& id, smtk::resource::Manager::Ptr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::session::mesh::Resource>(id, manager)
 {
 }
 
-Resource::Resource(resource::Manager::Ptr manager)
+Resource::Resource(smtk::resource::Manager::Ptr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::session::mesh::Resource>(manager)
 {
 }

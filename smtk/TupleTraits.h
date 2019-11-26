@@ -13,6 +13,7 @@
 
 #include <tuple>
 
+/// @file TupleTraits.h Tuple convenience functions
 namespace smtk
 {
 namespace detail
@@ -20,23 +21,28 @@ namespace detail
 /// If T is in Tuple, return std::tuple<T>. Otherwise, return std::tuple<>.
 ///
 /// Examples:
+/// ```
 ///   tuple_if_unique<int, std::tuple<float, double>::type == std::tuple<int>
 ///   tuple_if_unique<int, std::tuple<int, double>::type == std::tuple<>
+/// ```
 template <typename T, typename Tuple>
 struct tuple_if_unique;
 
+/// @see tuple_if_unique
 template <typename T>
 struct tuple_if_unique<T, std::tuple<> >
 {
   using type = std::tuple<T>;
 };
 
+/// @see tuple_if_unique
 template <typename T, typename U, typename... Ts>
 struct tuple_if_unique<T, std::tuple<U, Ts...> >
 {
   using type = typename tuple_if_unique<T, std::tuple<Ts...> >::type;
 };
 
+/// @see tuple_if_unique
 template <typename T, typename... Ts>
 struct tuple_if_unique<T, std::tuple<T, Ts...> >
 {
@@ -47,14 +53,17 @@ struct tuple_if_unique<T, std::tuple<T, Ts...> >
 /// Otherwise, return T.
 ///
 /// Examples:
+/// ```
 ///   untuple<int>::type == int
 ///   untuple<std::tuple<int>::type == int
+/// ```
 template <typename T>
 struct untuple
 {
   using type = T;
 };
 
+/// @see untuple
 template <typename T>
 struct untuple<std::tuple<T> >
 {
@@ -66,18 +75,22 @@ struct untuple<std::tuple<T> >
 /// and the plain types.
 ///
 /// Examples:
+/// ```
 ///   flatten_tuple<std::tuple<int, float>>::type == std::tuple<int, float>
 ///   flatten_tuple<std::tuple<int, std::tuple<float, float>>>::type ==
 ///     std::tuple<int, float, float>
+/// ```
 template <typename T>
 struct flatten_tuple;
 
+/// @see flatten_tuple
 template <>
 struct flatten_tuple<std::tuple<> >
 {
   using type = std::tuple<>;
 };
 
+/// @see flatten_tuple
 template <typename T, typename... Args>
 struct flatten_tuple<std::tuple<T, Args...> >
 {
@@ -90,23 +103,28 @@ struct flatten_tuple<std::tuple<T, Args...> >
 /// duplicate types removed.
 ///
 /// Examples:
+/// ```
 ///   unique_tuple<std::tuple<int, float>>::type == std::tuple<int, float>
 ///   unique_tuple<std::tuple<int, int, float>>::type == std::tuple<int, float>
+/// ```
 template <typename T, typename... Args>
 struct unique_tuple;
 
+/// @see unique_tuple
 template <>
 struct unique_tuple<std::tuple<> >
 {
   using type = std::tuple<>;
 };
 
+/// @see unique_tuple
 template <typename T>
 struct unique_tuple<std::tuple<T> >
 {
   using type = std::tuple<T>;
 };
 
+/// @see unique_tuple
 template <typename T, typename... Args>
 struct unique_tuple<std::tuple<T, Args...> >
 {
@@ -119,18 +137,22 @@ struct unique_tuple<std::tuple<T, Args...> >
 /// original types sans the input type.
 ///
 /// Examples:
+/// ```
 ///   remove_from_tuple<bool, std::tuple<int, float>>::type ==
-///     std::tuple<int, float>
+///      std::tuple<int, float>
 ///   remove_from_tuple<int, std::tuple<int, float>>::type == std::tuple<float>
+/// ```
 template <typename T, typename Tuple>
 struct remove_from_tuple;
 
+/// @see remove_from_tuple
 template <typename T, typename... Args>
 struct remove_from_tuple<T, std::tuple<T, Args...> >
 {
   using type = decltype(std::declval<typename remove_from_tuple<T, std::tuple<Args...> >::type>());
 };
 
+/// @see remove_from_tuple
 template <typename T, typename X, typename... Args>
 struct remove_from_tuple<T, std::tuple<X, Args...> >
 {
@@ -138,6 +160,7 @@ struct remove_from_tuple<T, std::tuple<X, Args...> >
     std::declval<typename remove_from_tuple<T, std::tuple<Args...> >::type>()));
 };
 
+/// @see remove_from_tuple
 template <typename T>
 struct remove_from_tuple<T, std::tuple<> >
 {
@@ -148,16 +171,20 @@ struct remove_from_tuple<T, std::tuple<> >
 /// instance of that type in the tuple.
 ///
 /// Examples:
+/// ```
 ///   tuple_index<bool, std::tuple<int, bool, float>>::value == 1
+/// ```
 template <class T, class Tuple>
 struct tuple_index;
 
+/// @see tuple_index
 template <class T, class... Types>
 struct tuple_index<T, std::tuple<T, Types...> >
 {
   constexpr static const std::size_t value = 0;
 };
 
+/// @see tuple_index
 template <class T, class U, class... Types>
 struct tuple_index<T, std::tuple<U, Types...> >
 {
@@ -168,21 +195,26 @@ struct tuple_index<T, std::tuple<U, Types...> >
 /// not the type is in the tuple.
 ///
 /// Examples:
+/// ```
 ///   tuple_contains<bool, std::tuple<int, bool, float>>() == true
 ///   tuple_contains<bool, std::tuple<int, float>>() == false
+/// ```
 template <typename T, typename Tuple>
 struct tuple_contains;
 
+/// @see tuple_contains
 template <typename T>
 struct tuple_contains<T, std::tuple<> > : std::false_type
 {
 };
 
+/// @see tuple_contains
 template <typename T, typename U, typename... Ts>
 struct tuple_contains<T, std::tuple<U, Ts...> > : tuple_contains<T, std::tuple<Ts...> >
 {
 };
 
+/// @see tuple_contains
 template <typename T, typename... Ts>
 struct tuple_contains<T, std::tuple<T, Ts...> > : std::true_type
 {

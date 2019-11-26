@@ -70,7 +70,7 @@ void XmlDocV3Parser::process(pugi::xml_node& rootNode)
   }
 }
 
-bool XmlDocV3Parser::canParse(xml_document& doc)
+bool XmlDocV3Parser::canParse(pugi::xml_document& doc)
 {
   // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeResource");
@@ -94,7 +94,7 @@ bool XmlDocV3Parser::canParse(xml_document& doc)
   return true;
 }
 
-bool XmlDocV3Parser::canParse(xml_node& node)
+bool XmlDocV3Parser::canParse(pugi::xml_node& node)
 {
   // Check the name of the node
   std::string name = node.name();
@@ -118,13 +118,13 @@ bool XmlDocV3Parser::canParse(xml_node& node)
   return true;
 }
 
-xml_node XmlDocV3Parser::getRootNode(xml_document& doc)
+pugi::xml_node XmlDocV3Parser::getRootNode(pugi::xml_document& doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeResource");
   return amnode;
 }
 
-void XmlDocV3Parser::process(xml_document& doc)
+void XmlDocV3Parser::process(pugi::xml_document& doc)
 {
   // Get the attribute resource node
   xml_node amnode = doc.child("SMTK_AttributeResource");
