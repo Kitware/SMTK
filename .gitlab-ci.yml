@@ -61,6 +61,12 @@
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
 
+.fedora31_tidy: &fedora31_tidy
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_tidy
+
 .fedora31_vtk_python2: &fedora31_vtk_python2
     extends: .fedora31
     image: "kitware/cmb:ci-smtk-fedora31-vtk-python2-20191125"
@@ -310,6 +316,29 @@ test:fedora31-asan:
         - build:fedora31-asan
     needs:
         - build:fedora31-asan
+
+build:fedora31-tidy:
+    <<:
+        - *fedora31_tidy
+    stage: build
+    only: *only_settings
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
+
+    script:
+        - dnf install -y --setopt=install_weak_deps=False clang-tools-extra
+        - .gitlab/ci/sccache.sh
+        - export PATH=$PATH:$PWD/.gitlab
+        - sccache --start-server
+        - sccache --show-stats
+        - "$CMAKE --version"
+        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_configure.cmake"
+        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_build.cmake"
+        - sccache --show-stats
+    interruptible: true
 
 build:fedora31-coverage:
     <<:
