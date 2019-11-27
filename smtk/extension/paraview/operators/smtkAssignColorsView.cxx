@@ -283,7 +283,7 @@ void smtkAssignColorsView::createWidget()
   this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
   this->Internals->EditorLayout = new QHBoxLayout;
-  this->updateAttributeData();
+  this->updateUI();
 
   QWidget* wtmp = new QWidget;
   this->Internals->setupUi(wtmp);
@@ -333,7 +333,12 @@ void smtkAssignColorsView::createWidget()
   QObject::connect(this->Internals->InfoBtn, SIGNAL(released()), this, SLOT(onInfo()));
 }
 
-void smtkAssignColorsView::updateAttributeData()
+void smtkAssignColorsView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void smtkAssignColorsView::updateUI()
 {
   smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
@@ -537,14 +542,9 @@ void smtkAssignColorsView::removeColors()
   this->requestOperation(this->Internals->CurrentOp);
 }
 
-void smtkAssignColorsView::showAdvanceLevelOverlay(bool show)
-{
-  this->qtBaseView::showAdvanceLevelOverlay(show);
-}
-
 void smtkAssignColorsView::requestModelEntityAssociation()
 {
-  this->updateAttributeData();
+  this->updateUI();
 }
 
 void smtkAssignColorsView::setInfoToBeDisplayed()

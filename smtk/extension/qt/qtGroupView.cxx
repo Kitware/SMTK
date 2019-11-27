@@ -369,7 +369,7 @@ void qtGroupView::updateUI()
 void qtGroupView::onShowCategory()
 {
   this->Internals->updateChildren(this, &qtBaseView::onShowCategory);
-  this->qtBaseView::onShowCategory();
+  this->qtBaseAttributeView::onShowCategory();
 }
 
 void qtGroupView::showAdvanceLevelOverlay(bool show)
@@ -378,7 +378,7 @@ void qtGroupView::showAdvanceLevelOverlay(bool show)
   {
     childView->showAdvanceLevelOverlay(show);
   }
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 void qtGroupView::addTabEntry(qtBaseView* child)

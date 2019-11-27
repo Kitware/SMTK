@@ -43,8 +43,9 @@ public:
   bool isEmpty() const override;
 
 public slots:
+  void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
-  void onShowCategory() override { this->updateAttributeData(); }
+  void onShowCategory() override;
 
 signals:
   // emitted when an attribute is modified
@@ -52,7 +53,6 @@ signals:
   void itemModified(qtItem*);
 
 protected:
-  void updateAttributeData() override;
   void createWidget() override;
   // This View needs to handle changes made to resources as a result of an operation.
   // This method is used by the observation mechanism to address these changes

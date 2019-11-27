@@ -158,7 +158,7 @@ void qtPolygonEdgeOperationView::createWidget()
   this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
   this->Internals->EditorLayout = new QVBoxLayout;
-  this->updateAttributeData();
+  this->updateUI();
   layout->addLayout(this->Internals->EditorLayout);
   layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Maximum));
 
@@ -168,7 +168,12 @@ void qtPolygonEdgeOperationView::createWidget()
     SLOT(cancelOperation(const smtk::operation::OperationPtr&)));
 }
 
-void qtPolygonEdgeOperationView::updateAttributeData()
+void qtPolygonEdgeOperationView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void qtPolygonEdgeOperationView::updateUI()
 {
   smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
@@ -490,12 +495,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::operation::Operat
   }
 }
 
-void qtPolygonEdgeOperationView::showAdvanceLevelOverlay(bool show)
-{
-  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
-}
-
 void qtPolygonEdgeOperationView::requestModelEntityAssociation()
 {
-  this->updateAttributeData();
+  this->updateUI();
 }

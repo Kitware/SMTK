@@ -57,9 +57,9 @@ public:
   const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& attDefinitionMap() const;
 
   bool isEmpty() const override;
-  void displayAttributes();
 
 public slots:
+  void updateUI() override;
   void onShowCategory() override;
   void updateModelAssociation() override;
   void onAttributeChanged(int);

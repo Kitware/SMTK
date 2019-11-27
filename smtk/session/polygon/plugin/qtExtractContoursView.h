@@ -31,9 +31,10 @@ public:
   virtual ~qtExtractContoursView();
 
 public slots:
-  void showAdvanceLevelOverlay(bool show) override;
+  void updateUI() override;
   void requestModelEntityAssociation() override;
-  void onShowCategory() override { this->updateAttributeData(); }
+  void onShowCategory() override;
+
   // This will be triggered by selecting different type
   // of edge operations, create-edge, edit-edge, or split-edge.
   virtual void operationSelected(const smtk::operation::OperationPtr& op);
@@ -45,7 +46,6 @@ protected slots:
   virtual void acceptContours(pqPipelineSource* contourSource);
 
 protected:
-  void updateAttributeData() override;
   void createWidget() override;
 
 private:

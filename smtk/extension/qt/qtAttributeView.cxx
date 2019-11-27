@@ -435,7 +435,7 @@ void qtAttributeView::createWidget()
 
 void qtAttributeView::updateModelAssociation()
 {
-  this->onShowCategory();
+  this->updateUI();
 }
 
 smtk::attribute::Attribute* qtAttributeView::getRawAttributeFromItem(QTableWidgetItem* item)
@@ -1024,6 +1024,11 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
 }
 
 void qtAttributeView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void qtAttributeView::updateUI()
 {
   int viewBy = this->Internals->ViewByCombo->currentIndex();
   this->onViewBy(viewBy);

@@ -474,16 +474,6 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
   }
 }
 
-void qtUIManager::updateModelViews()
-{
-  auto iview = dynamic_cast<qtBaseAttributeView*>(m_topView);
-  if (!iview)
-  {
-    return;
-  }
-  iview->updateModelAssociation();
-}
-
 QColor qtUIManager::contrastWithText(const QColor& color)
 {
   int textLightness = QGuiApplication::palette().text().color().lightness();

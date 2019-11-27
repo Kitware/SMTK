@@ -503,7 +503,7 @@ void qtBaseAttributeView::showAdvanceLevel(int level)
   {
     this->showAdvanceLevelOverlay(true);
   }
-  this->onShowCategory();
+  this->updateUI();
 }
 
 void qtBaseAttributeView::enableShowBy(int enable)
