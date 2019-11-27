@@ -22,6 +22,35 @@ Manager::Manager() = default;
 
 Manager::~Manager() = default;
 
+bool Manager::unregisterViewWidget(const std::string& typeName)
+{
+  auto iter = m_viewWidgets.find(typeName);
+  if (iter != m_viewWidgets.end())
+  {
+    m_viewWidgets.erase(iter);
+    return true;
+  }
+
+  return false;
+}
+
+smtk::extension::qtBaseView* Manager::createViewWidget(
+  const std::string& typeName, const smtk::extension::ViewInfo& info)
+{
+  smtk::extension::qtBaseView* viewWidget;
+
+  // Locate the constructor associated with this resource type
+  auto iter = m_viewWidgets.find(typeName);
+  if (iter != m_viewWidgets.end())
+  {
+    // Create the viewWidget, set its Manager
+    viewWidget = iter->second(info);
+    // viewWidget->m_manager = shared_from_this();
+  }
+
+  return viewWidget;
+}
+
 bool Manager::unregisterPhraseModel(const std::string& typeName)
 {
   auto iter = m_phraseModels.find(typeName);

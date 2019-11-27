@@ -25,8 +25,16 @@
 #include <type_traits>
 #include <typeinfo>
 
+// class smtk::extension::qtBaseView;
+// class smtk::extension::ViewInfo;
+
 namespace smtk
 {
+namespace extension
+{
+class qtBaseView;
+class ViewInfo;
+}
 namespace view
 {
 /// A view Manager is responsible for creating new views (eventually) as well as
@@ -34,13 +42,61 @@ namespace view
 class SMTKCORE_EXPORT Manager : smtkEnableSharedPtr(Manager)
 {
 public:
-  smtkTypedefs(smtk::view::Manager);
+  smtkTypeMacroBase(smtk::view::Manager);
   smtkCreateMacro(smtk::view::Manager);
 
   using PhraseModelConstructor = std::function<PhraseModelPtr(void)>;
   using SubphraseGeneratorConstructor = std::function<SubphraseGeneratorPtr(void)>;
+  using ViewWidgetConstructor =
+    std::function<smtk::extension::qtBaseView*(const smtk::extension::ViewInfo& info)>;
 
   virtual ~Manager();
+
+  // ------ ViewWidget ------
+  /// Register a resource identified by its class type.
+  template <typename ResourceType>
+  bool registerViewWidget();
+
+  /// Register a resource identified by its class type and type name.
+  template <typename ResourceType>
+  bool registerViewWidget(const std::string&);
+
+  /// Register a tuple of views identified by their class types.
+  template <typename Tuple>
+  bool registerViewWidgets()
+  {
+    return Manager::registerViewWidgets<0, Tuple>();
+  }
+
+  /// Register a tuple of views identified by their class types and type
+  /// names.
+  template <typename Tuple>
+  bool registerViewWidgets(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
+  {
+    return Manager::registerViewWidgets<0, Tuple>(typeNames);
+  }
+
+  /// Unregister a resource identified by its class type.
+  template <typename ResourceType>
+  bool unregisterViewWidget();
+
+  /// Unregister a ViewWidget identified by its type name.
+  bool unregisterViewWidget(const std::string&);
+
+  // Unregister a tuple of ViewWidgets identified by their class types.
+  template <typename Tuple>
+  bool unregisterViewWidgets()
+  {
+    return Manager::unregisterViewWidgets<0, Tuple>();
+  }
+
+  /// Construct a ViewWidget identified by its type name.
+  smtk::extension::qtBaseView* createViewWidget(
+    const std::string&, const smtk::extension::ViewInfo& info);
+
+  /// Construct a ViewWidget identified by its class type.
+  template <typename ViewWidgetType>
+  smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
   // ------ PhraseModel ------
   /// Register a resource identified by its class type.
@@ -136,8 +192,59 @@ public:
   template <typename SubphraseGeneratorType>
   smtk::shared_ptr<SubphraseGeneratorType> createSubphrase();
 
-private:
+protected:
   Manager();
+
+private:
+  // ------ ViewWidget ------
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
+  registerViewWidgets()
+  {
+    bool registered = this->registerViewWidget<typename std::tuple_element<I, Tuple>::type>();
+    return registered && Manager::registerViewWidgets<I + 1, Tuple>();
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
+  registerViewWidgets()
+  {
+    return true;
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
+  registerViewWidgets(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
+  {
+    bool registered =
+      this->registerViewWidget<typename std::tuple_element<I, Tuple>::type>(typeNames.at(I));
+    return registered && Manager::registerViewWidgets<I + 1, Tuple>(typeNames);
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
+  registerViewWidgets(const std::array<std::string, std::tuple_size<Tuple>::value>&)
+  {
+    return true;
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
+  unregisterViewWidgets()
+  {
+    bool unregistered = this->unregisterViewWidget<typename std::tuple_element<I, Tuple>::type>();
+    return unregistered && Manager::unregisterViewWidgets<I + 1, Tuple>();
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
+  unregisterViewWidgets()
+  {
+    return true;
+  }
+
+  /// A container for all registered ViewWidget constructors.
+  std::map<std::string, ViewWidgetConstructor> m_viewWidgets;
 
   // ------ PhraseModel ------
   template <std::size_t I, typename Tuple>
@@ -242,6 +349,38 @@ private:
   /// A container for all registered SubphraseGenerator constructors.
   std::map<std::string, SubphraseGeneratorConstructor> m_subphraseGenerators;
 };
+// ------ ViewWidget ------
+template <typename ViewWidgetType>
+bool Manager::unregisterViewWidget()
+{
+  return this->unregisterViewWidget(smtk::common::typeName<ViewWidgetType>());
+}
+
+template <typename ViewWidgetType>
+smtk::extension::qtBaseView* Manager::createViewWidget(const smtk::extension::ViewInfo& info)
+{
+  return this->createViewWidget(smtk::common::typeName<ViewWidgetType>(), info);
+}
+
+template <typename ViewWidgetType>
+bool Manager::registerViewWidget()
+{
+  return Manager::registerViewWidget<ViewWidgetType>(smtk::common::typeName<ViewWidgetType>());
+}
+
+template <typename ViewWidgetType>
+bool Manager::registerViewWidget(const std::string& typeName)
+{
+  // see if already exists:
+  if (m_viewWidgets.find(typeName) == m_viewWidgets.end())
+  {
+    // Must wrap: m_viewWidgets[typeName] = ViewWidgetType::createViewWidget;
+    m_viewWidgets[typeName] = [](
+      const smtk::extension::ViewInfo& info) { return ViewWidgetType::createViewWidget(info); };
+    return true;
+  }
+  return false;
+}
 
 // ------ PhraseModel ------
 template <typename PhraseModelType>

@@ -39,6 +39,7 @@ set(QAttrLibSrcs
   qtColorButton.cxx
   qtLineEdit.cxx
   qtDoubleLineEdit.cxx
+  qtViewRegistrar.cxx
 
   qtItem.cxx
   qtDiscreteValueEditor.cxx
@@ -139,6 +140,7 @@ set(QAttrLibHeaders
   qtStringItem.h
   qtTypeDeclarations.h
   qtViewInterface.h
+  qtViewRegistrar.h
 )
 
 #install the headers
@@ -176,6 +178,11 @@ smtk_export_header(smtkQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkQtExt)
+
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  set_property(GLOBAL APPEND
+    PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif()
 
 if (SMTK_ENABLE_EXAMPLES)
   add_subdirectory(examples)
