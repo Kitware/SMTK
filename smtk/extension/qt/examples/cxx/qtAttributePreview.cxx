@@ -24,7 +24,9 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
+#include "smtk/resource/Manager.h"
 #include "smtk/view/Configuration.h"
+#include "smtk/view/View.h"
 
 #ifdef VTK_SESSION
 #include "smtk/session/vtk/Resource.h"
@@ -89,6 +91,10 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  // Initialize resource manager
+  auto resourceManager = smtk::resource::Manager::create();
+  resourceManager->registerResource<smtk::attribute::Resource>();
+
   // Instantiate and load attribute resource
   smtk::attribute::ResourcePtr attResource = smtk::attribute::Resource::create();
   std::string inputPath = positionalArguments.first().toStdString();
@@ -103,8 +109,11 @@ int main(int argc, char* argv[])
     qCritical() << QString::fromStdString(inputLogger.convertToString());
     return 1;
   }
+  resourceManager->add(attResource);
 
 #ifdef VTK_SESSION
+  resourceManager->registerResource<smtk::session::vtk::Resource>();
+
   // Load model if specified
   smtk::session::vtk::Resource::Ptr modelResource;
   if (parser.isSet("model-file"))
@@ -144,12 +153,12 @@ int main(int argc, char* argv[])
         loadOpResult->findResource("resource"));
 
     modelResource = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->value());
-
     if (!modelResource)
     {
-      qCritical() << "ERROR: Model file failed to import.\n";
+      qCritical() << "ERROR loading model file " << modelFile << "\n";
       return 1;
     }
+    bool added = resourceManager->add(modelResource);
 
     // If model resource loaded, then associate it to the attribute resource
     attResource->associate(modelResource);
@@ -218,6 +227,7 @@ int main(int argc, char* argv[])
 
   // Instantiate smtk's qtUIManager
   smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(attResource);
+  uiManager->setResourceManager(resourceManager);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget* widget = new QWidget();
