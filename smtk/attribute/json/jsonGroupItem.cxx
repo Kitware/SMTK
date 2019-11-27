@@ -42,13 +42,8 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemPtr& itemP
     j["NumberOfGroups"] = n;
   }
 
-  if (!n)
-  {
-    return;
-  }
-
   // Optimize for number of required groups = 1
-  if (numRequiredGroups == 1)
+  else if (numRequiredGroups == 1)
   {
     json groupClusters, cluster;
     for (size_t itemPGIter = 0; itemPGIter < m; itemPGIter++)
@@ -68,6 +63,11 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::GroupItemPtr& itemP
     // for handling result
     groupClusters["Cluster 0"] = cluster;
     j["GroupClusters"] = groupClusters;
+    return;
+  }
+
+  if (!n)
+  {
     return;
   }
 
