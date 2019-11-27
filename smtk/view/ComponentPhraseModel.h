@@ -10,8 +10,8 @@
 #ifndef smtk_view_ComponentPhraseModel_h
 #define smtk_view_ComponentPhraseModel_h
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/PhraseModel.h"
-#include "smtk/view/View.h"
 
 #include <functional>
 #include <map>
@@ -49,7 +49,7 @@ public:
     * properly initializes its subphrase generator with a reference to
     * the created model so that subphrases are properly decorated.
     */
-  static PhraseModelPtr create(const View::Component& viewComp);
+  static PhraseModelPtr create(const smtk::view::Configuration::Component& viewComp);
 
   /// Return the active resource (i.e., the one resource whose components should be displayed).
   smtk::resource::ResourcePtr activeResource() const { return m_activeResource; }

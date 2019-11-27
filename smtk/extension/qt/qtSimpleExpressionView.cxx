@@ -25,7 +25,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QFileDialog>
 #include <QGridLayout>
@@ -751,7 +751,7 @@ void qtSimpleExpressionView::onRemoveSelectedValues()
 
 void qtSimpleExpressionView::initFunctionList()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;

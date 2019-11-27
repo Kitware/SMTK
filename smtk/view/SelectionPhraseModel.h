@@ -29,7 +29,7 @@ public:
   smtkTypeMacro(smtk::view::SelectionPhraseModel);
   smtkSuperclassMacro(smtk::view::PhraseModel);
   smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
-  static PhraseModelPtr create(const ViewPtr& view);
+  static PhraseModelPtr create(const ConfigurationPtr& view);
   virtual ~SelectionPhraseModel();
 
   /// Return the root phrase of the hierarchy.

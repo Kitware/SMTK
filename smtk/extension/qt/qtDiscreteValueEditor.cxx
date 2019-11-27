@@ -306,7 +306,7 @@ void qtDiscreteValueEditor::updateContents()
       }
       else
       {
-        smtk::view::View::Component comp; // create a default view style
+        smtk::view::Configuration::Component comp; // create a default view style
         qtAttributeItemInfo info(citem, comp, this->Internals->m_childrenFrame.data(),
           this->Internals->m_inputItem->m_itemInfo.baseView());
         childItem = this->Internals->m_inputItem->uiManager()->createItem(info);

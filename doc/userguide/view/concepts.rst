@@ -4,7 +4,7 @@ Key Concepts
 There are 2 ways that presentation is abstracted in SMTK:
 views and trees of descriptive phrases.
 
-:smtk:`View <smtk::view::View>`
+:smtk:`View <smtk::view::Configuration>`
   instances are containers that hold information used to configure a view.
   There are currently 2 types of views in SMTK:
   * attribute views, which allow users to inspect and edit an entire attribute resource; and
@@ -30,7 +30,7 @@ views and trees of descriptive phrases.
 
   Configuration information specifying how phrases should be arranged
   and what portions should be editable is held in a
-  :smtk:`View <smtk::view::View>` instance, since a view will hold
+  :smtk:`View <smtk::view::Configuration>` instance, since a view will hold
   the top of the phrase tree.
 
 Besides views and descriptive phrases,

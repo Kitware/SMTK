@@ -20,7 +20,7 @@
 #include "smtk/resource/Resource.h"
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #include "smtk/model/Resource.h"
 
 namespace py = pybind11;

@@ -24,7 +24,7 @@
 #include "smtk/extension/qt/qtAttributeEditorDialog.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -289,7 +289,7 @@ void qtBaseAttributeView::setInitialCategory()
   }
 }
 
-void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::ViewPtr& view)
+void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::ConfigurationPtr& view)
 {
   bool flag;
   // Do we need to provide advance level filtering? - this is on by default
@@ -318,7 +318,7 @@ void qtBaseAttributeView::topLevelPrepAdvanceLevels(const smtk::view::ViewPtr& v
 }
 
 void qtBaseAttributeView::topLevelPrepCategories(
-  const smtk::view::ViewPtr& view, const smtk::attribute::ResourcePtr& attResource)
+  const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource)
 {
   bool flag;
   // Do we need to provide category filtering - this is on by default
@@ -353,7 +353,7 @@ void qtBaseAttributeView::topLevelPrepCategories(
 }
 
 void qtBaseAttributeView::topLevelPrepConfigurations(
-  const smtk::view::ViewPtr& view, const smtk::attribute::ResourcePtr& attResource)
+  const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource)
 {
   bool flag;
   // Do we need to provide category filtering - this is off by default
@@ -407,7 +407,7 @@ void qtBaseAttributeView::makeTopLevel()
   this->qtBaseView::makeTopLevel();
   m_topLevelInitialized = true;
 
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
 
   this->Internals->clearWidgets();
   const attribute::ResourcePtr attResource = this->uiManager()->attResource();
@@ -480,7 +480,7 @@ void qtBaseAttributeView::showAdvanceLevel(int level)
     return;
   }
 
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;

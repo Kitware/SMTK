@@ -26,7 +26,7 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Resource.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #include <algorithm>
 #include <iostream>
 
@@ -454,7 +454,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
   {
     xml_attribute xatt;
     std::string name, vtype, icon;
-    smtk::view::ViewPtr view;
+    smtk::view::ConfigurationPtr view;
     xatt = child.attribute("Name");
     if (xatt)
     {
@@ -485,7 +485,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
       continue;
     }
 
-    view = smtk::view::View::New(vtype, name);
+    view = smtk::view::Configuration::New(vtype, name);
     xatt = child.attribute("Icon");
     if (xatt)
     {
@@ -499,7 +499,7 @@ void XmlDocV2Parser::processViews(xml_node& root)
 }
 
 void XmlDocV2Parser::processViewComponent(
-  smtk::view::View::Component& comp, xml_node& node, bool isTopComp)
+  smtk::view::Configuration::Component& comp, xml_node& node, bool isTopComp)
 {
   // Add the attributes of the node to the component
   xml_attribute xatt;

@@ -65,7 +65,7 @@ private:
   Ui::qtAttributeEditorWidget* m_widget;
   smtk::extension::qtAttribute* m_qtAttribute;
   std::unique_ptr<qtInstancedView> m_instancedView;
-  smtk::view::ViewPtr m_instancedViewDef;
+  smtk::view::ConfigurationPtr m_instancedViewDef;
 };
 }
 }

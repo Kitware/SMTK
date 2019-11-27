@@ -11,7 +11,7 @@
 // .SECTION Description
 // .SECTION See Also
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #include <algorithm>
 #include <sstream> // std::istringstream
 
@@ -20,13 +20,13 @@ namespace smtk
 namespace view
 {
 
-View::Component& View::Component::setContents(const std::string& c)
+Configuration::Component& Configuration::Component::setContents(const std::string& c)
 {
   m_contents = c;
   return *this;
 }
 
-bool View::Component::attributeAsBool(const std::string& attname, bool& val) const
+bool Configuration::Component::attributeAsBool(const std::string& attname, bool& val) const
 {
   std::string s;
   if (!this->attribute(attname, s))
@@ -49,7 +49,7 @@ bool View::Component::attributeAsBool(const std::string& attname, bool& val) con
   return false;
 }
 
-bool View::Component::attributeAsInt(const std::string& attname, int& val) const
+bool Configuration::Component::attributeAsInt(const std::string& attname, int& val) const
 {
   std::string s;
   if (!this->attribute(attname, s))
@@ -61,7 +61,7 @@ bool View::Component::attributeAsInt(const std::string& attname, int& val) const
   return true;
 }
 
-bool View::Component::attributeAsDouble(const std::string& attname, double& val) const
+bool Configuration::Component::attributeAsDouble(const std::string& attname, double& val) const
 {
   std::string s;
   if (!this->attribute(attname, s))
@@ -73,7 +73,7 @@ bool View::Component::attributeAsDouble(const std::string& attname, double& val)
   return true;
 }
 
-bool View::Component::attributeAsBool(const std::string& attname) const
+bool Configuration::Component::attributeAsBool(const std::string& attname) const
 {
   bool v;
   if (this->attributeAsBool(attname, v))
@@ -83,7 +83,7 @@ bool View::Component::attributeAsBool(const std::string& attname) const
   return false;
 }
 
-bool View::Component::contentsAsInt(int& val) const
+bool Configuration::Component::contentsAsInt(int& val) const
 {
   std::istringstream iss(m_contents);
   iss >> val;
@@ -94,7 +94,7 @@ bool View::Component::contentsAsInt(int& val) const
   return true;
 }
 
-bool View::Component::contentsAsVector(std::vector<double>& vec) const
+bool Configuration::Component::contentsAsVector(std::vector<double>& vec) const
 {
   std::istringstream iss(m_contents);
   char c;
@@ -118,13 +118,13 @@ bool View::Component::contentsAsVector(std::vector<double>& vec) const
   return (vec.size() > 0);
 }
 
-bool View::Component::attribute(const std::string& attname) const
+bool Configuration::Component::attribute(const std::string& attname) const
 {
   std::string dummy;
   return this->attribute(attname, dummy);
 }
 
-bool View::Component::attribute(const std::string& attname, std::string& value) const
+bool Configuration::Component::attribute(const std::string& attname, std::string& value) const
 {
   std::map<std::string, std::string>::const_iterator it;
   it = m_attributes.find(attname);
@@ -136,25 +136,26 @@ bool View::Component::attribute(const std::string& attname, std::string& value) 
   return true;
 }
 
-View::Component& View::Component::setAttribute(const std::string& attname, const std::string& value)
+Configuration::Component& Configuration::Component::setAttribute(
+  const std::string& attname, const std::string& value)
 {
   m_attributes[attname] = value;
   return *this;
 }
 
-View::Component& View::Component::unsetAttribute(const std::string& attname)
+Configuration::Component& Configuration::Component::unsetAttribute(const std::string& attname)
 {
   m_attributes.erase(attname);
   return *this;
 }
 
-View::Component& View::Component::addChild(const std::string& childName)
+Configuration::Component& Configuration::Component::addChild(const std::string& childName)
 {
   m_children.push_back(Component(childName));
   return m_children.back();
 }
 
-int View::Component::findChild(const std::string& compName) const
+int Configuration::Component::findChild(const std::string& compName) const
 {
   int i, n = static_cast<int>(m_children.size());
   for (i = 0; i < n; i++)
@@ -167,7 +168,7 @@ int View::Component::findChild(const std::string& compName) const
   return -1;
 }
 
-void View::Component::copyContents(const Component& comp)
+void Configuration::Component::copyContents(const Component& comp)
 {
   m_name = comp.m_name;
   m_attributes = comp.m_attributes;
@@ -179,7 +180,7 @@ void View::Component::copyContents(const Component& comp)
   }
 }
 
-View::View(const std::string& myType, const std::string& myName)
+Configuration::Configuration(const std::string& myType, const std::string& myName)
   : m_name(myName)
   , m_type(myType)
   , m_details("Details")
@@ -187,17 +188,17 @@ View::View(const std::string& myType, const std::string& myName)
 {
 }
 
-View::~View()
+Configuration::~Configuration()
 {
 }
 
-void View::copyContents(const View& view)
+void Configuration::copyContents(const Configuration& view)
 {
   m_iconName = view.m_iconName;
   m_details.copyContents(view.m_details);
 }
 
-std::string View::label() const
+std::string Configuration::label() const
 {
   std::string l;
   if (m_details.attribute("Label", l))

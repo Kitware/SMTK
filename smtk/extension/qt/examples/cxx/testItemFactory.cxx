@@ -30,7 +30,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -88,7 +88,7 @@ int testLifecycle()
   AttributePtr att = createAttribForTest(resource);
   qtUIManager* mgr = new qtUIManager(resource);
   QWidget* w = new QWidget;
-  smtk::extension::ViewInfo vinfo(smtk::view::View::New("base", "test view"), w, mgr);
+  smtk::extension::ViewInfo vinfo(smtk::view::Configuration::New("base", "test view"), w, mgr);
   qtBaseView* v = new qtBaseView(vinfo);
   qtAttribute* qatt = new qtAttribute(att, w, v);
 

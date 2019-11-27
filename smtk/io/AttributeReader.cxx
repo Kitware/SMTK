@@ -18,7 +18,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryInfo.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 #include <algorithm>

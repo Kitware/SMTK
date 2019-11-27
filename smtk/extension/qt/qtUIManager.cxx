@@ -78,7 +78,7 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <math.h>
 
@@ -278,19 +278,19 @@ void qtUIManager::initializeUI(
   m_topView->setInitialCategory();
 }
 
-smtk::view::ViewPtr qtUIManager::findOrCreateOperationView() const
+smtk::view::ConfigurationPtr qtUIManager::findOrCreateOperationView() const
 {
-  smtk::view::ViewPtr view;
+  smtk::view::ConfigurationPtr config;
   auto op = m_operation;
   if (!op)
   {
-    return view;
+    return config;
   }
 
   smtk::attribute::ResourcePtr rsrc = op->specification();
   if (!rsrc)
   {
-    return view;
+    return config;
   }
 
   smtk::attribute::AttributePtr params = op->parameters();
@@ -313,48 +313,48 @@ smtk::view::ViewPtr qtUIManager::findOrCreateOperationView() const
     {
       continue;
     }
-    smtk::view::View::Component& comp = it->second->details().child(i);
+    smtk::view::Configuration::Component& comp = it->second->details().child(i);
     for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
     {
       std::string optype;
       if (comp.child(ci).attribute("Type", optype) && optype == params->type())
       {
-        view = it->second;
+        config = it->second;
         // If we are dealing with an Operation View - The Name attribute needs to be
         // set to the same of the attribute the operator is using - so in practice
         // the Name attribute does not have to be set in the operator's sbt info
-        if (view->type() == "Operation")
+        if (config->type() == "Operation")
         {
           comp.child(ci).setAttribute("Name", params->name());
         }
         break;
       }
     }
-    if (view && this->hasViewConstructor(view->type()))
+    if (config && this->hasViewConstructor(config->type()))
     {
       break;
     }
   }
 
-  // There is no view or there is a view but the UI manager does
+  // There is no config or there is a config but the UI manager does
   // not know about it (perhaps because the plugin which should
-  // register widgets for the view is not loaded, perhaps because
-  // the view name is incorrect).
-  if (!view || !this->hasViewConstructor(view->type()))
+  // register widgets for the config is not loaded, perhaps because
+  // the config name is incorrect).
+  if (!config || !this->hasViewConstructor(config->type()))
   { // Create an "Operation" view.
     if (op)
     {
-      view = smtk::view::View::New("Operation", op->typeName());
-      view->details().setAttribute("UseSelectionManager", "true");
-      smtk::view::View::Component& comp =
-        view->details().addChild("InstancedAttributes").addChild("Att");
+      config = smtk::view::Configuration::New("Operation", op->typeName());
+      config->details().setAttribute("UseSelectionManager", "true");
+      smtk::view::Configuration::Component& comp =
+        config->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", params->type()).setAttribute("Name", params->name());
-      rsrc->addView(view);
+      rsrc->addView(config);
     }
   }
 
-  view->details().setAttribute("TopLevel", "true");
-  return view;
+  config->details().setAttribute("TopLevel", "true");
+  return config;
 }
 
 qtBaseView* qtUIManager::setSMTKView(
@@ -370,7 +370,7 @@ qtBaseView* qtUIManager::setSMTKView(
   return m_topView;
 }
 
-qtBaseView* qtUIManager::setSMTKView(smtk::view::ViewPtr v)
+qtBaseView* qtUIManager::setSMTKView(smtk::view::ConfigurationPtr v)
 {
   if (m_smtkView != v)
   {
@@ -381,7 +381,7 @@ qtBaseView* qtUIManager::setSMTKView(smtk::view::ViewPtr v)
 }
 
 qtBaseView* qtUIManager::setSMTKView(
-  smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser)
+  smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser)
 {
   if ((m_smtkView != v) || (m_parentWidget != pWidget) ||
     (m_useInternalFileBrowser != useInternalFileBrowser))

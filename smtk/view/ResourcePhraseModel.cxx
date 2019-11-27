@@ -9,11 +9,11 @@
 //=========================================================================
 #include "smtk/view/ResourcePhraseModel.h"
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/ResourcePhraseContent.h"
 #include "smtk/view/SubphraseGenerator.h"
-#include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
@@ -28,7 +28,7 @@
 
 using namespace smtk::view;
 
-PhraseModelPtr ResourcePhraseModel::create(const smtk::view::ViewPtr& viewSpec)
+PhraseModelPtr ResourcePhraseModel::create(const smtk::view::ConfigurationPtr& viewSpec)
 {
   (void)viewSpec;
   auto model = PhraseModel::Ptr(new ResourcePhraseModel);
@@ -36,7 +36,7 @@ PhraseModelPtr ResourcePhraseModel::create(const smtk::view::ViewPtr& viewSpec)
   return model;
 }
 
-PhraseModelPtr ResourcePhraseModel::create(const smtk::view::View::Component& viewSpec)
+PhraseModelPtr ResourcePhraseModel::create(const smtk::view::Configuration::Component& viewSpec)
 {
   (void)viewSpec;
   auto model = PhraseModel::Ptr(new ResourcePhraseModel);

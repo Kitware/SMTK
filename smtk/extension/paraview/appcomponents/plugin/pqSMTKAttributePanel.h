@@ -68,7 +68,7 @@ public slots:
     * configuration of a descriptive-phrase tree, but those will not
     * be accepted by this method.
     */
-  virtual bool displayView(smtk::view::ViewPtr view);
+  virtual bool displayView(smtk::view::ConfigurationPtr view);
   /**\brief Update the attribute panel when the ParaView pipeline changes.
     *
     * The attribute resource associated with the active

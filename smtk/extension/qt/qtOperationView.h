@@ -33,15 +33,16 @@ namespace extension
 class SMTKQTEXT_EXPORT OperationViewInfo : public ViewInfo
 {
 public:
-  OperationViewInfo(smtk::view::ViewPtr view, smtk::operation::OperationPtr targetOperation,
-    QWidget* parent, qtUIManager* uiman)
+  OperationViewInfo(smtk::view::ConfigurationPtr view,
+    smtk::operation::OperationPtr targetOperation, QWidget* parent, qtUIManager* uiman)
     : ViewInfo(view, parent, uiman)
     , m_operator(targetOperation)
   {
   }
 
-  OperationViewInfo(smtk::view::ViewPtr view, smtk::operation::OperationPtr targetOperation,
-    QWidget* parent, qtUIManager* uiman, const std::map<std::string, QLayout*>& layoutDict)
+  OperationViewInfo(smtk::view::ConfigurationPtr view,
+    smtk::operation::OperationPtr targetOperation, QWidget* parent, qtUIManager* uiman,
+    const std::map<std::string, QLayout*>& layoutDict)
     : ViewInfo(view, parent, uiman, layoutDict)
     , m_operator(targetOperation)
   {

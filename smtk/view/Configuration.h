@@ -7,13 +7,13 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME smtkView.h -  Base class for SMTK views
+// .NAME view/Configuration.h -  Base class for SMTK views
 // .SECTION Description
 //   A SMTK view is used to describe workflows
 // .SECTION See Also
 
-#ifndef __smtk_view_View_h
-#define __smtk_view_View_h
+#ifndef __smtk_view_Configuration_h
+#define __smtk_view_Configuration_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -23,9 +23,11 @@ namespace smtk
 {
 namespace view
 {
-class SMTKCORE_EXPORT View
+/// @brief Configure a view, specifying types and attributes, without specifying a UI library.
+class SMTKCORE_EXPORT Configuration
 {
 public:
+  /// @brief Configure one item in a view, which may contain children.
   class SMTKCORE_EXPORT Component
   {
   public:
@@ -50,23 +52,18 @@ public:
     Component& setAttribute(const std::string& attname, const std::string& value);
     Component& unsetAttribute(const std::string& attname);
 
-    //Description:
-    // Returns true if the component has an attribute called name and will
-    // set value to the attribute's values.  Else it returns false
+    /// Returns true if the component has an attribute called name and will
+    /// set value to the attribute's values.  Else it returns false
     bool attribute(const std::string& attname, std::string& value) const;
-    // Description:
-    // Simply tests to see if the attribute exists
+    /// Simply tests to see if the attribute exists
     bool attribute(const std::string& attname) const;
-    //Description:
-    // Returns true if the component has an attribute called name and if it has the
-    // string value of true, t, false, or f (ignoring case). Value will be true if the attribute
-    // is t or true, false if attribute is f or false and not set otherwise
-    // set value to the attribute's values.  Else it returns false
+    /// Returns true if the component has an attribute called name and if it has the
+    /// string value of true, t, false, or f (ignoring case). Value will be true if the attribute
+    /// is t or true, false if attribute is f or false and not set otherwise
+    /// set value to the attribute's values.  Else it returns false
     bool attributeAsBool(const std::string& attname, bool& value) const;
-    //Description:
-    // Returns true if the component has an attribute called name and if it's value is
-    // either t or true (ignoring case).  Else it returns false.
-
+    /// Returns true if the component has an attribute called name and if it's value is
+    /// either t or true (ignoring case).  Else it returns false.
     bool attributeAsBool(const std::string& attname) const;
 
     bool attributeAsInt(const std::string& attname, int& val) const;
@@ -100,20 +97,20 @@ public:
     std::vector<Component> m_children;
   };
 
-  View(const std::string& myType, const std::string& myName);
-  static smtk::view::ViewPtr New(const std::string& myType, const std::string& myName)
+  Configuration(const std::string& myType, const std::string& myName);
+  static smtk::view::ConfigurationPtr New(const std::string& myType, const std::string& myName)
   {
-    return smtk::view::ViewPtr(new smtk::view::View(myType, myName));
+    return smtk::view::ConfigurationPtr(new smtk::view::Configuration(myType, myName));
   }
 
-  ~View();
+  ~Configuration();
 
-  // Copy the contents of one View into another - this View will be the same as
-  // v with the exception of its name and type
-  void copyContents(const View& v);
+  /// Copy the contents of one Configuration into another - this Configuration will be the same as
+  /// v with the exception of its name and type
+  void copyContents(const Configuration& v);
   const std::string& name() const { return m_name; }
-  // Returns the name to be used in the GUI for the View - if there is none
-  // defined the name is returned.
+  /// Returns the label to be used in the GUI for the Configuration - if there is none
+  /// defined the name is returned.
   std::string label() const;
 
   const std::string& type() const { return m_type; }
@@ -124,15 +121,15 @@ public:
 
   Component& details() { return m_details; }
 
-  bool operator==(const View& other) const
+  bool operator==(const Configuration& other) const
   {
     return m_name == other.m_name && m_type == other.m_type && m_iconName == other.m_iconName &&
       m_details == other.m_details;
   }
 
-  // These methods are use primarily by I/O operations.  The include ID corresponds to
-  // the include directory information store in the attribute reosurce and is used
-  // when writing out the resource to use include files
+  /// These methods are use primarily by I/O operations.  The include ID corresponds to
+  /// the include directory information store in the attribute reosurce and is used
+  /// when writing out the resource to use include files
   void setIncludeIndex(std::size_t index) { m_includeIndex = index; }
 
   std::size_t includeIndex() const { return m_includeIndex; }
@@ -147,4 +144,4 @@ protected:
 }
 }
 
-#endif /* __smtk_view_View_h */
+#endif /* __smtk_view_Configuration_h */

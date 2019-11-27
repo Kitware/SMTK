@@ -622,7 +622,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   {
     for (auto& jView : *views)
     {
-      smtk::view::ViewPtr view = jView;
+      smtk::view::ConfigurationPtr view = jView;
       res->addView(view);
     }
   }

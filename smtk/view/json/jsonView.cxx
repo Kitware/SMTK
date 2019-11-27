@@ -9,7 +9,7 @@
 //=========================================================================
 #include "jsonView.h"
 #include "smtk/CoreExports.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "nlohmann/json.hpp"
 
@@ -20,7 +20,7 @@ namespace smtk
 namespace view
 {
 
-SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::View::Component& comp)
+SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::Configuration::Component& comp)
 {
   j = { { "Name", comp.name() } };
   if (!comp.attributes().empty())
@@ -39,9 +39,9 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::View::Componen
   }
 }
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j, View::Component& comp)
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::Configuration::Component& comp)
 {
-  comp = smtk::view::View::Component(j.at("Name").get<std::string>());
+  comp = smtk::view::Configuration::Component(j.at("Name").get<std::string>());
   nlohmann::json::const_iterator it;
   if ((it = j.find("Contents")) != j.end())
   {
@@ -70,32 +70,34 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, View::Component& comp)
   {
     for (auto child = it->begin(); child != it->end(); ++child)
     {
-      smtk::view::View::Component cc = *child;
+      smtk::view::Configuration::Component cc = *child;
       comp.addChild(cc.name()) = cc;
     }
   }
 }
 
-SMTKCORE_EXPORT void to_json(nlohmann::json& j, const ViewPtr& view)
+SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::ConfigurationPtr& config)
 {
-  j = { { "Type", view->type() }, { "Name", view->name() }, { "Component", view->details() } };
-  if (!view->iconName().empty())
+  j = { { "Type", config->type() }, { "Name", config->name() },
+    { "Component", config->details() } };
+  if (!config->iconName().empty())
   {
-    j["Icon"] = view->iconName();
+    j["Icon"] = config->iconName();
   }
 }
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::ViewPtr& view)
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::ConfigurationPtr& config)
 {
-  view = smtk::view::View::New(j["Type"].get<std::string>(), j["Name"].get<std::string>());
+  config =
+    smtk::view::Configuration::New(j["Type"].get<std::string>(), j["Name"].get<std::string>());
   nlohmann::json::const_iterator it;
   if ((it = j.find("Icon")) != j.end())
   {
-    view->setIconName(it->get<std::string>());
+    config->setIconName(it->get<std::string>());
   }
   if ((it = j.find("Component")) != j.end())
   {
-    view->details() = *it;
+    config->details() = *it;
   }
 }
 }

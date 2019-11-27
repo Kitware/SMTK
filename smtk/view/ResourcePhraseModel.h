@@ -12,7 +12,7 @@
 
 #include "smtk/view/PhraseModel.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 namespace smtk
 {
@@ -36,8 +36,8 @@ public:
   /// Return the root phrase of the hierarchy.
   DescriptivePhrasePtr root() const override;
 
-  static PhraseModelPtr create(const ViewPtr& view);
-  static PhraseModelPtr create(const View::Component& view);
+  static PhraseModelPtr create(const smtk::view::ConfigurationPtr& view);
+  static PhraseModelPtr create(const smtk::view::Configuration::Component& view);
 
   bool setResourceFilters(const std::multimap<std::string, std::string>& src);
 

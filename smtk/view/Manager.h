@@ -17,7 +17,7 @@
 
 #include "smtk/common/TypeName.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <array>
 #include <string>

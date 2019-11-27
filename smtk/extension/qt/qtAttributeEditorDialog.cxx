@@ -23,7 +23,7 @@
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -41,8 +41,8 @@ qtAttributeEditorDialog::qtAttributeEditorDialog(const smtk::attribute::Attribut
   m_widget->setupUi(this);
   this->setObjectName("qtAttributeEditorDialog");
 
-  m_instancedViewDef = smtk::view::View::New("Instanced", "Contents");
-  smtk::view::View::Component& child =
+  m_instancedViewDef = smtk::view::Configuration::New("Instanced", "Contents");
+  smtk::view::Configuration::Component& child =
     m_instancedViewDef->details().addChild("InstancedAttributes").addChild("Att");
   child.setAttribute("Name", m_attribute->name()).setAttribute("Type", m_attribute->type());
 

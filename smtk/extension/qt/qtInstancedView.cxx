@@ -18,7 +18,7 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QCheckBox>
 #include <QHBoxLayout>
@@ -123,7 +123,7 @@ void qtInstancedView::createWidget()
 
 void qtInstancedView::updateAttributeData()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -140,7 +140,7 @@ void qtInstancedView::updateAttributeData()
   this->Internals->AttInstances.clear();
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  std::vector<std::reference_wrapper<smtk::view::View::Component> > comps;
+  std::vector<std::reference_wrapper<smtk::view::Configuration::Component> > comps;
   int longLabelWidth = 0;
   // Lets find the InstancedAttributes Infomation
   int index = view->details().findChild("InstancedAttributes");
@@ -150,11 +150,11 @@ void qtInstancedView::updateAttributeData()
     return;
   }
 
-  smtk::view::View::Component& comp = view->details().child(index);
+  smtk::view::Configuration::Component& comp = view->details().child(index);
   std::size_t i, n = comp.numberOfChildren();
   for (i = 0; i < n; i++)
   {
-    smtk::view::View::Component& attComp = comp.child(i);
+    smtk::view::Configuration::Component& attComp = comp.child(i);
     if (attComp.name() != "Att")
     {
       continue;

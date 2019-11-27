@@ -68,17 +68,17 @@ public:
   void initializeUI(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = false);
 
   /// If this instance was constructed with an operation, return an appropriate view for it.
-  smtk::view::ViewPtr findOrCreateOperationView() const;
+  smtk::view::ConfigurationPtr findOrCreateOperationView() const;
 
   /// If this instance was constructed with an operation, return it.
   smtk::operation::OperationPtr operation() const { return m_operation; }
 
-  /// Use the given smtk::view::View to construct widgets matching the specification.
-  qtBaseView* setSMTKView(smtk::view::ViewPtr v);
+  /// Use the given smtk::view::Configuration to construct widgets matching the specification.
+  qtBaseView* setSMTKView(smtk::view::ConfigurationPtr v);
   qtBaseView* setSMTKView(
-    smtk::view::ViewPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
+    smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = true);
-  smtk::view::ViewPtr smtkView() const { return m_smtkView; }
+  smtk::view::ConfigurationPtr smtkView() const { return m_smtkView; }
 
   smtk::resource::ManagerPtr resourceManager() const { return m_resourceManager; }
   void setResourceManager(smtk::resource::ManagerPtr mgr) { m_resourceManager = mgr; }
@@ -276,7 +276,7 @@ protected:
 
 private:
   qtBaseView* m_topView;
-  smtk::view::ViewPtr m_smtkView;
+  smtk::view::ConfigurationPtr m_smtkView;
   QWidget* m_parentWidget;
   qtModelView* m_activeModelView;
 

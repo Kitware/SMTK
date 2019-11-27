@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #include "smtk/view/json/jsonView.h"
 
 #include "smtk/io/AttributeReader.h"
@@ -42,7 +42,7 @@ int unitJSONView(int argc, char* argv[])
   int numJSONViews = 0;
   for (auto view : j["Views"])
   {
-    smtk::view::ViewPtr test = view;
+    smtk::view::ConfigurationPtr test = view;
     nlohmann::json jtmp = test;
     std::cout << "jtemp:\n" << jtmp.dump(2) << std::endl;
     auto xit = rsrc->views().find(test->name());

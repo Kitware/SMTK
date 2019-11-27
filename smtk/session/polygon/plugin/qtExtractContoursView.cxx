@@ -20,7 +20,7 @@
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/session/polygon/qt/pqGenerateContoursDialog.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -65,7 +65,7 @@ public:
   {
     if (att && att->numberOfItems() > 0)
     {
-      smtk::view::View::Component comp; // currently not used
+      smtk::view::Configuration::Component comp; // currently not used
       qtAttribute* attInstance = new qtAttribute(att, comp, pw, view);
       //attInstance->setUseSelectionManager(view->useSelectionManager());
       if (attInstance && attInstance->widget())
@@ -133,7 +133,7 @@ qtExtractContoursView::~qtExtractContoursView()
 
 void qtExtractContoursView::createWidget()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -168,7 +168,7 @@ void qtExtractContoursView::createWidget()
 
 void qtExtractContoursView::updateAttributeData()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -184,14 +184,14 @@ void qtExtractContoursView::updateAttributeData()
   {
     return;
   }
-  smtk::view::View::Component& comp = view->details().child(i);
+  smtk::view::Configuration::Component& comp = view->details().child(i);
   // for now, we only handle "edit edge" operator; later we could use a list
   // to show all operators (attributes), and a panel underneath to edit current
   // selected operator.
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::view::View::Component& attComp = comp.child(ci);
+    smtk::view::Configuration::Component& attComp = comp.child(ci);
     if (attComp.name() != "Att")
     {
       continue;

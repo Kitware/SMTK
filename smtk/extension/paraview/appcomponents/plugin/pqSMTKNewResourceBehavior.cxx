@@ -78,7 +78,7 @@ void pqNewResourceReaction::newResource()
     QSharedPointer<smtk::extension::qtUIManager>(new smtk::extension::qtUIManager(createOp));
 
   // Create an operation view for the operation.
-  smtk::view::ViewPtr view = uiManager->findOrCreateOperationView();
+  smtk::view::ConfigurationPtr view = uiManager->findOrCreateOperationView();
 
   // Currently, creation operators all fallow the pattern of optionally creating
   // an entity within an extant resource. Since this functionality doesn't make

@@ -204,17 +204,18 @@ int main(int argc, char* argv[])
       status = -1;
     }
 
-    smtk::view::ViewPtr rootView = resource.findTopLevelView();
+    smtk::view::ConfigurationPtr rootView = resource.findTopLevelView();
     if (!rootView)
     {
-      rootView = smtk::view::View::New("Group", "RootView");
+      rootView = smtk::view::Configuration::New("Group", "RootView");
       rootView->details().setAttribute("TopLevel", "true");
       resource.addView(rootView);
-      smtk::view::View::Component& temp = rootView->details().addChild("Views");
+      smtk::view::Configuration::Component& temp = rootView->details().addChild("Views");
       temp.setContents("fooContent");
       (void)temp;
       // Add a second view
-      smtk::view::ViewPtr secondView = smtk::view::View::New("Group", "SecondView");
+      smtk::view::ConfigurationPtr secondView =
+        smtk::view::Configuration::New("Group", "SecondView");
       resource.addView(secondView);
     }
     /**************************************************************/

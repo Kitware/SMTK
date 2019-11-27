@@ -29,7 +29,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -55,7 +55,7 @@ public:
   {
     if (att && att->numberOfItems() > 0)
     {
-      smtk::view::View::Component comp; // not currently used
+      smtk::view::Configuration::Component comp; // not currently used
       qtAttribute* attInstance = new qtAttribute(att, comp, pw, view);
       // attInstance->setUseSelectionManager(view->useSelectionManager());
       if (attInstance && attInstance->widget())
@@ -196,7 +196,7 @@ void smtkTerrainExtractionView::onNumPointsCalculationFinshed(long numPoints)
 
 void smtkTerrainExtractionView::createWidget()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -265,7 +265,7 @@ void smtkTerrainExtractionView::createWidget()
 
 void smtkTerrainExtractionView::updateAttributeData()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -281,11 +281,11 @@ void smtkTerrainExtractionView::updateAttributeData()
   {
     return;
   }
-  smtk::view::View::Component& comp = view->details().child(i);
+  smtk::view::Configuration::Component& comp = view->details().child(i);
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::view::View::Component& attComp = comp.child(ci);
+    smtk::view::Configuration::Component& attComp = comp.child(ci);
     if (attComp.name() != "Att")
     {
       continue;

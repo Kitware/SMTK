@@ -19,7 +19,7 @@ set(viewSrcs
   SelectionPhraseModel.cxx
   SubphraseGenerator.cxx
   TwoLevelSubphraseGenerator.cxx
-  View.cxx
+  Configuration.cxx
   VisibilityContent.cxx
 )
 
@@ -50,7 +50,7 @@ set(viewHeaders
   SubphraseGenerator.h
   SubphraseGenerator.txx
   TwoLevelSubphraseGenerator.h
-  View.h
+  Configuration.h
   VisibilityContent.h
   ${jsonViewHeaders}
 )

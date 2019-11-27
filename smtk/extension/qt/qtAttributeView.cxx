@@ -34,7 +34,7 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QBrush>
 #include <QColorDialog>
@@ -152,7 +152,7 @@ public:
   std::vector<smtk::attribute::DefinitionPtr> m_attDefinitions;
   bool m_okToCreateModelEntities;
   smtk::model::BitFlags m_modelEntityMask;
-  std::map<std::string, smtk::view::View::Component> m_attCompMap;
+  std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
   QString m_alertIconPath;
 
   smtk::operation::Observers::Key m_observerKey;
@@ -170,7 +170,7 @@ qtAttributeView::qtAttributeView(const ViewInfo& info)
 {
   this->Internals = new qtAttributeViewInternals;
   this->Internals->m_alertIconPath = ":/icons/attribute/errorAlert.png";
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   m_hideAssociations = false;
   if (view)
   {
@@ -1041,7 +1041,7 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
   }
   else
   {
-    smtk::view::View::Component comp;
+    smtk::view::Configuration::Component comp;
     this->Internals->CurrentAtt = new qtAttribute(att, comp, this->Internals->AttFrame, this);
   }
   // By default use the basic layout with no model associations since this class
@@ -1303,7 +1303,7 @@ void qtAttributeView::addComparativeAttribute(smtk::attribute::AttributePtr att)
       std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
       if (vtWidget->item(row, 0)->text() == strItemLabel.c_str())
       {
-        smtk::view::View::Component comp;
+        smtk::view::Configuration::Component comp;
         comp.setAttribute("Orientation", "Vertical");
         qtAttributeItemInfo info(attItem, comp, NULL, this);
         auto qItem = ui_manager->createItem(info);
@@ -1437,7 +1437,7 @@ void qtAttributeView::addComparativeProperty(
       std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
       if (current->text() == strItemLabel.c_str())
       {
-        smtk::view::View::Component comp;
+        smtk::view::Configuration::Component comp;
         comp.setAttribute("Orientation", "Vertical");
         qtAttributeItemInfo info(attItem, comp, NULL, this);
         auto qItem = ui_manager->createItem(info);
@@ -1458,7 +1458,7 @@ int qtAttributeView::currentViewBy()
 
 void qtAttributeView::getAllDefinitions()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -1499,7 +1499,7 @@ void qtAttributeView::getAllDefinitions()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  smtk::view::View::Component& attsComp = view->details().child(0);
+  smtk::view::Configuration::Component& attsComp = view->details().child(0);
   std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)
   {

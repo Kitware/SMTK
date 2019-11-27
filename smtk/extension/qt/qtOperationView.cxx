@@ -18,7 +18,7 @@
 #include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QApplication>
 #include <QDialogButtonBox>
@@ -44,7 +44,7 @@ public:
   }
   smtk::operation::OperationPtr m_operator;
   std::unique_ptr<qtInstancedView> m_instancedView;
-  smtk::view::ViewPtr m_instancedViewDef;
+  smtk::view::ConfigurationPtr m_instancedViewDef;
   QPointer<QPushButton> m_applyButton;
   QPointer<QPushButton> m_infoButton;
   qtOperationLauncher* m_launcher;
@@ -71,8 +71,8 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
   this->Internals = new qtOperationViewInternals;
   this->Internals->m_operator = info.m_operator;
   // We need to create a new View for the internal instanced View
-  this->Internals->m_instancedViewDef = smtk::view::View::New("Instanced", "Parameters");
-  smtk::view::ViewPtr view = this->getObject();
+  this->Internals->m_instancedViewDef = smtk::view::Configuration::New("Instanced", "Parameters");
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (view)
   {
     this->Internals->m_instancedViewDef->copyContents(*view);

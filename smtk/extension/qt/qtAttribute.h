@@ -36,7 +36,7 @@ class SMTKQTEXT_EXPORT qtAttribute : public QObject
   Q_OBJECT
 
 public:
-  qtAttribute(smtk::attribute::AttributePtr, const smtk::view::View::Component& comp,
+  qtAttribute(smtk::attribute::AttributePtr, const smtk::view::Configuration::Component& comp,
     QWidget* parent, qtBaseView* view);
   virtual ~qtAttribute();
 

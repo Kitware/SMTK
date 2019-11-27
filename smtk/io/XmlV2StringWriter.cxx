@@ -33,7 +33,7 @@
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/json/jsonHandleRange.h"
@@ -1287,7 +1287,7 @@ void XmlV2StringWriter::processViews()
   // First write toplevel views and then write out the non-toplevel - note that the
   // attribute or view collection do not care about this - the assumption is that the designer would
   // probably like all the toplevel views clustered together
-  std::map<std::string, smtk::view::ViewPtr>::const_iterator iter;
+  std::map<std::string, smtk::view::ConfigurationPtr>::const_iterator iter;
   bool isTop;
   for (iter = m_resource->views().begin(); iter != m_resource->views().end(); iter++)
   {
@@ -1305,7 +1305,7 @@ void XmlV2StringWriter::processViews()
   }
 }
 
-void XmlV2StringWriter::processView(smtk::view::ViewPtr view)
+void XmlV2StringWriter::processView(smtk::view::ConfigurationPtr view)
 {
   std::size_t index = 0;
   // Are we using Directory Info?
@@ -1334,7 +1334,8 @@ void XmlV2StringWriter::processView(smtk::view::ViewPtr view)
   this->processViewComponent(view->details(), node);
 }
 
-void XmlV2StringWriter::processViewComponent(smtk::view::View::Component& comp, xml_node& node)
+void XmlV2StringWriter::processViewComponent(
+  smtk::view::Configuration::Component& comp, xml_node& node)
 {
   // Add the attributes of the component to the node
   std::map<std::string, std::string>::const_iterator iter;

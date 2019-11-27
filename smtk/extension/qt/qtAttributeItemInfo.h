@@ -15,7 +15,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #include <QObject>
 #include <QPointer>
 
@@ -31,14 +31,14 @@ class qtUIManager;
 /// This class is used by the qtUIManager to construct qtItem instances using registered factory methods.
 /// This information includes the following:
 /// - a smtk::attribute:Item that the qtItem is being created for
-/// - a smtk::view::View::Component that describes how the item (and optionally its children) should be displayed
+/// - a smtk::view::Configuration::Component that describes how the item (and optionally its children) should be displayed
 /// - a Widget that is to be used as the parent for the item widget
 /// - a qtBaseView that is the origin for being the item widget
 
 class SMTKQTEXT_EXPORT qtAttributeItemInfo
 {
 public:
-  qtAttributeItemInfo(smtk::attribute::ItemPtr item, smtk::view::View::Component itemComp,
+  qtAttributeItemInfo(smtk::attribute::ItemPtr item, smtk::view::Configuration::Component itemComp,
     QPointer<QWidget> parent, QPointer<qtBaseView> bview);
 
   qtAttributeItemInfo() {}
@@ -57,8 +57,8 @@ public:
 
   /// @{
   /// \brief Methods to set and retrieve the Component Style Information to be used to generate a qtItem
-  void setComponent(const smtk::view::View::Component& comp) { m_component = comp; }
-  smtk::view::View::Component component() const { return m_component; }
+  void setComponent(const smtk::view::Configuration::Component& comp) { m_component = comp; }
+  smtk::view::Configuration::Component component() const { return m_component; }
   ///@}
 
   /// @{
@@ -80,7 +80,7 @@ public:
   ///
   /// The key string represents a path to an item's child and the corresponding
   /// Component represents the style infomation that is to be used to generate its qtItem
-  std::map<std::string, smtk::view::View::Component>& childrenViewInfo() const;
+  std::map<std::string, smtk::view::Configuration::Component>& childrenViewInfo() const;
 
   /// \brief A helper method that can construct a dictionary from a View Component
   /// representing a block of Item Styles
@@ -92,8 +92,8 @@ public:
   /// the child Component is assigned to the corresponding qtAttributeItemInfo, else
   /// the new path and the child Component are inserted into the qtAttributeItemInfo's
   /// children view information.
-  static bool buildFromComponent(smtk::view::View::Component comp, QPointer<qtBaseView> view,
-    std::map<std::string, qtAttributeItemInfo>& dict);
+  static bool buildFromComponent(smtk::view::Configuration::Component comp,
+    QPointer<qtBaseView> view, std::map<std::string, qtAttributeItemInfo>& dict);
 
   /// \brief A  method that can construct a dictionary from the qtAttributeItemInfo's
   /// children view infromation.
@@ -108,12 +108,12 @@ public:
   bool createNewDictionary(std::map<std::string, qtAttributeItemInfo>& dict);
 
 protected:
-  smtk::attribute::WeakItemPtr m_item;     ///< Pointer to the attribute Item
-  smtk::view::View::Component m_component; ///< qtItem Component Definition
-  QPointer<QWidget> m_parentWidget;        ///< Parent Widget of the qtItem
-  QPointer<qtBaseView> m_baseView;         ///<  View Definition
+  smtk::attribute::WeakItemPtr m_item;              ///< Pointer to the attribute Item
+  smtk::view::Configuration::Component m_component; ///< qtItem Component Definition
+  QPointer<QWidget> m_parentWidget;                 ///< Parent Widget of the qtItem
+  QPointer<qtBaseView> m_baseView;                  ///<  View Definition
   /// Dictionary of component information for child of the item
-  std::map<std::string, smtk::view::View::Component> m_childrenViewInfo;
+  std::map<std::string, smtk::view::Configuration::Component> m_childrenViewInfo;
 }; // class
 }; // namespace extension
 }; // namespace smtk

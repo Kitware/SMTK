@@ -10,9 +10,9 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/ResourcePhraseModel.h"
-#include "smtk/view/View.h"
 
 #include "smtk/model/Resource.h"
 #include "smtk/model/json/jsonResource.h"
@@ -77,8 +77,8 @@ int main(int argc, char* argv[])
   qdelegate->setSubtitleFontSize(10);
   qdelegate->setSubtitleFontWeight(1);
   ModelBrowser* qview = new ModelBrowser;
-  auto view = smtk::view::View::New("ModelBrowser", "SMTK Model");
-  auto phraseModel = smtk::view::ResourcePhraseModel::create(view);
+  auto config = smtk::view::Configuration::New("ModelBrowser", "SMTK Model");
+  auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
   phraseModel->addSource(resourceManager, operationManager, nullptr);
   qmodel->setPhraseModel(phraseModel);
   qview->setup(resourceManager, qmodel, qdelegate);

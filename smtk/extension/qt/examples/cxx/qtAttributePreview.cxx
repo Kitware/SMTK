@@ -24,7 +24,7 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #ifdef VTK_SESSION
 #include "smtk/session/vtk/Resource.h"
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 #endif
 
   // Find view if specified
-  smtk::view::ViewPtr root;
+  smtk::view::ConfigurationPtr root;
   if (parser.isSet("view-name"))
   {
     QString viewName = parser.value("view-name");
@@ -177,15 +177,15 @@ int main(int argc, char* argv[])
   // If resource contains no views, create InstancedView by default
   if (!root)
   {
-    root = smtk::view::View::New("Group", "RootView");
+    root = smtk::view::Configuration::New("Group", "RootView");
     root->details().setAttribute("TopLevel", "true");
     attResource->addView(root);
-    smtk::view::View::Component& temp = root->details().addChild("Views");
+    smtk::view::Configuration::Component& temp = root->details().addChild("Views");
     (void)temp;
     int viewsIndex = root->details().findChild("Views");
 
     //  Add instances of all non-abstract attribute definitions
-    smtk::view::View::Component& viewsComp = root->details().child(viewsIndex);
+    smtk::view::Configuration::Component& viewsComp = root->details().child(viewsIndex);
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
     attResource->findBaseDefinitions(baseDefinitions);
@@ -202,9 +202,10 @@ int main(int argc, char* argv[])
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
     for (defIter = defs.begin(); defIter != defs.end(); defIter++)
     {
-      smtk::view::ViewPtr instanced = smtk::view::View::New("Instanced", (*defIter)->type());
+      smtk::view::ConfigurationPtr instanced =
+        smtk::view::Configuration::New("Instanced", (*defIter)->type());
 
-      smtk::view::View::Component& comp =
+      smtk::view::Configuration::Component& comp =
         instanced->details().addChild("InstancedAttributes").addChild("Att");
       comp.setAttribute("Type", (*defIter)->type());
       comp.setAttribute("Name", (*defIter)->type());

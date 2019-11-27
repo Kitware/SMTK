@@ -23,8 +23,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/resource/Manager.h"
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/Selection.h"
-#include "smtk/view/View.h"
 
 #include <QApplication>
 #include <QBrush>
@@ -182,7 +182,7 @@ public:
   std::string m_selectionSourceName;
   std::string m_unSetVal;
   smtk::view::SelectionObservers::Key m_selectionObserverId;
-  std::map<std::string, smtk::view::View::Component> m_attCompMap;
+  std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
 };
 
 qtBaseView* qtModelEntityAttributeView::createViewWidget(const ViewInfo& info)
@@ -655,7 +655,7 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
   }
   else
   {
-    smtk::view::View::Component comp;
+    smtk::view::Configuration::Component comp;
     this->Internals->CurrentAtt = new qtAttribute(att, comp, this->Internals->AttFrame, this);
   }
   // By default use the basic layout with no model associations since this class
@@ -674,7 +674,7 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
 
 void qtModelEntityAttributeView::getAllDefinitions()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -704,7 +704,7 @@ void qtModelEntityAttributeView::getAllDefinitions()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  smtk::view::View::Component& attsComp = view->details().child(0);
+  smtk::view::Configuration::Component& attsComp = view->details().child(0);
   std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)
   {

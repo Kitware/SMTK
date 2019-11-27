@@ -17,8 +17,8 @@
 #include "smtk/operation/Operation.h"
 
 #include "smtk/view/AvailableOperations.h"
+#include "smtk/view/Configuration.h"
 #include "smtk/view/Selection.h"
-#include "smtk/view/View.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
@@ -256,7 +256,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
     m_attrUIMgr->setOperationManager(m_availableOperations->operationManager());
   }
 
-  smtk::view::ViewPtr view = m_attrUIMgr->findOrCreateOperationView();
+  smtk::view::ConfigurationPtr view = m_attrUIMgr->findOrCreateOperationView();
   auto baseView = m_attrUIMgr->setSMTKView(view, m_p->OperationEditor);
   didDisplay = baseView ? true : false;
 

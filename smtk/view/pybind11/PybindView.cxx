@@ -47,7 +47,7 @@ PYBIND11_MODULE(_smtkPybindView, view)
   PySharedPtrClass< smtk::view::DescriptivePhrase > smtk_view_DescriptivePhrase = pybind11_init_smtk_view_DescriptivePhrase(view);
   PySharedPtrClass< smtk::view::SubphraseGenerator > smtk_view_SubphraseGenerator = pybind11_init_smtk_view_SubphraseGenerator(view);
 
-  PySharedPtrClass< smtk::view::View > smtk_view_View = pybind11_init_smtk_view_View(view);
+  PySharedPtrClass< smtk::view::Configuration > smtk_view_View = pybind11_init_smtk_view_View(view);
   py::class_< smtk::view::SelectionObservers > smtk_view_SelectionObserver = pybind11_init_smtk_view_SelectionObservers(view);
   py::class_< smtk::view::Selection > smtk_view_Selection = pybind11_init_smtk_view_Selection(view);
 }

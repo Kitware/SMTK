@@ -53,7 +53,7 @@ public:
   /// A collection of observers with runtime-modifiable call behaviors.
   using Observers = PhraseModelObservers;
   /// Subclasses of PhraseModel register their type information with a constructor of this type.
-  using ModelConstructor = std::function<PhraseModelPtr(const ViewPtr&)>;
+  using ModelConstructor = std::function<PhraseModelPtr(const ConfigurationPtr&)>;
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
   /// Subclasses (and others) may wish to invoke functions on the sources of data for the phrases.
@@ -67,7 +67,7 @@ public:
   using Resource = smtk::resource::Resource;
 
   static PhraseModelPtr create(
-    const smtk::view::ViewPtr& viewSpec, const smtk::view::ManagerPtr& manager);
+    const smtk::view::ConfigurationPtr& viewSpec, const smtk::view::ManagerPtr& manager);
 
   smtkTypeMacroBase(smtk::view::PhraseModel);
   smtkCreateMacro(smtk::view::PhraseModel);

@@ -21,7 +21,7 @@
 
 #include "smtk/attribute/Resource.h"
 #include "smtk/model/EntityTypeBits.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <sstream>
 #include <string>
@@ -99,8 +99,9 @@ protected:
   void processDateTimeItem(pugi::xml_node& node, smtk::attribute::DateTimeItemPtr item);
   void processValueDef(pugi::xml_node& node, smtk::attribute::ValueItemDefinitionPtr idef);
 
-  virtual void processView(smtk::view::ViewPtr view);
-  virtual void processViewComponent(smtk::view::View::Component& comp, pugi::xml_node& node);
+  virtual void processView(smtk::view::ConfigurationPtr view);
+  virtual void processViewComponent(
+    smtk::view::Configuration::Component& comp, pugi::xml_node& node);
   static std::string encodeModelEntityMask(smtk::model::BitFlags m);
   static std::string encodeColor(const double* color);
 

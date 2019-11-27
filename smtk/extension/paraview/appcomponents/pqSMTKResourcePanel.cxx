@@ -28,7 +28,7 @@ pqSMTKResourcePanel::pqSMTKResourcePanel(QWidget* parent)
 {
   // Parse a json representation of our default config, save it.
   nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
-  smtk::view::ViewPtr config = j[0];
+  smtk::view::ConfigurationPtr config = j[0];
   this->setView(config);
 
   auto smtkBehavior = pqSMTKBehavior::instance();
@@ -46,7 +46,7 @@ pqSMTKResourcePanel::~pqSMTKResourcePanel()
   // deletion of m_browser->widget() is handled when parent widget is deleted.
 }
 
-void pqSMTKResourcePanel::setView(const smtk::view::ViewPtr& view)
+void pqSMTKResourcePanel::setView(const smtk::view::ConfigurationPtr& view)
 {
   m_view = view;
 

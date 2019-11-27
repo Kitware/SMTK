@@ -19,7 +19,7 @@
 #include "smtk/extension/qt/qtModelView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/operation/Manager.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -61,7 +61,7 @@ public:
   {
     if (att && att->numberOfItems() > 0)
     {
-      smtk::view::View::Component comp;
+      smtk::view::Configuration::Component comp;
       qtAttribute* attInstance = new qtAttribute(att, comp, pw, view);
       // attInstance->setUseSelectionManager(view->useSelectionManager());
       if (attInstance && attInstance->widget())
@@ -257,7 +257,7 @@ void smtkAssignColorsView::prepPaletteChooser()
 
 void smtkAssignColorsView::createWidget()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -335,7 +335,7 @@ void smtkAssignColorsView::createWidget()
 
 void smtkAssignColorsView::updateAttributeData()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view || !this->Widget)
   {
     return;
@@ -351,11 +351,11 @@ void smtkAssignColorsView::updateAttributeData()
   {
     return;
   }
-  smtk::view::View::Component& comp = view->details().child(i);
+  smtk::view::Configuration::Component& comp = view->details().child(i);
   std::string defName;
   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   {
-    smtk::view::View::Component& attComp = comp.child(ci);
+    smtk::view::Configuration::Component& attComp = comp.child(ci);
     //std::cout << "  component " << attComp.name() << "\n";
     if (attComp.name() != "Att")
     {

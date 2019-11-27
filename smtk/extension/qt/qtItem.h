@@ -16,7 +16,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtAttributeItemInfo.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #include <QObject>
 #include <QPointer>
 

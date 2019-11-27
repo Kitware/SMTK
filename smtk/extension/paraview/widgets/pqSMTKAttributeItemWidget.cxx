@@ -198,7 +198,8 @@ pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(
 
 pqSMTKAttributeItemWidget::pqSMTKAttributeItemWidget(smtk::attribute::ItemPtr itm, QWidget* p,
   smtk::extension::qtBaseView* bview, Qt::Orientation orient)
-  : qtItem(smtk::extension::qtAttributeItemInfo(itm, smtk::view::View::Component(), p, bview))
+  : qtItem(
+      smtk::extension::qtAttributeItemInfo(itm, smtk::view::Configuration::Component(), p, bview))
 {
   m_p = new Internal(itm, this->widget(), bview, orient);
   QPointer<pqSMTKAttributeItemWidget> guardedObject(this);
