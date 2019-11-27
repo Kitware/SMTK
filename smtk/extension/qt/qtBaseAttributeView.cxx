@@ -270,13 +270,14 @@ void qtBaseAttributeView::buildUI()
     return;
   }
 
-  if (!m_ScrollArea)
+  if (m_ScrollArea)
   {
-    // This should be an error!
-    return;
+    m_ScrollArea->setWidget(this->Widget);
   }
-
-  m_ScrollArea->setWidget(this->Widget);
+  else
+  {
+    parentlayout->addWidget(this->Widget);
+  }
 }
 
 void qtBaseAttributeView::setInitialCategory()
@@ -460,12 +461,15 @@ void qtBaseAttributeView::makeTopLevel()
   parentlayout->setAlignment(Qt::AlignTop);
   parentlayout->addLayout(this->Internals->TopLevelLayout);
 
-  m_ScrollArea = new QScrollArea(this->parentWidget());
-  m_ScrollArea->setWidgetResizable(true);
-  m_ScrollArea->setAlignment(Qt::AlignHCenter);
-  m_ScrollArea->setFrameShape(QFrame::NoFrame);
-  m_ScrollArea->setObjectName("topLevelScrollArea");
-  parentlayout->addWidget(m_ScrollArea);
+  if (view->details().attributeAsBool("UseScrollingContainer"))
+  {
+    m_ScrollArea = new QScrollArea(this->parentWidget());
+    m_ScrollArea->setWidgetResizable(true);
+    m_ScrollArea->setAlignment(Qt::AlignHCenter);
+    m_ScrollArea->setFrameShape(QFrame::NoFrame);
+    m_ScrollArea->setObjectName("topLevelScrollArea");
+    parentlayout->addWidget(m_ScrollArea);
+  }
 }
 
 void qtBaseAttributeView::showAdvanceLevel(int level)
