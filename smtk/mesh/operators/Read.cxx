@@ -29,14 +29,17 @@
 
 #include "smtk/common/CompilerInformation.h"
 
+/// @cond dox_ignore
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
+/// @endcond
 
 #include <fstream>
 
 namespace
 {
+/// Internal \p smtk::mesh::Read utility
 class AddMeshToResult : public smtk::mesh::MeshForEach
 {
 public:

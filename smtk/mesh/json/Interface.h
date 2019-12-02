@@ -35,6 +35,7 @@ namespace json
 SMTKCORE_EXPORT
 smtk::mesh::json::InterfacePtr make_interface();
 
+/// Concrete implementation for json serialization
 class SMTKCORE_EXPORT Interface : public smtk::mesh::Interface
 {
 public:

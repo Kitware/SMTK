@@ -60,12 +60,9 @@ QTreeView* ModelBrowser::tree() const
 
 void ModelBrowser::setup(smtk::resource::ManagerPtr manager,
   smtk::extension::qtDescriptivePhraseModel* qmodel,
-  smtk::extension::qtDescriptivePhraseDelegate* qdelegate, smtk::model::DescriptivePhrasePtr root)
+  smtk::extension::qtDescriptivePhraseDelegate* qdelegate)
 {
-  (void)root;
   m_manager = manager;
-  //qmodel->setRoot(root);
-  //m_p->modelTree->setModel(qmodel); // Must come after qmodel->setRoot()!
   m_p->modelTree->setItemDelegate(qdelegate);
   m_p->qmodel = qmodel;
   m_p->modelTree->setModel(m_p->qmodel);

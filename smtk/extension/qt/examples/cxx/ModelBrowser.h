@@ -37,7 +37,7 @@ public:
   QTreeView* tree() const;
 
   void setup(smtk::resource::ManagerPtr mgr, smtk::extension::qtDescriptivePhraseModel* qm,
-    smtk::extension::qtDescriptivePhraseDelegate* qd, smtk::model::DescriptivePhrasePtr root);
+    smtk::extension::qtDescriptivePhraseDelegate* qd);
 
 public slots:
   virtual void addGroup();

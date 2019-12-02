@@ -111,6 +111,21 @@ namespace model
   */
 namespace mesh
 {
+/// moab is an external meshing library.
+namespace moab
+{
+}
+/// json serialization.
+namespace json
+{
+}
+}
+
+/**\brief Projects organize a user workspace.
+  *
+  */
+namespace project
+{
 }
 
 /**\brief Tools for exporting simulation input decks from attributes.
@@ -131,6 +146,13 @@ namespace view
   *
   */
 namespace io
+{
+}
+
+/**\brief workflow managment.
+  *
+  */
+namespace workflow
 {
 }
 

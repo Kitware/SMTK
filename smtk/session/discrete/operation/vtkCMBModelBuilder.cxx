@@ -50,7 +50,7 @@
 
 vtkStandardNewMacro(vtkCMBModelBuilder);
 
-namespace detail
+namespace
 {
 typedef std::pair<std::vector<vtkModelFace*>, std::vector<int> > RegionInfoPair;
 typedef std::map<vtkIdType, RegionInfoPair> RegionInfoMap;
@@ -180,7 +180,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
     return;
   }
 
-  detail::ModelDomains domains;
+  ModelDomains domains;
 
   //if this optional array exists use it to populate the domain/region mapping
   vtkIdTypeArray* modelRegionDomainMap = vtkIdTypeArray::SafeDownCast(
@@ -307,7 +307,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
   }
   model->SetLargestUsedUniqueId(maxModelEntityId + 1);
 
-  detail::RegionInfoMap RegionInfo;
+  RegionInfoMap RegionInfo;
   vtkIdType counter = 0;
   for (std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it = modelFaceCells.begin();
        it != modelFaceCells.end(); it++, counter++)
@@ -334,7 +334,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
   cellLocator->SetDataSet(modelPoly);
   cellLocator->BuildLocator();
 
-  typedef detail::ModelDomains::const_iterator md_iterator;
+  typedef ModelDomains::const_iterator md_iterator;
   for (md_iterator it = domains.begin(); it != domains.end(); it++, counter++)
   {
     //really randomly assigning a material to this region
@@ -359,7 +359,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
 
     //we need to do a sub loop here over each region in the
     //in the domain
-    detail::ModelDomains::const_region_id_iterator regionIterator;
+    ModelDomains::const_region_id_iterator regionIterator;
     for (regionIterator = it->second.begin(); regionIterator != it->second.end(); ++regionIterator)
     {
       vtkIdType regionId = *regionIterator;

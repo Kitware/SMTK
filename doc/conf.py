@@ -63,6 +63,13 @@ def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
     print >>dxo, cfg2
     dxo.close()
     os.chdir(refdir)
+
+    # Hack for lacking git-lfs support ReadTheDocs
+    if on_rtd:
+        print('Fetching files with git_lfs')
+        from git_lfs import fetch
+        fetch(rtdsrcdir)
+
     print 'Running Doxygen on %s' % dxoname
     rcode = subprocess.call(('doxygen', dxoname))
     print '   Doxygen returned %s' % rcode
