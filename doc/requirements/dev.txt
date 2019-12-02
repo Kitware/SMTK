@@ -7,3 +7,4 @@ sphinxcontrib-actdiag==0.7.2
 sphinxcontrib-doxylink==1.3.0
 sphinx_rtd_theme==0.2.4
 breathe==4.6.0
+git-lfs

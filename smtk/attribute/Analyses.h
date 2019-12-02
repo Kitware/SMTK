@@ -146,8 +146,7 @@ public:
 
   /// \brief Convience method that set's an Analysis' Parent by using their names.
   ///
-  /// If neither name does not corrsponds to an existing Analysis then the method returns
-  /// false.
+  /// If neither name corresponds to an existing Analysis then the method returns false.
   bool setAnalysisParent(const std::string& analysis, const std::string& parent);
 
   /// \brief Create an Attribute Definition to represent the Analysis Instances maintained by the Analyses.

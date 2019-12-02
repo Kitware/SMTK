@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
   auto phraseModel = smtk::view::ResourcePhraseModel::create(view);
   phraseModel->addSource(resourceManager, operationManager, nullptr);
   qmodel->setPhraseModel(phraseModel);
-  qview->setup(resourceManager, qmodel, qdelegate, nullptr);
+  qview->setup(resourceManager, qmodel, qdelegate);
 
   // Enable user sorting.
   qview->tree()->setSortingEnabled(true);

@@ -192,7 +192,7 @@ ConstReferenceItemDefinitionPtr Definition::associationRule() const
 
 /**\brief Create the definition's local association rule that governs attribute associations.
   *
-  * A Definition's local asscoation rule overrides the rule it inherits from its Base Definition.
+  * A Definition's local association rule overrides the rule it inherits from its Base Definition.
   * This creates a local association rule (if one does not already exist) and returns it.
   * The default is to create an empty association rule (nothing can be associated).
   */
