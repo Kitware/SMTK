@@ -216,17 +216,158 @@ static void signalAttribute(smtk::extension::qtUIManager* uiManager,
 
 void qtBaseAttributeView::attributeCreated(const smtk::attribute::AttributePtr& attr)
 {
+  if (attr == nullptr)
+  {
+    return;
+  }
+
+  // Let the toplevel view process attribute creation
+  if (!this->isTopLevel())
+  {
+    auto topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
+    if (topView)
+    {
+      topView->attributeCreated(attr);
+      return;
+    }
+  }
+
+  // If the toplevel view is using analysis configuration we need
+  // to check to see if the attribute is an analysis configuration
+  if (this->Internals->m_configurationCombo != nullptr)
+  {
+    smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+    if (attr->definition()->isA(def))
+    {
+      // if the combobox allows creation of configurations, the number
+      // of existing configurations is 1 less.
+      int n = this->Internals->m_configurationCombo->count();
+      if (m_topLevelCanCreateConfigurations)
+      {
+        --n;
+      }
+      // If there are no configurations in the combobox just prep it
+      if (!n)
+      {
+        this->prepConfigurationComboBox(attr->name());
+      }
+      else
+      {
+        // Lets insert it where it belongs
+        bool needToInsert = true;
+        for (int i = 0; (i < n) && needToInsert; i++)
+        {
+          if (this->Internals->m_configurationCombo->itemText(i).toStdString() > attr->name())
+          {
+            this->Internals->m_configurationCombo->insertItem(i, attr->name().c_str());
+            needToInsert = false;
+          }
+        }
+        if (needToInsert)
+        {
+          this->Internals->m_configurationCombo->insertItem(n, attr->name().c_str());
+        }
+      }
+    }
+  }
+  //Let observers know the attribute was created
   signalAttribute(this->uiManager(), attr, "created");
 }
 
 void qtBaseAttributeView::attributeChanged(
   const smtk::attribute::AttributePtr& attr, std::vector<std::string> items)
 {
+  if (attr == nullptr)
+  {
+    return;
+  }
+
+  // Let the toplevel view process attribute modification
+  if (!this->isTopLevel())
+  {
+    auto topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
+    if (topView)
+    {
+      topView->attributeChanged(attr, items);
+      return;
+    }
+  }
+
+  // If the toplevel view is using analysis configuration we need
+  // to check to see if the attribute is an analysis configuration
+  if (this->Internals->m_configurationCombo != nullptr)
+  {
+    smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+    if (attr->definition()->isA(def))
+    {
+      // We only need to refresh the combobox
+      this->prepConfigurationComboBox("");
+    }
+  }
+  //Let observers know the attribute was modified
   signalAttribute(this->uiManager(), attr, "modified", items);
 }
 
 void qtBaseAttributeView::attributeRemoved(const smtk::attribute::AttributePtr& attr)
 {
+  if (attr == nullptr)
+  {
+    return;
+  }
+
+  // Let the toplevel view process attribute removal
+  if (!this->isTopLevel())
+  {
+    auto topView = dynamic_cast<qtBaseAttributeView*>(this->uiManager()->topView());
+    if (topView)
+    {
+      topView->attributeRemoved(attr);
+      return;
+    }
+  }
+
+  // If the toplevel view is using analysis configuration we need
+  // to check to see if the attribute is an analysis configuration
+  if (this->Internals->m_configurationCombo != nullptr)
+  {
+    smtk::attribute::DefinitionPtr def = m_topLevelConfigurationDef.lock();
+    if (attr->definition()->isA(def))
+    {
+      // See if we can find the attribute
+      int n = this->Internals->m_configurationCombo->findText(attr->name().c_str());
+
+      if (n != -1)
+      {
+        int currentIndex = this->Internals->m_configurationCombo->currentIndex();
+        // If the attribute being removed the selected one?  If it is then select the
+        // select another configuration first
+        if (n == currentIndex)
+        {
+          // By default, we will select the previous configuration if it esists
+          int newSelection = n - 1;
+          if (newSelection < 0)
+          {
+            // Else we will select the first one in the list if one
+            // exists.
+            int count = this->Internals->m_configurationCombo->count();
+            if (m_topLevelCanCreateConfigurations)
+            {
+              --count;
+            }
+            newSelection = (count > 1) ? 0 : -1;
+          }
+          this->Internals->m_configurationCombo->removeItem(n);
+          this->Internals->m_configurationCombo->setCurrentIndex(newSelection);
+        }
+        else
+        {
+          // This is the case where the attribute is not currently selected.
+          this->Internals->m_configurationCombo->removeItem(n);
+        }
+      }
+    }
+  }
+  //Let observers know the attribute was removed
   signalAttribute(this->uiManager(), attr, "expunged");
 }
 
