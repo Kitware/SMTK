@@ -56,7 +56,7 @@
 
 .fedora31_paraview: &fedora31_paraview
     extends: .fedora31_vtk
-    image: "kitware/cmb:ci-smtk-fedora31-paraview-20191125"
+    image: "kitware/cmb:ci-smtk-fedora31-paraview-20191204"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
