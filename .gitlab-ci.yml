@@ -56,7 +56,7 @@
 
 .fedora31_paraview: &fedora31_paraview
     extends: .fedora31_vtk
-    image: "kitware/cmb:ci-smtk-fedora31-paraview-20191125"
+    image: "kitware/cmb:ci-smtk-fedora31-paraview-20191204"
 
     variables:
         CMAKE_CONFIGURATION: fedora31_paraview
@@ -67,6 +67,22 @@
 
     variables:
         CMAKE_CONFIGURATION: fedora31_vtk_python2
+
+.fedora31_memcheck: &fedora31_memcheck
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_BUILD_TYPE: RelWithDebInfo
+
+.fedora31_asan: &fedora31_asan
+    extends: .fedora31_memcheck
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_asan
+        CTEST_MEMORYCHECK_TYPE: AddressSanitizer
+        # Disable LeakSanitizer for now. It's catching all kinds of errors that
+        # need investigated or suppressed.
+        CTEST_MEMORYCHECK_SANITIZER_OPTIONS: detect_leaks=0
 
 .fedora31_coverage: &fedora31_coverage
     extends: .fedora31_paraview
@@ -174,6 +190,37 @@
         - linux
         - x11
 
+.cmake_memcheck_unix: &cmake_memcheck_unix
+    stage: test
+    only: *only_settings
+    tags:
+        - build
+        - cmb
+        - docker
+        - linux
+
+    script:
+        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_memcheck.cmake"
+
+    interruptible: true
+
+.cmake_memcheck_unix_x11: &cmake_memcheck_unix_x11
+    <<: *cmake_memcheck_unix
+    tags:
+        - cmb
+        - docker
+        - linux
+        - x11
+
+.cmake_memcheck_unix_x11_priv: &cmake_memcheck_unix_x11_priv
+    <<: *cmake_memcheck_unix
+    tags:
+        - cmb
+        - docker
+        - linux
+        - privileged
+        - x11
+
 .cmake_coverage: &cmake_coverage
     stage: analyze
     only: *only_settings
@@ -249,6 +296,20 @@ test:fedora31-vtk-python2:
         - build:fedora31-vtk-python2
     needs:
         - build:fedora31-vtk-python2
+
+build:fedora31-asan:
+    <<:
+        - *fedora31_asan
+        - *cmake_build_unix
+
+test:fedora31-asan:
+    <<:
+        - *fedora31_asan
+        - *cmake_memcheck_unix_x11_priv
+    dependencies:
+        - build:fedora31-asan
+    needs:
+        - build:fedora31-asan
 
 build:fedora31-coverage:
     <<:

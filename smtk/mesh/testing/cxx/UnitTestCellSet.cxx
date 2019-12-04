@@ -566,7 +566,7 @@ public:
     this->numCellsVisited++;
     this->numPointsSeen += numPts;
     this->pointsSeen.insert(
-      smtk::mesh::HandleInterval(*this->pointIds(), *(this->pointIds() + numPts)));
+      smtk::mesh::HandleInterval(*this->pointIds(), *(this->pointIds() + numPts - 1)));
     this->cellTypesSeen[static_cast<int>(cellType)] = true;
   }
 
@@ -599,7 +599,7 @@ void verify_cellset_for_each(const smtk::mesh::ResourcePtr& mr)
   while (pc.fetchNextCell(numPts, points))
   {
     numPointsSeen += numPts;
-    pointsFromConnectivity.insert(smtk::mesh::HandleInterval(*points, *(points + numPts)));
+    pointsFromConnectivity.insert(smtk::mesh::HandleInterval(*points, *(points + numPts - 1)));
   }
 
   //verify that point connectivity iteration and cell for_each visit

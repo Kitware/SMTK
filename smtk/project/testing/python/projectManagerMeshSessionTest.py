@@ -53,7 +53,7 @@ class TestProjectManager(unittest.TestCase):
         pm = smtk.project.Manager.create(rm, om)
         spec = pm.getProjectSpecification()
         logger = smtk.io.Logger.instance()
-        project = pm.createProject(spec)
+        project = pm.createProject(spec, logger=logger)
         self.assertIsNone(project)
 
     def init_project_manager(self):
@@ -194,7 +194,7 @@ class TestProjectManager(unittest.TestCase):
     def open_project(self):
         path = os.path.join(smtk.testing.TEMP_DIR, PROJECT1)
         # project = self.pm.openProject(path, smtk.io.Logger.instance())
-        logger = smtk.io.Logger()
+        logger = smtk.io.Logger.instance()
         project = self.pm.openProject(path, logger)
         self.assertIsNotNone(project, msg=logger.convertToString())
 

@@ -55,7 +55,7 @@ public:
     this->numCellsVisited++;
     this->numPointsSeen += numPts;
     this->pointsSeen.insert(
-      smtk::mesh::HandleInterval(*this->pointIds(), *(this->pointIds() + numPts)));
+      smtk::mesh::HandleInterval(*this->pointIds(), *(this->pointIds() + numPts - 1)));
   }
 
   int numberOCellsVisited() const { return numCellsVisited; }
