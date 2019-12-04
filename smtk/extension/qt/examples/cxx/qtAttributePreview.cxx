@@ -34,6 +34,10 @@
 #include "smtk/session/vtk/operators/Read.h"
 #endif
 
+// SMTK build tree includes
+#include "smtk/operation/Operation_xml.h"
+
+// Qt includes
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -64,11 +68,13 @@ int main(int argc, char* argv[])
   parser.setApplicationDescription("Load attribute template and display editor panel");
   parser.addHelpOption();
   parser.addPositionalArgument("attribute_filename", "Attribute file (.sbt)");
-  parser.addOptions({ { { "o", "output-file" }, "Output attribute file (.sbi)", "main" },
+  parser.addOptions({
 #ifdef VTK_SESSION
-    { { "m", "model-file" }, "Model file (using vtk session)", "main" },
+    { { "m", "model-file" }, "Model file (using vtk session)", "path" },
 #endif
-    { { "v", "view-name" }, "Specific View to display", "main" } });
+    { { "o", "output-file" }, "Output attribute file (.sbi)", "path" },
+    { { "p", "preload-operation" }, "Preload smtk operation template" },
+    { { "v", "view-name" }, "Specific View to display", "string" } });
 
   parser.process(app);
   if (!parser.parse(QCoreApplication::arguments()))
@@ -97,18 +103,34 @@ int main(int argc, char* argv[])
 
   // Instantiate and load attribute resource
   smtk::attribute::ResourcePtr attResource = smtk::attribute::Resource::create();
-  std::string inputPath = positionalArguments.first().toStdString();
-  qInfo() << "Loading simulation file:" << inputPath.c_str();
   smtk::io::AttributeReader reader;
   smtk::io::Logger inputLogger;
-  bool err = reader.read(attResource, inputPath, true, inputLogger);
+
+  if (parser.isSet("preload-operation"))
+  {
+    qInfo() << "Loading operation template";
+    bool opErr = reader.readContents(attResource, Operation_xml, inputLogger);
+    if (opErr)
+    {
+      qCritical() << "Error loading operation template -- exiting"
+                  << "\n";
+      qCritical() << QString::fromStdString(inputLogger.convertToString());
+      return 1;
+    }
+  }
+
+  QString inputPath = positionalArguments.first();
+  qInfo() << "Loading attribute file:" << inputPath;
+  bool err = reader.read(attResource, inputPath.toStdString(), true, inputLogger);
   if (err)
   {
-    qCritical() << "Error loading simulation file -- exiting"
+    qCritical() << "Error loading attribute file -- exiting"
                 << "\n";
     qCritical() << QString::fromStdString(inputLogger.convertToString());
     return 1;
   }
+  QFileInfo attFileInfo(inputPath);
+  attResource->setName(attFileInfo.baseName().toStdString());
   resourceManager->add(attResource);
 
 #ifdef VTK_SESSION
@@ -163,7 +185,7 @@ int main(int argc, char* argv[])
     // If model resource loaded, then associate it to the attribute resource
     attResource->associate(modelResource);
   }
-#endif
+#endif // VTK_SESSION
 
   // Find view if specified
   smtk::view::ConfigurationPtr root;
