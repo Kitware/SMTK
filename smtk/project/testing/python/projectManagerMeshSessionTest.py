@@ -53,7 +53,7 @@ class TestProjectManager(unittest.TestCase):
         pm = smtk.project.Manager.create(rm, om)
         spec = pm.getProjectSpecification()
         logger = smtk.io.Logger.instance()
-        project = pm.createProject(spec)
+        project = pm.createProject(spec, logger=logger)
         self.assertIsNone(project)
 
     def init_project_manager(self):
