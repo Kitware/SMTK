@@ -19,4 +19,10 @@ dnf install -y \
     ninja-build \
     make
 
+# Install memcheck tools
+dnf install -y \
+    libasan \
+    libubsan \
+    valgrind
+
 dnf clean all
