@@ -66,6 +66,9 @@ include(CMake/SMTKTestingMacros.cmake)
 # Add options for performing code coverage tests.
 include(CMake/SMTKCoverage.cmake)
 
+# Add options for performing sanitization.
+include(CMake/SMTKSanitize.cmake)
+
 # Include mechanism for determining function and bind support
 include(Function)
 
