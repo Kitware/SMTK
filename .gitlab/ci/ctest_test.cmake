@@ -12,17 +12,7 @@ ctest_start(APPEND)
 include(ProcessorCount)
 ProcessorCount(nproc)
 
-set(test_exclusions
-  # Issue #296.
-  "elevateMeshOnStructuredGridPy"
-  "pv.OpenExodusFile"
-  "TestReadWrite"
-)
-string(REPLACE ";" "|" test_exclusions "${test_exclusions}")
-if (test_exclusions)
-  set(test_exclusions "(${test_exclusions})")
-endif ()
-
+include("${CMAKE_CURRENT_LIST_DIR}/ctest_exclusions.cmake")
 ctest_test(
   PARALLEL_LEVEL "${nproc}"
   RETURN_VALUE test_result
