@@ -3,14 +3,6 @@ if(SMTK_ENABLE_QT_SUPPORT)
   add_subdirectory(qt)
 endif()
 
-# Add mesh operator if Remus is enabled.
-#this needs to be above vtk_smtk_setup_module_environment as that
-#pollutes the link libraries, and causes the remus plugin to depend
-#on libraries it doesn't require
-#if (SMTK_ENABLE_REMUS_SUPPORT)
-#  add_subdirectory(remus)
-#endif()
-
 # Add operators that use Delaunay 2d meshing
 add_subdirectory(delaunay)
 
@@ -39,10 +31,11 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   add_subdirectory(paraview)
 endif()
 
+# XXX: Disabled because it needs ported from cJSON to nlohmann_json
 # Add the cumulus UI if Qt support and cumulus enabled
-if(SMTK_ENABLE_QT_SUPPORT AND SMTK_ENABLE_CUMULUS_SUPPORT)
-  add_subdirectory(cumulus)
-endif()
+#if(SMTK_ENABLE_QT_SUPPORT AND SMTK_ENABLE_CUMULUS_SUPPORT)
+#  add_subdirectory(cumulus)
+#endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
 

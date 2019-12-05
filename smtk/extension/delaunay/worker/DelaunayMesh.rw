@@ -1,7 +1,0 @@
-{
-"ExecutableName": "DelaunayMeshWorker",
-"InputType": "Model",
-"OutputType": "Model",
-"File" : "DelaunayMeshingDefs.sbt",
-"FileFormat" : "XML"
-}

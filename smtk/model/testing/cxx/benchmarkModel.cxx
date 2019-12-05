@@ -11,8 +11,6 @@
 #include "smtk/model/json/jsonResource.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
-#include "cJSON.h"
-
 #include <fstream>
 #include <iostream>
 

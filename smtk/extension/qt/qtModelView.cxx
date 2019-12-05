@@ -365,13 +365,6 @@ bool qtModelView::requestOperation(const smtk::operation::OperationPtr& brOp, bo
     m_OperationsDock->updateGeometry();
   }
   return true;
-  //  cJSON* json = cJSON_CreateObject();
-  //  SaveJSON::forOperation(brOp, json);
-  //  std::cout << "Found operator " << cJSON_Print(json) << ")\n";
-  //  OperationResult result = brOp->operate();
-  //  json = cJSON_CreateObject();
-  //  SaveJSON::forOperationResult(result, json);
-  //  std::cout << "Result " << cJSON_Print(json) << "\n";
 
   //  emit this->operationRequested(uid, action->text());
   //  emit this->operationFinished(result);

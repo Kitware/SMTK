@@ -33,7 +33,6 @@ contents of these for details on the specifics of their respective
 licenses.
 - - - - - - - - - - - - - - - - - - - - - - - -
 Thirdparty/pugixml
-Thirdparty/cJSON
 Thirdparty/PyYaml
 Thidpary/rtvl
 CMake/FindDocutils.cmake

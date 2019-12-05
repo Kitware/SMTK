@@ -32,7 +32,8 @@ void to_json(json& j, const smtk::session::polygon::internal::pmodel::Ptr& pmode
   j["j axis"] = std::vector<double>(pmodel->jAxis(), pmodel->jAxis() + 3);
   j["feature size"] = pmodel->featureSize();
 
-  // Encode model scale carefully since cJSON cannot store large integers faithfully:
+  // Encode model scale carefully since some JSON implementations store numbers
+  // in doubles which loses precision with large integers.
   std::vector<int> modelScaleBytes(8);
   long long mscale = static_cast<long long>(pmodel->modelScale());
   for (int i = 0; i < 8; ++i)

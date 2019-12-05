@@ -31,7 +31,6 @@
 // #define SMTK_DISCRETE_SESSION_DEBUG
 
 #if defined(SMTK_DISCRETE_SESSION_DEBUG)
-#include "cJSON.h"
 #include "smtk/io/SaveJSON.h"
 #endif
 

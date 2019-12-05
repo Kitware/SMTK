@@ -15,8 +15,6 @@
 #include "smtk/session/polygon/Exports.h"
 #include "smtk/session/polygon/Resource.h"
 
-struct cJSON;
-
 namespace smtk
 {
 namespace session

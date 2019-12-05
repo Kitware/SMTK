@@ -19,7 +19,6 @@ set(unit_tests
   UnitTestIntervals.cxx
   UnitTestModelToMesh3D.cxx
   UnitTestQueryTypes.cxx
-#  UnitTestReadWriteHandles.cxx
   UnitTestTypeSet.cxx
 )
 
