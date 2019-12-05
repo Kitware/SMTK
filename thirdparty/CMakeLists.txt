@@ -1,3 +1,7 @@
+# Don't perform clang-tidy on third party code.
+set(CMAKE_C_CLANG_TIDY "")
+set(CMAKE_CXX_CLANG_TIDY "")
+
 add_subdirectory(cJSON)
 
 # disable warning flags for cJSON. This is optional because we should be
