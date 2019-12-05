@@ -251,8 +251,8 @@ void smtkAssignColorsView::prepPaletteChooser()
     this->Internals->ChoosePaletteBtn, SIGNAL(released()), this->Internals->PaletteChooser,
     SLOT(show()));
   QObject::connect( // When the user has chosen a preference, remember and apply it.
-    this->Internals->PaletteChooser, SIGNAL(applyPreset(const Json::Value&)), this,
-    SLOT(setDefaultPaletteAndApply()));
+    this->Internals->PaletteChooser, &pqPresetDialog::applyPreset, this,
+    &smtkAssignColorsView::setDefaultPaletteAndApply);
 }
 
 void smtkAssignColorsView::createWidget()
