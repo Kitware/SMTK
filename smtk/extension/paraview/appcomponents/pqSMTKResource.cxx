@@ -21,7 +21,6 @@
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
-#include "smtk/operation/operators/MarkModified.h"
 
 #include "vtkSMSourceProxy.h"
 
@@ -66,8 +65,7 @@ pqSMTKResource::pqSMTKResource(
         {
           return 0; // My resource is not being effected
         }
-        if (!dynamic_cast<const smtk::attribute::Signal*>(&op) &&
-          !dynamic_cast<const smtk::operation::MarkModified*>(&op))
+        if (!dynamic_cast<const smtk::attribute::Signal*>(&op))
         {
           emit this->operationOccurred(QPrivateSignal());
         }

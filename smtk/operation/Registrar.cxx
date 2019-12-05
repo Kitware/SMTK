@@ -15,7 +15,6 @@
 #include "smtk/operation/operators/ImportPythonOperation.h"
 #endif
 #include "smtk/operation/operators/ImportResource.h"
-#include "smtk/operation/operators/MarkModified.h"
 #include "smtk/operation/operators/ReadResource.h"
 #include "smtk/operation/operators/RemoveResource.h"
 #include "smtk/operation/operators/WriteResource.h"
@@ -32,7 +31,7 @@ typedef std::tuple<
 #ifdef SMTK_PYTHON_ENABLED
   ImportPythonOperation,
 #endif
-  ImportResource, MarkModified, ReadResource, RemoveResource, WriteResource>
+  ImportResource, ReadResource, RemoveResource, WriteResource>
   OperationList;
 }
 
