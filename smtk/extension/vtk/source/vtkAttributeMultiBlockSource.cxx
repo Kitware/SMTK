@@ -70,6 +70,6 @@ int vtkAttributeMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request
     vtkErrorMacro("No input attribute.");
     return 0;
   }
-  this->SetResourceId(output, resource->id());
+  vtkAttributeMultiBlockSource::SetResourceId(output, resource->id());
   return 1;
 }

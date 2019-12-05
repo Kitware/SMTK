@@ -400,7 +400,8 @@ void XmlV2StringWriter::generateXml()
       if (m_resource->advanceLevelColor(it->first))
       {
         anode.append_attribute("Color").set_value(
-          this->encodeColor(m_resource->advanceLevelColor(it->first)).c_str());
+          smtk::io::XmlV2StringWriter::encodeColor(m_resource->advanceLevelColor(it->first))
+            .c_str());
       }
       anode.text().set(getValueForXMLElement(it->first));
     }
@@ -555,12 +556,12 @@ void XmlV2StringWriter::processDefinitionInternal(
   std::string s;
   if (def->isNotApplicableColorSet())
   {
-    s = this->encodeColor(def->notApplicableColor());
+    s = smtk::io::XmlV2StringWriter::encodeColor(def->notApplicableColor());
     definition.append_child("NotApplicableColor").text().set(s.c_str());
   }
   if (def->isDefaultColorSet())
   {
-    s = this->encodeColor(def->defaultColor());
+    s = smtk::io::XmlV2StringWriter::encodeColor(def->defaultColor());
     definition.append_child("DefaultColor").text().set(s.c_str());
   }
 
@@ -726,7 +727,8 @@ void XmlV2StringWriter::processModelEntityDef(
   pugi::xml_node& node, attribute::ModelEntityItemDefinitionPtr idef)
 {
   smtk::model::BitFlags membershipMask = idef->membershipMask();
-  std::string membershipMaskStr = this->encodeModelEntityMask(membershipMask);
+  std::string membershipMaskStr =
+    smtk::io::XmlV2StringWriter::encodeModelEntityMask(membershipMask);
   xml_node menode;
   menode = node.append_child("MembershipMask");
   menode.text().set(membershipMaskStr.c_str());
@@ -968,7 +970,7 @@ void XmlV2StringWriter::processAttribute(xml_node& attributes, attribute::Attrib
   if (att->isColorSet())
   {
     std::string s;
-    s = this->encodeColor(att->color());
+    s = smtk::io::XmlV2StringWriter::encodeColor(att->color());
     node.append_child("Color").text().set(s.c_str());
   }
   // Does the attribute have explicit advance level information

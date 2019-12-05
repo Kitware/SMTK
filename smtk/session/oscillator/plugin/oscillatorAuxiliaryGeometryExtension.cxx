@@ -77,7 +77,8 @@ bool oscillatorAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
     const auto& entityMTime = entity.floatProperty("mtime");
     if (!entityMTime.empty() && entityMTime[0] < cachedFloatTime)
     {
-      return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+      return oscillatorAuxiliaryGeometryExtension::updateBoundsFromDataSet(
+        entity, bboxOut, dataset);
     }
   }
 
@@ -85,8 +86,8 @@ bool oscillatorAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   dataset = oscillatorAuxiliaryGeometryExtension::generateOscillatorRepresentation(entity);
   std::time_t mtime;
   std::time(&mtime);
-  this->addCacheGeometry(dataset, entity, mtime, trimCache);
-  return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+  oscillatorAuxiliaryGeometryExtension::addCacheGeometry(dataset, entity, mtime, trimCache);
+  return oscillatorAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
 }
 
 vtkSmartPointer<vtkDataObject>

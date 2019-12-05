@@ -452,5 +452,5 @@ int unitQtComponentItem(int argc, char* argv[])
     QTimer::singleShot(1, qApp, SLOT(closeAllWindows()));
   }
 
-  return app.exec();
+  return QApplication::exec();
 }

@@ -306,7 +306,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       mbds->SetBlock(i, poly.GetPointer());
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
-      this->SetDataObjectUUID(mbds->GetMetaData(i), cit->second.second.id());
+      vtkMeshMultiBlockSource::SetDataObjectUUID(mbds->GetMetaData(i), cit->second.second.id());
       this->GenerateRepresentationForSingleMesh(
         cit->second.second, poly.GetPointer(), cit->first, modelRequiresNormals);
 
@@ -389,6 +389,6 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     this->RemoveCacheEntriesExcept(this->Visited);
   }
   output->SetBlock(BlockId::Components, this->CachedOutput);
-  this->SetResourceId(output, resource->id());
+  vtkMeshMultiBlockSource::SetResourceId(output, resource->id());
   return 1;
 }

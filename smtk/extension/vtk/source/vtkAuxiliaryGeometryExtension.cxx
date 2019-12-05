@@ -217,12 +217,12 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
       }
       if (std::get<ClassInternal::TIMESTAMP>(tuple) >= mtime)
       {
-        return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+        return vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
       }
     }
     else
     { // TODO: No URL, so just assume the data is still good?
-      return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+      return vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
     }
   }
 
@@ -260,8 +260,8 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   }
   dataset = vtkAuxiliaryGeometryExtension::generateRepresentation(entity, genNormals);
   s_p->insert(entity, ClassInternal::CacheValue(dataset, mtime), trimCache);
-  this->addCacheGeometry(dataset, entity, mtime, trimCache);
-  return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+  vtkAuxiliaryGeometryExtension::addCacheGeometry(dataset, entity, mtime, trimCache);
+  return vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
 }
 
 void vtkAuxiliaryGeometryExtension::addCacheGeometry(const vtkSmartPointer<vtkDataObject> dataset,

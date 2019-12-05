@@ -285,7 +285,7 @@ void qtSimpleExpressionView::onFuncSelectionChanged(
   this->Internals->FuncTable->blockSignals(true);
   if (dataItem)
   {
-    this->uiManager()->updateArrayTableWidget(dataItem, this->Internals->FuncTable);
+    qtUIManager::updateArrayTableWidget(dataItem, this->Internals->FuncTable);
     this->Internals->FuncTable->resizeColumnsToContents();
     this->updateTableHeader();
   }
@@ -362,7 +362,7 @@ void qtSimpleExpressionView::onFuncValueChanged(QTableWidgetItem* item)
   {
     return;
   }
-  this->uiManager()->updateArrayDataValue(dataItem, item);
+  qtUIManager::updateArrayDataValue(dataItem, item);
   this->clearFuncExpression();
 }
 
@@ -630,7 +630,7 @@ void qtSimpleExpressionView::onFuncTableKeyPress(QKeyEvent* e)
   // Allow paste
   if (e->key() == Qt::Key_V && e->modifiers() == Qt::ControlModifier)
   {
-    QString values = this->uiManager()->clipBoardText();
+    QString values = qtUIManager::clipBoardText();
     this->pasteFunctionValues(values);
     e->accept();
     return;
@@ -656,7 +656,7 @@ void qtSimpleExpressionView::onFuncTableKeyPress(QKeyEvent* e)
     }
 
     QString tempText = list.join(" ");
-    this->uiManager()->setClipBoardText(tempText);
+    qtUIManager::setClipBoardText(tempText);
 
     e->accept();
     return;
@@ -732,7 +732,7 @@ void qtSimpleExpressionView::addNewValue(double* vals, int numVals)
     return;
   }
   this->Internals->FuncTable->blockSignals(true);
-  this->uiManager()->addNewTableValues(dataItem, this->Internals->FuncTable, vals, numVals);
+  qtUIManager::addNewTableValues(dataItem, this->Internals->FuncTable, vals, numVals);
   this->Internals->FuncTable->blockSignals(false);
 }
 
@@ -744,7 +744,7 @@ void qtSimpleExpressionView::onRemoveSelectedValues()
     return;
   }
   this->Internals->FuncTable->blockSignals(true);
-  this->uiManager()->removeSelectedTableValues(dataItem, this->Internals->FuncTable);
+  qtUIManager::removeSelectedTableValues(dataItem, this->Internals->FuncTable);
   this->Internals->FuncTable->blockSignals(false);
   this->clearFuncExpression();
 }

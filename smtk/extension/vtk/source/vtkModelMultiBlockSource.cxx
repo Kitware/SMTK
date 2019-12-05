@@ -236,7 +236,7 @@ static void AddEntityTessToPolyData(const smtk::model::EntityRef& entityref, vtk
   for (off = tess->begin(); off != tess->end(); off = tess->nextCellOffset(off))
   {
     Tessellation::size_type cell_type = tess->cellType(off);
-    Tessellation::size_type cell_shape = tess->cellShapeFromType(cell_type);
+    Tessellation::size_type cell_shape = Tessellation::cellShapeFromType(cell_type);
     std::vector<int> cell_conn;
     Tessellation::size_type num_verts = tess->vertexIdsOfCell(off, cell_conn);
     std::vector<vtkIdType> vtk_conn(cell_conn.begin(), cell_conn.end());
@@ -610,7 +610,8 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds
   vtkIdType nextProtoIndex = 0;
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
   {
-    smtk::common::UUID uid = this->GetDataObjectUUID(iter->GetCurrentMetaData());
+    smtk::common::UUID uid =
+      vtkModelMultiBlockSource::GetDataObjectUUID(iter->GetCurrentMetaData());
     if (uid)
     {
       smtk::model::EntityRef proto(this->GetModelResource(), uid);
@@ -668,8 +669,9 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
     instanceBlocks->SetBlock(block, instancePoly.GetPointer());
 
     // const smtk::model::EntityRef entRef = instance.prototype();
-    this->SetDataObjectUUID(instanceBlocks->GetMetaData(block), instance.entity());
-    this->SetDataObjectUUID(instancePoly->GetInformation(), instance.entity());
+    vtkModelMultiBlockSource::SetDataObjectUUID(
+      instanceBlocks->GetMetaData(block), instance.entity());
+    vtkModelMultiBlockSource::SetDataObjectUUID(instancePoly->GetInformation(), instance.entity());
     block++;
 
     vtkNew<vtkDoubleArray> instanceOrient;
@@ -918,8 +920,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
       topBlocks[bb]->SetBlock(lb, blockDatasets[bb][lb].GetPointer());
       topBlocks[bb]->GetMetaData(lb)->Set(
         vtkCompositeDataSet::NAME(), blockEntities[bb][lb].name().c_str());
-      this->SetDataObjectUUID(topBlocks[bb]->GetMetaData(lb), blockEntities[bb][lb].entity());
-      this->SetDataObjectUUID(
+      vtkModelMultiBlockSource::SetDataObjectUUID(
+        topBlocks[bb]->GetMetaData(lb), blockEntities[bb][lb].entity());
+      vtkModelMultiBlockSource::SetDataObjectUUID(
         blockDatasets[bb][lb]->GetInformation(), blockEntities[bb][lb].entity());
     }
   }
@@ -933,7 +936,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
     if (!miter->HasCurrentMetaData())
       continue;
     smtk::model::EntityRef ent =
-      this->GetDataObjectEntityAs<smtk::model::EntityRef>(resource, miter->GetCurrentMetaData());
+      vtkModelMultiBlockSource::GetDataObjectEntityAs<smtk::model::EntityRef>(
+        resource, miter->GetCurrentMetaData());
     if (ent.isValid())
     {
       addBlockInfo(resource, ent, volumeOfEntity(ent), miter->GetCurrentFlatIndex(),
@@ -988,7 +992,7 @@ int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
   output->SetBlock(BlockId::Components, this->CachedOutputMBDS);
   output->SetBlock(BlockId::Prototypes, this->CachedOutputProto);
   output->SetBlock(BlockId::Instances, this->CachedOutputInst);
-  this->SetResourceId(output, resource->id());
+  vtkModelMultiBlockSource::SetResourceId(output, resource->id());
 
   return 1;
 }

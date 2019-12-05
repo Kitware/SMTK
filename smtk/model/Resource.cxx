@@ -1514,7 +1514,7 @@ void Resource::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const 
       this->setIntegerProperty(irec->first, "pedigree id", pedigree);
     }
     std::string defaultName = counts.empty()
-      ? this->shortUUIDName(irec->first, irec->second->entityFlags())
+      ? Resource::shortUUIDName(irec->first, irec->second->entityFlags())
       : Entity::defaultNameFromCounters(irec->second->entityFlags(), counts);
     this->setStringProperty(irec->first, "name", defaultName);
   }
@@ -1616,7 +1616,7 @@ std::string Resource::assignDefaultName(const UUID& uid, BitFlags entityFlags)
     int pedigree = Entity::countForType(entityFlags, counts, false);
     this->setIntegerProperty(uid, "pedigree id", pedigree);
   }
-  std::string defaultName = counts.empty() ? this->shortUUIDName(uid, entityFlags)
+  std::string defaultName = counts.empty() ? Resource::shortUUIDName(uid, entityFlags)
                                            : Entity::defaultNameFromCounters(entityFlags, counts);
   this->setStringProperty(uid, "name", defaultName);
   return defaultName;

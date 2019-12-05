@@ -587,7 +587,7 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
       {
         double color[4];
         s = xatt.value();
-        if (!s.empty() && this->decodeColorInfo(s, color) == 0)
+        if (!s.empty() && XmlDocV1Parser::decodeColorInfo(s, color) == 0)
         {
           m_resource->setAdvanceLevelColor(val, color);
         }
@@ -2464,7 +2464,7 @@ bool XmlDocV1Parser::getColor(xml_node& node, double color[4], const std::string
     return false;
   }
 
-  int i = this->decodeColorInfo(s, color);
+  int i = XmlDocV1Parser::decodeColorInfo(s, color);
   if (i)
   {
     smtkErrorMacro(m_logger, "Color Format Problem - only found "

@@ -159,8 +159,8 @@ Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
   if (num_verts == 0)
     return this->end();
 
-  int num_cell_props = this->numCellPropsFromType(cell_type);
-  int num_vert_props = this->numVertexPropsFromType(cell_type);
+  int num_cell_props = Tessellation::numCellPropsFromType(cell_type);
+  int num_vert_props = Tessellation::numVertexPropsFromType(cell_type);
 
   size_type unchecked_next = curOffset + (cell_type & TESS_VARYING_VERT_CELL ? 2 : 1) +
     num_verts * (1 + num_vert_props) + num_cell_props;
@@ -197,7 +197,7 @@ Tessellation::size_type Tessellation::numberOfCellVertices(
   if (cellTypeOut)
     *cellTypeOut = cell_type;
 
-  size_type cell_shape = this->cellShapeFromType(cell_type);
+  size_type cell_shape = Tessellation::cellShapeFromType(cell_type);
   switch (cell_shape)
   {
     case TESS_VERTEX:
@@ -335,7 +335,7 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
 
   size_type num_verts;
   size_type cell_type = cellConn[0];
-  size_type cell_shape = this->cellShapeFromType(cell_type);
+  size_type cell_shape = Tessellation::cellShapeFromType(cell_type);
   switch (cell_shape)
   {
     case TESS_VERTEX:
@@ -361,8 +361,8 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
 
   // Determine whether cellConn is the proper length.
   // If not, then stop. Otherwise, insert more crud.
-  int num_cell_props = this->numCellPropsFromType(cell_type);
-  int num_vert_props = this->numVertexPropsFromType(cell_type);
+  int num_cell_props = Tessellation::numCellPropsFromType(cell_type);
+  int num_vert_props = Tessellation::numVertexPropsFromType(cell_type);
   size_type expected_length = 1 +                    // cell type
     ((cell_type & TESS_VARYING_VERT_CELL) ? 1 : 0) + // number of verts (when required)
     num_cell_props +                                 // per-cell property offsets

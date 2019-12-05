@@ -521,7 +521,7 @@ std::size_t computeNumberOfPoints(std::istream& stream)
 
   // reset the stream to the beginning of the file
   stream.clear();
-  stream.seekg(0, stream.beg);
+  stream.seekg(0, std::istream::beg);
 
   assert(fromComment || counter == nPts);
 
@@ -573,7 +573,7 @@ bool readPoints(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr
 
   // reset the stream to the beginning of the file
   stream.clear();
-  stream.seekg(0, stream.beg);
+  stream.seekg(0, std::istream::beg);
 
   return true;
 }

@@ -90,8 +90,8 @@ void qtSMTKUtilities::updateItemConstructors(smtk::extension::qtUIManager* uiMan
 
 QVariant qtSMTKUtilities::UUIDToQVariant(const smtk::common::UUID& uuid)
 {
-  QVariant vdata(
-    QByteArray(reinterpret_cast<const char*>(uuid.begin()), static_cast<int>(uuid.size())));
+  QVariant vdata(QByteArray(
+    reinterpret_cast<const char*>(uuid.begin()), static_cast<int>(smtk::common::UUID::size())));
   return vdata;
 }
 

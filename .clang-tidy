@@ -86,7 +86,6 @@ readability-*,\
 -readability-redundant-control-flow,\
 -readability-redundant-member-init,\
 -readability-simplify-boolean-expr,\
--readability-static-accessed-through-instance,\
 -readability-uppercase-literal-suffix,\
 "
 #WarningsAsErrors: "*"

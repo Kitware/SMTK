@@ -48,8 +48,8 @@ qtLineEdit::qtLineEdit(QWidget* _parent)
   , EditingFinishedPending(false)
   , ResetCursorPositionOnEditingFinished(true)
 {
-  this->connect(this, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
-  this->connect(this, SIGNAL(textEdited(const QString&)), this, SLOT(onTextEdited()));
+  qtLineEdit::connect(this, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
+  qtLineEdit::connect(this, SIGNAL(textEdited(const QString&)), this, SLOT(onTextEdited()));
 }
 
 //-----------------------------------------------------------------------------
@@ -58,8 +58,8 @@ qtLineEdit::qtLineEdit(const QString& _contents, QWidget* _parent)
   , EditingFinishedPending(false)
   , ResetCursorPositionOnEditingFinished(true)
 {
-  this->connect(this, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
-  this->connect(this, SIGNAL(textEdited(const QString&)), this, SLOT(onTextEdited()));
+  qtLineEdit::connect(this, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
+  qtLineEdit::connect(this, SIGNAL(textEdited(const QString&)), this, SLOT(onTextEdited()));
 }
 
 //-----------------------------------------------------------------------------
