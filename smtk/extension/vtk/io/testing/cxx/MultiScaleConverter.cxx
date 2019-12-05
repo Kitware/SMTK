@@ -223,7 +223,7 @@ void labelShellWithMaterial(const smtk::mesh::ResourcePtr& c, const smtk::mesh::
   }
 }
 
-static int nextDirId = 0;
+int nextDirId = 0;
 
 bool labelIntersection(
   const smtk::mesh::ResourcePtr& c, const smtk::mesh::MeshSet& shell, Filter& filter)

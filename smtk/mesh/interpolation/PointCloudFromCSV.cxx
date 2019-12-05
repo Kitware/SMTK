@@ -45,7 +45,7 @@ namespace mesh
 
 namespace
 {
-static bool registered = PointCloudFromCSV::registerClass();
+bool registered = PointCloudFromCSV::registerClass();
 }
 
 bool PointCloudFromCSV::valid(const std::string& fileName) const

@@ -169,7 +169,7 @@ void qtBaseAttributeView::valueChanged(smtk::attribute::ItemPtr item)
 namespace
 {
 
-static void signalAttribute(smtk::extension::qtUIManager* uiManager,
+void signalAttribute(smtk::extension::qtUIManager* uiManager,
   const smtk::attribute::AttributePtr& attr, const char* itemName,
   std::vector<std::string> items = std::vector<std::string>())
 {

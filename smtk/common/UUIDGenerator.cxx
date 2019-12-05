@@ -25,7 +25,7 @@ namespace
 std::mutex m_generatorMutex;
 
 // Return true when \a vname exists in the environment (empty or not).
-static bool checkenv(const char* vname)
+bool checkenv(const char* vname)
 {
 #if !defined(_WIN32) || defined(__CYGWIN__)
   return getenv(vname) ? true : false;

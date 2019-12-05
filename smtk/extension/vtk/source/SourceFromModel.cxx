@@ -26,7 +26,7 @@ namespace source
 
 namespace
 {
-static bool registered = SourceFromModel::registerClass();
+bool registered = SourceFromModel::registerClass();
 }
 
 bool SourceFromModel::valid(const smtk::resource::ResourcePtr& resource) const

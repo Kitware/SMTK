@@ -36,7 +36,7 @@ namespace mesh
 
 namespace
 {
-static bool registered = StructuredGridFromVTKFile::registerClass();
+bool registered = StructuredGridFromVTKFile::registerClass();
 }
 
 bool StructuredGridFromVTKFile::valid(const std::string& fileName) const

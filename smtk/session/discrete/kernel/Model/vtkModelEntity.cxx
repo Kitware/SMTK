@@ -39,7 +39,7 @@ vtkInformationKeyMacro(vtkModelEntity, SHOWTEXTURE, Integer);
 // between server and client.
 namespace
 {
-static vtkIdType UseIdCounter = -100;
+vtkIdType UseIdCounter = -100;
 }
 
 vtkModelEntity::vtkModelEntity()

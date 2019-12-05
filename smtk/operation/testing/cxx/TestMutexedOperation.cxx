@@ -39,7 +39,7 @@
 
 namespace
 {
-static std::atomic<bool> semaphore(false);
+std::atomic<bool> semaphore(false);
 
 class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>
 {

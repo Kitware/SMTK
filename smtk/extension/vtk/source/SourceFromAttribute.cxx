@@ -27,7 +27,7 @@ namespace source
 
 namespace
 {
-static bool registered = SourceFromAttribute::registerClass();
+bool registered = SourceFromAttribute::registerClass();
 }
 
 bool SourceFromAttribute::valid(const smtk::resource::ResourcePtr& resource) const

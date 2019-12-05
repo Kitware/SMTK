@@ -39,7 +39,7 @@ namespace
 // unwieldy when merging large numbers of entities. This value defines the
 // maximum number of entities to merge before switching to the naming convention
 // of "# entities".
-static constexpr const std::size_t DescriptionAppendLimit = 5;
+constexpr const std::size_t DescriptionAppendLimit = 5;
 }
 
 namespace smtk

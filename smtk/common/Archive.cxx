@@ -173,7 +173,7 @@ bool Archive::archive() const
 namespace
 {
 // Transfer data from one archive to another
-static la_int64_t copy_data(struct archive* ar, struct archive* aw)
+la_int64_t copy_data(struct archive* ar, struct archive* aw)
 {
   la_int64_t r;
   const void* buff;

@@ -36,7 +36,7 @@ namespace mesh
 
 namespace
 {
-static bool registered = StructuredGridFromVTKAuxiliaryGeometry::registerClass();
+bool registered = StructuredGridFromVTKAuxiliaryGeometry::registerClass();
 }
 
 bool StructuredGridFromVTKAuxiliaryGeometry::valid(

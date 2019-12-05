@@ -38,7 +38,7 @@ using namespace smtk::attribute;
 
 namespace
 {
-static void updateLabel(QLabel* lbl, const QString& txt, bool ok)
+void updateLabel(QLabel* lbl, const QString& txt, bool ok)
 {
   lbl->setText(txt);
   lbl->setAutoFillBackground(ok ? false : true);

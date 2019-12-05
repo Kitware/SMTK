@@ -13,7 +13,7 @@
 
 namespace
 {
-static constexpr const char* g_selectionManagerSource = "selection manager";
+constexpr const char* g_selectionManagerSource = "selection manager";
 }
 
 namespace smtk

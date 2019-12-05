@@ -63,7 +63,7 @@ struct PathComp
   }
 };
 
-static void notifyRecursive(
+void notifyRecursive(
   PhraseModel::Observer obs, DescriptivePhrasePtr parent, std::vector<int>& parentIdx)
 {
   if (!parent || !parent->areSubphrasesBuilt())
@@ -85,7 +85,7 @@ static void notifyRecursive(
   parentIdx.pop_back();
 }
 
-static void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
+void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
 {
   std::vector<int> parentIdx;
   return notifyRecursive(obs, parent, parentIdx);
