@@ -33,13 +33,9 @@ vtkModelLoopUse* vtkModelLoopUse::New()
   return new vtkModelLoopUse;
 }
 
-vtkModelLoopUse::vtkModelLoopUse()
-{
-}
+vtkModelLoopUse::vtkModelLoopUse() = default;
 
-vtkModelLoopUse::~vtkModelLoopUse()
-{
-}
+vtkModelLoopUse::~vtkModelLoopUse() = default;
 
 bool vtkModelLoopUse::Destroy()
 {

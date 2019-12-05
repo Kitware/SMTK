@@ -30,9 +30,7 @@ FileSystemItemDefinition::FileSystemItemDefinition(const std::string& myName)
 {
 }
 
-FileSystemItemDefinition::~FileSystemItemDefinition()
-{
-}
+FileSystemItemDefinition::~FileSystemItemDefinition() = default;
 
 Item::Type FileSystemItemDefinition::type() const
 {

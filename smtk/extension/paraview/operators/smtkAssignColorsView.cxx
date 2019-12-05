@@ -49,7 +49,7 @@ using namespace smtk::extension;
 class smtkAssignColorsViewInternals : public Ui::AssignColorsParameters
 {
 public:
-  smtkAssignColorsViewInternals() {}
+  smtkAssignColorsViewInternals() = default;
 
   ~smtkAssignColorsViewInternals()
   {

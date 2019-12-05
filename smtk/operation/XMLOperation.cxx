@@ -23,9 +23,7 @@ XMLOperation::XMLOperation()
 {
 }
 
-XMLOperation::~XMLOperation()
-{
-}
+XMLOperation::~XMLOperation() = default;
 
 smtk::operation::XMLOperation::Specification XMLOperation::createSpecification()
 {

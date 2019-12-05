@@ -60,9 +60,7 @@ qtResourceItem::qtResourceItem(const qtAttributeItemInfo& info)
 {
 }
 
-qtResourceItem::~qtResourceItem()
-{
-}
+qtResourceItem::~qtResourceItem() = default;
 
 smtk::view::PhraseModelPtr qtResourceItem::createPhraseModel() const
 {

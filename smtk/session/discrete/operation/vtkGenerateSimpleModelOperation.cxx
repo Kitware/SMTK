@@ -36,9 +36,7 @@ vtkGenerateSimpleModelOperation::vtkGenerateSimpleModelOperation()
   this->OperateSucceeded = 0;
 }
 
-vtkGenerateSimpleModelOperation::~vtkGenerateSimpleModelOperation()
-{
-}
+vtkGenerateSimpleModelOperation::~vtkGenerateSimpleModelOperation() = default;
 
 void vtkGenerateSimpleModelOperation::Operate(
   vtkDiscreteModelWrapper* modelWrapper, vtkAlgorithm* inputFilter, int cleanInput)

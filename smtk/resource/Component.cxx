@@ -28,9 +28,7 @@ Component::Component()
 {
 }
 
-Component::~Component()
-{
-}
+Component::~Component() = default;
 
 } // namespace resource
 } // namespace smtk

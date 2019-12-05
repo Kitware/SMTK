@@ -56,9 +56,7 @@ Session::Session()
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
-Session::~Session()
-{
-}
+Session::~Session() = default;
 
 /// The polygon session supports smtk::model::SESSION_EVERYTHING.
 smtk::model::SessionInfoBits Session::allSupportedInformation() const

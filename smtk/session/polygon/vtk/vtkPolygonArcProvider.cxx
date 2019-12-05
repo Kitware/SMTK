@@ -30,9 +30,7 @@ vtkPolygonArcProvider::vtkPolygonArcProvider()
   this->SetNumberOfOutputPorts(1);
 }
 
-vtkPolygonArcProvider::~vtkPolygonArcProvider()
-{
-}
+vtkPolygonArcProvider::~vtkPolygonArcProvider() = default;
 
 int vtkPolygonArcProvider::FillInputPortInformation(int, vtkInformation* info)
 {

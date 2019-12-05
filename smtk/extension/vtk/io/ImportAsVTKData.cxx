@@ -67,13 +67,9 @@ namespace vtk
 namespace io
 {
 
-ImportAsVTKData::ImportAsVTKData()
-{
-}
+ImportAsVTKData::ImportAsVTKData() = default;
 
-ImportAsVTKData::~ImportAsVTKData()
-{
-}
+ImportAsVTKData::~ImportAsVTKData() = default;
 
 std::vector<ImportFormat> ImportAsVTKData::fileFormats() const
 {

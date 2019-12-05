@@ -37,9 +37,7 @@ vtkSelectionSplitOperation::vtkSelectionSplitOperation()
   this->OperateSucceeded = 0;
 }
 
-vtkSelectionSplitOperation::~vtkSelectionSplitOperation()
-{
-}
+vtkSelectionSplitOperation::~vtkSelectionSplitOperation() = default;
 
 void vtkSelectionSplitOperation::Operate(
   vtkDiscreteModelWrapper* modelWrapper, vtkSelectionAlgorithm* selectionSource)

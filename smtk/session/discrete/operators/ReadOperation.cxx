@@ -47,9 +47,7 @@ namespace session
 namespace discrete
 {
 
-ReadOperation::ReadOperation()
-{
-}
+ReadOperation::ReadOperation() = default;
 
 bool ReadOperation::ableToOperate()
 {

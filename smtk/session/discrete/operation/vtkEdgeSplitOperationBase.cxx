@@ -26,9 +26,7 @@ vtkEdgeSplitOperationBase::vtkEdgeSplitOperationBase()
   this->CreatedModelVertexId = -1;
 }
 
-vtkEdgeSplitOperationBase::~vtkEdgeSplitOperationBase()
-{
-}
+vtkEdgeSplitOperationBase::~vtkEdgeSplitOperationBase() = default;
 
 void vtkEdgeSplitOperationBase::SetEdgeId(vtkIdType id)
 {

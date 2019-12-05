@@ -22,13 +22,9 @@ namespace smtk
 namespace view
 {
 
-QueryFilterSubphraseGenerator::QueryFilterSubphraseGenerator()
-{
-}
+QueryFilterSubphraseGenerator::QueryFilterSubphraseGenerator() = default;
 
-QueryFilterSubphraseGenerator::~QueryFilterSubphraseGenerator()
-{
-}
+QueryFilterSubphraseGenerator::~QueryFilterSubphraseGenerator() = default;
 
 DescriptivePhrases QueryFilterSubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
 {

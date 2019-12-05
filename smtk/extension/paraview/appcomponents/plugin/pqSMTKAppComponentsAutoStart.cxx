@@ -63,9 +63,7 @@ pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   m_viewTracker = new pqPluginSMTKViewBehavior(parent);
 }
 
-pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart()
-{
-}
+pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart() = default;
 
 void pqSMTKAppComponentsAutoStart::startup()
 {

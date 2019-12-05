@@ -19,8 +19,6 @@ namespace smtk
 namespace mesh
 {
 
-PointCloudGenerator::~PointCloudGenerator()
-{
-}
+PointCloudGenerator::~PointCloudGenerator() = default;
 }
 }

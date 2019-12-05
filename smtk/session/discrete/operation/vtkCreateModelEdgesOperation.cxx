@@ -27,9 +27,7 @@ vtkCreateModelEdgesOperation::vtkCreateModelEdgesOperation()
   this->ShowEdges = 0;
 }
 
-vtkCreateModelEdgesOperation::~vtkCreateModelEdgesOperation()
-{
-}
+vtkCreateModelEdgesOperation::~vtkCreateModelEdgesOperation() = default;
 
 bool vtkCreateModelEdgesOperation::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {

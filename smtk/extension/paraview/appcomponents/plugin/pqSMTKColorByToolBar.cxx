@@ -47,6 +47,4 @@ pqSMTKColorByToolBar::pqSMTKColorByToolBar(QWidget* parent)
   }
 }
 
-pqSMTKColorByToolBar::~pqSMTKColorByToolBar()
-{
-}
+pqSMTKColorByToolBar::~pqSMTKColorByToolBar() = default;

@@ -13,12 +13,8 @@ namespace smtk
 {
 namespace model
 {
-GridInfo::GridInfo()
-{
-}
+GridInfo::GridInfo() = default;
 
-GridInfo::~GridInfo()
-{
-}
+GridInfo::~GridInfo() = default;
 }
 }

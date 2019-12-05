@@ -49,9 +49,7 @@ vtkSplitPlanarLines::vtkSplitPlanarLines()
   this->Tolerance = 0.;
 }
 
-vtkSplitPlanarLines::~vtkSplitPlanarLines()
-{
-}
+vtkSplitPlanarLines::~vtkSplitPlanarLines() = default;
 
 void vtkSplitPlanarLines::PrintSelf(ostream& os, vtkIndent indent)
 {

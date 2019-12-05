@@ -30,13 +30,9 @@ vtkModelMaterial* vtkModelMaterial::New()
   return new vtkModelMaterial;
 }
 
-vtkModelMaterial::vtkModelMaterial()
-{
-}
+vtkModelMaterial::vtkModelMaterial() = default;
 
-vtkModelMaterial::~vtkModelMaterial()
-{
-}
+vtkModelMaterial::~vtkModelMaterial() = default;
 
 bool vtkModelMaterial::IsDestroyable()
 {

@@ -30,13 +30,9 @@ namespace smtk
 namespace io
 {
 
-WriteMesh::WriteMesh()
-{
-}
+WriteMesh::WriteMesh() = default;
 
-WriteMesh::~WriteMesh()
-{
-}
+WriteMesh::~WriteMesh() = default;
 
 std::vector<smtk::io::mesh::MeshIOPtr>& WriteMesh::SupportedIOTypes()
 {

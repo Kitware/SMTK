@@ -188,9 +188,7 @@ Configuration::Configuration(const std::string& myType, const std::string& myNam
 {
 }
 
-Configuration::~Configuration()
-{
-}
+Configuration::~Configuration() = default;
 
 void Configuration::copyContents(const Configuration& view)
 {

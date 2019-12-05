@@ -31,8 +31,8 @@ namespace
 
 struct Storage
 {
-  Storage() {}
-  virtual ~Storage() {}
+  Storage() = default;
+  virtual ~Storage() = default;
   virtual int value(int pos) = 0;
 };
 
@@ -88,13 +88,9 @@ private:
 //int or id type array
 }
 
-vtkMasterPolyDataNormals::vtkMasterPolyDataNormals()
-{
-}
+vtkMasterPolyDataNormals::vtkMasterPolyDataNormals() = default;
 
-vtkMasterPolyDataNormals::~vtkMasterPolyDataNormals()
-{
-}
+vtkMasterPolyDataNormals::~vtkMasterPolyDataNormals() = default;
 
 int vtkMasterPolyDataNormals::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)

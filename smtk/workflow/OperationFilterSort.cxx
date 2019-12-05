@@ -13,13 +13,9 @@
 
 using namespace smtk::workflow;
 
-OperationFilterSort::OperationFilterSort()
-{
-}
+OperationFilterSort::OperationFilterSort() = default;
 
-OperationFilterSort::~OperationFilterSort()
-{
-}
+OperationFilterSort::~OperationFilterSort() = default;
 
 void OperationFilterSort::apply(const WorkingSet& workingSet, Output& operationsToDisplay)
 {

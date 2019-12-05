@@ -41,13 +41,9 @@
 
 vtkStandardNewMacro(vtkCMBModelWriterV5);
 
-vtkCMBModelWriterV5::vtkCMBModelWriterV5()
-{
-}
+vtkCMBModelWriterV5::vtkCMBModelWriterV5() = default;
 
-vtkCMBModelWriterV5::~vtkCMBModelWriterV5()
-{
-}
+vtkCMBModelWriterV5::~vtkCMBModelWriterV5() = default;
 
 void vtkCMBModelWriterV5::SetModelEdgeData(vtkDiscreteModel* model, vtkPolyData* poly)
 {

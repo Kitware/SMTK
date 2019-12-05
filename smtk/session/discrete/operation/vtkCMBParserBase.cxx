@@ -25,13 +25,9 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
-vtkCMBParserBase::vtkCMBParserBase()
-{
-}
+vtkCMBParserBase::vtkCMBParserBase() = default;
 
-vtkCMBParserBase::~vtkCMBParserBase()
-{
-}
+vtkCMBParserBase::~vtkCMBParserBase() = default;
 
 void vtkCMBParserBase::SetGeometry(vtkDiscreteModel* Model, vtkObject* Geometry)
 {

@@ -24,9 +24,7 @@ vtkEdgeSplitOperation::vtkEdgeSplitOperation()
   this->OperateSucceeded = 0;
 }
 
-vtkEdgeSplitOperation::~vtkEdgeSplitOperation()
-{
-}
+vtkEdgeSplitOperation::~vtkEdgeSplitOperation() = default;
 
 vtkModelEntity* vtkEdgeSplitOperation::GetModelEntity(vtkDiscreteModelWrapper* ModelWrapper)
 {

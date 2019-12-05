@@ -184,9 +184,7 @@ vtkAuxiliaryGeometryExtension::vtkAuxiliaryGeometryExtension()
   vtkAuxiliaryGeometryExtension::ensureCache();
 }
 
-vtkAuxiliaryGeometryExtension::~vtkAuxiliaryGeometryExtension()
-{
-}
+vtkAuxiliaryGeometryExtension::~vtkAuxiliaryGeometryExtension() = default;
 
 bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)

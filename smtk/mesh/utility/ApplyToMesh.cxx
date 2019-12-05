@@ -96,7 +96,7 @@ class UndoWarpPoints : public smtk::mesh::PointForEach
   std::vector<double> m_data;
 
 public:
-  UndoWarpPoints() {}
+  UndoWarpPoints() = default;
 
   void forPoints(
     const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool& coordinatesModified) override

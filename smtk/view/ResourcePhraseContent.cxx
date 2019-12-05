@@ -30,9 +30,7 @@ ResourcePhraseContent::ResourcePhraseContent()
 {
 }
 
-ResourcePhraseContent::~ResourcePhraseContent()
-{
-}
+ResourcePhraseContent::~ResourcePhraseContent() = default;
 
 ResourcePhraseContent::Ptr ResourcePhraseContent::setup(
   const smtk::resource::ResourcePtr& rsrc, int mutability)

@@ -31,9 +31,7 @@ vtkModel::vtkModel()
   this->BlockModelGeometricEntityEvent = false;
 }
 
-vtkModel::~vtkModel()
-{
-}
+vtkModel::~vtkModel() = default;
 
 int vtkModel::GetNumberOfGeometricEntities()
 {

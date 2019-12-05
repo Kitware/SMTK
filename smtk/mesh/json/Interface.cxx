@@ -49,9 +49,7 @@ Interface::Interface(const std::vector<smtk::mesh::json::MeshInfo>& info)
 {
 }
 
-Interface::~Interface()
-{
-}
+Interface::~Interface() = default;
 
 bool Interface::isModified() const
 {

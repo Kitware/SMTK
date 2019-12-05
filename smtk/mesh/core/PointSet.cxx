@@ -54,14 +54,10 @@ PointSet::PointSet(
 }
 
 PointSet::PointSet(const smtk::mesh::PointSet& other)
-  : m_parent(other.m_parent)
-  , m_points(other.m_points)
-{
-}
 
-PointSet::~PointSet()
-{
-}
+  = default;
+
+PointSet::~PointSet() = default;
 
 PointSet& PointSet::operator=(const PointSet& other)
 {

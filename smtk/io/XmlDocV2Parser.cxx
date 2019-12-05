@@ -39,9 +39,7 @@ XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::ResourcePtr myResource, smtk::io
 {
 }
 
-XmlDocV2Parser::~XmlDocV2Parser()
-{
-}
+XmlDocV2Parser::~XmlDocV2Parser() = default;
 
 bool XmlDocV2Parser::canParse(pugi::xml_document& doc)
 {

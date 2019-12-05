@@ -30,13 +30,9 @@ namespace smtk
 namespace io
 {
 
-ReadMesh::ReadMesh()
-{
-}
+ReadMesh::ReadMesh() = default;
 
-ReadMesh::~ReadMesh()
-{
-}
+ReadMesh::~ReadMesh() = default;
 
 std::vector<smtk::io::mesh::MeshIOPtr>& ReadMesh::SupportedIOTypes()
 {

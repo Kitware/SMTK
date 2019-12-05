@@ -63,9 +63,7 @@ qtLineEdit::qtLineEdit(const QString& _contents, QWidget* _parent)
 }
 
 //-----------------------------------------------------------------------------
-qtLineEdit::~qtLineEdit()
-{
-}
+qtLineEdit::~qtLineEdit() = default;
 
 //-----------------------------------------------------------------------------
 void qtLineEdit::onTextEdited()

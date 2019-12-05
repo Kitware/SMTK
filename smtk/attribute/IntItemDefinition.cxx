@@ -17,9 +17,7 @@ IntItemDefinition::IntItemDefinition(const std::string& myName)
 {
 }
 
-IntItemDefinition::~IntItemDefinition()
-{
-}
+IntItemDefinition::~IntItemDefinition() = default;
 
 Item::Type IntItemDefinition::type() const
 {

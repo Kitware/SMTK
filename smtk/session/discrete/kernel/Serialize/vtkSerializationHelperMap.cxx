@@ -36,13 +36,9 @@ struct vtkSerializationHelperMapInternals
 vtkSerializationHelperMapInternals vtkSerializationHelperMapClassMap;
 }
 
-vtkSerializationHelperMap::vtkSerializationHelperMap()
-{
-}
+vtkSerializationHelperMap::vtkSerializationHelperMap() = default;
 
-vtkSerializationHelperMap::~vtkSerializationHelperMap()
-{
-}
+vtkSerializationHelperMap::~vtkSerializationHelperMap() = default;
 
 void vtkSerializationHelperMap::InstantiateDefaultHelpers()
 {

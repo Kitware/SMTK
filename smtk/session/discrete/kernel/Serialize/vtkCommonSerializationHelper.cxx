@@ -21,9 +21,7 @@
 
 vtkStandardNewMacro(vtkCommonSerializationHelper);
 
-vtkCommonSerializationHelper::vtkCommonSerializationHelper()
-{
-}
+vtkCommonSerializationHelper::vtkCommonSerializationHelper() = default;
 
 int vtkCommonSerializationHelper::Serialize(vtkObject* object, vtkSerializer* serializer)
 {

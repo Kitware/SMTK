@@ -56,9 +56,7 @@ oscillatorAuxiliaryGeometryExtension::oscillatorAuxiliaryGeometryExtension()
   oscillatorAuxiliaryGeometryExtension::ensureCache();
 }
 
-oscillatorAuxiliaryGeometryExtension::~oscillatorAuxiliaryGeometryExtension()
-{
-}
+oscillatorAuxiliaryGeometryExtension::~oscillatorAuxiliaryGeometryExtension() = default;
 
 bool oscillatorAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)

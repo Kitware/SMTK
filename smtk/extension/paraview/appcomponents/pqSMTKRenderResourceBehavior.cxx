@@ -32,14 +32,14 @@
 class pqSMTKApplyBehavior : public pqApplyBehavior
 {
 public:
-  ~pqSMTKApplyBehavior() override {}
+  ~pqSMTKApplyBehavior() override = default;
   void operator()(pqProxy* proxy) { this->applied(nullptr, proxy); }
 };
 
 class pqSMTKRenderResourceBehavior::Internal
 {
 public:
-  ~Internal() {}
+  ~Internal() = default;
 
   pqSMTKApplyBehavior ApplyBehavior;
 };

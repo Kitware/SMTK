@@ -44,9 +44,7 @@ namespace session
 namespace discrete
 {
 
-SplitFaceOperation::SplitFaceOperation()
-{
-}
+SplitFaceOperation::SplitFaceOperation() = default;
 
 bool SplitFaceOperation::ableToOperate()
 {

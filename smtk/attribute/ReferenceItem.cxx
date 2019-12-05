@@ -59,7 +59,7 @@ public:
 
 struct ReferenceItem::const_iterator::CacheIterator : ReferenceItem::Cache::const_iterator
 {
-  CacheIterator() {}
+  CacheIterator() = default;
   CacheIterator(const ReferenceItem::Cache::const_iterator& it)
     : ReferenceItem::Cache::const_iterator(it)
   {
@@ -80,9 +80,7 @@ ReferenceItem::const_iterator::const_iterator(const ReferenceItem::const_iterato
 {
 }
 
-ReferenceItem::const_iterator::~const_iterator()
-{
-}
+ReferenceItem::const_iterator::~const_iterator() = default;
 
 ReferenceItem::const_iterator& ReferenceItem::const_iterator::operator=(
   const ReferenceItem::const_iterator& it)

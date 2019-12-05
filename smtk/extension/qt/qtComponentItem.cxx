@@ -49,8 +49,6 @@ qtComponentItem::qtComponentItem(const qtAttributeItemInfo& info)
 {
 }
 
-qtComponentItem::~qtComponentItem()
-{
-}
+qtComponentItem::~qtComponentItem() = default;
 }
 }

@@ -251,9 +251,7 @@ Interface::Interface()
   ::moab::MBErrorHandler_Finalize();
 }
 
-Interface::~Interface()
-{
-}
+Interface::~Interface() = default;
 
 bool Interface::isModified() const
 {

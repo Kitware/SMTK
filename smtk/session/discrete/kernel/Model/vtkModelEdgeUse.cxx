@@ -32,13 +32,9 @@ vtkModelEdgeUse* vtkModelEdgeUse::New()
   return new vtkModelEdgeUse;
 }
 
-vtkModelEdgeUse::vtkModelEdgeUse()
-{
-}
+vtkModelEdgeUse::vtkModelEdgeUse() = default;
 
-vtkModelEdgeUse::~vtkModelEdgeUse()
-{
-}
+vtkModelEdgeUse::~vtkModelEdgeUse() = default;
 
 bool vtkModelEdgeUse::Destroy()
 {

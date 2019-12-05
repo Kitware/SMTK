@@ -40,9 +40,7 @@ bool VoidItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-VoidItem::~VoidItem()
-{
-}
+VoidItem::~VoidItem() = default;
 
 Item::Type VoidItem::type() const
 {

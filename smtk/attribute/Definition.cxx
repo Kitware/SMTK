@@ -57,9 +57,7 @@ Definition::Definition(
   }
 }
 
-Definition::~Definition()
-{
-}
+Definition::~Definition() = default;
 
 const Tag* Definition::tag(const std::string& name) const
 {

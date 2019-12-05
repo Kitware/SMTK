@@ -69,9 +69,7 @@ qtEventFilter::qtEventFilter(QObject* parent)
 {
 }
 
-qtEventFilter::~qtEventFilter()
-{
-}
+qtEventFilter::~qtEventFilter() = default;
 
 bool qtEventFilter::eventFilter(QObject* src, QEvent* event)
 {

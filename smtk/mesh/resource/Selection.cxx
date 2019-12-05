@@ -80,9 +80,7 @@ Selection::Selection(const smtk::mesh::CellSet& cellset)
 {
 }
 
-Selection::~Selection()
-{
-}
+Selection::~Selection() = default;
 
 std::shared_ptr<Selection> Selection::create(const smtk::mesh::CellSet& cellset)
 {

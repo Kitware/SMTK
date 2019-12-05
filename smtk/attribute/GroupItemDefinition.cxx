@@ -26,9 +26,7 @@ GroupItemDefinition::GroupItemDefinition(const std::string& myName)
 {
 }
 
-GroupItemDefinition::~GroupItemDefinition()
-{
-}
+GroupItemDefinition::~GroupItemDefinition() = default;
 
 Item::Type GroupItemDefinition::type() const
 {

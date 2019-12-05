@@ -38,9 +38,7 @@ XmlV3StringWriter::XmlV3StringWriter(
 {
 }
 
-XmlV3StringWriter::~XmlV3StringWriter()
-{
-}
+XmlV3StringWriter::~XmlV3StringWriter() = default;
 
 std::string XmlV3StringWriter::className() const
 {

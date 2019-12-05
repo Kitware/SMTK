@@ -129,9 +129,7 @@ ConnectivityStorage::ConnectivityStorage(
   this->NumberOfVerts = vertCount;
 }
 
-ConnectivityStorage::~ConnectivityStorage()
-{
-}
+ConnectivityStorage::~ConnectivityStorage() = default;
 
 void ConnectivityStorage::initTraversal(smtk::mesh::ConnectivityStorage::IterationState& state)
 {

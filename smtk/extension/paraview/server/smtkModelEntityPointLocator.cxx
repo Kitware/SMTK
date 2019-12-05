@@ -18,13 +18,9 @@
 #include "vtkPointSet.h"
 #include "vtkSmartPointer.h"
 
-smtkModelEntityPointLocator::smtkModelEntityPointLocator()
-{
-}
+smtkModelEntityPointLocator::smtkModelEntityPointLocator() = default;
 
-smtkModelEntityPointLocator::~smtkModelEntityPointLocator()
-{
-}
+smtkModelEntityPointLocator::~smtkModelEntityPointLocator() = default;
 
 bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
   std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)

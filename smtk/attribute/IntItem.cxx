@@ -23,9 +23,7 @@ IntItem::IntItem(Item* inOwningItem, int itemPosition, int mySubGroupPosition)
 {
 }
 
-IntItem::~IntItem()
-{
-}
+IntItem::~IntItem() = default;
 
 Item::Type IntItem::type() const
 {

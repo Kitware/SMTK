@@ -50,7 +50,7 @@ using namespace smtk::extension;
 class qtExtractContoursViewInternals
 {
 public:
-  qtExtractContoursViewInternals() {}
+  qtExtractContoursViewInternals() = default;
   ~qtExtractContoursViewInternals()
   {
     if (CurrentAtt)

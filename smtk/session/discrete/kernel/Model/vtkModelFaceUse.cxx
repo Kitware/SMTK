@@ -25,13 +25,9 @@
 
 vtkStandardNewMacro(vtkModelFaceUse);
 
-vtkModelFaceUse::vtkModelFaceUse()
-{
-}
+vtkModelFaceUse::vtkModelFaceUse() = default;
 
-vtkModelFaceUse::~vtkModelFaceUse()
-{
-}
+vtkModelFaceUse::~vtkModelFaceUse() = default;
 
 bool vtkModelFaceUse::Destroy()
 {

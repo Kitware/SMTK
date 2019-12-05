@@ -49,13 +49,9 @@
 
 vtkStandardNewMacro(vtkCMBParserV5);
 
-vtkCMBParserV5::vtkCMBParserV5()
-{
-}
+vtkCMBParserV5::vtkCMBParserV5() = default;
 
-vtkCMBParserV5::~vtkCMBParserV5()
-{
-}
+vtkCMBParserV5::~vtkCMBParserV5() = default;
 
 bool vtkCMBParserV5::Parse(
   vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::session::discrete::Session* session)

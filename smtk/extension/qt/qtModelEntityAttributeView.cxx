@@ -55,9 +55,8 @@ qModelEntityAttributeViewComboBoxItemDelegate::qModelEntityAttributeViewComboBox
   , m_values(vals)
 {
 }
-qModelEntityAttributeViewComboBoxItemDelegate::~qModelEntityAttributeViewComboBoxItemDelegate()
-{
-}
+qModelEntityAttributeViewComboBoxItemDelegate::~qModelEntityAttributeViewComboBoxItemDelegate() =
+  default;
 
 QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
   QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const

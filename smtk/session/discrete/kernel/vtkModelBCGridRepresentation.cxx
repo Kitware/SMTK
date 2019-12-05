@@ -32,13 +32,9 @@
 
 vtkStandardNewMacro(vtkModelBCGridRepresentation);
 
-vtkModelBCGridRepresentation::vtkModelBCGridRepresentation()
-{
-}
+vtkModelBCGridRepresentation::vtkModelBCGridRepresentation() = default;
 
-vtkModelBCGridRepresentation::~vtkModelBCGridRepresentation()
-{
-}
+vtkModelBCGridRepresentation::~vtkModelBCGridRepresentation() = default;
 
 void inline AddPointIds(vtkIdType /*entId*/, vtkIdList* inPtsList, vtkIdList* outPtsList)
 {

@@ -41,13 +41,9 @@
 
 vtkStandardNewMacro(vtkCMBModelWriterV4);
 
-vtkCMBModelWriterV4::vtkCMBModelWriterV4()
-{
-}
+vtkCMBModelWriterV4::vtkCMBModelWriterV4() = default;
 
-vtkCMBModelWriterV4::~vtkCMBModelWriterV4()
-{
-}
+vtkCMBModelWriterV4::~vtkCMBModelWriterV4() = default;
 
 void vtkCMBModelWriterV4::SetModelVertexData(vtkDiscreteModel* Model, vtkPolyData* Poly)
 {

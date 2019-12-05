@@ -39,9 +39,7 @@ bool FileItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return isSet;
 }
 
-FileItem::~FileItem()
-{
-}
+FileItem::~FileItem() = default;
 
 Item::Type FileItem::type() const
 {

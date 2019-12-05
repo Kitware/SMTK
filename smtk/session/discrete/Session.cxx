@@ -1287,7 +1287,7 @@ template <class P, class C, P& (P::*M)(const C&)>
 class EntityRefHelper
 {
 public:
-  EntityRefHelper() {}
+  EntityRefHelper() = default;
 
   typedef C ChildType;
 

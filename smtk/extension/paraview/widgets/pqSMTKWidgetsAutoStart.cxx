@@ -31,9 +31,7 @@ pqSMTKWidgetsAutoStart::pqSMTKWidgetsAutoStart(QObject* parent)
 {
 }
 
-pqSMTKWidgetsAutoStart::~pqSMTKWidgetsAutoStart()
-{
-}
+pqSMTKWidgetsAutoStart::~pqSMTKWidgetsAutoStart() = default;
 
 void pqSMTKWidgetsAutoStart::startup()
 {

@@ -105,9 +105,7 @@ pqPointPropertyWidget::pqPointPropertyWidget(
   this->setControlState("active");
 }
 
-pqPointPropertyWidget::~pqPointPropertyWidget()
-{
-}
+pqPointPropertyWidget::~pqPointPropertyWidget() = default;
 
 std::string pqPointPropertyWidget::controlState()
 {

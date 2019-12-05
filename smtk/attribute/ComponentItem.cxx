@@ -27,9 +27,7 @@ ComponentItem::ComponentItem(Item* inOwningItem, int itemPosition, int mySubGrou
 {
 }
 
-ComponentItem::~ComponentItem()
-{
-}
+ComponentItem::~ComponentItem() = default;
 
 Item::Type ComponentItem::type() const
 {

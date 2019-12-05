@@ -97,8 +97,8 @@ public:
   smtkCreateMacro(ReadOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  ReadOperation() {}
-  ~ReadOperation() override {}
+  ReadOperation() = default;
+  ~ReadOperation() override = default;
 
   smtk::io::Logger& log() const override { return m_logger; }
 
@@ -197,8 +197,8 @@ public:
   smtkCreateMacro(WriteOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  WriteOperation() {}
-  ~WriteOperation() override {}
+  WriteOperation() = default;
+  ~WriteOperation() override = default;
 
   smtk::io::Logger& log() const override { return m_logger; }
 

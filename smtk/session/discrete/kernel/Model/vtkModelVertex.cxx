@@ -21,13 +21,9 @@
 
 #include <map>
 
-vtkModelVertex::vtkModelVertex()
-{
-}
+vtkModelVertex::vtkModelVertex() = default;
 
-vtkModelVertex::~vtkModelVertex()
-{
-}
+vtkModelVertex::~vtkModelVertex() = default;
 
 bool vtkModelVertex::IsDestroyable()
 {

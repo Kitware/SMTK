@@ -23,9 +23,7 @@ StringItem::StringItem(Item* inOwningItem, int itemPosition, int mySubGroupPosit
 {
 }
 
-StringItem::~StringItem()
-{
-}
+StringItem::~StringItem() = default;
 
 Item::Type StringItem::type() const
 {

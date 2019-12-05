@@ -26,13 +26,9 @@ vtkModelVertexUse* vtkModelVertexUse::New()
   return new vtkModelVertexUse;
 }
 
-vtkModelVertexUse::vtkModelVertexUse()
-{
-}
+vtkModelVertexUse::vtkModelVertexUse() = default;
 
-vtkModelVertexUse::~vtkModelVertexUse()
-{
-}
+vtkModelVertexUse::~vtkModelVertexUse() = default;
 
 bool vtkModelVertexUse::Destroy()
 {

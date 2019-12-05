@@ -37,7 +37,7 @@ public:
         use_unchecked_modified_event, parentObject)
   {
   }
-  ~PropertyLinksConnection() override {}
+  ~PropertyLinksConnection() override = default;
 
 protected:
   /// Called to update the ServerManager Property due to UI change.
@@ -65,7 +65,7 @@ public:
   pqPropertyLinks Links;
   QPointer<pqComboBoxDomain> Domain;
   QPointer<pqDataRepresentation> PQRepr;
-  pqInternals() {}
+  pqInternals() = default;
 
   bool setColorByText(const QString& text)
   {
@@ -185,6 +185,4 @@ pqSMTKColorByPropertyWidget::pqSMTKColorByPropertyWidget(vtkSMProxy* smProxy, QW
 }
 
 //-----------------------------------------------------------------------------
-pqSMTKColorByPropertyWidget::~pqSMTKColorByPropertyWidget()
-{
-}
+pqSMTKColorByPropertyWidget::~pqSMTKColorByPropertyWidget() = default;

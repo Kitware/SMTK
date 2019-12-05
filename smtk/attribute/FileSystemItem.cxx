@@ -58,9 +58,7 @@ bool FileSystemItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-FileSystemItem::~FileSystemItem()
-{
-}
+FileSystemItem::~FileSystemItem() = default;
 
 bool FileSystemItem::isValid(const std::set<std::string>& cats) const
 {

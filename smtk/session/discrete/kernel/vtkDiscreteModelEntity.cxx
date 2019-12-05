@@ -18,13 +18,9 @@
 #include "vtkDiscreteModelRegion.h"
 #include "vtkObjectFactory.h"
 
-vtkDiscreteModelEntity::vtkDiscreteModelEntity()
-{
-}
+vtkDiscreteModelEntity::vtkDiscreteModelEntity() = default;
 
-vtkDiscreteModelEntity::~vtkDiscreteModelEntity()
-{
-}
+vtkDiscreteModelEntity::~vtkDiscreteModelEntity() = default;
 
 vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisDiscreteModelEntity(vtkModelEntity* entity)
 {

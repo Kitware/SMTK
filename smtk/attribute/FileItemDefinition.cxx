@@ -42,9 +42,7 @@ FileItemDefinition::FileItemDefinition(const std::string& myName)
 {
 }
 
-FileItemDefinition::~FileItemDefinition()
-{
-}
+FileItemDefinition::~FileItemDefinition() = default;
 
 Item::Type FileItemDefinition::type() const
 {

@@ -26,9 +26,7 @@ namespace smtk
 namespace operation
 {
 
-RemoveResource::RemoveResource()
-{
-}
+RemoveResource::RemoveResource() = default;
 
 RemoveResource::Result RemoveResource::operateInternal()
 {

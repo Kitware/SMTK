@@ -72,9 +72,7 @@ MeshSet::MeshSet(const smtk::mesh::MeshSet& other)
 {
 }
 
-MeshSet::~MeshSet()
-{
-}
+MeshSet::~MeshSet() = default;
 
 MeshSet& MeshSet::operator=(const MeshSet& other)
 {

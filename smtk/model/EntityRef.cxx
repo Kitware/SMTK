@@ -42,9 +42,7 @@ namespace model
 {
 
 /// Construct an invalid entityref.
-EntityRef::EntityRef()
-{
-}
+EntityRef::EntityRef() = default;
 
 /// Construct a entityref referencing a given \a entity residing in the given \a rsrc.
 EntityRef::EntityRef(ResourcePtr rsrc, const smtk::common::UUID& inEntity)

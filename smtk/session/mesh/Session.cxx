@@ -25,9 +25,7 @@ namespace session
 namespace mesh
 {
 
-Session::Session()
-{
-}
+Session::Session() = default;
 
 void Session::addTopology(
   const std::shared_ptr<smtk::session::mesh::Resource>& modelResource, Topology t)

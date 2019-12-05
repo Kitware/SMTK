@@ -39,9 +39,7 @@ namespace session
 namespace discrete
 {
 
-CreateEdgesOperation::CreateEdgesOperation()
-{
-}
+CreateEdgesOperation::CreateEdgesOperation() = default;
 
 bool CreateEdgesOperation::ableToOperate()
 {

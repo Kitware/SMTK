@@ -37,9 +37,7 @@ vtkModelFace::vtkModelFace()
   faceUse1->FastDelete();
 }
 
-vtkModelFace::~vtkModelFace()
-{
-}
+vtkModelFace::~vtkModelFace() = default;
 
 bool vtkModelFace::IsDestroyable()
 {

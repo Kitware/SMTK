@@ -41,7 +41,7 @@ public:
     : m_outcome(Outcome::SUCCEEDED)
   {
   }
-  ~TestOp() override {}
+  ~TestOp() override = default;
 
   bool ableToOperate() override { return m_outcome == Outcome::UNABLE_TO_OPERATE ? false : true; }
 

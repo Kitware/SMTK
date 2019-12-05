@@ -40,9 +40,7 @@ vtkDEMToMesh::vtkDEMToMesh()
   SubSampleStepSize = 1; //TODO this should be 1
 }
 
-vtkDEMToMesh::~vtkDEMToMesh()
-{
-}
+vtkDEMToMesh::~vtkDEMToMesh() = default;
 
 int vtkDEMToMesh::FillInputPortInformation(int /*port*/, vtkInformation* info)
 {

@@ -13,10 +13,6 @@
 
 vtkStandardNewMacro(vtkSerializableObject);
 
-vtkSerializableObject::vtkSerializableObject()
-{
-}
+vtkSerializableObject::vtkSerializableObject() = default;
 
-vtkSerializableObject::~vtkSerializableObject()
-{
-}
+vtkSerializableObject::~vtkSerializableObject() = default;

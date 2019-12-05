@@ -26,9 +26,7 @@ DirectoryItem::DirectoryItem(Item* inOwningItem, int itemPosition, int inSubGrou
 {
 }
 
-DirectoryItem::~DirectoryItem()
-{
-}
+DirectoryItem::~DirectoryItem() = default;
 
 Item::Type DirectoryItem::type() const
 {

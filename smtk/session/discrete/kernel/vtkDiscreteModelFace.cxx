@@ -46,13 +46,9 @@ vtkDiscreteModelFace* vtkDiscreteModelFace::New()
   return new vtkDiscreteModelFace;
 }
 
-vtkDiscreteModelFace::vtkDiscreteModelFace()
-{
-}
+vtkDiscreteModelFace::vtkDiscreteModelFace() = default;
 
-vtkDiscreteModelFace::~vtkDiscreteModelFace()
-{
-}
+vtkDiscreteModelFace::~vtkDiscreteModelFace() = default;
 
 vtkModelEntity* vtkDiscreteModelFace::GetThisModelEntity()
 {

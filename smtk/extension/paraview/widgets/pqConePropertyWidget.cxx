@@ -174,9 +174,7 @@ pqConePropertyWidget::pqConePropertyWidget(
   this->updateInformationLabels();
 }
 
-pqConePropertyWidget::~pqConePropertyWidget()
-{
-}
+pqConePropertyWidget::~pqConePropertyWidget() = default;
 
 void pqConePropertyWidget::pick(double wx, double wy, double wz)
 {

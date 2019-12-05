@@ -188,13 +188,9 @@ EntityHandle EntityHandle::parent() const
     this->m_modelNumber, this->m_session->parent(this->m_object), this->m_session);
 }
 
-Session::Session()
-{
-}
+Session::Session() = default;
 
-Session::~Session()
-{
-}
+Session::~Session() = default;
 
 // ++ 3 ++
 /// Turn any valid entityref into an entity handle.

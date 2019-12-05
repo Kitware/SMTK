@@ -51,9 +51,7 @@ Session::Session()
 }
 
 /// Destructor.
-Session::~Session()
-{
-}
+Session::~Session() = default;
 
 /**\brief Return the name of the session type (i.e., the name of the modeling kernel).
   *

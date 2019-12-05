@@ -60,7 +60,7 @@ public:
     qtAttributeItemInfo::buildFromComponent(iviews, m_view, m_itemViewMap);
   }
 
-  ~qtAttributeInternals() {}
+  ~qtAttributeInternals() = default;
   smtk::attribute::WeakAttributePtr m_attribute;
   QPointer<QWidget> m_parentWidget;
   QList<smtk::extension::qtItem*> m_items;

@@ -50,13 +50,9 @@ namespace smtk
 namespace view
 {
 
-VTKModelInstancePlacementSelection::VTKModelInstancePlacementSelection()
-{
-}
+VTKModelInstancePlacementSelection::VTKModelInstancePlacementSelection() = default;
 
-VTKModelInstancePlacementSelection::~VTKModelInstancePlacementSelection()
-{
-}
+VTKModelInstancePlacementSelection::~VTKModelInstancePlacementSelection() = default;
 
 smtk::model::EntityPtr VTKModelInstancePlacementSelection::temporaryInstance(
   const smtk::model::EntityPtr& sourceInstance, vtkIdTypeArray* sourcePlacements)

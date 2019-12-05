@@ -13,9 +13,7 @@
 
 vtkStandardNewMacro(vtkModelView);
 
-vtkModelView::vtkModelView()
-{
-}
+vtkModelView::vtkModelView() = default;
 
 vtkModelView::~vtkModelView()
 {

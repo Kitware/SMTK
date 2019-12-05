@@ -32,9 +32,7 @@ qtAvailableOperations::qtAvailableOperations(QWidget* parent)
   m_layout->addWidget(m_operationList);
 }
 
-qtAvailableOperations::~qtAvailableOperations()
-{
-}
+qtAvailableOperations::~qtAvailableOperations() = default;
 
 void qtAvailableOperations::setOperationSource(smtk::view::AvailableOperationsPtr avail)
 {

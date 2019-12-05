@@ -52,14 +52,10 @@ CellSet::CellSet(const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mes
 }
 
 CellSet::CellSet(const smtk::mesh::CellSet& other)
-  : m_parent(other.m_parent)
-  , m_range(other.m_range)
-{
-}
 
-CellSet::~CellSet()
-{
-}
+  = default;
+
+CellSet::~CellSet() = default;
 
 CellSet& CellSet::operator=(const CellSet& other)
 {

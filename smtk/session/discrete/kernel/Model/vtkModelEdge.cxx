@@ -22,13 +22,9 @@
 
 #include <set>
 
-vtkModelEdge::vtkModelEdge()
-{
-}
+vtkModelEdge::vtkModelEdge() = default;
 
-vtkModelEdge::~vtkModelEdge()
-{
-}
+vtkModelEdge::~vtkModelEdge() = default;
 
 int vtkModelEdge::GetType()
 {

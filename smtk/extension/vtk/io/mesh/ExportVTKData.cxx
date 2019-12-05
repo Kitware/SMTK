@@ -65,9 +65,7 @@ namespace io
 namespace mesh
 {
 
-ExportVTKData::ExportVTKData()
-{
-}
+ExportVTKData::ExportVTKData() = default;
 
 bool ExportVTKData::operator()(const std::string& filename, smtk::mesh::ResourcePtr resource,
   std::string domainPropertyName) const

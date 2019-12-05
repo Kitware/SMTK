@@ -30,9 +30,7 @@ qtOperationDockWidget::qtOperationDockWidget(QWidget* p)
   this->setFloating(true);
 }
 
-qtOperationDockWidget::~qtOperationDockWidget()
-{
-}
+qtOperationDockWidget::~qtOperationDockWidget() = default;
 
 void qtOperationDockWidget::reset()
 {

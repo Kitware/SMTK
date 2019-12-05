@@ -35,7 +35,7 @@ vtkCxxSetObjectMacro(vtkXMLModelWriter, RootElement, vtkXMLElement);
 
 struct vtkXMLModelWriterInternals
 {
-  vtkXMLModelWriterInternals() {}
+  vtkXMLModelWriterInternals() = default;
 
   void Push(vtkXMLElement* elem) { this->Stack.push_front(elem); }
 

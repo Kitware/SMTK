@@ -348,9 +348,7 @@ int polyLines2modelEdgesAndFaces(
   return numEdges;
 }
 
-Import::Import()
-{
-}
+Import::Import() = default;
 
 bool Import::ableToOperate()
 {

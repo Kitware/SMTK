@@ -41,9 +41,7 @@ vtkConeFrustum::vtkConeFrustum(int res)
   this->SetNumberOfOutputPorts(NumberOfOutputs);
 }
 
-vtkConeFrustum::~vtkConeFrustum()
-{
-}
+vtkConeFrustum::~vtkConeFrustum() = default;
 
 void vtkConeFrustum::PrintSelf(ostream& os, vtkIndent indent)
 {

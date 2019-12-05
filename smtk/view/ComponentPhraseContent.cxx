@@ -40,9 +40,7 @@ ComponentPhraseContent::ComponentPhraseContent()
 {
 }
 
-ComponentPhraseContent::~ComponentPhraseContent()
-{
-}
+ComponentPhraseContent::~ComponentPhraseContent() = default;
 
 ComponentPhraseContent::Ptr ComponentPhraseContent::setup(
   const smtk::resource::ComponentPtr& component, int mutability)

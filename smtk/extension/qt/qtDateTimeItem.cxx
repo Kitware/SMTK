@@ -49,8 +49,8 @@ using namespace smtk::extension;
 class qtDateTimeItem::qtDateTimeItemInternals
 {
 public:
-  qtDateTimeItemInternals() {}
-  ~qtDateTimeItemInternals() {}
+  qtDateTimeItemInternals() = default;
+  ~qtDateTimeItemInternals() = default;
 
   QPointer<QGridLayout> EntryLayout;
   QPointer<QLabel> theLabel;

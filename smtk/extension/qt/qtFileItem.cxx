@@ -72,7 +72,7 @@ public:
     : FileBrowser(NULL)
   {
   }
-  ~qtFileItemInternals() {}
+  ~qtFileItemInternals() = default;
 
   bool IsDirectory;
   QFileDialog* FileBrowser;

@@ -14,13 +14,9 @@
 
 vtkStandardNewMacro(vtkSMTKOperation);
 
-vtkSMTKOperation::vtkSMTKOperation()
-{
-}
+vtkSMTKOperation::vtkSMTKOperation() = default;
 
-vtkSMTKOperation::~vtkSMTKOperation()
-{
-}
+vtkSMTKOperation::~vtkSMTKOperation() = default;
 
 void vtkSMTKOperation::SetSMTKOperation(smtk::operation::Operation::Ptr op)
 {

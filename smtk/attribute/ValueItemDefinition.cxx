@@ -34,9 +34,7 @@ ValueItemDefinition::ValueItemDefinition(const std::string& myName)
   m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
-ValueItemDefinition::~ValueItemDefinition()
-{
-}
+ValueItemDefinition::~ValueItemDefinition() = default;
 
 bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {

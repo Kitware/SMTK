@@ -45,7 +45,7 @@ using namespace smtk::extension;
 class qtBaseAttributeViewInternals
 {
 public:
-  qtBaseAttributeViewInternals() {}
+  qtBaseAttributeViewInternals() = default;
   ~qtBaseAttributeViewInternals() { this->clearWidgets(); }
   void deleteWidget(QWidget* w) { delete w; }
   void clearWidgets()

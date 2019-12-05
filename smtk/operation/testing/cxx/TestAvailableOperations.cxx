@@ -128,8 +128,8 @@ public:
   smtkCreateMacro(OperationA);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  OperationA() {}
-  ~OperationA() override {}
+  OperationA() = default;
+  ~OperationA() override = default;
 
   Result operateInternal() override { return this->createResult(Outcome::SUCCEEDED); }
 
@@ -181,8 +181,8 @@ public:
   smtkCreateMacro(OperationB);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  OperationB() {}
-  ~OperationB() override {}
+  OperationB() = default;
+  ~OperationB() override = default;
 
   Result operateInternal() override { return this->createResult(Outcome::SUCCEEDED); }
 

@@ -57,9 +57,7 @@ OutputWindow::OutputWindow()
 {
 }
 
-OutputWindow::~OutputWindow()
-{
-}
+OutputWindow::~OutputWindow() = default;
 
 void OutputWindow::SetLogger(smtk::io::Logger* log)
 {

@@ -29,9 +29,7 @@ Manager::Manager()
 {
 }
 
-Manager::~Manager()
-{
-}
+Manager::~Manager() = default;
 
 bool Manager::registerOperation(Metadata&& metadata)
 {

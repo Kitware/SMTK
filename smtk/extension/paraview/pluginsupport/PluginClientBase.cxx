@@ -16,9 +16,7 @@ namespace extension
 {
 namespace paraview
 {
-PluginClientBase::~PluginClientBase()
-{
-}
+PluginClientBase::~PluginClientBase() = default;
 }
 }
 }

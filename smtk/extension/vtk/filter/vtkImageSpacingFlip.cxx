@@ -21,13 +21,9 @@
 
 vtkStandardNewMacro(vtkImageSpacingFlip);
 
-vtkImageSpacingFlip::vtkImageSpacingFlip()
-{
-}
+vtkImageSpacingFlip::vtkImageSpacingFlip() = default;
 
-vtkImageSpacingFlip::~vtkImageSpacingFlip()
-{
-}
+vtkImageSpacingFlip::~vtkImageSpacingFlip() = default;
 
 int vtkImageSpacingFlip::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)

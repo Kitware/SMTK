@@ -29,13 +29,9 @@ struct vtkInformationKeyMapInternals
 vtkInformationKeyMapInternals vtkInformationKeyMapKeys;
 }
 
-vtkInformationKeyMap::vtkInformationKeyMap()
-{
-}
+vtkInformationKeyMap::vtkInformationKeyMap() = default;
 
-vtkInformationKeyMap::~vtkInformationKeyMap()
-{
-}
+vtkInformationKeyMap::~vtkInformationKeyMap() = default;
 
 void vtkInformationKeyMap::RegisterKey(vtkInformationKey* key)
 {

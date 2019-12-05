@@ -42,9 +42,7 @@ Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
   m_localAdvanceLevel[0] = m_localAdvanceLevel[1] = 0;
 }
 
-Item::~Item()
-{
-}
+Item::~Item() = default;
 
 AttributePtr Item::attribute() const
 {

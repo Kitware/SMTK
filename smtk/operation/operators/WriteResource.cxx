@@ -35,9 +35,7 @@ namespace smtk
 namespace operation
 {
 
-WriteResource::WriteResource()
-{
-}
+WriteResource::WriteResource() = default;
 
 bool WriteResource::ableToOperate()
 {

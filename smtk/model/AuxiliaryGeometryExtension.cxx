@@ -14,12 +14,8 @@ namespace smtk
 namespace model
 {
 
-AuxiliaryGeometryExtension::AuxiliaryGeometryExtension()
-{
-}
+AuxiliaryGeometryExtension::AuxiliaryGeometryExtension() = default;
 
-AuxiliaryGeometryExtension::~AuxiliaryGeometryExtension()
-{
-}
+AuxiliaryGeometryExtension::~AuxiliaryGeometryExtension() = default;
 }
 }

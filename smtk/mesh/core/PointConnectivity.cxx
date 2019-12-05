@@ -30,9 +30,7 @@ PointConnectivity::PointConnectivity(const smtk::mesh::PointConnectivity& other)
 {
 }
 
-PointConnectivity::~PointConnectivity()
-{
-}
+PointConnectivity::~PointConnectivity() = default;
 
 PointConnectivity& PointConnectivity::operator=(const PointConnectivity& other)
 {

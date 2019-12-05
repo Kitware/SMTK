@@ -27,9 +27,7 @@ DateTimeItem::DateTimeItem(Item* inOwningAttribute, int itemPosition, int mySubG
 {
 }
 
-DateTimeItem::~DateTimeItem()
-{
-}
+DateTimeItem::~DateTimeItem() = default;
 
 Item::Type DateTimeItem::type() const
 {

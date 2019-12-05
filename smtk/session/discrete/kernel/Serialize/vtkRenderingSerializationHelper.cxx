@@ -17,9 +17,7 @@
 
 vtkStandardNewMacro(vtkRenderingSerializationHelper);
 
-vtkRenderingSerializationHelper::vtkRenderingSerializationHelper()
-{
-}
+vtkRenderingSerializationHelper::vtkRenderingSerializationHelper() = default;
 
 int vtkRenderingSerializationHelper::Serialize(vtkObject* object, vtkSerializer* serializer)
 {

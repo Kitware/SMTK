@@ -25,8 +25,8 @@ using namespace smtk::extension;
 class qtItemInternals
 {
 public:
-  qtItemInternals() {}
-  ~qtItemInternals() {}
+  qtItemInternals() = default;
+  ~qtItemInternals() = default;
   QPointer<qtOverlayFilter> advOverlay;
   QPointer<QComboBox> AdvLevelCombo;
 };

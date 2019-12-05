@@ -51,9 +51,7 @@ vtkCmbLayeredConeSource::vtkCmbLayeredConeSource()
   this->GenerateEnds = 1;
 }
 
-vtkCmbLayeredConeSource::~vtkCmbLayeredConeSource()
-{
-}
+vtkCmbLayeredConeSource::~vtkCmbLayeredConeSource() = default;
 
 void vtkCmbLayeredConeSource::SetNumberOfLayers(int layers)
 {

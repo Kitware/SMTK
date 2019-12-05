@@ -34,13 +34,9 @@ vtkDiscreteModelRegion* vtkDiscreteModelRegion::New()
   return new vtkDiscreteModelRegion;
 }
 
-vtkDiscreteModelRegion::vtkDiscreteModelRegion()
-{
-}
+vtkDiscreteModelRegion::vtkDiscreteModelRegion() = default;
 
-vtkDiscreteModelRegion::~vtkDiscreteModelRegion()
-{
-}
+vtkDiscreteModelRegion::~vtkDiscreteModelRegion() = default;
 
 vtkModelEntity* vtkDiscreteModelRegion::GetThisModelEntity()
 {

@@ -43,9 +43,7 @@ namespace session
 namespace discrete
 {
 
-EntityGroupOperation::EntityGroupOperation()
-{
-}
+EntityGroupOperation::EntityGroupOperation() = default;
 
 bool EntityGroupOperation::ableToOperate()
 {

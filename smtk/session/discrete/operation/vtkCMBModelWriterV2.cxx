@@ -49,9 +49,7 @@ vtkCMBModelWriterV2::vtkCMBModelWriterV2()
   this->DataMode = vtkXMLWriter::Binary;
 }
 
-vtkCMBModelWriterV2::~vtkCMBModelWriterV2()
-{
-}
+vtkCMBModelWriterV2::~vtkCMBModelWriterV2() = default;
 
 bool vtkCMBModelWriterV2::Write(vtkDiscreteModel* Model, smtk::session::discrete::Session* session)
 {

@@ -42,7 +42,7 @@ using namespace smtk::extension;
 class smtkTerrainExtractionViewInternals : public Ui::TerrainExtractionParameters
 {
 public:
-  smtkTerrainExtractionViewInternals() {}
+  smtkTerrainExtractionViewInternals() = default;
   ~smtkTerrainExtractionViewInternals()
   {
     if (TerrainExtractionAtt)

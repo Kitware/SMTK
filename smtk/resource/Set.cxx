@@ -19,9 +19,7 @@ namespace resource
 typedef Set::Role Role;
 typedef Set::State State;
 
-Set::Set()
-{
-}
+Set::Set() = default;
 
 Set::~Set()
 {

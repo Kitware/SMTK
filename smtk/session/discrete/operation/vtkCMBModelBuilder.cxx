@@ -148,9 +148,7 @@ vtkCMBModelBuilder::vtkCMBModelBuilder()
   this->OperateSucceeded = 0;
 }
 
-vtkCMBModelBuilder::~vtkCMBModelBuilder()
-{
-}
+vtkCMBModelBuilder::~vtkCMBModelBuilder() = default;
 
 void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgorithm* inputPoly)
 {

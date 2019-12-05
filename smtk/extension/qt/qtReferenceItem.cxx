@@ -76,9 +76,7 @@ qtReferenceItemData::qtReferenceItemData()
 {
 }
 
-qtReferenceItemData::~qtReferenceItemData()
-{
-}
+qtReferenceItemData::~qtReferenceItemData() = default;
 
 qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
   : Superclass(info)

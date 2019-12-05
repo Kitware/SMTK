@@ -40,9 +40,7 @@ ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
   m_onlyResources = false;
 }
 
-ReferenceItemDefinition::~ReferenceItemDefinition()
-{
-}
+ReferenceItemDefinition::~ReferenceItemDefinition() = default;
 
 bool ReferenceItemDefinition::setAcceptsEntries(
   const std::string& typeName, const std::string& filter, bool accept)

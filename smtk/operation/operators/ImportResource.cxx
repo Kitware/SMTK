@@ -33,9 +33,7 @@ namespace smtk
 namespace operation
 {
 
-ImportResource::ImportResource()
-{
-}
+ImportResource::ImportResource() = default;
 
 bool ImportResource::ableToOperate()
 {

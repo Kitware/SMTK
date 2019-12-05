@@ -44,9 +44,7 @@ namespace session
 namespace discrete
 {
 
-MergeOperation::MergeOperation()
-{
-}
+MergeOperation::MergeOperation() = default;
 
 bool MergeOperation::ableToOperate()
 {

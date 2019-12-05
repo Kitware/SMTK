@@ -74,9 +74,7 @@ qtSimpleExpressionEvaluationView::qtSimpleExpressionEvaluationView(const ViewInf
 {
 }
 
-qtSimpleExpressionEvaluationView::~qtSimpleExpressionEvaluationView()
-{
-}
+qtSimpleExpressionEvaluationView::~qtSimpleExpressionEvaluationView() = default;
 
 void qtSimpleExpressionEvaluationView::createWidget()
 {

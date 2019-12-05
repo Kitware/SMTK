@@ -23,9 +23,7 @@ DoubleItem::DoubleItem(Item* inOwningItem, int itemPosition, int mySubGroupPosit
 {
 }
 
-DoubleItem::~DoubleItem()
-{
-}
+DoubleItem::~DoubleItem() = default;
 
 Item::Type DoubleItem::type() const
 {

@@ -16,9 +16,7 @@ namespace smtk
 namespace model
 {
 
-Tessellation::Tessellation()
-{
-}
+Tessellation::Tessellation() = default;
 
 /// Add a 3-D point coordinate to the tessellation, but not a vertex record.
 int Tessellation::addCoords(const double* a)

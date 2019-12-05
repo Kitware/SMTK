@@ -38,7 +38,7 @@ class qtModelPanel::qInternal : public Ui::qtModelPanel
 public:
   QPointer<qtModelView> ModelView;
 
-  qInternal() {}
+  qInternal() = default;
 };
 
 qtModelPanel::qtModelPanel(QWidget* p)

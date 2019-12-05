@@ -77,7 +77,7 @@ struct WalkableEdge
   {
   }
 
-  ~WalkableEdge() {}
+  ~WalkableEdge() = default;
 
   //This comparison operator allows an edge to be viewed as an
   //ordered pair where -1 can be a wildcard in the second slot
@@ -364,9 +364,7 @@ vtkCMBMapToCMBModel::vtkCMBMapToCMBModel()
   this->OperateSucceeded = 0;
 }
 
-vtkCMBMapToCMBModel::~vtkCMBMapToCMBModel()
-{
-}
+vtkCMBMapToCMBModel::~vtkCMBMapToCMBModel() = default;
 
 void vtkCMBMapToCMBModel::PrintSelf(ostream& os, vtkIndent indent)
 {

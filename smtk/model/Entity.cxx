@@ -95,9 +95,7 @@ Entity::Entity()
 {
 }
 
-Entity::~Entity()
-{
-}
+Entity::~Entity() = default;
 
 /// Create and set up an entity object in a single call. This version sets the Entity's UUID.
 EntityPtr Entity::create(const UUID& uid, BitFlags entityFlags, ResourcePtr resource)

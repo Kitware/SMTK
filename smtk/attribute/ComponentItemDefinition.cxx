@@ -31,9 +31,7 @@ ComponentItemDefinition::ComponentItemDefinition(const std::string& sname)
 }
 
 /// Destructor.
-ComponentItemDefinition::~ComponentItemDefinition()
-{
-}
+ComponentItemDefinition::~ComponentItemDefinition() = default;
 
 /// Return the type of storage used by items defined by this class.
 Item::Type ComponentItemDefinition::type() const

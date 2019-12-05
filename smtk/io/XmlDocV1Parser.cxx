@@ -379,9 +379,7 @@ XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::ResourcePtr myResource, smtk::io
 {
 }
 
-XmlDocV1Parser::~XmlDocV1Parser()
-{
-}
+XmlDocV1Parser::~XmlDocV1Parser() = default;
 
 xml_node XmlDocV1Parser::getRootNode(xml_document& doc)
 {

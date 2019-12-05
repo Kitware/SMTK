@@ -25,9 +25,7 @@ ItemDefinition::ItemDefinition(const std::string& myName)
   m_categoryCheckMode = ItemDefinition::CategoryCheckMode::Any;
 }
 
-ItemDefinition::~ItemDefinition()
-{
-}
+ItemDefinition::~ItemDefinition() = default;
 
 bool ItemDefinition::isMemberOf(const std::vector<std::string>& inCategories) const
 {

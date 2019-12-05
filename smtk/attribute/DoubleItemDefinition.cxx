@@ -17,9 +17,7 @@ DoubleItemDefinition::DoubleItemDefinition(const std::string& myName)
 {
 }
 
-DoubleItemDefinition::~DoubleItemDefinition()
-{
-}
+DoubleItemDefinition::~DoubleItemDefinition() = default;
 
 Item::Type DoubleItemDefinition::type() const
 {

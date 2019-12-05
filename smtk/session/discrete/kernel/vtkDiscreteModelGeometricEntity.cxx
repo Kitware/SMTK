@@ -37,13 +37,9 @@ namespace
 const char ReverseClassificationArrayName[] = "ReverseClassification";
 }
 
-vtkDiscreteModelGeometricEntity::vtkDiscreteModelGeometricEntity()
-{
-}
+vtkDiscreteModelGeometricEntity::vtkDiscreteModelGeometricEntity() = default;
 
-vtkDiscreteModelGeometricEntity::~vtkDiscreteModelGeometricEntity()
-{
-}
+vtkDiscreteModelGeometricEntity::~vtkDiscreteModelGeometricEntity() = default;
 
 vtkModelMaterial* vtkDiscreteModelGeometricEntity::GetMaterial()
 {

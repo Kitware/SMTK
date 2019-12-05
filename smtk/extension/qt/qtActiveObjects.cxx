@@ -15,9 +15,7 @@ qtActiveObjects::qtActiveObjects()
   m_activeModel = smtk::model::Model();
 }
 
-qtActiveObjects::~qtActiveObjects()
-{
-}
+qtActiveObjects::~qtActiveObjects() = default;
 
 qtActiveObjects& qtActiveObjects::instance()
 {

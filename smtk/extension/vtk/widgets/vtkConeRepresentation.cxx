@@ -152,9 +152,7 @@ vtkConeRepresentation::vtkConeRepresentation()
   this->RepresentationState = vtkConeRepresentation::Outside;
 }
 
-vtkConeRepresentation::~vtkConeRepresentation()
-{
-}
+vtkConeRepresentation::~vtkConeRepresentation() = default;
 
 bool vtkConeRepresentation::SetEndpoint(bool isBottom, double x, double y, double z)
 {

@@ -10,13 +10,9 @@
 
 #include "vtkModelGeneratedGridRepresentation.h"
 
-vtkModelGeneratedGridRepresentation::vtkModelGeneratedGridRepresentation()
-{
-}
+vtkModelGeneratedGridRepresentation::vtkModelGeneratedGridRepresentation() = default;
 
-vtkModelGeneratedGridRepresentation::~vtkModelGeneratedGridRepresentation()
-{
-}
+vtkModelGeneratedGridRepresentation::~vtkModelGeneratedGridRepresentation() = default;
 
 void vtkModelGeneratedGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {

@@ -210,9 +210,7 @@ smtk::mesh::HandleRange convertDomain(vtkCellData* cellData, const smtk::mesh::I
 }
 }
 
-ImportVTKData::ImportVTKData()
-{
-}
+ImportVTKData::ImportVTKData() = default;
 
 smtk::mesh::ResourcePtr ImportVTKData::operator()(const std::string& filename,
   const smtk::mesh::InterfacePtr& interface, std::string materialPropertyName) const

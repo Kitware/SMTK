@@ -33,21 +33,12 @@ PointField::PointField(const smtk::mesh::MeshSet& meshset, const std::string& na
 }
 
 PointField::PointField(const smtk::mesh::PointField& other)
-  : m_name(other.m_name)
-  , m_meshset(other.m_meshset)
-{
-}
 
-PointField::~PointField()
-{
-}
+  = default;
 
-PointField& PointField::operator=(const PointField& other)
-{
-  m_name = other.m_name;
-  m_meshset = other.m_meshset;
-  return *this;
-}
+PointField::~PointField() = default;
+
+PointField& PointField::operator=(const PointField& other) = default;
 
 bool PointField::operator==(const PointField& other) const
 {

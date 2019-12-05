@@ -53,9 +53,7 @@ vtkDiscreteModelEdge::vtkDiscreteModelEdge()
   displayProp->SetPointSize(6.0);
 }
 
-vtkDiscreteModelEdge::~vtkDiscreteModelEdge()
-{
-}
+vtkDiscreteModelEdge::~vtkDiscreteModelEdge() = default;
 
 bool vtkDiscreteModelEdge::IsDestroyable()
 {

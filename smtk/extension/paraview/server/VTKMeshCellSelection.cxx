@@ -46,13 +46,9 @@ namespace smtk
 namespace view
 {
 
-VTKMeshCellSelection::VTKMeshCellSelection()
-{
-}
+VTKMeshCellSelection::VTKMeshCellSelection() = default;
 
-VTKMeshCellSelection::~VTKMeshCellSelection()
-{
-}
+VTKMeshCellSelection::~VTKMeshCellSelection() = default;
 
 bool VTKMeshCellSelection::transcribeCellIdSelection(Result& result)
 {

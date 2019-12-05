@@ -19,16 +19,12 @@
 #include "vtkObjectFactory.h"
 #include <set>
 
-vtkModelRegion::vtkModelRegion()
-{
-  // We don't build a model shell use yet because we don't know
-  // how to yet (e.g. we don't know what model face use
-  // it is comprised of/associated with
-}
+// We don't build a model shell use yet because we don't know
+// how to yet (e.g. we don't know what model face use
+// it is comprised of/associated with
+vtkModelRegion::vtkModelRegion() = default;
 
-vtkModelRegion::~vtkModelRegion()
-{
-}
+vtkModelRegion::~vtkModelRegion() = default;
 
 int vtkModelRegion::GetType()
 {

@@ -14,13 +14,9 @@ namespace smtk
 namespace resource
 {
 
-PersistentObject::PersistentObject()
-{
-}
+PersistentObject::PersistentObject() = default;
 
-PersistentObject::~PersistentObject()
-{
-}
+PersistentObject::~PersistentObject() = default;
 
 std::string PersistentObject::name() const
 {

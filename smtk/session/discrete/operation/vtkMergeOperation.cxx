@@ -25,9 +25,7 @@ vtkMergeOperation::vtkMergeOperation()
   this->OperateSucceeded = 0;
 }
 
-vtkMergeOperation::~vtkMergeOperation()
-{
-}
+vtkMergeOperation::~vtkMergeOperation() = default;
 
 void vtkMergeOperation::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
