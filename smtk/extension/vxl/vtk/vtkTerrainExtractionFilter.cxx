@@ -310,7 +310,7 @@ void vtkTerrainExtractionInternal::DeleteTemporaryFiles()
   std::vector<std::string>::iterator tempFileIter = this->TemporaryFiles.begin();
   for (; tempFileIter != this->TemporaryFiles.end(); tempFileIter++)
   {
-    vtksys::SystemTools::RemoveFile(tempFileIter->c_str());
+    vtksys::SystemTools::RemoveFile(*tempFileIter);
   }
   this->TemporaryFiles.clear();
 }
@@ -613,7 +613,7 @@ void vtkTerrainExtractionFilter::AppendOutputs()
   }
 
   std::string outputPath = vtksys::SystemTools::GetParentDirectory(
-    vtksys::SystemTools::GetFilenamePath(this->Internal->OutputFileNameBase[0]).c_str());
+    vtksys::SystemTools::GetFilenamePath(this->Internal->OutputFileNameBase[0]));
   outputPath += "/";
   for (int level = this->MinExtractLevel; level <= this->MaxExtractLevel; level++)
   {
@@ -721,7 +721,7 @@ void vtkTerrainExtractionFilter::AppendOutputs()
     glob.FindFiles(globString);
     if (glob.GetFiles().size() == 0)
     {
-      vtksys::SystemTools::RemoveADirectory(originalOutputPath.c_str());
+      vtksys::SystemTools::RemoveADirectory(originalOutputPath);
     }
   }
 }

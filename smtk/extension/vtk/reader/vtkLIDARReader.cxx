@@ -353,7 +353,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   std::string fileNameStr = this->FileName;
 
   vtksys::SystemTools::ConvertToUnixSlashes(fileNameStr);
-  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr.c_str());
+  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr);
 
   // Append File name to output
   vtkSmartPointer<vtkStringArray> filenameFD = vtkSmartPointer<vtkStringArray>::New();

@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
   std::string outputFileName(argc > 2 ? argv[2] : "mesh3D.exo");
   std::string materialName(argc > 3 ? argv[3] : std::string());
 
-  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName.c_str());
+  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName);
 
   // Dispatch based on the file extension
   vtkDataSet* data;

@@ -98,7 +98,7 @@ int vtkCMBGeometryReader::RequestData(vtkInformation* vtkNotUsed(request),
   std::string fileNameStr = this->FileName;
 
   vtksys::SystemTools::ConvertToUnixSlashes(fileNameStr);
-  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr.c_str());
+  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr);
   struct stat fs;
   if (stat(fileNameStr.c_str(), &fs) != 0)
   {

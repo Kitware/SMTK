@@ -379,7 +379,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName.c_str());
+  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName);
 
   // Dispatch based on the file extension
   vtkDataSet* data;

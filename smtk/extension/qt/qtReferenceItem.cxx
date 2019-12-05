@@ -158,8 +158,8 @@ bool qtReferenceItem::setSelectionIconPaths(
   m_p->m_unselectedIconURL = unselectedIconPath;
   if (m_p->m_qtModel)
   {
-    m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL.c_str());
-    m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL.c_str());
+    m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL);
+    m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL);
   }
   return true;
 }
@@ -435,8 +435,8 @@ void qtReferenceItem::updateUI()
       }
     });
   }
-  m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL.c_str());
-  m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL.c_str());
+  m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL);
+  m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL);
   if (m_p->m_phraseModel)
   {
     m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);

@@ -55,7 +55,7 @@ smtk::session::discrete::Resource::Ptr create_discrete_mesh_model()
   smtk::session::discrete::ImportOperation::Ptr op =
     smtk::session::discrete::ImportOperation::create();
 
-  op->parameters()->findFile("filename")->setValue(file_path.c_str());
+  op->parameters()->findFile("filename")->setValue(file_path);
   smtk::session::discrete::ImportOperation::Result result = op->operate();
   if (result->findInt("outcome")->value() !=
     static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))

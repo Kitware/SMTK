@@ -90,7 +90,7 @@ bool ExportVTKData::operator()(const std::string& filename, const smtk::mesh::Me
     return false;
   }
 
-  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(filename.c_str());
+  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(filename);
 
   // Dispatch based on the file extension
   if (extension == ".vtu")

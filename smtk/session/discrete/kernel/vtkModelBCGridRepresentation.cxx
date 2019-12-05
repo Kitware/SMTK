@@ -277,7 +277,7 @@ bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscret
     {
       continue;
     }
-    std::vector<std::string> values = vtksys::SystemTools::SplitString(line.c_str(), ' ');
+    std::vector<std::string> values = vtksys::SystemTools::SplitString(line, ' ');
     if (vtksys::SystemTools::Strucmp(values[0].c_str(), "NDS") == 0 && values.size() == 3)
     {
       vtkIdType pointId = atoi(values[1].c_str()) - 1; // analysis grid point Id in C++ ordering
