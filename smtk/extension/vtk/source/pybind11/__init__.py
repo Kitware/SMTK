@@ -16,11 +16,13 @@ from .._modules import vtkSMTKSourceExt
 
 class vtkMeshMultiBlockSource(vtkSMTKSourceExt.vtkMeshMultiBlockSource):
 
-    def GetDataObjectUUID(self, info):
-        return _srcfns._vtkMeshMultiBlockSource_GetDataObjectUUID(self, info)
+    @staticmethod
+    def GetDataObjectUUID(info):
+        return _srcfns._vtkMeshMultiBlockSource_GetDataObjectUUID(info)
 
-    def SetDataObjectUUID(self, info, uuid):
-        return _srcfns._vtkMeshMultiBlockSource_SetDataObjectUUID(self, info, uuid)
+    @staticmethod
+    def SetDataObjectUUID(info, uuid):
+        return _srcfns._vtkMeshMultiBlockSource_SetDataObjectUUID(info, uuid)
 
     def GetComponent(self, info):
         return _srcfns._vtkMeshMultiBlockSource_GetComponent(self, info)
@@ -40,11 +42,13 @@ class vtkMeshMultiBlockSource(vtkSMTKSourceExt.vtkMeshMultiBlockSource):
 
 class vtkModelMultiBlockSource(vtkSMTKSourceExt.vtkModelMultiBlockSource):
 
-    def GetDataObjectUUID(self, info):
-        return _srcfns._vtkModelMultiBlockSource_GetDataObjectUUID(self, info)
+    @staticmethod
+    def GetDataObjectUUID(info):
+        return _srcfns._vtkModelMultiBlockSource_GetDataObjectUUID(info)
 
-    def SetDataObjectUUID(self, info, uuid):
-        return _srcfns._vtkModelMultiBlockSource_SetDataObjectUUID(self, info, uuid)
+    @staticmethod
+    def SetDataObjectUUID(info, uuid):
+        return _srcfns._vtkModelMultiBlockSource_SetDataObjectUUID(info, uuid)
 
     def GetComponent(self, info):
         return _srcfns._vtkModelMultiBlockSource_GetComponent(self, info)
