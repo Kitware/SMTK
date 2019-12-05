@@ -122,7 +122,7 @@ public:
   smtkSharedPtrCreateMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::Operation);
   static bool s_haveRun;
-  virtual ~DeleterA() override {}
+  ~DeleterA() override {}
 
   bool ableToOperate() override { return true; }
 

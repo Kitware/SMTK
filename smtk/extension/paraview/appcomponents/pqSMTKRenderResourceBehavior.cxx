@@ -32,7 +32,7 @@
 class pqSMTKApplyBehavior : public pqApplyBehavior
 {
 public:
-  virtual ~pqSMTKApplyBehavior() {}
+  ~pqSMTKApplyBehavior() override {}
   void operator()(pqProxy* proxy) { this->applied(nullptr, proxy); }
 };
 

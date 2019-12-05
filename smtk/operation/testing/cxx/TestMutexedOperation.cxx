@@ -104,7 +104,7 @@ public:
 
   Result operateInternal() override;
 
-  virtual Specification createSpecification() override;
+  Specification createSpecification() override;
 
 private:
   mutable smtk::io::Logger m_logger;
@@ -204,7 +204,7 @@ public:
 
   Result operateInternal() override;
 
-  virtual Specification createSpecification() override;
+  Specification createSpecification() override;
 
 private:
   mutable smtk::io::Logger m_logger;
