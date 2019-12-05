@@ -2,28 +2,6 @@
 set(CMAKE_C_CLANG_TIDY "")
 set(CMAKE_CXX_CLANG_TIDY "")
 
-add_subdirectory(cJSON)
-
-# disable warning flags for cJSON. This is optional because we should be
-# continually pushing updates to cJSON, rather than just using it. For the
-# sanity of our own dashboards, though, it is nice to be able to distinguish
-# between cJSON's warnings and our own.
-option(SMTK_IGNORE_CJSON_WARNINGS "disable warning flags for cJSON" ON)
-mark_as_advanced(SMTK_IGNORE_CJSON_WARNINGS)
-
-if (SMTK_IGNORE_CJSON_WARNINGS)
-  set(ignore_rules_for_cjson "")
-
-   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    # disables: warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
-    set(ignore_rules_for_cjson "${ignore_rules_for_cjson} /wd4267")
-    # disables: warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead.
-    set(ignore_rules_for_cjson "${ignore_rules_for_cjson} /wd4996")
-  endif()
-
-  set_property(TARGET cJSON APPEND_STRING PROPERTY COMPILE_FLAGS ${ignore_rules_for_cjson})
-endif()
-
 #if(SMTK_ENABLE_OPENCV)
 #  set(Delaunay_USE_OPENCV ON)
 #endif()
