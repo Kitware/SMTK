@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/common/DateTimeZonePair.h"
-#include "cJSON.h"
+#include "nlohmann/json.hpp"
 #include <cstdio> // for snprintf()
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
@@ -50,91 +50,75 @@ void DateTimeZonePair::setTimeZone(const TimeZone& tz)
 std::string DateTimeZonePair::serialize() const
 {
   // Generate json output string
-  cJSON* outputJson = cJSON_CreateObject();
+  nlohmann::json outputJson;
 
   // Add "datetime" value (string)
-  std::string dtString = m_datetime.serialize();
-  //std::cout << "datetime " << dtString << std::endl;
-  cJSON* dtJson = cJSON_CreateString(dtString.c_str());
-  cJSON_AddItemToObject(outputJson, "datetime", dtJson);
+  outputJson["datetime"] = m_datetime.serialize();
 
   // Add optional "timezone" value (object)
   if (m_timezone.isSet())
   {
-    // std::cout << "timezone region \"" << m_timezone.region() << "\""
-    //           << ", posix: " << m_timezone.posixString() << std::endl;
-
     // Check UTC then region then posix string
     std::string regionString = m_timezone.region();
     if (m_timezone.isUTC())
     {
-      cJSON* utcJson = cJSON_CreateTrue();
-      cJSON_AddItemToObject(outputJson, "timezone-utc", utcJson);
+      outputJson["timezone-utc"] = true;
     }
     else if (!regionString.empty())
     {
-      cJSON* regionJson = cJSON_CreateString(regionString.c_str());
-      cJSON_AddItemToObject(outputJson, "timezone-region", regionJson);
+      outputJson["timezone-region"] = regionString;
     }
     else
     {
-      cJSON* posixJson = cJSON_CreateString(m_timezone.posixString().c_str());
-      cJSON_AddItemToObject(outputJson, "timezone-posix", posixJson);
+      outputJson["timezone-posix"] = m_timezone.posixString();
     }
   } // if (timezone is set)
 
   // Convert to string
-  std::string outputString = cJSON_PrintUnformatted(outputJson);
-
-  cJSON_Delete(outputJson);
-  return outputString;
+  return outputJson.dump();
 }
 
 bool DateTimeZonePair::deserialize(const std::string& content)
 {
-  cJSON* inputJson = cJSON_Parse(content.c_str());
-  if (!inputJson || inputJson->type != cJSON_Object)
+  nlohmann::json inputJson = nlohmann::json::parse(content);
+  if (inputJson.type() != nlohmann::json::value_t::object)
   {
-    cJSON_Delete(inputJson);
     std::cerr << "Missing or invalid DateTimeZonePair object: " << content << std::endl;
     return false;
   }
 
   // Extract datetime string
-  cJSON* dtJson = cJSON_GetObjectItem(inputJson, "datetime");
-  if (!dtJson || dtJson->type != cJSON_String)
+  auto dtJson = inputJson.find("datetime");
+  if (dtJson == inputJson.end())
   {
     std::cerr << "Missing or invalid DateTime string: " << content << std::endl;
-    cJSON_Delete(inputJson);
     return false;
   }
 
-  std::string dtString = dtJson->valuestring;
+  auto dtString = dtJson->get_ref<const nlohmann::json::string_t&>();
   if (!dtString.empty())
   {
     m_datetime.deserialize(dtString);
   }
 
   // Extract optional timezone objects
-  cJSON* utcJson = cJSON_GetObjectItem(inputJson, "timezone-utc");
-  cJSON* regionJson = cJSON_GetObjectItem(inputJson, "timezone-region");
-  cJSON* ptzJson = cJSON_GetObjectItem(inputJson, "timezone-posix");
-  if (utcJson && utcJson->type == cJSON_True)
+  auto utcJson = inputJson.find("timezone-utc");
+  auto regionJson = inputJson.find("timezone-region");
+  auto ptzJson = inputJson.find("timezone-posix");
+  if (utcJson != inputJson.end() && utcJson->type() == nlohmann::json::value_t::boolean &&
+    utcJson->get_ref<const nlohmann::json::boolean_t&>())
   {
     m_timezone.setUTC();
   }
-  else if (regionJson && regionJson->type == cJSON_String)
+  else if (regionJson != inputJson.end() && regionJson->type() == nlohmann::json::value_t::string)
   {
-    std::string regionString = regionJson->valuestring;
-    m_timezone.setRegion(regionString);
+    m_timezone.setRegion(regionJson->get_ref<const nlohmann::json::string_t&>());
   }
-  else if (ptzJson && ptzJson->type == cJSON_String)
+  else if (ptzJson != inputJson.end() && ptzJson->type() == nlohmann::json::value_t::string)
   {
-    std::string ptzString = ptzJson->valuestring;
-    m_timezone.setPosixString(ptzString);
+    m_timezone.setPosixString(ptzJson->get_ref<const nlohmann::json::string_t&>());
   }
 
-  cJSON_Delete(inputJson);
   return true;
 }
 
