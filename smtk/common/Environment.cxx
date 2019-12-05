@@ -11,7 +11,7 @@
 //=============================================================================
 #include "smtk/common/Environment.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace smtk
 {

@@ -30,7 +30,7 @@
 #include "smtk/mesh/core/Resource.h"
 
 #include <boost/functional/hash.hpp>
-#include <float.h>
+#include <cfloat>
 
 #include <algorithm>
 

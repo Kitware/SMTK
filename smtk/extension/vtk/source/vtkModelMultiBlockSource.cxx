@@ -71,9 +71,9 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include <errno.h>
-#include <inttypes.h>
-#include <stdlib.h>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdlib>
 
 using namespace smtk::model;
 

@@ -44,10 +44,10 @@
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
 
-#include <errno.h>
-#include <inttypes.h>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdlib>
 #include <iostream>
-#include <stdlib.h>
 
 using namespace smtk::model;
 

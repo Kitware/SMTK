@@ -41,8 +41,8 @@
 #include <map>
 #include <string>
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 using smtk::shared_ptr;
 using namespace smtk::common;

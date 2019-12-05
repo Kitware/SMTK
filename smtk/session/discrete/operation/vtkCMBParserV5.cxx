@@ -42,9 +42,9 @@
 #include "vtkStdString.h"
 #include "vtkStringArray.h"
 
+#include <cstdio>
+#include <cstring>
 #include <map>
-#include <stdio.h>
-#include <string.h>
 #include <vector>
 
 vtkStandardNewMacro(vtkCMBParserV5);

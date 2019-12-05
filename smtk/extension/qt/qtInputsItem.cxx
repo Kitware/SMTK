@@ -49,7 +49,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include <math.h>
+#include <cmath>
 
 #if defined(SMTK_MSVC) && _MSC_VER <= 1500
 #include <float.h>

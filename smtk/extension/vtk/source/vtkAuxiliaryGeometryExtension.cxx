@@ -70,7 +70,7 @@
 #include <list>
 #include <map>
 
-#include <stdlib.h> // for atexit()
+#include <cstdlib> // for atexit()
 
 using namespace smtk::model;
 using ::boost::filesystem::last_write_time;

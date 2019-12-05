@@ -80,7 +80,7 @@
 
 #include "smtk/view/Configuration.h"
 
-#include <math.h>
+#include <cmath>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;

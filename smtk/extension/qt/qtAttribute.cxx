@@ -32,7 +32,7 @@
 #include <QPointer>
 #include <QVBoxLayout>
 
-#include <stdlib.h> // for atexit()
+#include <cstdlib> // for atexit()
 
 #define DEBUG_ATTRIBUTE 0
 

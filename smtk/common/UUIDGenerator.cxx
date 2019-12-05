@@ -15,9 +15,9 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/uuid/uuid_generators.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include <ctime>    // for time()
-#include <mutex>    // for std::mutex
-#include <stdlib.h> // for getenv()/_dupenv_s()
+#include <cstdlib> // for getenv()/_dupenv_s()
+#include <ctime>   // for time()
+#include <mutex>   // for std::mutex
 
 namespace
 {

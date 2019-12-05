@@ -42,7 +42,7 @@
 #include "smtk/resource/Metadata.h"
 #include "smtk/resource/Set.h"
 
-#include <float.h>
+#include <cfloat>
 
 #include <algorithm>
 #include <functional>

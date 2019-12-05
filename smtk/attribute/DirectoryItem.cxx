@@ -11,8 +11,8 @@
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
+#include <cstdio>
 #include <iostream>
-#include <stdio.h>
 
 using namespace smtk::attribute;
 

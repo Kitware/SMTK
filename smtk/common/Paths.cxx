@@ -22,7 +22,7 @@
 
 #include "smtk/Options.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <sys/stat.h>
 #include <sys/types.h>

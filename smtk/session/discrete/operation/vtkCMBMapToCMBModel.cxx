@@ -10,7 +10,6 @@
 
 #include "vtkCMBMapToCMBModel.h"
 
-#include "math.h"
 #include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkAbstractArray.h"
 #include "vtkAlgorithm.h"
@@ -37,6 +36,7 @@
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
+#include <cmath>
 #include <vtkSmartPointer.h>
 
 #include <algorithm>

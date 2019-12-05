@@ -12,8 +12,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
 #include <cassert>
+#include <cstdio>
 #include <iostream>
-#include <stdio.h>
 
 using namespace smtk::attribute;
 

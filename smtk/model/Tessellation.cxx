@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/Tessellation.h"
 
-#include <float.h>
+#include <cfloat>
 
 namespace smtk
 {

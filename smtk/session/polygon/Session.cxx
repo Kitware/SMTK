@@ -37,7 +37,7 @@
 #include "smtk/session/polygon/internal/Model.h"
 #include "smtk/session/polygon/internal/Vertex.h"
 
-#include <string.h> // for strcmp
+#include <cstring> // for strcmp
 
 using smtk::model::EntityRef;
 using namespace smtk::common;

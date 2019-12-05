@@ -12,8 +12,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include <algorithm> // for std::find
+#include <cstdio>
 #include <iostream>
-#include <stdio.h>
 
 using namespace smtk::attribute;
 
