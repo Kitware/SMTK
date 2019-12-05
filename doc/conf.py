@@ -11,11 +11,17 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+from __future__ import print_function
 
 import sys
 import os
 import datetime
 
+# build results: https://readthedocs.org/projects/smtk/builds/
+# test locally, something like:
+#   cd doc
+#   python3 -m sphinx -Q -b html . html
+# you can also `export READTHEDOCS=1` beforehand so it pretends it's on RTD.
 readTheDocs = os.environ.get('READTHEDOCS', None) != None
 localReadTheDocs = os.environ.get('LOCALREADTHEDOCS', None) != None
 localSkipDoxygen = os.environ.get('LOCALSKIPDOXYGEN', None) != None
@@ -48,38 +54,51 @@ def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
     srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
     bindir = srcdir
     refdir = os.path.abspath(os.path.join(rtdblddir, 'doc', 'reference'))
+    # We want to direct the output differently, and since there's no smtk
+    # build, have the bin dir just point to the source - so replace output
+    # first, then bin dir.
     cfg2 = re.sub('@smtk_SOURCE_DIR@', srcdir,
-                  re.sub('@smtk_BINARY_DIR@', os.path.abspath(rtdblddir), cfg))
+                  re.sub('@smtk_BINARY_DIR@', os.path.abspath(bindir),
+                         re.sub('@smtk_BINARY_DIR@/doc/reference/smtk', os.path.abspath(rtdblddir) + '/doc/reference/smtk',
+                                cfg)))
     try:
         os.makedirs(refdir)
     except OSError as e:
         if e.errno == 17:
             pass
     except:
-        print 'Failed to create doxygen reference directory %s' % refdir
+        print('Failed to create doxygen reference directory %s' % refdir)
         return
     dxoname = os.path.abspath(os.path.join(refdir, doxyfileOut))
     dxo = open(dxoname, 'w')
-    print >>dxo, cfg2
+    print(cfg2, file=dxo)
     dxo.close()
     os.chdir(refdir)
 
-    # Hack for lacking git-lfs support ReadTheDocs
-    if on_rtd:
-        print('Fetching files with git_lfs')
-        from git_lfs import fetch
-        fetch(rtdsrcdir)
+    # copied from https://test-builds.readthedocs.io/en/git-lfs/conf.html
+    # Install and execute git-lfs
+    if not os.path.exists('./git-lfs'):
+        print('Fetching files with git-lfs')
+        os.system(
+            'wget https://github.com/git-lfs/git-lfs/releases/download/v2.7.1/git-lfs-linux-amd64-v2.7.1.tar.gz')
+        os.system('tar xvfz git-lfs-linux-amd64-v2.7.1.tar.gz')
+        # make lfs available in current repository
+        os.system('./git-lfs install')
+        os.system('./git-lfs fetch')  # download content from remote
+        # make local files to have the real content on them
+        os.system('./git-lfs checkout')
 
-    print 'Running Doxygen on %s' % dxoname
+    print('Running Doxygen on %s' % dxoname)
     rcode = subprocess.call(('doxygen', dxoname))
-    print '   Doxygen returned %s' % rcode
+    print('   Doxygen returned %s' % rcode)
     os.chdir(orgdir)
 
 
 def configFile(srcdir, blddir, templateFile, outputFile, keywords):
     ofile = open(os.path.join(srcdir, outputFile), 'w')
     data = open(os.path.join(srcdir, templateFile), 'r').read()
-    for (patt, repl) in keywords.iteritems():
+    for patt in keywords:
+        repl = keywords[patt]
         data = data.replace(patt, str(repl))
     ofile.write(data)
     ofile.close()
