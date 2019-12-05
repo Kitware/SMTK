@@ -152,10 +152,10 @@ void PreAllocatedTessellation::determineAllocationLengths(const smtk::model::Loo
 
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity)
   : m_connectivity(connectivity)
-  , m_cellLocations(NULL)
-  , m_cellTypes(NULL)
-  , m_dpoints(NULL)
-  , m_fpoints(NULL)
+  , m_cellLocations(nullptr)
+  , m_cellTypes(nullptr)
+  , m_dpoints(nullptr)
+  , m_fpoints(nullptr)
   , m_useVTKConnectivity(true)
   , m_useVTKCellTypes(true)
 {
@@ -163,9 +163,9 @@ PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity)
 
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity, float* points)
   : m_connectivity(connectivity)
-  , m_cellLocations(NULL)
-  , m_cellTypes(NULL)
-  , m_dpoints(NULL)
+  , m_cellLocations(nullptr)
+  , m_cellTypes(nullptr)
+  , m_dpoints(nullptr)
   , m_fpoints(points)
   , m_useVTKConnectivity(true)
   , m_useVTKCellTypes(true)
@@ -174,10 +174,10 @@ PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity, f
 
 PreAllocatedTessellation::PreAllocatedTessellation(std::int64_t* connectivity, double* points)
   : m_connectivity(connectivity)
-  , m_cellLocations(NULL)
-  , m_cellTypes(NULL)
+  , m_cellLocations(nullptr)
+  , m_cellTypes(nullptr)
   , m_dpoints(points)
-  , m_fpoints(NULL)
+  , m_fpoints(nullptr)
   , m_useVTKConnectivity(true)
   , m_useVTKCellTypes(true)
 {
@@ -188,8 +188,8 @@ PreAllocatedTessellation::PreAllocatedTessellation(
   : m_connectivity(connectivity)
   , m_cellLocations(cellLocations)
   , m_cellTypes(cellTypes)
-  , m_dpoints(NULL)
-  , m_fpoints(NULL)
+  , m_dpoints(nullptr)
+  , m_fpoints(nullptr)
   , m_useVTKConnectivity(true)
   , m_useVTKCellTypes(true)
 {
@@ -200,7 +200,7 @@ PreAllocatedTessellation::PreAllocatedTessellation(
   : m_connectivity(connectivity)
   , m_cellLocations(cellLocations)
   , m_cellTypes(cellTypes)
-  , m_dpoints(NULL)
+  , m_dpoints(nullptr)
   , m_fpoints(points)
   , m_useVTKConnectivity(true)
   , m_useVTKCellTypes(true)
@@ -213,7 +213,7 @@ PreAllocatedTessellation::PreAllocatedTessellation(
   , m_cellLocations(cellLocations)
   , m_cellTypes(cellTypes)
   , m_dpoints(points)
-  , m_fpoints(NULL)
+  , m_fpoints(nullptr)
   , m_useVTKConnectivity(true)
   , m_useVTKCellTypes(true)
 {
@@ -324,9 +324,9 @@ void extractTessellationInternal(
   PointConnectivity& pc, const smtk::mesh::PointSet& ps, PreAllocatedTessellation& tess)
 {
   //we need to detect what options of tesselation the user has enabled.
-  const bool fetch_cellLocations = tess.m_cellLocations != NULL;
-  const bool fetch_fPoints = tess.m_fpoints != NULL;
-  const bool fetch_dPoints = tess.m_dpoints != NULL;
+  const bool fetch_cellLocations = tess.m_cellLocations != nullptr;
+  const bool fetch_fPoints = tess.m_fpoints != nullptr;
+  const bool fetch_dPoints = tess.m_dpoints != nullptr;
 
   //we need to determine what version of this function we are actually
   //using. This is fairly important as we don't want to branch within the

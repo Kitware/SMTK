@@ -72,7 +72,7 @@ DiscreteMesh::DiscreteMesh()
 {
   this->FaceData = vtkPolyData::New();
   this->EdgeData = vtkPolyData::New();
-  this->SharedPoints = NULL;
+  this->SharedPoints = nullptr;
 
   this->FaceData->SetPoints(this->SharedPoints);
   this->EdgeData->SetPoints(this->SharedPoints);
@@ -99,7 +99,7 @@ DiscreteMesh::DiscreteMesh(vtkPolyData* allData)
 
   if (this->SharedPoints)
   {
-    this->SharedPoints->Register(NULL);
+    this->SharedPoints->Register(nullptr);
   }
   this->FaceData->SetPoints(this->SharedPoints);
   this->EdgeData->SetPoints(this->SharedPoints);
@@ -144,19 +144,19 @@ DiscreteMesh::~DiscreteMesh()
   if (this->FaceData)
   {
     this->FaceData->Delete();
-    this->FaceData = NULL;
+    this->FaceData = nullptr;
   }
 
   if (this->EdgeData)
   {
     this->EdgeData->Delete();
-    this->EdgeData = NULL;
+    this->EdgeData = nullptr;
   }
 
   if (this->SharedPoints)
   {
     this->SharedPoints->Delete();
-    this->SharedPoints = NULL;
+    this->SharedPoints = nullptr;
   }
 }
 
@@ -539,14 +539,14 @@ void DiscreteMesh::ShallowAssignment(const DiscreteMesh& other)
   if (this->SharedPoints)
   {
     this->SharedPoints->Delete();
-    this->SharedPoints = NULL;
+    this->SharedPoints = nullptr;
   }
 
   this->SharedPoints = other.SharedPoints;
 
   if (this->SharedPoints)
   {
-    this->SharedPoints->Register(NULL);
+    this->SharedPoints->Register(nullptr);
   }
 }
 

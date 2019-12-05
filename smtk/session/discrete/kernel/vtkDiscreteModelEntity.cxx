@@ -26,7 +26,7 @@ vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisDiscreteModelEntity(vtkMo
 {
   if (!entity)
   {
-    return 0;
+    return nullptr;
   }
 
   if (vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::SafeDownCast(entity))
@@ -44,7 +44,7 @@ vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisDiscreteModelEntity(vtkMo
     return edge;
   }
 
-  return 0;
+  return nullptr;
 }
 
 int vtkDiscreteModelEntity::GetNumberOfModelEntityGroups()

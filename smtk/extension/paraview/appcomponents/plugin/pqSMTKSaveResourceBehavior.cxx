@@ -58,8 +58,8 @@ void pqSaveResourceReaction::updateEnableState()
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
   // TODO: also if there's a pending accept.
   bool enable_state =
-    (activeObjects.activeServer() != NULL && activeObjects.activeSource() != NULL &&
-      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != NULL);
+    (activeObjects.activeServer() != nullptr && activeObjects.activeSource() != nullptr &&
+      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
   this->parentAction()->setEnabled(enable_state);
 }
 
@@ -115,8 +115,8 @@ void pqSaveResourceAsReaction::updateEnableState()
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
   // TODO: also is there's a pending accept.
   bool enable_state =
-    (activeObjects.activeServer() != NULL && activeObjects.activeSource() != NULL &&
-      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != NULL);
+    (activeObjects.activeServer() != nullptr && activeObjects.activeSource() != nullptr &&
+      dynamic_cast<pqSMTKResource*>(activeObjects.activeSource()) != nullptr);
   this->parentAction()->setEnabled(enable_state);
 }
 
@@ -192,7 +192,7 @@ QAction* findSaveAction(QMenu* menu)
       return action;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 QAction* findHelpMenuAction(QMenuBar* menubar)
@@ -207,7 +207,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
       return existingMenuAction;
     }
   }
-  return NULL;
+  return nullptr;
 }
 }
 
@@ -238,7 +238,7 @@ pqSMTKSaveResourceBehavior::pqSMTKSaveResourceBehavior(QObject* parent)
 
       QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
-      QMenu* menu = NULL;
+      QMenu* menu = nullptr;
       foreach (QAction* existingMenuAction, menuBarActions)
       {
         QString menuName = existingMenuAction->text();

@@ -58,8 +58,8 @@ smtkImplementTracksAllInstances(vtkMeshMultiBlockSource);
 vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
 {
   this->SetNumberOfInputPorts(0);
-  this->CachedOutput = NULL;
-  this->ModelEntityID = NULL;
+  this->CachedOutput = nullptr;
+  this->ModelEntityID = nullptr;
   this->AllowNormalGeneration = 0;
   this->linkInstance();
 }
@@ -67,8 +67,8 @@ vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
 vtkMeshMultiBlockSource::~vtkMeshMultiBlockSource()
 {
   this->unlinkInstance();
-  this->SetCachedOutput(NULL);
-  this->SetModelEntityID(NULL);
+  this->SetCachedOutput(nullptr);
+  this->SetModelEntityID(nullptr);
 }
 
 void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
@@ -106,7 +106,7 @@ void vtkMeshMultiBlockSource::Dirty()
   // This both clears the output and marks this filter
   // as modified so that RequestData() will run the next
   // time the representation is updated:
-  this->SetCachedOutput(NULL);
+  this->SetCachedOutput(nullptr);
 }
 
 /// Add customized block info.
@@ -376,7 +376,7 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
 
   // Destroy the cache if the parameters have changed since it was generated.
   if (this->CachedOutput && this->GetMTime() > this->CachedOutput->GetMTime())
-    this->SetCachedOutput(NULL);
+    this->SetCachedOutput(nullptr);
 
   if (!this->CachedOutput)
   { // Populate a polydata with tessellation information from the model.

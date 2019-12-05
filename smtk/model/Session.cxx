@@ -563,7 +563,7 @@ std::string Session::defaultFileExtension(const Model& model) const
 EntityPtr Session::addEntityRecord(const EntityRef& entRef)
 {
   (void)entRef;
-  return NULL;
+  return nullptr;
 }
 
 /**\brief Subclasses implement this; it should return a new ArrangementHelper subclass instance.

@@ -30,7 +30,7 @@ vtkModelEntity* vtkEdgeSplitOperation::GetModelEntity(vtkDiscreteModelWrapper* M
 {
   if (!ModelWrapper || !this->GetIsEdgeIdSet())
   {
-    return 0;
+    return nullptr;
   }
   return this->Superclass::GetModelEntity(ModelWrapper->GetModel());
 }

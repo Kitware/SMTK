@@ -39,17 +39,17 @@ vtkModel3dmGridRepresentation::~vtkModel3dmGridRepresentation()
   if (this->ModelPointToAnalysisPoint)
   {
     this->ModelPointToAnalysisPoint->Delete();
-    this->ModelPointToAnalysisPoint = NULL;
+    this->ModelPointToAnalysisPoint = nullptr;
   }
   if (this->ModelCellToAnalysisCells)
   {
     this->ModelCellToAnalysisCells->Delete();
-    this->ModelCellToAnalysisCells = NULL;
+    this->ModelCellToAnalysisCells = nullptr;
   }
   if (this->ModelCellToAnalysisCellSides)
   {
     this->ModelCellToAnalysisCellSides->Delete();
-    this->ModelCellToAnalysisCellSides = NULL;
+    this->ModelCellToAnalysisCellSides = nullptr;
   }
 }
 

@@ -38,7 +38,7 @@ vtkCxxSetObjectMacro(vtkLIDARReader, Transform, vtkTransform);
 
 vtkLIDARReader::vtkLIDARReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   this->ValuesPerLine = -1;
   this->BytesPerPoint = 0;
@@ -49,7 +49,7 @@ vtkLIDARReader::vtkLIDARReader()
   this->PieceIndex = -1;
   this->ReadBounds[0] = this->ReadBounds[2] = this->ReadBounds[4] = VTK_DOUBLE_MAX;
   this->ReadBounds[1] = this->ReadBounds[3] = this->ReadBounds[5] = VTK_DOUBLE_MIN;
-  this->Transform = 0;
+  this->Transform = nullptr;
   this->TransformOutputData = false;
 
   this->ConvertFromLatLongToXYZ = false;
@@ -67,8 +67,8 @@ vtkLIDARReader::vtkLIDARReader()
 
 vtkLIDARReader::~vtkLIDARReader()
 {
-  this->SetFileName(0);
-  this->SetTransform(static_cast<vtkTransform*>(0));
+  this->SetFileName(nullptr);
+  this->SetTransform(static_cast<vtkTransform*>(nullptr));
 }
 
 void vtkLIDARReader::SetConvertFromLatLongToXYZ(bool mode)
@@ -95,7 +95,7 @@ void vtkLIDARReader::SetConvertFromLatLongToXYZ(bool mode)
 void vtkLIDARReader::SetFileName(const char* filename)
 {
   vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting FileName to " << filename);
-  if (this->FileName == NULL && filename == NULL)
+  if (this->FileName == nullptr && filename == nullptr)
   {
     return;
   }
@@ -117,7 +117,7 @@ void vtkLIDARReader::SetFileName(const char* filename)
   }
   else
   {
-    this->FileName = NULL;
+    this->FileName = nullptr;
   }
 
   this->CompleteFileHasBeenRead = false;
@@ -222,7 +222,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   if (!fin)
   {
     vtkErrorMacro(<< "File " << this->FileName << " not found");
-    this->SetFileName(NULL);
+    this->SetFileName(nullptr);
     return 0;
   }
 
@@ -247,8 +247,8 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   newPts->UnRegister(this);
   newVerts->UnRegister(this);
 
-  vtkUnsignedCharArray* scalars = 0;
-  vtkFloatArray* intensityArray = 0;
+  vtkUnsignedCharArray* scalars = nullptr;
+  vtkFloatArray* intensityArray = nullptr;
   if (this->ValuesPerLine > 5)
   {
     scalars = vtkUnsignedCharArray::New();

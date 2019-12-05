@@ -47,16 +47,16 @@ vtkCMBPrepareForTriangleMesher::vtkCMBPrepareForTriangleMesher()
   numArcsAdded = 0;
   numNodesAdded = 0;
 
-  fieldCellArrayOffset = 0;
-  fieldCellArraySize = 0;
-  fieldArcId = 0;
-  fieldLoop1 = 0;
-  fieldLoop2 = 0;
-  fieldEndpoint1 = 0;
-  fieldEndpoint2 = 0;
-  fieldLoopInfo = 0;
+  fieldCellArrayOffset = nullptr;
+  fieldCellArraySize = nullptr;
+  fieldArcId = nullptr;
+  fieldLoop1 = nullptr;
+  fieldLoop2 = nullptr;
+  fieldEndpoint1 = nullptr;
+  fieldEndpoint2 = nullptr;
+  fieldLoopInfo = nullptr;
 
-  cellElementIds = 0;
+  cellElementIds = nullptr;
 }
 
 void vtkCMBPrepareForTriangleMesher::InitializeNewMapInfo()
@@ -363,15 +363,15 @@ void vtkCMBPrepareForTriangleMesher::FinalizeNewMapInfo()
     fieldLoop2->FastDelete();
     fieldLoopInfo->FastDelete();
     cellElementIds->FastDelete();
-    fieldCellArrayOffset = NULL;
-    fieldCellArraySize = NULL;
-    fieldArcId = NULL;
-    fieldEndpoint1 = NULL;
-    fieldEndpoint2 = NULL;
-    fieldLoop1 = NULL;
-    fieldLoop2 = NULL;
-    fieldLoopInfo = NULL;
-    cellElementIds = NULL;
+    fieldCellArrayOffset = nullptr;
+    fieldCellArraySize = nullptr;
+    fieldArcId = nullptr;
+    fieldEndpoint1 = nullptr;
+    fieldEndpoint2 = nullptr;
+    fieldLoop1 = nullptr;
+    fieldLoop2 = nullptr;
+    fieldLoopInfo = nullptr;
+    cellElementIds = nullptr;
   }
   else
   {

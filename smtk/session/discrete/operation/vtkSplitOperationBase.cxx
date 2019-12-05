@@ -62,7 +62,7 @@ vtkModelEntity* vtkSplitOperationBase::GetModelEntity(vtkDiscreteModel* Model)
 {
   if (!Model || !this->GetIsIdSet())
   {
-    return 0;
+    return nullptr;
   }
   return Model->GetModelEntity(vtkModelFaceType, this->GetId());
 }

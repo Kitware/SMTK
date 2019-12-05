@@ -49,7 +49,7 @@ bool moab_write(const smtk::mesh::moab::InterfacePtr& interface, const std::stri
 
     ::moab::Range setsToSave;
     m_iface->get_entities_by_type_and_tag(m_iface->get_root_set(), ::moab::MBENTITYSET, &subsetTag,
-      NULL, 1, setsToSave, ::moab::Interface::UNION);
+      nullptr, 1, setsToSave, ::moab::Interface::UNION);
 
     if (setsToSave.empty())
     {
@@ -73,8 +73,8 @@ bool moab_write(const smtk::mesh::moab::InterfacePtr& interface, const std::stri
     //write out just the subset. We let the file extension the user specified
     //determine what writer to use.
     err = m_iface->write_file(path.c_str(),
-      NULL, //explicit writer type
-      NULL, //options
+      nullptr, //explicit writer type
+      nullptr, //options
       entitiesToSave);
   }
   else
@@ -104,7 +104,7 @@ bool moab_write(const smtk::mesh::moab::InterfacePtr& interface, const std::stri
 
 //requires that interface is not a null shared ptr
 bool write_file(const smtk::mesh::moab::InterfacePtr& interface, const std::string& path,
-  const char* tag_name = NULL)
+  const char* tag_name = nullptr)
 { //tag_name which is NULL loads in all meshes
   return moab_write(interface, path, tag_name);
 }

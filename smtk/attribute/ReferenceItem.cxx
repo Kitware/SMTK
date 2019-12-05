@@ -640,7 +640,7 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (!Superclass::setDefinition(adef)))
+  if ((def == nullptr) || (!Superclass::setDefinition(adef)))
   {
     return false;
   }

@@ -234,9 +234,9 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscreteModel* model)
 {
   this->Reset();
-  if (bcFileName == NULL || vtksys::SystemTools::FileExists(bcFileName, true) == false)
+  if (bcFileName == nullptr || vtksys::SystemTools::FileExists(bcFileName, true) == false)
   {
-    if (bcFileName == NULL)
+    if (bcFileName == nullptr)
     {
       vtkErrorMacro("Passed in empty file name.");
     }
@@ -380,7 +380,7 @@ bool vtkModelBCGridRepresentation::AddModelFace(
 {
   vtkDiscreteModelFace* face =
     vtkDiscreteModelFace::SafeDownCast(model->GetModelEntity(vtkModelFaceType, modelFaceId));
-  if (face == NULL || face->GetNumberOfCells() == 0)
+  if (face == nullptr || face->GetNumberOfCells() == 0)
   {
     vtkErrorMacro("Could not find model face.");
     this->Reset();
@@ -450,7 +450,7 @@ bool vtkModelBCGridRepresentation::GetModelFaceAnalysisFacets(
   }
   vtkDiscreteModelFace* face =
     vtkDiscreteModelFace::SafeDownCast(model->GetModelEntity(vtkModelFaceType, modelFaceId));
-  if (face == NULL || face->GetNumberOfCells() == 0)
+  if (face == nullptr || face->GetNumberOfCells() == 0)
   {
     vtkErrorMacro("Could not find model face.");
     this->Reset();

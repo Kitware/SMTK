@@ -79,7 +79,7 @@ void vtkRenderingSerializationHelper::SerializeCamera(vtkCamera* camera, vtkSeri
     unsigned int length = 0;
 
     // vectors of length 3
-    double *position = 0, *focalPt = 0, *viewUp = 0;
+    double *position = nullptr, *focalPt = nullptr, *viewUp = nullptr;
     serializer->Serialize("Position", position, length);
     if (length > 0)
     {
@@ -100,7 +100,7 @@ void vtkRenderingSerializationHelper::SerializeCamera(vtkCamera* camera, vtkSeri
     }
 
     // vectors of length 2
-    double *clippingRange = 0, *windowCenter = 0;
+    double *clippingRange = nullptr, *windowCenter = nullptr;
     serializer->Serialize("ClippingRange", clippingRange, length);
     if (length > 0)
     {
@@ -139,7 +139,7 @@ const char* vtkRenderingSerializationHelper::GetSerializationType(vtkObject* obj
   {
     return "vtkCamera";
   }
-  return 0;
+  return nullptr;
 }
 
 void vtkRenderingSerializationHelper::PrintSelf(ostream& os, vtkIndent indent)

@@ -59,8 +59,8 @@ namespace pqSplitEdgeWidgetInternals
 {
 EdgePointPicker::EdgePointPicker(QObject* p)
   : QAction(p)
-  , Selecter(NULL)
-  , InteractiveSelectButton(NULL)
+  , Selecter(nullptr)
+  , InteractiveSelectButton(nullptr)
   , m_isActive(false)
 {
   this->setCheckable(true);
@@ -107,7 +107,7 @@ void EdgePointPicker::donePicking(pqRenderView* view)
       vtkSMRenderViewProxy::SafeDownCast(view->getViewProxy()));
     this->Selecter->disconnect();
     delete this->Selecter;
-    this->Selecter = NULL;
+    this->Selecter = nullptr;
   }
   if (view)
   {
@@ -127,7 +127,7 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget* prent)
   : QWidget(prent)
   , Internals(new pqSplitEdgeWidget::pqInternals)
   , m_edgePointPicker(new pqSplitEdgeWidgetInternals::EdgePointPicker(this))
-  , View(NULL)
+  , View(nullptr)
 {
   this->setObjectName("pqSplitEdgeWidget");
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -155,7 +155,7 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget* prent)
 
 pqSplitEdgeWidget::~pqSplitEdgeWidget()
 {
-  this->setView(NULL);
+  this->setView(nullptr);
   delete this->Internals;
   delete m_edgePointPicker;
 }
@@ -288,7 +288,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
     }
 
     // once find the edge needed, turn off the selection for model source
-    port->setSelectionInput(NULL, 0);
+    port->setSelectionInput(nullptr, 0);
     this->View->render();
     if (readytoOp)
     {
@@ -296,7 +296,7 @@ void pqSplitEdgeWidget::arcPointPicked(pqOutputPort* port)
       // keep picking mode. We need this to refresh the Selecter with new model geometry
       vtkPVRenderView* rv =
         vtkPVRenderView::SafeDownCast(this->View->getRenderViewProxy()->GetClientSideObject());
-      if (rv != NULL)
+      if (rv != nullptr)
       {
         rv->InvalidateCachedSelection();
         rv->GetRenderWindow()->Render();

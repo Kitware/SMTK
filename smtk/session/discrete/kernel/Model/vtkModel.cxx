@@ -73,7 +73,7 @@ vtkModelEntity* vtkModel::GetModelEntity(vtkIdType uniquePersistentId)
     }
     iter->Delete();
   }
-  return 0;
+  return nullptr;
 }
 
 vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType uniquePersistentId)
@@ -93,7 +93,7 @@ vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType uniquePersisten
   }
   iter->Delete();
 
-  return 0;
+  return nullptr;
 }
 
 bool vtkModel::DestroyModelGeometricEntity(vtkModelGeometricEntity* entity)

@@ -78,7 +78,7 @@ vtkModelFace* vtkModelLoopUse::GetModelFace()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelFaceUseType);
   iter->Begin();
-  vtkModelFace* face = 0;
+  vtkModelFace* face = nullptr;
   if (!iter->IsAtEnd())
   {
     if (vtkModelFaceUse* FaceUse = vtkModelFaceUse::SafeDownCast(iter->GetCurrentItem()))
@@ -104,7 +104,7 @@ vtkModelEdgeUse* vtkModelLoopUse::GetModelEdgeUse(int index)
     counter++;
   }
   vtkWarningMacro("Bad index.");
-  return NULL;
+  return nullptr;
 }
 
 vtkModelItemIterator* vtkModelLoopUse::NewModelEdgeUseIterator()

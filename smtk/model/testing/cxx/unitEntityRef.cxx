@@ -204,10 +204,10 @@ int main(int argc, char* argv[])
   try
   {
     ResourcePtr sm = Resource::create();
-    sm->observe(ResourceEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, NULL);
-    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, NULL);
-    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), didRemove, NULL);
-    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), didRemove, NULL);
+    sm->observe(ResourceEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, nullptr);
+    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, nullptr);
+    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), didRemove, nullptr);
+    sm->observe(ResourceEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), didRemove, nullptr);
 
     UUIDArray uids = createTet(sm);
 

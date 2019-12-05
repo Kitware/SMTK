@@ -86,8 +86,10 @@ int Test3DModelSerialization()
 
   vtkSmartPointer<vtkDiscreteModel> model = vtkSmartPointer<vtkDiscreteModel>::New();
   vtkModelMaterial* Material = model->BuildMaterial();
-  vtkDiscreteModelFace* Face0 = vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, 0, 0));
-  vtkDiscreteModelFace* Face1 = vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, 0, 0));
+  vtkDiscreteModelFace* Face0 =
+    vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, nullptr, nullptr));
+  vtkDiscreteModelFace* Face1 =
+    vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, nullptr, nullptr));
   int FaceSides[2] = { 1, 0 };
   vtkDiscreteModelEntity* vtkCMBFaces[2] = { Face0, Face1 };
   vtkModelFace* vtkFaces[2] = { Face0, Face1 };
@@ -146,7 +148,7 @@ int Test3DModelSerialization()
   //model->Reset();
 
   // Force the model to be deleted.
-  model = 0;
+  model = nullptr;
 
   return errors;
 }

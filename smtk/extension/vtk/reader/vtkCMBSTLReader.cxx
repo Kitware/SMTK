@@ -27,13 +27,13 @@ vtkStandardNewMacro(vtkCMBSTLReader);
 
 vtkCMBSTLReader::vtkCMBSTLReader()
 {
-  this->FileName = 0;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
 }
 
 vtkCMBSTLReader::~vtkCMBSTLReader()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 int vtkCMBSTLReader::RequestData(vtkInformation* vtkNotUsed(request),

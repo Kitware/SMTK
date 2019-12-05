@@ -17,8 +17,8 @@ namespace mesh
 MeshForEach::~MeshForEach() = default;
 
 CellForEach::CellForEach(bool wantCoordinates)
-  : m_pointIds(NULL)
-  , m_coords(NULL)
+  : m_pointIds(nullptr)
+  , m_coords(nullptr)
   , m_wantsCoordinates(wantCoordinates)
 {
 }

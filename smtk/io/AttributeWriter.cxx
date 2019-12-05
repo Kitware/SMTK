@@ -142,7 +142,7 @@ bool AttributeWriter::writeContents(const smtk::attribute::ResourcePtr resource,
 XmlStringWriter* AttributeWriter::newXmlStringWriter(
   const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger) const
 {
-  XmlStringWriter* writer = NULL;
+  XmlStringWriter* writer = nullptr;
   switch (m_fileVersion)
   {
     case 3:

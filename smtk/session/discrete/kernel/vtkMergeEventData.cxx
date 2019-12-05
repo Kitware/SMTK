@@ -18,18 +18,18 @@ vtkCxxSetObjectMacro(vtkMergeEventData, LowerDimensionalIds, vtkIdTypeArray);
 
 vtkMergeEventData::vtkMergeEventData()
 {
-  this->SourceEntity = NULL;
-  this->TargetEntity = NULL;
-  this->LowerDimensionalIds = NULL;
+  this->SourceEntity = nullptr;
+  this->TargetEntity = nullptr;
+  this->LowerDimensionalIds = nullptr;
 }
 
 vtkMergeEventData::~vtkMergeEventData()
 {
   // SourceEntity and TargetEntity don't strictly need to be set to NULL
   // now but that may change in the future
-  this->SetSourceEntity(0);
-  this->SetTargetEntity(0);
-  this->SetLowerDimensionalIds(0);
+  this->SetSourceEntity(nullptr);
+  this->SetTargetEntity(nullptr);
+  this->SetLowerDimensionalIds(nullptr);
 }
 
 void vtkMergeEventData::PrintSelf(ostream& os, vtkIndent indent)

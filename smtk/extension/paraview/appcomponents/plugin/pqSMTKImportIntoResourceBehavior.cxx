@@ -69,7 +69,8 @@ void pqImportIntoResourceReaction::updateEnableState()
   pqActiveObjects& activeObjects = pqActiveObjects::instance();
 
   // TODO: also is there's a pending accept.
-  bool enable_state = activeObjects.activeServer() != NULL && activeObjects.activeSource() != NULL;
+  bool enable_state =
+    activeObjects.activeServer() != nullptr && activeObjects.activeSource() != nullptr;
   if (enable_state == false)
   {
     return;
@@ -162,7 +163,7 @@ QAction* findSaveAction(QMenu* menu)
       return action;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 QAction* findHelpMenuAction(QMenuBar* menubar)
@@ -177,7 +178,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
       return existingMenuAction;
     }
   }
-  return NULL;
+  return nullptr;
 }
 }
 
@@ -199,7 +200,7 @@ pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* pare
 
       QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
-      QMenu* menu = NULL;
+      QMenu* menu = nullptr;
       foreach (QAction* existingMenuAction, menuBarActions)
       {
         QString menuName = existingMenuAction->text();

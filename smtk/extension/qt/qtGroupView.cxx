@@ -320,7 +320,7 @@ qtBaseView* qtGroupView::getChildView(int pageIndex)
   {
     return this->Internals->m_TabbedViews.value(pageIndex);
   }
-  return NULL;
+  return nullptr;
 }
 
 void qtGroupView::addChildView(qtBaseView* child)

@@ -245,7 +245,7 @@ qtBaseView* qtSelectorView::getChildView(int pageIndex)
   {
     return this->Internals->ChildViews.value(pageIndex);
   }
-  return NULL;
+  return nullptr;
 }
 
 void qtSelectorView::addChildView(qtBaseView* child, int viewEnumIndex)

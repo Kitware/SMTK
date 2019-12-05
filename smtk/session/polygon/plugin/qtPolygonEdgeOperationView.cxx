@@ -95,7 +95,7 @@ public:
       }
       return attInstance;
     }
-    return NULL;
+    return nullptr;
   }
 
   QPointer<pqArcWidgetManager> ArcManager;

@@ -91,7 +91,7 @@ struct cmbFaceMesherInterface::TriangleInput
 
 cmbFaceMesherInterface::cmbFaceMesherInterface(const int& numPoints, const int& numSegments,
   const int& numHoles, const int& numRegions, const bool& preserveEdgesAndNodes)
-  : OutputMesh(NULL)
+  : OutputMesh(nullptr)
   , MinAngleOn(false)
   , MaxAreaOn(false)
   , MaxArea(-1)
@@ -112,7 +112,7 @@ cmbFaceMesherInterface::cmbFaceMesherInterface(const int& numPoints, const int& 
 cmbFaceMesherInterface::~cmbFaceMesherInterface()
 {
   delete this->Ti;
-  this->OutputMesh = NULL;
+  this->OutputMesh = nullptr;
 }
 
 void cmbFaceMesherInterface::InitDataStructures()
@@ -356,7 +356,7 @@ bool cmbFaceMesherInterface::unPackData(
     AllocFromStream(buffer, out.triangleAttribute, numTriangles);
   }
 
-  vtkIdTypeArray* elementIds = NULL;
+  vtkIdTypeArray* elementIds = nullptr;
   vtkIdType element_insert_loc = 0;
   //setup the nodes if requested
   if (this->PreserveEdgesAndNodes)

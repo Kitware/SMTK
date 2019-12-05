@@ -913,7 +913,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
     topBlocks[bb]->SetNumberOfBlocks(nlb);
     if (nlb == 0)
     {
-      mbds->SetBlock(bb, NULL);
+      mbds->SetBlock(bb, nullptr);
     }
     for (int lb = 0; lb < nlb; ++lb)
     {

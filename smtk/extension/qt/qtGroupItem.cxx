@@ -371,7 +371,7 @@ void qtGroupItem::onRemoveSubGroup()
   // explicitly since minusButton could be NULL in MinusButtonIndices
   foreach (QToolButton* tb, this->Internals->MinusButtonIndices)
   {
-    rowIdx = tb != NULL ? rowIdx + 1 : rowIdx;
+    rowIdx = tb != nullptr ? rowIdx + 1 : rowIdx;
     if (tb == minusButton)
     {
       rmIdx = rowIdx;
@@ -475,7 +475,7 @@ void qtGroupItem::addItemsToTable(int index)
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
     }
   }
-  QToolButton* minusButton = NULL;
+  QToolButton* minusButton = nullptr;
   // if there are items
   if (added > 0)
   {

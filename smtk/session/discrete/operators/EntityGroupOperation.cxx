@@ -81,11 +81,11 @@ bool EntityGroupOperation::ableToOperate()
   }
   if (optype == "Remove")
   {
-    able2Op = this->fetchCMBCell(resource, "remove cell group") != NULL;
+    able2Op = this->fetchCMBCell(resource, "remove cell group") != nullptr;
   }
   else if (optype == "Modify")
   {
-    able2Op = this->fetchCMBCell(resource, "modify cell group") != NULL &&
+    able2Op = this->fetchCMBCell(resource, "modify cell group") != nullptr &&
       (this->fetchCMBCell(resource, "cell to add") ||
                 this->fetchCMBCell(resource, "cell to remove"));
   }

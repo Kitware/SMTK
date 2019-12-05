@@ -25,7 +25,7 @@ namespace
 class TimeZoneRegionProxyModel : public QSortFilterProxyModel
 {
 public:
-  TimeZoneRegionProxyModel(QObject* parent = NULL)
+  TimeZoneRegionProxyModel(QObject* parent = nullptr)
     : QSortFilterProxyModel(parent)
   {
   }

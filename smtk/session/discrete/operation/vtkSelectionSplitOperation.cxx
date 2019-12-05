@@ -43,7 +43,7 @@ void vtkSelectionSplitOperation::Operate(
   vtkDiscreteModelWrapper* modelWrapper, vtkSelectionAlgorithm* selectionSource)
 {
   this->OperateSucceeded = 0;
-  if (this->AbleToOperate(modelWrapper) == 0 || selectionSource == NULL)
+  if (this->AbleToOperate(modelWrapper) == 0 || selectionSource == nullptr)
   {
     return;
   }
@@ -54,7 +54,7 @@ void vtkSelectionSplitOperation::Operate(
 void vtkSelectionSplitOperation::Operate(
   vtkDiscreteModelWrapper* modelWrapper, vtkSelection* selection)
 {
-  if (selection == NULL)
+  if (selection == nullptr)
   {
     return;
   }

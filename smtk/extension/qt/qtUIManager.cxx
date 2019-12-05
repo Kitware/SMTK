@@ -214,7 +214,7 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   if (m_topView)
   {
     delete m_topView;
-    m_topView = NULL;
+    m_topView = nullptr;
   }
 
   if (!m_smtkView)
@@ -258,7 +258,7 @@ void qtUIManager::initializeUI(
   if (m_topView)
   {
     delete m_topView;
-    m_topView = NULL;
+    m_topView = nullptr;
   }
 
   if (!m_smtkView)
@@ -601,7 +601,7 @@ void qtUIManager::clearRoot()
   if (m_topView)
   {
     delete m_topView;
-    m_topView = NULL;
+    m_topView = nullptr;
   }
 }
 

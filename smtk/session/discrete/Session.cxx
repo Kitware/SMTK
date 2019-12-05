@@ -189,7 +189,7 @@ Session::~Session()
       ++mbit;
     }
   }
-  m_itemWatcher->session = NULL;
+  m_itemWatcher->session = nullptr;
   m_itemWatcher->Delete();
 }
 
@@ -259,10 +259,10 @@ vtkUnsignedIntArray* Session::retrieveUUIDs(
 {
   std::map<vtkDiscreteModel*, WeakPtr>::iterator sessionIt = m_modelsToSessions.find(model);
   if (sessionIt == m_modelsToSessions.end())
-    return NULL;
+    return nullptr;
   Ptr session = sessionIt->second.lock();
   if (!session)
-    return NULL;
+    return nullptr;
 
   vtkUnsignedIntArray* vuid = vtkUnsignedIntArray::New();
   vuid->SetNumberOfComponents(static_cast<int>(smtk::common::UUID::size() / sizeof(unsigned int)));
@@ -326,7 +326,7 @@ vtkDiscreteModelWrapper* Session::findModelEntity(const smtk::common::UUID& uid)
   std::map<smtk::common::UUID, vtkSmartPointer<vtkDiscreteModelWrapper> >::const_iterator it;
   if ((it = m_modelIdsToRefs.find(uid)) != m_modelIdsToRefs.end())
     return it->second.GetPointer();
-  return NULL;
+  return nullptr;
 }
 
 std::string Session::defaultFileExtension(const smtk::model::Model& model) const
@@ -355,7 +355,7 @@ EntityPtr Session::addEntityRecord(const smtk::model::EntityRef& entRef)
       smtkErrorMacro(this->log(), "Entity " << entRef.entity() << " " << entRef.name()
                                             << " has no matching CMB model item");
     }
-    return NULL;
+    return nullptr;
   }
 
   vtkModel* modelEntity = dynamic_cast<vtkModel*>(ent);
@@ -1198,12 +1198,12 @@ smtk::common::UUID Session::findOrSetEntityUUID(vtkInformation* mp)
 vtkModelItem* Session::entityForUUID(const smtk::common::UUID& uid)
 {
   if (uid.isNull())
-    return NULL;
+    return nullptr;
 
   std::map<smtk::common::UUID, vtkWeakPointer<vtkModelItem> >::const_iterator iref =
     m_itemsToRefs.find(uid);
   if (iref == m_itemsToRefs.end())
-    return NULL;
+    return nullptr;
 
   return iref->second;
 }
@@ -1827,7 +1827,7 @@ smtk::model::EdgeUse Session::addEdgeUseToResource(const smtk::common::UUID& uid
   if (relDepth >= 0)
   {
     smtk::model::Edge matchingEdge(resource, this->findOrSetEntityUUID(coEdge->GetModelEdge()));
-    if (resource->findEntity(matchingEdge.entity(), false) == NULL)
+    if (resource->findEntity(matchingEdge.entity(), false) == nullptr)
     { // Force the addition of the parent edge to the model.
       this->addEdgeToResource(matchingEdge.entity(), coEdge->GetModelEdge(), resource, 0);
     }
@@ -1911,7 +1911,7 @@ static vtkModelFaceUse* locateLoopInFace(
         if (other == refLoop)
         { // Found our loop, prepare output variables/return value:
           vtkModelLoopUse* outerLoop = refFaceUse->GetOuterLoopUse();
-          refLoopParent = (other == outerLoop) ? NULL : outerLoop;
+          refLoopParent = (other == outerLoop) ? nullptr : outerLoop;
           faceUseOrientation = i;
           loopUseIt->Delete();
           return refFaceUse;
@@ -1921,7 +1921,7 @@ static vtkModelFaceUse* locateLoopInFace(
     loopUseIt->Delete();
   }
   // If we still haven't found the loop in its own face, then insanity prevails!
-  return NULL;
+  return nullptr;
 }
 
 /// Given a CMB \a loop tagged with \a uid, create a record in \a resource for it.
@@ -1938,7 +1938,7 @@ smtk::model::Loop Session::addLoopToResource(const smtk::common::UUID& uid,
     this->addFaceToResource(fid, refFace, resource, relDepth - 1);
     // Find the face *use* this loop belongs to and transcribe it.
     // Note that loop may be the child of a face use OR another loop (which we must then transcribe).
-    vtkModelLoopUse* refLoopParent = NULL;
+    vtkModelLoopUse* refLoopParent = nullptr;
     int faceUseOrientation = -1;
     vtkModelFaceUse* refFaceUse = locateLoopInFace(refLoop, faceUseOrientation, refLoopParent);
     if (!refFaceUse || faceUseOrientation < 0)

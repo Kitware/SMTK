@@ -35,7 +35,7 @@ qtItem::qtItem(const qtAttributeItemInfo& info)
   : m_itemInfo(info)
 {
   this->Internals = new qtItemInternals();
-  this->m_widget = NULL;
+  this->m_widget = nullptr;
   this->m_isLeafItem = false;
   m_useSelectionManager = false;
   m_readOnly = m_itemInfo.component().attributeAsBool("ReadOnly");

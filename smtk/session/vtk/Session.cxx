@@ -95,8 +95,8 @@ std::string EntityTypeNameString(EntityType etype)
 /// Construct an invalid handle.
 EntityHandle::EntityHandle()
   : m_modelNumber(-1)
-  , m_object(NULL)
-  , m_session(NULL)
+  , m_object(nullptr)
+  , m_session(nullptr)
 {
 }
 
@@ -661,7 +661,7 @@ size_t Session::numberOfModels() const
 /// Return the model owning the given handle, \a h.
 vtkDataObject* Session::modelOfHandle(const EntityHandle& h) const
 {
-  return (h.isValid() ? this->m_models[h.modelNumber()] : NULL);
+  return (h.isValid() ? this->m_models[h.modelNumber()] : nullptr);
 }
 
 /// Return the parent dataset of \a obj.
@@ -669,7 +669,7 @@ vtkDataObject* Session::parent(vtkDataObject* obj) const
 {
   ChildParentMap_t::const_iterator it = this->m_cpMap.find(obj);
   if (it == this->m_cpMap.end())
-    return NULL;
+    return nullptr;
 
   return it->second.first;
 }

@@ -43,16 +43,16 @@ vtkStandardNewMacro(vtkMergeDuplicateCells);
 
 vtkMergeDuplicateCells::vtkMergeDuplicateCells()
 {
-  this->ModelFaceArrayName = 0;
+  this->ModelFaceArrayName = nullptr;
   this->PassThroughPointIds = 1;
-  this->ModelRegionArrayName = 0;
+  this->ModelRegionArrayName = nullptr;
   this->Internal = new vtkInternal();
 }
 
 vtkMergeDuplicateCells::~vtkMergeDuplicateCells()
 {
-  this->SetModelFaceArrayName(0);
-  this->SetModelRegionArrayName(0);
+  this->SetModelFaceArrayName(nullptr);
+  this->SetModelRegionArrayName(nullptr);
   delete this->Internal;
 }
 
@@ -94,7 +94,7 @@ int vtkMergeDuplicateCells::RequestData(vtkInformation* /*request*/,
     return 0;
   }
 
-  vtkIntArray* RegionArray = 0;
+  vtkIntArray* RegionArray = nullptr;
   if (!this->ModelRegionArrayName)
   {
     vtkErrorMacro("Did not specify ModelRegionArrayName.");
@@ -104,7 +104,7 @@ int vtkMergeDuplicateCells::RequestData(vtkInformation* /*request*/,
   {
     RegionArray =
       vtkIntArray::SafeDownCast(input->GetCellData()->GetArray(this->ModelRegionArrayName));
-    if (RegionArray == 0)
+    if (RegionArray == nullptr)
     {
       vtkErrorMacro("Could not find region array.");
       return 0;

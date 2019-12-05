@@ -37,7 +37,7 @@ vtkModelEntityOperationBase::vtkModelEntityOperationBase()
     this->RepresentationRGBA[i] = -10.0;
   }
   this->IsRepresentationRGBASet = 0;
-  this->UserName = 0;
+  this->UserName = nullptr;
   this->IsPickableSet = 0;
   this->Pickable = -1;
   this->IsShowTextureSet = 0;
@@ -46,7 +46,7 @@ vtkModelEntityOperationBase::vtkModelEntityOperationBase()
 
 vtkModelEntityOperationBase::~vtkModelEntityOperationBase()
 {
-  this->SetUserName(0);
+  this->SetUserName(nullptr);
 }
 
 void vtkModelEntityOperationBase::SetId(vtkIdType id)
@@ -139,7 +139,7 @@ vtkModelEntity* vtkModelEntityOperationBase::GetModelEntity(vtkDiscreteModel* Mo
 {
   if (!Model || !this->GetIsIdSet())
   {
-    return 0;
+    return nullptr;
   }
   if (this->GetIsItemTypeSet())
   {
@@ -149,7 +149,7 @@ vtkModelEntity* vtkModelEntityOperationBase::GetModelEntity(vtkDiscreteModel* Mo
   {
     return Model->GetModelEntity(this->GetId());
   }
-  return 0;
+  return nullptr;
 }
 
 bool vtkModelEntityOperationBase::AbleToOperate(vtkDiscreteModel* Model)
@@ -166,7 +166,7 @@ bool vtkModelEntityOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   }
 
   if (!this->GetIsVisibilitySet() && !this->GetIsRGBASet() && !this->GetIsRepresentationRGBASet() &&
-    !this->GetIsPickableSet() && this->GetUserName() == 0 && !this->GetIsShowTextureSet())
+    !this->GetIsPickableSet() && this->GetUserName() == nullptr && !this->GetIsShowTextureSet())
   {
     vtkWarningMacro("Did not set the visibility, user name or RGBA values.");
     return 0;

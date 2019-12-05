@@ -669,7 +669,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
 
   std::map<internal::Point, std::set<smtk::model::EntityRef> > endpoints;
   std::list<internal::Segment> segs;
-  internal::pmodel* pp = NULL;
+  internal::pmodel* pp = nullptr;
   internal::pmodel* mod;
   std::map<size_t, smtk::model::Edge> lkup;
   std::map<smtk::model::Edge, std::pair<size_t, size_t> > revlkup;

@@ -24,8 +24,8 @@ bool IsSingleFaceModelValid(vtkDiscreteModel* model, int numberOfEdges, int* edg
 int main()
 {
   vtkDiscreteModel* model = vtkDiscreteModel::New();
-  vtkModelEdge* SingleEdgeModelEdge = model->BuildModelEdge(0, 0);
-  vtkModelEdge* Edges[3] = { SingleEdgeModelEdge, NULL, NULL };
+  vtkModelEdge* SingleEdgeModelEdge = model->BuildModelEdge(nullptr, nullptr);
+  vtkModelEdge* Edges[3] = { SingleEdgeModelEdge, nullptr, nullptr };
   int edgeDirections[3] = { 1, 0, 0 };
   /*vtkModelFace* SingleEdgeModelFace = */ model->BuildModelFace(1, Edges, edgeDirections);
   bool Status = !IsSingleFaceModelValid(model, 1, edgeDirections);

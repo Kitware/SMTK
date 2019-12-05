@@ -182,7 +182,7 @@ void qtAttributeDisplay::enableShowBy(int enable)
 
 smtk::attribute::ItemPtr qtAttributeDisplay::getAttributeItemFromItem(QTableWidgetItem* item)
 {
-  Item* rawPtr = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : NULL;
+  Item* rawPtr = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::ItemPtr();
 }
 
@@ -324,7 +324,7 @@ void qtAttributeDisplay::onFieldSelected()
   if (!rawPtr)
     return;
 
-  Item* irawPtr = NULL;
+  Item* irawPtr = nullptr;
   int selrow = this->Internals->SelectPropCombo->currentIndex();
   if (selrow >= 0)
   {

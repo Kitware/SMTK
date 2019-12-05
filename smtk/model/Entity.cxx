@@ -695,7 +695,7 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
   {
     return -1;
   }
-  IntegerList::value_type* ptr = NULL;
+  IntegerList::value_type* ptr = nullptr;
   switch (flags & ENTITY_MASK)
   {
     case CELL_ENTITY:
@@ -703,22 +703,22 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       switch (flags & ANY_DIMENSION)
       {
         case DIMENSION_0:
-          ptr = !counters.empty() ? &counters[0] : NULL;
+          ptr = !counters.empty() ? &counters[0] : nullptr;
           break;
         case DIMENSION_1:
-          ptr = counters.size() > 1 ? &counters[1] : NULL;
+          ptr = counters.size() > 1 ? &counters[1] : nullptr;
           break;
         case DIMENSION_2:
-          ptr = counters.size() > 2 ? &counters[2] : NULL;
+          ptr = counters.size() > 2 ? &counters[2] : nullptr;
           break;
         case DIMENSION_3:
-          ptr = counters.size() > 3 ? &counters[3] : NULL;
+          ptr = counters.size() > 3 ? &counters[3] : nullptr;
           break;
         case DIMENSION_4:
-          ptr = counters.size() > 4 ? &counters[4] : NULL;
+          ptr = counters.size() > 4 ? &counters[4] : nullptr;
           break;
         default:
-          ptr = counters.size() > 5 ? &counters[5] : NULL;
+          ptr = counters.size() > 5 ? &counters[5] : nullptr;
           break;
       }
       break;
@@ -726,46 +726,46 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       switch (flags & ANY_DIMENSION)
       {
         case DIMENSION_0 | DIMENSION_1:
-          ptr = !counters.empty() ? &counters[0] : NULL;
+          ptr = !counters.empty() ? &counters[0] : nullptr;
           break;
         case DIMENSION_1 | DIMENSION_2:
-          ptr = counters.size() > 1 ? &counters[1] : NULL;
+          ptr = counters.size() > 1 ? &counters[1] : nullptr;
           break;
         case DIMENSION_2 | DIMENSION_3:
-          ptr = counters.size() > 2 ? &counters[2] : NULL;
+          ptr = counters.size() > 2 ? &counters[2] : nullptr;
           break;
         case DIMENSION_3 | DIMENSION_4:
-          ptr = counters.size() > 3 ? &counters[3] : NULL;
+          ptr = counters.size() > 3 ? &counters[3] : nullptr;
           break;
         case 0:
-          ptr = counters.size() > 4 ? &counters[4] : NULL;
+          ptr = counters.size() > 4 ? &counters[4] : nullptr;
           break;
         default:
-          ptr = counters.size() > 5 ? &counters[5] : NULL;
+          ptr = counters.size() > 5 ? &counters[5] : nullptr;
       }
       break;
     case GROUP_ENTITY:
       if ((((flags & MODEL_BOUNDARY) != 0) ^ ((flags & MODEL_DOMAIN) != 0)) == 0)
       {
-        ptr = !counters.empty() ? &counters[0] : NULL;
+        ptr = !counters.empty() ? &counters[0] : nullptr;
       }
       else if (flags & MODEL_DOMAIN)
       {
-        ptr = counters.size() > 1 ? &counters[1] : NULL;
+        ptr = counters.size() > 1 ? &counters[1] : nullptr;
       }
       else // if (flags & MODEL_BOUNDARY)
       {
-        ptr = counters.size() > 2 ? &counters[2] : NULL;
+        ptr = counters.size() > 2 ? &counters[2] : nullptr;
       }
       break;
     case MODEL_ENTITY:
-      ptr = !counters.empty() ? &counters[0] : NULL;
+      ptr = !counters.empty() ? &counters[0] : nullptr;
       break;
     case INSTANCE_ENTITY:
     case SESSION:
     case AUX_GEOM_ENTITY:
     default:
-      ptr = !counters.empty() ? &counters[0] : NULL;
+      ptr = !counters.empty() ? &counters[0] : nullptr;
       break;
   }
   if (!ptr)

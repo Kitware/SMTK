@@ -35,8 +35,8 @@ vtkStandardNewMacro(vtkCompleteShells);
 
 vtkCompleteShells::vtkCompleteShells()
 {
-  this->ModelFaceArrayName = 0;
-  this->ModelRegionArrayName = 0;
+  this->ModelFaceArrayName = nullptr;
+  this->ModelRegionArrayName = nullptr;
   this->DetectAndFixSubmergedSolids = true;
   this->MinimumSubmergedVoteCountToAvoidWarning = 6;
   this->Internals = new vtkCompleteShellsInternals;
@@ -44,8 +44,8 @@ vtkCompleteShells::vtkCompleteShells()
 
 vtkCompleteShells::~vtkCompleteShells()
 {
-  this->SetModelFaceArrayName(0);
-  this->SetModelRegionArrayName(0);
+  this->SetModelFaceArrayName(nullptr);
+  this->SetModelRegionArrayName(nullptr);
   delete this->Internals;
 }
 
@@ -69,7 +69,7 @@ int vtkCompleteShells::RequestData(vtkInformation* /*request*/, vtkInformationVe
   vtkIntArray* regionArray = vtkIntArray::SafeDownCast(input->GetCellData()->GetArray(
     this->ModelRegionArrayName ? this->ModelRegionArrayName
                                : ModelParserHelper::GetShellTagName()));
-  if (regionArray == 0)
+  if (regionArray == nullptr)
   {
     vtkErrorMacro("Could not find region array.");
     return 0;

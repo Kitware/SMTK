@@ -35,13 +35,13 @@ vtkLIDARElevationFilter::vtkLIDARElevationFilter()
 
   this->ScalarRange[0] = 0.0;
   this->ScalarRange[1] = 1.0;
-  this->Transform = 0;
+  this->Transform = nullptr;
   this->CreateElevation = true;
 }
 
 vtkLIDARElevationFilter::~vtkLIDARElevationFilter()
 {
-  this->SetTransform(static_cast<vtkTransform*>(0));
+  this->SetTransform(static_cast<vtkTransform*>(nullptr));
 }
 
 void vtkLIDARElevationFilter::PrintSelf(ostream& os, vtkIndent indent)

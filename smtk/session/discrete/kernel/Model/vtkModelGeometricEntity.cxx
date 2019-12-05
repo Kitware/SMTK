@@ -29,7 +29,7 @@ vtkModelGeometricEntity::vtkModelGeometricEntity()
 vtkModelGeometricEntity::~vtkModelGeometricEntity()
 {
   // do we need to remove BoundaryRep from the informationobject?
-  this->SetDisplayProperty(0);
+  this->SetDisplayProperty(nullptr);
 }
 
 void vtkModelGeometricEntity::SetGeometry(vtkObject* geometry)

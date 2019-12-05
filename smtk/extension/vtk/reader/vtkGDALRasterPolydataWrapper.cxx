@@ -67,7 +67,7 @@ vtkGDALRasterPolydataWrapper::vtkGDALRasterPolydataWrapper()
   this->OnRatio = 239;
   this->LimitToMaxNumberOfPoints = false;
   Reader = vtkSmartPointer<vtkGDALRasterReader>::New();
-  this->Transform = 0;
+  this->Transform = nullptr;
   this->TransformOutputData = false;
   this->LimitReadToBounds = false;
   this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
@@ -75,8 +75,8 @@ vtkGDALRasterPolydataWrapper::vtkGDALRasterPolydataWrapper()
 
 vtkGDALRasterPolydataWrapper::~vtkGDALRasterPolydataWrapper()
 {
-  this->Reader->SetFileName(0);
-  this->SetTransform(static_cast<vtkTransform*>(0));
+  this->Reader->SetFileName(nullptr);
+  this->SetTransform(static_cast<vtkTransform*>(nullptr));
 }
 
 const char* vtkGDALRasterPolydataWrapper::GetProjectionString() const
@@ -145,7 +145,7 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
   vtkDataObject* vdo = this->Reader->GetOutputDataObject(0);
 
   vtkImageData* img = vtkImageData::SafeDownCast(vdo);
-  vtkUniformGrid* ugrid = NULL;
+  vtkUniformGrid* ugrid = nullptr;
   if (vdo->IsA("vtkUniformGrid"))
   {
     ugrid = vtkUniformGrid::SafeDownCast(img);
@@ -193,12 +193,13 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
   double tranpt[] = { 0, 0, 0 };
   double* cp = pt;
   double* ap = pt;
-  bool dotrans = this->Transform != NULL && (this->TransformOutputData || this->LimitReadToBounds);
+  bool dotrans =
+    this->Transform != nullptr && (this->TransformOutputData || this->LimitReadToBounds);
   if (dotrans)
   {
     cp = tranpt;
   }
-  if (this->Transform != NULL && this->TransformOutputData)
+  if (this->Transform != nullptr && this->TransformOutputData)
   {
     ap = tranpt;
   }
@@ -211,7 +212,7 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
     {
       xyz[1] = y - Origin[1];
       vtkIdType id = img->ComputeCellId(xyz);
-      if (ugrid == NULL || ugrid->IsCellVisible(id))
+      if (ugrid == nullptr || ugrid->IsCellVisible(id))
       {
         vtkCell* cell = img->GetCell(id);
         auto subId = cell->GetParametricCenter(pcoords);

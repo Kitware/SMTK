@@ -79,7 +79,7 @@ public:
       }
       return attInstance;
     }
-    return NULL;
+    return nullptr;
   }
 
   vtkSMProxy* createVTKContourOperation(vtkSMProxy* sourceProxy)
@@ -87,7 +87,7 @@ public:
     vtkSMProxy* smPolyEdgeOp = vtkSMProxyManager::GetProxyManager()->NewProxy(
       "polygon_operators", "PolygonContourOperation");
     if (!smPolyEdgeOp)
-      return NULL;
+      return nullptr;
     smPolyEdgeOp->UpdateVTKObjects();
     sourceProxy->UpdateVTKObjects();
 

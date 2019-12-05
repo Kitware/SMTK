@@ -272,7 +272,7 @@ int vtkSplitPlanarLines::RequestData(
   for (vtkIdType cellId = numVerts; cellId < firstPolyCell; ++cellId)
   {
     IntersectSegments(input, cellId, clocator.GetPointer(), hits, output, plocator.GetPointer(),
-      haveInputPedigree ? NULL : pedigreeIds.GetPointer());
+      haveInputPedigree ? nullptr : pedigreeIds.GetPointer());
   }
   // Only add cell pedigree Ids if the input had none.
   // If the input had them, then copying cell data to each

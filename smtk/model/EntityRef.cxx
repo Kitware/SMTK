@@ -456,7 +456,7 @@ void EntityRef::setColor(double red, double green, double blue, double alpha)
   */
 bool EntityRef::isValid() const
 {
-  return this->isValid(NULL);
+  return this->isValid(nullptr);
 }
 
 /**\brief Return whether the entityref is pointing to valid resource that contains the UUID of the entity.
@@ -493,7 +493,7 @@ bool EntityRef::checkForArrangements(ArrangementKind k, EntityPtr& entRec, Arran
   ResourcePtr rsrc = m_resource.lock();
   if (this->isValid(&entRec))
   {
-    arr = NULL;
+    arr = nullptr;
     if ((arr = rsrc->hasArrangementsOfKindForEntity(m_entity, k)) && !arr->empty())
     {
       return true;
@@ -814,7 +814,7 @@ const Tessellation* EntityRef::hasTessellation() const
       return this->as<Instance>().generateTessellation();
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 /**\brief Return the entity's analysis mesh if one exists or NULL otherwise.
@@ -829,7 +829,7 @@ const Tessellation* EntityRef::hasAnalysisMesh() const
     if (it != rsrc->analysisMesh().end())
       return &it->second;
   }
-  return NULL;
+  return nullptr;
 }
 
 /**\brief Return the entity's analysis mesh if one exists,
@@ -850,7 +850,7 @@ const Tessellation* EntityRef::gotMesh() const
     if (te != rsrc->tessellations().end())
       return &te->second;
   }
-  return NULL;
+  return nullptr;
 }
 
 /**\brief Set the tessellation of the entity, returning its

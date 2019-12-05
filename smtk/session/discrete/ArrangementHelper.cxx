@@ -214,7 +214,7 @@ T* EntityFromId(const smtk::common::UUID& entId, std::map<smtk::common::UUID, T*
 {
   typename std::map<smtk::common::UUID, T*>::const_iterator it = bck.find(entId);
   if (it == bck.end())
-    return NULL;
+    return nullptr;
   return it->second;
 }
 

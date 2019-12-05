@@ -3579,10 +3579,10 @@ void Resource::unobserve(ResourceEventType event, OneToManyCallback functionHand
 void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& src)
 {
   std::set<ConditionTrigger>::const_iterator begin = m_conditionTriggers.lower_bound(
-    ConditionTrigger(event, ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
+    ConditionTrigger(event, ConditionObserver(ConditionCallback(), static_cast<void*>(nullptr))));
   std::set<ConditionTrigger>::const_iterator end = m_conditionTriggers.upper_bound(ConditionTrigger(
     std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
-    ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
+    ConditionObserver(ConditionCallback(), static_cast<void*>(nullptr))));
   for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, it->second.second);
 }
@@ -3592,10 +3592,10 @@ void Resource::trigger(
   ResourceEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related)
 {
   std::set<OneToOneTrigger>::const_iterator begin = m_oneToOneTriggers.lower_bound(
-    OneToOneTrigger(event, OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
+    OneToOneTrigger(event, OneToOneObserver(OneToOneCallback(), static_cast<void*>(nullptr))));
   std::set<OneToOneTrigger>::const_iterator end = m_oneToOneTriggers.upper_bound(OneToOneTrigger(
     std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
-    OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
+    OneToOneObserver(OneToOneCallback(), static_cast<void*>(nullptr))));
   for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
@@ -3605,10 +3605,10 @@ void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& sr
   const smtk::model::EntityRefArray& related)
 {
   std::set<OneToManyTrigger>::const_iterator begin = m_oneToManyTriggers.lower_bound(
-    OneToManyTrigger(event, OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
+    OneToManyTrigger(event, OneToManyObserver(OneToManyCallback(), static_cast<void*>(nullptr))));
   std::set<OneToManyTrigger>::const_iterator end = m_oneToManyTriggers.upper_bound(OneToManyTrigger(
     std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
-    OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
+    OneToManyObserver(OneToManyCallback(), static_cast<void*>(nullptr))));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }

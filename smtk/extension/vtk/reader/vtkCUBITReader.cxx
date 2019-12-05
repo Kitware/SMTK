@@ -25,13 +25,13 @@ vtkStandardNewMacro(vtkCUBITReader);
 
 vtkCUBITReader::vtkCUBITReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
 }
 
 vtkCUBITReader::~vtkCUBITReader()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 int vtkCUBITReader::RequestData(vtkInformation* vtkNotUsed(request),

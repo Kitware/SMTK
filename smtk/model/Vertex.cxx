@@ -44,7 +44,7 @@ double* Vertex::coordinates() const
       }
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 /*

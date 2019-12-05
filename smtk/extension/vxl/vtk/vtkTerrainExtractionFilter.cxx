@@ -270,13 +270,13 @@ vtkTerrainExtractionInternal::vtkTerrainExtractionInternal()
   this->OutPoints = vtkSmartPointer<vtkPoints>::New();
   this->OutScales = vtkSmartPointer<vtkDoubleArray>::New();
   this->OutScales->SetName("Scale");
-  this->Refine = 0;
-  this->OutputSplitCount = 0;
-  this->LevelScales = 0;
-  this->OutputFileNameBase = 0;
-  this->RGBScalars = 0;
-  this->IntensityArray = 0;
-  this->PointLocator = 0;
+  this->Refine = nullptr;
+  this->OutputSplitCount = nullptr;
+  this->LevelScales = nullptr;
+  this->OutputFileNameBase = nullptr;
+  this->RGBScalars = nullptr;
+  this->IntensityArray = nullptr;
+  this->PointLocator = nullptr;
 }
 
 vtkTerrainExtractionInternal::~vtkTerrainExtractionInternal()
@@ -322,9 +322,9 @@ vtkTerrainExtractionFilter::vtkTerrainExtractionFilter()
 
   this->ExecuteMode = VTK_MODE_REFINE;
   this->OutputPtsFormat = VTK_OUTPUT_TYPE_XML_PD;
-  this->OutputPath = 0;
-  this->IntermediateResultsPath = 0;
-  this->OutputBaseFileName = 0;
+  this->OutputPath = nullptr;
+  this->IntermediateResultsPath = nullptr;
+  this->OutputBaseFileName = nullptr;
   this->SetOutputBaseFileName("TerrainExtract");
   this->NumberOfLevels = 0;
   this->CacheRefineResultsToDisk = false;
@@ -339,8 +339,8 @@ vtkTerrainExtractionFilter::vtkTerrainExtractionFilter()
 
 vtkTerrainExtractionFilter::~vtkTerrainExtractionFilter()
 {
-  this->SetOutputPath(0);
-  this->SetOutputBaseFileName(0);
+  this->SetOutputPath(nullptr);
+  this->SetOutputBaseFileName(nullptr);
   delete this->Internal;
 }
 
@@ -464,13 +464,14 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
     // (if the info exists on the input); note, however, that may not end up using
     // if the user does not have DetermineIntensityAndColor == true
     vtkDataArray* scalars =
-      input->GetPointData() ? input->GetPointData()->GetScalars("Color") : NULL;
+      input->GetPointData() ? input->GetPointData()->GetScalars("Color") : nullptr;
 
-    this->Internal->InputRGBScalars = scalars ? vtkUnsignedCharArray::SafeDownCast(scalars) : NULL;
+    this->Internal->InputRGBScalars =
+      scalars ? vtkUnsignedCharArray::SafeDownCast(scalars) : nullptr;
 
     this->Internal->InputIntensityArray = input->GetPointData()
       ? vtkFloatArray::SafeDownCast(input->GetPointData()->GetArray("Intensity"))
-      : NULL;
+      : nullptr;
 
     if (this->Internal->InputRGBScalars)
     {
@@ -485,7 +486,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
     else if (this->Internal->RGBScalars)
     {
       this->Internal->RGBScalars->Delete();
-      this->Internal->RGBScalars = 0;
+      this->Internal->RGBScalars = nullptr;
     }
     if (this->Internal->InputIntensityArray)
     {
@@ -499,7 +500,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
     else if (this->Internal->IntensityArray)
     {
       this->Internal->IntensityArray->Delete();
-      this->Internal->IntensityArray = 0;
+      this->Internal->IntensityArray = nullptr;
     }
     // let's just be sure that we have no PointLocator unless we
     // specifically create one because the input has either
@@ -507,7 +508,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
     if (this->Internal->PointLocator)
     {
       this->Internal->PointLocator->Delete();
-      this->Internal->PointLocator = 0;
+      this->Internal->PointLocator = nullptr;
     }
     if (this->Internal->IntensityArray || this->Internal->RGBScalars)
     {
@@ -558,17 +559,17 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
       if (this->Internal->PointLocator)
       {
         this->Internal->PointLocator->Delete();
-        this->Internal->PointLocator = 0;
+        this->Internal->PointLocator = nullptr;
       }
       if (this->Internal->IntensityArray)
       {
         this->Internal->IntensityArray->Delete();
-        this->Internal->IntensityArray = 0;
+        this->Internal->IntensityArray = nullptr;
       }
       if (this->Internal->RGBScalars)
       {
         this->Internal->RGBScalars->Delete();
-        this->Internal->RGBScalars = 0;
+        this->Internal->RGBScalars = nullptr;
       }
     }
     else if (this->Internal->PointLocator)
@@ -578,7 +579,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
 
     /*bool abort = */ this->TerrainExtract(baseIntermediateFileName.c_str(), output);
     delete this->Internal->Refine;
-    this->Internal->Refine = 0;
+    this->Internal->Refine = nullptr;
 
     this->Internal->DeleteTemporaryFiles();
     this->AppendOutputs();
@@ -586,9 +587,9 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
     delete[] this->Internal->OutputSplitCount;
     delete[] this->Internal->OutputFileNameBase;
     delete[] this->Internal->LevelScales;
-    this->Internal->OutputSplitCount = 0;
-    this->Internal->OutputFileNameBase = 0;
-    this->Internal->LevelScales = 0;
+    this->Internal->OutputSplitCount = nullptr;
+    this->Internal->OutputFileNameBase = nullptr;
+    this->Internal->LevelScales = nullptr;
   }
 
   return 1;
@@ -771,7 +772,7 @@ void vtkTerrainExtractionFilter::TokenRefineAnalyze(
       {
         this->Internal->DeleteTemporaryFiles();
         delete this->Internal->Refine;
-        this->Internal->Refine = 0;
+        this->Internal->Refine = nullptr;
         return;
       }
     }
@@ -844,7 +845,7 @@ vtkPolyData* vtkTerrainExtractionInternal::Visualize(std::string& outFileName, i
   {
     this->WritePoints(outFileName, outputPtsFormat, outPD);
     outPD->Delete();
-    return 0;
+    return nullptr;
   }
 
   return outPD;
@@ -966,7 +967,7 @@ bool vtkTerrainExtractionInternal::TerrainExtractSubLevel(
     levelBlock->Terrain.resize(levelBlock->Ni * levelBlock->Nj);
 
     // get the tokens for this scale
-    this->Refine->get_tokens(extractLevel, 0, this->Tokens);
+    this->Refine->get_tokens(extractLevel, nullptr, this->Tokens);
 
     // DO THE WORK
     //push this all into threaded routine
@@ -1034,7 +1035,7 @@ bool vtkTerrainExtractionInternal::TerrainExtractSubLevel(
 
       // delete the "tree" as we process the leaves
       delete levelBlock;
-      prevLevelBlock->SubBlock[i] = 0;
+      prevLevelBlock->SubBlock[i] = nullptr;
     }
   }
   return abort;
@@ -1189,7 +1190,7 @@ bool vtkTerrainExtractionFilter::TerrainExtract(
   // released in ExtractNextLevel)
 
   // call recursive function which processes a current level
-  return this->Internal->TerrainExtractSubLevel(0, this->MaxExtractLevel);
+  return this->Internal->TerrainExtractSubLevel(nullptr, this->MaxExtractLevel);
 }
 
 int vtkTerrainExtractionFilter::DetermineStartingSplitLevel(unsigned int maxMemoryMB)
@@ -1319,7 +1320,7 @@ vtkPolyData* vtkTerrainExtractionInternal::ExtractSave(TerrainLevelBlock* levelB
 
   this->WritePoints(levelFileName, this->Main->GetOutputPtsFormat(), polyData);
   polyData->Delete();
-  return 0;
+  return nullptr;
   //  return polyData;
 }
 
@@ -1516,7 +1517,7 @@ void vtkTerrainExtractionInternal::Extract2D(TerrainLevelBlock* levelBlock,
       }
       else
       {
-        userData.RGBScalars[i] = 0;
+        userData.RGBScalars[i] = nullptr;
       }
       if (this->IntensityArray)
       {
@@ -1524,7 +1525,7 @@ void vtkTerrainExtractionInternal::Extract2D(TerrainLevelBlock* levelBlock,
       }
       else
       {
-        userData.IntensityArray[i] = 0;
+        userData.IntensityArray[i] = nullptr;
       }
     }
   }

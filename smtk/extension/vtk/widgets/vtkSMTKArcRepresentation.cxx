@@ -246,7 +246,7 @@ void vtkSMTKArcRepresentation::StartWidgetInteraction(double startEventPos[2])
     {
       this->SetCurrentOperationToInactive();
     }
-    PointSelectCallBack->Execute(NULL, this->ActiveNode, NULL);
+    PointSelectCallBack->Execute(nullptr, this->ActiveNode, nullptr);
   }
   else
   {

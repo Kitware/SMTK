@@ -39,10 +39,10 @@ pqArcWidgetManager::pqArcWidgetManager(pqServer* server, pqRenderView* view)
   //server and view need to be set before we call createContourWidget
   this->Server = server;
   this->View = view;
-  this->ArcWidget = NULL;
+  this->ArcWidget = nullptr;
 
-  this->EditWidget = NULL;
-  this->ActiveWidget = NULL;
+  this->EditWidget = nullptr;
+  this->ActiveWidget = nullptr;
   this->EnableWidgetApplyButton = true;
 }
 
@@ -53,8 +53,8 @@ pqArcWidgetManager::~pqArcWidgetManager()
 
 void pqArcWidgetManager::reset()
 {
-  this->Server = NULL;
-  this->setActiveArc(NULL);
+  this->Server = nullptr;
+  this->setActiveArc(nullptr);
   if (this->ArcWidget)
   {
     //if a widget is deleted without having an active view it throws errors
@@ -65,13 +65,13 @@ void pqArcWidgetManager::reset()
 
     delete this->ArcWidget;
   }
-  this->ArcWidget = NULL;
+  this->ArcWidget = nullptr;
   if (this->EditWidget)
   {
     delete this->EditWidget;
   }
-  this->EditWidget = NULL;
-  this->View = NULL;
+  this->EditWidget = nullptr;
+  this->View = nullptr;
 }
 
 pqPolygonArc* pqArcWidgetManager::activeArc()
@@ -94,7 +94,7 @@ int pqArcWidgetManager::create()
   {
     this->EditWidget->hideArcWidget();
     this->EditWidget->hide();
-    this->ActiveWidget = NULL;
+    this->ActiveWidget = nullptr;
   }
 
   emit this->Busy();
@@ -172,9 +172,9 @@ void pqArcWidgetManager::cancelOperation(const smtk::operation::OperationPtr& op
   }
 
   delete this->ArcWidget;
-  this->ActiveWidget = NULL;
+  this->ActiveWidget = nullptr;
   delete this->EditWidget;
-  this->EditWidget = NULL;
+  this->EditWidget = nullptr;
   emit this->operationCancelled();
 }
 
@@ -211,7 +211,7 @@ void pqArcWidgetManager::createEdge()
 
   //update the object
   this->disableArcWidget();
-  this->ActiveWidget = NULL;
+  this->ActiveWidget = nullptr;
 
   emit this->Ready();
   emit this->operationDone();
@@ -219,7 +219,7 @@ void pqArcWidgetManager::createEdge()
 
 void pqArcWidgetManager::editingFinished()
 {
-  this->ActiveWidget = NULL;
+  this->ActiveWidget = nullptr;
   emit this->Ready();
   emit this->operationDone();
 }

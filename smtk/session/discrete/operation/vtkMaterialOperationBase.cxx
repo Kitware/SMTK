@@ -37,17 +37,17 @@ vtkMaterialOperationBase::~vtkMaterialOperationBase()
   if (this->GeometricEntitiesToAdd)
   {
     this->GeometricEntitiesToAdd->Delete();
-    this->GeometricEntitiesToAdd = 0;
+    this->GeometricEntitiesToAdd = nullptr;
   }
   if (this->GeometricEntitiesToRemove)
   {
     this->GeometricEntitiesToRemove->Delete();
-    this->GeometricEntitiesToRemove = 0;
+    this->GeometricEntitiesToRemove = nullptr;
   }
   if (this->PreviousMaterialsOfGeometricEntities)
   {
     this->PreviousMaterialsOfGeometricEntities->Delete();
-    this->PreviousMaterialsOfGeometricEntities = 0;
+    this->PreviousMaterialsOfGeometricEntities = nullptr;
   }
 }
 
@@ -129,7 +129,7 @@ bool vtkMaterialOperationBase::Operate(vtkDiscreteModel* Model)
   for (vtkIdType i = 0; i < this->GeometricEntitiesToAdd->GetNumberOfIds(); i++)
   {
     vtkModelEntity* Entity = Model->GetModelEntity(this->GeometricEntitiesToAdd->GetId(i));
-    vtkDiscreteModelGeometricEntity* GeometricEntity = 0;
+    vtkDiscreteModelGeometricEntity* GeometricEntity = nullptr;
     vtkDiscreteModelRegion* Region = vtkDiscreteModelRegion::SafeDownCast(Entity);
     if (Region)
     {
@@ -138,7 +138,7 @@ bool vtkMaterialOperationBase::Operate(vtkDiscreteModel* Model)
     else
     {
       vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Entity);
-      if (Face && Face->GetModelRegion(0) == NULL && Face->GetModelRegion(1) == NULL)
+      if (Face && Face->GetModelRegion(0) == nullptr && Face->GetModelRegion(1) == nullptr)
       { // Face can have a material associated with it since it is not associated with a region
         GeometricEntity = Face;
       }
@@ -156,7 +156,7 @@ bool vtkMaterialOperationBase::Operate(vtkDiscreteModel* Model)
   for (vtkIdType i = 0; i < this->GeometricEntitiesToRemove->GetNumberOfIds(); i++)
   {
     vtkModelEntity* Entity = Model->GetModelEntity(this->GeometricEntitiesToRemove->GetId(i));
-    vtkDiscreteModelGeometricEntity* GeometricEntity = 0;
+    vtkDiscreteModelGeometricEntity* GeometricEntity = nullptr;
     vtkDiscreteModelRegion* Region = vtkDiscreteModelRegion::SafeDownCast(Entity);
     if (Region)
     {
@@ -165,7 +165,7 @@ bool vtkMaterialOperationBase::Operate(vtkDiscreteModel* Model)
     else
     {
       vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Entity);
-      if (Face && Face->GetModelRegion(0) == NULL && Face->GetModelRegion(1) == NULL)
+      if (Face && Face->GetModelRegion(0) == nullptr && Face->GetModelRegion(1) == nullptr)
       { // Face can have a material associated with it since it is not associated with a region
         GeometricEntity = Face;
       }

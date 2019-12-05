@@ -205,7 +205,7 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
 void vtkCMBModelWriterV5::SetAnalysisGridData(vtkDiscreteModel* model, vtkPolyData* poly)
 {
   vtkModelGridRepresentation* gridRepresentation = model->GetAnalysisGridInfo();
-  if (gridRepresentation == NULL || gridRepresentation->IsModelConsistent(model) == false)
+  if (gridRepresentation == nullptr || gridRepresentation->IsModelConsistent(model) == false)
   {
     return;
   }

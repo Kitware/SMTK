@@ -61,7 +61,7 @@ qtSimpleExpressionView::qtSimpleExpressionViewInternals::~qtSimpleExpressionView
   if (this->FunctionParserDescription)
   {
     delete[] this->FunctionParserDescription;
-    this->FunctionParserDescription = 0;
+    this->FunctionParserDescription = nullptr;
   }
 }
 
@@ -238,7 +238,7 @@ smtk::attribute::ValueItemPtr qtSimpleExpressionView::getStringDataFromItem(QLis
 smtk::attribute::AttributePtr qtSimpleExpressionView::getFunctionFromItem(QListWidgetItem* item)
 {
   Attribute* rawPtr =
-    item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : NULL;
+    item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
 }
 
@@ -602,10 +602,10 @@ QListWidgetItem* qtSimpleExpressionView::addFunctionListItem(
   if (!this->uiManager()->passAdvancedCheck(childData->definition()->advanceLevel()) ||
     !this->uiManager()->passAttributeCategoryCheck(childData->definition()))
   {
-    return NULL;
+    return nullptr;
   }
 
-  QListWidgetItem* item = NULL;
+  QListWidgetItem* item = nullptr;
   smtk::attribute::GroupItemPtr dataItem = this->getFunctionArrayData(childData);
   if (dataItem)
   {

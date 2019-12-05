@@ -46,7 +46,7 @@ vtkInformationKey* vtkInformationKeyMap::FindKey(const char* name)
   {
     return iter->second;
   }
-  return 0;
+  return nullptr;
 }
 
 std::string vtkInformationKeyMap::GetFullName(vtkInformationKey* key)

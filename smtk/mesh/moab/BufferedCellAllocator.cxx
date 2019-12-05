@@ -118,7 +118,7 @@ bool BufferedCellAllocator::flush()
   smtk::mesh::HandleRange cellsCreatedForThisType;
 
   // need to convert from smtk cell type to moab cell type
-  ::moab::EntityHandle* startOfConnectivityArray = 0;
+  ::moab::EntityHandle* startOfConnectivityArray = nullptr;
 
   m_validState = this->allocateCells(m_activeCellType, m_localConnectivity.size() / m_nCoords,
     m_nCoords, cellsCreatedForThisType, startOfConnectivityArray);

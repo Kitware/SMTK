@@ -202,7 +202,7 @@ MergeMeshVertices::~MergeMeshVertices()
       // check close-by leaves too
       leaves_out.clear();
       result = tree.distance_search(
-        from.array(), mergeTol, leaves_out, mergeTol, 1.0e-6, NULL, NULL, &tree_root);
+        from.array(), mergeTol, leaves_out, mergeTol, 1.0e-6, nullptr, nullptr, &tree_root);
       leaf_range2.clear();
       for (std::vector<EntityHandle>::iterator vit = leaves_out.begin(); vit != leaves_out.end();
            vit++)
@@ -379,7 +379,7 @@ MergeMeshVertices::~MergeMeshVertices()
     {
       int numCellsInSubRange = 0;
       int verts_per_ent = 0;
-      EntityHandle* connectivity = NULL;
+      EntityHandle* connectivity = nullptr;
       result = mbImpl->connect_iterate(iter, end, connectivity, verts_per_ent, numCellsInSubRange);
       if (MB_SUCCESS != result)
       {

@@ -23,13 +23,13 @@ vtkStandardNewMacro(vtkCMBModelReader);
 
 vtkCMBModelReader::vtkCMBModelReader()
 {
-  this->FileName = 0;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
 }
 
 vtkCMBModelReader::~vtkCMBModelReader()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 int vtkCMBModelReader::RequestData(vtkInformation* vtkNotUsed(request),

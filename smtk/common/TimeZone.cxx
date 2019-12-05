@@ -25,7 +25,7 @@ boost::local_time::tz_database TimeZone::s_database;
 bool TimeZone::s_databaseLoaded = false;
 
 TimeZone::TimeZone()
-  : m_boostTimeZone(0)
+  : m_boostTimeZone(nullptr)
   , m_isUTC(false)
 {
 }
@@ -38,7 +38,7 @@ bool TimeZone::isSet() const
 void TimeZone::setUTC()
 {
   // Clear boost pointer and region string
-  boost::local_time::time_zone_ptr tzNull(0);
+  boost::local_time::time_zone_ptr tzNull(nullptr);
   m_boostTimeZone = tzNull;
   m_region.clear();
   m_isUTC = true;
@@ -98,7 +98,7 @@ bool TimeZone::setPosixString(const std::string& posixTimeZoneString)
     (void)e;
     ;
 #endif
-    boost::local_time::time_zone_ptr tzNull(0);
+    boost::local_time::time_zone_ptr tzNull(nullptr);
     m_boostTimeZone = tzNull;
     return false;
   }

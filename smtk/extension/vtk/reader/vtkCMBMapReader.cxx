@@ -45,7 +45,7 @@ vtkStandardNewMacro(vtkCMBMapReader);
 
 vtkCMBMapReader::vtkCMBMapReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->NumArcs = 0;
   this->SetNumberOfInputPorts(0);
   this->ArcIds = vtkIntArray::New();
@@ -53,11 +53,11 @@ vtkCMBMapReader::vtkCMBMapReader()
 
 vtkCMBMapReader::~vtkCMBMapReader()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
   if (this->ArcIds)
   {
     this->ArcIds->Delete();
-    this->ArcIds = NULL;
+    this->ArcIds = nullptr;
   }
 }
 //

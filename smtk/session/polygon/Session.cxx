@@ -179,7 +179,7 @@ smtk::model::SessionIOPtr Session::createIODelegate(const std::string& format)
   {
     return SessionIOJSON::create();
   }
-  return NULL;
+  return nullptr;
 }
 
 internal::EntityIdToPtr::iterator Session::findStorageIterator(const smtk::common::UUID& uid)

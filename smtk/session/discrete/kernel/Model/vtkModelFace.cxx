@@ -166,7 +166,7 @@ vtkModelRegion* vtkModelFace::GetModelRegion(int direction)
   vtkModelShellUse* shellUse = faceUse->GetModelShellUse();
   if (!shellUse)
   {
-    return 0;
+    return nullptr;
   }
   return shellUse->GetModelRegion();
 }

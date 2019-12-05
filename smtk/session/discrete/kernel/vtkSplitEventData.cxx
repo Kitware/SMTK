@@ -18,16 +18,16 @@ vtkCxxSetObjectMacro(vtkSplitEventData, CreatedModelEntityIds, vtkIdList);
 
 vtkSplitEventData::vtkSplitEventData()
 {
-  this->SourceEntity = NULL;
-  this->CreatedModelEntityIds = NULL;
+  this->SourceEntity = nullptr;
+  this->CreatedModelEntityIds = nullptr;
 }
 
 vtkSplitEventData::~vtkSplitEventData()
 {
   // SourceEntity doesn't strictly need to be set to NULL
   // now but that may change in the future
-  this->SetSourceEntity(0);
-  this->SetCreatedModelEntityIds(0);
+  this->SetSourceEntity(nullptr);
+  this->SetCreatedModelEntityIds(nullptr);
 }
 
 void vtkSplitEventData::PrintSelf(ostream& os, vtkIndent indent)

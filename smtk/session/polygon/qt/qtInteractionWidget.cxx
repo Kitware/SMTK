@@ -25,7 +25,7 @@ qtInteractionWidget::qtInteractionWidget(
   , WidgetProxy(smproxy.Get())
   , Interactivity(false)
 {
-  Q_ASSERT(smproxy != NULL);
+  Q_ASSERT(smproxy != nullptr);
 
   this->VTKConnect->Connect(
     smproxy, vtkCommand::StartInteractionEvent, this, SIGNAL(widgetStartInteraction()));

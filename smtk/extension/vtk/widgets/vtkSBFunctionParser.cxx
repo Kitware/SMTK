@@ -49,8 +49,8 @@ vtkSBFunctionParser::vtkSBFunctionParser()
   , InitialValue(0.0)
   , Delta(0.0)
   , NumberOfValues(-1)
-  , Help(0)
-  , Result(0)
+  , Help(nullptr)
+  , Result(nullptr)
 {
   this->Implementation = new vtkInternal();
 
@@ -62,18 +62,18 @@ vtkSBFunctionParser::~vtkSBFunctionParser()
   if (this->Help)
   {
     delete[] this->Help;
-    this->Help = 0;
+    this->Help = nullptr;
   }
   if (this->Result)
   {
     this->Result->Delete();
-    this->Result = 0;
+    this->Result = nullptr;
   }
 
   if (this->Implementation)
   {
     delete this->Implementation;
-    this->Implementation = 0;
+    this->Implementation = nullptr;
   }
 }
 
@@ -161,7 +161,7 @@ vtkDoubleArray* vtkSBFunctionParser::GetResult()
 
   if (!err.empty() || (pos != -1))
   {
-    return 0;
+    return nullptr;
   }
 
   this->Result = vtkDoubleArray::New();

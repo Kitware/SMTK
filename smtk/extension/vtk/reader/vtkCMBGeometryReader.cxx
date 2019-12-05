@@ -58,7 +58,7 @@ vtkStandardNewMacro(vtkCMBGeometryReader);
 
 vtkCMBGeometryReader::vtkCMBGeometryReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   this->PrepNonClosedSurfaceForModelCreation = false;
   this->HasBoundaryEdges = false;
@@ -68,7 +68,7 @@ vtkCMBGeometryReader::vtkCMBGeometryReader()
 
 vtkCMBGeometryReader::~vtkCMBGeometryReader()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 int vtkCMBGeometryReader::RequestData(vtkInformation* vtkNotUsed(request),
@@ -126,7 +126,7 @@ int vtkCMBGeometryReader::RequestData(vtkInformation* vtkNotUsed(request),
     // If the data is an unstructured grid we need to see what types of elements
     // it has to determine if it represents a volume mesh
     vtkUnstructuredGrid* uGrid = vtkUnstructuredGrid::SafeDownCast(dataset);
-    if (uGrid != NULL)
+    if (uGrid != nullptr)
     {
       vtkNew<vtkCellTypes> types;
       uGrid->GetCellTypes(types.GetPointer());
@@ -228,7 +228,7 @@ int vtkCMBGeometryReader::RequestData(vtkInformation* vtkNotUsed(request),
     rdr->Update();
 
     vtkPolyData* loops = rdr->GetOutput();
-    vtkDataArray* adim = loops ? loops->GetFieldData()->GetArray("Dimension") : NULL;
+    vtkDataArray* adim = loops ? loops->GetFieldData()->GetArray("Dimension") : nullptr;
     int dim = adim ? adim->GetTuple1(0) : 3;
 
     if (dim == 2)

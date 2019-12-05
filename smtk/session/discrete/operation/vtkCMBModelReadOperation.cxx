@@ -31,13 +31,13 @@ vtkStandardNewMacro(vtkCMBModelReadOperation);
 
 vtkCMBModelReadOperation::vtkCMBModelReadOperation()
 {
-  this->FileName = 0;
+  this->FileName = nullptr;
   this->OperateSucceeded = 0;
 }
 
 vtkCMBModelReadOperation::~vtkCMBModelReadOperation()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 const char* vtkCMBModelReadOperation::GetCMBFileVersionString()
@@ -99,12 +99,12 @@ vtkCMBParserBase* vtkCMBModelReadOperation::NewParser(vtkPolyData* MasterPoly)
   if (!version)
   {
     vtkErrorMacro("No Version in CMB file, unsupported.");
-    return NULL;
+    return nullptr;
   }
   else if (version->GetValue(0) == 1)
   {
     vtkErrorMacro("Version 1 CMB file no longer supported.");
-    return NULL;
+    return nullptr;
   }
   else if (version->GetValue(0) == 2 || version->GetValue(0) == 3)
   {
@@ -123,7 +123,7 @@ vtkCMBParserBase* vtkCMBModelReadOperation::NewParser(vtkPolyData* MasterPoly)
     vtkErrorMacro("Unsupported file version " << version->GetValue(0));
   }
 
-  return 0;
+  return nullptr;
 }
 
 void vtkCMBModelReadOperation::PrintSelf(ostream& os, vtkIndent indent)

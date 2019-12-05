@@ -127,8 +127,8 @@ public:
   //WalkableLoop(const vtkIdType& _loopId) : loopId(_loopId), numEdges(0), edge_arr(NULL), edge_dir_arr(NULL){}
   WalkableLoop()
     : numEdges(-1)
-    , edge_arr(NULL)
-    , edge_dir_arr(NULL)
+    , edge_arr(nullptr)
+    , edge_dir_arr(nullptr)
     , edge_dir_flipped(false)
   {
   }

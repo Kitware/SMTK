@@ -52,7 +52,7 @@ vtkModelEntity* vtkEdgeSplitOperationBase::GetModelEntity(vtkDiscreteModel* Mode
 {
   if (!Model || !this->GetIsEdgeIdSet())
   {
-    return 0;
+    return nullptr;
   }
   return Model->GetModelEntity(vtkModelEdgeType, this->GetEdgeId());
 }

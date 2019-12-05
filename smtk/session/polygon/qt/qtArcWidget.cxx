@@ -168,7 +168,7 @@ void qtArcWidget::updateMode()
 void qtArcWidget::finishContour()
 {
   vtkSMNewWidgetRepresentationProxy* widget = this->widgetProxy();
-  widget->GetWidget()->InvokeEvent(vtkCommand::EndInteractionEvent, NULL);
+  widget->GetWidget()->InvokeEvent(vtkCommand::EndInteractionEvent, nullptr);
   emit this->contourDone();
 }
 

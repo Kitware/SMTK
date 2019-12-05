@@ -84,9 +84,9 @@ qtModelView::qtModelView(QWidget* p)
   //  QObject::connect(this,
   //                   SIGNAL(customContextMenuRequested(const QPoint &)),
   //                   this, SLOT(showContextMenu(const QPoint &)));
-  m_ContextMenu = NULL;
-  m_OperationsDock = NULL;
-  m_OperationsWidget = NULL;
+  m_ContextMenu = nullptr;
+  m_OperationsDock = nullptr;
+  m_OperationsWidget = nullptr;
 
   this->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
@@ -277,7 +277,7 @@ qtOperationDockWidget* qtModelView::operatorsDock()
   QObject::connect(this, SIGNAL(operationFinished(const smtk::operation::OperationResult&)),
     opWidget, SIGNAL(operationFinished(const smtk::operation::OperationResult&)));
 
-  QWidget* dockP = NULL;
+  QWidget* dockP = nullptr;
   foreach (QWidget* widget, QApplication::topLevelWidgets())
   {
     if (widget->inherits("QMainWindow"))

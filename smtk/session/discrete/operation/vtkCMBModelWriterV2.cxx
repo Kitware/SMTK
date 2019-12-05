@@ -45,7 +45,7 @@ vtkStandardNewMacro(vtkCMBModelWriterV2);
 
 vtkCMBModelWriterV2::vtkCMBModelWriterV2()
 {
-  this->FileName = 0;
+  this->FileName = nullptr;
   this->DataMode = vtkXMLWriter::Binary;
 }
 
@@ -117,9 +117,9 @@ void vtkCMBModelWriterV2::SetAnalysisGridData(vtkDiscreteModel* model, vtkPolyDa
     vtkIdTypeArray* pointMap = analysisGridInfo->GetModelPointToAnalysisPoint();
     vtkIdTypeArray* cellMap = analysisGridInfo->GetModelCellToAnalysisCells();
     vtkCharArray* cellSides = analysisGridInfo->GetModelCellToAnalysisCellSides();
-    if ((pointMap != NULL && pointMap->GetNumberOfTuples() == poly->GetNumberOfPoints()) &&
-      (cellMap != NULL && cellMap->GetNumberOfTuples() == poly->GetNumberOfCells()) &&
-      (cellSides != NULL && cellSides->GetNumberOfTuples() == poly->GetNumberOfCells()))
+    if ((pointMap != nullptr && pointMap->GetNumberOfTuples() == poly->GetNumberOfPoints()) &&
+      (cellMap != nullptr && cellMap->GetNumberOfTuples() == poly->GetNumberOfCells()) &&
+      (cellSides != nullptr && cellSides->GetNumberOfTuples() == poly->GetNumberOfCells()))
     {
       pointMap->SetName(vtkDiscreteModel::GetPointMapArrayName());
       poly->GetPointData()->AddArray(pointMap);

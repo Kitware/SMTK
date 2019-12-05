@@ -45,7 +45,7 @@ vtkModelMaterial* vtkDiscreteModelGeometricEntity::GetMaterial()
 {
   vtkModelItemIterator* iter = this->GetThisModelEntity()->NewIterator(vtkModelMaterialType);
   iter->Begin();
-  vtkModelMaterial* material = 0;
+  vtkModelMaterial* material = nullptr;
   if (!iter->IsAtEnd())
   {
     material = vtkModelMaterial::SafeDownCast(iter->GetCurrentItem());
@@ -85,7 +85,7 @@ vtkDiscreteModelGeometricEntity::GetThisDiscreteModelGeometricEntity(vtkModelEnt
 {
   if (!entity)
   {
-    return 0;
+    return nullptr;
   }
   if (vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(entity))
   {
@@ -306,7 +306,7 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     // we are on the client
     return 1;
   }
-  if (entityPoly == 0)
+  if (entityPoly == nullptr)
   {
     if (geometry)
     {
@@ -413,7 +413,7 @@ bool vtkDiscreteModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
   vtkObject* geometry = thisEntity->GetGeometry();
   vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
-  if (poly == 0)
+  if (poly == nullptr)
   {
     return 1;
   }
@@ -459,9 +459,9 @@ vtkIdTypeArray* vtkDiscreteModelGeometricEntity::GetReverseClassificationArray()
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
   vtkObject* geometry = thisEntity->GetGeometry();
   vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
-  if (poly == 0)
+  if (poly == nullptr)
   {
-    return 0;
+    return nullptr;
   }
 
   return vtkIdTypeArray::SafeDownCast(

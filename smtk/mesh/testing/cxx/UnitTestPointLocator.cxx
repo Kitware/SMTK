@@ -41,7 +41,7 @@ void verify_empty_locator(const smtk::mesh::ResourcePtr& mr)
 
   smtk::mesh::PointLocator locator1(emptyPoints);
 
-  double* xyzs = NULL;
+  double* xyzs = nullptr;
   std::size_t numPoints = 0;
   smtk::mesh::PointLocator locator2(mr, numPoints, xyzs);
 }

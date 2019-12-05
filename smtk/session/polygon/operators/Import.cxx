@@ -271,7 +271,7 @@ int polyLines2modelEdgesAndFaces(
 
     vtkIdType numPedIDs = pedigreeIds ? pedigreeIds->GetNumberOfTuples() : 0;
     vtkIdType* pedigree =
-      numPedIDs == lines->GetNumberOfCells() && pedigreeIds ? pedigreeIds->GetPointer(0) : NULL;
+      numPedIDs == lines->GetNumberOfCells() && pedigreeIds ? pedigreeIds->GetPointer(0) : nullptr;
     /*
     std::cout << "number of line cells: " << lines->GetNumberOfCells() << std::endl;
     if(pedigreeIds)

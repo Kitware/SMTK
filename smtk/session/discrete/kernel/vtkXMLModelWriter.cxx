@@ -48,13 +48,13 @@ struct vtkXMLModelWriterInternals
 vtkXMLModelWriter::vtkXMLModelWriter()
 {
   this->Internal = new vtkXMLModelWriterInternals;
-  this->RootElement = 0;
+  this->RootElement = nullptr;
 }
 
 vtkXMLModelWriter::~vtkXMLModelWriter()
 {
   delete this->Internal;
-  this->SetRootElement(0);
+  this->SetRootElement(nullptr);
 }
 
 void vtkXMLModelWriter::PrintSelf(ostream& os, vtkIndent indent)
@@ -70,7 +70,7 @@ vtkSmartPointer<vtkXMLElement> BaseSerialize(const char* name, vtkXMLModelWriter
   if (!root)
   {
     vtkGenericWarningMacro("Serialize cannot be called before Initialize()");
-    return 0;
+    return nullptr;
   }
 
   vtkSmartPointer<vtkXMLElement> elem = vtkSmartPointer<vtkXMLElement>::New();
@@ -321,9 +321,9 @@ void vtkXMLModelWriter::Serialize(
 
   vtkXMLElement* re = this->CreateDOM(rootName, objs);
   re->PrintXML(ostr, vtkIndent());
-  this->SetRootElement(0);
+  this->SetRootElement(nullptr);
   delete this->Internal;
-  this->Internal = 0;
+  this->Internal = nullptr;
 }
 
 // -------------integers---------------

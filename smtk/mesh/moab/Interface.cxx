@@ -80,7 +80,7 @@ std::vector<T> computeDenseIntTagValues(
   //fetch all entities with the given tag
   ::moab::Range entitiesWithTag;
   iface->get_entities_by_type_and_tag(
-    iface->get_root_set(), ::moab::MBENTITYSET, tag.moabTagPtr(), NULL, 1, entitiesWithTag);
+    iface->get_root_set(), ::moab::MBENTITYSET, tag.moabTagPtr(), nullptr, 1, entitiesWithTag);
 
   //we have all entity sets that have the this tag
   //now we need to find the subset that is part of our
@@ -125,7 +125,7 @@ T computeDenseOpaqueTagValues(U tag, const ::moab::Range& meshsets, ::moab::Inte
   // Fetch all entities with the given tag
   ::moab::Range entitiesWithTag;
   iface->get_entities_by_type_and_tag(
-    iface->get_root_set(), ::moab::MBENTITYSET, tag.moabTagPtr(), NULL, 1, entitiesWithTag);
+    iface->get_root_set(), ::moab::MBENTITYSET, tag.moabTagPtr(), nullptr, 1, entitiesWithTag);
 
   // We have all entity sets that have the this tag; now we need
   // to find the subset that is part of our HandleRange.
@@ -231,7 +231,7 @@ smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::ResourcePtr& 
 ::moab::Interface* extract_moab_interface(const smtk::mesh::InterfacePtr& iface)
 {
   smtk::mesh::moab::Interface* mi = dynamic_cast<smtk::mesh::moab::Interface*>(iface.get());
-  return (mi == NULL) ? NULL : mi->moabInterface();
+  return (mi == nullptr) ? nullptr : mi->moabInterface();
 }
 
 Interface::Interface()
@@ -1327,7 +1327,8 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 
   ::moab::Range result;
 
-  rval = m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, result);
+  rval =
+    m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, nullptr, 1, result);
   if (rval != ::moab::MB_SUCCESS)
   {
     result.clear();
@@ -1489,7 +1490,7 @@ std::set<smtk::mesh::CellFieldTag> Interface::computeCellFieldTags(
       // then check if there are tagged instances under our handle
       ::moab::Range range;
       ::moab::ErrorCode rval = rval =
-        m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, range);
+        m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, nullptr, 1, range);
       if (rval == ::moab::MB_SUCCESS && !range.empty())
       {
         std::string name;
@@ -1675,7 +1676,8 @@ smtk::mesh::HandleRange Interface::getMeshsets(
 
   ::moab::Range result;
 
-  rval = m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, result);
+  rval =
+    m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, nullptr, 1, result);
   if (rval != ::moab::MB_SUCCESS)
   {
     result.clear();
@@ -1842,7 +1844,7 @@ std::set<smtk::mesh::PointFieldTag> Interface::computePointFieldTags(
       // then check if there are tagged instances under our handle
       ::moab::Range range;
       ::moab::ErrorCode rval = rval =
-        m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, NULL, 1, range);
+        m_iface->get_entities_by_type_and_tag(handle, ::moab::MBENTITYSET, &tag, nullptr, 1, range);
       if (rval == ::moab::MB_SUCCESS && !range.empty())
       {
         std::string name;

@@ -50,10 +50,10 @@ namespace Ui
 {
 ArcPicker::ArcPicker(QObject* parent)
   : QAction(parent)
-  , Info(NULL)
-  , Arc(NULL)
-  , View(NULL)
-  , Selecter(NULL)
+  , Info(nullptr)
+  , Arc(nullptr)
+  , View(nullptr)
+  , Selecter(nullptr)
   , m_isActive(false)
 {
   this->setCheckable(true);
@@ -72,7 +72,7 @@ void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
 {
   delete this->Selecter;
   m_isActive = false;
-  this->View = NULL; //clear the view each time
+  this->View = nullptr; //clear the view each time
   if (view)
   {
     this->Selecter = new pqRenderViewSelectionReaction(
@@ -111,7 +111,7 @@ vtkSelectionNode* ArcPicker::gatherSelectionNode(
   {
     return selInfo->GetSelection()->GetNode(0);
   }
-  return NULL;
+  return nullptr;
 }
 
 void ArcPicker::selectedInfo(pqOutputPort* port)
@@ -122,7 +122,7 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
 
   //always update the port
   this->Info->EdgeId = smtk::common::UUID::null();
-  this->Info->port = NULL;
+  this->Info->port = nullptr;
 
   if (port && this->Arc->edgeOperation())
   {
@@ -169,7 +169,7 @@ void ArcPicker::selectedInfo(pqOutputPort* port)
         this->Info->BlockIndex = flatIdx - 1;
         this->Arc->setSource(port->getSource());
         // once find the edge needed, turn off the selection for model source
-        port->setSelectionInput(NULL, 0);
+        port->setSelectionInput(nullptr, 0);
         this->View->render();
       }
     }
@@ -184,7 +184,7 @@ void ArcPicker::onPickingFinished()
   {
     this->Selecter->disconnect();
     delete this->Selecter;
-    this->Selecter = NULL;
+    this->Selecter = nullptr;
   }
   if (this->View)
   {
@@ -207,10 +207,10 @@ pqArcWidgetPanel::pqArcWidgetPanel(QWidget* parent)
   : QWidget(parent)
   , Internals(new pqArcWidgetPanel::pqInternals)
   , Picker(parent)
-  , View(NULL)
-  , Arc(NULL)
-  , ArcWidget(NULL)
-  , ArcManager(NULL)
+  , View(nullptr)
+  , Arc(nullptr)
+  , ArcWidget(nullptr)
+  , ArcManager(nullptr)
 {
   Internals->setupUi(this);
   this->setObjectName("pqArcWidgetPanel");
@@ -259,7 +259,7 @@ void pqArcWidgetPanel::showEditWidget()
   // clear selection on the selected port when contourWidget is shown
   if (this->ArcInfo.port)
   {
-    this->ArcInfo.port->setSelectionInput(NULL, 0);
+    this->ArcInfo.port->setSelectionInput(nullptr, 0);
   }
 
   emit this->startArcEditing();
@@ -326,7 +326,7 @@ void pqArcWidgetPanel::hideArcWidget()
   {
     this->ArcWidget->setEnableInteractivity(false);
     this->ArcWidget->setVisible(false);
-    this->ArcWidget->setView(NULL);
+    this->ArcWidget->setView(nullptr);
     this->ArcWidget->hide();
   }
 }

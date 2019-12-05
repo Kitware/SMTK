@@ -26,15 +26,15 @@ vtkCxxSetObjectMacro(vtkCMBModelPointsOperation, ModelPointData, vtkPointData);
 
 vtkCMBModelPointsOperation::vtkCMBModelPointsOperation()
 {
-  this->ModelPoints = 0;
-  this->ModelPointData = 0;
+  this->ModelPoints = nullptr;
+  this->ModelPointData = nullptr;
   this->OperateSucceeded = 0;
 }
 
 vtkCMBModelPointsOperation::~vtkCMBModelPointsOperation()
 {
-  this->SetModelPoints(0);
-  this->SetModelPointData(0);
+  this->SetModelPoints(nullptr);
+  this->SetModelPointData(nullptr);
 }
 
 void vtkCMBModelPointsOperation::SetModelPointsInput(vtkAlgorithm* dataAlg)

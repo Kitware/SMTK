@@ -16,13 +16,13 @@ vtkStandardNewMacro(vtkModelXMLParser);
 
 vtkModelXMLParser::vtkModelXMLParser()
 {
-  this->FileName = 0;
-  this->InputString = 0;
+  this->FileName = nullptr;
+  this->InputString = nullptr;
   this->NumberOfOpenElements = 0;
   this->OpenElementsSize = 10;
   this->OpenElements = new vtkXMLElement*[this->OpenElementsSize];
   this->ElementIdIndex = 0;
-  this->RootElement = 0;
+  this->RootElement = nullptr;
 }
 
 vtkModelXMLParser::~vtkModelXMLParser()
@@ -37,7 +37,7 @@ vtkModelXMLParser::~vtkModelXMLParser()
   {
     this->RootElement->Delete();
   }
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 void vtkModelXMLParser::PrintSelf(ostream& os, vtkIndent indent)
@@ -116,7 +116,7 @@ vtkXMLElement* vtkModelXMLParser::PopOpenElement()
     --this->NumberOfOpenElements;
     return this->OpenElements[this->NumberOfOpenElements];
   }
-  return 0;
+  return nullptr;
 }
 
 void vtkModelXMLParser::PrintXML(ostream& os)
@@ -129,7 +129,7 @@ int vtkModelXMLParser::ParseXML()
   if (this->RootElement)
   {
     this->RootElement->Delete();
-    this->RootElement = 0;
+    this->RootElement = nullptr;
   }
   return this->Superclass::ParseXML();
 }

@@ -89,7 +89,7 @@ void vtkGenerateSimpleModelOperation::Operate(
   // TODO: Handle non-vtkIdType pedigree IDs.
   vtkIdTypeArray* pedigreeIds = vtkIdTypeArray::SafeDownCast(poly->GetCellData()->GetPedigreeIds());
   vtkIdType* pedigree =
-    pedigreeIds && pedigreeIds->GetNumberOfTuples() > 0 ? pedigreeIds->GetPointer(0) : NULL;
+    pedigreeIds && pedigreeIds->GetNumberOfTuples() > 0 ? pedigreeIds->GetPointer(0) : nullptr;
 
   // Create the associated model using \a poly as the mesh:
   DiscreteMesh mesh(poly);
@@ -98,12 +98,12 @@ void vtkGenerateSimpleModelOperation::Operate(
   model->SetMesh(mesh);
 
   int zero = 0;
-  vtkModelMaterial* material = NULL;
+  vtkModelMaterial* material = nullptr;
   if (!modelFaceIds)
   { // Add all triangles to one model face
     material = pedigree ? model->BuildMaterial(pedigree[0]) : model->BuildMaterial();
     vtkDiscreteModelFace* face =
-      vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, NULL, &zero, material));
+      vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, nullptr, &zero, material));
     vtkNew<vtkIdList> cellIds;
     cellIds->SetNumberOfIds(poly->GetNumberOfCells());
     for (vtkIdType i = 0; i < poly->GetNumberOfCells(); i++)
@@ -156,7 +156,7 @@ void vtkGenerateSimpleModelOperation::Operate(
     for (fit = decomposition.begin(); fit != decomposition.end(); ++fit)
     {
       vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(
-        0, NULL, &zero, pedigree ? groups[pedigree[fit->second->GetId(0)]] : material));
+        0, nullptr, &zero, pedigree ? groups[pedigree[fit->second->GetId(0)]] : material));
       face->AddCellsToGeometry(fit->second.GetPointer());
     }
   }

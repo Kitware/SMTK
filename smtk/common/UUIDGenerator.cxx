@@ -52,7 +52,7 @@ public:
     {
       // This is a poor technique for seeding or
       // we would initialize this way all the time.
-      m_mtseed.seed(static_cast<boost::mt19937::result_type>(time(NULL)));
+      m_mtseed.seed(static_cast<boost::mt19937::result_type>(time(nullptr)));
       m_randomGenerator = new boost::uuids::basic_random_generator<boost::mt19937>(&m_mtseed);
     }
     else

@@ -330,7 +330,7 @@ void extractMaterials(
 
   //find the top and bottom of the shell and apply dirichlet properties
   //to each section
-  if (bounds != NULL)
+  if (bounds != nullptr)
   {
     const double ymin = bounds[2];
     {
@@ -383,7 +383,7 @@ int main(int argc, char* argv[])
 
   // Dispatch based on the file extension
   vtkDataSet* data;
-  double* bounds = NULL;
+  double* bounds = nullptr;
   smtk::mesh::ResourcePtr c;
   if (extension == ".vtu")
   {

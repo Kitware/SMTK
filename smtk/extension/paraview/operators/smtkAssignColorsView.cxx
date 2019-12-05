@@ -75,7 +75,7 @@ public:
       }
       return attInstance;
     }
-    return NULL;
+    return nullptr;
   }
 
   bool paletteFromDialog(QList<QColor>& colors, const QString& paletteName)

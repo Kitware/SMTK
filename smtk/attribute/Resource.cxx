@@ -589,7 +589,7 @@ const double* Resource::advanceLevelColor(int level) const
   {
     return &it->second[0];
   }
-  return NULL;
+  return nullptr;
 }
 
 void Resource::setAdvanceLevelColor(int level, const double* l_color)

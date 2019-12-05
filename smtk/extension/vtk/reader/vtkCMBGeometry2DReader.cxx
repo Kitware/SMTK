@@ -43,7 +43,7 @@ vtkStandardNewMacro(vtkCMBGeometry2DReader);
 
 vtkCMBGeometry2DReader::vtkCMBGeometry2DReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   for (int i = 0; i < 4; ++i)
   {
@@ -51,14 +51,14 @@ vtkCMBGeometry2DReader::vtkCMBGeometry2DReader()
     this->AbsoluteMargin[i] = 1.;
     this->AbsoluteBounds[i] = i % 2 ? -1. : +1.;
   }
-  this->BoundaryFile = NULL;
+  this->BoundaryFile = nullptr;
   this->BoundaryStyle = NONE;
 }
 
 vtkCMBGeometry2DReader::~vtkCMBGeometry2DReader()
 {
-  this->SetFileName(0);
-  this->SetBoundaryFile(NULL);
+  this->SetFileName(nullptr);
+  this->SetBoundaryFile(nullptr);
 }
 
 void vtkCMBGeometry2DReader::PrintSelf(ostream& os, vtkIndent indent)
@@ -175,7 +175,7 @@ int vtkCMBGeometry2DReader::RequestData(vtkInformation* vtkNotUsed(request),
     // Now we do some manual processing:
     // (a) create a polydata for a bounding box
     // (b) add a pedigree ID indicating the original ID of the geometry.
-    vtkPolyData* rdp = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
+    vtkPolyData* rdp = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : nullptr;
 
     // Remove the "label" attribute if it exists... string arrays
     // can cause problems.
@@ -217,7 +217,7 @@ int vtkCMBGeometry2DReader::RequestData(vtkInformation* vtkNotUsed(request),
         // Now we do some manual processing:
         // (a) create a polydata for a bounding box
         // (b) add a pedigree ID indicating the original ID of the geometry.
-        vtkPolyData* rdp2 = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
+        vtkPolyData* rdp2 = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : nullptr;
 
         // Remove the "label" attribute if it exists... string arrays
         // can cause problems.

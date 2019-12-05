@@ -56,7 +56,7 @@ vtkModelEntity::~vtkModelEntity()
   if (this->Attributes)
   {
     this->Attributes->Delete();
-    this->Attributes = 0;
+    this->Attributes = nullptr;
   }
 }
 
@@ -150,7 +150,7 @@ vtkModelEntity* vtkModelEntity::GetModelEntity(vtkIdType uniquePersistentId)
     }
     iter->Delete();
   }
-  return 0;
+  return nullptr;
 }
 
 vtkModelEntity* vtkModelEntity::GetModelEntity(int type, vtkIdType uniquePersistentId)
@@ -166,7 +166,7 @@ vtkModelEntity* vtkModelEntity::GetModelEntity(int type, vtkIdType uniquePersist
     }
   }
   iter->Delete();
-  return 0;
+  return nullptr;
 }
 
 void vtkModelEntity::Serialize(vtkSerializer* ser)

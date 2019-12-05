@@ -50,7 +50,7 @@ vtkStandardNewMacro(vtkSMTKLASReader);
 
 vtkSMTKLASReader::vtkSMTKLASReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   this->LimitReadToBounds = false;
   this->ReadBounds[0] = this->ReadBounds[2] = this->ReadBounds[4] = VTK_DOUBLE_MAX;
@@ -58,7 +58,7 @@ vtkSMTKLASReader::vtkSMTKLASReader()
   this->Origin[0] = this->Origin[1] = this->Origin[2] = 0;
   for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
   {
-    this->Transform[i] = 0;
+    this->Transform[i] = nullptr;
     this->PointRecordsPerClassification[i] = 0;
   }
   this->TransformOutputData = false;
@@ -77,10 +77,10 @@ vtkSMTKLASReader::vtkSMTKLASReader()
 
 vtkSMTKLASReader::~vtkSMTKLASReader()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
   for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
   {
-    this->SetTransform(i, static_cast<vtkTransform*>(0));
+    this->SetTransform(i, static_cast<vtkTransform*>(nullptr));
   }
 }
 
@@ -101,7 +101,7 @@ void vtkSMTKLASReader::SetConvertFromLatLongToXYZ(bool mode)
 void vtkSMTKLASReader::SetFileName(const char* filename)
 {
   vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting FileName to " << filename);
-  if (this->FileName == NULL && filename == NULL)
+  if (this->FileName == nullptr && filename == nullptr)
   {
     return;
   }
@@ -123,7 +123,7 @@ void vtkSMTKLASReader::SetFileName(const char* filename)
   }
   else
   {
-    this->FileName = NULL;
+    this->FileName = nullptr;
   }
 
   // only want to clear these values if FileName changes!
@@ -171,11 +171,11 @@ void vtkSMTKLASReader::SetTransform(int index, vtkTransform* transform)
   {
     vtkTransform* tempTransform = this->Transform[index];
     this->Transform[index] = transform;
-    if (this->Transform[index] != NULL)
+    if (this->Transform[index] != nullptr)
     {
       this->Transform[index]->Register(this);
     }
-    if (tempTransform != NULL)
+    if (tempTransform != nullptr)
     {
       tempTransform->UnRegister(this);
     }
@@ -185,7 +185,7 @@ void vtkSMTKLASReader::SetTransform(int index, vtkTransform* transform)
 
 vtkTransform* vtkSMTKLASReader::GetTransform(int index)
 {
-  return (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS) ? this->Transform[index] : 0;
+  return (index >= 0 && index < NUMBER_OF_CLASSIFICATIONS) ? this->Transform[index] : nullptr;
 }
 
 int vtkSMTKLASReader::ReadHeaderBlock()
@@ -342,7 +342,7 @@ int vtkSMTKLASReader::ReadPoints(vtkMultiBlockDataSet* output)
     LASPieceInfo()
     {
       this->PointsInClassification = 0;
-      this->PolyData = 0;
+      this->PolyData = nullptr;
       this->SkipCount = 0;
       this->ReadRatio = 1;
     }
@@ -399,10 +399,10 @@ int vtkSMTKLASReader::ReadPoints(vtkMultiBlockDataSet* output)
     progressInterval = 1;
   }
 
-  vtkCellArray* verts = NULL;
-  vtkPoints* pts = NULL;
-  vtkUnsignedCharArray* colorArray = NULL;
-  vtkUnsignedShortArray* intensityArray = NULL;
+  vtkCellArray* verts = nullptr;
+  vtkPoints* pts = nullptr;
+  vtkUnsignedCharArray* colorArray = nullptr;
+  vtkUnsignedShortArray* intensityArray = nullptr;
   vtkIdType idx;
   for (vtkTypeUInt32 ptIndex = 0; ptIndex < this->Header.NumberOfPointRecords; ptIndex++)
   {
@@ -415,7 +415,7 @@ int vtkSMTKLASReader::ReadPoints(vtkMultiBlockDataSet* output)
         fin.close();
         for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
         {
-          if (pieceInfo[i].PolyData != 0)
+          if (pieceInfo[i].PolyData != nullptr)
           {
             pieceInfo[i].PolyData->Delete();
           }
@@ -683,7 +683,7 @@ int vtkSMTKLASReader::ReadPoints(vtkMultiBlockDataSet* output)
   {
     this->PointRecordsPerClassification[i] = pieceInfo[i].PointsInClassification;
 
-    if (pieceInfo[i].PolyData != 0)
+    if (pieceInfo[i].PolyData != nullptr)
     {
       vtkIdTypeArray* pointsInClassification = vtkIdTypeArray::New();
       pointsInClassification->SetName("NumberOfPointsInClassification");

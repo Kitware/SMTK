@@ -25,7 +25,7 @@ Logger& Logger::instance()
 
 Logger::~Logger()
 {
-  this->setFlushToStream(NULL, false, false);
+  this->setFlushToStream(nullptr, false, false);
   if (m_callback)
   {
     m_callback();

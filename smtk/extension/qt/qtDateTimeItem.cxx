@@ -89,11 +89,11 @@ qtDateTimeItem::qtDateTimeItem(const qtAttributeItemInfo& info)
 {
   this->Internals = new qtDateTimeItemInternals;
 
-  this->Internals->TimeZoneDialog = NULL;
-  this->Internals->TimeZoneDialogAcceptButton = NULL;
-  this->Internals->TimeZoneWidget = NULL;
-  this->Internals->TimeZoneButton = NULL;
-  this->Internals->TimeZoneMenu = NULL;
+  this->Internals->TimeZoneDialog = nullptr;
+  this->Internals->TimeZoneDialogAcceptButton = nullptr;
+  this->Internals->TimeZoneWidget = nullptr;
+  this->Internals->TimeZoneButton = nullptr;
+  this->Internals->TimeZoneMenu = nullptr;
   auto item = m_itemInfo.item();
   smtk::attribute::ConstDateTimeItemDefinitionPtr def =
     smtk::dynamic_pointer_cast<const smtk::attribute::DateTimeItemDefinition>(item->definition());
@@ -479,7 +479,7 @@ void qtDateTimeItem::addInputEditor(int i)
     return;
   }
 
-  QBoxLayout* childLayout = NULL;
+  QBoxLayout* childLayout = nullptr;
   childLayout = new QVBoxLayout;
   childLayout->setContentsMargins(12, 3, 3, 0);
   childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -535,7 +535,7 @@ void qtDateTimeItem::clearChildWidgets()
     if (childLayout)
     {
       QLayoutItem* child;
-      while ((child = childLayout->takeAt(0)) != 0)
+      while ((child = childLayout->takeAt(0)) != nullptr)
       {
         delete child;
       }
