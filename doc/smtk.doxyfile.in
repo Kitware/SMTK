@@ -679,7 +679,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/delaunay" \
   "@smtk_SOURCE_DIR@/smtk/extension/delaunay/io" \
   "@smtk_SOURCE_DIR@/smtk/extension/delaunay/operators" \
-  "@smtk_SOURCE_DIR@/smtk/extension/delaunay/worker" \
   "@smtk_SOURCE_DIR@/smtk/extension/matplotlib" \
   "@smtk_SOURCE_DIR@/smtk/extension/opencv/operators" \
   "@smtk_SOURCE_DIR@/smtk/extension/opencv/qt" \
@@ -691,7 +690,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/paraview/pluginsupport" \
   "@smtk_SOURCE_DIR@/smtk/extension/qt" \
   "@smtk_SOURCE_DIR@/smtk/extension/qt/examples/cxx" \
-  "@smtk_SOURCE_DIR@/smtk/extension/remus" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators" \
   "@smtk_SOURCE_DIR@/smtk/extension/vxl/operators" \
