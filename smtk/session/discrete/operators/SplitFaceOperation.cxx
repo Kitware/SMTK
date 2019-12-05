@@ -164,7 +164,7 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
     }
 
     // Return the created and/or modified faces.
-    if (newEnts.size() > 0)
+    if (!newEnts.empty())
     {
       smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
       for (auto c : newEnts)
@@ -172,7 +172,7 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
         created->appendValue(c.component());
       }
     }
-    if (modEnts.size() > 0)
+    if (!modEnts.empty())
     {
       smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
       for (auto m : modEnts)

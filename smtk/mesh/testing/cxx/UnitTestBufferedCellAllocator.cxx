@@ -126,7 +126,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
 
   smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
   test(allocator->isValid() == false);
-  test(allocator->cells().size() == 0);
+  test(allocator->cells().empty());
 
   // Try to add a coordinate before allocating for it (should fail)
   test(allocator->setCoordinate(0, cellPoints[cellType][0]) == false);
@@ -165,7 +165,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   // Add a cell before defining vertices (should succeed but not add anything
   // until the allocator is flushed)
   test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
-  test(allocator->cells().size() == 0);
+  test(allocator->cells().empty());
 
   // fill the vertices and remember the connectivity (should succeed)
   for (std::size_t i = 0; i < nVerticesPerCell; i++)

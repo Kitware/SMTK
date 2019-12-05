@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
       resource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
 
     std::cout << "found " << models.size() << " models" << std::endl;
-    if (models.size() < 1)
+    if (models.empty())
       return 1;
 
     modelEntity = models[0].entityRecord();

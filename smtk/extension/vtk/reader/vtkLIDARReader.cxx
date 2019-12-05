@@ -154,7 +154,7 @@ int vtkLIDARReader::GetKnownNumberOfPieces()
 
 vtkIdType vtkLIDARReader::GetTotalNumberOfPoints()
 {
-  if (this->LIDARPieces.size() == 0)
+  if (this->LIDARPieces.empty())
   {
     // -1 indicates that ReadFileInfo not yet done
     return -1;
@@ -207,7 +207,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   // get the ouptut
   vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  if (this->RequestedReadPieces.size() > 0 &&
+  if (!this->RequestedReadPieces.empty() &&
     this->RequestedReadPieces.begin()->second == VTK_INT_MAX)
   {
     return 1; // just scanning to get file info, which already done in ReadFileInfo
@@ -301,7 +301,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
     // the same as the MaxPoint during the SetMaxPoint fn call.
   }
 
-  if (this->RequestedReadPieces.size() == 0) // read all pieces
+  if (this->RequestedReadPieces.empty()) // read all pieces
   {
     int j = 0;
     int onRationForAllPieces = 1;
@@ -384,7 +384,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
 vtkIdType vtkLIDARReader::GetEstimatedNumOfOutPoints()
 {
   vtkIdType numOutputPts = 0;
-  if (this->RequestedReadPieces.size() > 0)
+  if (!this->RequestedReadPieces.empty())
   {
     for (std::map<int, int>::iterator it = this->RequestedReadPieces.begin();
          it != this->RequestedReadPieces.end(); it++)
@@ -524,7 +524,7 @@ int vtkLIDARReader::GetPointInfo(ifstream& fin)
       }
     } while (!fin.eof() && numPts <= 0);
     // Add the first piece info
-    if (this->LIDARPieces.size() == 0)
+    if (this->LIDARPieces.empty())
     {
       pieceInfo.PiecePointsOffset = fin.tellg();
       pieceInfo.NumPoints = numPts;
@@ -761,7 +761,7 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream& fin, int pieceIndex)
   int currentPieceIndex = -1;
   vtkTypeInt32 numPts = -1;
   // move to the beginning of the last piece we're aware of
-  if (this->LIDARPieces.size() > 0)
+  if (!this->LIDARPieces.empty())
   {
     fin.seekg(this->LIDARPieces.back().PiecePointsOffset, ios::beg);
     currentPieceIndex = static_cast<int>(this->LIDARPieces.size()) - 1;

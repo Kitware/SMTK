@@ -94,7 +94,7 @@ public:
       test((results.x_s.size() == results.pointIds.size()));
       test((results.y_s.size() == results.pointIds.size()));
       test((results.z_s.size() == results.pointIds.size()));
-      test((results.sqDistances.size() == 0)); //since we didn't ask for them
+      test(results.sqDistances.empty()); //since we didn't ask for them
 
       //should only return a single point as inside a radius of 0.0. So verify
       //the Id and coordinates are the same

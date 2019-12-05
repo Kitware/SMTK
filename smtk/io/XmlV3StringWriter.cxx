@@ -115,7 +115,7 @@ void XmlV3StringWriter::generateXml()
     auto excludedTypes = def->excludedTypeNames();
 
     // First lets process exclusions
-    if (excludedTypes.size())
+    if (!excludedTypes.empty())
     {
       // First we need to see if we need to create the XML node
       if (!exNode)
@@ -159,7 +159,7 @@ void XmlV3StringWriter::generateXml()
     // Now lets process prerequisites
     auto prerequisitesTypes = def->prerequisiteTypeNames();
 
-    if (prerequisitesTypes.size())
+    if (!prerequisitesTypes.empty())
     {
       // First we need to see if we need to create the XML node
       if (!preNode)

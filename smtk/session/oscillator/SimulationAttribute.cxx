@@ -71,7 +71,7 @@ bool SimulationAttribute::lint(
   // II. Find the simulation's geometric domain.
   auto volumes = modelResource->entitiesMatchingFlagsAs<smtk::model::Volumes>(
     smtk::model::VOLUME, /* exactMatch */ true);
-  if (volumes.size() < 1)
+  if (volumes.empty())
   {
     smtkErrorMacro(feedback, "No simulation domain included in the geometric model.");
     return false;
@@ -89,7 +89,7 @@ bool SimulationAttribute::lint(
   //      is self-consistent and complete.
   auto sourcePoints = modelResource->entitiesMatchingFlagsAs<AuxGeomSet>(
     smtk::model::AUX_GEOM_ENTITY | smtk::model::DIMENSION_2, /* exactMatch */ true);
-  if (sourcePoints.size() < 1)
+  if (sourcePoints.empty())
   {
     smtkErrorMacro(feedback, "No oscillator source-points included in the geometric model.");
     return false;

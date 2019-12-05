@@ -160,7 +160,7 @@ void extractSurfaces(smtk::mesh::ResourcePtr c, std::string outputFile)
   std::cout << " neumann count: " << c->dirichlets().size() << std::endl;
   std::cout << " dirichlet count: " << c->neumanns().size() << std::endl;
 
-  if (c->domains().size() == 0)
+  if (c->domains().empty())
   { //if no domains make a fake domain per volumetric mesh
     ShellPerMesh spm;
     smtk::mesh::MeshSet volMeshes = c->meshes(smtk::mesh::Dims3);

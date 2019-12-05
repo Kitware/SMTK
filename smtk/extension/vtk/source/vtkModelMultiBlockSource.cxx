@@ -329,7 +329,7 @@ static void addBlockInfo(const smtk::model::ResourcePtr& resource,
   smtk::model::EntityRefs vols;
   if (bordantCell.isValid() && bordantCell.isVolume())
     vols.insert(bordantCell);
-  if (vols.size())
+  if (!vols.empty())
   {
     // Add volume UUID to fieldData
     vtkNew<vtkStringArray> volArray;

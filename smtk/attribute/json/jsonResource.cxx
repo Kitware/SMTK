@@ -75,19 +75,19 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     }
     j["Analyses"] = aInfo;
     j["AnalysesOrder"] = aNames;
-    if (pInfo.size())
+    if (!pInfo.empty())
     {
       j["AnalysesParentInfo"] = pInfo;
     }
-    if (lInfo.size())
+    if (!lInfo.empty())
     {
       j["AnalysesLabelInfo"] = lInfo;
     }
-    if (eInfo.size())
+    if (!eInfo.empty())
     {
       j["AnalysesExclusiveInfo"] = eInfo;
     }
-    if (rInfo.size())
+    if (!rInfo.empty())
     {
       j["AnalysesRequiredInfo"] = rInfo;
     }
@@ -170,7 +170,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     // Lets process the constraints of def
 
     auto excludedTypes = def->excludedTypeNames();
-    if (excludedTypes.size())
+    if (!excludedTypes.empty())
     {
       json types = json::array();
       for (auto etype : excludedTypes)
@@ -181,14 +181,14 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
           types.push_back(etype);
         }
       }
-      if (types.size())
+      if (!types.empty())
       {
         excsObj.push_back(types);
       }
     }
     // Now the prerequistics
     auto prerequisitesTypes = def->prerequisiteTypeNames();
-    if (prerequisitesTypes.size())
+    if (!prerequisitesTypes.empty())
     {
       json pobj = json::object();
       pobj["Type"] = defType;
@@ -198,12 +198,12 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     }
   }
 
-  if (excsObj.size())
+  if (!excsObj.empty())
   {
     j["Exclusions"] = excsObj;
   }
 
-  if (presObj.size())
+  if (!presObj.empty())
   {
     j["Prerequisites"] = presObj;
   }
@@ -414,6 +414,10 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
         continue;
       }
       auto baseType = currentDef.find("BaseType");
+      // XXX(clang-tidy): The `""` comparison cannot be changed to
+      // `baseType->empty()` because `baseType` is a JSON object. We're
+      // checking if a string is empty, not if a JSON object is empty.
+      // NOLINTNEXTLINE
       if ((baseType == currentDef.end()) || (*baseType == ""))
       {
         baseDef = nullptr;

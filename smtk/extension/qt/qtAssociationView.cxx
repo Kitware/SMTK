@@ -73,13 +73,13 @@ public:
       auto currentCat = uiManager->currentCategory();
       if (this->AttDefMap.keys().contains(currentCat.c_str()))
       {
-        return (this->AttDefMap[currentCat.c_str()].size() == 0);
+        return (this->AttDefMap[currentCat.c_str()].empty());
       }
-      return (this->AllDefs.size() == 0);
+      return (this->AllDefs.empty());
     }
     else if (!uiManager->topLevelCategoriesSet())
     {
-      return (this->AllDefs.size() == 0);
+      return (this->AllDefs.empty());
     }
     QList<smtk::attribute::DefinitionPtr> defs;
     foreach (DefinitionPtr attDef, this->AllDefs)
@@ -189,7 +189,7 @@ void qtAssociationView::updateUI()
 {
   this->Internals->attributes->blockSignals(true);
   this->Internals->attributes->clear();
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     this->Internals->attributes->blockSignals(false);
     return;
@@ -204,7 +204,7 @@ void qtAssociationView::updateUI()
     ResourcePtr attResource = attDef->resource();
     std::vector<smtk::attribute::AttributePtr> result;
     attResource->findAttributes(attDef, result);
-    if (result.size())
+    if (!result.empty())
     {
       atts.insert(result.begin(), result.end());
     }
@@ -216,7 +216,7 @@ void qtAssociationView::updateUI()
     this->Internals->attributes->addItem(att->name().c_str(), vdata);
   }
   this->Internals->attributes->blockSignals(false);
-  if (atts.size())
+  if (!atts.empty())
   {
     this->Internals->attributes->setCurrentIndex(0);
     this->onAttributeChanged(0);

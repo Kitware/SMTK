@@ -410,7 +410,7 @@ void qtUIManager::internalInitialize()
   if (auto attResource = m_attResource.lock())
   {
     const std::map<int, std::string>& levels = attResource->advanceLevels();
-    if (levels.size() > 0)
+    if (!levels.empty())
     {
       // use the minimum enum value as initial advance level
       std::map<int, std::string>::const_iterator ait = levels.begin();
@@ -446,7 +446,7 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
   {
     combo->blockSignals(true);
     const std::map<int, std::string>& levels = attResource->advanceLevels();
-    if (levels.size() == 0)
+    if (levels.empty())
     {
       // for backward compatibility, we automatically add
       // two levels which is implicitly supported in previous version

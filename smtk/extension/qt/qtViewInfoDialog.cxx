@@ -98,8 +98,8 @@ void qtViewInfoDialog::displayInfo(smtk::attribute::AttributePtr att)
   {
     auto item = def->itemDefinition(static_cast<int>(i));
     std::string info =
-      (item->detailedDescription() != "") ? item->detailedDescription() : item->briefDescription();
-    if (info == "")
+      !item->detailedDescription().empty() ? item->detailedDescription() : item->briefDescription();
+    if (info.empty())
     {
       continue;
     }

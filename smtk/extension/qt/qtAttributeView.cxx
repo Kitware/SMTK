@@ -607,7 +607,7 @@ void qtAttributeView::updateTableWithProperties()
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = rawPtr->resource();
   attResource->findAttributes(rawPtr->shared_from_this(), result);
-  if (result.size() == 0)
+  if (result.empty())
   {
     this->Internals->ValuesTable->blockSignals(false);
     return;
@@ -739,7 +739,7 @@ void qtAttributeView::updateItemWidgetsEnableState(
 
 smtk::attribute::DefinitionPtr qtAttributeView::getCurrentDef() const
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return nullptr;
   }
@@ -884,7 +884,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
 
 void qtAttributeView::onViewBy(int viewBy)
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return;
   }
@@ -1001,7 +1001,7 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
-  if (result.size())
+  if (!result.empty())
   {
     std::vector<smtk::attribute::AttributePtr>::iterator it;
     for (it = result.begin(); it != result.end(); ++it)
@@ -1127,7 +1127,7 @@ void qtAttributeView::initSelectPropCombo(smtk::attribute::DefinitionPtr attDef)
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
-  if (result.size() == 0)
+  if (result.empty())
   {
     this->Internals->SelectPropCombo->blockSignals(false);
     return;
@@ -1380,7 +1380,7 @@ void qtAttributeView::onPropertyDefSelected()
 
 void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return;
   }
@@ -1400,7 +1400,7 @@ void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 void qtAttributeView::addComparativeProperty(
   QStandardItem* current, smtk::attribute::DefinitionPtr attDef)
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return;
   }

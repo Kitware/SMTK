@@ -133,7 +133,7 @@ std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
   {
     return m_labels[0];
   }
-  if (m_labels.size())
+  if (!m_labels.empty())
   {
     return m_labels[element];
   }

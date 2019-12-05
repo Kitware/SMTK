@@ -126,7 +126,7 @@ void verify_partial_cellfields()
 
   {
     std::set<smtk::mesh::CellField> cellfields = one.cellFields();
-    test(cellfields.size() == 0);
+    test(cellfields.empty());
   }
 
   {

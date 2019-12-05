@@ -29,12 +29,12 @@ void verify_valid_constructor()
   test((uid != smtk::common::UUID::null()), "resource uuid should be valid");
 
   //verify the name
-  test((resource->name() == std::string()));
+  test(resource->name().empty());
   resource->setName("example");
   test((resource->name() == std::string("example")));
 
   //verify the interface name
-  test((resource->interfaceName() != std::string()));
+  test(!resource->interfaceName().empty());
 
   //verify the read and write location
   test((resource->readLocation() == std::string()));
@@ -52,12 +52,12 @@ void verify_resource_info_moab()
   test((uid != smtk::common::UUID::null()), "resource uuid should be valid");
 
   //verify the name
-  test((resource->name() == std::string()));
+  test(resource->name().empty());
   resource->setName("example");
   test((resource->name() == std::string("example")));
 
   //verify the interface name
-  test((resource->interfaceName() != std::string()));
+  test(!resource->interfaceName().empty());
   test((resource->interfaceName() == std::string("moab")));
 
   //verify the read and write location
@@ -81,12 +81,12 @@ void verify_resource_info_json()
   test((uid != smtk::common::UUID::null()), "resource uuid should be valid");
 
   //verify the name
-  test((resource->name() == std::string()));
+  test(resource->name().empty());
   resource->setName("example");
   test((resource->name() == std::string("example")));
 
   //verify the interface name
-  test((resource->interfaceName() != std::string()));
+  test(!resource->interfaceName().empty());
   test((resource->interfaceName() == std::string("json")));
 
   //verify the read and write location

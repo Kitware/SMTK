@@ -192,7 +192,7 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)
 {
   smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
-  if (!entity.isValid() || (entity.url().empty() && entity.auxiliaryGeometries().size() == 0) ||
+  if (!entity.isValid() || (entity.url().empty() && entity.auxiliaryGeometries().empty()) ||
     (!entity.url().empty() && !importAsVTKData.valid(entity.url())))
   {
     return false;

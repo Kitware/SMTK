@@ -206,7 +206,7 @@ int vtkCompleteShells::RequestData(vtkInformation* /*request*/, vtkInformationVe
       }
     }
 
-    if (singleFaceRegions.size() > 0)
+    if (!singleFaceRegions.empty())
     {
       vtkSmartPointer<vtkCellLocator> cellLocator = vtkSmartPointer<vtkCellLocator>::New();
       cellLocator->SetDataSet(input);
@@ -270,7 +270,7 @@ void vtkCompleteShells::FindRegionEdge(vtkPolyData* input, vtkDataArray* cellNor
   const vtkIdType* pts{ nullptr };
   vtkSmartPointer<vtkIdList> neighborIds = vtkSmartPointer<vtkIdList>::New();
   vtkIdType currentCellId;
-  while (cellSearchList.size())
+  while (!cellSearchList.empty())
   {
     currentCellId = cellSearchList.back();
     cellSearchList.pop_back();

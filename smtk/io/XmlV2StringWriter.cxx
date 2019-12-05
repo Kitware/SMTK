@@ -278,7 +278,7 @@ std::string XmlV2StringWriter::convertToString(bool no_declaration)
     if (m_useDirectoryInfo)
     {
       auto incs = m_resource->directoryInfo().at(i).includeFiles();
-      if (incs.size())
+      if (!incs.empty())
       {
         auto inodes = root.append_child("Includes");
         for (auto inc : incs)
@@ -411,7 +411,7 @@ void XmlV2StringWriter::generateXml()
   for (std::size_t i = 1; i < num; i++)
   {
     auto cats = m_resource->directoryInfo().at(i).catagories();
-    if (cats.size())
+    if (!cats.empty())
     {
       xml_node& catsRoot(m_internals->m_roots.at(i));
       catsRoot.append_child(node_comment).set_value("**********  Category Information ***********");
@@ -508,7 +508,7 @@ void XmlV2StringWriter::processDefinitionInternal(
   xml_node& definition, smtk::attribute::DefinitionPtr def)
 {
   definition.append_attribute("Type").set_value(def->type().c_str());
-  if (def->label() != "")
+  if (!def->label().empty())
   {
     definition.append_attribute("Label").set_value(def->label().c_str());
   }
@@ -572,11 +572,11 @@ void XmlV2StringWriter::processDefinitionInternal(
     this->processItemDefinition(assocDefNode, assocRule);
   }
 
-  if (def->briefDescription() != "")
+  if (!def->briefDescription().empty())
   {
     definition.append_child("BriefDescription").text().set(def->briefDescription().c_str());
   }
-  if (def->detailedDescription() != "")
+  if (!def->detailedDescription().empty())
   {
     definition.append_child("DetailedDescription").text().set(def->detailedDescription().c_str());
   }
@@ -609,7 +609,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
 {
   xml_node child;
   node.append_attribute("Name").set_value(idef->name().c_str());
-  if (idef->label() != "")
+  if (!idef->label().empty())
   {
     node.append_attribute("Label").set_value(idef->label().c_str());
   }
@@ -644,11 +644,11 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
       catNodes.append_child("Cat").text().set(str.c_str());
     }
   }
-  if (idef->briefDescription() != "")
+  if (!idef->briefDescription().empty())
   {
     node.append_child("BriefDescription").text().set(idef->briefDescription().c_str());
   }
-  if (idef->detailedDescription() != "")
+  if (!idef->detailedDescription().empty())
   {
     node.append_child("DetailedDescription").text().set(idef->detailedDescription().c_str());
   }
@@ -807,7 +807,7 @@ void XmlV2StringWriter::processValueDef(
       enode.text().set(exp->type().c_str());
     }
   }
-  if (idef->units() != "")
+  if (!idef->units().empty())
   {
     node.append_attribute("Units") = idef->units().c_str();
   }
@@ -837,7 +837,7 @@ void XmlV2StringWriter::processFileDef(pugi::xml_node& node, attribute::FileItem
 {
   this->processFileSystemDef(node, idef);
   std::string fileFilters = idef->getFileFilters();
-  if (fileFilters != "")
+  if (!fileFilters.empty())
   {
     node.append_attribute("FileFilters") = fileFilters.c_str();
   }
@@ -1182,7 +1182,7 @@ void XmlV2StringWriter::processDirectoryItem(pugi::xml_node& node, attribute::Di
 void XmlV2StringWriter::processFileItem(pugi::xml_node& node, attribute::FileItemPtr item)
 {
   // always write out all recentValues
-  if (item->recentValues().size() > 0)
+  if (!item->recentValues().empty())
   {
     xml_node recval, recvalues = node.append_child("RecentValues");
     std::vector<std::string>::const_iterator it;
@@ -1327,7 +1327,7 @@ void XmlV2StringWriter::processView(smtk::view::ConfigurationPtr view)
   node = viewsNode.append_child("View");
   node.append_attribute("Type").set_value(view->type().c_str());
   node.append_attribute("Name").set_value(view->name().c_str());
-  if (view->iconName() != "")
+  if (!view->iconName().empty())
   {
     node.append_attribute("Icon").set_value(view->iconName().c_str());
   }
@@ -1345,7 +1345,7 @@ void XmlV2StringWriter::processViewComponent(
   }
   // if the comp has contents then save it in the node's text
   // else process the comp's children
-  if (comp.contents() != "")
+  if (!comp.contents().empty())
   {
     node.text().set(comp.contents().c_str());
   }

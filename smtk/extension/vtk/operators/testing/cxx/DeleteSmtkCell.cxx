@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
   smtk::model::Models models =
     modelresource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
 
-  if (models.size() < 1)
+  if (models.empty())
     return 1;
 
   smtk::model::Model simpleSMTK = models[0];

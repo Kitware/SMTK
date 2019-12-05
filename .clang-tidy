@@ -75,7 +75,6 @@ portability-*,\
 readability-*,\
 -readability-braces-around-statements,\
 -readability-const-return-type,\
--readability-container-size-empty,\
 -readability-convert-member-functions-to-static,\
 -readability-else-after-return,\
 -readability-implicit-bool-conversion,\

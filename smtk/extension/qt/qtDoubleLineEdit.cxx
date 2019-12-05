@@ -89,7 +89,7 @@ void unregister_dle_instance(qtDoubleLineEdit* dle)
 {
   assert(InstanceTracker != nullptr);
   InstanceTracker->removeOne(dle);
-  if (InstanceTracker->size() == 0)
+  if (InstanceTracker->empty())
   {
     delete InstanceTracker;
     InstanceTracker = nullptr;

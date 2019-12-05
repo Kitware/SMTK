@@ -90,7 +90,7 @@ bool qtAttributeItemInfo::buildFromComponent(smtk::view::Configuration::Componen
           // Ok we need to "prep" it
           qtAttributeItemInfo info;
           info.m_baseView = view;
-          if (subPath == "")
+          if (subPath.empty())
           {
             // The path refers to this item
             info.m_component = comp.child(i);
@@ -102,7 +102,7 @@ bool qtAttributeItemInfo::buildFromComponent(smtk::view::Configuration::Componen
           }
           dict[iname] = info;
         }
-        else if (subPath == "")
+        else if (subPath.empty())
         {
           it->second.m_component = comp.child(i);
         }
@@ -141,7 +141,7 @@ bool qtAttributeItemInfo::createNewDictionary(std::map<std::string, qtAttributeI
         // Ok we need to "prep" it
         qtAttributeItemInfo info;
         info.m_baseView = m_baseView;
-        if (subPath == "")
+        if (subPath.empty())
         {
           // The path refers to this item
           info.m_component = entry.second;
@@ -153,7 +153,7 @@ bool qtAttributeItemInfo::createNewDictionary(std::map<std::string, qtAttributeI
         }
         dict[iname] = info;
       }
-      else if (subPath == "")
+      else if (subPath.empty())
       {
         it->second.m_component = entry.second;
       }

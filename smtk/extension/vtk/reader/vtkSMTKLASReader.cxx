@@ -356,7 +356,7 @@ int vtkSMTKLASReader::ReadPoints(vtkMultiBlockDataSet* output)
   // only 0-8 really used, allocated array for all 32
   LASPieceInfo pieceInfo[NUMBER_OF_CLASSIFICATIONS];
   // initialize with readRatios
-  if (this->RequestedReadClassifications.size() == 0)
+  if (this->RequestedReadClassifications.empty())
   {
     for (int i = 0; i < NUMBER_OF_CLASSIFICATIONS; i++)
     {

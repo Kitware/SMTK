@@ -29,7 +29,7 @@ int main(int argc, char** const argv)
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();
 
-  test(operationManager->metadata().size() == 0);
+  test(operationManager->metadata().empty());
 
   // Register import python operation to the operation manager
   operationManager->registerOperation<smtk::operation::ImportPythonOperation>(

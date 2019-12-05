@@ -103,7 +103,7 @@ MergeMeshVertices::~MergeMeshVertices()
     return rval;
   }
 
-  if (deadEnts.size() > 0)
+  if (!deadEnts.empty())
   {
     rval = map_dead_to_alive(mbMergeTag);
     if (MB_SUCCESS != rval)
@@ -284,7 +284,7 @@ MergeMeshVertices::~MergeMeshVertices()
   // they are used (eventually) for higher dim entities
   mergedToVertices.clear();
   ErrorCode result;
-  if (deadEnts.size() == 0)
+  if (deadEnts.empty())
   {
     return MB_SUCCESS; //nothing to merge carry on with the program
   }

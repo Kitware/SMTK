@@ -125,7 +125,7 @@ void verify_partial_pointfields()
 
   {
     std::set<smtk::mesh::PointField> pointfields = one.pointFields();
-    test(pointfields.size() == 0);
+    test(pointfields.empty());
   }
 
   {

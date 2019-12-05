@@ -51,7 +51,7 @@ void vtkCMBIncorporateMeshOperation::Operate(vtkDiscreteModelWrapper* modelWrapp
 {
   vtkDebugMacro("Incorporating solid meshes into a CMB model.");
   this->OperateSucceeded = 0;
-  if (this->SolidMeshes.size() == 0)
+  if (this->SolidMeshes.empty())
   {
     vtkWarningMacro("There is no solid mesh input.");
     return;
@@ -268,7 +268,7 @@ bool vtkCMBIncorporateMeshOperation::SplitMeshRegion(
       } // end if(ptFound)
     }   // end for each cell
 
-    if (SolidRegionMeshCellsMap.size() > 0)
+    if (!SolidRegionMeshCellsMap.empty())
     {
       std::map<vtkDiscreteModelRegion*, vtkSmartPointer<vtkIdList> >::iterator itReg =
         SolidRegionMeshCellsMap.begin();

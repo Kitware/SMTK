@@ -273,7 +273,7 @@ bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscret
   while (!file.eof())
   {
     std::getline(file, line);
-    if (line.size() == 0)
+    if (line.empty())
     {
       continue;
     }

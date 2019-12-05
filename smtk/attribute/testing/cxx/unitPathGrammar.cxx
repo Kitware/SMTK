@@ -47,7 +47,7 @@ int unitPathGrammar(int, char** const)
   test(ok, "Failed to parse: /foo-bar!");
   std::cerr << "Path = " << path << " Leading Item = " << a << " Residue = " << b << std::endl;
   test(a == "foo-bar", "Failed: Leading Item should be foo-bar!");
-  test(b == "", "Failed: Residue should be empty !");
+  test(b.empty(), "Failed: Residue should be empty !");
 
   return 0;
 }

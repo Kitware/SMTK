@@ -258,7 +258,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
       {
         createdEntities->appendValue(bgroup.component());
       }
-      if (modGrps.size() > 0)
+      if (!modGrps.empty())
       {
         for (auto c : modGrps)
         {
@@ -266,7 +266,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
         }
       }
     }
-    if (optype == "Remove" && grpsRemoved.size() > 0)
+    if (optype == "Remove" && !grpsRemoved.empty())
     {
       smtk::attribute::ComponentItem::Ptr remEntities = result->findComponent("removed");
       for (auto r : grpsRemoved)

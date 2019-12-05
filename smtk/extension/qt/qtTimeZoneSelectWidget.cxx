@@ -145,7 +145,7 @@ void qtTimeZoneSelectWidget::onContinentChanged(
   (void)deselected;
 
   //qDebug() << "onContinentChanged";
-  if (selected.size() == 0)
+  if (selected.empty())
   {
     return; // deselected case
   }

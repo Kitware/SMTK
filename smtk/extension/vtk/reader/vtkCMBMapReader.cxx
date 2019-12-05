@@ -441,7 +441,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
 
       //we know know the polygon id
       //update the loop table with polygon information
-      if (outerLoopIndexes.size() > 0)
+      if (!outerLoopIndexes.empty())
       {
         mapInterface->AddLoopWithArcs(id, true, outerLoopIndexes);
       }

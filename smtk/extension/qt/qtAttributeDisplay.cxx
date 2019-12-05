@@ -205,7 +205,7 @@ void qtAttributeDisplay::onShowCategory(const std::string& strCategory)
   this->Internals->PropDefsCombo->blockSignals(false);
 
   this->getDefinitionsWithAssociations();
-  if (!this->Internals->AllAssignedDefs.size())
+  if (this->Internals->AllAssignedDefs.empty())
   {
     return;
   }
@@ -276,7 +276,7 @@ void qtAttributeDisplay::initSelectPropCombo(
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
-  if (result.size() == 0)
+  if (result.empty())
   {
     this->Internals->SelectPropCombo->setCurrentIndex(0);
     this->Internals->SelectPropCombo->blockSignals(false);
@@ -352,7 +352,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
 
   std::vector<smtk::attribute::AttributePtr> atts;
   attResource->attributes(atts);
-  if (atts.size() == 0)
+  if (atts.empty())
     return;
 
   if (attResource->associations().empty() == true)
@@ -361,7 +361,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   std::vector<smtk::attribute::AttributePtr>::const_iterator it;
   for (it = atts.begin(); it != atts.end(); ++it)
   {
-    if ((*it)->associatedModelEntityIds().size() == 0)
+    if ((*it)->associatedModelEntityIds().empty())
     {
       continue;
     }

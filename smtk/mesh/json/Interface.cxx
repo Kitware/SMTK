@@ -412,7 +412,7 @@ smtk::common::UUIDArray Interface::computeModelEntities(
     if (m == m_meshInfo.end())
       continue;
     const smtk::common::UUIDArray& t = m->modelUUIDS();
-    if (t.size() > 0)
+    if (!t.empty())
     {
       uuids.insert(uuids.end(), t.begin(), t.end());
     }

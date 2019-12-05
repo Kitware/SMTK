@@ -496,7 +496,7 @@ void qtBaseAttributeView::topLevelPrepConfigurations(
 
   // First lets see if the definition information was set
   std::string configDefType;
-  if ((!view->details().attribute("ConfigurationType", configDefType)) || (configDefType == ""))
+  if ((!view->details().attribute("ConfigurationType", configDefType)) || configDefType.empty())
   {
     std::cerr << "Could not find ConfigurationType: " << configDefType << "\n";
     return;
@@ -510,7 +510,7 @@ void qtBaseAttributeView::topLevelPrepConfigurations(
     // Was a definition label specified?
     std::string configDefLabel;
     if ((!view->details().attribute("ConfigurationTypeLabel", configDefLabel)) ||
-      (configDefLabel == ""))
+      configDefLabel.empty())
     {
       configDef = analyses.buildAnalysesDefinition(attResource, configDefType);
     }
@@ -808,7 +808,7 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
     {
       // If the current config name is not set then record this as the
       // current configuration
-      if (currentConfig == "")
+      if (currentConfig.empty())
       {
         currentConfig = att->name();
         attRes->analyses().getAnalysisAttributeCategories(att, cats);

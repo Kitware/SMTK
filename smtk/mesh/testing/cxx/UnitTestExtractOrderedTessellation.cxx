@@ -119,7 +119,7 @@ int UnitTestExtractOrderedTessellation(int, char** const)
 
     //check if we have an exterior loop
     smtk::model::Loops exteriorLoops = fu.loops();
-    if (exteriorLoops.size() == 0)
+    if (exteriorLoops.empty())
     {
       //if we don't have loops we are bailing out!
       std::cerr << "No loops!" << std::endl;

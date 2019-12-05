@@ -705,7 +705,7 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       switch (flags & ANY_DIMENSION)
       {
         case DIMENSION_0:
-          ptr = counters.size() > 0 ? &counters[0] : NULL;
+          ptr = !counters.empty() ? &counters[0] : NULL;
           break;
         case DIMENSION_1:
           ptr = counters.size() > 1 ? &counters[1] : NULL;
@@ -728,7 +728,7 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       switch (flags & ANY_DIMENSION)
       {
         case DIMENSION_0 | DIMENSION_1:
-          ptr = counters.size() > 0 ? &counters[0] : NULL;
+          ptr = !counters.empty() ? &counters[0] : NULL;
           break;
         case DIMENSION_1 | DIMENSION_2:
           ptr = counters.size() > 1 ? &counters[1] : NULL;
@@ -749,7 +749,7 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
     case GROUP_ENTITY:
       if ((((flags & MODEL_BOUNDARY) != 0) ^ ((flags & MODEL_DOMAIN) != 0)) == 0)
       {
-        ptr = counters.size() > 0 ? &counters[0] : NULL;
+        ptr = !counters.empty() ? &counters[0] : NULL;
       }
       else if (flags & MODEL_DOMAIN)
       {
@@ -761,13 +761,13 @@ int Entity::countForType(BitFlags flags, IntegerList& counters, bool incr)
       }
       break;
     case MODEL_ENTITY:
-      ptr = counters.size() > 0 ? &counters[0] : NULL;
+      ptr = !counters.empty() ? &counters[0] : NULL;
       break;
     case INSTANCE_ENTITY:
     case SESSION:
     case AUX_GEOM_ENTITY:
     default:
-      ptr = counters.size() > 0 ? &counters[0] : NULL;
+      ptr = !counters.empty() ? &counters[0] : NULL;
       break;
   }
   if (!ptr)

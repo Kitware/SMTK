@@ -140,7 +140,7 @@ static void internal_AddBlockInfo(const smtk::mesh::ResourcePtr& meshcollect,
   smtk::model::EntityRefs vols;
   if (bordantCell.isValid() && bordantCell.isVolume())
     vols.insert(bordantCell);
-  if (vols.size())
+  if (!vols.empty())
   {
     // Add volume UUID to fieldData
     vtkNew<vtkStringArray> volArray;
@@ -336,18 +336,19 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       defaultName << "mesh " << i;
       smtk::mesh::MeshSet singleMesh = allMeshes.subset(i);
       std::vector<std::string> meshNames = singleMesh.names();
-      std::string meshName = meshNames.size() > 0 ? meshNames[0] : defaultName.str();
+      std::string meshName = !meshNames.empty() ? meshNames[0] : defaultName.str();
       // Set the block name to a mesh name if it has one.
       // for now, use "mesh (<cell type>) <index>" for name
       mbds->GetMetaData(static_cast<unsigned>(i))
         ->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
-      this->SetDataObjectUUID(mbds->GetMetaData(static_cast<unsigned>(i)), singleMesh.id());
+      vtkMeshMultiBlockSource::SetDataObjectUUID(
+        mbds->GetMetaData(static_cast<unsigned>(i)), singleMesh.id());
       this->GenerateRepresentationForSingleMesh(
         singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
       mbds->SetBlock(static_cast<unsigned>(i), poly.GetPointer());
       smtk::model::EntityRefArray ents;
       bool validEnts = singleMesh.modelEntities(ents);
-      if (validEnts && ents.size() > 0)
+      if (validEnts && !ents.empty())
       {
         internal_AddBlockEntityInfo(singleMesh, ents[0], i, poly.GetPointer(), m_UUID2BlockIdMap);
       }

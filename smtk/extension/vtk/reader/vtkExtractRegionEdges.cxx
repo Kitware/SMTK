@@ -608,7 +608,7 @@ void vtkExtractRegionEdges::UpdateRegionIdentifiersIfNecessary(vtkPolyData* outp
     processStack.clear();
     newRegionIds->SetValue(cellIndex, regionId);
     processStack.push_back(cellIndex);
-    while (processStack.size())
+    while (!processStack.empty())
     {
       vtkIdType currentIndex = processStack.back();
       processStack.pop_back();

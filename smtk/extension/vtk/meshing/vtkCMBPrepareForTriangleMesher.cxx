@@ -646,7 +646,7 @@ bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
         edge.setMeshPoints(this->PolyData, cellOffset, cellSize);
 
         //If there is node information add it
-        if (nodeId2point.size() > 0)
+        if (!nodeId2point.empty())
         {
           vtkIdType nodeId1 = fEndpoint1->GetTuple1(arcIndex);
           vtkIdType nodeId2 = fEndpoint2->GetTuple1(arcIndex);

@@ -553,7 +553,7 @@ void qtSimpleExpressionView::onCSVLoad()
     }
     tableVals.append(rowVals);
   }
-  if (tableVals.size())
+  if (!tableVals.empty())
   {
     QString tableString = tableVals.join(" ");
     QString dummy;

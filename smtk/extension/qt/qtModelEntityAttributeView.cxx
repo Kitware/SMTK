@@ -150,7 +150,7 @@ public:
     {
       auto atts = (*iter)->attributes(obj);
       assert(atts.size() <= 1); // debug
-      if (atts.size())
+      if (!atts.empty())
       {
         return *(atts.begin());
       }

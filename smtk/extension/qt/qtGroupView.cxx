@@ -129,7 +129,7 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
     }
     // If we could not find the saved tab and there are tabs in the widget
     // set the curren to the first
-    if ((m_currentTabSelected == -1) && (m_TabbedViews.size() > 0))
+    if ((m_currentTabSelected == -1) && !m_TabbedViews.empty())
     {
       m_currentTabSelected = 0;
     }
@@ -297,7 +297,7 @@ void qtGroupView::createWidget()
     tabWidget->setIconSize(QSize(24, 24));
     tabWidget->setTabPosition(this->Internals->m_tabPosition);
     // If there is no currently saved View then lets set it to the currently selected tab
-    if (this->Internals->m_savedViewName == "")
+    if (this->Internals->m_savedViewName.empty())
     {
       qtBaseView* currView = this->getChildView(this->Internals->m_currentTabSelected);
       if (currView)

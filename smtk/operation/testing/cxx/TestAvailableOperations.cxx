@@ -286,7 +286,7 @@ int TestAvailableOperations(int, char* [])
 
     // Query the operation manager for resources that accept our component
     auto availableOperations = operationManager->availableOperations(component);
-    smtkTest((availableOperations.size() == 0), "Should be 0 available operations for resourceX.");
+    smtkTest(availableOperations.empty(), "Should be 0 available operations for resourceX.");
   }
 
   return 0;

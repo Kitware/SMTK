@@ -85,7 +85,7 @@ public:
   vtkIdType createNewDomain()
   {
     vtkIdType newDomainValue = 0;
-    if (this->DomainsToRegions.size() > 0)
+    if (!this->DomainsToRegions.empty())
     {
       //find the last element in the map, and increment its value
       //by one to get the new domain value. This is will not
@@ -590,7 +590,7 @@ void vtkCMBModelBuilder::ProcessAs2DMesh(
     // If original region array exist, we should use those region Ids to
     // create materials.
     vtkModelMaterial* newMaterial = NULL;
-    if (oldRegionArray && newToOldRegionMap.size() > 0)
+    if (oldRegionArray && !newToOldRegionMap.empty())
     {
       vtkIdType oldRegionId = newToOldRegionMap[regionId];
       newMaterial =

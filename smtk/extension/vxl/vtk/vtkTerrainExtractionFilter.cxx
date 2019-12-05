@@ -719,7 +719,7 @@ void vtkTerrainExtractionFilter::AppendOutputs()
     std::string globString = originalOutputPath + "/*";
     vtksys::Glob glob;
     glob.FindFiles(globString);
-    if (glob.GetFiles().size() == 0)
+    if (glob.GetFiles().empty())
     {
       vtksys::SystemTools::RemoveADirectory(originalOutputPath);
     }

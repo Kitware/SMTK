@@ -86,7 +86,7 @@ void verify_model_association()
   //verify the MODEL_ENTITY is correct
   smtk::model::EntityRefs currentModels =
     modelResource->entitiesMatchingFlagsAs<smtk::model::EntityRefs>(smtk::model::MODEL_ENTITY);
-  if (currentModels.size() > 0)
+  if (!currentModels.empty())
   { //presuming only a single model in the model resource
     test((meshResource->associatedModel() == currentModels.begin()->entity()),
       "mesh resource associated model should match model resource");

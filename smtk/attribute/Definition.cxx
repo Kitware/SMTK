@@ -160,7 +160,7 @@ void Definition::setIsUnique(bool val)
 bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
 {
   // 2 Definitions conflict if they exclude each other
-  if (m_exclusionDefs.size())
+  if (!m_exclusionDefs.empty())
   {
     for (auto wdef : m_exclusionDefs)
     {
@@ -390,7 +390,7 @@ bool Definition::checkAssociationRules(smtk::resource::ConstPersistentObjectPtr 
 
 AttributePtr Definition::checkForConflicts(smtk::resource::ConstPersistentObjectPtr object) const
 {
-  if (m_exclusionDefs.size())
+  if (!m_exclusionDefs.empty())
   {
     for (auto wdef : m_exclusionDefs)
     {
@@ -400,7 +400,7 @@ AttributePtr Definition::checkForConflicts(smtk::resource::ConstPersistentObject
         continue;
       }
       auto atts = def->attributes(object);
-      if (atts.size() > 0)
+      if (!atts.empty())
       {
         return *(atts.begin());
       }
@@ -418,7 +418,7 @@ DefinitionPtr Definition::checkForPrerequisites(
   smtk::resource::ConstPersistentObjectPtr object) const
 {
   // Next let's see if there are any attributes that would exclude this one
-  if (m_prerequisiteDefs.size())
+  if (!m_prerequisiteDefs.empty())
   {
     for (auto wdef : m_prerequisiteDefs)
     {
@@ -428,7 +428,7 @@ DefinitionPtr Definition::checkForPrerequisites(
         continue;
       }
       auto atts = def->attributes(object);
-      if (atts.size() == 0)
+      if (atts.empty())
       {
         return def;
       }
@@ -530,7 +530,7 @@ std::vector<std::string> Definition::prerequisiteTypeNames() const
 smtk::attribute::ConstDefinitionPtr Definition::hasPrerequisite(
   smtk::attribute::ConstDefinitionPtr def) const
 {
-  if (m_prerequisiteDefs.size())
+  if (!m_prerequisiteDefs.empty())
   {
     for (auto it = m_prerequisiteDefs.begin(); it != m_prerequisiteDefs.end(); ++it)
     {
@@ -551,14 +551,14 @@ smtk::attribute::ConstDefinitionPtr Definition::hasPrerequisite(
 
 bool Definition::hasPrerequisites() const
 {
-  if (m_prerequisiteDefs.size())
+  if (!m_prerequisiteDefs.empty())
   {
     return true;
   }
   auto def = m_baseDefinition;
   while (def != nullptr)
   {
-    if (def->m_prerequisiteDefs.size())
+    if (!def->m_prerequisiteDefs.empty())
     {
       return true;
     }

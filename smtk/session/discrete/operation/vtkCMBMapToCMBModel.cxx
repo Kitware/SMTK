@@ -251,7 +251,7 @@ public:
       (*curr).edgeId); //Remove the edge so we don't have to check it again
 
     // Start walking the rest of the edges
-    while (order1.size() > 0)
+    while (!order1.empty())
     {
       //Find edges connected to the last endpoint
       std::list<WalkableEdge> foundEdges;
@@ -269,7 +269,7 @@ public:
         this->removeEdge(nextEdge.ptId1, nextEdge.ptId2, nextEdge.edgeId);
         currPt = (currPt == nextEdge.ptId1) ? nextEdge.ptId2 : nextEdge.ptId1;
 
-        if (currPt == targetEndPoint && order1.size() > 0)
+        if (currPt == targetEndPoint && !order1.empty())
         {
           //Error there are edges in the loop that are not part of the loop
           numEdges = -2;

@@ -856,7 +856,7 @@ void ModelLoopRep::bounds(double b[4]) const
 {
   std::map<meshVertex, vtkIdType>::const_iterator pointIt;
 
-  if (this->Internal->PointsToIds.size() == 0)
+  if (this->Internal->PointsToIds.empty())
   {
     //handle the 0 point use case
     b[0] = b[1] = b[2] = b[3] = 0.0;
@@ -882,7 +882,7 @@ const meshEdge* ModelLoopRep::findClosestSegment(
   const double& x, const double& y, meshVertex& vertex) const
 {
   const meshEdge* result = NULL;
-  if (this->Internal->Segments.size() == 0)
+  if (this->Internal->Segments.empty())
   {
     return NULL;
   }

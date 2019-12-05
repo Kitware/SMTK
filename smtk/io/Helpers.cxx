@@ -93,7 +93,7 @@ bool Helpers::isSMTKFilename(const std::string& pathToFile, std::string& contain
     << ptf << " extension " << ptf.extension() << "\n"
     ;
     */
-  if (ptf.stem() != "" && ptf.extension() == ".smtk")
+  if (!ptf.stem().empty() && ptf.extension() == ".smtk")
   {
     containingDir = ptf.parent_path().string();
     return true;

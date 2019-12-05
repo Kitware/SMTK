@@ -124,7 +124,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     // mylevel 150 will use level 200
     // my level 250 will use level 300
     // my level 350 will not be visible at all
-    if (!foundLevel && levels.size() > 0)
+    if (!foundLevel && !levels.empty())
     {
       levels.insert(mylevel);
       std::set<int>::iterator it = levels.upper_bound(mylevel);

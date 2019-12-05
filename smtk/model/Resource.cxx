@@ -1973,7 +1973,7 @@ bool Resource::setBoundingBox(
   }
   else // calculate boundingBox
   {
-    if (coords.size() == 0)
+    if (coords.empty())
     {
       return false;
     } // nothing to set

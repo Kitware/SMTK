@@ -356,7 +356,7 @@ vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int /*id*/)
   std::vector<vtkIdType> associatedModelEdgeUses;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
     vtkModelEdgeUseType, associatedModelEdgeUses);
-  if (associatedModelEdgeUses.size() == 0)
+  if (associatedModelEdgeUses.empty())
   {
     vtkErrorMacro("ModelLoopUse has incorrect number of adjacent model edge uses.");
     return 0;
@@ -502,7 +502,7 @@ vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
   std::vector<vtkIdType> floatingEdges;
   this->GetAssociations(
     this->CurrentElement->FindNestedElementByName("Associations"), vtkModelEdgeType, floatingEdges);
-  if (floatingEdges.size() != 0)
+  if (!floatingEdges.empty())
   {
     vtkModelItem* edge = this->Model->GetModelEntity(vtkModelEdgeType, floatingEdges[0]);
     region->AddAssociation(edge);
@@ -704,7 +704,7 @@ vtkDiscreteModelEntityGroup* vtkXMLModelReader::ConstructModelEntityGroup(int id
     return this->Model->BuildModelEntityGroup(
       type, numberOfEntities, numberOfEntities ? (&entities[0]) : NULL, id);
   }
-  else if (associations.size() == 0)
+  else if (associations.empty())
   {
     return this->Model->BuildModelEntityGroup(-1, 0, NULL, id);
   }

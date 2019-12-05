@@ -398,7 +398,7 @@ void XmlDocV1Parser::getCategories(
   {
     // Get the default category if one is specified
     defCat = node.attribute("Default").value();
-    if (defCat != "")
+    if (!defCat.empty())
     {
       cats.insert(defCat);
     }
@@ -496,7 +496,7 @@ void XmlDocV1Parser::process(pugi::xml_node& amnode)
   std::set<std::string> newCats, seccategories = m_resource->categories();
   std::string defCat, s;
   this->getCategories(amnode, newCats, defCat);
-  if (defCat != "")
+  if (!defCat.empty())
   {
     m_defaultCategory = defCat;
   }
@@ -693,7 +693,7 @@ void XmlDocV1Parser::createDefinition(xml_node& defNode)
     return;
   }
   baseType = defNode.attribute("BaseType").value();
-  if (baseType != "")
+  if (!baseType.empty())
   {
     baseDef = m_resource->findDefinition(baseType);
     if (!baseDef)
@@ -1004,7 +1004,7 @@ void XmlDocV1Parser::processItemDef(xml_node& node, smtk::attribute::ItemDefinit
       idef->addLocalCategory(child.text().get());
     }
   }
-  else if (m_defaultCategory != "" &&
+  else if (!m_defaultCategory.empty() &&
     !smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef))
   { // group item definitions don't get categories
     idef->addLocalCategory(m_defaultCategory);

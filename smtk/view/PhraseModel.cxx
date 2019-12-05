@@ -101,7 +101,7 @@ class PhraseDeltas : public std::set<std::vector<int>, PathComp>
 // than one source
 smtk::operation::ManagerPtr PhraseModel::operationManager() const
 {
-  if (m_sources.size())
+  if (!m_sources.empty())
   {
     return m_sources.front().m_operMgr;
   }

@@ -102,9 +102,9 @@ int main(int argc, char* argv[])
   sm->setStringProperty(uids[21], "name", "Tetrahedron"); // Resets name to length 1.
   test(sm->stringProperty(uids[0], "velocity")[0] == "vx");
   test(sm->stringProperty(uids[0], "velocity")[1] == "vy");
-  test(sm->stringProperty(uids[0], "velocity").size() == 3);  // Test multi-entry length.
-  test(sm->stringProperty(uids[21], "velocity").size() == 0); // Test missing entry length.
-  test(sm->stringProperty(uids[21], "name").size() == 1);     // Test length of reset property.
+  test(sm->stringProperty(uids[0], "velocity").size() == 3); // Test multi-entry length.
+  test(sm->stringProperty(uids[21], "velocity").empty());    // Test missing entry length.
+  test(sm->stringProperty(uids[21], "name").size() == 1);    // Test length of reset property.
   double d3vals[] = { 1.0, 0.0, 2.0 };
   int i2vals[] = { 100, 200 };
   FloatList v3(d3vals, d3vals + 3);

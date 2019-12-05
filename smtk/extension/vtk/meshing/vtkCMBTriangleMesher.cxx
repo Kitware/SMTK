@@ -107,7 +107,7 @@ public:
 void SmartMapAppend(std::list<vtkPolyData*> inputs, vtkPolyData* output, bool PreserveEdgesAndNodes)
 {
   //if we have nothing to append to do anything at all
-  if (inputs.size() == 0)
+  if (inputs.empty())
   {
     return;
   }

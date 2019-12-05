@@ -68,7 +68,7 @@ bool FileSystemItem::isValid(const std::set<std::string>& cats) const
   // category checks - if it doesn't it means its not be taken into account
   // for validity checking so just return true
 
-  if (cats.size() && !this->passCategoryCheck(cats))
+  if (!cats.empty() && !this->passCategoryCheck(cats))
   {
     return true;
   }
@@ -168,7 +168,7 @@ std::string FileSystemItem::valueAsString(std::size_t element, const std::string
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
   assert(m_values.size() > element);
-  if (format != "")
+  if (!format.empty())
   {
     sprintf(dummy, format.c_str(), m_values[element].c_str());
   }

@@ -163,7 +163,7 @@ int Import::taggedPolyData2PolygonModelEntities(smtk::session::polygon::Resource
     if (pcoords.empty() || (currentEdgeTag != tagInfo->GetValue(cellId)))
     {
       // Were we walking a model edge already?
-      if (pcoords.size())
+      if (!pcoords.empty())
       {
         createEdgeOp->process(pcoords, 3, model);
         numEnts++;
@@ -191,7 +191,7 @@ int Import::taggedPolyData2PolygonModelEntities(smtk::session::polygon::Resource
     pcoords.push_back(pnt[2]);
     lastPointId = pts[1];
   }
-  if (pcoords.size())
+  if (!pcoords.empty())
   {
     createEdgeOp->process(pcoords, 3, model);
     numEnts++;

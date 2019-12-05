@@ -462,7 +462,7 @@ bool write_dm(
   }
 
   std::vector<MeshByRegion> meshes = subsetByRegion(meshResource, type);
-  if (meshes.size() == 0)
+  if (meshes.empty())
   { //nothing to write out
     return false;
   }
@@ -480,7 +480,7 @@ bool write_dm(smtk::mesh::ResourcePtr meshResource, smtk::model::ResourcePtr res
 
   std::vector<MeshByRegion> meshes =
     subsetByModelProperty(meshResource, resource, modelPropertyName, type);
-  if (meshes.size() == 0)
+  if (meshes.empty())
   { //nothing to write out
     return false;
   }

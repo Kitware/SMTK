@@ -299,7 +299,7 @@ int Session::ExportEntitiesToFileOfNameAndType(const std::vector<smtk::model::En
     if (model)
       refsOut.insert(model);
   }
-  if (refsOut.size() <= 0)
+  if (refsOut.empty())
     return 1;
 
   vtkNew<vtkCMBModelWriterV5> wri;

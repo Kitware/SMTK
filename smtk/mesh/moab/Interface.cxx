@@ -1205,7 +1205,7 @@ smtk::common::UUID Interface::rootAssociation() const
   smtk::mesh::Handle root = m_iface->get_root_set();
   m_iface->tag_get_tags_on_entity(root, tag_handles);
 
-  if (tag_handles.size() > 0)
+  if (!tag_handles.empty())
   {
     tag::QueryRootModelEntTag mtag(this->moabInterface());
     return detail::computeDenseOpaqueTagValue<smtk::common::UUID>(

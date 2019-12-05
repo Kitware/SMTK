@@ -81,7 +81,7 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
 
     //this file has no mesh sets that match the given tag so we should
     //fail as trying to load now will bring in the entire mesh, which is wrong
-    if (tag_err != ::moab::MB_SUCCESS || tag_values.size() == 0)
+    if (tag_err != ::moab::MB_SUCCESS || tag_values.empty())
     {
       return false;
     }

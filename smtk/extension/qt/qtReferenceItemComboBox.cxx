@@ -322,7 +322,7 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
     // refactored so that the logic for calculating names resides in one place
     // Also - the current approach doesn't work when there are more than 1
     // unamed resources.
-    if (obj->name() == "")
+    if (obj->name().empty())
     {
       this->Internals->comboBox->addItem("New Resource", vdata);
     }

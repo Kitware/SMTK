@@ -451,7 +451,7 @@ smtk::mesh::ResourcePtr ModelToMesh::operator()(const smtk::model::ResourcePtr& 
 
       EntityRefs currentModels =
         modelResource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::MODEL_ENTITY);
-      if (currentModels.size() > 0)
+      if (!currentModels.empty())
       {
         meshResource->associateToModel(currentModels.begin()->entity());
       }
