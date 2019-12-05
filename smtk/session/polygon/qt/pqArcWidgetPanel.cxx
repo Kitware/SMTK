@@ -70,10 +70,7 @@ ArcPicker::~ArcPicker()
 
 void ArcPicker::doPick(pqRenderView* view, pqPolygonArc* arc, PickInfo& arcinfo)
 {
-  if (this->Selecter)
-  {
-    delete this->Selecter;
-  }
+  delete this->Selecter;
   m_isActive = false;
   this->View = NULL; //clear the view each time
   if (view)

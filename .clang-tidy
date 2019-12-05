@@ -77,7 +77,6 @@ readability-*,\
 -readability-const-return-type,\
 -readability-container-size-empty,\
 -readability-convert-member-functions-to-static,\
--readability-delete-null-pointer,\
 -readability-else-after-return,\
 -readability-implicit-bool-conversion,\
 -readability-inconsistent-declaration-parameter-name,\

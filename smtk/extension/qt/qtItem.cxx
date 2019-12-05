@@ -48,10 +48,7 @@ qtItem::~qtItem()
   {
     delete m_widget;
   }
-  if (this->Internals)
-  {
-    delete this->Internals;
-  }
+  delete this->Internals;
 }
 
 void qtItem::markForDeletion()

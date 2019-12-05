@@ -85,10 +85,7 @@ Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePt
 
 Resource::~Resource()
 {
-  if (m_internals)
-  {
-    delete m_internals;
-  }
+  delete m_internals;
 }
 
 smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& compId) const

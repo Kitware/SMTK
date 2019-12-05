@@ -204,10 +204,7 @@ void qtUIManager::commonConstructor()
 
 qtUIManager::~qtUIManager()
 {
-  if (m_topView)
-  {
-    delete m_topView;
-  }
+  delete m_topView;
 }
 
 void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)

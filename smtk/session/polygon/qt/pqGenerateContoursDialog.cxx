@@ -244,10 +244,7 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(pqPipelineSource* imagesource
 pqGenerateContoursDialog::~pqGenerateContoursDialog()
 {
   delete this->InternalWidget;
-  if (this->MainDialog)
-  {
-    delete MainDialog;
-  }
+  delete MainDialog;
   pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
   if (this->ContourRepresentation)
   {

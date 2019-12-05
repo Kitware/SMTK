@@ -84,10 +84,7 @@ vtkSMTKArcRepresentation::~vtkSMTKArcRepresentation()
     PointSelectCallBack->Delete();
   }
   PointSelectCallBack = nullptr;
-  if (this->ModifiedPointMap)
-  {
-    delete this->ModifiedPointMap;
-  }
+  delete this->ModifiedPointMap;
 }
 
 int vtkSMTKArcRepresentation::GetNumberOfSelectedNodes()

@@ -316,10 +316,7 @@ vtkXMLElement* vtkXMLModelWriter::CreateDOM(
 void vtkXMLModelWriter::Serialize(
   std::ostringstream& ostr, const char* rootName, std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
-  if (this->Internal)
-  {
-    delete this->Internal;
-  }
+  delete this->Internal;
   this->Internal = new vtkXMLModelWriterInternals;
 
   vtkXMLElement* re = this->CreateDOM(rootName, objs);

@@ -284,10 +284,7 @@ vtkTerrainExtractionInternal::~vtkTerrainExtractionInternal()
   this->Transform->Delete();
   this->InverseTransform->Delete();
   this->DeleteTemporaryFiles();
-  if (this->Refine)
-  {
-    delete this->Refine;
-  }
+  delete this->Refine;
   if (this->OutputSplitCount)
   {
     delete[] this->OutputSplitCount;
@@ -449,10 +446,7 @@ int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
 
     bbox.GetBounds(this->InputBounds);
 
-    if (this->Internal->Refine)
-    {
-      delete this->Internal->Refine;
-    }
+    delete this->Internal->Refine;
     this->Internal->Refine = new rtvl_level_refine<3>(n, &points[0], this->InputBounds);
     this->Internal->Refine->set_mask_size(this->MaskSize);
     if (this->ComputeInitialScale)

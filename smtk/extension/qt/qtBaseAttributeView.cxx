@@ -47,13 +47,7 @@ class qtBaseAttributeViewInternals
 public:
   qtBaseAttributeViewInternals() {}
   ~qtBaseAttributeViewInternals() { this->clearWidgets(); }
-  void deleteWidget(QWidget* w)
-  {
-    if (w)
-    {
-      delete w;
-    }
-  }
+  void deleteWidget(QWidget* w) { delete w; }
   void clearWidgets()
   {
     this->deleteWidget(this->AdvLevelCombo);
@@ -92,10 +86,7 @@ qtBaseAttributeView::qtBaseAttributeView(const ViewInfo& info)
 
 qtBaseAttributeView::~qtBaseAttributeView()
 {
-  if (this->Internals)
-  {
-    delete this->Internals;
-  }
+  delete this->Internals;
 }
 
 void qtBaseAttributeView::getDefinitions(
