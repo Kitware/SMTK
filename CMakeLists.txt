@@ -660,7 +660,6 @@ include_directories(
   SYSTEM
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty"
   "${CMAKE_CURRENT_BINARY_DIR}/thirdparty"
-  "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cJSON"
   "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
   "${Boost_INCLUDE_DIRS}"
 )

@@ -18,8 +18,6 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
-struct cJSON;
-
 namespace smtk
 {
 namespace model

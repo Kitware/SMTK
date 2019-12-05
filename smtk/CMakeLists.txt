@@ -79,7 +79,6 @@ if(WIN32)
   set(moab_libs "MOAB")
 endif()
 set(smtkCore_public_link_libraries
-  cJSON
   ${moab_libs}
   nlohmann_json
   taocpp::pegtl
