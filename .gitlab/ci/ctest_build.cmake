@@ -16,10 +16,16 @@ if (CTEST_CMAKE_GENERATOR STREQUAL "Unix Makefiles")
 endif ()
 
 ctest_build(
+  NUMBER_WARNINGS num_warnings
   RETURN_VALUE build_result)
 ctest_submit_multi(PARTS Build)
 
 if (build_result)
   message(FATAL_ERROR
     "Failed to build")
+endif ()
+
+if ("$ENV{CTEST_NO_WARNINGS_ALLOWED}" AND num_warnings GREATER 0)
+  message(FATAL_ERROR
+    "Found ${num_warnings} warnings (treating as fatal).")
 endif ()
