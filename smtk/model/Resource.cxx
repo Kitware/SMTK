@@ -141,32 +141,32 @@ Resource::~Resource()
 //@{
 UUIDsToEntities& Resource::topology()
 {
-  return *m_topology.get();
+  return *m_topology;
 }
 
 const UUIDsToEntities& Resource::topology() const
 {
-  return *m_topology.get();
+  return *m_topology;
 }
 
 UUIDsToTessellations& Resource::tessellations()
 {
-  return *m_tessellations.get();
+  return *m_tessellations;
 }
 
 const UUIDsToTessellations& Resource::tessellations() const
 {
-  return *m_tessellations.get();
+  return *m_tessellations;
 }
 
 UUIDsToTessellations& Resource::analysisMesh()
 {
-  return *m_analysisMesh.get();
+  return *m_analysisMesh;
 }
 
 const UUIDsToTessellations& Resource::analysisMesh() const
 {
-  return *m_analysisMesh.get();
+  return *m_analysisMesh;
 }
 
 bool Resource::setMeshTessellations(const smtk::mesh::ResourcePtr& meshResource)

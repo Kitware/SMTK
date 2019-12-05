@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     return -1;
   }
   auto resptr = smtk::attribute::Resource::create();
-  smtk::attribute::Resource& resource(*resptr.get());
+  smtk::attribute::Resource& resource(*resptr);
   std::cout << "Resource Created\n";
   // Lets add some analyses
   auto analyses = resptr->analyses();

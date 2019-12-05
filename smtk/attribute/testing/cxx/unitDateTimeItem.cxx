@@ -93,7 +93,7 @@ void verifySerialize()
 
   // Instantiate att resource, attdef, & attribute to write out
   auto outputResptr = sa::Resource::create();
-  sa::Resource& outputResource(*outputResptr.get());
+  sa::Resource& outputResource(*outputResptr);
   sa::DefinitionPtr attDef = outputResource.createDefinition("test-att");
 
   // First DateTimeItemDefinition
@@ -165,7 +165,7 @@ void verifySerialize()
 
   // Read back
   auto inputResptr = sa::Resource::create();
-  sa::Resource& inputResource(*inputResptr.get());
+  sa::Resource& inputResource(*inputResptr);
   smtk::io::AttributeReader reader;
   bool readError = reader.readContents(inputResptr, contents, logger);
   if (readError)

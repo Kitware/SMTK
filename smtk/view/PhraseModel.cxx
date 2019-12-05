@@ -471,7 +471,7 @@ void PhraseModel::updateChildren(
       DescriptivePhrase* nval = it->get();
       for (auto it2 = orig.begin(); it2 != orig.end(); ++it2)
       {
-        if ((*nval == *it2->get()) ||
+        if ((*nval == **it2) ||
           (nval && nval->relatedObject() && nval->relatedObject() == it2->get()->relatedObject()))
         {
           *it = *it2;
