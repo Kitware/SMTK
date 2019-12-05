@@ -248,7 +248,7 @@ std::set<std::string> Group::operationNames() const
 
 std::string Group::operationName(const Operation::Index& index) const
 {
-  static const std::string nullString = "";
+  static const std::string nullString;
   auto manager = m_manager.lock();
   if (manager == nullptr)
   {
@@ -266,7 +266,7 @@ std::string Group::operationName(const Operation::Index& index) const
 
 std::string Group::operationLabel(const Operation::Index& index) const
 {
-  static const std::string nullString = "";
+  static const std::string nullString;
 
   auto manager = m_manager.lock();
   if (manager == nullptr)

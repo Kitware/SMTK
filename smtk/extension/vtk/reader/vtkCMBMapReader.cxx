@@ -100,7 +100,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
 
     /*Setup variables*/
     std::stringstream line(std::stringstream::in | std::stringstream::out);
-    std::string card = "";
+    std::string card;
 
     vtkPoints* points = vtkPoints::New();
     vtkCellArray* verts = vtkCellArray::New();

@@ -325,7 +325,7 @@ int vtkCMBMeshReader::CanReadFile(const char* fname)
 
 int vtkCMBMeshReader::PreviewFile(vtkIdType& ncells, vtkIdType& npts)
 {
-  std::string card = "";
+  std::string card;
   vtkIdType id = -1, maxPt = -1, maxCell = -1, line = 0;
 
   ncells = npts = 0;

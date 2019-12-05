@@ -155,7 +155,7 @@ void vtkSBFunctionParser::CheckExpression(int& pos, std::string& error)
 vtkDoubleArray* vtkSBFunctionParser::GetResult()
 {
   int pos;
-  std::string err("");
+  std::string err;
 
   this->CheckExpression(pos, err);
 
