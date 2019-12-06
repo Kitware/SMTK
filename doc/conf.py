@@ -240,7 +240,10 @@ findfigure_paths = {
 actdiag_antialias = True
 
 actdiag_html_image_format = 'SVG'
-actdiag_latex_image_format = 'PDF'
+# using PDF format causes a warning about fonts that crashes when using
+# sphinx 2, setting actdiag_fontpath to a TTF might fix it?
+actdiag_latex_image_format = 'PNG'
+# actdiag_debug = True
 
 # -- To-do list configuration ---------------------------------------------
 
