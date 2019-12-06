@@ -40,9 +40,9 @@ public:
   // virtual bool displayItem(smtk::attribute::ItemPtr);
 
 public slots:
-  void updateUI() override {} // NB: Subclass implementation causes crashes.
+  void updateUI() override;
   void requestModelEntityAssociation() override;
-  void onShowCategory() override { this->updateAttributeData(); }
+  void onShowCategory() override;
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
   void valueChanged(smtk::attribute::ItemPtr optype) override;
@@ -69,7 +69,6 @@ protected slots:
 
   void onShowPickResultFileDialog(std::string& filename);
 
-  void updateAttributeData() override;
   void onNumPointsCalculationFinshed(long numPoints);
 
 protected:

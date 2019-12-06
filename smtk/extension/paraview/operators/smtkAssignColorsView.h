@@ -40,10 +40,9 @@ public:
   bool displayItem(smtk::attribute::ItemPtr) override;
 
 public slots:
-  void updateUI() override {} // NB: Subclass implementation causes crashes.
-  void showAdvanceLevelOverlay(bool show) override;
+  void updateUI() override;
   void requestModelEntityAssociation() override;
-  void onShowCategory() override { this->updateAttributeData(); }
+  void onShowCategory() override;
   // This will be triggered by selecting different type
   // of construction method in create-edge op.
   void valueChanged(smtk::attribute::ItemPtr optype) override;
@@ -63,7 +62,6 @@ protected slots:
   virtual void attributeModified();
 
 protected:
-  void updateAttributeData() override;
   void createWidget() override;
   void setInfoToBeDisplayed() override;
   void prepPaletteChooser();

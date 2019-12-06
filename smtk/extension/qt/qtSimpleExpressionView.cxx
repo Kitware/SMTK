@@ -222,7 +222,7 @@ void qtSimpleExpressionView::createWidget()
 
   this->Widget = frame;
 
-  this->initFunctionList();
+  this->updateUI();
 }
 
 smtk::attribute::GroupItemPtr qtSimpleExpressionView::getArrayDataFromItem(QListWidgetItem* item)
@@ -749,7 +749,12 @@ void qtSimpleExpressionView::onRemoveSelectedValues()
   this->clearFuncExpression();
 }
 
-void qtSimpleExpressionView::initFunctionList()
+void qtSimpleExpressionView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void qtSimpleExpressionView::updateUI()
 {
   smtk::view::ViewPtr view = this->getObject();
   if (!view)

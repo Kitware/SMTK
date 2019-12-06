@@ -102,7 +102,7 @@ void qtInstancedView::createWidget()
   layout->setMargin(0);
   this->Widget->setLayout(layout);
 
-  this->updateAttributeData();
+  this->updateUI();
 
   auto opManager = uiManager()->operationManager();
   QPointer<qtInstancedView> guardedObject(this);
@@ -121,7 +121,12 @@ void qtInstancedView::createWidget()
   }
 }
 
-void qtInstancedView::updateAttributeData()
+void qtInstancedView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void qtInstancedView::updateUI()
 {
   smtk::view::ViewPtr view = this->getObject();
   if (!view)

@@ -90,10 +90,10 @@ public slots:
   void onRemoveSelectedValues();
 
   virtual void createFunctionWithExpression();
-  void onShowCategory() override { this->updateAttributeData(); }
+  void updateUI() override;
+  void onShowCategory() override;
 
 protected slots:
-  void updateAttributeData() override { this->initFunctionList(); }
 
 protected:
   void createWidget() override;
@@ -110,7 +110,6 @@ protected:
   void updateFunctionEditorUI(
     smtk::attribute::ValueItemPtr expressionItem, smtk::attribute::GroupItemPtr arrayItem);
   void pasteFunctionValues(QString& values, bool clearExp = true);
-  virtual void initFunctionList();
   virtual void clearFuncExpression();
   virtual void getAllDefinitions(QList<smtk::attribute::DefinitionPtr>& defs);
 

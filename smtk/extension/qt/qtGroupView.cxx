@@ -296,6 +296,17 @@ void qtGroupView::createWidget()
     tabWidget->setCurrentIndex(this->Internals->m_currentTabSelected);
     tabWidget->setIconSize(QSize(24, 24));
     tabWidget->setTabPosition(this->Internals->m_tabPosition);
+    // If there is no currently saved View then lets set it to the currently selected tab
+    if (this->Internals->m_savedViewName == "")
+    {
+      qtBaseView* currView = this->getChildView(this->Internals->m_currentTabSelected);
+      if (currView)
+      {
+        this->uiManager()->setActiveTabInfo(
+          this->getObject()->name(), currView->getObject()->name());
+        this->Internals->m_savedViewName = currView->getObject()->name();
+      }
+    }
   }
   if (this->Internals->m_style == qtGroupViewInternals::TABBED)
   {
@@ -358,7 +369,7 @@ void qtGroupView::updateUI()
 void qtGroupView::onShowCategory()
 {
   this->Internals->updateChildren(this, &qtBaseView::onShowCategory);
-  this->qtBaseView::onShowCategory();
+  this->qtBaseAttributeView::onShowCategory();
 }
 
 void qtGroupView::showAdvanceLevelOverlay(bool show)
@@ -367,7 +378,7 @@ void qtGroupView::showAdvanceLevelOverlay(bool show)
   {
     childView->showAdvanceLevelOverlay(show);
   }
-  this->qtBaseView::showAdvanceLevelOverlay(show);
+  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
 }
 
 void qtGroupView::addTabEntry(qtBaseView* child)

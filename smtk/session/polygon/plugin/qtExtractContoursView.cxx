@@ -160,13 +160,18 @@ void qtExtractContoursView::createWidget()
   contourButton->setMinimumHeight(32);
   contourButton->setObjectName("polygonStartContourButton");
   contourButton->setText("Launch Contour Preview");
-  this->updateAttributeData();
+  this->updateUI();
 
   QObject::connect(contourButton, SIGNAL(clicked()), this, SLOT(startContourOperation()));
   layout->addWidget(contourButton);
 }
 
-void qtExtractContoursView::updateAttributeData()
+void qtExtractContoursView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void qtExtractContoursView::updateUI()
 {
   smtk::view::ViewPtr view = this->getObject();
   if (!view || !this->Widget)
@@ -343,12 +348,7 @@ void qtExtractContoursView::operationSelected(const smtk::operation::OperationPt
   }
 }
 
-void qtExtractContoursView::showAdvanceLevelOverlay(bool show)
-{
-  this->qtBaseAttributeView::showAdvanceLevelOverlay(show);
-}
-
 void qtExtractContoursView::requestModelEntityAssociation()
 {
-  this->updateAttributeData();
+  this->updateUI();
 }

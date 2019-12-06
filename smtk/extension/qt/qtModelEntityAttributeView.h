@@ -72,6 +72,7 @@ public:
   bool isEmpty() const override;
 
 public slots:
+  void updateUI() override;
   void onShowCategory() override;
   void showAdvanceLevelOverlay(bool show) override;
   /**\brief slot called when the user changes the type of attribute assigned to the model entity*/

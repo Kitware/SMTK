@@ -191,6 +191,16 @@ void qtOperationView::onModifiedParameter(qtItem* uiItem)
   }
 }
 
+void qtOperationView::updateUI()
+{
+  this->Internals->m_instancedView->updateUI();
+}
+
+void qtOperationView::onShowCategory()
+{
+  this->Internals->m_instancedView->onShowCategory();
+}
+
 void qtOperationView::showAdvanceLevelOverlay(bool show)
 {
   this->Internals->m_instancedView->showAdvanceLevelOverlay(show);

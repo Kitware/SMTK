@@ -234,7 +234,6 @@ public:
 public slots:
   void onFileItemCreated(smtk::extension::qtFileItem*);
   void onModelEntityItemCreated(smtk::extension::qtModelEntityItem*);
-  void updateModelViews();
   void onViewUIModified(smtk::extension::qtBaseView*, smtk::attribute::ItemPtr);
   void setAdvanceLevel(int b);
   void onOperationFinished();

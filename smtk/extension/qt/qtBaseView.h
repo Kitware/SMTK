@@ -95,11 +95,15 @@ signals:
   void aboutToDestroy();
 
 public slots:
+  ///\brief Have the view update its contents
+  ///
+  /// The public method slot is used to update the view's GUI based on its  contents
+  /// and the state of it's UIManager (category and advance level state, etc..)
   virtual void updateUI() { ; }
   virtual void childrenResized() { ; }
   virtual void showAdvanceLevelOverlay(bool val) { m_advOverlayVisible = val; }
+  ///\brief Have the view update its contents based on a new advance level
   virtual void showAdvanceLevel(int /* level */) { ; }
-  virtual void updateViewUI(int /* currentTab */) { ; }
   virtual void enableShowBy(int /* enable */) { ; }
   /// Display view information (i.e., help text)
   virtual void onInfo();
