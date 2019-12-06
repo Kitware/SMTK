@@ -102,6 +102,43 @@ bool testCategories(const ItemDefinitionPtr& idef, const std::string& prefix,
           status = false;
         }
       }
+      // Additional Checks for s1
+      if (videf->name() == "s1")
+      {
+        const std::vector<std::set<std::string> > enumCats = { { "ec1" }, { "ec2" }, {} };
+        const std::vector<bool> enumAL = { true, false, true };
+        std::size_t i, n = videf->numberOfDiscreteValues();
+        if (n != 3)
+        {
+          std::cerr << prefix << " Testing Item Definition:" << idef->name()
+                    << " number of enums = " << n << " not 3\n";
+          status = false;
+        }
+        for (i = 0; i < n; i++)
+        {
+          std::string e = videf->discreteEnum(i);
+          std::cerr << prefix << " Testing Item Definition:" << idef->name() << " enum = " << e
+                    << "'s Categories: ";
+          if (!compareSets(videf->enumCategories(e), enumCats[i]))
+          {
+            status = false;
+          }
+          if (videf->hasEnumAdvanceLevel(e) != enumAL[i])
+          {
+            std::cerr << prefix << " Testing Item Definition:" << idef->name() << " enum = " << e
+                      << "'s Advance Level: Failed!\n";
+            status = false;
+          }
+
+          if (videf->hasEnumAdvanceLevel(e) && (videf->enumAdvanceLevel(e) != 10))
+          {
+            std::cerr << prefix << " Testing Item Definition:" << idef->name() << " enum = " << e
+                      << "'s Advance Level Value: " << videf->enumAdvanceLevel(e)
+                      << " should be 10!\n";
+            status = false;
+          }
+        }
+      }
     }
   }
 
@@ -162,8 +199,17 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   A->addLocalCategory("A");
   GroupItemDefinitionPtr gItemDef0 = A->addItemDefinition<GroupItemDefinition>("g1");
   gItemDef0->addLocalCategory("g1");
+  // Lets create a Discrete String Item with Enums having category and advance level info
+  // assigned to some of them
   StringItemDefinitionPtr sItemDef0 = gItemDef0->addItemDefinition<StringItemDefinition>("s1");
   sItemDef0->addLocalCategory("s1");
+  sItemDef0->addDiscreteValue("a", "e1");
+  sItemDef0->addDiscreteValue("b", "e2");
+  sItemDef0->addDiscreteValue("c", "e3");
+  sItemDef0->addEnumCategory("e1", "ec1");
+  sItemDef0->addEnumCategory("e2", "ec2");
+  sItemDef0->setEnumAdvanceLevel("e1", 10);
+  sItemDef0->setEnumAdvanceLevel("e3", 10);
   StringItemDefinitionPtr sItemDef1 = sItemDef0->addItemDefinition<StringItemDefinition>("s2");
   sItemDef1->addLocalCategory("s2");
   sItemDef1->setIsOkToInherit(false);
@@ -205,8 +251,9 @@ int unitCategories(int, char* [])
     { "C", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "C" } },
     { "D", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "v3" } }, { "E", { "E" } }, { "F", {} },
     { "g1", { "A", "g1", "g2", "s1", "s2", "s3", "v1" } }, { "g2", { "g2", "s3" } },
-    { "s1", { "A", "g1", "s1", "s2", "v1" } }, { "s2", { "s2", "v1" } }, { "s3", { "g2", "s3" } },
-    { "v1", { "s2", "v1" } }, { "v2", { "A", "B", "v2" } }, { "v3", { "A", "v3" } }, { "v4", {} },
+    { "s1", { "A", "g1", "s1", "s2", "v1", "ec1", "ec2" } }, { "s2", { "s2", "v1" } },
+    { "s3", { "g2", "s3" } }, { "v1", { "s2", "v1" } }, { "v2", { "A", "B", "v2" } },
+    { "v3", { "A", "v3" } }, { "v4", {} },
     { "resource", { "A", "g1", "g2", "s1", "s2", "s3", "v1", "B", "v2", "C", "v3", "E" } }
   };
   smtkTest(

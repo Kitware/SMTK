@@ -251,6 +251,12 @@ void ValueItemDefinition::applyCategories(
     m_categories.insert(inheritedFromParent.begin(), inheritedFromParent.end());
   }
 
+  //Lets add the categories associated with its enums
+  for (const auto& enumCatInfo : m_valueToCategoryAssociations)
+  {
+    m_categories.insert(enumCatInfo.second.begin(), enumCatInfo.second.end());
+  }
+
   std::set<std::string> myChildrenCats;
 
   // Now process the children item defs - this will also assembly the categories
@@ -385,4 +391,72 @@ bool ValueItemDefinition::getEnumIndex(const std::string& enumVal, std::size_t& 
     }
   }
   return false;
+}
+
+void ValueItemDefinition::setEnumCategories(
+  const std::string& enumValue, const std::set<std::string>& cats)
+{
+  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+    m_discreteValueEnums.end())
+  {
+    return; // enum not defined
+  }
+  m_valueToCategoryAssociations[enumValue] = cats;
+}
+
+void ValueItemDefinition::addEnumCategory(const std::string& enumValue, const std::string& cat)
+{
+  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+    m_discreteValueEnums.end())
+  {
+    return; // enum not defined
+  }
+  m_valueToCategoryAssociations[enumValue].insert(cat);
+}
+
+std::set<std::string> ValueItemDefinition::enumCategories(const std::string& enumValue) const
+{
+  auto result = m_valueToCategoryAssociations.find(enumValue);
+  if (result == m_valueToCategoryAssociations.end())
+  {
+    std::set<std::string> dummy;
+    return dummy; // enum does not have explicit categories
+  }
+  return result->second;
+}
+
+void ValueItemDefinition::setEnumAdvanceLevel(const std::string& enumValue, unsigned int level)
+{
+  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+    m_discreteValueEnums.end())
+  {
+    return; // enum not defined
+  }
+  m_valueToAdvanceLevelAssociations[enumValue] = level;
+}
+
+void ValueItemDefinition::unsetEnumAdvanceLevel(const std::string& enumValue)
+{
+  if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
+    m_discreteValueEnums.end())
+  {
+    return; // enum not defined
+  }
+  m_valueToAdvanceLevelAssociations.erase(enumValue);
+}
+
+unsigned int ValueItemDefinition::enumAdvanceLevel(const std::string& enumValue) const
+{
+  auto result = m_valueToAdvanceLevelAssociations.find(enumValue);
+  if (result == m_valueToAdvanceLevelAssociations.end())
+  {
+    return 0;
+  }
+  return result->second;
+}
+
+bool ValueItemDefinition::hasEnumAdvanceLevel(const std::string& enumValue) const
+{
+  auto result = m_valueToAdvanceLevelAssociations.find(enumValue);
+  return (result != m_valueToAdvanceLevelAssociations.end());
 }
