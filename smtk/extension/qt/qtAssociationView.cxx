@@ -19,7 +19,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 #include "ui_qtAssociationView.h"
 
 #include <QMessageBox>
@@ -102,7 +102,7 @@ public:
 
   std::vector<smtk::attribute::DefinitionPtr> m_attDefinitions;
   smtk::model::BitFlags m_modelEntityMask;
-  std::map<std::string, smtk::view::View::Component> m_attCompMap;
+  std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
 };
 
 qtBaseView* qtAssociationView::createViewWidget(const ViewInfo& info)
@@ -230,7 +230,7 @@ void qtAssociationView::onShowCategory()
 
 void qtAssociationView::getAllDefinitions()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -261,7 +261,7 @@ void qtAssociationView::getAllDefinitions()
   }
 
   std::vector<smtk::attribute::AttributePtr> atts;
-  smtk::view::View::Component& attsComp = view->details().child(0);
+  smtk::view::Configuration::Component& attsComp = view->details().child(0);
   std::size_t i, n = attsComp.numberOfChildren();
   for (i = 0; i < n; i++)
   {

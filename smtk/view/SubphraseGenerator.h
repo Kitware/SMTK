@@ -43,7 +43,7 @@ namespace view
 class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerator)
 {
 public:
-  static std::string getType(const smtk::view::ViewPtr& viewSpec);
+  static std::string getType(const smtk::view::ConfigurationPtr& viewSpec);
   static SubphraseGeneratorPtr create(
     const std::string& typeName, const smtk::view::ManagerPtr& manager);
 

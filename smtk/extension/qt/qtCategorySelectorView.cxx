@@ -17,7 +17,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QApplication>
 #include <QFile>
@@ -40,7 +40,7 @@ class qtCategorySelectorViewInternals
 {
 public:
   QList<smtk::extension::qtBaseView*> ChildViews;
-  std::vector<smtk::view::ViewPtr> m_views;
+  std::vector<smtk::view::ConfigurationPtr> m_views;
   QList<std::string> m_viewCategories;
   smtk::attribute::AttributePtr m_selectorAttribute;
   smtk::attribute::ValueItemPtr m_selectorItem;
@@ -67,7 +67,7 @@ qtCategorySelectorView::~qtCategorySelectorView()
 
 void qtCategorySelectorView::createWidget()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -82,7 +82,7 @@ void qtCategorySelectorView::createWidget()
 
 bool qtCategorySelectorView::createChildren()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
   int viewsIndex;
@@ -92,9 +92,9 @@ bool qtCategorySelectorView::createChildren()
     // there are no children views
     return false;
   }
-  smtk::view::View::Component& viewsComp = view->details().child(viewsIndex);
+  smtk::view::Configuration::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
-  smtk::view::ViewPtr v;
+  smtk::view::ConfigurationPtr v;
   qtBaseView* qtView;
   std::string currentCategory = this->uiManager()->currentCategory();
 

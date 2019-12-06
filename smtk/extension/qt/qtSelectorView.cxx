@@ -18,7 +18,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QApplication>
 #include <QFile>
@@ -43,7 +43,7 @@ public:
   ~qtSelectorViewInternals() { delete this->m_qtSelectorAttribute; }
 
   QList<smtk::extension::qtBaseView*> ChildViews;
-  std::vector<smtk::view::ViewPtr> m_views;
+  std::vector<smtk::view::ConfigurationPtr> m_views;
   QList<int> m_viewEnumIdices;
   smtk::attribute::AttributePtr m_selectorAttribute;
   smtk::extension::qtAttribute* m_qtSelectorAttribute;
@@ -71,7 +71,7 @@ qtSelectorView::~qtSelectorView()
 
 void qtSelectorView::createWidget()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -93,7 +93,7 @@ void qtSelectorView::createWidget()
 bool qtSelectorView::createSelector()
 {
   //create the layout for the frame area
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout(layout);
@@ -142,7 +142,7 @@ bool qtSelectorView::createSelector()
     this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
 
   this->setFixedLabelWidth(labelWidth);
-  smtk::view::View::Component comp; // Right now not being used
+  smtk::view::Configuration::Component comp; // Right now not being used
   this->Internals->m_qtSelectorAttribute =
     new qtAttribute(this->Internals->m_selectorAttribute, comp, this->widget(), this);
   this->Internals->m_qtSelectorAttribute->createBasicLayout(true);
@@ -154,7 +154,7 @@ bool qtSelectorView::createSelector()
 
 bool qtSelectorView::createChildren()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   smtk::attribute::ResourcePtr resource = this->uiManager()->attResource();
 
   // We need the selector item's definition in order to get the enumeration info
@@ -168,9 +168,9 @@ bool qtSelectorView::createChildren()
     // there are no children views
     return false;
   }
-  smtk::view::View::Component& viewsComp = view->details().child(viewsIndex);
+  smtk::view::Configuration::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
-  smtk::view::ViewPtr v;
+  smtk::view::ConfigurationPtr v;
   bool hasDefaultIndex = selItemDef->hasDefault();
   int defaultIndex = (hasDefaultIndex ? selItemDef->defaultDiscreteIndex() : -1);
   qtBaseView* qtView;

@@ -40,7 +40,7 @@ namespace smtk
 namespace view
 {
 
-std::string SubphraseGenerator::getType(const smtk::view::ViewPtr& viewSpec)
+std::string SubphraseGenerator::getType(const smtk::view::ConfigurationPtr& viewSpec)
 {
   std::string typeName;
   if (!viewSpec || viewSpec->name().empty() || viewSpec->name() != "ResourceBrowser")

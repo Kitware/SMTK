@@ -11,7 +11,7 @@
 #define smtk_view_jsonView_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "nlohmann/json.hpp"
 
@@ -22,13 +22,13 @@ namespace smtk
 namespace view
 {
 
-SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::View::Component& comp);
+SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::Configuration::Component& comp);
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j, View::Component& comp);
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::Configuration::Component& comp);
 
-SMTKCORE_EXPORT void to_json(nlohmann::json& j, const ViewPtr& view);
+SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::view::ConfigurationPtr& view);
 
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::ViewPtr& view);
+SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::ConfigurationPtr& view);
 }
 }
 

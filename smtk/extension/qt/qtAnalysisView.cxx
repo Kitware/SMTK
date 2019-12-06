@@ -18,7 +18,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QApplication>
 #include <QFile>
@@ -62,7 +62,7 @@ void qtAnalysisView::createWidget()
   // If there is a previous qt analysis attribute delete it
   delete m_qtAnalysisAttribute;
 
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;
@@ -96,7 +96,7 @@ void qtAnalysisView::createWidget()
     this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
 
   this->setFixedLabelWidth(labelWidth);
-  smtk::view::View::Component comp; // Right now not being used
+  smtk::view::Configuration::Component comp; // Right now not being used
   m_qtAnalysisAttribute = new qtAttribute(m_analysisAttribute, comp, this->widget(), this);
   m_qtAnalysisAttribute->createBasicLayout(true);
   layout->addWidget(m_qtAnalysisAttribute->widget());

@@ -227,7 +227,7 @@ class PhraseModel;
 class ResourcePhraseContent;
 class Selection;
 class SubphraseGenerator;
-class View;
+class Configuration;
 class VisibilityContent;
 }
 
@@ -594,10 +594,10 @@ typedef smtk::weak_ptr<smtk::view::Selection> WeakSelectionPtr;
 typedef smtk::shared_ptr<smtk::view::SubphraseGenerator> SubphraseGeneratorPtr;
 /// @see smtk::view::SubphraseGenerator
 typedef smtk::weak_ptr<smtk::view::SubphraseGenerator> WeakSubphraseGeneratorPtr;
-/// @see smtk::view::View
-typedef smtk::shared_ptr<smtk::view::View> ViewPtr;
-/// @see smtk::view::View
-typedef smtk::weak_ptr<smtk::view::View> WeakViewPtr;
+/// @see smtk::view::Configuration
+typedef smtk::shared_ptr<smtk::view::Configuration> ConfigurationPtr;
+/// @see smtk::view::Configuration
+typedef smtk::weak_ptr<smtk::view::Configuration> WeakConfigurationPtr;
 /// @see smtk::view::PhraseContent
 typedef smtk::shared_ptr<smtk::view::PhraseContent> PhraseContentPtr;
 /// @see smtk::view::PhraseContent

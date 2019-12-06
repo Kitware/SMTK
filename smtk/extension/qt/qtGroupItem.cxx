@@ -323,7 +323,7 @@ void qtGroupItem::addSubGroup(int i)
     }
     else
     {
-      smtk::view::View::Component comp; // lets create a default style (an empty component)
+      smtk::view::Configuration::Component comp; // lets create a default style (an empty component)
       qtAttributeItemInfo info(citem, comp, m_widget, m_itemInfo.baseView());
       childItem = m_itemInfo.uiManager()->createItem(info);
     }
@@ -447,7 +447,7 @@ void qtGroupItem::addItemsToTable(int index)
     }
     else
     {
-      smtk::view::View::Component comp; // lets create a default style (an empty component)
+      smtk::view::Configuration::Component comp; // lets create a default style (an empty component)
       qtAttributeItemInfo info(citem, comp, m_widget, m_itemInfo.baseView());
       childItem = m_itemInfo.uiManager()->createItem(info);
     }

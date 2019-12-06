@@ -28,7 +28,7 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "vtkDoubleArray.h"
 #include "vtkNew.h"

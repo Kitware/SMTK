@@ -16,8 +16,8 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/PhraseModel.h"
-#include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
 

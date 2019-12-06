@@ -46,7 +46,7 @@ class qtAttributeInternals
 {
 public:
   qtAttributeInternals(smtk::attribute::AttributePtr myAttribute,
-    const smtk::view::View::Component& comp, QWidget* p, qtBaseView* myView)
+    const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView)
   {
     m_parentWidget = p;
     m_attribute = myAttribute;
@@ -68,12 +68,12 @@ public:
   QPointer<QWidget> m_parentWidget;
   QList<smtk::extension::qtItem*> m_items;
   QPointer<qtBaseView> m_view;
-  smtk::view::View::Component m_attComp;
+  smtk::view::Configuration::Component m_attComp;
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
 };
 
 qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute,
-  const smtk::view::View::Component& comp, QWidget* p, qtBaseView* myView)
+  const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView)
 {
   m_internals = new qtAttributeInternals(myAttribute, comp, p, myView);
   m_widget = NULL;
@@ -185,7 +185,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   // This will be the same widget used for ModelEntityItem.
   if (includeAssociations && att->associations())
   {
-    smtk::view::View::Component comp; // not currently used but will be
+    smtk::view::Configuration::Component comp; // not currently used but will be
     qtAttributeItemInfo info(att->associations(), comp, m_widget, m_internals->m_view);
     qItem = uiManager->createItem(info);
     if (qItem && qItem->widget())
@@ -211,7 +211,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     }
     else
     {
-      smtk::view::View::Component comp; // not current used but will be
+      smtk::view::Configuration::Component comp; // not current used but will be
       qtAttributeItemInfo info(item, comp, m_widget, m_internals->m_view);
       qItem = uiManager->createItem(info);
     }

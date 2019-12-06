@@ -32,7 +32,7 @@ public:
   ~pqSMTKResourcePanel() override;
 
   /// Let the panel display a custom view config, from json or xml.
-  void setView(const smtk::view::ViewPtr& view);
+  void setView(const smtk::view::ConfigurationPtr& view);
 
 protected slots:
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
@@ -40,7 +40,7 @@ protected slots:
 
 protected:
   pqSMTKResourceBrowser* m_browser;
-  smtk::view::ViewPtr m_view;
+  smtk::view::ConfigurationPtr m_view;
   smtk::extension::qtUIManager* m_viewUIMgr;
 };
 

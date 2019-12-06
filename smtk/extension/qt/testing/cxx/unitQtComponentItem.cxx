@@ -12,10 +12,10 @@
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
-#include "smtk/view/View.h"
 #include "smtk/view/VisibilityContent.h"
 
 #include "smtk/resource/Manager.h"
@@ -177,8 +177,8 @@ int unitQtComponentItem(int argc, char* argv[])
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
   // to point back to the model (thus ensuring subphrases are decorated). This is required
   // since we need to decorate phrases to show+edit "visibility" as set membership:
-  auto view = smtk::view::View::New("ComponentItem", "stuff");
-  auto phraseModel = smtk::view::ResourcePhraseModel::create(view);
+  auto config = smtk::view::Configuration::New("ComponentItem", "stuff");
+  auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
   phraseModel->root()->findDelegate()->setModel(phraseModel);
 
   std::map<smtk::resource::ComponentPtr, int>

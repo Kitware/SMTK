@@ -29,7 +29,7 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 #include "smtk/model/StringData.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "smtk/io/Logger.h"
 
@@ -341,9 +341,9 @@ bool qtModelOperationWidget::initOperationUI(const smtk::operation::OperationPtr
   // // ( meaning if there is no "AttributeTypes" specified in view components' children,
   // // or the att->type() is not included in any view "AttributeTypes" ),
   // // use "Operation" view by default
-  // smtk::view::ViewPtr opView;
+  // smtk::view::ConfigurationPtr opView;
 
-  // std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
+  // std::map<std::string, smtk::view::ConfigurationPtr>::const_iterator it;
   // for (it = att->resource()->views().begin(); it != att->resource()->views().end(); ++it)
   // {
   //   //If  this is an Operation View we need to check its InstancedAttributes child else
@@ -361,7 +361,7 @@ bool qtModelOperationWidget::initOperationUI(const smtk::operation::OperationPtr
   //   {
   //     continue;
   //   }
-  //   smtk::view::View::Component& comp = it->second->details().child(i);
+  //   smtk::view::Configuration::Component& comp = it->second->details().child(i);
   //   for (std::size_t ci = 0; ci < comp.numberOfChildren(); ++ci)
   //   {
   //     std::string optype;
@@ -385,9 +385,9 @@ bool qtModelOperationWidget::initOperationUI(const smtk::operation::OperationPtr
   // if (!opView || !uiManager->hasViewConstructor(opView->type()))
   // {
   //   //Lets create a default view for the operator itself
-  //   opView = smtk::view::View::New("Operation", brOp->name());
+  //   opView = smtk::view::Configuration::New("Operation", brOp->name());
   //   opView->details().setAttribute("UseSelectionManager", "true");
-  //   smtk::view::View::Component& comp =
+  //   smtk::view::Configuration::Component& comp =
   //     opView->details().addChild("InstancedAttributes").addChild("Att");
   //   comp.setAttribute("Type", att->type()).setAttribute("Name", att->name());
   //   att->resource()->addView(opView);

@@ -10,7 +10,7 @@
 
 #include "smtk/attribute/Resource.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -838,15 +838,15 @@ smtk::attribute::AttributePtr Resource::copyAttribute(const smtk::attribute::Att
   return newAtt;
 }
 
-void Resource::addView(smtk::view::ViewPtr v)
+void Resource::addView(smtk::view::ConfigurationPtr v)
 {
   m_views[v->name()] = v;
   this->setClean(false);
 }
 
-smtk::view::ViewPtr Resource::findViewByType(const std::string& vtype) const
+smtk::view::ConfigurationPtr Resource::findViewByType(const std::string& vtype) const
 {
-  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ConfigurationPtr>::const_iterator it;
   for (it = m_views.begin(); it != m_views.end(); ++it)
   {
     if (it->second->type() == vtype)
@@ -854,12 +854,12 @@ smtk::view::ViewPtr Resource::findViewByType(const std::string& vtype) const
       return it->second;
     }
   }
-  return smtk::view::ViewPtr();
+  return smtk::view::ConfigurationPtr();
 }
 
-smtk::view::ViewPtr Resource::findTopLevelView() const
+smtk::view::ConfigurationPtr Resource::findTopLevelView() const
 {
-  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ConfigurationPtr>::const_iterator it;
   bool isTopLevel;
   for (it = m_views.begin(); it != m_views.end(); ++it)
   {
@@ -868,14 +868,14 @@ smtk::view::ViewPtr Resource::findTopLevelView() const
       return it->second;
     }
   }
-  return smtk::view::ViewPtr();
+  return smtk::view::ConfigurationPtr();
 }
 
-std::vector<smtk::view::ViewPtr> Resource::findTopLevelViews() const
+std::vector<smtk::view::ConfigurationPtr> Resource::findTopLevelViews() const
 {
-  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ConfigurationPtr>::const_iterator it;
   bool isTopLevel;
-  std::vector<smtk::view::ViewPtr> topViews;
+  std::vector<smtk::view::ConfigurationPtr> topViews;
   for (it = m_views.begin(); it != m_views.end(); ++it)
   {
     if (it->second->details().attributeAsBool("TopLevel", isTopLevel) && isTopLevel)

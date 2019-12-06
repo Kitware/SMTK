@@ -10,10 +10,10 @@
 #include "smtk/view/ComponentPhraseModel.h"
 
 #include "smtk/view/ComponentPhraseContent.h"
+#include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/PhraseListContent.h"
-#include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -26,7 +26,8 @@
 
 using namespace smtk::view;
 
-PhraseModelPtr ComponentPhraseModel::create(const smtk::view::View::Component& itemViewSpec)
+PhraseModelPtr ComponentPhraseModel::create(
+  const smtk::view::Configuration::Component& itemViewSpec)
 {
   // Currently the itemViewSpec is not used but in the future it wll contain information to
   // customize how the model should behave

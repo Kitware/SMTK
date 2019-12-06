@@ -21,7 +21,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
 
 #include <QApplication>
 #include <QWidget>
@@ -49,7 +49,7 @@ qtBaseView::~qtBaseView()
 
 void qtBaseView::makeTopLevel()
 {
-  smtk::view::ViewPtr view = this->getObject();
+  smtk::view::ConfigurationPtr view = this->getObject();
   if (!view)
   {
     return;

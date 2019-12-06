@@ -9,11 +9,11 @@
 //=========================================================================
 #include "smtk/view/PhraseModel.h"
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/SubphraseGenerator.h"
-#include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
@@ -109,7 +109,7 @@ smtk::operation::ManagerPtr PhraseModel::operationManager() const
 }
 
 PhraseModelPtr PhraseModel::create(
-  const smtk::view::ViewPtr& viewSpec, const smtk::view::ManagerPtr& manager)
+  const smtk::view::ConfigurationPtr& viewSpec, const smtk::view::ManagerPtr& manager)
 {
   if (!manager || !viewSpec || viewSpec->name().empty() || viewSpec->name() != "ResourceBrowser")
   {

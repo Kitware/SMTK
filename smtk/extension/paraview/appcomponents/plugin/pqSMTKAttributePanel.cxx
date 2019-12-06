@@ -23,8 +23,8 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
+#include "smtk/view/Configuration.h"
 #include "smtk/view/Selection.h"
-#include "smtk/view/View.h"
 
 #include "pqActiveObjects.h"
 #include "pqApplicationCore.h"
@@ -180,7 +180,7 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
   // Fetch the current user preferences and update the UI manager with them.
   this->updateSettings();
 
-  smtk::view::ViewPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
+  smtk::view::ConfigurationPtr view = rsrc ? rsrc->findTopLevelView() : nullptr;
   if (view)
   {
     didDisplay = this->displayView(view);
@@ -240,7 +240,7 @@ bool pqSMTKAttributePanel::displayResourceOnServer(const smtk::attribute::Resour
   return false;
 }
 
-bool pqSMTKAttributePanel::displayView(smtk::view::ViewPtr view)
+bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
 {
   if (!view)
   {

@@ -175,12 +175,12 @@ public:
   std::size_t numberOfCategories() const { return m_categories.size(); }
   const std::set<std::string>& categories() const { return m_categories; }
 
-  void addView(smtk::view::ViewPtr);
-  smtk::view::ViewPtr findView(const std::string& name) const;
-  smtk::view::ViewPtr findViewByType(const std::string& vtype) const;
-  smtk::view::ViewPtr findTopLevelView() const;
-  std::vector<smtk::view::ViewPtr> findTopLevelViews() const;
-  const std::map<std::string, smtk::view::ViewPtr>& views() const { return m_views; }
+  void addView(smtk::view::ConfigurationPtr);
+  smtk::view::ConfigurationPtr findView(const std::string& name) const;
+  smtk::view::ConfigurationPtr findViewByType(const std::string& vtype) const;
+  smtk::view::ConfigurationPtr findTopLevelView() const;
+  std::vector<smtk::view::ConfigurationPtr> findTopLevelViews() const;
+  const std::map<std::string, smtk::view::ConfigurationPtr>& views() const { return m_views; }
 
   /// \brief Return a set of resources associated to this attribute resource.
   smtk::resource::ResourceSet associations() const;
@@ -251,7 +251,7 @@ protected:
     m_derivedDefInfo;
   std::set<std::string> m_categories;
   smtk::attribute::Analyses m_analyses;
-  std::map<std::string, smtk::view::ViewPtr> m_views;
+  std::map<std::string, smtk::view::ConfigurationPtr> m_views;
 
   // Advance levels, <int-level, <string-label, color[4]>
   // higher level means more advanced.
@@ -263,11 +263,11 @@ protected:
 private:
 };
 
-inline smtk::view::ViewPtr Resource::findView(const std::string& name) const
+inline smtk::view::ConfigurationPtr Resource::findView(const std::string& name) const
 {
-  std::map<std::string, smtk::view::ViewPtr>::const_iterator it;
+  std::map<std::string, smtk::view::ConfigurationPtr>::const_iterator it;
   it = m_views.find(name);
-  return (it == m_views.end()) ? smtk::view::ViewPtr() : it->second;
+  return (it == m_views.end()) ? smtk::view::ConfigurationPtr() : it->second;
 }
 
 inline smtk::attribute::AttributePtr Resource::findAttribute(const std::string& name) const

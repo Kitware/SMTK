@@ -51,22 +51,19 @@ so we use the :smtk:`smtkCreateMacro` to provide a static method for
 creating a shared pointer to a new instance and
 the :smtk:`smtkSharedFromThisMacro` to override the base
 class' :c:func:`shared_from_this` method.
-Finally, we invoke the :smtk:`smtkDeclareModelOperator`.
-This declares methods for accessing the operator's class-name and
-human-readable name.
 
 Beyond these basic requirements, an operator should implement
 two inherited virtual methods
 
-+ :smtk:`ableToOperate <Operator::ableToOperate>` which is an opportunity for an
++ :smtk:`ableToOperate <smtk::operation::Operation::ableToOperate>` which is an opportunity for an
   operator to perform checks on the validity of input parameters
   that cannot be easily encoded using the attribute resource; and
 
-+ :smtk:`operateInternal <Operator::operateInternal>` which implements the actual
++ :smtk:`operateInternal <smtk::operation::Operation::operateInternal>` which implements the actual
   behavior of the operator.
 
-Because our operator is simple, we implement :smtk:`Operator::ableToOperate`
-in the class header file. We only declare :smtk:`Operator::operateInternal`:
+Because our operator is simple, we implement :smtk:`smtk::operation::Operation::ableToOperate`
+in the class header file. We only declare :smtk:`smtk::operation::Operation::operateInternal`:
 
 .. literalinclude:: implement_an_operator.h
    :start-after: // ++ 2 ++

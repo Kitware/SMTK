@@ -10,11 +10,11 @@
 #include "smtk/view/SelectionPhraseModel.h"
 
 #include "smtk/view/ComponentPhraseContent.h"
+#include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/ResourcePhraseContent.h"
-#include "smtk/view/View.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -29,7 +29,7 @@
 
 using namespace smtk::view;
 
-PhraseModelPtr SelectionPhraseModel::create(const smtk::view::ViewPtr& viewSpec)
+PhraseModelPtr SelectionPhraseModel::create(const smtk::view::ConfigurationPtr& viewSpec)
 {
   (void)viewSpec;
   auto model = SelectionPhraseModel::Ptr(new SelectionPhraseModel);

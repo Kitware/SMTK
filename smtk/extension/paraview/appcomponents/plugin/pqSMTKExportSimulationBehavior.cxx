@@ -131,7 +131,7 @@ void pqExportSimulationReaction::exportSimulation()
         new smtk::extension::qtUIManager(exportOp, wrapper->smtkResourceManager()));
 
     // Create an operation view for the operation.
-    smtk::view::ViewPtr view = uiManager->findOrCreateOperationView();
+    smtk::view::ConfigurationPtr view = uiManager->findOrCreateOperationView();
     smtk::extension::qtOperationView* opView = dynamic_cast<smtk::extension::qtOperationView*>(
       uiManager->setSMTKView(view, exportDialog.data()));
 

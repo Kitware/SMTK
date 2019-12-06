@@ -21,8 +21,9 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-qtAttributeItemInfo::qtAttributeItemInfo(ItemPtr item, smtk::view::View::Component itemComp,
-  QPointer<QWidget> parent, QPointer<qtBaseView> bview)
+qtAttributeItemInfo::qtAttributeItemInfo(ItemPtr item,
+  smtk::view::Configuration::Component itemComp, QPointer<QWidget> parent,
+  QPointer<qtBaseView> bview)
   : m_item(item)
   , m_component(itemComp)
   , m_parentWidget(parent)
@@ -39,7 +40,7 @@ qtUIManager* qtAttributeItemInfo::uiManager() const
   return nullptr;
 }
 
-bool qtAttributeItemInfo::buildFromComponent(smtk::view::View::Component comp,
+bool qtAttributeItemInfo::buildFromComponent(smtk::view::Configuration::Component comp,
   QPointer<qtBaseView> view, std::map<std::string, qtAttributeItemInfo>& dict)
 {
   std::string iname, path;
