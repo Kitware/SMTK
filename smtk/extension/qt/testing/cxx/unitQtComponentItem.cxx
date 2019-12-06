@@ -38,6 +38,8 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
+#include "smtk/view/json/jsonView.h"
+
 #include "smtk/AutoInit.h"
 
 #include <QApplication>
@@ -170,6 +172,9 @@ int unitQtComponentItem(int argc, char* argv[])
 
   auto rsrcMgr = smtk::resource::Manager::create();
   auto operMgr = smtk::operation::Manager::create();
+  // Ensure operations whose results include resources have
+  // those resources registered with rsrcMgr:
+  operMgr->registerResourceManager(rsrcMgr);
 
   auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
@@ -343,6 +348,10 @@ int unitQtComponentItem(int argc, char* argv[])
   }
   auto qmodel = new qtDescriptivePhraseModel;
 
+  // Test that the row count of an invalid index (without phrase model) does not cause problems
+  QModelIndex invalid;
+  smtkTest(qmodel->rowCount(invalid) == 0, "Expect 0 rows in an invalid model index.");
+
   labl->setText("edges");
   pbtn->setAutoDefault(true);
   pbtn->setDefault(true);
@@ -366,6 +375,12 @@ int unitQtComponentItem(int argc, char* argv[])
   auto layout = new QVBoxLayout(dlog);
   // layout->addWidget(combo);
   qmodel->setPhraseModel(phraseModel);
+
+  // Test that the row count of an invalid index (with phrase model) does not cause problems
+  // phraseModel
+  int numRoot = static_cast<int>(phraseModel->root()->subphrases().size());
+  smtkTest(qmodel->rowCount(invalid) == numRoot, "Expect 0 rows in an invalid model index.");
+
   // combo->setModel(qmodel);
   QModelIndex comboRoot =
     qmodel->index(4, 0, qmodel->index(0, 0, qmodel->index(0, 0, QModelIndex())));
