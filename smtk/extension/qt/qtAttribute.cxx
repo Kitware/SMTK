@@ -25,9 +25,6 @@
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/operation/Manager.h"
-#include "smtk/operation/operators/MarkModified.h"
-
 #include "smtk/io/Logger.h"
 
 #include <QFrame>
@@ -247,43 +244,6 @@ void qtAttribute::onItemModified()
   if (iobject == NULL)
   {
     return;
-  }
-
-  auto attr = this->attribute();
-  if (attr)
-  {
-    bool didNotify = false;
-    // create a "dummy" operation that will mark the attribute resource
-    // as modified so that applications know when a "save" is required.
-    auto uiManager = m_internals->m_view->uiManager();
-    auto opManager = uiManager->operationManager();
-    if (opManager)
-    {
-      auto markModified = opManager->create<smtk::operation::MarkModified>();
-      if (markModified)
-      {
-        didNotify = markModified->parameters()->associations()->appendObjectValue(attr);
-        //auto result = markModified->operate();
-        //didNotify &= result->findInt("outcome")->value() ==
-        //  static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
-        opManager->launchers()(markModified);
-      }
-    }
-#if !defined(NDEBUG) && DEBUG_ATTRIBUTE
-    if (!didNotify)
-    {
-      static bool once = true;
-      if (once)
-      {
-        once = false;
-        smtkWarningMacro(smtk::io::Logger::instance(),
-          "Could not notify resource observers that resource state changed. "
-          "This is not necessarily an error if the operation is unmanaged.");
-      }
-    }
-#else
-    (void)didNotify;
-#endif // NDEBUG
   }
   emit this->itemModified(iobject);
   emit this->modified();

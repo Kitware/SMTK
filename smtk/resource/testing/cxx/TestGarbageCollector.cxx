@@ -10,9 +10,10 @@
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
-#include "smtk/operation/operators/MarkModified.h"
+#include "smtk/operation/XMLOperation.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/Resource.h"
 
@@ -201,6 +202,69 @@ void testResourceCount(
     DeleterA::s_haveRun = false;
   }
 }
+
+class TestOperation : public smtk::operation::XMLOperation
+{
+public:
+  smtkTypeMacro(TestOperation);
+  smtkCreateMacro(TestOperation);
+  smtkSharedFromThisMacro(smtk::operation::Operation);
+
+  TestOperation() {}
+  ~TestOperation() override {}
+
+  Result operateInternal() override;
+
+  const char* xmlDescription() const override;
+};
+
+TestOperation::Result TestOperation::operateInternal()
+{
+  auto assoc = this->parameters()->associations();
+  if (!assoc->isSet(0))
+  {
+    return this->createResult(Outcome::FAILED);
+  }
+  auto result = this->createResult(Outcome::SUCCEEDED);
+  result->findComponent("modified")->appendValue(assoc->valueAs<smtk::resource::Component>());
+  return result;
+}
+
+const char testOperationXML[] =
+  "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+  "<SMTK_AttributeSystem Version=\"2\">"
+  "  <Definitions>"
+  "    <AttDef Type=\"operation\" Label=\"operation\" Abstract=\"True\">"
+  "      <ItemDefinitions>"
+  "        <Int Name=\"debug level\" Optional=\"True\">"
+  "          <DefaultValue>0</DefaultValue>"
+  "        </Int>"
+  "      </ItemDefinitions>"
+  "    </AttDef>"
+  "    <AttDef Type=\"result\" Abstract=\"True\">"
+  "      <ItemDefinitions>"
+  "        <Int Name=\"outcome\" Label=\"outcome\" Optional=\"False\" NumberOfRequiredValues=\"1\">"
+  "        </Int>"
+  "        <String Name=\"log\" Optional=\"True\" NumberOfRequiredValues=\"0\" Extensible=\"True\">"
+  "        </String>"
+  "        <Component Name=\"modified\" NumberOfRequiredValues=\"0\" Extensible=\"1\" "
+  "HoldReference=\"1\"/>"
+  "      </ItemDefinitions>"
+  "    </AttDef>"
+  "    <AttDef Type=\"TestOperation\" Label=\"My Operation\" BaseType=\"operation\">"
+  "      <AssociationsDef Name=\"components\" Extensible=\"true\" NumberOfRequiredValues=\"0\">"
+  "        <Accepts><Resource Name=\"smtk::resource::Resource\" Filter=\"*\"/></Accepts>"
+  "      </AssociationsDef>"
+  "    </AttDef>"
+  "    <AttDef Type=\"result(test op)\" BaseType=\"result\">"
+  "    </AttDef>"
+  "  </Definitions>"
+  "</SMTK_AttributeSystem>";
+
+const char* TestOperation::xmlDescription() const
+{
+  return testOperationXML;
+}
 }
 
 using namespace detail;
@@ -237,7 +301,7 @@ void TestSingle(const T& resourceA, const U& operationManager)
   std::cout << "Test that garbage collection does happen when it should.\n";
   smtkTest(resourceA->size() == 2, "Expected 2 components after shared-pointer freed.");
   // Now run an operation that will trigger garbage collection.
-  auto markerA = operationManager->template create<smtk::operation::MarkModified>();
+  auto markerA = operationManager->template create<TestOperation>();
   markerA->parameters()->associate(resourceA);
   markerA->operate();
   testResourceCount(resourceA, 1, "Expected 1 component after mark-modified.");
@@ -275,7 +339,7 @@ void TestMultiple(const T& resourceA, const U& operationManager)
     // Now run an operation that will trigger garbage collection.
     // This time, nothing should happen since 1 of the shared pointers is still
     // held elsewhere.
-    auto markerA = operationManager->template create<smtk::operation::MarkModified>();
+    auto markerA = operationManager->template create<TestOperation>();
     markerA->parameters()->associate(resourceA);
     markerA->operate();
     std::cout << "  Resource has " << resourceA->size() << " components.\n";
@@ -285,7 +349,7 @@ void TestMultiple(const T& resourceA, const U& operationManager)
   std::cout << "Test that garbage collection works with multiple associations.\n";
   smtkTest(resourceA->size() == 3, "Expected 3 components after shared-pointer freed.");
   // Now run an operation that will trigger garbage collection.
-  auto markerA = operationManager->template create<smtk::operation::MarkModified>();
+  auto markerA = operationManager->template create<TestOperation>();
   markerA->parameters()->associate(resourceA);
   markerA->operate();
   std::cout << "  Resource has " << resourceA->size() << " components.\n";
@@ -303,7 +367,7 @@ int TestGarbageCollector(int, char** const)
 
   // Register DeleterA
   operationManager->registerOperation<DeleterA>();
-  operationManager->registerOperation<smtk::operation::MarkModified>();
+  operationManager->registerOperation<TestOperation>();
 
   // Create a new ResourceA type
   auto resourceA = resourceManager->create<ResourceA>();
