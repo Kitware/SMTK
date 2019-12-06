@@ -18,7 +18,11 @@
 #include <type_traits>
 #include <utility>
 
-#define DEBUG_OBSERVER 0
+#define DEBUG_OBSERVERS 0
+
+#if !defined(NDEBUG) && DEBUG_OBSERVERS
+#include <iostream>
+#endif
 
 #define ADD_OBSERVER(key, observers, observer, priority, initialize)                               \
   key = observers->insert(observer, priority, initialize,                                          \
@@ -123,6 +127,10 @@ public:
       // these observers from being called (as though they were erased).
       if (m_toErase.find(entry.first) == m_toErase.end())
       {
+#if !defined(NDEBUG) && DEBUG_OBSERVERS
+        std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
+                  << "): " << m_descriptions[entry.first] << std::endl;
+#endif
         result |= entry.second(std::forward<Types>(args)...);
       }
     }
@@ -159,7 +167,7 @@ public:
       {
 #if !defined(NDEBUG) && DEBUG_OBSERVERS
         std::cerr << "Calling observer (" << entry.first.first << ", " << entry.first.second
-                  << "): " << m_descriptions[entry.first];
+                  << "): " << m_descriptions[entry.first] << std::endl;
 #endif
         entry.second(std::forward<Types>(args)...);
       }

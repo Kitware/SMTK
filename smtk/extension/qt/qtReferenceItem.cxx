@@ -453,6 +453,11 @@ void qtReferenceItem::updateUI()
   }
 
   // Create a container for the item:
+  if (m_widget)
+  {
+    delete m_widget;
+  }
+
   m_widget = new QFrame(m_itemInfo.parentWidget());
   if (this->isReadOnly())
   {
