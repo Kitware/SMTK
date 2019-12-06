@@ -17,3 +17,6 @@ These changes were made to help simplify/cleanup the qtView infrastructure.  The
 * **qtBaseView::updateViewUI - has been removed.** It was not being used.
 * **qtBaseAttributeView::updateAttributeData - has been removed.** This method's role was to update the attribute content of a View.  You should now call updateUI() instead.
 * qtBaseAttributeView no longer overrides updateUI()
+
+### Tracking Changes in Analysis Configuration Attributes
+Attributes that are deleted, created, or modified are now checked to see if they represent Analysis Configurations.  The configuration combobox is then updated appropriately.
