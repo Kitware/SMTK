@@ -155,12 +155,15 @@ void qtDescriptivePhraseModel::setPhraseModel(smtk::view::PhraseModelPtr model)
 
 QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelIndex& owner) const
 {
+  // When the model is empty, there are no valid indices:
   if (!m_model || m_model->root()->subphrases().empty())
     return QModelIndex();
 
+  // We currently only support column 0:
   if (owner.isValid() && owner.column() != 0)
     return QModelIndex();
 
+  // Check that the parent has the given row/column:
   int rows = this->rowCount(owner);
   int columns = this->columnCount(owner);
   if (row < 0 || row >= rows || column < 0 || column >= columns)
@@ -196,6 +199,10 @@ QModelIndex qtDescriptivePhraseModel::parent(const QModelIndex& child) const
   }
 
   view::DescriptivePhrasePtr childPhrase = this->getItem(child);
+  if (!childPhrase)
+  {
+    return QModelIndex();
+  }
   view::DescriptivePhrasePtr parentPhrase = childPhrase->parent();
   if (parentPhrase == m_model->root())
   {
@@ -233,6 +240,10 @@ bool qtDescriptivePhraseModel::hasChildren(const QModelIndex& owner) const
 int qtDescriptivePhraseModel::rowCount(const QModelIndex& owner) const
 {
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
+  if (!ownerPhrase)
+  {
+    return 0;
+  }
   return static_cast<int>(ownerPhrase->subphrases().size());
 }
 
@@ -723,7 +734,12 @@ view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& 
       this->P->ptrs.erase(phraseIdx);
     }
   }
-  return m_model->root();
+  else if (m_model)
+  {
+    return m_model->root();
+  }
+
+  return nullptr;
 }
 
 QModelIndex qtDescriptivePhraseModel::indexFromPath(const std::vector<int>& path) const
