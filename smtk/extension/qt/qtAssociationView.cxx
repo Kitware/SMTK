@@ -167,7 +167,7 @@ void qtAssociationView::createWidget()
 
 void qtAssociationView::updateModelAssociation()
 {
-  this->onShowCategory();
+  this->updateUI();
 }
 
 smtk::attribute::AttributePtr qtAssociationView::getAttributeFromIndex(int index)
@@ -185,7 +185,7 @@ void qtAssociationView::onAttributeChanged(int index)
   this->Internals->AssociationsWidget->showEntityAssociation(att);
 }
 
-void qtAssociationView::displayAttributes()
+void qtAssociationView::updateUI()
 {
   this->Internals->attributes->blockSignals(true);
   this->Internals->attributes->clear();
@@ -225,7 +225,7 @@ void qtAssociationView::displayAttributes()
 
 void qtAssociationView::onShowCategory()
 {
-  this->displayAttributes();
+  this->updateUI();
 }
 
 void qtAssociationView::getAllDefinitions()

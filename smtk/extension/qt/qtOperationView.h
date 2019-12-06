@@ -66,9 +66,10 @@ public:
   smtk::operation::OperationPtr operation() const;
 
 public slots:
+  void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
   void requestModelEntityAssociation() override;
-  void onShowCategory() override { this->updateAttributeData(); }
+  void onShowCategory() override;
   virtual void onModifiedParameters();
   virtual void onModifiedParameter(qtItem* item);
   virtual void onOperate();

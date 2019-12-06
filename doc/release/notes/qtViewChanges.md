@@ -10,3 +10,10 @@ It was discovered that passing the **this** pointer into an Observer's lambda ex
 ### Changes to qtGroupItem
 * The first Column is no longer marked with 1 for extensible groups.
 * Fixed issue with updating extensible qtGroupItems due to the number of columns being set to 0 instead of 1
+
+### API Changes
+These changes were made to help simplify/cleanup the qtView infrastructure.  There were several places where onShowCategory() was being called in order to update the UI.  This resulted in confusion as to the role of the method.  In many cases these calls have been replaced with updateUI.
+
+* **qtBaseView::updateViewUI - has been removed.** It was not being used.
+* **qtBaseAttributeView::updateAttributeData - has been removed.** This method's role was to update the attribute content of a View.  You should now call updateUI() instead.
+* qtBaseAttributeView no longer overrides updateUI()

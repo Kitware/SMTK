@@ -66,12 +66,7 @@ signals:
   void modified(smtk::attribute::ItemPtr);
 
 public slots:
-  void updateUI() override
-  {
-    this->updateAttributeData();
-    this->updateModelAssociation();
-    this->showAdvanceLevelOverlay(m_advOverlayVisible);
-  }
+
   virtual void updateModelAssociation() { ; }
   virtual void valueChanged(smtk::attribute::ItemPtr);
   /// Invoke the Signal dummy operation to indicate an attribute has been created.
@@ -88,7 +83,6 @@ public slots:
   virtual void requestModelEntityAssociation() { ; }
 
 protected slots:
-  virtual void updateAttributeData() { ; }
   virtual void onAdvanceLevelChanged(int levelIdx);
   void onConfigurationChanged(int levelIdx);
 

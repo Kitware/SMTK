@@ -625,6 +625,11 @@ void qtModelEntityAttributeView::updateSelectedModelEntity(
 
 void qtModelEntityAttributeView::onShowCategory()
 {
+  this->updateUI();
+}
+
+void qtModelEntityAttributeView::updateUI()
+{
   this->updateModelEntities();
 }
 

@@ -59,6 +59,7 @@ public:
 public slots:
   void onViewBy(int);
   void onViewByWithDefinition(int viewBy, smtk::attribute::DefinitionPtr attDef);
+  void updateUI() override;
   void onShowCategory() override;
   void onListBoxSelectionChanged();
   void onAttributeValueChanged(QTableWidgetItem*);

@@ -201,7 +201,7 @@ void qtSimpleExpressionEvaluationView::createWidget()
 
   this->Widget = frame;
 
-  this->initFunctionList();
+  this->updateUI();
 }
 
 void qtSimpleExpressionEvaluationView::createFunctionWithExpression()

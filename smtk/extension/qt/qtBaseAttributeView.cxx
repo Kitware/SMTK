@@ -507,12 +507,7 @@ void qtBaseAttributeView::showAdvanceLevel(int level)
   {
     this->showAdvanceLevelOverlay(true);
   }
-  if (this->Widget)
-  {
-    delete this->Widget;
-    this->Widget = NULL;
-  }
-  this->buildUI();
+  this->updateUI();
 }
 
 void qtBaseAttributeView::enableShowBy(int enable)

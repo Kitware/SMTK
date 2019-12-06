@@ -140,6 +140,9 @@ public:
   QPointer<qtAttribute> CurrentAtt;
   QPointer<QFrame> AttFrame;
 
+  //Last selected attribute
+  WeakAttributePtr selectedAttribute;
+
   // Model for filtering the attribute by combobox.
   QPointer<QStandardItemModel> checkableAttComboModel;
   QMap<std::string, Qt::CheckState> AttSelections;
@@ -432,7 +435,7 @@ void qtAttributeView::createWidget()
 
 void qtAttributeView::updateModelAssociation()
 {
-  this->onShowCategory();
+  this->updateUI();
 }
 
 smtk::attribute::Attribute* qtAttributeView::getRawAttributeFromItem(QTableWidgetItem* item)
@@ -524,6 +527,7 @@ void qtAttributeView::onListBoxSelectionChanged()
   else
   {
     delete this->Internals->CurrentAtt;
+    this->Internals->selectedAttribute = AttributePtr();
     this->Internals->CurrentAtt = nullptr;
     this->updateAssociationEnableState(smtk::attribute::AttributePtr());
   }
@@ -993,6 +997,7 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
   {
     return;
   }
+  smtk::attribute::AttributePtr currentAtt = this->Internals->selectedAttribute.lock();
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
@@ -1010,11 +1015,20 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
       {
         item->setFont(this->uiManager()->advancedFont());
       }
+      if (currentAtt == (*it))
+      {
+        this->Internals->ListTable->setCurrentItem(item);
+      }
     }
   }
 }
 
 void qtAttributeView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void qtAttributeView::updateUI()
 {
   int viewBy = this->Internals->ViewByCombo->currentIndex();
   this->onViewBy(viewBy);
@@ -1044,6 +1058,7 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
     smtk::view::Configuration::Component comp;
     this->Internals->CurrentAtt = new qtAttribute(att, comp, this->Internals->AttFrame, this);
   }
+  this->Internals->selectedAttribute = att;
   // By default use the basic layout with no model associations since this class
   // takes care of it
   this->Internals->CurrentAtt->createBasicLayout(false);

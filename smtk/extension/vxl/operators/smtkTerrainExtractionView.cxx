@@ -221,7 +221,7 @@ void smtkTerrainExtractionView::createWidget()
   this->Widget->setLayout(layout);
   this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
-  this->updateAttributeData();
+  this->updateUI();
 
   this->Internals->terrainExtraction = new QWidget;
   this->Internals->setupUi(this->Internals->terrainExtraction);
@@ -263,7 +263,12 @@ void smtkTerrainExtractionView::createWidget()
   this->attributeModified();
 }
 
-void smtkTerrainExtractionView::updateAttributeData()
+void smtkTerrainExtractionView::onShowCategory()
+{
+  this->updateUI();
+}
+
+void smtkTerrainExtractionView::updateUI()
 {
   smtk::view::ConfigurationPtr view = this->getObject();
   if (!view || !this->Widget)
@@ -442,7 +447,7 @@ void smtkTerrainExtractionView::onResolutionEditChanged(QString scaleString)
 
 void smtkTerrainExtractionView::requestModelEntityAssociation()
 {
-  this->updateAttributeData();
+  this->updateUI();
 }
 
 void smtkTerrainExtractionView::setInfoToBeDisplayed()
