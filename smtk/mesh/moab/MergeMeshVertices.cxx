@@ -103,7 +103,7 @@ MergeMeshVertices::~MergeMeshVertices()
     return rval;
   }
 
-  if (deadEnts.size() > 0)
+  if (!deadEnts.empty())
   {
     rval = map_dead_to_alive(mbMergeTag);
     if (MB_SUCCESS != rval)
@@ -202,7 +202,7 @@ MergeMeshVertices::~MergeMeshVertices()
       // check close-by leaves too
       leaves_out.clear();
       result = tree.distance_search(
-        from.array(), mergeTol, leaves_out, mergeTol, 1.0e-6, NULL, NULL, &tree_root);
+        from.array(), mergeTol, leaves_out, mergeTol, 1.0e-6, nullptr, nullptr, &tree_root);
       leaf_range2.clear();
       for (std::vector<EntityHandle>::iterator vit = leaves_out.begin(); vit != leaves_out.end();
            vit++)
@@ -284,7 +284,7 @@ MergeMeshVertices::~MergeMeshVertices()
   // they are used (eventually) for higher dim entities
   mergedToVertices.clear();
   ErrorCode result;
-  if (deadEnts.size() == 0)
+  if (deadEnts.empty())
   {
     return MB_SUCCESS; //nothing to merge carry on with the program
   }
@@ -379,7 +379,7 @@ MergeMeshVertices::~MergeMeshVertices()
     {
       int numCellsInSubRange = 0;
       int verts_per_ent = 0;
-      EntityHandle* connectivity = NULL;
+      EntityHandle* connectivity = nullptr;
       result = mbImpl->connect_iterate(iter, end, connectivity, verts_per_ent, numCellsInSubRange);
       if (MB_SUCCESS != result)
       {

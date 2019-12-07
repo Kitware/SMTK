@@ -58,10 +58,10 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
   ResourcePtr sm = Resource::create();
-  sm->observe(std::make_pair(ANY_EVENT, ENTITY_ENTRY), &entityResourceEvent, NULL);
-  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_FREE_CELL), &addEntityToModel, NULL);
-  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_GROUP), &addEntityToModel, NULL);
-  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_MODEL), &addEntityToModel, NULL);
+  sm->observe(std::make_pair(ANY_EVENT, ENTITY_ENTRY), &entityResourceEvent, nullptr);
+  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_FREE_CELL), &addEntityToModel, nullptr);
+  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_GROUP), &addEntityToModel, nullptr);
+  sm->observe(std::make_pair(ANY_EVENT, MODEL_INCLUDES_MODEL), &addEntityToModel, nullptr);
 
   UUIDArray uids = createTet(sm);
 
@@ -102,9 +102,9 @@ int main(int argc, char* argv[])
   sm->setStringProperty(uids[21], "name", "Tetrahedron"); // Resets name to length 1.
   test(sm->stringProperty(uids[0], "velocity")[0] == "vx");
   test(sm->stringProperty(uids[0], "velocity")[1] == "vy");
-  test(sm->stringProperty(uids[0], "velocity").size() == 3);  // Test multi-entry length.
-  test(sm->stringProperty(uids[21], "velocity").size() == 0); // Test missing entry length.
-  test(sm->stringProperty(uids[21], "name").size() == 1);     // Test length of reset property.
+  test(sm->stringProperty(uids[0], "velocity").size() == 3); // Test multi-entry length.
+  test(sm->stringProperty(uids[21], "velocity").empty());    // Test missing entry length.
+  test(sm->stringProperty(uids[21], "name").size() == 1);    // Test length of reset property.
   double d3vals[] = { 1.0, 0.0, 2.0 };
   int i2vals[] = { 100, 200 };
   FloatList v3(d3vals, d3vals + 3);
@@ -179,15 +179,15 @@ int main(int argc, char* argv[])
   smtk::common::UUID aid1, aid2;
   aid1 = smtk::common::UUID::random();
   aid2 = smtk::common::UUID::random();
-  test(sm->associateAttribute(NULL, /*attribId*/ aid1, uids[0]),
+  test(sm->associateAttribute(nullptr, /*attribId*/ aid1, uids[0]),
     "Inserting a new attribute should succeed");
-  test(sm->associateAttribute(NULL, /*attribId*/ aid2, uids[0]),
+  test(sm->associateAttribute(nullptr, /*attribId*/ aid2, uids[0]),
     "Inserting a new attribute should succeed");
-  test(sm->associateAttribute(NULL, /*attribId*/ aid1, uids[0]),
+  test(sm->associateAttribute(nullptr, /*attribId*/ aid1, uids[0]),
     "Inserting an attribute twice should succeed");
-  test(sm->disassociateAttribute(NULL, /*attribId*/ aid1, uids[0]),
+  test(sm->disassociateAttribute(nullptr, /*attribId*/ aid1, uids[0]),
     "Removing a non-existent attribute should fail");
-  test(!sm->disassociateAttribute(NULL, /*attribId*/ aid1, uids[1]),
+  test(!sm->disassociateAttribute(nullptr, /*attribId*/ aid1, uids[1]),
     "Removing a non-existent attribute should fail");
 
   // Test removal of arrangement information and entities.
@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
     "Detaching a Volume from a non-existent Model did not fail.");
   test(
     sm->unarrangeEntity(uids[21], HAS_USE, 0, true) == 2, "Detaching a Volume/VolumeUse failed.");
-  test(sm->findEntity(uids[21]) == NULL,
+  test(sm->findEntity(uids[21]) == nullptr,
     "unarrangeEntity(..., true) failed to remove the entity afterwards.");
   test(sm->erase(uids[0]), "Failed to erase a vertex.");
 

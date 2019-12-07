@@ -46,13 +46,9 @@ namespace discrete
 {
 
 /// Private constructor since this class is a base class which should not be instantiated.
-ArrangementHelper::ArrangementHelper()
-{
-}
+ArrangementHelper::ArrangementHelper() = default;
 
-ArrangementHelper::~ArrangementHelper()
-{
-}
+ArrangementHelper::~ArrangementHelper() = default;
 
 void ArrangementHelper::addArrangement(const smtk::model::EntityRef& parent,
   smtk::model::ArrangementKind k, const smtk::model::EntityRef& child)
@@ -218,7 +214,7 @@ T* EntityFromId(const smtk::common::UUID& entId, std::map<smtk::common::UUID, T*
 {
   typename std::map<smtk::common::UUID, T*>::const_iterator it = bck.find(entId);
   if (it == bck.end())
-    return NULL;
+    return nullptr;
   return it->second;
 }
 

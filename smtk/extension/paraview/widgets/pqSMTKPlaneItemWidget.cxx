@@ -41,9 +41,7 @@ pqSMTKPlaneItemWidget::pqSMTKPlaneItemWidget(
   this->createWidget();
 }
 
-pqSMTKPlaneItemWidget::~pqSMTKPlaneItemWidget()
-{
-}
+pqSMTKPlaneItemWidget::~pqSMTKPlaneItemWidget() = default;
 
 qtItem* pqSMTKPlaneItemWidget::createPlaneItemWidget(const qtAttributeItemInfo& info)
 {

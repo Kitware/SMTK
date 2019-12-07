@@ -24,15 +24,13 @@ vtkSplitOperation::vtkSplitOperation()
   this->OperateSucceeded = 0;
 }
 
-vtkSplitOperation::~vtkSplitOperation()
-{
-}
+vtkSplitOperation::~vtkSplitOperation() = default;
 
 vtkModelEntity* vtkSplitOperation::GetModelEntity(vtkDiscreteModelWrapper* ModelWrapper)
 {
   if (!ModelWrapper || !this->GetIsIdSet())
   {
-    return 0;
+    return nullptr;
   }
   return this->Superclass::GetModelEntity(ModelWrapper->GetModel());
 }

@@ -41,9 +41,7 @@ ComponentProperties::ComponentProperties(const Component* component)
   // in an indeterminate state.
 }
 
-ComponentProperties::~ComponentProperties()
-{
-}
+ComponentProperties::~ComponentProperties() = default;
 
 const smtk::common::UUID& ComponentProperties::id() const
 {

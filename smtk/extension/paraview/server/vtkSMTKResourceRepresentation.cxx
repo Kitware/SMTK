@@ -1391,7 +1391,8 @@ void vtkSMTKResourceRepresentation::ApplyGlyphBlockAttributes(vtkGlyph3DMapper* 
   for (auto const& item : this->InstanceVisibilities)
   {
     unsigned int currentIdx = 0;
-    auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+    auto dob =
+      vtkCompositeDataDisplayAttributes::DataObjectFromIndex(item.first, instanceData, currentIdx);
 
     if (dob)
     {
@@ -1403,7 +1404,8 @@ void vtkSMTKResourceRepresentation::ApplyGlyphBlockAttributes(vtkGlyph3DMapper* 
   for (auto const& item : this->InstanceColors)
   {
     unsigned int currentIdx = 0;
-    auto dob = blockAttr->DataObjectFromIndex(item.first, instanceData, currentIdx);
+    auto dob =
+      vtkCompositeDataDisplayAttributes::DataObjectFromIndex(item.first, instanceData, currentIdx);
 
     if (dob)
     {

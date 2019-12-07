@@ -67,8 +67,8 @@ pqTerrainExtractionManager::~pqTerrainExtractionManager()
 
 void pqTerrainExtractionManager::clear()
 {
-  this->TerrainExtractFilter = 0;
-  this->FullProcessTerrainExtractFilter = 0;
+  this->TerrainExtractFilter = nullptr;
+  this->FullProcessTerrainExtractFilter = nullptr;
 
   this->DetailedScale = 0;
   this->InputDims[0] = 1;
@@ -103,7 +103,7 @@ void pqTerrainExtractionManager::ComputeBasicResolution()
   if (this->TerrainExtractFilter)
   {
     builder->destroy(this->TerrainExtractFilter);
-    this->TerrainExtractFilter = 0;
+    this->TerrainExtractFilter = nullptr;
   }
 
   pqPipelineSource* pdSource = this->PrepDataForTerrainExtraction();
@@ -123,7 +123,7 @@ void pqTerrainExtractionManager::ComputeBasicResolution()
   // release the memory
   builder->destroy(this->TerrainExtractFilter);
   builder->destroy(pdSource);
-  this->TerrainExtractFilter = 0;
+  this->TerrainExtractFilter = nullptr;
 
   QString scaleString;
   scaleString.setNum(computedScale);
@@ -158,7 +158,7 @@ void pqTerrainExtractionManager::ComputeDetailedResolution()
 
       // after "setting up refine", can get rid of appendedSource
       pqSMAdaptor::setInputProperty(
-        this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("Input"), 0, 0);
+        this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("Input"), nullptr, 0);
       this->FullProcessTerrainExtractFilter->getProxy()->UpdateVTKObjects();
       pqApplicationCore::instance()->getObjectBuilder()->destroy(appendedSource);
     }
@@ -299,7 +299,7 @@ pqPipelineSource* pqTerrainExtractionManager::setupFullProcessTerrainFilter()
   if (this->FullProcessTerrainExtractFilter)
   {
     builder->destroy(this->FullProcessTerrainExtractFilter);
-    this->FullProcessTerrainExtractFilter = 0;
+    this->FullProcessTerrainExtractFilter = nullptr;
   }
 
   // Set value for FullProcessTerrainExtractFilter and get appendedSource
@@ -364,7 +364,7 @@ void pqTerrainExtractionManager::onProcesssFullData(double scale, double maskSiz
 
     // after "setting up refine", can get rid of appendedSource
     pqSMAdaptor::setInputProperty(
-      this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("Input"), 0, 0);
+      this->FullProcessTerrainExtractFilter->getProxy()->GetProperty("Input"), nullptr, 0);
     this->FullProcessTerrainExtractFilter->getProxy()->UpdateVTKObjects();
     builder->destroy(appendedSource);
   }
@@ -438,7 +438,7 @@ void pqTerrainExtractionManager::onProcesssFullData(double scale, double maskSiz
   if (aborted)
   {
     builder->destroy(this->FullProcessTerrainExtractFilter);
-    this->FullProcessTerrainExtractFilter = 0;
+    this->FullProcessTerrainExtractFilter = nullptr;
     return;
   }
 
@@ -496,7 +496,7 @@ void pqTerrainExtractionManager::onProcesssFullData(double scale, double maskSiz
 
   // right now not supporting repeat full process
   builder->destroy(this->FullProcessTerrainExtractFilter);
-  this->FullProcessTerrainExtractFilter = 0;
+  this->FullProcessTerrainExtractFilter = nullptr;
 
   // Update the render view
   pqApplicationCore::instance()->render();

@@ -36,7 +36,7 @@ namespace mesh
 
 namespace
 {
-static bool registered = PointCloudFromVTKFile::registerClass();
+bool registered = PointCloudFromVTKFile::registerClass();
 }
 
 bool PointCloudFromVTKFile::valid(const std::string& fileName) const

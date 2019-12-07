@@ -69,10 +69,10 @@ class qtFileItemInternals
 {
 public:
   qtFileItemInternals()
-    : FileBrowser(NULL)
+    : FileBrowser(nullptr)
   {
   }
-  ~qtFileItemInternals() {}
+  ~qtFileItemInternals() = default;
 
   bool IsDirectory;
   QFileDialog* FileBrowser;
@@ -169,11 +169,11 @@ void qtFileItem::enableFileBrowser(bool state)
 {
   if (!state)
   {
-    this->Internals->FileBrowser->setParent(NULL);
+    this->Internals->FileBrowser->setParent(nullptr);
     delete this->Internals->FileBrowser;
-    this->Internals->FileBrowser = NULL;
+    this->Internals->FileBrowser = nullptr;
   }
-  else if (NULL == this->Internals->FileBrowser)
+  else if (nullptr == this->Internals->FileBrowser)
   {
     this->Internals->FileBrowser = new QFileDialog(m_widget);
     this->Internals->FileBrowser->setObjectName("Select File Dialog");
@@ -185,9 +185,9 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
   const smtk::attribute::FileSystemItem& item,
   const smtk::attribute::FileSystemItemDefinition& itemDef)
 {
-  QWidget* fileTextWidget = NULL;
-  QComboBox* fileCombo = NULL;
-  QLineEdit* lineEdit = NULL;
+  QWidget* fileTextWidget = nullptr;
+  QComboBox* fileCombo = nullptr;
+  QLineEdit* lineEdit = nullptr;
   QFrame* frame = new QFrame(m_itemInfo.parentWidget());
   //frame->setStyleSheet("QFrame { background-color: yellow; }");
   QString defaultText;
@@ -226,7 +226,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
     }
   }
 
-  if (fileTextWidget == NULL)
+  if (fileTextWidget == nullptr)
   {
     lineEdit = new QLineEdit(frame);
     fileTextWidget = lineEdit;
@@ -362,7 +362,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
 
 void qtFileItem::onInputValueChanged()
 {
-  QLineEdit* editBox = NULL;
+  QLineEdit* editBox = nullptr;
   if (this->Internals->fileCombo)
   {
     editBox = this->Internals->fileCombo->lineEdit();
@@ -518,7 +518,7 @@ void qtFileItem::updateFileComboList(const QString& newFile)
 
 void qtFileItem::setInputValue(const QString& val)
 {
-  QLineEdit* lineEdit = NULL;
+  QLineEdit* lineEdit = nullptr;
   if (this->Internals->fileCombo)
   {
     lineEdit = this->Internals->fileCombo->lineEdit();
@@ -586,7 +586,7 @@ void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& it
   {
     return;
   }
-  QBoxLayout* childLayout = NULL;
+  QBoxLayout* childLayout = nullptr;
   childLayout = new QVBoxLayout;
   childLayout->setContentsMargins(12, 3, 3, 0);
   childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -871,7 +871,7 @@ void qtFileItem::onRemoveValue()
   if (childLayout)
   {
     QLayoutItem* child;
-    while ((child = childLayout->takeAt(0)) != 0)
+    while ((child = childLayout->takeAt(0)) != nullptr)
     {
       delete child;
     }
@@ -943,7 +943,7 @@ void qtFileItem::clearChildWidgets()
     if (childLayout)
     {
       QLayoutItem* child;
-      while ((child = childLayout->takeAt(0)) != 0)
+      while ((child = childLayout->takeAt(0)) != nullptr)
       {
         delete child;
       }

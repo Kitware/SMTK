@@ -13,13 +13,9 @@
 #include "vtkModelItem.h"
 #include "vtkObjectFactory.h"
 
-vtkModelItemIterator::vtkModelItemIterator()
-{
-}
+vtkModelItemIterator::vtkModelItemIterator() = default;
 
-vtkModelItemIterator::~vtkModelItemIterator()
-{
-}
+vtkModelItemIterator::~vtkModelItemIterator() = default;
 
 void vtkModelItemIterator::PrintSelf(ostream& os, vtkIndent indent)
 {

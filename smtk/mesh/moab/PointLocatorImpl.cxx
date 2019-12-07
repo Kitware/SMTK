@@ -87,7 +87,7 @@ PointLocatorImpl::PointLocatorImpl(::moab::Interface* interface, std::size_t num
     create_point_mesh(interface, static_cast<int>(numPoints), coordinates, points);
   // hacker solution to speed up the bathymetry Operation
   ::moab::FileOptions treeOptions("MAX_DEPTH=13");
-  m_tree.build_tree(points, NULL, &treeOptions);
+  m_tree.build_tree(points, nullptr, &treeOptions);
 }
 
 PointLocatorImpl::~PointLocatorImpl()

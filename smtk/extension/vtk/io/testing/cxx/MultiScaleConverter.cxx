@@ -223,7 +223,7 @@ void labelShellWithMaterial(const smtk::mesh::ResourcePtr& c, const smtk::mesh::
   }
 }
 
-static int nextDirId = 0;
+int nextDirId = 0;
 
 bool labelIntersection(
   const smtk::mesh::ResourcePtr& c, const smtk::mesh::MeshSet& shell, Filter& filter)
@@ -330,7 +330,7 @@ void extractMaterials(
 
   //find the top and bottom of the shell and apply dirichlet properties
   //to each section
-  if (bounds != NULL)
+  if (bounds != nullptr)
   {
     const double ymin = bounds[2];
     {
@@ -379,11 +379,11 @@ int main(int argc, char* argv[])
     }
   }
 
-  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName.c_str());
+  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName);
 
   // Dispatch based on the file extension
   vtkDataSet* data;
-  double* bounds = NULL;
+  double* bounds = nullptr;
   smtk::mesh::ResourcePtr c;
   if (extension == ".vtu")
   {

@@ -40,9 +40,7 @@ vtkDEMToMesh::vtkDEMToMesh()
   SubSampleStepSize = 1; //TODO this should be 1
 }
 
-vtkDEMToMesh::~vtkDEMToMesh()
-{
-}
+vtkDEMToMesh::~vtkDEMToMesh() = default;
 
 int vtkDEMToMesh::FillInputPortInformation(int /*port*/, vtkInformation* info)
 {
@@ -68,7 +66,7 @@ int vtkDEMToMesh::RequestData(vtkInformation* vtkNotUsed(req), vtkInformationVec
   }
 
   vtkImageData* img = vtkImageData::SafeDownCast(input);
-  vtkUniformGrid* ugrid = NULL;
+  vtkUniformGrid* ugrid = nullptr;
   if (input->IsA("vtkUniformGrid"))
   {
     ugrid = vtkUniformGrid::SafeDownCast(input);
@@ -80,7 +78,7 @@ int vtkDEMToMesh::RequestData(vtkInformation* vtkNotUsed(req), vtkInformationVec
   }
 
   vtkPoints* points = vtkPoints::New();
-  vtkDoubleArray* scalers = NULL;
+  vtkDoubleArray* scalers = nullptr;
   scalers = vtkDoubleArray::New();
   scalers->SetName("Elevation");
   scalers->SetNumberOfComponents(1);
@@ -113,7 +111,7 @@ int vtkDEMToMesh::RequestData(vtkInformation* vtkNotUsed(req), vtkInformationVec
       int j = y / SubSampleStepSize;
       xyz[1] = y;
       vtkIdType id = img->ComputePointId(xyz);
-      if (ugrid == NULL || ugrid->IsPointVisible(id))
+      if (ugrid == nullptr || ugrid->IsPointVisible(id))
       {
         img->GetPoint(id, pt);
         if (UseScalerForZ)

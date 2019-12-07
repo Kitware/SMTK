@@ -40,9 +40,7 @@ ReferenceItemDefinition::ReferenceItemDefinition(const std::string& sname)
   m_onlyResources = false;
 }
 
-ReferenceItemDefinition::~ReferenceItemDefinition()
-{
-}
+ReferenceItemDefinition::~ReferenceItemDefinition() = default;
 
 bool ReferenceItemDefinition::setAcceptsEntries(
   const std::string& typeName, const std::string& filter, bool accept)
@@ -126,7 +124,7 @@ std::string ReferenceItemDefinition::valueLabel(std::size_t i) const
     assert(!m_valueLabels.empty());
     return m_valueLabels[0];
   }
-  if (m_valueLabels.size())
+  if (!m_valueLabels.empty())
   {
     assert(m_valueLabels.size() > i);
     return m_valueLabels[i];

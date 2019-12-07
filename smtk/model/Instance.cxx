@@ -263,7 +263,7 @@ bool Instance::setRule(const std::string& nextRule)
 
 namespace
 {
-static const std::string sampleSurfaceStr = "sample surface";
+const std::string sampleSurfaceStr = "sample surface";
 }
 
 bool Instance::setSampleSurface(const EntityRef& surface)

@@ -68,7 +68,7 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
   //when we have no subset to load tag_values is empty and
   //dereferencing an empty std::vector is undefined behavior
   std::vector<int> tag_values;
-  int* tag_values_ptr = NULL;
+  int* tag_values_ptr = nullptr;
   int num_tag_values = 0;
 
   //if we have a have subset to load, we need to consider have zero values
@@ -76,12 +76,12 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
   if (subset_name_to_load)
   {
     ::moab::ErrorCode tag_err = core->serial_read_tag(path.c_str(), subset_name_to_load,
-      NULL, //options
+      nullptr, //options
       tag_values);
 
     //this file has no mesh sets that match the given tag so we should
     //fail as trying to load now will bring in the entire mesh, which is wrong
-    if (tag_err != ::moab::MB_SUCCESS || tag_values.size() == 0)
+    if (tag_err != ::moab::MB_SUCCESS || tag_values.empty())
     {
       return false;
     }
@@ -91,8 +91,8 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
   }
 
   ::moab::ErrorCode err = m_iface->load_file(path.c_str(),
-    NULL, //file set to append to
-    NULL, //options
+    nullptr, //file set to append to
+    nullptr, //options
     subset_name_to_load, tag_values_ptr, num_tag_values);
 #ifndef NDEBUG
   if (err != ::moab::MB_SUCCESS)
@@ -113,7 +113,7 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
     ::moab::Tag sense_tag;
     m_iface->tag_get_handle("NEUSET_SENSE", 1, ::moab::MB_TYPE_INTEGER, sense_tag);
     m_iface->get_entities_by_type_and_tag(
-      0, ::moab::MBENTITYSET, &sense_tag, NULL, 1, sense_sets, ::moab::Interface::UNION);
+      0, ::moab::MBENTITYSET, &sense_tag, nullptr, 1, sense_sets, ::moab::Interface::UNION);
     m_iface->delete_entities(sense_sets);
   }
 
@@ -128,7 +128,7 @@ bool moab_load(const smtk::mesh::moab::InterfacePtr& interface, const std::strin
 
 //requires that interface is not a null shared ptr
 smtk::mesh::moab::InterfacePtr load_file(
-  smtk::mesh::moab::InterfacePtr interface, const std::string& path, const char* tag_name = NULL)
+  smtk::mesh::moab::InterfacePtr interface, const std::string& path, const char* tag_name = nullptr)
 {
   const bool loaded = moab_load(interface, path, tag_name);
   if (!loaded)
@@ -142,7 +142,7 @@ smtk::mesh::moab::InterfacePtr load_file(
 
 //requires that interface is not a null shared ptr
 bool append_file(const smtk::mesh::moab::InterfacePtr& interface, const std::string& path,
-  const char* tag_name = NULL)
+  const char* tag_name = nullptr)
 {
   return moab_load(interface, path, tag_name);
 }

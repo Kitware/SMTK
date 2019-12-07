@@ -37,6 +37,9 @@ public:
   void DisplayGenericWarningText(const char* msg) override;
   void DisplayDebugText(const char* msg) override;
 
+  OutputWindow(const OutputWindow&) = delete;
+  void operator=(const OutputWindow&) = delete;
+
 protected:
   OutputWindow();
   ~OutputWindow() override;
@@ -44,10 +47,6 @@ protected:
   FormattedOutput ParseOutput(const char* msg) const;
 
   smtk::io::Logger* Log;
-
-private:
-  OutputWindow(const OutputWindow&) = delete;
-  void operator=(const OutputWindow&) = delete;
 };
 
 vtkStandardNewMacro(OutputWindow);
@@ -57,9 +56,7 @@ OutputWindow::OutputWindow()
 {
 }
 
-OutputWindow::~OutputWindow()
-{
-}
+OutputWindow::~OutputWindow() = default;
 
 void OutputWindow::SetLogger(smtk::io::Logger* log)
 {

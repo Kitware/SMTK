@@ -36,7 +36,7 @@ namespace mesh
 
 namespace
 {
-static bool registered = PointCloudFromVTKAuxiliaryGeometry::registerClass();
+bool registered = PointCloudFromVTKAuxiliaryGeometry::registerClass();
 }
 
 bool PointCloudFromVTKAuxiliaryGeometry::valid(const smtk::model::AuxiliaryGeometry& auxGeom) const

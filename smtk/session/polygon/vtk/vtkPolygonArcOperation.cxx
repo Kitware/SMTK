@@ -27,12 +27,12 @@ vtkCxxSetObjectMacro(vtkPolygonArcOperation, ArcRepresentation, vtkContourRepres
 
 vtkPolygonArcOperation::vtkPolygonArcOperation()
 {
-  this->ArcRepresentation = NULL;
+  this->ArcRepresentation = nullptr;
 }
 
 vtkPolygonArcOperation::~vtkPolygonArcOperation()
 {
-  this->SetArcRepresentation(NULL);
+  this->SetArcRepresentation(nullptr);
 }
 
 bool vtkPolygonArcOperation::AbleToOperate()
@@ -60,9 +60,11 @@ bool vtkPolygonArcOperation::AbleToOperate()
 
   // for create-edge-with-widget and edit-edge operation, we need arc source
   //we need at least two point to create a valid edge
-  vtkPolyData* arcPoly =
-    this->ArcRepresentation ? this->ArcRepresentation->GetContourRepresentationAsPolyData() : NULL;
-  able2Op = arcPoly != NULL && arcPoly->GetNumberOfLines() > 0 && arcPoly->GetNumberOfPoints() >= 2;
+  vtkPolyData* arcPoly = this->ArcRepresentation
+    ? this->ArcRepresentation->GetContourRepresentationAsPolyData()
+    : nullptr;
+  able2Op =
+    arcPoly != nullptr && arcPoly->GetNumberOfLines() > 0 && arcPoly->GetNumberOfPoints() >= 2;
 
   if (able2Op && m_smtkOp.lock()->typeName() == "smtk::session::polygon::TweakEdge")
   {

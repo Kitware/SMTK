@@ -229,7 +229,7 @@ pqSMTKAttributeItemWidget::~pqSMTKAttributeItemWidget()
     operationManager->observers().erase(m_p->m_opObserver);
   }
   delete this->m_p;
-  this->m_p = NULL;
+  this->m_p = nullptr;
 }
 
 pqInteractivePropertyWidget* pqSMTKAttributeItemWidget::propertyWidget()

@@ -16,13 +16,9 @@ namespace smtk
 namespace model
 {
 
-PointLocatorExtension::PointLocatorExtension()
-{
-}
+PointLocatorExtension::PointLocatorExtension() = default;
 
-PointLocatorExtension::~PointLocatorExtension()
-{
-}
+PointLocatorExtension::~PointLocatorExtension() = default;
 
 bool PointLocatorExtension::randomPoint(
   const EntityRef& entity, std::size_t nPoints, std::vector<double>& points)

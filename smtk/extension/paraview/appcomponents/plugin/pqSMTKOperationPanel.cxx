@@ -52,9 +52,9 @@ using json = nlohmann::json;
 class pqSMTKOperationPanel::Internal : public Ui::pqSMTKOperationPanel
 {
 public:
-  Internal() {}
+  Internal() = default;
 
-  ~Internal() {}
+  ~Internal() = default;
 
   void setup(::pqSMTKOperationPanel* panel)
   {

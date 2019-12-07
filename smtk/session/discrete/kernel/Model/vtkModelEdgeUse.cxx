@@ -32,13 +32,9 @@ vtkModelEdgeUse* vtkModelEdgeUse::New()
   return new vtkModelEdgeUse;
 }
 
-vtkModelEdgeUse::vtkModelEdgeUse()
-{
-}
+vtkModelEdgeUse::vtkModelEdgeUse() = default;
 
-vtkModelEdgeUse::~vtkModelEdgeUse()
-{
-}
+vtkModelEdgeUse::~vtkModelEdgeUse() = default;
 
 bool vtkModelEdgeUse::Destroy()
 {
@@ -137,7 +133,7 @@ vtkModelVertexUse* vtkModelEdgeUse::GetModelVertexUse(int i)
   if (iter->IsAtEnd())
   {
     iter->Delete();
-    return 0;
+    return nullptr;
   }
   if (i == 0)
   {
@@ -149,7 +145,7 @@ vtkModelVertexUse* vtkModelEdgeUse::GetModelVertexUse(int i)
   if (iter->IsAtEnd())
   {
     iter->Delete();
-    return 0;
+    return nullptr;
   }
   vtkModelVertexUse* vertexUse = vtkModelVertexUse::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();

@@ -37,20 +37,16 @@
 #include "vtkStdString.h"
 #include "vtkStringArray.h"
 
+#include <cstdio>
+#include <cstring>
 #include <map>
-#include <stdio.h>
-#include <string.h>
 #include <vector>
 
 vtkStandardNewMacro(vtkCMBParserV4);
 
-vtkCMBParserV4::vtkCMBParserV4()
-{
-}
+vtkCMBParserV4::vtkCMBParserV4() = default;
 
-vtkCMBParserV4::~vtkCMBParserV4()
-{
-}
+vtkCMBParserV4::~vtkCMBParserV4() = default;
 
 bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
   smtk::session::discrete::Session* vtkNotUsed(session))
@@ -162,7 +158,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       this->SetModelEntityData(MasterPoly, ModelEntities, "ModelVertex", Model);
     }
     VertexIdsArray->Delete();
-    VertexIdsArray = 0;
+    VertexIdsArray = nullptr;
   }
   // next load in the model edges
   if (EdgeIdsArray)
@@ -172,14 +168,14 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     ModelEntities.resize(EdgeIdsArray->GetNumberOfTuples());
     for (vtkIdType i = 0; i < EdgeIdsArray->GetNumberOfTuples(); i++)
     {
-      vtkModelVertex* Vertices[2] = { NULL, NULL };
+      vtkModelVertex* Vertices[2] = { nullptr, nullptr };
       vtkIdType VertexIds[2];
       EdgeVertices->GetTypedTuple(i, VertexIds);
       for (int j = 0; j < 2; j++)
       {
         Vertices[j] =
           vtkModelVertex::SafeDownCast(Model->GetModelEntity(vtkModelVertexType, VertexIds[j]));
-        if (Vertices[j] == 0 && VertexIds[j] >= 0)
+        if (Vertices[j] == nullptr && VertexIds[j] >= 0)
         {
           vtkErrorMacro("Could not find vertex needed by edge.");
           return 0;
@@ -190,7 +186,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       ModelEntities[i] = Edge;
     }
     EdgeIdsArray->Delete();
-    EdgeIdsArray = 0;
+    EdgeIdsArray = nullptr;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEdge", Model);
     EdgeVertices->Delete();
   }
@@ -227,7 +223,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       EdgeCounter++;
     }
     ArrayCounter++; // incremented because we want to skip the -1 value
-    vtkDiscreteModelFace* face = 0;
+    vtkDiscreteModelFace* face = nullptr;
     if (FaceMaterials && FaceMaterials->GetValue(i) >= 0)
     {
       vtkModelMaterial* Material = vtkModelMaterial::SafeDownCast(
@@ -235,7 +231,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       if (EdgeCounter == 0)
       {
         face = vtkDiscreteModelFace::SafeDownCast(
-          Model->BuildModelFace(EdgeCounter, NULL, NULL, Material));
+          Model->BuildModelFace(EdgeCounter, nullptr, nullptr, Material));
       }
       else
       {
@@ -248,7 +244,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       if (EdgeCounter == 0)
       {
         face = vtkDiscreteModelFace::SafeDownCast(
-          Model->BuildModelFace(EdgeCounter, NULL, NULL, FaceIdsArray->GetValue(i)));
+          Model->BuildModelFace(EdgeCounter, nullptr, nullptr, FaceIdsArray->GetValue(i)));
       }
       else
       {
@@ -283,18 +279,18 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     } // if(ModelFaceRegions)
   }
   EdgesOfModelFace->Delete();
-  EdgesOfModelFace = 0;
+  EdgesOfModelFace = nullptr;
   FaceIdsArray->Delete();
-  FaceIdsArray = 0;
+  FaceIdsArray = nullptr;
   if (ModelFaceRegions)
   {
     ModelFaceRegions->Delete();
-    ModelFaceRegions = 0;
+    ModelFaceRegions = nullptr;
   }
   if (FaceMaterials)
   {
     FaceMaterials->Delete();
-    FaceMaterials = 0;
+    FaceMaterials = nullptr;
   }
   this->SetModelEntityData(MasterPoly, ModelEntities, "ModelFace", Model);
   // now that the ids are properly set we can add the cells to the model faces and/or edges
@@ -334,7 +330,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     }
   }
   CellClassification->Delete();
-  CellClassification = 0;
+  CellClassification = nullptr;
 
   // next load in the regions
   if (RegionIdsArray)
@@ -373,9 +369,9 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       ModelEntities[i] = region;
     }
     RegionIdsArray->Delete();
-    RegionIdsArray = 0;
+    RegionIdsArray = nullptr;
     RegionMaterials->Delete();
-    RegionMaterials = 0;
+    RegionMaterials = nullptr;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelRegion", Model);
   }
 
@@ -452,9 +448,9 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       ModelEntities[i] = Model->BuildModelEntityGroup(itemType, numEntities, &Entities[0]);
     }
     EntityGroupIds->Delete();
-    EntityGroupIds = 0;
+    EntityGroupIds = nullptr;
     GroupedEntityIds->Delete();
-    GroupedEntityIds = 0;
+    GroupedEntityIds = nullptr;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEntityGroup", Model);
   }
 

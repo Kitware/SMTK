@@ -39,9 +39,7 @@ pqSMTKLineItemWidget::pqSMTKLineItemWidget(
   this->createWidget();
 }
 
-pqSMTKLineItemWidget::~pqSMTKLineItemWidget()
-{
-}
+pqSMTKLineItemWidget::~pqSMTKLineItemWidget() = default;
 
 qtItem* pqSMTKLineItemWidget::createLineItemWidget(const qtAttributeItemInfo& info)
 {

@@ -17,7 +17,7 @@
 #include "vtkMultiBlockDataSet.h"
 #include "vtkObjectFactory.h"
 
-vtkPVModelSources* vtkPVModelSources::s_instance = NULL;
+vtkPVModelSources* vtkPVModelSources::s_instance = nullptr;
 
 static bool s_assuredDestruction = false;
 void vtkPVModelSources::destroySingleton()

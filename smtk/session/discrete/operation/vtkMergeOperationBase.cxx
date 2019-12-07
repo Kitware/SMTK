@@ -74,9 +74,9 @@ void vtkMergeOperationBase::RemoveAllLowerDimensionalIds()
 vtkDiscreteModelGeometricEntity* vtkMergeOperationBase::GetTargetModelEntity(
   vtkDiscreteModel* Model)
 {
-  if (Model == 0 || this->IsTargetIdSet == 0)
+  if (Model == nullptr || this->IsTargetIdSet == 0)
   {
-    return 0;
+    return nullptr;
   }
   vtkDiscreteModelFace* Face =
     vtkDiscreteModelFace::SafeDownCast(Model->GetModelEntity(vtkModelFaceType, this->TargetId));
@@ -98,15 +98,15 @@ vtkDiscreteModelGeometricEntity* vtkMergeOperationBase::GetTargetModelEntity(
   }
 
   vtkWarningMacro("Problem getting model entity.");
-  return 0;
+  return nullptr;
 }
 
 vtkDiscreteModelGeometricEntity* vtkMergeOperationBase::GetSourceModelEntity(
   vtkDiscreteModel* model)
 {
-  if (model == 0 || this->IsSourceIdSet == 0)
+  if (model == nullptr || this->IsSourceIdSet == 0)
   {
-    return 0;
+    return nullptr;
   }
   if (vtkDiscreteModelFace* face =
         vtkDiscreteModelFace::SafeDownCast(model->GetModelEntity(vtkModelFaceType, this->SourceId)))
@@ -125,7 +125,7 @@ vtkDiscreteModelGeometricEntity* vtkMergeOperationBase::GetSourceModelEntity(
   }
 
   vtkWarningMacro("Problem getting model entity.");
-  return 0;
+  return nullptr;
 }
 
 bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
@@ -146,9 +146,9 @@ bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
     return 0;
   }
   vtkModelEntity* targetEntity = model->GetModelEntity(this->TargetId);
-  if (vtkDiscreteModelFace::SafeDownCast(targetEntity) == 0 &&
-    vtkDiscreteModelRegion::SafeDownCast(targetEntity) == 0 &&
-    vtkDiscreteModelEdge::SafeDownCast(targetEntity) == 0)
+  if (vtkDiscreteModelFace::SafeDownCast(targetEntity) == nullptr &&
+    vtkDiscreteModelRegion::SafeDownCast(targetEntity) == nullptr &&
+    vtkDiscreteModelEdge::SafeDownCast(targetEntity) == nullptr)
   {
     return 0;
   }
@@ -162,7 +162,7 @@ bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
   // all of them have the same regions/materials on both sides
   if (targetEntityType == vtkModelFaceType)
   {
-    vtkModelRegion* sides[2] = { 0, 0 };
+    vtkModelRegion* sides[2] = { nullptr, nullptr };
     sides[0] = vtkModelFace::SafeDownCast(targetEntity)->GetModelRegion(0);
     sides[1] = vtkModelFace::SafeDownCast(targetEntity)->GetModelRegion(1);
     if (sides[0] != vtkModelFace::SafeDownCast(sourceEntity)->GetModelRegion(0) &&
@@ -192,7 +192,7 @@ bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
     {
       vtkModelVertex* sharedVertex = vtkModelVertex::SafeDownCast(
         model->GetModelEntity(vtkModelVertexType, this->LowerDimensionalIds->GetValue(i)));
-      if (sharedVertex == 0)
+      if (sharedVertex == nullptr)
       {
         return 0;
       }

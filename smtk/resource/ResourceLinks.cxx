@@ -28,9 +28,7 @@ ResourceLinks::ResourceLinks(Resource* resource)
   // an indeterminate state.
 }
 
-ResourceLinks::~ResourceLinks()
-{
-}
+ResourceLinks::~ResourceLinks() = default;
 
 Resource* ResourceLinks::leftHandSideResource()
 {

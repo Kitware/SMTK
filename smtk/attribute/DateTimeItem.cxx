@@ -27,9 +27,7 @@ DateTimeItem::DateTimeItem(Item* inOwningAttribute, int itemPosition, int mySubG
 {
 }
 
-DateTimeItem::~DateTimeItem()
-{
-}
+DateTimeItem::~DateTimeItem() = default;
 
 Item::Type DateTimeItem::type() const
 {
@@ -42,7 +40,7 @@ bool DateTimeItem::isValid(const std::set<std::string>& cats) const
   // category checks - if it doesn't it means its not be taken into account
   // for validity checking so just return true
 
-  if (cats.size() && !this->passCategoryCheck(cats))
+  if (!cats.empty() && !this->passCategoryCheck(cats))
   {
     return true;
   }

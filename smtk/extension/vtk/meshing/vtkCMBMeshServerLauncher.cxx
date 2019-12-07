@@ -81,7 +81,7 @@ vtkCMBMeshServerLauncher::~vtkCMBMeshServerLauncher()
 {
   this->Terminate();
   delete this->Implementation;
-  this->Implementation = NULL;
+  this->Implementation = nullptr;
 }
 
 int vtkCMBMeshServerLauncher::Launch()

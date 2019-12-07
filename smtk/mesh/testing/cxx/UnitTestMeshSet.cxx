@@ -131,7 +131,7 @@ void verify_mesh_by_name(const smtk::mesh::ResourcePtr& mr)
   //while we can't state that every mesh will have a name, we do know
   //that at least 1 will have a name
   test(collec_numMeshes >= mesh_names.size());
-  test(mesh_names.size() > 0);
+  test(!mesh_names.empty());
 
   //now iterate over all the mesh_name and verify we can
   //get a valid meshset out of it

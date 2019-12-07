@@ -119,7 +119,7 @@ int vtkExtractImageBlock::RequestData(vtkInformation* vtkNotUsed(request),
 
   // Copy selected block over to the output.
   int index = 0;
-  vtkImageData* block = NULL;
+  vtkImageData* block = nullptr;
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), index++)
   {
     if (index == this->BlockIndex)

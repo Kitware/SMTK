@@ -19,9 +19,7 @@
   this->view_constructor_pointer = &@_smtk_ui_view_CLASS_NAME@::createViewWidget;
 }
 
-@_smtk_ui_view_CLASS_NAME@Implementation::~@_smtk_ui_view_CLASS_NAME@Implementation()
-{
-}
+@_smtk_ui_view_CLASS_NAME@Implementation::~@_smtk_ui_view_CLASS_NAME@Implementation() = default;
 
 QString @_smtk_ui_view_CLASS_NAME@Implementation::viewName() const
 {

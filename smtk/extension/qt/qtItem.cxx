@@ -25,8 +25,8 @@ using namespace smtk::extension;
 class qtItemInternals
 {
 public:
-  qtItemInternals() {}
-  ~qtItemInternals() {}
+  qtItemInternals() = default;
+  ~qtItemInternals() = default;
   QPointer<qtOverlayFilter> advOverlay;
   QPointer<QComboBox> AdvLevelCombo;
 };
@@ -35,7 +35,7 @@ qtItem::qtItem(const qtAttributeItemInfo& info)
   : m_itemInfo(info)
 {
   this->Internals = new qtItemInternals();
-  this->m_widget = NULL;
+  this->m_widget = nullptr;
   this->m_isLeafItem = false;
   m_useSelectionManager = false;
   m_readOnly = m_itemInfo.component().attributeAsBool("ReadOnly");
@@ -48,10 +48,7 @@ qtItem::~qtItem()
   {
     delete m_widget;
   }
-  if (this->Internals)
-  {
-    delete this->Internals;
-  }
+  delete this->Internals;
 }
 
 void qtItem::markForDeletion()
@@ -127,7 +124,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     // mylevel 150 will use level 200
     // my level 250 will use level 300
     // my level 350 will not be visible at all
-    if (!foundLevel && levels.size() > 0)
+    if (!foundLevel && !levels.empty())
     {
       levels.insert(mylevel);
       std::set<int>::iterator it = levels.upper_bound(mylevel);

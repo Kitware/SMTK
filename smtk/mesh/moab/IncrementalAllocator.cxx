@@ -26,7 +26,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 namespace
 {
 // must be a power of two
-static const std::size_t StartingAllocation = 64; // (1<<6)
+const std::size_t StartingAllocation = 64; // (1<<6)
 }
 
 namespace smtk

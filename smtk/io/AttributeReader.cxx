@@ -301,7 +301,7 @@ void AttributeReaderInternals::readAttributes(smtk::attribute::ResourcePtr resou
   myFileInfo.setCatagories(catagories);
   myFileInfo.setDefaultCatagory(defaultCat);
   // If doc was read in from a file, seed the active include set to start with it
-  if (initialFileName != "")
+  if (!initialFileName.empty())
   {
     activeIncludes.insert(initialFileName);
   }
@@ -320,7 +320,7 @@ void AttributeReaderInternals::readAttributes(smtk::attribute::ResourcePtr resou
   // First set the file index to be the file we are going to be processing
   m_currentFileIndex = 1;
 
-  while (includeStack.size())
+  while (!includeStack.empty())
   {
     pugi::xml_document doc1;
     doc1.load_file(includeStack.back().c_str());

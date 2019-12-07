@@ -112,7 +112,7 @@ ExtractContours::Result ExtractContours::operateInternal()
 
   SessionPtr opsession = resource->polygonSession();
 
-  bool noExistingTess = model.entitiesWithTessellation().size() == 0;
+  bool noExistingTess = model.entitiesWithTessellation().empty();
   internal::pmodel::Ptr storage = resource->findStorage<internal::pmodel>(model.entity());
   smtk::attribute::DoubleItem::Ptr boundsItem =
     this->parameters()->findAs<smtk::attribute::DoubleItem>(

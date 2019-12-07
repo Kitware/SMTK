@@ -146,7 +146,7 @@ QAction* findSaveResourceAction(QMenu* menu)
       return action;
     }
   }
-  return NULL;
+  return nullptr;
 }
 }
 
@@ -212,7 +212,7 @@ QMenu* pqSMTKNewResourceBehavior::fileMenu()
 
   QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
-  QMenu* menu = NULL;
+  QMenu* menu = nullptr;
   foreach (QAction* existingMenuAction, menuBarActions)
   {
     QString menuName = existingMenuAction->text();

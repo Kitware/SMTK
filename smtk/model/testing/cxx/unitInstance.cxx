@@ -63,7 +63,7 @@ std::set<Instance> testInstanceDivide(const Instance& instance, bool merge)
   std::set<Instance> result = source.divide<std::set<Instance> >(merge);
   if (merge)
   {
-    smtkTest(result.size() > 0, "Always expect merged division to have at least 1 output.");
+    smtkTest(!result.empty(), "Always expect merged division to have at least 1 output.");
     smtkTest(result.size() <= 2, "Always expect merged division to have 1 or 2 outputs.");
   }
 
@@ -73,7 +73,7 @@ std::set<Instance> testInstanceDivide(const Instance& instance, bool merge)
     auto tess = entry.generateTessellation();
     std::ostringstream msg;
     msg << "Unexpected empty output \"" << entry.name() << "\".";
-    smtkTest(tess && tess->coords().size() > 0, msg.str());
+    smtkTest(tess && !tess->coords().empty(), msg.str());
   }
   return result;
 }

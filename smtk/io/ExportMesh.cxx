@@ -28,13 +28,9 @@ namespace smtk
 namespace io
 {
 
-ExportMesh::ExportMesh()
-{
-}
+ExportMesh::ExportMesh() = default;
 
-ExportMesh::~ExportMesh()
-{
-}
+ExportMesh::~ExportMesh() = default;
 
 std::vector<smtk::io::mesh::MeshIOPtr>& ExportMesh::SupportedIOTypes()
 {

@@ -36,13 +36,9 @@ struct vtkSerializationHelperMapInternals
 vtkSerializationHelperMapInternals vtkSerializationHelperMapClassMap;
 }
 
-vtkSerializationHelperMap::vtkSerializationHelperMap()
-{
-}
+vtkSerializationHelperMap::vtkSerializationHelperMap() = default;
 
-vtkSerializationHelperMap::~vtkSerializationHelperMap()
-{
-}
+vtkSerializationHelperMap::~vtkSerializationHelperMap() = default;
 
 void vtkSerializationHelperMap::InstantiateDefaultHelpers()
 {
@@ -115,7 +111,7 @@ const char* vtkSerializationHelperMap::GetSerializationType(vtkObject* object)
   if (iter == vtkSerializationHelperMapClassMap.ClassMap.end())
   {
     vtkGenericWarningMacro("Unable to get serialization type: " << object->GetClassName());
-    return 0;
+    return nullptr;
   }
 
   return iter->second->GetSerializationType(object);
@@ -126,7 +122,7 @@ vtkSerializationHelper* vtkSerializationHelperMap::GetHelper(const char* classTy
   ClassHelperMapType::iterator iter = vtkSerializationHelperMapClassMap.ClassMap.find(classType);
   if (iter == vtkSerializationHelperMapClassMap.ClassMap.end())
   {
-    return 0;
+    return nullptr;
   }
 
   return iter->second;

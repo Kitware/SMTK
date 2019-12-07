@@ -19,9 +19,7 @@ StringItemDefinition::StringItemDefinition(const std::string& myName)
 {
 }
 
-StringItemDefinition::~StringItemDefinition()
-{
-}
+StringItemDefinition::~StringItemDefinition() = default;
 
 Item::Type StringItemDefinition::type() const
 {

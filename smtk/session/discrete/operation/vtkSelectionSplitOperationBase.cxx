@@ -34,12 +34,12 @@ vtkSelectionSplitOperationBase::~vtkSelectionSplitOperationBase()
   if (this->ModifiedPairIDs)
   {
     ModifiedPairIDs->Delete();
-    ModifiedPairIDs = 0;
+    ModifiedPairIDs = nullptr;
   }
   if (this->CompletelySelectedIDs)
   {
     CompletelySelectedIDs->Delete();
-    CompletelySelectedIDs = 0;
+    CompletelySelectedIDs = nullptr;
   }
 }
 

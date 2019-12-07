@@ -25,7 +25,7 @@ Logger& Logger::instance()
 
 Logger::~Logger()
 {
-  this->setFlushToStream(NULL, false, false);
+  this->setFlushToStream(nullptr, false, false);
   if (m_callback)
   {
     m_callback();
@@ -117,7 +117,7 @@ std::string Logger::toString(const Logger::Record& record, bool includeSourceLoc
 {
   std::stringstream ss;
   ss << severityAsString(record.severity) << ": ";
-  if (includeSourceLoc && record.fileName != "")
+  if (includeSourceLoc && !record.fileName.empty())
   {
     ss << "In " << record.fileName << ", line " << record.lineNumber << ": ";
   }
@@ -149,7 +149,7 @@ std::string Logger::toStringInternal(std::size_t i, std::size_t j, bool includeS
   for (; i < j; i++)
   {
     ss << severityAsString(m_records[i].severity) << ": ";
-    if (includeSourceLoc && m_records[i].fileName != "")
+    if (includeSourceLoc && !m_records[i].fileName.empty())
     {
       ss << "In " << m_records[i].fileName << ", line " << m_records[i].lineNumber << ": ";
     }
@@ -169,7 +169,7 @@ std::string Logger::toHTML(std::size_t i, std::size_t j, bool includeSourceLoc) 
     if (includeSourceLoc)
     {
       ss << "<td>";
-      if (m_records[i].fileName != "")
+      if (!m_records[i].fileName.empty())
       {
         ss << m_records[i].fileName << ", line " << m_records[i].lineNumber;
       }

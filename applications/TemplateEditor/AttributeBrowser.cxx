@@ -51,10 +51,7 @@ void AttributeBrowser::clear()
 //------------------------------------------------------------------------------
 void AttributeBrowser::populateDefinitions(smtk::attribute::ResourcePtr resource)
 {
-  if (this->AttDefModel)
-  {
-    delete this->AttDefModel;
-  }
+  delete this->AttDefModel;
   this->AttDefModel = new AttDefDataModel(this);
 
   this->AttDefModel->populate(resource);

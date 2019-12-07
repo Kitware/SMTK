@@ -107,7 +107,7 @@ vtkModelItem* vtkModelItemListIterator::GetCurrentItem()
   if (!this->Root)
   {
     vtkErrorMacro("Root is not set. Can not perform operation: GetRoot()");
-    return 0;
+    return nullptr;
   }
 
   if (!this->IsAtEnd())
@@ -115,7 +115,7 @@ vtkModelItem* vtkModelItemListIterator::GetCurrentItem()
     return this->Internal->ConceptualModelItemListIterator->GetPointer();
   }
 
-  return 0;
+  return nullptr;
 }
 
 int vtkModelItemListIterator::Size()

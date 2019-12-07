@@ -35,20 +35,20 @@ struct vtkGMSTINReaderInternals
   ifstream* Stream;
 
   vtkGMSTINReaderInternals()
-    : Stream(0)
+    : Stream(nullptr)
   {
   }
   ~vtkGMSTINReaderInternals() { this->DeleteStream(); }
   void DeleteStream()
   {
     delete this->Stream;
-    this->Stream = 0;
+    this->Stream = nullptr;
   }
 };
 
 vtkGMSTINReader::vtkGMSTINReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   this->Internals = new vtkGMSTINReaderInternals;
 }

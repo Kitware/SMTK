@@ -50,9 +50,7 @@ pqSMTKBoxItemWidget::pqSMTKBoxItemWidget(
   this->createWidget();
 }
 
-pqSMTKBoxItemWidget::~pqSMTKBoxItemWidget()
-{
-}
+pqSMTKBoxItemWidget::~pqSMTKBoxItemWidget() = default;
 
 qtItem* pqSMTKBoxItemWidget::createBoxItemWidget(const qtAttributeItemInfo& info)
 {

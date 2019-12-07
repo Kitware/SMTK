@@ -155,9 +155,9 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(pqPipelineSource* imagesource
     vboxlayout->setMargin(0);
     vboxlayout->addWidget(this->RenderView->widget());
 
-    this->ContourRepresentation = 0;
-    this->ContourSource = 0;
-    this->CleanPolyLines = 0;
+    this->ContourRepresentation = nullptr;
+    this->ContourSource = nullptr;
+    this->CleanPolyLines = nullptr;
 
     this->ContourValue = VTK_FLOAT_MAX;
     this->MinimumLineLength = -1;
@@ -232,7 +232,7 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(pqPipelineSource* imagesource
       QString("Scalar Range:   %1, %2").arg(range[0]).arg(range[1]));
   }
   delete this->Progress;
-  this->Progress = NULL;
+  this->Progress = nullptr;
 
   // not ready to enable abort
   //QObject::connect(this->ProgressWidget, SIGNAL(abortPressed()),
@@ -244,10 +244,7 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(pqPipelineSource* imagesource
 pqGenerateContoursDialog::~pqGenerateContoursDialog()
 {
   delete this->InternalWidget;
-  if (this->MainDialog)
-  {
-    delete MainDialog;
-  }
+  delete MainDialog;
   pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
   if (this->ContourRepresentation)
   {
@@ -256,22 +253,22 @@ pqGenerateContoursDialog::~pqGenerateContoursDialog()
   if (this->CleanPolyLines)
   {
     builder->destroy(this->CleanPolyLines);
-    this->CleanPolyLines = 0;
+    this->CleanPolyLines = nullptr;
   }
   if (this->ContourSource)
   {
     builder->destroy(this->ContourSource);
-    this->ContourSource = 0;
+    this->ContourSource = nullptr;
   }
   if (this->ImageMesh)
   {
     builder->destroy(this->ImageMesh);
-    this->ImageMesh = 0;
+    this->ImageMesh = nullptr;
   }
   if (this->ImageSource)
   {
     builder->destroy(this->ImageSource);
-    this->ImageSource = 0;
+    this->ImageSource = nullptr;
   }
 }
 
@@ -362,7 +359,7 @@ void pqGenerateContoursDialog::generateContours()
   this->InternalWidget->loadImageFrame->setEnabled(true);
   this->InternalWidget->generateContoursButton->setEnabled(false);
   delete this->Progress;
-  this->Progress = NULL;
+  this->Progress = nullptr;
 }
 
 void pqGenerateContoursDialog::onAccecptContours()
@@ -378,7 +375,7 @@ void pqGenerateContoursDialog::onAccecptContours()
   this->MainDialog->done(QDialog::Accepted);
 
   delete this->Progress;
-  this->Progress = NULL;
+  this->Progress = nullptr;
 }
 
 void pqGenerateContoursDialog::onCancel()

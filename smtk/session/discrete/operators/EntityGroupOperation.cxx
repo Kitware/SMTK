@@ -43,9 +43,7 @@ namespace session
 namespace discrete
 {
 
-EntityGroupOperation::EntityGroupOperation()
-{
-}
+EntityGroupOperation::EntityGroupOperation() = default;
 
 bool EntityGroupOperation::ableToOperate()
 {
@@ -83,11 +81,11 @@ bool EntityGroupOperation::ableToOperate()
   }
   if (optype == "Remove")
   {
-    able2Op = this->fetchCMBCell(resource, "remove cell group") != NULL;
+    able2Op = this->fetchCMBCell(resource, "remove cell group") != nullptr;
   }
   else if (optype == "Modify")
   {
-    able2Op = this->fetchCMBCell(resource, "modify cell group") != NULL &&
+    able2Op = this->fetchCMBCell(resource, "modify cell group") != nullptr &&
       (this->fetchCMBCell(resource, "cell to add") ||
                 this->fetchCMBCell(resource, "cell to remove"));
   }
@@ -258,7 +256,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
       {
         createdEntities->appendValue(bgroup.component());
       }
-      if (modGrps.size() > 0)
+      if (!modGrps.empty())
       {
         for (auto c : modGrps)
         {
@@ -266,7 +264,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
         }
       }
     }
-    if (optype == "Remove" && grpsRemoved.size() > 0)
+    if (optype == "Remove" && !grpsRemoved.empty())
     {
       smtk::attribute::ComponentItem::Ptr remEntities = result->findComponent("removed");
       for (auto r : grpsRemoved)

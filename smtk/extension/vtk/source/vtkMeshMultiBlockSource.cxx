@@ -44,10 +44,10 @@
 #include "vtkProperty.h"
 #include "vtkStringArray.h"
 
-#include <errno.h>
-#include <inttypes.h>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdlib>
 #include <iostream>
-#include <stdlib.h>
 
 using namespace smtk::model;
 
@@ -58,8 +58,8 @@ smtkImplementTracksAllInstances(vtkMeshMultiBlockSource);
 vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
 {
   this->SetNumberOfInputPorts(0);
-  this->CachedOutput = NULL;
-  this->ModelEntityID = NULL;
+  this->CachedOutput = nullptr;
+  this->ModelEntityID = nullptr;
   this->AllowNormalGeneration = 0;
   this->linkInstance();
 }
@@ -67,8 +67,8 @@ vtkMeshMultiBlockSource::vtkMeshMultiBlockSource()
 vtkMeshMultiBlockSource::~vtkMeshMultiBlockSource()
 {
   this->unlinkInstance();
-  this->SetCachedOutput(NULL);
-  this->SetModelEntityID(NULL);
+  this->SetCachedOutput(nullptr);
+  this->SetModelEntityID(nullptr);
 }
 
 void vtkMeshMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
@@ -106,7 +106,7 @@ void vtkMeshMultiBlockSource::Dirty()
   // This both clears the output and marks this filter
   // as modified so that RequestData() will run the next
   // time the representation is updated:
-  this->SetCachedOutput(NULL);
+  this->SetCachedOutput(nullptr);
 }
 
 /// Add customized block info.
@@ -140,7 +140,7 @@ static void internal_AddBlockInfo(const smtk::mesh::ResourcePtr& meshcollect,
   smtk::model::EntityRefs vols;
   if (bordantCell.isValid() && bordantCell.isVolume())
     vols.insert(bordantCell);
-  if (vols.size())
+  if (!vols.empty())
   {
     // Add volume UUID to fieldData
     vtkNew<vtkStringArray> volArray;
@@ -306,7 +306,7 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       mbds->SetBlock(i, poly.GetPointer());
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cit->first.name().c_str());
-      this->SetDataObjectUUID(mbds->GetMetaData(i), cit->second.second.id());
+      vtkMeshMultiBlockSource::SetDataObjectUUID(mbds->GetMetaData(i), cit->second.second.id());
       this->GenerateRepresentationForSingleMesh(
         cit->second.second, poly.GetPointer(), cit->first, modelRequiresNormals);
 
@@ -336,18 +336,19 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
       defaultName << "mesh " << i;
       smtk::mesh::MeshSet singleMesh = allMeshes.subset(i);
       std::vector<std::string> meshNames = singleMesh.names();
-      std::string meshName = meshNames.size() > 0 ? meshNames[0] : defaultName.str();
+      std::string meshName = !meshNames.empty() ? meshNames[0] : defaultName.str();
       // Set the block name to a mesh name if it has one.
       // for now, use "mesh (<cell type>) <index>" for name
       mbds->GetMetaData(static_cast<unsigned>(i))
         ->Set(vtkCompositeDataSet::NAME(), meshName.c_str());
-      this->SetDataObjectUUID(mbds->GetMetaData(static_cast<unsigned>(i)), singleMesh.id());
+      vtkMeshMultiBlockSource::SetDataObjectUUID(
+        mbds->GetMetaData(static_cast<unsigned>(i)), singleMesh.id());
       this->GenerateRepresentationForSingleMesh(
         singleMesh, poly.GetPointer(), smtk::model::EntityRef(), modelRequiresNormals);
       mbds->SetBlock(static_cast<unsigned>(i), poly.GetPointer());
       smtk::model::EntityRefArray ents;
       bool validEnts = singleMesh.modelEntities(ents);
-      if (validEnts && ents.size() > 0)
+      if (validEnts && !ents.empty())
       {
         internal_AddBlockEntityInfo(singleMesh, ents[0], i, poly.GetPointer(), m_UUID2BlockIdMap);
       }
@@ -375,7 +376,7 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
 
   // Destroy the cache if the parameters have changed since it was generated.
   if (this->CachedOutput && this->GetMTime() > this->CachedOutput->GetMTime())
-    this->SetCachedOutput(NULL);
+    this->SetCachedOutput(nullptr);
 
   if (!this->CachedOutput)
   { // Populate a polydata with tessellation information from the model.
@@ -388,6 +389,6 @@ int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
     this->RemoveCacheEntriesExcept(this->Visited);
   }
   output->SetBlock(BlockId::Components, this->CachedOutput);
-  this->SetResourceId(output, resource->id());
+  vtkMeshMultiBlockSource::SetResourceId(output, resource->id());
   return 1;
 }

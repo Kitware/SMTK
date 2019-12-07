@@ -39,7 +39,7 @@
 
 namespace
 {
-static std::atomic<bool> semaphore(false);
+std::atomic<bool> semaphore(false);
 
 class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource::Resource>
 {
@@ -97,14 +97,14 @@ public:
   smtkCreateMacro(ReadOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  ReadOperation() {}
-  ~ReadOperation() override {}
+  ReadOperation() = default;
+  ~ReadOperation() override = default;
 
   smtk::io::Logger& log() const override { return m_logger; }
 
   Result operateInternal() override;
 
-  virtual Specification createSpecification() override;
+  Specification createSpecification() override;
 
 private:
   mutable smtk::io::Logger m_logger;
@@ -197,14 +197,14 @@ public:
   smtkCreateMacro(WriteOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  WriteOperation() {}
-  ~WriteOperation() override {}
+  WriteOperation() = default;
+  ~WriteOperation() override = default;
 
   smtk::io::Logger& log() const override { return m_logger; }
 
   Result operateInternal() override;
 
-  virtual Specification createSpecification() override;
+  Specification createSpecification() override;
 
 private:
   mutable smtk::io::Logger m_logger;

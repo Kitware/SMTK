@@ -18,13 +18,9 @@ namespace smtk
 namespace view
 {
 
-Manager::Manager()
-{
-}
+Manager::Manager() = default;
 
-Manager::~Manager()
-{
-}
+Manager::~Manager() = default;
 
 bool Manager::unregisterPhraseModel(const std::string& typeName)
 {

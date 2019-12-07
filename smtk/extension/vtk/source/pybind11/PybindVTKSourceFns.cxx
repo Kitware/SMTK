@@ -42,14 +42,14 @@ PYBIND11_MODULE(_smtkPybindVTKSourceFns, source)
 {
   source.doc() = "<description>";
 
-  source.def("_vtkModelMultiBlockSource_GetDataObjectUUID",[&](vtkModelMultiBlockSource* obj, vtkInformation* info){ return obj->GetDataObjectUUID(info); });
-  source.def("_vtkModelMultiBlockSource_SetDataObjectUUID",[&](vtkModelMultiBlockSource* obj, vtkInformation* info, const smtk::common::UUID& id){ return obj->SetDataObjectUUID(info, id); });
+  source.def("_vtkModelMultiBlockSource_GetDataObjectUUID",[&](vtkInformation* info){ return vtkModelMultiBlockSource::GetDataObjectUUID(info); });
+  source.def("_vtkModelMultiBlockSource_SetDataObjectUUID",[&](vtkInformation* info, const smtk::common::UUID& id){ return vtkModelMultiBlockSource::SetDataObjectUUID(info, id); });
   source.def("_vtkModelMultiBlockSource_GetComponent",[&](vtkModelMultiBlockSource* obj, vtkInformation* info){ return std::dynamic_pointer_cast<smtk::model::Entity>(obj->GetComponent(info)); });
   source.def("_vtkModelMultiBlockSource_GetModelResource",[&](vtkModelMultiBlockSource* obj){ return obj->GetModelResource(); });
   source.def("_vtkModelMultiBlockSource_SetModelResource",[&](vtkModelMultiBlockSource* obj, smtk::model::ResourcePtr resource){ return obj->SetModelResource(resource); });
 
-  source.def("_vtkMeshMultiBlockSource_GetDataObjectUUID",[&](vtkMeshMultiBlockSource* obj, vtkInformation* info){ return obj->GetDataObjectUUID(info); });
-  source.def("_vtkMeshMultiBlockSource_SetDataObjectUUID",[&](vtkMeshMultiBlockSource* obj, vtkInformation* info, const smtk::common::UUID& id){ return obj->SetDataObjectUUID(info, id); });
+  source.def("_vtkMeshMultiBlockSource_GetDataObjectUUID",[&](vtkInformation* info){ return vtkMeshMultiBlockSource::GetDataObjectUUID(info); });
+  source.def("_vtkMeshMultiBlockSource_SetDataObjectUUID",[&](vtkInformation* info, const smtk::common::UUID& id){ return vtkMeshMultiBlockSource::SetDataObjectUUID(info, id); });
   source.def("_vtkMeshMultiBlockSource_GetComponent",[&](vtkMeshMultiBlockSource* obj, vtkInformation* info){ return std::dynamic_pointer_cast<smtk::mesh::Component>(obj->GetComponent(info)); });
   source.def("_vtkMeshMultiBlockSource_GetMeshResource",[&](vtkMeshMultiBlockSource* obj){ obj->GetMeshResource(); });
   source.def("_vtkMeshMultiBlockSource_SetMeshResource",[&](vtkMeshMultiBlockSource* obj, smtk::mesh::ResourcePtr resource){ return obj->SetMeshResource(resource); });

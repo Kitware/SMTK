@@ -11,8 +11,8 @@
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
+#include <cstdio>
 #include <iostream>
-#include <stdio.h>
 
 using namespace smtk::attribute;
 
@@ -26,9 +26,7 @@ DirectoryItem::DirectoryItem(Item* inOwningItem, int itemPosition, int inSubGrou
 {
 }
 
-DirectoryItem::~DirectoryItem()
-{
-}
+DirectoryItem::~DirectoryItem() = default;
 
 Item::Type DirectoryItem::type() const
 {

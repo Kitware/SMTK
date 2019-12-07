@@ -59,7 +59,7 @@ public:
 
 struct ReferenceItem::const_iterator::CacheIterator : ReferenceItem::Cache::const_iterator
 {
-  CacheIterator() {}
+  CacheIterator() = default;
   CacheIterator(const ReferenceItem::Cache::const_iterator& it)
     : ReferenceItem::Cache::const_iterator(it)
   {
@@ -80,9 +80,7 @@ ReferenceItem::const_iterator::const_iterator(const ReferenceItem::const_iterato
 {
 }
 
-ReferenceItem::const_iterator::~const_iterator()
-{
-}
+ReferenceItem::const_iterator::~const_iterator() = default;
 
 ReferenceItem::const_iterator& ReferenceItem::const_iterator::operator=(
   const ReferenceItem::const_iterator& it)
@@ -232,7 +230,7 @@ bool ReferenceItem::isValid(const std::set<std::string>& cats) const
   // category checks - if it doesn't it means its not be taken into account
   // for validity checking so just return true
 
-  if (cats.size() && !this->passCategoryCheck(cats))
+  if (!cats.empty() && !this->passCategoryCheck(cats))
   {
     return true;
   }
@@ -642,7 +640,7 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (!Superclass::setDefinition(adef)))
+  if ((def == nullptr) || (!Superclass::setDefinition(adef)))
   {
     return false;
   }

@@ -98,8 +98,8 @@ void qtViewInfoDialog::displayInfo(smtk::attribute::AttributePtr att)
   {
     auto item = def->itemDefinition(static_cast<int>(i));
     std::string info =
-      (item->detailedDescription() != "") ? item->detailedDescription() : item->briefDescription();
-    if (info == "")
+      !item->detailedDescription().empty() ? item->detailedDescription() : item->briefDescription();
+    if (info.empty())
     {
       continue;
     }
@@ -119,7 +119,7 @@ void qtViewInfoDialog::displayInfo(smtk::attribute::AttributePtr att)
     }
     numItemsDisplayed++;
     s.append(item->label()).append("</strong></td><td>");
-    s.append(info.c_str()).append("</td></tr>");
+    s.append(info).append("</td></tr>");
     //m_dialog->textBrowser->insertHtml(item->detailedDescription().c_str());
     //m_dialog->textBrowser->insertHtml("</td></tr>");
   }

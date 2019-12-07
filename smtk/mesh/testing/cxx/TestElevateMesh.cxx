@@ -65,9 +65,8 @@ namespace
 //SMTK_DATA_DIR is a define setup by cmake
 std::string data_root = SMTK_DATA_DIR;
 
-static bool pcRegistered =
-  smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();
-static bool sgRegistered =
+bool pcRegistered = smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();
+bool sgRegistered =
   smtk::extension::vtk::mesh::StructuredGridFromVTKAuxiliaryGeometry::registerClass();
 
 class ValidatePoints : public smtk::mesh::PointForEach

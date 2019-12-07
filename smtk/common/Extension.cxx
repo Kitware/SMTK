@@ -21,13 +21,9 @@ static std::map<std::string, std::pair<std::function<Extension::Ptr(void)>, bool
 // std::map<std::string, std::pair<std::function<Extension::Ptr(void)>, bool>>
 // Extension::s_extensionMap;
 
-Extension::Extension()
-{
-}
+Extension::Extension() = default;
 
-Extension::~Extension()
-{
-}
+Extension::~Extension() = default;
 
 bool Extension::registerExtension(
   const std::string& name, std::function<Extension::Ptr(void)> ctor, bool oneShot)

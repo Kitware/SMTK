@@ -37,9 +37,7 @@ vtkSMSMTKWrapperProxy* vtkSMSMTKWrapperProxy::Instance()
   return g_instance;
 }
 
-vtkSMSMTKWrapperProxy::vtkSMSMTKWrapperProxy()
-{
-}
+vtkSMSMTKWrapperProxy::vtkSMSMTKWrapperProxy() = default;
 
 vtkSMSMTKWrapperProxy::~vtkSMSMTKWrapperProxy()
 {

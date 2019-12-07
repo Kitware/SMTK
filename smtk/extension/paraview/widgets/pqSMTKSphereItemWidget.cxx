@@ -41,9 +41,7 @@ pqSMTKSphereItemWidget::pqSMTKSphereItemWidget(
   this->createWidget();
 }
 
-pqSMTKSphereItemWidget::~pqSMTKSphereItemWidget()
-{
-}
+pqSMTKSphereItemWidget::~pqSMTKSphereItemWidget() = default;
 
 qtItem* pqSMTKSphereItemWidget::createSphereItemWidget(const qtAttributeItemInfo& info)
 {

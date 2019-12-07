@@ -23,9 +23,7 @@ DateTimeItemDefinition::DateTimeItemDefinition(const std::string& myName)
 {
 }
 
-DateTimeItemDefinition::~DateTimeItemDefinition()
-{
-}
+DateTimeItemDefinition::~DateTimeItemDefinition() = default;
 
 Item::Type DateTimeItemDefinition::type() const
 {

@@ -38,8 +38,8 @@ public:
   smtkCreateMacro(OperationA);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  OperationA() {}
-  ~OperationA() override {}
+  OperationA() = default;
+  ~OperationA() override = default;
 
   Result operateInternal() override;
 

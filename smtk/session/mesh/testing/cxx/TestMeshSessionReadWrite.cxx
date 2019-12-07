@@ -162,7 +162,7 @@ int TestMeshSessionReadWrite(int argc, char* argv[])
       resource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
 
     std::cout << "found " << models.size() << " models" << std::endl;
-    if (models.size() < 1)
+    if (models.empty())
       return 1;
 
     model = models[0].entityRecord();
@@ -217,7 +217,7 @@ int TestMeshSessionReadWrite(int argc, char* argv[])
       resource2->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
 
     std::cout << "found " << models.size() << " models" << std::endl;
-    if (models.size() < 1)
+    if (models.empty())
       return 1;
 
     smtk::model::Model model2 = models[0];

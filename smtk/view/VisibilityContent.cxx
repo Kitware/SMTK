@@ -24,13 +24,9 @@ namespace smtk
 namespace view
 {
 
-VisibilityContent::VisibilityContent()
-{
-}
+VisibilityContent::VisibilityContent() = default;
 
-VisibilityContent::~VisibilityContent()
-{
-}
+VisibilityContent::~VisibilityContent() = default;
 
 VisibilityContent::Ptr VisibilityContent::setup(Delegate delegate)
 {

@@ -186,7 +186,7 @@ QAction* findExitAction(QMenu* menu)
       return action;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 QAction* findHelpMenuAction(QMenuBar* menubar)
@@ -201,7 +201,7 @@ QAction* findHelpMenuAction(QMenuBar* menubar)
       return existingMenuAction;
     }
   }
-  return NULL;
+  return nullptr;
 }
 }
 
@@ -222,7 +222,7 @@ pqSMTKExportSimulationBehavior::pqSMTKExportSimulationBehavior(QObject* parent)
 
       QList<QAction*> menuBarActions = mainWindow->menuBar()->actions();
 
-      QMenu* menu = NULL;
+      QMenu* menu = nullptr;
       foreach (QAction* existingMenuAction, menuBarActions)
       {
         QString menuName = existingMenuAction->text();
@@ -247,14 +247,14 @@ pqSMTKExportSimulationBehavior::pqSMTKExportSimulationBehavior(QObject* parent)
         *connection = QObject::connect(menu, &QMenu::aboutToShow, [=]() {
           QAction* exitAction = findExitAction(menu);
 
-          if (exitAction == NULL)
+          if (exitAction == nullptr)
           {
             menu->addSeparator();
           }
 
           menu->insertAction(exitAction, exportSimulationAction);
 
-          if (exitAction != NULL)
+          if (exitAction != nullptr)
           {
             menu->insertSeparator(exitAction);
           }

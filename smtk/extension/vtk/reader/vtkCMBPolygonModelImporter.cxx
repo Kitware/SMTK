@@ -43,7 +43,7 @@ vtkStandardNewMacro(vtkCMBPolygonModelImporter);
 
 vtkCMBPolygonModelImporter::vtkCMBPolygonModelImporter()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   for (int i = 0; i < 4; ++i)
   {
@@ -51,14 +51,14 @@ vtkCMBPolygonModelImporter::vtkCMBPolygonModelImporter()
     this->AbsoluteMargin[i] = 1.;
     this->AbsoluteBounds[i] = i % 2 ? -1. : +1.;
   }
-  this->BoundaryFile = NULL;
+  this->BoundaryFile = nullptr;
   this->BoundaryStyle = NONE;
 }
 
 vtkCMBPolygonModelImporter::~vtkCMBPolygonModelImporter()
 {
-  this->SetFileName(0);
-  this->SetBoundaryFile(NULL);
+  this->SetFileName(nullptr);
+  this->SetBoundaryFile(nullptr);
 }
 
 void vtkCMBPolygonModelImporter::PrintSelf(ostream& os, vtkIndent indent)
@@ -144,7 +144,7 @@ int vtkCMBPolygonModelImporter::RequestData(vtkInformation* vtkNotUsed(request),
   vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
   std::string fileNameStr = this->FileName;
   vtksys::SystemTools::ConvertToUnixSlashes(fileNameStr);
-  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr.c_str());
+  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr);
   struct stat fs;
   if (stat(fileNameStr.c_str(), &fs) != 0)
   {
@@ -177,7 +177,7 @@ int vtkCMBPolygonModelImporter::RequestData(vtkInformation* vtkNotUsed(request),
     // Now we do some manual processing:
     // (a) create a polydata for a bounding box
     // (b) add a pedigree ID indicating the original ID of the geometry.
-    vtkPolyData* rdp = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : NULL;
+    vtkPolyData* rdp = mbds ? vtkPolyData::SafeDownCast(mbds->GetBlock(0)) : nullptr;
     /*
     // Remove the "label" attribute if it exists... string arrays
     // can cause problems.

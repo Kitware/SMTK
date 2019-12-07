@@ -25,13 +25,9 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
-vtkCMBParserBase::vtkCMBParserBase()
-{
-}
+vtkCMBParserBase::vtkCMBParserBase() = default;
 
-vtkCMBParserBase::~vtkCMBParserBase()
-{
-}
+vtkCMBParserBase::~vtkCMBParserBase() = default;
 
 void vtkCMBParserBase::SetGeometry(vtkDiscreteModel* Model, vtkObject* Geometry)
 {
@@ -83,7 +79,7 @@ void vtkCMBParserBase::SetAnalysisGridInfo(vtkDiscreteModel* model, vtkDataArray
   vtkDataArray* cellMapArray, vtkCharArray* canonicalSideArray)
 {
   vtkSmartPointer<vtkIdTypeArray> pMapArray = vtkIdTypeArray::SafeDownCast(pointMapArray);
-  if (pMapArray == NULL)
+  if (pMapArray == nullptr)
   {
     pMapArray = vtkSmartPointer<vtkIdTypeArray>::New();
     pMapArray->SetName(pointMapArray->GetName());
@@ -102,7 +98,7 @@ void vtkCMBParserBase::SetAnalysisGridInfo(vtkDiscreteModel* model, vtkDataArray
   }
 
   vtkSmartPointer<vtkIdTypeArray> cMapArray = vtkIdTypeArray::SafeDownCast(cellMapArray);
-  if (cMapArray == NULL)
+  if (cMapArray == nullptr)
   {
     cMapArray = vtkSmartPointer<vtkIdTypeArray>::New();
     cMapArray->SetName(cellMapArray->GetName());
@@ -121,7 +117,8 @@ void vtkCMBParserBase::SetAnalysisGridInfo(vtkDiscreteModel* model, vtkDataArray
   }
 
   vtkModel3dmGridRepresentation* analysisGridInfo = vtkModel3dmGridRepresentation::New();
-  if (analysisGridInfo->Initialize(NULL, model, pMapArray, cMapArray, canonicalSideArray) == true)
+  if (analysisGridInfo->Initialize(nullptr, model, pMapArray, cMapArray, canonicalSideArray) ==
+    true)
   {
     model->SetAnalysisGridInfo(analysisGridInfo);
   }
@@ -136,7 +133,7 @@ vtkIdTypeArray* vtkCMBParserBase::NewIdTypeArray(vtkDataArray* a)
 {
   if (!a)
   {
-    return 0;
+    return nullptr;
   }
   // If it is already a vtkIdTypeArray, just return it after increasing
   // the reference count.
@@ -161,7 +158,7 @@ vtkIdTypeArray* vtkCMBParserBase::NewIdTypeArray(vtkDataArray* a)
       vtkErrorMacro(
         "Cannot convert vtkDataArray of type " << a->GetDataType() << " to vtkIdTypeArray.");
       ida->Delete();
-      ida = 0;
+      ida = nullptr;
   }
   return ida;
 }
@@ -177,8 +174,8 @@ void vtkCMBParserBase::SeparateCellClassification(vtkDiscreteModel* model,
   for (vtkIdType i = 0; i < cellClassification->GetNumberOfTuples(); i++)
   {
     const vtkIdType value = cellClassification->GetValue(i);
-    const bool isEdge =
-      (NULL != vtkDiscreteModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, value)));
+    const bool isEdge = (nullptr !=
+      vtkDiscreteModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, value)));
 
     const vtkIdType meshId = counts[isEdge];
     ++counts[isEdge]; //increment counts for edges or faces

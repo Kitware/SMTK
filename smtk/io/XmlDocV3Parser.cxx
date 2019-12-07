@@ -42,9 +42,7 @@ XmlDocV3Parser::XmlDocV3Parser(smtk::attribute::ResourcePtr myResource, smtk::io
 {
 }
 
-XmlDocV3Parser::~XmlDocV3Parser()
-{
-}
+XmlDocV3Parser::~XmlDocV3Parser() = default;
 
 void XmlDocV3Parser::process(pugi::xml_node& rootNode)
 {

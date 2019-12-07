@@ -19,9 +19,7 @@ namespace session
 namespace discrete
 {
 
-Operation::~Operation()
-{
-}
+Operation::~Operation() = default;
 
 } // namespace discrete
 } //namespace session

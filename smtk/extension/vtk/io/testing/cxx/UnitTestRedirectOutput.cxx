@@ -25,9 +25,9 @@ public:
     return obj;
   }
 
-  vtkMyObject() {}
+  vtkMyObject() = default;
 
-  ~vtkMyObject() override {}
+  ~vtkMyObject() override = default;
 
   void NormalMessage() { vtkOutputWindowDisplayText("VTK-style normal message!"); }
 

@@ -85,7 +85,7 @@ public:
   vtkIdType createNewDomain()
   {
     vtkIdType newDomainValue = 0;
-    if (this->DomainsToRegions.size() > 0)
+    if (!this->DomainsToRegions.empty())
     {
       //find the last element in the map, and increment its value
       //by one to get the new domain value. This is will not
@@ -148,9 +148,7 @@ vtkCMBModelBuilder::vtkCMBModelBuilder()
   this->OperateSucceeded = 0;
 }
 
-vtkCMBModelBuilder::~vtkCMBModelBuilder()
-{
-}
+vtkCMBModelBuilder::~vtkCMBModelBuilder() = default;
 
 void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgorithm* inputPoly)
 {
@@ -293,7 +291,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
       vtkModel3dmGridRepresentation* analysisGridInfo = vtkModel3dmGridRepresentation::New();
       vtkStringArray* solidFileName =
         vtkStringArray::SafeDownCast(modelPoly->GetFieldData()->GetAbstractArray("FileName"));
-      const char* analysisGridFile = solidFileName ? solidFileName->GetValue(0).c_str() : NULL;
+      const char* analysisGridFile = solidFileName ? solidFileName->GetValue(0).c_str() : nullptr;
       analysisGridInfo->Initialize(
         analysisGridFile, model, pointMapArray, cellMapArray, canonicalSideArray);
       model->SetAnalysisGridInfo(analysisGridInfo);
@@ -314,7 +312,7 @@ void vtkCMBModelBuilder::Operate(vtkDiscreteModelWrapper* modelWrapper, vtkAlgor
   {
     faceId = it->first;
     vtkDiscreteModelFace* Face =
-      vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, 0, 0, faceId));
+      vtkDiscreteModelFace::SafeDownCast(model->BuildModelFace(0, nullptr, nullptr, faceId));
     Face->AddCellsToGeometry(it->second);
     // store the region adjacency info
     vtkIdType RegionIds[] = { faceToRegionsMap[faceId].first, faceToRegionsMap[faceId].second };
@@ -589,8 +587,8 @@ void vtkCMBModelBuilder::ProcessAs2DMesh(
     }
     // If original region array exist, we should use those region Ids to
     // create materials.
-    vtkModelMaterial* newMaterial = NULL;
-    if (oldRegionArray && newToOldRegionMap.size() > 0)
+    vtkModelMaterial* newMaterial = nullptr;
+    if (oldRegionArray && !newToOldRegionMap.empty())
     {
       vtkIdType oldRegionId = newToOldRegionMap[regionId];
       newMaterial =

@@ -53,9 +53,7 @@ vtkDiscreteModelEdge::vtkDiscreteModelEdge()
   displayProp->SetPointSize(6.0);
 }
 
-vtkDiscreteModelEdge::~vtkDiscreteModelEdge()
-{
-}
+vtkDiscreteModelEdge::~vtkDiscreteModelEdge() = default;
 
 bool vtkDiscreteModelEdge::IsDestroyable()
 {
@@ -126,7 +124,7 @@ vtkObject* vtkDiscreteModelEdge::GetGeometry()
       return this->Superclass::GetGeometry();
     }
   }
-  return 0;
+  return nullptr;
 }
 
 bool vtkDiscreteModelEdge::ConstructRepresentation()
@@ -177,7 +175,7 @@ bool vtkDiscreteModelEdge::Split(
   vtkObject* geometry = this->GetGeometry();
   vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
 
-  if (poly == 0 || poly->GetNumberOfCells() == 0)
+  if (poly == nullptr || poly->GetNumberOfCells() == 0)
   {
     if (geometry)
     {
@@ -198,7 +196,7 @@ bool vtkDiscreteModelEdge::Split(
   // is splitting won't create a new model edge, it will just
   // modify the current model edge
 
-  if (this->GetAdjacentModelVertex(0) == 0)
+  if (this->GetAdjacentModelVertex(0) == nullptr)
   {
     createdEdgeId = -1;
     createdVertexId = -1;
@@ -362,7 +360,8 @@ bool vtkDiscreteModelEdge::Split(
   createdVertexId = vertex->GetUniquePersistentId();
   bool blockEvent = this->GetModel()->GetBlockModelGeometricEntityEvent();
   this->GetModel()->SetBlockModelGeometricEntityEvent(1);
-  vtkDiscreteModelEdge* newEdge = vtkDiscreteModelEdge::SafeDownCast(model->BuildModelEdge(0, 0));
+  vtkDiscreteModelEdge* newEdge =
+    vtkDiscreteModelEdge::SafeDownCast(model->BuildModelEdge(nullptr, nullptr));
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockEvent);
   this->Superclass::SplitModelEdge(vertex, newEdge);
   // now create the poly data for the new edge
@@ -456,7 +455,7 @@ void vtkDiscreteModelEdge::GetAllPointIds(vtkIdList* ptsList)
 {
   ptsList->Reset();
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
-  if (edgePoly == NULL)
+  if (edgePoly == nullptr)
   { // we're on the client and don't know this info
     return;
   }
@@ -489,7 +488,7 @@ void vtkDiscreteModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
 {
   ptsList->Reset();
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
-  if (edgePoly == NULL)
+  if (edgePoly == nullptr)
   { // we're on the client and don't know this info
     return;
   }
@@ -617,7 +616,7 @@ bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
 bool vtkDiscreteModelEdge::IsEdgeCellPoint(vtkIdType pointId)
 {
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
-  if (edgePoly == NULL)
+  if (edgePoly == nullptr)
   { // we're on the client and don't know this info
     return false;
   }

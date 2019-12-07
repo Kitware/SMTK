@@ -37,7 +37,7 @@
 #include "smtk/session/polygon/internal/Model.h"
 #include "smtk/session/polygon/internal/Vertex.h"
 
-#include <string.h> // for strcmp
+#include <cstring> // for strcmp
 
 using smtk::model::EntityRef;
 using namespace smtk::common;
@@ -56,9 +56,7 @@ Session::Session()
 }
 
 /// Virtual destructor. Here because Session overrides virtual methods from Session.
-Session::~Session()
-{
-}
+Session::~Session() = default;
 
 /// The polygon session supports smtk::model::SESSION_EVERYTHING.
 smtk::model::SessionInfoBits Session::allSupportedInformation() const
@@ -181,7 +179,7 @@ smtk::model::SessionIOPtr Session::createIODelegate(const std::string& format)
   {
     return SessionIOJSON::create();
   }
-  return NULL;
+  return nullptr;
 }
 
 internal::EntityIdToPtr::iterator Session::findStorageIterator(const smtk::common::UUID& uid)

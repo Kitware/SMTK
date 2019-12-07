@@ -23,7 +23,7 @@
 namespace
 {
 // We use inverse distance weighting via Shepard's method, implmented below.
-static const double EPSILON = 1.e-10;
+const double EPSILON = 1.e-10;
 
 double euclideanDistance(const std::array<double, 3>& p1, const std::array<double, 3>& p2)
 {

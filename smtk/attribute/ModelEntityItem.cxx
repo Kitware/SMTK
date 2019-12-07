@@ -30,9 +30,7 @@ ModelEntityItem::ModelEntityItem(Item* inOwningItem, int itemPosition, int mySub
 }
 
 /// Destructor
-ModelEntityItem::~ModelEntityItem()
-{
-}
+ModelEntityItem::~ModelEntityItem() = default;
 
 /// Return the type of storage used by the item.
 Item::Type ModelEntityItem::type() const

@@ -21,9 +21,7 @@
 
 vtkStandardNewMacro(vtkCommonSerializationHelper);
 
-vtkCommonSerializationHelper::vtkCommonSerializationHelper()
-{
-}
+vtkCommonSerializationHelper::vtkCommonSerializationHelper() = default;
 
 int vtkCommonSerializationHelper::Serialize(vtkObject* object, vtkSerializer* serializer)
 {
@@ -71,7 +69,7 @@ void vtkCommonSerializationHelper::SerializeTransform(
   else
   {
     unsigned int length = 0;
-    double* elements = 0;
+    double* elements = nullptr;
     serializer->Serialize("Matrix", elements, length);
     if (length > 0)
     {
@@ -142,7 +140,7 @@ void vtkCommonSerializationHelper::SerializeDataArray(
     unsigned int numberOfValues = 0;
     if (vtkIdTypeArray::SafeDownCast(dataArray))
     {
-      vtkIdType* arrayPtr = 0;
+      vtkIdType* arrayPtr = nullptr;
       serializer->Serialize("Array", arrayPtr, numberOfValues);
       if (numberOfValues > 0)
       {
@@ -154,7 +152,7 @@ void vtkCommonSerializationHelper::SerializeDataArray(
     }
     else if (vtkDoubleArray::SafeDownCast(dataArray))
     {
-      double* arrayPtr = 0;
+      double* arrayPtr = nullptr;
       serializer->Serialize("Array", arrayPtr, numberOfValues);
       if (numberOfValues > 0)
       {
@@ -166,7 +164,7 @@ void vtkCommonSerializationHelper::SerializeDataArray(
     }
     else if (vtkIntArray::SafeDownCast(dataArray))
     {
-      int* arrayPtr = 0;
+      int* arrayPtr = nullptr;
       serializer->Serialize("Array", arrayPtr, numberOfValues);
       if (numberOfValues > 0)
       {
@@ -197,7 +195,7 @@ const char* vtkCommonSerializationHelper::GetSerializationType(vtkObject* object
   {
     return "vtkIntArray";
   }
-  return 0;
+  return nullptr;
 }
 
 void vtkCommonSerializationHelper::PrintSelf(ostream& os, vtkIndent indent)

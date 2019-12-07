@@ -84,7 +84,7 @@ int UnitTestTriangulateFaces(int, char** const)
     { //just make sure the file exists
       file.close();
 
-      readOp->parameters()->findFile("filename")->setValue(file_path.c_str());
+      readOp->parameters()->findFile("filename")->setValue(file_path);
       smtk::session::polygon::LegacyRead::Result result = readOp->operate();
       if (result->findInt("outcome")->value() !=
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))

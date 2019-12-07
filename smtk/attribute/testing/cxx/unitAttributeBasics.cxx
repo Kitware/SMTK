@@ -79,7 +79,7 @@ int unitAttributeBasics(int, char* [])
     "Wrong default color values: " << tcol[0] << " " << tcol[1] << " " << tcol[2] << ' '
                                    << tcol[3]);
 
-  smtkTest(att->associatedModelEntityIds().size() == 0, "Should not have associated entity IDs.");
+  smtkTest(att->associatedModelEntityIds().empty(), "Should not have associated entity IDs.");
   smtkTest(!att->associatedObjects(), "Should not have associated components.");
 
   smtkTest(!att->appliesToBoundaryNodes(), "Should not be applied to boundry node.");

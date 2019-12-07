@@ -63,9 +63,7 @@ namespace session
 namespace discrete
 {
 
-ImportOperation::ImportOperation()
-{
-}
+ImportOperation::ImportOperation() = default;
 
 bool ImportOperation::ableToOperate()
 {

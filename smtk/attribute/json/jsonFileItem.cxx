@@ -28,7 +28,7 @@ namespace attribute
 SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::FileItemPtr& itemPtr)
 {
   smtk::attribute::to_json(j, smtk::dynamic_pointer_cast<FileSystemItem>(itemPtr));
-  if (itemPtr->recentValues().size() > 0)
+  if (!itemPtr->recentValues().empty())
   {
     j["RecentValues"] = itemPtr->recentValues();
   }

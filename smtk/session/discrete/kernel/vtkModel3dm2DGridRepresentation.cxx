@@ -24,13 +24,9 @@
 
 vtkStandardNewMacro(vtkModel3dm2DGridRepresentation);
 
-vtkModel3dm2DGridRepresentation::vtkModel3dm2DGridRepresentation()
-{
-}
+vtkModel3dm2DGridRepresentation::vtkModel3dm2DGridRepresentation() = default;
 
-vtkModel3dm2DGridRepresentation::~vtkModel3dm2DGridRepresentation()
-{
-}
+vtkModel3dm2DGridRepresentation::~vtkModel3dm2DGridRepresentation() = default;
 
 bool vtkModel3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds)

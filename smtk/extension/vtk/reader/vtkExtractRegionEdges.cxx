@@ -65,7 +65,7 @@ struct RegionEdgeType
 
   RegionEdgeType()
   {
-    this->MainEdge = 0;
+    this->MainEdge = nullptr;
     this->Index = -1;
     this->EdgeUsedInLoop = false;
     this->ReverseDirection = false;
@@ -339,13 +339,13 @@ void vtkExtractRegionEdges::vtkInternal::AddLoopToFieldData(vtkFieldData* fieldD
 vtkExtractRegionEdges::vtkExtractRegionEdges()
 {
   this->Internal = new vtkInternal;
-  this->RegionArrayName = 0;
+  this->RegionArrayName = nullptr;
   this->RegionIdentifiersModified = false;
 }
 
 vtkExtractRegionEdges::~vtkExtractRegionEdges()
 {
-  this->SetRegionArrayName(0);
+  this->SetRegionArrayName(nullptr);
   delete this->Internal;
 }
 
@@ -608,7 +608,7 @@ void vtkExtractRegionEdges::UpdateRegionIdentifiersIfNecessary(vtkPolyData* outp
     processStack.clear();
     newRegionIds->SetValue(cellIndex, regionId);
     processStack.push_back(cellIndex);
-    while (processStack.size())
+    while (!processStack.empty())
     {
       vtkIdType currentIndex = processStack.back();
       processStack.pop_back();

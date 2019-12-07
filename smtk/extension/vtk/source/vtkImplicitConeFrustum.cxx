@@ -35,9 +35,7 @@ vtkImplicitConeFrustum::vtkImplicitConeFrustum()
   this->InfiniteCone->SetTransform(this->ConeTransform);
 }
 
-vtkImplicitConeFrustum::~vtkImplicitConeFrustum()
-{
-}
+vtkImplicitConeFrustum::~vtkImplicitConeFrustum() = default;
 
 void vtkImplicitConeFrustum::PrintSelf(ostream& os, vtkIndent indent)
 {

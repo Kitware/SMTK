@@ -26,9 +26,7 @@ vtkModelEntityGroupOperation::vtkModelEntityGroupOperation()
   this->DestroySucceeded = 0;
 }
 
-vtkModelEntityGroupOperation::~vtkModelEntityGroupOperation()
-{
-}
+vtkModelEntityGroupOperation::~vtkModelEntityGroupOperation() = default;
 
 bool vtkModelEntityGroupOperation::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {

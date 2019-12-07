@@ -77,7 +77,7 @@ int UnitTestEmittingStringBuffer(int argc, char** const argv)
   // Run the task from the application event loop
   QTimer::singleShot(0, testEmittingStringBuffer, SLOT(run()));
 
-  return application.exec();
+  return QCoreApplication::exec();
 
   return 0;
 }

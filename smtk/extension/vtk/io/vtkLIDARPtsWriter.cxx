@@ -34,14 +34,14 @@ vtkStandardNewMacro(vtkLIDARPtsWriter);
 
 vtkLIDARPtsWriter::vtkLIDARPtsWriter()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->OutputIsBinary = 0;
   this->WriteAsSinglePiece = false;
 }
 
 vtkLIDARPtsWriter::~vtkLIDARPtsWriter()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 void vtkLIDARPtsWriter::WriteData()
@@ -137,13 +137,14 @@ int vtkLIDARPtsWriter::ComputeRequiredAxisPrecision(double min, double max)
 int vtkLIDARPtsWriter::WritePoints(ofstream& ofp, vtkPolyData* inputPoly)
 {
   vtkDataArray* scalars =
-    inputPoly->GetPointData() ? inputPoly->GetPointData()->GetScalars("Color") : NULL;
+    inputPoly->GetPointData() ? inputPoly->GetPointData()->GetScalars("Color") : nullptr;
 
-  vtkUnsignedCharArray* rgbScalars = scalars ? vtkUnsignedCharArray::SafeDownCast(scalars) : NULL;
+  vtkUnsignedCharArray* rgbScalars =
+    scalars ? vtkUnsignedCharArray::SafeDownCast(scalars) : nullptr;
 
   vtkFloatArray* intensityArray = inputPoly->GetPointData()
     ? vtkFloatArray::SafeDownCast(inputPoly->GetPointData()->GetArray("Intensity"))
-    : NULL;
+    : nullptr;
 
   vtkPoints* points = inputPoly->GetPoints();
   if (!points)
@@ -218,10 +219,10 @@ ofstream* vtkLIDARPtsWriter::OpenOutputFile()
   if (!this->FileName || !this->FileName[0])
   {
     vtkErrorMacro("Output FileName has to be specified.");
-    return 0;
+    return nullptr;
   }
 
-  ofstream* fptr = 0;
+  ofstream* fptr = nullptr;
   if (this->IsBinaryType(this->FileName))
   {
     fptr = new ofstream(this->FileName, ios::out | ios::binary);
@@ -237,7 +238,7 @@ ofstream* vtkLIDARPtsWriter::OpenOutputFile()
   {
     vtkErrorMacro(<< "Unable to open file: " << this->FileName);
     delete fptr;
-    return 0;
+    return nullptr;
   }
   return fptr;
 }

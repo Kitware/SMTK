@@ -37,9 +37,7 @@ vtkDiscreteModelVertex::vtkDiscreteModelVertex()
   this->GetProperties()->Set(POINTID(), -1);
 }
 
-vtkDiscreteModelVertex::~vtkDiscreteModelVertex()
-{
-}
+vtkDiscreteModelVertex::~vtkDiscreteModelVertex() = default;
 
 bool vtkDiscreteModelVertex::GetPoint(double* xyz)
 {

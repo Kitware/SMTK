@@ -45,15 +45,9 @@ using namespace smtk::extension;
 class qtBaseAttributeViewInternals
 {
 public:
-  qtBaseAttributeViewInternals() {}
+  qtBaseAttributeViewInternals() = default;
   ~qtBaseAttributeViewInternals() { this->clearWidgets(); }
-  void deleteWidget(QWidget* w)
-  {
-    if (w)
-    {
-      delete w;
-    }
-  }
+  void deleteWidget(QWidget* w) { delete w; }
   void clearWidgets()
   {
     this->deleteWidget(this->AdvLevelCombo);
@@ -92,10 +86,7 @@ qtBaseAttributeView::qtBaseAttributeView(const ViewInfo& info)
 
 qtBaseAttributeView::~qtBaseAttributeView()
 {
-  if (this->Internals)
-  {
-    delete this->Internals;
-  }
+  delete this->Internals;
 }
 
 void qtBaseAttributeView::getDefinitions(
@@ -178,7 +169,7 @@ void qtBaseAttributeView::valueChanged(smtk::attribute::ItemPtr item)
 namespace
 {
 
-static void signalAttribute(smtk::extension::qtUIManager* uiManager,
+void signalAttribute(smtk::extension::qtUIManager* uiManager,
   const smtk::attribute::AttributePtr& attr, const char* itemName,
   std::vector<std::string> items = std::vector<std::string>())
 {
@@ -505,7 +496,7 @@ void qtBaseAttributeView::topLevelPrepConfigurations(
 
   // First lets see if the definition information was set
   std::string configDefType;
-  if ((!view->details().attribute("ConfigurationType", configDefType)) || (configDefType == ""))
+  if ((!view->details().attribute("ConfigurationType", configDefType)) || configDefType.empty())
   {
     std::cerr << "Could not find ConfigurationType: " << configDefType << "\n";
     return;
@@ -519,7 +510,7 @@ void qtBaseAttributeView::topLevelPrepConfigurations(
     // Was a definition label specified?
     std::string configDefLabel;
     if ((!view->details().attribute("ConfigurationTypeLabel", configDefLabel)) ||
-      (configDefLabel == ""))
+      configDefLabel.empty())
     {
       configDef = analyses.buildAnalysesDefinition(attResource, configDefType);
     }
@@ -817,7 +808,7 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
     {
       // If the current config name is not set then record this as the
       // current configuration
-      if (currentConfig == "")
+      if (currentConfig.empty())
       {
         currentConfig = att->name();
         attRes->analyses().getAnalysisAttributeCategories(att, cats);

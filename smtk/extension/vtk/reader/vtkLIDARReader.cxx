@@ -38,7 +38,7 @@ vtkCxxSetObjectMacro(vtkLIDARReader, Transform, vtkTransform);
 
 vtkLIDARReader::vtkLIDARReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   this->ValuesPerLine = -1;
   this->BytesPerPoint = 0;
@@ -49,7 +49,7 @@ vtkLIDARReader::vtkLIDARReader()
   this->PieceIndex = -1;
   this->ReadBounds[0] = this->ReadBounds[2] = this->ReadBounds[4] = VTK_DOUBLE_MAX;
   this->ReadBounds[1] = this->ReadBounds[3] = this->ReadBounds[5] = VTK_DOUBLE_MIN;
-  this->Transform = 0;
+  this->Transform = nullptr;
   this->TransformOutputData = false;
 
   this->ConvertFromLatLongToXYZ = false;
@@ -67,8 +67,8 @@ vtkLIDARReader::vtkLIDARReader()
 
 vtkLIDARReader::~vtkLIDARReader()
 {
-  this->SetFileName(0);
-  this->SetTransform(static_cast<vtkTransform*>(0));
+  this->SetFileName(nullptr);
+  this->SetTransform(static_cast<vtkTransform*>(nullptr));
 }
 
 void vtkLIDARReader::SetConvertFromLatLongToXYZ(bool mode)
@@ -95,7 +95,7 @@ void vtkLIDARReader::SetConvertFromLatLongToXYZ(bool mode)
 void vtkLIDARReader::SetFileName(const char* filename)
 {
   vtkDebugMacro(<< this->GetClassName() << " (" << this << "): setting FileName to " << filename);
-  if (this->FileName == NULL && filename == NULL)
+  if (this->FileName == nullptr && filename == nullptr)
   {
     return;
   }
@@ -103,10 +103,7 @@ void vtkLIDARReader::SetFileName(const char* filename)
   {
     return;
   }
-  if (this->FileName)
-  {
-    delete[] this->FileName;
-  }
+  delete[] this->FileName;
   if (filename)
   {
     size_t n = strlen(filename) + 1;
@@ -120,7 +117,7 @@ void vtkLIDARReader::SetFileName(const char* filename)
   }
   else
   {
-    this->FileName = NULL;
+    this->FileName = nullptr;
   }
 
   this->CompleteFileHasBeenRead = false;
@@ -157,7 +154,7 @@ int vtkLIDARReader::GetKnownNumberOfPieces()
 
 vtkIdType vtkLIDARReader::GetTotalNumberOfPoints()
 {
-  if (this->LIDARPieces.size() == 0)
+  if (this->LIDARPieces.empty())
   {
     // -1 indicates that ReadFileInfo not yet done
     return -1;
@@ -210,7 +207,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   // get the ouptut
   vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  if (this->RequestedReadPieces.size() > 0 &&
+  if (!this->RequestedReadPieces.empty() &&
     this->RequestedReadPieces.begin()->second == VTK_INT_MAX)
   {
     return 1; // just scanning to get file info, which already done in ReadFileInfo
@@ -225,7 +222,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   if (!fin)
   {
     vtkErrorMacro(<< "File " << this->FileName << " not found");
-    this->SetFileName(NULL);
+    this->SetFileName(nullptr);
     return 0;
   }
 
@@ -250,8 +247,8 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   newPts->UnRegister(this);
   newVerts->UnRegister(this);
 
-  vtkUnsignedCharArray* scalars = 0;
-  vtkFloatArray* intensityArray = 0;
+  vtkUnsignedCharArray* scalars = nullptr;
+  vtkFloatArray* intensityArray = nullptr;
   if (this->ValuesPerLine > 5)
   {
     scalars = vtkUnsignedCharArray::New();
@@ -304,7 +301,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
     // the same as the MaxPoint during the SetMaxPoint fn call.
   }
 
-  if (this->RequestedReadPieces.size() == 0) // read all pieces
+  if (this->RequestedReadPieces.empty()) // read all pieces
   {
     int j = 0;
     int onRationForAllPieces = 1;
@@ -356,7 +353,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
   std::string fileNameStr = this->FileName;
 
   vtksys::SystemTools::ConvertToUnixSlashes(fileNameStr);
-  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr.c_str());
+  std::string fullName = vtksys::SystemTools::CollapseFullPath(fileNameStr);
 
   // Append File name to output
   vtkSmartPointer<vtkStringArray> filenameFD = vtkSmartPointer<vtkStringArray>::New();
@@ -387,7 +384,7 @@ int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
 vtkIdType vtkLIDARReader::GetEstimatedNumOfOutPoints()
 {
   vtkIdType numOutputPts = 0;
-  if (this->RequestedReadPieces.size() > 0)
+  if (!this->RequestedReadPieces.empty())
   {
     for (std::map<int, int>::iterator it = this->RequestedReadPieces.begin();
          it != this->RequestedReadPieces.end(); it++)
@@ -527,7 +524,7 @@ int vtkLIDARReader::GetPointInfo(ifstream& fin)
       }
     } while (!fin.eof() && numPts <= 0);
     // Add the first piece info
-    if (this->LIDARPieces.size() == 0)
+    if (this->LIDARPieces.empty())
     {
       pieceInfo.PiecePointsOffset = fin.tellg();
       pieceInfo.NumPoints = numPts;
@@ -764,7 +761,7 @@ int vtkLIDARReader::MoveToStartOfPiece(ifstream& fin, int pieceIndex)
   int currentPieceIndex = -1;
   vtkTypeInt32 numPts = -1;
   // move to the beginning of the last piece we're aware of
-  if (this->LIDARPieces.size() > 0)
+  if (!this->LIDARPieces.empty())
   {
     fin.seekg(this->LIDARPieces.back().PiecePointsOffset, ios::beg);
     currentPieceIndex = static_cast<int>(this->LIDARPieces.size()) - 1;

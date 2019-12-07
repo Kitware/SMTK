@@ -22,7 +22,7 @@
 
 #include "smtk/Options.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -64,9 +64,7 @@ std::string Paths::s_bundleDir;
 std::vector<std::string> Paths::s_workerSearchPaths;
 
 /// Construct a path-discovery instance without providing the current executable's path.
-Paths::Paths()
-{
-}
+Paths::Paths() = default;
 
 /// Construct a path-discovery instance, providing the current executable's path for use as a starting point.
 Paths::Paths(const std::string& argv0)

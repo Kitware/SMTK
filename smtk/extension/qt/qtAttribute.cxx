@@ -32,7 +32,7 @@
 #include <QPointer>
 #include <QVBoxLayout>
 
-#include <stdlib.h> // for atexit()
+#include <cstdlib> // for atexit()
 
 #define DEBUG_ATTRIBUTE 0
 
@@ -60,7 +60,7 @@ public:
     qtAttributeItemInfo::buildFromComponent(iviews, m_view, m_itemViewMap);
   }
 
-  ~qtAttributeInternals() {}
+  ~qtAttributeInternals() = default;
   smtk::attribute::WeakAttributePtr m_attribute;
   QPointer<QWidget> m_parentWidget;
   QList<smtk::extension::qtItem*> m_items;
@@ -73,7 +73,7 @@ qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute,
   const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView)
 {
   m_internals = new qtAttributeInternals(myAttribute, comp, p, myView);
-  m_widget = NULL;
+  m_widget = nullptr;
   m_useSelectionManager = false;
   this->createWidget();
   m_isEmpty = true;
@@ -175,7 +175,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     return;
   }
   QLayout* layout = m_widget->layout();
-  qtItem* qItem = NULL;
+  qtItem* qItem = nullptr;
   smtk::attribute::AttributePtr att = this->attribute();
   auto uiManager = m_internals->m_view->uiManager();
   // If there are model assocications for the attribute, create UI for them if requested.
@@ -236,12 +236,12 @@ void qtAttribute::onItemModified()
 {
   // are we here due to a signal?
   QObject* sobject = this->sender();
-  if (sobject == NULL)
+  if (sobject == nullptr)
   {
     return;
   }
   auto iobject = qobject_cast<smtk::extension::qtItem*>(sobject);
-  if (iobject == NULL)
+  if (iobject == nullptr)
   {
     return;
   }

@@ -21,9 +21,7 @@ XmlDocV4Parser::XmlDocV4Parser(smtk::attribute::ResourcePtr myResource, smtk::io
 {
 }
 
-XmlDocV4Parser::~XmlDocV4Parser()
-{
-}
+XmlDocV4Parser::~XmlDocV4Parser() = default;
 
 bool XmlDocV4Parser::canParse(pugi::xml_document& doc)
 {

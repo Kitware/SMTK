@@ -64,7 +64,7 @@ void qtSMTKUtilities::registerModelViewConstructor(
 
 void qtSMTKUtilities::updateViewConstructors(smtk::extension::qtUIManager* uiMan)
 {
-  if (!uiMan || qtSMTKUtilities::viewConstructors().size() == 0)
+  if (!uiMan || qtSMTKUtilities::viewConstructors().empty())
     return;
 
   SMTKViewConstructorMap::const_iterator it;
@@ -77,7 +77,7 @@ void qtSMTKUtilities::updateViewConstructors(smtk::extension::qtUIManager* uiMan
 
 void qtSMTKUtilities::updateItemConstructors(smtk::extension::qtUIManager* uiMan)
 {
-  if (!uiMan || qtSMTKUtilities::itemConstructors().size() == 0)
+  if (!uiMan || qtSMTKUtilities::itemConstructors().empty())
     return;
 
   SMTKItemConstructorMap::const_iterator it;
@@ -90,8 +90,8 @@ void qtSMTKUtilities::updateItemConstructors(smtk::extension::qtUIManager* uiMan
 
 QVariant qtSMTKUtilities::UUIDToQVariant(const smtk::common::UUID& uuid)
 {
-  QVariant vdata(
-    QByteArray(reinterpret_cast<const char*>(uuid.begin()), static_cast<int>(uuid.size())));
+  QVariant vdata(QByteArray(
+    reinterpret_cast<const char*>(uuid.begin()), static_cast<int>(smtk::common::UUID::size())));
   return vdata;
 }
 

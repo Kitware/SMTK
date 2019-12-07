@@ -55,7 +55,7 @@ vtkDiscreteModelWrapper::vtkDiscreteModelWrapper()
   this->Model->AddObserver(ModelGeometricEntityAboutToDestroy, this->ModelCBC);
   this->Model->AddObserver(ModelReset, this->ModelCBC);
 
-  this->SerializedModel = 0;
+  this->SerializedModel = nullptr;
 }
 
 vtkDiscreteModelWrapper::~vtkDiscreteModelWrapper()
@@ -68,7 +68,7 @@ vtkDiscreteModelWrapper::~vtkDiscreteModelWrapper()
     this->ModelCBC->Delete();
   }
 
-  this->SetSerializedModel(0);
+  this->SetSerializedModel(nullptr);
 }
 
 void vtkDiscreteModelWrapper::ResetModel()
@@ -161,7 +161,7 @@ void vtkDiscreteModelWrapper::SetModel(vtkDiscreteModel* model)
   if (this->Model)
   {
     //this->Model->UnRegister(this);
-    this->Model = NULL;
+    this->Model = nullptr;
   }
 
   this->Model = model;
@@ -200,7 +200,7 @@ vtkMTimeType vtkDiscreteModelWrapper::GetMTime()
 
 vtkDiscreteModelWrapper* vtkDiscreteModelWrapper::GetData(vtkInformation* info)
 {
-  return info ? vtkDiscreteModelWrapper::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
+  return info ? vtkDiscreteModelWrapper::SafeDownCast(info->Get(DATA_OBJECT())) : nullptr;
 }
 
 vtkDiscreteModelWrapper* vtkDiscreteModelWrapper::GetData(vtkInformationVector* v, int i)
@@ -214,7 +214,7 @@ const char* vtkDiscreteModelWrapper::GetAnalysisGridFileName()
   {
     return this->Model->GetAnalysisGridInfo()->GetGridFileName();
   }
-  return NULL;
+  return nullptr;
 }
 
 vtkModelEntity* vtkDiscreteModelWrapper::GetModelEntity(vtkIdType uniquePersistentId)
@@ -233,7 +233,7 @@ vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
   if (!this->Model)
   {
     vtkWarningMacro("No model to serialize.");
-    return 0;
+    return nullptr;
   }
   vtkSmartPointer<vtkXMLModelWriter> serializer = vtkSmartPointer<vtkXMLModelWriter>::New();
   std::ostringstream ostr;
@@ -310,7 +310,7 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
     return 0;
   }
 
-  vtkDiscreteModelGeometricEntity* modelEntity = NULL;
+  vtkDiscreteModelGeometricEntity* modelEntity = nullptr;
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it;
   // Faces
   for (it = faceToIds.begin(); it != faceToIds.end(); it++)
@@ -370,7 +370,7 @@ vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByEntityId(vtkIdType enti
   {
     return this->GetEntityPropertyByChildIndex(cur_index);
   }
-  return NULL;
+  return nullptr;
 }
 
 vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByChildIndex(unsigned int index)
@@ -381,9 +381,9 @@ vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByChildIndex(unsigned int
     vtkIdType entId = static_cast<vtkIdType>(childInfo->Get(vtkModelEntity::UNIQUEPERSISTENTID()));
     vtkModelGeometricEntity* entity =
       vtkModelGeometricEntity::SafeDownCast(this->Model->GetModelEntity(entId));
-    return entity ? entity->GetDisplayProperty() : NULL;
+    return entity ? entity->GetDisplayProperty() : nullptr;
   }
-  return NULL;
+  return nullptr;
 }
 
 vtkModelEntity* vtkDiscreteModelWrapper::GetEntityObjectByFlatIndex(unsigned int index)
@@ -396,7 +396,7 @@ vtkModelEntity* vtkDiscreteModelWrapper::GetEntityObjectByFlatIndex(unsigned int
     vtkIdType entId = static_cast<vtkIdType>(childInfo->Get(vtkModelEntity::UNIQUEPERSISTENTID()));
     return this->Model->GetModelEntity(entId);
   }
-  return NULL;
+  return nullptr;
 }
 
 bool vtkDiscreteModelWrapper::GetChildIndexByEntityId(vtkIdType entityId, unsigned int& index)

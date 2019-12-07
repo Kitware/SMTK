@@ -22,13 +22,9 @@
 
 #include <set>
 
-vtkModelEdge::vtkModelEdge()
-{
-}
+vtkModelEdge::vtkModelEdge() = default;
 
-vtkModelEdge::~vtkModelEdge()
-{
-}
+vtkModelEdge::~vtkModelEdge() = default;
 
 int vtkModelEdge::GetType()
 {
@@ -44,11 +40,11 @@ vtkModelEdgeUse* vtkModelEdge::GetModelEdgeUse(int which)
 { // 0 <= which < number of modeledgeuses
   if (which >= this->GetNumberOfAssociations(vtkModelEdgeUseType) || which < 0)
   {
-    return NULL;
+    return nullptr;
   }
   vtkModelItemIterator* iter = this->NewIterator(vtkModelEdgeUseType);
   int counter = 0;
-  vtkModelEdgeUse* edgeUse = 0;
+  vtkModelEdgeUse* edgeUse = nullptr;
   for (iter->Begin(); !iter->IsAtEnd(); iter->Next())
   {
     if (counter == which)
@@ -79,7 +75,7 @@ vtkModelVertex* vtkModelEdge::GetAdjacentModelVertex(int which)
   {
     return vertexUse->GetModelVertex();
   }
-  return 0;
+  return nullptr;
 }
 
 void vtkModelEdge::Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1, vtkIdType edgeId)
@@ -100,14 +96,14 @@ vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
   if (this->GetNumberOfModelEdgeUses() == 0)
   {
     vtkErrorMacro("Must have an existing edge use before calling BuildModelEdgeUse.");
-    return 0;
+    return nullptr;
   }
   vtkModelEdgeUse* firstEdgeUse = this->GetModelEdgeUse(0);
 
   // first edge use is in opposite direction of edge
   vtkModelVertexUse* vertexUse1 = firstEdgeUse->GetModelVertexUse(0);
   vtkModelVertexUse* vertexUse0 = firstEdgeUse->GetModelVertexUse(1);
-  vtkModelVertex *vertex0 = 0, *vertex1 = 0;
+  vtkModelVertex *vertex0 = nullptr, *vertex1 = nullptr;
   if (vertexUse0)
   {
     vertex0 = vertexUse0->GetModelVertex();
@@ -184,7 +180,7 @@ void vtkModelEdge::SplitModelEdge(vtkModelVertex* newVertex, vtkModelEdge* newEd
     // want so we remove them now
     vtkModelVertexUse* vertexUse0 = newEdgeUse->GetModelVertexUse(0);
     vtkModelVertexUse* vertexUse1 = newEdgeUse->GetModelVertexUse(1);
-    newEdgeUse->SetModelVertexUses(0, 0);
+    newEdgeUse->SetModelVertexUses(nullptr, nullptr);
     if (vertexUse0 && vertexUse0->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
     {
       vertexUse0->GetModelVertex()->DestroyModelVertexUse(vertexUse0);
@@ -197,7 +193,7 @@ void vtkModelEdge::SplitModelEdge(vtkModelVertex* newVertex, vtkModelEdge* newEd
 
     vertexUse0 = newEdgeUse->GetPairedModelEdgeUse()->GetModelVertexUse(0);
     vertexUse1 = newEdgeUse->GetPairedModelEdgeUse()->GetModelVertexUse(1);
-    newEdgeUse->GetPairedModelEdgeUse()->SetModelVertexUses(0, 0);
+    newEdgeUse->GetPairedModelEdgeUse()->SetModelVertexUses(nullptr, nullptr);
     if (vertexUse0 && vertexUse0->GetNumberOfAssociations(vtkModelEdgeUseType) == 0)
     {
       vertexUse0->GetModelVertex()->DestroyModelVertexUse(vertexUse0);

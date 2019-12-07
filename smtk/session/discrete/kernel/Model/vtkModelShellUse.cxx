@@ -26,13 +26,9 @@ vtkModelShellUse* vtkModelShellUse::New()
   return new vtkModelShellUse;
 }
 
-vtkModelShellUse::vtkModelShellUse()
-{
-}
+vtkModelShellUse::vtkModelShellUse() = default;
 
-vtkModelShellUse::~vtkModelShellUse()
-{
-}
+vtkModelShellUse::~vtkModelShellUse() = default;
 
 bool vtkModelShellUse::Destroy()
 {

@@ -462,7 +462,7 @@ bool write_dm(
   }
 
   std::vector<MeshByRegion> meshes = subsetByRegion(meshResource, type);
-  if (meshes.size() == 0)
+  if (meshes.empty())
   { //nothing to write out
     return false;
   }
@@ -480,7 +480,7 @@ bool write_dm(smtk::mesh::ResourcePtr meshResource, smtk::model::ResourcePtr res
 
   std::vector<MeshByRegion> meshes =
     subsetByModelProperty(meshResource, resource, modelPropertyName, type);
-  if (meshes.size() == 0)
+  if (meshes.empty())
   { //nothing to write out
     return false;
   }
@@ -521,7 +521,7 @@ std::size_t computeNumberOfPoints(std::istream& stream)
 
   // reset the stream to the beginning of the file
   stream.clear();
-  stream.seekg(0, stream.beg);
+  stream.seekg(0, std::istream::beg);
 
   assert(fromComment || counter == nPts);
 
@@ -573,7 +573,7 @@ bool readPoints(std::istream& stream, const smtk::mesh::BufferedCellAllocatorPtr
 
   // reset the stream to the beginning of the file
   stream.clear();
-  stream.seekg(0, stream.beg);
+  stream.seekg(0, std::istream::beg);
 
   return true;
 }

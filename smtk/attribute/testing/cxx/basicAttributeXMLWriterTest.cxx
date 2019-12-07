@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     return -1;
   }
   auto resptr = smtk::attribute::Resource::create();
-  smtk::attribute::Resource& resource(*resptr.get());
+  smtk::attribute::Resource& resource(*resptr);
   std::cout << "Resource Created\n";
   // Lets add some analyses
   auto analyses = resptr->analyses();
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   smtk::attribute::ComponentItemDefinitionPtr acitemdef =
     attcompdef->addItemDefinition<smtk::attribute::ComponentItemDefinitionPtr>("BaseDefItem");
   acitemdef->setCommonValueLabel("A reference to another attribute");
-  std::string attQuery = resource.createAttributeQuery(base);
+  std::string attQuery = smtk::attribute::Resource::createAttributeQuery(base);
   acitemdef->setAcceptsEntries(smtk::common::typeName<smtk::attribute::Resource>(), attQuery, true);
 
   // Process Definition Information

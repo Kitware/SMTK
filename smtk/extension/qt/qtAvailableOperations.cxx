@@ -32,9 +32,7 @@ qtAvailableOperations::qtAvailableOperations(QWidget* parent)
   m_layout->addWidget(m_operationList);
 }
 
-qtAvailableOperations::~qtAvailableOperations()
-{
-}
+qtAvailableOperations::~qtAvailableOperations() = default;
 
 void qtAvailableOperations::setOperationSource(smtk::view::AvailableOperationsPtr avail)
 {
@@ -108,7 +106,7 @@ void qtAvailableOperations::updateList()
     item->setData(Qt::UserRole + 47, // TODO: why 47?
       QVariant::fromValue(op));      // Store the operation's index with the list item.
     item->setText(label.c_str());
-    if (toolTip != "")
+    if (!toolTip.empty())
     {
       item->setToolTip(toolTip.c_str());
     }

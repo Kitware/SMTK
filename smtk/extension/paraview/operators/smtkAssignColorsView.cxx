@@ -49,7 +49,7 @@ using namespace smtk::extension;
 class smtkAssignColorsViewInternals : public Ui::AssignColorsParameters
 {
 public:
-  smtkAssignColorsViewInternals() {}
+  smtkAssignColorsViewInternals() = default;
 
   ~smtkAssignColorsViewInternals()
   {
@@ -75,7 +75,7 @@ public:
       }
       return attInstance;
     }
-    return NULL;
+    return nullptr;
   }
 
   bool paletteFromDialog(QList<QColor>& colors, const QString& paletteName)
@@ -447,7 +447,7 @@ void smtkAssignColorsView::applyDefaultColor()
 void smtkAssignColorsView::setDefaultPaletteAndApply()
 {
   const Json::Value& preset = this->Internals->PaletteChooser->currentPreset();
-  std::string name(preset["Name"].asString().c_str());
+  std::string name(preset["Name"].asString());
   //std::cerr << "Change default palette to \"" << name << "\"" << std::endl;
   pqSettings* settings = pqApplicationCore::instance()->settings();
   settings->setValue("ModelBuilder/Operations/AssignColors/defaultPalette", name.c_str());

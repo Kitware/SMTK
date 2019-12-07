@@ -32,12 +32,12 @@ class pqSMTKColorByWidget::PropertyLinksConnection : public pqPropertyLinksConne
 public:
   PropertyLinksConnection(QObject* qobject, const char* qproperty, const char* qsignal,
     vtkSMProxy* smproxy, vtkSMProperty* smproperty, int smindex, bool use_unchecked_modified_event,
-    QObject* parentObject = 0)
+    QObject* parentObject = nullptr)
     : Superclass(qobject, qproperty, qsignal, smproxy, smproperty, smindex,
         use_unchecked_modified_event, parentObject)
   {
   }
-  ~PropertyLinksConnection() override {}
+  ~PropertyLinksConnection() override = default;
 
 protected:
   /// Called to update the ServerManager Property due to UI change.
@@ -65,7 +65,7 @@ public:
   pqPropertyLinks Links;
   QPointer<pqComboBoxDomain> Domain;
   QPointer<pqDataRepresentation> PQRepr;
-  pqInternals() {}
+  pqInternals() = default;
 
   bool setColorByText(const QString& text)
   {
@@ -107,7 +107,7 @@ void pqSMTKColorByWidget::setRepresentation(pqDataRepresentation* display)
   {
     this->Internal->PQRepr->disconnect(this);
   }
-  vtkSMProxy* proxy = display ? display->getProxy() : NULL;
+  vtkSMProxy* proxy = display ? display->getProxy() : nullptr;
   this->setRepresentation(proxy);
   this->Internal->PQRepr = display;
   if (display)
@@ -125,8 +125,8 @@ void pqSMTKColorByWidget::setRepresentation(vtkSMProxy* proxy)
   delete this->Internal->Domain;
   bool prev = this->Internal->comboBox->blockSignals(true);
   this->Internal->comboBox->clear();
-  vtkSMProperty* smproperty = proxy ? proxy->GetProperty("ColorBy") : NULL;
-  this->Internal->comboBox->setEnabled(smproperty != NULL);
+  vtkSMProperty* smproperty = proxy ? proxy->GetProperty("ColorBy") : nullptr;
+  this->Internal->comboBox->setEnabled(smproperty != nullptr);
   if (!smproperty)
   {
     this->Internal->comboBox->addItem("Color Model By");
@@ -185,6 +185,4 @@ pqSMTKColorByPropertyWidget::pqSMTKColorByPropertyWidget(vtkSMProxy* smProxy, QW
 }
 
 //-----------------------------------------------------------------------------
-pqSMTKColorByPropertyWidget::~pqSMTKColorByPropertyWidget()
-{
-}
+pqSMTKColorByPropertyWidget::~pqSMTKColorByPropertyWidget() = default;

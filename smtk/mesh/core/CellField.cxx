@@ -33,21 +33,12 @@ CellField::CellField(const smtk::mesh::MeshSet& meshset, const std::string& name
 }
 
 CellField::CellField(const smtk::mesh::CellField& other)
-  : m_name(other.m_name)
-  , m_meshset(other.m_meshset)
-{
-}
 
-CellField::~CellField()
-{
-}
+  = default;
 
-CellField& CellField::operator=(const CellField& other)
-{
-  m_name = other.m_name;
-  m_meshset = other.m_meshset;
-  return *this;
-}
+CellField::~CellField() = default;
+
+CellField& CellField::operator=(const CellField& other) = default;
 
 bool CellField::operator==(const CellField& other) const
 {

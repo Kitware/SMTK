@@ -10,7 +10,6 @@
 
 #include "vtkCMBMapToCMBModel.h"
 
-#include "math.h"
 #include "smtk/session/discrete/kernel/Model/vtkModelItemIterator.h"
 #include "vtkAbstractArray.h"
 #include "vtkAlgorithm.h"
@@ -37,6 +36,7 @@
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
+#include <cmath>
 #include <vtkSmartPointer.h>
 
 #include <algorithm>
@@ -77,7 +77,7 @@ struct WalkableEdge
   {
   }
 
-  ~WalkableEdge() {}
+  ~WalkableEdge() = default;
 
   //This comparison operator allows an edge to be viewed as an
   //ordered pair where -1 can be a wildcard in the second slot
@@ -127,8 +127,8 @@ public:
   //WalkableLoop(const vtkIdType& _loopId) : loopId(_loopId), numEdges(0), edge_arr(NULL), edge_dir_arr(NULL){}
   WalkableLoop()
     : numEdges(-1)
-    , edge_arr(NULL)
-    , edge_dir_arr(NULL)
+    , edge_arr(nullptr)
+    , edge_dir_arr(nullptr)
     , edge_dir_flipped(false)
   {
   }
@@ -251,7 +251,7 @@ public:
       (*curr).edgeId); //Remove the edge so we don't have to check it again
 
     // Start walking the rest of the edges
-    while (order1.size() > 0)
+    while (!order1.empty())
     {
       //Find edges connected to the last endpoint
       std::list<WalkableEdge> foundEdges;
@@ -269,7 +269,7 @@ public:
         this->removeEdge(nextEdge.ptId1, nextEdge.ptId2, nextEdge.edgeId);
         currPt = (currPt == nextEdge.ptId1) ? nextEdge.ptId2 : nextEdge.ptId1;
 
-        if (currPt == targetEndPoint && order1.size() > 0)
+        if (currPt == targetEndPoint && !order1.empty())
         {
           //Error there are edges in the loop that are not part of the loop
           numEdges = -2;
@@ -364,9 +364,7 @@ vtkCMBMapToCMBModel::vtkCMBMapToCMBModel()
   this->OperateSucceeded = 0;
 }
 
-vtkCMBMapToCMBModel::~vtkCMBMapToCMBModel()
-{
-}
+vtkCMBMapToCMBModel::~vtkCMBMapToCMBModel() = default;
 
 void vtkCMBMapToCMBModel::PrintSelf(ostream& os, vtkIndent indent)
 {

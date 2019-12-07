@@ -43,13 +43,9 @@
 
 vtkStandardNewMacro(vtkSMTKEncodeSelection);
 
-vtkSMTKEncodeSelection::vtkSMTKEncodeSelection()
-{
-}
+vtkSMTKEncodeSelection::vtkSMTKEncodeSelection() = default;
 
-vtkSMTKEncodeSelection::~vtkSMTKEncodeSelection()
-{
-}
+vtkSMTKEncodeSelection::~vtkSMTKEncodeSelection() = default;
 
 bool vtkSMTKEncodeSelection::ProcessSelection(vtkSelection* rawSelection,
   vtkSMRenderViewProxy* viewProxy, bool multipleSelectionsAllowed,

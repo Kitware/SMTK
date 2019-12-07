@@ -25,13 +25,9 @@
 
 vtkStandardNewMacro(vtkModelFaceUse);
 
-vtkModelFaceUse::vtkModelFaceUse()
-{
-}
+vtkModelFaceUse::vtkModelFaceUse() = default;
 
-vtkModelFaceUse::~vtkModelFaceUse()
-{
-}
+vtkModelFaceUse::~vtkModelFaceUse() = default;
 
 bool vtkModelFaceUse::Destroy()
 {
@@ -85,7 +81,7 @@ vtkModelFace* vtkModelFaceUse::GetModelFace()
 vtkModelLoopUse* vtkModelFaceUse::GetOuterLoopUse()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
-  vtkModelLoopUse* loopUse = 0;
+  vtkModelLoopUse* loopUse = nullptr;
   iter->Begin();
   if (!iter->IsAtEnd())
   {

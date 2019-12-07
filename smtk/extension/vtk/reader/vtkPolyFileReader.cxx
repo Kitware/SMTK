@@ -757,8 +757,8 @@ vtkPolyFileReader::vtkPolyFileReader()
 {
   this->P = new Private;
   this->B = new Builder;
-  this->FileName = NULL;
-  this->NodeFileName = NULL;
+  this->FileName = nullptr;
+  this->NodeFileName = nullptr;
   this->SimpleMeshFormat = 0;
   this->FacetMarksAsCellData = 0;
   this->SetNumberOfInputPorts(0);
@@ -767,8 +767,8 @@ vtkPolyFileReader::vtkPolyFileReader()
 
 vtkPolyFileReader::~vtkPolyFileReader()
 {
-  this->SetFileName(NULL);
-  this->SetNodeFileName(NULL);
+  this->SetFileName(nullptr);
+  this->SetNodeFileName(nullptr);
   delete this->P;
   delete this->B;
 }
@@ -776,9 +776,9 @@ vtkPolyFileReader::~vtkPolyFileReader()
 void vtkPolyFileReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  os << indent << "FileName: " << (this->FileName == NULL ? "(NULL)" : this->FileName) << "\n";
-  os << indent << "NodeFileName: " << (this->NodeFileName == NULL ? "(NULL)" : this->NodeFileName)
-     << "\n";
+  os << indent << "FileName: " << (this->FileName == nullptr ? "(NULL)" : this->FileName) << "\n";
+  os << indent
+     << "NodeFileName: " << (this->NodeFileName == nullptr ? "(NULL)" : this->NodeFileName) << "\n";
   os << indent << "SimpleMeshFormat: " << this->SimpleMeshFormat << "\n";
   os << indent << "FacetMarksAsCellData: " << (this->FacetMarksAsCellData ? "ON" : "OFF") << "\n";
 }

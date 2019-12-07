@@ -72,7 +72,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::FileSystemItemPtr
   auto values = j.find("Values");
   if (values != j.end())
   {
-    if (itemPtr->isExtensible() && values->is_array() && (values->size() > 0))
+    if (itemPtr->isExtensible() && values->is_array() && !values->empty())
     {
       n = values->size();
       itemPtr->setNumberOfValues(n);

@@ -35,7 +35,7 @@ namespace
 // than letting the attribute system spin one for us. This atomic counter is
 // used to create that name. Its value is irrelevant so we don't need to reset
 // it; its uniqueness is what we are after.
-static std::atomic<std::size_t> g_uniqueCounter{ 0 };
+std::atomic<std::size_t> g_uniqueCounter{ 0 };
 }
 
 namespace smtk

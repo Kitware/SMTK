@@ -57,7 +57,7 @@ qtBaseView* qtOperationView::createViewWidget(const ViewInfo& info)
   qtOperationView* view;
   if (!opinfo)
   {
-    return NULL;
+    return nullptr;
   }
   view = new qtOperationView(*opinfo);
   view->buildUI();

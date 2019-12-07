@@ -101,15 +101,15 @@ vtkXMLModelReader::vtkXMLModelReader()
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::USERDATA());
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::SHOWTEXTURE());
 
-  this->RootElement = 0;
-  this->CurrentElement = 0;
-  this->Model = 0;
+  this->RootElement = nullptr;
+  this->CurrentElement = nullptr;
+  this->Model = nullptr;
 }
 
 vtkXMLModelReader::~vtkXMLModelReader()
 {
-  this->SetRootElement(0);
-  this->SetModel(0);
+  this->SetRootElement(nullptr);
+  this->SetModel(nullptr);
 }
 
 void vtkXMLModelReader::GetElementsByType(
@@ -238,7 +238,7 @@ void vtkXMLModelReader::Serialize(const char* ObjectName)
       vtkWarningMacro("Could not get object id");
       continue;
     }
-    vtkSerializableObject* obj = NULL;
+    vtkSerializableObject* obj = nullptr;
     if (!strcmp(ObjectName, "vtkModelMaterial"))
     {
       obj = this->Model->BuildMaterial(id);
@@ -334,13 +334,13 @@ vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int /*id*/)
   if (associatedModelFaceUse.size() != 1)
   {
     vtkErrorMacro("ModelLoopUse has incorrect number of adjacent model faces uses.");
-    return 0;
+    return nullptr;
   }
   // because the model doesn't directly know about face uses we have to go through
   // all of the faces and then look there for the face use we want
   vtkModelItemIterator* faces = this->Model->NewIterator(vtkModelFaceType);
-  vtkModelFaceUse* faceUse = 0;
-  for (faces->Begin(); !faces->IsAtEnd() && faceUse == 0; faces->Next())
+  vtkModelFaceUse* faceUse = nullptr;
+  for (faces->Begin(); !faces->IsAtEnd() && faceUse == nullptr; faces->Next())
   {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
     faceUse = vtkModelFaceUse::SafeDownCast(
@@ -350,16 +350,16 @@ vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int /*id*/)
   if (!faceUse)
   {
     vtkErrorMacro("ModelFaceUse is not yet available for needed ModelLoopUse.");
-    return 0;
+    return nullptr;
   }
   // now build up the model edge uses
   std::vector<vtkIdType> associatedModelEdgeUses;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
     vtkModelEdgeUseType, associatedModelEdgeUses);
-  if (associatedModelEdgeUses.size() == 0)
+  if (associatedModelEdgeUses.empty())
   {
     vtkErrorMacro("ModelLoopUse has incorrect number of adjacent model edge uses.");
-    return 0;
+    return nullptr;
   }
 
   vtkModelLoopUse* loopUse = vtkModelLoopUse::New();
@@ -396,7 +396,7 @@ vtkModelFace* vtkXMLModelReader::ConstructModelFace(int id)
   if (modelFaceUses.size() != 2)
   {
     vtkErrorMacro("Model face does not have two uses.");
-    return 0;
+    return nullptr;
   }
   vtkDiscreteModelFace* modelFace = vtkDiscreteModelFace::New();
   this->Model->AddAssociation(modelFace);
@@ -422,21 +422,21 @@ vtkModelFace* vtkXMLModelReader::ConstructModelFace(int id)
 
 vtkModelFaceUse* vtkXMLModelReader::ConstructModelFaceUse(int id)
 {
-  vtkModelFaceUse* faceUse = 0;
+  vtkModelFaceUse* faceUse = nullptr;
   std::vector<vtkIdType> associatedModelFace;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
     vtkModelFaceType, associatedModelFace);
   if (associatedModelFace.size() != 1)
   {
     vtkErrorMacro("ModelFaceUse has incorrect number of adjacent model faces.");
-    return 0;
+    return nullptr;
   }
   vtkModelFace* face = vtkModelFace::SafeDownCast(
     this->Model->GetModelEntity(vtkModelFaceType, associatedModelFace[0]));
   if (!face)
   {
     vtkErrorMacro("ModelFace is not yet available for needed ModelFaceUse.");
-    return 0;
+    return nullptr;
   }
   if (face->GetModelFaceUse(0)->GetUniquePersistentId() == id)
   {
@@ -449,14 +449,14 @@ vtkModelFaceUse* vtkXMLModelReader::ConstructModelFaceUse(int id)
   else
   {
     vtkErrorMacro("ModelFaceUse associated with wrong model face.");
-    return 0;
+    return nullptr;
   }
   return faceUse;
 }
 
 vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
 {
-  vtkModelRegion* region = 0;
+  vtkModelRegion* region = nullptr;
   std::map<int, std::vector<vtkIdType> > associations;
   this->GetAssociations(
     this->CurrentElement->FindNestedElementByName("Associations"), associations);
@@ -465,7 +465,7 @@ vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
   {
     // Currently serialization only supports a single shell
     vtkErrorMacro("Model region has wrong associations.");
-    return 0;
+    return nullptr;
   }
   vtkModelMaterial* material = vtkModelMaterial::SafeDownCast(
     this->Model->GetModelEntity(vtkModelMaterialType, associations[vtkModelMaterialType][0]));
@@ -502,7 +502,7 @@ vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
   std::vector<vtkIdType> floatingEdges;
   this->GetAssociations(
     this->CurrentElement->FindNestedElementByName("Associations"), vtkModelEdgeType, floatingEdges);
-  if (floatingEdges.size() != 0)
+  if (!floatingEdges.empty())
   {
     vtkModelItem* edge = this->Model->GetModelEntity(vtkModelEdgeType, floatingEdges[0]);
     region->AddAssociation(edge);
@@ -535,7 +535,7 @@ vtkModelVertexUse* vtkXMLModelReader::ConstructModelVertexUse(int id)
   if (associatedVertex.size() != 1)
   {
     vtkErrorMacro("Could not find proper vertex for vertex use.");
-    return 0;
+    return nullptr;
   }
   vtkModelVertex* vertex = vtkModelVertex::SafeDownCast(
     this->Model->GetModelEntity(vtkModelVertexType, associatedVertex[0]));
@@ -577,14 +577,14 @@ vtkModelEdgeUse* vtkXMLModelReader::ConstructModelEdgeUse(int id)
   if (associations[vtkModelEdgeType].size() != 1)
   {
     vtkErrorMacro("Model edge use has wrong associations.");
-    return 0;
+    return nullptr;
   }
 
   vtkModelEntity* edge =
     this->Model->GetModelEntity(vtkModelEdgeType, associations[vtkModelEdgeType][0]);
   vtkModelItemIterator* edgeUses = edge->NewIterator(vtkModelEdgeUseType);
-  vtkModelEdgeUse* edgeUse = 0;
-  for (edgeUses->Begin(); !edgeUses->IsAtEnd() && edgeUse == 0; edgeUses->Next())
+  vtkModelEdgeUse* edgeUse = nullptr;
+  for (edgeUses->Begin(); !edgeUses->IsAtEnd() && edgeUse == nullptr; edgeUses->Next())
   {
     vtkModelEdgeUse* tmp = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
     if (tmp->GetUniquePersistentId() == id)
@@ -596,7 +596,7 @@ vtkModelEdgeUse* vtkXMLModelReader::ConstructModelEdgeUse(int id)
 
   // hook up the edge use pair
   vtkIdType edgeUsePairId = associations[vtkModelEdgeUseType][0];
-  if (edgeUse->GetPairedModelEdgeUse() == 0)
+  if (edgeUse->GetPairedModelEdgeUse() == nullptr)
   {
     vtkModelEntity* edgeUsePair = edge->GetModelEntity(vtkModelEdgeUseType, edgeUsePairId);
     if (edgeUsePair)
@@ -618,10 +618,10 @@ vtkModelEdgeUse* vtkXMLModelReader::ConstructModelEdgeUse(int id)
     vtkModelEntity* vertex = this->Model->GetModelEntity(vtkModelVertexType, vertexId[0]);
     vtkModelVertexUse* vertexUse = vtkModelVertexUse::SafeDownCast(
       vertex->GetModelEntity(vtkModelVertexUseType, associations[vtkModelVertexUseType][i]));
-    if (vertexUse == 0)
+    if (vertexUse == nullptr)
     {
       vtkErrorMacro("Could not find vertex use for edge use.");
-      return 0;
+      return nullptr;
     }
     edgeUse->AddAssociation(vertexUse);
   }
@@ -637,9 +637,9 @@ vtkModelShellUse* vtkXMLModelReader::ConstructModelShellUse(int id)
   if (associatedRegion.size() != 1)
   {
     vtkErrorMacro("ModelRegion is not yet available for needed ModelShellUse.");
-    return 0;
+    return nullptr;
   }
-  vtkModelShellUse* shellUse = 0;
+  vtkModelShellUse* shellUse = nullptr;
   vtkModelItemIterator* iter =
     vtkDiscreteModelRegion::SafeDownCast(
       this->Model->GetModelEntity(vtkModelRegionType, associatedRegion[0]))
@@ -655,7 +655,7 @@ vtkModelShellUse* vtkXMLModelReader::ConstructModelShellUse(int id)
   if (!shellUse)
   {
     vtkErrorMacro("Model shell use cannot find the proper region.");
-    return 0;
+    return nullptr;
   }
   return shellUse;
 }
@@ -697,20 +697,20 @@ vtkDiscreteModelEntityGroup* vtkXMLModelReader::ConstructModelEntityGroup(int id
         default:
         {
           vtkErrorMacro("Wrong type of object in model entity group.");
-          return 0;
+          return nullptr;
         }
       }
     }
     return this->Model->BuildModelEntityGroup(
-      type, numberOfEntities, numberOfEntities ? (&entities[0]) : NULL, id);
+      type, numberOfEntities, numberOfEntities ? (&entities[0]) : nullptr, id);
   }
-  else if (associations.size() == 0)
+  else if (associations.empty())
   {
-    return this->Model->BuildModelEntityGroup(-1, 0, NULL, id);
+    return this->Model->BuildModelEntityGroup(-1, 0, nullptr, id);
   }
 
   vtkErrorMacro("Model entity group contains more than one type.");
-  return 0;
+  return nullptr;
 }
 
 void vtkXMLModelReader::Serialize(const char* name, vtkInformation* info)
@@ -777,7 +777,7 @@ void vtkXMLModelReader::Serialize(const char* name, vtkInformation* info)
         // information object , which is where we were trying to get it but
         // has the side effect of further incrementing the ReferenceCount.
         // To prevent a leak we need to decrment the ReferenceCount.
-        obj->UnRegister(0);
+        obj->UnRegister(nullptr);
       }
     }
   }
@@ -792,7 +792,7 @@ void vtkXMLModelReader::Serialize(const char* name, vtkObject*& obj, bool weakPt
     return;
   }
 
-  obj = 0;
+  obj = nullptr;
   vtkIdType id;
   if (elem->GetScalarAttribute("to_id", &id))
   {
@@ -824,7 +824,7 @@ void vtkXMLModelReader::Serialize(const char* name, int*& val, unsigned int& len
   if (val)
   {
     delete[] val;
-    val = 0;
+    val = nullptr;
   }
   length = 0;
   elem->GetScalarAttribute("length", &length);
@@ -859,7 +859,7 @@ void vtkXMLModelReader::Serialize(const char* name, unsigned long*& val, unsigne
   if (val)
   {
     delete[] val;
-    val = 0;
+    val = nullptr;
   }
   length = 0;
   elem->GetScalarAttribute("length", &length);
@@ -895,7 +895,7 @@ void vtkXMLModelReader::Serialize(const char* name, vtkIdType*& val, unsigned in
   if (val)
   {
     delete[] val;
-    val = 0;
+    val = nullptr;
   }
   length = 0;
   elem->GetScalarAttribute("length", &length);
@@ -931,7 +931,7 @@ void vtkXMLModelReader::Serialize(const char* name, double*& val, unsigned int& 
   if (val)
   {
     delete[] val;
-    val = 0;
+    val = nullptr;
   }
   length = 0;
   elem->GetScalarAttribute("length", &length);
@@ -951,7 +951,7 @@ void vtkXMLModelReader::Serialize(const char* name, char*& str)
     return;
   }
 
-  str = 0;
+  str = nullptr;
   const char* val = elem->GetAttribute("value");
   if (val)
   {
@@ -1077,7 +1077,7 @@ void vtkXMLModelReader::GetAssociations(
 
 vtkObject* vtkXMLModelReader::ReadObject(vtkIdType /*id*/, bool /*weakPtr*/)
 {
-  return 0;
+  return nullptr;
 }
 
 int vtkXMLModelReader::ParseStream(istream& str)

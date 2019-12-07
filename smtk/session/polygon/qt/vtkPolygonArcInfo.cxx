@@ -28,7 +28,7 @@ vtkPolygonArcInfo::vtkPolygonArcInfo()
   this->BlockIndex = -1;
   this->ClosedLoop = 0;
   this->NumberOfPoints = 0;
-  this->ModelEntityID = NULL;
+  this->ModelEntityID = nullptr;
   this->SelectedPointId = -1;
   this->SelectedPointCoordinates[0] = this->SelectedPointCoordinates[1] =
     this->SelectedPointCoordinates[2] = 0.0;
@@ -36,7 +36,7 @@ vtkPolygonArcInfo::vtkPolygonArcInfo()
 
 vtkPolygonArcInfo::~vtkPolygonArcInfo()
 {
-  this->SetModelEntityID(NULL);
+  this->SetModelEntityID(nullptr);
 }
 
 void vtkPolygonArcInfo::PrintSelf(ostream& os, vtkIndent indent)
@@ -56,7 +56,7 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
   //reset member variables to defaults
   this->ClosedLoop = false;
   this->NumberOfPoints = 0;
-  this->SetModelEntityID(NULL);
+  this->SetModelEntityID(nullptr);
   vtkMultiBlockDataSetAlgorithm* filterAlg = vtkMultiBlockDataSetAlgorithm::SafeDownCast(obj);
   if (!filterAlg)
     return;
@@ -82,8 +82,8 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
     treeIter->VisitOnlyLeavesOff();
   }
   int index = 0;
-  vtkPolyData* edgePoly = NULL;
-  vtkInformation* metaInfo = NULL;
+  vtkPolyData* edgePoly = nullptr;
+  vtkInformation* metaInfo = nullptr;
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem(), index++)
   {
     if (index == this->BlockIndex)
@@ -163,7 +163,7 @@ void vtkPolygonArcInfo::CopyFromStream(const vtkClientServerStream* css)
 
   int len;
   css->GetArgument(0, 4, &len);
-  this->SetModelEntityID(NULL);
+  this->SetModelEntityID(nullptr);
   this->ModelEntityID = new char[len];
   css->GetArgument(0, 5, this->ModelEntityID, len);
 }

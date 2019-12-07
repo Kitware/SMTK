@@ -53,9 +53,7 @@ namespace smtk
 {
 namespace project
 {
-Project::Project()
-{
-}
+Project::Project() = default;
 
 Project::~Project()
 {

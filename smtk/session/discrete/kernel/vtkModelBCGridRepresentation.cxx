@@ -32,13 +32,9 @@
 
 vtkStandardNewMacro(vtkModelBCGridRepresentation);
 
-vtkModelBCGridRepresentation::vtkModelBCGridRepresentation()
-{
-}
+vtkModelBCGridRepresentation::vtkModelBCGridRepresentation() = default;
 
-vtkModelBCGridRepresentation::~vtkModelBCGridRepresentation()
-{
-}
+vtkModelBCGridRepresentation::~vtkModelBCGridRepresentation() = default;
 
 void inline AddPointIds(vtkIdType /*entId*/, vtkIdList* inPtsList, vtkIdList* outPtsList)
 {
@@ -238,9 +234,9 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscreteModel* model)
 {
   this->Reset();
-  if (bcFileName == NULL || vtksys::SystemTools::FileExists(bcFileName, true) == false)
+  if (bcFileName == nullptr || vtksys::SystemTools::FileExists(bcFileName, true) == false)
   {
-    if (bcFileName == NULL)
+    if (bcFileName == nullptr)
     {
       vtkErrorMacro("Passed in empty file name.");
     }
@@ -273,11 +269,11 @@ bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscret
   while (!file.eof())
   {
     std::getline(file, line);
-    if (line.size() == 0)
+    if (line.empty())
     {
       continue;
     }
-    std::vector<std::string> values = vtksys::SystemTools::SplitString(line.c_str(), ' ');
+    std::vector<std::string> values = vtksys::SystemTools::SplitString(line, ' ');
     if (vtksys::SystemTools::Strucmp(values[0].c_str(), "NDS") == 0 && values.size() == 3)
     {
       vtkIdType pointId = atoi(values[1].c_str()) - 1; // analysis grid point Id in C++ ordering
@@ -384,7 +380,7 @@ bool vtkModelBCGridRepresentation::AddModelFace(
 {
   vtkDiscreteModelFace* face =
     vtkDiscreteModelFace::SafeDownCast(model->GetModelEntity(vtkModelFaceType, modelFaceId));
-  if (face == NULL || face->GetNumberOfCells() == 0)
+  if (face == nullptr || face->GetNumberOfCells() == 0)
   {
     vtkErrorMacro("Could not find model face.");
     this->Reset();
@@ -454,7 +450,7 @@ bool vtkModelBCGridRepresentation::GetModelFaceAnalysisFacets(
   }
   vtkDiscreteModelFace* face =
     vtkDiscreteModelFace::SafeDownCast(model->GetModelEntity(vtkModelFaceType, modelFaceId));
-  if (face == NULL || face->GetNumberOfCells() == 0)
+  if (face == nullptr || face->GetNumberOfCells() == 0)
   {
     vtkErrorMacro("Could not find model face.");
     this->Reset();

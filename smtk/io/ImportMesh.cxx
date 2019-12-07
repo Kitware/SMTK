@@ -29,13 +29,9 @@ namespace smtk
 namespace io
 {
 
-ImportMesh::ImportMesh()
-{
-}
+ImportMesh::ImportMesh() = default;
 
-ImportMesh::~ImportMesh()
-{
-}
+ImportMesh::~ImportMesh() = default;
 
 std::vector<smtk::io::mesh::MeshIOPtr>& ImportMesh::SupportedIOTypes()
 {

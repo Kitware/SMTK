@@ -29,13 +29,9 @@ struct vtkInformationKeyMapInternals
 vtkInformationKeyMapInternals vtkInformationKeyMapKeys;
 }
 
-vtkInformationKeyMap::vtkInformationKeyMap()
-{
-}
+vtkInformationKeyMap::vtkInformationKeyMap() = default;
 
-vtkInformationKeyMap::~vtkInformationKeyMap()
-{
-}
+vtkInformationKeyMap::~vtkInformationKeyMap() = default;
 
 void vtkInformationKeyMap::RegisterKey(vtkInformationKey* key)
 {
@@ -50,7 +46,7 @@ vtkInformationKey* vtkInformationKeyMap::FindKey(const char* name)
   {
     return iter->second;
   }
-  return 0;
+  return nullptr;
 }
 
 std::string vtkInformationKeyMap::GetFullName(vtkInformationKey* key)

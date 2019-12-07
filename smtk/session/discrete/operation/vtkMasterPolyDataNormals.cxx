@@ -31,8 +31,8 @@ namespace
 
 struct Storage
 {
-  Storage() {}
-  virtual ~Storage() {}
+  Storage() = default;
+  virtual ~Storage() = default;
   virtual int value(int pos) = 0;
 };
 
@@ -40,7 +40,7 @@ template <typename vtkArrayType>
 struct vtkArrayStorage : public Storage
 {
   vtkArrayStorage(vtkDataArray* array) { this->Array = vtkArrayType::SafeDownCast(array); }
-  ~vtkArrayStorage() override { this->Array = NULL; }
+  ~vtkArrayStorage() override { this->Array = nullptr; }
   int value(int pos) override { return static_cast<int>(this->Array->GetValue(pos)); }
 private:
   vtkArrayType* Array;
@@ -51,7 +51,7 @@ struct vtkArrayStorage<vtkDataArray> : public Storage
 {
   vtkArrayStorage(vtkDataArray* array) { this->Array = array; }
 
-  ~vtkArrayStorage() override { this->Array = NULL; }
+  ~vtkArrayStorage() override { this->Array = nullptr; }
   int value(int pos) override { return static_cast<int>(this->Array->GetTuple1(pos)); }
 
 private:
@@ -88,13 +88,9 @@ private:
 //int or id type array
 }
 
-vtkMasterPolyDataNormals::vtkMasterPolyDataNormals()
-{
-}
+vtkMasterPolyDataNormals::vtkMasterPolyDataNormals() = default;
 
-vtkMasterPolyDataNormals::~vtkMasterPolyDataNormals()
-{
-}
+vtkMasterPolyDataNormals::~vtkMasterPolyDataNormals() = default;
 
 int vtkMasterPolyDataNormals::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
@@ -147,8 +143,8 @@ int vtkMasterPolyDataNormals::RequestData(vtkInformation* vtkNotUsed(request),
   vtkNew<vtkPolyData> workingPD;
   workingPD->ShallowCopy(input);
   // per chance there are any Verts or Lines, want to ignore them
-  workingPD->SetVerts(0);
-  workingPD->SetLines(0);
+  workingPD->SetVerts(nullptr);
+  workingPD->SetLines(nullptr);
   workingPD->BuildCells();
 
   // keep track of which polys have been processed

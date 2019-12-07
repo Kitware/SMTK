@@ -22,9 +22,7 @@ namespace smtk
 namespace resource
 {
 
-GarbageCollector::GarbageCollector()
-{
-}
+GarbageCollector::GarbageCollector() = default;
 
 GarbageCollector::~GarbageCollector()
 {

@@ -385,7 +385,7 @@ enum class Action
   QUERY
 };
 
-static std::set<std::string> emptyTagValues;
+std::set<std::string> emptyTagValues;
 
 bool actOnTag(Operation::Specification specification, const std::string& tagName, Action action,
   const std::set<std::string>& tagValues)

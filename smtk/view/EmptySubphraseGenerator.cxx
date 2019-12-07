@@ -11,9 +11,7 @@
 
 using namespace smtk::view;
 
-EmptySubphraseGenerator::EmptySubphraseGenerator()
-{
-}
+EmptySubphraseGenerator::EmptySubphraseGenerator() = default;
 
 DescriptivePhrases EmptySubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
 {

@@ -27,7 +27,7 @@ struct MyBase
     : value(val)
   {
   }
-  virtual ~MyBase() {}
+  virtual ~MyBase() = default;
   std::string value;
 };
 
@@ -138,7 +138,7 @@ struct MyMoveOnlyBase
     : value(val)
   {
   }
-  virtual ~MyMoveOnlyBase() {}
+  virtual ~MyMoveOnlyBase() = default;
   std::string value;
 };
 }

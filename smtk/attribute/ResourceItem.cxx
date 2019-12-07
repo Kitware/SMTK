@@ -28,9 +28,7 @@ ResourceItem::ResourceItem(Item* inOwningItem, int itemPosition, int mySubGroupP
 {
 }
 
-ResourceItem::~ResourceItem()
-{
-}
+ResourceItem::~ResourceItem() = default;
 
 Item::Type ResourceItem::type() const
 {

@@ -18,13 +18,9 @@
 
 vtkStandardNewMacro(vtkCreateModelEdgesOperationBase);
 
-vtkCreateModelEdgesOperationBase::vtkCreateModelEdgesOperationBase()
-{
-}
+vtkCreateModelEdgesOperationBase::vtkCreateModelEdgesOperationBase() = default;
 
-vtkCreateModelEdgesOperationBase::~vtkCreateModelEdgesOperationBase()
-{
-}
+vtkCreateModelEdgesOperationBase::~vtkCreateModelEdgesOperationBase() = default;
 
 bool vtkCreateModelEdgesOperationBase::AbleToOperate(vtkDiscreteModel* Model)
 {

@@ -19,9 +19,7 @@ VoidItemDefinition::VoidItemDefinition(const std::string& myName)
 {
 }
 
-VoidItemDefinition::~VoidItemDefinition()
-{
-}
+VoidItemDefinition::~VoidItemDefinition() = default;
 
 smtk::attribute::ItemPtr VoidItemDefinition::buildItem(
   Attribute* owningAttribute, int itemPosition) const

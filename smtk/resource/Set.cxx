@@ -19,9 +19,7 @@ namespace resource
 typedef Set::Role Role;
 typedef Set::State State;
 
-Set::Set()
-{
-}
+Set::Set() = default;
 
 Set::~Set()
 {
@@ -37,7 +35,7 @@ bool Set::add(ResourcePtr resource, std::string id, std::string link, Role role)
 {
   // Check that id not already in use
   Wrapper* wrapper = this->getWrapper(id);
-  if (wrapper != NULL)
+  if (wrapper != nullptr)
   {
     std::cerr << "ERROR: Id " << id << " already in use" << std::endl;
     return false;
@@ -62,7 +60,7 @@ bool Set::addInfo(const std::string id, Role role, State state, std::string link
 {
   // Check that id not already in use
   Wrapper* wrapper = this->getWrapper(id);
-  if (wrapper != NULL)
+  if (wrapper != nullptr)
   {
     std::cerr << "ERROR: Id " << id << " already in use" << std::endl;
     return false;
@@ -117,7 +115,7 @@ bool Set::resourceInfo(std::string id, Role& role, State& state, std::string& li
 {
   // Get wrapper from resource map
   Wrapper* wrapper = this->getWrapper(id);
-  if (wrapper == NULL)
+  if (wrapper == nullptr)
   {
     std::cerr << "Id " << id << " not found" << std::endl;
     return false;
@@ -133,7 +131,7 @@ bool Set::get(std::string id, ResourcePtr& resource) const
 {
   // Get wrapper from resource map
   Wrapper* wrapper = this->getWrapper(id);
-  if (wrapper == NULL)
+  if (wrapper == nullptr)
   {
     std::cerr << "Id " << id << " not found" << std::endl;
     return false;
@@ -149,7 +147,7 @@ Wrapper* Set::getWrapper(std::string id) const
   std::map<std::string, Wrapper*>::const_iterator iter = m_resourceMap.find(id);
   if (iter == m_resourceMap.end())
   {
-    return NULL;
+    return nullptr;
   }
 
   return iter->second;

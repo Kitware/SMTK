@@ -45,7 +45,7 @@ vtkStandardNewMacro(vtkCMBMapReader);
 
 vtkCMBMapReader::vtkCMBMapReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->NumArcs = 0;
   this->SetNumberOfInputPorts(0);
   this->ArcIds = vtkIntArray::New();
@@ -53,11 +53,11 @@ vtkCMBMapReader::vtkCMBMapReader()
 
 vtkCMBMapReader::~vtkCMBMapReader()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
   if (this->ArcIds)
   {
     this->ArcIds->Delete();
-    this->ArcIds = NULL;
+    this->ArcIds = nullptr;
   }
 }
 //
@@ -100,7 +100,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
 
     /*Setup variables*/
     std::stringstream line(std::stringstream::in | std::stringstream::out);
-    std::string card = "";
+    std::string card;
 
     vtkPoints* points = vtkPoints::New();
     vtkCellArray* verts = vtkCellArray::New();
@@ -441,7 +441,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
 
       //we know know the polygon id
       //update the loop table with polygon information
-      if (outerLoopIndexes.size() > 0)
+      if (!outerLoopIndexes.empty())
       {
         mapInterface->AddLoopWithArcs(id, true, outerLoopIndexes);
       }

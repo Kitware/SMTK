@@ -21,9 +21,7 @@ qtTableWidget::qtTableWidget(QWidget* p)
   this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
-qtTableWidget::~qtTableWidget()
-{
-}
+qtTableWidget::~qtTableWidget() = default;
 
 void qtTableWidget::keyPressEvent(QKeyEvent* e)
 {

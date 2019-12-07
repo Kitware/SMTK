@@ -70,7 +70,7 @@ vtkModelItem* vtkModelItemGenericIterator::GetCurrentItem()
     return this->Internal->Iterator->GetPointer();
   }
 
-  return 0;
+  return nullptr;
 }
 
 void vtkModelItemGenericIterator::AddModelItem(vtkModelItem* modelItem)

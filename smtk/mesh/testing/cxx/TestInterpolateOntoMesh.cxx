@@ -245,7 +245,7 @@ int main(int argc, char* argv[])
     fromCSV = std::atoi(argv[3]) == 1;
   }
 
-  std::string write_path = "";
+  std::string write_path;
   if (fromCSV)
   {
     write_path = std::string(write_root + "/" + smtk::common::UUID::random().toString() + ".csv");

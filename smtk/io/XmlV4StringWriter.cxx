@@ -28,9 +28,7 @@ XmlV4StringWriter::XmlV4StringWriter(
 {
 }
 
-XmlV4StringWriter::~XmlV4StringWriter()
-{
-}
+XmlV4StringWriter::~XmlV4StringWriter() = default;
 
 std::string XmlV4StringWriter::className() const
 {

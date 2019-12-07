@@ -49,7 +49,7 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include <math.h>
+#include <cmath>
 
 #if defined(SMTK_MSVC) && _MSC_VER <= 1500
 #include <float.h>
@@ -470,7 +470,7 @@ void qtInputsItem::addInputEditor(int i)
   {
     return;
   }
-  QBoxLayout* childLayout = NULL;
+  QBoxLayout* childLayout = nullptr;
   if (item->isDiscrete())
   {
     childLayout = new QVBoxLayout;
@@ -847,7 +847,7 @@ void qtInputsItem::clearChildWidgets()
     if (childLayout)
     {
       QLayoutItem* child;
-      while ((child = childLayout->takeAt(0)) != 0)
+      while ((child = childLayout->takeAt(0)) != nullptr)
       {
         delete child;
       }
@@ -864,7 +864,7 @@ QWidget* qtInputsItem::createInputWidget(int elementIdx, QLayout* childLayout)
   smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
   if (!item)
   {
-    return NULL;
+    return nullptr;
   }
 
   if (item->allowsExpressions())
@@ -888,7 +888,7 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
   smtk::attribute::ValueItemPtr inputitem = m_itemInfo.itemAs<ValueItem>();
   if (!inputitem)
   {
-    return NULL;
+    return nullptr;
   }
 
   QFrame* checkFrame = new QFrame(m_widget);
@@ -1388,10 +1388,10 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
   qtUIManager* uimanager = m_itemInfo.uiManager();
   if (!item)
   {
-    return NULL;
+    return nullptr;
   }
 
-  QWidget* inputWidget = NULL;
+  QWidget* inputWidget = nullptr;
   QVariant vdata(elementIdx);
   QString tooltip;
 
@@ -1466,7 +1466,7 @@ QWidget* qtInputsItem::createEditBox(int elementIdx, QWidget* pWidget)
 
   if (!inputWidget)
   {
-    return NULL;
+    return nullptr;
   }
 
   inputWidget->setProperty("ElementIndex", vdata);
@@ -1623,7 +1623,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     return;
   }
   QWidget* inputBox;
-  if (editBox != NULL)
+  if (editBox != nullptr)
   {
     inputBox = editBox;
   }

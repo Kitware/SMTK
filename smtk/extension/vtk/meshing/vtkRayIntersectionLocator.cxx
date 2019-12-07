@@ -33,13 +33,9 @@ typedef std::stack<vtkRayIntersectionLocator::vtkCellTreeNode*,
 
 vtkStandardNewMacro(vtkRayIntersectionLocator);
 
-vtkRayIntersectionLocator::vtkRayIntersectionLocator()
-{
-}
+vtkRayIntersectionLocator::vtkRayIntersectionLocator() = default;
 
-vtkRayIntersectionLocator::~vtkRayIntersectionLocator()
-{
-}
+vtkRayIntersectionLocator::~vtkRayIntersectionLocator() = default;
 
 void vtkRayIntersectionLocator::PrintSelf(ostream& os, vtkIndent indent)
 {

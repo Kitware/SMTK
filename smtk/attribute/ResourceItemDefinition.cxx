@@ -26,9 +26,7 @@ ResourceItemDefinition::ResourceItemDefinition(const std::string& sname)
 }
 
 /// Destructor.
-ResourceItemDefinition::~ResourceItemDefinition()
-{
-}
+ResourceItemDefinition::~ResourceItemDefinition() = default;
 
 /// Return the type of storage used by items defined by this class.
 Item::Type ResourceItemDefinition::type() const

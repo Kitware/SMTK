@@ -51,9 +51,7 @@ vtkCmbLayeredConeSource::vtkCmbLayeredConeSource()
   this->GenerateEnds = 1;
 }
 
-vtkCmbLayeredConeSource::~vtkCmbLayeredConeSource()
-{
-}
+vtkCmbLayeredConeSource::~vtkCmbLayeredConeSource() = default;
 
 void vtkCmbLayeredConeSource::SetNumberOfLayers(int layers)
 {
@@ -115,17 +113,17 @@ double vtkCmbLayeredConeSource::GetBaseRadius(int layer, int s)
 vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateUnitLayer(int l)
 {
   if (l < 0)
-    return NULL;
+    return nullptr;
   if (l >= this->GetNumberOfLayers())
-    return NULL;
+    return nullptr;
 
   int innerRes = 0;
   int outerRes = 0;
   double one[] = { 1, 1 };
-  double* innerBottomR = NULL;
-  double* innerTopR = NULL;
-  double* outerBottomR = NULL;
-  double* outerTopR = NULL;
+  double* innerBottomR = nullptr;
+  double* innerTopR = nullptr;
+  double* outerBottomR = nullptr;
+  double* outerTopR = nullptr;
 
   outerBottomR = this->LayerRadii[l].BaseRadii;
   outerTopR = this->LayerRadii[l].TopRadii;
@@ -159,8 +157,8 @@ vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateBoundaryLayer(double
 {
   int innerRes = 0;
   int outerRes = 0;
-  double* innerBottomR = NULL;
-  double* innerTopR = NULL;
+  double* innerBottomR = nullptr;
+  double* innerTopR = nullptr;
   innerBottomR = this->LayerRadii[l].BaseRadii;
   innerTopR = this->LayerRadii[l].TopRadii;
   outerRes = innerRes = this->LayerRadii[l].Resolution;
@@ -385,10 +383,10 @@ vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(double h, doub
   double* outerBottomR, double* innerTopR, double* outerTopR, int innerRes, int outerRes,
   bool lines)
 {
-  if (outerTopR == NULL || outerBottomR == NULL)
-    return NULL;
+  if (outerTopR == nullptr || outerBottomR == nullptr)
+    return nullptr;
   if (outerRes == 0)
-    return NULL;
+    return nullptr;
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
   polyData->Allocate();
 

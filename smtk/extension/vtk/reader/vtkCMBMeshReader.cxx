@@ -39,17 +39,17 @@ struct vtkCMBMeshReaderInternals
   std::stringstream* Line;
 
   vtkCMBMeshReaderInternals()
-    : Stream(0)
-    , Line(0)
+    : Stream(nullptr)
+    , Line(nullptr)
   {
   }
   ~vtkCMBMeshReaderInternals() { this->DeleteStreams(); }
   void DeleteStreams()
   {
     delete this->Stream;
-    this->Stream = 0;
+    this->Stream = nullptr;
     delete this->Line;
-    this->Line = 0;
+    this->Line = nullptr;
   }
   void ReadLine()
   {
@@ -66,7 +66,7 @@ struct vtkCMBMeshReaderInternals
 
 vtkCMBMeshReader::vtkCMBMeshReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->CreateMeshElementIdArray = false;
   this->CreateMeshMaterialIdArray = true;
   this->CreateMeshNodeIdArray = false;
@@ -198,7 +198,7 @@ int vtkCMBMeshReader::RequestData(vtkInformation* vtkNotUsed(request),
   pts->Delete();
   vtkDoubleArray* dpts = vtkDoubleArray::SafeDownCast(pts->GetData());
 
-  vtkIdTypeArray* nodeIdArray = NULL;
+  vtkIdTypeArray* nodeIdArray = nullptr;
   if (this->CreateMeshNodeIdArray)
   {
     nodeIdArray = vtkIdTypeArray::New();
@@ -208,7 +208,7 @@ int vtkCMBMeshReader::RequestData(vtkInformation* vtkNotUsed(request),
     nodeIdArray->Delete();
   }
 
-  vtkIntArray* cellMaterialArray = NULL;
+  vtkIntArray* cellMaterialArray = nullptr;
   if (CreateMeshMaterialIdArray)
   {
     cellMaterialArray = vtkIntArray::New();
@@ -219,7 +219,7 @@ int vtkCMBMeshReader::RequestData(vtkInformation* vtkNotUsed(request),
     cellMaterialArray->Delete();
   }
 
-  vtkIdTypeArray* cellIdArray = NULL;
+  vtkIdTypeArray* cellIdArray = nullptr;
   if (CreateMeshElementIdArray)
   {
     cellIdArray = vtkIdTypeArray::New();
@@ -325,7 +325,7 @@ int vtkCMBMeshReader::CanReadFile(const char* fname)
 
 int vtkCMBMeshReader::PreviewFile(vtkIdType& ncells, vtkIdType& npts)
 {
-  std::string card = "";
+  std::string card;
   vtkIdType id = -1, maxPt = -1, maxCell = -1, line = 0;
 
   ncells = npts = 0;

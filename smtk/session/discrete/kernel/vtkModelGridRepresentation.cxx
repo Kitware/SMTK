@@ -12,24 +12,24 @@
 
 vtkModelGridRepresentation::vtkModelGridRepresentation()
 {
-  this->GridFileName = NULL;
-  this->ModelInfoFileName = NULL;
+  this->GridFileName = nullptr;
+  this->ModelInfoFileName = nullptr;
 }
 
 vtkModelGridRepresentation::~vtkModelGridRepresentation()
 {
-  this->SetGridFileName(NULL);
-  this->SetModelInfoFileName(NULL);
+  this->SetGridFileName(nullptr);
+  this->SetModelInfoFileName(nullptr);
 }
 
 void vtkModelGridRepresentation::Reset()
 {
-  this->SetGridFileName(NULL);
-  this->SetModelInfoFileName(NULL);
+  this->SetGridFileName(nullptr);
+  this->SetModelInfoFileName(nullptr);
 }
 bool vtkModelGridRepresentation::IsSameModelInfoFile(const char* filename)
 {
-  if ((this->ModelInfoFileName == NULL && filename == NULL) ||
+  if ((this->ModelInfoFileName == nullptr && filename == nullptr) ||
     (this->ModelInfoFileName && filename && !strcmp(this->ModelInfoFileName, filename)))
   {
     return true;

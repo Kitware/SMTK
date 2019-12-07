@@ -34,9 +34,9 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include <errno.h>
-#include <inttypes.h>
-#include <stdlib.h>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdlib>
 
 using namespace smtk::model;
 
@@ -47,8 +47,8 @@ smtkImplementTracksAllInstances(vtkModelAuxiliaryGeometry);
 vtkModelAuxiliaryGeometry::vtkModelAuxiliaryGeometry()
 {
   this->SetNumberOfInputPorts(0);
-  this->CachedOutput = NULL;
-  this->AuxiliaryEntityID = NULL;
+  this->CachedOutput = nullptr;
+  this->AuxiliaryEntityID = nullptr;
   this->linkInstance();
   this->AuxGeomHelper = vtkAuxiliaryGeometryExtension::create();
 }
@@ -56,8 +56,8 @@ vtkModelAuxiliaryGeometry::vtkModelAuxiliaryGeometry()
 vtkModelAuxiliaryGeometry::~vtkModelAuxiliaryGeometry()
 {
   this->unlinkInstance();
-  this->SetCachedOutput(NULL);
-  this->SetAuxiliaryEntityID(NULL);
+  this->SetCachedOutput(nullptr);
+  this->SetAuxiliaryEntityID(nullptr);
 }
 
 void vtkModelAuxiliaryGeometry::PrintSelf(ostream& os, vtkIndent indent)
@@ -91,7 +91,7 @@ void vtkModelAuxiliaryGeometry::Dirty()
   // This both clears the output and marks this filter
   // as modified so that RequestData() will run the next
   // time the representation is updated:
-  this->SetCachedOutput(NULL);
+  this->SetCachedOutput(nullptr);
 }
 
 // Fill in the WholeExtent and spacing information from the image block
@@ -155,7 +155,7 @@ int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* vtkNotUsed(request),
   // Destroy the cache if the parameters have changed since it was generated.
   if (this->CachedOutput && this->GetMTime() > this->CachedOutput->GetMTime())
   {
-    this->SetCachedOutput(NULL);
+    this->SetCachedOutput(nullptr);
   }
 
   if (!this->CachedOutput)

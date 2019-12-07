@@ -30,7 +30,7 @@ public:
     this->BaseWidget = parentW ? qobject_cast<QComboBox*>(parentW) : NULL;
     ;
   }
-  ~PIMPL() {}
+  ~PIMPL() = default;
   QPointer<QComboBox> BaseWidget;
 };
 

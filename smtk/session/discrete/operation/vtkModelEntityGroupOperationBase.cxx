@@ -35,12 +35,12 @@ vtkModelEntityGroupOperationBase::~vtkModelEntityGroupOperationBase()
   if (this->EntitiesToAdd)
   {
     this->EntitiesToAdd->Delete();
-    this->EntitiesToAdd = 0;
+    this->EntitiesToAdd = nullptr;
   }
   if (this->EntitiesToRemove)
   {
     this->EntitiesToRemove->Delete();
-    this->EntitiesToRemove = 0;
+    this->EntitiesToRemove = nullptr;
   }
 }
 
@@ -176,7 +176,7 @@ vtkIdType vtkModelEntityGroupOperationBase::Build(vtkDiscreteModel* Model)
     this->SetBuildEnityType(vtkModelEdgeType);
   }
   vtkDiscreteModelEntityGroup* EntityGroup =
-    Model->BuildModelEntityGroup(this->BuildEnityType, 0, 0);
+    Model->BuildModelEntityGroup(this->BuildEnityType, 0, nullptr);
   return EntityGroup->GetUniquePersistentId();
 }
 

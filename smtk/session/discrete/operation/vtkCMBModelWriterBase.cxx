@@ -27,14 +27,14 @@ vtkStandardNewMacro(vtkCMBModelWriterBase);
 
 vtkCMBModelWriterBase::vtkCMBModelWriterBase()
 {
-  this->FileName = 0;
+  this->FileName = nullptr;
   this->Version = this->GetCurrentVersion();
   this->OperateSucceeded = 0;
 }
 
 vtkCMBModelWriterBase::~vtkCMBModelWriterBase()
 {
-  this->SetFileName(0);
+  this->SetFileName(nullptr);
 }
 
 void vtkCMBModelWriterBase::Operate(
@@ -61,7 +61,7 @@ void vtkCMBModelWriterBase::Write(
 
   // Note that all writers are currently derived from the
   // V2 version
-  vtkCMBModelWriterV2* writer = 0;
+  vtkCMBModelWriterV2* writer = nullptr;
 
   if (!model)
   {

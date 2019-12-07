@@ -34,7 +34,7 @@ using namespace smtk::model;
 
 namespace
 {
-static void RetrievePreservedUUID(vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)
+void RetrievePreservedUUID(vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)
 {
   if (!data)
     return;
@@ -44,8 +44,7 @@ static void RetrievePreservedUUID(vtkDataObject* data, std::vector<smtk::common:
     smtk::common::UUID(std::string(info->Get(smtk::session::vtk::Session::SMTK_UUID_KEY()))));
 }
 
-static void RetrievePreservedUUIDsRecursive(
-  vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)
+void RetrievePreservedUUIDsRecursive(vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)
 {
   RetrievePreservedUUID(data, uuids);
 

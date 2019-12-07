@@ -59,9 +59,7 @@ qtArcWidget::qtArcWidget(QWidget* parentWdg)
     this->widgetProxy(), vtkCommand::EndInteractionEvent, this, SLOT(checkContourLoopClosed()));
 }
 
-qtArcWidget::~qtArcWidget()
-{
-}
+qtArcWidget::~qtArcWidget() = default;
 
 void qtArcWidget::enableApplyButton(bool state)
 {
@@ -170,7 +168,7 @@ void qtArcWidget::updateMode()
 void qtArcWidget::finishContour()
 {
   vtkSMNewWidgetRepresentationProxy* widget = this->widgetProxy();
-  widget->GetWidget()->InvokeEvent(vtkCommand::EndInteractionEvent, NULL);
+  widget->GetWidget()->InvokeEvent(vtkCommand::EndInteractionEvent, nullptr);
   emit this->contourDone();
 }
 

@@ -59,8 +59,8 @@
 #include <iostream>
 #include <string>
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 using namespace smtk::extension;
 
@@ -69,9 +69,7 @@ qtEventFilter::qtEventFilter(QObject* parent)
 {
 }
 
-qtEventFilter::~qtEventFilter()
-{
-}
+qtEventFilter::~qtEventFilter() = default;
 
 bool qtEventFilter::eventFilter(QObject* src, QEvent* event)
 {
@@ -452,5 +450,5 @@ int unitQtComponentItem(int argc, char* argv[])
     QTimer::singleShot(1, qApp, SLOT(closeAllWindows()));
   }
 
-  return app.exec();
+  return QApplication::exec();
 }

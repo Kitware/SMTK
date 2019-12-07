@@ -26,7 +26,7 @@ namespace source
 
 namespace
 {
-static bool registered = SourceFromMesh::registerClass();
+bool registered = SourceFromMesh::registerClass();
 }
 
 bool SourceFromMesh::valid(const smtk::resource::ResourcePtr& resource) const

@@ -51,8 +51,8 @@ pqPolygonArc::pqPolygonArc(QObject* prnt)
   : QObject(prnt)
 {
   //for an arc the source is actually the arc provider not the arc itself
-  this->Source = NULL;
-  this->ArcInfo = NULL;
+  this->Source = nullptr;
+  this->ArcInfo = nullptr;
   m_currentModelId = smtk::common::UUID::null();
   this->PlaneProjectionNormal = 2;
   this->PlaneProjectionPosition = 0;
@@ -83,7 +83,7 @@ inline vtkSMProxy* internal_createVTKEdgeOperation(vtkSMNewWidgetRepresentationP
   vtkSMProxy* smPolyEdgeOp =
     vtkSMProxyManager::GetProxyManager()->NewProxy("polygon_operators", "PolygonArcOperation");
   if (!smPolyEdgeOp)
-    return NULL;
+    return nullptr;
   smPolyEdgeOp->UpdateVTKObjects();
 
   // create the vtkPolygonArcOperation proxy, and set its ArcRepresentation with
@@ -100,16 +100,16 @@ inline vtkSMProxy* internal_createVTKEdgeOperation(vtkSMNewWidgetRepresentationP
 vtkSMProxy* pqPolygonArc::prepareOperation(vtkSMNewWidgetRepresentationProxy* widgetProxy)
 {
   if (!widgetProxy || !this->edgeOperation())
-    return NULL;
+    return nullptr;
   smtk::attribute::AttributePtr spec = this->edgeOperation()->parameters();
   if (spec->type() != "tweak edge" && spec->type() != "create edge")
-    return NULL;
+    return nullptr;
   smtk::attribute::IntItem::Ptr opProxyIdItem = spec->findInt("HelperGlobalID");
   if (!opProxyIdItem)
-    return NULL;
+    return nullptr;
   vtkSMProxy* smPolyEdgeOp = internal_createVTKEdgeOperation(widgetProxy);
   if (!smPolyEdgeOp)
-    return NULL;
+    return nullptr;
   // Now set the GlobalId of smPolyEdgeOp proxy to the edge op, and later
   // on the GlobalId will be used to find the proxy
   // for Create and Edit operation, we need arc source
@@ -241,7 +241,7 @@ vtkPolygonArcInfo* pqPolygonArc::getArcInfo(int blockIndex)
 void pqPolygonArc::resetOperationSource()
 {
   // need to reset
-  this->Source = NULL;
+  this->Source = nullptr;
   m_currentModelId = smtk::common::UUID::null();
   // the Source should always reference to the source for the referenced model,
   // which should be activated by emitting activateModel()

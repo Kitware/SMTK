@@ -25,7 +25,7 @@ namespace
 class TimeZoneRegionProxyModel : public QSortFilterProxyModel
 {
 public:
-  TimeZoneRegionProxyModel(QObject* parent = NULL)
+  TimeZoneRegionProxyModel(QObject* parent = nullptr)
     : QSortFilterProxyModel(parent)
   {
   }
@@ -145,7 +145,7 @@ void qtTimeZoneSelectWidget::onContinentChanged(
   (void)deselected;
 
   //qDebug() << "onContinentChanged";
-  if (selected.size() == 0)
+  if (selected.empty())
   {
     return; // deselected case
   }

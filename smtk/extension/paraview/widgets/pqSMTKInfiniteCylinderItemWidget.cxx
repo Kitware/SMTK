@@ -44,9 +44,7 @@ pqSMTKInfiniteCylinderItemWidget::pqSMTKInfiniteCylinderItemWidget(
   this->createWidget();
 }
 
-pqSMTKInfiniteCylinderItemWidget::~pqSMTKInfiniteCylinderItemWidget()
-{
-}
+pqSMTKInfiniteCylinderItemWidget::~pqSMTKInfiniteCylinderItemWidget() = default;
 
 qtItem* pqSMTKInfiniteCylinderItemWidget::createCylinderItemWidget(const qtAttributeItemInfo& info)
 {

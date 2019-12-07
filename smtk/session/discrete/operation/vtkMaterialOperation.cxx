@@ -26,9 +26,7 @@ vtkMaterialOperation::vtkMaterialOperation()
   this->DestroySucceeded = 0;
 }
 
-vtkMaterialOperation::~vtkMaterialOperation()
-{
-}
+vtkMaterialOperation::~vtkMaterialOperation() = default;
 
 bool vtkMaterialOperation::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
 {

@@ -67,7 +67,7 @@ smtk::attribute::DefinitionPtr Resource::createDefinition(
   }
 
   // If baseTypeName is not empty then it better exist
-  if (baseTypeName != "")
+  if (!baseTypeName.empty())
   {
     def = this->findDefinition(baseTypeName);
     if (!def)
@@ -118,7 +118,7 @@ bool Resource::removeDefinition(DefinitionPtr def)
   }
 
   const auto childrenIt = m_derivedDefInfo.find(def);
-  const bool hasChildren = childrenIt != m_derivedDefInfo.cend() && (*childrenIt).second.size() > 0;
+  const bool hasChildren = childrenIt != m_derivedDefInfo.cend() && !(*childrenIt).second.empty();
   if (hasChildren)
   {
     std::cerr << "ERROR: Removing base Definition instances is not"
@@ -589,7 +589,7 @@ const double* Resource::advanceLevelColor(int level) const
   {
     return &it->second[0];
   }
-  return NULL;
+  return nullptr;
 }
 
 void Resource::setAdvanceLevelColor(int level, const double* l_color)

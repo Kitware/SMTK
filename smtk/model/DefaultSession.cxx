@@ -20,9 +20,7 @@ namespace model
 {
 
 /// Default constructor. Initializes statically-registered operators.
-DefaultSession::DefaultSession()
-{
-}
+DefaultSession::DefaultSession() = default;
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.
 SessionInfoBits DefaultSession::transcribeInternal(

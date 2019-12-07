@@ -73,7 +73,7 @@ QTextStream::RealNumberNotation toTextStreamNotation(qtDoubleLineEdit::RealNumbe
 
 //-----------------------------------------------------------------------------
 using InstanceTrackerType = QList<qtDoubleLineEdit*>;
-static InstanceTrackerType* InstanceTracker = nullptr;
+InstanceTrackerType* InstanceTracker = nullptr;
 
 //-----------------------------------------------------------------------------
 void register_dle_instance(qtDoubleLineEdit* dle)
@@ -89,7 +89,7 @@ void unregister_dle_instance(qtDoubleLineEdit* dle)
 {
   assert(InstanceTracker != nullptr);
   InstanceTracker->removeOne(dle);
-  if (InstanceTracker->size() == 0)
+  if (InstanceTracker->empty())
   {
     delete InstanceTracker;
     InstanceTracker = nullptr;

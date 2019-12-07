@@ -34,9 +34,7 @@ ValueItemDefinition::ValueItemDefinition(const std::string& myName)
   m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
-ValueItemDefinition::~ValueItemDefinition()
-{
-}
+ValueItemDefinition::~ValueItemDefinition() = default;
 
 bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
@@ -122,14 +120,14 @@ bool ValueItemDefinition::isValidExpression(const smtk::attribute::AttributePtr&
 
 bool ValueItemDefinition::allowsExpressions() const
 {
-  return (m_expressionType != "");
+  return (!m_expressionType.empty());
 }
 
 void ValueItemDefinition::setExpressionDefinition(const smtk::attribute::DefinitionPtr& exp)
 {
   if (exp == nullptr)
   {
-    if (m_expressionType != "")
+    if (!m_expressionType.empty())
     {
       m_expressionType = "";
       m_expressionDefinition->clearAcceptableEntries();
@@ -148,7 +146,7 @@ void ValueItemDefinition::setExpressionDefinition(const smtk::attribute::Definit
 smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition(
   const smtk::attribute::ResourcePtr& attResource) const
 {
-  if (m_expressionType == "")
+  if (m_expressionType.empty())
   {
     return nullptr;
   }
@@ -302,7 +300,7 @@ void ValueItemDefinition::copyTo(
 
   ItemDefinition::copyTo(def);
 
-  if (m_units != "")
+  if (!m_units.empty())
   {
     def->setUnits(m_units);
   }
@@ -343,7 +341,7 @@ void ValueItemDefinition::copyTo(
   }
 
   // Add children item definitions
-  if (m_itemDefs.size() > 0)
+  if (!m_itemDefs.empty())
   {
     std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator itemDefMapIter =
       m_itemDefs.begin();
@@ -355,7 +353,7 @@ void ValueItemDefinition::copyTo(
   }
 
   // Add condition items
-  if (m_valueToItemAssociations.size() > 0)
+  if (!m_valueToItemAssociations.empty())
   {
     std::map<std::string, std::vector<std::string> >::const_iterator mapIter =
       m_valueToItemAssociations.begin();

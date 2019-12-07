@@ -126,7 +126,7 @@ int main()
     cellType = tess.cellType(i);
     materialId = tess.materialIdOfCell(i);
     std::cout << "Cell " << cellId << ": type " << cellType << " off " << i << " # "
-              << tess.numberOfCellVertices(i, NULL) << " mat " << tess.materialIdOfCell(i)
+              << tess.numberOfCellVertices(i, nullptr) << " mat " << tess.materialIdOfCell(i)
               << "\n  conn";
     test(*ctcit == cellType, "Incorrect cell type.");
     test(*cmcit == materialId, "Incorrect cell material ID.");

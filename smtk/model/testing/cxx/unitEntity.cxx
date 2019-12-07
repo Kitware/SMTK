@@ -27,7 +27,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <assert.h>
+#include <cassert>
 
 using namespace smtk::common;
 using namespace smtk::model;

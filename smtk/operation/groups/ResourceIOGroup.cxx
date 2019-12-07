@@ -27,7 +27,7 @@ std::string ResourceIOGroup::fileItemNameForOperation(const std::string& typeNam
 
 std::string ResourceIOGroup::fileItemNameForOperation(const Operation::Index& index) const
 {
-  static const std::string nullString = "";
+  static const std::string nullString;
   auto manager = m_manager.lock();
   if (manager == nullptr)
   {

@@ -27,7 +27,7 @@ template <typename DefinitionPtrType>
 void buildAnalysisItemHelper(const Analyses::Analysis* analysis, DefinitionPtrType& def)
 {
   // Childless Analyses are represented as a Void Item
-  if (!analysis->children().size())
+  if (analysis->children().empty())
   {
     auto vitem = def->template addItemDefinition<VoidItemDefinition>(analysis->name());
     vitem->setIsOptional(!analysis->isRequired());
@@ -140,7 +140,7 @@ void Analyses::Analysis::buildAnalysisItem(GroupItemDefinitionPtr& pitem) const
 void Analyses::Analysis::buildAnalysisItem(StringItemDefinitionPtr& pitem) const
 {
   pitem->addDiscreteValue(m_name, this->displayedName());
-  if (!m_children.size())
+  if (m_children.empty())
   {
     return;
   }

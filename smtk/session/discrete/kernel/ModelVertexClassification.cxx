@@ -51,7 +51,7 @@ vtkDiscreteModelVertex* ModelVertexClassification::GetModelVertex(vtkIdType poin
 {
   typedef std::map<vtkIdType, Internals::ModelVertexInfo>::iterator iterator;
   iterator i = this->Internal->ModelVertInfo.find(pointId);
-  vtkDiscreteModelVertex* info = NULL;
+  vtkDiscreteModelVertex* info = nullptr;
   if (i != this->Internal->ModelVertInfo.end())
   {
     //iterator is key:value, we need the values second item
@@ -91,7 +91,7 @@ vtkDiscreteModelVertex* ModelVertexClassification::AddModelVertex(
   typedef std::map<vtkIdType, Internals::ModelVertexInfo>::iterator iterator;
   typedef std::pair<vtkIdType, Internals::ModelVertexInfo> insertPair;
 
-  vtkDiscreteModelVertex* emptyVertex = NULL;
+  vtkDiscreteModelVertex* emptyVertex = nullptr;
   Internals::ModelVertexInfo empty(-1, emptyVertex);
   insertPair insertedItem(pointId, empty);
 

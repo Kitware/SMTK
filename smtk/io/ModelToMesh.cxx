@@ -229,7 +229,7 @@ std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
     {
       Tess::size_type cell_type;
       Tess::size_type numVertsPerCell = tess->numberOfCellVertices(start_off, &cell_type);
-      Tess::size_type cell_shape = tess->cellShapeFromType(cell_type);
+      Tess::size_type cell_shape = Tess::cellShapeFromType(cell_type);
       if (cell_shape == smtk::model::TESS_VERTEX || cell_shape == smtk::model::TESS_TRIANGLE ||
         cell_shape == smtk::model::TESS_QUAD)
       {
@@ -281,7 +281,7 @@ std::map<smtk::model::EntityRef, smtk::mesh::HandleRange> convert_cells(
       //fetch the number of cell vertices, and the cell type in a single query
       Tess::size_type cell_type;
       Tess::size_type numVerts = tess->numberOfCellVertices(start_off, &cell_type);
-      Tess::size_type cell_shape = tess->cellShapeFromType(cell_type);
+      Tess::size_type cell_shape = Tess::cellShapeFromType(cell_type);
 
       //convert from tess type to smtk cell type
       const smtk::mesh::CellType cellType = tessToSMTKCell(cell_shape);
@@ -451,7 +451,7 @@ smtk::mesh::ResourcePtr ModelToMesh::operator()(const smtk::model::ResourcePtr& 
 
       EntityRefs currentModels =
         modelResource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::MODEL_ENTITY);
-      if (currentModels.size() > 0)
+      if (!currentModels.empty())
       {
         meshResource->associateToModel(currentModels.begin()->entity());
       }

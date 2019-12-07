@@ -26,14 +26,14 @@ vtkStandardNewMacro(vtkPolygonContourOperation);
 vtkCxxSetObjectMacro(vtkPolygonContourOperation, ContourInput, vtkPolyData);
 vtkPolygonContourOperation::vtkPolygonContourOperation()
 {
-  this->ContourInput = NULL;
+  this->ContourInput = nullptr;
   this->ImageBounds[0] = this->ImageBounds[2] = this->ImageBounds[4] = 0.0;
   this->ImageBounds[1] = this->ImageBounds[3] = this->ImageBounds[5] = -1.0;
 }
 
 vtkPolygonContourOperation::~vtkPolygonContourOperation()
 {
-  this->SetContourInput(NULL);
+  this->SetContourInput(nullptr);
 }
 
 bool vtkPolygonContourOperation::AbleToOperate()
@@ -47,7 +47,7 @@ bool vtkPolygonContourOperation::AbleToOperate()
   }
 
   //we need at least two point to create a valid edge
-  able2Op = this->ContourInput != NULL && this->ContourInput->GetNumberOfLines() > 0 &&
+  able2Op = this->ContourInput != nullptr && this->ContourInput->GetNumberOfLines() > 0 &&
     this->ContourInput->GetNumberOfPoints() >= 2;
 
   return able2Op;

@@ -19,9 +19,7 @@ DirectoryItemDefinition::DirectoryItemDefinition(const std::string& myName)
 {
 }
 
-DirectoryItemDefinition::~DirectoryItemDefinition()
-{
-}
+DirectoryItemDefinition::~DirectoryItemDefinition() = default;
 Item::Type DirectoryItemDefinition::type() const
 {
   return Item::DirectoryType;

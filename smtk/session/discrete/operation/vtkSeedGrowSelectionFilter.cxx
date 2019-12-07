@@ -87,14 +87,14 @@ vtkSeedGrowSelectionFilter::vtkSeedGrowSelectionFilter()
 
   this->Internal = new vtkInternal();
 
-  this->ModelWrapper = 0;
+  this->ModelWrapper = nullptr;
 }
 
 vtkSeedGrowSelectionFilter::~vtkSeedGrowSelectionFilter()
 {
   delete this->Internal;
 
-  this->SetModelWrapper(0);
+  this->SetModelWrapper(nullptr);
 }
 
 void vtkSeedGrowSelectionFilter::SetFaceCellId(vtkIdType faceId, vtkIdType cellId)
@@ -348,8 +348,8 @@ void vtkSeedGrowSelectionFilter::SetInputSelection(vtkSelection* inSelection)
 void vtkSeedGrowSelectionFilter::MergeGrowSelection(
   vtkSelection* selection, vtkIntArray* marked, vtkIdTypeArray* outSelectionList)
 {
-  vtkIdTypeArray* array = NULL;
-  vtkSelectionNode* selNode = NULL;
+  vtkIdTypeArray* array = nullptr;
+  vtkSelectionNode* selNode = nullptr;
   for (unsigned int ui = 0; ui < selection->GetNumberOfNodes(); ui++)
   {
     selNode = selection->GetNode(ui);

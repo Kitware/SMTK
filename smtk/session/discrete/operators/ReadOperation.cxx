@@ -47,9 +47,7 @@ namespace session
 namespace discrete
 {
 
-ReadOperation::ReadOperation()
-{
-}
+ReadOperation::ReadOperation() = default;
 
 bool ReadOperation::ableToOperate()
 {
@@ -71,7 +69,7 @@ ReadOperation::Result ReadOperation::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   m_op->SetFileName(fname.c_str());
-  std::string modelName = vtksys::SystemTools::GetFilenameWithoutExtension(fname.c_str());
+  std::string modelName = vtksys::SystemTools::GetFilenameWithoutExtension(fname);
 
   // There are three possible import modes
   //

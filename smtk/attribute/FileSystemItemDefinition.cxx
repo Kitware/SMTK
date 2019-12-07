@@ -30,9 +30,7 @@ FileSystemItemDefinition::FileSystemItemDefinition(const std::string& myName)
 {
 }
 
-FileSystemItemDefinition::~FileSystemItemDefinition()
-{
-}
+FileSystemItemDefinition::~FileSystemItemDefinition() = default;
 
 Item::Type FileSystemItemDefinition::type() const
 {
@@ -111,7 +109,7 @@ std::string FileSystemItemDefinition::valueLabel(std::size_t element) const
     assert(m_valueLabels.size() > 0);
     return m_valueLabels[0];
   }
-  if (m_valueLabels.size())
+  if (!m_valueLabels.empty())
   {
     assert(m_valueLabels.size() > element);
     return m_valueLabels[element];

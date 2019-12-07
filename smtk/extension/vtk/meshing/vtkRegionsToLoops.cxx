@@ -50,9 +50,7 @@ vtkRegionsToLoops::vtkRegionsToLoops()
   this->SetNumberOfInputPorts(3);
 }
 
-vtkRegionsToLoops::~vtkRegionsToLoops()
-{
-}
+vtkRegionsToLoops::~vtkRegionsToLoops() = default;
 
 void vtkRegionsToLoops::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -294,7 +292,7 @@ public:
     }
   }
 
-  Snippets() {}
+  Snippets() = default;
   Snippets(const Snippets& other)
     : Sets(other.Sets)
     , Uses(other.Uses)

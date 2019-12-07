@@ -159,7 +159,7 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
       smtk::model::MODEL_ENTITY, false);
 
     std::cout << "found " << models.size() << " models" << std::endl;
-    if (models.size() < 1)
+    if (models.empty())
       return 1;
 
     smtk::model::Model model = models[0];
@@ -205,7 +205,7 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
       smtk::model::MODEL_ENTITY, false);
 
     std::cout << "found " << models.size() << " models" << std::endl;
-    if (models.size() < 1)
+    if (models.empty())
       return 1;
 
     smtk::model::Model model2 = models[0];

@@ -50,13 +50,13 @@ vtkDiscreteModel::vtkDiscreteModel()
   // initialize bounds to be invalid
   this->ModelBounds[0] = this->ModelBounds[2] = this->ModelBounds[4] = 1;
   this->ModelBounds[1] = this->ModelBounds[3] = this->ModelBounds[5] = -1;
-  this->AnalysisGridInfo = NULL;
+  this->AnalysisGridInfo = nullptr;
   this->BlockEvent = false;
 }
 
 vtkDiscreteModel::~vtkDiscreteModel()
 {
-  this->SetAnalysisGridInfo(NULL);
+  this->SetAnalysisGridInfo(nullptr);
 }
 
 vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId, bool bCreateGeometry)
@@ -134,7 +134,7 @@ vtkModelEdge* vtkDiscreteModel::BuildFloatingRegionEdge(
     return edge;
   }
   vtkErrorMacro("Problem creating floating edge.");
-  return NULL;
+  return nullptr;
 }
 
 vtkModelFace* vtkDiscreteModel::BuildModelFace(
@@ -419,7 +419,7 @@ void vtkDiscreteModel::GetModelEntityDefaultName(
   {
     int baseNameLength = static_cast<int>(strlen(baseName));
     vtkModelEntity* entity = vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
-    if (!entity || vtkModelUserName::GetUserName(entity) == 0)
+    if (!entity || vtkModelUserName::GetUserName(entity) == nullptr)
     {
       continue;
     }
@@ -515,7 +515,7 @@ void vtkDiscreteModel::Serialize(vtkSerializer* ser)
   }
   else
   {
-    double* bounds = 0;
+    double* bounds = nullptr;
     unsigned int length = 0;
     ser->Serialize("ModelBounds", bounds, length);
     if (length > 0)

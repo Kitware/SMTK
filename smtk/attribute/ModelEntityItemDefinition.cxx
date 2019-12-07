@@ -28,9 +28,7 @@ ModelEntityItemDefinition::ModelEntityItemDefinition(const std::string& sname)
 }
 
 /// Destructor.
-ModelEntityItemDefinition::~ModelEntityItemDefinition()
-{
-}
+ModelEntityItemDefinition::~ModelEntityItemDefinition() = default;
 
 /// Return the type of storage used by items defined by this class.
 Item::Type ModelEntityItemDefinition::type() const

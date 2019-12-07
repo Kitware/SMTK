@@ -511,7 +511,7 @@ struct RegionTracker
     this->ContainmentRelationships->AddColumn(this->ContainerShellIds.GetPointer());
     this->ContainmentRelationships->AddColumn(this->ContainerShellCells.GetPointer());
     this->ContainmentRelationships->AddColumn(this->ContainerShellSense.GetPointer());
-    this->RegionPoints = NULL;
+    this->RegionPoints = nullptr;
   }
 
   // Keep a record of which connected components are contained in which loops.
@@ -597,9 +597,9 @@ vtkStandardNewMacro(vtkDiscoverRegions);
 
 vtkDiscoverRegions::vtkDiscoverRegions()
 {
-  this->FaceGroupArrayName = NULL;
-  this->ModelFaceArrayName = NULL;
-  this->RegionGroupArrayName = NULL;
+  this->FaceGroupArrayName = nullptr;
+  this->ModelFaceArrayName = nullptr;
+  this->RegionGroupArrayName = nullptr;
   this->SetFaceGroupArrayName("FaceGroups");
   this->ReportRegionsByModelFace = 0;
   this->GenerateRegionInteriorPoints = 0;
@@ -615,9 +615,9 @@ vtkDiscoverRegions::vtkDiscoverRegions()
 
 vtkDiscoverRegions::~vtkDiscoverRegions()
 {
-  this->SetFaceGroupArrayName(NULL);
-  this->SetModelFaceArrayName(NULL);
-  this->SetRegionGroupArrayName(NULL);
+  this->SetFaceGroupArrayName(nullptr);
+  this->SetModelFaceArrayName(nullptr);
+  this->SetRegionGroupArrayName(nullptr);
 }
 
 void vtkDiscoverRegions::PrintSelf(ostream& os, vtkIndent indent)
@@ -675,7 +675,7 @@ struct vtkDiscoverRegionsOneFacetPerCell
   {
     return facet; // facet == cell
   }
-  vtkIdTypeArray* GetFaceGroupArray() { return NULL; }
+  vtkIdTypeArray* GetFaceGroupArray() { return nullptr; }
   bool AreOversubscribedFacetsPossible(vtkIdTypeArray*) const { return true; }
 };
 
@@ -1584,7 +1584,7 @@ int DiscoverRegions(vtkPolyData* pdIn, vtkPolyData* holesIn, vtkPolyData* region
   const char* regionGroupArrayName, const char* faceGroupArrayName, const char* modelFaceArrayName,
   vtkPolyData* pdOut, vtkTable* tabOut, T& cell2facet, RegionTracker<N>& regions)
 {
-  vtkIdTypeArray* mapArray = NULL;
+  vtkIdTypeArray* mapArray = nullptr;
 
   InitializeRegions(pdIn, regions, cell2facet);
   if (pdIn->GetNumberOfCells())
@@ -1611,7 +1611,7 @@ int DiscoverRegions(vtkPolyData* pdIn, vtkPolyData* holesIn, vtkPolyData* region
     // It will also change entries in regions.ModelRegions.
     mapArray = modelFaceArrayName
       ? vtkIdTypeArray::SafeDownCast(pdIn->GetCellData()->GetArray(modelFaceArrayName))
-      : NULL;
+      : nullptr;
     if (mapArray)
     {
       vtkDiscoverRegionsFacetFromCellArray<vtkIdTypeArray> reconciler;
@@ -1622,15 +1622,15 @@ int DiscoverRegions(vtkPolyData* pdIn, vtkPolyData* holesIn, vtkPolyData* region
 
   // See if we have enough information to mark regions
   // as belonging to domain sets.
-  vtkPoints* regionPts = regionPtsIn ? regionPtsIn->GetPoints() : NULL;
+  vtkPoints* regionPts = regionPtsIn ? regionPtsIn->GetPoints() : nullptr;
   if (!regionGroupArrayName || !regionGroupArrayName[0] || !regionPts ||
     !regionPts->GetNumberOfPoints())
   {
-    regionPtsIn = NULL;
+    regionPtsIn = nullptr;
   }
 
   // Points identifying regions as holes.
-  vtkPoints* holePointsIn = holesIn ? holesIn->GetPoints() : NULL;
+  vtkPoints* holePointsIn = holesIn ? holesIn->GetPoints() : nullptr;
 
   // Map region IDs into a 0-based integer sequence.
   AssignRegionIDsHolesAndAttributes(pdIn, holePointsIn, regionPtsIn,
@@ -1677,7 +1677,7 @@ int vtkDiscoverRegions::RequestData(
   vtkPolyData* pdOut = vtkPolyData::GetData(outInfo, 0);
   vtkTable* tabOut = vtkTable::GetData(outInfo, 1);
   vtkPolyData* regionPtsOut =
-    this->GenerateRegionInteriorPoints ? vtkPolyData::GetData(outInfo, 2) : NULL;
+    this->GenerateRegionInteriorPoints ? vtkPolyData::GetData(outInfo, 2) : nullptr;
 
   /*
   vtkPolyData* pdIn = this->GetPolyDataInput(0);
@@ -1688,7 +1688,7 @@ int vtkDiscoverRegions::RequestData(
 
   vtkIdTypeArray* mapArray = this->ModelFaceArrayName && !this->ReportRegionsByModelFace
     ? vtkIdTypeArray::SafeDownCast(pdIn->GetCellData()->GetArray(this->ModelFaceArrayName))
-    : NULL;
+    : nullptr;
 
   int dimension = -1;
   if (!pdIn->GetNumberOfPolys() && !pdIn->GetNumberOfStrips())

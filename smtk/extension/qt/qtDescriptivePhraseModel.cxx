@@ -339,7 +339,7 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
               break;
           }
         }
-        return QVariant(this->lookupIconForPhraseFlags(item, color));
+        return QVariant(qtDescriptivePhraseModel::lookupIconForPhraseFlags(item, color));
       }
       else if (role == PhraseVisibilityRole)
       {

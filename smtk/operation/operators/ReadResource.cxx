@@ -35,9 +35,7 @@ namespace smtk
 namespace operation
 {
 
-ReadResource::ReadResource()
-{
-}
+ReadResource::ReadResource() = default;
 
 bool ReadResource::ableToOperate()
 {

@@ -182,7 +182,7 @@ void qtAttributeDisplay::enableShowBy(int enable)
 
 smtk::attribute::ItemPtr qtAttributeDisplay::getAttributeItemFromItem(QTableWidgetItem* item)
 {
-  Item* rawPtr = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : NULL;
+  Item* rawPtr = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::ItemPtr();
 }
 
@@ -205,7 +205,7 @@ void qtAttributeDisplay::onShowCategory(const std::string& strCategory)
   this->Internals->PropDefsCombo->blockSignals(false);
 
   this->getDefinitionsWithAssociations();
-  if (!this->Internals->AllAssignedDefs.size())
+  if (this->Internals->AllAssignedDefs.empty())
   {
     return;
   }
@@ -276,7 +276,7 @@ void qtAttributeDisplay::initSelectPropCombo(
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
-  if (result.size() == 0)
+  if (result.empty())
   {
     this->Internals->SelectPropCombo->setCurrentIndex(0);
     this->Internals->SelectPropCombo->blockSignals(false);
@@ -324,7 +324,7 @@ void qtAttributeDisplay::onFieldSelected()
   if (!rawPtr)
     return;
 
-  Item* irawPtr = NULL;
+  Item* irawPtr = nullptr;
   int selrow = this->Internals->SelectPropCombo->currentIndex();
   if (selrow >= 0)
   {
@@ -352,7 +352,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
 
   std::vector<smtk::attribute::AttributePtr> atts;
   attResource->attributes(atts);
-  if (atts.size() == 0)
+  if (atts.empty())
     return;
 
   if (attResource->associations().empty() == true)
@@ -361,7 +361,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   std::vector<smtk::attribute::AttributePtr>::const_iterator it;
   for (it = atts.begin(); it != atts.end(); ++it)
   {
-    if ((*it)->associatedModelEntityIds().size() == 0)
+    if ((*it)->associatedModelEntityIds().empty())
     {
       continue;
     }

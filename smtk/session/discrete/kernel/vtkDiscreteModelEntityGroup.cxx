@@ -31,9 +31,7 @@ vtkDiscreteModelEntityGroup::vtkDiscreteModelEntityGroup()
   this->EntityType = -1;
 }
 
-vtkDiscreteModelEntityGroup::~vtkDiscreteModelEntityGroup()
-{
-}
+vtkDiscreteModelEntityGroup::~vtkDiscreteModelEntityGroup() = default;
 
 bool vtkDiscreteModelEntityGroup::IsDestroyable()
 {

@@ -272,7 +272,7 @@ void qtAttributeView::createWidget()
     filterLayout->addWidget(this->Internals->PropDefsCombo, 0, 2);
     QObject::connect(this->Internals->PropDefsCombo, SIGNAL(currentIndexChanged(int)), this,
       SLOT(onPropertyDefSelected()), Qt::QueuedConnection);
-    this->Internals->PropDefLabel = NULL;
+    this->Internals->PropDefLabel = nullptr;
   }
   else
   {
@@ -281,7 +281,7 @@ void qtAttributeView::createWidget()
       this->Internals->AllDefs[0]->displayedTypeName().c_str());
     filterLayout->addWidget(this->Internals->PropDefLabel, 0, 2);
     this->Internals->PropDefLabel->setVisible(false);
-    this->Internals->PropDefsCombo = NULL;
+    this->Internals->PropDefsCombo = nullptr;
   }
   this->Internals->SelectPropCombo = new qtCheckItemComboBox(TopFrame, "Properties");
   this->Internals->SelectPropCombo->setVisible(false);
@@ -328,7 +328,7 @@ void qtAttributeView::createWidget()
     this->Internals->DefsCombo = new QComboBox(this->Internals->ButtonsFrame);
     this->Internals->DefsCombo->setVisible(false);
     buttonLayout->addWidget(this->Internals->DefsCombo);
-    this->Internals->DefLabel = NULL;
+    this->Internals->DefLabel = nullptr;
   }
   else
   {
@@ -336,7 +336,7 @@ void qtAttributeView::createWidget()
     this->Internals->DefLabel->setText(this->Internals->AllDefs[0]->displayedTypeName().c_str());
     this->Internals->DefLabel->setVisible(false);
     buttonLayout->addWidget(this->Internals->DefLabel);
-    this->Internals->DefsCombo = NULL;
+    this->Internals->DefsCombo = nullptr;
   }
   buttonLayout->addWidget(this->Internals->AddButton);
   buttonLayout->addWidget(this->Internals->CopyButton);
@@ -463,7 +463,7 @@ smtk::attribute::ItemPtr qtAttributeView::getAttributeItemFromItem(QTableWidgetI
 {
   if (this->Internals->ViewByCombo->currentIndex() == VIEWBY_PROPERTY)
   {
-    Item* rawPtr = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : NULL;
+    Item* rawPtr = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
     return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::ItemPtr();
   }
   return smtk::attribute::ItemPtr();
@@ -607,7 +607,7 @@ void qtAttributeView::updateTableWithProperties()
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = rawPtr->resource();
   attResource->findAttributes(rawPtr->shared_from_this(), result);
-  if (result.size() == 0)
+  if (result.empty())
   {
     this->Internals->ValuesTable->blockSignals(false);
     return;
@@ -666,7 +666,7 @@ void qtAttributeView::insertTableColumn(
 
 void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
 {
-  Item* linkedData = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : NULL;
+  Item* linkedData = item ? static_cast<Item*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
 
   if (linkedData && linkedData->isOptional())
   {
@@ -739,7 +739,7 @@ void qtAttributeView::updateItemWidgetsEnableState(
 
 smtk::attribute::DefinitionPtr qtAttributeView::getCurrentDef() const
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return nullptr;
   }
@@ -884,7 +884,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
 
 void qtAttributeView::onViewBy(int viewBy)
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return;
   }
@@ -1001,7 +1001,7 @@ void qtAttributeView::onViewByWithDefinition(int viewBy, smtk::attribute::Defini
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
-  if (result.size())
+  if (!result.empty())
   {
     std::vector<smtk::attribute::AttributePtr>::iterator it;
     for (it = result.begin(); it != result.end(); ++it)
@@ -1127,7 +1127,7 @@ void qtAttributeView::initSelectPropCombo(smtk::attribute::DefinitionPtr attDef)
   std::vector<smtk::attribute::AttributePtr> result;
   ResourcePtr attResource = attDef->resource();
   attResource->findAttributes(attDef, result);
-  if (result.size() == 0)
+  if (result.empty())
   {
     this->Internals->SelectPropCombo->blockSignals(false);
     return;
@@ -1320,7 +1320,7 @@ void qtAttributeView::addComparativeAttribute(smtk::attribute::AttributePtr att)
       {
         smtk::view::Configuration::Component comp;
         comp.setAttribute("Orientation", "Vertical");
-        qtAttributeItemInfo info(attItem, comp, NULL, this);
+        qtAttributeItemInfo info(attItem, comp, nullptr, this);
         auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
         vtWidget->setCellWidget(row, col, qItem->widget());
@@ -1380,7 +1380,7 @@ void qtAttributeView::onPropertyDefSelected()
 
 void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return;
   }
@@ -1400,7 +1400,7 @@ void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 void qtAttributeView::addComparativeProperty(
   QStandardItem* current, smtk::attribute::DefinitionPtr attDef)
 {
-  if (!this->Internals->m_attDefinitions.size())
+  if (this->Internals->m_attDefinitions.empty())
   {
     return;
   }
@@ -1454,7 +1454,7 @@ void qtAttributeView::addComparativeProperty(
       {
         smtk::view::Configuration::Component comp;
         comp.setAttribute("Orientation", "Vertical");
-        qtAttributeItemInfo info(attItem, comp, NULL, this);
+        qtAttributeItemInfo info(attItem, comp, nullptr, this);
         auto qItem = ui_manager->createItem(info);
         qItem->setLabelVisible(false);
         vtWidget->setCellWidget(insertRow, col, qItem->widget());

@@ -45,9 +45,7 @@ pqSMTKConeItemWidget::pqSMTKConeItemWidget(
   this->createWidget();
 }
 
-pqSMTKConeItemWidget::~pqSMTKConeItemWidget()
-{
-}
+pqSMTKConeItemWidget::~pqSMTKConeItemWidget() = default;
 
 qtItem* pqSMTKConeItemWidget::createConeItemWidget(const qtAttributeItemInfo& info)
 {

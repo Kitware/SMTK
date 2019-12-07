@@ -62,7 +62,7 @@ void vtkModelItem::AddAssociationInPosition(int index, vtkModelItem* item)
         // he/she is doing
         // use add reverse association since it won't attempt to add an
         // association to a null pointer
-        this->AddReverseAssociationToType(NULL, itemType);
+        this->AddReverseAssociationToType(nullptr, itemType);
       }
     }
     this->AddAssociation(item);

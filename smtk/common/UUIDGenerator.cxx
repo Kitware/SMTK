@@ -15,9 +15,9 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/uuid/uuid_generators.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
-#include <ctime>    // for time()
-#include <mutex>    // for std::mutex
-#include <stdlib.h> // for getenv()/_dupenv_s()
+#include <cstdlib> // for getenv()/_dupenv_s()
+#include <ctime>   // for time()
+#include <mutex>   // for std::mutex
 
 namespace
 {
@@ -25,7 +25,7 @@ namespace
 std::mutex m_generatorMutex;
 
 // Return true when \a vname exists in the environment (empty or not).
-static bool checkenv(const char* vname)
+bool checkenv(const char* vname)
 {
 #if !defined(_WIN32) || defined(__CYGWIN__)
   return getenv(vname) ? true : false;
@@ -52,7 +52,7 @@ public:
     {
       // This is a poor technique for seeding or
       // we would initialize this way all the time.
-      m_mtseed.seed(static_cast<boost::mt19937::result_type>(time(NULL)));
+      m_mtseed.seed(static_cast<boost::mt19937::result_type>(time(nullptr)));
       m_randomGenerator = new boost::uuids::basic_random_generator<boost::mt19937>(&m_mtseed);
     }
     else

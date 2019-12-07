@@ -88,7 +88,7 @@ QAction* findActiveAction(const QString& name)
   {
     return activeView->widget()->parentWidget()->parentWidget()->findChild<QAction*>(name);
   }
-  return NULL;
+  return nullptr;
 }
 
 void triggerAction(const QString& name)

@@ -59,7 +59,7 @@ bool WriteOperation::ableToOperate()
   smtk::model::Models models = this->parameters()->associatedModelEntities<smtk::model::Models>();
 
   // The SMTK model must be valid
-  if (models.size() == 0 || !models[0].isValid())
+  if (models.empty() || !models[0].isValid())
   {
     return false;
   }
@@ -97,7 +97,7 @@ WriteOperation::Result WriteOperation::operateInternal()
 
   // ableToOperate should have verified that the model exists
   smtk::model::Models models = this->parameters()->associatedModelEntities<smtk::model::Models>();
-  if (models.size() == 0)
+  if (models.empty())
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
 
   smtk::model::Model model = models[0];

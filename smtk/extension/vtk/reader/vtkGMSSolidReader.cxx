@@ -35,20 +35,20 @@ struct vtkGMSSolidReaderInternals
   ifstream* Stream;
 
   vtkGMSSolidReaderInternals()
-    : Stream(0)
+    : Stream(nullptr)
   {
   }
   ~vtkGMSSolidReaderInternals() { this->DeleteStream(); }
   void DeleteStream()
   {
     delete this->Stream;
-    this->Stream = 0;
+    this->Stream = nullptr;
   }
 };
 
 vtkGMSSolidReader::vtkGMSSolidReader()
 {
-  this->FileName = NULL;
+  this->FileName = nullptr;
   this->SetNumberOfInputPorts(0);
   this->Internals = new vtkGMSSolidReaderInternals;
 }

@@ -47,7 +47,7 @@
 #include <list>
 #include <map>
 
-#include <stdlib.h> // for atexit()
+#include <cstdlib> // for atexit()
 
 using namespace smtk::model;
 
@@ -56,9 +56,7 @@ oscillatorAuxiliaryGeometryExtension::oscillatorAuxiliaryGeometryExtension()
   oscillatorAuxiliaryGeometryExtension::ensureCache();
 }
 
-oscillatorAuxiliaryGeometryExtension::~oscillatorAuxiliaryGeometryExtension()
-{
-}
+oscillatorAuxiliaryGeometryExtension::~oscillatorAuxiliaryGeometryExtension() = default;
 
 bool oscillatorAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)
@@ -77,7 +75,8 @@ bool oscillatorAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
     const auto& entityMTime = entity.floatProperty("mtime");
     if (!entityMTime.empty() && entityMTime[0] < cachedFloatTime)
     {
-      return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+      return oscillatorAuxiliaryGeometryExtension::updateBoundsFromDataSet(
+        entity, bboxOut, dataset);
     }
   }
 
@@ -85,8 +84,8 @@ bool oscillatorAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   dataset = oscillatorAuxiliaryGeometryExtension::generateOscillatorRepresentation(entity);
   std::time_t mtime;
   std::time(&mtime);
-  this->addCacheGeometry(dataset, entity, mtime, trimCache);
-  return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+  oscillatorAuxiliaryGeometryExtension::addCacheGeometry(dataset, entity, mtime, trimCache);
+  return oscillatorAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
 }
 
 vtkSmartPointer<vtkDataObject>

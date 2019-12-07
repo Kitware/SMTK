@@ -39,9 +39,7 @@ ObjectGroupPhraseContent::ObjectGroupPhraseContent()
 {
 }
 
-ObjectGroupPhraseContent::~ObjectGroupPhraseContent()
-{
-}
+ObjectGroupPhraseContent::~ObjectGroupPhraseContent() = default;
 
 ObjectGroupPhraseContent::Ptr ObjectGroupPhraseContent::setup(
   const std::string& title, const std::string& resourceFilter, const std::string& componentFilter)

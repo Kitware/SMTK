@@ -43,9 +43,7 @@ pqSMTKPointItemWidget::pqSMTKPointItemWidget(
   this->createWidget();
 }
 
-pqSMTKPointItemWidget::~pqSMTKPointItemWidget()
-{
-}
+pqSMTKPointItemWidget::~pqSMTKPointItemWidget() = default;
 
 qtItem* pqSMTKPointItemWidget::createPointItemWidget(const qtAttributeItemInfo& info)
 {

@@ -24,15 +24,13 @@ vtkEdgeSplitOperation::vtkEdgeSplitOperation()
   this->OperateSucceeded = 0;
 }
 
-vtkEdgeSplitOperation::~vtkEdgeSplitOperation()
-{
-}
+vtkEdgeSplitOperation::~vtkEdgeSplitOperation() = default;
 
 vtkModelEntity* vtkEdgeSplitOperation::GetModelEntity(vtkDiscreteModelWrapper* ModelWrapper)
 {
   if (!ModelWrapper || !this->GetIsEdgeIdSet())
   {
-    return 0;
+    return nullptr;
   }
   return this->Superclass::GetModelEntity(ModelWrapper->GetModel());
 }

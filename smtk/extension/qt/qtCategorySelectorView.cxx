@@ -160,7 +160,7 @@ qtBaseView* qtCategorySelectorView::getChildView(int pageIndex)
   {
     return this->Internals->ChildViews.value(pageIndex);
   }
-  return NULL;
+  return nullptr;
 }
 
 void qtCategorySelectorView::addChildView(qtBaseView* child, const std::string& cval)

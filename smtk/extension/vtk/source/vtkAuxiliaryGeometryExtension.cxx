@@ -70,7 +70,7 @@
 #include <list>
 #include <map>
 
-#include <stdlib.h> // for atexit()
+#include <cstdlib> // for atexit()
 
 using namespace smtk::model;
 using ::boost::filesystem::last_write_time;
@@ -184,15 +184,13 @@ vtkAuxiliaryGeometryExtension::vtkAuxiliaryGeometryExtension()
   vtkAuxiliaryGeometryExtension::ensureCache();
 }
 
-vtkAuxiliaryGeometryExtension::~vtkAuxiliaryGeometryExtension()
-{
-}
+vtkAuxiliaryGeometryExtension::~vtkAuxiliaryGeometryExtension() = default;
 
 bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   smtk::model::AuxiliaryGeometry& entity, std::vector<double>& bboxOut)
 {
   smtk::extension::vtk::io::ImportAsVTKData importAsVTKData;
-  if (!entity.isValid() || (entity.url().empty() && entity.auxiliaryGeometries().size() == 0) ||
+  if (!entity.isValid() || (entity.url().empty() && entity.auxiliaryGeometries().empty()) ||
     (!entity.url().empty() && !importAsVTKData.valid(entity.url())))
   {
     return false;
@@ -217,12 +215,12 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
       }
       if (std::get<ClassInternal::TIMESTAMP>(tuple) >= mtime)
       {
-        return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+        return vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
       }
     }
     else
     { // TODO: No URL, so just assume the data is still good?
-      return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+      return vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
     }
   }
 
@@ -260,8 +258,8 @@ bool vtkAuxiliaryGeometryExtension::canHandleAuxiliaryGeometry(
   }
   dataset = vtkAuxiliaryGeometryExtension::generateRepresentation(entity, genNormals);
   s_p->insert(entity, ClassInternal::CacheValue(dataset, mtime), trimCache);
-  this->addCacheGeometry(dataset, entity, mtime, trimCache);
-  return this->updateBoundsFromDataSet(entity, bboxOut, dataset);
+  vtkAuxiliaryGeometryExtension::addCacheGeometry(dataset, entity, mtime, trimCache);
+  return vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(entity, bboxOut, dataset);
 }
 
 void vtkAuxiliaryGeometryExtension::addCacheGeometry(const vtkSmartPointer<vtkDataObject> dataset,

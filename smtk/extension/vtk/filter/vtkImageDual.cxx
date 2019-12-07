@@ -22,13 +22,9 @@
 
 vtkStandardNewMacro(vtkImageDual);
 
-vtkImageDual::vtkImageDual()
-{
-}
+vtkImageDual::vtkImageDual() = default;
 
-vtkImageDual::~vtkImageDual()
-{
-}
+vtkImageDual::~vtkImageDual() = default;
 
 int vtkImageDual::RequestData(vtkInformation* vtkNotUsed(request),
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)

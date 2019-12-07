@@ -138,7 +138,7 @@ struct xyz_view
   double* m_ptr;
 
   xyz_view()
-    : m_ptr(NULL)
+    : m_ptr(nullptr)
   {
   }
   xyz_view(double* ptr)

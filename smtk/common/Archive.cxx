@@ -20,8 +20,8 @@
 #ifdef _WIN32
 #include <io.h>
 #endif
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -173,7 +173,7 @@ bool Archive::archive() const
 namespace
 {
 // Transfer data from one archive to another
-static la_int64_t copy_data(struct archive* ar, struct archive* aw)
+la_int64_t copy_data(struct archive* ar, struct archive* aw)
 {
   la_int64_t r;
   const void* buff;

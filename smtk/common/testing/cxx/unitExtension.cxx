@@ -27,7 +27,7 @@ public:
   smtkSuperclassMacro(Extension);
   smtkSharedFromThisMacro(Extension);
   void eval(int num) { std::cout << "Test 1: " << num << "\n"; }
-  virtual ~TestExtOne() { std::cout << "    Deleting TestExtOne instance " << this << "\n"; }
+  ~TestExtOne() override { std::cout << "    Deleting TestExtOne instance " << this << "\n"; }
 protected:
   TestExtOne() { std::cout << "    Creating TestExtOne instance " << this << "\n"; }
 };
@@ -40,7 +40,7 @@ public:
   smtkSuperclassMacro(Extension);
   smtkSharedFromThisMacro(Extension);
   void print(int num) { std::cout << "Test 2: " << num << "\n"; }
-  virtual ~TestExtTwo() { std::cout << "    Deleting TestExtTwo instance " << this << "\n"; }
+  ~TestExtTwo() override { std::cout << "    Deleting TestExtTwo instance " << this << "\n"; }
 protected:
   TestExtTwo() { std::cout << "    Creating TestExtTwo instance " << this << "\n"; }
 };

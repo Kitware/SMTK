@@ -44,9 +44,7 @@ namespace session
 namespace discrete
 {
 
-MergeOperation::MergeOperation()
-{
-}
+MergeOperation::MergeOperation() = default;
 
 bool MergeOperation::ableToOperate()
 {
@@ -92,7 +90,7 @@ bool MergeOperation::ableToOperate()
 
   // Currently the discrete kernel can't merge face with edges becasue the
   // operation does not update edge relationships after face-merge
-  if (!tgtFace.isValid() || tgtFace.edges().size() != 0)
+  if (!tgtFace.isValid() || !tgtFace.edges().empty())
   {
     smtkErrorMacro(this->log(), "Merging faces with edges is not supported.");
     return false;

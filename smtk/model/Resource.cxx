@@ -42,7 +42,7 @@
 #include "smtk/resource/Metadata.h"
 #include "smtk/resource/Set.h"
 
-#include <float.h>
+#include <cfloat>
 
 #include <algorithm>
 #include <functional>
@@ -141,32 +141,32 @@ Resource::~Resource()
 //@{
 UUIDsToEntities& Resource::topology()
 {
-  return *m_topology.get();
+  return *m_topology;
 }
 
 const UUIDsToEntities& Resource::topology() const
 {
-  return *m_topology.get();
+  return *m_topology;
 }
 
 UUIDsToTessellations& Resource::tessellations()
 {
-  return *m_tessellations.get();
+  return *m_tessellations;
 }
 
 const UUIDsToTessellations& Resource::tessellations() const
 {
-  return *m_tessellations.get();
+  return *m_tessellations;
 }
 
 UUIDsToTessellations& Resource::analysisMesh()
 {
-  return *m_analysisMesh.get();
+  return *m_analysisMesh;
 }
 
 const UUIDsToTessellations& Resource::analysisMesh() const
 {
-  return *m_analysisMesh.get();
+  return *m_analysisMesh;
 }
 
 bool Resource::setMeshTessellations(const smtk::mesh::ResourcePtr& meshResource)
@@ -1514,7 +1514,7 @@ void Resource::assignDefaultNamesWithOwner(const UUIDWithEntityPtr& irec, const 
       this->setIntegerProperty(irec->first, "pedigree id", pedigree);
     }
     std::string defaultName = counts.empty()
-      ? this->shortUUIDName(irec->first, irec->second->entityFlags())
+      ? Resource::shortUUIDName(irec->first, irec->second->entityFlags())
       : Entity::defaultNameFromCounters(irec->second->entityFlags(), counts);
     this->setStringProperty(irec->first, "name", defaultName);
   }
@@ -1616,7 +1616,7 @@ std::string Resource::assignDefaultName(const UUID& uid, BitFlags entityFlags)
     int pedigree = Entity::countForType(entityFlags, counts, false);
     this->setIntegerProperty(uid, "pedigree id", pedigree);
   }
-  std::string defaultName = counts.empty() ? this->shortUUIDName(uid, entityFlags)
+  std::string defaultName = counts.empty() ? Resource::shortUUIDName(uid, entityFlags)
                                            : Entity::defaultNameFromCounters(entityFlags, counts);
   this->setStringProperty(uid, "name", defaultName);
   return defaultName;
@@ -1973,7 +1973,7 @@ bool Resource::setBoundingBox(
   }
   else // calculate boundingBox
   {
-    if (coords.size() == 0)
+    if (coords.empty())
     {
       return false;
     } // nothing to set
@@ -3579,10 +3579,10 @@ void Resource::unobserve(ResourceEventType event, OneToManyCallback functionHand
 void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& src)
 {
   std::set<ConditionTrigger>::const_iterator begin = m_conditionTriggers.lower_bound(
-    ConditionTrigger(event, ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
+    ConditionTrigger(event, ConditionObserver(ConditionCallback(), static_cast<void*>(nullptr))));
   std::set<ConditionTrigger>::const_iterator end = m_conditionTriggers.upper_bound(ConditionTrigger(
     std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
-    ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
+    ConditionObserver(ConditionCallback(), static_cast<void*>(nullptr))));
   for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, it->second.second);
 }
@@ -3592,10 +3592,10 @@ void Resource::trigger(
   ResourceEventType event, const smtk::model::EntityRef& src, const smtk::model::EntityRef& related)
 {
   std::set<OneToOneTrigger>::const_iterator begin = m_oneToOneTriggers.lower_bound(
-    OneToOneTrigger(event, OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
+    OneToOneTrigger(event, OneToOneObserver(OneToOneCallback(), static_cast<void*>(nullptr))));
   std::set<OneToOneTrigger>::const_iterator end = m_oneToOneTriggers.upper_bound(OneToOneTrigger(
     std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
-    OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
+    OneToOneObserver(OneToOneCallback(), static_cast<void*>(nullptr))));
   for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
@@ -3605,10 +3605,10 @@ void Resource::trigger(ResourceEventType event, const smtk::model::EntityRef& sr
   const smtk::model::EntityRefArray& related)
 {
   std::set<OneToManyTrigger>::const_iterator begin = m_oneToManyTriggers.lower_bound(
-    OneToManyTrigger(event, OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
+    OneToManyTrigger(event, OneToManyObserver(OneToManyCallback(), static_cast<void*>(nullptr))));
   std::set<OneToManyTrigger>::const_iterator end = m_oneToManyTriggers.upper_bound(OneToManyTrigger(
     std::make_pair(event.first, static_cast<ResourceEventRelationType>(event.second + 1)),
-    OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
+    OneToManyObserver(OneToManyCallback(), static_cast<void*>(nullptr))));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }

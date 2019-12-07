@@ -40,13 +40,9 @@ namespace smtk
 namespace view
 {
 
-TwoLevelSubphraseGenerator::TwoLevelSubphraseGenerator()
-{
-}
+TwoLevelSubphraseGenerator::TwoLevelSubphraseGenerator() = default;
 
-TwoLevelSubphraseGenerator::~TwoLevelSubphraseGenerator()
-{
-}
+TwoLevelSubphraseGenerator::~TwoLevelSubphraseGenerator() = default;
 
 DescriptivePhrases TwoLevelSubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
 {

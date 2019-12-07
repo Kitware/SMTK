@@ -107,7 +107,7 @@ public:
 void SmartMapAppend(std::list<vtkPolyData*> inputs, vtkPolyData* output, bool PreserveEdgesAndNodes)
 {
   //if we have nothing to append to do anything at all
-  if (inputs.size() == 0)
+  if (inputs.empty())
   {
     return;
   }
@@ -178,7 +178,7 @@ void SmartMapAppend(std::list<vtkPolyData*> inputs, vtkPolyData* output, bool Pr
   vtkPoints* outputPts = vtkPoints::New();
   outputPts->SetNumberOfPoints(uniquePoints.getNumberOfPoints());
   //Allocate space for celldata if one originally existed
-  vtkIdTypeArray* outputElementIds = NULL;
+  vtkIdTypeArray* outputElementIds = nullptr;
   if (PreserveEdgesAndNodes)
   {
     outputElementIds = vtkIdTypeArray::New();
@@ -250,12 +250,12 @@ vtkCMBTriangleMesher::vtkCMBTriangleMesher()
   UseUniqueAreas = false;
   MaxAreaMode = RelativeToBoundsAndSegments;
   VerboseOutput = false;
-  Launcher = NULL;
+  Launcher = nullptr;
 }
 
 vtkCMBTriangleMesher::~vtkCMBTriangleMesher()
 {
-  this->SetLauncher(NULL);
+  this->SetLauncher(nullptr);
 }
 
 void vtkCMBTriangleMesher::PrintSelf(ostream& os, vtkIndent indent)

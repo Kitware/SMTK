@@ -11,10 +11,6 @@
 
 using namespace smtk::extension;
 
-qtViewInterface::qtViewInterface()
-{
-}
+qtViewInterface::qtViewInterface() = default;
 
-qtViewInterface::~qtViewInterface()
-{
-}
+qtViewInterface::~qtViewInterface() = default;

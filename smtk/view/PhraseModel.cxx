@@ -63,7 +63,7 @@ struct PathComp
   }
 };
 
-static void notifyRecursive(
+void notifyRecursive(
   PhraseModel::Observer obs, DescriptivePhrasePtr parent, std::vector<int>& parentIdx)
 {
   if (!parent || !parent->areSubphrasesBuilt())
@@ -85,7 +85,7 @@ static void notifyRecursive(
   parentIdx.pop_back();
 }
 
-static void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
+void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
 {
   std::vector<int> parentIdx;
   return notifyRecursive(obs, parent, parentIdx);
@@ -101,7 +101,7 @@ class PhraseDeltas : public std::set<std::vector<int>, PathComp>
 // than one source
 smtk::operation::ManagerPtr PhraseModel::operationManager() const
 {
-  if (m_sources.size())
+  if (!m_sources.empty())
   {
     return m_sources.front().m_operMgr;
   }
@@ -471,7 +471,7 @@ void PhraseModel::updateChildren(
       DescriptivePhrase* nval = it->get();
       for (auto it2 = orig.begin(); it2 != orig.end(); ++it2)
       {
-        if ((*nval == *it2->get()) ||
+        if ((*nval == **it2) ||
           (nval && nval->relatedObject() && nval->relatedObject() == it2->get()->relatedObject()))
         {
           *it = *it2;

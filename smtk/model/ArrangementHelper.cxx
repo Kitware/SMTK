@@ -17,13 +17,9 @@ namespace model
 {
 
 /// Private constructor since this class is a base class which should not be instantiated.
-ArrangementHelper::ArrangementHelper()
-{
-}
+ArrangementHelper::ArrangementHelper() = default;
 
-ArrangementHelper::~ArrangementHelper()
-{
-}
+ArrangementHelper::~ArrangementHelper() = default;
 
 /// This method is called after all related entities have been added and before arrangement updates are made.
 void ArrangementHelper::doneAddingEntities(SessionPtr sess, SessionInfoBits flags)

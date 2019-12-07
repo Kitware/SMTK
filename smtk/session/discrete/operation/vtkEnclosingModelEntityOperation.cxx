@@ -33,8 +33,8 @@ vtkStandardNewMacro(vtkEnclosingModelEntityOperation);
 vtkEnclosingModelEntityOperation::vtkEnclosingModelEntityOperation()
 {
   this->OperateSucceeded = 0;
-  this->CellLocator = 0;
-  this->EnclosingEntity = 0;
+  this->CellLocator = nullptr;
+  this->EnclosingEntity = nullptr;
 }
 
 vtkEnclosingModelEntityOperation::~vtkEnclosingModelEntityOperation()
@@ -66,7 +66,7 @@ void vtkEnclosingModelEntityOperation::Operate(vtkDiscreteModelWrapper* modelWra
   }
 
   // reset, per chance we don't handle condition specific to the point and closest cell
-  this->EnclosingEntity = 0;
+  this->EnclosingEntity = nullptr;
 
   vtkIdType closestCellId;
   int subId;

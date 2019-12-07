@@ -88,7 +88,7 @@ TriangulateFaces::Result TriangulateFaces::operateInternal()
 
     // check if we have an exterior loop
     smtk::model::Loops exteriorLoops = fu.loops();
-    if (exteriorLoops.size() == 0)
+    if (exteriorLoops.empty())
     {
       // if we don't have loops, there is nothing to mesh
       smtkErrorMacro(this->log(), "No loops associated with this face.");

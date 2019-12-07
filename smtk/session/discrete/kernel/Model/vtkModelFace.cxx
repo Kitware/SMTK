@@ -37,9 +37,7 @@ vtkModelFace::vtkModelFace()
   faceUse1->FastDelete();
 }
 
-vtkModelFace::~vtkModelFace()
-{
-}
+vtkModelFace::~vtkModelFace() = default;
 
 bool vtkModelFace::IsDestroyable()
 {
@@ -168,7 +166,7 @@ vtkModelRegion* vtkModelFace::GetModelRegion(int direction)
   vtkModelShellUse* shellUse = faceUse->GetModelShellUse();
   if (!shellUse)
   {
-    return 0;
+    return nullptr;
   }
   return shellUse->GetModelRegion();
 }

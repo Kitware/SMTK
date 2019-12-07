@@ -111,11 +111,11 @@ bool Configuration::Component::contentsAsVector(std::vector<double>& vec) const
     iss >> d;
     if (!iss.good())
     {
-      return (vec.size() > 0);
+      return !vec.empty();
     }
     vec.push_back(d);
   }
-  return (vec.size() > 0);
+  return !vec.empty();
 }
 
 bool Configuration::Component::attribute(const std::string& attname) const
@@ -188,9 +188,7 @@ Configuration::Configuration(const std::string& myType, const std::string& myNam
 {
 }
 
-Configuration::~Configuration()
-{
-}
+Configuration::~Configuration() = default;
 
 void Configuration::copyContents(const Configuration& view)
 {

@@ -38,9 +38,7 @@ Resource::Resource(ManagerPtr manager)
 {
 }
 
-Resource::~Resource()
-{
-}
+Resource::~Resource() = default;
 
 ComponentSet Resource::find(const std::string& queryString) const
 {

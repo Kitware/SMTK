@@ -14,24 +14,18 @@ namespace smtk
 namespace mesh
 {
 
-MeshForEach::~MeshForEach()
-{
-}
+MeshForEach::~MeshForEach() = default;
 
 CellForEach::CellForEach(bool wantCoordinates)
-  : m_pointIds(NULL)
-  , m_coords(NULL)
+  : m_pointIds(nullptr)
+  , m_coords(nullptr)
   , m_wantsCoordinates(wantCoordinates)
 {
 }
 
-CellForEach::~CellForEach()
-{
-}
+CellForEach::~CellForEach() = default;
 
-PointForEach::~PointForEach()
-{
-}
+PointForEach::~PointForEach() = default;
 
 } // namespace mesh
 } // namespace smtk

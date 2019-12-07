@@ -147,7 +147,7 @@ void verify_null_polydata()
   smtk::mesh::InterfacePtr interface = smtk::mesh::moab::make_interface();
   smtk::extension::vtk::io::mesh::ImportVTKData imprt;
 
-  vtkPolyData* pd = NULL;
+  vtkPolyData* pd = nullptr;
   smtk::mesh::ResourcePtr meshResource = imprt(pd, interface);
   test(!meshResource, "resource should be invalid for a NULL poly data");
 }

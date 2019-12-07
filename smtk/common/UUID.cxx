@@ -127,11 +127,7 @@ bool UUID::operator<(const UUID& other) const
 }
 
 /// Assignment operator.
-UUID& UUID::operator=(const UUID& other)
-{
-  m_data = other.m_data;
-  return *this;
-}
+UUID& UUID::operator=(const UUID& other) = default;
 
 /// Cast-to-boolean operator
 UUID::operator bool() const

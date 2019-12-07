@@ -14,39 +14,27 @@ namespace smtk
 namespace simulation
 {
 
-UserData::UserData()
-{
-}
+UserData::UserData() = default;
 
-UserData::~UserData()
-{
-}
+UserData::~UserData() = default;
 
 UserDataInt::UserDataInt()
   : m_value(0)
 {
 }
 
-UserDataInt::~UserDataInt()
-{
-}
+UserDataInt::~UserDataInt() = default;
 
 UserDataDouble::UserDataDouble()
   : m_value(0.0)
 {
 }
 
-UserDataDouble::~UserDataDouble()
-{
-}
+UserDataDouble::~UserDataDouble() = default;
 
-UserDataString::UserDataString()
-{
-}
+UserDataString::UserDataString() = default;
 
-UserDataString::~UserDataString()
-{
-}
+UserDataString::~UserDataString() = default;
 
 } // namespace simulation
 } // namespace smtk

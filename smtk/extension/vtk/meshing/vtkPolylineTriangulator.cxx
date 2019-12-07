@@ -80,8 +80,8 @@ vtkCxxSetObjectMacro(vtkPolylineTriangulator, Launcher, vtkCMBMeshServerLauncher
 
 vtkPolylineTriangulator::vtkPolylineTriangulator()
 {
-  this->ModelFaceArrayName = NULL;
-  this->Launcher = NULL;
+  this->ModelFaceArrayName = nullptr;
+  this->Launcher = nullptr;
   // port 0: polylines describing facet contours
   // port 1: facet hole points
   this->SetNumberOfInputPorts(2);
@@ -89,8 +89,8 @@ vtkPolylineTriangulator::vtkPolylineTriangulator()
 
 vtkPolylineTriangulator::~vtkPolylineTriangulator()
 {
-  this->SetModelFaceArrayName(NULL);
-  this->SetLauncher(NULL);
+  this->SetModelFaceArrayName(nullptr);
+  this->SetLauncher(nullptr);
 }
 
 void vtkPolylineTriangulator::PrintSelf(ostream& os, vtkIndent indent)
@@ -886,7 +886,7 @@ int vtkPolylineTriangulator::RequestData(vtkInformation* vtkNotUsed(req),
   FacetSourceType facets;
   vtkIdTypeArray* mapArray = this->ModelFaceArrayName
     ? vtkIdTypeArray::SafeDownCast(pdIn->GetCellData()->GetArray(this->ModelFaceArrayName))
-    : NULL;
+    : nullptr;
 
   // Group polylines into per-facet records
   if (mapArray)
@@ -908,9 +908,9 @@ int vtkPolylineTriangulator::RequestData(vtkInformation* vtkNotUsed(req),
 
   // Split hole points out according to the facet they reference
   vtkPolyData* holesIn = this->GetPolyDataInput(1);
-  vtkPoints* holePoints = holesIn ? holesIn->GetPoints() : NULL;
+  vtkPoints* holePoints = holesIn ? holesIn->GetPoints() : nullptr;
   vtkIdTypeArray* holeFaceGroups =
-    holesIn ? vtkIdTypeArray::SafeDownCast(holesIn->GetPointData()->GetPedigreeIds()) : NULL;
+    holesIn ? vtkIdTypeArray::SafeDownCast(holesIn->GetPointData()->GetPedigreeIds()) : nullptr;
   if (holePoints && holePoints->GetNumberOfPoints())
   {
     if (!holeFaceGroups)

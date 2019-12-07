@@ -46,13 +46,9 @@ vtkDiscreteModelFace* vtkDiscreteModelFace::New()
   return new vtkDiscreteModelFace;
 }
 
-vtkDiscreteModelFace::vtkDiscreteModelFace()
-{
-}
+vtkDiscreteModelFace::vtkDiscreteModelFace() = default;
 
-vtkDiscreteModelFace::~vtkDiscreteModelFace()
-{
-}
+vtkDiscreteModelFace::~vtkDiscreteModelFace() = default;
 
 vtkModelEntity* vtkDiscreteModelFace::GetThisModelEntity()
 {
@@ -65,7 +61,7 @@ bool vtkDiscreteModelFace::Split(
   vtkObject* geometry = this->GetGeometry();
   vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
 
-  if (poly == 0)
+  if (poly == nullptr)
   {
     if (geometry)
     {
@@ -146,7 +142,7 @@ vtkDiscreteModelFace* vtkDiscreteModelFace::BuildFromExistingModelFace(
   thisModel->SetBlockModelGeometricEntityEvent(true);
 
   vtkDiscreteModelFace* newModelFace =
-    vtkDiscreteModelFace::SafeDownCast(thisModel->BuildModelFace(0, 0, 0));
+    vtkDiscreteModelFace::SafeDownCast(thisModel->BuildModelFace(0, nullptr, nullptr));
   thisModel->SetBlockModelGeometricEntityEvent(blockEvent);
 
   newModelFace->AddCellsToGeometry(masterCellIds);
@@ -746,7 +742,7 @@ void vtkDiscreteModelFace::CreateModelEdges(NewModelEdgeInfo& newEdgesInfo,
   const DiscreteMesh& mesh = thisModel->GetMesh();
   vtkDiscreteModel::ClassificationType& classificationInfo = thisModel->GetMeshClassification();
   ModelVertexClassification vertexInfo(thisModel);
-  vtkDiscreteModelVertex *v0 = NULL, *v1;
+  vtkDiscreteModelVertex *v0 = nullptr, *v1;
   vtkDiscreteModelEdge* gedge;
   std::vector<std::pair<vtkIdType, vtkIdType> >& info = newEdgesInfo.info;
   std::size_t i, numMeshEdges = info.size();
@@ -935,7 +931,7 @@ void vtkDiscreteModelFace::SplitEdges(
       }
       else
       {
-        splitEdge = NULL;
+        splitEdge = nullptr;
       }
     }
   }

@@ -45,7 +45,7 @@ void qtCheckableComboItemDelegate::paint(
 
 qtCheckItemComboBox::qtCheckItemComboBox(QWidget* pw, const QString& displayExt)
   : QComboBox(pw)
-  , m_displayItem(NULL)
+  , m_displayItem(nullptr)
   , m_displayTextExt(displayExt)
 {
   this->setStyleSheet("combobox-popup: 0;");
@@ -68,7 +68,7 @@ void qtCheckItemComboBox::updateText()
 {
   int numSel = 0;
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
-  QStandardItem* lastSelItem = NULL;
+  QStandardItem* lastSelItem = nullptr;
   if (itemModel)
   {
     for (int row = 1; row < this->count(); row++)

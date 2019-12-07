@@ -29,7 +29,7 @@
 
 namespace
 {
-static const double tolerance = 1.e-5;
+const double tolerance = 1.e-5;
 }
 
 int UnitTestPolygonCreateEdgeFromVerts(int argc, char* argv[])

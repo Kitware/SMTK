@@ -80,7 +80,7 @@
 
 #include "smtk/view/Configuration.h"
 
-#include <math.h>
+#include <cmath>
 
 using namespace smtk::attribute;
 using namespace smtk::extension;
@@ -204,10 +204,7 @@ void qtUIManager::commonConstructor()
 
 qtUIManager::~qtUIManager()
 {
-  if (m_topView)
-  {
-    delete m_topView;
-  }
+  delete m_topView;
 }
 
 void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
@@ -217,7 +214,7 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   if (m_topView)
   {
     delete m_topView;
-    m_topView = NULL;
+    m_topView = nullptr;
   }
 
   if (!m_smtkView)
@@ -261,7 +258,7 @@ void qtUIManager::initializeUI(
   if (m_topView)
   {
     delete m_topView;
-    m_topView = NULL;
+    m_topView = nullptr;
   }
 
   if (!m_smtkView)
@@ -413,7 +410,7 @@ void qtUIManager::internalInitialize()
   if (auto attResource = m_attResource.lock())
   {
     const std::map<int, std::string>& levels = attResource->advanceLevels();
-    if (levels.size() > 0)
+    if (!levels.empty())
     {
       // use the minimum enum value as initial advance level
       std::map<int, std::string>::const_iterator ait = levels.begin();
@@ -449,7 +446,7 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
   {
     combo->blockSignals(true);
     const std::map<int, std::string>& levels = attResource->advanceLevels();
-    if (levels.size() == 0)
+    if (levels.empty())
     {
       // for backward compatibility, we automatically add
       // two levels which is implicitly supported in previous version
@@ -604,7 +601,7 @@ void qtUIManager::clearRoot()
   if (m_topView)
   {
     delete m_topView;
-    m_topView = NULL;
+    m_topView = nullptr;
   }
 }
 

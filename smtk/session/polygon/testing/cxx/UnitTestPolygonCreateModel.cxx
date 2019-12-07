@@ -27,7 +27,7 @@
 
 namespace
 {
-static const double tolerance = 1.e-5;
+const double tolerance = 1.e-5;
 }
 
 int UnitTestPolygonCreateModel(int argc, char* argv[])

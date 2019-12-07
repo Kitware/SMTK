@@ -469,7 +469,7 @@ const meshVertex* ModelLoopRep::getPoint(const vtkIdType& id) const
   it = this->Internal->IdsToPoints.find(id);
   if (it == this->Internal->IdsToPoints.end())
   {
-    return NULL;
+    return nullptr;
   }
   return &it->second;
 }
@@ -481,7 +481,7 @@ const meshVertex* ModelLoopRep::getPoint(const double& x, const double& y) const
   it = this->Internal->PointsToIds.find(p);
   if (it == this->Internal->PointsToIds.end())
   {
-    return NULL;
+    return nullptr;
   }
   return &it->first;
 }
@@ -502,7 +502,7 @@ bool ModelLoopRep::pointClassification(
   const vtkIdType& pointId, int& modelEntityType, vtkIdType& uniqueId) const
 {
   const meshVertex* vert = this->getPoint(pointId);
-  if (vert == NULL)
+  if (vert == nullptr)
   {
     return false;
   }
@@ -523,7 +523,7 @@ bool ModelLoopRep::pointClassification(
   const double& x, const double& y, int& modelEntityType, vtkIdType& uniqueId) const
 {
   const meshVertex* vert = this->getPoint(x, y);
-  if (vert == NULL)
+  if (vert == nullptr)
   {
     return false;
   }
@@ -736,7 +736,7 @@ bool ModelLoopRep::findPointInsideConcave(double& x, double& y) const
     //now find the closest segment to this point
     const meshEdge* closestEdgeToCircle =
       this->findClosestSegment(circlePoint[0], circlePoint[1], pointOnSegment);
-    if (closestEdgeToCircle == NULL)
+    if (closestEdgeToCircle == nullptr)
     {
       continue;
     }
@@ -782,7 +782,7 @@ bool ModelLoopRep::findPointInsideConcave(double& x, double& y) const
     //verify the closest segment is the one that the circle point found
     const meshEdge* closestEdgeToHole =
       this->findClosestSegment(holePoint[0], holePoint[1], pointOnSegment);
-    if (closestEdgeToHole == NULL)
+    if (closestEdgeToHole == nullptr)
     {
       continue;
     }
@@ -856,7 +856,7 @@ void ModelLoopRep::bounds(double b[4]) const
 {
   std::map<meshVertex, vtkIdType>::const_iterator pointIt;
 
-  if (this->Internal->PointsToIds.size() == 0)
+  if (this->Internal->PointsToIds.empty())
   {
     //handle the 0 point use case
     b[0] = b[1] = b[2] = b[3] = 0.0;
@@ -881,10 +881,10 @@ void ModelLoopRep::bounds(double b[4]) const
 const meshEdge* ModelLoopRep::findClosestSegment(
   const double& x, const double& y, meshVertex& vertex) const
 {
-  const meshEdge* result = NULL;
-  if (this->Internal->Segments.size() == 0)
+  const meshEdge* result = nullptr;
+  if (this->Internal->Segments.empty())
   {
-    return NULL;
+    return nullptr;
   }
 
   double distance = std::numeric_limits<double>::max();
@@ -1028,7 +1028,7 @@ bool ModelFaceRep::RelateMeshPointsToModel(vtkPolyData* mesh, const vtkIdType& f
 {
   //Currently not needed, as cell relationship is good enough
   vtkPoints* points = mesh->GetPoints();
-  if (points == NULL)
+  if (points == nullptr)
   {
     return false;
   }
@@ -1102,7 +1102,7 @@ bool ModelFaceRep::RelateMeshCellsToModel(vtkPolyData* mesh, const vtkIdType& fa
   //if we have other cell arrays this will break
   //if we have non triangle cells in the poly list this will break
   vtkCellArray* cells = mesh->GetPolys();
-  if (cells == NULL)
+  if (cells == nullptr)
   {
     return false;
   }
@@ -1226,7 +1226,7 @@ bool ModelFaceRep::SetFaceIdOnMesh(vtkPolyData* mesh, const vtkIdType& facePersi
 {
   //we presume we only have triangle cells
   vtkCellArray* cells = mesh->GetPolys();
-  if (cells == NULL)
+  if (cells == nullptr)
   {
     return false;
   }

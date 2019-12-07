@@ -42,20 +42,16 @@
 #include "vtkStdString.h"
 #include "vtkStringArray.h"
 
+#include <cstdio>
+#include <cstring>
 #include <map>
-#include <stdio.h>
-#include <string.h>
 #include <vector>
 
 vtkStandardNewMacro(vtkCMBParserV5);
 
-vtkCMBParserV5::vtkCMBParserV5()
-{
-}
+vtkCMBParserV5::vtkCMBParserV5() = default;
 
-vtkCMBParserV5::~vtkCMBParserV5()
-{
-}
+vtkCMBParserV5::~vtkCMBParserV5() = default;
 
 bool vtkCMBParserV5::Parse(
   vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::session::discrete::Session* session)
@@ -157,7 +153,7 @@ bool vtkCMBParserV5::Parse(
       }
     }
     VertexIdsArray->Delete();
-    VertexIdsArray = 0;
+    VertexIdsArray = nullptr;
   }
   // next load in the model edges
   if (EdgeIdsArray)
@@ -167,14 +163,14 @@ bool vtkCMBParserV5::Parse(
     ModelEntities.resize(EdgeIdsArray->GetNumberOfTuples());
     for (vtkIdType i = 0; i < EdgeIdsArray->GetNumberOfTuples(); i++)
     {
-      vtkModelVertex* Vertices[2] = { NULL, NULL };
+      vtkModelVertex* Vertices[2] = { nullptr, nullptr };
       vtkIdType VertexIds[2];
       EdgeVertices->GetTypedTuple(i, VertexIds);
       for (int j = 0; j < 2; j++)
       {
         Vertices[j] =
           vtkModelVertex::SafeDownCast(Model->GetModelEntity(vtkModelVertexType, VertexIds[j]));
-        if (Vertices[j] == 0 && VertexIds[j] >= 0)
+        if (Vertices[j] == nullptr && VertexIds[j] >= 0)
         {
           vtkErrorMacro("Could not find vertex needed by edge.");
           return 0;
@@ -185,7 +181,7 @@ bool vtkCMBParserV5::Parse(
       ModelEntities[i] = Edge;
     }
     EdgeIdsArray->Delete();
-    EdgeIdsArray = 0;
+    EdgeIdsArray = nullptr;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEdge", Model);
     if (session)
     {
@@ -224,12 +220,13 @@ bool vtkCMBParserV5::Parse(
     {
       vtkModelMaterial* Material = vtkModelMaterial::SafeDownCast(
         Model->GetModelEntity(vtkModelMaterialType, FaceMaterials->GetValue(i)));
-      face = vtkDiscreteModelFace::SafeDownCast(Model->BuildModelFace(0, NULL, NULL, Material));
+      face =
+        vtkDiscreteModelFace::SafeDownCast(Model->BuildModelFace(0, nullptr, nullptr, Material));
     }
     else
     { // a model face in a 3D model
       face = vtkDiscreteModelFace::SafeDownCast(
-        Model->BuildModelFace(0, NULL, NULL, FaceIdsArray->GetValue(i)));
+        Model->BuildModelFace(0, nullptr, nullptr, FaceIdsArray->GetValue(i)));
       vtkIdType RegionIds[2];
       ModelFaceRegions->GetTypedTuple(i, RegionIds);
       for (int j = 0; j < 2; j++)
@@ -284,19 +281,19 @@ bool vtkCMBParserV5::Parse(
   if (EdgesOfModelFace)
   {
     EdgesOfModelFace->Delete();
-    EdgesOfModelFace = 0;
+    EdgesOfModelFace = nullptr;
   }
   FaceIdsArray->Delete();
-  FaceIdsArray = 0;
+  FaceIdsArray = nullptr;
   if (ModelFaceRegions)
   {
     ModelFaceRegions->Delete();
-    ModelFaceRegions = 0;
+    ModelFaceRegions = nullptr;
   }
   if (FaceMaterials)
   {
     FaceMaterials->Delete();
-    FaceMaterials = 0;
+    FaceMaterials = nullptr;
   }
   this->SetModelEntityData(MasterPoly, ModelEntities, "ModelFace", Model);
   if (session)
@@ -337,7 +334,7 @@ bool vtkCMBParserV5::Parse(
     }
   }
   CellClassification->Delete();
-  CellClassification = 0;
+  CellClassification = nullptr;
 
   // next load in the regions
   if (RegionIdsArray)
@@ -376,9 +373,9 @@ bool vtkCMBParserV5::Parse(
       ModelEntities[i] = region;
     }
     RegionIdsArray->Delete();
-    RegionIdsArray = 0;
+    RegionIdsArray = nullptr;
     RegionMaterials->Delete();
-    RegionMaterials = 0;
+    RegionMaterials = nullptr;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelRegion", Model);
     if (session)
     {
@@ -457,12 +454,12 @@ bool vtkCMBParserV5::Parse(
         numEntities = static_cast<vtkIdType>(Entities.size());
       }
       ModelEntities[i] =
-        Model->BuildModelEntityGroup(itemType, numEntities, numEntities ? (&Entities[0]) : NULL);
+        Model->BuildModelEntityGroup(itemType, numEntities, numEntities ? (&Entities[0]) : nullptr);
     }
     EntityGroupIds->Delete();
-    EntityGroupIds = 0;
+    EntityGroupIds = nullptr;
     GroupedEntityIds->Delete();
-    GroupedEntityIds = 0;
+    GroupedEntityIds = nullptr;
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEntityGroup", Model);
     if (session)
     {

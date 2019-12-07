@@ -12,8 +12,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileSystemItemDefinition.h"
 #include <cassert>
+#include <cstdio>
 #include <iostream>
-#include <stdio.h>
 
 using namespace smtk::attribute;
 
@@ -35,7 +35,7 @@ bool FileSystemItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (!Item::setDefinition(adef)))
+  if ((def == nullptr) || (!Item::setDefinition(adef)))
   {
     return false;
   }
@@ -58,9 +58,7 @@ bool FileSystemItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-FileSystemItem::~FileSystemItem()
-{
-}
+FileSystemItem::~FileSystemItem() = default;
 
 bool FileSystemItem::isValid(const std::set<std::string>& cats) const
 {
@@ -68,7 +66,7 @@ bool FileSystemItem::isValid(const std::set<std::string>& cats) const
   // category checks - if it doesn't it means its not be taken into account
   // for validity checking so just return true
 
-  if (cats.size() && !this->passCategoryCheck(cats))
+  if (!cats.empty() && !this->passCategoryCheck(cats))
   {
     return true;
   }
@@ -103,7 +101,7 @@ std::size_t FileSystemItem::numberOfRequiredValues() const
 {
   const FileSystemItemDefinition* def =
     static_cast<const FileSystemItemDefinition*>(m_definition.get());
-  if (def == NULL)
+  if (def == nullptr)
   {
     return 0;
   }
@@ -114,7 +112,7 @@ std::size_t FileSystemItem::maxNumberOfValues() const
 {
   const FileSystemItemDefinition* def =
     static_cast<const FileSystemItemDefinition*>(m_definition.get());
-  if (def == NULL)
+  if (def == nullptr)
   {
     return 0;
   }
@@ -125,7 +123,7 @@ bool FileSystemItem::shouldBeRelative() const
 {
   const FileSystemItemDefinition* def =
     static_cast<const FileSystemItemDefinition*>(this->definition().get());
-  if (def != NULL)
+  if (def != nullptr)
   {
     return def->shouldBeRelative();
   }
@@ -136,7 +134,7 @@ bool FileSystemItem::shouldExist() const
 {
   const FileSystemItemDefinition* def =
     static_cast<const FileSystemItemDefinition*>(this->definition().get());
-  if (def != NULL)
+  if (def != nullptr)
   {
     return def->shouldExist();
   }
@@ -147,7 +145,7 @@ bool FileSystemItem::setValue(std::size_t element, const std::string& val)
 {
   const FileSystemItemDefinition* def =
     static_cast<const FileSystemItemDefinition*>(this->definition().get());
-  if ((def == NULL) || (def->isValueValid(val)))
+  if ((def == nullptr) || (def->isValueValid(val)))
   {
     assert(m_values.size() > element);
     assert(m_isSet.size() > element);
@@ -168,7 +166,7 @@ std::string FileSystemItem::valueAsString(std::size_t element, const std::string
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
   assert(m_values.size() > element);
-  if (format != "")
+  if (!format.empty())
   {
     sprintf(dummy, format.c_str(), m_values[element].c_str());
   }

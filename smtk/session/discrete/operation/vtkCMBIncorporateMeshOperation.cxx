@@ -51,7 +51,7 @@ void vtkCMBIncorporateMeshOperation::Operate(vtkDiscreteModelWrapper* modelWrapp
 {
   vtkDebugMacro("Incorporating solid meshes into a CMB model.");
   this->OperateSucceeded = 0;
-  if (this->SolidMeshes.size() == 0)
+  if (this->SolidMeshes.empty())
   {
     vtkWarningMacro("There is no solid mesh input.");
     return;
@@ -268,7 +268,7 @@ bool vtkCMBIncorporateMeshOperation::SplitMeshRegion(
       } // end if(ptFound)
     }   // end for each cell
 
-    if (SolidRegionMeshCellsMap.size() > 0)
+    if (!SolidRegionMeshCellsMap.empty())
     {
       std::map<vtkDiscreteModelRegion*, vtkSmartPointer<vtkIdList> >::iterator itReg =
         SolidRegionMeshCellsMap.begin();
@@ -344,15 +344,15 @@ bool vtkCMBIncorporateMeshOperation::CreateNewMeshRegions(vtkDiscreteModel* soli
         vtkWarningMacro("Not a valid model face ??");
         continue;
       }
-      vtkDiscreteModelFace* newFace = NULL;
+      vtkDiscreteModelFace* newFace = nullptr;
       if (UsedSolidFaces.find(faceEntity) == UsedSolidFaces.end())
       {
         // Brand new solid face.
         // an internal face of the solid, which should be
         // used to create the new mesh region.
         // we need to create new mesh faces for the mesh
-        newFace =
-          vtkDiscreteModelFace::SafeDownCast(meshModel->BuildModelFace(0, 0, 0, newMaterial));
+        newFace = vtkDiscreteModelFace::SafeDownCast(
+          meshModel->BuildModelFace(0, nullptr, nullptr, newMaterial));
         // Add new cells to mesh master polydata
         vtkNew<vtkIdList> newCellIds;
         this->AddSolidFaceCells(

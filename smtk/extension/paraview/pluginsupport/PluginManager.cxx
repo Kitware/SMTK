@@ -26,9 +26,7 @@ namespace paraview
 {
 namespace detail
 {
-PluginManager::~PluginManager()
-{
-}
+PluginManager::~PluginManager() = default;
 
 void PluginManager::addPluginClient(const std::weak_ptr<PluginClientBase>& pluginClient)
 {

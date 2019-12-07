@@ -12,8 +12,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include <algorithm> // for std::find
+#include <cstdio>
 #include <iostream>
-#include <stdio.h>
 
 using namespace smtk::attribute;
 
@@ -39,9 +39,7 @@ bool FileItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return isSet;
 }
 
-FileItem::~FileItem()
-{
-}
+FileItem::~FileItem() = default;
 
 Item::Type FileItem::type() const
 {

@@ -47,7 +47,7 @@ namespace internal
 typedef std::vector<std::pair<size_t, Segment> > SegmentSplitsT;
 
 pmodel::pmodel()
-  : m_session(NULL)
+  : m_session(nullptr)
   , m_featureSize(1e-8)
 {
   for (int i = 0; i < 3; ++i)
@@ -68,7 +68,7 @@ pmodel::pmodel()
 pmodel::~pmodel()
 {
   // Tis better to have dereferenced and crashed than never to have crashed at all:
-  m_session = NULL;
+  m_session = nullptr;
 }
 
 bool pmodel::computeModelScaleAndNormal(std::vector<double>& origin, std::vector<double>& x_axis,

@@ -160,7 +160,7 @@ void extractSurfaces(smtk::mesh::ResourcePtr c, std::string outputFile)
   std::cout << " neumann count: " << c->dirichlets().size() << std::endl;
   std::cout << " dirichlet count: " << c->neumanns().size() << std::endl;
 
-  if (c->domains().size() == 0)
+  if (c->domains().empty())
   { //if no domains make a fake domain per volumetric mesh
     ShellPerMesh spm;
     smtk::mesh::MeshSet volMeshes = c->meshes(smtk::mesh::Dims3);
@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
   std::string outputFileName(argc > 2 ? argv[2] : "mesh3D.exo");
   std::string materialName(argc > 3 ? argv[3] : std::string());
 
-  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName.c_str());
+  std::string extension = vtksys::SystemTools::GetFilenameLastExtension(inputFileName);
 
   // Dispatch based on the file extension
   vtkDataSet* data;

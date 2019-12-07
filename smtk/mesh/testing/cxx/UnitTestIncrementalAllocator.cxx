@@ -121,7 +121,7 @@ void verify_moab_incremental_allocator_validity(smtk::mesh::CellType cellType)
 
   smtk::mesh::IncrementalAllocatorPtr allocator = resource->interface()->incrementalAllocator();
   test(allocator->isValid() == true);
-  test(allocator->cells().size() == 0);
+  test(allocator->cells().empty());
 
   // Grab the number of vertices for the cell type being tested
   std::size_t nVerticesPerCell =

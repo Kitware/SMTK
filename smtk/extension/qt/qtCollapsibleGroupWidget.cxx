@@ -18,7 +18,7 @@ class smtk::extension::qtCollapsibleGroupWidgetInternals
   : public Ui::qtCollapsibleGroupWidgetInternals
 {
 public:
-  qtCollapsibleGroupWidgetInternals() {}
+  qtCollapsibleGroupWidgetInternals() = default;
 };
 
 qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(QWidget* p)

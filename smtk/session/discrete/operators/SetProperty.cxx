@@ -111,7 +111,7 @@ void SetProperty::setName(const std::string& pname, smtk::model::EntityRefArray&
 
     vtkModelEntity* discEnt = resource->discreteEntityAs<vtkModelEntity*>(*it);
     if (discEnt)
-      vtkModelUserName::SetUserName(discEnt, pname.empty() ? NULL : pname.c_str());
+      vtkModelUserName::SetUserName(discEnt, pname.empty() ? nullptr : pname.c_str());
   }
 }
 

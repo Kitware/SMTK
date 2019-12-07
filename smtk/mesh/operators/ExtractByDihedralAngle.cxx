@@ -70,7 +70,7 @@ public:
     return n;
   }
 
-  virtual void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
   {
     m_normalsMap[cellId] = this->unitNormal();
   }
