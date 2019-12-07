@@ -57,18 +57,6 @@ void vtkConeFrustum::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Output Points Precision: " << this->OutputPointsPrecision << "\n";
 }
 
-#if 0
-int vtkConeFrustum::RequestInformation(
-  vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector),
-  vtkInformationVector* outputVector)
-{
-  vtkInformation* outInfo = outputVector->GetInformationObject(0);
-  outInfo->Set(CAN_HANDLE_PIECE_REQUEST(), 1);
-  return 1;
-}
-#endif
-
 double vtkConeFrustum::GetAngle() const
 {
   vtkVector3d p0(this->BottomPoint);
