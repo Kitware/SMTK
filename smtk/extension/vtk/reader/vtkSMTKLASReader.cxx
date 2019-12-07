@@ -37,7 +37,7 @@
 #include <sstream>
 
 //#define LIDAR_PREVIEW_PIECE_NUM_POINTS 10000
-#define LIDAR_BINARY_POINT_SIZE sizeof(double) * 3
+#define LIDAR_BINARY_POINT_SIZE (sizeof(double) * 3)
 
 enum FileReadingStatus
 {
