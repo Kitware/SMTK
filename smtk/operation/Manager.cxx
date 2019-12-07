@@ -22,12 +22,7 @@ namespace smtk
 namespace operation
 {
 
-Manager::Manager()
-  : m_observers()
-  , m_resourceObserver()
-  , m_resourceMetadataObserver()
-{
-}
+Manager::Manager() = default;
 
 Manager::~Manager() = default;
 

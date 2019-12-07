@@ -94,7 +94,6 @@ public:
 
 qtDescriptivePhraseModel::qtDescriptivePhraseModel(QObject* owner)
   : QAbstractItemModel(owner)
-  , m_modelObserver()
   , m_visibleIconURL(":/icons/display/eyeball.png")
   , m_invisibleIconURL(":/icons/display/eyeballClosed.png")
 {

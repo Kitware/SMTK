@@ -22,7 +22,6 @@ Item::Item(Attribute* owningAttribute, int itemPosition)
   , m_owningItem(nullptr)
   , m_position(itemPosition)
   , m_isEnabled(true)
-  , m_definition()
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
@@ -35,7 +34,6 @@ Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
   , m_position(itemPosition)
   , m_subGroupPosition(inSubGroupPosition)
   , m_isEnabled(true)
-  , m_definition()
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;

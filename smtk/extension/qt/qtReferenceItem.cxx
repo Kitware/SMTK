@@ -70,7 +70,6 @@ qtReferenceItemData::qtReferenceItemData()
   , m_alreadyClosingPopup(false)
   , m_qtModel(nullptr)
   , m_qtDelegate(nullptr)
-  , m_modelObserverId()
   , m_selectedIconURL(":/icons/display/selected.png")
   , m_unselectedIconURL(":/icons/display/unselected.png")
 {

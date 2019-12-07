@@ -220,21 +220,13 @@ PreAllocatedTessellation::PreAllocatedTessellation(
 }
 
 Tessellation::Tessellation()
-  : m_connectivity()
-  , m_cellLocations()
-  , m_cellTypes()
-  , m_points()
-  , m_useVTKConnectivity(true)
+  : m_useVTKConnectivity(true)
   , m_useVTKCellTypes(true)
 {
 }
 
 Tessellation::Tessellation(bool useVTKConnectivity, bool useVTKCellTypes)
-  : m_connectivity()
-  , m_cellLocations()
-  , m_cellTypes()
-  , m_points()
-  , m_useVTKConnectivity(useVTKConnectivity)
+  : m_useVTKConnectivity(useVTKConnectivity)
   , m_useVTKCellTypes(useVTKCellTypes)
 {
 }

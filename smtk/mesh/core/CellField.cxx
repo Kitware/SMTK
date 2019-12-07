@@ -20,11 +20,7 @@ namespace smtk
 namespace mesh
 {
 
-CellField::CellField()
-  : m_name()
-  , m_meshset()
-{
-}
+CellField::CellField() = default;
 
 CellField::CellField(const smtk::mesh::MeshSet& meshset, const std::string& name)
   : m_name(name)

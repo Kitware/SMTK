@@ -35,7 +35,6 @@ namespace mesh
 {
 
 MeshIOVTK::MeshIOVTK()
-  : MeshIO()
 {
   this->Formats.push_back(
     smtk::io::mesh::Format("vtk unstructured grid", std::vector<std::string>({ ".vtu" }),

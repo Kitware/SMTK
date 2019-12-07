@@ -19,10 +19,7 @@ namespace
 {
 struct MyBase
 {
-  MyBase()
-    : value()
-  {
-  }
+  MyBase() = default;
   MyBase(const std::string& val)
     : value(val)
   {
@@ -130,10 +127,7 @@ void UnitTest()
 
 struct MyMoveOnlyBase
 {
-  MyMoveOnlyBase()
-    : value()
-  {
-  }
+  MyMoveOnlyBase() = default;
   MyMoveOnlyBase(const std::string& val)
     : value(val)
   {

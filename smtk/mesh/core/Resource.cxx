@@ -48,8 +48,6 @@ private:
 Resource::Resource()
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
@@ -57,8 +55,6 @@ Resource::Resource()
 
 Resource::Resource(const smtk::common::UUID& resourceID)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
@@ -67,8 +63,6 @@ Resource::Resource(const smtk::common::UUID& resourceID)
 Resource::Resource(smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
@@ -76,8 +70,6 @@ Resource::Resource(smtk::mesh::InterfacePtr interface)
 
 Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
@@ -109,8 +101,7 @@ void Resource::visit(smtk::resource::Component::Visitor& visitor) const
   {
   public:
     Visit(smtk::resource::Component::Visitor& visitor)
-      : smtk::mesh::MeshForEach()
-      , m_visitor(visitor)
+      : m_visitor(visitor)
     {
     }
 

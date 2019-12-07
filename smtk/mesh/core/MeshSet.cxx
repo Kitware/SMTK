@@ -23,9 +23,7 @@ namespace mesh
 {
 
 MeshSet::MeshSet()
-  : m_parent()
-  , m_handle()
-  , m_range()
+  : m_handle()
 {
 }
 

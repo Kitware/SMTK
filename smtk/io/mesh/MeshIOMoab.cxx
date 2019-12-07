@@ -24,7 +24,6 @@ namespace mesh
 {
 
 MeshIOMoab::MeshIOMoab()
-  : MeshIO()
 {
   this->Formats.push_back(Format("moab", std::vector<std::string>({ ".h5m", ".mhdf" }),
     Format::Import | Format::Export | Format::Read | Format::Write));

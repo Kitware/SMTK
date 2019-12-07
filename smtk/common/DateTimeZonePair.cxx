@@ -21,11 +21,7 @@ namespace smtk
 namespace common
 {
 
-DateTimeZonePair::DateTimeZonePair()
-  : m_datetime()
-  , m_timezone()
-{
-}
+DateTimeZonePair::DateTimeZonePair() = default;
 
 DateTime DateTimeZonePair::dateTime() const
 {

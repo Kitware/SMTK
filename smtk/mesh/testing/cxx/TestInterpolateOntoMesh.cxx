@@ -122,8 +122,7 @@ class HistogramPointFieldData : public smtk::mesh::PointForEach, public Histogra
 {
 public:
   HistogramPointFieldData(std::size_t nBins, double min, double max, smtk::mesh::PointField& pf)
-    : smtk::mesh::PointForEach()
-    , HistogramFieldData(nBins, min, max)
+    : HistogramFieldData(nBins, min, max)
     , m_pointField(pf)
   {
   }

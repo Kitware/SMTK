@@ -60,8 +60,7 @@ class CoolingPlateFilter : public Filter
 
 public:
   CoolingPlateFilter(double yval, double rval, const double* o, bool less = true)
-    : Filter()
-    , yvalue(yval)
+    : yvalue(yval)
     , rvalue(rval)
     , lessThan(less)
   {
@@ -106,8 +105,7 @@ class OuterEdgeFilter : public Filter
 
 public:
   OuterEdgeFilter(const double o[3], double r)
-    : Filter()
-    , rmin(r)
+    : rmin(r)
   {
     for (int i = 0; i < 3; i++)
     {

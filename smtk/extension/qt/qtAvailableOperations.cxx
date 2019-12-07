@@ -23,7 +23,6 @@ qtAvailableOperations::qtAvailableOperations(QWidget* parent)
   , m_operationList(nullptr)
   , m_layout(nullptr)
   , m_operationSource(nullptr)
-  , m_operationSourceObserverId()
   , m_useLabels(false)
 {
   m_operationList = new QListWidget(this);

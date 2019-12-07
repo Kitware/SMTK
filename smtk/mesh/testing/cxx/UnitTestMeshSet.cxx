@@ -380,8 +380,7 @@ class CountMeshesAndCells : public smtk::mesh::MeshForEach
 
 public:
   CountMeshesAndCells(smtk::mesh::ResourcePtr resource)
-    : smtk::mesh::MeshForEach()
-    , cellsSeen(resource->meshes("InvalidName").cells())
+    : cellsSeen(resource->meshes("InvalidName").cells())
     , numMeshesIteratedOver(0)
 
   {

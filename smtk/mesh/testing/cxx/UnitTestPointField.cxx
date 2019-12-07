@@ -217,8 +217,7 @@ private:
 public:
   SetPointData(
     const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::PointField& ds)
-    : smtk::mesh::PointForEach()
-    , m_dataGenerator(dataGenerator)
+    : m_dataGenerator(dataGenerator)
     , m_pointfield(ds)
   {
   }
@@ -248,8 +247,7 @@ private:
 public:
   ValidatePointData(
     const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::PointField& ds)
-    : smtk::mesh::PointForEach()
-    , m_dataGenerator(dataGenerator)
+    : m_dataGenerator(dataGenerator)
     , m_pointfield(ds)
   {
   }

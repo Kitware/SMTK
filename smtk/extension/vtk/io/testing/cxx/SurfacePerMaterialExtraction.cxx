@@ -48,8 +48,7 @@ class ShellPerMesh : public smtk::mesh::MeshForEach
 
 public:
   ShellPerMesh()
-    : smtk::mesh::MeshForEach()
-    , currentMaterialValue(0)
+    : currentMaterialValue(0)
   {
   }
 

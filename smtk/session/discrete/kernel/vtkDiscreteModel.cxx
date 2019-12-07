@@ -44,8 +44,6 @@ vtkInformationKeyMacro(vtkDiscreteModel, POINTMAPARRAY, ObjectBase);
 vtkInformationKeyMacro(vtkDiscreteModel, CELLMAPARRAY, ObjectBase);
 
 vtkDiscreteModel::vtkDiscreteModel()
-  : Mesh()
-  , MeshClassificationInstance()
 {
   // initialize bounds to be invalid
   this->ModelBounds[0] = this->ModelBounds[2] = this->ModelBounds[4] = 1;

@@ -124,9 +124,7 @@ void AddRenderables(
 vtkStandardNewMacro(vtkSMTKResourceRepresentation);
 
 vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
-  : Superclass()
-  , Wrapper(nullptr)
-  , SelectionObserver()
+  : Wrapper(nullptr)
   , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , GlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())

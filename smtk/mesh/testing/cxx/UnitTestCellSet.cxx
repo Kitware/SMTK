@@ -552,10 +552,7 @@ class CountCells : public smtk::mesh::CellForEach
 
 public:
   CountCells()
-    : smtk::mesh::CellForEach()
-    , pointsSeen()
-    , cellsSeen()
-    , numCellsVisited(0)
+    : numCellsVisited(0)
     , numPointsSeen(0)
   {
   }

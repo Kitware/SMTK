@@ -153,8 +153,7 @@ private:
 
 public:
   ScalarPointField(const std::function<double(std::array<double, 3>)>& mapping, std::size_t nPoints)
-    : smtk::mesh::PointForEach()
-    , m_mapping(mapping)
+    : m_mapping(mapping)
     , m_data(nPoints)
     , m_counter(0)
   {
@@ -247,8 +246,7 @@ private:
 public:
   VectorPointField(
     const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping, std::size_t nPoints)
-    : smtk::mesh::PointForEach()
-    , m_mapping(mapping)
+    : m_mapping(mapping)
     , m_data(3 * nPoints)
     , m_counter(0)
   {

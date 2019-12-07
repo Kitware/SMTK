@@ -36,8 +36,7 @@ smtk::mesh::json::InterfacePtr make_interface()
 }
 
 Interface::Interface()
-  : m_meshInfo()
-  , m_associated_model(smtk::common::UUID::null())
+  : m_associated_model(smtk::common::UUID::null())
   , m_modified(false)
 {
 }

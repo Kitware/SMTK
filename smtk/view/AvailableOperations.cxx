@@ -28,7 +28,7 @@ AvailableOperations::AvailableOperations()
   , m_selectionExact(true)
   , m_useSelection(true)
   , m_workflowFilter(nullptr)
-  , m_workflowFilterObserverId()
+
 {
 // For debugging:
 #if !defined(NDEBUG) && DEBUG_AVAILABLE_OPERATIONS

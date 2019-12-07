@@ -47,8 +47,7 @@ using namespace smtk::common;
 
 Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition,
   const smtk::common::UUID& myId)
-  : Component()
-  , m_name(myName)
+  : m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
@@ -62,8 +61,7 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
 }
 
 Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
-  : Component()
-  , m_name(myName)
+  : m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)

@@ -35,8 +35,7 @@ class SubdivideMesh : public smtk::mesh::MeshForEach
 {
 public:
   SubdivideMesh(const std::vector<std::size_t>& order)
-    : smtk::mesh::MeshForEach()
-    , m_order(order)
+    : m_order(order)
     , m_index(0)
   {
   }
@@ -61,8 +60,7 @@ public:
   ValidateCells(const std::vector<smtk::mesh::CellSet>& cellsByDomain,
     const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
     const smtk::mesh::HandleRange cellRange)
-    : smtk::mesh::CellForEach()
-    , m_cellsByDomain(cellsByDomain)
+    : m_cellsByDomain(cellsByDomain)
     , m_domains(domains)
     , m_domainAssignments(domainAssignments)
     , m_cellRange(cellRange)
@@ -100,8 +98,7 @@ public:
   ValidatePoints(const std::vector<smtk::mesh::PointSet>& pointsByDomain,
     const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
     const smtk::mesh::HandleRange pointRange)
-    : smtk::mesh::PointForEach()
-    , m_pointsByDomain(pointsByDomain)
+    : m_pointsByDomain(pointsByDomain)
     , m_domains(domains)
     , m_domainAssignments(domainAssignments)
     , m_pointRange(pointRange)

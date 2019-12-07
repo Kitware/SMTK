@@ -34,8 +34,7 @@ class ForMeshset : public smtk::mesh::MeshForEach
 {
 public:
   ForMeshset(nlohmann::json& j)
-    : smtk::mesh::MeshForEach()
-    , m_json(j)
+    : m_json(j)
   {
   }
 

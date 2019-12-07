@@ -23,14 +23,6 @@ namespace json
 
 MeshInfo::MeshInfo()
   : m_mesh()
-  , m_uuid()
-  , m_cells()
-  , m_points()
-  , m_types()
-  , m_domains()
-  , m_dirichlets()
-  , m_neumanns()
-  , m_uuids()
 {
 }
 
@@ -42,10 +34,6 @@ MeshInfo::MeshInfo(smtk::mesh::Handle meshId, const smtk::common::UUID& uuid,
   , m_cells(cells)
   , m_points(points)
   , m_types(types)
-  , m_domains()
-  , m_dirichlets()
-  , m_neumanns()
-  , m_uuids()
 {
 }
 

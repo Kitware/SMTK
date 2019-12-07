@@ -20,7 +20,6 @@ PointConnectivity::PointConnectivity(
   const smtk::mesh::ResourcePtr& parent, const smtk::mesh::HandleRange& range)
   : m_parent(parent)
   , m_connectivity(parent->interface()->connectivityStorage(range))
-  , m_iteratorLocation()
 {
 }
 

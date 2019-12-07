@@ -18,10 +18,8 @@ namespace
 struct verify_all_off_cell_types
 {
   smtk::mesh::CellTypes ctypes;
-  verify_all_off_cell_types()
-    : ctypes()
-  { //initialize the cellTypes for this struct to be all off
-  }
+  //initialize the cellTypes for this struct to be all off
+  verify_all_off_cell_types() = default;
 
   void operator()(smtk::mesh::CellType cellEnum)
   { //this operator will be called for each CellType, so verify that

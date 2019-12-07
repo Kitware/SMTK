@@ -20,11 +20,7 @@ namespace smtk
 namespace mesh
 {
 
-PointField::PointField()
-  : m_name()
-  , m_meshset()
-{
-}
+PointField::PointField() = default;
 
 PointField::PointField(const smtk::mesh::MeshSet& meshset, const std::string& name)
   : m_name(name)

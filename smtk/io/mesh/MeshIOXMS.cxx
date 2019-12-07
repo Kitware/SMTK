@@ -773,7 +773,6 @@ bool read_dm(std::istream& stream, smtk::mesh::ResourcePtr& meshResource)
 }
 }
 MeshIOXMS::MeshIOXMS()
-  : MeshIO()
 {
   this->Formats.push_back(
     Format("xms 2d", std::vector<std::string>({ ".2dm" }), Format::Import | Format::Export));
