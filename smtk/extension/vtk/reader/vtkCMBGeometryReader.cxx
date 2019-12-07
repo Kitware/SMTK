@@ -334,7 +334,7 @@ int vtkCMBGeometryReader::RequestData(vtkInformation* vtkNotUsed(request),
       regionArray->SetName(ReaderHelperFunctions::GetShellTagName());
 
       // fill
-      for (int i = 0; i < tmpPD->GetNumberOfCells(); i++)
+      for (vtkIdType i = 0; i < tmpPD->GetNumberOfCells(); i++)
       {
         matArray->SetValue(i, materialID);
         regionArray->SetValue(i, solidID);

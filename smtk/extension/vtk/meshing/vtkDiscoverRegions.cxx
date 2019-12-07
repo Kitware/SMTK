@@ -956,7 +956,7 @@ void FindPointsInRegions(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell2f
     vec3d basePt(0.);
     vec3d tmp;
     double invNpts = 1. / npts;
-    for (int i = 0; i < npts; ++i)
+    for (vtkIdType i = 0; i < npts; ++i)
     {
       //cout << " " << conn[i];
       pts->GetPoint(conn[i], tmp.GetData());
@@ -1124,7 +1124,7 @@ vtkIdType DiscoverNestings(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell
     vec3d basePt(0.);
     vec3d tmp;
     double invNpts = 1. / npts;
-    for (int i = 0; i < npts; ++i)
+    for (vtkIdType i = 0; i < npts; ++i)
     {
       //cout << " " << conn[i];
       pts->GetPoint(conn[i], tmp.GetData());

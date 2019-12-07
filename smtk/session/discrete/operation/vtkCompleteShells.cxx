@@ -105,7 +105,7 @@ int vtkCompleteShells::RequestData(vtkInformation* /*request*/, vtkInformationVe
     modelFaceArray = vtkSmartPointer<vtkIdTypeArray>::New();
     modelFaceArray->Allocate(input->GetNumberOfCells());
     modelFaceArray->SetName(ModelParserHelper::GetModelFaceTagName());
-    for (int i = 0; i < input->GetNumberOfCells(); i++)
+    for (vtkIdType i = 0; i < input->GetNumberOfCells(); i++)
     {
       modelFaceArray->SetValue(i, -1);
       // RSB: instead of setting to -1 thinking we initialize to Region...
@@ -282,7 +282,7 @@ void vtkCompleteShells::FindRegionEdge(vtkPolyData* input, vtkDataArray* cellNor
     }
 
     // check each edge
-    for (int ptIndex = 0; ptIndex < npts; ptIndex++)
+    for (vtkIdType ptIndex = 0; ptIndex < npts; ptIndex++)
     {
       otherPtIndex = (ptIndex + 1 == npts ? 0 : ptIndex + 1);
       input->GetCellEdgeNeighbors(currentCellId, pts[ptIndex], pts[otherPtIndex], neighborIds);
@@ -297,7 +297,7 @@ void vtkCompleteShells::FindRegionEdge(vtkPolyData* input, vtkDataArray* cellNor
       // the currentCell, then ignore any other edges
       int numberOfNeighborsFromSameRegion = 0;
       vtkIdType cellIndexWithMatchingRegion = 0;
-      for (int j = 0; j < neighborIds->GetNumberOfIds(); j++)
+      for (vtkIdType j = 0; j < neighborIds->GetNumberOfIds(); j++)
       {
         if (regionArray->GetValue(neighborIds->GetId(j)) == regionId)
         {
@@ -384,13 +384,13 @@ vtkIdType vtkCompleteShells::FindHoleFillingModelFace(vtkPolyData* input, vtkDat
 
   vtkIdType cellIdToFixHole = -1;
   double bestDotResult = -10;
-  for (int j = 0; j < neighborIds->GetNumberOfIds(); j++)
+  for (vtkIdType j = 0; j < neighborIds->GetNumberOfIds(); j++)
   {
     // find pt id != to our edge
     vtkIdType neighborNPts{ 0 };
     const vtkIdType* neighborPts{ nullptr };
     input->GetCellPoints(neighborIds->GetId(j), neighborNPts, neighborPts);
-    for (int i = 0; i < neighborNPts; i++)
+    for (vtkIdType i = 0; i < neighborNPts; i++)
     {
       if (neighborPts[i] == pts[ptIndex] || neighborPts[i] == pts[otherPtIndex])
       {

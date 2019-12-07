@@ -418,7 +418,7 @@ void vtkCMBMapToCMBModel::Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkAlgo
   // the CMB Model needs to know which cells belong to which node/edge/polygon
   // build up lists of these and map them to thier respective id
   vtkIdType faceId = 0, edgeId = 0; //faces are positive ids, edges are negative ids
-  for (int cellId = 0; cellId < input->GetNumberOfCells(); cellId++)
+  for (vtkIdType cellId = 0; cellId < input->GetNumberOfCells(); cellId++)
   {
     vtkCell* cell = input->GetCell(cellId);
     vtkIdType elementId = elementIds->GetTuple1(cellId); //element id is the node/arc/poly id
@@ -479,7 +479,7 @@ void vtkCMBMapToCMBModel::Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkAlgo
   std::vector<WalkableLoop> loopId2WalkableLoop;
   loopId2WalkableLoop.resize(fieldLoopInfo->GetNumberOfTuples(), WalkableLoop());
 
-  for (int arcIndex = 0; arcIndex < fieldArcIds->GetNumberOfTuples(); arcIndex++)
+  for (vtkIdType arcIndex = 0; arcIndex < fieldArcIds->GetNumberOfTuples(); arcIndex++)
   {
     vtkIdType arcId = fieldArcIds->GetTuple1(arcIndex);
     vtkIdType endpoint1 = fieldEndpoint1->GetTuple1(arcIndex);
@@ -510,7 +510,7 @@ void vtkCMBMapToCMBModel::Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkAlgo
                                // remember the inner loops so we don't have to refind them later
                                // The inner loop ids are stored in a list of vtkIdTypes and the
   // list is associated via pair with the vtkModelFace they will belong to
-  for (int loopIndex = 0; loopIndex < fieldLoopInfo->GetNumberOfTuples(); loopIndex++)
+  for (vtkIdType loopIndex = 0; loopIndex < fieldLoopInfo->GetNumberOfTuples(); loopIndex++)
   {
     //Grab the inner and outer polygon that use this loop
     double* polyIds = vtkIdTypeArray::SafeDownCast(fieldLoopInfo)->GetTuple2(loopIndex);

@@ -93,7 +93,7 @@ void IntersectSegments(vtkPolyData* input, vtkIdType cellId, vtkRayIntersectionL
   vtkCellData* cd = output->GetCellData();
   vtkPointData* pd = output->GetPointData();
   opts->GetPoint(conn[0], ptA.GetData());
-  for (int j = 1; j < npts; ++j)
+  for (vtkIdType j = 1; j < npts; ++j)
   {
     opts->GetPoint(conn[j], ptB.GetData());
     clocator->AllIntersectionsAlongSegment(ptA, ptB, points, tvals, pcoords, cellIds, subIds);

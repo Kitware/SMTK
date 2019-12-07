@@ -13,7 +13,6 @@ bugprone-*,\
 -bugprone-sizeof-expression,\
 -bugprone-string-integer-assignment,\
 -bugprone-suspicious-string-compare,\
--bugprone-too-small-loop-variable,\
 -bugprone-unhandled-self-assignment,\
 -bugprone-unused-raii,\
 -cert-*,\

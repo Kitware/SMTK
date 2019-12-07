@@ -140,7 +140,7 @@ void vtkExtractRegionEdges::vtkInternal::BuildRegionEdges(vtkPolyData* linePolyD
     {
       lastSize = edge->size();
       linePolyData->GetPointCells(currentPtId, nCells, cellIds);
-      for (int i = 0; i < nCells; i++)
+      for (vtkIdType i = 0; i < nCells; i++)
       {
         if (cellIds[i] == currentCellId || this->EdgeSegments[cellIds[i]].AssignedToEdge ||
           outerLoopSegmentIter->RegionIds[0] != this->EdgeSegments[cellIds[i]].RegionIds[0] ||
@@ -165,7 +165,7 @@ void vtkExtractRegionEdges::vtkInternal::BuildRegionEdges(vtkPolyData* linePolyD
     {
       lastSize = edge->size();
       linePolyData->GetPointCells(currentPtId, nCells, cellIds);
-      for (int i = 0; i < nCells; i++)
+      for (vtkIdType i = 0; i < nCells; i++)
       {
         if (cellIds[i] == currentCellId || this->EdgeSegments[cellIds[i]].AssignedToEdge ||
           outerLoopSegmentIter->RegionIds[0] != this->EdgeSegments[cellIds[i]].RegionIds[0] ||

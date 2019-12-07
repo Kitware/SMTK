@@ -456,9 +456,9 @@ void vtkSMTKArcRepresentation::Initialize(vtkPolyData* pd)
   }
 
   // Clear all existing nodes.
-  for (unsigned int i = 0; i < this->Internal->Nodes.size(); i++)
+  for (size_t i = 0; i < this->Internal->Nodes.size(); i++)
   {
-    for (unsigned int j = 0; j < this->Internal->Nodes[i]->Points.size(); j++)
+    for (size_t j = 0; j < this->Internal->Nodes[i]->Points.size(); j++)
     {
       delete this->Internal->Nodes[i]->Points[j];
     }

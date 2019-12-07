@@ -91,7 +91,7 @@ int main(int /* argc */, const char* /* argv */ [])
   else
   {
     const char* expectedNames[] = { "resource1", "resource2", "resource1-different-id" };
-    for (unsigned i = 0; i < ids.size(); i++)
+    for (size_t i = 0; i < ids.size(); i++)
     {
       if (ids[i] != expectedNames[i])
       {

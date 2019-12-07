@@ -267,7 +267,7 @@ bool vtkDiscreteModelEdge::Split(
   */
 
   vtkIdType currentCellId = -1;
-  for (int i = 0; i < pointCells->GetNumberOfIds(); ++i)
+  for (vtkIdType i = 0; i < pointCells->GetNumberOfIds(); ++i)
   {
     poly->GetCellPoints(pointCells->GetId(i), currentPtIds);
     if (splitPointId == currentPtIds->GetId(0))

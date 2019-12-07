@@ -172,7 +172,6 @@ void vtkCleanPolylines::StripLines(vtkPolyData* input, vtkPolyData* result, vtkD
   vtkIdType nCells;
   // Scan each point in the input for a cell count not equal to 2 (non-manifold point)
   vtkIdType pid, lastLineId, *pCells;
-  unsigned short i;
   double l;
   for (pid = 0; pid < numPts; pid++)
   {
@@ -181,7 +180,7 @@ void vtkCleanPolylines::StripLines(vtkPolyData* input, vtkPolyData* result, vtkD
     {
       continue; // Manifold Point
     }
-    for (i = 0; i < nCells; i++)
+    for (vtkIdType i = 0; i < nCells; i++)
     {
       // Have we walked along this cell?
       ret = vCells.insert(pCells[i]);
@@ -304,7 +303,7 @@ void vtkCleanPolylines::RemoveNonManifoldFeatures(
   // Scan each point in the input for a cell count not equal to 2 (non-manifold point)
   vtkIdType *pCells, cell, nPts;
   const vtkIdType* cPnts = nullptr;
-  unsigned short i, j;
+  unsigned short j;
   double l;
   double cellLengths[2];
   vtkIdType cellIds[2], testPoints[2];
@@ -338,7 +337,7 @@ void vtkCleanPolylines::RemoveNonManifoldFeatures(
       // Find the 2 longest cells
       cellLengths[0] = cellLengths[1] = -1.0;
       cellIds[0] = cellIds[1] = -1;
-      for (i = 0; i < nCells; i++)
+      for (vtkIdType i = 0; i < nCells; i++)
       {
         if (!marks[pCells[i]])
         {
@@ -404,7 +403,7 @@ void vtkCleanPolylines::RemoveNonManifoldFeatures(
     {
       // check to see if the point is "non-manifold"
       input->GetPointCells(testPoints[j], nCells, pCells);
-      for (i = 0; i < nCells; i++)
+      for (vtkIdType i = 0; i < nCells; i++)
       {
         if (marks[pCells[i]] == 1)
         {
@@ -461,7 +460,7 @@ void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCell
     if (cellPnts[0] == lastPid)
     {
       // OK we are traversing the polyline from first to last
-      for (i = 1; i < nPnts; i++)
+      for (vtkIdType i = 1; i < nPnts; i++)
       {
         ids->InsertNextId(cellPnts[i]);
       }
@@ -486,7 +485,7 @@ void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCell
     input->GetPointCells(pid, nCells, pntCells);
     // Find the next cell that has not been rejected or moved
     cell = -1;
-    for (i = 0; i < nCells; i++)
+    for (vtkIdType i = 0; i < nCells; i++)
     {
       if (marks[pntCells[i]] == 1)
       {

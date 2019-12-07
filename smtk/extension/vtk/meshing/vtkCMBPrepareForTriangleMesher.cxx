@@ -512,7 +512,7 @@ bool vtkCMBPrepareForTriangleMesher::BuildLoopId2ArcIndexMap(
 
   typedef std::map<vtkIdType, std::vector<vtkIdType> >::iterator LoopIterator;
 
-  for (int i = 0; i < fLoop1->GetNumberOfTuples(); i++)
+  for (vtkIdType i = 0; i < fLoop1->GetNumberOfTuples(); i++)
   {
     vtkIdType loop1 = fLoop1->GetTuple1(i);
     vtkIdType loop2 = fLoop2->GetTuple1(i);
@@ -607,7 +607,7 @@ bool vtkCMBPrepareForTriangleMesher::BuildPolygonId2ModelFaceMap(
   }
 
   //Populate the ModelFaceRep's in pid2Face
-  for (int loopId = 0; loopId < fLoopInfo->GetNumberOfTuples(); loopId++)
+  for (vtkIdType loopId = 0; loopId < fLoopInfo->GetNumberOfTuples(); loopId++)
   {
     double* polyId = fLoopInfo->GetTuple2(loopId);
     //iterate twice: loopType = 0 is the outer loop

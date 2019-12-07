@@ -371,7 +371,7 @@ bool EntityGroupOperation::modifyGroup(smtk::session::discrete::Resource::Ptr& r
       if (ok)
       {
         vtkIdList* prevMaterials = m_opDomain->GetPreviousMaterialsOfGeometricEntities();
-        for (int i = 0; i < prevMaterials->GetNumberOfIds(); i++)
+        for (vtkIdType i = 0; i < prevMaterials->GetNumberOfIds(); i++)
         {
           vtkModelEntity* matEntity =
             modelWrapper->GetModelEntity(vtkModelMaterialType, prevMaterials->GetId(i));

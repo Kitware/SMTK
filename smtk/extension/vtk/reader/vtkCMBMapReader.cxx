@@ -445,7 +445,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
       {
         mapInterface->AddLoopWithArcs(id, true, outerLoopIndexes);
       }
-      for (unsigned i = 0; i < innerLoopsIndexes.size(); i++)
+      for (size_t i = 0; i < innerLoopsIndexes.size(); i++)
       {
         mapInterface->AddLoopWithArcs(id, false, innerLoopsIndexes[i]);
       }
@@ -454,7 +454,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
       //The loops have been calculated update
       //Now change the arc's field data to associate an arc with
       //a loop
-      for (unsigned int i = 0; i < outerLoopIds.size(); i++)
+      for (size_t i = 0; i < outerLoopIds.size(); i++)
       {
         vtkIdType arcId = outerLoopIds[i];
         std::vector<vtkIdType>::iterator iter;

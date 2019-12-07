@@ -354,7 +354,7 @@ void vtkSeedGrowSelectionFilter::MergeGrowSelection(
     {
       continue;
     }
-    for (int i = 0; i < array->GetNumberOfTuples(); i++)
+    for (vtkIdType i = 0; i < array->GetNumberOfTuples(); i++)
     {
       int selId = array->GetValue(i);
       ; // add in ids here to marked
@@ -434,8 +434,7 @@ int vtkSeedGrowSelectionFilter::RequestData(vtkInformation* vtkNotUsed(request),
   vtkIntArray* marked = vtkIntArray::New();
   marked->SetNumberOfComponents(1);
   marked->SetNumberOfTuples(numCells);
-  int i;
-  for (i = 0; i < numCells; i++)
+  for (vtkIdType i = 0; i < numCells; i++)
   {
     marked->SetValue(i, 0);
   }
