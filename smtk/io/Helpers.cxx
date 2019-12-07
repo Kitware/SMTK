@@ -132,7 +132,7 @@ std::string Helpers::uniqueFilename(const std::string& start, std::set<std::stri
     }
     else
     { // look for a pre-existing "_#" pattern.
-      std::size_t found = stem.find_last_of("_");
+      std::size_t found = stem.find_last_of('_');
       if (found == std::string::npos)
       {
         stem += "_1";

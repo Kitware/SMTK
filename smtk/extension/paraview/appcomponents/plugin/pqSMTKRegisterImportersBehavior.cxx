@@ -66,8 +66,8 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
   sregex_token_iterator it(fileFilters.begin(), fileFilters.end(), re, -1), last;
   for (; it != last; ++it)
   {
-    std::size_t begin = it->str().find_first_not_of(" \n\r\t*.", it->str().find_last_of("("));
-    std::size_t end = it->str().find_last_not_of(" \n\r\t", it->str().find_last_of(")"));
+    std::size_t begin = it->str().find_first_not_of(" \n\r\t*.", it->str().find_last_of('('));
+    std::size_t end = it->str().find_last_not_of(" \n\r\t", it->str().find_last_of(')'));
     std::string description = it->str().substr(0, begin);
     std::string extensions = it->str().substr(begin + 1, end - begin - 1);
 

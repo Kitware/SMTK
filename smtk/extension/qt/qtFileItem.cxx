@@ -126,7 +126,7 @@ namespace
 QString extractFileTypeName(const std::string& fileTypeDescription)
 {
   // Trim the extensions to get just the file type name
-  std::string name = fileTypeDescription.substr(0, fileTypeDescription.find_last_of("("));
+  std::string name = fileTypeDescription.substr(0, fileTypeDescription.find_last_of('('));
 
   // Trim leading and trailing whitespace, remove multiple spaces.
   name = regex_replace(name, regex("^ +| +$|( ) +"), "$1");
@@ -137,7 +137,7 @@ QString extractFileTypeName(const std::string& fileTypeDescription)
 QString extractFileTypeExtension(const std::string& fileTypeDescription)
 {
   std::size_t begin =
-    fileTypeDescription.find_first_of("*", fileTypeDescription.find_first_of("(")) + 1;
+    fileTypeDescription.find_first_of('*', fileTypeDescription.find_first_of('(')) + 1;
   std::size_t end = fileTypeDescription.find_first_of(" \n\r\t)", begin);
   std::string acceptableSuffix = fileTypeDescription.substr(begin, end - begin);
 
@@ -544,7 +544,7 @@ void qtFileItem::setInputValue(const QString& val)
       QFileInfo fi(val);
 
       std::string filters = fItemDef->getFileFilters();
-      std::size_t begin = filters.find_first_of("*", filters.find_first_of("(")) + 1;
+      std::size_t begin = filters.find_first_of('*', filters.find_first_of('(')) + 1;
       std::size_t end = filters.find_first_of(" \n\r\t", begin);
       QString acceptableSuffix(filters.substr(begin, end - begin).c_str());
 

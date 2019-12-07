@@ -56,8 +56,8 @@ int FileItemDefinition::filterId(const std::string& val) const
   sregex_token_iterator it(getFileFilters().begin(), getFileFilters().end(), re, -1), last;
   for (int id = 0; it != last; ++it, ++id)
   {
-    std::size_t begin = it->str().find_first_not_of(" \n\r\t*.", it->str().find_last_of("(") + 1);
-    std::size_t end = it->str().find_last_not_of(" \n\r\t", it->str().find_last_of(")"));
+    std::size_t begin = it->str().find_first_not_of(" \n\r\t*.", it->str().find_last_of('(') + 1);
+    std::size_t end = it->str().find_last_not_of(" \n\r\t", it->str().find_last_of(')'));
     std::string suffixes = it->str().substr(begin, end - begin);
 
     // If the suffixes string is empty, we have a permissive filter (*.*). No

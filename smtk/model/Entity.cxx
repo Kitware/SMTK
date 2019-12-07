@@ -1406,7 +1406,7 @@ Entity::QueryFunctor Entity::filterStringToQueryFunctor(const std::string& filte
   // If we can turn the filter string into a simple bit-vector comparison,
   // do that since it will be much faster to evaluate:
   std::size_t pos;
-  if ((pos = filter.find("[")) == std::string::npos)
+  if ((pos = filter.find('[')) == std::string::npos)
   {
     smtk::model::BitFlags bitflags =
       filter.empty() ? smtk::model::ANY_ENTITY : smtk::model::Entity::specifierStringToFlag(filter);

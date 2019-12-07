@@ -142,7 +142,7 @@ int vtkCUBITReader::GetNextLineOfData(ifstream& fin, std::stringstream& lineStre
 
     testString = buffer;
     // see if it is a comment or blank line
-    if (testString.empty() || testString.find("#") == 0)
+    if (testString.empty() || testString.find('#') == 0)
     {
       continue;
     }
