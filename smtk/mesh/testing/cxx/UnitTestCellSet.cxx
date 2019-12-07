@@ -36,7 +36,7 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::MeshSet all_meshes = mr->meshes();
 
   smtk::mesh::CellSet all_cells_from_ms = all_meshes.cells();
-  smtk::mesh::CellSet copy_of_all_cells(all_cells_from_ms);
+  const smtk::mesh::CellSet& copy_of_all_cells(all_cells_from_ms);
 
   test(!all_cells_from_ms.is_empty());
   test(all_cells_from_ms.size() != 0);
@@ -115,7 +115,7 @@ void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
   test(oneDim != zeroDim);
   test(!(oneDim == zeroDim));
 
-  smtk::mesh::CellSet zeroDim_a(zeroDim);
+  const smtk::mesh::CellSet& zeroDim_a(zeroDim);
   test(zeroDim_a == zeroDim);
 
   smtk::mesh::CellSet oneDim_b = zeroDim_a;

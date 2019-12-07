@@ -382,7 +382,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
     (ment = std::dynamic_pointer_cast<smtk::model::Entity>(actualParent->relatedComponent())))
   {
     bool shouldAdd = false;
-    auto parentEntity = ment;
+    const auto& parentEntity = ment;
     auto childEntity = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
     if (childEntity)
     {

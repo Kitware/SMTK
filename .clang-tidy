@@ -59,7 +59,6 @@ performance-*,\
 -performance-for-range-copy,\
 -performance-inefficient-vector-operation,\
 -performance-noexcept-move-constructor,\
--performance-unnecessary-copy-initialization,\
 -performance-inefficient-string-concatenation,\
 -performance-move-const-arg,\
 -performance-type-promotion-in-math-fn,\

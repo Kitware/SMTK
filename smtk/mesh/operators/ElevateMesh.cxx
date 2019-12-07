@@ -130,7 +130,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   // Access the mesh to elevate
   smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
   smtk::mesh::MeshSet meshset = meshItem->valueAs<smtk::mesh::Component>()->mesh();
-  smtk::mesh::Resource::Ptr resource = meshset.resource();
+  const smtk::mesh::Resource::Ptr& resource = meshset.resource();
 
   // Access the string describing the interpolation scheme
   smtk::attribute::StringItem::Ptr interpolationSchemeItem =

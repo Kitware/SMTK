@@ -129,7 +129,7 @@ void TemplateEditorMain::onLoad()
   if (dialog.exec())
   {
     QStringList names = dialog.selectedFiles();
-    QString fileName = names.at(0);
+    const QString& fileName = names.at(0);
     this->load(fileName.toStdString().c_str());
   }
 }

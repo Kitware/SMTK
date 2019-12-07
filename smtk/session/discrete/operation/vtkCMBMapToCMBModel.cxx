@@ -125,13 +125,7 @@ class WalkableLoop
 {
 public:
   //WalkableLoop(const vtkIdType& _loopId) : loopId(_loopId), numEdges(0), edge_arr(NULL), edge_dir_arr(NULL){}
-  WalkableLoop()
-    : numEdges(-1)
-    , edge_arr(nullptr)
-    , edge_dir_arr(nullptr)
-    , edge_dir_flipped(false)
-  {
-  }
+  WalkableLoop() = default;
   ~WalkableLoop()
   {
     //If numEdges is initialized it means we created edge arrays
@@ -343,10 +337,10 @@ public:
 private:
   //These are the variables that will ultimately be the output of
   //this class. Store them for easy access
-  int numEdges;
-  vtkModelEdge** edge_arr;
-  int* edge_dir_arr;
-  bool edge_dir_flipped;
+  int numEdges{ -1 };
+  vtkModelEdge** edge_arr{ nullptr };
+  int* edge_dir_arr{ nullptr };
+  bool edge_dir_flipped{ false };
 
   // We are going to view edges as unordered pairs
   // To make them searchable for each pair keep

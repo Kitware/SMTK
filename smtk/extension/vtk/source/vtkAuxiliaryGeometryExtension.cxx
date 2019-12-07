@@ -107,7 +107,7 @@ public:
   bool insert(const AuxiliaryGeometry& aux, const CacheValue& entry, bool trimCache = true)
   {
     bool hadSomeEffect = false;
-    auto dataset = std::get<DATA>(entry);
+    const auto& dataset = std::get<DATA>(entry);
     auto replace = m_cache.find(aux);
     if (replace != m_cache.end())
     { // Entry replaces an older one for the same entity.

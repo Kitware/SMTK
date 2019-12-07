@@ -85,7 +85,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
     this, [this, resourceManager](QString resourceId, int event) {
       auto id = smtk::common::UUID(resourceId.toStdString());
       auto rsrc = m_activeResources[id];
-      if (auto resource = rsrc)
+      if (const auto& resource = rsrc)
       {
         if (auto manager = resourceManager.lock())
         {
@@ -119,7 +119,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
       auto id = smtk::common::UUID(operationId.toStdString());
       m_activeOperationMutex.lock();
       auto op = m_activeOperations[id];
-      if (auto operation = op)
+      if (const auto& operation = op)
       {
         smtk::attribute::AttributePtr att;
         if (!resultName.isNull())

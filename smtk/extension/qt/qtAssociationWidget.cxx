@@ -68,13 +68,10 @@ using namespace smtk::extension;
 class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
-  qtAssociationWidgetInternals()
-    : lastHighlightedItem(nullptr)
-  {
-  }
+  qtAssociationWidgetInternals() = default;
   WeakAttributePtr currentAtt;
   QPointer<qtBaseView> view;
-  QListWidgetItem* lastHighlightedItem;
+  QListWidgetItem* lastHighlightedItem{ nullptr };
   QBrush normalBackground;
 };
 

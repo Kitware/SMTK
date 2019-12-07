@@ -66,14 +66,11 @@ using namespace smtk::extension;
 class qtFileItemInternals
 {
 public:
-  qtFileItemInternals()
-    : FileBrowser(nullptr)
-  {
-  }
+  qtFileItemInternals() = default;
   ~qtFileItemInternals() = default;
 
   bool IsDirectory;
-  QFileDialog* FileBrowser;
+  QFileDialog* FileBrowser{ nullptr };
   QPointer<QComboBox> fileCombo;
 
   QPointer<QComboBox> fileExtCombo;

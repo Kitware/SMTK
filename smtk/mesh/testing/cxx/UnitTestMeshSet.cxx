@@ -58,7 +58,7 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
 
   smtk::mesh::MeshSet ms = mr->meshes(mesh_names[0]);
 
-  smtk::mesh::MeshSet ms2(ms);
+  const smtk::mesh::MeshSet& ms2(ms);
   smtk::mesh::MeshSet ms3 = mr->meshes("bad_name");
   test(ms3.is_empty());
   test(!ms3.isValid());
@@ -87,7 +87,7 @@ void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
   test(two != one);
   test(!(two == one));
 
-  smtk::mesh::MeshSet one_a(one);
+  const smtk::mesh::MeshSet& one_a(one);
   test(one_a == one);
 
   smtk::mesh::MeshSet two_b = one_a;

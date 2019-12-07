@@ -35,14 +35,10 @@ vtkStandardNewMacro(vtkCMBMeshReader);
 
 struct vtkCMBMeshReaderInternals
 {
-  ifstream* Stream;
-  std::stringstream* Line;
+  ifstream* Stream{ nullptr };
+  std::stringstream* Line{ nullptr };
 
-  vtkCMBMeshReaderInternals()
-    : Stream(nullptr)
-    , Line(nullptr)
-  {
-  }
+  vtkCMBMeshReaderInternals() = default;
   ~vtkCMBMeshReaderInternals() { this->DeleteStreams(); }
   void DeleteStreams()
   {

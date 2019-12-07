@@ -38,7 +38,7 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::MeshSet ms = mr->meshes(mesh_names[0]);
   smtk::mesh::PointSet ps = ms.points();
 
-  smtk::mesh::PointSet ps2(ps);
+  const smtk::mesh::PointSet& ps2(ps);
   smtk::mesh::PointSet ps3 = mr->meshes("bad_name").points();
   test(ps3.is_empty());
   test(ps3.size() == 0);
@@ -100,7 +100,7 @@ void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
   test(two != one);
   test(!(two == one));
 
-  smtk::mesh::PointSet one_a(one);
+  const smtk::mesh::PointSet& one_a(one);
   test(one_a == one);
 
   smtk::mesh::PointSet two_b = one_a;

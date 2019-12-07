@@ -50,7 +50,7 @@ void to_json(json& j, const EntityIterator& iter)
 
   for (mit.begin(); !mit.isAtEnd(); ++mit)
   {
-    EntityRef ent = mit.current();
+    const EntityRef& ent = mit.current();
     EntityPtr eptr;
     if (ent.isValid(&eptr))
     {

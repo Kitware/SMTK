@@ -32,12 +32,9 @@ vtkStandardNewMacro(vtkGMSTINReader);
 
 struct vtkGMSTINReaderInternals
 {
-  ifstream* Stream;
+  ifstream* Stream{ nullptr };
 
-  vtkGMSTINReaderInternals()
-    : Stream(nullptr)
-  {
-  }
+  vtkGMSTINReaderInternals() = default;
   ~vtkGMSTINReaderInternals() { this->DeleteStream(); }
   void DeleteStream()
   {

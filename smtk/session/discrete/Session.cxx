@@ -2205,7 +2205,7 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
   {
     if (mbit->first == dmod)
     {
-      smtk::common::UUID modelId = modRef.entity();
+      const smtk::common::UUID& modelId = modRef.entity();
       m_modelsToSessions.erase(mbit);
       vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = m_modelIdsToRefs[modelId];
       m_modelIdsToRefs.erase(modelId);
@@ -2219,7 +2219,7 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
 
 void Session::retranscribeModel(const smtk::model::Model& inModel)
 {
-  smtk::common::UUID mid = inModel.entity();
+  const smtk::common::UUID& mid = inModel.entity();
   smtk::model::StringList const& urlprop(inModel.stringProperty("url"));
   std::string url;
   if (!urlprop.empty())

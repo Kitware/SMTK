@@ -44,13 +44,10 @@ vtkDataSet* readXMLFile(const std::string& fileName)
 
 class ShellPerMesh : public smtk::mesh::MeshForEach
 {
-  int currentMaterialValue;
+  int currentMaterialValue{ 0 };
 
 public:
-  ShellPerMesh()
-    : currentMaterialValue(0)
-  {
-  }
+  ShellPerMesh() = default;
 
   void forMesh(smtk::mesh::MeshSet& mesh) override
   {

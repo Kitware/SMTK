@@ -376,7 +376,7 @@ SessionInfoBits Resource::erase(const EntityPtr& entityref, SessionInfoBits flag
   */
 SessionInfoBits Resource::hardErase(const EntityRef& eref, SessionInfoBits flags)
 {
-  smtk::common::UUID uid(eref.entity());
+  const smtk::common::UUID& uid(eref.entity());
   if (!uid)
   {
     return SessionInfoBits(0);

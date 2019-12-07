@@ -32,12 +32,9 @@ vtkStandardNewMacro(vtkGMSSolidReader);
 
 struct vtkGMSSolidReaderInternals
 {
-  ifstream* Stream;
+  ifstream* Stream{ nullptr };
 
-  vtkGMSSolidReaderInternals()
-    : Stream(nullptr)
-  {
-  }
+  vtkGMSSolidReaderInternals() = default;
   ~vtkGMSSolidReaderInternals() { this->DeleteStream(); }
   void DeleteStream()
   {

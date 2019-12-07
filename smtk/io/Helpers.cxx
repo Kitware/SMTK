@@ -45,7 +45,7 @@ bool Helpers::isDirectoryASubdirectory(
     */
 
   path ar = weakly_canonical(aa);
-  path br = bc;
+  const path& br = bc;
 
   // Want to use std::mismatch(ar.begin(), ar.end(), br.begin(), br.end()).first == ar.end();
   // but it fails to compile on macos because "path::iterator does not provide a call operator".

@@ -43,12 +43,7 @@ public:
     TILED,
     GROUP_BOX
   };
-  qtGroupViewInternals()
-    : m_style(TABBED)
-    , m_currentTabSelected(0)
-    , m_tabPosition(QTabWidget::East)
-  {
-  }
+  qtGroupViewInternals() = default;
 
   void updateChildren(qtGroupView* gview, qtBaseViewMemFn mfunc);
 
@@ -59,10 +54,10 @@ public:
   QList<QWidget*> m_PageWidgets;
   QList<QIcon> m_PageIcons;
   QList<QLabel*> m_Labels;
-  qtGroupViewInternals::Style m_style;
+  qtGroupViewInternals::Style m_style{ TABBED };
   std::vector<smtk::view::ConfigurationPtr> m_activeViews;
-  int m_currentTabSelected;
-  QTabWidget::TabPosition m_tabPosition;
+  int m_currentTabSelected{ 0 };
+  QTabWidget::TabPosition m_tabPosition{ QTabWidget::East };
   std::string m_savedViewName;
 };
 

@@ -37,7 +37,7 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::MeshSet all_meshes = mr->meshes();
 
   smtk::mesh::PointConnectivity all_cells_from_ms = all_meshes.pointConnectivity();
-  smtk::mesh::PointConnectivity copy_of_all_cells(all_cells_from_ms);
+  const smtk::mesh::PointConnectivity& copy_of_all_cells(all_cells_from_ms);
 
   test(!all_cells_from_ms.is_empty());
   test(all_cells_from_ms.size() != 0);
@@ -113,7 +113,7 @@ void verify_simple_equiv(const smtk::mesh::ResourcePtr& mr)
   test(oneDim != twoDim);
   test(!(oneDim == twoDim));
 
-  smtk::mesh::PointConnectivity twoDim_a(twoDim);
+  const smtk::mesh::PointConnectivity& twoDim_a(twoDim);
   test(twoDim_a == twoDim);
 
   smtk::mesh::PointConnectivity oneDim_b = twoDim_a;

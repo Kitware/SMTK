@@ -120,7 +120,7 @@ void PreviewPanel::updateCurrentView(const QModelIndex& current, const QModelInd
 {
   Q_UNUSED(previous);
   const AttDefDataModel* model = qobject_cast<const AttDefDataModel*>(current.model());
-  const auto def = model->get(current);
+  const auto& def = model->get(current);
 
   // TODO It might be necessary to remove views (in order to save/export only those
   // views created by the user or already available beforehand).

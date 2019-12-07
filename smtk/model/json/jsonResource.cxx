@@ -63,7 +63,7 @@ void to_json(json& j, const ResourcePtr& mresource)
     eit.traverse(model, IteratorStyle::ITERATE_CHILDREN);
     for (eit.begin(); !eit.isAtEnd(); ++eit)
     {
-      EntityRef ent = eit.current();
+      const EntityRef& ent = eit.current();
       EntityPtr eptr;
       if (ent.isValid(&eptr))
       {

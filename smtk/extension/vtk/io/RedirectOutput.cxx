@@ -46,15 +46,12 @@ protected:
 
   FormattedOutput ParseOutput(const char* msg) const;
 
-  smtk::io::Logger* Log;
+  smtk::io::Logger* Log{};
 };
 
 vtkStandardNewMacro(OutputWindow);
 
-OutputWindow::OutputWindow()
-  : Log()
-{
-}
+OutputWindow::OutputWindow() = default;
 
 OutputWindow::~OutputWindow() = default;
 
