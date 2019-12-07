@@ -108,6 +108,7 @@ Write::Result Write::operateInternal()
   }
 
   std::vector<std::string> preservedUUIDsStr;
+  preservedUUIDsStr.reserve(preservedUUIDs.size());
   for (auto& id : preservedUUIDs)
   {
     preservedUUIDsStr.push_back(id.toString());

@@ -24,6 +24,7 @@ void foo(int i)
 int main()
 {
   std::vector<std::thread> threads;
+  threads.reserve(10);
   for (int i = 0; i < 10; i++)
   {
     threads.emplace_back(std::thread(foo, i));
