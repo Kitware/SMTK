@@ -28,7 +28,7 @@ using namespace smtk::attribute;
 using namespace smtk::common;
 using namespace smtk;
 
-int unitAttributeAssociation(int, char* [])
+int unitAttributeAssociation(int /*unused*/, char* /*unused*/ [])
 {
   // ----
   // I. First see how things work when Resource is not yet set.

@@ -68,7 +68,7 @@ SelectCells::Result SelectCells::operateInternal()
   return result;
 }
 
-void SelectCells::generateSummary(Operation::Result&)
+void SelectCells::generateSummary(Operation::Result& /*unused*/)
 {
 }
 

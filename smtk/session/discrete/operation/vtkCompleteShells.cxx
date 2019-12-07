@@ -49,7 +49,7 @@ vtkCompleteShells::~vtkCompleteShells()
   delete this->Internals;
 }
 
-int vtkCompleteShells::FillInputPortInformation(int, vtkInformation* info)
+int vtkCompleteShells::FillInputPortInformation(int /*port*/, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");
   return 1;

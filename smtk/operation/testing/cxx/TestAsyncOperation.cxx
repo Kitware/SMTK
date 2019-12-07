@@ -89,7 +89,7 @@ const char* MyOperation::xmlDescription() const
 }
 }
 
-int TestAsyncOperation(int, char** const)
+int TestAsyncOperation(int /*unused*/, char** const /*unused*/)
 {
   int sleepValue = 3;
 

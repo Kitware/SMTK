@@ -108,7 +108,7 @@ struct vtkPolylineTriangulatorFacetFromPolyArray
 
 struct vtkPolylineTriangulatorOneFacet
 {
-  vtkIdType operator()(vtkIdType) const { return 0; }
+  vtkIdType operator()(vtkIdType /*unused*/) const { return 0; }
 };
 
 struct vtkPolylineTriangulatorOneFacetPerPoly
@@ -175,7 +175,7 @@ static vec2d ProjectPointToPlane(const vec3d& pt, const vec3d& basePt, const vec
   return projection;
 }
 
-void ProjectLoop(vtkIdType vtkNotUsed(modelFace), FacetLoops& loop)
+void ProjectLoop(vtkIdType /*modelFace*/, FacetLoops& loop)
 {
   vec3d pt;
   int numPts = static_cast<int>(loop.Length.back());
@@ -585,8 +585,7 @@ static void RecursivelyAssignPolygonId(
 // \a facet has exactly one loop of 3 distinct vertices (4 vertices
 // including the repeated vertex at the front+back of facet.Conn)
 static void TriangulateATriangle(vtkPolyData* pdIn, vtkIdType modelFaceId,
-  vtkIdType& vtkNotUsed(nextPolygon), FacetLoops& facet, vtkPolyData* pdOut,
-  vtkIdTypeArray* pedigreeIds)
+  vtkIdType& /*nextPolygon*/, FacetLoops& facet, vtkPolyData* pdOut, vtkIdTypeArray* pedigreeIds)
 {
   if (facet.Length.size() != 1 || facet.Length[0] != 4)
   {
@@ -863,7 +862,7 @@ int vtkPolylineTriangulator::FillInputPortInformation(int port, vtkInformation* 
   return 1;
 }
 
-int vtkPolylineTriangulator::RequestData(vtkInformation* vtkNotUsed(req),
+int vtkPolylineTriangulator::RequestData(vtkInformation* /*request*/,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   vtkPolyData* pdIn = vtkPolyData::GetData(inputVector[0], 0);

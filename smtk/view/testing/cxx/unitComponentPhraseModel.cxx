@@ -186,7 +186,7 @@ int unitComponentPhraseModel(int argc, char* argv[])
     smtk::resource::ComponentArray faces;
     smtk::model::EntityPtr fmod; // model owning the faces
     phraseModel->root()->visitChildren(
-      [&faces, &fmod](DescriptivePhrasePtr p, const std::vector<int>&) {
+      [&faces, &fmod](DescriptivePhrasePtr p, const std::vector<int>& /*unused*/) {
         auto comp = p->relatedComponent();
         faces.push_back(comp);
         auto ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp);

@@ -118,7 +118,7 @@ void verify_points_find_themselves(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestPointLocator(int, char** const)
+int UnitTestPointLocator(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

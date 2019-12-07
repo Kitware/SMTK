@@ -91,7 +91,7 @@ std::function<bool(const resource::ConstComponentPtr&)> Resource::queryOperation
 {
   // TODO
   (void)queryString;
-  return [](const resource::ConstComponentPtr&) { return true; };
+  return [](const resource::ConstComponentPtr& /*unused*/) { return true; };
 }
 
 // visit all components in the resource.

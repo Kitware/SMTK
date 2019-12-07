@@ -396,8 +396,8 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     {
       vtkSmartPointer<vtkDataObject> cgeom;
       smtk::common::Extension::visit<vtkAuxiliaryGeometryExtension::Ptr>(
-        [&cgeom, &aux](
-          const std::string&, vtkAuxiliaryGeometryExtension::Ptr ext) -> std::pair<bool, bool> {
+        [&cgeom, &aux](const std::string& /*unused*/,
+          vtkAuxiliaryGeometryExtension::Ptr ext) -> std::pair<bool, bool> {
           std::vector<double> bbox;
           if (ext->canHandleAuxiliaryGeometry(aux, bbox))
           {
@@ -954,8 +954,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
+int vtkModelMultiBlockSource::RequestData(
+  vtkInformation* /*request*/, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
 {
   auto resource = this->GetModelResource();
   this->UUID2BlockIdMap.clear();

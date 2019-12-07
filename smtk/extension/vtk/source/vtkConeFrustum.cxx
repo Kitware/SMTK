@@ -77,8 +77,8 @@ double vtkConeFrustum::GetAngle() const
   return vtkMath::DegreesFromRadians(atan2(fabs(this->TopRadius - this->BottomRadius), height));
 }
 
-int vtkConeFrustum::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkConeFrustum::RequestData(vtkInformation* /*request*/, vtkInformationVector** /*inputVector*/,
+  vtkInformationVector* outputVector)
 {
   // vtkInformation* outInfo = outputVector->GetInformationObject(0);
   vtkPolyData* conical =

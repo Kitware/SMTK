@@ -93,7 +93,7 @@ bool GarbageCollector::add(const smtk::operation::OperationPtr& deleter)
 }
 
 int GarbageCollector::collectGarbage(const smtk::operation::Operation& op,
-  smtk::operation::EventType event, smtk::operation::Operation::Result)
+  smtk::operation::EventType event, smtk::operation::Operation::Result /*unused*/)
 {
   (void)op;
   if (event == smtk::operation::EventType::DID_OPERATE)

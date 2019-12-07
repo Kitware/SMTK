@@ -125,8 +125,8 @@ int vtkCMBGeometry2DReader::GetMarginFromString(const char* text, double vals[4]
   return numVals;
 }
 
-int vtkCMBGeometry2DReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCMBGeometry2DReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {
@@ -137,8 +137,8 @@ int vtkCMBGeometry2DReader::RequestInformation(vtkInformation* vtkNotUsed(reques
   return 1;
 }
 
-int vtkCMBGeometry2DReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCMBGeometry2DReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
   vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));

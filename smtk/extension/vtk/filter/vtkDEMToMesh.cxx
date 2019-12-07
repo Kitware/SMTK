@@ -48,7 +48,7 @@ int vtkDEMToMesh::FillInputPortInformation(int /*port*/, vtkInformation* info)
   return 1;
 }
 
-int vtkDEMToMesh::RequestData(vtkInformation* vtkNotUsed(req), vtkInformationVector** inputVector,
+int vtkDEMToMesh::RequestData(vtkInformation* /*request*/, vtkInformationVector** inputVector,
   vtkInformationVector* outputVector)
 {
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);

@@ -156,7 +156,7 @@ void verify_create_mesh_marks_modified()
 }
 }
 
-int UnitTestCreateMesh(int, char** const)
+int UnitTestCreateMesh(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh(smtk::mesh::moab::make_interface());
 

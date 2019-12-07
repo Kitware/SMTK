@@ -188,8 +188,8 @@ void vtkLIDARReader::SetTransform(double elements[16])
   tmpTransform->Delete();
 }
 
-int vtkLIDARReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkLIDARReader::RequestData(vtkInformation* /*request*/, vtkInformationVector** /*inputVector*/,
+  vtkInformationVector* outputVector)
 {
   int res = this->ReadFileInfo();
   if (res == READ_ERROR)
@@ -844,8 +844,8 @@ void vtkLIDARReader::PrintSelf(ostream& os, vtkIndent indent)
      << "Convert From Lat/Long to xyz: " << (this->ConvertFromLatLongToXYZ ? "On" : "Off");
 }
 
-int vtkLIDARReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkLIDARReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

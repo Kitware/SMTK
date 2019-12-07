@@ -16,11 +16,11 @@ namespace common
 {
 namespace detail
 {
-void to_json(json&, const NullLinkBase&)
+void to_json(json& /*unused*/, const NullLinkBase& /*unused*/)
 {
 }
 
-void from_json(const json&, NullLinkBase&)
+void from_json(const json& /*unused*/, NullLinkBase& /*unused*/)
 {
 }
 }

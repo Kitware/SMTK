@@ -334,7 +334,7 @@ ComponentDefinitionVector extractComponentDefinitions(Operation::Specification s
 
     // For each definition, gather all of the components using a filter.
     auto componentItemDefinitionFilter = [](
-      smtk::attribute::ComponentItemDefinition::Ptr) { return true; };
+      smtk::attribute::ComponentItemDefinition::Ptr /*unused*/) { return true; };
     for (auto& definition : definitions)
     {
       definition->filterItemDefinitions(componentItemDefinitions, componentItemDefinitionFilter);

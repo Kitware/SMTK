@@ -609,7 +609,7 @@ void verify_cellset_for_each(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestCellSet(int, char** const)
+int UnitTestCellSet(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

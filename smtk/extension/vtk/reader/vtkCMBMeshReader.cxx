@@ -78,8 +78,8 @@ vtkCMBMeshReader::~vtkCMBMeshReader()
   delete this->Internals;
 }
 
-int vtkCMBMeshReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCMBMeshReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   if (!this->FileName || (strlen(this->FileName) == 0))
   {
@@ -446,8 +446,8 @@ void vtkCMBMeshReader::PrintSelf(ostream& os, vtkIndent indent)
      << endl;
 }
 
-int vtkCMBMeshReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCMBMeshReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

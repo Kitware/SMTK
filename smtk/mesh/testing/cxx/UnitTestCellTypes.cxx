@@ -169,7 +169,7 @@ struct verify_cell_attributes
 #endif
 }
 
-int UnitTestCellTypes(int, char** const)
+int UnitTestCellTypes(int /*unused*/, char** const /*unused*/)
 {
   std::cout << "verify_cell_attributes" << std::endl;
   smtk::mesh::testing::TryAllCells(verify_cell_attributes());

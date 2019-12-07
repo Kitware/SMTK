@@ -159,7 +159,7 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
   smtk::attribute::IntItem::Ptr modeItem = this->parameters()->findInt("interpmode");
 
   // Construct a prefilter for the input data
-  std::function<bool(double)> prefilter = [](double) { return true; };
+  std::function<bool(double)> prefilter = [](double /*unused*/) { return true; };
   {
     // Access the input filter parameter group
     smtk::attribute::GroupItem::Ptr inputFilterItem = this->parameters()->findGroup("input filter");
@@ -343,12 +343,12 @@ InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()
     if (externalPointItem->value() == "set to NaN")
     {
       externalDataPoint = [](
-        std::array<double, 3>) { return std::numeric_limits<double>::quiet_NaN(); };
+        std::array<double, 3> /*unused*/) { return std::numeric_limits<double>::quiet_NaN(); };
     }
     else if (externalPointItem->value() == "set to value")
     {
       double externalPointValue = this->parameters()->findDouble("external point value")->value();
-      externalDataPoint = [=](std::array<double, 3>) { return externalPointValue; };
+      externalDataPoint = [=](std::array<double, 3> /*unused*/) { return externalPointValue; };
     }
   }
 

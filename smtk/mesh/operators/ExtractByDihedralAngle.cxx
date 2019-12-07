@@ -70,7 +70,8 @@ public:
     return n;
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+    int /*numPointIds*/) override
   {
     m_normalsMap[cellId] = this->unitNormal();
   }
@@ -96,7 +97,8 @@ public:
 
   void clear() { m_newCells.clear(); }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int nPoints) override
+  void forCell(
+    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*unused*/, int nPoints) override
   {
     (void)nPoints;
     assert(nPoints == 3);

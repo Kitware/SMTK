@@ -114,7 +114,7 @@ pqSMTKOperationPanel::~pqSMTKOperationPanel()
   delete m_p;
 }
 
-void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer*)
+void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer* /*unused*/)
 {
   if (wrapper)
   {
@@ -160,7 +160,7 @@ void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer*)
   m_availableOperations->setUseSelection(useSelection);
 }
 
-void pqSMTKOperationPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqServer*)
+void pqSMTKOperationPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqServer* /*unused*/)
 {
   if (wrapper != m_wrapper)
   {
@@ -273,7 +273,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
         // Gather all resource items
         std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
         std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
-          smtk::attribute::ResourceItemPtr) { return true; };
+          smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
         result->filterItems(resourceItems, filter);
 
         // For each resource item found...

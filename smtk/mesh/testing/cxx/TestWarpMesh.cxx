@@ -85,7 +85,8 @@ public:
     m_hist.resize(nBins, 0);
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& /*coordinatesModified*/) override
   {
     std::size_t counter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);

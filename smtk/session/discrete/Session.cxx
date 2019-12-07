@@ -579,7 +579,7 @@ struct LookupSenseOfUse
 template <>
 struct LookupSenseOfUse<vtkModelVertexUse>
 {
-  LookupSenseOfUse(ArrangementHelper*) {}
+  LookupSenseOfUse(ArrangementHelper* /*unused*/) {}
 
   bool operator()(vtkModelItem* dscEntity, int& sense, Orientation& orientation)
   {

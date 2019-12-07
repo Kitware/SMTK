@@ -126,7 +126,7 @@ void verify_DimsType_usage()
 }
 }
 
-int UnitTestQueryTypes(int, char** const)
+int UnitTestQueryTypes(int /*unused*/, char** const /*unused*/)
 {
   verify_dims_value();
   verify_CellTypes_usage();

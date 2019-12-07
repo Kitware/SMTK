@@ -102,7 +102,8 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+    bool& /*coordinatesModified*/) override
   {
     std::vector<double> values(pointIds.size());
     m_pointField.get(pointIds, &values[0]);

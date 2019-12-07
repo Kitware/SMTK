@@ -94,7 +94,7 @@ qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
 qtReferenceItem::~qtReferenceItem()
 {
   this->removeObservers();
-  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
+  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr /*unused*/) {});
   delete m_p;
   m_p = nullptr;
 }

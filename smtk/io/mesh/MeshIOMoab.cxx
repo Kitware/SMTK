@@ -49,14 +49,14 @@ MeshIOMoab::MeshIOMoab()
     Format("obj", std::vector<std::string>({ ".obj" }), Format::Import | Format::Export));
 }
 
-smtk::mesh::ResourcePtr MeshIOMoab::importMesh(
-  const std::string& filePath, const smtk::mesh::InterfacePtr& interface, const std::string&) const
+smtk::mesh::ResourcePtr MeshIOMoab::importMesh(const std::string& filePath,
+  const smtk::mesh::InterfacePtr& interface, const std::string& /*unused*/) const
 {
   return this->read(filePath, interface, Subset::EntireResource);
 }
 
-bool MeshIOMoab::importMesh(
-  const std::string& filePath, smtk::mesh::ResourcePtr resource, const std::string&) const
+bool MeshIOMoab::importMesh(const std::string& filePath, smtk::mesh::ResourcePtr resource,
+  const std::string& /*unused*/) const
 {
   return this->read(filePath, resource, Subset::EntireResource);
 }
@@ -76,7 +76,7 @@ bool MeshIOMoab::exportMesh(const std::string& filePath, smtk::mesh::ResourcePtr
 // }
 
 smtk::mesh::ResourcePtr MeshIOMoab::read(
-  const std::string& filePath, const smtk::mesh::InterfacePtr&, Subset subset) const
+  const std::string& filePath, const smtk::mesh::InterfacePtr& /*unused*/, Subset subset) const
 {
   smtk::mesh::ResourcePtr resource;
 

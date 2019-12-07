@@ -61,7 +61,7 @@ private:
 };
 }
 
-int UnitTestDerivedThreadPool(int, char** const)
+int UnitTestDerivedThreadPool(int /*unused*/, char** const /*unused*/)
 {
   StoppableThreadPool<bool> threadPool(2);
   std::vector<std::future<bool> > futures;

@@ -132,7 +132,7 @@ PhraseModel::PhraseModel()
   : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
   , m_mutableAspects(PhraseContent::EVERYTHING)
 {
-  m_decorator = [](smtk::view::DescriptivePhrasePtr) {};
+  m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
 }
 
 PhraseModel::~PhraseModel()
@@ -419,16 +419,17 @@ void PhraseModel::handleCreated(
 
 void PhraseModel::redecorate()
 {
-  this->root()->visitChildren([this](DescriptivePhrasePtr phr, std::vector<int>&) -> int {
-    PhraseContentPtr topContent = phr->content();
-    PhraseContentPtr content = topContent->undecoratedContent();
-    if (content != topContent)
-    {
-      phr->setContent(content);
-    }
-    this->decoratePhrase(phr);
-    return 0; // Continue iterating, incl. children.
-  });
+  this->root()->visitChildren(
+    [this](DescriptivePhrasePtr phr, std::vector<int> & /*unused*/) -> int {
+      PhraseContentPtr topContent = phr->content();
+      PhraseContentPtr content = topContent->undecoratedContent();
+      if (content != topContent)
+      {
+        phr->setContent(content);
+      }
+      this->decoratePhrase(phr);
+      return 0; // Continue iterating, incl. children.
+    });
 }
 
 void PhraseModel::updateChildren(

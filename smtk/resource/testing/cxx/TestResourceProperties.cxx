@@ -80,9 +80,9 @@ public:
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor& visitor) const override
@@ -101,7 +101,7 @@ private:
 };
 }
 
-int TestResourceProperties(int, char** const)
+int TestResourceProperties(int /*unused*/, char** const /*unused*/)
 {
   {
     // Create a Resource.

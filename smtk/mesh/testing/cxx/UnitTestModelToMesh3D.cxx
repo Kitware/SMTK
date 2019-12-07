@@ -344,7 +344,7 @@ void verify_cell_have_points()
 }
 }
 
-int UnitTestModelToMesh3D(int, char** const)
+int UnitTestModelToMesh3D(int /*unused*/, char** const /*unused*/)
 {
   verify_empty_model();
   verify_model_association();

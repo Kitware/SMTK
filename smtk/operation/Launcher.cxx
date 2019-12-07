@@ -31,7 +31,7 @@ public:
   {
   }
 
-  DefaultLauncher(const DefaultLauncher&)
+  DefaultLauncher(const DefaultLauncher& /*unused*/)
     : m_pool(new smtk::common::ThreadPool<smtk::operation::Operation::Result>)
   {
   }

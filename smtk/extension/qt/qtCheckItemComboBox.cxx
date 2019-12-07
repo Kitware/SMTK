@@ -129,7 +129,7 @@ bool qtCheckItemComboBox::eventFilter(QObject* editor, QEvent* evt)
   return QObject::eventFilter(editor, evt);
 }
 
-void qtCheckItemComboBox::showEvent(QShowEvent*)
+void qtCheckItemComboBox::showEvent(QShowEvent* /*e*/)
 {
   this->init();
 }

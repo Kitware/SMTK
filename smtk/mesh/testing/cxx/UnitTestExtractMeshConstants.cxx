@@ -68,7 +68,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+    int /*numPointIds*/) override
   {
     // default to the value for unlabeled domains
     std::int64_t domainValue = -1;
@@ -106,7 +107,8 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+    bool& /*coordinatesModified*/) override
   {
     for (auto point = pointIds.begin(); point != pointIds.end(); ++point)
     {
@@ -181,7 +183,7 @@ void verify_extract_domain()
 }
 }
 
-int UnitTestExtractMeshConstants(int, char** const)
+int UnitTestExtractMeshConstants(int /*unused*/, char** const /*unused*/)
 {
   verify_extract_domain();
 

@@ -17,7 +17,7 @@
 
 using nlohmann::json;
 
-int UnitTestIntervals(int, char** const)
+int UnitTestIntervals(int /*unused*/, char** const /*unused*/)
 {
   using namespace smtk::mesh;
 

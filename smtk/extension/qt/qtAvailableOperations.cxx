@@ -48,7 +48,7 @@ void qtAvailableOperations::setOperationSource(smtk::view::AvailableOperationsPt
   if (m_operationSource)
   {
     m_operationSourceObserverId = m_operationSource->observers().insert(
-      [this](smtk::view::AvailableOperationsPtr) { this->updateList(); },
+      [this](smtk::view::AvailableOperationsPtr /*unused*/) { this->updateList(); },
       0,    // assign a neutral priority
       true, // immediatelyInvoke
       "qtAvailableOperations: Update list of available operations.");

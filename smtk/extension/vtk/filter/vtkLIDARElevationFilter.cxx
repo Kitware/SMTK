@@ -63,8 +63,8 @@ void vtkLIDARElevationFilter::SetTransform(double elements[16])
   tmpTransform->Delete();
 }
 
-int vtkLIDARElevationFilter::RequestData(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkLIDARElevationFilter::RequestData(vtkInformation* /*unused*/,
+  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   // Get the input and output data objects.
   vtkDataSet* input = vtkDataSet::GetData(inputVector[0]);

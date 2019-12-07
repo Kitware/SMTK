@@ -146,7 +146,7 @@ void verify_tet_typeset_queries(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestTypeSetFromData(int, char** const)
+int UnitTestTypeSetFromData(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr hexMeshResource = load_hex_mesh();
   verify_hex_typeset_queries(hexMeshResource);

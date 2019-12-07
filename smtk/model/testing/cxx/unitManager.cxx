@@ -25,7 +25,8 @@ static int subgroups = 0;
 static int subcells = 0;
 static int submodels = 0;
 
-int entityResourceEvent(ResourceEventType evt, const smtk::model::EntityRef&, void*)
+int entityResourceEvent(
+  ResourceEventType evt, const smtk::model::EntityRef& /*unused*/, void* /*unused*/)
 {
   if (evt.first == ADD_EVENT)
     ++entCount;
@@ -35,7 +36,7 @@ int entityResourceEvent(ResourceEventType evt, const smtk::model::EntityRef&, vo
 }
 
 int addEntityToModel(ResourceEventType evt, const smtk::model::EntityRef& src,
-  const smtk::model::EntityRef& related, void*)
+  const smtk::model::EntityRef& related, void* /*unused*/)
 {
   if (evt.first == ADD_EVENT)
   {

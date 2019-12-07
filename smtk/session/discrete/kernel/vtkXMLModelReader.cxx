@@ -147,7 +147,7 @@ void vtkXMLModelReader::GetElementsByType(
   }
 }
 
-void vtkXMLModelReader::Serialize(istream& str, const char*)
+void vtkXMLModelReader::Serialize(istream& str, const char* /*unused*/)
 {
   this->ParseStream(str);
 

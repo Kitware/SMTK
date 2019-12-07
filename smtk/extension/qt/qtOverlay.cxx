@@ -44,7 +44,7 @@ void qtOverlay::addOverlayWidget(QWidget* w)
   }
 }
 
-void qtOverlay::paintEvent(QPaintEvent*)
+void qtOverlay::paintEvent(QPaintEvent* /*event*/)
 {
   QPainter p(this);
   p.fillRect(rect(), m_overlayColor);

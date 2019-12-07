@@ -682,7 +682,7 @@ void qtReferenceItemComboBox::removeObservers()
   }
 }
 
-int qtReferenceItemComboBox::handleOperationEvent(const smtk::operation::Operation&,
+int qtReferenceItemComboBox::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
   smtk::operation::EventType event, smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)

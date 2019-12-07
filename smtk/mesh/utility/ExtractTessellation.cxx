@@ -88,7 +88,7 @@ inline std::size_t smtkToVTKLocation(const std::size_t& location, int numPts)
   return location + numPts + 1;
 }
 
-inline std::size_t smtkToSMTKConn(std::int64_t&, std::size_t index, int)
+inline std::size_t smtkToSMTKConn(std::int64_t& /*unused*/, std::size_t index, int /*unused*/)
 {
   //do nothing as we aren't storing the length of each cell in the connectivity
   //array

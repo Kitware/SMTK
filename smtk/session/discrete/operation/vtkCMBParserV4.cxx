@@ -48,8 +48,8 @@ vtkCMBParserV4::vtkCMBParserV4() = default;
 
 vtkCMBParserV4::~vtkCMBParserV4() = default;
 
-bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
-  smtk::session::discrete::Session* vtkNotUsed(session))
+bool vtkCMBParserV4::Parse(
+  vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::session::discrete::Session* /*session*/)
 {
   Model->Reset();
 

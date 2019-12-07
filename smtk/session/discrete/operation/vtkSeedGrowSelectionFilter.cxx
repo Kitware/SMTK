@@ -368,7 +368,7 @@ void vtkSeedGrowSelectionFilter::MergeGrowSelection(
   }
 }
 
-int vtkSeedGrowSelectionFilter::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkSeedGrowSelectionFilter::RequestData(vtkInformation* /*request*/,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   vtkSelection* output = vtkSelection::GetData(outputVector);

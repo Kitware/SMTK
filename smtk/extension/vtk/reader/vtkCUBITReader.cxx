@@ -34,8 +34,8 @@ vtkCUBITReader::~vtkCUBITReader()
   this->SetFileName(nullptr);
 }
 
-int vtkCUBITReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCUBITReader::RequestData(vtkInformation* /*request*/, vtkInformationVector** /*inputVector*/,
+  vtkInformationVector* outputVector)
 {
   // get the info object
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -160,8 +160,8 @@ void vtkCUBITReader::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "File Name: " << (this->FileName ? this->FileName : "(none)") << "\n";
 }
 
-int vtkCUBITReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCUBITReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

@@ -93,7 +93,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
       // cancel whatever action is removing the manager from the server. All we
       // can do is prompt the user to save any modified resources held by the
       // server.
-      auto onRemovingManagerFromServer = [&](pqSMTKWrapper* wrapper, pqServer*) {
+      auto onRemovingManagerFromServer = [&](pqSMTKWrapper* wrapper, pqServer* /*unused*/) {
         std::size_t numberOfUnsavedResources = 0;
         if (!wrapper)
         {
@@ -138,7 +138,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
         &pqMainWindowEventManager::close, [](QCloseEvent* closeEvent) {
           std::size_t numberOfUnsavedResources = 0;
           pqSMTKBehavior::instance()->visitResourceManagersOnServers(
-            [&numberOfUnsavedResources](pqSMTKWrapper* wrapper, pqServer*) {
+            [&numberOfUnsavedResources](pqSMTKWrapper* wrapper, pqServer* /*unused*/) {
               if (!wrapper)
               {
                 return false;
@@ -163,7 +163,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
             if (ret == QMessageBox::Save)
             {
               pqSMTKBehavior::instance()->visitResourceManagersOnServers(
-                [&](pqSMTKWrapper* wrapper, pqServer*) {
+                [&](pqSMTKWrapper* wrapper, pqServer* /*unused*/) {
                   wrapper->visitResources([&](pqSMTKResource* smtkResource) {
                     pqActiveObjects* activeObjects = &pqActiveObjects::instance();
                     activeObjects->setActiveSource(smtkResource);

@@ -63,7 +63,7 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 }
 }
 
-int UnitTestTriangulateFaces(int, char** const)
+int UnitTestTriangulateFaces(int /*unused*/, char** const /*unused*/)
 {
   smtk::session::polygon::Resource::Ptr resource;
 

@@ -193,7 +193,7 @@ void verifyPosixTimeZone()
 
 } // end namespace
 
-int UnitTestDateTimeZonePair(int, char** const)
+int UnitTestDateTimeZonePair(int /*unused*/, char** const /*unused*/)
 {
   verifyNotSet();
   verifyTimeZoneOnly();

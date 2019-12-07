@@ -235,7 +235,7 @@ void verify_merge()
 }
 }
 
-int UnitTestReclassifyEdges(int, char** const)
+int UnitTestReclassifyEdges(int /*unused*/, char** const /*unused*/)
 {
   verify_split();
   verify_merge();

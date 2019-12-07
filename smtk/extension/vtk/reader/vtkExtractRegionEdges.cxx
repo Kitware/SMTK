@@ -349,13 +349,13 @@ vtkExtractRegionEdges::~vtkExtractRegionEdges()
   delete this->Internal;
 }
 
-int vtkExtractRegionEdges::FillInputPortInformation(int, vtkInformation* info)
+int vtkExtractRegionEdges::FillInputPortInformation(int /*port*/, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
   return 1;
 }
 
-int vtkExtractRegionEdges::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkExtractRegionEdges::RequestData(vtkInformation* /*request*/,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   // get the info objects

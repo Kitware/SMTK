@@ -1063,7 +1063,7 @@ bool EntityRef::disassociateAttribute(
 /**\brief Disassociate an attribute from the entity? - To be deprecated!
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool)
+  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool /*unused*/)
 {
   return this->disassociateAttribute(attResource, attribId);
 }
@@ -1083,7 +1083,7 @@ bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResour
 
 /**\brief Remove all attribute association form this entityref - To be deprecated!
   */
-bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool)
+bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool /*unused*/)
 {
   return this->disassociateAllAttributes(attResource);
 }

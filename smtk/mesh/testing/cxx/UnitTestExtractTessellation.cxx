@@ -462,7 +462,7 @@ void verify_extract_volume_meshes_by_global_points_to_vtk(const smtk::mesh::Reso
 }
 }
 
-int UnitTestExtractTessellation(int, char** const)
+int UnitTestExtractTessellation(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

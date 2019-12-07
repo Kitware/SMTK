@@ -464,7 +464,7 @@ void verify_write_operation()
 }
 }
 
-int UnitTestWriteMesh(int, char** const)
+int UnitTestWriteMesh(int /*unused*/, char** const /*unused*/)
 {
   verify_write_empty_resource();
   verify_write_null_resource();

@@ -134,7 +134,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   {
     AuxiliaryGeometryExtension::Ptr ext;
     smtk::common::Extension::visit<AuxiliaryGeometryExtension::Ptr>(
-      [&ext, &auxGeom, &bbox](const std::string&, AuxiliaryGeometryExtension::Ptr obj) {
+      [&ext, &auxGeom, &bbox](const std::string& /*unused*/, AuxiliaryGeometryExtension::Ptr obj) {
         // Don't take the first AuxiliaryGeometryExtenion... look for one
         // that can handle the URL.
         if (obj && obj->canHandleAuxiliaryGeometry(auxGeom, bbox))

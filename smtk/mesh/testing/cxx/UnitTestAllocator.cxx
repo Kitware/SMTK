@@ -53,7 +53,7 @@ void verify_json_allocator_creation()
 }
 }
 
-int UnitTestAllocator(int, char** const)
+int UnitTestAllocator(int /*unused*/, char** const /*unused*/)
 {
   verify_moab_allocator_creation();
   verify_json_allocator_creation();

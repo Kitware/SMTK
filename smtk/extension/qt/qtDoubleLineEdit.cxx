@@ -205,8 +205,8 @@ qtDoubleLineEdit::qtDoubleLineEdit(QWidget* _parent)
   internals.InactiveLineEdit->hide();
   internals.sync(this);
 
-  QObject::connect(
-    this, &QLineEdit::textChanged, [this](const QString&) { this->Internals->sync(this); });
+  QObject::connect(this, &QLineEdit::textChanged,
+    [this](const QString& /*unused*/) { this->Internals->sync(this); });
 }
 
 //-----------------------------------------------------------------------------

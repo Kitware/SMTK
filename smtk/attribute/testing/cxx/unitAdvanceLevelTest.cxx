@@ -434,7 +434,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
 }
 }
 
-int unitAdvanceLevelTest(int, char* [])
+int unitAdvanceLevelTest(int /*unused*/, char* /*unused*/ [])
 {
   //
   // I. Let's create an attribute resource and some definitions

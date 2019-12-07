@@ -63,8 +63,8 @@ vtkCMBMapReader::~vtkCMBMapReader()
 //
 //This is a reader for the SMS Map file for help on the format of the file go to
 //http://www.ems-i.com/smshelp/SMS-Help.htm#File_Formats/SMS_Project_Files.htm
-int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCMBMapReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   // get the info object
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -571,8 +571,8 @@ void vtkCMBMapReader::PrintSelf(ostream& os, vtkIndent indent)
   }
 }
 
-int vtkCMBMapReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCMBMapReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

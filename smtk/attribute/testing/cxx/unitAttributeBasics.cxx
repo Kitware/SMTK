@@ -18,7 +18,7 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
-int unitAttributeBasics(int, char* [])
+int unitAttributeBasics(int /*unused*/, char* /*unused*/ [])
 {
   int status = 0;
   smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();

@@ -101,7 +101,7 @@ struct
 int obs = 0;
 }
 
-int unitOperation(int, char* [])
+int unitOperation(int /*unused*/, char* /*unused*/ [])
 {
   auto manager = smtk::operation::Manager::create();
 
@@ -117,7 +117,7 @@ int unitOperation(int, char* [])
 
   smtk::operation::Observers::Key handleTmp = manager->observers().insert(
     [&handleTmp, &manager](const smtk::operation::Operation& op, smtk::operation::EventType event,
-      smtk::operation::Operation::Result) -> int {
+      smtk::operation::Operation::Result /*unused*/) -> int {
       std::cout << "[x] " << op.typeName() << " event " << static_cast<int>(event)
                 << " testing that an observer (" << handleTmp.first << " " << handleTmp.second
                 << ") can remove itself.\n";
@@ -149,9 +149,9 @@ int unitOperation(int, char* [])
       return (obs == 3 ? 1 : 0);
     });
 
-  auto another =
-    manager->observers().insert([](const smtk::operation::Operation&, smtk::operation::EventType,
-                                  smtk::operation::Operation::Result) -> int {
+  auto another = manager->observers().insert(
+    [](const smtk::operation::Operation& /*unused*/, smtk::operation::EventType /*unused*/,
+      smtk::operation::Operation::Result /*unused*/) -> int {
       smtkTest(false, "This observer should never be called");
       return 1;
     });

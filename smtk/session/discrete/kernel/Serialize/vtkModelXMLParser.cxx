@@ -65,7 +65,7 @@ void vtkModelXMLParser::StartElement(const char* name, const char** atts)
   this->PushOpenElement(element);
 }
 
-void vtkModelXMLParser::EndElement(const char* vtkNotUsed(name))
+void vtkModelXMLParser::EndElement(const char* /*name*/)
 {
   vtkXMLElement* finished = this->PopOpenElement();
   unsigned int numOpen = this->NumberOfOpenElements;

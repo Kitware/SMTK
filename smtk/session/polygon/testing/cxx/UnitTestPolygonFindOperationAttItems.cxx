@@ -37,15 +37,17 @@ int UnitTestPolygonFindOperationAttItems(int argc, char* argv[])
 
   // Explicitly instantiate item filters for gcc4.8
   std::function<bool(smtk::attribute::ItemPtr)> itemFilter = [](
-    smtk::attribute::ItemPtr) { return true; };
+    smtk::attribute::ItemPtr /*unused*/) { return true; };
   std::function<bool(smtk::attribute::DoubleItemPtr)> doubleFilter = [](
-    DoubleItemPtr) { return true; };
-  std::function<bool(smtk::attribute::IntItemPtr)> intFilter = [](IntItemPtr) { return true; };
+    DoubleItemPtr /*unused*/) { return true; };
+  std::function<bool(smtk::attribute::IntItemPtr)> intFilter = [](
+    IntItemPtr /*unused*/) { return true; };
   std::function<bool(smtk::attribute::ItemPtr)> intDoubleFilter = [](
     ItemPtr item) { return item->type() == Item::DoubleType || item->type() == Item::IntType; };
   std::function<bool(smtk::attribute::ComponentItemPtr)> componentFilter = [](
-    ComponentItemPtr) { return true; };
-  std::function<bool(smtk::attribute::VoidItemPtr)> voidFilter = [](VoidItemPtr) { return true; };
+    ComponentItemPtr /*unused*/) { return true; };
+  std::function<bool(smtk::attribute::VoidItemPtr)> voidFilter = [](
+    VoidItemPtr /*unused*/) { return true; };
 
   std::cout << "Use create model operator to test filterItems function in attribute." << std::endl;
   /// Use "create model" operator to valid valueItem

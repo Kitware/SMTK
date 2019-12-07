@@ -606,7 +606,8 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+    bool& /*coordinatesModified*/) override
   {
     //use local variable instead of member to help locality
     std::size_t index = xyz_index;
@@ -658,8 +659,8 @@ public:
   {
   }
 
-  void forPoints(
-    const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool& coordinatesModified) override
+  void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     coordinatesModified = true;
     //use local variable instead of member to help locality

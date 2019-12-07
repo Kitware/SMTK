@@ -409,7 +409,7 @@ int unitQtComponentItem(int argc, char* argv[])
   QObject::connect(ef, &qtEventFilter::reset, [&m_visibleThings, &phraseModel]() {
     phraseModel->root()->visitChildren(
       [&phraseModel, &m_visibleThings](
-        smtk::view::DescriptivePhrasePtr cphr, std::vector<int>&) -> int {
+        smtk::view::DescriptivePhrasePtr cphr, std::vector<int> & /*unused*/) -> int {
         std::map<smtk::resource::ComponentPtr, int>::iterator it;
         if (cphr->relatedComponent() &&
           (it = m_visibleThings.find(cphr->relatedComponent())) != m_visibleThings.end())

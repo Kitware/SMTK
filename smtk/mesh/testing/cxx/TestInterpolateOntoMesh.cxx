@@ -104,7 +104,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+    int /*numPointIds*/) override
   {
     smtk::mesh::HandleRange range;
     range.insert(cellId);
@@ -127,7 +128,8 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+    bool& /*coordinatesModified*/) override
   {
     std::vector<double> values(pointIds.size());
     m_pointField.get(pointIds, &values[0]);

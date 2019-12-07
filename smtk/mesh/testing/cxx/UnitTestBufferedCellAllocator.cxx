@@ -252,7 +252,7 @@ void verify_moab_buffered_cell_allocator_cells()
 }
 }
 
-int UnitTestBufferedCellAllocator(int, char** const)
+int UnitTestBufferedCellAllocator(int /*unused*/, char** const /*unused*/)
 {
   verify_moab_buffered_cell_allocator_creation();
   verify_json_buffered_cell_allocator_creation();

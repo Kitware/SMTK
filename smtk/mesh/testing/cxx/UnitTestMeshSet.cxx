@@ -481,7 +481,7 @@ void verify_meshset_set_name_op(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestMeshSet(int, char** const)
+int UnitTestMeshSet(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

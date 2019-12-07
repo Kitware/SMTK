@@ -792,8 +792,8 @@ smtk::mesh::ResourcePtr MeshIOXMS::importMesh(const std::string& filePath,
   return smtk::mesh::ResourcePtr();
 }
 
-bool MeshIOXMS::importMesh(
-  const std::string& filePath, smtk::mesh::ResourcePtr meshResource, const std::string&) const
+bool MeshIOXMS::importMesh(const std::string& filePath, smtk::mesh::ResourcePtr meshResource,
+  const std::string& /*unused*/) const
 {
   ::boost::filesystem::path path(filePath);
   if (!::boost::filesystem::is_regular_file(path))

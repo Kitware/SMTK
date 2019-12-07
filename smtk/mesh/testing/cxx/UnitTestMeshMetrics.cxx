@@ -52,7 +52,7 @@ void verify_eulerCharacteristic_cubeWithHole()
 }
 }
 
-int UnitTestMeshMetrics(int, char** const)
+int UnitTestMeshMetrics(int /*unused*/, char** const /*unused*/)
 {
   verify_eulerCharacteristic_cube();
   verify_eulerCharacteristic_cubeWithHole();

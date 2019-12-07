@@ -910,7 +910,7 @@ std::function<bool(const smtk::resource::ConstComponentPtr&)> Resource::queryOpe
 {
   if (filter.empty() || filter == "any" || filter == "*")
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
   const std::string attributeFilter("attribute");
   if (!filter.compare(0, attributeFilter.size(), attributeFilter))
@@ -932,7 +932,7 @@ std::function<bool(const smtk::resource::ConstComponentPtr&)> Resource::queryOpe
       }
     }
   }
-  return [](const smtk::resource::ConstComponentPtr&) { return false; };
+  return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return false; };
 }
 
 // visit all components in the resource.

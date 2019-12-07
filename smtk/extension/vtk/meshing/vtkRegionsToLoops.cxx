@@ -370,8 +370,8 @@ public:
 
 } // namespace
 
-int vtkRegionsToLoops::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputInfo, vtkInformationVector* outputInfo)
+int vtkRegionsToLoops::RequestData(
+  vtkInformation* /*request*/, vtkInformationVector** inputInfo, vtkInformationVector* outputInfo)
 {
   if (!inputInfo || !outputInfo)
   {

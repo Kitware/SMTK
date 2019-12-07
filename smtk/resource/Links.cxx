@@ -308,8 +308,8 @@ bool Links::removeLink(Resource* lhs1, const Links::Key& key)
   return returnValue;
 }
 
-bool Links::removeLinksTo(Resource* lhs1, const smtk::common::UUID&, const smtk::common::UUID& rhs1,
-  const smtk::common::UUID& rhs2, const RoleType& role)
+bool Links::removeLinksTo(Resource* lhs1, const smtk::common::UUID& /*unused*/,
+  const smtk::common::UUID& rhs1, const smtk::common::UUID& rhs2, const RoleType& role)
 {
   // Access the Resource Link data that connects this component's resource to
   // the input resource. If it doesn't exist, then there is no link.

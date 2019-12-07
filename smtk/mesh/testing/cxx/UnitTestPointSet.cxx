@@ -360,7 +360,7 @@ class CountPoints : public smtk::mesh::PointForEach
   int numPointsIteratedOver;
 
 public:
-  CountPoints(smtk::mesh::ResourcePtr)
+  CountPoints(smtk::mesh::ResourcePtr /*unused*/)
     : numPointsIteratedOver(0)
   {
   }
@@ -444,7 +444,7 @@ void verify_pointset_for_each_modify(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestPointSet(int, char** const)
+int UnitTestPointSet(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

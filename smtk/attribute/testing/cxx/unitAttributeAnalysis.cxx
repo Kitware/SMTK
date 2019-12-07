@@ -53,7 +53,7 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
 }
 }
 
-int unitAttributeAnalysis(int, char* [])
+int unitAttributeAnalysis(int /*unused*/, char* /*unused*/ [])
 {
   // ----
   // I. Let's create an attribute resource and some analyses

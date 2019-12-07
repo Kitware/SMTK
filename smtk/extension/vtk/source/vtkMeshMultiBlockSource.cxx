@@ -362,8 +362,8 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkMeshMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
+int vtkMeshMultiBlockSource::RequestData(
+  vtkInformation* /*request*/, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
 {
   auto resource = this->GetResource();
   m_UUID2BlockIdMap.clear();

@@ -112,7 +112,7 @@ const char* WriteResource::xmlDescription() const
   return WriteResource_xml;
 }
 
-void WriteResource::markModifiedResources(WriteResource::Result&)
+void WriteResource::markModifiedResources(WriteResource::Result& /*unused*/)
 {
   auto resourceItem = this->parameters()->associations();
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)

@@ -334,7 +334,7 @@ void MoveOnlyRecursionTest()
 }
 }
 
-int UnitTestLinks(int, char** const)
+int UnitTestLinks(int /*unused*/, char** const /*unused*/)
 {
   UnitTest();
   MoveOnlyTest();

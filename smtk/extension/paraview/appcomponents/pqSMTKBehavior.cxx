@@ -154,7 +154,7 @@ void pqSMTKBehavior::addPQProxy(pqSMTKWrapper* rsrcMgr)
 pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr mgr)
 {
   pqSMTKWrapper* result = nullptr;
-  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKWrapper* mos, pqServer*) {
+  this->visitResourceManagersOnServers([&result, &mgr](pqSMTKWrapper* mos, pqServer* /*unused*/) {
     if (mos && mos->smtkResourceManager() == mgr)
     {
       result = mos;
@@ -168,15 +168,16 @@ pqSMTKWrapper* pqSMTKBehavior::getPVResourceManager(smtk::resource::ManagerPtr m
 pqSMTKResource* pqSMTKBehavior::getPVResource(const smtk::resource::ResourcePtr& resource) const
 {
   pqSMTKResource* result = nullptr;
-  this->visitResourceManagersOnServers([&result, &resource](pqSMTKWrapper* mos, pqServer*) {
-    pqSMTKResource* pvr;
-    if (mos && (pvr = mos->getPVResource(resource)))
-    {
-      result = pvr;
-      return true;
-    }
-    return false;
-  });
+  this->visitResourceManagersOnServers(
+    [&result, &resource](pqSMTKWrapper* mos, pqServer* /*unused*/) {
+      pqSMTKResource* pvr;
+      if (mos && (pvr = mos->getPVResource(resource)))
+      {
+        result = pvr;
+        return true;
+      }
+      return false;
+    });
 
   return result;
 }

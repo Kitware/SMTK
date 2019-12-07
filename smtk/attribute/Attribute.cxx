@@ -359,7 +359,7 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
   // update all modelEntityItems
   std::set<smtk::attribute::ModelEntityItemPtr> modelEntityPtrs;
   std::function<bool(smtk::attribute::ModelEntityItemPtr)> filter = [](
-    smtk::attribute::ModelEntityItemPtr) { return true; };
+    smtk::attribute::ModelEntityItemPtr /*unused*/) { return true; };
   this->filterItems(modelEntityPtrs, filter, false);
   for (std::set<smtk::attribute::ModelEntityItemPtr>::iterator iterator = modelEntityPtrs.begin();
        iterator != modelEntityPtrs.end(); iterator++)
@@ -658,7 +658,8 @@ bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool rever
   return this->disassociate(obj, foo, reverse);
 }
 
-bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool)
+bool Attribute::disassociate(
+  smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool /*unused*/)
 {
   if (!this->canBeDisassociated(obj, probAtt))
   {

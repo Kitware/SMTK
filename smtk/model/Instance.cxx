@@ -118,7 +118,7 @@ static void GenerateRandomOnSurfaceTessellation(Instance& inst, Tessellation* pl
   std::vector<double> points;
 
   smtk::common::Extension::visitAll(
-    [&](const std::string&, smtk::common::Extension::Ptr extension) {
+    [&](const std::string& /*unused*/, smtk::common::Extension::Ptr extension) {
       bool success = false;
       auto snapper = smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
 
@@ -165,7 +165,7 @@ static void SnapPlacementsTo(const Instance& inst, const EntityRefs& snaps, Tess
     snapToPoint = true;
   }
   smtk::common::Extension::visitAll(
-    [&](const std::string&, smtk::common::Extension::Ptr extension) {
+    [&](const std::string& /*unused*/, smtk::common::Extension::Ptr extension) {
       bool success = false;
       auto snapper = smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
 

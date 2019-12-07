@@ -193,7 +193,8 @@ pqSMTKNewResourceBehavior::pqSMTKNewResourceBehavior(QObject* parent)
       if (wrapper != nullptr)
       {
         m_key = wrapper->smtkOperationManager()->groupObservers().insert(
-          [this](const smtk::operation::Operation::Index&, const std::string& groupName, bool) {
+          [this](const smtk::operation::Operation::Index& /*unused*/, const std::string& groupName,
+            bool /*unused*/) {
             if (g_instance != nullptr && groupName == smtk::operation::CreatorGroup::type_name)
             {
               this->updateNewMenu();

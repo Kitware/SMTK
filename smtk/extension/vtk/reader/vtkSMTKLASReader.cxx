@@ -304,8 +304,8 @@ std::string vtkSMTKLASReader::GetHeaderInfo()
   return ss.str();
 }
 
-int vtkSMTKLASReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkSMTKLASReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   // get the ouptut
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -785,8 +785,8 @@ void vtkSMTKLASReader::PrintSelf(ostream& os, vtkIndent indent)
      << "Convert From Lat/Long to xyz: " << (this->ConvertFromLatLongToXYZ ? "On" : "Off");
 }
 
-int vtkSMTKLASReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkSMTKLASReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

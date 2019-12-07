@@ -40,8 +40,8 @@ namespace session
 namespace oscillator
 {
 
-bool EditSource::configure(
-  const smtk::attribute::AttributePtr&, const smtk::attribute::ItemPtr& changedItem)
+bool EditSource::configure(const smtk::attribute::AttributePtr& /*changedAttribute*/,
+  const smtk::attribute::ItemPtr& changedItem)
 {
   auto params = this->parameters();
   auto assocs = params->associations();

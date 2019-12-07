@@ -32,18 +32,18 @@ public:
   smtkCreateMacro(MyResource);
   smtkSharedFromThisMacro(smtk::resource::Resource);
 
-  smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
     return smtk::resource::ComponentPtr();
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
-  void visit(smtk::resource::Component::Visitor&) const override {}
+  void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
   MyResource()
@@ -53,7 +53,7 @@ protected:
 };
 }
 
-int TestRemoveResource(int, char** const)
+int TestRemoveResource(int /*unused*/, char** const /*unused*/)
 {
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();

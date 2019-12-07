@@ -83,7 +83,7 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
 }
 
 std::string proxyName(
-  const std::string& resource, const std::string&, const std::string& description)
+  const std::string& resource, const std::string& /*unused*/, const std::string& description)
 {
   std::size_t hash = std::hash<std::string>{}(resource + description);
   std::stringstream s;

@@ -81,7 +81,8 @@ void qtModelPanel::onViewTypeChanged()
   (void)enType;
 }
 
-void qtModelPanel::resetView(qtModelPanel::enumTreeView, smtk::model::ResourcePtr)
+void qtModelPanel::resetView(
+  qtModelPanel::enumTreeView /*unused*/, smtk::model::ResourcePtr /*unused*/)
 {
 }
 

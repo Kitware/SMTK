@@ -41,7 +41,8 @@ static int numberOfFreeCellsRemoved = 0;
 static int numberOfSubmodelsRemoved = 0;
 static int numberOfGroupsRemoved = 0;
 
-int didRemove(ResourceEventType event, const EntityRef&, const EntityRef&, void*)
+int didRemove(ResourceEventType event, const EntityRef& /*unused*/, const EntityRef& /*unused*/,
+  void* /*unused*/)
 {
   switch (event.second)
   {

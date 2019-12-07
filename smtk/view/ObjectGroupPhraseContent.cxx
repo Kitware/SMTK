@@ -82,7 +82,8 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
 
   model->visitSources(
     [this, &container, &location](const smtk::resource::ManagerPtr& rsrcMgr,
-      const smtk::operation::ManagerPtr&, const smtk::view::SelectionPtr&) -> bool {
+      const smtk::operation::ManagerPtr& /*unused*/, const smtk::view::SelectionPtr &
+      /*unused*/) -> bool {
       if (!rsrcMgr)
       {
         return true;

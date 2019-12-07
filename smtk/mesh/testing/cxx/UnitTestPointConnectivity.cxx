@@ -242,7 +242,7 @@ void verify_shared_iteration(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestPointConnectivity(int, char** const)
+int UnitTestPointConnectivity(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

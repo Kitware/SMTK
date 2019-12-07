@@ -64,8 +64,8 @@ SMTKCORE_EXPORT void to_json(json& j, const std::map<smtk::resource::ComponentPt
 }
 
 /// Conversion from JSON requires a resource manager to look up pointers from UUIDs.
-SMTKCORE_EXPORT void from_json(
-  const json&, std::map<smtk::resource::ComponentPtr, int>&, smtk::resource::ManagerPtr)
+SMTKCORE_EXPORT void from_json(const json& /*unused*/,
+  std::map<smtk::resource::ComponentPtr, int>& /*unused*/, smtk::resource::ManagerPtr /*unused*/)
 {
 }
 }

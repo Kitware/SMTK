@@ -68,7 +68,7 @@ public:
 };
 }
 
-int TestOperationGroup(int, char** const)
+int TestOperationGroup(int /*unused*/, char** const /*unused*/)
 {
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();

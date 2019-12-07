@@ -246,7 +246,7 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 }
 }
 
-int UnitTestExtractTessellationOfModel(int, char** const)
+int UnitTestExtractTessellationOfModel(int /*unused*/, char** const /*unused*/)
 {
   // Somehow grab an EntityRef with an associated tessellation
   smtk::model::EntityRef eRef;

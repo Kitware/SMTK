@@ -49,7 +49,7 @@ void cleanup(const std::string& file_path)
 }
 }
 
-int UnitTestReadWriteMeshResource(int, char** const)
+int UnitTestReadWriteMeshResource(int /*unused*/, char** const /*unused*/)
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";

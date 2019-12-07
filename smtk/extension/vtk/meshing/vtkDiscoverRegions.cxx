@@ -231,8 +231,7 @@ bool EstimateNormal<3>(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, ve
 }
 
 static bool SpliceFaceIntoHood(vtkIdType faceId, vtkIdType npts, const vtkIdType* conn,
-  vtkIdType vtkNotUsed(edge), bool sense, Edgerhoods::iterator hood, vtkPoints* pts,
-  double vtkNotUsed(tol))
+  vtkIdType /*edge*/, bool sense, Edgerhoods::iterator hood, vtkPoints* pts, double /*tol*/)
 {
   vec3d norm;
   if (!EstimateNormal<3>(pts, npts, conn, norm))
@@ -634,7 +633,7 @@ template <typename T>
 struct vtkDiscoverRegionsFacetFromCellArray
 {
   vtkIdType operator()(vtkIdType poly) const { return this->Array->GetValue(poly); }
-  std::set<vtkIdType> FacetIds(vtkPolyData*) const
+  std::set<vtkIdType> FacetIds(vtkPolyData* /*unused*/) const
   {
     std::set<vtkIdType> uniques;
     for (vtkIdType i = 0; i <= this->Array->GetMaxId(); ++i)
@@ -676,7 +675,7 @@ struct vtkDiscoverRegionsOneFacetPerCell
     return facet; // facet == cell
   }
   vtkIdTypeArray* GetFaceGroupArray() { return nullptr; }
-  bool AreOversubscribedFacetsPossible(vtkIdTypeArray*) const { return true; }
+  bool AreOversubscribedFacetsPossible(vtkIdTypeArray* /*unused*/) const { return true; }
 };
 
 template <typename T, typename N>
@@ -1379,8 +1378,8 @@ void AssignHoles(vtkPolyData* pdIn, vtkPoints* holePoints, RegionTracker<N>& reg
 
 template <typename T, typename N>
 void AssignRegionIDsHolesAndAttributes(vtkPolyData* pdIn, vtkPoints* holePtsIn,
-  vtkPolyData* regionPtsIn, const std::string& vtkNotUsed(regionIdAttributeName),
-  RegionTracker<N>& regions, T& cell2facet)
+  vtkPolyData* regionPtsIn, const std::string& /*regionIdAttributeName*/, RegionTracker<N>& regions,
+  T& cell2facet)
 {
   // I. Collapse remaining union-find sets to a sequential integer numbering.
   //
@@ -1668,7 +1667,7 @@ int vtkDiscoverRegions::FillOutputPortInformation(int port, vtkInformation* info
 }
 
 int vtkDiscoverRegions::RequestData(
-  vtkInformation* vtkNotUsed(req), vtkInformationVector** inInfo, vtkInformationVector* outInfo)
+  vtkInformation* /*request*/, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
 {
   // get the input and output
   vtkPolyData* pdIn = vtkPolyData::GetData(inInfo[0], 0);

@@ -602,7 +602,7 @@ void qtAssociationWidget::updateListItemSelectionAfterChange(
   list->blockSignals(false);
 }
 
-int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation&,
+int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
   smtk::operation::EventType event, smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)

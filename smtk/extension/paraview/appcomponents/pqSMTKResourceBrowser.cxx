@@ -48,7 +48,7 @@
 
 template <typename T, typename U>
 int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& comp, int visible,
-  U& visibleThings, const smtk::view::DescriptivePhrasePtr&)
+  U& visibleThings, const smtk::view::DescriptivePhrasePtr& /*unused*/)
 {
   bool didUpdate = false;
   int rval(0);

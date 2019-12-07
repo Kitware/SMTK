@@ -247,7 +247,7 @@ void verifySerialize()
 
 } // end namespace
 
-int unitDateTimeItem(int, char** const)
+int unitDateTimeItem(int /*unused*/, char** const /*unused*/)
 {
   verifyDefault();
   verifySerialize();

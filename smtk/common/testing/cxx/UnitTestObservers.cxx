@@ -57,7 +57,7 @@ void TestPriority()
   return;
 }
 
-int UnitTestObservers(int, char** const)
+int UnitTestObservers(int /*unused*/, char** const /*unused*/)
 {
   TestPriority();
 

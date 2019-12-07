@@ -100,7 +100,7 @@ void verify_resource_info_json()
 }
 }
 
-int UnitTestResource(int, char** const)
+int UnitTestResource(int /*unused*/, char** const /*unused*/)
 {
   verify_valid_constructor();
 

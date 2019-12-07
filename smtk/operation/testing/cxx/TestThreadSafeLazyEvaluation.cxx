@@ -107,7 +107,7 @@ const char* MyOperation::xmlDescription() const
 // timing intervals to ensure that both the observing thread and the main thread
 // access the parameters object at the same time +/- 1 microsecond. We then test
 // to ensure that the objects are the same.
-int TestThreadSafeLazyEvaluation(int, char** const)
+int TestThreadSafeLazyEvaluation(int /*unused*/, char** const /*unused*/)
 {
   int ntest = 100;
   for (int i = 0; i < ntest; ++i)
@@ -120,7 +120,7 @@ int TestThreadSafeLazyEvaluation(int, char** const)
     smtk::operation::Operation::Parameters parametersFromObserver = nullptr;
     operationManager->observers().insert(
       [&](const smtk::operation::Operation& op, smtk::operation::EventType eventType,
-        smtk::operation::Operation::Result) -> int {
+        smtk::operation::Operation::Result /*unused*/) -> int {
         if (eventType == smtk::operation::EventType::WILL_OPERATE)
         {
           std::thread t([&]() {

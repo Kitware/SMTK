@@ -48,7 +48,7 @@ public:
 };
 }
 
-int UnitTestProperties(int, char** const)
+int UnitTestProperties(int /*unused*/, char** const /*unused*/)
 {
   Properties properties;
 

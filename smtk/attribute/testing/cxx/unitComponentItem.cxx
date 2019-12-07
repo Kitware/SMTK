@@ -28,7 +28,7 @@
 
 using namespace smtk::attribute;
 
-int unitComponentItem(int, char** const)
+int unitComponentItem(int /*unused*/, char** const /*unused*/)
 {
   // Instantiate definition
   auto compDef = ComponentItemDefinition::New("comp-def");

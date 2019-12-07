@@ -222,7 +222,7 @@ void verify_moab_incremental_allocator_cells()
 }
 }
 
-int UnitTestIncrementalAllocator(int, char** const)
+int UnitTestIncrementalAllocator(int /*unused*/, char** const /*unused*/)
 {
   verify_moab_incremental_allocator_creation();
   verify_json_incremental_allocator_creation();

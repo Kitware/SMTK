@@ -95,8 +95,8 @@ void vtkModelAuxiliaryGeometry::Dirty()
 }
 
 // Fill in the WholeExtent and spacing information from the image block
-int vtkModelAuxiliaryGeometry::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkModelAuxiliaryGeometry::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   if (!this->ModelResource || !this->AuxiliaryEntityID || !this->AuxiliaryEntityID[0])
   {
@@ -122,8 +122,8 @@ int vtkModelAuxiliaryGeometry::RequestInformation(vtkInformation* vtkNotUsed(req
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outputVector)
+int vtkModelAuxiliaryGeometry::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inInfo*/, vtkInformationVector* outputVector)
 {
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outputVector, 0);

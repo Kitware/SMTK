@@ -123,7 +123,7 @@ vtkModelItemIterator* vtkModelRegion::NewAdjacentModelFaceIterator()
   return faces;
 }
 
-void vtkModelRegion::AddShell(int, vtkModelFace**, int*)
+void vtkModelRegion::AddShell(int /*unused*/, vtkModelFace** /*unused*/, int* /*unused*/)
 {
   this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, this);
   vtkErrorMacro("Not implemented.");

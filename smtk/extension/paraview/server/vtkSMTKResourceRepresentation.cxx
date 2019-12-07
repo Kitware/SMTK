@@ -975,7 +975,9 @@ void vtkSMTKResourceRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
     auto newSeln = this->Wrapper->GetSelection();
     this->SelectionObserver = newSeln
       ? newSeln->observers().insert(
-          [this](const std::string&, smtk::view::Selection::Ptr) { this->SelectionModified(); },
+          [this](const std::string& /*unused*/, smtk::view::Selection::Ptr /*unused*/) {
+            this->SelectionModified();
+          },
           "vtkSMTKResourceRepresentation: Update visual properties to reflect selection change.")
       : smtk::view::SelectionObservers::Key();
   }
@@ -1433,7 +1435,7 @@ bool vtkSMTKResourceRepresentation::GetBlockVisibility(unsigned int index) const
   return it->second;
 }
 
-void vtkSMTKResourceRepresentation::RemoveBlockVisibility(unsigned int index, bool)
+void vtkSMTKResourceRepresentation::RemoveBlockVisibility(unsigned int index, bool /*unused*/)
 {
   auto it = this->BlockVisibilities.find(index);
   if (it == this->BlockVisibilities.cend())
@@ -1564,7 +1566,7 @@ bool vtkSMTKResourceRepresentation::GetInstanceVisibility(unsigned int index) co
   return it->second;
 }
 
-void vtkSMTKResourceRepresentation::RemoveInstanceVisibility(unsigned int index, bool)
+void vtkSMTKResourceRepresentation::RemoveInstanceVisibility(unsigned int index, bool /*unused*/)
 {
   auto it = this->InstanceVisibilities.find(index);
   if (it == this->InstanceVisibilities.cend())

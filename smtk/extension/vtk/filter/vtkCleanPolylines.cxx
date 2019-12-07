@@ -34,8 +34,8 @@ vtkCleanPolylines::vtkCleanPolylines()
   this->UseRelativeLineLength = true;
 }
 
-int vtkCleanPolylines::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkCleanPolylines::RequestData(vtkInformation* /*request*/, vtkInformationVector** inputVector,
+  vtkInformationVector* outputVector)
 {
   // get the info objects
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);

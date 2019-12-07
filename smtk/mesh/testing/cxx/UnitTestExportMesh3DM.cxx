@@ -93,7 +93,7 @@ void verify_write_valid_resource()
 }
 }
 
-int UnitTestExportMesh3DM(int, char** const)
+int UnitTestExportMesh3DM(int /*unused*/, char** const /*unused*/)
 {
   verify_write_empty_resource();
   verify_write_null_resource();

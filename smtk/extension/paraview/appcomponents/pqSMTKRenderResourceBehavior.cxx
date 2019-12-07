@@ -51,7 +51,7 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
   , m_p(new Internal)
 {
   // Whenever an SMTK wrapper is added to the server...
-  auto onAddedManagerOnServer = [this](pqSMTKWrapper* wrapper, pqServer*) {
+  auto onAddedManagerOnServer = [this](pqSMTKWrapper* wrapper, pqServer* /*unused*/) {
     if (!wrapper)
     {
       return;

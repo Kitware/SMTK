@@ -59,7 +59,7 @@ qModelEntityAttributeViewComboBoxItemDelegate::~qModelEntityAttributeViewComboBo
   default;
 
 QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
-  QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
+  QWidget* parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const
 {
   auto cbox = new QComboBox(parent);
   cbox->addItems(m_values);
@@ -591,7 +591,7 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
 }
 
 void qtModelEntityAttributeView::updateSelectedModelEntity(
-  const std::string&, smtk::view::SelectionPtr p)
+  const std::string& /*unused*/, smtk::view::SelectionPtr p)
 {
   this->Internals->ListTable->blockSignals(true);
   auto selBit = this->uiManager()->selectionBit();

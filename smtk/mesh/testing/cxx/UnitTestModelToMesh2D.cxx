@@ -137,7 +137,7 @@ void verify_vertex_conversion()
 }
 }
 
-int UnitTestModelToMesh2D(int, char** const)
+int UnitTestModelToMesh2D(int /*unused*/, char** const /*unused*/)
 {
   verify_empty_model();
   verify_model_association();

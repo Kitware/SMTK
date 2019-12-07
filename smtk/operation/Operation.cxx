@@ -104,7 +104,8 @@ Operation::Specification Operation::specification()
   return m_specification;
 }
 
-bool Operation::configure(const smtk::attribute::AttributePtr&, const smtk::attribute::ItemPtr&)
+bool Operation::configure(
+  const smtk::attribute::AttributePtr& /*unused*/, const smtk::attribute::ItemPtr& /*unused*/)
 {
   // Do nothing. Subclasses might want to do something, though.
   return false;

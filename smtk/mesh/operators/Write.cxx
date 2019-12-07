@@ -167,7 +167,7 @@ Write::Specification Write::createSpecification()
   return spec;
 }
 
-void Write::markModifiedResources(Write::Result&)
+void Write::markModifiedResources(Write::Result& /*unused*/)
 {
   auto resourceItem = this->parameters()->associations();
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
