@@ -351,7 +351,7 @@ void qtAttributeView::createWidget()
   TopLayout->addWidget(this->Internals->ListTable);
 
   BottomLayout->addWidget(this->Internals->ValuesTable);
-  this->Internals->ValuesTable->setVisible(0);
+  this->Internals->ValuesTable->setVisible(false);
 
   // Attribte frame
   this->Internals->AttFrame = new QFrame(frame);
@@ -410,7 +410,7 @@ void qtAttributeView::createWidget()
   this->Internals->ValuesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   this->Internals->ValuesTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
-  this->Internals->ValuesTable->setVisible(0);
+  this->Internals->ValuesTable->setVisible(false);
 
   this->Widget = frame;
 
@@ -1027,8 +1027,8 @@ void qtAttributeView::updateUI()
 
 void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att)
 {
-  this->Internals->ValuesTable->setVisible(0);
-  this->Internals->AttFrame->setVisible(1);
+  this->Internals->ValuesTable->setVisible(false);
+  this->Internals->AttFrame->setVisible(true);
 
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
   {
@@ -1080,8 +1080,8 @@ void qtAttributeView::initSelectionFilters()
   {
     return;
   }
-  this->Internals->AttFrame->setVisible(0);
-  this->Internals->ValuesTable->setVisible(1);
+  this->Internals->AttFrame->setVisible(false);
+  this->Internals->ValuesTable->setVisible(true);
   DefinitionPtr dp;
   if (this->Internals->AllDefs.size() > 1)
   {

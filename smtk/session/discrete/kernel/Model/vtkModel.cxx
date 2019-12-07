@@ -100,16 +100,16 @@ bool vtkModel::DestroyModelGeometricEntity(vtkModelGeometricEntity* entity)
 {
   if (!entity || !entity->IsDestroyable())
   {
-    return 0;
+    return false;
   }
   if (!entity->Destroy())
   {
-    return 0;
+    return false;
   }
 
   this->RemoveAssociation(entity);
   this->Modified();
-  return 1;
+  return true;
 }
 
 vtkIdType vtkModel::GetNextUniquePersistentId()

@@ -145,7 +145,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       if (!vertexPointIdsTmp)
       {
         vtkErrorMacro("Could not add model vertex.");
-        return 0;
+        return false;
       }
 
       ModelEntities.resize(numVertices);
@@ -178,7 +178,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
         if (Vertices[j] == nullptr && VertexIds[j] >= 0)
         {
           vtkErrorMacro("Could not find vertex needed by edge.");
-          return 0;
+          return false;
         }
       }
       vtkModelEdge* Edge =
@@ -302,7 +302,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
   if (!CellClassification)
   {
     vtkErrorMacro("Cannot get cell classification information.");
-    return 0;
+    return false;
   }
 
   //in a V4 idspace the ids are going from 0 to N, where
@@ -529,7 +529,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     }
   }
 
-  return 1;
+  return true;
 }
 
 void vtkCMBParserV4::SetModelEntityData(vtkPolyData* Poly,

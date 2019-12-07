@@ -153,8 +153,8 @@ void qtSimpleExpressionView::createWidget()
   this->Internals->DeltaInput->setText("1.0");
 
   this->Internals->EditorGroup = new QGroupBox("Use Function Expression", frame);
-  this->Internals->EditorGroup->setCheckable(1);
-  this->Internals->EditorGroup->setChecked(0);
+  this->Internals->EditorGroup->setCheckable(true);
+  this->Internals->EditorGroup->setChecked(false);
   // Without vtk enabled, the parser cannot do anything here
   this->Internals->EditorGroup->setDisabled(true);
   this->Internals->EditorGroup->setToolTip(this->Internals->getFunctionParserDescription());

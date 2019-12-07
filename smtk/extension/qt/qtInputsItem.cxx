@@ -926,7 +926,7 @@ QWidget* qtInputsItem::createExpressionRefWidget(int elementIdx)
 
   mainlayout->addWidget(funCheck);
   mainlayout->addWidget(valeditor);
-  combo->setVisible(0);
+  combo->setVisible(false);
   mainlayout->addWidget(combo);
   mainlayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
   mainlayout->setContentsMargins(0, 0, 0, 0);

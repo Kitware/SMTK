@@ -26,7 +26,7 @@ vtkStandardNewMacro(vtkPolygonArcInfo);
 vtkPolygonArcInfo::vtkPolygonArcInfo()
 {
   this->BlockIndex = -1;
-  this->ClosedLoop = 0;
+  this->ClosedLoop = false;
   this->NumberOfPoints = 0;
   this->ModelEntityID = nullptr;
   this->SelectedPointId = -1;

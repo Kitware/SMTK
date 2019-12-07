@@ -56,7 +56,7 @@ bool vtkCMBModelWriterV2::Write(vtkDiscreteModel* Model, smtk::session::discrete
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
 
   const DiscreteMesh& mesh = Model->GetMesh();
@@ -106,7 +106,7 @@ bool vtkCMBModelWriterV2::Write(vtkDiscreteModel* Model, smtk::session::discrete
   Writer->SetDataMode(this->DataMode);
   Writer->Write();
   vtkDebugMacro("Finished writing a CMB file.");
-  return 1;
+  return true;
 }
 
 void vtkCMBModelWriterV2::SetAnalysisGridData(vtkDiscreteModel* model, vtkPolyData* poly)

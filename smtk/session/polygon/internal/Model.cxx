@@ -844,7 +844,7 @@ bool pmodel::splitModelEdgeAtModelVertices(smtk::model::ResourcePtr resource, ed
       break;
     }
     ++sgit;
-  } while (1);
+  } while (true);
 
   if (debugLevel > 0)
   {

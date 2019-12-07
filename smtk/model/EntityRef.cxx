@@ -195,7 +195,7 @@ int EntityRef::maxParametricDimension() const
   if (dimbits == 0)
     return result;
   BitFlags onedim = DIMENSION_0;
-  while (1)
+  while (true)
   {
     ++result;
     if (2 * onedim > dimbits)

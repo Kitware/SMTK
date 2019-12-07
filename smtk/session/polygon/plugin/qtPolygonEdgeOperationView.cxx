@@ -421,7 +421,7 @@ void qtPolygonEdgeOperationView::operationSelected(const smtk::operation::Operat
       }
       else
       {
-        userUiWidgets.value(i)->setVisible(0);
+        userUiWidgets.value(i)->setVisible(false);
       }
     }
     if (!found)

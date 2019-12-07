@@ -135,7 +135,7 @@ bool vtkCMBParserV5::Parse(
       if (!vertexPointIds)
       {
         vtkErrorMacro("Could not add model vertex.");
-        return 0;
+        return false;
       }
 
       ModelEntities.resize(numVertices);
@@ -173,7 +173,7 @@ bool vtkCMBParserV5::Parse(
         if (Vertices[j] == nullptr && VertexIds[j] >= 0)
         {
           vtkErrorMacro("Could not find vertex needed by edge.");
-          return 0;
+          return false;
         }
       }
       vtkModelEdge* Edge =
@@ -309,7 +309,7 @@ bool vtkCMBParserV5::Parse(
   if (!CellClassification)
   {
     vtkErrorMacro("Cannot get cell classification information.");
-    return 0;
+    return false;
   }
 
   this->SeparateCellClassification(Model, CellClassification, CellToModelEntityIds);
@@ -522,7 +522,7 @@ bool vtkCMBParserV5::Parse(
       vtkDebugMacro("Field data array name is " << MasterPoly->GetFieldData()->GetArrayName(ii));
     }
   }
-  return 1;
+  return true;
 }
 
 void vtkCMBParserV5::SetModelEntityData(vtkPolyData* Poly,

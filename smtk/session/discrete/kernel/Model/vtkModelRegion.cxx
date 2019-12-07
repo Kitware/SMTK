@@ -33,7 +33,7 @@ int vtkModelRegion::GetType()
 
 bool vtkModelRegion::IsDestroyable()
 {
-  return 1;
+  return true;
 }
 
 bool vtkModelRegion::Destroy()
@@ -45,12 +45,12 @@ bool vtkModelRegion::Destroy()
     if (!vtkModelShellUse::SafeDownCast(shellUseIter->GetCurrentItem())->Destroy())
     {
       shellUseIter->Delete();
-      return 0;
+      return false;
     }
   }
   shellUseIter->Delete();
   this->RemoveAllAssociations(vtkModelShellUseType);
-  return 1;
+  return true;
 }
 
 void vtkModelRegion::Initialize(vtkIdType modelRegionId)

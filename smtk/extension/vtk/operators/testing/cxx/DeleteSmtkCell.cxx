@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
   smtk::model::Edge edge1 = modelresource->findEntitiesByPropertyAs<Edges>("name", "edge 1")[0];
   test(edge1.isValid());
 
-  bool result(0);
+  bool result(false);
   result = deleteOp->parameters()->associateEntity(face1);
   test(result == 1);
   result = deleteOp->parameters()->associateEntity(edge1);

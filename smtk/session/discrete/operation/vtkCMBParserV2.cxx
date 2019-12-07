@@ -118,7 +118,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
   if (!CellClassification)
   {
     vtkErrorMacro("Cannot get cell classification information.");
-    return 0;
+    return false;
   }
 
   //in a V2 idspace the ids are going from 0 to N, and what we do
@@ -325,7 +325,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     }
   }
 
-  return 1;
+  return true;
 }
 
 void vtkCMBParserV2::SetModelEntityData(vtkPolyData* Poly,

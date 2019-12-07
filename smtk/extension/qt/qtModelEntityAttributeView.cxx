@@ -642,11 +642,11 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
 
   if (att == nullptr)
   {
-    this->Internals->AttFrame->setVisible(0);
+    this->Internals->AttFrame->setVisible(false);
     return;
   }
 
-  this->Internals->AttFrame->setVisible(1);
+  this->Internals->AttFrame->setVisible(true);
 
   int currentLen = this->fixedLabelWidth();
   int tmpLen = this->uiManager()->getWidthOfAttributeMaxLabel(

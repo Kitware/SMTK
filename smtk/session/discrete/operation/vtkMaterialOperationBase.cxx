@@ -70,20 +70,20 @@ bool vtkMaterialOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
   if (this->GetIsIdSet() == 0)
   {
     vtkErrorMacro("No entity id specified.");
-    return 0;
+    return false;
   }
   if (!this->GetMaterial(Model))
   {
     vtkErrorMacro("Cannot find the material.");
-    return 0;
+    return false;
   }
 
-  return 1;
+  return true;
 }
 
 void vtkMaterialOperationBase::AddModelGeometricEntity(vtkIdType GeometricEntityId)
@@ -120,7 +120,7 @@ bool vtkMaterialOperationBase::Operate(vtkDiscreteModel* Model)
 {
   if (!this->AbleToOperate(Model))
   {
-    return 0;
+    return false;
   }
 
   vtkModelMaterial* Material = this->GetMaterial(Model);

@@ -62,12 +62,12 @@ bool vtkEdgeSplitOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
   if (this->GetIsEdgeIdSet() == 0)
   {
     vtkErrorMacro("No entity id specified.");
-    return 0;
+    return false;
   }
   if (this->IsPointIdSet == 0)
   {
@@ -79,9 +79,9 @@ bool vtkEdgeSplitOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Edge)
   {
     vtkErrorMacro("No model edge found with Id " << this->GetEdgeId());
-    return 0;
+    return false;
   }
-  return 1;
+  return true;
 }
 
 void vtkEdgeSplitOperationBase::PrintSelf(ostream& os, vtkIndent indent)

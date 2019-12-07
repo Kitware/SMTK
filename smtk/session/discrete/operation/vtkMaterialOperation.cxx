@@ -33,7 +33,7 @@ bool vtkMaterialOperation::AbleToOperate(vtkDiscreteModelWrapper* ModelWrapper)
   if (!ModelWrapper)
   {
     vtkErrorMacro("Passed in a null model wrapper.");
-    return 0;
+    return false;
   }
   return this->Superclass::AbleToOperate(ModelWrapper->GetModel());
 }

@@ -58,11 +58,7 @@ public:
 
   bool IsModelFaceVisible(vtkIdType modelFaceId)
   {
-    if (this->ModelFaceIds.find(modelFaceId) == this->ModelFaceIds.end())
-    {
-      return 0;
-    }
-    return 1;
+    return this->ModelFaceIds.find(modelFaceId) != this->ModelFaceIds.end();
   }
 
   bool IsModelFaceVisible(vtkDiscreteModelGeometricEntity* modelFace)

@@ -132,7 +132,7 @@ int vtkCUBITReader::GetNextLineOfData(ifstream& fin, std::stringstream& lineStre
   lineStream.clear();
   char buffer[1024]; // a pretty long line!
   std::string testString;
-  while (1)
+  while (true)
   {
     fin.getline(buffer, 1024);
     if (fin.eof())

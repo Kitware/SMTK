@@ -409,7 +409,7 @@ std::string Resource::createUniqueName(const std::string& type) const
   int i = 0;
   std::string base = type, newName;
   base.append("-");
-  while (1)
+  while (true)
   {
     std::ostringstream n;
     n << i++;
@@ -499,7 +499,7 @@ smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
   // Keep traveling up the definition's ancestors until
   // we come to the end or we find one that isn't unique
   smtk::attribute::ConstDefinitionPtr uDef = attDef, def;
-  while (1 && uDef.get())
+  while (uDef.get())
   {
     def = uDef->baseDefinition();
     if (!def.get() || (!def->isUnique()))

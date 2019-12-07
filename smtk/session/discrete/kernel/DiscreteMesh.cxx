@@ -467,7 +467,7 @@ vtkIdType DiscreteMesh::AddEdgeIfNotExisting(
   if (!this->EdgeExists(e, meshId))
   {
     //doesn't exist, add it
-    orientation = 1;
+    orientation = true;
     createdEdge = true;
     return this->AddEdge(e);
   }

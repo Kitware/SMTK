@@ -177,7 +177,7 @@ bool vtkDiscreteModelGeometricEntity::Merge(
     if (lowerDimensionalIds->GetNumberOfTuples() == 0)
     {
       vtkGenericWarningMacro("No end node specified when merging model edges.");
-      return 0;
+      return false;
     }
     vtkModelVertex* sharedVertex = vtkModelVertex::SafeDownCast(
       model->GetModelEntity(vtkModelVertexType, lowerDimensionalIds->GetValue(0)));
@@ -195,7 +195,7 @@ bool vtkDiscreteModelGeometricEntity::Merge(
     else
     {
       vtkGenericWarningMacro("End node is not part of arc.");
-      return 0;
+      return false;
     }
     int sourceSharedVertexNumber = -1;
     if (sourceEdge->GetAdjacentModelVertex(0) == sharedVertex)
@@ -209,7 +209,7 @@ bool vtkDiscreteModelGeometricEntity::Merge(
     else
     {
       vtkGenericWarningMacro("End node is not part of arc.");
-      return 0;
+      return false;
     }
 
     //get rid of sourceEdge adjacencies
@@ -291,7 +291,7 @@ bool vtkDiscreteModelGeometricEntity::Merge(
     faces->Delete();
   }
 
-  return 1;
+  return true;
 }
 
 bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellIds)
@@ -304,14 +304,14 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
   if (model->HasInValidMesh())
   {
     // we are on the client
-    return 1;
+    return true;
   }
   if (entityPoly == nullptr)
   {
     if (geometry)
     {
       cerr << "vtkDiscreteModelGeometricEntity: Bad geometry.\n";
-      return 0;
+      return false;
     }
     entityPoly = vtkPolyData::New();
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity())->SetGeometry(entityPoly);
@@ -400,7 +400,7 @@ bool vtkDiscreteModelGeometricEntity::AddCellsClassificationToMesh(vtkIdList* ce
     entityPoly->Modified();
   }
 
-  return 1;
+  return true;
 }
 
 bool vtkDiscreteModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds)
@@ -415,7 +415,7 @@ bool vtkDiscreteModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds
   vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
   if (poly == nullptr)
   {
-    return 1;
+    return true;
   }
 
   vtkIdType numberOfOriginalCells = poly->GetNumberOfCells();
@@ -445,7 +445,7 @@ bool vtkDiscreteModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds
     classified.SetEntity(masterCellId, i, this);
   }
 
-  return 1;
+  return true;
 }
 
 const char* vtkDiscreteModelGeometricEntity::GetReverseClassificationArrayName()

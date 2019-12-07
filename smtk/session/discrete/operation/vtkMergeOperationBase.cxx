@@ -133,30 +133,30 @@ bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
   if (!model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
   if (this->GetIsTargetIdSet() == 0)
   {
     vtkErrorMacro("No target id specified.");
-    return 0;
+    return false;
   }
   if (this->GetIsSourceIdSet() == 0)
   {
     vtkErrorMacro("No source id set.");
-    return 0;
+    return false;
   }
   vtkModelEntity* targetEntity = model->GetModelEntity(this->TargetId);
   if (vtkDiscreteModelFace::SafeDownCast(targetEntity) == nullptr &&
     vtkDiscreteModelRegion::SafeDownCast(targetEntity) == nullptr &&
     vtkDiscreteModelEdge::SafeDownCast(targetEntity) == nullptr)
   {
-    return 0;
+    return false;
   }
   int targetEntityType = targetEntity->GetType();
   vtkModelEntity* sourceEntity = model->GetModelEntity(this->SourceId);
   if (targetEntityType != sourceEntity->GetType())
   {
-    return 0;
+    return false;
   }
   // if we are merging model faces for a 3D model we need to make sure that
   // all of them have the same regions/materials on both sides
@@ -169,13 +169,13 @@ bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
       sides[0] != vtkModelFace::SafeDownCast(sourceEntity)->GetModelRegion(1))
     {
       vtkDebugMacro("Model faces do not share the same regions.");
-      return 0;
+      return false;
     }
     if (sides[1] != vtkModelFace::SafeDownCast(sourceEntity)->GetModelRegion(0) &&
       sides[1] != vtkModelFace::SafeDownCast(sourceEntity)->GetModelRegion(1))
     {
       vtkDebugMacro("Model faces do not share the same regions.");
-      return 0;
+      return false;
     }
   }
   else if (targetEntityType == vtkModelEdgeType)
@@ -184,7 +184,7 @@ bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
       this->LowerDimensionalIds->GetNumberOfTuples() > 2)
     {
       vtkDebugMacro("Wrong number of end nodes inputted for merge.");
-      return 0;
+      return false;
     }
     vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(sourceEntity);
     vtkModelEdge* targetEdge = vtkModelEdge::SafeDownCast(targetEntity);
@@ -194,22 +194,22 @@ bool vtkMergeOperationBase::AbleToOperate(vtkDiscreteModel* model)
         model->GetModelEntity(vtkModelVertexType, this->LowerDimensionalIds->GetValue(i)));
       if (sharedVertex == nullptr)
       {
-        return 0;
+        return false;
       }
       if (targetEdge->GetAdjacentModelVertex(0) != sharedVertex &&
         targetEdge->GetAdjacentModelVertex(1) != sharedVertex)
       {
-        return 0;
+        return false;
       }
       if (sourceEdge->GetAdjacentModelVertex(0) != sharedVertex &&
         sourceEdge->GetAdjacentModelVertex(1) != sharedVertex)
       {
-        return 0;
+        return false;
       }
     }
   }
 
-  return 1;
+  return true;
 }
 
 bool vtkMergeOperationBase::Operate(vtkDiscreteModel* model)

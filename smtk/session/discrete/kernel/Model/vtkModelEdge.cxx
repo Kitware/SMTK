@@ -243,7 +243,7 @@ bool vtkModelEdge::SplitModelEdgeLoop(vtkModelVertex* vertex)
   }
   edgeUses->Delete();
   this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, this);
-  return 1;
+  return true;
 }
 
 int vtkModelEdge::GetNumberOfAdjacentModelFaces()
