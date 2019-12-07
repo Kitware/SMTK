@@ -61,7 +61,7 @@ int TestSerialization(vtkDiscreteModel* model)
   std::ostringstream ostr2;
   writer->Serialize(ostr2, "ConceptualModel", objs);
 
-  if (strcmp(ostr2.str().c_str(), ostr.str().c_str()))
+  if (ostr2.str() != ostr.str())
   {
     errors++;
     cerr << "Serialization information does not match.\n";

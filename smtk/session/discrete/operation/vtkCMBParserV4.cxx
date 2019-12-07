@@ -538,7 +538,7 @@ void vtkCMBParserV4::SetModelEntityData(vtkPolyData* Poly,
   std::string Base(BaseArrayName);
   std::string Name = Base + "Ids";
   vtkIdTypeArray* EntityIds = this->NewIdTypeArray(Poly->GetFieldData()->GetArray(Name.c_str()));
-  if (strcmp(Base.c_str(), "ModelEdge"))
+  if (Base != "ModelEdge")
   {
     Poly->GetFieldData()->RemoveArray(Name.c_str());
   }

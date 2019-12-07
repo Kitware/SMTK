@@ -420,7 +420,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
   for (it i = all_ents.begin(); i != all_ents.end(); ++i)
   {
     const bool has_name = query_name.fetch_name(*i);
-    if (has_name && (std::strcmp(name.c_str(), query_name.current_name()) == 0))
+    if (has_name && (name == query_name.current_name()))
     { //has a matching name
       matching_ents.push_back(*i);
     }
