@@ -23,7 +23,7 @@ namespace model
 smtk::model::Edges Face::edges() const
 {
   Edges result;
-  EntityRefs all = this->boundaryEntities(/*dim = */ 1);
+  EntityRefs all = this->boundaryEntities(/*ofDimension = */ 1);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isEdge())
@@ -35,7 +35,7 @@ smtk::model::Edges Face::edges() const
 smtk::model::Volumes Face::volumes() const
 {
   Volumes result;
-  EntityRefs all = this->bordantEntities(/*dim = */ 3);
+  EntityRefs all = this->bordantEntities(/*ofDimension = */ 3);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isVolume())

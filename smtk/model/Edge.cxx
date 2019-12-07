@@ -70,7 +70,7 @@ EdgeUse Edge::findOrAddEdgeUse(Orientation orientation, int sense)
 smtk::model::Faces Edge::faces() const
 {
   Faces result;
-  EntityRefs all = this->bordantEntities(/*dim = */ 2);
+  EntityRefs all = this->bordantEntities(/*ofDimension = */ 2);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isFace())
@@ -93,7 +93,7 @@ smtk::model::Faces Edge::faces() const
 smtk::model::Vertices Edge::vertices() const
 {
   Vertices result;
-  EntityRefs all = this->boundaryEntities(/*dim = */ 0);
+  EntityRefs all = this->boundaryEntities(/*ofDimension = */ 0);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isVertex())

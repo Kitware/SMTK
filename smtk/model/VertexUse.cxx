@@ -28,7 +28,7 @@ Vertex VertexUse::vertex() const
 smtk::model::Edges VertexUse::edges() const
 {
   Edges result;
-  EntityRefs all = this->bordantEntities(/*dim = */ 1);
+  EntityRefs all = this->bordantEntities(/*ofDimension = */ 1);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isEdge())
