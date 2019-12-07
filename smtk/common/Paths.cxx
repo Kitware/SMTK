@@ -118,7 +118,7 @@ std::vector<std::string> Paths::pruneInvalidDirectories(const std::vector<std::s
 }
 
 /// Return the directory containing the library that describes \a func.
-std::string Paths::pathToLibraryContainingFunction(void (*func)(void))
+std::string Paths::pathToLibraryContainingFunction(void (*func)())
 {
   return boost::dll::symbol_location(*func).parent_path().string();
 }

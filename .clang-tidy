@@ -43,7 +43,6 @@ modernize-*,\
 -modernize-loop-convert,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\
--modernize-redundant-void-arg,\
 -modernize-return-braced-init-list,\
 -modernize-use-auto,\
 -modernize-use-default-member-init,\
