@@ -43,6 +43,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <algorithm>
 #include <cstring>
+#include <memory>
 #include <set>
 
 namespace smtk
@@ -217,7 +218,7 @@ bool setDenseOpaqueTagValue(T tag, const smtk::mesh::Handle& handle, ::moab::Int
 smtk::mesh::moab::InterfacePtr make_interface()
 {
   //Core is a fully implemented moab::Interface
-  return smtk::mesh::moab::InterfacePtr(new smtk::mesh::moab::Interface());
+  return std::make_shared<smtk::mesh::moab::Interface>();
 }
 
 //Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface

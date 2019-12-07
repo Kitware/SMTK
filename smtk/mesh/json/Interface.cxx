@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <memory>
 #include <set>
 
 namespace smtk
@@ -32,7 +33,7 @@ namespace json
 //construct an empty interface instance
 smtk::mesh::json::InterfacePtr make_interface()
 {
-  return smtk::mesh::json::InterfacePtr(new smtk::mesh::json::Interface());
+  return std::make_shared<smtk::mesh::json::Interface>();
 }
 
 Interface::Interface()
