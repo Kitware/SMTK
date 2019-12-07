@@ -210,8 +210,8 @@ public:
   smtkCreateMacro(TestOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  TestOperation() {}
-  ~TestOperation() override {}
+  TestOperation() = default;
+  ~TestOperation() override = default;
 
   Result operateInternal() override;
 
