@@ -29,7 +29,6 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 namespace sa = smtk::attribute;
-namespace sc = smtk::common;
 namespace
 {
 
