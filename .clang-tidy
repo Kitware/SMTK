@@ -11,7 +11,6 @@ bugprone-*,\
 -bugprone-narrowing-conversions,\
 -bugprone-sizeof-expression,\
 -bugprone-string-integer-assignment,\
--bugprone-suspicious-string-compare,\
 -bugprone-unhandled-self-assignment,\
 -cert-*,\
 -cppcoreguidelines-*,\

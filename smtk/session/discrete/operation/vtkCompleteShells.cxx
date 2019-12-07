@@ -117,7 +117,7 @@ int vtkCompleteShells::RequestData(vtkInformation* /*request*/, vtkInformationVe
   // if our modelFaceArray has different name than expected by the builder,
   // need to copy to array that has expected name (array must have come
   // from the input and been specfied via this->ModelFaceArrayName)
-  if (strcmp(modelFaceArray->GetName(), ModelParserHelper::GetModelFaceTagName()))
+  if (strcmp(modelFaceArray->GetName(), ModelParserHelper::GetModelFaceTagName()) != 0)
   {
     vtkSmartPointer<vtkIdTypeArray> tmpModelFaceArray = vtkSmartPointer<vtkIdTypeArray>::New();
     tmpModelFaceArray->SetName(ModelParserHelper::GetModelFaceTagName());

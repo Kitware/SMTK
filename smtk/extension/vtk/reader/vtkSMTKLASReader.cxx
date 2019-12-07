@@ -199,7 +199,7 @@ int vtkSMTKLASReader::ReadHeaderBlock()
 
   fin.read(this->Header.FileSignature, 4);
   this->Header.FileSignature[4] = 0;
-  if (strcmp(this->Header.FileSignature, "LASF"))
+  if (strcmp(this->Header.FileSignature, "LASF") != 0)
   {
     vtkErrorMacro("File " << this->FileName << " doesn't appear to be LAS file!");
     return READ_ERROR;
