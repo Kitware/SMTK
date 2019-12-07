@@ -37,10 +37,7 @@ public:
   smtkCreateMacro(TestOp);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  TestOp()
-    : m_outcome(Outcome::SUCCEEDED)
-  {
-  }
+  TestOp() = default;
   ~TestOp() override = default;
 
   bool ableToOperate() override { return m_outcome != Outcome::UNABLE_TO_OPERATE; }
@@ -49,7 +46,7 @@ public:
 
   const char* xmlDescription() const override;
 
-  Outcome m_outcome;
+  Outcome m_outcome{ Outcome::SUCCEEDED };
 };
 
 const char testOpXML[] =

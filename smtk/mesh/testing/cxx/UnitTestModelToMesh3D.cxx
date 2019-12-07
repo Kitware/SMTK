@@ -33,18 +33,14 @@ class CountCells : public smtk::mesh::CellForEach
 
   //keep a physical count of number of cells so that we can verify we
   //don't iterate over a cell more than once
-  int numCellsVisited;
+  int numCellsVisited{ 0 };
 
   //total number of points seen, relates to the total size of the connectivity
   //array for this cellset
-  int numPointsSeen;
+  int numPointsSeen{ 0 };
 
 public:
-  CountCells()
-    : numCellsVisited(0)
-    , numPointsSeen(0)
-  {
-  }
+  CountCells() = default;
 
   void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts) override
   {

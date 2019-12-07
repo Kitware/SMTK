@@ -22,7 +22,6 @@ class StoppableThreadPool : public smtk::common::ThreadPool<ReturnType>
 public:
   StoppableThreadPool(unsigned int maxThreads = 0)
     : smtk::common::ThreadPool<ReturnType>(maxThreads)
-    , m_stopped(false)
   {
   }
 
@@ -58,7 +57,7 @@ private:
     }
   }
 
-  bool m_stopped;
+  bool m_stopped{ false };
 };
 }
 
