@@ -25,8 +25,6 @@
 #include <fstream>
 
 using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::IntItem;
 
 namespace smtk
 {

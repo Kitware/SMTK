@@ -40,7 +40,6 @@ misc-*,\
 -misc-non-private-member-variables-in-classes,\
 -misc-redundant-expression,\
 -misc-throw-by-value-catch-by-reference,\
--misc-unused-using-decls,\
 modernize-*,\
 -modernize-avoid-c-arrays,\
 -modernize-loop-convert,\

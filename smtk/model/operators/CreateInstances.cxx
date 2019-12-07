@@ -32,8 +32,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace boost::filesystem;
 using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::StringItem;
 using smtk::resource::PersistentObjectPtr;
 
 namespace smtk

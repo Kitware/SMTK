@@ -25,8 +25,6 @@
 #include "smtk/model/MergeInstances_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::ComponentItem;
-using smtk::attribute::IntItem;
 
 namespace smtk
 {

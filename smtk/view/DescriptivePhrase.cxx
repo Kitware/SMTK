@@ -19,7 +19,6 @@
 
 #include <algorithm>
 
-using smtk::resource::Component;
 using smtk::resource::ComponentPtr;
 
 namespace smtk

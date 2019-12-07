@@ -24,7 +24,6 @@
 
 using namespace smtk::model;
 using smtk::attribute::ComponentItem;
-using smtk::attribute::IntItem;
 
 namespace smtk
 {

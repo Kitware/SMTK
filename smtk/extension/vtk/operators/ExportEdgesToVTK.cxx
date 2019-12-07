@@ -32,7 +32,6 @@
 #include "smtk/extension/vtk/operators/ExportEdgesToVTK_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::FileItem;
 
 namespace smtk
 {

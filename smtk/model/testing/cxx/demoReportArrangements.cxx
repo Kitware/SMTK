@@ -24,7 +24,6 @@ using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 using namespace smtk::io;
-using smtk::shared_ptr;
 
 smtk::model::BitFlags maskOrder[] = { MODEL_ENTITY, INSTANCE_ENTITY, GROUP_ENTITY, CELL_3D, CELL_2D,
   CELL_1D, CELL_0D, SHELL_2D, USE_2D, SHELL_1D, USE_1D, SHELL_0D, USE_0D };

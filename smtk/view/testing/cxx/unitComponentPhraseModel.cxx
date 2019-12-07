@@ -44,7 +44,6 @@
 #include <cstdlib>
 #include <cstring>
 
-using smtk::shared_ptr;
 using namespace smtk::common;
 using namespace smtk::view;
 using namespace smtk::io;

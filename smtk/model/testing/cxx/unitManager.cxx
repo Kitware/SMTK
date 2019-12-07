@@ -15,7 +15,6 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
-using smtk::shared_ptr;
 using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;

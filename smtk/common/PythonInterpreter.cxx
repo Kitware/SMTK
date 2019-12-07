@@ -26,9 +26,6 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <regex>
 using std::regex;
 using std::sregex_token_iterator;
-using std::regex_replace;
-using std::regex_search;
-using std::regex_match;
 #else
 #include <boost/regex.hpp>
 using boost::regex;

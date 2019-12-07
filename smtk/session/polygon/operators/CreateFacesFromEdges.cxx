@@ -44,7 +44,6 @@
 #include <set>
 #include <vector>
 
-namespace poly = boost::polygon;
 using namespace boost::polygon::operators;
 
 namespace smtk

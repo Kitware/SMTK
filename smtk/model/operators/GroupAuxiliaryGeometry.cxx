@@ -26,8 +26,6 @@
 #include "smtk/model/GroupAuxiliaryGeometry_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::StringItem;
 
 namespace smtk
 {

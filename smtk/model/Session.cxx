@@ -31,12 +31,7 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
-using smtk::attribute::Definition;
 using smtk::attribute::DefinitionPtr;
-using smtk::attribute::IntItemDefinition;
-using smtk::attribute::ModelEntityItemDefinition;
-using smtk::attribute::ComponentItemDefinition;
-using smtk::attribute::StringItemDefinition;
 
 namespace smtk
 {

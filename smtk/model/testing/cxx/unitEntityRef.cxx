@@ -35,7 +35,6 @@ using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 using namespace smtk::io;
-using smtk::shared_ptr;
 
 static int numberOfInclusionsRemoved = 0;
 static int numberOfFreeCellsRemoved = 0;
