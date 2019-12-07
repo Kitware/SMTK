@@ -980,7 +980,7 @@ bool EntityRef::hasAttributes() const
     return false;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
     // If this is an attribute then return true
@@ -1020,7 +1020,7 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
     return false;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
     // If this is an attribute then see if it matches the UUID
@@ -1135,7 +1135,7 @@ smtk::attribute::Attributes EntityRef::attributes() const
     return atts;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
     // If this is an attribute resource, get the approproate attributes

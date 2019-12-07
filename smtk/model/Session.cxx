@@ -274,7 +274,7 @@ bool Session::splitAttributes(const EntityRef& from, const EntityRefs& to) const
     ok &= mutableFrom.disassociateAttributes(attrs);
   }
 
-  for (auto attr : attrs)
+  for (const auto& attr : attrs)
   {
     for (auto ent : to)
     {
@@ -331,7 +331,7 @@ bool Session::mergeAttributes(const EntityRefs& from, EntityRef& to) const
   }
 
   // Add attributes previously in {from \ to} to target (to).
-  for (auto attr : attrs)
+  for (const auto& attr : attrs)
   {
     ok &= to.associateAttribute(attr->attributeResource(), attr->id());
   }
@@ -450,7 +450,7 @@ bool Session::mergeProperties(const EntityRefs& from, EntityRef& to) const
   unsigned npf = sizeof(floatPropertyNamesToReduce) / sizeof(floatPropertyNamesToReduce[0]);
 
   std::cout << "Merging from:\n";
-  for (auto fent : from)
+  for (const auto& fent : from)
   {
     std::cout << "  " << fent.name() << "\n";
   }

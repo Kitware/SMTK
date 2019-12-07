@@ -62,7 +62,7 @@ void to_json(json& j, const EntityIterator& iter)
       if (!amap.empty())
       {
         json jarr = json::object();
-        for (auto ktoa : amap)
+        for (const auto& ktoa : amap)
         {
           jarr[AbbreviationForArrangementKind(ktoa.first)] = ktoa.second;
         }

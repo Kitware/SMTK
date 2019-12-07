@@ -740,7 +740,7 @@ bool Project::populateExportOperator(
   std::vector<smtk::resource::ResourcePtr> attResourceList;
   std::vector<smtk::resource::ComponentPtr> modelList;
   auto resourceList = this->resources();
-  for (const auto resource : resourceList)
+  for (const auto& resource : resourceList)
   {
     if (resource->isOfType(smtk::common::typeName<smtk::attribute::Resource>()))
     {

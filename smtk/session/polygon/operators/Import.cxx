@@ -320,7 +320,7 @@ int polyLines2modelEdgesAndFaces(
         auto assocs = faceSpec->associations();
         assocs->setNumberOfValues(createdEds.size());
         int ii = 0;
-        for (auto ced : createdEds)
+        for (const auto& ced : createdEds)
         {
           assocs->setObjectValue(ii, ced.component());
           ++ii;

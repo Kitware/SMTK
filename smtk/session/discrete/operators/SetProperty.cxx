@@ -239,7 +239,7 @@ SetProperty::Result SetProperty::operateInternal()
   // modified so that remote sessions can track what records
   // need to be re-fetched.
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
-  for (auto m : entities)
+  for (const auto& m : entities)
   {
     modified->appendValue(m.component());
   }

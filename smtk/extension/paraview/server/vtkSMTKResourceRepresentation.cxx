@@ -432,7 +432,7 @@ void vtkSMTKResourceRepresentation::GetEntityVisibilities(
   std::map<smtk::common::UUID, int>& visdata)
 {
   visdata.clear();
-  for (auto entry : this->ComponentState)
+  for (const auto& entry : this->ComponentState)
   {
     visdata[entry.first] = entry.second.m_visibility;
   }
@@ -572,7 +572,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
       {
         auto model = smtk::model::Model(ent);
         auto cells = model.cellsAs<smtk::model::EntityRefs>();
-        for (auto cell : cells)
+        for (const auto& cell : cells)
         {
           // If the cell has no geometry, then add its boundary cells.
           if (renderables.find(cell.entity()) == renderables.end())
@@ -584,7 +584,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
         atLeastOneSelected |= this->SelectComponentFootprint(cells, selnBits, renderables);
 
         auto groups = model.groups();
-        for (auto group : groups)
+        for (const auto& group : groups)
         {
           auto members = group.members<smtk::model::EntityRefs>();
           atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
@@ -595,7 +595,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
         auto auxGeoms = model.auxiliaryGeometry();
         // Convert auxGeoms to EntityRefs to match SelectComponentFootprint() API:
         smtk::model::EntityRefs auxEnts;
-        for (auto auxGeom : auxGeoms)
+        for (const auto& auxGeom : auxGeoms)
         {
           auxEnts.insert(auxGeom);
         }
@@ -616,7 +616,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
 {
   bool atLeastOneSelected = false;
   auto& smap = this->GetComponentState();
-  for (auto item : items)
+  for (const auto& item : items)
   {
     auto dataIt = renderables.find(item.entity());
     auto cstate = smap.find(item.entity());
@@ -759,14 +759,14 @@ void vtkSMTKResourceRepresentation::UpdateDisplayAttributesFromSelection(
   // should *all* be present but set to false.
   auto seda = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
   auto sgda = this->SelectedGlyphMapper->GetBlockAttributes();
-  for (auto entry : this->RenderableData)
+  for (const auto& entry : this->RenderableData)
   {
     seda->SetBlockVisibility(entry.second, false);
     sgda->SetBlockVisibility(entry.second, false);
   }
 
   // Add user-specified visibility
-  for (auto entry : this->ComponentState)
+  for (const auto& entry : this->ComponentState)
   {
     auto rit = this->RenderableData.find(entry.first);
     if (rit == this->RenderableData.end())

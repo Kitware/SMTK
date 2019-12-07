@@ -53,7 +53,7 @@ bool SimulationAttribute::lint(
   // I. Identify the geometric model associated with \a simulation.
   auto resources = simulation->associations();
   smtk::session::oscillator::Resource::Ptr modelResource;
-  for (auto resource : resources)
+  for (const auto& resource : resources)
   {
     modelResource = std::dynamic_pointer_cast<smtk::session::oscillator::Resource>(resource);
     if (modelResource)
@@ -96,7 +96,7 @@ bool SimulationAttribute::lint(
   }
 
   auto sourceAttribs = simulation->findAttributes("source-term");
-  for (auto sourceAttrib : sourceAttribs)
+  for (const auto& sourceAttrib : sourceAttribs)
   {
     auto assocPoints = sourceAttrib->associatedObjects<EntitySet>();
     if (assocPoints.empty())
@@ -105,7 +105,7 @@ bool SimulationAttribute::lint(
                                                   << "\" has no associated source point geometry.");
       continue;
     }
-    for (auto assocPoint : assocPoints)
+    for (const auto& assocPoint : assocPoints)
     {
       auto sourcePoint = assocPoint->referenceAs<smtk::model::AuxiliaryGeometry>();
       sourcePoints.erase(sourcePoint);

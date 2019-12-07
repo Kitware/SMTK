@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
   // get edge info
   EntityRefs edges = modelresource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside model are:\n";
-  for (auto edge : edges)
+  for (const auto& edge : edges)
   {
     std::cout << " " << edge.name() << "\n";
   }

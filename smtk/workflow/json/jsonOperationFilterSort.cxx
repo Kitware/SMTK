@@ -30,7 +30,7 @@ void to_json(json& j, const OperationFilterSortPtr& ofs, smtk::operation::Manage
   const auto& meta = manager->metadata().get<smtk::operation::IndexTag>();
   json jflist = json::array();
   const auto& filterList = ofs->filterList();
-  for (auto entry : filterList)
+  for (const auto& entry : filterList)
   {
     // Entries must have an index, name, and precedence:
     json jentry = {

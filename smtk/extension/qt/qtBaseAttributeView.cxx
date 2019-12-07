@@ -708,7 +708,7 @@ void qtBaseAttributeView::setTopLevelCategories(const std::set<std::string>& cat
   auto current = this->Internals->ShowCategoryCombo->currentText();
   this->Internals->ShowCategoryCombo->blockSignals(true);
   this->Internals->ShowCategoryCombo->clear();
-  for (auto cat : categories)
+  for (const auto& cat : categories)
   {
     this->Internals->ShowCategoryCombo->addItem(cat.c_str());
   }

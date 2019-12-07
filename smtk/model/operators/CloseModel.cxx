@@ -70,7 +70,7 @@ CloseModel::Result CloseModel::operateInternal()
 
     // Similarly, meshes must be added to the "mesh_expunged" attribute.
     auto associatedMeshes = resource->links().linkedFrom(smtk::mesh::Resource::ClassificationRole);
-    for (auto cit : associatedMeshes)
+    for (const auto& cit : associatedMeshes)
     {
       auto meshResource = std::dynamic_pointer_cast<smtk::resource::Resource>(cit);
       smtk::resource::Component::Visitor temp = [&](

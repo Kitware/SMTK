@@ -51,7 +51,7 @@ bool MergeInstances::ableToOperate()
   {
     return false;
   }
-  for (auto instance : instances)
+  for (const auto& instance : instances)
   {
     if (instance.prototype() != proto)
     {
@@ -91,18 +91,18 @@ MergeInstances::Result MergeInstances::operateInternal()
   auto expunged = result->findComponent("expunged");
 
   created->appendValue(merged.entityRecord());
-  for (auto instance : instances)
+  for (const auto& instance : instances)
   {
     expunged->appendValue(instance.entityRecord());
   }
   smtk::model::EntityRefArray delExpunged;
   smtk::model::EntityRefArray delModified;
   resource->deleteEntities(instances, delModified, delExpunged, m_debugLevel > 0);
-  for (auto tmp : delExpunged)
+  for (const auto& tmp : delExpunged)
   {
     expunged->appendValue(tmp.entityRecord());
   }
-  for (auto tmp : delModified)
+  for (const auto& tmp : delModified)
   {
     modified->appendValue(tmp.entityRecord());
   }

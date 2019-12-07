@@ -160,7 +160,7 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   // 2 Definitions conflict if they exclude each other
   if (!m_exclusionDefs.empty())
   {
-    for (auto wdef : m_exclusionDefs)
+    for (const auto& wdef : m_exclusionDefs)
     {
       auto edef = wdef.lock(); // Need to get the shared pointer (if there is one)
       if (edef == nullptr)
@@ -241,7 +241,7 @@ smtk::model::BitFlags Definition::associationMask() const
   if (accepts)
   {
     const auto entries = accepts->acceptableEntries();
-    for (auto entry : entries)
+    for (const auto& entry : entries)
     {
       // FIXME: Handle "derived" types like smtk::session::polygon::Resource
       if (entry.first == "smtk::model::Resource")
@@ -383,7 +383,7 @@ AttributePtr Definition::checkForConflicts(smtk::resource::ConstPersistentObject
 {
   if (!m_exclusionDefs.empty())
   {
-    for (auto wdef : m_exclusionDefs)
+    for (const auto& wdef : m_exclusionDefs)
     {
       auto def = wdef.lock(); // Need to get the shared pointer (if there is one)
       if (def == nullptr)
@@ -411,7 +411,7 @@ DefinitionPtr Definition::checkForPrerequisites(
   // Next let's see if there are any attributes that would exclude this one
   if (!m_prerequisiteDefs.empty())
   {
-    for (auto wdef : m_prerequisiteDefs)
+    for (const auto& wdef : m_prerequisiteDefs)
     {
       auto def = wdef.lock(); // Need to get the shared pointer (if there is one)
       if (def == nullptr)

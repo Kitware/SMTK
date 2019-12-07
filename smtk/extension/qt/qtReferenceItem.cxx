@@ -124,7 +124,7 @@ qtReferenceItem::AcceptsTypes qtReferenceItem::acceptableTypes() const
 
   bool rsrc = false;
   bool comp = false;
-  for (auto entry : def->acceptableEntries())
+  for (const auto& entry : def->acceptableEntries())
   {
     if (entry.second.empty())
     {
@@ -202,7 +202,7 @@ void qtReferenceItem::linkHover(bool link)
   {
     // Traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
     // in the application selection.
-    for (auto member : m_p->m_members)
+    for (const auto& member : m_p->m_members)
     {
       if (member.second)
       {
@@ -621,7 +621,7 @@ std::string qtReferenceItem::synopsis(bool& ok) const
   std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
   std::size_t numSel = 0;
-  for (auto entry : m_p->m_members)
+  for (const auto& entry : m_p->m_members)
   {
     if (entry.second > 0)
     {
@@ -903,7 +903,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
   }
 
   std::size_t uiMembers = 0;
-  for (auto member : m_p->m_members)
+  for (const auto& member : m_p->m_members)
   {
     if (member.second)
     {
@@ -921,7 +921,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
         return false;
       }
       int idx = 0;
-      for (auto member : m_p->m_members)
+      for (const auto& member : m_p->m_members)
       {
         if (member.second)
         {

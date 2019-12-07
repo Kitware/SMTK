@@ -40,7 +40,7 @@ int unitJSONView(int argc, char* argv[])
   std::string data((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
   nlohmann::json j = nlohmann::json::parse(data);
   int numJSONViews = 0;
-  for (auto view : j["Views"])
+  for (const auto& view : j["Views"])
   {
     smtk::view::ConfigurationPtr test = view;
     nlohmann::json jtmp = test;

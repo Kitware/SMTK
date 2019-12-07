@@ -91,7 +91,7 @@ bool ItemDefinition::passCategoryCheck(const std::set<std::string>& categories) 
   }
   if (m_categoryCheckMode == CategoryCheckMode::Any)
   {
-    for (auto cat : m_categories)
+    for (const auto& cat : m_categories)
     {
       if (categories.find(cat) != categories.end())
       {
@@ -100,7 +100,7 @@ bool ItemDefinition::passCategoryCheck(const std::set<std::string>& categories) 
     }
     return false;
   }
-  for (auto cat : m_categories)
+  for (const auto& cat : m_categories)
   {
     if (categories.find(cat) == categories.end())
     {

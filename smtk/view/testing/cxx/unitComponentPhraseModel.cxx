@@ -138,7 +138,7 @@ int unitComponentPhraseModel(int argc, char* argv[])
   // I.a. Verify that top-level phrases have a mutability as specified.
   int wantMutability = phraseModel->mutableAspects();
   auto& topLevel = phraseModel->root()->subphrases();
-  for (auto entry : topLevel)
+  for (const auto& entry : topLevel)
   {
     PhraseContent::ContentType attribs[] = { PhraseContent::ContentType::TITLE,
       PhraseContent::ContentType::SUBTITLE, PhraseContent::ContentType::COLOR,

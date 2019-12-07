@@ -259,7 +259,7 @@ void qtAssociationWidget::refreshAssociations(const smtk::common::UUID& ignoreRe
   smtk::attribute::DefinitionPtr preDef;
   smtk::attribute::AttributePtr conAtt;
   // Now lets see if the objects are associated with this attribute or can be
-  for (auto obj : objects)
+  for (const auto& obj : objects)
   {
     if (theAttribute->isObjectAssociated(obj))
     {
@@ -328,7 +328,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
       range = assocMap.equal_range(i->first);
 
       // Lets see if any of the resources match this type
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {
@@ -366,7 +366,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
       // As the resource manager to get all appropriate resources
       resources = resManager->find(i->first);
       // Need to process all of these resources
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {

@@ -355,7 +355,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
   if (!resources.empty())
   {
     // Lets see if any of the resources are model resources
-    for (auto resource : resources)
+    for (const auto& resource : resources)
     {
       if (resource->isOfType(smtk::model::Resource::type_name))
       {
@@ -377,7 +377,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
     // Ask the resource manager to get all appropriate resources
     resources = resManager->find(smtk::model::Resource::type_name);
     // Need to process all of these resources
-    for (auto resource : resources)
+    for (const auto& resource : resources)
     {
       // Find all components of the proper type
       auto comps = resource->find(this->Internals->m_modelEntityMask);
@@ -452,7 +452,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   auto entities = this->associatableObjects();
 
   int rcount = 0;
-  for (auto entity : entities)
+  for (const auto& entity : entities)
   {
     std::string name = entity->name();
     auto item = new QTableWidgetItem(QString::fromStdString(name));

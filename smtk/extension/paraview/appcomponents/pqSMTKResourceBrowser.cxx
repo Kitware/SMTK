@@ -316,7 +316,7 @@ void pqSMTKResourceBrowser::activeViewChanged(pqView* view)
   }
   auto rsrcPhrases = m_p->m_phraseModel->root()->subphrases();
   auto behavior = pqSMTKBehavior::instance();
-  for (auto rsrcPhrase : rsrcPhrases)
+  for (const auto& rsrcPhrase : rsrcPhrases)
   {
     auto rsrc = rsrcPhrase->relatedResource();
     if (!rsrc)

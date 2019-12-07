@@ -92,7 +92,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
     if (parent.isValid())
     {
       auxGeom = resource->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
-      for (auto child : entities)
+      for (const auto& child : entities)
       {
         if (child.as<smtk::model::AuxiliaryGeometry>().reparent(auxGeom))
         {

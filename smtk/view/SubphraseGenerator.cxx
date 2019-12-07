@@ -167,7 +167,7 @@ void SubphraseGenerator::decoratePhrases(DescriptivePhrases& phrases)
     return;
   }
 
-  for (auto phrase : phrases)
+  for (const auto& phrase : phrases)
   {
     mod->decoratePhrase(phrase);
   }
@@ -242,7 +242,7 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
 
     smtk::resource::ResourcePtr rsrc;
     smtk::resource::ComponentPtr comp;
-    for (auto obj : objects)
+    for (const auto& obj : objects)
     {
       DescriptivePhrasePtr actualParent(parent);
       Path childPath = this->indexOfObjectInParent(obj, actualParent, parentPath);
@@ -280,7 +280,7 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
   smtk::attribute::AttributePtr attr;
   smtk::model::EntityPtr ment;
   smtk::mesh::ComponentPtr mcmp;
-  for (auto obj : objects)
+  for (const auto& obj : objects)
   {
     auto comp = obj->as<smtk::resource::Component>();
     if (!comp)
@@ -393,7 +393,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
         if (parentEntity->isGroup())
         {
           auto groups = childRef.containingGroups();
-          for (auto group : groups)
+          for (const auto& group : groups)
           {
             if (group.entity() == parentEntity->id())
             {
@@ -414,7 +414,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
         {
           smtk::model::Model parentModel(parentEntity);
           auto cells = parentModel.cells();
-          for (auto cell : cells)
+          for (const auto& cell : cells)
           {
             if (cell.entity() == childRef.entity())
             {
@@ -428,7 +428,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
       {
         // Is the parent a group that owns this group?
         auto groups = childRef.containingGroups();
-        for (auto group : groups)
+        for (const auto& group : groups)
         {
           if (group.entity() == parentEntity->id())
           {
@@ -440,7 +440,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
         if (!shouldAdd && parentEntity->isModel())
         {
           groups = smtk::model::Model(parentEntity).groups();
-          for (auto group : groups)
+          for (const auto& group : groups)
           {
             if (group.entity() == childRef.entity())
             {
@@ -508,7 +508,7 @@ int SubphraseGenerator::findResourceLocation(
   }
 
   int ii = 0;
-  for (auto phrase : root->subphrases())
+  for (const auto& phrase : root->subphrases())
   {
     if (phrase->relatedResource() == rsrc)
     {
@@ -535,7 +535,7 @@ bool SubphraseGenerator::findSortedLocation(Path& pathOut, smtk::attribute::Attr
   int ii = 0;
 
   // For now, attributes are flat, so pathOut is easy.
-  for (auto phrase : phrases)
+  for (const auto& phrase : phrases)
   {
     if (phrase->title() > attr->name())
     {
@@ -605,7 +605,7 @@ void SubphraseGenerator::componentsOfResource(
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
     auto models =
       modelRsrc->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);
-    for (auto model : models)
+    for (const auto& model : models)
     {
       result.push_back(ComponentPhraseContent::createPhrase(model.component(), mutability, src));
     }
@@ -614,7 +614,7 @@ void SubphraseGenerator::componentsOfResource(
   {
     std::vector<smtk::attribute::AttributePtr> attrs;
     attrRsrc->attributes(attrs);
-    for (auto attr : attrs)
+    for (const auto& attr : attrs)
     {
       result.push_back(ComponentPhraseContent::createPhrase(attr, 0, src));
     }
@@ -791,7 +791,7 @@ void SubphraseGenerator::childrenOfModelAuxiliaryGeometry(
   DescriptivePhrase::Ptr src, const smtk::model::AuxiliaryGeometry& aux, DescriptivePhrases& result)
 {
   auto children = aux.embeddedEntities<smtk::model::AuxiliaryGeometries>();
-  for (auto child : children)
+  for (const auto& child : children)
   {
     result.push_back(ComponentPhraseContent::createPhrase(child.component(), 0, src));
   }

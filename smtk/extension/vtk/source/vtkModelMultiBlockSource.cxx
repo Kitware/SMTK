@@ -626,7 +626,7 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds
   }
   // Hidden entity's vtkDataObject is not added into mbds. Generate them here if it's used as a
   // glyph prototype
-  for (auto ipIter : instancePrototypes)
+  for (const auto& ipIter : instancePrototypes)
   {
     if (ipIter.second == -1 && ipIter.first.isValid() &&
       ipIter.first.exclusions(smtk::model::Exclusions::Rendering))
@@ -657,7 +657,7 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
 {
   instanceBlocks->SetNumberOfBlocks(static_cast<int>(modelInstances.size()));
   int block = 0;
-  for (auto instance : modelInstances)
+  for (const auto& instance : modelInstances)
   {
     const smtk::model::Tessellation* tess = instance.hasTessellation();
     vtkIdType numPoints = static_cast<vtkIdType>(tess->coords().size() / 3);

@@ -281,7 +281,7 @@ std::string XmlV2StringWriter::convertToString(bool no_declaration)
       if (!incs.empty())
       {
         auto inodes = root.append_child("Includes");
-        for (auto inc : incs)
+        for (const auto& inc : incs)
         {
           inodes.append_child("File").text().set(inc.c_str());
         }
@@ -332,7 +332,7 @@ void XmlV2StringWriter::generateXml()
     {
       auto catNodes = root.append_child("Categories");
       auto cats = m_resource->categories();
-      for (auto cat : cats)
+      for (const auto& cat : cats)
       {
         catNodes.append_child("Cat").text().set(cat.c_str());
       }
@@ -365,7 +365,7 @@ void XmlV2StringWriter::generateXml()
         anode.append_attribute("Required").set_value(true);
       }
       auto aCats = analysis->localCategories();
-      for (auto acat : aCats)
+      for (const auto& acat : aCats)
       {
         anode.append_child("Cat").text().set(acat.c_str());
       }
@@ -417,7 +417,7 @@ void XmlV2StringWriter::generateXml()
       xml_node& catsRoot(m_internals->m_roots.at(i));
       catsRoot.append_child(node_comment).set_value("**********  Category Information ***********");
       auto catNodes = catsRoot.append_child("Categories");
-      for (auto cat : cats)
+      for (const auto& cat : cats)
       {
         catNodes.append_child("Cat").text().set(cat.c_str());
       }

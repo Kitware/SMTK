@@ -70,7 +70,7 @@ DescriptivePhrases TwoLevelSubphraseGenerator::subphrases(DescriptivePhrase::Ptr
 int FindPhraseByTitle(const std::string& title, const DescriptivePhrases& phrases)
 {
   int result = 0;
-  for (auto phrase : phrases)
+  for (const auto& phrase : phrases)
   {
     if (phrase->title() == title)
     {
@@ -215,7 +215,7 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
   {
     std::vector<smtk::attribute::AttributePtr> attrs;
     attrRsrc->attributes(attrs);
-    for (auto attr : attrs)
+    for (const auto& attr : attrs)
     {
       if (attr)
       {

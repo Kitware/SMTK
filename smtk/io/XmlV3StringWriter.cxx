@@ -88,7 +88,7 @@ void XmlV3StringWriter::generateXml()
     associationsNode = root.append_child("Associations");
   }
 
-  for (auto association : associations)
+  for (const auto& association : associations)
   {
     xml_node associationNode = associationsNode.append_child("Association");
     // Because resource links are not serialized into XML, we add enough data
@@ -107,7 +107,7 @@ void XmlV3StringWriter::generateXml()
   m_resource->definitions(defs, true);
 
   // Lets process the constraints
-  for (auto def : defs)
+  for (const auto& def : defs)
   {
     auto defType = def->type();
     auto excludedTypes = def->excludedTypeNames();
@@ -142,7 +142,7 @@ void XmlV3StringWriter::generateXml()
       // We will now write out pair-wise rules starting with the
       // first definition in the list that comes after this definition
       // alphabetically - assuming all of the skipped rules have already been added
-      for (auto etype : excludedTypes)
+      for (const auto& etype : excludedTypes)
       {
         if (etype > defType)
         {
@@ -186,7 +186,7 @@ void XmlV3StringWriter::generateXml()
       // set the xml type attribute
       child.append_attribute("Type").set_value(defType.c_str());
       // Write out all prerequisitesTypes
-      for (auto ptype : prerequisitesTypes)
+      for (const auto& ptype : prerequisitesTypes)
       {
         n = child.append_child("Def");
         n.text().set(ptype.c_str());
@@ -513,7 +513,7 @@ void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
   auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");
 
-  for (auto entry : acceptableEntries)
+  for (const auto& entry : acceptableEntries)
   {
     xml_node rsrcnode = accnode.append_child("Resource");
     rsrcnode.append_attribute("Name").set_value(entry.first.c_str());

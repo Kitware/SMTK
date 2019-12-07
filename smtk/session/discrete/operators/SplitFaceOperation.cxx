@@ -165,7 +165,7 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
     if (!newEnts.empty())
     {
       smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
-      for (auto c : newEnts)
+      for (const auto& c : newEnts)
       {
         created->appendValue(c.component());
       }
@@ -173,7 +173,7 @@ SplitFaceOperation::Result SplitFaceOperation::operateInternal()
     if (!modEnts.empty())
     {
       smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
-      for (auto m : modEnts)
+      for (const auto& m : modEnts)
       {
         modified->appendValue(m.component());
       }

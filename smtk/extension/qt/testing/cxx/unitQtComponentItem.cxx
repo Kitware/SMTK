@@ -205,7 +205,7 @@ int unitQtComponentItem(int argc, char* argv[])
       (userMaxAllowed > 0 && userMaxAllowed >= numRequired) ? userMaxAllowed : 4;
     std::ostringstream label;
     int numSel = 0;
-    for (auto entry : m_visibleThings)
+    for (const auto& entry : m_visibleThings)
     {
       if (entry.second)
       {

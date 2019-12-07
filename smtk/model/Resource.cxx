@@ -2875,9 +2875,9 @@ bool Resource::insertEntityAssociations(
   {
     return didFind;
   }
-  for (auto attribId : eait->second.attributeIds())
+  for (const auto& attribId : eait->second.attributeIds())
   {
-    for (auto attribResource : m_attributeResources)
+    for (const auto& attribResource : m_attributeResources)
     {
       smtk::attribute::Resource::Ptr aresource = attribResource.lock();
       smtk::attribute::AttributePtr att;
@@ -3417,7 +3417,7 @@ bool Resource::closeSession(const SessionRef& sref)
           all.insert(*eit);
         }
       }
-      for (auto ent : all)
+      for (const auto& ent : all)
       {
         this->hardErase(ent);
       }

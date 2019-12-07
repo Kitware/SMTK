@@ -26,7 +26,7 @@ GarbageCollector::GarbageCollector() = default;
 
 GarbageCollector::~GarbageCollector()
 {
-  for (auto entry : m_observers)
+  for (const auto& entry : m_observers)
   {
     auto manager = entry.first.lock();
     auto observer = entry.second;

@@ -59,7 +59,7 @@ DescriptivePhrasePtr DescriptivePhrase::setDelegate(SubphraseGeneratorPtr delega
       if (!this->parent())
       {
         auto& children = this->subphrases();
-        for (auto child : children)
+        for (const auto& child : children)
         {
           if (child->areSubphrasesBuilt())
           {
@@ -563,7 +563,7 @@ int DescriptivePhrase::visitChildrenInternal(Visitor fn, std::vector<int>& indic
   {
     DescriptivePhrases list = this->subphrases();
     indices.insert(indices.end(), 0);
-    for (auto entry : list)
+    for (const auto& entry : list)
     {
       if (entry)
       {

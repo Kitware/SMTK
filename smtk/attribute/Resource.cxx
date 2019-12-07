@@ -214,7 +214,7 @@ void Resource::definitions(std::vector<smtk::attribute::DefinitionPtr>& result, 
     return;
   }
   std::vector<std::string> keys;
-  for (auto info : m_definitions)
+  for (const auto& info : m_definitions)
   {
     keys.push_back(info.first);
   }
@@ -956,7 +956,7 @@ std::set<AttributePtr> Resource::attributes(
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto entry = std::dynamic_pointer_cast<Attribute>(obj);
     if (entry)
@@ -975,7 +975,7 @@ bool Resource::hasAttributes(const smtk::resource::ConstPersistentObjectPtr& obj
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto entry = std::dynamic_pointer_cast<Attribute>(obj);
     if (entry)
@@ -994,7 +994,7 @@ void Resource::disassociateAllAttributes(const smtk::resource::PersistentObjectP
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto entry = std::dynamic_pointer_cast<Attribute>(obj);
     if (entry)

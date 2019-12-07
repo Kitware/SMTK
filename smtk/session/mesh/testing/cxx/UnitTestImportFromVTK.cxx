@@ -63,7 +63,7 @@ int UnitTestImportFromVTK(int argc, char* argv[])
   // resources will be automatically registered to the resource manager).
   operationManager->registerResourceManager(resourceManager);
 
-  for (auto file : files)
+  for (const auto& file : files)
   {
     smtk::model::Entity::Ptr model;
 

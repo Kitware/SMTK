@@ -66,7 +66,7 @@ Export::Result Export::operateInternal()
 
   std::ofstream oscFile(filename.c_str());
   oscFile << "## type      center      r       omega0      zeta ##\n";
-  for (auto sourceTerm : linter.sourceTerms())
+  for (const auto& sourceTerm : linter.sourceTerms())
   {
     auto sourceType = sourceTerm->definition()->type();
     std::string termName;
@@ -93,7 +93,7 @@ Export::Result Export::operateInternal()
       continue;
     }
     auto assocPoints = sourceTerm->associatedObjects<EntitySet>();
-    for (auto assocPoint : assocPoints)
+    for (const auto& assocPoint : assocPoints)
     {
       auto sourcePoint = assocPoint->referenceAs<smtk::model::AuxiliaryGeometry>();
       auto center = sourcePoint.floatProperty("center");

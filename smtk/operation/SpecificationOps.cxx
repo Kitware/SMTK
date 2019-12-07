@@ -225,7 +225,7 @@ extractResources(Operation::Result result)
   std::set<std::weak_ptr<smtk::resource::Resource>,
     std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
     resources;
-  for (auto resourceAndLockType : resourcesAndLockTypes)
+  for (const auto& resourceAndLockType : resourcesAndLockTypes)
   {
     resources.insert(resourceAndLockType.first);
   }

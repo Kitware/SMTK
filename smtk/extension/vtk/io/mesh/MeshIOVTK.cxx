@@ -49,7 +49,7 @@ MeshIOVTK::MeshIOVTK()
   for (auto& format : formats)
   {
     std::vector<std::string> extensionVector;
-    for (auto ext : format.Extensions)
+    for (const auto& ext : format.Extensions)
     {
       extensionVector.push_back("." + ext);
     }

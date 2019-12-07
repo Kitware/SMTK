@@ -552,7 +552,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
       range = assocMap.equal_range(i->first);
 
       // Lets see if any of the resources match this type
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {
@@ -598,7 +598,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
       // As the resource manager to get all appropriate resources
       auto resources = resManager->find(i->first);
       // Need to process all of these resources
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {

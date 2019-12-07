@@ -370,10 +370,10 @@ void pqSMTKSelectionFilterBehavior::installFilter()
             case 0:
             {
               smtk::model::Edges edges = cell.as<smtk::model::Vertex>().edges();
-              for (auto edge : edges)
+              for (const auto& edge : edges)
               {
                 smtk::model::Faces faces = edge.faces();
-                for (auto face : faces)
+                for (const auto& face : faces)
                 {
                   smtk::model::Volumes tmp = face.volumes();
                   vv.insert(vv.end(), tmp.begin(), tmp.end());
@@ -384,7 +384,7 @@ void pqSMTKSelectionFilterBehavior::installFilter()
             case 1:
             {
               smtk::model::Faces faces = cell.as<smtk::model::Edge>().faces();
-              for (auto face : faces)
+              for (const auto& face : faces)
               {
                 smtk::model::Volumes tmp = face.volumes();
                 vv.insert(vv.end(), tmp.begin(), tmp.end());
@@ -402,7 +402,7 @@ void pqSMTKSelectionFilterBehavior::installFilter()
           }
         }
         smtk::model::EntityPtr suggestion;
-        for (auto vc : vv)
+        for (const auto& vc : vv)
         {
           if (vc.isValid(&suggestion))
           {

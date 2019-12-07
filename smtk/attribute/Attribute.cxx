@@ -314,7 +314,7 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
     // if we are allowed to remove what we can then disassociate where we can
     if (partialRemovalOk)
     {
-      for (auto obj : objs)
+      for (const auto& obj : objs)
       {
         if (!this->disassociate(obj))
         {
@@ -505,7 +505,7 @@ bool Attribute::associateEntity(const smtk::common::UUID& objId)
   }
 
   // Look for anything with the given UUID:
-  for (auto rsrc : rsrcs)
+  for (const auto& rsrc : rsrcs)
   {
     if (rsrc != nullptr)
     {
@@ -565,7 +565,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
   }
 
   // Look for anything with the given UUID:
-  for (auto rsrc : rsrcs)
+  for (const auto& rsrc : rsrcs)
   {
     if (rsrc != nullptr)
     {
@@ -617,7 +617,7 @@ bool Attribute::canBeDisassociated(
   // 2b. If it does then see how many other attributes associated with the object
   // match the type - if there is only one then return false
   auto atts = attRes->attributes(obj);
-  for (auto att : atts)
+  for (const auto& att : atts)
   {
     // If the attribite is the same type as this, or it has no
     // prerequisites, we can skip it
@@ -635,7 +635,7 @@ bool Attribute::canBeDisassociated(
     }
     // Count number of atts that match the preDef
     int count = 0;
-    for (auto att1 : atts)
+    for (const auto& att1 : atts)
     {
       if (att1->m_definition->isA(preDef))
       {

@@ -119,13 +119,13 @@ int main(int argc, char* argv[])
   // get face and edge info
   EntityRefs faces = modelresource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::FACE);
   std::cout << "Faces inside model are:\n";
-  for (auto face : faces)
+  for (const auto& face : faces)
   {
     std::cout << " " << face.name() << "\n";
   }
   EntityRefs edges = modelresource->entitiesMatchingFlagsAs<EntityRefs>(smtk::model::EDGE);
   std::cout << "Edges inside model are:\n";
-  for (auto edge : edges)
+  for (const auto& edge : edges)
   {
     std::cout << " " << edge.name() << "\n";
   }

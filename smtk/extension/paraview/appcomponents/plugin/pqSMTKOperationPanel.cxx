@@ -391,7 +391,7 @@ void pqSMTKOperationPanel::operationListDoubleClicked(QListWidgetItem* item)
     const auto& smap = seln->currentSelection();
     auto params = opInstance->parameters();
     bool anyAssociations = false;
-    for (auto entry : smap)
+    for (const auto& entry : smap)
     {
       if ((entry.second & 0x01) ==
         0x01) // FIXME: properly select entities from the map based on a specific bit flag

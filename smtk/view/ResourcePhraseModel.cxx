@@ -137,7 +137,7 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool ad
   {
     // Only attempt to filter resource out if there are filters defined.
     bool acceptable = m_resourceFilters.empty();
-    for (auto filter : m_resourceFilters)
+    for (const auto& filter : m_resourceFilters)
     {
       if (resource->isOfType(filter.first))
       {

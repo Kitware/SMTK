@@ -88,7 +88,7 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
         return true;
       }
       auto rsrcs = rsrcMgr->find(m_resourceFilter);
-      for (auto rsrc : rsrcs)
+      for (const auto& rsrc : rsrcs)
       {
         if (m_componentFilter.empty())
         {
@@ -102,7 +102,7 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
           std::cout << "ObjectGroupPhraseContent: Find " << comps.size() << " Components"
                                                                             " with filter="
                     << m_componentFilter << std::endl;
-          for (auto comp : comps)
+          for (const auto& comp : comps)
           {
             auto phr = ComponentPhraseContent::createPhrase(
               comp, PhraseContent::ContentType::EVERYTHING, location);

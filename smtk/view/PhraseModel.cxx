@@ -77,7 +77,7 @@ void notifyRecursive(
   obs(parent, PhraseModelEvent::ABOUT_TO_INSERT, parentIdx, parentIdx, range);
   obs(parent, PhraseModelEvent::INSERT_FINISHED, parentIdx, parentIdx, range);
   parentIdx.push_back(0);
-  for (auto child : children)
+  for (const auto& child : children)
   {
     notifyRecursive(obs, child, parentIdx);
     ++parentIdx.back();
@@ -143,7 +143,7 @@ PhraseModel::~PhraseModel()
 bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
   smtk::view::SelectionPtr seln)
 {
-  for (auto source : m_sources)
+  for (const auto& source : m_sources)
   {
     if (source.m_rsrcMgr == rsrcMgr && source.m_operMgr == operMgr && source.m_seln == seln)
     {
@@ -229,7 +229,7 @@ bool PhraseModel::resetSources()
 
 void PhraseModel::visitSources(SourceVisitor visitor)
 {
-  for (auto src : m_sources)
+  for (const auto& src : m_sources)
   {
     if (!visitor(src.m_rsrcMgr, src.m_operMgr, src.m_seln))
     {

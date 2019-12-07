@@ -39,7 +39,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::resource::ComponentSet& cset)
   {
     // Group components by resource IDs:
     std::map<smtk::common::UUID, std::set<smtk::common::UUID> > rcset;
-    for (auto entry : cset)
+    for (const auto& entry : cset)
     {
       auto rset = rcset.find(entry->resource()->id());
       if (rset == rcset.end())
@@ -52,7 +52,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::resource::ComponentSet& cset)
 
     // Now output arrays of resources that list component-id members.
     j = json::array();
-    for (auto rsrc : rcset)
+    for (const auto& rsrc : rcset)
     {
       json ra = json::array();
       ra.push_back(rsrc.first);
