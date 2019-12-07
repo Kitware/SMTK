@@ -277,11 +277,7 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
     }
   }
   // also check associations
-  if (m_associatedObjects && !m_associatedObjects->isValid())
-  {
-    return false;
-  }
-  return true;
+  return !(m_associatedObjects && !m_associatedObjects->isValid());
 }
 
 ResourcePtr Attribute::attributeResource() const

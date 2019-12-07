@@ -59,11 +59,7 @@ namespace mesh
 
 bool Write::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 Write::Result Write::operateInternal()
@@ -106,7 +102,7 @@ Write::Result Write::operateInternal()
       }
     }
 
-    if (fileWriteSuccess == false)
+    if (!fileWriteSuccess)
     {
       for (auto&& file : generatedFiles)
       {

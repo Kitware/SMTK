@@ -154,12 +154,8 @@ bool AbstractDataModel::isIndexValidUpperBound(const QModelIndex& index_) const
   }
 
   QModelIndex const& parent_ = index_.parent();
-  if (index_.row() >= this->rowCount(parent_) || index_.column() >= this->columnCount(parent_))
-  {
-    return false;
-  }
-
-  return true;
+  return !(
+    index_.row() >= this->rowCount(parent_) || index_.column() >= this->columnCount(parent_));
 }
 
 // -----------------------------------------------------------------------------

@@ -337,7 +337,7 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Han
 
     int dimension = 4;
     bool hasDim = false;
-    while (hasDim == false && dimension >= 0)
+    while (!hasDim && dimension >= 0)
     {
       //by starting at 4 and decrementing we don't need to branch
       //on hasDim to see if we need to decrement at the end of
@@ -821,7 +821,7 @@ bool Interface::computeShell(
   ::moab::Range cells;
   int dimension = 4;
   bool hasCells = false;
-  while (hasCells == false && dimension >= 0)
+  while (!hasCells && dimension >= 0)
   {
     --dimension;
     // get all non-meshset entities in meshset of a given cell type
@@ -833,7 +833,7 @@ bool Interface::computeShell(
     hasCells = !cells.empty();
   }
 
-  if (hasCells == false)
+  if (!hasCells)
   {
     return false;
   }
@@ -1027,7 +1027,7 @@ bool Interface::setNeumann(
   //step 1 find the highest dimension cells for the meshes.
   int dimension = 4;
   bool hasCells = false;
-  while (hasCells == false && dimension >= 0)
+  while (!hasCells && dimension >= 0)
   {
     ::moab::Range cells;
     --dimension;
@@ -1550,12 +1550,7 @@ bool Interface::deleteCellField(
 
   // Delete the data flag from the meshsets
   rval = m_iface->tag_delete_data(tag, smtkToMOABRange(meshsets));
-  if (rval != ::moab::MB_SUCCESS)
-  {
-    return false;
-  }
-
-  return true;
+  return rval == ::moab::MB_SUCCESS;
 }
 
 //create a data set named <name> with <dimension> doubles for each point in
@@ -1908,12 +1903,7 @@ bool Interface::deletePointField(
 
   // Delete the data flag from the meshsets
   rval = m_iface->tag_delete_data(tag, smtkToMOABRange(meshsets));
-  if (rval != ::moab::MB_SUCCESS)
-  {
-    return false;
-  }
-
-  return true;
+  return rval == ::moab::MB_SUCCESS;
 }
 
 smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& a_,
@@ -1947,7 +1937,7 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
       const bool validCell = bpc.fetchNextCell(size, connectivity);
       if (validCell)
       {
-        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained ? true : false);
+        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained);
         bool contains = !exitCondition;
         for (int j = 0; j < size && contains != exitCondition; ++j)
         {
@@ -1995,7 +1985,7 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
       const bool validCell = bpc.fetchNextCell(size, connectivity);
       if (validCell)
       {
-        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained ? true : false);
+        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained);
         bool contains = !exitCondition;
         for (int j = 0; j < size && contains != exitCondition; ++j)
         {
@@ -2125,7 +2115,7 @@ void Interface::cellForEach(const HandleRange& cells, smtk::mesh::PointConnectiv
     if (filter.wantsCoordinates())
     {
       std::vector<double> coords;
-      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; ++currentCell)
+      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points); ++currentCell)
       {
         coords.resize(size * 3);
 
@@ -2139,7 +2129,7 @@ void Interface::cellForEach(const HandleRange& cells, smtk::mesh::PointConnectiv
     }
     else
     { //don't extract the coords
-      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; ++currentCell)
+      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points); ++currentCell)
       {
         filter.pointIds(points);
         //call the custom filter

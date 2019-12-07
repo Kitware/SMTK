@@ -39,7 +39,7 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::PointConnectivity all_cells_from_ms = all_meshes.pointConnectivity();
   smtk::mesh::PointConnectivity copy_of_all_cells(all_cells_from_ms);
 
-  test(all_cells_from_ms.is_empty() == false);
+  test(!all_cells_from_ms.is_empty());
   test(all_cells_from_ms.size() != 0);
   test(all_cells_from_ms.size() == copy_of_all_cells.size());
 
@@ -58,7 +58,7 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   equalToOneDim = oneDim; //test assignment operator
   test(equalToOneDim.numberOfCells() == oneDim.numberOfCells());
   test(equalToOneDim.size() != oneDim.numberOfCells());
-  test(equalToOneDim.is_empty() == false);
+  test(!equalToOneDim.is_empty());
 }
 
 void verify_empty(const smtk::mesh::ResourcePtr& mr)
@@ -72,10 +72,10 @@ void verify_empty(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::PointConnectivity no_cells_d =
     no_mesh.cells(smtk::mesh::CellTypes()).pointConnectivity();
 
-  test(no_cells_a.is_empty() == true);
-  test(no_cells_b.is_empty() == true);
-  test(no_cells_c.is_empty() == true);
-  test(no_cells_d.is_empty() == true);
+  test(no_cells_a.is_empty());
+  test(no_cells_b.is_empty());
+  test(no_cells_c.is_empty());
+  test(no_cells_d.is_empty());
 
   test(no_cells_a.size() == 0);
   test(no_cells_b.size() == 0);
@@ -94,8 +94,8 @@ void verify_all_connecitivity(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::PointConnectivity all_cells_from_collec = mr->pointConnectivity();
   smtk::mesh::PointConnectivity all_cells_from_ms = all_meshes.pointConnectivity();
 
-  test(all_cells_from_collec.is_empty() == false);
-  test(all_cells_from_ms.is_empty() == false);
+  test(!all_cells_from_collec.is_empty());
+  test(!all_cells_from_ms.is_empty());
 
   test(all_cells_from_collec.size() != 0);
   test(all_cells_from_ms.size() != 0);
@@ -186,9 +186,9 @@ void verify_iteration(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::TypeSet typeSet(allCellTypesSeen, false, true);
 
   //verify that the cell types that are reported are only 2D cells.
-  test(typeSet.hasDimension(smtk::mesh::Dims1) == false);
-  test(typeSet.hasDimension(smtk::mesh::Dims2) == true);
-  test(typeSet.hasDimension(smtk::mesh::Dims3) == false);
+  test(!typeSet.hasDimension(smtk::mesh::Dims1));
+  test(typeSet.hasDimension(smtk::mesh::Dims2));
+  test(!typeSet.hasDimension(smtk::mesh::Dims3));
 
   test(reportedNumCells == actualNumCells);
   test(reportedNumVerts == actualNumVerts);
@@ -223,7 +223,7 @@ void verify_shared_iteration(const smtk::mesh::ResourcePtr& mr)
 
   std::size_t actualNumCells = 0;
   std::size_t actualNumVerts = 0;
-  while (twoDim.fetchNextCell(size, points) == true)
+  while (twoDim.fetchNextCell(size, points))
   {
     ++actualNumCells;
     actualNumVerts += static_cast<std::size_t>(size);
@@ -237,7 +237,7 @@ void verify_shared_iteration(const smtk::mesh::ResourcePtr& mr)
   for (std::size_t i = 10; i < reportedNumCells; ++i)
   {
     //if we iterate too far this will through an exception
-    test(twoDimCopy.fetchNextCell(size, points) == true);
+    test(twoDimCopy.fetchNextCell(size, points));
   }
 }
 }

@@ -251,14 +251,14 @@ int unitQtComponentItem(int argc, char* argv[])
     }
     ok &= (maxAllowed <= 0 || numSel <= maxAllowed);
     plbl->setText(label.str().c_str());
-    plbl->setAutoFillBackground(ok ? false : true);
+    plbl->setAutoFillBackground(!ok);
     QPalette pal = plbl->palette();
     pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
     plbl->setPalette(pal);
     plbl->update();
 
     dlbl->setText(label.str().c_str());
-    dlbl->setAutoFillBackground(ok ? false : true);
+    dlbl->setAutoFillBackground(!ok);
     QPalette dpal = dlbl->palette();
     dpal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
     dlbl->setPalette(dpal);

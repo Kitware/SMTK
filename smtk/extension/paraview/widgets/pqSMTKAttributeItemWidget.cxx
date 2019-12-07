@@ -511,11 +511,7 @@ bool pqSMTKAttributeItemWidget::validateControlItem(const smtk::attribute::Strin
     return false;
   }
   std::size_t index;
-  if ((!def->getEnumIndex("active", index) && !def->getEnumIndex("Active", index)) ||
+  return !((!def->getEnumIndex("active", index) && !def->getEnumIndex("Active", index)) ||
     // NB: Allow but do not require "visible" enum
-    (!def->getEnumIndex("inactive", index) && !def->getEnumIndex("Inactive", index)))
-  {
-    return false;
-  }
-  return true;
+    (!def->getEnumIndex("inactive", index) && !def->getEnumIndex("Inactive", index)));
 }

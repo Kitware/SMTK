@@ -667,11 +667,7 @@ bool ModelLoopRep::findAPointInside(double& x, double& y) const
   //if we can't find the a hole point with the simple check
   //we move onto using a slower but better algorithm
   found = this->findPointInsideConcave(x, y);
-  if (found)
-  {
-    return true;
-  }
-  return false;
+  return found;
 }
 
 bool ModelLoopRep::isNonManifoldEdge(const vtkIdType& modelEdgeId) const

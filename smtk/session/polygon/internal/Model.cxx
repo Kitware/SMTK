@@ -1089,7 +1089,7 @@ Point pmodel::edgeTestPoint(const Id& edgeId, bool edgeEndPt) const
   edge::Ptr e = m_session->findStorage<edge>(edgeId);
   if (e)
   {
-    if (edgeEndPt == true)
+    if (edgeEndPt)
     { // Return test point near *last* vertex of forwards edge.
       PointSeq::const_reverse_iterator it = e->pointsRBegin();
       ++it; // Advance from endpoint by 1 so we are not coincident to the endpoint.

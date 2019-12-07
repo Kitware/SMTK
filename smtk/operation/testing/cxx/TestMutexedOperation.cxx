@@ -212,7 +212,7 @@ private:
 
 WriteOperation::Result WriteOperation::operateInternal()
 {
-  if (semaphore == true)
+  if (semaphore)
   {
     return this->createResult(Outcome::FAILED);
   }

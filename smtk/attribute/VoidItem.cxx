@@ -33,11 +33,7 @@ bool VoidItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == nullptr) || (!Item::setDefinition(adef)))
-  {
-    return false;
-  }
-  return true;
+  return !((def == nullptr) || (!Item::setDefinition(adef)));
 }
 
 VoidItem::~VoidItem() = default;

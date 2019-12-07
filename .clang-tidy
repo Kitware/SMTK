@@ -82,7 +82,6 @@ readability-*,\
 -readability-non-const-parameter,\
 -readability-redundant-control-flow,\
 -readability-redundant-member-init,\
--readability-simplify-boolean-expr,\
 -readability-uppercase-literal-suffix,\
 "
 #WarningsAsErrors: "*"

@@ -268,7 +268,7 @@ int vtkSplitPlanarLines::RequestData(
   plocator->SetDataSet(output);
   plocator->SetTolerance(this->Tolerance);
   pedigreeIds->SetName("vtkPedigreeIds");
-  bool haveInputPedigree = input->GetCellData()->GetPedigreeIds() ? true : false;
+  bool haveInputPedigree = input->GetCellData()->GetPedigreeIds() != nullptr;
   for (vtkIdType cellId = numVerts; cellId < firstPolyCell; ++cellId)
   {
     IntersectSegments(input, cellId, clocator.GetPointer(), hits, output, plocator.GetPointer(),

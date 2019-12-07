@@ -1228,7 +1228,7 @@ bool IsValueValid(const smtk::resource::ConstComponentPtr& comp, smtk::model::Bi
       // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
       // require all entries to have the same entity type flag as the first.
       smtk::model::BitFlags typeMask = mask;
-      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
+      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) != 0;
       if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
       {
         typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
@@ -1261,7 +1261,7 @@ bool CheckPropStringValues(const StringList& propValues, const LimitingClause& c
 
        ++sit, ++rit, ++vit)
   {
-    if (*rit == true)
+    if (*rit)
     {
       // This is a regex, test it.
       regex match(*sit);

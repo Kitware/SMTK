@@ -400,7 +400,7 @@ void vtkCMBGeometryReader::PostProcessMesh(vtkDataSet* dataset, bool is3DVolumeM
       featureEdges->SetInputData(dataset);
     }
     featureEdges->Update();
-    this->HasBoundaryEdges = featureEdges->GetOutput()->GetNumberOfLines() > 0 ? true : false;
+    this->HasBoundaryEdges = featureEdges->GetOutput()->GetNumberOfLines() > 0;
 
     // we have what we need, either a closed shell or we have found that it has
     // edges but we're not preping for model creation

@@ -355,7 +355,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   if (atts.empty())
     return;
 
-  if (attResource->associations().empty() == true)
+  if (attResource->associations().empty())
     return;
 
   std::vector<smtk::attribute::AttributePtr>::const_iterator it;

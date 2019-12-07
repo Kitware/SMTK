@@ -258,7 +258,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
 
   smtk::view::ConfigurationPtr view = m_attrUIMgr->findOrCreateOperationView();
   auto baseView = m_attrUIMgr->setSMTKView(view, m_p->OperationEditor);
-  didDisplay = baseView ? true : false;
+  didDisplay = baseView != nullptr;
 
   // Connect the signal emitted from the operation view after an operation is
   // run to a lambda that extracts any newly added resources and queries the

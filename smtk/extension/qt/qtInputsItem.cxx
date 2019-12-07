@@ -696,7 +696,7 @@ void qtInputsItem::setOutputOptional(int state)
   {
     return;
   }
-  bool enable = state ? true : false;
+  bool enable = state != 0;
   if (item->isExtensible())
   {
     if (this->Internals->AddItemButton)

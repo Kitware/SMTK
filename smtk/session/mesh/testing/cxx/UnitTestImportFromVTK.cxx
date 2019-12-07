@@ -83,7 +83,7 @@ int UnitTestImportFromVTK(int argc, char* argv[])
       importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
       // Test for success
-      if (importOp->ableToOperate() == false)
+      if (!importOp->ableToOperate())
       {
         std::cerr << "Import operator unable to operate\n";
         return 1;

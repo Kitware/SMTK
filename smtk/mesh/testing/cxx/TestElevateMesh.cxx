@@ -230,7 +230,7 @@ int TestElevateMesh(int argc, char* argv[])
     elevateMesh->parameters()->findString("interpolation scheme")->setToDefault();
     elevateMesh->parameters()->findDouble("radius")->setValue(7.);
 
-    if (elevateMesh->ableToOperate() == false)
+    if (!elevateMesh->ableToOperate())
     {
       std::cerr << "Elevate mesh operator could not operate\n";
       return 1;

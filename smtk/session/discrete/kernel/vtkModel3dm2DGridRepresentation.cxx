@@ -32,7 +32,7 @@ bool vtkModel3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds)
 {
   pointIds->Reset();
-  if (this->IsModelConsistent(model) == false)
+  if (!this->IsModelConsistent(model))
   {
     this->Reset();
     return false;

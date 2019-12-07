@@ -73,7 +73,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
           }
 
           smtk::resource::ResourcePtr resource = smtkResource->getResource();
-          if (resource && resource->clean() == false)
+          if (resource && !resource->clean())
           {
             int ret = QMessageBox::Discard;
             ret = pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(1, false);
@@ -101,7 +101,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
         }
         wrapper->visitResources([&](pqSMTKResource* smtkResource) {
           smtk::resource::ResourcePtr resource = smtkResource->getResource();
-          if (resource && resource->clean() == false)
+          if (resource && !resource->clean())
           {
             ++numberOfUnsavedResources;
           }
@@ -145,7 +145,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
               }
               wrapper->visitResources([&numberOfUnsavedResources](pqSMTKResource* smtkResource) {
                 smtk::resource::ResourcePtr resource = smtkResource->getResource();
-                if (resource && resource->clean() == false)
+                if (resource && !resource->clean())
                 {
                   ++numberOfUnsavedResources;
                 }

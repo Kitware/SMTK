@@ -170,7 +170,7 @@ bool MeshSet::isValid() const
   {
     return false;
   }
-  return set_intersect(*this, resource->meshes()).is_empty() == false;
+  return !set_intersect(*this, resource->meshes()).is_empty();
 }
 
 bool MeshSet::is_empty() const

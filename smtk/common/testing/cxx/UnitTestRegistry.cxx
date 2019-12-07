@@ -50,7 +50,7 @@ public:
 bool Registrar_1::registerTo(const std::shared_ptr<Manager_1>& m) const
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return true;
 }
 
@@ -65,7 +65,7 @@ bool Registrar_1::unregisterFrom(const std::shared_ptr<Manager_1>& m) const
 bool Registrar_1::registerTo(const std::shared_ptr<Manager_2>& m) const
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return true;
 }
 
@@ -79,7 +79,7 @@ void Registrar_1::unregisterFrom(const std::shared_ptr<Manager_2>& m) const
 void Registrar_1::registerTo(const std::shared_ptr<Manager_3>& m) const
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
 }
 
 void Registrar_1::unregisterFrom(const std::shared_ptr<Manager_3>& m) const
@@ -103,7 +103,7 @@ public:
 int Registrar_2::registerTo(const std::shared_ptr<Manager_1>& m)
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return 4;
 }
 
@@ -118,7 +118,7 @@ bool Registrar_2::unregisterFrom(const std::shared_ptr<Manager_1>& m)
 bool Registrar_2::registerTo(const std::shared_ptr<Manager_2>& m)
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return true;
 }
 

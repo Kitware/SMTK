@@ -119,11 +119,7 @@ namespace mesh
 
 bool ElevateMesh::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 ElevateMesh::Result ElevateMesh::operateInternal()

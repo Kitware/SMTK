@@ -1008,11 +1008,7 @@ bool Resource::hasAssociations() const
 {
   // Get the data from the resource's links and see if it contains a link with the
   // association role
-  if (this->links().linkedTo(smtk::attribute::Resource::AssociationRole).empty() == false)
-  {
-    return true;
-  }
-  return false;
+  return !this->links().linkedTo(smtk::attribute::Resource::AssociationRole).empty();
 }
 
 bool Resource::isRoleUnique(const smtk::resource::Links::RoleType& role) const

@@ -251,12 +251,8 @@ void vtkLIDARPtsWriter::CloseFile(ios* fp)
 bool vtkLIDARPtsWriter::IsBinaryType(const char* filename)
 {
   std::string fileNameStr = filename;
-  if (fileNameStr.find("bin.pts") != std::string::npos ||
-    fileNameStr.find(".bin") != std::string::npos)
-  {
-    return true;
-  }
-  return false;
+  return fileNameStr.find("bin.pts") != std::string::npos ||
+    fileNameStr.find(".bin") != std::string::npos;
 }
 
 void vtkLIDARPtsWriter::AddInputData(int index, vtkDataObject* input)

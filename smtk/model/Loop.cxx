@@ -162,7 +162,7 @@ bool Loop::replaceEdgeUseWithUses(const EdgeUse& original, const EdgeUses& repla
       Arrangement::UseHasShellWithIndex(useRec->appendRelation(m_entity)), -1);
   }
 
-  return didFind ? true : false;
+  return didFind;
 }
 
 } // namespace model

@@ -66,35 +66,35 @@ int main()
     smtk::attribute::FileItemPtr file = att->findFile("multipleExtensions");
 
     bool ok = file->setValue("");
-    if (ok != false)
+    if (ok)
     {
       std::cerr << "Empty ile name was not properly filtered.\n";
       return 1;
     }
 
     ok = file->setValue("foo");
-    if (ok != false)
+    if (ok)
     {
       std::cerr << "File name with no extension was not properly filtered.\n";
       return 1;
     }
 
     ok = file->setValue("foo.ex1");
-    if (ok != true)
+    if (!ok)
     {
       std::cerr << "File name with appropriate extension was rejected.\n";
       return 1;
     }
 
     ok = file->setValue("foo.ex2");
-    if (ok != true)
+    if (!ok)
     {
       std::cerr << "File name with appropriate extension was rejected.\n";
       return 1;
     }
 
     ok = file->setValue("foo.ex4");
-    if (ok != false)
+    if (ok)
     {
       std::cerr << "File name with incorrect extension was accepted.\n";
       return 1;
@@ -105,21 +105,21 @@ int main()
     smtk::attribute::FileItemPtr file = att->findFile("anyExtension");
 
     bool ok = file->setValue("");
-    if (ok != false)
+    if (ok)
     {
       std::cerr << "Empty ile name was not properly filtered.\n";
       return 1;
     }
 
     ok = file->setValue("foo");
-    if (ok != true)
+    if (!ok)
     {
       std::cerr << "File name with no extension was rejected.\n";
       return 1;
     }
 
     ok = file->setValue("foo.ex2");
-    if (ok != true)
+    if (!ok)
     {
       std::cerr << "File name with appropriate extension was rejected.\n";
       return 1;

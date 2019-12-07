@@ -370,14 +370,7 @@ bool Definition::checkAssociationRules(smtk::resource::ConstPersistentObjectPtr 
   if (m_acceptsRules != nullptr)
   {
     // Let's verify that the object passes the contraints imposed by the association rules
-    if (m_acceptsRules->isValueValid(object))
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
+    return m_acceptsRules->isValueValid(object);
   }
   if (m_baseDefinition)
   {

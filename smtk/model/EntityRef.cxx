@@ -476,7 +476,7 @@ bool EntityRef::isValid(EntityPtr* entityRecord) const
   if (status)
   {
     EntityPtr rec = rsrc->findEntity(m_entity, false);
-    status = rec ? true : false;
+    status = static_cast<bool>(rec);
     if (status && entityRecord)
     {
       *entityRecord = rec;
@@ -1232,7 +1232,7 @@ bool EntityRef::hasFloatProperties() const
   if (comp != nullptr)
   {
     const auto& floatProperties = comp->properties().get<std::vector<double> >();
-    return (floatProperties.empty() == false);
+    return !floatProperties.empty();
   }
   return false;
 }
@@ -1332,7 +1332,7 @@ bool EntityRef::hasStringProperties() const
   if (comp != nullptr)
   {
     const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
-    return (stringProperties.empty() == false);
+    return !stringProperties.empty();
   }
   return false;
 }
@@ -1432,7 +1432,7 @@ bool EntityRef::hasIntegerProperties() const
   if (comp != nullptr)
   {
     const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    return (integerProperties.empty() == false);
+    return !integerProperties.empty();
   }
   return false;
 }
@@ -1630,7 +1630,7 @@ EntityRef EntityRef::memberOf() const
 bool EntityRef::operator==(const EntityRef& other) const
 {
   ResourcePtr rsrc = m_resource.lock();
-  return ((rsrc == other.resource()) && (m_entity == other.m_entity)) ? true : false;
+  return (rsrc == other.resource()) && (m_entity == other.m_entity);
 }
 
 /// A comparator provided for convenience.

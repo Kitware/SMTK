@@ -39,7 +39,7 @@ smtk::mesh::MergeCoincidentPoints::Result MergeCoincidentPoints::operateInternal
   // Set the name of the meshset
   bool success = meshset.mergeCoincidentContactPoints(tolerance);
 
-  if (success == false)
+  if (!success)
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }

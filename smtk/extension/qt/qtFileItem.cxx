@@ -541,7 +541,7 @@ void qtFileItem::setInputValue(const QString& val)
     smtk::attribute::ItemPtr item = m_itemInfo.item();
 
     auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
-    if (fItemDef->isValueValid(val.toStdString()) == false)
+    if (!fItemDef->isValueValid(val.toStdString()))
     {
       QFileInfo fi(val);
 
@@ -796,7 +796,7 @@ void qtFileItem::setOutputOptional(int state)
   {
     return;
   }
-  bool enable = state ? true : false;
+  bool enable = state != 0;
   if (item->isExtensible())
   {
     if (this->Internals->AddItemButton)

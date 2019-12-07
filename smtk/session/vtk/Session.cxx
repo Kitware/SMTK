@@ -173,7 +173,7 @@ bool EntityHandle::visible() const
   // When eprop is 0, the property was not present (or was set to 0).
   // In that case, assume the object is visible.
   // If eprop is set, it should be either -1 (invisible) or +1 (visible):
-  return eprop == 0 ? true : (eprop < 0 ? false : true);
+  return eprop == 0 ? true : (eprop >= 0);
 }
 
 /// Given a handle, return its parent if it has one.

@@ -184,7 +184,7 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
     // Force other model entity buttons off:
     for (int ii = 0; ii < NUM_ACTIONS; ++ii)
     {
-      m_p->ActionArray[ii]->setChecked((a != m_p->ActionArray[ii]) ? false : true);
+      m_p->ActionArray[ii]->setChecked(a == m_p->ActionArray[ii]);
     }
     modelFlags = (m_p->Actions.actionSelnAcceptModels->isChecked() ? smtk::model::MODEL_ENTITY
                                                                    : smtk::model::NOTHING) |
@@ -413,12 +413,9 @@ void pqSMTKSelectionFilterBehavior::installFilter()
       else if ((entBits & smtk::model::ENTITY_MASK) & (modelFlags & smtk::model::ENTITY_MASK))
       {
         // Ensure the dimension is acceptable, too:
-        return ((entBits & smtk::model::AUX_GEOM_ENTITY) ||
-                 (entBits & smtk::model::INSTANCE_ENTITY) ||
-                 ((entBits & smtk::model::ANY_DIMENSION) &
-                   (modelFlags & smtk::model::ANY_DIMENSION)))
-          ? true
-          : false;
+        return (entBits & smtk::model::AUX_GEOM_ENTITY) ||
+          (entBits & smtk::model::INSTANCE_ENTITY) ||
+          ((entBits & smtk::model::ANY_DIMENSION) & (modelFlags & smtk::model::ANY_DIMENSION));
       }
     }
     return false;

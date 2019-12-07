@@ -57,7 +57,7 @@ bool vtkModel3dmGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds)
 {
   pointIds->Reset();
-  if (this->IsModelConsistent(model) == false)
+  if (!this->IsModelConsistent(model))
   {
     this->Reset();
     return false;
@@ -131,7 +131,7 @@ bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
 {
   cellIds->Reset();
   cellSides->Reset();
-  if (this->IsModelConsistent(model) == false)
+  if (!this->IsModelConsistent(model))
   {
     this->Reset();
     return false;

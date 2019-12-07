@@ -57,12 +57,7 @@ bool ExtractContours::ableToOperate()
     return false;
   }
   std::string url = aux.url();
-  if (url.empty())
-  {
-    return false;
-  }
-
-  return true;
+  return !url.empty();
 }
 
 int internal_createEdge(smtk::session::polygon::CreateEdge::Ptr edgeOp,

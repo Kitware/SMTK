@@ -133,11 +133,11 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
-  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
+  titleFont.setBold(this->titleFontWeight() > 1);
   QFontMetrics titleFM(titleFont);
   QFont subtitleFont = QApplication::font();
   subtitleFont.setPixelSize(m_subtitleFontSize);
-  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1);
   QFontMetrics subtitleFM(subtitleFont);
   int minHeight = titleFM.height() + 2 * m_textVerticalPad;
   if (m_drawSubtitle)
@@ -202,14 +202,14 @@ void qtDescriptivePhraseDelegate::paint(
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
   /// add a method to set/get title font
-  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
+  titleFont.setBold(this->titleFontWeight() > 1);
   // bold the active model title
   if (idx.data(qtDescriptivePhraseModel::ModelActiveRole).toBool())
   {
     titleFont.setBold(true);
   }
   subtitleFont.setPixelSize(m_subtitleFontSize);
-  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1);
 
   //subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);
@@ -317,14 +317,14 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
   /// add a method to set/get title font
-  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
+  titleFont.setBold(this->titleFontWeight() > 1);
   // bold the active model title
   if (idx.data(qtDescriptivePhraseModel::ModelActiveRole).toBool())
   {
     titleFont.setBold(true);
   }
   subtitleFont.setPixelSize(m_subtitleFontSize);
-  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1);
 
   //subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);

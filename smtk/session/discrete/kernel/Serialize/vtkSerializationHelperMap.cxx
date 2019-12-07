@@ -81,12 +81,7 @@ bool vtkSerializationHelperMap::IsSerializable(vtkObject* obj)
 {
   ClassHelperMapType::iterator iter =
     vtkSerializationHelperMapClassMap.ClassMap.find(obj->GetClassName());
-  if (iter != vtkSerializationHelperMapClassMap.ClassMap.end())
-  {
-    return true;
-  }
-
-  return false;
+  return iter != vtkSerializationHelperMapClassMap.ClassMap.end();
 }
 
 int vtkSerializationHelperMap::Serialize(vtkObject* object, vtkSerializer* serializer)

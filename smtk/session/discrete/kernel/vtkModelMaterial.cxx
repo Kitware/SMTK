@@ -36,11 +36,7 @@ vtkModelMaterial::~vtkModelMaterial() = default;
 
 bool vtkModelMaterial::IsDestroyable()
 {
-  if (this->GetNumberOfModelGeometricEntities())
-  {
-    return false;
-  }
-  return true;
+  return this->GetNumberOfModelGeometricEntities() == 0;
 }
 
 bool vtkModelMaterial::Destroy()

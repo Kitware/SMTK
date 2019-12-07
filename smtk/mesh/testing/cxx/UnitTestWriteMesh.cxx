@@ -65,7 +65,7 @@ void verify_write_empty_resource()
 
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
-  test(result == true, "Wrote empty resource to disk");
+  test(result, "Wrote empty resource to disk");
 }
 
 void verify_write_null_resource()
@@ -82,7 +82,7 @@ void verify_write_null_resource()
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
 
-  test(result == false, "Can't save null resource to disk");
+  test(!result, "Can't save null resource to disk");
 }
 
 void verify_write_valid_resource_hdf5()
@@ -105,7 +105,7 @@ void verify_write_valid_resource_hdf5()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out a valid hdf5 resource");
+    test(result, "failed to properly write out a valid hdf5 resource");
   }
 
   //reload the written file and verify the number of meshes are the same as the
@@ -143,7 +143,7 @@ void verify_write_valid_resource_exodus()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out a valid exodus resource");
+    test(result, "failed to properly write out a valid exodus resource");
   }
 
   //When exporting as an exodus file we only write out the volume elements
@@ -187,7 +187,7 @@ void verify_write_valid_resource_using_write_path()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out a valid hdf5 resource");
+    test(result, "failed to properly write out a valid hdf5 resource");
   }
 
   //reload the written file and verify the number of meshes are the same as the
@@ -228,7 +228,7 @@ void verify_write_valid_resource_using_functions()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out a valid hdf5 resource");
+    test(result, "failed to properly write out a valid hdf5 resource");
   }
 
   //reload the written file and verify the number of meshes are the same as the
@@ -265,7 +265,7 @@ void verify_write_onlyDomain()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out only Material");
+    test(result, "failed to properly write out only Material");
   }
 
   //reload the written file and verify the number of meshes are the same as the
@@ -307,7 +307,7 @@ void verify_write_onlyNeumann()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out only Neumann");
+    test(result, "failed to properly write out only Neumann");
   }
 
   //reload the written file and verify the number of meshes are the same as the
@@ -350,7 +350,7 @@ void verify_write_onlyDirichlet()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out only Dirichlet");
+    test(result, "failed to properly write out only Dirichlet");
   }
 
   //reload the written file and verify the number of meshes are the same as the
@@ -398,7 +398,7 @@ void verify_write_clears_modified_flag()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out the mesh");
+    test(result, "failed to properly write out the mesh");
   }
 
   test(!mr->isModified(), "after a write the resource should not be modified");
@@ -412,7 +412,7 @@ void verify_write_clears_modified_flag()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out the mesh");
+    test(result, "failed to properly write out the mesh");
   }
   test(!mr->isModified(), "after a write the resource should not be modified");
 

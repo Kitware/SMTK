@@ -52,7 +52,7 @@ int UnitTestProperties(int, char** const)
 {
   Properties properties;
 
-  test(properties.contains<int>("foo") == false, "New instance should contain no values.");
+  test(!properties.contains<int>("foo"), "New instance should contain no values.");
 
   try
   {
@@ -69,7 +69,7 @@ int UnitTestProperties(int, char** const)
   test(properties.at<int>("foo") == 3, "Inserted value should be retrievable.");
 
   bool inserted = properties.insert<int>("foo", 4);
-  test(inserted == false, "Second insertion should not succeed.");
+  test(!inserted, "Second insertion should not succeed.");
 
   const smtk::common::PropertiesOfType<int>& constIntProperties = properties.get<int>();
 

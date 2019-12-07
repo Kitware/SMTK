@@ -174,7 +174,7 @@ void qtAssociationWidget::initWidget()
 
 bool qtAssociationWidget::hasSelectedItem()
 {
-  return this->Internals->AvailableList->selectedItems().isEmpty() ? false : true;
+  return !this->Internals->AvailableList->selectedItems().isEmpty();
 }
 
 void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)

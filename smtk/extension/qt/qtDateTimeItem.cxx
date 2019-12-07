@@ -238,7 +238,7 @@ void qtDateTimeItem::setOutputOptional(int state)
   {
     return;
   }
-  bool enable = state ? true : false;
+  bool enable = state != 0;
   foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
   {
     QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);

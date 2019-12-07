@@ -136,7 +136,7 @@ Import::Result Import::operateInternal()
 
   // Name the mesh according to the stem of the file
   std::string name = smtk::common::Paths::stem(filePath);
-  if (!name.empty() && newResource == true)
+  if (!name.empty() && newResource)
   {
     meshResource->setName(name);
     resource->setName(name);
@@ -166,7 +166,7 @@ Import::Result Import::operateInternal()
 
   // By default, a model is invalid
   smtk::model::Model model;
-  if (associatedModelId != smtk::common::UUID::null() && newResource == true)
+  if (associatedModelId != smtk::common::UUID::null() && newResource)
   {
     // Assign the model to one described already in the resource with the id of
     // mesh resource's associated model. If there is no such model, then this
@@ -174,7 +174,7 @@ Import::Result Import::operateInternal()
     model = smtk::model::Model(resource, associatedModelId);
   }
 
-  if (model.isValid() == false)
+  if (!model.isValid())
   {
     // Determine the model's dimension
     int dimension = int(smtk::mesh::utility::highestDimension(meshResource->meshes()));

@@ -117,7 +117,7 @@ void verify_partial_pointfields()
     for (auto& pointfieldname : pointfieldnames)
     {
       smtk::mesh::PointField pointfield(one, pointfieldname);
-      test(one.removePointField(pointfield) == true);
+      test(one.removePointField(pointfield));
       test(pointfield.size() == 0);
       test(pointfield.dimension() == 0);
     }
@@ -316,7 +316,7 @@ void verify_pointfield_persistency()
     if (!result)
     {
       cleanup(write_path);
-      test(result == true, "failed to properly write out a valid hdf5 resource");
+      test(result, "failed to properly write out a valid hdf5 resource");
     }
   }
 

@@ -1071,7 +1071,7 @@ void Resource::insertEntityReferences(const UUIDWithEntityPtr& c)
 bool Resource::elideOneEntityReference(const UUIDWithEntityPtr& c, const UUID& r)
 {
   UUIDArray::const_iterator bit;
-  return c->second->invalidateRelation(r) < 0 ? false : true;
+  return c->second->invalidateRelation(r) >= 0;
 }
 
 /**\brief Given an entity \a c, ensure that all of its references
@@ -1680,7 +1680,7 @@ bool Resource::unregisterSession(SessionPtr session, bool expungeSession)
     m_tessellations->erase(sessId);
     m_attributeAssignments->erase(sessId);
   }
-  return m_sessions->erase(sessId) ? true : false;
+  return m_sessions->erase(sessId) != 0;
 }
 
 /// Find a session given its session UUID (or NULL).
@@ -2744,7 +2744,7 @@ bool Resource::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
       ++count;
     }
   }
-  return count > 0 ? true : false;
+  return count > 0;
 }
 
 smtk::resource::ResourceSet Resource::associations() const

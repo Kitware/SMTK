@@ -95,7 +95,7 @@ bool FileItemDefinition::isValueValid(const std::string& val) const
 {
   // If the base class method's validity conditions are not satisfied, then the
   // value is not valid.
-  if (FileSystemItemDefinition::isValueValid(val) == false)
+  if (!FileSystemItemDefinition::isValueValid(val))
   {
     return false;
   }

@@ -43,7 +43,7 @@ public:
   }
   ~TestOp() override = default;
 
-  bool ableToOperate() override { return m_outcome == Outcome::UNABLE_TO_OPERATE ? false : true; }
+  bool ableToOperate() override { return m_outcome != Outcome::UNABLE_TO_OPERATE; }
 
   Result operateInternal() override { return this->createResult(m_outcome); }
 

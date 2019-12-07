@@ -77,7 +77,7 @@ Read::Result Read::operateInternal()
   auto resource = smtk::mesh::Resource::create();
   bool success = smtk::io::readMesh(filePath, resource, subset);
 
-  if (success == false)
+  if (!success)
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }

@@ -29,12 +29,8 @@ void vtkModelGridRepresentation::Reset()
 }
 bool vtkModelGridRepresentation::IsSameModelInfoFile(const char* filename)
 {
-  if ((this->ModelInfoFileName == nullptr && filename == nullptr) ||
-    (this->ModelInfoFileName && filename && !strcmp(this->ModelInfoFileName, filename)))
-  {
-    return true;
-  }
-  return false;
+  return (this->ModelInfoFileName == nullptr && filename == nullptr) ||
+    (this->ModelInfoFileName && filename && !strcmp(this->ModelInfoFileName, filename));
 }
 
 void vtkModelGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)

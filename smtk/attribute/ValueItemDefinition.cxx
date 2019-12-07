@@ -111,11 +111,7 @@ std::string ValueItemDefinition::valueLabel(std::size_t element) const
 
 bool ValueItemDefinition::isValidExpression(const smtk::attribute::AttributePtr& exp) const
 {
-  if (this->allowsExpressions() && m_expressionDefinition->isValueValid(exp))
-  {
-    return true;
-  }
-  return false;
+  return this->allowsExpressions() && m_expressionDefinition->isValueValid(exp);
 }
 
 bool ValueItemDefinition::allowsExpressions() const

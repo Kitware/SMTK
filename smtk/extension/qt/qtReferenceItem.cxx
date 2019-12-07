@@ -41,7 +41,7 @@ namespace
 void updateLabel(QLabel* lbl, const QString& txt, bool ok)
 {
   lbl->setText(txt);
-  lbl->setAutoFillBackground(ok ? false : true);
+  lbl->setAutoFillBackground(!ok);
   QPalette pal = lbl->palette();
   pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
   lbl->setPalette(pal);
@@ -183,10 +183,10 @@ void qtReferenceItem::setOutputOptional(int state)
   auto itm = m_itemInfo.item();
   if (itm)
   {
-    itm->setIsEnabled(state ? true : false);
+    itm->setIsEnabled(state != 0);
     emit modified();
   }
-  m_p->m_editBtn->setEnabled(state ? true : false);
+  m_p->m_editBtn->setEnabled(state != 0);
   this->updateSynopsisLabels();
 }
 

@@ -471,11 +471,11 @@ bool DescriptivePhrase::compareByTitle(const DescriptivePhrasePtr& a, const Desc
 
   // Shorter strings are less than longer versions with the same start:
   if (i == minlen)
-    return ta.size() < tb.size() ? true : false;
+    return ta.size() < tb.size();
 
   // Both ta & tb have some character present and different.
-  bool da = isdigit(ta[i]) ? true : false;
-  bool db = isdigit(tb[i]) ? true : false;
+  bool da = isdigit(ta[i]) != 0;
+  bool db = isdigit(tb[i]) != 0;
   if (da && !db)
     return true; // digits come before other things
   if (!da && db)

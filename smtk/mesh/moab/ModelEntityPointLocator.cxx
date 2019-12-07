@@ -48,7 +48,7 @@ ModelEntityPointLocator::~ModelEntityPointLocator() = default;
 bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
   std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
 {
-  if (snapToPoint == true)
+  if (snapToPoint)
   {
     return false;
   }

@@ -40,7 +40,7 @@ using namespace smtk::io;
 
 int main(int argc, char* argv[])
 {
-  bool debug = argc > 1 ? true : false;
+  bool debug = argc > 1;
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
   if (debug)

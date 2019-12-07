@@ -59,11 +59,7 @@ namespace mesh
 
 bool Export::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 Export::Result Export::operateInternal()
@@ -103,7 +99,7 @@ Export::Result Export::operateInternal()
       }
     }
 
-    if (fileExportSuccess == false)
+    if (!fileExportSuccess)
     {
       for (auto&& file : generatedFiles)
       {

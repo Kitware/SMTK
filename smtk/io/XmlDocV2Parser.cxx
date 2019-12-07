@@ -57,12 +57,7 @@ bool XmlDocV2Parser::canParse(pugi::xml_document& doc)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 2)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 2;
 }
 
 bool XmlDocV2Parser::canParse(pugi::xml_node& node)
@@ -81,12 +76,7 @@ bool XmlDocV2Parser::canParse(pugi::xml_node& node)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 2)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 2;
 }
 
 pugi::xml_node XmlDocV2Parser::getRootNode(pugi::xml_document& doc)

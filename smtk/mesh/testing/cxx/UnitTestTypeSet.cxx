@@ -21,19 +21,19 @@ namespace
 void verify_basic_typeset()
 {
   smtk::mesh::TypeSet t_set;
-  test(t_set.hasMeshes() == false);
-  test(t_set.hasCells() == false);
+  test(!t_set.hasMeshes());
+  test(!t_set.hasCells());
 
   //verify all cell types are zero
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
-    test(t_set.hasCell(static_cast<smtk::mesh::CellType>(i)) == false);
+    test(!t_set.hasCell(static_cast<smtk::mesh::CellType>(i)));
   }
 
   //verify all dim types are zero
   for (int i = 0; i < 3; ++i)
   {
-    test(t_set.hasDimension(static_cast<smtk::mesh::DimensionType>(i)) == false);
+    test(!t_set.hasDimension(static_cast<smtk::mesh::DimensionType>(i)));
   }
 }
 
@@ -44,19 +44,19 @@ void verify_typeset_constructors()
   smtk::mesh::TypeSet t_set2(t_set);
   smtk::mesh::TypeSet t_set3 = t_set2;
 
-  test(t_set3.hasMeshes() == false);
-  test(t_set3.hasCells() == true);
+  test(!t_set3.hasMeshes());
+  test(t_set3.hasCells());
 
   //verify all cell types are zero
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
   {
-    test(t_set.hasCell(static_cast<smtk::mesh::CellType>(i)) == false);
+    test(!t_set.hasCell(static_cast<smtk::mesh::CellType>(i)));
   }
 
   //verify all dim types are zero
   for (int i = 0; i < 3; ++i)
   {
-    test(t_set.hasDimension(static_cast<smtk::mesh::DimensionType>(i)) == false);
+    test(!t_set.hasDimension(static_cast<smtk::mesh::DimensionType>(i)));
   }
 }
 
@@ -77,8 +77,8 @@ void verify_typeset_with_cells_and_dims()
   smtk::mesh::TypeSet t_set(smtk::mesh::CellTypes(std::string("11100")), //triangle,quad,polygon
     false, true);                                                        //has cells only
 
-  test(t_set.hasMeshes() == false);
-  test(t_set.hasCells() == true);
+  test(!t_set.hasMeshes());
+  test(t_set.hasCells());
 
   //verify all only 2d cells are valid
   for (int i = 0; i < smtk::mesh::CellType_MAX; ++i)
@@ -95,10 +95,10 @@ void verify_typeset_with_cells_and_dims()
   }
 
   //verify only 2d only is true
-  test(t_set.hasDimension(smtk::mesh::Dims0) == false);
-  test(t_set.hasDimension(smtk::mesh::Dims1) == false);
-  test(t_set.hasDimension(smtk::mesh::Dims2) == true);
-  test(t_set.hasDimension(smtk::mesh::Dims3) == false);
+  test(!t_set.hasDimension(smtk::mesh::Dims0));
+  test(!t_set.hasDimension(smtk::mesh::Dims1));
+  test(t_set.hasDimension(smtk::mesh::Dims2));
+  test(!t_set.hasDimension(smtk::mesh::Dims3));
 }
 }
 

@@ -161,14 +161,6 @@ int UnitTestTriangulateFaces(int, char** const)
       std::cerr << "Triangulate faces operator did something wrong\n";
       return 1;
     }
-
-    if (false)
-    {
-      smtk::io::ExportMesh exportMesh;
-      std::string output_path(scratch_root);
-      output_path += "/boxWithHole.vtk";
-      exportMesh(output_path, triangulatedFace);
-    }
   }
 
   return 0;

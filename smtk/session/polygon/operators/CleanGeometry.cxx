@@ -415,10 +415,9 @@ bool checkOneDirection(T& p0, T& q0, const U& p1, const U& q1)
       return false;
     }
   }
-  return (t0 != q0 || t1 != q1) ?
-                                /* point sequences are not of same length */ false
-                                :
-                                /* point sequences match at ever point */ true;
+  return !(t0 != q0 || t1 != q1);
+  // point sequences are not of same length: false
+  // point sequences match at every point: true
 }
 
 template <typename T>

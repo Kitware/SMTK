@@ -82,7 +82,7 @@ void pqCloseResourceReaction::closeResource()
 
   int ret = QMessageBox::Discard;
 
-  if (resource && resource->clean() == false)
+  if (resource && !resource->clean())
   {
     ret = pqSMTKSaveOnCloseResourceBehavior::showDialogWithPrefs(1, true);
 

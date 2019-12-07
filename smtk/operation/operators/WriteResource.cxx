@@ -131,7 +131,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
 
     // Since we bypass the write operation's validity checks (and its locks),
     // manually check that the operation's conditions are satisfied.
-    if (writeOperation->ableToOperate() == false)
+    if (!writeOperation->ableToOperate())
     {
       // An error message should already enter the logger from the local
       // operation.

@@ -744,7 +744,7 @@ void qtReferenceItemComboBox::setOutputOptional(int state)
   {
     return;
   }
-  bool enable = state ? true : false;
+  bool enable = state != 0;
   this->Internals->comboBox->setVisible(enable);
   if (enable != item->isEnabled())
   {

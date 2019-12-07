@@ -427,12 +427,7 @@ bool XmlDocV1Parser::canParse(pugi::xml_document& doc)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 1)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 1;
 }
 
 bool XmlDocV1Parser::canParse(pugi::xml_node& node)
@@ -451,12 +446,7 @@ bool XmlDocV1Parser::canParse(pugi::xml_node& node)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 1)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 1;
 }
 
 void XmlDocV1Parser::process(pugi::xml_document& doc)

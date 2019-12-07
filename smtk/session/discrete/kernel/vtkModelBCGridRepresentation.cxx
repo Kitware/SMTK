@@ -155,8 +155,8 @@ bool vtkModelBCGridRepresentation::GetBoundaryGroupAnalysisFacets(
     faceCellSides->Reset();
     vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(faces->GetCurrentItem());
     if (!face ||
-      this->GetModelFaceAnalysisFacets(model, face->GetUniquePersistentId(),
-        faceCellIds.GetPointer(), faceCellSides.GetPointer()) == false)
+      !this->GetModelFaceAnalysisFacets(
+        model, face->GetUniquePersistentId(), faceCellIds.GetPointer(), faceCellSides.GetPointer()))
     {
       vtkErrorMacro("A boundary group has changed since loading the bc information."
         << " The Omicron information will be reset.");
@@ -211,7 +211,7 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
          this->FloatingEdgeToPointIds.begin();
        it != this->FloatingEdgeToPointIds.end(); it++)
   {
-    if (this->IsFloatingEdgeConsistent(model, it->first) == false)
+    if (!this->IsFloatingEdgeConsistent(model, it->first))
     {
       this->Reset();
       return false;
@@ -221,7 +221,7 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
          this->MasterCellToMeshCellInfo.begin();
        it != this->MasterCellToMeshCellInfo.end(); it++)
   {
-    if (this->IsModelFaceConsistent(model, it->first) == false)
+    if (!this->IsModelFaceConsistent(model, it->first))
     {
       this->Reset();
       return false;
@@ -234,7 +234,7 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscreteModel* model)
 {
   this->Reset();
-  if (bcFileName == nullptr || vtksys::SystemTools::FileExists(bcFileName, true) == false)
+  if (bcFileName == nullptr || !vtksys::SystemTools::FileExists(bcFileName, true))
   {
     if (bcFileName == nullptr)
     {
@@ -247,7 +247,7 @@ bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscret
     return false;
   }
   std::ifstream file(bcFileName);
-  if (file.is_open() == false)
+  if (!file.is_open())
   {
     vtkErrorMacro("Problem opening file " << bcFileName);
     return false;
@@ -334,7 +334,7 @@ bool vtkModelBCGridRepresentation::Initialize(const char* bcFileName, vtkDiscret
     }
   }
   file.close();
-  if (this->IsModelConsistent(model) == false)
+  if (!this->IsModelConsistent(model))
   {
     return false;
   }
@@ -367,7 +367,7 @@ bool vtkModelBCGridRepresentation::AddFloatingEdge(
     it->second.insert(pointIds->GetId(i));
   }
 
-  if (IsFloatingEdgeConsistent(model, floatingEdgeId) == true)
+  if (IsFloatingEdgeConsistent(model, floatingEdgeId))
   {
     return true;
   }
@@ -441,7 +441,7 @@ bool vtkModelBCGridRepresentation::GetModelFaceAnalysisFacets(
 {
   cellIds->Reset();
   cellSides->Reset();
-  if (this->IsModelFaceConsistent(model, modelFaceId) == false)
+  if (!this->IsModelFaceConsistent(model, modelFaceId))
   {
     vtkErrorMacro("A boundary group has changed since loading the bc information."
       << " The Omicron information will be reset.");

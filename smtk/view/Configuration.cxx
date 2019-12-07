@@ -87,11 +87,7 @@ bool Configuration::Component::contentsAsInt(int& val) const
 {
   std::istringstream iss(m_contents);
   iss >> val;
-  if (!iss.good())
-  {
-    return false;
-  }
-  return true;
+  return iss.good();
 }
 
 bool Configuration::Component::contentsAsVector(std::vector<double>& vec) const

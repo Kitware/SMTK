@@ -132,7 +132,7 @@ UUID& UUID::operator=(const UUID& other) = default;
 /// Cast-to-boolean operator
 UUID::operator bool() const
 {
-  return this->isNull() ? false : true;
+  return !this->isNull();
 }
 
 /// Return a hash of a UUID.

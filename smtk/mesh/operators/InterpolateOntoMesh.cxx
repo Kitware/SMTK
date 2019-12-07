@@ -125,12 +125,7 @@ namespace mesh
 
 bool InterpolateOntoMesh::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 InterpolateOntoMesh::Result InterpolateOntoMesh::operateInternal()

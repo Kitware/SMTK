@@ -229,11 +229,11 @@ bool qtDescriptivePhraseModel::hasChildren(const QModelIndex& owner) const
     view::DescriptivePhrasePtr phrase = this->getItem(owner);
     if (phrase)
     { // Return whether the parent has subphrases.
-      return phrase->subphrases().empty() ? false : true;
+      return !phrase->subphrases().empty();
     }
   }
   // Return whether the toplevel m_phrases list is empty.
-  return (m_model ? (m_model->root()->subphrases().empty() ? false : true) : false);
+  return (m_model ? (!m_model->root()->subphrases().empty()) : false);
 }
 
 /// The number of rows in the table "underneath" \a owner.

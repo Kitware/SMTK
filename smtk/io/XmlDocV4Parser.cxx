@@ -39,12 +39,7 @@ bool XmlDocV4Parser::canParse(pugi::xml_document& doc)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 4)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 4;
 }
 
 bool XmlDocV4Parser::canParse(pugi::xml_node& node)
@@ -63,12 +58,7 @@ bool XmlDocV4Parser::canParse(pugi::xml_node& node)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 4)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 4;
 }
 
 pugi::xml_node XmlDocV4Parser::getRootNode(pugi::xml_document& doc)

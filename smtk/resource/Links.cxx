@@ -296,7 +296,7 @@ bool Links::removeLink(Resource* lhs1, const Links::Key& key)
 {
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
   ResourceLinkData& resourceLinkData = lhs1->links().data();
-  if (resourceLinkData.contains(key.first) == false)
+  if (!resourceLinkData.contains(key.first))
   {
     return false;
   }
@@ -345,7 +345,7 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
 {
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
   const ResourceLinkData& resourceLinkData = lhs1->links().data();
-  if (resourceLinkData.contains(key.first) == false)
+  if (!resourceLinkData.contains(key.first))
   {
     return std::make_pair(ResourcePtr(), Component::Links::Data::undefinedRole);
   }

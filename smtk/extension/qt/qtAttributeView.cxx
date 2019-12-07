@@ -861,15 +861,6 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   this->Internals->ListTable->setItem(numRows - 1, type_column, defitem);
 
   // ToDo: Reactivate Color Option when we are ready to use it
-  if (false)
-  {
-    QTableWidgetItem* colorItem = new QTableWidgetItem();
-    this->Internals->ListTable->setItem(numRows - 1, color_column, colorItem);
-    const double* rgba = childData->color();
-    QBrush bgBrush(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
-    colorItem->setBackground(bgBrush);
-    colorItem->setFlags(Qt::ItemIsEnabled);
-  }
   // Lets see if we need to show an alert icon cause the attribute is not
   // valid
   if (!this->uiManager()->checkAttributeValidity(childData.get()))

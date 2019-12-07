@@ -74,17 +74,9 @@ bool ItemDefinition::passCategoryCheck(const std::string& category) const
 
   if (m_categoryCheckMode == CategoryCheckMode::Any)
   {
-    if (m_categories.find(category) != m_categories.end())
-    {
-      return true;
-    }
-    return false;
+    return m_categories.find(category) != m_categories.end();
   }
-  if (*(m_categories.begin()) == category)
-  {
-    return true;
-  }
-  return false;
+  return *(m_categories.begin()) == category;
 }
 
 bool ItemDefinition::passCategoryCheck(const std::set<std::string>& categories) const

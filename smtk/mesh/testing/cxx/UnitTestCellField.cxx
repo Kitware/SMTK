@@ -118,7 +118,7 @@ void verify_partial_cellfields()
     for (auto& cellfieldname : cellfieldnames)
     {
       smtk::mesh::CellField cellfield(one, cellfieldname);
-      test(one.removeCellField(cellfield) == true);
+      test(one.removeCellField(cellfield));
       test(cellfield.size() == 0);
       test(cellfield.dimension() == 0);
     }
@@ -328,7 +328,7 @@ void verify_cellfield_persistency()
     if (!result)
     {
       cleanup(write_path);
-      test(result == true, "failed to properly write out a valid hdf5 resource");
+      test(result, "failed to properly write out a valid hdf5 resource");
     }
   }
 

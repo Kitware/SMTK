@@ -191,7 +191,7 @@ static smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& modelO
 
   // A default-constructed model is invalid.
   smtk::model::Model smtkModelOut;
-  if (uuids.empty() == false)
+  if (!uuids.empty())
   {
     // The first id in the list of preserved ids is for the containing model.
     smtkModelOut = smtk::model::Model(resource, uuids.at(0));
@@ -199,7 +199,7 @@ static smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& modelO
     // The resulting model may be invalid if the model was not successfully
     // constructed in the parent Read operation (e.g. for LegacyRead). In this
     // situation, we can construct the model here.
-    if (smtkModelOut.isValid() == false)
+    if (!smtkModelOut.isValid())
     {
       // First set the UUID on the multiblock dataset representing the model.
       // This way, the resulting smtk model will have the right UUID.

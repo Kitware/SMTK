@@ -926,11 +926,7 @@ bool vtkTerrainExtractionInternal::UpdateProgress(int currentLevel, double* boun
   double factor = (bounds[1] - bounds[0]) / (this->InputBounds[1] - this->InputBounds[0]);
   currentProgress += (factor * factor) / pow(2.0, currentLevel - this->MinExtractLevel + 1);
   this->Main->UpdateProgress(currentProgress);
-  if (this->Main->GetAbortExecute())
-  {
-    return true;
-  }
-  return false;
+  return this->Main->GetAbortExecute() != 0;
 }
 
 bool vtkTerrainExtractionInternal::TerrainExtractSubLevel(

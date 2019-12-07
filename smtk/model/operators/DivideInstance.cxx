@@ -43,11 +43,7 @@ bool DivideInstance::ableToOperate()
   // Check that the associated instance is cloned or has cloned children
   // that we can use to divide its placements.
   Instance parent = this->parentOfClones(this->parameters()->associations());
-  if (!parent.isValid())
-  {
-    return false;
-  }
-  return true;
+  return parent.isValid();
 }
 
 DivideInstance::Result DivideInstance::operateInternal()

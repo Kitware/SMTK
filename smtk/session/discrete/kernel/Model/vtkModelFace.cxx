@@ -408,7 +408,7 @@ int vtkModelFace::GetNumberOfHoles()
         edges.erase(it);
       }
     }
-    if (edges.empty() == false)
+    if (!edges.empty())
     {
       // this is a hole because there's at least one edge that
       // the loop use is not using 2 of the edge's edge uses

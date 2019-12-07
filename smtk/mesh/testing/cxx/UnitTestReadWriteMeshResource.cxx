@@ -99,7 +99,7 @@ int UnitTestReadWriteMeshResource(int, char** const)
   cleanup(meshFilename);
 
   //verify the meshes
-  test(mr1->isValid() == true, "resource should be valid");
+  test(mr1->isValid(), "resource should be valid");
   test(mr1->name() == mr->name());
   test(mr1->numberOfMeshes() == mr->numberOfMeshes());
   test(mr1->types() == mr->types());

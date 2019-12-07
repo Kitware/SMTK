@@ -200,7 +200,7 @@ bool vtkDiscreteModelEdge::Split(
   {
     createdEdgeId = -1;
     createdVertexId = -1;
-    if (this->SplitModelEdgeLoop(splitPointId) == false)
+    if (!this->SplitModelEdgeLoop(splitPointId))
     {
       vtkErrorMacro("Unable to split edge loop.");
       return 0;

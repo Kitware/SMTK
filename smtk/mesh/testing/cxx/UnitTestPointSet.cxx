@@ -40,7 +40,7 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
 
   smtk::mesh::PointSet ps2(ps);
   smtk::mesh::PointSet ps3 = mr->meshes("bad_name").points();
-  test(ps3.is_empty() == true);
+  test(ps3.is_empty());
   test(ps3.size() == 0);
 
   test(ps.size() == ps2.size());
@@ -49,9 +49,9 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   ps3 = ps; //test assignment operator
   test(ps.size() == ps3.size());
 
-  test(ps.is_empty() == false);
-  test(ps2.is_empty() == false);
-  test(ps3.is_empty() == false);
+  test(!ps.is_empty());
+  test(!ps2.is_empty());
+  test(!ps3.is_empty());
 }
 
 void verify_subsets(const smtk::mesh::ResourcePtr& mr)

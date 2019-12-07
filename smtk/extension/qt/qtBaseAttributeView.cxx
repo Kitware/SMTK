@@ -644,7 +644,7 @@ void qtBaseAttributeView::showAdvanceLevel(int level)
 
 void qtBaseAttributeView::enableShowBy(int enable)
 {
-  this->Internals->ShowCategoryCombo->setEnabled(enable ? true : false);
+  this->Internals->ShowCategoryCombo->setEnabled(enable != 0);
   this->onShowCategory();
 }
 

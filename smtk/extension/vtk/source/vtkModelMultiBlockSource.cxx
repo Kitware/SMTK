@@ -747,17 +747,16 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
 
   // First check if orient, scale, mask and color has been provided in the instance
   const smtk::model::FloatList& orientations = inst.floatProperty(Instance::orientations);
-  bool hasOrientations =
-    (orientations.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+  bool hasOrientations = orientations.size() == nptsThisInst * 3 && inst.rule() == "tabular";
 
   const smtk::model::FloatList& scales = inst.floatProperty(Instance::scales);
-  bool hasScales = (scales.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+  bool hasScales = scales.size() == nptsThisInst * 3 && inst.rule() == "tabular";
 
   const smtk::model::IntegerList& masks = inst.integerProperty(Instance::masks);
-  bool hasMasks = (masks.size() == nptsThisInst && inst.rule() == "tabular") ? true : false;
+  bool hasMasks = masks.size() == nptsThisInst && inst.rule() == "tabular";
 
   const smtk::model::FloatList& colors = inst.floatProperty(Instance::colors);
-  bool hasColors = (colors.size() == nptsThisInst * 4 && inst.rule() == "tabular") ? true : false;
+  bool hasColors = colors.size() == nptsThisInst * 4 && inst.rule() == "tabular";
 
   double ptOrientDefault[3] = { 0, 0, 0 };
   double ptScaleDefault[3] = { 1, 1, 1 };

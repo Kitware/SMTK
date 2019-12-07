@@ -128,7 +128,7 @@ smtk::model::Vertices Edge::vertices() const
 bool Edge::isPeriodic() const
 {
   Vertices endpts = this->vertices();
-  return (endpts.size() < 2 ? true : false);
+  return (endpts.size() < 2);
 }
 
 /*

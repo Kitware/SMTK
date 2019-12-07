@@ -48,8 +48,8 @@ void verify_num_meshes(const smtk::mesh::ResourcePtr& mr)
 
   smtk::mesh::MeshSet all_meshes = mr->meshes();
   test(numMeshes == all_meshes.size());
-  test(all_meshes.is_empty() == false);
-  test(all_meshes.isValid() == true);
+  test(!all_meshes.is_empty());
+  test(all_meshes.isValid());
 }
 
 void verify_constructors(const smtk::mesh::ResourcePtr& mr)
@@ -60,8 +60,8 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
 
   smtk::mesh::MeshSet ms2(ms);
   smtk::mesh::MeshSet ms3 = mr->meshes("bad_name");
-  test(ms3.is_empty() == true);
-  test(ms3.isValid() == false);
+  test(ms3.is_empty());
+  test(!ms3.isValid());
   test(ms3.size() == 0);
 
   test(ms.size() == ms2.size());
@@ -70,9 +70,9 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   ms3 = ms; //test assignment operator
   test(ms.size() == ms3.size());
 
-  test(ms.is_empty() == false);
-  test(ms2.is_empty() == false);
-  test(ms3.is_empty() == false);
+  test(!ms.is_empty());
+  test(!ms2.is_empty());
+  test(!ms3.is_empty());
 }
 
 void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
@@ -106,8 +106,8 @@ void verify_typeset(const smtk::mesh::ResourcePtr& mr)
     smtk::mesh::TypeSet noTypes = emptyMeshSet.types();
 
     test(noTypes.cellTypes() == no_cell_types);
-    test(noTypes.hasMeshes() == false);
-    test(noTypes.hasCells() == false);
+    test(!noTypes.hasMeshes());
+    test(!noTypes.hasCells());
   }
 
   //verify that if we get all cells from the resource the type set is correct
@@ -116,8 +116,8 @@ void verify_typeset(const smtk::mesh::ResourcePtr& mr)
     smtk::mesh::MeshSet allMeshes = mr->meshes();
     smtk::mesh::TypeSet allMeshesTypes = allMeshes.types();
 
-    test(allMeshesTypes.hasMeshes() == true);
-    test(allMeshesTypes.hasCells() == true);
+    test(allMeshesTypes.hasMeshes());
+    test(allMeshesTypes.hasCells());
     test(allMeshesTypes.cellTypes() == all_types.cellTypes());
     test(allMeshesTypes == all_types);
   }
@@ -191,30 +191,30 @@ void verify_meshset_of_only_a_dim(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::MeshSet meshesWithOnlyDim3 = smtk::mesh::set_difference(meshesWithDim3, otherMeshes);
 
   //verify that we have zero cells of 1 or 2 dim
-  test(meshesWithOnlyDim3.cells(smtk::mesh::Dims0).is_empty() == true);
-  test(meshesWithOnlyDim3.cells(smtk::mesh::Dims1).is_empty() == true);
-  test(meshesWithOnlyDim3.cells(smtk::mesh::Dims2).is_empty() == true);
-  test(meshesWithOnlyDim3.cells(smtk::mesh::Dims3).is_empty() == false);
+  test(meshesWithOnlyDim3.cells(smtk::mesh::Dims0).is_empty());
+  test(meshesWithOnlyDim3.cells(smtk::mesh::Dims1).is_empty());
+  test(meshesWithOnlyDim3.cells(smtk::mesh::Dims2).is_empty());
+  test(!meshesWithOnlyDim3.cells(smtk::mesh::Dims3).is_empty());
 
   //verify that the associated types comes back to properly
   smtk::mesh::TypeSet types = meshesWithOnlyDim3.types();
-  test(types.hasMeshes() == true);
-  test(types.hasCells() == true);
+  test(types.hasMeshes());
+  test(types.hasCells());
 
-  test(types.hasDimension(smtk::mesh::Dims0) == false);
-  test(types.hasDimension(smtk::mesh::Dims1) == false);
-  test(types.hasDimension(smtk::mesh::Dims2) == false);
-  test(types.hasDimension(smtk::mesh::Dims3) == true);
+  test(!types.hasDimension(smtk::mesh::Dims0));
+  test(!types.hasDimension(smtk::mesh::Dims1));
+  test(!types.hasDimension(smtk::mesh::Dims2));
+  test(types.hasDimension(smtk::mesh::Dims3));
 
-  test(types.hasCell(smtk::mesh::Vertex) == false);
-  test(types.hasCell(smtk::mesh::Line) == false);
-  test(types.hasCell(smtk::mesh::Triangle) == false);
-  test(types.hasCell(smtk::mesh::Quad) == false);
-  test(types.hasCell(smtk::mesh::Polygon) == false);
-  test(types.hasCell(smtk::mesh::Tetrahedron) == false);
-  test(types.hasCell(smtk::mesh::Pyramid) == false);
-  test(types.hasCell(smtk::mesh::Wedge) == false);
-  test(types.hasCell(smtk::mesh::Hexahedron) == true);
+  test(!types.hasCell(smtk::mesh::Vertex));
+  test(!types.hasCell(smtk::mesh::Line));
+  test(!types.hasCell(smtk::mesh::Triangle));
+  test(!types.hasCell(smtk::mesh::Quad));
+  test(!types.hasCell(smtk::mesh::Polygon));
+  test(!types.hasCell(smtk::mesh::Tetrahedron));
+  test(!types.hasCell(smtk::mesh::Pyramid));
+  test(!types.hasCell(smtk::mesh::Wedge));
+  test(types.hasCell(smtk::mesh::Hexahedron));
 }
 
 void verify_meshset_subset_dim(const smtk::mesh::ResourcePtr& mr)
@@ -269,7 +269,7 @@ void verify_meshset_add_tags(const smtk::mesh::ResourcePtr& mr)
   const bool applied = verts.setDirichlet(smtk::mesh::Dirichlet(42));
   const std::size_t numDirValues = mr->dirichlets().size();
 
-  test(applied == true, "didn't apply the dirichlet property");
+  test(applied, "didn't apply the dirichlet property");
   test(numDirValues > 0, "should have more than zero dirichlet sets");
 }
 

@@ -106,7 +106,7 @@ void verify_model_association()
   test((mr->associatedModel() != smtk::common::UUID()),
     "mesh resource should be associated to a real model");
   test((mr->isAssociatedToModel()), "mesh resource should be associated to a real model");
-  test(mr->isModified() == true, "A mesh created in memory with no file is considered modified");
+  test(mr->isModified(), "A mesh created in memory with no file is considered modified");
 
   //verify the MODEL_ENTITY is correct
   smtk::model::EntityRefs currentModels =
@@ -301,7 +301,7 @@ void verify_cell_conversion()
   std::cout << "Entity lookup via reverse classification\n";
   smtk::model::EntityRefArray ents;
   bool entsAreValid = mr->meshes().modelEntities(ents);
-  test(entsAreValid == true, "Expected valid entity refs.");
+  test(entsAreValid, "Expected valid entity refs.");
   test(ents.size() == numTetsInModel, "Expected 1 tetrahedron per model.");
   for (smtk::model::EntityRefArray::iterator eit = ents.begin(); eit != ents.end(); ++eit)
   {

@@ -184,11 +184,7 @@ namespace mesh
 
 bool GenerateHotStartData::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 GenerateHotStartData::Result GenerateHotStartData::operateInternal()

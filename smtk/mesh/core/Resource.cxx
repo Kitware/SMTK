@@ -143,7 +143,7 @@ void Resource::swapInterfaces(smtk::mesh::ResourcePtr& other)
 bool Resource::isValid() const
 {
   //make sure we have a valid uuid, and that our internals are valid
-  return (this->id().isNull() != true);
+  return !this->id().isNull();
 }
 
 bool Resource::isModified() const

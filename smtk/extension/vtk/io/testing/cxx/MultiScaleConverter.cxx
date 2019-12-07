@@ -322,12 +322,6 @@ void extractMaterials(
   smtk::mesh::MeshSet shell = c->meshes().extractShell();
   std::cout << "There are " << shell.size() << " shell mesh sets" << std::endl;
 
-  //break the shell based on the materials
-  if (false)
-  {
-    labelShellWithMaterial(c, shell);
-  }
-
   //find the top and bottom of the shell and apply dirichlet properties
   //to each section
   if (bounds != nullptr)

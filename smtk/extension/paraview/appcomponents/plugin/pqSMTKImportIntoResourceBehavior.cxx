@@ -71,7 +71,7 @@ void pqImportIntoResourceReaction::updateEnableState()
   // TODO: also is there's a pending accept.
   bool enable_state =
     activeObjects.activeServer() != nullptr && activeObjects.activeSource() != nullptr;
-  if (enable_state == false)
+  if (!enable_state)
   {
     return;
   }
@@ -120,7 +120,7 @@ void pqImportIntoResourceReaction::importIntoResource()
   auto importIntoOp = wrapper->smtkOperationManager()->create(operationIndex);
 
   // Associate the active resource to the operation's parameters
-  if (importIntoOp->parameters()->associate(resource) == false)
+  if (!importIntoOp->parameters()->associate(resource))
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Import operation for resource type <"
         << resource->typeName() << "> is not configured for importing into an extant resource.");

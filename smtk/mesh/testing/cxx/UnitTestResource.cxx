@@ -23,7 +23,7 @@ void verify_valid_constructor()
   smtk::mesh::ResourcePtr resource = smtk::mesh::Resource::create();
 
   test(resource->isValid(), "resource should be valid");
-  test(resource->isModified() == false, "resource shouldn't be marked as modified");
+  test(!resource->isModified(), "resource shouldn't be marked as modified");
 
   smtk::common::UUID uid = resource->entity();
   test((uid != smtk::common::UUID::null()), "resource uuid should be valid");

@@ -198,7 +198,7 @@ bool EstimateNormal<2>(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, ve
   vec3d dir = xB - xA;
   vec3d z(0., 0., 1.);
   norm = dir.Cross(z);
-  return norm.Normalize() < 1e-8 ? false : true;
+  return norm.Normalize() >= 1e-8;
 }
 
 template <>
@@ -930,7 +930,7 @@ void FindPointsInRegions(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell2f
     // correspond to the shell ID. From this offset into ModelMap,
     // we can then find the Facet ID for a shell and from there obtain
     // a cell on the facet for the shell.
-    bool sense = (*shellIt) % 2 ? true : false; // positive orientation?
+    bool sense = ((*shellIt) % 2) != 0; // positive orientation?
     vtkIdType regionInfo[3];
     regions.ModelRegions->GetTypedTuple(*shellIt / 2, regionInfo);
     vtkIdType cellOnShell = cell2facet.CellForFacet(regionInfo[0]);
@@ -1098,7 +1098,7 @@ vtkIdType DiscoverNestings(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell
     // correspond to the shell ID. From this offset into ModelMap,
     // we can then find the Facet ID for a shell and from there obtain
     // a cell on the facet for the shell.
-    bool sense = (*shellIt) % 2 ? true : false; // positive orientation?
+    bool sense = ((*shellIt) % 2) != 0; // positive orientation?
     vtkIdType regionInfo[3];
     regions.ModelRegions->GetTypedTuple(*shellIt / 2, regionInfo);
     vtkIdType cellOnShell = cell2facet.CellForFacet(regionInfo[0]);

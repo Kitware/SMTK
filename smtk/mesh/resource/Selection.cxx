@@ -107,7 +107,7 @@ std::string Selection::name() const
 const smtk::mesh::MeshSet Selection::mesh() const
 {
   smtk::mesh::MeshSet meshSet = Component::mesh();
-  if (meshSet.isValid() == false)
+  if (!meshSet.isValid())
   {
     if (smtk::mesh::Resource::Ptr resource =
           std::dynamic_pointer_cast<smtk::mesh::Resource>(this->resource()))
@@ -121,7 +121,7 @@ const smtk::mesh::MeshSet Selection::mesh() const
 smtk::mesh::MeshSet Selection::mesh()
 {
   smtk::mesh::MeshSet meshSet = Component::mesh();
-  if (meshSet.isValid() == false)
+  if (!meshSet.isValid())
   {
     if (smtk::mesh::Resource::Ptr resource =
           std::dynamic_pointer_cast<smtk::mesh::Resource>(this->resource()))

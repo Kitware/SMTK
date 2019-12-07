@@ -117,8 +117,7 @@ void vtkCMBParserBase::SetAnalysisGridInfo(vtkDiscreteModel* model, vtkDataArray
   }
 
   vtkModel3dmGridRepresentation* analysisGridInfo = vtkModel3dmGridRepresentation::New();
-  if (analysisGridInfo->Initialize(nullptr, model, pMapArray, cMapArray, canonicalSideArray) ==
-    true)
+  if (analysisGridInfo->Initialize(nullptr, model, pMapArray, cMapArray, canonicalSideArray))
   {
     model->SetAnalysisGridInfo(analysisGridInfo);
   }
