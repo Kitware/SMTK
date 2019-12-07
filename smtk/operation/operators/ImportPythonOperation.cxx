@@ -115,7 +115,7 @@ std::vector<std::string> ImportPythonOperation::importOperationsFromModule(
 
     if (registered)
     {
-      typeNames.push_back(std::string(moduleName + "." + opName));
+      typeNames.emplace_back(moduleName + "." + opName);
     }
   }
 

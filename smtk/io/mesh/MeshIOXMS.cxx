@@ -306,7 +306,7 @@ std::vector<MeshByRegion> subsetByRegion(
   if (modelIds.size() <= 1)
   { //explicitly done so that no model relationship is equal to everything
     //being in the same region
-    meshesByModelRef.push_back(MeshByRegion(meshes, 1, type));
+    meshesByModelRef.emplace_back(meshes, 1, type);
   }
   else
   {
@@ -319,7 +319,7 @@ std::vector<MeshByRegion> subsetByRegion(
       smtk::mesh::MeshSet subset = meshResource->findAssociatedMeshes(*i, type);
       if (!subset.is_empty())
       {
-        meshesByModelRef.push_back(MeshByRegion(subset, region, type));
+        meshesByModelRef.emplace_back(subset, region, type);
         ++region;
       }
     }
@@ -351,7 +351,7 @@ std::vector<MeshByRegion> subsetByModelProperty(smtk::mesh::ResourcePtr meshReso
     { //only accept model properties that have single values
       //since that is what we think region id's should be
       const int& region = values[0];
-      meshesByModelRef.push_back(MeshByRegion(subset, region, type));
+      meshesByModelRef.emplace_back(subset, region, type);
     }
   }
 
@@ -774,10 +774,10 @@ bool read_dm(std::istream& stream, smtk::mesh::ResourcePtr& meshResource)
 }
 MeshIOXMS::MeshIOXMS()
 {
-  this->Formats.push_back(
-    Format("xms 2d", std::vector<std::string>({ ".2dm" }), Format::Import | Format::Export));
-  this->Formats.push_back(
-    Format("xms 3d", std::vector<std::string>({ ".3dm" }), Format::Import | Format::Export));
+  this->Formats.emplace_back(
+    "xms 2d", std::vector<std::string>({ ".2dm" }), Format::Import | Format::Export);
+  this->Formats.emplace_back(
+    "xms 3d", std::vector<std::string>({ ".3dm" }), Format::Import | Format::Export);
 }
 
 smtk::mesh::ResourcePtr MeshIOXMS::importMesh(const std::string& filePath,

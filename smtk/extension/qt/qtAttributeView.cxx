@@ -1615,7 +1615,7 @@ void qtAttributeView::associationsChanged()
   emit this->modified(this->Internals->CurrentAtt->attribute()->associations());
   emit this->attAssociationChanged();
   std::vector<std::string> items;
-  items.push_back("_associations");
+  items.emplace_back("_associations");
   this->attributeChanged(this->Internals->CurrentAtt->attribute(), items);
 }
 

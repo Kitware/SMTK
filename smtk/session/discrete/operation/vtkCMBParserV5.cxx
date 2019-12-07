@@ -237,7 +237,7 @@ bool vtkCMBParserV5::Parse(
             FacesOfRegion.find(RegionIds[j]);
           if (it != FacesOfRegion.end())
           {
-            it->second.push_back(std::pair<vtkDiscreteModelFace*, int>(face, j));
+            it->second.emplace_back(face, j);
           }
           else
           {

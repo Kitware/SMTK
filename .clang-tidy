@@ -43,7 +43,6 @@ modernize-*,\
 -modernize-raw-string-literal,\
 -modernize-return-braced-init-list,\
 -modernize-use-auto,\
--modernize-use-emplace,\
 -modernize-use-trailing-return-type,\
 -modernize-use-using,\
 mpi-*,\

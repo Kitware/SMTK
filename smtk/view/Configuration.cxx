@@ -147,7 +147,7 @@ Configuration::Component& Configuration::Component::unsetAttribute(const std::st
 
 Configuration::Component& Configuration::Component::addChild(const std::string& childName)
 {
-  m_children.push_back(Component(childName));
+  m_children.emplace_back(childName);
   return m_children.back();
 }
 

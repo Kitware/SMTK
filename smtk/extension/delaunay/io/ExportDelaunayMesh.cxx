@@ -54,8 +54,8 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
       tess->vertexIdsOfCell(start_off, cell_conn);
       for (std::size_t j = 0; j < cell_conn.size(); j++)
       {
-        pointsForEdge.push_back(Delaunay::Shape::Point(
-          tess->coords()[cell_conn[j] * 3 + 0], tess->coords()[cell_conn[j] * 3 + 1]));
+        pointsForEdge.emplace_back(
+          tess->coords()[cell_conn[j] * 3 + 0], tess->coords()[cell_conn[j] * 3 + 1]);
       }
       cell_conn.clear();
     }
@@ -67,14 +67,14 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
     {
       for (auto p = pointsForEdge.begin() + 1; p != pointsForEdge.end(); ++p)
       {
-        points.push_back(Delaunay::Shape::Point(p->x, p->y));
+        points.emplace_back(p->x, p->y);
       }
     }
     else
     {
       for (auto p = pointsForEdge.rbegin() + 1; p != pointsForEdge.rend(); ++p)
       {
-        points.push_back(Delaunay::Shape::Point(p->x, p->y));
+        points.emplace_back(p->x, p->y);
       }
     }
     pointsForEdge.clear();
@@ -108,7 +108,7 @@ std::vector<Delaunay::Shape::Point> ExportDelaunayMesh::operator()(
 
   for (std::size_t i = 0; i < fpoints.size(); i += 3)
   {
-    points.push_back(Delaunay::Shape::Point(fpoints[i], fpoints[i + 1]));
+    points.emplace_back(fpoints[i], fpoints[i + 1]);
   }
 
   // Delaunay polygons do not use a repeated point to denote a loop.

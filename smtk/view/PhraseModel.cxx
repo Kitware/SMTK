@@ -179,7 +179,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         true, // observeImmediately
         description.str() + "Update phrases when selection changes.")
     : smtk::view::SelectionObservers::Key();
-  m_sources.push_back(Source(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle));
+  m_sources.emplace_back(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle);
   return true;
 }
 

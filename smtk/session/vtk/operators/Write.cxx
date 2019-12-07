@@ -40,8 +40,7 @@ void RetrievePreservedUUID(vtkDataObject* data, std::vector<smtk::common::UUID>&
     return;
 
   vtkInformation* info = data->GetInformation();
-  uuids.push_back(
-    smtk::common::UUID(std::string(info->Get(smtk::session::vtk::Session::SMTK_UUID_KEY()))));
+  uuids.emplace_back(std::string(info->Get(smtk::session::vtk::Session::SMTK_UUID_KEY())));
 }
 
 void RetrievePreservedUUIDsRecursive(vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)

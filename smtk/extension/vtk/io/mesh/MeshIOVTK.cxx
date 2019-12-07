@@ -36,14 +36,12 @@ namespace mesh
 
 MeshIOVTK::MeshIOVTK()
 {
-  this->Formats.push_back(
-    smtk::io::mesh::Format("vtk unstructured grid", std::vector<std::string>({ ".vtu" }),
-      smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
-  this->Formats.push_back(
-    smtk::io::mesh::Format("vtk polydata", std::vector<std::string>({ ".vtp" }),
-      smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
-  this->Formats.push_back(smtk::io::mesh::Format("vtk legacy", std::vector<std::string>({ ".vtk" }),
-    smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export));
+  this->Formats.emplace_back("vtk unstructured grid", std::vector<std::string>({ ".vtu" }),
+    smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export);
+  this->Formats.emplace_back("vtk polydata", std::vector<std::string>({ ".vtp" }),
+    smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export);
+  this->Formats.emplace_back("vtk legacy", std::vector<std::string>({ ".vtk" }),
+    smtk::io::mesh::Format::Import | smtk::io::mesh::Format::Export);
   smtk::extension::vtk::io::ImportAsVTKData import;
   auto formats = import.fileFormats();
   for (auto& format : formats)
@@ -53,8 +51,7 @@ MeshIOVTK::MeshIOVTK()
     {
       extensionVector.push_back("." + ext);
     }
-    this->Formats.push_back(
-      smtk::io::mesh::Format(format.Name, extensionVector, smtk::io::mesh::Format::Import));
+    this->Formats.emplace_back(format.Name, extensionVector, smtk::io::mesh::Format::Import);
   }
 }
 

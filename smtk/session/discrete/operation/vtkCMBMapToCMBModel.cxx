@@ -181,16 +181,16 @@ public:
       // Make sure we are still within bounds of the arcs we want to find
       if (ptId1 != order1Iter->ptId1 || (ptId2 != -1 && ptId2 != order1Iter->ptId2))
         break;
-      foundArcsAndDirs.push_back(WalkableEdge(order1Iter->ptId1, order1Iter->ptId2,
-        order1Iter->edgeId, 1)); //return the arcId and clockwise direction
+      foundArcsAndDirs.emplace_back(order1Iter->ptId1, order1Iter->ptId2, order1Iter->edgeId,
+        1); //return the arcId and clockwise direction
     }
     for (; order2Iter != order2.end(); order2Iter++)
     {
       // Make sure we are still within bounds of the arcs we want to find
       if (ptId1 != order2Iter->ptId1 || (ptId2 != -1 && ptId2 != order2Iter->ptId2))
         break;
-      foundArcsAndDirs.push_back(WalkableEdge(order2Iter->ptId1, order2Iter->ptId2,
-        order2Iter->edgeId, 0)); //return the arcId and counterclockwise direction
+      foundArcsAndDirs.emplace_back(order2Iter->ptId1, order2Iter->ptId2, order2Iter->edgeId,
+        0); //return the arcId and counterclockwise direction
     }
   }
 

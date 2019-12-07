@@ -110,8 +110,8 @@ void vtkXMLElement::AddAttribute(const char* attrName, const char* attrValue)
     return;
   }
 
-  this->Internal->AttributeNames.push_back(attrName);
-  this->Internal->AttributeValues.push_back(attrValue);
+  this->Internal->AttributeNames.emplace_back(attrName);
+  this->Internal->AttributeValues.emplace_back(attrValue);
 }
 
 void vtkXMLElement::AddAttribute(const char* attrName, double* vals, unsigned int length)

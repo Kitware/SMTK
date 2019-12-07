@@ -1000,7 +1000,7 @@ void vtkXMLModelReader::Serialize(
       vtkSerializableObject* obj = this->Model->GetModelEntity(to_id);
       if (obj)
       {
-        objs.push_back(obj);
+        objs.emplace_back(obj);
         // ReadObject incremented the ReferenceCount (weakPtr = false), or
         // created the object (ReferenceCount = 1); we then stuff it in the
         // vector , which is where we were trying to get it but has the

@@ -193,7 +193,7 @@ void qtInstancedView::updateUI()
     }
 
     atts.push_back(att);
-    comps.push_back(attComp);
+    comps.emplace_back(attComp);
     int labelWidth =
       this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
     longLabelWidth = std::max(labelWidth, longLabelWidth);

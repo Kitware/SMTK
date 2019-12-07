@@ -151,7 +151,7 @@ CreateEdge::Result CreateEdge::operateInternal()
           curr = storage->projectPoint(pt.begin(), pt.end());
           if (!first && curr != prev)
           {
-            edgeSegs.push_back(internal::Segment(prev, curr));
+            edgeSegs.emplace_back(prev, curr);
           }
           else
           {
@@ -186,7 +186,7 @@ CreateEdge::Result CreateEdge::operateInternal()
           curr = vert->point();
           if (!first)
           {
-            edgeSegs.push_back(internal::Segment(prev, curr));
+            edgeSegs.emplace_back(prev, curr);
           }
           else
           {

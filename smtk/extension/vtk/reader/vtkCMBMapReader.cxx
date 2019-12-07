@@ -393,7 +393,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* /*request*/,
             // see above "Note for Special Case between MAP file and triangle"
             if (numArcsInPoly > 1 && loopedArcs.count(arcId) != 0)
             {
-              innerLoopsIndexes.push_back(std::vector<vtkIdType>());
+              innerLoopsIndexes.emplace_back();
               innerLoopsIndexes.back().push_back(arcId2ArcIndex[arcId]);
             }
             else
@@ -410,10 +410,10 @@ int vtkCMBMapReader::RequestData(vtkInformation* /*request*/,
           line >> numHarcs;
           //Create an inner loop vector for every
           //HARC card read
-          innerLoopsIndexes.push_back(std::vector<vtkIdType>());
+          innerLoopsIndexes.emplace_back();
           innerLoopsIndexes.back().reserve(numHarcs);
 #if WRITE_DEBUG_CELLDATA
-          innerLoopsIds.push_back(std::vector<vtkIdType>());
+          innerLoopsIds.emplace_back();
           innerLoopsIds.back().reserve(numHarcs);
 #endif
           for (vtkIdType i = 0; i < numHarcs; i++)

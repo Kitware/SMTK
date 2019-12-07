@@ -163,7 +163,7 @@ void IntersectSegments(vtkPolyData* input, vtkIdType cellId, vtkRayIntersectionL
           tvals.push_back(sit->Param[0]);
           subIds.push_back(sit->SubId);
           cellIds.push_back(sit->CellId);
-          pcoords.push_back(vtkVector3d(sit->Param[1], 0., 0.));
+          pcoords.emplace_back(sit->Param[1], 0., 0.);
           SegmentRecords::iterator tmp = sit - 1;
           hitit->second.erase(sit);
           sit = tmp;

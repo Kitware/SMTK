@@ -298,7 +298,7 @@ int SpliceEdgeIntoVertex(vtkIdType edgeId, vtkIdType& idA, vtkIdType& idB, bool 
       return -1;
     }
     srch = hoods.insert(entry);
-    srch.first->second.Bordants.push_back(VertexEdgeUse(edgeId, sense, 0.));
+    srch.first->second.Bordants.emplace_back(edgeId, sense, 0.);
   }
   else
   {

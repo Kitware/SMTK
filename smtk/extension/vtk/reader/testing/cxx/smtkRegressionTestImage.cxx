@@ -17,14 +17,14 @@ vtkIdType smtkRegressionTestImage(vtkRenderWindow* rw, const double thresh,
 {
   // Append the testing temporary directory, the baseline image to the commandline arguments
   std::vector<std::string> args;
-  args.push_back("-V");
+  args.emplace_back("-V");
   std::string baselineDirectory(SMTK_DATA_DIR);
   baselineDirectory = baselineDirectory + "/baseline/smtk/vtk/";
   std::string image =
     baselineDirectory + vtksys::SystemTools::GetFilenameWithoutLastExtension(fileName) + fileType;
   args.push_back(image);
-  args.push_back("-T");
-  args.push_back(SMTK_SCRATCH_DIR);
+  args.emplace_back("-T");
+  args.emplace_back(SMTK_SCRATCH_DIR);
 
   std::cout << "Commandline arguments passed to RegressionTestAndCaptureOutput:" << std::endl;
   vtkNew<vtkTesting> testing;

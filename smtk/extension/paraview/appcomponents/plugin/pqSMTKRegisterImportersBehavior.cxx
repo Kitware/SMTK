@@ -78,7 +78,7 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
       continue;
     }
 
-    extensionsAndDescriptions.push_back(std::make_pair(trim(extensions), trim(description)));
+    extensionsAndDescriptions.emplace_back(trim(extensions), trim(description));
   }
 }
 

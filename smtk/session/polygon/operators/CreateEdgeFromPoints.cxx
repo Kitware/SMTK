@@ -121,7 +121,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
     curr = storage->projectPoint(pt.begin(), pt.end());
     if (!first && curr != prev)
     {
-      edgeSegs.push_back(internal::Segment(prev, curr));
+      edgeSegs.emplace_back(prev, curr);
     }
     else
     {
