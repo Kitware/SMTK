@@ -256,7 +256,7 @@ build:fedora31:
 test:fedora31:
     <<:
         - *fedora31
-        - *cmake_test_unix
+        - *cmake_test_unix_x11
     dependencies:
         - build:fedora31
     needs:
