@@ -170,22 +170,39 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
       {
         idef->addDiscreteValue(val);
       }
+      // First grab the associated enum
+      std::string v = idef->discreteEnum(i);
+      // Check to see if teh enum has an explicit advance level
+      xatt = vnode.attribute("AdvanceLevel");
+      if (xatt)
+      {
+        idef->setEnumAdvanceLevel(v, xatt.as_uint());
+      }
       if (cname != "Structure")
       {
         continue;
       }
       // Ok lets read in the items associated with this value
-      // First grab the associated enum
-      std::string v = idef->discreteEnum(i);
       xml_node inode, items = child.child("Items");
-      if (!items)
+      if (items)
       {
-        continue;
+        for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"))
+        {
+          std::string iname = inode.text().get();
+          idef->addConditionalItem(v, iname);
+        }
       }
-      for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"))
+      // Does the enum have explicit categories
+      items = child.child("Categories");
+      if (items)
       {
-        std::string iname = inode.text().get();
-        idef->addConditionalItem(v, iname);
+        std::set<std::string> cats;
+        for (inode = items.child("Cat"); inode; inode = inode.next_sibling("Cat"))
+        {
+          std::string iname = inode.text().get();
+          cats.insert(iname);
+        }
+        idef->setEnumCategories(v, cats);
       }
     }
     xatt = dnode.attribute("DefaultIndex");

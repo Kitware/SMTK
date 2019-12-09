@@ -84,6 +84,7 @@ qtDiscreteValueEditor::~qtDiscreteValueEditor()
 
 void qtDiscreteValueEditor::createWidget()
 {
+  auto uiManager = this->Internals->m_inputItem->uiManager();
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   if (!item)
   {
@@ -104,28 +105,50 @@ void qtDiscreteValueEditor::createWidget()
   }
 
   auto itemDef = item->definitionAs<attribute::ValueItemDefinition>();
-  QList<QString> discreteVals;
   QString tooltip;
+  QComboBox* combo = new QComboBox(this);
+  // When building the combobox using the following guidelines:
+  // * All entries should set UserRole data to indicate the corresponding
+  //   discrete index that value corresponds to.
+  // * The first entry should be "Please Select" and should have an UserRole
+  //   value of -1 (this indicates that the item's value is not set)
+  // * Skip all enums that don't pass the category and advance level checks
+  // * If the current value of the item is not present in the combobox
+  //   due to advancelevel/category filtering then insert it into to the
+  //   combobox but mark it using UserRole+1 so that we can color it red
+  //   to indicate that the value violates the current category/advance level
+  //   settings
+  combo->addItem("Please Select", -1);
+  combo->setItemData(0, QColor(Qt::red), Qt::TextColorRole);
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
   {
     std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
+    // Check its categories and advance level if appropriate
+    auto cats = itemDef->enumCategories(enumText);
+    if (cats.size() && (uiManager != nullptr) && !uiManager->passCategoryCheck(cats))
+    {
+      // enum failed category check
+      continue;
+    }
+    if (itemDef->hasEnumAdvanceLevel(enumText) && (uiManager != nullptr) &&
+      !uiManager->passAdvancedCheck(itemDef->enumAdvanceLevel(enumText)))
+    {
+      // enum failed advance level check
+      continue;
+    }
     if (itemDef->hasDefault() && static_cast<size_t>(itemDef->defaultDiscreteIndex()) == i)
     {
       tooltip = "Default: " + QString(enumText.c_str());
       enumText += " (Default)";
     }
-    discreteVals.push_back(enumText.c_str());
+    combo->addItem(enumText.c_str(), (int)i);
   }
 
-  QComboBox* combo = new QComboBox(this);
   if (!tooltip.isEmpty())
   {
     combo->setToolTip(tooltip);
   }
-  combo->addItems(discreteVals);
   QPointer<qtDiscreteValueEditor> guardedObject(this);
-  //QObject::connect(combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputValueChanged()),
-  //  Qt::QueuedConnection);
   QObject::connect(combo, (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged, this,
     [guardedObject]() {
       if (guardedObject)
@@ -165,16 +188,49 @@ void qtDiscreteValueEditor::updateItemData()
   {
     setIndex = item->discreteIndex(elementIdx);
   }
-  // Is the item's value valid and the same as the combo's current value - if it is then just return
-  if ((setIndex >= 0) && (setIndex == combo->currentIndex()))
+  // Does combo's current value match the state of the item- if it is then just return
+  if ((setIndex >= 0) && (setIndex == combo->currentData().toInt()))
   {
     return;
   }
-  if (setIndex < 0 && itemDef->hasDefault() && itemDef->defaultDiscreteIndex() < combo->count())
+  if (setIndex < 0 && itemDef->hasDefault())
   {
     setIndex = itemDef->defaultDiscreteIndex();
   }
-  combo->setCurrentIndex(setIndex);
+  // We need to find the correct Item in the combo box
+  int i, numItems = combo->count();
+  for (i = 0; i < numItems; i++)
+  {
+    if (combo->itemData(i).toInt() == setIndex)
+    {
+      combo->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  // The item's current value was not found in the combobox
+  // due to advance level/category filtering so lets add it
+  // but make its text red and mark it using UserRole+1 to indicate
+  // it does not currently pass advance level/category filtering
+  if (i == numItems)
+  {
+    combo->addItem(itemDef->discreteEnum(setIndex).c_str(), setIndex);
+    combo->setItemData(numItems, QColor(Qt::red), Qt::TextColorRole);
+    combo->setItemData(numItems, 1, Qt::UserRole + 1);
+    combo->setCurrentIndex(numItems);
+  }
+
+  if ((i == 0) || (i == numItems))
+  {
+    QPalette comboboxPalette = combo->palette();
+    comboboxPalette.setColor(QPalette::Text, Qt::red);
+    comboboxPalette.setColor(QPalette::WindowText, Qt::red);
+    combo->setPalette(comboboxPalette);
+  }
+  else
+  {
+    combo->setPalette(combo->parentWidget()->palette());
+  }
 }
 
 void qtDiscreteValueEditor::onInputValueChanged()
@@ -185,7 +241,25 @@ void qtDiscreteValueEditor::onInputValueChanged()
   {
     return;
   }
-  int curIdx = comboBox->currentIndex();
+
+  int curIdx = comboBox->currentData().toInt();
+  // Lets set the combo pallete properly if the current index is 0 (Please Select) or
+  // has been added to the combo box because the item is set to a value that is not
+  // considered accessible due to the current category and advance level settings
+  // (indicated by having UserRole+1 data assugned to it) then set palette to be use red
+  // else set it to be the same as the combo-box's parent widget
+  if ((comboBox->currentIndex() == 0) || comboBox->currentData(Qt::UserRole + 1).isValid())
+  {
+    QPalette comboboxPalette = comboBox->palette();
+    comboboxPalette.setColor(QPalette::Text, Qt::red);
+    comboboxPalette.setColor(QPalette::WindowText, Qt::red);
+    comboBox->setPalette(comboboxPalette);
+  }
+  else
+  {
+    comboBox->setPalette(comboBox->parentWidget()->palette());
+  }
+
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
 
   // If the current selection matches the current value of the item then we can just return
@@ -226,11 +300,6 @@ void qtDiscreteValueEditor::updateContents()
   if (uiManager == nullptr)
     return;
 
-  QComboBox* const comboBox = this->Internals->m_combo;
-  if (!comboBox)
-  {
-    return;
-  }
   this->Internals->clearChildItems();
 
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();

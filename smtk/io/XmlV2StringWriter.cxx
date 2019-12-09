@@ -84,26 +84,48 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
   if (idef->isDiscrete())
   {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    size_t j, i, nItems, n = idef->numberOfDiscreteValues();
+    size_t j, i, nItems, nCats, n = idef->numberOfDiscreteValues();
     xml_node dnode, snode, inodes;
     std::string ename;
     std::vector<std::string> citems;
+    std::set<std::string> cats;
     for (i = 0; i < n; i++)
     {
       ename = idef->discreteEnum(i);
       // Lets see if there are any conditional items
       citems = idef->conditionalItems(ename);
       nItems = citems.size();
-      if (nItems)
+      // Lets see if there are any categories
+      cats = idef->enumCategories(ename);
+      nCats = cats.size();
+      // Use the Structure Form if the enum has either
+      // children item or explicit categories associated with it
+      if (nItems || nCats)
       {
         snode = dnodes.append_child("Structure");
         dnode = snode.append_child("Value");
         dnode.append_attribute("Enum").set_value(ename.c_str());
-        dnode.text().set(getValueForXMLElement(idef->discreteValue(i)));
-        inodes = snode.append_child("Items");
-        for (j = 0; j < nItems; j++)
+        // Does the enum has an explicit advance level?
+        if (idef->hasEnumAdvanceLevel(ename))
         {
-          inodes.append_child("Item").text().set(citems[j].c_str());
+          dnode.append_attribute("AdvanceLevel").set_value(idef->enumAdvanceLevel(ename));
+        }
+        dnode.text().set(getValueForXMLElement(idef->discreteValue(i)));
+        if (nItems)
+        {
+          inodes = snode.append_child("Items");
+          for (j = 0; j < nItems; j++)
+          {
+            inodes.append_child("Item").text().set(citems[j].c_str());
+          }
+        }
+        if (nCats)
+        {
+          inodes = snode.append_child("Categories");
+          for (const auto& cat : cats)
+          {
+            inodes.append_child("Cat").text().set(cat.c_str());
+          }
         }
       }
       else
@@ -111,6 +133,11 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
         dnode = dnodes.append_child("Value");
         dnode.append_attribute("Enum").set_value(ename.c_str());
         dnode.text().set(getValueForXMLElement(idef->discreteValue(i)));
+        // Does the enum has an explicit advance level?
+        if (idef->hasEnumAdvanceLevel(ename))
+        {
+          dnode.append_attribute("AdvanceLevel").set_value(idef->enumAdvanceLevel(ename));
+        }
       }
     }
     if (idef->hasDefault())
