@@ -29,6 +29,31 @@ namespace smtk
 {
 namespace extension
 {
+
+class Launcher;
+
+/// This class will be responsible for notifying the original caller of an
+/// operation that the result from said operation is ready.
+class SMTKQTEXT_EXPORT ResultHandler : public QObject
+{
+  Q_OBJECT
+
+public:
+  explicit ResultHandler();
+  smtk::operation::Operation::Result waitForResult();
+  std::shared_future<smtk::operation::Operation::Result>& future() { return m_future; }
+
+signals:
+  /// Externally accessible signal on the primary thread containing the
+  /// operation results.
+  void resultReady(smtk::operation::Operation::Result result);
+
+private:
+  friend class qtOperationLauncher;
+  friend class Launcher;
+  std::shared_future<smtk::operation::Operation::Result> m_future;
+};
+
 /// An operation launcher that emits a signal containing the operation's result
 /// after the operation has successfully executed.
 ///
@@ -42,18 +67,15 @@ class SMTKQTEXT_EXPORT qtOperationLauncher : public QObject
 public:
   static constexpr const char* const type_name = "smtk::extension::qtOperationLauncher";
 
-  /// The primary execution method of this functor.
-  std::future<smtk::operation::Operation::Result> operator()(
-    const smtk::operation::Operation::Ptr& operation);
+  /* The primary execution method of this functor. This function returns a new ResultHandler
+   * for each operation.
+   */
+  std::shared_ptr<ResultHandler> operator()(const smtk::operation::Operation::Ptr& operation);
 
 signals:
   /// Internal signal from the executing subthread to the primary thread
   /// indicating the completion of the operation.
   void operationHasResult(QString parametersName, QString resultName, QPrivateSignal);
-
-  /// Externally accessible signal on the primary thread containing the
-  /// operation results.
-  void resultReady(smtk::operation::Operation::Result result);
 
 private:
   /// Internal method run on a subthread to invoke the operation.
@@ -100,10 +122,11 @@ public:
 
   ~Launcher() { delete m_launcher; }
 
-  std::future<smtk::operation::Operation::Result> operator()(
+  std::shared_future<smtk::operation::Operation::Result> operator()(
     const smtk::operation::Operation::Ptr& operation)
   {
-    return (*m_launcher)(operation);
+    auto resHandler = (*m_launcher)(operation);
+    return resHandler->future();
   }
 
   qtOperationLauncher* get() const { return m_launcher; }

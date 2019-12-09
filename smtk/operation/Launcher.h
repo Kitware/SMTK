@@ -23,7 +23,7 @@ namespace smtk
 namespace operation
 {
 
-typedef std::function<std::future<Operation::Result>(const Operation::Ptr&)> Launcher;
+typedef std::function<std::shared_future<Operation::Result>(const Operation::Ptr&)> Launcher;
 
 /// A functor for executing operations and returning futures of the result.
 /// Multiple launch types are supported and can be accessed using the
@@ -54,10 +54,11 @@ public:
   LauncherMap::size_type erase(const LauncherMap::key_type&);
 
   /// Launch an operation using the default launch method.
-  std::future<Operation::Result> operator()(const Operation::Ptr&);
+  std::shared_future<Operation::Result> operator()(const Operation::Ptr&);
 
   /// Launch an operation using the launch method associated to the input key.
-  std::future<Operation::Result> operator()(const Operation::Ptr&, const LauncherMap::key_type&);
+  std::shared_future<Operation::Result> operator()(
+    const Operation::Ptr&, const Launchers::LauncherMap::key_type&);
 
 protected:
   LauncherMap m_launchers;
