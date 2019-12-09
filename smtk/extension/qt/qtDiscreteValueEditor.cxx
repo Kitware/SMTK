@@ -125,7 +125,7 @@ void qtDiscreteValueEditor::createWidget()
     std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
     // Check its categories and advance level if appropriate
     auto cats = itemDef->enumCategories(enumText);
-    if (cats.size() && (uiManager != nullptr) && !uiManager->passCategoryCheck(cats))
+    if (!cats.empty() && (uiManager != nullptr) && !uiManager->passCategoryCheck(cats))
     {
       // enum failed category check
       continue;
