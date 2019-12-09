@@ -137,6 +137,29 @@ public:
 
   bool addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
 
+  /// @{
+  ///\brief Set/Get the set of categories associated with a value Enum
+  void setEnumCategories(const std::string& enumValue, const std::set<std::string>& cats);
+  void addEnumCategory(const std::string& enumValue, const std::string& cat);
+  std::set<std::string> enumCategories(const std::string& enumValue) const;
+  const std::map<std::string, std::set<std::string> > enumCategoryInfo() const
+  {
+    return m_valueToCategoryAssociations;
+  }
+  /// @}
+
+  /// @{
+  ///\brief Set/Get advance level associated with associated with a value Enum
+  void setEnumAdvanceLevel(const std::string& enumValue, unsigned int level);
+  void unsetEnumAdvanceLevel(const std::string& enumValue);
+  unsigned int enumAdvanceLevel(const std::string& enumValue) const;
+  bool hasEnumAdvanceLevel(const std::string& enumValue) const;
+  const std::map<std::string, unsigned int> enumAdvanceLevelInfo() const
+  {
+    return m_valueToAdvanceLevelAssociations;
+  }
+  ///@}
+
   // Description:
   // Create an item definition based on a given idName. If an item
   // with that name already exists then return a shared_pointer
@@ -184,6 +207,8 @@ protected:
   std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, std::set<std::string> > m_itemToValueAssociations;
   std::map<std::string, std::vector<std::string> > m_valueToItemAssociations;
+  std::map<std::string, std::set<std::string> > m_valueToCategoryAssociations;
+  std::map<std::string, unsigned int> m_valueToAdvanceLevelAssociations;
 
 private:
 };
