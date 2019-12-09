@@ -73,7 +73,6 @@ def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
     dxo = open(dxoname, 'w')
     print(cfg2, file=dxo)
     dxo.close()
-    os.chdir(refdir)
 
     # copied from https://test-builds.readthedocs.io/en/git-lfs/conf.html
     # Install and execute git-lfs
@@ -82,12 +81,20 @@ def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
         os.system(
             'wget https://github.com/git-lfs/git-lfs/releases/download/v2.7.1/git-lfs-linux-amd64-v2.7.1.tar.gz')
         os.system('tar xvfz git-lfs-linux-amd64-v2.7.1.tar.gz')
-        # make lfs available in current repository
-        os.system('./git-lfs install')
+        # make lfs available, but don't install hooks!
+        # they will prevent checkout working a second time without git-lfs installed.
+        os.system('./git-lfs install --skip-repo')
         os.system('./git-lfs fetch')  # download content from remote
         # make local files to have the real content on them
         os.system('./git-lfs checkout')
+        # make sure the problematic hook is gone: .git/hooks/post-checkout
+        try:
+            os.remove(os.path.abspath(os.path.join(
+                srcdir, '.git', 'hooks', 'post-checkout')))
+        except OSError:
+            pass
 
+    os.chdir(refdir)
     print('Running Doxygen on %s' % dxoname)
     rcode = subprocess.call(('doxygen', dxoname))
     print('   Doxygen returned %s' % rcode)
@@ -240,8 +247,8 @@ findfigure_paths = {
 actdiag_antialias = True
 
 actdiag_html_image_format = 'SVG'
-# using PDF format causes a warning about fonts that crashes when using
-# sphinx 2, setting actdiag_fontpath to a TTF might fix it?
+# using PDF format causes a warning about fonts that produces nothing when
+# using sphinx 2, setting actdiag_fontpath to a TTF might fix it?
 actdiag_latex_image_format = 'PNG'
 # actdiag_debug = True
 
