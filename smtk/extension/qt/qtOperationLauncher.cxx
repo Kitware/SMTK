@@ -16,9 +16,12 @@ namespace smtk
 {
 namespace extension
 {
-std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
+std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
   const smtk::operation::Operation::Ptr& op)
 {
+  // Create Result Handler
+  std::shared_ptr<ResultHandler> handler = std::make_shared<ResultHandler>();
+
 #ifdef SINGLE_THREAD
 
   // Construct a promise to pass to the subthread. Its associated future is the
@@ -29,14 +32,22 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // subthread.
   std::future<smtk::operation::Operation::Result> future = promise.get_future();
 
+  // Set the result handler's future
+  handler->m_future = future;
+
   // Execute the operation in the subthread.
   auto result = op->operate();
 
   // Set the promise to the output result.
   promise.set_value(result);
 
-  // Signal that the operation's result is ready for parsing.
-  emit resultReady(result);
+  /// Signal that the operation's result is ready for parsing.
+  /// The emit should happen later because you'll miss the signal
+  /// by the time this function returns. Passing a lamda to invokeMethod and
+  /// using QueuedConnection will allow the emit to happen after the current
+  /// path of execution.
+  invokeMethod(
+    this, [handler, result]() { emit handler->resultReady(result); }, Qt::QueuedConnection);
 
 #else
 
@@ -55,11 +66,11 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // associated to the input operation, so we delete the connection upon firing.
   QMetaObject::Connection* connection = new QMetaObject::Connection;
   *connection = QObject::connect(this, &qtOperationLauncher::operationHasResult, this,
-    [&, connection, operation](QString parametersName, QString resultName) {
+    [&, connection, operation, handler](QString parametersName, QString resultName) {
       if (parametersName.toStdString() == operation->parameters()->name())
       {
         auto result = operation->specification()->findAttribute(resultName.toStdString());
-        this->resultReady(result);
+        emit handler->resultReady(result);
 
         // Remove this connection.
         QObject::disconnect(*connection);
@@ -67,13 +78,12 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
       }
     });
 
-  std::future<smtk::operation::Operation::Result> future =
-    m_threadPool(&qtOperationLauncher::run, this, op);
+  handler->m_future = m_threadPool(&qtOperationLauncher::run, this, op);
 
 #endif
 
   // Return the future associated with the promise created above.
-  return future;
+  return handler;
 }
 
 smtk::operation::Operation::Result qtOperationLauncher::run(
@@ -88,6 +98,16 @@ smtk::operation::Operation::Result qtOperationLauncher::run(
     QString::fromStdString(result->name()), QPrivateSignal());
 
   return result;
+}
+
+ResultHandler::ResultHandler()
+  : QObject(nullptr)
+{
+}
+
+smtk::operation::Operation::Result ResultHandler::waitForResult()
+{
+  return m_future.get();
 }
 }
 }
