@@ -110,8 +110,8 @@ void vtkXMLElement::AddAttribute(const char* attrName, const char* attrValue)
     return;
   }
 
-  this->Internal->AttributeNames.push_back(attrName);
-  this->Internal->AttributeValues.push_back(attrValue);
+  this->Internal->AttributeNames.emplace_back(attrName);
+  this->Internal->AttributeValues.emplace_back(attrValue);
 }
 
 void vtkXMLElement::AddAttribute(const char* attrName, double* vals, unsigned int length)
@@ -197,7 +197,7 @@ void vtkXMLElement::SetAttribute(const char* attrName, const char* attrValue)
   size_t i;
   for (i = 0; i < numAttributes; ++i)
   {
-    if (strcmp(this->Internal->AttributeNames[i].c_str(), attrName) == 0)
+    if (this->Internal->AttributeNames[i] == attrName)
     {
       this->Internal->AttributeValues[i] = attrValue;
       return;
@@ -274,7 +274,7 @@ const char* vtkXMLElement::GetAttribute(const char* name)
   size_t i;
   for (i = 0; i < numAttributes; ++i)
   {
-    if (strcmp(this->Internal->AttributeNames[i].c_str(), name) == 0)
+    if (this->Internal->AttributeNames[i] == name)
     {
       return this->Internal->AttributeValues[i].c_str();
     }

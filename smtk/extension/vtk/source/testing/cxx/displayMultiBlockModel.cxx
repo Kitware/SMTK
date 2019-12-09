@@ -30,7 +30,6 @@
 
 #include "vtkRegressionTestImage.h"
 
-using smtk::shared_ptr;
 using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::io;

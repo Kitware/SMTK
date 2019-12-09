@@ -157,7 +157,7 @@ void convert_fixed_size_cell(std::vector<int>& cell_conn, smtk::mesh::CellType c
 }
 
 template <typename HandleData>
-void convert_vertex(std::vector<int>&, smtk::mesh::CellType cellType,
+void convert_vertex(std::vector<int>& /*unused*/, smtk::mesh::CellType cellType,
   smtk::model::Tessellation::size_type numVerts, std::vector<std::size_t>& numCellsOfType,
   std::vector<HandleData>& cellMBConn, std::size_t global_coordinate_offset)
 {

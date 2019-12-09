@@ -22,7 +22,6 @@ Item::Item(Attribute* owningAttribute, int itemPosition)
   , m_owningItem(nullptr)
   , m_position(itemPosition)
   , m_isEnabled(true)
-  , m_definition()
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
@@ -35,7 +34,6 @@ Item::Item(Item* inOwningItem, int itemPosition, int inSubGroupPosition)
   , m_position(itemPosition)
   , m_subGroupPosition(inSubGroupPosition)
   , m_isEnabled(true)
-  , m_definition()
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
@@ -91,13 +89,14 @@ smtk::attribute::ConstItemPtr Item::find(const std::string& itemName, SearchStyl
   return this->findInternal(itemName, style);
 }
 
-smtk::attribute::ItemPtr Item::findInternal(const std::string&, SearchStyle)
+smtk::attribute::ItemPtr Item::findInternal(const std::string& /*unused*/, SearchStyle /*unused*/)
 {
   // By default there are no children to search
   return nullptr;
 }
 
-smtk::attribute::ConstItemPtr Item::findInternal(const std::string&, SearchStyle) const
+smtk::attribute::ConstItemPtr Item::findInternal(
+  const std::string& /*unused*/, SearchStyle /*unused*/) const
 {
   // By default there are no children to search
   return nullptr;
@@ -222,7 +221,7 @@ unsigned int Item::advanceLevel(int mode) const
   return level;
 }
 
-bool Item::assign(ConstItemPtr& sourceItem, unsigned int)
+bool Item::assign(ConstItemPtr& sourceItem, unsigned int /*unused*/)
 {
   // Assigns my contents to be same as sourceItem
   m_isEnabled = sourceItem->isEnabled();

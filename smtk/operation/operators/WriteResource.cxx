@@ -131,7 +131,7 @@ smtk::operation::Operation::Result WriteResource::operateInternal()
 
     // Since we bypass the write operation's validity checks (and its locks),
     // manually check that the operation's conditions are satisfied.
-    if (writeOperation->ableToOperate() == false)
+    if (!writeOperation->ableToOperate())
     {
       // An error message should already enter the logger from the local
       // operation.
@@ -158,7 +158,7 @@ const char* WriteResource::xmlDescription() const
   return WriteResource_xml;
 }
 
-void WriteResource::markModifiedResources(WriteResource::Result&)
+void WriteResource::markModifiedResources(WriteResource::Result& /*unused*/)
 {
   auto resourceItem = this->parameters()->associations();
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)

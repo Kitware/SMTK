@@ -35,14 +35,14 @@ using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 using namespace smtk::io;
-using smtk::shared_ptr;
 
 static int numberOfInclusionsRemoved = 0;
 static int numberOfFreeCellsRemoved = 0;
 static int numberOfSubmodelsRemoved = 0;
 static int numberOfGroupsRemoved = 0;
 
-int didRemove(ResourceEventType event, const EntityRef&, const EntityRef&, void*)
+int didRemove(ResourceEventType event, const EntityRef& /*unused*/, const EntityRef& /*unused*/,
+  void* /*unused*/)
 {
   switch (event.second)
   {
@@ -280,7 +280,7 @@ int main(int argc, char* argv[])
     test(ies.size() == 1 && ies[0] == ie, "Prototype should list its instances.");
 
     EntityRef entity(sm, uids[0]);
-    test(entity.isValid() == true);
+    test(entity.isValid());
     test(entity.dimension() == 0);
     test((entity.entityFlags() & ANY_ENTITY) == (CELL_ENTITY | DIMENSION_0));
 
@@ -326,7 +326,7 @@ int main(int argc, char* argv[])
     VertexUses vertexUses = cell.uses<VertexUses>();
 
     entity = EntityRef(sm, uids[21]);
-    test(entity.isValid() == true);
+    test(entity.isValid());
     test(entity.dimension() == 3);
 
     for (int dim = 2; dim >= 0; --dim)
@@ -383,16 +383,16 @@ int main(int argc, char* argv[])
 
     entity = EntityRef(sm, UUID::null());
     test(entity.dimension() == -1);
-    test(entity.isValid() == false);
+    test(!entity.isValid());
 
     // Verify that setting properties on an invalid entityref works.
     entity.setFloatProperty("perpendicular", 1.57);
     entity.setStringProperty("name", "Tetrahedron");
     entity.setIntegerProperty("7beef", 507631);
     // The above should have had no effect since the entityref is invalid:
-    test(entity.hasFloatProperty("perpendicular") == false);
-    test(entity.hasStringProperty("name") == false);
-    test(entity.hasIntegerProperty("7beef") == false);
+    test(!entity.hasFloatProperty("perpendicular"));
+    test(!entity.hasStringProperty("name"));
+    test(!entity.hasIntegerProperty("7beef"));
 
     // Test that face entity was created with invalid (but present) face uses.
     Face f(sm, uids[20]);

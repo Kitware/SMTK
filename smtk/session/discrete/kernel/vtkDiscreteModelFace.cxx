@@ -66,10 +66,10 @@ bool vtkDiscreteModelFace::Split(
     if (geometry)
     {
       // we are on the server...
-      return 0;
+      return false;
     }
     // BoundaryRep has not been set -> return error
-    return 0;
+    return false;
   }
 
   // on server, go ahead and perform the split
@@ -131,7 +131,7 @@ bool vtkDiscreteModelFace::Split(
     splitEventData->Delete();
   }
 
-  return 1;
+  return true;
 }
 
 vtkDiscreteModelFace* vtkDiscreteModelFace::BuildFromExistingModelFace(

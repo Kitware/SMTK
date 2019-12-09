@@ -371,7 +371,7 @@ void vtkCmbLayeredConeSource::TriangulateEnd(const int innerRes, const int outer
     tri->InitTraversal();
     while (tri->GetNextCell(npts, tmppts))
     {
-      for (int j = 0; j < npts; ++j)
+      for (vtkIdType j = 0; j < npts; ++j)
         pts[j] = tmppts[j] + offset;
       cells->InsertNextCell(npts, pts);
     }
@@ -414,12 +414,12 @@ vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(double h, doub
     innerRes = static_cast<int>(InnerPoints.size());
     points->Allocate((outerRes + innerRes) * 2);
     gp.AddPoints(points, 0, outerBottomR, 0);
-    for (unsigned int i = 0; i < InnerPoints.size(); ++i)
+    for (size_t i = 0; i < InnerPoints.size(); ++i)
     {
       points->InsertNextPoint(InnerPoints[i][0], InnerPoints[i][1], 0);
     }
     gp.AddPoints(points, h, outerTopR, 0);
-    for (unsigned int i = 0; i < InnerPoints.size(); ++i)
+    for (size_t i = 0; i < InnerPoints.size(); ++i)
     {
       points->InsertNextPoint(InnerPoints[i][0], InnerPoints[i][1], h);
     }

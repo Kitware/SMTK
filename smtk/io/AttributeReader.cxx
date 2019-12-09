@@ -84,12 +84,12 @@ void AttributeReaderInternals::print(smtk::attribute::ResourcePtr resource)
   resource->attributes(attResult);
   auto viewResult = resource->views();
   std::cerr << "Definitions:\n";
-  for (auto def : result)
+  for (const auto& def : result)
   {
     std::cerr << "  Def: " << def->type() << " Include Id: " << def->includeIndex() << std::endl;
   }
   std::cerr << "Attributes:\n";
-  for (auto att : attResult)
+  for (const auto& att : attResult)
   {
     std::cerr << "  Att: " << att->name() << " Include Id: " << att->includeIndex() << std::endl;
   }

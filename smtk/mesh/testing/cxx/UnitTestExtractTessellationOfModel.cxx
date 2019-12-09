@@ -45,9 +45,7 @@ public:
   VerifyCells(const smtk::mesh::CellSet& cells, const std::vector<std::int64_t>& conn,
     const std::vector<std::int64_t>& locations, const std::vector<unsigned char>& types,
     bool is_vtk_conn)
-    : smtk::mesh::CellForEach()
-    , m_cells()
-    , m_points(cells.points())
+    : m_points(cells.points())
     , m_conn(conn)
     , m_locations(locations)
     , m_types(types)
@@ -248,7 +246,7 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 }
 }
 
-int UnitTestExtractTessellationOfModel(int, char** const)
+int UnitTestExtractTessellationOfModel(int /*unused*/, char** const /*unused*/)
 {
   // Somehow grab an EntityRef with an associated tessellation
   smtk::model::EntityRef eRef;

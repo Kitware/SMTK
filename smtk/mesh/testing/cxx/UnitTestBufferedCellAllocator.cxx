@@ -84,12 +84,12 @@ void verify_moab_buffered_cell_allocator_cell(smtk::mesh::CellType cellType)
   std::size_t nVerticesPerCell =
     (cellType == smtk::mesh::Polygon ? 5 : smtk::mesh::verticesPerCell(cellType));
 
-  test(allocator->isValid() == false);
+  test(!allocator->isValid());
 
   // Reserve the vertices
   test(allocator->reserveNumberOfCoordinates(nVerticesPerCell));
 
-  test(allocator->isValid() == true);
+  test(allocator->isValid());
 
   std::vector<int> connectivity(nVerticesPerCell);
   // fill the vertices and remember the connectivity
@@ -125,16 +125,16 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   test(!resource->isModified(), "resource shouldn't be modified");
 
   smtk::mesh::BufferedCellAllocatorPtr allocator = resource->interface()->bufferedCellAllocator();
-  test(allocator->isValid() == false);
+  test(!allocator->isValid());
   test(allocator->cells().empty());
 
   // Try to add a coordinate before allocating for it (should fail)
-  test(allocator->setCoordinate(0, cellPoints[cellType][0]) == false);
-  test(allocator->isValid() == false);
+  test(!allocator->setCoordinate(0, cellPoints[cellType][0]));
+  test(!allocator->isValid());
 
   // Flush before initializing anything (should fail)
-  test(allocator->flush() == false);
-  test(allocator->isValid() == false);
+  test(!allocator->flush());
+  test(!allocator->isValid());
 
   // Grab the number of vertices for the cell type being tested
   std::size_t nVerticesPerCell =
@@ -146,21 +146,21 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
   {
     connectivity[i] = static_cast<int>(i);
   }
-  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell) == false);
-  test(allocator->isValid() == false);
+  test(!allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
+  test(!allocator->isValid());
 
   // Reserve the coordinates (should succeed)
-  test(allocator->reserveNumberOfCoordinates(nVerticesPerCell) == true);
-  test(allocator->isValid() == true);
+  test(allocator->reserveNumberOfCoordinates(nVerticesPerCell));
+  test(allocator->isValid());
 
   // Reserve coordinates again (should fail but not alter the validity of the
   // allocator)
-  test(allocator->reserveNumberOfCoordinates(nVerticesPerCell + 1) == false);
-  test(allocator->isValid() == true);
+  test(!allocator->reserveNumberOfCoordinates(nVerticesPerCell + 1));
+  test(allocator->isValid());
 
   // Flush with coordinates allocated but no cells added (should succeed)
-  test(allocator->flush() == true);
-  test(allocator->isValid() == true);
+  test(allocator->flush());
+  test(allocator->isValid());
 
   // Add a cell before defining vertices (should succeed but not add anything
   // until the allocator is flushed)
@@ -175,7 +175,7 @@ void verify_moab_buffered_cell_allocator_validity(smtk::mesh::CellType cellType)
 
   // Finalize the addition of cells (should succeed)
   test(allocator->flush());
-  test(allocator->isValid() == true);
+  test(allocator->isValid());
 
   test(allocator->cells().size() == 1);
 
@@ -252,7 +252,7 @@ void verify_moab_buffered_cell_allocator_cells()
 }
 }
 
-int UnitTestBufferedCellAllocator(int, char** const)
+int UnitTestBufferedCellAllocator(int /*unused*/, char** const /*unused*/)
 {
   verify_moab_buffered_cell_allocator_creation();
   verify_json_buffered_cell_allocator_creation();

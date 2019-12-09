@@ -32,8 +32,8 @@ vtkCMBModelReader::~vtkCMBModelReader()
   this->SetFileName(nullptr);
 }
 
-int vtkCMBModelReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCMBModelReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   vtkDebugMacro("Reading a CMB file.");
   // get the info object
@@ -58,8 +58,8 @@ int vtkCMBModelReader::RequestData(vtkInformation* vtkNotUsed(request),
   return 1;
 }
 
-int vtkCMBModelReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCMBModelReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

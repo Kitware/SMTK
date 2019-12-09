@@ -23,9 +23,7 @@ namespace mesh
 {
 
 MeshSet::MeshSet()
-  : m_parent()
-  , m_handle()
-  , m_range()
+  : m_handle()
 {
 }
 
@@ -170,7 +168,7 @@ bool MeshSet::isValid() const
   {
     return false;
   }
-  return set_intersect(*this, resource->meshes()).is_empty() == false;
+  return !set_intersect(*this, resource->meshes()).is_empty();
 }
 
 bool MeshSet::is_empty() const

@@ -41,7 +41,7 @@ void cleanup(const smtk::mesh::ResourcePtr& mr, smtk::mesh::MeshSet meshset)
   const bool is_part_of_resource = smtk::mesh::set_intersect(allMeshes, meshset).is_empty();
   if (is_part_of_resource)
   {
-    test(mr->removeMeshes(meshset) == true);
+    test(mr->removeMeshes(meshset));
   }
 }
 
@@ -148,15 +148,15 @@ void verify_create_mesh_marks_modified()
 {
   //verify that a resource loaded from file is not marked as modified
   smtk::mesh::ResourcePtr mr = load_mesh(smtk::mesh::moab::make_interface());
-  test(mr->isModified() == false, "resource loaded from disk shouldn't be modified");
+  test(!mr->isModified(), "resource loaded from disk shouldn't be modified");
 
   //verify that creating a mesh does mark update modify flag
   verify_create_mesh(mr);
-  test(mr->isModified() == true, "resource should be marked as modified now");
+  test(mr->isModified(), "resource should be marked as modified now");
 }
 }
 
-int UnitTestCreateMesh(int, char** const)
+int UnitTestCreateMesh(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh(smtk::mesh::moab::make_interface());
 

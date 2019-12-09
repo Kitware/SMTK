@@ -34,7 +34,6 @@ PointSet::PointSet(
 PointSet::PointSet(
   const smtk::mesh::ResourcePtr& parent, const std::vector<smtk::mesh::Handle>& points)
   : m_parent(parent)
-  , m_points()
 {
   for (auto& point : points)
   {
@@ -45,7 +44,6 @@ PointSet::PointSet(
 PointSet::PointSet(
   const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mesh::Handle>& points)
   : m_parent(parent)
-  , m_points()
 {
   for (auto& point : points)
   {

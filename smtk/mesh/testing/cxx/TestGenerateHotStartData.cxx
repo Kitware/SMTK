@@ -97,13 +97,13 @@ class HistogramPointFieldData : public smtk::mesh::PointForEach, public Histogra
 {
 public:
   HistogramPointFieldData(std::size_t nBins, double min, double max, smtk::mesh::PointField& pf)
-    : smtk::mesh::PointForEach()
-    , HistogramFieldData(nBins, min, max)
+    : HistogramFieldData(nBins, min, max)
     , m_pointField(pf)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+    bool& /*coordinatesModified*/) override
   {
     std::vector<double> values(pointIds.size());
     m_pointField.get(pointIds, &values[0]);

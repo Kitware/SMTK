@@ -40,8 +40,8 @@ static bool toggleMenuItem(QMenu* menu, bool hide)
   // Both hide and disable the menu. This should help with
   // testing where we do not wish tests to succeed if users
   // could not have clicked on the menu to activate the action.
-  menu->menuAction()->setVisible(hide == false);
-  menu->setEnabled(hide == false);
+  menu->menuAction()->setVisible(!hide);
+  menu->setEnabled(!hide);
   return true;
 }
 

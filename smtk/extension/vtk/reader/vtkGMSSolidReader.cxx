@@ -32,12 +32,9 @@ vtkStandardNewMacro(vtkGMSSolidReader);
 
 struct vtkGMSSolidReaderInternals
 {
-  ifstream* Stream;
+  ifstream* Stream{ nullptr };
 
-  vtkGMSSolidReaderInternals()
-    : Stream(nullptr)
-  {
-  }
+  vtkGMSSolidReaderInternals() = default;
   ~vtkGMSSolidReaderInternals() { this->DeleteStream(); }
   void DeleteStream()
   {
@@ -59,8 +56,8 @@ vtkGMSSolidReader::~vtkGMSSolidReader()
   delete this->Internals;
 }
 
-int vtkGMSSolidReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkGMSSolidReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   if (!this->FileName || (strlen(this->FileName) == 0))
   {
@@ -287,8 +284,8 @@ void vtkGMSSolidReader::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "File Name: " << (this->FileName ? this->FileName : "(none)") << endl;
 }
 
-int vtkGMSSolidReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkGMSSolidReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

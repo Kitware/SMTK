@@ -22,7 +22,6 @@ class StoppableThreadPool : public smtk::common::ThreadPool<ReturnType>
 public:
   StoppableThreadPool(unsigned int maxThreads = 0)
     : smtk::common::ThreadPool<ReturnType>(maxThreads)
-    , m_stopped(false)
   {
   }
 
@@ -58,11 +57,11 @@ private:
     }
   }
 
-  bool m_stopped;
+  bool m_stopped{ false };
 };
 }
 
-int UnitTestDerivedThreadPool(int, char** const)
+int UnitTestDerivedThreadPool(int /*unused*/, char** const /*unused*/)
 {
   StoppableThreadPool<bool> threadPool(2);
   std::vector<std::future<bool> > futures;

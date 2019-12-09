@@ -28,7 +28,7 @@ AvailableOperations::AvailableOperations()
   , m_selectionExact(true)
   , m_useSelection(true)
   , m_workflowFilter(nullptr)
-  , m_workflowFilterObserverId()
+
 {
 // For debugging:
 #if !defined(NDEBUG) && DEBUG_AVAILABLE_OPERATIONS
@@ -205,7 +205,7 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
     // Narrow the selection map down to the actual selected
     // set based on how the application wants us to use the selection:
     std::set<smtk::resource::PersistentObjectPtr> actual;
-    for (auto entry : selnMap)
+    for (const auto& entry : selnMap)
     {
       if ((exactSelectionIn && ((entry.second & selectionMaskIn) == selectionMaskIn)) ||
         (!exactSelectionIn && (entry.second & selectionMaskIn)))
@@ -265,7 +265,7 @@ void AvailableOperations::workingSet(smtk::operation::ManagerPtr operationsIn,
       // All the easy checks are done; see if the number and type
       // of items in the actual selection exactly match the requirements.
       bool match = true;
-      for (auto item : actual)
+      for (const auto& item : actual)
       {
         if (!primaryAssociation->isValueValid(item))
         {

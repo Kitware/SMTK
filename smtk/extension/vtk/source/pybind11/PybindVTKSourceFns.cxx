@@ -32,7 +32,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
 
-namespace py = pybind11;
 
 PYBIND11_VTK_TYPECASTER(vtkInformation)
 PYBIND11_VTK_TYPECASTER(vtkModelMultiBlockSource)

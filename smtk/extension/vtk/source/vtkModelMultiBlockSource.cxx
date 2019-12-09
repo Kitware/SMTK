@@ -396,8 +396,8 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     {
       vtkSmartPointer<vtkDataObject> cgeom;
       smtk::common::Extension::visit<vtkAuxiliaryGeometryExtension::Ptr>(
-        [&cgeom, &aux](
-          const std::string&, vtkAuxiliaryGeometryExtension::Ptr ext) -> std::pair<bool, bool> {
+        [&cgeom, &aux](const std::string& /*unused*/,
+          vtkAuxiliaryGeometryExtension::Ptr ext) -> std::pair<bool, bool> {
           std::vector<double> bbox;
           if (ext->canHandleAuxiliaryGeometry(aux, bbox))
           {
@@ -626,7 +626,7 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(vtkMultiBlockDataSet* mbds
   }
   // Hidden entity's vtkDataObject is not added into mbds. Generate them here if it's used as a
   // glyph prototype
-  for (auto ipIter : instancePrototypes)
+  for (const auto& ipIter : instancePrototypes)
   {
     if (ipIter.second == -1 && ipIter.first.isValid() &&
       ipIter.first.exclusions(smtk::model::Exclusions::Rendering))
@@ -657,7 +657,7 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(vtkMultiBlockDataSet* insta
 {
   instanceBlocks->SetNumberOfBlocks(static_cast<int>(modelInstances.size()));
   int block = 0;
-  for (auto instance : modelInstances)
+  for (const auto& instance : modelInstances)
   {
     const smtk::model::Tessellation* tess = instance.hasTessellation();
     vtkIdType numPoints = static_cast<vtkIdType>(tess->coords().size() / 3);
@@ -747,17 +747,16 @@ void vtkModelMultiBlockSource::AddInstancePoints(vtkPolyData* instancePoly,
 
   // First check if orient, scale, mask and color has been provided in the instance
   const smtk::model::FloatList& orientations = inst.floatProperty(Instance::orientations);
-  bool hasOrientations =
-    (orientations.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+  bool hasOrientations = orientations.size() == nptsThisInst * 3 && inst.rule() == "tabular";
 
   const smtk::model::FloatList& scales = inst.floatProperty(Instance::scales);
-  bool hasScales = (scales.size() == nptsThisInst * 3 && inst.rule() == "tabular") ? true : false;
+  bool hasScales = scales.size() == nptsThisInst * 3 && inst.rule() == "tabular";
 
   const smtk::model::IntegerList& masks = inst.integerProperty(Instance::masks);
-  bool hasMasks = (masks.size() == nptsThisInst && inst.rule() == "tabular") ? true : false;
+  bool hasMasks = masks.size() == nptsThisInst && inst.rule() == "tabular";
 
   const smtk::model::FloatList& colors = inst.floatProperty(Instance::colors);
-  bool hasColors = (colors.size() == nptsThisInst * 4 && inst.rule() == "tabular") ? true : false;
+  bool hasColors = colors.size() == nptsThisInst * 4 && inst.rule() == "tabular";
 
   double ptOrientDefault[3] = { 0, 0, 0 };
   double ptScaleDefault[3] = { 1, 1, 1 };
@@ -955,8 +954,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkModelMultiBlockSource::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inInfo), vtkInformationVector* outInfo)
+int vtkModelMultiBlockSource::RequestData(
+  vtkInformation* /*request*/, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
 {
   auto resource = this->GetModelResource();
   this->UUID2BlockIdMap.clear();

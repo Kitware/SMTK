@@ -237,7 +237,7 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
 }
 }
 
-int unitComponentItemConstraints(int, char* [])
+int unitComponentItemConstraints(int /*unused*/, char* /*unused*/ [])
 {
   // ----
   // I. Let's create an attribute resource and some definitions

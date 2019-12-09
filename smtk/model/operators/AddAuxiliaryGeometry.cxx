@@ -33,8 +33,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace boost::filesystem;
 using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::StringItem;
 using smtk::resource::PersistentObjectPtr;
 
 namespace smtk
@@ -94,7 +92,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
     if (parent.isValid())
     {
       auxGeom = resource->addAuxiliaryGeometry(parent.as<AuxiliaryGeometry>(), dim);
-      for (auto child : entities)
+      for (const auto& child : entities)
       {
         if (child.as<smtk::model::AuxiliaryGeometry>().reparent(auxGeom))
         {
@@ -136,7 +134,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   {
     AuxiliaryGeometryExtension::Ptr ext;
     smtk::common::Extension::visit<AuxiliaryGeometryExtension::Ptr>(
-      [&ext, &auxGeom, &bbox](const std::string&, AuxiliaryGeometryExtension::Ptr obj) {
+      [&ext, &auxGeom, &bbox](const std::string& /*unused*/, AuxiliaryGeometryExtension::Ptr obj) {
         // Don't take the first AuxiliaryGeometryExtenion... look for one
         // that can handle the URL.
         if (obj && obj->canHandleAuxiliaryGeometry(auxGeom, bbox))

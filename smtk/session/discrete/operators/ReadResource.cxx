@@ -54,7 +54,7 @@ ReadResource::Result ReadResource::operateInternal()
 
   for (auto& model : models)
   {
-    smtk::common::UUID modelid = model.entity();
+    const smtk::common::UUID& modelid = model.entity();
 
     std::string nativemodelfile;
     std::string nativefilekey = resource->hasStringProperty(modelid, "url") ? "url" : "";

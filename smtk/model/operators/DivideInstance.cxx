@@ -25,8 +25,6 @@
 #include "smtk/model/DivideInstance_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::ComponentItem;
-using smtk::attribute::IntItem;
 
 namespace smtk
 {
@@ -43,11 +41,7 @@ bool DivideInstance::ableToOperate()
   // Check that the associated instance is cloned or has cloned children
   // that we can use to divide its placements.
   Instance parent = this->parentOfClones(this->parameters()->associations());
-  if (!parent.isValid())
-  {
-    return false;
-  }
-  return true;
+  return parent.isValid();
 }
 
 DivideInstance::Result DivideInstance::operateInternal()
@@ -74,14 +68,14 @@ DivideInstance::Result DivideInstance::operateInternal()
     // safe to delete the input.
     children.insert(children.end(), instance);
   }
-  for (auto entry : children)
+  for (const auto& entry : children)
   {
     expunged->appendValue(entry.entityRecord());
   }
   smtk::model::EntityRefArray delExpunged;
   smtk::model::EntityRefArray delModified;
   resource->deleteEntities(children, delModified, delExpunged, m_debugLevel > 0);
-  for (auto entry : divided)
+  for (const auto& entry : divided)
   {
     if (entry == instance)
     {
@@ -89,11 +83,11 @@ DivideInstance::Result DivideInstance::operateInternal()
     }
     created->appendValue(entry.entityRecord());
   }
-  for (auto tmp : delExpunged)
+  for (const auto& tmp : delExpunged)
   {
     expunged->appendValue(tmp.entityRecord());
   }
-  for (auto tmp : delModified)
+  for (const auto& tmp : delModified)
   {
     modified->appendValue(tmp.entityRecord());
   }

@@ -39,9 +39,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <regex>
 using std::regex;
 using std::sregex_token_iterator;
-using std::regex_replace;
-using std::regex_search;
-using std::regex_match;
 #else
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/regex.hpp>
@@ -118,7 +115,7 @@ std::vector<std::string> ImportPythonOperation::importOperationsFromModule(
 
     if (registered)
     {
-      typeNames.push_back(std::string(moduleName + "." + opName));
+      typeNames.emplace_back(moduleName + "." + opName);
     }
   }
 

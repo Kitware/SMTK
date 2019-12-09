@@ -54,7 +54,7 @@ public:
     this->nptIds = npts;
     this->elementId = inElementId;
     this->ptIds = new vtkIdType[this->nptIds];
-    for (int i = 0; i < nptIds; i++)
+    for (vtkIdType i = 0; i < nptIds; i++)
     {
       this->ptIds[i] = pts[i];
     }
@@ -66,7 +66,7 @@ public:
     this->nptIds = other.nptIds;
     this->elementId = other.elementId;
     this->ptIds = new vtkIdType[this->nptIds];
-    for (int i = 0; i < nptIds; i++)
+    for (vtkIdType i = 0; i < nptIds; i++)
     {
       this->ptIds[i] = other.ptIds[i];
     }
@@ -135,7 +135,7 @@ void SmartMapAppend(std::list<vtkPolyData*> inputs, vtkPolyData* output, bool Pr
     oldPtId2newPtId.reserve(toMerge->GetPoints()->GetNumberOfPoints());
 
     //Populate uniquePoints
-    for (int i = 0; i < toMerge->GetPoints()->GetNumberOfPoints(); i++)
+    for (vtkIdType i = 0; i < toMerge->GetPoints()->GetNumberOfPoints(); i++)
     {
       double pt[3];
       toMerge->GetPoints()->GetPoint(i, pt);
@@ -145,7 +145,7 @@ void SmartMapAppend(std::list<vtkPolyData*> inputs, vtkPolyData* output, bool Pr
     //Populate the unique Cells
     vtkIdTypeArray* elementIds =
       vtkIdTypeArray::SafeDownCast(toMerge->GetCellData()->GetArray("ElementIds"));
-    for (int i = 0; i < toMerge->GetNumberOfCells(); i++)
+    for (vtkIdType i = 0; i < toMerge->GetNumberOfCells(); i++)
     {
       vtkCell* cell = toMerge->GetCell(i);
       vtkIdList* cellPointIds = cell->GetPointIds();

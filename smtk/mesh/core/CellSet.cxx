@@ -33,7 +33,6 @@ CellSet::CellSet(const smtk::mesh::ConstResourcePtr& parent, const smtk::mesh::H
 CellSet::CellSet(
   const smtk::mesh::ResourcePtr& parent, const std::vector<smtk::mesh::Handle>& cellIds)
   : m_parent(parent)
-  , m_range()
 {
   for (auto& cellId : cellIds)
   {
@@ -43,7 +42,6 @@ CellSet::CellSet(
 
 CellSet::CellSet(const smtk::mesh::ResourcePtr& parent, const std::set<smtk::mesh::Handle>& cellIds)
   : m_parent(parent)
-  , m_range()
 {
   for (auto& cellId : cellIds)
   {

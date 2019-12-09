@@ -91,7 +91,7 @@ const char* MyOperation::xmlDescription() const
 }
 }
 
-int TestOperationLauncher(int, char** const)
+int TestOperationLauncher(int /*unused*/, char** const /*unused*/)
 {
   // Create an operation manager
   smtk::operation::Manager::Ptr operationManager = smtk::operation::Manager::create();

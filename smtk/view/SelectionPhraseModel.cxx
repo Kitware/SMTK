@@ -84,7 +84,7 @@ void SelectionPhraseModel::populateRoot(const std::string& src, Selection::Ptr s
   DescriptivePhrases children;
   smtk::resource::Component::Ptr comp;
   smtk::resource::Resource::Ptr rsrc;
-  for (auto entry : seln->currentSelection())
+  for (const auto& entry : seln->currentSelection())
   {
     if ((entry.second & m_selectionBit) == 0)
     { // Not part of the selection we're interested in.

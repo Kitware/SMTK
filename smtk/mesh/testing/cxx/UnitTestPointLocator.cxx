@@ -36,7 +36,7 @@ smtk::mesh::ResourcePtr load_mesh()
 void verify_empty_locator(const smtk::mesh::ResourcePtr& mr)
 {
   smtk::mesh::PointSet emptyPoints = mr->meshes("bad_name").points();
-  test(emptyPoints.is_empty() == true);
+  test(emptyPoints.is_empty());
   test(emptyPoints.size() == 0);
 
   smtk::mesh::PointLocator locator1(emptyPoints);
@@ -118,7 +118,7 @@ void verify_points_find_themselves(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestPointLocator(int, char** const)
+int UnitTestPointLocator(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

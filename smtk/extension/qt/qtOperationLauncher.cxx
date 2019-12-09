@@ -43,7 +43,7 @@ std::future<smtk::operation::Operation::Result> qtOperationLauncher::operator()(
   // Construct a copy of the operation shared pointer to pass to the subsequent
   // lambda to prevent the underlying operation from being changed before the
   // operation completes.
-  smtk::operation::Operation::Ptr operation = op;
+  const smtk::operation::Operation::Ptr& operation = op;
 
   // When the subthread completes the operation, it emits a private signal
   // containing the name of the result. We pass the result name rather than the

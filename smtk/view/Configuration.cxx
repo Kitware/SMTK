@@ -87,11 +87,7 @@ bool Configuration::Component::contentsAsInt(int& val) const
 {
   std::istringstream iss(m_contents);
   iss >> val;
-  if (!iss.good())
-  {
-    return false;
-  }
-  return true;
+  return iss.good();
 }
 
 bool Configuration::Component::contentsAsVector(std::vector<double>& vec) const
@@ -151,7 +147,7 @@ Configuration::Component& Configuration::Component::unsetAttribute(const std::st
 
 Configuration::Component& Configuration::Component::addChild(const std::string& childName)
 {
-  m_children.push_back(Component(childName));
+  m_children.emplace_back(childName);
   return m_children.back();
 }
 

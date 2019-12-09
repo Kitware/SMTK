@@ -80,7 +80,7 @@ bool Selection::registerSelectionValue(
 
   if (valueMustBeUnique)
   {
-    for (auto entry : m_selectionValueLabels)
+    for (const auto& entry : m_selectionValueLabels)
     {
       if (entry.second == value)
       {
@@ -220,7 +220,7 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
       if (!m_filter(obj, value, suggestions))
       {
         // Add the suggested entries if any.
-        for (auto suggestion : suggestions)
+        for (const auto& suggestion : suggestions)
         {
           auto it = m_selection.find(suggestion.first);
           if (it == m_selection.end())
@@ -284,7 +284,7 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
         it->second = (bitwise ? it->second | value : value);
       }
       // Now add all the suggested entries and clear.
-      for (auto suggestion : suggestions)
+      for (const auto& suggestion : suggestions)
       {
         it = m_selection.find(suggestion.first);
         if (it == m_selection.end())
@@ -328,7 +328,7 @@ bool Selection::performAction(smtk::resource::PersistentObject::Ptr obj, int val
       // Now deal with suggestions... should we really allow additions
       // during a subtract? Not going to for now, but I guess it is
       // possible someone might want to make a substitution.
-      for (auto suggestion : suggestions)
+      for (const auto& suggestion : suggestions)
       {
         it = m_selection.find(suggestion.first);
         if (it != m_selection.end())
@@ -373,7 +373,7 @@ bool Selection::refilter(const std::string& source)
     }
   }
   // Now handle suggestions
-  for (auto suggestion : suggestions)
+  for (const auto& suggestion : suggestions)
   {
     auto it = m_selection.find(suggestion.first);
     if (it == m_selection.end())

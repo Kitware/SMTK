@@ -31,18 +31,14 @@ public:
   {
   }
 
-  DefaultLauncher(const DefaultLauncher&)
+  DefaultLauncher(const DefaultLauncher& /*unused*/)
     : m_pool(new smtk::common::ThreadPool<smtk::operation::Operation::Result>)
   {
   }
 
-  DefaultLauncher(DefaultLauncher&& other)
-    : m_pool()
-  {
-    m_pool.swap(other.m_pool);
-  }
+  DefaultLauncher(DefaultLauncher&& other) noexcept : m_pool() { m_pool.swap(other.m_pool); }
 
-  DefaultLauncher& operator=(DefaultLauncher&& other)
+  DefaultLauncher& operator=(DefaultLauncher&& other) noexcept
   {
     if (&other != this)
     {

@@ -525,7 +525,7 @@ void vtkCMBModelBuilder::ProcessAs2DMesh(
   vtkIdTypeArray* vertices =
     vtkIdTypeArray::SafeDownCast(modelPolyData->GetFieldData()->GetArray("Vertices"));
   std::vector<vtkModelVertex*> modelVertices;
-  for (int i = 0; i < vertices->GetNumberOfTuples(); i++)
+  for (vtkIdType i = 0; i < vertices->GetNumberOfTuples(); i++)
   {
     vtkDiscreteModelVertex* cmbVertex =
       vtkDiscreteModelVertex::SafeDownCast(model->BuildModelVertex(vertices->GetValue(i)));
@@ -543,7 +543,7 @@ void vtkCMBModelBuilder::ProcessAs2DMesh(
   vtkStringArray* edgeNames =
     vtkStringArray::SafeDownCast(modelPolyData->GetFieldData()->GetAbstractArray("Edge Names"));
   vtkSmartPointer<vtkIdList> cellIds = vtkSmartPointer<vtkIdList>::New();
-  for (int i = 0; i < edgeNames->GetNumberOfValues(); i++)
+  for (vtkIdType i = 0; i < edgeNames->GetNumberOfValues(); i++)
   {
     vtkIdTypeArray* edgeArray = vtkIdTypeArray::SafeDownCast(
       modelPolyData->GetFieldData()->GetArray(edgeNames->GetValue(i).c_str()));
@@ -553,7 +553,7 @@ void vtkCMBModelBuilder::ProcessAs2DMesh(
 
     cellIds->Allocate(edgeArray->GetNumberOfTuples() - 2);
     cellIds->Reset();
-    for (int j = 2; j < edgeArray->GetNumberOfTuples(); j++)
+    for (vtkIdType j = 2; j < edgeArray->GetNumberOfTuples(); j++)
     {
       //We are currently presuming that at write time, that all writes will
       //combine the edge and face mesh poly data's into a single combined

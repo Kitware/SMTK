@@ -579,7 +579,7 @@ struct LookupSenseOfUse
 template <>
 struct LookupSenseOfUse<vtkModelVertexUse>
 {
-  LookupSenseOfUse(ArrangementHelper*) {}
+  LookupSenseOfUse(ArrangementHelper* /*unused*/) {}
 
   bool operator()(vtkModelItem* dscEntity, int& sense, Orientation& orientation)
   {
@@ -1612,7 +1612,7 @@ smtk::model::Model Session::addBodyToResource(
     smtk::model::Model model;
     smtk::model::SessionInfoBits translated;
     bool already;
-    if ((already = resource->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = static_cast<bool>(resource->findEntity(uid, false))) || relDepth < 0)
     {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
       model = smtk::model::Model(resource, uid);
@@ -1678,7 +1678,7 @@ smtk::model::Group Session::addGroupToResource(const smtk::common::UUID& uid,
     smtk::model::Group result;
     smtk::model::SessionInfoBits translated;
     bool already;
-    if ((already = resource->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = static_cast<bool>(resource->findEntity(uid, false))) || relDepth < 0)
     {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
       result = smtk::model::Group(resource, uid);
@@ -1712,7 +1712,7 @@ smtk::model::Group Session::addMaterialToResource(const smtk::common::UUID& uid,
     smtk::model::SessionInfoBits translated;
     smtk::model::Group result;
     bool already;
-    if ((already = resource->findEntity(uid, false) ? true : false) || relDepth < 0)
+    if ((already = static_cast<bool>(resource->findEntity(uid, false))) || relDepth < 0)
     {
       translated = already ? smtk::model::SESSION_EVERYTHING : smtk::model::SESSION_NOTHING;
       result = smtk::model::Group(resource, uid);
@@ -1758,7 +1758,7 @@ smtk::model::FaceUse Session::addFaceUseToResource(const smtk::common::UUID& uid
     smtk::model::SessionInfoBits translated;
     bool already;
     smtk::model::Face matchingFace(resource, this->findOrSetEntityUUID(coFace->GetModelFace()));
-    if ((already = resource->findEntity(uid, false) ? true : false))
+    if ((already = static_cast<bool>(resource->findEntity(uid, false))))
     {
       translated = already ? smtk::model::SESSION_ENTITY_ARRANGED : smtk::model::SESSION_NOTHING;
       result = smtk::model::FaceUse(resource, uid);
@@ -1819,7 +1819,7 @@ smtk::model::EdgeUse Session::addEdgeUseToResource(const smtk::common::UUID& uid
   smtk::model::SessionInfoBits translated = smtk::model::SESSION_NOTHING;
   bool already;
   smtk::model::EdgeUse result(resource, uid);
-  if ((already = resource->findEntity(uid, false) ? true : false))
+  if ((already = static_cast<bool>(resource->findEntity(uid, false))))
   {
     translated = already ? smtk::model::SESSION_ENTITY_TYPE : smtk::model::SESSION_NOTHING;
   }
@@ -2205,7 +2205,7 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
   {
     if (mbit->first == dmod)
     {
-      smtk::common::UUID modelId = modRef.entity();
+      const smtk::common::UUID& modelId = modRef.entity();
       m_modelsToSessions.erase(mbit);
       vtkSmartPointer<vtkDiscreteModelWrapper> modelPtr = m_modelIdsToRefs[modelId];
       m_modelIdsToRefs.erase(modelId);
@@ -2219,7 +2219,7 @@ bool Session::removeModelEntity(const smtk::model::EntityRef& modRef)
 
 void Session::retranscribeModel(const smtk::model::Model& inModel)
 {
-  smtk::common::UUID mid = inModel.entity();
+  const smtk::common::UUID& mid = inModel.entity();
   smtk::model::StringList const& urlprop(inModel.stringProperty("url"));
   std::string url;
   if (!urlprop.empty())

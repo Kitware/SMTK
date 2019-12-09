@@ -63,7 +63,7 @@ int UnitTestImportFromVTK(int argc, char* argv[])
   // resources will be automatically registered to the resource manager).
   operationManager->registerResourceManager(resourceManager);
 
-  for (auto file : files)
+  for (const auto& file : files)
   {
     smtk::model::Entity::Ptr model;
 
@@ -83,7 +83,7 @@ int UnitTestImportFromVTK(int argc, char* argv[])
       importOp->parameters()->findFile("filename")->setValue(importFilePath);
 
       // Test for success
-      if (importOp->ableToOperate() == false)
+      if (!importOp->ableToOperate())
       {
         std::cerr << "Import operator unable to operate\n";
         return 1;

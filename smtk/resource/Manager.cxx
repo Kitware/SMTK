@@ -29,7 +29,7 @@ void InitializeObserver(Manager* mgr, Observer fn)
     return;
   }
 
-  for (auto rsrc : mgr->resources())
+  for (const auto& rsrc : mgr->resources())
   {
     fn(*rsrc, smtk::resource::EventType::ADDED);
   }

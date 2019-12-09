@@ -63,8 +63,8 @@ vtkCMBMapReader::~vtkCMBMapReader()
 //
 //This is a reader for the SMS Map file for help on the format of the file go to
 //http://www.ems-i.com/smshelp/SMS-Help.htm#File_Formats/SMS_Project_Files.htm
-int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCMBMapReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   // get the info object
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -393,7 +393,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
             // see above "Note for Special Case between MAP file and triangle"
             if (numArcsInPoly > 1 && loopedArcs.count(arcId) != 0)
             {
-              innerLoopsIndexes.push_back(std::vector<vtkIdType>());
+              innerLoopsIndexes.emplace_back();
               innerLoopsIndexes.back().push_back(arcId2ArcIndex[arcId]);
             }
             else
@@ -410,10 +410,10 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
           line >> numHarcs;
           //Create an inner loop vector for every
           //HARC card read
-          innerLoopsIndexes.push_back(std::vector<vtkIdType>());
+          innerLoopsIndexes.emplace_back();
           innerLoopsIndexes.back().reserve(numHarcs);
 #if WRITE_DEBUG_CELLDATA
-          innerLoopsIds.push_back(std::vector<vtkIdType>());
+          innerLoopsIds.emplace_back();
           innerLoopsIds.back().reserve(numHarcs);
 #endif
           for (vtkIdType i = 0; i < numHarcs; i++)
@@ -445,7 +445,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
       {
         mapInterface->AddLoopWithArcs(id, true, outerLoopIndexes);
       }
-      for (unsigned i = 0; i < innerLoopsIndexes.size(); i++)
+      for (size_t i = 0; i < innerLoopsIndexes.size(); i++)
       {
         mapInterface->AddLoopWithArcs(id, false, innerLoopsIndexes[i]);
       }
@@ -454,7 +454,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* vtkNotUsed(request),
       //The loops have been calculated update
       //Now change the arc's field data to associate an arc with
       //a loop
-      for (unsigned int i = 0; i < outerLoopIds.size(); i++)
+      for (size_t i = 0; i < outerLoopIds.size(); i++)
       {
         vtkIdType arcId = outerLoopIds[i];
         std::vector<vtkIdType>::iterator iter;
@@ -571,8 +571,8 @@ void vtkCMBMapReader::PrintSelf(ostream& os, vtkIndent indent)
   }
 }
 
-int vtkCMBMapReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCMBMapReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

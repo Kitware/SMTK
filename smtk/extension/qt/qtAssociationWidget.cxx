@@ -68,13 +68,10 @@ using namespace smtk::extension;
 class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
-  qtAssociationWidgetInternals()
-    : lastHighlightedItem(nullptr)
-  {
-  }
+  qtAssociationWidgetInternals() = default;
   WeakAttributePtr currentAtt;
   QPointer<qtBaseView> view;
-  QListWidgetItem* lastHighlightedItem;
+  QListWidgetItem* lastHighlightedItem{ nullptr };
   QBrush normalBackground;
 };
 
@@ -174,7 +171,7 @@ void qtAssociationWidget::initWidget()
 
 bool qtAssociationWidget::hasSelectedItem()
 {
-  return this->Internals->AvailableList->selectedItems().isEmpty() ? false : true;
+  return !this->Internals->AvailableList->selectedItems().isEmpty();
 }
 
 void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)
@@ -262,7 +259,7 @@ void qtAssociationWidget::refreshAssociations(const smtk::common::UUID& ignoreRe
   smtk::attribute::DefinitionPtr preDef;
   smtk::attribute::AttributePtr conAtt;
   // Now lets see if the objects are associated with this attribute or can be
-  for (auto obj : objects)
+  for (const auto& obj : objects)
   {
     if (theAttribute->isObjectAssociated(obj))
     {
@@ -331,7 +328,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
       range = assocMap.equal_range(i->first);
 
       // Lets see if any of the resources match this type
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {
@@ -369,7 +366,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
       // As the resource manager to get all appropriate resources
       resources = resManager->find(i->first);
       // Need to process all of these resources
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {
@@ -605,7 +602,7 @@ void qtAssociationWidget::updateListItemSelectionAfterChange(
   list->blockSignals(false);
 }
 
-int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation&,
+int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
   smtk::operation::EventType event, smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)

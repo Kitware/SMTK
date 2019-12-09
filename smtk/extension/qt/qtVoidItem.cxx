@@ -113,7 +113,7 @@ void qtVoidItem::updateItemData()
 
 void qtVoidItem::setOutputOptional(int state)
 {
-  bool enable = state ? true : false;
+  bool enable = state != 0;
   auto item = m_itemInfo.item();
   if (enable != item->isEnabled())
   {

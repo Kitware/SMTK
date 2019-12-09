@@ -23,7 +23,6 @@ MergeMeshVertices::MergeMeshVertices(::moab::Interface* iface)
   , mbMergeTag()
   , deadEnts()
   , mergedToVertices()
-  , mappingFromDeadToAlive()
 {
 }
 

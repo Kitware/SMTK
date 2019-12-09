@@ -164,7 +164,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
   // Process Exceptions and Prerequistics
   std::vector<smtk::attribute::DefinitionPtr> defs;
   res->definitions(defs, true);
-  for (auto def : defs)
+  for (const auto& def : defs)
   {
     auto defType = def->type();
     // Lets process the constraints of def
@@ -173,7 +173,7 @@ SMTKCORE_EXPORT void to_json(json& j, const smtk::attribute::ResourcePtr& res)
     if (!excludedTypes.empty())
     {
       json types = json::array();
-      for (auto etype : excludedTypes)
+      for (const auto& etype : excludedTypes)
       {
         if (etype > defType)
         {
@@ -367,7 +367,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
   auto uniqueRoles = j.find("UniqueRoles");
   if (uniqueRoles != j.end())
   {
-    for (auto role : *uniqueRoles)
+    for (const auto& role : *uniqueRoles)
     {
       res->addUniqueRole(role);
     }

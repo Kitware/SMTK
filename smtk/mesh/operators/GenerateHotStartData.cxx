@@ -48,9 +48,6 @@
 #include <regex>
 using std::regex;
 using std::sregex_token_iterator;
-using std::regex_replace;
-using std::regex_search;
-using std::regex_match;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
@@ -140,13 +137,13 @@ std::array<double, 6> bounds(smtk::mesh::MeshSet ms)
   {
   public:
     Extent()
-      : smtk::mesh::PointForEach()
     {
       m_values[0] = m_values[2] = m_values[4] = std::numeric_limits<double>::max();
       m_values[1] = m_values[3] = m_values[5] = std::numeric_limits<double>::lowest();
     }
 
-    void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&) override
+    void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+      bool& /*coordinatesModified*/) override
     {
       for (std::size_t i = 0; i < xyz.size(); i += 3)
       {
@@ -184,11 +181,7 @@ namespace mesh
 
 bool GenerateHotStartData::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 GenerateHotStartData::Result GenerateHotStartData::operateInternal()

@@ -77,7 +77,7 @@ void notifyRecursive(
   obs(parent, PhraseModelEvent::ABOUT_TO_INSERT, parentIdx, parentIdx, range);
   obs(parent, PhraseModelEvent::INSERT_FINISHED, parentIdx, parentIdx, range);
   parentIdx.push_back(0);
-  for (auto child : children)
+  for (const auto& child : children)
   {
     notifyRecursive(obs, child, parentIdx);
     ++parentIdx.back();
@@ -132,7 +132,7 @@ PhraseModel::PhraseModel()
   : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
   , m_mutableAspects(PhraseContent::EVERYTHING)
 {
-  m_decorator = [](smtk::view::DescriptivePhrasePtr) {};
+  m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
 }
 
 PhraseModel::~PhraseModel()
@@ -143,7 +143,7 @@ PhraseModel::~PhraseModel()
 bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
   smtk::view::SelectionPtr seln)
 {
-  for (auto source : m_sources)
+  for (const auto& source : m_sources)
   {
     if (source.m_rsrcMgr == rsrcMgr && source.m_operMgr == operMgr && source.m_seln == seln)
     {
@@ -179,7 +179,7 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         true, // observeImmediately
         description.str() + "Update phrases when selection changes.")
     : smtk::view::SelectionObservers::Key();
-  m_sources.push_back(Source(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle));
+  m_sources.emplace_back(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle);
   return true;
 }
 
@@ -229,7 +229,7 @@ bool PhraseModel::resetSources()
 
 void PhraseModel::visitSources(SourceVisitor visitor)
 {
-  for (auto src : m_sources)
+  for (const auto& src : m_sources)
   {
     if (!visitor(src.m_rsrcMgr, src.m_operMgr, src.m_seln))
     {
@@ -419,16 +419,17 @@ void PhraseModel::handleCreated(
 
 void PhraseModel::redecorate()
 {
-  this->root()->visitChildren([this](DescriptivePhrasePtr phr, std::vector<int>&) -> int {
-    PhraseContentPtr topContent = phr->content();
-    PhraseContentPtr content = topContent->undecoratedContent();
-    if (content != topContent)
-    {
-      phr->setContent(content);
-    }
-    this->decoratePhrase(phr);
-    return 0; // Continue iterating, incl. children.
-  });
+  this->root()->visitChildren(
+    [this](DescriptivePhrasePtr phr, std::vector<int> & /*unused*/) -> int {
+      PhraseContentPtr topContent = phr->content();
+      PhraseContentPtr content = topContent->undecoratedContent();
+      if (content != topContent)
+      {
+        phr->setContent(content);
+      }
+      this->decoratePhrase(phr);
+      return 0; // Continue iterating, incl. children.
+    });
 }
 
 void PhraseModel::updateChildren(

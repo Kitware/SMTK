@@ -135,12 +135,9 @@ void add_model_edge_and_vert(smtk::model::ResourcePtr modelResource, smtk::model
 
 struct xyz_view
 {
-  double* m_ptr;
+  double* m_ptr{ nullptr };
 
-  xyz_view()
-    : m_ptr(nullptr)
-  {
-  }
+  xyz_view() = default;
   xyz_view(double* ptr)
     : m_ptr(ptr)
   {
@@ -238,7 +235,7 @@ void verify_merge()
 }
 }
 
-int UnitTestReclassifyEdges(int, char** const)
+int UnitTestReclassifyEdges(int /*unused*/, char** const /*unused*/)
 {
   verify_split();
   verify_merge();

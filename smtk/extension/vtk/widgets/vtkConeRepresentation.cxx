@@ -268,7 +268,7 @@ bool vtkConeRepresentation::SetCylindrical(vtkTypeBool isCylindrical)
   return true;
 }
 
-int vtkConeRepresentation::ComputeInteractionState(int X, int Y, int vtkNotUsed(modify))
+int vtkConeRepresentation::ComputeInteractionState(int X, int Y, int /*modify*/)
 {
   // See if anything has been selected
   vtkAssemblyPath* path = this->GetAssemblyPath(X, Y, 0., this->Picker);
@@ -501,7 +501,7 @@ void vtkConeRepresentation::WidgetInteraction(double e[2])
   this->LastEventPosition[2] = 0.0;
 }
 
-void vtkConeRepresentation::EndWidgetInteraction(double vtkNotUsed(e)[2])
+void vtkConeRepresentation::EndWidgetInteraction(double /*newEventPos*/[2])
 {
   this->SetRepresentationState(vtkConeRepresentation::Outside);
 }
@@ -861,8 +861,7 @@ void vtkConeRepresentation::PushCap(bool isBottom, double* p1, double* p2)
 }
 
 // Loop through all points and translate them
-void vtkConeRepresentation::AdjustBottomRadius(
-  double vtkNotUsed(X), double Y, double* p1, double* p2)
+void vtkConeRepresentation::AdjustBottomRadius(double /*X*/, double Y, double* p1, double* p2)
 {
   if (Y == this->LastEventPosition[1])
   {
@@ -902,7 +901,7 @@ void vtkConeRepresentation::AdjustBottomRadius(
   this->BuildRepresentation();
 }
 
-void vtkConeRepresentation::AdjustTopRadius(double vtkNotUsed(X), double Y, double* p1, double* p2)
+void vtkConeRepresentation::AdjustTopRadius(double /*X*/, double Y, double* p1, double* p2)
 {
   if (Y == this->LastEventPosition[1])
   {
@@ -1001,7 +1000,7 @@ void vtkConeRepresentation::TranslateHandle(bool isBottomHandle, double* p1, dou
   this->BuildRepresentation();
 }
 
-void vtkConeRepresentation::Scale(double* p1, double* p2, double vtkNotUsed(X), double Y)
+void vtkConeRepresentation::Scale(double* p1, double* p2, double /*X*/, double Y)
 {
   //Get the motion vector
   vtkVector3d v;

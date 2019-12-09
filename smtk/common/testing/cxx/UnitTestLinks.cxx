@@ -19,10 +19,7 @@ namespace
 {
 struct MyBase
 {
-  MyBase()
-    : value()
-  {
-  }
+  MyBase() = default;
   MyBase(const std::string& val)
     : value(val)
   {
@@ -130,10 +127,7 @@ void UnitTest()
 
 struct MyMoveOnlyBase
 {
-  MyMoveOnlyBase()
-    : value()
-  {
-  }
+  MyMoveOnlyBase() = default;
   MyMoveOnlyBase(const std::string& val)
     : value(val)
   {
@@ -257,7 +251,7 @@ void JsonTest()
 
   smtkTest(links.size() == newLinks.size(), "Number of links should be equal.");
 
-  for (auto link : links)
+  for (const auto& link : links)
   {
     auto id = link.id;
     smtkTest(links.at(id).id == newLinks.at(id).id, "Link ids should be equal.");
@@ -282,7 +276,7 @@ void MoveOnlyJsonTest()
 
   smtkTest(links.size() == newLinks.size(), "Number of links should be equal.");
 
-  for (auto link : links)
+  for (const auto& link : links)
   {
     auto id = link.id;
     smtkTest(links.at(id).id == newLinks.at(id).id, "Link ids should be equal.");
@@ -340,7 +334,7 @@ void MoveOnlyRecursionTest()
 }
 }
 
-int UnitTestLinks(int, char** const)
+int UnitTestLinks(int /*unused*/, char** const /*unused*/)
 {
   UnitTest();
   MoveOnlyTest();

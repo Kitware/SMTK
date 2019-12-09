@@ -38,9 +38,9 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::MeshSet ms = mr->meshes(mesh_names[0]);
   smtk::mesh::PointSet ps = ms.points();
 
-  smtk::mesh::PointSet ps2(ps);
+  const smtk::mesh::PointSet& ps2(ps);
   smtk::mesh::PointSet ps3 = mr->meshes("bad_name").points();
-  test(ps3.is_empty() == true);
+  test(ps3.is_empty());
   test(ps3.size() == 0);
 
   test(ps.size() == ps2.size());
@@ -49,9 +49,9 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   ps3 = ps; //test assignment operator
   test(ps.size() == ps3.size());
 
-  test(ps.is_empty() == false);
-  test(ps2.is_empty() == false);
-  test(ps3.is_empty() == false);
+  test(!ps.is_empty());
+  test(!ps2.is_empty());
+  test(!ps3.is_empty());
 }
 
 void verify_subsets(const smtk::mesh::ResourcePtr& mr)
@@ -100,7 +100,7 @@ void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
   test(two != one);
   test(!(two == one));
 
-  smtk::mesh::PointSet one_a(one);
+  const smtk::mesh::PointSet& one_a(one);
   test(one_a == one);
 
   smtk::mesh::PointSet two_b = one_a;
@@ -360,7 +360,7 @@ class CountPoints : public smtk::mesh::PointForEach
   int numPointsIteratedOver;
 
 public:
-  CountPoints(smtk::mesh::ResourcePtr)
+  CountPoints(smtk::mesh::ResourcePtr /*unused*/)
     : numPointsIteratedOver(0)
   {
   }
@@ -444,7 +444,7 @@ void verify_pointset_for_each_modify(const smtk::mesh::ResourcePtr& mr)
 }
 }
 
-int UnitTestPointSet(int, char** const)
+int UnitTestPointSet(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

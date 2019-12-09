@@ -63,7 +63,7 @@ void removeRefsWithoutTess(smtk::model::EntityRefs& ents)
 }
 }
 
-int UnitTestTriangulateFaces(int, char** const)
+int UnitTestTriangulateFaces(int /*unused*/, char** const /*unused*/)
 {
   smtk::session::polygon::Resource::Ptr resource;
 
@@ -160,14 +160,6 @@ int UnitTestTriangulateFaces(int, char** const)
     {
       std::cerr << "Triangulate faces operator did something wrong\n";
       return 1;
-    }
-
-    if (false)
-    {
-      smtk::io::ExportMesh exportMesh;
-      std::string output_path(scratch_root);
-      output_path += "/boxWithHole.vtk";
-      exportMesh(output_path, triangulatedFace);
     }
   }
 

@@ -36,9 +36,9 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::MeshSet all_meshes = mr->meshes();
 
   smtk::mesh::CellSet all_cells_from_ms = all_meshes.cells();
-  smtk::mesh::CellSet copy_of_all_cells(all_cells_from_ms);
+  const smtk::mesh::CellSet& copy_of_all_cells(all_cells_from_ms);
 
-  test(all_cells_from_ms.is_empty() == false);
+  test(!all_cells_from_ms.is_empty());
   test(all_cells_from_ms.size() != 0);
   test(all_cells_from_ms.size() == copy_of_all_cells.size());
 
@@ -46,14 +46,14 @@ void verify_constructors(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::CellSet equalToZeroDim = copy_of_all_cells;
   equalToZeroDim = zeroDim; //test assignment operator
   test(equalToZeroDim.size() == zeroDim.size());
-  test(equalToZeroDim.is_empty() == false);
+  test(!equalToZeroDim.is_empty());
 }
 
 void verify_subsets(const smtk::mesh::ResourcePtr& mr)
 {
   std::vector<std::string> mesh_names = mr->meshNames();
 
-  test(mesh_names.empty() == false, "There are no meshes in the resource.");
+  test(!mesh_names.empty(), "There are no meshes in the resource.");
 
   smtk::mesh::MeshSet ms = mr->meshes(mesh_names[0]);
   smtk::mesh::CellSet ps = ms.cells();
@@ -94,10 +94,10 @@ void verify_empty(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::CellSet no_cells_c = no_mesh.cells(smtk::mesh::Dims2);
   smtk::mesh::CellSet no_cells_d = no_mesh.cells(smtk::mesh::CellTypes());
 
-  test(no_cells_a.is_empty() == true);
-  test(no_cells_b.is_empty() == true);
-  test(no_cells_c.is_empty() == true);
-  test(no_cells_d.is_empty() == true);
+  test(no_cells_a.is_empty());
+  test(no_cells_b.is_empty());
+  test(no_cells_c.is_empty());
+  test(no_cells_d.is_empty());
 
   test(no_cells_a.size() == 0);
   test(no_cells_b.size() == 0);
@@ -115,7 +115,7 @@ void verify_comparisons(const smtk::mesh::ResourcePtr& mr)
   test(oneDim != zeroDim);
   test(!(oneDim == zeroDim));
 
-  smtk::mesh::CellSet zeroDim_a(zeroDim);
+  const smtk::mesh::CellSet& zeroDim_a(zeroDim);
   test(zeroDim_a == zeroDim);
 
   smtk::mesh::CellSet oneDim_b = zeroDim_a;
@@ -134,8 +134,8 @@ void verify_typeset(const smtk::mesh::ResourcePtr& mr)
     smtk::mesh::TypeSet noTypes = emptyCellSet.types();
 
     test(noTypes.cellTypes() == no_cell_types);
-    test(noTypes.hasMeshes() == false);
-    test(noTypes.hasCells() == false);
+    test(!noTypes.hasMeshes());
+    test(!noTypes.hasCells());
   }
 
   //verify that if we get all cells from the resource the type set is correct
@@ -145,8 +145,8 @@ void verify_typeset(const smtk::mesh::ResourcePtr& mr)
     smtk::mesh::TypeSet allCellsTypes = allCells.types();
 
     test(allCellsTypes.cellTypes() == all_types.cellTypes());
-    test(allCellsTypes.hasMeshes() == false);
-    test(allCellsTypes.hasCells() == true);
+    test(!allCellsTypes.hasMeshes());
+    test(allCellsTypes.hasCells());
   }
 
   //verify typeset work on dimension cell queries and cell type queries
@@ -160,8 +160,8 @@ void verify_all_cells(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::CellSet all_cells_from_collec = mr->cells();
   smtk::mesh::CellSet all_cells_from_ms = all_meshes.cells();
 
-  test(all_cells_from_collec.is_empty() == false);
-  test(all_cells_from_ms.is_empty() == false);
+  test(!all_cells_from_collec.is_empty());
+  test(!all_cells_from_ms.is_empty());
 
   test(all_cells_from_collec.size() != 0);
   test(all_cells_from_ms.size() != 0);
@@ -185,11 +185,11 @@ void verify_cell_count_by_type(smtk::mesh::MeshSet ms)
 
     //verify that the cells typeset is correct
     smtk::mesh::TypeSet types = cells.types();
-    test(types.hasMeshes() == false);
+    test(!types.hasMeshes());
     test(types.hasCells() == (!cells.is_empty()));
     if (!cells.is_empty())
     { //only do these tests if we have anything in the cellset
-      test(types.hasCell(cellType) == true);
+      test(types.hasCell(cellType));
     }
     all_typeset += types;
   }
@@ -218,11 +218,11 @@ void verify_cell_count_by_dim(smtk::mesh::MeshSet ms)
 
     //verify that the cells typeset is correct
     smtk::mesh::TypeSet types = cells.types();
-    test(types.hasMeshes() == false);
+    test(!types.hasMeshes());
     test(types.hasCells() == (!cells.is_empty()));
     if (!cells.is_empty())
     { //only do these tests if we have anything in the cellset
-      test(types.hasDimension(dimType) == true);
+      test(types.hasDimension(dimType));
     }
     all_typeset += types;
   }
@@ -295,13 +295,13 @@ void verify_cells_by_types(const smtk::mesh::ResourcePtr& mr)
   //verify that empty typeset returns nothing
   smtk::mesh::CellTypes no_cell_types;
   smtk::mesh::CellSet no_associatedCells = mr->cells(no_cell_types);
-  test(no_associatedCells.is_empty() == true); //should be empty
+  test(no_associatedCells.is_empty()); //should be empty
 
   //1. verify that when we query based on types everything works properly
   //when from a Resource
   smtk::mesh::TypeSet types = mr->types();
   smtk::mesh::CellSet associatedCells = mr->cells(types.cellTypes());
-  test(associatedCells.is_empty() == false); //can't be false
+  test(!associatedCells.is_empty()); //can't be false
 
   //verify cellTypes returns the same number of cells as asking for all cells
   test(associatedCells.size() == mr->cells().size());
@@ -544,21 +544,14 @@ class CountCells : public smtk::mesh::CellForEach
 
   //keep a physical count of number of cells so that we can verify we
   //don't iterate over a cell more than once
-  int numCellsVisited;
+  int numCellsVisited{ 0 };
 
   //total number of points seen, relates to the total size of the connectivity
   //array for this cellset
-  int numPointsSeen;
+  int numPointsSeen{ 0 };
 
 public:
-  CountCells()
-    : smtk::mesh::CellForEach()
-    , pointsSeen()
-    , cellsSeen()
-    , numCellsVisited(0)
-    , numPointsSeen(0)
-  {
-  }
+  CountCells() = default;
 
   void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts) override
   {
@@ -610,13 +603,13 @@ void verify_cellset_for_each(const smtk::mesh::ResourcePtr& mr)
 
   //verify that the cell types that are reported are only 3D cells.
   smtk::mesh::TypeSet typeSet(functor.cellTypes(), false, true);
-  test(typeSet.hasDimension(smtk::mesh::Dims1) == false);
-  test(typeSet.hasDimension(smtk::mesh::Dims2) == false);
-  test(typeSet.hasDimension(smtk::mesh::Dims3) == true);
+  test(!typeSet.hasDimension(smtk::mesh::Dims1));
+  test(!typeSet.hasDimension(smtk::mesh::Dims2));
+  test(typeSet.hasDimension(smtk::mesh::Dims3));
 }
 }
 
-int UnitTestCellSet(int, char** const)
+int UnitTestCellSet(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

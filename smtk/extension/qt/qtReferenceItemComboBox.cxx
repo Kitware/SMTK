@@ -552,7 +552,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
       range = assocMap.equal_range(i->first);
 
       // Lets see if any of the resources match this type
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {
@@ -598,7 +598,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associata
       // As the resource manager to get all appropriate resources
       auto resources = resManager->find(i->first);
       // Need to process all of these resources
-      for (auto resource : resources)
+      for (const auto& resource : resources)
       {
         if (resource->id() == ignoreResource)
         {
@@ -682,7 +682,7 @@ void qtReferenceItemComboBox::removeObservers()
   }
 }
 
-int qtReferenceItemComboBox::handleOperationEvent(const smtk::operation::Operation&,
+int qtReferenceItemComboBox::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
   smtk::operation::EventType event, smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
@@ -744,7 +744,7 @@ void qtReferenceItemComboBox::setOutputOptional(int state)
   {
     return;
   }
-  bool enable = state ? true : false;
+  bool enable = state != 0;
   this->Internals->comboBox->setVisible(enable);
   if (enable != item->isEnabled())
   {

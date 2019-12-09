@@ -34,9 +34,7 @@ namespace mesh
 {
 
 TypeSet::TypeSet()
-  : m_cellTypes()
-  , m_dimTypes()
-  , m_hasMesh(false)
+  : m_hasMesh(false)
   , m_hasCell(false)
 {
 }

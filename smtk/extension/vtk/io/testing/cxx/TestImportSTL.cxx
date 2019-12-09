@@ -27,7 +27,7 @@ void verify_import_stl()
 
   std::cout << "file_path: " << file_path << std::endl;
   test(smtk::io::importMesh(file_path, c), "should be able to import stl file");
-  test(c->meshes().is_empty() == false, "aggregate meshset should be nonempty");
+  test(!c->meshes().is_empty(), "aggregate meshset should be nonempty");
 }
 }
 

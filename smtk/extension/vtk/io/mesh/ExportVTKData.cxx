@@ -129,21 +129,22 @@ namespace
 {
 
 // functions to shunt past data transfer if input and output types match
-void constructNewArrayIfNecessary(vtkIdType*&, vtkIdType*&, std::int64_t)
+void constructNewArrayIfNecessary(
+  vtkIdType*& /*unused*/, vtkIdType*& /*unused*/, std::int64_t /*unused*/)
 {
 }
-void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, std::int64_t)
+void transferDataIfNecessary(vtkIdType*& in, vtkIdType*& out, std::int64_t /*unused*/)
 {
   out = in;
 }
-void deleteOldArrayIfNecessary(vtkIdType*&, vtkIdType*&)
+void deleteOldArrayIfNecessary(vtkIdType*& /*unused*/, vtkIdType*& /*unused*/)
 {
 }
 
 // functions for allocation, transfer and deallocation when there is a type
 // mismatch
 template <typename T>
-void constructNewArrayIfNecessary(T*&, vtkIdType*& out, std::int64_t len)
+void constructNewArrayIfNecessary(T*& /*unused*/, vtkIdType*& out, std::int64_t len)
 {
   out = new vtkIdType[len];
 }
@@ -158,7 +159,7 @@ void transferDataIfNecessary(T*& in, vtkIdType*& out, std::int64_t len)
 }
 
 template <typename T>
-void deleteOldArrayIfNecessary(T*& in, vtkIdType*&)
+void deleteOldArrayIfNecessary(T*& in, vtkIdType*& /*unused*/)
 {
   delete[] in;
 }

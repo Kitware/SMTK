@@ -132,8 +132,8 @@ void qtAttributeDisplay::createWidget()
   int layoutcol = 0;
   if (this->Internals->ShowCategoryCombo->count() == 0)
   {
-    this->Internals->FilterByCheck->setVisible(0);
-    this->Internals->ShowCategoryCombo->setVisible(0);
+    this->Internals->FilterByCheck->setVisible(false);
+    this->Internals->ShowCategoryCombo->setVisible(false);
   }
   else
   {
@@ -355,7 +355,7 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
   if (atts.empty())
     return;
 
-  if (attResource->associations().empty() == true)
+  if (attResource->associations().empty())
     return;
 
   std::vector<smtk::attribute::AttributePtr>::const_iterator it;

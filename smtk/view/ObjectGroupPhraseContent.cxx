@@ -82,13 +82,14 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
 
   model->visitSources(
     [this, &container, &location](const smtk::resource::ManagerPtr& rsrcMgr,
-      const smtk::operation::ManagerPtr&, const smtk::view::SelectionPtr&) -> bool {
+      const smtk::operation::ManagerPtr& /*unused*/, const smtk::view::SelectionPtr &
+      /*unused*/) -> bool {
       if (!rsrcMgr)
       {
         return true;
       }
       auto rsrcs = rsrcMgr->find(m_resourceFilter);
-      for (auto rsrc : rsrcs)
+      for (const auto& rsrc : rsrcs)
       {
         if (m_componentFilter.empty())
         {
@@ -102,7 +103,7 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
           std::cout << "ObjectGroupPhraseContent: Find " << comps.size() << " Components"
                                                                             " with filter="
                     << m_componentFilter << std::endl;
-          for (auto comp : comps)
+          for (const auto& comp : comps)
           {
             auto phr = ComponentPhraseContent::createPhrase(
               comp, PhraseContent::ContentType::EVERYTHING, location);

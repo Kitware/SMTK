@@ -41,7 +41,7 @@ namespace
 void updateLabel(QLabel* lbl, const QString& txt, bool ok)
 {
   lbl->setText(txt);
-  lbl->setAutoFillBackground(ok ? false : true);
+  lbl->setAutoFillBackground(!ok);
   QPalette pal = lbl->palette();
   pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
   lbl->setPalette(pal);
@@ -70,7 +70,6 @@ qtReferenceItemData::qtReferenceItemData()
   , m_alreadyClosingPopup(false)
   , m_qtModel(nullptr)
   , m_qtDelegate(nullptr)
-  , m_modelObserverId()
   , m_selectedIconURL(":/icons/display/selected.png")
   , m_unselectedIconURL(":/icons/display/unselected.png")
 {
@@ -95,7 +94,7 @@ qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
 qtReferenceItem::~qtReferenceItem()
 {
   this->removeObservers();
-  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr) {});
+  m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr /*unused*/) {});
   delete m_p;
   m_p = nullptr;
 }
@@ -125,7 +124,7 @@ qtReferenceItem::AcceptsTypes qtReferenceItem::acceptableTypes() const
 
   bool rsrc = false;
   bool comp = false;
-  for (auto entry : def->acceptableEntries())
+  for (const auto& entry : def->acceptableEntries())
   {
     if (entry.second.empty())
     {
@@ -183,10 +182,10 @@ void qtReferenceItem::setOutputOptional(int state)
   auto itm = m_itemInfo.item();
   if (itm)
   {
-    itm->setIsEnabled(state ? true : false);
+    itm->setIsEnabled(state != 0);
     emit modified();
   }
-  m_p->m_editBtn->setEnabled(state ? true : false);
+  m_p->m_editBtn->setEnabled(state != 0);
   this->updateSynopsisLabels();
 }
 
@@ -203,7 +202,7 @@ void qtReferenceItem::linkHover(bool link)
   {
     // Traverse entries of m_itemInfo.item() and ensure their "hover" bit is set
     // in the application selection.
-    for (auto member : m_p->m_members)
+    for (const auto& member : m_p->m_members)
     {
       if (member.second)
       {
@@ -622,7 +621,7 @@ std::string qtReferenceItem::synopsis(bool& ok) const
   std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
   std::size_t numSel = 0;
-  for (auto entry : m_p->m_members)
+  for (const auto& entry : m_p->m_members)
   {
     if (entry.second > 0)
     {
@@ -904,7 +903,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
   }
 
   std::size_t uiMembers = 0;
-  for (auto member : m_p->m_members)
+  for (const auto& member : m_p->m_members)
   {
     if (member.second)
     {
@@ -922,7 +921,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
         return false;
       }
       int idx = 0;
-      for (auto member : m_p->m_members)
+      for (const auto& member : m_p->m_members)
       {
         if (member.second)
         {

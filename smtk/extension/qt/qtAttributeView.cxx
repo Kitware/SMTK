@@ -351,7 +351,7 @@ void qtAttributeView::createWidget()
   TopLayout->addWidget(this->Internals->ListTable);
 
   BottomLayout->addWidget(this->Internals->ValuesTable);
-  this->Internals->ValuesTable->setVisible(0);
+  this->Internals->ValuesTable->setVisible(false);
 
   // Attribte frame
   this->Internals->AttFrame = new QFrame(frame);
@@ -410,7 +410,7 @@ void qtAttributeView::createWidget()
   this->Internals->ValuesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   this->Internals->ValuesTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
-  this->Internals->ValuesTable->setVisible(0);
+  this->Internals->ValuesTable->setVisible(false);
 
   this->Widget = frame;
 
@@ -861,15 +861,6 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   this->Internals->ListTable->setItem(numRows - 1, type_column, defitem);
 
   // ToDo: Reactivate Color Option when we are ready to use it
-  if (false)
-  {
-    QTableWidgetItem* colorItem = new QTableWidgetItem();
-    this->Internals->ListTable->setItem(numRows - 1, color_column, colorItem);
-    const double* rgba = childData->color();
-    QBrush bgBrush(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
-    colorItem->setBackground(bgBrush);
-    colorItem->setFlags(Qt::ItemIsEnabled);
-  }
   // Lets see if we need to show an alert icon cause the attribute is not
   // valid
   if (!this->uiManager()->checkAttributeValidity(childData.get()))
@@ -1036,8 +1027,8 @@ void qtAttributeView::updateUI()
 
 void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att)
 {
-  this->Internals->ValuesTable->setVisible(0);
-  this->Internals->AttFrame->setVisible(1);
+  this->Internals->ValuesTable->setVisible(false);
+  this->Internals->AttFrame->setVisible(true);
 
   if (this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
   {
@@ -1089,8 +1080,8 @@ void qtAttributeView::initSelectionFilters()
   {
     return;
   }
-  this->Internals->AttFrame->setVisible(0);
-  this->Internals->ValuesTable->setVisible(1);
+  this->Internals->AttFrame->setVisible(false);
+  this->Internals->ValuesTable->setVisible(true);
   DefinitionPtr dp;
   if (this->Internals->AllDefs.size() > 1)
   {
@@ -1624,7 +1615,7 @@ void qtAttributeView::associationsChanged()
   emit this->modified(this->Internals->CurrentAtt->attribute()->associations());
   emit this->attAssociationChanged();
   std::vector<std::string> items;
-  items.push_back("_associations");
+  items.emplace_back("_associations");
   this->attributeChanged(this->Internals->CurrentAtt->attribute(), items);
 }
 

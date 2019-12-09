@@ -46,15 +46,12 @@ protected:
 
   FormattedOutput ParseOutput(const char* msg) const;
 
-  smtk::io::Logger* Log;
+  smtk::io::Logger* Log{};
 };
 
 vtkStandardNewMacro(OutputWindow);
 
-OutputWindow::OutputWindow()
-  : Log()
-{
-}
+OutputWindow::OutputWindow() = default;
 
 OutputWindow::~OutputWindow() = default;
 
@@ -118,14 +115,14 @@ std::tuple<std::string, unsigned int, std::string> OutputWindow::ParseOutput(con
   std::string input(msg);
   FormattedOutput output;
 
-  std::size_t fileStart = input.find_first_of("In ", input.find_first_of(":"));
+  std::size_t fileStart = input.find_first_of("In ", input.find_first_of(':'));
   if (fileStart != std::string::npos)
   {
     ++fileStart; // Skip space at end?
-    std::size_t fileEnd = input.find_first_of(",", fileStart);
+    std::size_t fileEnd = input.find_first_of(',', fileStart);
 
     std::size_t lineStart = fileEnd + 6;
-    std::size_t lineEnd = input.find_first_of("\n", lineStart);
+    std::size_t lineEnd = input.find_first_of('\n', lineStart);
 
     std::size_t messageStart = lineEnd + 1;
     std::size_t messageEnd = input.size() - 2;

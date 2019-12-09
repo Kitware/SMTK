@@ -45,7 +45,6 @@ namespace operation
 
 Operation::Operation()
   : m_debugLevel(0)
-  , m_manager()
   , m_specification(nullptr)
   , m_parameters(nullptr)
   , m_resultDefinition(nullptr)
@@ -57,7 +56,8 @@ Operation::~Operation()
   // If the specification exists...
   if (m_specification != nullptr)
   {
-    smtk::resource::ScopedLockGuard(m_specification->lock({}), smtk::resource::LockType::Write);
+    smtk::resource::ScopedLockGuard lock(
+      m_specification->lock({}), smtk::resource::LockType::Write);
 
     // ...and if the parameters have been generated, remove the parameters from
     // the specification.
@@ -105,7 +105,8 @@ Operation::Specification Operation::specification()
   return m_specification;
 }
 
-bool Operation::configure(const smtk::attribute::AttributePtr&, const smtk::attribute::ItemPtr&)
+bool Operation::configure(
+  const smtk::attribute::AttributePtr& /*unused*/, const smtk::attribute::ItemPtr& /*unused*/)
 {
   // Do nothing. Subclasses might want to do something, though.
   return false;
@@ -259,7 +260,7 @@ Operation::Parameters Operation::parameters()
   if (!m_parameters)
   {
     auto specification = this->specification();
-    smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Write);
+    smtk::resource::ScopedLockGuard lock(specification->lock({}), smtk::resource::LockType::Write);
     if (m_parameters != nullptr)
     {
       return m_parameters;
@@ -298,7 +299,7 @@ Operation::Result Operation::createResult(Outcome outcome)
   if (!m_resultDefinition)
   {
     auto specification = this->specification();
-    smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Read);
+    smtk::resource::ScopedLockGuard lock(specification->lock({}), smtk::resource::LockType::Read);
     m_resultDefinition = extractResultDefinition(specification, this->typeName());
   }
 
@@ -310,7 +311,8 @@ Operation::Result Operation::createResult(Outcome outcome)
     // Create a new instance of the result.
     {
       auto specification = this->specification();
-      smtk::resource::ScopedLockGuard(specification->lock({}), smtk::resource::LockType::Write);
+      smtk::resource::ScopedLockGuard lock(
+        specification->lock({}), smtk::resource::LockType::Write);
       result = specification->createAttribute(
         this->typeName() + "_result_" + std::to_string(g_uniqueCounter++), m_resultDefinition);
     }

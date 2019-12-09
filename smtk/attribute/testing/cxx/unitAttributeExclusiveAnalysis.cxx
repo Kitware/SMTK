@@ -45,7 +45,7 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
 }
 }
 
-int unitAttributeExclusiveAnalysis(int, char* [])
+int unitAttributeExclusiveAnalysis(int /*unused*/, char* /*unused*/ [])
 {
   // ----
   // I. Let's create an attribute resource and some analyses

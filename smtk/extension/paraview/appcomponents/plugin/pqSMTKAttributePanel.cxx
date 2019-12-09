@@ -254,7 +254,7 @@ bool pqSMTKAttributePanel::displayView(smtk::view::ConfigurationPtr view)
     return false;
   }
   auto qview = m_attrUIMgr->setSMTKView(view, this->widget());
-  return qview ? true : false;
+  return qview != nullptr;
 }
 
 bool pqSMTKAttributePanel::updatePipeline()

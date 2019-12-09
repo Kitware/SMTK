@@ -305,21 +305,6 @@ Topology::Topology(
         meshset.subset(static_cast<smtk::mesh::DimensionType>(dimension)), addFreeElements);
     }
   }
-
-  if (false)
-  {
-    std::size_t count[4] = { 0, 0, 0, 0 };
-    for (auto&& i : m_elements)
-    {
-      if (i.second.m_dimension >= 0 && i.second.m_dimension <= 3)
-        count[i.second.m_dimension]++;
-    }
-
-    std::cout << count[3] << " volumes" << std::endl;
-    std::cout << count[2] << " faces" << std::endl;
-    std::cout << count[1] << " edges" << std::endl;
-    std::cout << count[0] << " vertices" << std::endl;
-  }
 }
 }
 }

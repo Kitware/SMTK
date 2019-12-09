@@ -78,7 +78,7 @@ void testLoadedAttributeResource(attribute::ResourcePtr& attRes, const std::stri
       << "- C does not think it is associated with attTest")
 }
 
-int unitAttributeAssociationConstraints(int, char* [])
+int unitAttributeAssociationConstraints(int /*unused*/, char* /*unused*/ [])
 {
   // ----
   // I. Let's create an attribute resource and some definitions

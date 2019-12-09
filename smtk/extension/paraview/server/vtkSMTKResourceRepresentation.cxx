@@ -77,7 +77,7 @@ void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtk
   {
     atts->SetBlockOpacity(block, color[3]);
   }
-  else if (atts->HasBlockVisibility(block) == true)
+  else if (atts->HasBlockVisibility(block))
   {
     atts->RemoveBlockOpacity(block);
   }
@@ -124,9 +124,7 @@ void AddRenderables(
 vtkStandardNewMacro(vtkSMTKResourceRepresentation);
 
 vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
-  : Superclass()
-  , Wrapper(nullptr)
-  , SelectionObserver()
+  : Wrapper(nullptr)
   , EntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , SelectedEntityMapper(vtkSmartPointer<vtkCompositePolyDataMapper2>::New())
   , GlyphMapper(vtkSmartPointer<vtkGlyph3DMapper>::New())
@@ -434,7 +432,7 @@ void vtkSMTKResourceRepresentation::GetEntityVisibilities(
   std::map<smtk::common::UUID, int>& visdata)
 {
   visdata.clear();
-  for (auto entry : this->ComponentState)
+  for (const auto& entry : this->ComponentState)
   {
     visdata[entry.first] = entry.second.m_visibility;
   }
@@ -574,7 +572,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
       {
         auto model = smtk::model::Model(ent);
         auto cells = model.cellsAs<smtk::model::EntityRefs>();
-        for (auto cell : cells)
+        for (const auto& cell : cells)
         {
           // If the cell has no geometry, then add its boundary cells.
           if (renderables.find(cell.entity()) == renderables.end())
@@ -586,7 +584,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
         atLeastOneSelected |= this->SelectComponentFootprint(cells, selnBits, renderables);
 
         auto groups = model.groups();
-        for (auto group : groups)
+        for (const auto& group : groups)
         {
           auto members = group.members<smtk::model::EntityRefs>();
           atLeastOneSelected |= this->SelectComponentFootprint(members, selnBits, renderables);
@@ -597,7 +595,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
         auto auxGeoms = model.auxiliaryGeometry();
         // Convert auxGeoms to EntityRefs to match SelectComponentFootprint() API:
         smtk::model::EntityRefs auxEnts;
-        for (auto auxGeom : auxGeoms)
+        for (const auto& auxGeom : auxGeoms)
         {
           auxEnts.insert(auxGeom);
         }
@@ -618,7 +616,7 @@ bool vtkSMTKResourceRepresentation::SelectComponentFootprint(
 {
   bool atLeastOneSelected = false;
   auto& smap = this->GetComponentState();
-  for (auto item : items)
+  for (const auto& item : items)
   {
     auto dataIt = renderables.find(item.entity());
     auto cstate = smap.find(item.entity());
@@ -761,14 +759,14 @@ void vtkSMTKResourceRepresentation::UpdateDisplayAttributesFromSelection(
   // should *all* be present but set to false.
   auto seda = this->SelectedEntityMapper->GetCompositeDataDisplayAttributes();
   auto sgda = this->SelectedGlyphMapper->GetBlockAttributes();
-  for (auto entry : this->RenderableData)
+  for (const auto& entry : this->RenderableData)
   {
     seda->SetBlockVisibility(entry.second, false);
     sgda->SetBlockVisibility(entry.second, false);
   }
 
   // Add user-specified visibility
-  for (auto entry : this->ComponentState)
+  for (const auto& entry : this->ComponentState)
   {
     auto rit = this->RenderableData.find(entry.first);
     if (rit == this->RenderableData.end())
@@ -977,7 +975,9 @@ void vtkSMTKResourceRepresentation::SetWrapper(vtkSMTKWrapper* wrapper)
     auto newSeln = this->Wrapper->GetSelection();
     this->SelectionObserver = newSeln
       ? newSeln->observers().insert(
-          [this](const std::string&, smtk::view::Selection::Ptr) { this->SelectionModified(); },
+          [this](const std::string& /*unused*/, smtk::view::Selection::Ptr /*unused*/) {
+            this->SelectionModified();
+          },
           "vtkSMTKResourceRepresentation: Update visual properties to reflect selection change.")
       : smtk::view::SelectionObservers::Key();
   }
@@ -1435,7 +1435,7 @@ bool vtkSMTKResourceRepresentation::GetBlockVisibility(unsigned int index) const
   return it->second;
 }
 
-void vtkSMTKResourceRepresentation::RemoveBlockVisibility(unsigned int index, bool)
+void vtkSMTKResourceRepresentation::RemoveBlockVisibility(unsigned int index, bool /*unused*/)
 {
   auto it = this->BlockVisibilities.find(index);
   if (it == this->BlockVisibilities.cend())
@@ -1566,7 +1566,7 @@ bool vtkSMTKResourceRepresentation::GetInstanceVisibility(unsigned int index) co
   return it->second;
 }
 
-void vtkSMTKResourceRepresentation::RemoveInstanceVisibility(unsigned int index, bool)
+void vtkSMTKResourceRepresentation::RemoveInstanceVisibility(unsigned int index, bool /*unused*/)
 {
   auto it = this->InstanceVisibilities.find(index);
   if (it == this->InstanceVisibilities.cend())

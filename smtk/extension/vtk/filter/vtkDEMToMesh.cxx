@@ -48,7 +48,7 @@ int vtkDEMToMesh::FillInputPortInformation(int /*port*/, vtkInformation* info)
   return 1;
 }
 
-int vtkDEMToMesh::RequestData(vtkInformation* vtkNotUsed(req), vtkInformationVector** inputVector,
+int vtkDEMToMesh::RequestData(vtkInformation* /*request*/, vtkInformationVector** inputVector,
   vtkInformationVector* outputVector)
 {
   vtkInformation* inInfo = inputVector[0]->GetInformationObject(0);
@@ -131,9 +131,9 @@ int vtkDEMToMesh::RequestData(vtkInformation* vtkNotUsed(req), vtkInformationVec
 
   vtkCellArray* cells = vtkCellArray::New();
 
-  for (unsigned int i = 0; i < ptsGrid.size() - 1; ++i)
+  for (size_t i = 0; i < ptsGrid.size() - 1; ++i)
   {
-    for (unsigned int j = 0; j < ptsGrid[i].size() - 1; ++j)
+    for (size_t j = 0; j < ptsGrid[i].size() - 1; ++j)
     {
       int ids[] = { ptsGrid[i][j], ptsGrid[i][j + 1], ptsGrid[i + 1][j], ptsGrid[i + 1][j + 1] };
       if (ids[0] == -1 || ids[1] == -1 || ids[2] == -1 || ids[3] == -1)

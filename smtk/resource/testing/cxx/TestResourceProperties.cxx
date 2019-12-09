@@ -80,9 +80,9 @@ public:
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor& visitor) const override
@@ -101,7 +101,7 @@ private:
 };
 }
 
-int TestResourceProperties(int, char** const)
+int TestResourceProperties(int /*unused*/, char** const /*unused*/)
 {
   {
     // Create a Resource.
@@ -117,8 +117,8 @@ int TestResourceProperties(int, char** const)
     test(resource->properties().get<long>()["foo"] == 2, "Value incorrectly assigned");
 
     // Test existence.
-    test(resource->properties().contains<long>("foo") == true, "Value incorrectly assigned");
-    test(component->properties().contains<long>("foo") == false, "Value incorrectly assigned");
+    test(resource->properties().contains<long>("foo"), "Value incorrectly assigned");
+    test(!component->properties().contains<long>("foo"), "Value incorrectly assigned");
 
     try
     {
@@ -131,11 +131,11 @@ int TestResourceProperties(int, char** const)
     }
 
     component->properties().emplace<double>("foo", 2.3);
-    test(component->properties().contains<double>("foo") == true, "Value incorrectly assigned");
+    test(component->properties().contains<double>("foo"), "Value incorrectly assigned");
     test(fabs(component->properties().at<double>("foo") - 2.3) < double_epsilon,
       "Value incorrectly emplaced");
 
-    test(resource->properties().get<std::vector<std::string> >()["bar"].empty() == true,
+    test(resource->properties().get<std::vector<std::string> >()["bar"].empty(),
       "Array-style access should implicitly create property type");
 
     resource->properties().erase<double>("bar"); // Try to erase a value not present.

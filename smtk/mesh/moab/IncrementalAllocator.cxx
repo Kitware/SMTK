@@ -37,8 +37,7 @@ namespace moab
 {
 
 IncrementalAllocator::IncrementalAllocator(::moab::Interface* interface)
-  : smtk::mesh::IncrementalAllocator()
-  , BufferedCellAllocator(interface)
+  : BufferedCellAllocator(interface)
   , m_index(0)
 {
 }

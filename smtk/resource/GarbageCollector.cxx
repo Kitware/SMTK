@@ -26,7 +26,7 @@ GarbageCollector::GarbageCollector() = default;
 
 GarbageCollector::~GarbageCollector()
 {
-  for (auto entry : m_observers)
+  for (const auto& entry : m_observers)
   {
     auto manager = entry.first.lock();
     auto observer = entry.second;
@@ -93,7 +93,7 @@ bool GarbageCollector::add(const smtk::operation::OperationPtr& deleter)
 }
 
 int GarbageCollector::collectGarbage(const smtk::operation::Operation& op,
-  smtk::operation::EventType event, smtk::operation::Operation::Result)
+  smtk::operation::EventType event, smtk::operation::Operation::Result /*unused*/)
 {
   (void)op;
   if (event == smtk::operation::EventType::DID_OPERATE)

@@ -18,15 +18,13 @@ namespace
 struct verify_all_off_cell_types
 {
   smtk::mesh::CellTypes ctypes;
-  verify_all_off_cell_types()
-    : ctypes()
-  { //initialize the cellTypes for this struct to be all off
-  }
+  //initialize the cellTypes for this struct to be all off
+  verify_all_off_cell_types() = default;
 
   void operator()(smtk::mesh::CellType cellEnum)
   { //this operator will be called for each CellType, so verify that
     //the struct 's ctypes bit is turned off for the given type
-    test(ctypes[cellEnum] == false, "This cell type should be off");
+    test(!ctypes[cellEnum], "This cell type should be off");
   }
 };
 
@@ -41,7 +39,7 @@ struct verify_all_on_cell_types
   void operator()(smtk::mesh::CellType cellEnum)
   { //this operator will be called for each CellType, so verify that
     //the struct 's ctypes bit is turned off for the given type
-    test(ctypes[cellEnum] == true, "This cell type should be off");
+    test(ctypes[cellEnum], "This cell type should be off");
   }
 };
 
@@ -64,39 +62,39 @@ void verify_CellTypes_usage()
   smtk::mesh::CellTypes ctypes_only_line(std::string("10"));
   smtk::mesh::CellTypes ctypes_only_2d(std::string("000011100"));
 
-  test(ctypes_only_line[smtk::mesh::Vertex] == false);
-  test(ctypes_only_line[smtk::mesh::Line] == true);
-  test(ctypes_only_line[smtk::mesh::Triangle] == false);
-  test(ctypes_only_line[smtk::mesh::Quad] == false);
+  test(!ctypes_only_line[smtk::mesh::Vertex]);
+  test(ctypes_only_line[smtk::mesh::Line]);
+  test(!ctypes_only_line[smtk::mesh::Triangle]);
+  test(!ctypes_only_line[smtk::mesh::Quad]);
 
-  test(ctypes_only_2d[smtk::mesh::Vertex] == false);
-  test(ctypes_only_2d[smtk::mesh::Line] == false);
-  test(ctypes_only_2d[smtk::mesh::Triangle] == true);
-  test(ctypes_only_2d[smtk::mesh::Quad] == true);
-  test(ctypes_only_2d[smtk::mesh::Polygon] == true);
-  test(ctypes_only_2d[smtk::mesh::Tetrahedron] == false);
-  test(ctypes_only_2d[smtk::mesh::Pyramid] == false);
-  test(ctypes_only_2d[smtk::mesh::Wedge] == false);
-  test(ctypes_only_2d[smtk::mesh::Hexahedron] == false);
+  test(!ctypes_only_2d[smtk::mesh::Vertex]);
+  test(!ctypes_only_2d[smtk::mesh::Line]);
+  test(ctypes_only_2d[smtk::mesh::Triangle]);
+  test(ctypes_only_2d[smtk::mesh::Quad]);
+  test(ctypes_only_2d[smtk::mesh::Polygon]);
+  test(!ctypes_only_2d[smtk::mesh::Tetrahedron]);
+  test(!ctypes_only_2d[smtk::mesh::Pyramid]);
+  test(!ctypes_only_2d[smtk::mesh::Wedge]);
+  test(!ctypes_only_2d[smtk::mesh::Hexahedron]);
 
   //verify the long long constructors
   smtk::mesh::CellTypes ctypes_only_3d(992);
   smtk::mesh::CellTypes ctypes_only_1d(2);
 
-  test(ctypes_only_3d[smtk::mesh::Vertex] == false);
-  test(ctypes_only_3d[smtk::mesh::Line] == false);
-  test(ctypes_only_3d[smtk::mesh::Triangle] == false);
-  test(ctypes_only_3d[smtk::mesh::Quad] == false);
-  test(ctypes_only_3d[smtk::mesh::Polygon] == false);
-  test(ctypes_only_3d[smtk::mesh::Tetrahedron] == true);
-  test(ctypes_only_3d[smtk::mesh::Pyramid] == true);
-  test(ctypes_only_3d[smtk::mesh::Wedge] == true);
-  test(ctypes_only_3d[smtk::mesh::Hexahedron] == true);
+  test(!ctypes_only_3d[smtk::mesh::Vertex]);
+  test(!ctypes_only_3d[smtk::mesh::Line]);
+  test(!ctypes_only_3d[smtk::mesh::Triangle]);
+  test(!ctypes_only_3d[smtk::mesh::Quad]);
+  test(!ctypes_only_3d[smtk::mesh::Polygon]);
+  test(ctypes_only_3d[smtk::mesh::Tetrahedron]);
+  test(ctypes_only_3d[smtk::mesh::Pyramid]);
+  test(ctypes_only_3d[smtk::mesh::Wedge]);
+  test(ctypes_only_3d[smtk::mesh::Hexahedron]);
 
-  test(ctypes_only_1d[smtk::mesh::Vertex] == false);
-  test(ctypes_only_1d[smtk::mesh::Line] == true);
-  test(ctypes_only_1d[smtk::mesh::Triangle] == false);
-  test(ctypes_only_1d[smtk::mesh::Quad] == false);
+  test(!ctypes_only_1d[smtk::mesh::Vertex]);
+  test(ctypes_only_1d[smtk::mesh::Line]);
+  test(!ctypes_only_1d[smtk::mesh::Triangle]);
+  test(!ctypes_only_1d[smtk::mesh::Quad]);
 }
 
 void verify_DimsType_usage()
@@ -106,29 +104,29 @@ void verify_DimsType_usage()
   smtk::mesh::DimensionTypes dtypes_2d_only(4);
   smtk::mesh::DimensionTypes dtypes_3d_only(std::string("1000"));
 
-  test(dtypes_all_off[smtk::mesh::Dims0] == false);
-  test(dtypes_all_off[smtk::mesh::Dims1] == false);
-  test(dtypes_all_off[smtk::mesh::Dims2] == false);
-  test(dtypes_all_off[smtk::mesh::Dims3] == false);
+  test(!dtypes_all_off[smtk::mesh::Dims0]);
+  test(!dtypes_all_off[smtk::mesh::Dims1]);
+  test(!dtypes_all_off[smtk::mesh::Dims2]);
+  test(!dtypes_all_off[smtk::mesh::Dims3]);
 
-  test(dtypes_all_on[smtk::mesh::Dims0] == true);
-  test(dtypes_all_on[smtk::mesh::Dims1] == true);
-  test(dtypes_all_on[smtk::mesh::Dims2] == true);
-  test(dtypes_all_on[smtk::mesh::Dims3] == true);
+  test(dtypes_all_on[smtk::mesh::Dims0]);
+  test(dtypes_all_on[smtk::mesh::Dims1]);
+  test(dtypes_all_on[smtk::mesh::Dims2]);
+  test(dtypes_all_on[smtk::mesh::Dims3]);
 
-  test(dtypes_2d_only[smtk::mesh::Dims0] == false);
-  test(dtypes_2d_only[smtk::mesh::Dims1] == false);
-  test(dtypes_2d_only[smtk::mesh::Dims2] == true);
-  test(dtypes_2d_only[smtk::mesh::Dims3] == false);
+  test(!dtypes_2d_only[smtk::mesh::Dims0]);
+  test(!dtypes_2d_only[smtk::mesh::Dims1]);
+  test(dtypes_2d_only[smtk::mesh::Dims2]);
+  test(!dtypes_2d_only[smtk::mesh::Dims3]);
 
-  test(dtypes_3d_only[smtk::mesh::Dims0] == false);
-  test(dtypes_3d_only[smtk::mesh::Dims1] == false);
-  test(dtypes_3d_only[smtk::mesh::Dims2] == false);
-  test(dtypes_3d_only[smtk::mesh::Dims3] == true);
+  test(!dtypes_3d_only[smtk::mesh::Dims0]);
+  test(!dtypes_3d_only[smtk::mesh::Dims1]);
+  test(!dtypes_3d_only[smtk::mesh::Dims2]);
+  test(dtypes_3d_only[smtk::mesh::Dims3]);
 }
 }
 
-int UnitTestQueryTypes(int, char** const)
+int UnitTestQueryTypes(int /*unused*/, char** const /*unused*/)
 {
   verify_dims_value();
   verify_CellTypes_usage();

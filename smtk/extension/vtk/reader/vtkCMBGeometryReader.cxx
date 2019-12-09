@@ -71,8 +71,8 @@ vtkCMBGeometryReader::~vtkCMBGeometryReader()
   this->SetFileName(nullptr);
 }
 
-int vtkCMBGeometryReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCMBGeometryReader::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
 
   /*
@@ -334,7 +334,7 @@ int vtkCMBGeometryReader::RequestData(vtkInformation* vtkNotUsed(request),
       regionArray->SetName(ReaderHelperFunctions::GetShellTagName());
 
       // fill
-      for (int i = 0; i < tmpPD->GetNumberOfCells(); i++)
+      for (vtkIdType i = 0; i < tmpPD->GetNumberOfCells(); i++)
       {
         matArray->SetValue(i, materialID);
         regionArray->SetValue(i, solidID);
@@ -400,7 +400,7 @@ void vtkCMBGeometryReader::PostProcessMesh(vtkDataSet* dataset, bool is3DVolumeM
       featureEdges->SetInputData(dataset);
     }
     featureEdges->Update();
-    this->HasBoundaryEdges = featureEdges->GetOutput()->GetNumberOfLines() > 0 ? true : false;
+    this->HasBoundaryEdges = featureEdges->GetOutput()->GetNumberOfLines() > 0;
 
     // we have what we need, either a closed shell or we have found that it has
     // edges but we're not preping for model creation
@@ -443,8 +443,8 @@ void vtkCMBGeometryReader::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "File Name: " << (this->FileName ? this->FileName : "(none)") << "\n";
 }
 
-int vtkCMBGeometryReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCMBGeometryReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

@@ -24,18 +24,18 @@ public:
   smtkCreateMacro(ResourceA);
   smtkSharedFromThisMacro(smtk::resource::Resource);
 
-  smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
     return smtk::resource::ComponentPtr();
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
-  void visit(smtk::resource::Component::Visitor&) const override {}
+  void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
   ResourceA()
@@ -78,7 +78,7 @@ protected:
 };
 }
 
-int TestResourceManager(int, char** const)
+int TestResourceManager(int /*unused*/, char** const /*unused*/)
 {
   // Create a resource manager
   smtk::resource::ManagerPtr resourceManager = smtk::resource::Manager::create();
@@ -127,7 +127,7 @@ int TestResourceManager(int, char** const)
 
   // Test that the observer can unregister itself while the observer is being called.
   auto removingObserver = [&handle, &resourceManager](
-    const smtk::resource::Resource&, smtk::resource::EventType) {
+    const smtk::resource::Resource& /*unused*/, smtk::resource::EventType /*unused*/) {
     std::cout << "Observer (" << handle.first << " " << handle.second << ") removing self\n";
     resourceManager->observers().erase(handle);
   };

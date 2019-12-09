@@ -88,7 +88,7 @@ void removeOnesWithoutTess(smtk::model::EntityRefs& ents)
 }
 }
 
-int UnitTestExtractOrderedTessellation(int, char** const)
+int UnitTestExtractOrderedTessellation(int /*unused*/, char** const /*unused*/)
 {
   smtk::model::EntityRef eRef;
   smtk::session::discrete::Resource::Ptr resource = create_discrete_mesh_model();

@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     std::cout << std::endl << "Paths searched: " << std::endl;
 
     auto pathVec = smtk::common::PythonInterpreter::instance().pythonPath();
-    for (auto path : pathVec)
+    for (const auto& path : pathVec)
     {
       std::cout << path << std::endl;
     }

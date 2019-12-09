@@ -59,11 +59,7 @@ namespace mesh
 
 bool Write::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 Write::Result Write::operateInternal()
@@ -76,8 +72,8 @@ Write::Result Write::operateInternal()
   smtk::attribute::ReferenceItem::Ptr resourceItem = this->parameters()->associations();
 
   // for multiple meshes, we suffix the file name root with ascending integers
-  std::string root = outputfile.substr(0, outputfile.find_last_of("."));
-  std::string ext = outputfile.substr(outputfile.find_last_of("."));
+  std::string root = outputfile.substr(0, outputfile.find_last_of('.'));
+  std::string ext = outputfile.substr(outputfile.find_last_of('.'));
   int index = 0;
 
   std::vector<std::string> generatedFiles;
@@ -106,7 +102,7 @@ Write::Result Write::operateInternal()
       }
     }
 
-    if (fileWriteSuccess == false)
+    if (!fileWriteSuccess)
     {
       for (auto&& file : generatedFiles)
       {
@@ -171,7 +167,7 @@ Write::Specification Write::createSpecification()
   return spec;
 }
 
-void Write::markModifiedResources(Write::Result&)
+void Write::markModifiedResources(Write::Result& /*unused*/)
 {
   auto resourceItem = this->parameters()->associations();
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)

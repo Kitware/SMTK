@@ -50,7 +50,7 @@ Signal::Result Signal::operateInternal()
   return result;
 }
 
-void Signal::generateSummary(Operation::Result&)
+void Signal::generateSummary(Operation::Result& /*unused*/)
 {
 }
 

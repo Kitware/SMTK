@@ -47,7 +47,7 @@ bool vtkDiscreteModelRegion::Destroy()
 {
   this->Superclass::Destroy();
   this->RemoveAllAssociations(vtkModelEdgeType);
-  return 1;
+  return true;
 }
 
 void vtkDiscreteModelRegion::SetPointInside(double* point)

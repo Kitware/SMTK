@@ -48,8 +48,8 @@ vtkCMBParserV4::vtkCMBParserV4() = default;
 
 vtkCMBParserV4::~vtkCMBParserV4() = default;
 
-bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
-  smtk::session::discrete::Session* vtkNotUsed(session))
+bool vtkCMBParserV4::Parse(
+  vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::session::discrete::Session* /*session*/)
 {
   Model->Reset();
 
@@ -145,7 +145,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
       if (!vertexPointIdsTmp)
       {
         vtkErrorMacro("Could not add model vertex.");
-        return 0;
+        return false;
       }
 
       ModelEntities.resize(numVertices);
@@ -178,7 +178,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
         if (Vertices[j] == nullptr && VertexIds[j] >= 0)
         {
           vtkErrorMacro("Could not find vertex needed by edge.");
-          return 0;
+          return false;
         }
       }
       vtkModelEdge* Edge =
@@ -266,7 +266,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
             FacesOfRegion.find(RegionIds[j]);
           if (it != FacesOfRegion.end())
           {
-            it->second.push_back(std::pair<vtkDiscreteModelFace*, int>(face, j));
+            it->second.emplace_back(face, j);
           }
           else
           {
@@ -302,7 +302,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
   if (!CellClassification)
   {
     vtkErrorMacro("Cannot get cell classification information.");
-    return 0;
+    return false;
   }
 
   //in a V4 idspace the ids are going from 0 to N, where
@@ -529,7 +529,7 @@ bool vtkCMBParserV4::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     }
   }
 
-  return 1;
+  return true;
 }
 
 void vtkCMBParserV4::SetModelEntityData(vtkPolyData* Poly,
@@ -538,7 +538,7 @@ void vtkCMBParserV4::SetModelEntityData(vtkPolyData* Poly,
   std::string Base(BaseArrayName);
   std::string Name = Base + "Ids";
   vtkIdTypeArray* EntityIds = this->NewIdTypeArray(Poly->GetFieldData()->GetArray(Name.c_str()));
-  if (strcmp(Base.c_str(), "ModelEdge"))
+  if (Base != "ModelEdge")
   {
     Poly->GetFieldData()->RemoveArray(Name.c_str());
   }

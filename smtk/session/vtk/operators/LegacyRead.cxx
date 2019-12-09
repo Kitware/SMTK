@@ -71,7 +71,7 @@ LegacyRead::Result LegacyRead::operateInternal()
     std::vector<std::string> uuidStrs = jsonData.at("preservedUUIDs");
     for (auto& str : uuidStrs)
     {
-      importOp->m_preservedUUIDs.push_back(smtk::common::UUID(str));
+      importOp->m_preservedUUIDs.emplace_back(str);
     }
   }
 

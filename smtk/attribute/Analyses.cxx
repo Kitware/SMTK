@@ -306,7 +306,7 @@ void Analyses::getAnalysisItemCategories(
     auto analysis = this->find(item->name());
     if (analysis != nullptr)
     {
-      auto myCats = analysis->localCategories();
+      const auto& myCats = analysis->localCategories();
       cats.insert(myCats.begin(), myCats.end());
     }
     else
@@ -330,7 +330,7 @@ void Analyses::getAnalysisItemCategories(
     auto analysis = this->find(sitem->value());
     if (analysis != nullptr)
     {
-      auto myCats = analysis->localCategories();
+      const auto& myCats = analysis->localCategories();
       cats.insert(myCats.begin(), myCats.end());
     }
     else

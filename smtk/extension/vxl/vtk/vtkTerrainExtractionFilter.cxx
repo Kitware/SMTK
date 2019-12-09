@@ -374,7 +374,7 @@ void vtkTerrainExtractionFilter::GetDataTransform(vtkTransform* transform)
 //
 // Clip through data generating surface.
 //
-int vtkTerrainExtractionFilter::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkTerrainExtractionFilter::RequestData(vtkInformation* /*request*/,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   // get the info objects
@@ -926,11 +926,7 @@ bool vtkTerrainExtractionInternal::UpdateProgress(int currentLevel, double* boun
   double factor = (bounds[1] - bounds[0]) / (this->InputBounds[1] - this->InputBounds[0]);
   currentProgress += (factor * factor) / pow(2.0, currentLevel - this->MinExtractLevel + 1);
   this->Main->UpdateProgress(currentProgress);
-  if (this->Main->GetAbortExecute())
-  {
-    return true;
-  }
-  return false;
+  return this->Main->GetAbortExecute() != 0;
 }
 
 bool vtkTerrainExtractionInternal::TerrainExtractSubLevel(
@@ -2037,7 +2033,7 @@ void vtkTerrainExtractionInternal::ExtractNextLevel(TerrainLevelBlock* levelBloc
   }
 }
 
-int vtkTerrainExtractionFilter::FillInputPortInformation(int, vtkInformation* info)
+int vtkTerrainExtractionFilter::FillInputPortInformation(int /*port*/, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_IS_OPTIONAL(), 1); // only needed for "setup refine" step
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPolyData");

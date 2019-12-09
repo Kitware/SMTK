@@ -121,7 +121,7 @@ void verifySetGets()
 
 } // end namespace
 
-int UnitTestDateTime(int, char** const)
+int UnitTestDateTime(int /*unused*/, char** const /*unused*/)
 {
   verifyTimeZones();
   verifyConstructors();

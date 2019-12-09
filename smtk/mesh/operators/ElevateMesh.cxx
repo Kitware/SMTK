@@ -119,11 +119,7 @@ namespace mesh
 
 bool ElevateMesh::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 ElevateMesh::Result ElevateMesh::operateInternal()
@@ -134,7 +130,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   // Access the mesh to elevate
   smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
   smtk::mesh::MeshSet meshset = meshItem->valueAs<smtk::mesh::Component>()->mesh();
-  smtk::mesh::Resource::Ptr resource = meshset.resource();
+  const smtk::mesh::Resource::Ptr& resource = meshset.resource();
 
   // Access the string describing the interpolation scheme
   smtk::attribute::StringItem::Ptr interpolationSchemeItem =
@@ -151,7 +147,7 @@ ElevateMesh::Result ElevateMesh::operateInternal()
   smtk::attribute::DoubleItem::Ptr powerItem = this->parameters()->findDouble("power");
 
   // Construct a prefilter for the input data
-  std::function<bool(double)> prefilter = [](double) { return true; };
+  std::function<bool(double)> prefilter = [](double /*unused*/) { return true; };
   {
     // Access the input filter parameter group
     smtk::attribute::GroupItem::Ptr inputFilterItem = this->parameters()->findGroup("input filter");
@@ -337,12 +333,12 @@ ElevateMesh::Result ElevateMesh::operateInternal()
     if (externalPointItem->value() == "set to NaN")
     {
       externalDataPoint = [](
-        std::array<double, 3>) { return std::numeric_limits<double>::quiet_NaN(); };
+        std::array<double, 3> /*unused*/) { return std::numeric_limits<double>::quiet_NaN(); };
     }
     else if (externalPointItem->value() == "set to value")
     {
       double externalPointValue = this->parameters()->findDouble("external point value")->value();
-      externalDataPoint = [=](std::array<double, 3>) { return externalPointValue; };
+      externalDataPoint = [=](std::array<double, 3> /*unused*/) { return externalPointValue; };
     }
   }
 

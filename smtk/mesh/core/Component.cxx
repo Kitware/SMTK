@@ -70,7 +70,7 @@ std::shared_ptr<Component> Component::create(
     const smtk::mesh::InterfacePtr& iface = resource->interface();
     smtk::mesh::Handle handle;
     smtk::mesh::HandleRange entities;
-    if (iface->findById(iface->getRoot(), id, handle) == false)
+    if (!iface->findById(iface->getRoot(), id, handle))
     {
       // If the id is not associated with a meshset, return an invalid
       // component.
@@ -91,7 +91,7 @@ std::shared_ptr<Component> Component::create(
 std::shared_ptr<Component> Component::create(const smtk::mesh::MeshSet& meshset)
 {
   // If the meshset is invalid, return an invalid component
-  if (meshset.isValid() == false)
+  if (!meshset.isValid())
   {
     return std::shared_ptr<Component>();
   }

@@ -201,7 +201,7 @@ void verify_append_domain_to_dirichlet()
 }
 }
 
-int UnitTestAddFileToResource(int, char** const)
+int UnitTestAddFileToResource(int /*unused*/, char** const /*unused*/)
 {
   //append into a resource that had failed to load previously
   verify_cant_append_to_null_resource();

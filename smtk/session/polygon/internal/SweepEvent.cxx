@@ -18,22 +18,20 @@ namespace polygon
 
 bool SweepEvent::operator<(const SweepEvent& other) const
 {
-  return (m_posn.x() < other.point().x() ||
-           (m_posn.x() == other.point().x() &&
-             (m_posn.y() < other.point().y() ||
-               (m_posn.y() == other.point().y() &&
-                 (m_type < other.type() ||
-                   (m_type == other.type() &&
-                     ( // Types match, perform type-specific comparisons:
-                       (m_type == SEGMENT_START &&
-                         (m_edge < other.m_edge ||
-                           (m_edge == other.m_edge && m_indx < other.m_indx))) ||
-                       (m_type == SEGMENT_END && (m_frag[0] < other.m_frag[0])) ||
-                       (m_type == SEGMENT_CROSS &&
-                         (m_frag[0] < other.m_frag[0] ||
-                           (m_frag[0] == other.m_frag[0] && (m_frag[1] < other.m_frag[1])))))))))))
-    ? true
-    : false;
+  return (
+    m_posn.x() < other.point().x() ||
+    (m_posn.x() == other.point().x() &&
+      (m_posn.y() < other.point().y() ||
+        (m_posn.y() == other.point().y() &&
+          (m_type < other.type() ||
+            (m_type == other.type() &&
+              ( // Types match, perform type-specific comparisons:
+                (m_type == SEGMENT_START &&
+                  (m_edge < other.m_edge || (m_edge == other.m_edge && m_indx < other.m_indx))) ||
+                (m_type == SEGMENT_END && (m_frag[0] < other.m_frag[0])) ||
+                (m_type == SEGMENT_CROSS &&
+                  (m_frag[0] < other.m_frag[0] ||
+                    (m_frag[0] == other.m_frag[0] && (m_frag[1] < other.m_frag[1])))))))))));
 }
 
 SweepEvent SweepEvent::SegmentStart(

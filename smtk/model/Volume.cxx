@@ -44,7 +44,7 @@ Shells Volume::shells() const
 smtk::model::Faces Volume::faces() const
 {
   Faces result;
-  EntityRefs all = this->boundaryEntities(/*dim = */ 2);
+  EntityRefs all = this->boundaryEntities(/*ofDimension = */ 2);
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isFace())

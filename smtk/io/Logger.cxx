@@ -48,7 +48,7 @@ void Logger::addRecord(
   {
     m_hasErrors = true;
   }
-  m_records.push_back(Record(s, m, fname, line));
+  m_records.emplace_back(s, m, fname, line);
   std::size_t nr = this->numberOfRecords();
   this->flushRecordsToStream(nr - 1, nr);
 }

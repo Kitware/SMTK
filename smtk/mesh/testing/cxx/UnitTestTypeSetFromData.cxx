@@ -63,28 +63,28 @@ void verify_hex_typeset_queries(const smtk::mesh::ResourcePtr& mr)
   //now lets make sure we get the correct result for the type of cells
   //that this resource holds:
   // vertex, lines, quads, hexs
-  test(types.hasCell(smtk::mesh::Vertex) == true);
+  test(types.hasCell(smtk::mesh::Vertex));
 
-  test(types.hasCell(smtk::mesh::Line) == true);
+  test(types.hasCell(smtk::mesh::Line));
 
-  test(types.hasCell(smtk::mesh::Triangle) == false);
-  test(types.hasCell(smtk::mesh::Quad) == true);
-  test(types.hasCell(smtk::mesh::Polygon) == false);
+  test(!types.hasCell(smtk::mesh::Triangle));
+  test(types.hasCell(smtk::mesh::Quad));
+  test(!types.hasCell(smtk::mesh::Polygon));
 
-  test(types.hasCell(smtk::mesh::Tetrahedron) == false);
-  test(types.hasCell(smtk::mesh::Pyramid) == false);
-  test(types.hasCell(smtk::mesh::Wedge) == false);
-  test(types.hasCell(smtk::mesh::Hexahedron) == true);
+  test(!types.hasCell(smtk::mesh::Tetrahedron));
+  test(!types.hasCell(smtk::mesh::Pyramid));
+  test(!types.hasCell(smtk::mesh::Wedge));
+  test(types.hasCell(smtk::mesh::Hexahedron));
 
   smtk::mesh::MeshSet hexs = mr->meshes(smtk::mesh::Dims3);
   smtk::mesh::TypeSet hexTypes = hexs.types();
 
   test(hexTypes.hasMeshes());
   test(hexTypes.hasCell(smtk::mesh::Hexahedron));
-  test(hexTypes.hasDimension(smtk::mesh::Dims3) == true);
-  test(hexTypes.hasDimension(smtk::mesh::Dims2) == false);
-  test(hexTypes.hasDimension(smtk::mesh::Dims1) == false);
-  test(hexTypes.hasDimension(smtk::mesh::Dims0) == false);
+  test(hexTypes.hasDimension(smtk::mesh::Dims3));
+  test(!hexTypes.hasDimension(smtk::mesh::Dims2));
+  test(!hexTypes.hasDimension(smtk::mesh::Dims1));
+  test(!hexTypes.hasDimension(smtk::mesh::Dims0));
 }
 
 void verify_tet_typeset_queries(const smtk::mesh::ResourcePtr& mr)
@@ -107,18 +107,18 @@ void verify_tet_typeset_queries(const smtk::mesh::ResourcePtr& mr)
   //now lets make sure we get the correct result for the type of cells
   //that this resource holds:
   // vertex, lines, triangles, tets
-  test(types.hasCell(smtk::mesh::Vertex) == true);
+  test(types.hasCell(smtk::mesh::Vertex));
 
-  test(types.hasCell(smtk::mesh::Line) == true);
+  test(types.hasCell(smtk::mesh::Line));
 
-  test(types.hasCell(smtk::mesh::Triangle) == true);
-  test(types.hasCell(smtk::mesh::Quad) == false);
-  test(types.hasCell(smtk::mesh::Polygon) == false);
+  test(types.hasCell(smtk::mesh::Triangle));
+  test(!types.hasCell(smtk::mesh::Quad));
+  test(!types.hasCell(smtk::mesh::Polygon));
 
-  test(types.hasCell(smtk::mesh::Tetrahedron) == true);
-  test(types.hasCell(smtk::mesh::Pyramid) == false);
-  test(types.hasCell(smtk::mesh::Wedge) == false);
-  test(types.hasCell(smtk::mesh::Hexahedron) == false);
+  test(types.hasCell(smtk::mesh::Tetrahedron));
+  test(!types.hasCell(smtk::mesh::Pyramid));
+  test(!types.hasCell(smtk::mesh::Wedge));
+  test(!types.hasCell(smtk::mesh::Hexahedron));
 
   //Unlike the hex mesh, the tet mesh has all the cell types mixed
   //into a single meshset, so when we ask for meshsets with cells of
@@ -127,26 +127,26 @@ void verify_tet_typeset_queries(const smtk::mesh::ResourcePtr& mr)
   smtk::mesh::TypeSet tetTypes = tets.types();
 
   test(tetTypes.hasMeshes());
-  test(tetTypes.hasCell(smtk::mesh::Tetrahedron) == true);
-  test(tetTypes.hasDimension(smtk::mesh::Dims3) == true);
-  test(tetTypes.hasDimension(smtk::mesh::Dims2) == true);
-  test(tetTypes.hasDimension(smtk::mesh::Dims1) == true);
-  test(tetTypes.hasDimension(smtk::mesh::Dims0) == true);
+  test(tetTypes.hasCell(smtk::mesh::Tetrahedron));
+  test(tetTypes.hasDimension(smtk::mesh::Dims3));
+  test(tetTypes.hasDimension(smtk::mesh::Dims2));
+  test(tetTypes.hasDimension(smtk::mesh::Dims1));
+  test(tetTypes.hasDimension(smtk::mesh::Dims0));
 
   //extract only the tet cells from the mixed type meshset
   smtk::mesh::CellSet tetCells = tets.cells(smtk::mesh::Dims3);
   smtk::mesh::TypeSet tetCTypes = tetCells.types();
 
-  test(tetCTypes.hasMeshes() == false);
-  test(tetCTypes.hasCell(smtk::mesh::Tetrahedron) == true);
-  test(tetCTypes.hasDimension(smtk::mesh::Dims3) == true);
-  test(tetCTypes.hasDimension(smtk::mesh::Dims2) == false);
-  test(tetCTypes.hasDimension(smtk::mesh::Dims1) == false);
-  test(tetCTypes.hasDimension(smtk::mesh::Dims0) == false);
+  test(!tetCTypes.hasMeshes());
+  test(tetCTypes.hasCell(smtk::mesh::Tetrahedron));
+  test(tetCTypes.hasDimension(smtk::mesh::Dims3));
+  test(!tetCTypes.hasDimension(smtk::mesh::Dims2));
+  test(!tetCTypes.hasDimension(smtk::mesh::Dims1));
+  test(!tetCTypes.hasDimension(smtk::mesh::Dims0));
 }
 }
 
-int UnitTestTypeSetFromData(int, char** const)
+int UnitTestTypeSetFromData(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr hexMeshResource = load_hex_mesh();
   verify_hex_typeset_queries(hexMeshResource);

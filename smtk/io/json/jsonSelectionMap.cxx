@@ -37,7 +37,7 @@ SMTKCORE_EXPORT void to_json(json& j, const std::map<smtk::resource::ComponentPt
   {
     // Group components by resource IDs:
     std::map<smtk::common::UUID, std::map<smtk::common::UUID, int> > rcset;
-    for (auto entry : seln)
+    for (const auto& entry : seln)
     {
       auto rset = rcset.find(entry.first->resource()->id());
       if (rset == rcset.end())
@@ -50,11 +50,11 @@ SMTKCORE_EXPORT void to_json(json& j, const std::map<smtk::resource::ComponentPt
 
     // Now output arrays of resources that list [component-id, selection-level] pairs.
     j = json::array();
-    for (auto rsrc : rcset)
+    for (const auto& rsrc : rcset)
     {
       json ra = json::array();
       ra.push_back(rsrc.first);
-      for (auto cmap : rsrc.second)
+      for (const auto& cmap : rsrc.second)
       {
         ra.push_back(json::array({ cmap.first, cmap.second }));
       }
@@ -64,8 +64,8 @@ SMTKCORE_EXPORT void to_json(json& j, const std::map<smtk::resource::ComponentPt
 }
 
 /// Conversion from JSON requires a resource manager to look up pointers from UUIDs.
-SMTKCORE_EXPORT void from_json(
-  const json&, std::map<smtk::resource::ComponentPtr, int>&, smtk::resource::ManagerPtr)
+SMTKCORE_EXPORT void from_json(const json& /*unused*/,
+  std::map<smtk::resource::ComponentPtr, int>& /*unused*/, smtk::resource::ManagerPtr /*unused*/)
 {
 }
 }

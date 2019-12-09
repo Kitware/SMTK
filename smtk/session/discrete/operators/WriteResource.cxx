@@ -70,7 +70,7 @@ WriteResource::Result WriteResource::operateInternal()
 
   for (auto& model : models)
   {
-    smtk::common::UUID modelid = model.entity();
+    const smtk::common::UUID& modelid = model.entity();
 
     std::string nativemodelfile;
     std::string nativefilekey = resource->hasStringProperty(modelid, "url") ? "url" : "";
@@ -112,7 +112,7 @@ const char* WriteResource::xmlDescription() const
   return WriteResource_xml;
 }
 
-void WriteResource::markModifiedResources(WriteResource::Result&)
+void WriteResource::markModifiedResources(WriteResource::Result& /*unused*/)
 {
   auto resourceItem = this->parameters()->associations();
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)

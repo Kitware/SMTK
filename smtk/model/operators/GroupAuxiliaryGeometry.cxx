@@ -26,8 +26,6 @@
 #include "smtk/model/GroupAuxiliaryGeometry_xml.h"
 
 using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::StringItem;
 
 namespace smtk
 {
@@ -53,7 +51,7 @@ GroupAuxiliaryGeometry::Result GroupAuxiliaryGeometry::operateInternal()
   int dim = dimItem != nullptr ? dimItem->value(0) : -1;
   if (dim < 0)
   { // Find dimension from children
-    for (auto ent : entities)
+    for (const auto& ent : entities)
     {
       int edim = ent.dimension();
       if (edim > dim)
@@ -108,7 +106,7 @@ GroupAuxiliaryGeometry::Result GroupAuxiliaryGeometry::operateInternal()
   created->setValue(auxGeom.component());
   smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
   modified->appendValue(parent.component());
-  for (auto m : entities)
+  for (const auto& m : entities)
   {
     modified->appendValue(m.component());
   }

@@ -164,7 +164,7 @@ bool CleanGeometry::splitEdgeAsNeeded(const smtk::model::Edge& curEdge, internal
       reshaped.push_back(splitPt);
       if (tmp != it)
       {
-        splitPts.push_back(rit);
+        splitPts.emplace_back(rit);
         /*
         mod->liftPoint(*rit, rp);
         std::cout << "      split at " << rp[0] << " " << rp[1] << "\n";
@@ -415,10 +415,9 @@ bool checkOneDirection(T& p0, T& q0, const U& p1, const U& q1)
       return false;
     }
   }
-  return (t0 != q0 || t1 != q1) ?
-                                /* point sequences are not of same length */ false
-                                :
-                                /* point sequences match at ever point */ true;
+  return !(t0 != q0 || t1 != q1);
+  // point sequences are not of same length: false
+  // point sequences match at every point: true
 }
 
 template <typename T>
@@ -708,7 +707,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
       for (++epit; epit != epts.end(); ++epit, p0 = p1)
       {
         p1 = *epit;
-        segs.push_back(internal::Segment(p0, p1));
+        segs.emplace_back(p0, p1);
       }
       size_t sstop = static_cast<size_t>(segs.size());
       revlkup[*iit] = std::pair<size_t, size_t>(sstart, sstop);

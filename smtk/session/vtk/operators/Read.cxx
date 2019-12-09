@@ -52,7 +52,7 @@ Read::Result Read::operateInternal()
     std::vector<std::string> uuidStrs = j.at("preservedUUIDs");
     for (auto& str : uuidStrs)
     {
-      preservedUUIDs.push_back(smtk::common::UUID(str));
+      preservedUUIDs.emplace_back(str);
     }
   }
 
@@ -86,7 +86,7 @@ Read::Result Read::operateInternal()
     std::vector<std::string> uuidStrs = j.at("preservedUUIDs");
     for (auto& str : uuidStrs)
     {
-      importOp->m_preservedUUIDs.push_back(smtk::common::UUID(str));
+      importOp->m_preservedUUIDs.emplace_back(str);
     }
   }
 

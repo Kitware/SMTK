@@ -171,7 +171,8 @@ void qtResourceBrowser::setHighlightOnHover(bool highlight)
   m_p->m_delegate->setHighlightOnHover(highlight);
 }
 
-void qtResourceBrowser::sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)
+void qtResourceBrowser::sendPanelSelectionToSMTK(
+  const QItemSelection& /*unused*/, const QItemSelection& /*unused*/)
 {
   if (!m_p->m_seln)
   {

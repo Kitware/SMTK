@@ -27,13 +27,14 @@ std::array<double, 6> extent(const smtk::mesh::MeshSet& ms)
   {
   public:
     Extent()
-      : smtk::mesh::PointForEach()
+
     {
       m_values[0] = m_values[2] = m_values[4] = std::numeric_limits<double>::max();
       m_values[1] = m_values[3] = m_values[5] = std::numeric_limits<double>::lowest();
     }
 
-    void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&) override
+    void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+      bool& /*coordinatesModified*/) override
     {
       for (std::size_t i = 0; i < xyz.size(); i += 3)
       {

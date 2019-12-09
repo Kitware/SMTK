@@ -29,7 +29,6 @@ Surrogate::Surrogate(const Index& index, const std::string& typeName, const smtk
   , m_typeName(typeName)
   , m_id(id)
   , m_location(location)
-  , m_resource()
 {
 }
 

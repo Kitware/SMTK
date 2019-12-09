@@ -209,7 +209,7 @@ void qtAssociationView::updateUI()
       atts.insert(result.begin(), result.end());
     }
   }
-  for (auto att : atts)
+  for (const auto& att : atts)
   {
     QVariant vdata;
     vdata.setValue(static_cast<void*>(att.get()));

@@ -26,15 +26,14 @@ struct IterationOrder
   template <typename T>
   bool operator()(const T& a, const T& b) const
   {
-    return (a->kind < b->kind ||
-             (a->kind == b->kind &&
-               (a->parent < b->parent ||
-                 (a->parent == b->parent &&
-                   (a->iter_pos < b->iter_pos ||
-                     (a->iter_pos == b->iter_pos &&
-                       (a->child < b->child || (a->child == b->child && a->sense < b->sense))))))))
-      ? true
-      : false;
+    return static_cast<bool>(
+      a->kind < b->kind ||
+      (a->kind == b->kind &&
+        (a->parent < b->parent ||
+          (a->parent == b->parent &&
+            (a->iter_pos < b->iter_pos ||
+              (a->iter_pos == b->iter_pos &&
+                (a->child < b->child || (a->child == b->child && a->sense < b->sense))))))));
   }
 };
 }
@@ -72,7 +71,7 @@ void ArrangementHelper::addArrangement(const smtk::model::EntityRef& parent,
 
   typedef std::set<Spec>::const_iterator iter;
   std::pair<iter, bool> insertedInfo = m_arrangements.insert(s);
-  if (insertedInfo.second == false)
+  if (!insertedInfo.second)
   { //already added just update the iter_pos
     insertedInfo.first->iter_pos = iter_pos;
   }

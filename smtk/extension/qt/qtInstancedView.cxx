@@ -35,10 +35,7 @@ using namespace smtk::extension;
 class qtInstancedViewInternals
 {
 public:
-  qtInstancedViewInternals()
-    : m_isEmpty(true)
-  {
-  }
+  qtInstancedViewInternals() = default;
 
   ~qtInstancedViewInternals()
   {
@@ -50,7 +47,7 @@ public:
 
   //QScrollArea *ScrollArea;
   QList<QPointer<qtAttribute> > AttInstances;
-  bool m_isEmpty;
+  bool m_isEmpty{ true };
   smtk::operation::Observers::Key m_observerKey;
 };
 
@@ -196,7 +193,7 @@ void qtInstancedView::updateUI()
     }
 
     atts.push_back(att);
-    comps.push_back(attComp);
+    comps.emplace_back(attComp);
     int labelWidth =
       this->uiManager()->getWidthOfAttributeMaxLabel(attDef, this->uiManager()->advancedFont());
     longLabelWidth = std::max(labelWidth, longLabelWidth);

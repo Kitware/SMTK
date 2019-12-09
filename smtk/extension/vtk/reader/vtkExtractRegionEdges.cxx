@@ -140,7 +140,7 @@ void vtkExtractRegionEdges::vtkInternal::BuildRegionEdges(vtkPolyData* linePolyD
     {
       lastSize = edge->size();
       linePolyData->GetPointCells(currentPtId, nCells, cellIds);
-      for (int i = 0; i < nCells; i++)
+      for (vtkIdType i = 0; i < nCells; i++)
       {
         if (cellIds[i] == currentCellId || this->EdgeSegments[cellIds[i]].AssignedToEdge ||
           outerLoopSegmentIter->RegionIds[0] != this->EdgeSegments[cellIds[i]].RegionIds[0] ||
@@ -165,7 +165,7 @@ void vtkExtractRegionEdges::vtkInternal::BuildRegionEdges(vtkPolyData* linePolyD
     {
       lastSize = edge->size();
       linePolyData->GetPointCells(currentPtId, nCells, cellIds);
-      for (int i = 0; i < nCells; i++)
+      for (vtkIdType i = 0; i < nCells; i++)
       {
         if (cellIds[i] == currentCellId || this->EdgeSegments[cellIds[i]].AssignedToEdge ||
           outerLoopSegmentIter->RegionIds[0] != this->EdgeSegments[cellIds[i]].RegionIds[0] ||
@@ -349,13 +349,13 @@ vtkExtractRegionEdges::~vtkExtractRegionEdges()
   delete this->Internal;
 }
 
-int vtkExtractRegionEdges::FillInputPortInformation(int, vtkInformation* info)
+int vtkExtractRegionEdges::FillInputPortInformation(int /*port*/, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkPointSet");
   return 1;
 }
 
-int vtkExtractRegionEdges::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkExtractRegionEdges::RequestData(vtkInformation* /*request*/,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   // get the info objects

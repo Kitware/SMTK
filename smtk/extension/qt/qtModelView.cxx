@@ -161,7 +161,7 @@ void qtModelView::updateActiveModelByModelIndex()
 {
 }
 
-bool qtModelView::removeSession(const smtk::model::SessionRef&)
+bool qtModelView::removeSession(const smtk::model::SessionRef& /*unused*/)
 {
   return false;
 }
@@ -370,7 +370,8 @@ bool qtModelView::requestOperation(const smtk::operation::OperationPtr& brOp, bo
   //  emit this->operationFinished(result);
 }
 
-bool qtModelView::requestOperation(const std::string&, const smtk::common::UUID&, bool)
+bool qtModelView::requestOperation(
+  const std::string& /*unused*/, const smtk::common::UUID& /*unused*/, bool /*unused*/)
 {
   return false;
 }
@@ -461,7 +462,7 @@ void qtModelView::onEntitiesExpunged(const smtk::model::EntityRefs& expungedEnts
   m_OperationsWidget->expungeEntities(expungedEnts);
 }
 
-std::string qtModelView::determineAction(const QPoint&) const
+std::string qtModelView::determineAction(const QPoint& /*unused*/) const
 {
   return "";
 }

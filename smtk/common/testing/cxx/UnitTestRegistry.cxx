@@ -39,18 +39,18 @@ class Registrar_1
 public:
   static constexpr const char* const type_name = "Registrar 1";
 
-  bool registerTo(const std::shared_ptr<Manager_1>&) const;
-  bool unregisterFrom(const std::shared_ptr<Manager_1>&) const;
-  bool registerTo(const std::shared_ptr<Manager_2>&) const;
-  void unregisterFrom(const std::shared_ptr<Manager_2>&) const;
-  void registerTo(const std::shared_ptr<Manager_3>&) const;
-  void unregisterFrom(const std::shared_ptr<Manager_3>&) const;
+  bool registerTo(const std::shared_ptr<Manager_1>& /*m*/) const;
+  bool unregisterFrom(const std::shared_ptr<Manager_1>& /*m*/) const;
+  bool registerTo(const std::shared_ptr<Manager_2>& /*m*/) const;
+  void unregisterFrom(const std::shared_ptr<Manager_2>& /*m*/) const;
+  void registerTo(const std::shared_ptr<Manager_3>& /*m*/) const;
+  void unregisterFrom(const std::shared_ptr<Manager_3>& /*m*/) const;
 };
 
 bool Registrar_1::registerTo(const std::shared_ptr<Manager_1>& m) const
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return true;
 }
 
@@ -65,7 +65,7 @@ bool Registrar_1::unregisterFrom(const std::shared_ptr<Manager_1>& m) const
 bool Registrar_1::registerTo(const std::shared_ptr<Manager_2>& m) const
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return true;
 }
 
@@ -79,7 +79,7 @@ void Registrar_1::unregisterFrom(const std::shared_ptr<Manager_2>& m) const
 void Registrar_1::registerTo(const std::shared_ptr<Manager_3>& m) const
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
 }
 
 void Registrar_1::unregisterFrom(const std::shared_ptr<Manager_3>& m) const
@@ -94,16 +94,16 @@ class Registrar_2
 public:
   static constexpr const char* const type_name = "Registrar 2";
 
-  static int registerTo(const std::shared_ptr<Manager_1>&);
-  static bool unregisterFrom(const std::shared_ptr<Manager_1>&);
-  static bool registerTo(const std::shared_ptr<Manager_2>&);
-  static void unregisterFrom(const std::shared_ptr<Manager_2>&);
+  static int registerTo(const std::shared_ptr<Manager_1>& /*m*/);
+  static bool unregisterFrom(const std::shared_ptr<Manager_1>& /*m*/);
+  static bool registerTo(const std::shared_ptr<Manager_2>& /*m*/);
+  static void unregisterFrom(const std::shared_ptr<Manager_2>& /*m*/);
 };
 
 int Registrar_2::registerTo(const std::shared_ptr<Manager_1>& m)
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return 4;
 }
 
@@ -118,7 +118,7 @@ bool Registrar_2::unregisterFrom(const std::shared_ptr<Manager_1>& m)
 bool Registrar_2::registerTo(const std::shared_ptr<Manager_2>& m)
 {
   auto inserted = m->managed.insert(type_name);
-  test(inserted.second == true, "Double registering a registrar with a manager");
+  test(inserted.second, "Double registering a registrar with a manager");
   return true;
 }
 
@@ -130,7 +130,7 @@ void Registrar_2::unregisterFrom(const std::shared_ptr<Manager_2>& m)
 }
 }
 
-int UnitTestRegistry(int, char** const)
+int UnitTestRegistry(int /*unused*/, char** const /*unused*/)
 {
   auto manager_1 = std::make_shared<Manager_1>();
   auto manager_2 = std::make_shared<Manager_2>();

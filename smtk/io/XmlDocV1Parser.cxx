@@ -64,22 +64,23 @@ using namespace smtk;
 namespace
 {
 
-int getValueFromXMLElement(xml_node& node, int)
+int getValueFromXMLElement(xml_node& node, int /*unused*/)
 {
   return node.text().as_int();
 }
 
-double getValueFromXMLElement(xml_node& node, double)
+double getValueFromXMLElement(xml_node& node, double /*unused*/)
 {
   return node.text().as_double();
 }
 
-const char* getValueFromXMLElement(xml_node& node, std::string)
+const char* getValueFromXMLElement(xml_node& node, std::string /*unused*/)
 {
   return node.text().get();
 }
 
-std::vector<int> getValueFromXMLElement(xml_node& node, const std::string& sep, std::vector<int>)
+std::vector<int> getValueFromXMLElement(
+  xml_node& node, const std::string& sep, std::vector<int> /*unused*/)
 {
   std::vector<int> result;
   std::vector<std::string> vals;
@@ -98,7 +99,7 @@ std::vector<int> getValueFromXMLElement(xml_node& node, const std::string& sep, 
 }
 
 std::vector<double> getValueFromXMLElement(
-  xml_node& node, const std::string& sep, std::vector<double>)
+  xml_node& node, const std::string& sep, std::vector<double> /*unused*/)
 {
   std::vector<double> result;
   std::vector<std::string> vals;
@@ -117,7 +118,7 @@ std::vector<double> getValueFromXMLElement(
 }
 
 std::vector<std::string> getValueFromXMLElement(
-  xml_node& node, const std::string& sep, std::vector<std::string>)
+  xml_node& node, const std::string& sep, std::vector<std::string> /*unused*/)
 {
   std::vector<std::string> vals;
   vals = smtk::common::StringUtil::split(node.text().get(), sep, false, false);
@@ -444,12 +445,7 @@ bool XmlDocV1Parser::canParse(pugi::xml_document& doc)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 1)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 1;
 }
 
 bool XmlDocV1Parser::canParse(pugi::xml_node& node)
@@ -468,12 +464,7 @@ bool XmlDocV1Parser::canParse(pugi::xml_node& node)
   }
 
   int versionNum = xatt.as_int();
-  if (versionNum != 1)
-  {
-    return false;
-  }
-
-  return true;
+  return versionNum == 1;
 }
 
 void XmlDocV1Parser::process(pugi::xml_document& doc)

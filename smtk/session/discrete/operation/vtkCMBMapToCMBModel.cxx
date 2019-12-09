@@ -125,13 +125,7 @@ class WalkableLoop
 {
 public:
   //WalkableLoop(const vtkIdType& _loopId) : loopId(_loopId), numEdges(0), edge_arr(NULL), edge_dir_arr(NULL){}
-  WalkableLoop()
-    : numEdges(-1)
-    , edge_arr(nullptr)
-    , edge_dir_arr(nullptr)
-    , edge_dir_flipped(false)
-  {
-  }
+  WalkableLoop() = default;
   ~WalkableLoop()
   {
     //If numEdges is initialized it means we created edge arrays
@@ -187,16 +181,16 @@ public:
       // Make sure we are still within bounds of the arcs we want to find
       if (ptId1 != order1Iter->ptId1 || (ptId2 != -1 && ptId2 != order1Iter->ptId2))
         break;
-      foundArcsAndDirs.push_back(WalkableEdge(order1Iter->ptId1, order1Iter->ptId2,
-        order1Iter->edgeId, 1)); //return the arcId and clockwise direction
+      foundArcsAndDirs.emplace_back(order1Iter->ptId1, order1Iter->ptId2, order1Iter->edgeId,
+        1); //return the arcId and clockwise direction
     }
     for (; order2Iter != order2.end(); order2Iter++)
     {
       // Make sure we are still within bounds of the arcs we want to find
       if (ptId1 != order2Iter->ptId1 || (ptId2 != -1 && ptId2 != order2Iter->ptId2))
         break;
-      foundArcsAndDirs.push_back(WalkableEdge(order2Iter->ptId1, order2Iter->ptId2,
-        order2Iter->edgeId, 0)); //return the arcId and counterclockwise direction
+      foundArcsAndDirs.emplace_back(order2Iter->ptId1, order2Iter->ptId2, order2Iter->edgeId,
+        0); //return the arcId and counterclockwise direction
     }
   }
 
@@ -343,10 +337,10 @@ public:
 private:
   //These are the variables that will ultimately be the output of
   //this class. Store them for easy access
-  int numEdges;
-  vtkModelEdge** edge_arr;
-  int* edge_dir_arr;
-  bool edge_dir_flipped;
+  int numEdges{ -1 };
+  vtkModelEdge** edge_arr{ nullptr };
+  int* edge_dir_arr{ nullptr };
+  bool edge_dir_flipped{ false };
 
   // We are going to view edges as unordered pairs
   // To make them searchable for each pair keep
@@ -424,7 +418,7 @@ void vtkCMBMapToCMBModel::Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkAlgo
   // the CMB Model needs to know which cells belong to which node/edge/polygon
   // build up lists of these and map them to thier respective id
   vtkIdType faceId = 0, edgeId = 0; //faces are positive ids, edges are negative ids
-  for (int cellId = 0; cellId < input->GetNumberOfCells(); cellId++)
+  for (vtkIdType cellId = 0; cellId < input->GetNumberOfCells(); cellId++)
   {
     vtkCell* cell = input->GetCell(cellId);
     vtkIdType elementId = elementIds->GetTuple1(cellId); //element id is the node/arc/poly id
@@ -485,7 +479,7 @@ void vtkCMBMapToCMBModel::Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkAlgo
   std::vector<WalkableLoop> loopId2WalkableLoop;
   loopId2WalkableLoop.resize(fieldLoopInfo->GetNumberOfTuples(), WalkableLoop());
 
-  for (int arcIndex = 0; arcIndex < fieldArcIds->GetNumberOfTuples(); arcIndex++)
+  for (vtkIdType arcIndex = 0; arcIndex < fieldArcIds->GetNumberOfTuples(); arcIndex++)
   {
     vtkIdType arcId = fieldArcIds->GetTuple1(arcIndex);
     vtkIdType endpoint1 = fieldEndpoint1->GetTuple1(arcIndex);
@@ -516,7 +510,7 @@ void vtkCMBMapToCMBModel::Operate(vtkDiscreteModelWrapper* ModelWrapper, vtkAlgo
                                // remember the inner loops so we don't have to refind them later
                                // The inner loop ids are stored in a list of vtkIdTypes and the
   // list is associated via pair with the vtkModelFace they will belong to
-  for (int loopIndex = 0; loopIndex < fieldLoopInfo->GetNumberOfTuples(); loopIndex++)
+  for (vtkIdType loopIndex = 0; loopIndex < fieldLoopInfo->GetNumberOfTuples(); loopIndex++)
   {
     //Grab the inner and outer polygon that use this loop
     double* polyIds = vtkIdTypeArray::SafeDownCast(fieldLoopInfo)->GetTuple2(loopIndex);

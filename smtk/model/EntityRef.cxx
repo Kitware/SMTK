@@ -195,7 +195,7 @@ int EntityRef::maxParametricDimension() const
   if (dimbits == 0)
     return result;
   BitFlags onedim = DIMENSION_0;
-  while (1)
+  while (true)
   {
     ++result;
     if (2 * onedim > dimbits)
@@ -476,7 +476,7 @@ bool EntityRef::isValid(EntityPtr* entityRecord) const
   if (status)
   {
     EntityPtr rec = rsrc->findEntity(m_entity, false);
-    status = rec ? true : false;
+    status = static_cast<bool>(rec);
     if (status && entityRecord)
     {
       *entityRecord = rec;
@@ -980,7 +980,7 @@ bool EntityRef::hasAttributes() const
     return false;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
     // If this is an attribute then return true
@@ -1020,7 +1020,7 @@ bool EntityRef::hasAttribute(const smtk::common::UUID& attribId) const
     return false;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
     // If this is an attribute then see if it matches the UUID
@@ -1063,7 +1063,7 @@ bool EntityRef::disassociateAttribute(
 /**\brief Disassociate an attribute from the entity? - To be deprecated!
   */
 bool EntityRef::disassociateAttribute(
-  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool)
+  smtk::attribute::ResourcePtr attResource, const smtk::common::UUID& attribId, bool /*unused*/)
 {
   return this->disassociateAttribute(attResource, attribId);
 }
@@ -1083,7 +1083,7 @@ bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResour
 
 /**\brief Remove all attribute association form this entityref - To be deprecated!
   */
-bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool)
+bool EntityRef::disassociateAllAttributes(smtk::attribute::ResourcePtr attResource, bool /*unused*/)
 {
   return this->disassociateAllAttributes(attResource);
 }
@@ -1135,7 +1135,7 @@ smtk::attribute::Attributes EntityRef::attributes() const
     return atts;
   }
   auto objs = comp->links().linkedFrom(smtk::attribute::Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(obj);
     // If this is an attribute resource, get the approproate attributes
@@ -1232,7 +1232,7 @@ bool EntityRef::hasFloatProperties() const
   if (comp != nullptr)
   {
     const auto& floatProperties = comp->properties().get<std::vector<double> >();
-    return (floatProperties.empty() == false);
+    return !floatProperties.empty();
   }
   return false;
 }
@@ -1332,7 +1332,7 @@ bool EntityRef::hasStringProperties() const
   if (comp != nullptr)
   {
     const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
-    return (stringProperties.empty() == false);
+    return !stringProperties.empty();
   }
   return false;
 }
@@ -1432,7 +1432,7 @@ bool EntityRef::hasIntegerProperties() const
   if (comp != nullptr)
   {
     const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    return (integerProperties.empty() == false);
+    return !integerProperties.empty();
   }
   return false;
 }
@@ -1630,7 +1630,7 @@ EntityRef EntityRef::memberOf() const
 bool EntityRef::operator==(const EntityRef& other) const
 {
   ResourcePtr rsrc = m_resource.lock();
-  return ((rsrc == other.resource()) && (m_entity == other.m_entity)) ? true : false;
+  return (rsrc == other.resource()) && (m_entity == other.m_entity);
 }
 
 /// A comparator provided for convenience.

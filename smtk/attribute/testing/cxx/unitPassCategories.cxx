@@ -211,7 +211,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
 }
 }
 
-int unitPassCategories(int, char* [])
+int unitPassCategories(int /*unused*/, char* /*unused*/ [])
 {
   //
   // I. Let's create an attribute resource and some definitions

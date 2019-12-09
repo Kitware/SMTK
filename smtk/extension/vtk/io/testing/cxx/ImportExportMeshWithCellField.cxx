@@ -84,7 +84,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int numPts) override
+  void forCell(
+    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)
@@ -120,7 +121,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int numPts) override
+  void forCell(
+    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)

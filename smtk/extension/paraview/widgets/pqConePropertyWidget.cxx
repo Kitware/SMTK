@@ -27,13 +27,12 @@ class pqConePropertyWidget::Internals
 {
 public:
   Internals()
-    : PickPoint1(true)
-    , BottomRadiusName("Bottom radius")
+    : BottomRadiusName("Bottom radius")
   {
   }
 
   Ui::ConePropertyWidget Ui;
-  bool PickPoint1;
+  bool PickPoint1{ true };
   std::string BottomRadiusName;
 };
 

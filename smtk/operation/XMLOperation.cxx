@@ -18,10 +18,7 @@ namespace smtk
 namespace operation
 {
 
-XMLOperation::XMLOperation()
-  : Operation()
-{
-}
+XMLOperation::XMLOperation() = default;
 
 XMLOperation::~XMLOperation() = default;
 

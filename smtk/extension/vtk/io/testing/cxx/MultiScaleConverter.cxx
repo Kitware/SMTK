@@ -60,8 +60,7 @@ class CoolingPlateFilter : public Filter
 
 public:
   CoolingPlateFilter(double yval, double rval, const double* o, bool less = true)
-    : Filter()
-    , yvalue(yval)
+    : yvalue(yval)
     , rvalue(rval)
     , lessThan(less)
   {
@@ -71,7 +70,8 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
+  void forCell(
+    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
@@ -106,8 +106,7 @@ class OuterEdgeFilter : public Filter
 
 public:
   OuterEdgeFilter(const double o[3], double r)
-    : Filter()
-    , rmin(r)
+    : rmin(r)
   {
     for (int i = 0; i < 3; i++)
     {
@@ -115,7 +114,8 @@ public:
     }
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int numPts) override
+  void forCell(
+    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int numPts) override
   {
     const std::vector<double>& coords = this->coordinates();
     const smtk::mesh::Handle* const ptIds = this->pointIds();
@@ -321,12 +321,6 @@ void extractMaterials(
   //extract the exterior-shell for all meshes.
   smtk::mesh::MeshSet shell = c->meshes().extractShell();
   std::cout << "There are " << shell.size() << " shell mesh sets" << std::endl;
-
-  //break the shell based on the materials
-  if (false)
-  {
-    labelShellWithMaterial(c, shell);
-  }
 
   //find the top and bottom of the shell and apply dirichlet properties
   //to each section

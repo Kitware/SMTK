@@ -44,8 +44,8 @@ vtkCMBParserV2::vtkCMBParserV2() = default;
 
 vtkCMBParserV2::~vtkCMBParserV2() = default;
 
-bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
-  smtk::session::discrete::Session* vtkNotUsed(session))
+bool vtkCMBParserV2::Parse(
+  vtkPolyData* MasterPoly, vtkDiscreteModel* Model, smtk::session::discrete::Session* /*session*/)
 {
   Model->Reset();
 
@@ -96,7 +96,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
           FacesOfRegion.find(RegionIds[j]);
         if (it != FacesOfRegion.end())
         {
-          it->second.push_back(std::pair<vtkDiscreteModelFace*, int>(face, j));
+          it->second.emplace_back(face, j);
         }
         else
         {
@@ -118,7 +118,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
   if (!CellClassification)
   {
     vtkErrorMacro("Cannot get cell classification information.");
-    return 0;
+    return false;
   }
 
   //in a V2 idspace the ids are going from 0 to N, and what we do
@@ -325,7 +325,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model,
     }
   }
 
-  return 1;
+  return true;
 }
 
 void vtkCMBParserV2::SetModelEntityData(vtkPolyData* Poly,

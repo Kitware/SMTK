@@ -246,7 +246,7 @@ bool ReferenceItem::isValid(const std::set<std::string>& cats) const
   }
 
   // Do all objects resolve to a valid reference?
-  if (this->resolve() == false)
+  if (!this->resolve())
   {
     return false;
   }

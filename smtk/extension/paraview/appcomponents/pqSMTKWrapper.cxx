@@ -89,7 +89,7 @@ pqSMTKWrapper::~pqSMTKWrapper()
 #endif
   if (!this->getServer())
   {
-    for (auto rsrc : m_resources)
+    for (const auto& rsrc : m_resources)
     {
       if (rsrc)
       {
@@ -148,7 +148,7 @@ pqSMTKResource* pqSMTKWrapper::getPVResource(const smtk::resource::ResourcePtr& 
 
 void pqSMTKWrapper::visitResources(std::function<bool(pqSMTKResource*)> visitor) const
 {
-  for (auto rsrc : m_resources)
+  for (const auto& rsrc : m_resources)
   {
     if (rsrc)
     {

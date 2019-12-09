@@ -127,7 +127,7 @@ void ItemDefDataModel::remove(const QModelIndex& itemIndex, smtk::attribute::Def
   const auto parentElem = static_cast<ItemDefElement*>(this->getItem(parentIndex));
   const auto& parentItemDef = parentElem->getReferencedDataConst();
   const auto item = static_cast<ItemDefElement*>(this->getItem(itemIndex));
-  auto itemDef = item->getReferencedDataConst();
+  const auto& itemDef = item->getReferencedDataConst();
   if (parentItemDef && parentItemDef->type() == smtk::attribute::Item::GroupType)
   {
     auto group = std::static_pointer_cast<smtk::attribute::GroupItemDefinition>(parentItemDef);

@@ -163,7 +163,7 @@ void vtkSMTKEncodeSelection::ProcessRawSelection(
 bool vtkSMTKEncodeSelection::ProcessResource(pqSMTKWrapper* wrapper,
   const smtk::resource::ResourcePtr& resource, const smtk::view::SelectionPtr& smtkSelection,
   vtkSMTKResourceRepresentation* resourceRep, vtkSelection* rawSelection,
-  vtkSMRenderViewProxy* vtkNotUsed(viewProxy), int modifier, bool selectBlocks)
+  vtkSMRenderViewProxy* vtkNotUsed(viewProxy) /*unused*/, int modifier, bool selectBlocks)
 {
   (void)resource;
   (void)rawSelection;

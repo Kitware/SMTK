@@ -84,7 +84,7 @@ void verify_moab_incremental_allocator_cell(smtk::mesh::CellType cellType)
   std::size_t nVerticesPerCell =
     (cellType == smtk::mesh::Polygon ? 5 : smtk::mesh::verticesPerCell(cellType));
 
-  test(allocator->isValid() == true);
+  test(allocator->isValid());
 
   std::vector<int> connectivity(nVerticesPerCell);
   // fill the vertices and remember the connectivity
@@ -120,7 +120,7 @@ void verify_moab_incremental_allocator_validity(smtk::mesh::CellType cellType)
   test(!resource->isModified(), "resource shouldn't be modified");
 
   smtk::mesh::IncrementalAllocatorPtr allocator = resource->interface()->incrementalAllocator();
-  test(allocator->isValid() == true);
+  test(allocator->isValid());
   test(allocator->cells().empty());
 
   // Grab the number of vertices for the cell type being tested
@@ -133,12 +133,12 @@ void verify_moab_incremental_allocator_validity(smtk::mesh::CellType cellType)
   {
     connectivity[i] = static_cast<int>(i);
   }
-  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell) == true);
-  test(allocator->isValid() == true);
+  test(allocator->addCell(cellType, &connectivity[0], nVerticesPerCell));
+  test(allocator->isValid());
 
   // Flush with coordinates allocated but no cells added (should succeed)
-  test(allocator->flush() == true);
-  test(allocator->isValid() == true);
+  test(allocator->flush());
+  test(allocator->isValid());
 
   // fill the vertices and remember the connectivity (should succeed)
   for (std::size_t i = 0; i < nVerticesPerCell; i++)
@@ -150,7 +150,7 @@ void verify_moab_incremental_allocator_validity(smtk::mesh::CellType cellType)
   // Finalize the addition of cells (should succeed)
   test(allocator->flush());
   test(allocator->cells().size() == 1);
-  test(allocator->isValid() == true);
+  test(allocator->isValid());
 
   smtk::mesh::MeshSet mesh =
     resource->createMesh(smtk::mesh::CellSet(resource, allocator->cells()));
@@ -222,7 +222,7 @@ void verify_moab_incremental_allocator_cells()
 }
 }
 
-int UnitTestIncrementalAllocator(int, char** const)
+int UnitTestIncrementalAllocator(int /*unused*/, char** const /*unused*/)
 {
   verify_moab_incremental_allocator_creation();
   verify_json_incremental_allocator_creation();

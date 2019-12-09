@@ -59,7 +59,7 @@ qModelEntityAttributeViewComboBoxItemDelegate::~qModelEntityAttributeViewComboBo
   default;
 
 QWidget* qModelEntityAttributeViewComboBoxItemDelegate::createEditor(
-  QWidget* parent, const QStyleOptionViewItem&, const QModelIndex&) const
+  QWidget* parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const
 {
   auto cbox = new QComboBox(parent);
   cbox->addItems(m_values);
@@ -355,7 +355,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
   if (!resources.empty())
   {
     // Lets see if any of the resources are model resources
-    for (auto resource : resources)
+    for (const auto& resource : resources)
     {
       if (resource->isOfType(smtk::model::Resource::type_name))
       {
@@ -377,7 +377,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtModelEntityAttributeView::associ
     // Ask the resource manager to get all appropriate resources
     resources = resManager->find(smtk::model::Resource::type_name);
     // Need to process all of these resources
-    for (auto resource : resources)
+    for (const auto& resource : resources)
     {
       // Find all components of the proper type
       auto comps = resource->find(this->Internals->m_modelEntityMask);
@@ -452,7 +452,7 @@ void qtModelEntityAttributeView::updateModelEntities()
   auto entities = this->associatableObjects();
 
   int rcount = 0;
-  for (auto entity : entities)
+  for (const auto& entity : entities)
   {
     std::string name = entity->name();
     auto item = new QTableWidgetItem(QString::fromStdString(name));
@@ -591,7 +591,7 @@ void qtModelEntityAttributeView::showCurrentRow(bool broadcastSelected)
 }
 
 void qtModelEntityAttributeView::updateSelectedModelEntity(
-  const std::string&, smtk::view::SelectionPtr p)
+  const std::string& /*unused*/, smtk::view::SelectionPtr p)
 {
   this->Internals->ListTable->blockSignals(true);
   auto selBit = this->uiManager()->selectionBit();
@@ -642,11 +642,11 @@ void qtModelEntityAttributeView::displayAttribute(smtk::attribute::AttributePtr 
 
   if (att == nullptr)
   {
-    this->Internals->AttFrame->setVisible(0);
+    this->Internals->AttFrame->setVisible(false);
     return;
   }
 
-  this->Internals->AttFrame->setVisible(1);
+  this->Internals->AttFrame->setVisible(true);
 
   int currentLen = this->fixedLabelWidth();
   int tmpLen = this->uiManager()->getWidthOfAttributeMaxLabel(

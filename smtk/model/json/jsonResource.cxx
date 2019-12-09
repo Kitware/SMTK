@@ -56,14 +56,14 @@ void to_json(json& j, const ResourcePtr& mresource)
   json jmodels = json::object();
 
   Models models = mresource->entitiesMatchingFlagsAs<Models>(EntityTypeBits::MODEL_ENTITY, false);
-  for (auto model : models)
+  for (const auto& model : models)
   {
     json jmodel = json::object();
     EntityIterator eit;
     eit.traverse(model, IteratorStyle::ITERATE_CHILDREN);
     for (eit.begin(); !eit.isAtEnd(); ++eit)
     {
-      EntityRef ent = eit.current();
+      const EntityRef& ent = eit.current();
       EntityPtr eptr;
       if (ent.isValid(&eptr))
       {
@@ -75,7 +75,7 @@ void to_json(json& j, const ResourcePtr& mresource)
         if (!amap.empty())
         {
           json jarr = json::object();
-          for (auto ktoa : amap)
+          for (const auto& ktoa : amap)
           {
             jarr[AbbreviationForArrangementKind(ktoa.first)] = ktoa.second;
           }
@@ -163,7 +163,7 @@ void from_json(const json& j, ResourcePtr& mresource)
         {
           ArrangementKind kind = ArrangementKindFromAbbreviation(std::string(arrIter.key()));
           Arrangements arrangements = arrIter.value();
-          for (auto arrangement : arrangements)
+          for (const auto& arrangement : arrangements)
           {
             entity->arrange(kind, arrangement);
           }

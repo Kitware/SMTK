@@ -15,8 +15,7 @@ namespace resource
 {
 
 Lock::Lock()
-  : m_mutex()
-  , m_activeReaders(0)
+  : m_activeReaders(0)
   , m_waitingWriters(0)
   , m_activeWriters(0)
 {

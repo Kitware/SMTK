@@ -37,8 +37,6 @@
 using std::regex;
 using std::sregex_token_iterator;
 using std::regex_replace;
-using std::regex_search;
-using std::regex_match;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
@@ -68,8 +66,8 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
   sregex_token_iterator it(fileFilters.begin(), fileFilters.end(), re, -1), last;
   for (; it != last; ++it)
   {
-    std::size_t begin = it->str().find_first_not_of(" \n\r\t*.", it->str().find_last_of("("));
-    std::size_t end = it->str().find_last_not_of(" \n\r\t", it->str().find_last_of(")"));
+    std::size_t begin = it->str().find_first_not_of(" \n\r\t*.", it->str().find_last_of('('));
+    std::size_t end = it->str().find_last_not_of(" \n\r\t", it->str().find_last_of(')'));
     std::string description = it->str().substr(0, begin);
     std::string extensions = it->str().substr(begin + 1, end - begin - 1);
 
@@ -80,12 +78,12 @@ void extensionsAndDescriptionsFromFileFilters(const std::string& fileFilters,
       continue;
     }
 
-    extensionsAndDescriptions.push_back(std::make_pair(trim(extensions), trim(description)));
+    extensionsAndDescriptions.emplace_back(trim(extensions), trim(description));
   }
 }
 
 std::string proxyName(
-  const std::string& resource, const std::string&, const std::string& description)
+  const std::string& resource, const std::string& /*unused*/, const std::string& description)
 {
   std::size_t hash = std::hash<std::string>{}(resource + description);
   std::stringstream s;

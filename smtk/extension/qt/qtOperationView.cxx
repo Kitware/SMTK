@@ -237,7 +237,7 @@ void qtOperationView::onOperate()
   }
 }
 
-void qtOperationView::onOperationExecuted(const smtk::operation::Operation::Result&)
+void qtOperationView::onOperationExecuted(const smtk::operation::Operation::Result& /*unused*/)
 {
   if (--(this->Internals->m_activeOperations) == 0)
   {

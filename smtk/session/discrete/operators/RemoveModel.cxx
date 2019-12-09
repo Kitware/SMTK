@@ -64,7 +64,7 @@ RemoveModel::Result RemoveModel::operateInternal()
   if (success)
   {
     smtk::attribute::ComponentItem::Ptr expungedItem = result->findComponent("expunged");
-    for (auto e : expunged)
+    for (const auto& e : expunged)
     {
       expungedItem->appendValue(e);
     }

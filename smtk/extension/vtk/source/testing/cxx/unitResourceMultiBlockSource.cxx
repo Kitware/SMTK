@@ -136,7 +136,7 @@ void TestCache()
 }
 }
 
-int unitResourceMultiBlockSource(int, char** const)
+int unitResourceMultiBlockSource(int /*unused*/, char** const /*unused*/)
 {
   TestCache();
 

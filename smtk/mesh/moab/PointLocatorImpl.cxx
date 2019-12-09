@@ -118,7 +118,7 @@ void reserve_space(std::vector<double>& container, std::size_t size)
 }
 
 template <>
-void reserve_space<false>(std::vector<double>&, std::size_t)
+void reserve_space<false>(std::vector<double>& /*unused*/, std::size_t /*unused*/)
 {
 }
 
@@ -129,7 +129,7 @@ void add_to(std::vector<double>& container, double value)
 }
 
 template <>
-void add_to<false>(std::vector<double>&, double)
+void add_to<false>(std::vector<double>& /*unused*/, double /*unused*/)
 {
 }
 

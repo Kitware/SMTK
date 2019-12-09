@@ -49,7 +49,7 @@ void cleanup(const std::string& file_path)
 }
 }
 
-int UnitTestReadWriteMeshResource(int, char** const)
+int UnitTestReadWriteMeshResource(int /*unused*/, char** const /*unused*/)
 {
   std::string file_path(data_root);
   file_path += "/mesh/3d/twoassm_out.h5m";
@@ -99,7 +99,7 @@ int UnitTestReadWriteMeshResource(int, char** const)
   cleanup(meshFilename);
 
   //verify the meshes
-  test(mr1->isValid() == true, "resource should be valid");
+  test(mr1->isValid(), "resource should be valid");
   test(mr1->name() == mr->name());
   test(mr1->numberOfMeshes() == mr->numberOfMeshes());
   test(mr1->types() == mr->types());

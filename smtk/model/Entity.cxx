@@ -35,9 +35,7 @@
 #include <regex>
 using std::regex;
 using std::sregex_token_iterator;
-using std::regex_replace;
 using std::regex_search;
-using std::regex_match;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
@@ -1228,7 +1226,7 @@ bool IsValueValid(const smtk::resource::ConstComponentPtr& comp, smtk::model::Bi
       // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
       // require all entries to have the same entity type flag as the first.
       smtk::model::BitFlags typeMask = mask;
-      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
+      bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) != 0;
       if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
       {
         typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
@@ -1261,7 +1259,7 @@ bool CheckPropStringValues(const StringList& propValues, const LimitingClause& c
 
        ++sit, ++rit, ++vit)
   {
-    if (*rit == true)
+    if (*rit)
     {
       // This is a regex, test it.
       regex match(*sit);
@@ -1408,7 +1406,7 @@ Entity::QueryFunctor Entity::filterStringToQueryFunctor(const std::string& filte
   // If we can turn the filter string into a simple bit-vector comparison,
   // do that since it will be much faster to evaluate:
   std::size_t pos;
-  if ((pos = filter.find("[")) == std::string::npos)
+  if ((pos = filter.find('[')) == std::string::npos)
   {
     smtk::model::BitFlags bitflags =
       filter.empty() ? smtk::model::ANY_ENTITY : smtk::model::Entity::specifierStringToFlag(filter);

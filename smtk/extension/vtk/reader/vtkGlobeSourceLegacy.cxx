@@ -119,8 +119,8 @@ void vtkGlobeSourceLegacy::AddPoint(double theta, double phi, double radius, vtk
 }
 
 //----------------------------------------------------------------------------
-int vtkGlobeSourceLegacy::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkGlobeSourceLegacy::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   // get the info object
   vtkInformation* outInfo = outputVector->GetInformationObject(0);

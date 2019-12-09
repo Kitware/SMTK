@@ -36,11 +36,7 @@ vtkModelMaterial::~vtkModelMaterial() = default;
 
 bool vtkModelMaterial::IsDestroyable()
 {
-  if (this->GetNumberOfModelGeometricEntities())
-  {
-    return false;
-  }
-  return true;
+  return this->GetNumberOfModelGeometricEntities() == 0;
 }
 
 bool vtkModelMaterial::Destroy()
@@ -63,7 +59,7 @@ bool vtkModelMaterial::SetWarehouseId(double* uuid)
 {
   this->GetProperties()->Set(WAREHOUSEID(), uuid, 2);
   this->Modified();
-  return 1;
+  return true;
 }
 
 double* vtkModelMaterial::GetWarehouseId()
@@ -105,7 +101,7 @@ bool vtkModelMaterial::RemoveModelGeometricEntity(vtkModelGeometricEntity* geome
 {
   this->RemoveAssociation(geometricEntity);
   this->Modified();
-  return 1;
+  return true;
 }
 
 void vtkModelMaterial::Serialize(vtkSerializer* ser)

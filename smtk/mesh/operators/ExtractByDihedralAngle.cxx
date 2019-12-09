@@ -70,7 +70,8 @@ public:
     return n;
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+    int /*numPointIds*/) override
   {
     m_normalsMap[cellId] = this->unitNormal();
   }
@@ -96,7 +97,8 @@ public:
 
   void clear() { m_newCells.clear(); }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int nPoints) override
+  void forCell(
+    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*unused*/, int nPoints) override
   {
     (void)nPoints;
     assert(nPoints == 3);
@@ -136,12 +138,7 @@ bool ExtractByDihedralAngle::ableToOperate()
   // Ensure that we are dealing with a triangle mesh.
   CellTypes triangles;
   triangles[smtk::mesh::Triangle] = true;
-  if (meshset.types().cellTypes() != triangles)
-  {
-    return false;
-  }
-
-  return true;
+  return meshset.types().cellTypes() == triangles;
 }
 
 smtk::mesh::ExtractByDihedralAngle::Result ExtractByDihedralAngle::operateInternal()
@@ -150,7 +147,7 @@ smtk::mesh::ExtractByDihedralAngle::Result ExtractByDihedralAngle::operateIntern
   smtk::mesh::Component::Ptr meshComponent = meshItem->valueAs<smtk::mesh::Component>();
   smtk::mesh::MeshSet meshset = meshComponent->mesh();
 
-  if (meshset.isValid() == false)
+  if (!meshset.isValid())
   {
     this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
@@ -216,7 +213,7 @@ smtk::mesh::ExtractByDihedralAngle::Result ExtractByDihedralAngle::operateIntern
 
     // Include the newest set of cells in the overall range of cells to extract
     cells += newCells;
-  } while (newCells.empty() == false);
+  } while (!newCells.empty());
 
   // If a shell was created to facilitate the algorithm, remove it.
   if (shellCreated)

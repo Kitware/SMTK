@@ -38,7 +38,7 @@ smtk::mesh::SetMeshName::Result SetMeshName::operateInternal()
   // Set the name of the meshset
   bool success = meshset.setName(nameItem->value());
 
-  if (success == false)
+  if (!success)
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }

@@ -44,8 +44,6 @@ vtkInformationKeyMacro(vtkDiscreteModel, POINTMAPARRAY, ObjectBase);
 vtkInformationKeyMacro(vtkDiscreteModel, CELLMAPARRAY, ObjectBase);
 
 vtkDiscreteModel::vtkDiscreteModel()
-  : Mesh()
-  , MeshClassificationInstance()
 {
   // initialize bounds to be invalid
   this->ModelBounds[0] = this->ModelBounds[2] = this->ModelBounds[4] = 1;
@@ -356,7 +354,7 @@ bool vtkDiscreteModel::DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* enti
 {
   if (!entityGroup->IsDestroyable())
   {
-    return 0;
+    return false;
   }
   vtkIdType entityId = entityGroup->GetUniquePersistentId();
   this->InternalInvokeEvent(ModelEntityGroupAboutToDestroy, &entityId);
@@ -364,30 +362,30 @@ bool vtkDiscreteModel::DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* enti
   if (!entityGroup->Destroy())
   {
     vtkErrorMacro("Problem destroying entity group.");
-    return 0;
+    return false;
   }
   this->RemoveAssociation(entityGroup);
   this->InternalInvokeEvent(ModelEntityGroupDestroyed, &entityId);
 
   this->Modified();
-  return 1;
+  return true;
 }
 
 bool vtkDiscreteModel::DestroyModelEdge(vtkDiscreteModelEdge* modelEdge)
 {
   if (!modelEdge->IsDestroyable())
   {
-    return 0;
+    return false;
   }
   this->Modified();
   if (!modelEdge->Destroy())
   {
     vtkErrorMacro("Problem destroying entity group.");
-    return 0;
+    return false;
   }
   this->RemoveAssociation(modelEdge);
 
-  return 1;
+  return true;
 }
 
 void vtkDiscreteModel::SetMesh(DiscreteMesh& m)

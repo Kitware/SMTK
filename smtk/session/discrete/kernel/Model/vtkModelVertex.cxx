@@ -27,17 +27,13 @@ vtkModelVertex::~vtkModelVertex() = default;
 
 bool vtkModelVertex::IsDestroyable()
 {
-  if (this->GetNumberOfAssociations(vtkModelVertexUseType) != 0)
-  {
-    return 0;
-  }
-  return 1;
+  return this->GetNumberOfAssociations(vtkModelVertexUseType) == 0;
 }
 
 bool vtkModelVertex::Destroy()
 {
   this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityAboutToDestroy, this);
-  return 1;
+  return true;
 }
 
 int vtkModelVertex::GetType()

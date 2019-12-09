@@ -152,7 +152,7 @@ bool vtkSelectionSplitOperation::AbleToOperate(vtkDiscreteModelWrapper* modelWra
   if (!modelWrapper)
   {
     vtkErrorMacro("Passed in a null model wrapper.");
-    return 0;
+    return false;
   }
 
   return this->Superclass::AbleToOperate(modelWrapper->GetModel());

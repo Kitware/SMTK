@@ -85,7 +85,7 @@ bool ResourcePhraseModel::setResourceFilters(const std::multimap<std::string, st
                          break;
                        }
                      }
-                     return acceptable == false;
+                     return !acceptable;
                    }),
     children.end());
   this->updateChildren(m_root, children, std::vector<int>());
@@ -136,8 +136,8 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool ad
   if (adding)
   {
     // Only attempt to filter resource out if there are filters defined.
-    bool acceptable = m_resourceFilters.empty() ? true : false;
-    for (auto filter : m_resourceFilters)
+    bool acceptable = m_resourceFilters.empty();
+    for (const auto& filter : m_resourceFilters)
     {
       if (resource->isOfType(filter.first))
       {

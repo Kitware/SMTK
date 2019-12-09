@@ -33,7 +33,7 @@
 #include <array>
 #include <functional>
 
-int UnitTestExtractCanonicalIndices(int, char* [])
+int UnitTestExtractCanonicalIndices(int /*unused*/, char* /*unused*/ [])
 {
   // Create a new mesh mesh resource
   smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create();

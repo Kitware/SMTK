@@ -33,7 +33,7 @@ int vtkModelRegion::GetType()
 
 bool vtkModelRegion::IsDestroyable()
 {
-  return 1;
+  return true;
 }
 
 bool vtkModelRegion::Destroy()
@@ -45,12 +45,12 @@ bool vtkModelRegion::Destroy()
     if (!vtkModelShellUse::SafeDownCast(shellUseIter->GetCurrentItem())->Destroy())
     {
       shellUseIter->Delete();
-      return 0;
+      return false;
     }
   }
   shellUseIter->Delete();
   this->RemoveAllAssociations(vtkModelShellUseType);
-  return 1;
+  return true;
 }
 
 void vtkModelRegion::Initialize(vtkIdType modelRegionId)
@@ -123,7 +123,7 @@ vtkModelItemIterator* vtkModelRegion::NewAdjacentModelFaceIterator()
   return faces;
 }
 
-void vtkModelRegion::AddShell(int, vtkModelFace**, int*)
+void vtkModelRegion::AddShell(int /*unused*/, vtkModelFace** /*unused*/, int* /*unused*/)
 {
   this->GetModel()->InvokeModelGeometricEntityEvent(ModelGeometricEntityBoundaryModified, this);
   vtkErrorMacro("Not implemented.");

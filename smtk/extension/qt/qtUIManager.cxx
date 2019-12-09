@@ -552,7 +552,7 @@ bool qtUIManager::passCategoryCheck(const std::set<std::string>& categories)
 
   // In this case we have been given an explicit set of categories that restrict
   // what can be displayed even if the top level is displaying its category widget
-  for (auto cat : m_topLevelCategories)
+  for (const auto& cat : m_topLevelCategories)
   {
     if (categories.find(cat) != categories.end())
     {

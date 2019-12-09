@@ -117,7 +117,7 @@ void verify_partial_pointfields()
     for (auto& pointfieldname : pointfieldnames)
     {
       smtk::mesh::PointField pointfield(one, pointfieldname);
-      test(one.removePointField(pointfield) == true);
+      test(one.removePointField(pointfield));
       test(pointfield.size() == 0);
       test(pointfield.dimension() == 0);
     }
@@ -217,13 +217,13 @@ private:
 public:
   SetPointData(
     const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::PointField& ds)
-    : smtk::mesh::PointForEach()
-    , m_dataGenerator(dataGenerator)
+    : m_dataGenerator(dataGenerator)
     , m_pointfield(ds)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& /*coordinatesModified*/) override
   {
     std::size_t counter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
@@ -248,13 +248,13 @@ private:
 public:
   ValidatePointData(
     const std::function<double(double, double, double)>& dataGenerator, smtk::mesh::PointField& ds)
-    : smtk::mesh::PointForEach()
-    , m_dataGenerator(dataGenerator)
+    : m_dataGenerator(dataGenerator)
     , m_pointfield(ds)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& /*coordinatesModified*/) override
   {
     std::size_t counter = 0;
     for (auto i = smtk::mesh::rangeElementsBegin(pointIds);
@@ -316,7 +316,7 @@ void verify_pointfield_persistency()
     if (!result)
     {
       cleanup(write_path);
-      test(result == true, "failed to properly write out a valid hdf5 resource");
+      test(result, "failed to properly write out a valid hdf5 resource");
     }
   }
 
@@ -347,7 +347,7 @@ void verify_pointfield_persistency()
 }
 }
 
-int UnitTestPointField(int, char** const)
+int UnitTestPointField(int /*unused*/, char** const /*unused*/)
 {
   verify_partial_pointfields();
   verify_duplicate_pointfields();

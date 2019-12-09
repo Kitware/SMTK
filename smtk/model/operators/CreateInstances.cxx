@@ -32,8 +32,6 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 using namespace boost::filesystem;
 using namespace smtk::model;
-using smtk::attribute::FileItem;
-using smtk::attribute::StringItem;
 using smtk::resource::PersistentObjectPtr;
 
 namespace smtk
@@ -119,7 +117,7 @@ CreateInstances::Result CreateInstances::operateInternal()
   smtk::attribute::ComponentItem::Ptr createdItem = result->findComponent("created");
   smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
 
-  for (auto prototype : prototypes)
+  for (const auto& prototype : prototypes)
   {
     smtk::model::Resource::Ptr resource =
       std::static_pointer_cast<smtk::model::Resource>(prototype.component()->resource());

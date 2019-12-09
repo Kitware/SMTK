@@ -367,7 +367,7 @@ void ValueItem::updateActiveChildrenItems()
   }
 
   // Get the children that should be active for the current value
-  std::string v = def->discreteEnum(static_cast<size_t>(m_discreteIndices[0]));
+  const std::string& v = def->discreteEnum(static_cast<size_t>(m_discreteIndices[0]));
   std::vector<std::string> citems = def->conditionalItems(v);
   std::size_t i, n = citems.size();
   for (i = 0; i < n; i++)

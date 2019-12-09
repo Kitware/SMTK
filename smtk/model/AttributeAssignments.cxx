@@ -26,7 +26,7 @@ bool AttributeAssignments::disassociateAttribute(const smtk::common::UUID& attri
 
 bool AttributeAssignments::isAssociated(const smtk::common::UUID& attribId) const
 {
-  return m_attributes.find(attribId) == m_attributes.end() ? false : true;
+  return m_attributes.find(attribId) != m_attributes.end();
 }
 
 } //namespace model

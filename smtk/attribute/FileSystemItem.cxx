@@ -321,11 +321,7 @@ bool FileSystemItem::isUsingDefault(std::size_t element) const
   auto def = static_cast<const FileSystemItemDefinition*>(this->definition().get());
   assert(m_isSet.size() > element);
   assert(m_values.size() > element);
-  if (def->hasDefault() && m_isSet[element] && m_values[element] == def->defaultValue())
-  {
-    return true;
-  }
-  return false;
+  return def->hasDefault() && m_isSet[element] && m_values[element] == def->defaultValue();
 }
 
 std::string FileSystemItem::defaultValue() const

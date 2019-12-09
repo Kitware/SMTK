@@ -28,7 +28,7 @@ std::mutex m_generatorMutex;
 bool checkenv(const char* vname)
 {
 #if !defined(_WIN32) || defined(__CYGWIN__)
-  return getenv(vname) ? true : false;
+  return getenv(vname) != nullptr;
 #else
   char* buf; //allocated or assigned by _dupenv_s
   const bool valid = (_dupenv_s(&buf, NULL, vname) == 0) && (buf != NULL);

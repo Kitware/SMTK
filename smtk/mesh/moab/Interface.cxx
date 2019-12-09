@@ -43,6 +43,7 @@ SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <algorithm>
 #include <cstring>
+#include <memory>
 #include <set>
 
 namespace smtk
@@ -217,7 +218,7 @@ bool setDenseOpaqueTagValue(T tag, const smtk::mesh::Handle& handle, ::moab::Int
 smtk::mesh::moab::InterfacePtr make_interface()
 {
   //Core is a fully implemented moab::Interface
-  return smtk::mesh::moab::InterfacePtr(new smtk::mesh::moab::Interface());
+  return std::make_shared<smtk::mesh::moab::Interface>();
 }
 
 //Given a smtk::mesh Interface convert it to a smtk::mesh::moab interface
@@ -236,8 +237,6 @@ smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::ResourcePtr& 
 
 Interface::Interface()
   : m_iface(new ::moab::Core())
-  , m_alloc()
-  , m_bcAlloc()
   , m_modified(false)
 {
   m_alloc.reset(new smtk::mesh::moab::Allocator(m_iface.get()));
@@ -337,7 +336,7 @@ bool Interface::createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Han
 
     int dimension = 4;
     bool hasDim = false;
-    while (hasDim == false && dimension >= 0)
+    while (!hasDim && dimension >= 0)
     {
       //by starting at 4 and decrementing we don't need to branch
       //on hasDim to see if we need to decrement at the end of
@@ -421,7 +420,7 @@ smtk::mesh::HandleRange Interface::getMeshsets(
   for (it i = all_ents.begin(); i != all_ents.end(); ++i)
   {
     const bool has_name = query_name.fetch_name(*i);
-    if (has_name && (std::strcmp(name.c_str(), query_name.current_name()) == 0))
+    if (has_name && (name == query_name.current_name()))
     { //has a matching name
       matching_ents.push_back(*i);
     }
@@ -607,7 +606,8 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+    bool& /*coordinatesModified*/) override
   {
     //use local variable instead of member to help locality
     std::size_t index = xyz_index;
@@ -659,8 +659,8 @@ public:
   {
   }
 
-  void forPoints(
-    const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool& coordinatesModified) override
+  void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     coordinatesModified = true;
     //use local variable instead of member to help locality
@@ -821,7 +821,7 @@ bool Interface::computeShell(
   ::moab::Range cells;
   int dimension = 4;
   bool hasCells = false;
-  while (hasCells == false && dimension >= 0)
+  while (!hasCells && dimension >= 0)
   {
     --dimension;
     // get all non-meshset entities in meshset of a given cell type
@@ -833,7 +833,7 @@ bool Interface::computeShell(
     hasCells = !cells.empty();
   }
 
-  if (hasCells == false)
+  if (!hasCells)
   {
     return false;
   }
@@ -1027,7 +1027,7 @@ bool Interface::setNeumann(
   //step 1 find the highest dimension cells for the meshes.
   int dimension = 4;
   bool hasCells = false;
-  while (hasCells == false && dimension >= 0)
+  while (!hasCells && dimension >= 0)
   {
     ::moab::Range cells;
     --dimension;
@@ -1550,12 +1550,7 @@ bool Interface::deleteCellField(
 
   // Delete the data flag from the meshsets
   rval = m_iface->tag_delete_data(tag, smtkToMOABRange(meshsets));
-  if (rval != ::moab::MB_SUCCESS)
-  {
-    return false;
-  }
-
-  return true;
+  return rval == ::moab::MB_SUCCESS;
 }
 
 //create a data set named <name> with <dimension> doubles for each point in
@@ -1908,12 +1903,7 @@ bool Interface::deletePointField(
 
   // Delete the data flag from the meshsets
   rval = m_iface->tag_delete_data(tag, smtkToMOABRange(meshsets));
-  if (rval != ::moab::MB_SUCCESS)
-  {
-    return false;
-  }
-
-  return true;
+  return rval == ::moab::MB_SUCCESS;
 }
 
 smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange& a_,
@@ -1947,7 +1937,7 @@ smtk::mesh::HandleRange Interface::pointIntersect(const smtk::mesh::HandleRange&
       const bool validCell = bpc.fetchNextCell(size, connectivity);
       if (validCell)
       {
-        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained ? true : false);
+        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained);
         bool contains = !exitCondition;
         for (int j = 0; j < size && contains != exitCondition; ++j)
         {
@@ -1995,7 +1985,7 @@ smtk::mesh::HandleRange Interface::pointDifference(const smtk::mesh::HandleRange
       const bool validCell = bpc.fetchNextCell(size, connectivity);
       if (validCell)
       {
-        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained ? true : false);
+        bool exitCondition = (containmentType == smtk::mesh::PartiallyContained);
         bool contains = !exitCondition;
         for (int j = 0; j < size && contains != exitCondition; ++j)
         {
@@ -2125,7 +2115,7 @@ void Interface::cellForEach(const HandleRange& cells, smtk::mesh::PointConnectiv
     if (filter.wantsCoordinates())
     {
       std::vector<double> coords;
-      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; ++currentCell)
+      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points); ++currentCell)
       {
         coords.resize(size * 3);
 
@@ -2139,7 +2129,7 @@ void Interface::cellForEach(const HandleRange& cells, smtk::mesh::PointConnectiv
     }
     else
     { //don't extract the coords
-      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points) == true; ++currentCell)
+      for (pc.initCellTraversal(); pc.fetchNextCell(cellType, size, points); ++currentCell)
       {
         filter.pointIds(points);
         //call the custom filter

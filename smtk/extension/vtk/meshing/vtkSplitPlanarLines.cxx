@@ -93,7 +93,7 @@ void IntersectSegments(vtkPolyData* input, vtkIdType cellId, vtkRayIntersectionL
   vtkCellData* cd = output->GetCellData();
   vtkPointData* pd = output->GetPointData();
   opts->GetPoint(conn[0], ptA.GetData());
-  for (int j = 1; j < npts; ++j)
+  for (vtkIdType j = 1; j < npts; ++j)
   {
     opts->GetPoint(conn[j], ptB.GetData());
     clocator->AllIntersectionsAlongSegment(ptA, ptB, points, tvals, pcoords, cellIds, subIds);
@@ -163,7 +163,7 @@ void IntersectSegments(vtkPolyData* input, vtkIdType cellId, vtkRayIntersectionL
           tvals.push_back(sit->Param[0]);
           subIds.push_back(sit->SubId);
           cellIds.push_back(sit->CellId);
-          pcoords.push_back(vtkVector3d(sit->Param[1], 0., 0.));
+          pcoords.emplace_back(sit->Param[1], 0., 0.);
           SegmentRecords::iterator tmp = sit - 1;
           hitit->second.erase(sit);
           sit = tmp;
@@ -268,7 +268,7 @@ int vtkSplitPlanarLines::RequestData(
   plocator->SetDataSet(output);
   plocator->SetTolerance(this->Tolerance);
   pedigreeIds->SetName("vtkPedigreeIds");
-  bool haveInputPedigree = input->GetCellData()->GetPedigreeIds() ? true : false;
+  bool haveInputPedigree = input->GetCellData()->GetPedigreeIds() != nullptr;
   for (vtkIdType cellId = numVerts; cellId < firstPolyCell; ++cellId)
   {
     IntersectSegments(input, cellId, clocator.GetPointer(), hits, output, plocator.GetPointer(),

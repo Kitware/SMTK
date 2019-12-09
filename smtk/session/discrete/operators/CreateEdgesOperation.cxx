@@ -116,7 +116,7 @@ CreateEdgesOperation::Result CreateEdgesOperation::operateInternal()
 
     result->findComponent("tess_changed")->setValue(inModel.component());
     smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
-    for (auto m : modEnts)
+    for (const auto& m : modEnts)
     {
       modified->appendValue(m.component());
     }

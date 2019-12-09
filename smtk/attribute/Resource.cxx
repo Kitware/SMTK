@@ -214,7 +214,7 @@ void Resource::definitions(std::vector<smtk::attribute::DefinitionPtr>& result, 
     return;
   }
   std::vector<std::string> keys;
-  for (auto info : m_definitions)
+  for (const auto& info : m_definitions)
   {
     keys.push_back(info.first);
   }
@@ -409,7 +409,7 @@ std::string Resource::createUniqueName(const std::string& type) const
   int i = 0;
   std::string base = type, newName;
   base.append("-");
-  while (1)
+  while (true)
   {
     std::ostringstream n;
     n << i++;
@@ -499,7 +499,7 @@ smtk::attribute::ConstDefinitionPtr Resource::findIsUniqueBaseClass(
   // Keep traveling up the definition's ancestors until
   // we come to the end or we find one that isn't unique
   smtk::attribute::ConstDefinitionPtr uDef = attDef, def;
-  while (1 && uDef.get())
+  while (uDef.get())
   {
     def = uDef->baseDefinition();
     if (!def.get() || (!def->isUnique()))
@@ -910,7 +910,7 @@ std::function<bool(const smtk::resource::ConstComponentPtr&)> Resource::queryOpe
 {
   if (filter.empty() || filter == "any" || filter == "*")
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
   const std::string attributeFilter("attribute");
   if (!filter.compare(0, attributeFilter.size(), attributeFilter))
@@ -932,7 +932,7 @@ std::function<bool(const smtk::resource::ConstComponentPtr&)> Resource::queryOpe
       }
     }
   }
-  return [](const smtk::resource::ConstComponentPtr&) { return false; };
+  return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return false; };
 }
 
 // visit all components in the resource.
@@ -956,7 +956,7 @@ std::set<AttributePtr> Resource::attributes(
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto entry = std::dynamic_pointer_cast<Attribute>(obj);
     if (entry)
@@ -975,7 +975,7 @@ bool Resource::hasAttributes(const smtk::resource::ConstPersistentObjectPtr& obj
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto entry = std::dynamic_pointer_cast<Attribute>(obj);
     if (entry)
@@ -994,7 +994,7 @@ void Resource::disassociateAllAttributes(const smtk::resource::PersistentObjectP
   // non-const objects to shared pointers to const objects.
   auto objs = object->links().linkedFrom(
     const_cast<Resource*>(this)->shared_from_this(), Resource::AssociationRole);
-  for (auto obj : objs)
+  for (const auto& obj : objs)
   {
     auto entry = std::dynamic_pointer_cast<Attribute>(obj);
     if (entry)
@@ -1008,11 +1008,7 @@ bool Resource::hasAssociations() const
 {
   // Get the data from the resource's links and see if it contains a link with the
   // association role
-  if (this->links().linkedTo(smtk::attribute::Resource::AssociationRole).empty() == false)
-  {
-    return true;
-  }
-  return false;
+  return !this->links().linkedTo(smtk::attribute::Resource::AssociationRole).empty();
 }
 
 bool Resource::isRoleUnique(const smtk::resource::Links::RoleType& role) const

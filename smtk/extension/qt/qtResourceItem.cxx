@@ -91,7 +91,7 @@ std::string qtResourceItem::synopsis(bool& ok) const
   std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
   std::size_t numSel = 0;
-  for (auto entry : m_p->m_members)
+  for (const auto& entry : m_p->m_members)
   {
     if (entry.second > 0)
     {

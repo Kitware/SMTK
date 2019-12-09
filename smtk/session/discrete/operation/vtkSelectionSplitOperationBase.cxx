@@ -54,11 +54,11 @@ bool vtkSelectionSplitOperationBase::GetModifiedPair(
 {
   if (index < 0 || index >= this->ModifiedPairIDs->GetNumberOfTuples())
   {
-    return 0;
+    return false;
   }
   SourceID = this->ModifiedPairIDs->GetValue(index * 2);
   TargetID = this->ModifiedPairIDs->GetValue(index * 2 + 1);
-  return 1;
+  return true;
 }
 
 bool vtkSelectionSplitOperationBase::AbleToOperate(vtkDiscreteModel* Model)
@@ -66,10 +66,10 @@ bool vtkSelectionSplitOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
 
-  return 1;
+  return true;
 }
 
 void vtkSelectionSplitOperationBase::PrintSelf(ostream& os, vtkIndent indent)

@@ -135,7 +135,7 @@ EditDomain::Result EditDomain::operateInternal()
   {
     auto potentialSims = resourceManager->find<smtk::attribute::Resource>();
     // First see if there are attributes already associated to us (in the "edit" case)
-    for (auto potentialSim : potentialSims)
+    for (const auto& potentialSim : potentialSims)
     {
       auto assocs = potentialSim->associations();
       auto assoc = assocs.find(resource);
@@ -149,7 +149,7 @@ EditDomain::Result EditDomain::operateInternal()
     if (!skipAssociation)
     {
       // We need to associate ourselves to a simulation attribute
-      for (auto potentialSim : potentialSims)
+      for (const auto& potentialSim : potentialSims)
       {
         if (potentialSim && potentialSim->findDefinition("source-term"))
         {

@@ -40,7 +40,7 @@ int TestSerialization(vtkDiscreteModel* model)
   writer->SetArchiveVersion(1);
   // The archiver expects a vector of objects
   std::vector<vtkSmartPointer<vtkObject> > objs;
-  objs.push_back(model);
+  objs.emplace_back(model);
   // The root node with be called ConceptualModel. This is for
   // reference only.
   writer->Serialize(ostr, "ConceptualModel", objs);
@@ -57,11 +57,11 @@ int TestSerialization(vtkDiscreteModel* model)
   // Write out what we just read back to XML and print it to make sure
   // we got it right.
   objs.clear();
-  objs.push_back(reader->GetModel());
+  objs.emplace_back(reader->GetModel());
   std::ostringstream ostr2;
   writer->Serialize(ostr2, "ConceptualModel", objs);
 
-  if (strcmp(ostr2.str().c_str(), ostr.str().c_str()))
+  if (ostr2.str() != ostr.str())
   {
     errors++;
     cerr << "Serialization information does not match.\n";

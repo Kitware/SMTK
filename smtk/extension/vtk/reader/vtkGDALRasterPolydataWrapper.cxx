@@ -138,8 +138,8 @@ std::string vtkGDALRasterPolydataWrapper::GetFileName()
 #define strdup _strdup
 #endif
 
-int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   this->Reader->Update();
   vtkDataObject* vdo = this->Reader->GetOutputDataObject(0);
@@ -251,8 +251,8 @@ int vtkGDALRasterPolydataWrapper::RequestData(vtkInformation* vtkNotUsed(request
   return 1;
 }
 
-int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkGDALRasterPolydataWrapper::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (FileName.empty())
     return 0;
@@ -279,8 +279,8 @@ double vtkGDALRasterPolydataWrapper::GetInvalidValue()
   return this->Reader->GetInvalidValue();
 }
 
-int vtkGDALRasterPolydataWrapper::RequestDataObject(vtkInformation*,
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkGDALRasterPolydataWrapper::RequestDataObject(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
 
   vtkInformation* info = outputVector->GetInformationObject(0);

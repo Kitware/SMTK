@@ -44,7 +44,7 @@ void ExporterGroup::filterOperationsThatRejectFileName(
 {
   for (auto index = ops.begin(); index != ops.end();)
   {
-    if (fileItemDefinitionForOperation(*index)->isValueValid(fileName) == false)
+    if (!fileItemDefinitionForOperation(*index)->isValueValid(fileName))
     {
       ops.erase(index++);
     }

@@ -60,7 +60,7 @@ using UUIDsToEntities = smtk::model::UUIDsToEntities;
 void to_json(json& j, const UUIDsToEntities& emap)
 {
   j = json::object();
-  for (auto epair : emap)
+  for (const auto& epair : emap)
   {
     j[epair.first.toString()] = { { "d", epair.second->dimensionBits() },
       { "e", smtk::model::Entity::flagToSpecifierString(epair.second->entityFlags()) },

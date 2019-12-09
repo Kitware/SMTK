@@ -114,7 +114,7 @@ pqSMTKOperationPanel::~pqSMTKOperationPanel()
   delete m_p;
 }
 
-void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer*)
+void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer* /*unused*/)
 {
   if (wrapper)
   {
@@ -160,7 +160,7 @@ void pqSMTKOperationPanel::observeWrapper(pqSMTKWrapper* wrapper, pqServer*)
   m_availableOperations->setUseSelection(useSelection);
 }
 
-void pqSMTKOperationPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqServer*)
+void pqSMTKOperationPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqServer* /*unused*/)
 {
   if (wrapper != m_wrapper)
   {
@@ -258,7 +258,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
 
   smtk::view::ConfigurationPtr view = m_attrUIMgr->findOrCreateOperationView();
   auto baseView = m_attrUIMgr->setSMTKView(view, m_p->OperationEditor);
-  didDisplay = baseView ? true : false;
+  didDisplay = baseView != nullptr;
 
   // Connect the signal emitted from the operation view after an operation is
   // run to a lambda that extracts any newly added resources and queries the
@@ -273,7 +273,7 @@ bool pqSMTKOperationPanel::editOperation(smtk::operation::OperationPtr op)
         // Gather all resource items
         std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
         std::function<bool(smtk::attribute::ResourceItemPtr)> filter = [](
-          smtk::attribute::ResourceItemPtr) { return true; };
+          smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
         result->filterItems(resourceItems, filter);
 
         // For each resource item found...
@@ -391,7 +391,7 @@ void pqSMTKOperationPanel::operationListDoubleClicked(QListWidgetItem* item)
     const auto& smap = seln->currentSelection();
     auto params = opInstance->parameters();
     bool anyAssociations = false;
-    for (auto entry : smap)
+    for (const auto& entry : smap)
     {
       if ((entry.second & 0x01) ==
         0x01) // FIXME: properly select entities from the map based on a specific bit flag

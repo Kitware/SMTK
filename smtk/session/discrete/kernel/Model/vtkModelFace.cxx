@@ -45,10 +45,10 @@ bool vtkModelFace::IsDestroyable()
   {
     if (this->GetModelFaceUse(i)->GetModelShellUse())
     {
-      return 0;
+      return false;
     }
   }
-  return 1;
+  return true;
 }
 
 bool vtkModelFace::Destroy()
@@ -59,15 +59,15 @@ bool vtkModelFace::Destroy()
   if (!faceUse0->Destroy())
   {
     vtkErrorMacro("Problem destroying face's face use 0.");
-    return 0;
+    return false;
   }
   if (!faceUse1->Destroy())
   {
     vtkErrorMacro("Problem destroying face's face use 1.");
-    return 0;
+    return false;
   }
   this->RemoveAllAssociations(vtkModelFaceUseType);
-  return 1;
+  return true;
 }
 
 bool vtkModelFace::DestroyLoopUses()
@@ -408,7 +408,7 @@ int vtkModelFace::GetNumberOfHoles()
         edges.erase(it);
       }
     }
-    if (edges.empty() == false)
+    if (!edges.empty())
     {
       // this is a hole because there's at least one edge that
       // the loop use is not using 2 of the edge's edge uses

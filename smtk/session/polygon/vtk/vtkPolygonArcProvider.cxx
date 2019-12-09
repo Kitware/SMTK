@@ -32,14 +32,14 @@ vtkPolygonArcProvider::vtkPolygonArcProvider()
 
 vtkPolygonArcProvider::~vtkPolygonArcProvider() = default;
 
-int vtkPolygonArcProvider::FillInputPortInformation(int, vtkInformation* info)
+int vtkPolygonArcProvider::FillInputPortInformation(int /*port*/, vtkInformation* info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkMultiBlockDataSet");
   return 1;
 }
 
-int vtkPolygonArcProvider::RequestData(
-  vtkInformation*, vtkInformationVector** inputVector, vtkInformationVector* outputVector)
+int vtkPolygonArcProvider::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   vtkMultiBlockDataSet* input = vtkMultiBlockDataSet::GetData(inputVector[0], 0);
   vtkPolyData* output = vtkPolyData::GetData(outputVector, 0);

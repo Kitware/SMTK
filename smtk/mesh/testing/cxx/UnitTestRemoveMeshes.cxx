@@ -251,7 +251,7 @@ void verify_remove_verts_with_model_association(const smtk::mesh::ResourcePtr& m
 }
 }
 
-int UnitTestRemoveMeshes(int, char** const)
+int UnitTestRemoveMeshes(int /*unused*/, char** const /*unused*/)
 {
   smtk::mesh::ResourcePtr mr = load_mesh();
 

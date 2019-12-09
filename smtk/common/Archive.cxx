@@ -240,7 +240,7 @@ bool Archive::extract()
   boost::filesystem::path temp =
     boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
 
-  if (boost::filesystem::create_directories(temp) == false)
+  if (!boost::filesystem::create_directories(temp))
   {
     return false;
   }

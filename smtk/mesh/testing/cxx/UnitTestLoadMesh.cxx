@@ -131,7 +131,7 @@ void verify_load_onlyDirichlet()
 }
 }
 
-int UnitTestLoadMesh(int, char** const)
+int UnitTestLoadMesh(int /*unused*/, char** const /*unused*/)
 {
   verify_load_valid_mesh();
   verify_load_writeLocation();

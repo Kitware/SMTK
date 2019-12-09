@@ -17,12 +17,12 @@ using namespace smtk::attribute;
 void FileInfo::print(const std::string& pre)
 {
   std::cerr << pre << "File Name: " << m_filename << "\n" << pre << "  Includes:\n";
-  for (auto inc : m_includes)
+  for (const auto& inc : m_includes)
   {
     std::cerr << pre << "  " << inc << "\n";
   }
   std::cerr << pre << "  Categories:\n";
-  for (auto cat : m_catagories)
+  for (const auto& cat : m_catagories)
   {
     std::cerr << pre << "  " << cat;
     if (cat == m_defaultCategory)

@@ -49,7 +49,7 @@ bool registerPythonOperations(
               << "\" has been requested but cannot be imported." << std::endl;
     std::cerr << std::endl << "Paths searched:" << std::endl;
     auto paths = smtk::common::PythonInterpreter::instance().pythonPath();
-    for (auto path : paths)
+    for (const auto& path : paths)
     {
       std::cerr << path << std::endl;
     }

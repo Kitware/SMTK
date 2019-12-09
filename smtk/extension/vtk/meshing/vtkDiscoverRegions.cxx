@@ -198,7 +198,7 @@ bool EstimateNormal<2>(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, ve
   vec3d dir = xB - xA;
   vec3d z(0., 0., 1.);
   norm = dir.Cross(z);
-  return norm.Normalize() < 1e-8 ? false : true;
+  return norm.Normalize() >= 1e-8;
 }
 
 template <>
@@ -231,8 +231,7 @@ bool EstimateNormal<3>(vtkPoints* pts, vtkIdType npts, const vtkIdType* conn, ve
 }
 
 static bool SpliceFaceIntoHood(vtkIdType faceId, vtkIdType npts, const vtkIdType* conn,
-  vtkIdType vtkNotUsed(edge), bool sense, Edgerhoods::iterator hood, vtkPoints* pts,
-  double vtkNotUsed(tol))
+  vtkIdType /*edge*/, bool sense, Edgerhoods::iterator hood, vtkPoints* pts, double /*tol*/)
 {
   vec3d norm;
   if (!EstimateNormal<3>(pts, npts, conn, norm))
@@ -299,7 +298,7 @@ int SpliceEdgeIntoVertex(vtkIdType edgeId, vtkIdType& idA, vtkIdType& idB, bool 
       return -1;
     }
     srch = hoods.insert(entry);
-    srch.first->second.Bordants.push_back(VertexEdgeUse(edgeId, sense, 0.));
+    srch.first->second.Bordants.emplace_back(edgeId, sense, 0.);
   }
   else
   {
@@ -634,7 +633,7 @@ template <typename T>
 struct vtkDiscoverRegionsFacetFromCellArray
 {
   vtkIdType operator()(vtkIdType poly) const { return this->Array->GetValue(poly); }
-  std::set<vtkIdType> FacetIds(vtkPolyData*) const
+  std::set<vtkIdType> FacetIds(vtkPolyData* /*unused*/) const
   {
     std::set<vtkIdType> uniques;
     for (vtkIdType i = 0; i <= this->Array->GetMaxId(); ++i)
@@ -676,7 +675,7 @@ struct vtkDiscoverRegionsOneFacetPerCell
     return facet; // facet == cell
   }
   vtkIdTypeArray* GetFaceGroupArray() { return nullptr; }
-  bool AreOversubscribedFacetsPossible(vtkIdTypeArray*) const { return true; }
+  bool AreOversubscribedFacetsPossible(vtkIdTypeArray* /*unused*/) const { return true; }
 };
 
 template <typename T, typename N>
@@ -930,7 +929,7 @@ void FindPointsInRegions(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell2f
     // correspond to the shell ID. From this offset into ModelMap,
     // we can then find the Facet ID for a shell and from there obtain
     // a cell on the facet for the shell.
-    bool sense = (*shellIt) % 2 ? true : false; // positive orientation?
+    bool sense = ((*shellIt) % 2) != 0; // positive orientation?
     vtkIdType regionInfo[3];
     regions.ModelRegions->GetTypedTuple(*shellIt / 2, regionInfo);
     vtkIdType cellOnShell = cell2facet.CellForFacet(regionInfo[0]);
@@ -956,7 +955,7 @@ void FindPointsInRegions(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell2f
     vec3d basePt(0.);
     vec3d tmp;
     double invNpts = 1. / npts;
-    for (int i = 0; i < npts; ++i)
+    for (vtkIdType i = 0; i < npts; ++i)
     {
       //cout << " " << conn[i];
       pts->GetPoint(conn[i], tmp.GetData());
@@ -1098,7 +1097,7 @@ vtkIdType DiscoverNestings(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell
     // correspond to the shell ID. From this offset into ModelMap,
     // we can then find the Facet ID for a shell and from there obtain
     // a cell on the facet for the shell.
-    bool sense = (*shellIt) % 2 ? true : false; // positive orientation?
+    bool sense = ((*shellIt) % 2) != 0; // positive orientation?
     vtkIdType regionInfo[3];
     regions.ModelRegions->GetTypedTuple(*shellIt / 2, regionInfo);
     vtkIdType cellOnShell = cell2facet.CellForFacet(regionInfo[0]);
@@ -1124,7 +1123,7 @@ vtkIdType DiscoverNestings(vtkPolyData* pdIn, RegionTracker<N>& regions, T& cell
     vec3d basePt(0.);
     vec3d tmp;
     double invNpts = 1. / npts;
-    for (int i = 0; i < npts; ++i)
+    for (vtkIdType i = 0; i < npts; ++i)
     {
       //cout << " " << conn[i];
       pts->GetPoint(conn[i], tmp.GetData());
@@ -1379,8 +1378,8 @@ void AssignHoles(vtkPolyData* pdIn, vtkPoints* holePoints, RegionTracker<N>& reg
 
 template <typename T, typename N>
 void AssignRegionIDsHolesAndAttributes(vtkPolyData* pdIn, vtkPoints* holePtsIn,
-  vtkPolyData* regionPtsIn, const std::string& vtkNotUsed(regionIdAttributeName),
-  RegionTracker<N>& regions, T& cell2facet)
+  vtkPolyData* regionPtsIn, const std::string& /*regionIdAttributeName*/, RegionTracker<N>& regions,
+  T& cell2facet)
 {
   // I. Collapse remaining union-find sets to a sequential integer numbering.
   //
@@ -1668,7 +1667,7 @@ int vtkDiscoverRegions::FillOutputPortInformation(int port, vtkInformation* info
 }
 
 int vtkDiscoverRegions::RequestData(
-  vtkInformation* vtkNotUsed(req), vtkInformationVector** inInfo, vtkInformationVector* outInfo)
+  vtkInformation* /*request*/, vtkInformationVector** inInfo, vtkInformationVector* outInfo)
 {
   // get the input and output
   vtkPolyData* pdIn = vtkPolyData::GetData(inInfo[0], 0);

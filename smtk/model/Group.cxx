@@ -125,7 +125,7 @@ EntityRef Group::findFirstNonGroupMember()
 bool Group::meetsMembershipConstraints(const EntityRef& prospectiveMember)
 {
   BitFlags typeMask = 0;
-  bool mustBeHomogenous = this->entityFlags() & HOMOGENOUS_GROUP ? true : false;
+  bool mustBeHomogenous = (this->entityFlags() & HOMOGENOUS_GROUP) != 0;
   return this->meetsMembershipConstraints(prospectiveMember, typeMask, mustBeHomogenous);
 }
 

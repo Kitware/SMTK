@@ -72,12 +72,12 @@ bool vtkSplitOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
   if (this->GetIsIdSet() == 0)
   {
     vtkErrorMacro("No entity id specified.");
-    return 0;
+    return false;
   }
   if (this->IsFeatureAngleSet == 0)
   {
@@ -89,9 +89,9 @@ bool vtkSplitOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!ModelFace)
   {
     vtkErrorMacro("No model face found with Id " << this->GetId());
-    return 0;
+    return false;
   }
-  return 1;
+  return true;
 }
 
 void vtkSplitOperationBase::PrintSelf(ostream& os, vtkIndent indent)

@@ -48,7 +48,7 @@
 
 template <typename T, typename U>
 int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& comp, int visible,
-  U& visibleThings, const smtk::view::DescriptivePhrasePtr&)
+  U& visibleThings, const smtk::view::DescriptivePhrasePtr& /*unused*/)
 {
   bool didUpdate = false;
   int rval(0);
@@ -85,14 +85,14 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
       {
         for (const auto& child : auxgeomChildren)
         {
-          int ok = smap->setVisibility(child.component(), visible ? true : false);
+          int ok = smap->setVisibility(child.component(), visible != 0);
           any |= ok;
           visibleThings[child.entity()] = visible;
         }
       }
       rval |= any;
 
-      rval |= smap->setVisibility(comp, visible ? true : false) ? 1 : 0;
+      rval |= smap->setVisibility(comp, visible != 0) ? 1 : 0;
       if (rval)
       {
         visibleThings[comp->id()] =
@@ -103,7 +103,7 @@ int UpdateVisibilityForFootprint(pqSMTKResourceRepresentation* smap, const T& co
   }
   else if (auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(comp))
   {
-    rval |= smap->setVisibility(comp, visible ? true : false) ? 1 : 0;
+    rval |= smap->setVisibility(comp, visible != 0) ? 1 : 0;
     if (rval)
     {
       visibleThings[comp->id()] = visible;
@@ -211,7 +211,7 @@ int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Q
   // TODO: We could check more than just that the view is non-null.
   //       For instance, does the resource have a representation in the active view?
   //       However, that gets expensive.
-  bool validView = pqActiveObjects::instance().activeView() ? true : false;
+  bool validView = pqActiveObjects::instance().activeView() != nullptr;
 
   switch (qq)
   {
@@ -316,7 +316,7 @@ void pqSMTKResourceBrowser::activeViewChanged(pqView* view)
   }
   auto rsrcPhrases = m_p->m_phraseModel->root()->subphrases();
   auto behavior = pqSMTKBehavior::instance();
-  for (auto rsrcPhrase : rsrcPhrases)
+  for (const auto& rsrcPhrase : rsrcPhrases)
   {
     auto rsrc = rsrcPhrase->relatedResource();
     if (!rsrc)

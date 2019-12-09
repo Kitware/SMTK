@@ -48,18 +48,18 @@ public:
   smtkCreateMacro(MyResource);
   smtkSharedFromThisMacro(smtk::resource::Resource);
 
-  smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
     return smtk::resource::ComponentPtr();
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
-  void visit(smtk::resource::Component::Visitor&) const override {}
+  void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
   MyResource()
@@ -212,7 +212,7 @@ private:
 
 WriteOperation::Result WriteOperation::operateInternal()
 {
-  if (semaphore == true)
+  if (semaphore)
   {
     return this->createResult(Outcome::FAILED);
   }
@@ -397,7 +397,7 @@ int writeTest(int sleepValue)
 // operation fails if the semaphore is false, then toggles it to true, waits for
 // a time, and toggles it back to false. If two of these operations are executed
 // within a time window less than the wait period, both tests should pass.
-int TestMutexedOperation(int, char** const)
+int TestMutexedOperation(int /*unused*/, char** const /*unused*/)
 {
   int returnValue = 1;
 

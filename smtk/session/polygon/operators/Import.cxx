@@ -320,7 +320,7 @@ int polyLines2modelEdgesAndFaces(
         auto assocs = faceSpec->associations();
         assocs->setNumberOfValues(createdEds.size());
         int ii = 0;
-        for (auto ced : createdEds)
+        for (const auto& ced : createdEds)
         {
           assocs->setObjectValue(ii, ced.component());
           ++ii;
@@ -361,16 +361,11 @@ bool Import::ableToOperate()
   // support 2d models by vtkCMBGeometryReader
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
   std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  if (ext == ".2dm" ||
+  return (ext == ".2dm" ||
 #ifdef SMTK_ENABLE_REMUS_SUPPORT
     ext == ".poly" || ext == ".smesh" || ext == ".map" || ext == ".shp" ||
 #endif
-    ext == ".stl" || ext == ".vtp" || ext == ".vtk")
-  {
-    return true;
-  }
-
-  return false;
+    ext == ".stl" || ext == ".vtp" || ext == ".vtk");
 }
 
 Import::Result Import::operateInternal()

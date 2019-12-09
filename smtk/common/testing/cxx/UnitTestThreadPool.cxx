@@ -22,7 +22,7 @@ void task3(int i)
 }
 }
 
-int UnitTestThreadPool(int, char** const)
+int UnitTestThreadPool(int /*unused*/, char** const /*unused*/)
 {
   {
     smtk::common::ThreadPool<void>* pool = new smtk::common::ThreadPool<void>();

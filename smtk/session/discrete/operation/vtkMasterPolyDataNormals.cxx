@@ -92,7 +92,7 @@ vtkMasterPolyDataNormals::vtkMasterPolyDataNormals() = default;
 
 vtkMasterPolyDataNormals::~vtkMasterPolyDataNormals() = default;
 
-int vtkMasterPolyDataNormals::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkMasterPolyDataNormals::RequestData(vtkInformation* /*request*/,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   // get the info objects

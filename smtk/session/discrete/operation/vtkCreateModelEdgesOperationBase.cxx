@@ -27,9 +27,9 @@ bool vtkCreateModelEdgesOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
-  return 1;
+  return true;
 }
 
 void vtkCreateModelEdgesOperationBase::PrintSelf(ostream& os, vtkIndent indent)

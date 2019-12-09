@@ -33,20 +33,14 @@ class CountCells : public smtk::mesh::CellForEach
 
   //keep a physical count of number of cells so that we can verify we
   //don't iterate over a cell more than once
-  int numCellsVisited;
+  int numCellsVisited{ 0 };
 
   //total number of points seen, relates to the total size of the connectivity
   //array for this cellset
-  int numPointsSeen;
+  int numPointsSeen{ 0 };
 
 public:
-  CountCells()
-    : smtk::mesh::CellForEach()
-    , pointsSeen()
-    , numCellsVisited(0)
-    , numPointsSeen(0)
-  {
-  }
+  CountCells() = default;
 
   void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType cellType, int numPts) override
   {
@@ -106,7 +100,7 @@ void verify_model_association()
   test((mr->associatedModel() != smtk::common::UUID()),
     "mesh resource should be associated to a real model");
   test((mr->isAssociatedToModel()), "mesh resource should be associated to a real model");
-  test(mr->isModified() == true, "A mesh created in memory with no file is considered modified");
+  test(mr->isModified(), "A mesh created in memory with no file is considered modified");
 
   //verify the MODEL_ENTITY is correct
   smtk::model::EntityRefs currentModels =
@@ -301,7 +295,7 @@ void verify_cell_conversion()
   std::cout << "Entity lookup via reverse classification\n";
   smtk::model::EntityRefArray ents;
   bool entsAreValid = mr->meshes().modelEntities(ents);
-  test(entsAreValid == true, "Expected valid entity refs.");
+  test(entsAreValid, "Expected valid entity refs.");
   test(ents.size() == numTetsInModel, "Expected 1 tetrahedron per model.");
   for (smtk::model::EntityRefArray::iterator eit = ents.begin(); eit != ents.end(); ++eit)
   {
@@ -350,7 +344,7 @@ void verify_cell_have_points()
 }
 }
 
-int UnitTestModelToMesh3D(int, char** const)
+int UnitTestModelToMesh3D(int /*unused*/, char** const /*unused*/)
 {
   verify_empty_model();
   verify_model_association();

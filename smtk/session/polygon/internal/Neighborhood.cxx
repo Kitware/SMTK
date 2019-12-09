@@ -548,7 +548,7 @@ void Neighborhood::processFragmentStartEvents()
     it->m_segment = event->m_indx;
     it->m_edgeData = this->findStorage<internal::edge>(it->m_edge.entity());
     it->m_edgeData->pointsOfSegment(event->m_indx, it->m_lo, it->m_hi);
-    it->m_sense = event->m_frag[0] > 0 ? true : false;
+    it->m_sense = event->m_frag[0] > 0;
     if (it->m_lo > it->m_hi)
     {
       if (it->m_sense)

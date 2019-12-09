@@ -58,11 +58,7 @@ public:
 
   bool IsModelFaceVisible(vtkIdType modelFaceId)
   {
-    if (this->ModelFaceIds.find(modelFaceId) == this->ModelFaceIds.end())
-    {
-      return 0;
-    }
-    return 1;
+    return this->ModelFaceIds.find(modelFaceId) != this->ModelFaceIds.end();
   }
 
   bool IsModelFaceVisible(vtkDiscreteModelGeometricEntity* modelFace)
@@ -358,7 +354,7 @@ void vtkSeedGrowSelectionFilter::MergeGrowSelection(
     {
       continue;
     }
-    for (int i = 0; i < array->GetNumberOfTuples(); i++)
+    for (vtkIdType i = 0; i < array->GetNumberOfTuples(); i++)
     {
       int selId = array->GetValue(i);
       ; // add in ids here to marked
@@ -372,7 +368,7 @@ void vtkSeedGrowSelectionFilter::MergeGrowSelection(
   }
 }
 
-int vtkSeedGrowSelectionFilter::RequestData(vtkInformation* vtkNotUsed(request),
+int vtkSeedGrowSelectionFilter::RequestData(vtkInformation* /*request*/,
   vtkInformationVector** inputVector, vtkInformationVector* outputVector)
 {
   vtkSelection* output = vtkSelection::GetData(outputVector);
@@ -438,8 +434,7 @@ int vtkSeedGrowSelectionFilter::RequestData(vtkInformation* vtkNotUsed(request),
   vtkIntArray* marked = vtkIntArray::New();
   marked->SetNumberOfComponents(1);
   marked->SetNumberOfTuples(numCells);
-  int i;
-  for (i = 0; i < numCells; i++)
+  for (vtkIdType i = 0; i < numCells; i++)
   {
     marked->SetValue(i, 0);
   }

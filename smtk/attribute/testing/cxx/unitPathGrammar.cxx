@@ -11,7 +11,7 @@
 #include "smtk/attribute/PathGrammar.h"
 #include "smtk/common/testing/cxx/helpers.h"
 
-int unitPathGrammar(int, char** const)
+int unitPathGrammar(int /*unused*/, char** const /*unused*/)
 {
   using namespace smtk::attribute;
   // Some quick sanity grammar tests

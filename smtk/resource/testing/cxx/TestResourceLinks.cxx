@@ -76,9 +76,9 @@ public:
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor& visitor) const override
@@ -154,9 +154,9 @@ public:
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor& visitor) const override
@@ -243,7 +243,7 @@ void TestLink(typename ObjectA::Ptr& objectA, typename ObjectB::Ptr& objectB)
 }
 }
 
-int TestResourceLinks(int, char** const)
+int TestResourceLinks(int /*unused*/, char** const /*unused*/)
 {
   // Create a ResourceA.
   ResourceA::Ptr resourceA = ResourceA::create();

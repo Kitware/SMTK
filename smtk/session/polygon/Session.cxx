@@ -64,7 +64,7 @@ smtk::model::SessionInfoBits Session::allSupportedInformation() const
   return smtk::model::SESSION_EVERYTHING;
 }
 
-std::string Session::defaultFileExtension(const smtk::model::Model&) const
+std::string Session::defaultFileExtension(const smtk::model::Model& /*model*/) const
 {
   return "";
 }

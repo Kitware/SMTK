@@ -188,7 +188,7 @@ void ComponentPhraseModel::populateRoot()
   {
     if (m_activeResource)
     {
-      for (auto filter : m_componentFilters)
+      for (const auto& filter : m_componentFilters)
       {
         // Skip filters that do not apply to this resource.
         if (!m_activeResource->isOfType(filter.first))
@@ -203,7 +203,7 @@ void ComponentPhraseModel::populateRoot()
   }
   else
   {
-    for (auto rsrc : m_resources)
+    for (const auto& rsrc : m_resources)
     {
       auto resource = rsrc.lock();
       if (resource == nullptr)
@@ -211,7 +211,7 @@ void ComponentPhraseModel::populateRoot()
         continue;
       }
 
-      for (auto filter : m_componentFilters)
+      for (const auto& filter : m_componentFilters)
       {
         if (!resource->isOfType(filter.first))
         {
@@ -226,7 +226,7 @@ void ComponentPhraseModel::populateRoot()
 
   // Turn each entry of comps into a decorated phrase, sort, and update.
   DescriptivePhrases children;
-  for (auto comp : comps)
+  for (const auto& comp : comps)
   {
     children.push_back(
       smtk::view::ComponentPhraseContent::createPhrase(comp, m_mutableAspects, m_root));

@@ -47,8 +47,7 @@ using namespace smtk::common;
 
 Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition,
   const smtk::common::UUID& myId)
-  : Component()
-  , m_name(myName)
+  : m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
@@ -62,8 +61,7 @@ Attribute::Attribute(const std::string& myName, const smtk::attribute::Definitio
 }
 
 Attribute::Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition)
-  : Component()
-  , m_name(myName)
+  : m_name(myName)
   , m_definition(myDefinition)
   , m_appliesToBoundaryNodes(false)
   , m_appliesToInteriorNodes(false)
@@ -277,11 +275,7 @@ bool Attribute::isValid(const std::set<std::string>& cats) const
     }
   }
   // also check associations
-  if (m_associatedObjects && !m_associatedObjects->isValid())
-  {
-    return false;
-  }
-  return true;
+  return !(m_associatedObjects && !m_associatedObjects->isValid());
 }
 
 ResourcePtr Attribute::attributeResource() const
@@ -320,7 +314,7 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
     // if we are allowed to remove what we can then disassociate where we can
     if (partialRemovalOk)
     {
-      for (auto obj : objs)
+      for (const auto& obj : objs)
       {
         if (!this->disassociate(obj))
         {
@@ -365,7 +359,7 @@ bool Attribute::removeExpungedEntities(const smtk::model::EntityRefs& expungedEn
   // update all modelEntityItems
   std::set<smtk::attribute::ModelEntityItemPtr> modelEntityPtrs;
   std::function<bool(smtk::attribute::ModelEntityItemPtr)> filter = [](
-    smtk::attribute::ModelEntityItemPtr) { return true; };
+    smtk::attribute::ModelEntityItemPtr /*unused*/) { return true; };
   this->filterItems(modelEntityPtrs, filter, false);
   for (std::set<smtk::attribute::ModelEntityItemPtr>::iterator iterator = modelEntityPtrs.begin();
        iterator != modelEntityPtrs.end(); iterator++)
@@ -511,7 +505,7 @@ bool Attribute::associateEntity(const smtk::common::UUID& objId)
   }
 
   // Look for anything with the given UUID:
-  for (auto rsrc : rsrcs)
+  for (const auto& rsrc : rsrcs)
   {
     if (rsrc != nullptr)
     {
@@ -571,7 +565,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
   }
 
   // Look for anything with the given UUID:
-  for (auto rsrc : rsrcs)
+  for (const auto& rsrc : rsrcs)
   {
     if (rsrc != nullptr)
     {
@@ -623,7 +617,7 @@ bool Attribute::canBeDisassociated(
   // 2b. If it does then see how many other attributes associated with the object
   // match the type - if there is only one then return false
   auto atts = attRes->attributes(obj);
-  for (auto att : atts)
+  for (const auto& att : atts)
   {
     // If the attribite is the same type as this, or it has no
     // prerequisites, we can skip it
@@ -641,7 +635,7 @@ bool Attribute::canBeDisassociated(
     }
     // Count number of atts that match the preDef
     int count = 0;
-    for (auto att1 : atts)
+    for (const auto& att1 : atts)
     {
       if (att1->m_definition->isA(preDef))
       {
@@ -664,7 +658,8 @@ bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, bool rever
   return this->disassociate(obj, foo, reverse);
 }
 
-bool Attribute::disassociate(smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool)
+bool Attribute::disassociate(
+  smtk::resource::PersistentObjectPtr obj, AttributePtr& probAtt, bool /*unused*/)
 {
   if (!this->canBeDisassociated(obj, probAtt))
   {

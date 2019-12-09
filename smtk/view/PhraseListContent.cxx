@@ -165,7 +165,7 @@ smtk::resource::ComponentArray PhraseListContent::relatedComponents() const
   }
 
   auto phrases = parent->subphrases();
-  for (auto phrase : phrases)
+  for (const auto& phrase : phrases)
   {
     result.push_back(phrase->relatedComponent());
   }
@@ -215,7 +215,7 @@ std::string PhraseListContent::generateTitle(
   smtk::resource::ComponentArray::size_type sz = phrase->subphrases().size();
   std::map<std::string, smtk::model::BitFlags> flagUnion;
   std::map<std::string, smtk::model::BitFlags> flagCommon;
-  for (auto phr : phrase->subphrases())
+  for (const auto& phr : phrase->subphrases())
   {
     if (!phr)
     {

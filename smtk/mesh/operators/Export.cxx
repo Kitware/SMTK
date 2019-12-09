@@ -59,11 +59,7 @@ namespace mesh
 
 bool Export::ableToOperate()
 {
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-  return true;
+  return this->Superclass::ableToOperate();
 }
 
 Export::Result Export::operateInternal()
@@ -73,8 +69,8 @@ Export::Result Export::operateInternal()
   smtk::attribute::ReferenceItem::Ptr meshItem = this->parameters()->associations();
 
   // for multiple meshes, we suffix the file name root with ascending integers
-  std::string root = outputfile.substr(0, outputfile.find_last_of("."));
-  std::string ext = outputfile.substr(outputfile.find_last_of("."));
+  std::string root = outputfile.substr(0, outputfile.find_last_of('.'));
+  std::string ext = outputfile.substr(outputfile.find_last_of('.'));
   int index = 0;
 
   std::vector<std::string> generatedFiles;
@@ -103,7 +99,7 @@ Export::Result Export::operateInternal()
       }
     }
 
-    if (fileExportSuccess == false)
+    if (!fileExportSuccess)
     {
       for (auto&& file : generatedFiles)
       {

@@ -44,8 +44,7 @@ class AddMeshToResult : public smtk::mesh::MeshForEach
 {
 public:
   AddMeshToResult(smtk::mesh::Read::Result& result)
-    : smtk::mesh::MeshForEach()
-    , m_result(result)
+    : m_result(result)
   {
   }
 
@@ -77,7 +76,7 @@ Read::Result Read::operateInternal()
   auto resource = smtk::mesh::Resource::create();
   bool success = smtk::io::readMesh(filePath, resource, subset);
 
-  if (success == false)
+  if (!success)
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }

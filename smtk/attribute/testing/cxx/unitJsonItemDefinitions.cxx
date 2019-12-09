@@ -32,7 +32,7 @@
 using namespace smtk::attribute;
 using json = nlohmann::json;
 
-int unitJsonItemDefinitions(int, char** const)
+int unitJsonItemDefinitions(int /*unused*/, char** const /*unused*/)
 {
   smtk::attribute::ResourcePtr resptr = smtk::attribute::Resource::create();
   smtk::attribute::Resource& resource(*resptr.get());

@@ -50,7 +50,7 @@ void verify_write_empty_resource()
 
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
-  test(result == false, "nothing to write for an empty resource");
+  test(!result, "nothing to write for an empty resource");
 }
 
 void verify_write_null_resource()
@@ -66,7 +66,7 @@ void verify_write_null_resource()
   //before we verify if the write was good, first remove the output file
   cleanup(write_path);
 
-  test(result == false, "Can't save null resource to disk");
+  test(!result, "Can't save null resource to disk");
 }
 
 void verify_read_write_valid_resource()
@@ -91,7 +91,7 @@ void verify_read_write_valid_resource()
 
     if (!smtk::io::exportMesh(write_path, mr))
     {
-      test(result == true, "failed to properly write out a valid 2dm file");
+      test(result, "failed to properly write out a valid 2dm file");
     }
   }
 
@@ -110,7 +110,7 @@ void verify_read_write_valid_resource()
 }
 }
 
-int UnitTestExportMesh2DM(int, char** const)
+int UnitTestExportMesh2DM(int /*unused*/, char** const /*unused*/)
 {
   verify_write_empty_resource();
   verify_write_null_resource();

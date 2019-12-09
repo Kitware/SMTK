@@ -40,18 +40,18 @@ public:
   smtkCreateMacro(ResourceA);
   smtkSharedFromThisMacro(smtk::resource::Resource);
 
-  smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
     return smtk::resource::ComponentPtr();
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
-  void visit(smtk::resource::Component::Visitor&) const override {}
+  void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
   ResourceA()
@@ -79,18 +79,18 @@ public:
   smtkTypeMacro(ResourceX);
   smtkSharedPtrCreateMacro(smtk::resource::Resource);
 
-  smtk::resource::ComponentPtr find(const smtk::common::UUID&) const override
+  smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
     return smtk::resource::ComponentPtr();
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
-  void visit(smtk::resource::Component::Visitor&) const override {}
+  void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
 
 protected:
   ResourceX()
@@ -235,7 +235,7 @@ const char* OperationB::xmlDescription() const
 // components from ResourceA and OperationB accepts components from ResourceB.
 // We query the operation manager using each of the three resource types and
 // test how many operations are available for each type.
-int TestAvailableOperations(int, char* [])
+int TestAvailableOperations(int /*unused*/, char* /*unused*/ [])
 {
   // Create a resource manager
   smtk::resource::Manager::Ptr resourceManager = smtk::resource::Manager::create();

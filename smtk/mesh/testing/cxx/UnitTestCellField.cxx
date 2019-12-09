@@ -118,7 +118,7 @@ void verify_partial_cellfields()
     for (auto& cellfieldname : cellfieldnames)
     {
       smtk::mesh::CellField cellfield(one, cellfieldname);
-      test(one.removeCellField(cellfield) == true);
+      test(one.removeCellField(cellfield));
       test(cellfield.size() == 0);
       test(cellfield.dimension() == 0);
     }
@@ -224,7 +224,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int numPts) override
+  void forCell(
+    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)
@@ -260,7 +261,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int numPts) override
+  void forCell(
+    const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/, int numPts) override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < numPts; i++)
@@ -328,7 +330,7 @@ void verify_cellfield_persistency()
     if (!result)
     {
       cleanup(write_path);
-      test(result == true, "failed to properly write out a valid hdf5 resource");
+      test(result, "failed to properly write out a valid hdf5 resource");
     }
   }
 
@@ -359,7 +361,7 @@ void verify_cellfield_persistency()
 }
 }
 
-int UnitTestCellField(int, char** const)
+int UnitTestCellField(int /*unused*/, char** const /*unused*/)
 {
   verify_partial_cellfields();
   verify_duplicate_cellfields();

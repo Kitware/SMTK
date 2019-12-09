@@ -39,7 +39,7 @@ void cleanup(const std::string& file_path)
 }
 }
 
-int TestArchive(int, char** const)
+int TestArchive(int /*unused*/, char** const /*unused*/)
 {
   std::size_t numberOfFiles = 10;
   std::size_t contentLength = 20;

@@ -34,8 +34,7 @@ class AddMeshToResult : public smtk::mesh::MeshForEach
 {
 public:
   AddMeshToResult(smtk::mesh::Import::Result& result)
-    : smtk::mesh::MeshForEach()
-    , m_result(result)
+    : m_result(result)
   {
   }
 
@@ -67,7 +66,7 @@ Import::Result Import::operateInternal()
   auto resource = smtk::mesh::Resource::create();
   bool success = smtk::io::importMesh(filePath, resource, label);
 
-  if (success == false)
+  if (!success)
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }

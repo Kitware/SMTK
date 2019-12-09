@@ -132,8 +132,8 @@ void qtSimpleExpressionEvaluationView::createWidget()
   this->Internals->DeltaInput->setText("1.0");
 
   this->Internals->EditorGroup = new QGroupBox("Use Function Expression", frame);
-  this->Internals->EditorGroup->setCheckable(1);
-  this->Internals->EditorGroup->setChecked(0);
+  this->Internals->EditorGroup->setCheckable(true);
+  this->Internals->EditorGroup->setChecked(false);
   this->Internals->EditorGroup->setToolTip(this->Internals->getFunctionParserDescription());
 
   QVBoxLayout* addLayout = new QVBoxLayout(this->Internals->EditorGroup);

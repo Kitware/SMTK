@@ -51,8 +51,6 @@
 using std::regex;
 using std::sregex_token_iterator;
 using std::regex_replace;
-using std::regex_search;
-using std::regex_match;
 #else
 #include <boost/regex.hpp>
 using boost::regex;
@@ -68,14 +66,11 @@ using namespace smtk::extension;
 class qtFileItemInternals
 {
 public:
-  qtFileItemInternals()
-    : FileBrowser(nullptr)
-  {
-  }
+  qtFileItemInternals() = default;
   ~qtFileItemInternals() = default;
 
   bool IsDirectory;
-  QFileDialog* FileBrowser;
+  QFileDialog* FileBrowser{ nullptr };
   QPointer<QComboBox> fileCombo;
 
   QPointer<QComboBox> fileExtCombo;
@@ -128,7 +123,7 @@ namespace
 QString extractFileTypeName(const std::string& fileTypeDescription)
 {
   // Trim the extensions to get just the file type name
-  std::string name = fileTypeDescription.substr(0, fileTypeDescription.find_last_of("("));
+  std::string name = fileTypeDescription.substr(0, fileTypeDescription.find_last_of('('));
 
   // Trim leading and trailing whitespace, remove multiple spaces.
   name = regex_replace(name, regex("^ +| +$|( ) +"), "$1");
@@ -139,7 +134,7 @@ QString extractFileTypeName(const std::string& fileTypeDescription)
 QString extractFileTypeExtension(const std::string& fileTypeDescription)
 {
   std::size_t begin =
-    fileTypeDescription.find_first_of("*", fileTypeDescription.find_first_of("(")) + 1;
+    fileTypeDescription.find_first_of('*', fileTypeDescription.find_first_of('(')) + 1;
   std::size_t end = fileTypeDescription.find_first_of(" \n\r\t)", begin);
   std::string acceptableSuffix = fileTypeDescription.substr(begin, end - begin);
 
@@ -541,12 +536,12 @@ void qtFileItem::setInputValue(const QString& val)
     smtk::attribute::ItemPtr item = m_itemInfo.item();
 
     auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
-    if (fItemDef->isValueValid(val.toStdString()) == false)
+    if (!fItemDef->isValueValid(val.toStdString()))
     {
       QFileInfo fi(val);
 
       std::string filters = fItemDef->getFileFilters();
-      std::size_t begin = filters.find_first_of("*", filters.find_first_of("(")) + 1;
+      std::size_t begin = filters.find_first_of('*', filters.find_first_of('(')) + 1;
       std::size_t end = filters.find_first_of(" \n\r\t", begin);
       QString acceptableSuffix(filters.substr(begin, end - begin).c_str());
 
@@ -796,7 +791,7 @@ void qtFileItem::setOutputOptional(int state)
   {
     return;
   }
-  bool enable = state ? true : false;
+  bool enable = state != 0;
   if (item->isExtensible())
   {
     if (this->Internals->AddItemButton)

@@ -34,8 +34,8 @@ vtkCUBITReader::~vtkCUBITReader()
   this->SetFileName(nullptr);
 }
 
-int vtkCUBITReader::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCUBITReader::RequestData(vtkInformation* /*request*/, vtkInformationVector** /*inputVector*/,
+  vtkInformationVector* outputVector)
 {
   // get the info object
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -132,7 +132,7 @@ int vtkCUBITReader::GetNextLineOfData(ifstream& fin, std::stringstream& lineStre
   lineStream.clear();
   char buffer[1024]; // a pretty long line!
   std::string testString;
-  while (1)
+  while (true)
   {
     fin.getline(buffer, 1024);
     if (fin.eof())
@@ -142,7 +142,7 @@ int vtkCUBITReader::GetNextLineOfData(ifstream& fin, std::stringstream& lineStre
 
     testString = buffer;
     // see if it is a comment or blank line
-    if (testString.empty() || testString.find("#") == 0)
+    if (testString.empty() || testString.find('#') == 0)
     {
       continue;
     }
@@ -160,8 +160,8 @@ void vtkCUBITReader::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "File Name: " << (this->FileName ? this->FileName : "(none)") << "\n";
 }
 
-int vtkCUBITReader::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCUBITReader::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {

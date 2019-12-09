@@ -52,7 +52,7 @@ smtk::mesh::DeleteMesh::Result DeleteMesh::operateInternal()
     allRemoved &= removed;
   }
 
-  if (allRemoved == false)
+  if (!allRemoved)
   {
     result->findInt("outcome")->setValue(
       0, static_cast<int>(smtk::operation::Operation::Outcome::FAILED));
@@ -67,7 +67,7 @@ const char* DeleteMesh::xmlDescription() const
 
 void DeleteMesh::generateSummary(smtk::operation::Operation::Result& result)
 {
-  if (m_suppressOutput == false)
+  if (!m_suppressOutput)
   {
     smtk::operation::Operation::generateSummary(result);
   }

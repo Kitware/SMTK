@@ -125,8 +125,8 @@ int vtkCMBPolygonModelImporter::GetMarginFromString(const char* text, double val
   return numVals;
 }
 
-int vtkCMBPolygonModelImporter::RequestInformation(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* vtkNotUsed(outputVector))
+int vtkCMBPolygonModelImporter::RequestInformation(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* /*outputVector*/)
 {
   if (!this->FileName)
   {
@@ -137,8 +137,8 @@ int vtkCMBPolygonModelImporter::RequestInformation(vtkInformation* vtkNotUsed(re
   return 1;
 }
 
-int vtkCMBPolygonModelImporter::RequestData(vtkInformation* vtkNotUsed(request),
-  vtkInformationVector** vtkNotUsed(inputVector), vtkInformationVector* outputVector)
+int vtkCMBPolygonModelImporter::RequestData(vtkInformation* /*request*/,
+  vtkInformationVector** /*inputVector*/, vtkInformationVector* outputVector)
 {
   vtkInformation* outInfo = outputVector->GetInformationObject(0);
   vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));

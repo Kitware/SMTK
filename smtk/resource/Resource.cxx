@@ -25,7 +25,6 @@ namespace resource
 
 Resource::Resource(const smtk::common::UUID& myID, ManagerPtr manager)
   : m_id(myID)
-  , m_location()
   , m_clean(false)
   , m_links(this)
   , m_properties(this)

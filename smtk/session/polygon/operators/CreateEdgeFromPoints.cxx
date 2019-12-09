@@ -121,7 +121,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
     curr = storage->projectPoint(pt.begin(), pt.end());
     if (!first && curr != prev)
     {
-      edgeSegs.push_back(internal::Segment(prev, curr));
+      edgeSegs.emplace_back(prev, curr);
     }
     else
     {
@@ -280,7 +280,7 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
     segStart = result.begin();
     for (SegmentSplitsT::iterator sit = result.begin(); sit != result.end();)
     {
-      bool generateEdge = (storage->pointId(sit->second.high()) ? true : false);
+      bool generateEdge = (storage->pointId(sit->second.high()));
       ++sit;
       // Does the current segment end with a model vertex?
       if (generateEdge)

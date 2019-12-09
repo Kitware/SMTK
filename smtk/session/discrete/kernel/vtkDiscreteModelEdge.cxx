@@ -131,7 +131,7 @@ bool vtkDiscreteModelEdge::ConstructRepresentation()
 {
   if (this->GetGeometry())
   {
-    return 1;
+    return true;
   }
   vtkModelVertex* vertex1 = this->GetAdjacentModelVertex(0);
   vtkModelVertex* vertex2 = this->GetAdjacentModelVertex(1);
@@ -180,15 +180,15 @@ bool vtkDiscreteModelEdge::Split(
     if (geometry)
     {
       // we are on the server...
-      return 0;
+      return false;
     }
     // BoundaryRep has not been set -> return error
-    return 0;
+    return false;
   }
   if (splitPointId >= poly->GetNumberOfPoints() || splitPointId < 0)
   {
     vtkErrorMacro("Bad point id for model edge split.");
-    return 0;
+    return false;
   }
 
   // on server, go ahead and perform the split first determine if
@@ -200,10 +200,10 @@ bool vtkDiscreteModelEdge::Split(
   {
     createdEdgeId = -1;
     createdVertexId = -1;
-    if (this->SplitModelEdgeLoop(splitPointId) == false)
+    if (!this->SplitModelEdgeLoop(splitPointId))
     {
       vtkErrorMacro("Unable to split edge loop.");
-      return 0;
+      return false;
     }
     vtkModelVertex* newVertex = this->GetAdjacentModelVertex(0);
     createdVertexId = newVertex->GetUniquePersistentId();
@@ -225,7 +225,7 @@ bool vtkDiscreteModelEdge::Split(
   if (splitPointId == modelEdgeStartPoint || splitPointId == modelEdgeEndPoint)
   {
     vtkWarningMacro("Picked an end point for splitting a model edge.");
-    return 0;
+    return false;
   }
 
   poly->BuildLinks();
@@ -236,14 +236,14 @@ bool vtkDiscreteModelEdge::Split(
     (pointCells->GetNumberOfIds() != 2 && modelEdgeStartPoint == modelEdgeEndPoint))
   {
     vtkWarningMacro("Improper grid.");
-    return 0;
+    return false;
   }
   poly->GetPointCells(splitPointId, pointCells);
   if (pointCells->GetNumberOfIds() < 2)
   {
     vtkWarningMacro("Improper splitting point for splitting an edge.");
     poly->DeleteLinks();
-    return 0;
+    return false;
   }
 
   // we do a cell walk from the split point to the end the edge polydata
@@ -267,7 +267,7 @@ bool vtkDiscreteModelEdge::Split(
   */
 
   vtkIdType currentCellId = -1;
-  for (int i = 0; i < pointCells->GetNumberOfIds(); ++i)
+  for (vtkIdType i = 0; i < pointCells->GetNumberOfIds(); ++i)
   {
     poly->GetCellPoints(pointCells->GetId(i), currentPtIds);
     if (splitPointId == currentPtIds->GetId(0))
@@ -329,7 +329,7 @@ bool vtkDiscreteModelEdge::Split(
           if (nextCellId < 0)
           {
             vtkWarningMacro("Could not perform grid walk.");
-            return 0;
+            return false;
           }
         }
       }
@@ -353,13 +353,13 @@ bool vtkDiscreteModelEdge::Split(
   if (newModelEdgeCells->GetNumberOfIds() >= poly->GetNumberOfCells())
   {
     vtkErrorMacro("Bad list of cells to split off from existing model edge.");
-    return 0;
+    return false;
   }
   vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
   vtkModelVertex* vertex = model->BuildModelVertex(splitPointId);
   createdVertexId = vertex->GetUniquePersistentId();
   bool blockEvent = this->GetModel()->GetBlockModelGeometricEntityEvent();
-  this->GetModel()->SetBlockModelGeometricEntityEvent(1);
+  this->GetModel()->SetBlockModelGeometricEntityEvent(true);
   vtkDiscreteModelEdge* newEdge =
     vtkDiscreteModelEdge::SafeDownCast(model->BuildModelEdge(nullptr, nullptr));
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockEvent);
@@ -392,7 +392,7 @@ bool vtkDiscreteModelEdge::Split(
   {
     ModelVertex->CreateGeometry();
   }
-  return 1;
+  return true;
 }
 
 bool vtkDiscreteModelEdge::SplitModelEdgeLoop(vtkIdType pointId)

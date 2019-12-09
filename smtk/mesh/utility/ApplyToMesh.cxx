@@ -98,8 +98,8 @@ class UndoWarpPoints : public smtk::mesh::PointForEach
 public:
   UndoWarpPoints() = default;
 
-  void forPoints(
-    const smtk::mesh::HandleRange&, std::vector<double>& xyz, bool& coordinatesModified) override
+  void forPoints(const smtk::mesh::HandleRange& /*pointIds*/, std::vector<double>& xyz,
+    bool& coordinatesModified) override
   {
     xyz = m_data;
     coordinatesModified = true;
@@ -153,14 +153,14 @@ private:
 
 public:
   ScalarPointField(const std::function<double(std::array<double, 3>)>& mapping, std::size_t nPoints)
-    : smtk::mesh::PointForEach()
-    , m_mapping(mapping)
+    : m_mapping(mapping)
     , m_data(nPoints)
     , m_counter(0)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& /*coordinatesModified*/) override
   {
     // The internal <m_counter> provides access to the the point field in
     // sequence. The local <xyzCounter> provides access to the coordinates of
@@ -206,7 +206,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int nPts) override
+  void forCell(
+    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int nPts) override
   {
     double xyz[3] = { 0., 0., 0. };
     for (int i = 0; i < 3 * nPts; i += 3)
@@ -247,14 +248,14 @@ private:
 public:
   VectorPointField(
     const std::function<std::array<double, 3>(std::array<double, 3>)>& mapping, std::size_t nPoints)
-    : smtk::mesh::PointForEach()
-    , m_mapping(mapping)
+    : m_mapping(mapping)
     , m_data(3 * nPoints)
     , m_counter(0)
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& xyz,
+    bool& /*coordinatesModified*/) override
   {
     // The internal <m_counter> provides access to the the point field in
     // sequence. The local <xyzCounter> provides access to the coordinates of
@@ -304,7 +305,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle&, smtk::mesh::CellType, int nPts) override
+  void forCell(
+    const smtk::mesh::Handle& /*cellId*/, smtk::mesh::CellType /*cellType*/, int nPts) override
   {
     std::array<double, 3> x = { { 0., 0., 0. } }, f_x;
     for (int i = 0; i < 3 * nPts; i += 3)

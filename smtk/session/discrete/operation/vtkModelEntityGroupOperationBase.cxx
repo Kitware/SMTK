@@ -73,20 +73,20 @@ bool vtkModelEntityGroupOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
   if (this->GetIsIdSet() == 0)
   {
     vtkErrorMacro("No entity id specified.");
-    return 0;
+    return false;
   }
   if (!this->GetModelEntityGroup(Model))
   {
     vtkErrorMacro("Cannot find the entity group.");
-    return 0;
+    return false;
   }
 
-  return 1;
+  return true;
 }
 
 void vtkModelEntityGroupOperationBase::AddModelEntity(vtkIdType EntityId)
@@ -125,7 +125,7 @@ bool vtkModelEntityGroupOperationBase::Operate(vtkDiscreteModel* Model)
 {
   if (!this->AbleToOperate(Model))
   {
-    return 0;
+    return false;
   }
 
   vtkDiscreteModelEntityGroup* EntityGroup = this->GetModelEntityGroup(Model);

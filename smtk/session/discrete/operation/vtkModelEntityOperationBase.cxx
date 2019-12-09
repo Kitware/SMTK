@@ -157,22 +157,22 @@ bool vtkModelEntityOperationBase::AbleToOperate(vtkDiscreteModel* Model)
   if (!Model)
   {
     vtkErrorMacro("Passed in a null model.");
-    return 0;
+    return false;
   }
   if (this->GetIsIdSet() == 0)
   {
     vtkErrorMacro("No entity id specified.");
-    return 0;
+    return false;
   }
 
   if (!this->GetIsVisibilitySet() && !this->GetIsRGBASet() && !this->GetIsRepresentationRGBASet() &&
     !this->GetIsPickableSet() && this->GetUserName() == nullptr && !this->GetIsShowTextureSet())
   {
     vtkWarningMacro("Did not set the visibility, user name or RGBA values.");
-    return 0;
+    return false;
   }
 
-  return 1;
+  return true;
 }
 
 bool vtkModelEntityOperationBase::Operate(vtkDiscreteModel* Model)
@@ -181,14 +181,14 @@ bool vtkModelEntityOperationBase::Operate(vtkDiscreteModel* Model)
 
   if (!this->AbleToOperate(Model))
   {
-    return 0;
+    return false;
   }
 
   vtkModelEntity* Entity = this->GetModelEntity(Model);
   if (!Entity)
   {
     vtkErrorMacro("Could not find entity with id " << this->GetId());
-    return 0;
+    return false;
   }
 
   if (this->GetIsVisibilitySet())
@@ -236,7 +236,7 @@ bool vtkModelEntityOperationBase::Operate(vtkDiscreteModel* Model)
   this->IsShowTextureSet = 0;
 
   vtkDebugMacro("Finished operating on a model.");
-  return 1;
+  return true;
 }
 
 void vtkModelEntityOperationBase::PrintSelf(ostream& os, vtkIndent indent)

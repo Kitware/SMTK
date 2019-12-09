@@ -91,9 +91,9 @@ public:
   }
 
   std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
-    const std::string&) const override
+    const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr&) { return true; };
+    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor& visitor) const override
@@ -173,7 +173,7 @@ protected:
     return spec;
   }
 
-  void generateSummary(Result&) override {}
+  void generateSummary(Result& /*unused*/) override {}
 };
 
 bool DeleterA::s_haveRun = false;
@@ -210,8 +210,8 @@ public:
   smtkCreateMacro(TestOperation);
   smtkSharedFromThisMacro(smtk::operation::Operation);
 
-  TestOperation() {}
-  ~TestOperation() override {}
+  TestOperation() = default;
+  ~TestOperation() override = default;
 
   Result operateInternal() override;
 
@@ -356,7 +356,7 @@ void TestMultiple(const T& resourceA, const U& operationManager)
   testResourceCount(resourceA, 1, "Expected 1 components after second mark-modified.");
 }
 
-int TestGarbageCollector(int, char** const)
+int TestGarbageCollector(int /*unused*/, char** const /*unused*/)
 {
   // Create managers
   auto resourceManager = smtk::resource::Manager::create();

@@ -23,10 +23,7 @@ class ContainedInNewEdge : public smtk::mesh::CellForEach
 public:
   ContainedInNewEdge(smtk::model::Edge edge)
     : CellForEach(true)
-    , m_cells()
-    , m_Xpoints()
-    , m_Ypoints()
-    , m_Zpoints()
+
   {
     //Find the tessellation of the edge and store the points
     //in a search-able structure.

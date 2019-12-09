@@ -205,7 +205,7 @@ int unitQtComponentItem(int argc, char* argv[])
       (userMaxAllowed > 0 && userMaxAllowed >= numRequired) ? userMaxAllowed : 4;
     std::ostringstream label;
     int numSel = 0;
-    for (auto entry : m_visibleThings)
+    for (const auto& entry : m_visibleThings)
     {
       if (entry.second)
       {
@@ -251,14 +251,14 @@ int unitQtComponentItem(int argc, char* argv[])
     }
     ok &= (maxAllowed <= 0 || numSel <= maxAllowed);
     plbl->setText(label.str().c_str());
-    plbl->setAutoFillBackground(ok ? false : true);
+    plbl->setAutoFillBackground(!ok);
     QPalette pal = plbl->palette();
     pal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
     plbl->setPalette(pal);
     plbl->update();
 
     dlbl->setText(label.str().c_str());
-    dlbl->setAutoFillBackground(ok ? false : true);
+    dlbl->setAutoFillBackground(!ok);
     QPalette dpal = dlbl->palette();
     dpal.setColor(QPalette::Background, QColor(QRgb(ok ? 0x00ff00 : 0xff7777)));
     dlbl->setPalette(dpal);
@@ -409,7 +409,7 @@ int unitQtComponentItem(int argc, char* argv[])
   QObject::connect(ef, &qtEventFilter::reset, [&m_visibleThings, &phraseModel]() {
     phraseModel->root()->visitChildren(
       [&phraseModel, &m_visibleThings](
-        smtk::view::DescriptivePhrasePtr cphr, std::vector<int>&) -> int {
+        smtk::view::DescriptivePhrasePtr cphr, std::vector<int> & /*unused*/) -> int {
         std::map<smtk::resource::ComponentPtr, int>::iterator it;
         if (cphr->relatedComponent() &&
           (it = m_visibleThings.find(cphr->relatedComponent())) != m_visibleThings.end())

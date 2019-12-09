@@ -40,7 +40,7 @@ void ArrangementHelper::mark(const EntityRef& ent, bool m)
 /// Return whether an entity is marked or not.
 bool ArrangementHelper::isMarked(const EntityRef& ent) const
 {
-  return m_marked.find(ent) == m_marked.end() ? false : true;
+  return m_marked.find(ent) != m_marked.end();
 }
 
 /// Clear all the marks so that isMarked() returns false for any argument.

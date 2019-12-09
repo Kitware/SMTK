@@ -48,8 +48,6 @@ private:
 Resource::Resource()
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
@@ -57,8 +55,6 @@ Resource::Resource()
 
 Resource::Resource(const smtk::common::UUID& resourceID)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
@@ -67,8 +63,6 @@ Resource::Resource(const smtk::common::UUID& resourceID)
 Resource::Resource(smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
       smtk::common::UUIDGenerator::instance().random())
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
@@ -76,8 +70,6 @@ Resource::Resource(smtk::mesh::InterfacePtr interface)
 
 Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
   : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
-  , m_readLocation()
-  , m_writeLocation()
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
@@ -99,7 +91,7 @@ std::function<bool(const resource::ConstComponentPtr&)> Resource::queryOperation
 {
   // TODO
   (void)queryString;
-  return [](const resource::ConstComponentPtr&) { return true; };
+  return [](const resource::ConstComponentPtr& /*unused*/) { return true; };
 }
 
 // visit all components in the resource.
@@ -109,8 +101,7 @@ void Resource::visit(smtk::resource::Component::Visitor& visitor) const
   {
   public:
     Visit(smtk::resource::Component::Visitor& visitor)
-      : smtk::mesh::MeshForEach()
-      , m_visitor(visitor)
+      : m_visitor(visitor)
     {
     }
 
@@ -143,7 +134,7 @@ void Resource::swapInterfaces(smtk::mesh::ResourcePtr& other)
 bool Resource::isValid() const
 {
   //make sure we have a valid uuid, and that our internals are valid
-  return (this->id().isNull() != true);
+  return !this->id().isNull();
 }
 
 bool Resource::isModified() const

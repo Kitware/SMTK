@@ -126,7 +126,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
       remGroups.push_back(grpRem);
     }
 
-    ok = remGroups.empty() ? false : true;
+    ok = !remGroups.empty();
   }
   else if (optype == "Modify")
   {
@@ -174,7 +174,7 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
       }
     }
     modGroups.push_back(modifyGroup);
-    ok = modGroups.empty() ? false : true;
+    ok = !modGroups.empty();
   }
 
   Result result = this->createResult(ok ? smtk::operation::Operation::Outcome::SUCCEEDED

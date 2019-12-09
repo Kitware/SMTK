@@ -225,7 +225,7 @@ void verify_write_valid_meshResource_hdf5_after_merge()
   if (!result)
   {
     cleanup(write_path);
-    test(result == true, "failed to properly write out a valid hdf5 resource");
+    test(result, "failed to properly write out a valid hdf5 resource");
   }
 
   //reload the written file and verify the number of meshes are the same as the
@@ -253,7 +253,7 @@ void verify_write_valid_meshResource_hdf5_after_merge()
 }
 }
 
-int UnitTestMergeContactPoints(int, char** const)
+int UnitTestMergeContactPoints(int /*unused*/, char** const /*unused*/)
 {
   verify_simple_merge();
   verify_complex_merge();

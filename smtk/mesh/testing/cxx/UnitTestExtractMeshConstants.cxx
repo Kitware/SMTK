@@ -35,8 +35,7 @@ class SubdivideMesh : public smtk::mesh::MeshForEach
 {
 public:
   SubdivideMesh(const std::vector<std::size_t>& order)
-    : smtk::mesh::MeshForEach()
-    , m_order(order)
+    : m_order(order)
     , m_index(0)
   {
   }
@@ -61,8 +60,7 @@ public:
   ValidateCells(const std::vector<smtk::mesh::CellSet>& cellsByDomain,
     const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
     const smtk::mesh::HandleRange cellRange)
-    : smtk::mesh::CellForEach()
-    , m_cellsByDomain(cellsByDomain)
+    : m_cellsByDomain(cellsByDomain)
     , m_domains(domains)
     , m_domainAssignments(domainAssignments)
     , m_cellRange(cellRange)
@@ -70,7 +68,8 @@ public:
   {
   }
 
-  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType, int) override
+  void forCell(const smtk::mesh::Handle& cellId, smtk::mesh::CellType /*cellType*/,
+    int /*numPointIds*/) override
   {
     // default to the value for unlabeled domains
     std::int64_t domainValue = -1;
@@ -100,8 +99,7 @@ public:
   ValidatePoints(const std::vector<smtk::mesh::PointSet>& pointsByDomain,
     const std::vector<smtk::mesh::Domain>& domains, const std::int64_t* domainAssignments,
     const smtk::mesh::HandleRange pointRange)
-    : smtk::mesh::PointForEach()
-    , m_pointsByDomain(pointsByDomain)
+    : m_pointsByDomain(pointsByDomain)
     , m_domains(domains)
     , m_domainAssignments(domainAssignments)
     , m_pointRange(pointRange)
@@ -109,7 +107,8 @@ public:
   {
   }
 
-  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>&, bool&) override
+  void forPoints(const smtk::mesh::HandleRange& pointIds, std::vector<double>& /*xyz*/,
+    bool& /*coordinatesModified*/) override
   {
     for (auto point = pointIds.begin(); point != pointIds.end(); ++point)
     {
@@ -184,7 +183,7 @@ void verify_extract_domain()
 }
 }
 
-int UnitTestExtractMeshConstants(int, char** const)
+int UnitTestExtractMeshConstants(int /*unused*/, char** const /*unused*/)
 {
   verify_extract_domain();
 
