@@ -83,6 +83,8 @@ signals:
   void numOfAttributesChanged();
   void attColorChanged();
   void attAssociationChanged();
+  // signal to indicate that a different attribute has been selected
+  void attributeSelected(smtk::attribute::AttributePtr att);
 
 protected:
   void createWidget() override;
