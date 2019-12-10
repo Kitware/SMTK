@@ -37,7 +37,7 @@ struct SMTKCORE_EXPORT LimitingClause
 
   smtk::resource::PropertyType m_propType;
   std::string m_propName;
-  bool m_propNameIsRegex;
+  bool m_propNameIsRegex{ false };
   std::vector<std::string> m_propStringValues;
   std::vector<bool> m_propStringIsRegex;
   std::vector<long> m_propIntValues;
