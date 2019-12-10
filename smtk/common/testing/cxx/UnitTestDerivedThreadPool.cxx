@@ -14,6 +14,12 @@
 #include <chrono>
 #include <iostream>
 
+#if __has_attribute(no_sanitize)
+#define NO_UBSAN_VPTR __attribute__((no_sanitize("vptr")))
+#else
+#define NO_UBSAN_VPTR
+#endif
+
 namespace
 {
 template <typename ReturnType>
@@ -29,7 +35,10 @@ public:
   void start() { m_stopped = false; }
 
 private:
-  void exec() override
+  // XXX(ubsan): UBSan detects that there is a vptr mismatch in the
+  // `this->m_condition.wait` call below. AFAICT, this is a false positive.
+  // Adding `SMTK_ALWAYS_EXPORT` to `ThreadPool` doesn't fix the issue.
+  NO_UBSAN_VPTR void exec() override
   {
     while (this->m_active)
     {
