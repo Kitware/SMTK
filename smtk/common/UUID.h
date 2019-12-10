@@ -20,6 +20,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/uuid/uuid.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
+#include <cstring>
 #include <iostream>
 #include <set>
 #include <string>
@@ -128,12 +129,14 @@ struct hash<smtk::common::UUID>
 {
   size_t operator()(const smtk::common::UUID& uid) const
   {
+    size_t hash;
     // Use the last sizeof(size_t) bytes as the hash since UUIDs
     // put their version number in the 4 LSBs of the 8th byte, which
     // causes collisions when sizeof(size_t) == 8.
     // This will need to be revisited if we switch to node-based
     // UUIDs, but for random UUIDs it works well.
-    return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
+    memmove(&hash, uid.begin() + uid.size() - sizeof(hash), sizeof(hash));
+    return hash;
   }
 };
 #else
@@ -141,23 +144,27 @@ struct hash<smtk::common::UUID>
 template <>
 inline size_t hash<const smtk::common::UUID&>::operator()(const smtk::common::UUID& uid) const
 {
+  size_t hash;
   // Use the last sizeof(size_t) bytes as the hash since UUIDs
   // put their version number in the 4 LSBs of the 8th byte, which
   // causes collisions when sizeof(size_t) == 8.
   // This will need to be revisited if we switch to node-based
   // UUIDs, but for random UUIDs it works well.
-  return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
+  memmove(&hash, uid.begin() + uid.size() - sizeof(hash), sizeof(hash));
+  return hash;
 }
 
 template <>
 inline size_t hash<smtk::common::UUID>::operator()(smtk::common::UUID uid) const
 {
+  size_t hash;
   // Use the last sizeof(size_t) bytes as the hash since UUIDs
   // put their version number in the 4 LSBs of the 8th byte, which
   // causes collisions when sizeof(size_t) == 8.
   // This will need to be revisited if we switch to node-based
   // UUIDs, but for random UUIDs it works well.
-  return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
+  memmove(&hash, uid.begin() + uid.size() - sizeof(hash), sizeof(hash));
+  return hash;
 }
 #endif // SMTK_HASH_SPECIALIZATION
 

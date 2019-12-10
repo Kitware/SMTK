@@ -91,6 +91,13 @@
         # need investigated or suppressed.
         CTEST_MEMORYCHECK_SANITIZER_OPTIONS: detect_leaks=0
 
+.fedora31_ubsan: &fedora31_ubsan
+    extends: .fedora31_memcheck
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_ubsan
+        CTEST_MEMORYCHECK_TYPE: UndefinedBehaviorSanitizer
+
 .fedora31_coverage: &fedora31_coverage
     extends: .fedora31_paraview
 
@@ -317,6 +324,20 @@ test:fedora31-asan:
         - build:fedora31-asan
     needs:
         - build:fedora31-asan
+
+build:fedora31-ubsan:
+    <<:
+        - *fedora31_ubsan
+        - *cmake_build_unix
+
+test:fedora31-ubsan:
+    <<:
+        - *fedora31_ubsan
+        - *cmake_memcheck_unix_x11
+    dependencies:
+        - build:fedora31-ubsan
+    needs:
+        - build:fedora31-ubsan
 
 build:fedora31-tidy:
     <<:

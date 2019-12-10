@@ -57,7 +57,7 @@ void from_json(const json& j, smtk::session::polygon::internal::pmodel::Ptr& pmo
     std::vector<double> jAxis = j.at("j axis");
     double featureSize = j["feature size"];
 
-    std::vector<int> modelScaleBytes = j["model scale"];
+    std::vector<unsigned long long> modelScaleBytes = j["model scale"];
     long long modelScale = 0;
     for (int i = 0; i < 8; ++i)
     {
