@@ -23,6 +23,7 @@ set(_smtk_packages
   Boost
   nlohmann_json
   pegtl
+  LibArchive
   MOAB
   Qt5
   ParaView
@@ -35,6 +36,9 @@ set(_smtk_packages
 # Per-package variable forwarding goes here.
 set(Boost_find_package_vars
   Boost_INCLUDE_DIR)
+set(LibArchive_find_package_vars
+  LibArchive_INCLUDE_DIR
+  LibArchive_LIBRARY)
 set(ZeroMQ_find_package_vars
   ZeroMQ_INCLUDE_DIR
   ZeroMQ_LIBRARY)
