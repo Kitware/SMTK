@@ -417,7 +417,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::ResourcePtr& res)
       // XXX(clang-tidy): The `""` comparison cannot be changed to
       // `baseType->empty()` because `baseType` is a JSON object. We're
       // checking if a string is empty, not if a JSON object is empty.
-      // NOLINTNEXTLINE
+      // NOLINTNEXTLINE(readability-container-size-empty)
       if ((baseType == currentDef.end()) || (*baseType == ""))
       {
         baseDef = nullptr;

@@ -47,7 +47,8 @@ struct verify_cell_attributes
 
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellHexahedron> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 8, "CellHexahedron Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellHexahedron Traits reports fixedPointSize() incorrectly");
@@ -60,7 +61,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellLine> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 2, "CellLine Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellLine Traits reports fixedPointSize() incorrectly");
@@ -73,7 +75,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellPolygon> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == -1, "CellPolygon Trait reports wrong number of points");
     test(traits.fixedPointSize() != smtk::mesh::CellFixedPointNumberTag::Type,
       "CellPolygon Traits reports fixedPointSize() incorrectly");
@@ -86,7 +89,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellPyramid> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 5, "CellPyramid Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellPyramid Traits reports fixedPointSize() incorrectly");
@@ -99,7 +103,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellQuad> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 4, "CellQuad Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellQuad Traits reports fixedPointSize() incorrectly");
@@ -112,7 +117,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellTetrahedron> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 4, "CellTetrahedron Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellTetrahedron Traits reports fixedPointSize() incorrectly");
@@ -125,7 +131,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellTriangle> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 3, "CellTriangle Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellTriangle Traits reports fixedPointSize() incorrectly");
@@ -138,7 +145,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellVertex> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 1, "CellVertex Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellVertex Traits reports fixedPointSize() incorrectly");
@@ -151,7 +159,8 @@ struct verify_cell_attributes
   }
   void verify(smtk::mesh::CellTraits<smtk::mesh::CellWedge> traits)
   {
-    // NOLINTNEXTLINE: Use `traits` to access the static data for test consistency.
+    // XXX(clang-tidy): Use `traits` to access the static data for test consistency.
+    // NOLINTNEXTLINE(readability-static-accessed-through-instance)
     test(traits.NUM_VERTICES == 6, "CellWedge Trait reports wrong number of points");
     test(traits.fixedPointSize() == smtk::mesh::CellFixedPointNumberTag::Type,
       "CellWedge Traits reports fixedPointSize() incorrectly");
