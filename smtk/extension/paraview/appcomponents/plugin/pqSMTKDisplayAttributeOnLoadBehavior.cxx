@@ -135,6 +135,10 @@ void pqSMTKDisplayAttributeOnLoadBehavior::handleResourceEvent(
     // the same attribute anyway.
     pqSMTKAttributePanel* panel = nullptr;
     QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
+    if (!mainWindow)
+    {
+      return;
+    }
     foreach (pqSMTKAttributePanel* attrPanel, mainWindow->findChildren<pqSMTKAttributePanel*>())
     {
       panel = attrPanel;
