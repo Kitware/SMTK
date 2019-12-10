@@ -522,6 +522,7 @@ void qtAttributeView::onListBoxSelectionChanged()
     if (dataItem)
     {
       this->updateTableWithAttribute(dataItem);
+      emit attributeSelected(dataItem);
     }
   }
   else

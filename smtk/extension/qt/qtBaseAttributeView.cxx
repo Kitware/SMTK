@@ -175,30 +175,22 @@ void signalAttribute(smtk::extension::qtUIManager* uiManager,
 {
   if (attr && uiManager && itemName && itemName[0])
   {
-    bool didNotify = false;
-    // create a "dummy" operation that will mark the attribute resource
-    // as modified so that applications know when a "save" is required.
+    // create a Signal operation that will let Observers know that an
+    // attribute was created, modified, or removed.
     auto opManager = uiManager->operationManager();
     if (opManager)
     {
-      auto markModified = opManager->create<smtk::attribute::Signal>();
-      if (markModified)
+      auto signalOp = opManager->create<smtk::attribute::Signal>();
+      if (signalOp)
       {
-        didNotify = markModified->parameters()->findComponent(itemName)->appendObjectValue(attr);
-        markModified->parameters()->findString("items")->setValues(items.begin(), items.end());
-        auto result = markModified->operate();
-        didNotify &= result->findInt("outcome")->value() ==
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
+        signalOp->parameters()->findComponent(itemName)->appendObjectValue(attr);
+        signalOp->parameters()->findString("items")->setValues(items.begin(), items.end());
+        opManager->launchers()(signalOp);
       }
-    }
-    if (!didNotify)
-    {
-      static bool once = true;
-      if (once)
+      else
       {
-        once = false;
         smtkWarningMacro(
-          smtk::io::Logger::instance(), "Could not notify operation observers of attribute event.");
+          smtk::io::Logger::instance(), "Could not create Signal Operation for attribute event.");
       }
     }
   }
