@@ -88,6 +88,7 @@ set(unit_tests
   unitJsonItemDefinitions.cxx
   unitPassCategories
   unitPathGrammar.cxx
+  unitUnsetValueError.cxx
 )
 
 set(unit_tests_which_require_data)

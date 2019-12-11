@@ -109,6 +109,7 @@ set(attributeHeaders
   StringItem.h
   StringItemDefinition.h
   Tag.h
+  UnsetValueError.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
