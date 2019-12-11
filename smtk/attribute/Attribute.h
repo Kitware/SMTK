@@ -259,6 +259,31 @@ public:
   /// Disassociate attribute from an object.  Returns true if successful.
   bool disassociate(smtk::resource::PersistentObjectPtr obj, bool reverse = true);
 
+  /**
+  * @brief Sever dependencies between items and the owning resource.
+  *
+  * Some items implicitly interact with the parent resource to store and
+  * retrieve data (e.g. ReferenceItem uses links to retrieve references). For
+  * items with this type of relationship with the owning resource, this method
+  * disables those routines, forcing the item (and, therefore, the containing
+  * attribute) to satisfy its API without using the owning resource. This is
+  * useful when an attribute has been removed from its parent resource and is
+  * still held by ancillary routines (i.e. when the attribute is expunged and
+  * Operation observers are inspecting expunged resources).
+  */
+  void detachItemsFromOwningResource();
+
+  /**
+  * @brief Remove all associations of this attribute with model entities.
+  *
+  * When dealing with prerequisite constraints it may not be possible to
+  * remove all associations.  If partialRemovalOk is true, then all
+  * associations that can be removed all.  If false, then associations are
+  * only removed iff all can be removed.
+  * Note that this may reset the associations.
+  * If there are any default associations, they will be present
+  * but typically there are none.
+  */
   bool removeAllAssociations(bool partialRemovalOk = false);
 
   /**

@@ -436,15 +436,24 @@ ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
 bool ReferenceItem::setObjectValue(std::size_t i, const PersistentObjectPtr& val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
+  if ((i >= m_cache->size()) || (val != nullptr && !def->isValueValid(val)))
+  {
+    return false;
+  }
+
   AttributePtr myAtt = this->m_referencedAttribute.lock();
-  if ((myAtt != nullptr) && (i < m_cache->size()) && (val == nullptr || def->isValueValid(val)))
+  if (myAtt != nullptr)
   {
     myAtt->links().removeLink(m_keys[i]);
     m_keys[i] = this->linkTo(val);
-    assignToCache(i, val);
-    return true;
   }
-  return false;
+  else
+  {
+    m_keys[i] = Key();
+  }
+
+  assignToCache(i, val);
+  return true;
 }
 
 bool ReferenceItem::appendObjectValue(const PersistentObjectPtr& val)
@@ -513,6 +522,29 @@ bool ReferenceItem::removeValue(std::size_t i)
   m_keys.erase(m_keys.begin() + i);
   (*m_cache).erase((*m_cache).begin() + i);
   return true;
+}
+
+void ReferenceItem::detachOwningResource()
+{
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if (myAtt != nullptr)
+  {
+    // Populate the cache
+    this->resolve();
+
+    // Remove links to referenced items
+    for (auto& key : m_keys)
+    {
+      myAtt->links().removeLink(key);
+    }
+  }
+
+  // Flush keys
+  m_keys.clear();
+  m_keys.resize((*m_cache).size());
+
+  // Let the base class detach from the resource
+  Item::detachOwningResource();
 }
 
 void ReferenceItem::reset()
@@ -719,6 +751,10 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
 
 bool ReferenceItem::resolve() const
 {
+  // This static value refers to an unset key. It is declared statically once
+  // here rather than repeatedly created when querying whether the key is set.
+  static const Key nullKey = Key();
+
   bool allResolved = true;
   AttributePtr myAtt = this->m_referencedAttribute.lock();
   if (myAtt == nullptr)
@@ -745,9 +781,9 @@ bool ReferenceItem::resolve() const
     //       deleted.  For the time being we will always look up the object if
     //       we are not explicitly holding the reference and the attribute
     //       resource itself is being managed.
-    // if (reference == nullptr)
+    // if (reference == nullptr && (*key) != nullKey)
     if ((reference == nullptr) ||
-      (!def->holdReference() && myAtt->resource()->manager() != nullptr))
+      (!def->holdReference() && (*key) != nullKey && myAtt->resource()->manager() != nullptr))
     {
       // ...set it equal to the object pointer accessed using its key.
       auto newValue = this->objectValue(*key);

@@ -75,6 +75,8 @@ public:
   bool setDiscreteIndex(int value) { return this->setDiscreteIndex(0, value); }
   // Returns true if value is a valid index - else it returns false
   bool setDiscreteIndex(std::size_t elementIndex, int value);
+  /// Release the item's dependency on its parent attribute's Resource.
+  void detachOwningResource() override;
   // Reset returns the item to its initial state.
   //If the item is of fixed size, then it's values  to their initial state.
   // If there is a default available it will use it, else
