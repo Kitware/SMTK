@@ -43,4 +43,6 @@ smtk_public_headers(smtkPVServerExt ${vtk_headers})
 paraview_add_server_manager_xmls(
   XMLS smconfig.xml)
 
-add_subdirectory(testing)
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif ()

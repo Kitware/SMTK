@@ -25,4 +25,6 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_subdirectory(pybind11)
 endif()
 
-add_subdirectory(testing)
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif ()
