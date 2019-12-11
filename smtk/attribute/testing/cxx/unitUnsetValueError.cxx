@@ -128,6 +128,17 @@ int unitUnsetValueError(int argc, char* argv[])
 
   test(errorCaught == true, "Failed to catch \"UnsetValueError\" exception");
 
+  std::size_t numberOfUnsetValues = 0;
+  for (auto it = referenceItem->begin(); it != referenceItem->end(); ++it)
+  {
+    if (!it.isSet())
+    {
+      ++numberOfUnsetValues;
+    }
+  }
+
+  test(numberOfUnsetValues == 1, "Incorrect number of unset values counted through iteration");
+
   while (!dataArgs.empty())
   {
     char* val = dataArgs.back();

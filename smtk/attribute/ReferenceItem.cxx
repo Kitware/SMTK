@@ -159,6 +159,12 @@ ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator
   return ref;
 }
 
+bool ReferenceItem::const_iterator::isSet() const
+{
+  reference ref = boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+  return (ref != nullptr);
+}
+
 ReferenceItem::const_iterator::difference_type operator-(
   const ReferenceItem::const_iterator& a, const ReferenceItem::const_iterator& b)
 {
