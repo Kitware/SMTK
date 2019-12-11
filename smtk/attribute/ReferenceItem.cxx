@@ -12,6 +12,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/UnsetValueError.h"
 
 #include "smtk/resource/Component.h"
 
@@ -131,16 +132,37 @@ ReferenceItem::const_iterator ReferenceItem::const_iterator::operator-(
 
 ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator*() const
 {
-  return boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+  reference ref = boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+  if (ref == nullptr)
+  {
+    throw UnsetValueError();
+  }
+  return ref;
 }
 ReferenceItem::const_iterator::pointer ReferenceItem::const_iterator::operator->() const
 {
-  return boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+  pointer ptr = boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+  if (ptr == nullptr)
+  {
+    throw UnsetValueError();
+  }
+  return ptr;
 }
 ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator[](
   const difference_type& d)
 {
-  return boost::apply_visitor(access_reference(), (*m_cacheIterator)[d]);
+  reference ref = boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+  if (ref == nullptr)
+  {
+    throw UnsetValueError();
+  }
+  return ref;
+}
+
+bool ReferenceItem::const_iterator::isSet() const
+{
+  reference ref = boost::apply_visitor(access_reference(), *(*m_cacheIterator));
+  return (ref != nullptr);
 }
 
 ReferenceItem::const_iterator::difference_type operator-(

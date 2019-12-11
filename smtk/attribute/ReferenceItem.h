@@ -91,6 +91,8 @@ public:
     pointer operator->() const;
     reference operator[](const difference_type& d);
 
+    bool isSet() const;
+
     friend difference_type SMTKCORE_EXPORT operator-(const const_iterator&, const const_iterator&);
 
     friend bool SMTKCORE_EXPORT operator<(const const_iterator& it1, const const_iterator& it2);
