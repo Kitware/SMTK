@@ -70,10 +70,6 @@ set(smtkCore_public_include_directories
   $<INSTALL_INTERFACE:include/smtk/${SMTK_VERSION}>
   )
 
-set(smtkCore_private_include_directories
-  ${LibArchive_INCLUDE_DIRS}
-  )
-
 set(moab_libs ${MOAB_LIBRARIES})
 if(WIN32)
   set(moab_libs "MOAB")
@@ -89,7 +85,7 @@ set(smtkCore_private_link_libraries
   Boost::date_time
   Boost::filesystem
   Boost::system
-  ${LibArchive_LIBRARIES}
+  LibArchive::LibArchive
   )
 
 if(SMTK_ENABLE_PYTHON_WRAPPING)
@@ -107,8 +103,6 @@ add_library(smtkCore ${smtk_srcs})
 target_include_directories(smtkCore
   PUBLIC
   ${smtkCore_public_include_directories}
-  PRIVATE
-  ${smtkCore_private_include_directories}
 )
 target_link_libraries(smtkCore
   LINK_PUBLIC ${smtkCore_public_link_libraries}

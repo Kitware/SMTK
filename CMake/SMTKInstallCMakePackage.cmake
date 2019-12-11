@@ -35,6 +35,8 @@ configure_file(
   COPYONLY)
 
 set(smtk_cmake_module_files
+  FindLibArchive.cmake
+
   EncodeStringFunctions.cmake
   SMTKMacros.cmake
   SMTKOperationXML.cmake
