@@ -119,7 +119,7 @@ void qtDiscreteValueEditor::createWidget()
   //   to indicate that the value violates the current category/advance level
   //   settings
   combo->addItem("Please Select", -1);
-  combo->setItemData(0, QColor(Qt::red), Qt::TextColorRole);
+  combo->setItemData(0, QColor(Qt::red), Qt::ForegroundRole);
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
   {
     std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
@@ -188,7 +188,7 @@ void qtDiscreteValueEditor::updateItemData()
   {
     setIndex = item->discreteIndex(elementIdx);
   }
-  // Does combo's current value match the state of the item- if it is then just return
+  // If combo's current value matches the state of the item just return
   if ((setIndex >= 0) && (setIndex == combo->currentData().toInt()))
   {
     return;
@@ -215,16 +215,18 @@ void qtDiscreteValueEditor::updateItemData()
   if (i == numItems)
   {
     combo->addItem(itemDef->discreteEnum(setIndex).c_str(), setIndex);
-    combo->setItemData(numItems, QColor(Qt::red), Qt::TextColorRole);
+    combo->setItemData(numItems, QColor(Qt::red), Qt::ForegroundRole);
     combo->setItemData(numItems, 1, Qt::UserRole + 1);
     combo->setCurrentIndex(numItems);
   }
 
   if ((i == 0) || (i == numItems))
   {
+    // On Macs to change the button text color you need to set QPalette::Text
+    // For Linux you need to set QPalette::ButtonText
     QPalette comboboxPalette = combo->palette();
+    comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
     comboboxPalette.setColor(QPalette::Text, Qt::red);
-    comboboxPalette.setColor(QPalette::WindowText, Qt::red);
     combo->setPalette(comboboxPalette);
   }
   else
@@ -250,9 +252,11 @@ void qtDiscreteValueEditor::onInputValueChanged()
   // else set it to be the same as the combo-box's parent widget
   if ((comboBox->currentIndex() == 0) || comboBox->currentData(Qt::UserRole + 1).isValid())
   {
+    // On Macs to change the button text color you need to set QPalette::Text
+    // For Linux you need to set QPalette::ButtonText
     QPalette comboboxPalette = comboBox->palette();
+    comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
     comboboxPalette.setColor(QPalette::Text, Qt::red);
-    comboboxPalette.setColor(QPalette::WindowText, Qt::red);
     comboBox->setPalette(comboboxPalette);
   }
   else
