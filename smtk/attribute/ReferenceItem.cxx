@@ -357,6 +357,11 @@ void ReferenceItem::visit(std::function<bool(const PersistentObjectPtr&)> visito
 {
   for (auto it = this->begin(); it != this->end(); ++it)
   {
+    if (!it.isSet())
+    {
+      continue;
+    }
+
     if (!visitor(*it))
     {
       break;
@@ -621,6 +626,11 @@ std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
   std::ptrdiff_t idx = 0;
   for (auto it = this->begin(); it != this->end(); ++it, ++idx)
   {
+    if (!it.isSet())
+    {
+      continue;
+    }
+
     if ((*it) && (*it)->id() == uid)
     {
       return idx;
@@ -634,6 +644,11 @@ std::ptrdiff_t ReferenceItem::find(const PersistentObjectPtr& comp) const
   std::ptrdiff_t idx = 0;
   for (auto it = this->begin(); it != this->end(); ++it, ++idx)
   {
+    if (!it.isSet())
+    {
+      continue;
+    }
+
     if ((*it) == comp)
     {
       return idx;
