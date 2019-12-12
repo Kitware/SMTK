@@ -111,6 +111,9 @@ public:
     std::size_t element, const std::string& name, SearchStyle style = IMMEDIATE) const;
   using Item::findAs;
 
+  /// Release the item's dependency on its parent attribute's Resource.
+  void detachOwningResource() override;
+
   void reset() override;
 
   /**\brief Rotate the order of subgroups between specified positions.

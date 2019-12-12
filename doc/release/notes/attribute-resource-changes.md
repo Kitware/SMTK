@@ -60,3 +60,12 @@ In terms of XML the following shows an example snippet for using the new capabil
 
 ```
 See smtk/attribute/testing/cxx/unitCategoryTest.cxx and smtk/data/attribute/attribute_collection/ConfigurationTest.sbt for examples.
+
+#### Support for ReferenceItems within detached Attributes
+When an attribute containing ReferenceItems (including associations)
+is detached, the links describing the connections between the
+ReferenceItems and their references are now severed (originally, this
+was only true for ReferenceItems representing associations). The ReferenceItems'
+caches remain populated after detachment to support the
+ReferenceItems' API once its parent attribute is removed from its
+Resource.

@@ -288,6 +288,16 @@ bool ValueItem::isDiscrete() const
   return static_cast<const ValueItemDefinition*>(m_definition.get())->isDiscrete();
 }
 
+void ValueItem::detachOwningResource()
+{
+  std::map<std::string, smtk::attribute::ItemPtr>::const_iterator iter;
+  const std::map<std::string, smtk::attribute::ItemPtr>& childrenItems = this->childrenItems();
+  for (iter = childrenItems.begin(); iter != childrenItems.end(); iter++)
+  {
+    iter->second->detachOwningResource();
+  }
+}
+
 void ValueItem::reset()
 {
   Item::reset();

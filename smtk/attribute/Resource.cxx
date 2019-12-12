@@ -285,6 +285,8 @@ bool Resource::removeAttribute(smtk::attribute::AttributePtr att)
     return false;
   }
 
+  att->detachItemsFromOwningResource();
+
   m_attributes.erase(att->name());
   m_attributeIdMap.erase(att->id());
   m_attributeClusters[att->type()].erase(att);

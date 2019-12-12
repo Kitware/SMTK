@@ -196,6 +196,9 @@ public:
   /// Default behavior here is no-op (returns false).
   virtual bool rotate(std::size_t fromPosition, std::size_t toPosition);
 
+  /// Release the item's dependency on its parent attribute's Resource.
+  virtual void detachOwningResource() {}
+
   /// This should be used only by attributes
   void detachOwningAttribute() { m_attribute = NULL; }
   /// This should only be called by the item that owns
