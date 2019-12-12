@@ -47,7 +47,7 @@ public:
     return *this;
   }
 
-  std::future<smtk::operation::Operation::Result> operator()(
+  std::shared_future<smtk::operation::Operation::Result> operator()(
     const smtk::operation::Operation::Ptr& operation)
   {
     return m_pool->operator()(
@@ -102,7 +102,7 @@ Launchers::LauncherMap::size_type Launchers::erase(const Launchers::LauncherMap:
   return m_launchers.size();
 }
 
-std::future<Operation::Result> Launchers::operator()(
+std::shared_future<Operation::Result> Launchers::operator()(
   const Operation::Ptr& op, const Launchers::LauncherMap::key_type& k_type)
 {
   assert(op != nullptr);
@@ -120,7 +120,7 @@ std::future<Operation::Result> Launchers::operator()(
   }
 }
 
-std::future<Operation::Result> Launchers::operator()(const Operation::Ptr& op)
+std::shared_future<Operation::Result> Launchers::operator()(const Operation::Ptr& op)
 {
   return this->operator()(op, default_key);
 }

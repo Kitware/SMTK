@@ -105,7 +105,7 @@ int TestOperationLauncher(int /*unused*/, char** const /*unused*/)
   myOperation->parameters()->findAs<smtk::attribute::IntItem>("sleep")->setValue(sleepValue);
 
   // Use the default operation launcher to launch our operation asynchronously
-  std::future<smtk::operation::Operation::Result> result =
+  std::shared_future<smtk::operation::Operation::Result> result =
     operationManager->launchers()(myOperation);
 
   std::future_status status;
