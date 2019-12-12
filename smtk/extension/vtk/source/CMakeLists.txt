@@ -1,35 +1,29 @@
 set(classes
+  PointCloudFromVTKAuxiliaryGeometry
+  SourceFromAttribute
+  SourceFromMesh
+  SourceFromModel
+  StructuredGridFromVTKAuxiliaryGeometry
   vtkAttributeMultiBlockSource
   vtkAuxiliaryGeometryExtension
   vtkCmbLayeredConeSource
   vtkConeFrustum
   vtkImplicitConeFrustum
   vtkMeshMultiBlockSource
+  vtkModelAuxiliaryGeometry
   vtkModelMultiBlockSource
   vtkModelView
   vtkResourceMultiBlockSource)
-set(sources
-  PointCloudFromVTKAuxiliaryGeometry.cxx
-  SourceFromAttribute.cxx
-  SourceFromMesh.cxx
-  SourceFromModel.cxx
-  StructuredGridFromVTKAuxiliaryGeometry.cxx
-  vtkModelAuxiliaryGeometry.cxx)
+set(templates
+  vtkModelAuxiliaryGeometry.txx)
 set(headers
-  PointCloudFromVTKAuxiliaryGeometry.h
-  SourceFromAttribute.h
-  SourceFromMesh.h
-  SourceFromModel.h
   SourceGenerator.h
-  StructuredGridFromVTKAuxiliaryGeometry.h
-  vtkModelAuxiliaryGeometry.txx
   vtkTracksAllInstances.h)
 
 vtk_module_add_module(vtkSMTKSourceExt
   CLASSES ${classes}
-  SOURCES ${sources}
-  HEADERS ${headers}
-  PRIVATE_HEADERS ${private_headers})
+  TEMPLATES ${templates}
+  HEADERS ${headers})
 
 vtk_module_link(vtkSMTKSourceExt
   PUBLIC
