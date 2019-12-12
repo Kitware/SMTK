@@ -147,7 +147,7 @@ ReferenceItem::const_iterator::pointer ReferenceItem::const_iterator::operator->
   return ptr;
 }
 ReferenceItem::const_iterator::reference ReferenceItem::const_iterator::operator[](
-  const difference_type& d)
+  const difference_type& /*d*/)
 {
   reference ref = boost::apply_visitor(access_reference(), *(*m_cacheIterator));
   if (ref == nullptr)

@@ -124,7 +124,8 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 cmake_dependent_option(SMTK_ENABLE_UNSTABLE_TESTS "Enable Unstable Testing" OFF SMTK_ENABLE_TESTING OFF)
 option(SMTK_INSTALL_TESTING_DATA "Install Testing Data" OFF)
-option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF)
+cmake_dependent_option(SMTK_ENABLE_EXAMPLES "Enable Examples" OFF
+  SMTK_ENABLE_TESTING OFF)
 option(SMTK_ENABLE_PYTHON_WRAPPING "Build Python Wrappings" OFF)
 # Provide system packagers with the ability to install SMTK
 # to the system's Python site package directory. The default

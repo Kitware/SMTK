@@ -126,7 +126,7 @@ int unitUnsetValueError(int argc, char* argv[])
     errorCaught = true;
   }
 
-  test(errorCaught == true, "Failed to catch \"UnsetValueError\" exception");
+  test(errorCaught, "Failed to catch \"UnsetValueError\" exception");
 
   std::size_t numberOfUnsetValues = 0;
   for (auto it = referenceItem->begin(); it != referenceItem->end(); ++it)
