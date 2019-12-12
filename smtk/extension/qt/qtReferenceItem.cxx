@@ -949,7 +949,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
         // the size of m_members is used to determine whether the
         // association's rules are met, so an extra entry can prevent
         // the association from being edited by the user.
-        if (*vit)
+        if (vit.isSet())
         {
           m_p->m_members[*vit] = 1; // FIXME: Use a bit specified by the application.
         }
