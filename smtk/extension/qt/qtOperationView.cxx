@@ -99,8 +99,6 @@ qtOperationView::qtOperationView(const OperationViewInfo& info)
     }
     assert(launcher != nullptr);
     this->Internals->m_launcher = launcher->get();
-    connect(this->Internals->m_launcher, &qtOperationLauncher::resultReady, this,
-      &qtOperationView::operationExecuted);
   }
 
   connect(this, &qtOperationView::operationExecuted, this, &qtOperationView::onOperationExecuted);
@@ -221,7 +219,12 @@ void qtOperationView::onOperate()
 {
   if ((!m_applied) && this->Internals->m_instancedView->isValid())
   {
-    auto future = (*this->Internals->m_launcher)(this->Internals->m_operator);
+    shared_ptr<smtk::extension::ResultHandler> handler =
+      (*this->Internals->m_launcher)(this->Internals->m_operator);
+
+    connect(handler.get(), &smtk::extension::ResultHandler::resultReady, this,
+      &qtOperationView::operationExecuted);
+
     emit this->operationRequested(this->Internals->m_operator);
     if (this->Internals->m_applyButton)
     { // The button may disappear when a session is closed by an operator.
