@@ -294,16 +294,19 @@ const smtk::resource::ResourcePtr Attribute::resource() const
   return this->attributeResource();
 }
 
-/**\brief Remove all associations of this attribute with model entities.
-  *
-  * When dealing with prerequisite constrinats it may not be possible to
-  * remove all associations.  If partialRemovalOk is true, then all
-  * associations that can be removed all.  If false, then associations are
-  * only removed iff all can be removed.
-  * Note that this may reset the associations.
-  * If there are any default associations, they will be present
-  * but typically there are none.
-  */
+void Attribute::detachItemsFromOwningResource()
+{
+  for (auto it = m_items.begin(); it != m_items.end(); ++it)
+  {
+    (*it)->detachOwningResource();
+  }
+
+  if (m_associatedObjects != nullptr)
+  {
+    m_associatedObjects->detachOwningResource();
+  }
+}
+
 bool Attribute::removeAllAssociations(bool partialRemovalOk)
 {
   if (m_associatedObjects == nullptr)
@@ -329,10 +332,9 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
       }
       if (result)
       {
-        // OK - we have been able to remove all associations,
-        // so we now need to reset the association item in the
-        // rare case there are default associations
-        m_associatedObjects->reset();
+        // OK - we have been able to remove all associations, so we now need to
+        // sever the association item's connection to its parent resource
+        m_associatedObjects->detachOwningResource();
       }
       return result;
     }
@@ -352,7 +354,7 @@ bool Attribute::removeAllAssociations(bool partialRemovalOk)
       return false;
     }
   }
-  m_associatedObjects->reset();
+  m_associatedObjects->detachOwningResource();
   return true;
 }
 

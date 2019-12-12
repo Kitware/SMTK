@@ -245,6 +245,8 @@ public:
     * from the array (reducing the number of values stored by 1).
     */
   bool removeValue(std::size_t i);
+  /// Release the item's dependency on its parent attribute's Resource.
+  void detachOwningResource() override;
   /// Clear the list of values and fill it with null entries up to the number of required values.
   void reset() override;
   /// A convenience method to obtain the first value in the item as a string.
