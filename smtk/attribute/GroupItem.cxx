@@ -97,6 +97,20 @@ bool GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
   return true;
 }
 
+void GroupItem::detachOwningResource()
+{
+  for (auto it = m_items.begin(); it != m_items.end(); ++it)
+  {
+    for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
+    {
+      if (*it1 != nullptr)
+      {
+        (*it1)->detachOwningResource();
+      }
+    }
+  }
+}
+
 void GroupItem::reset()
 {
   const GroupItemDefinition* def = static_cast<const GroupItemDefinition*>(m_definition.get());

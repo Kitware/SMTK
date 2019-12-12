@@ -84,6 +84,7 @@ set(unit_tests
   unitComponentItem.cxx
   unitComponentItemConstraints
   unitDateTimeItem.cxx
+  unitDetachReferenceItem.cxx
   unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
   unitPassCategories
