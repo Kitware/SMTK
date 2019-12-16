@@ -1,6 +1,5 @@
 set(test_exclusions
   # Issue #296.
-  "elevateMeshOnStructuredGridPy"
   "TestReadWrite"
 )
 string(REPLACE ";" "|" test_exclusions "${test_exclusions}")
