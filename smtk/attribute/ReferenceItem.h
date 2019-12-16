@@ -180,6 +180,11 @@ public:
   {
     for (auto it = this->begin(); it != this->end(); ++it)
     {
+      if (it.isSet() == false)
+      {
+        continue;
+      }
+
       typename Container::value_type val = converter(*it);
       if (val)
       {
@@ -220,6 +225,9 @@ public:
   template <typename I>
   bool setObjectValues(
     I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0);
+  template <>
+  bool setObjectValues<const_iterator>(const_iterator vbegin, const_iterator vend,
+    typename std::iterator_traits<const_iterator>::difference_type offset = 0);
   template <typename I>
   bool appendObjectValues(I vbegin, I vend);
 
@@ -352,6 +360,11 @@ bool ReferenceItem::setObjectValues(
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
+      if ((*it) == nullptr)
+      {
+        continue;
+      }
+
       if (!this->setObjectValue(offset + i, *it))
       {
         ok = false;
@@ -385,6 +398,11 @@ bool ReferenceItem::setValuesVia(
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
+      if (it.isSet() == false)
+      {
+        continue;
+      }
+
       if (!this->setObjectValue(offset + i, converter(*it)))
       {
         ok = false;

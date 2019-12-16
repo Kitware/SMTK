@@ -407,6 +407,39 @@ bool ReferenceItem::setObjectValue(const PersistentObjectPtr& val)
   return this->setObjectValue(0, val);
 }
 
+template <>
+bool ReferenceItem::setObjectValues<ReferenceItem::const_iterator>(
+  ReferenceItem::const_iterator vbegin, ReferenceItem::const_iterator vend,
+  typename std::iterator_traits<ReferenceItem::const_iterator>::difference_type offset = 0);
+{
+  bool ok = false;
+  std::size_t num = std::distance(vbegin, vend) + offset;
+  if (this->setNumberOfValues(num))
+  {
+    ok = true;
+    std::size_t i = 0;
+    for (I it = vbegin; it != vend; ++it, ++i)
+    {
+      if (it.isSet() == false)
+      {
+        continue;
+      }
+
+      if (!this->setObjectValue(offset + i, *it))
+      {
+        ok = false;
+        break;
+      }
+    }
+  }
+  // Enable or disable the item if it is optional.
+  if (ok)
+  {
+    this->setIsEnabled(num > 0 ? true : false);
+  }
+  return ok;
+}
+
 ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
 {
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
