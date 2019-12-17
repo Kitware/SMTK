@@ -829,5 +829,12 @@ void ReferenceItem::appendToCache(const PersistentObjectPtr& obj) const
   m_cache->push_back(Cache::value_type());
   return assignToCache(i, obj);
 }
+
+template <>
+bool ReferenceItem::iteratorIsSet<ReferenceItem::const_iterator>(
+  const ReferenceItem::const_iterator& iterator) const
+{
+  return iterator.isSet();
+}
 }
 }

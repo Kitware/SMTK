@@ -393,6 +393,11 @@ T Attribute::entityRefsAs(const std::string& iname) const
 
   for (auto it = itm->begin(); it != itm->end(); ++it)
   {
+    if (it.isSet() == false)
+    {
+      continue;
+    }
+
     typename T::value_type entry = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
     if (entry.isValid())
     {
@@ -413,6 +418,11 @@ T Attribute::associatedObjects() const
 
   for (auto it = m_associatedObjects->begin(); it != m_associatedObjects->end(); ++it)
   {
+    if (it.isSet() == false)
+    {
+      continue;
+    }
+
     auto entry = std::dynamic_pointer_cast<typename T::value_type::element_type>(*it);
     if (entry)
     {
@@ -433,6 +443,11 @@ T Attribute::associatedModelEntities() const
 
   for (auto it = m_associatedObjects->begin(); it != m_associatedObjects->end(); ++it)
   {
+    if (it.isSet() == false)
+    {
+      continue;
+    }
+
     typename T::value_type entry = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
     if (entry.isValid())
     {

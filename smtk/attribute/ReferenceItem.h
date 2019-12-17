@@ -180,6 +180,11 @@ public:
   {
     for (auto it = this->begin(); it != this->end(); ++it)
     {
+      if (it.isSet() == false)
+      {
+        continue;
+      }
+
       typename Container::value_type val = converter(*it);
       if (val)
       {
@@ -333,12 +338,25 @@ protected:
   smtk::attribute::WeakAttributePtr m_referencedAttribute;
 
 private:
+  /// To make it easier to catch errors associated with dereferencing unset
+  /// reference item entries, ReferenceItem's const_iterator throws when it is
+  /// dereferenced and the value under iteration is unset. Since we expose
+  /// access methods that are templated over the iterator type, we separate the
+  /// logic for testing if an iterator is valid into its own template with a
+  /// specialization for ReferenceItem::const_iterator.
+  template <typename I>
+  bool iteratorIsSet(const I& iterator) const;
+
   void assignToCache(std::size_t i, const PersistentObjectPtr& obj) const;
   void appendToCache(const PersistentObjectPtr& obj) const;
 
   struct Cache;
   mutable std::unique_ptr<Cache> m_cache;
 };
+
+template <>
+bool ReferenceItem::iteratorIsSet<ReferenceItem::const_iterator>(
+  const ReferenceItem::const_iterator& iterator) const;
 
 template <typename I>
 bool ReferenceItem::setObjectValues(
@@ -352,6 +370,11 @@ bool ReferenceItem::setObjectValues(
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
+      if (iteratorIsSet(it) == false)
+      {
+        continue;
+      }
+
       if (!this->setObjectValue(offset + i, *it))
       {
         ok = false;
@@ -385,6 +408,11 @@ bool ReferenceItem::setValuesVia(
     std::size_t i = 0;
     for (I it = vbegin; it != vend; ++it, ++i)
     {
+      if (iteratorIsSet(it) == false)
+      {
+        continue;
+      }
+
       if (!this->setObjectValue(offset + i, converter(*it)))
       {
         ok = false;
@@ -404,6 +432,12 @@ template <typename I, typename T>
 bool ReferenceItem::appendValuesVia(I vbegin, I vend, const T& converter)
 {
   return this->setValuesVia(vbegin, vend, converter, this->numberOfValues());
+}
+
+template <typename I>
+bool ReferenceItem::iteratorIsSet(const I& iterator) const
+{
+  return !!(*iterator);
 }
 
 } // namespace attribute
