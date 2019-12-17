@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 {
   if (argc == 1)
   {
-    std::cout << "Usage: TestReadWrite /path/to/input1.sbi /path/to/input2.sbi..." << std::endl;
+    std::cerr << "Usage: TestReadWrite /path/to/input1.sbi /path/to/input2.sbi..." << std::endl;
     return 1;
   }
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
   {
     std::string inputFileName(argv[i]);
 
-    std::cout << "Testing " << inputFileName << std::endl;
+    std::cerr << "Testing " << inputFileName << std::endl;
 
     // 1. Read the .sbi file into a new attribute resource
 
@@ -187,6 +187,7 @@ int main(int argc, char** argv)
       {
         std::cerr << "Encountered Errors while writing " << sbi2FileName << "\n";
         std::cerr << logger.convertToString();
+        cleanup(sbi2FileName);
         return -2;
       }
       else if (smtk::io::Logger::instance().numberOfRecords())
@@ -199,6 +200,7 @@ int main(int argc, char** argv)
 
     // 6. Compare the .sbi files generated in steps 2 and 5
 
+    int status = 0;
     {
       std::ifstream f1(sbi1FileName, std::ifstream::binary | std::ifstream::ate);
       std::ifstream f2(sbi2FileName, std::ifstream::binary | std::ifstream::ate);
@@ -209,7 +211,7 @@ int main(int argc, char** argv)
         std::cerr << "generated smtk file: " << smtkFileName << "\n";
         std::cerr << "generated sbi1 file: " << sbi1FileName << "\n";
         std::cerr << "generated sbi2 file: " << sbi2FileName << "\n";
-        assert(false);
+        status = -1;
       }
 
       if (f1.tellg() != f2.tellg())
@@ -218,7 +220,7 @@ int main(int argc, char** argv)
         std::cerr << "generated smtk file: " << smtkFileName << "\n";
         std::cerr << "generated sbi1 file: " << sbi1FileName << "\n";
         std::cerr << "generated sbi2 file: " << sbi2FileName << "\n";
-        assert(false);
+        status = -1;
       }
 
       f1.seekg(0, std::ifstream::beg);
@@ -230,15 +232,18 @@ int main(int argc, char** argv)
         std::cerr << "generated smtk file: " << smtkFileName << "\n";
         std::cerr << "generated sbi1 file: " << sbi1FileName << "\n";
         std::cerr << "generated sbi2 file: " << sbi2FileName << "\n";
-        assert(false);
+        status = -1;
       }
     }
 
     // Clean up all generated files
-
     cleanup(smtkFileName);
     cleanup(sbi1FileName);
     cleanup(sbi2FileName);
+    if (status != 0)
+    {
+      return status;
+    }
   }
   std::cout << "Pass all file tests" << std::endl;
 
