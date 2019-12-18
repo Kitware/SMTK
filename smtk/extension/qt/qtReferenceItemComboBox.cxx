@@ -336,8 +336,10 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   if (selectedIndex == 0)
   {
     QPalette comboboxPalette = this->Internals->comboBox->palette();
+    // On Macs to change the button text color you need to set QPalette::Text
+    // For Linux you need to set QPalette::ButtonText
+    comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
     comboboxPalette.setColor(QPalette::Text, Qt::red);
-    comboboxPalette.setColor(QPalette::WindowText, Qt::red);
     this->Internals->comboBox->setPalette(comboboxPalette);
   }
   else
