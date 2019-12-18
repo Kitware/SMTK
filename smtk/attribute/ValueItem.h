@@ -103,7 +103,7 @@ public:
     assert(m_isSet.size() > elementIndex);
     return m_isSet[elementIndex];
   }
-  virtual void unset(std::size_t elementIndex = 0) { m_isSet[elementIndex] = false; }
+  virtual void unset(std::size_t elementIndex = 0);
   smtk::attribute::ComponentItemPtr expressionReference(std::size_t elementIndex = 0) const
   {
     assert(m_expressions.size() > elementIndex);

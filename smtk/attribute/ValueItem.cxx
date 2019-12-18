@@ -87,6 +87,14 @@ ValueItem::~ValueItem()
   }
 }
 
+void ValueItem::unset(std::size_t elementIndex)
+{
+  assert(m_expressions.size() > elementIndex);
+  m_isSet[elementIndex] = false;
+  // Clear the current list of active children items
+  m_activeChildrenItems.clear();
+}
+
 bool ValueItem::isValid(const std::set<std::string>& cats) const
 {
   // If we have been given categories we need to see if the item passes its
