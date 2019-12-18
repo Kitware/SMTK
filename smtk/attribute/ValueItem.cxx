@@ -89,7 +89,7 @@ ValueItem::~ValueItem()
 
 void ValueItem::unset(std::size_t elementIndex)
 {
-  assert(m_expressions.size() > elementIndex);
+  assert(m_isSet.size() > elementIndex);
   m_isSet[elementIndex] = false;
   // Clear the current list of active children items
   m_activeChildrenItems.clear();
