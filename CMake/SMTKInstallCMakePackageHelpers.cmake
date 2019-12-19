@@ -15,6 +15,7 @@ function (_smtk_package_append_variables)
     endif ()
 
     string(APPEND _smtk_package_variables
+      # Only set the variable as a helper entry if there isn't already a value for it.
       "if (NOT DEFINED \"${var}\" OR NOT ${var})
   set(\"${var}\" \"${${var}}\" CACHE ${type} \"Third-party helper setting from \${CMAKE_FIND_PACKAGE_NAME}\")
 endif ()
