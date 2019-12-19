@@ -15,9 +15,7 @@ function (_smtk_package_append_variables)
     endif ()
 
     string(APPEND _smtk_package_variables
-      "if (NOT DEFINED \"${var}\")
-  set(\"${var}\" \"${${var}}\" CACHE ${type} \"Third-party helper setting from \${CMAKE_FIND_PACKAGE_NAME}\")
-elseif (NOT ${var})
+      "if (NOT DEFINED \"${var}\" OR NOT ${var})
   set(\"${var}\" \"${${var}}\" CACHE ${type} \"Third-party helper setting from \${CMAKE_FIND_PACKAGE_NAME}\")
 endif ()
 ")
