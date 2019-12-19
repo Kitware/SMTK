@@ -120,7 +120,7 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
     else
     {
       smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing NumberOfGroups "
-          << "for extensible group item:" << itemPtr->name());
+          << " for extensible group item: " << itemPtr->name());
       return;
     }
   }
@@ -139,8 +139,8 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
       auto cluster = groupClusters->find(clusterName);
       if (cluster == groupClusters->end())
       {
-        smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing "
-            << clusterName << "for group item:" << itemPtr->name());
+        smtkErrorMacro(smtk::io::Logger::instance(),
+          "JSON missing: " << clusterName << " for group item: " << itemPtr->name());
         continue;
       }
       for (size_t itemPGIter = 0; itemPGIter < m; itemPGIter++)
@@ -149,15 +149,17 @@ SMTKCORE_EXPORT void from_json(const json& j, smtk::attribute::GroupItemPtr& ite
         auto itemJson = cluster->find(itemName);
         if (itemJson == cluster->end())
         {
-          smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing index:"
-              << itemName << "for cluster:" << clusterName << "for group item:" << itemPtr->name());
+          smtkErrorMacro(smtk::io::Logger::instance(),
+            "JSON missing index: " << itemName << " for cluster: " << clusterName
+                                   << " for group item: " << itemPtr->name());
           continue;
         }
         auto itemValue = itemJson->find("ItemValue");
         if (itemValue == itemJson->end())
         {
-          smtkErrorMacro(smtk::io::Logger::instance(), "JSON missing ItemValue for index:"
-              << itemName << "for cluster:" << clusterName << "for group item:" << itemPtr->name());
+          smtkErrorMacro(smtk::io::Logger::instance(),
+            "JSON missing ItemValue for index: " << itemName << " for cluster: " << clusterName
+                                                 << " for group item: " << itemPtr->name());
           continue;
         }
         auto groupItemPtr = itemPtr->item(groupIter, itemPGIter);
