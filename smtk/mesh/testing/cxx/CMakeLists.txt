@@ -87,6 +87,7 @@ if(SMTK_ENABLE_MESH_SESSION)
     list(APPEND extra_libs
          smtkIOVTK
          vtkSMTKSourceExt
+         VTK::IOXML
          )
   endif()
   list(APPEND extra_libs

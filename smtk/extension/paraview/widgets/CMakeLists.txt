@@ -69,5 +69,6 @@ paraview_add_plugin(smtkPQWidgetsPlugin
 target_link_libraries(smtkPQWidgetsPlugin
   PRIVATE
     ParaView::pqApplicationComponents
+    ParaView::ServerManagerRendering
     smtkQtExt
     vtkSMTKWidgetsExt)

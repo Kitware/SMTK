@@ -214,6 +214,7 @@ target_link_libraries(smtkDiscreteSession
     VTK::FiltersSources
     VTK::GeovisCore
     VTK::IOGDAL
+    VTK::IOXML
     VTK::IOParallel
     VTK::RenderingCore
     VTK::RenderingFreeType

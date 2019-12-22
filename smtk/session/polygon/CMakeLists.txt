@@ -117,6 +117,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     VTK::CommonDataModel
     VTK::FiltersGeometry
     VTK::IOParallel
+    VTK::IOXML
     VTK::InteractionStyle
     VTK::RenderingCore
     VTK::RenderingFreeType

@@ -115,6 +115,7 @@ if (SMTK_DATA_DIR)
       smtkCore
       smtkMeshSession
       vtkSMTKSourceExt
+      VTK::IOXML
       VTK::RenderingGL2PSOpenGL2
       VTK::TestingRendering
     )
