@@ -1889,6 +1889,10 @@ void XmlDocV1Parser::processAttribute(xml_node& attNode)
     // to let the referenced objects know about the associations.
     for (auto it = assocItem->begin(); it != assocItem->end(); ++it)
     {
+      if (!it.isSet())
+      {
+        continue;
+      }
       auto mcomp = std::dynamic_pointer_cast<smtk::model::Entity>(*it);
       auto mmgr = mcomp ? mcomp->modelResource() : smtk::model::ResourcePtr();
       if (mcomp && mmgr)
