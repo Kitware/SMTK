@@ -1,5 +1,6 @@
 set(operationSrcs
   Launcher.cxx
+  MarkGeometry.cxx
   Group.cxx
   Manager.cxx
   Metadata.cxx
@@ -25,6 +26,7 @@ set(operationSrcs
 
 set(operationHeaders
   Launcher.h
+  MarkGeometry.h
   Group.h
   GroupObserver.h
   Manager.h

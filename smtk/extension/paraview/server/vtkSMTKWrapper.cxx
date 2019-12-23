@@ -28,6 +28,8 @@
 
 #include "smtk/operation/Manager.h"
 
+#include "smtk/geometry/Manager.h"
+
 #include "smtk/project/Manager.h"
 
 #include "smtk/view/Manager.h"
@@ -85,6 +87,10 @@ vtkSMTKWrapper::vtkSMTKWrapper()
   this->OperationManager = smtk::operation::Manager::create();
   this->OperationManager->registerResourceManager(this->ResourceManager);
   smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->OperationManager);
+
+  this->GeometryManager = smtk::geometry::Manager::create();
+  this->GeometryManager->registerResourceManager(this->ResourceManager);
+  smtk::extension::paraview::PluginManager::instance()->registerPluginsTo(this->GeometryManager);
 
   this->ProjectManager =
     smtk::project::Manager::create(this->ResourceManager, this->OperationManager);

@@ -24,6 +24,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/CreateEdge_xml.h"
 
 using smtk::common::UUID;
@@ -409,6 +411,8 @@ CreateEdge::Result CreateEdge::operateInternal()
     {
       modifiedItem->appendValue(m.component());
     }
+
+    operation::MarkGeometry(resource).markResult(opResult);
   }
   else
   {

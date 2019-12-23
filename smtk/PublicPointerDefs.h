@@ -42,6 +42,14 @@ class Manager;
 class Set;
 }
 
+namespace geometry
+{
+class Backend;
+class Geometry;
+class Manager;
+class Resource;
+}
+
 namespace attribute
 {
 class Attribute;
@@ -297,6 +305,18 @@ typedef std::set<smtk::resource::PersistentObjectPtr> PersistentObjectSet;
 typedef std::set<smtk::resource::ResourcePtr> ResourceSet;
 /// @see ComponentPtr
 typedef std::set<smtk::resource::ComponentPtr> ComponentSet;
+}
+
+namespace geometry
+{
+/// @see smtk::geometry::Geometry
+typedef std::unique_ptr<Geometry> GeometryPtr;
+/// @see smtk::geometry::Manager
+typedef std::shared_ptr<Manager> ManagerPtr;
+typedef std::shared_ptr<const Manager> ConstManagerPtr;
+/// @see smtk::geometry::Resource
+typedef std::shared_ptr<Resource> ResourcePtr;
+typedef std::shared_ptr<const Resource> ConstResourcePtr;
 }
 
 namespace operation

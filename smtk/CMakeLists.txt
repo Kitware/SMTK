@@ -9,6 +9,9 @@ smtk_source_group(common)
 add_subdirectory(resource)
 smtk_source_group(resource)
 
+add_subdirectory(geometry)
+smtk_source_group(geometry)
+
 add_subdirectory(attribute)
 smtk_source_group(attribute)
 
@@ -39,6 +42,7 @@ smtk_source_group(workflow)
 set(smtk_headers
   ${commonHeaders}
   ${resourceHeaders}
+  ${geometryHeaders}
   ${attributeHeaders}
   ${operationHeaders}
   ${meshHeaders}
@@ -52,6 +56,7 @@ set(smtk_headers
 set(smtk_srcs
   ${commonSrcs}
   ${resourceSrcs}
+  ${geometrySrcs}
   ${attributeSrcs}
   ${operationSrcs}
   ${projectSrcs}

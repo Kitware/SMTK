@@ -28,6 +28,8 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/SessionRef.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/ExtractContours_xml.h"
 
 #include <limits>
@@ -164,6 +166,8 @@ ExtractContours::Result ExtractContours::operateInternal()
     }
     smtk::attribute::ComponentItem::Ptr modifiedItem = result->findComponent("modified");
     modifiedItem->appendValue(aux.owningModel().component());
+
+    operation::MarkGeometry(resource).markResult(result);
   }
 
   return result;

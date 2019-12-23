@@ -41,6 +41,8 @@
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/CreateFaces_xml.h"
 
 #include <cmath>
@@ -386,6 +388,7 @@ void CreateFaces::evaluateLoop(
     {
       smtk::attribute::ComponentItem::Ptr created = m_result->findComponent("created");
       created->appendValue(modelFace.component());
+      operation::MarkGeometry(m_resource).markModified(created);
     }
 
     if (m_debugLevel > 0)

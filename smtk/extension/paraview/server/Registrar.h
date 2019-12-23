@@ -14,6 +14,7 @@
 #include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
 
 #include "smtk/attribute/Registrar.h"
+#include "smtk/extension/vtk/source/Registrar.h"
 #include "smtk/mesh/resource/Registrar.h"
 #include "smtk/model/Registrar.h"
 #include "smtk/operation/Manager.h"
@@ -32,8 +33,8 @@ namespace server
 class SMTKPVSERVEREXT_EXPORT Registrar
 {
 public:
-  using Dependencies =
-    std::tuple<operation::Registrar, model::Registrar, attribute::Registrar, mesh::Registrar>;
+  using Dependencies = std::tuple<operation::Registrar, model::Registrar, attribute::Registrar,
+    mesh::Registrar, vtk::source::Registrar>;
 
   static void registerTo(const smtk::operation::Manager::Ptr&);
   static void unregisterFrom(const smtk::operation::Manager::Ptr&);

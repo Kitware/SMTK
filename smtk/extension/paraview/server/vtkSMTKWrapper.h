@@ -70,6 +70,8 @@ public:
   smtk::resource::ManagerPtr GetResourceManager() const { return this->ResourceManager; }
   /// Return the server's application-wide operation manager.
   smtk::operation::ManagerPtr GetOperationManager() const { return this->OperationManager; }
+  /// Return the server's application-wide geometry manager.
+  smtk::geometry::ManagerPtr GetGeometryManager() const { return this->GeometryManager; }
   /// Return the server's application-wide project manager.
   smtk::project::ManagerPtr GetProjectManager() const { return this->ProjectManager; }
   /// Return the server's application-wide view manager.
@@ -127,6 +129,7 @@ protected:
   char* JSONResponse;
   smtk::resource::ManagerPtr ResourceManager;
   smtk::operation::ManagerPtr OperationManager;
+  smtk::geometry::ManagerPtr GeometryManager;
   smtk::project::ManagerPtr ProjectManager;
   smtk::view::ManagerPtr ViewManager;
   smtk::view::SelectionPtr Selection;

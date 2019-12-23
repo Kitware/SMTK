@@ -72,11 +72,6 @@
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(tweak edge)" BaseType="result">
-      <ItemDefinitions>
-        <Component Name="tess_changed" NumberOfRequiredValues="0" Extensible="yes">
-          <Accepts><Resource Name="smtk::session::polygon::Session" Filter=""/></Accepts>
-        </Component>
-      </ItemDefinitions>
     </AttDef>
   </Definitions>
   <Views>

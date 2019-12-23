@@ -23,6 +23,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/CreateEdgeFromVertices_xml.h"
 
 namespace smtk
@@ -100,6 +102,7 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
     {
       createdItem->appendValue(c.component());
     }
+    operation::MarkGeometry(resource).markModified(createdItem);
 
     smtk::attribute::ComponentItem::Ptr modified = opResult->findComponent("modified");
     modified->appendValue(parentModel.component());

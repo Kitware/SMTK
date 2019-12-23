@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
+#include "smtk/extension/vtk/source/Backend.h"
+#include "smtk/extension/vtk/source/Geometry.h"
 #include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
@@ -955,7 +957,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(vtkMultiBlockData
 
 /// Generate polydata from an smtk::model with tessellation information.
 int vtkModelMultiBlockSource::RequestData(
-  vtkInformation* /*request*/, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
+  vtkInformation* request, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
 {
   auto resource = this->GetModelResource();
   this->UUID2BlockIdMap.clear();
@@ -970,6 +972,22 @@ int vtkModelMultiBlockSource::RequestData(
   {
     vtkErrorMacro("No input model");
     return 0;
+  }
+
+  // Use the new rendering backend if the resource supports it:
+  smtk::extension::vtk::source::Backend vtk;
+  const auto& geom = resource->geometry(vtk);
+  if (geom)
+  {
+    try
+    {
+      const auto& properGeom = dynamic_cast<const smtk::extension::vtk::source::Geometry&>(*geom);
+      return this->RequestDataFromGeometry(request, outInfo, properGeom);
+    }
+    catch (std::bad_cast&)
+    {
+      // do nothing
+    }
   }
 
   // Destroy the cache if the parameters have changed since it was generated.

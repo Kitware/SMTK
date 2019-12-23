@@ -1,4 +1,5 @@
 set(classes
+  Geometry
   vtkPolygonArcOperation
   vtkPolygonArcProvider
   vtkPolygonContourOperation)
@@ -11,4 +12,6 @@ vtk_module_add_module(vtkPolygonOperationsExt
 # session
 vtk_module_link(vtkPolygonOperationsExt
   PUBLIC
-    smtkCore)
+    smtkCore
+    smtkPolygonSession
+)

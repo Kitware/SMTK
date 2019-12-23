@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_core_Resource_h
-#define __smtk_mesh_core_Resource_h
+#ifndef smtk_mesh_core_Resource_h
+#define smtk_mesh_core_Resource_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -31,6 +31,8 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/geometry/Resource.h"
+
 #include "smtk/resource/DerivedFrom.h"
 
 #include <vector>
@@ -51,7 +53,7 @@ namespace mesh
 
 //Flyweight interface around a moab database of meshes.
 class SMTKCORE_EXPORT Resource
-  : public smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>
+  : public smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>
 {
   //default constructor generates an invalid resource
   Resource();
@@ -67,10 +69,11 @@ class SMTKCORE_EXPORT Resource
 
 public:
   smtkTypeMacro(smtk::mesh::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSuperclassMacro(smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   // typedef referring to the parent resource.
-  typedef smtk::resource::Resource ParentResource;
+  typedef smtk::geometry::Resource ParentResource;
 
   //A mesh resource may be classified to a model. This relationship is modeled
   //using resource links.
@@ -330,4 +333,4 @@ private:
 } // namespace mesh
 } // namespace smtk
 
-#endif //__smtk_mesh_core_Resource_h
+#endif // smtk_mesh_core_Resource_h

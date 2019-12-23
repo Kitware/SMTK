@@ -17,6 +17,8 @@
 
 #include "smtk/model/Vertex.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -84,6 +86,8 @@ SplitEdge::Result SplitEdge::operateInternal()
 
     smtk::attribute::ComponentItem::Ptr expungedItem = opResult->findComponent("expunged");
     expungedItem->appendValue(edgeToSplit.component());
+
+    operation::MarkGeometry(resource).markResult(opResult);
   }
   else
   {

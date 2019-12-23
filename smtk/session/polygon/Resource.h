@@ -13,9 +13,10 @@
 #include "smtk/session/polygon/Exports.h"
 #include "smtk/session/polygon/Session.h"
 
+#include "smtk/resource/DerivedFrom.h"
+
 #include "smtk/model/Resource.h"
 
-#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk

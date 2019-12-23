@@ -13,9 +13,10 @@
 #include "smtk/session/multiscale/Exports.h"
 #include "smtk/session/multiscale/Session.h"
 
+#include "smtk/resource/DerivedFrom.h"
+
 #include "smtk/session/mesh/Resource.h"
 
-#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 

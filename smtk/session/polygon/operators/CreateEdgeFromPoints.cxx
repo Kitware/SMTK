@@ -25,6 +25,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/CreateEdgeFromPoints_xml.h"
 
 using smtk::common::UUID;
@@ -342,6 +344,8 @@ CreateEdgeFromPoints::Result CreateEdgeFromPoints::process(
       smtk::attribute::ComponentItem::Ptr modified = opResult->findComponent("modified");
       modified->setValue(parentModel.component());
     }
+
+    operation::MarkGeometry(resource).markResult(opResult);
   }
   else
   {

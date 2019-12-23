@@ -18,6 +18,8 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Vertex.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -201,11 +203,7 @@ TweakEdge::Result TweakEdge::operateInternal()
       expungedItem->appendValue(e.component());
     }
 
-    // Modified items will have new tessellations, which we must indicate
-    // separately for the time being.
-    auto tessItem = opResult->findComponent("tess_changed");
-    tessItem->appendValuesVia(modified.begin(), modified.end(),
-      [](const smtk::model::EntityRef& ent) { return ent.component(); });
+    operation::MarkGeometry(resource).markResult(opResult);
   }
   else
   {

@@ -25,7 +25,7 @@ target_link_libraries(${library_name}
     smtkVTKSession
     VTK::CommonDataModel
   LINK_PRIVATE
-    ${iport_vtk_depends}
+    ${import_vtk_depends}
 )
 vtk_module_autoinit(
   TARGETS ${library_name}

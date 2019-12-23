@@ -20,6 +20,7 @@ set(resourceSrcs
 set(resourceHeaders
   Component.h
   ComponentLinks.h
+  Container.h
   DerivedFrom.h
   GarbageCollector.h
   Links.h
@@ -35,7 +36,6 @@ set(resourceHeaders
   Registrar.h
   Resource.h
   ResourceLinks.h
-  Container.h
   Set.h
   Surrogate.h
   json/jsonLinkBase.h
