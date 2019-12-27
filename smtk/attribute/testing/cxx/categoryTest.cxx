@@ -44,17 +44,17 @@ int main()
     // Lets add some item definitions
     smtk::attribute::IntItemDefinitionPtr iitemdef =
       base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem1");
-    iitemdef->addLocalCategory("Flow");
+    iitemdef->localCategories().insert("Flow");
     iitemdef = base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem2");
     iitemdef->setDefaultValue(10);
-    iitemdef->addLocalCategory("Heat");
+    iitemdef->localCategories().insert("Heat");
 
     smtk::attribute::DefinitionPtr def1 = resource.createDefinition("Derived1", "BaseDef");
     // Lets add some item definitions
     smtk::attribute::DoubleItemDefinitionPtr ditemdef =
       def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
     // Allow this one to hold an expression
-    ditemdef->addLocalCategory("Veg");
+    ditemdef->localCategories().insert("Veg");
     ditemdef->setExpressionDefinition(expDef);
     // Check to make sure we can use expressions
     if (!ditemdef->allowsExpressions())
@@ -64,45 +64,53 @@ int main()
     }
     ditemdef = def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem2");
     ditemdef->setDefaultValue(-35.2);
-    ditemdef->addLocalCategory("Constituent");
+    ditemdef->localCategories().insert("Constituent");
 
     smtk::attribute::DefinitionPtr def2 = resource.createDefinition("Derived2", "Derived1");
     // Lets add some item definitions
     smtk::attribute::StringItemDefinitionPtr sitemdef =
       def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");
-    sitemdef->addLocalCategory("Flow");
+    sitemdef->localCategories().insert("Flow");
     sitemdef = def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem2");
     sitemdef->setDefaultValue("Default");
-    sitemdef->addLocalCategory("General");
+    sitemdef->localCategories().insert("General");
 
     // Process Categories
     resource.finalizeDefinitions();
     // Lets see what categories the attribute definitions think they are
-    if (expDef->numberOfCategories())
+    if (expDef->categories().size())
     {
-      const std::set<std::string>& categories = expDef->categories();
-      std::set<std::string>::const_iterator it;
+      const smtk::attribute::Categories& categories = expDef->categories();
       std::cout << "ERROR: ExpDef's categories: ";
-      for (it = categories.begin(); it != categories.end(); it++)
+      int i = 0;
+      for (const auto& catSet : categories.sets())
       {
-        std::cout << "\"" << (*it) << "\" ";
+        std::cout << "Category Set: " << i++ << " = ";
+        for (const auto& catName : catSet.categoryNames())
+        {
+          std::cout << "\"" << catName << "\" ";
+        }
+        std::cout << std::endl;
       }
-      std::cout << "\n";
     }
     else
     {
       std::cout << "ExpDef has no categories\n";
     }
-    if (def2->numberOfCategories())
+    if (def2->categories().size())
     {
-      const std::set<std::string>& categories = def2->categories();
-      std::set<std::string>::const_iterator it;
+      const smtk::attribute::Categories& categories = def2->categories();
       std::cout << "Def2's categories: ";
-      for (it = categories.begin(); it != categories.end(); it++)
+      int i = 0;
+      for (const auto& catSet : categories.sets())
       {
-        std::cout << "\"" << (*it) << "\" ";
+        std::cout << "Category Set: " << i++ << " = ";
+        for (const auto& catName : catSet.categoryNames())
+        {
+          std::cout << "\"" << catName << "\" ";
+        }
+        std::cout << std::endl;
       }
-      std::cout << "\n";
     }
     else
     {

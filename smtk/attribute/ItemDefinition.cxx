@@ -22,92 +22,23 @@ ItemDefinition::ItemDefinition(const std::string& myName)
   m_isOptional = false;
   m_isEnabledByDefault = false;
   m_isOkToInherit = true;
-  m_categoryCheckMode = ItemDefinition::CategoryCheckMode::Any;
 }
 
 ItemDefinition::~ItemDefinition() = default;
 
-bool ItemDefinition::isMemberOf(const std::vector<std::string>& inCategories) const
-{
-  std::size_t i, n = inCategories.size();
-  for (i = 0; i < n; i++)
-  {
-    if (this->isMemberOf(inCategories[i]))
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-void ItemDefinition::applyCategories(
-  const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent)
+void ItemDefinition::applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+  smtk::attribute::Categories& inheritedToParent)
 {
   // The item's definition's categories are it's local categories and (if its ok to inherit
   // categories from it's owning item definition/attribute definition) those inherited
   // from its parent
-  m_categories = m_localCategories;
+  m_categories.reset();
+  m_categories.insert(m_localCategories);
   if (m_isOkToInherit)
   {
-    m_categories.insert(inheritedFromParent.begin(), inheritedFromParent.end());
+    m_categories.insert(inheritedFromParent);
   }
-  inheritedToParent.insert(m_localCategories.begin(), m_localCategories.end());
-}
-
-void ItemDefinition::addLocalCategory(const std::string& category)
-{
-  m_localCategories.insert(category);
-}
-
-void ItemDefinition::removeLocalCategory(const std::string& category)
-{
-  m_localCategories.erase(category);
-}
-
-bool ItemDefinition::passCategoryCheck(const std::string& category) const
-{
-  if (m_categories.empty() ||
-    ((m_categoryCheckMode == CategoryCheckMode::All) && (m_categories.size() != 1)))
-  {
-    return false;
-  }
-
-  if (m_categoryCheckMode == CategoryCheckMode::Any)
-  {
-    return m_categories.find(category) != m_categories.end();
-  }
-  return *(m_categories.begin()) == category;
-}
-
-bool ItemDefinition::passCategoryCheck(const std::set<std::string>& categories) const
-{
-  if (categories.empty())
-  {
-    return true;
-  }
-  if (m_categories.empty())
-  {
-    return false;
-  }
-  if (m_categoryCheckMode == CategoryCheckMode::Any)
-  {
-    for (const auto& cat : m_categories)
-    {
-      if (categories.find(cat) != categories.end())
-      {
-        return true;
-      }
-    }
-    return false;
-  }
-  for (const auto& cat : m_categories)
-  {
-    if (categories.find(cat) == categories.end())
-    {
-      return false;
-    }
-  }
-  return true;
+  inheritedToParent.insert(m_localCategories);
 }
 
 void ItemDefinition::setLocalAdvanceLevel(int mode, unsigned int level)
@@ -154,12 +85,7 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
   def->setIsOptional(m_isOptional);
   def->setIsEnabledByDefault(m_isEnabledByDefault);
   def->setIsOkToInherit(m_isOkToInherit);
-
-  std::set<std::string>::const_iterator categoryIter = m_localCategories.begin();
-  for (; categoryIter != m_localCategories.end(); categoryIter++)
-  {
-    def->addLocalCategory(*categoryIter);
-  }
+  def->localCategories() = m_localCategories;
 
   if (m_hasLocalAdvanceLevelInfo[0])
   {

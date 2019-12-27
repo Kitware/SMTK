@@ -31,12 +31,22 @@ using namespace smtk;
 namespace
 {
 
-bool testCategories(const ItemPtr s[], const std::set<std::string>& cats, bool result[])
+bool testCategories(
+  const AttributePtr& att, const ItemPtr s[], const std::set<std::string>& cats, bool result[])
 {
   bool status = true;
+  if (att->categories().passes(cats) == result[0])
+  {
+    std::cerr << att->name() << ":passed ";
+  }
+  else
+  {
+    std::cerr << att->name() << ":failed ";
+    status = false;
+  }
   for (int i = 0; i < 3; i++)
   {
-    if (s[i]->passCategoryCheck(cats) == result[i])
+    if (s[i]->categories().passes(cats) == result[i + 1])
     {
       std::cerr << "s" << i << ":passed ";
     }
@@ -100,34 +110,40 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   AttributePtr att = attRes->findAttribute("TestAtt");
   smtkTest(att != nullptr, "Could not find attribute!");
   ItemPtr s[3];
-  bool catResults[3], valResults[4];
+  bool catResults[4], valResults[4];
   std::set<std::string> cats;
   bool status = true;
   s[0] = att->find("s0");
   s[1] = att->find("s1");
   s[2] = att->find("s2");
 
+  std::cerr << "TestAtt Categories: ";
+  att->categories().print();
+
   for (int i = 0; i < 3; i++)
   {
     smtkTest(s[i] != nullptr, "Could not find s" << i << "!");
+    std::cerr << "s" << i << " Categories: ";
+    s[i]->categories().print();
   }
 
   // Passing Category checks
   // s0 should pass if given A, a, b, or nothing
   // s1 should pass if given b, c or nothing
-  // s2 should pass if only given nothing or (A, a, b)
+  // s2 should pass if only given nothing or A or (d and e)
 
   // Passing Validity checks
   // A should pass if  given A or a or Z - only s0 has a default value
   // s0 should pass always
   // s1 should pass if not given b or c
-  // s2 should pass if not given {A, a, b}
+  // s2 should pass if not given {A or (d and e)}
 
-  std::cerr << prefix << " Testing Item Categories with {} :";
+  std::cerr << prefix << " Testing Categories with {} :";
   catResults[0] = true;
   catResults[1] = true;
   catResults[2] = true;
-  status = (testCategories(s, cats, catResults)) ? status : false;
+  catResults[3] = true;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {} :";
   valResults[0] = false;
   valResults[1] = true;
@@ -135,12 +151,13 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   valResults[3] = false;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
-  std::cerr << prefix << " Testing Item Categories with {Z} :";
+  std::cerr << prefix << " Testing Categories with {Z} :";
   cats.insert("Z");
   catResults[0] = false;
   catResults[1] = false;
   catResults[2] = false;
-  status = (testCategories(s, cats, catResults)) ? status : false;
+  catResults[3] = false;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {Z} :";
   valResults[0] = true;
   valResults[1] = true;
@@ -148,42 +165,76 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   valResults[3] = true;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
-  std::cerr << prefix << " Testing Item Categories with {Z,A} :";
+  std::cerr << prefix << " Testing Categories with {Z,A} :";
   cats.insert("A");
   catResults[0] = true;
+  catResults[1] = true;
+  catResults[2] = false;
+  catResults[3] = true;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
+  std::cerr << prefix << " Testing Validity with {Z,A} :";
+  valResults[0] = false;
+  valResults[1] = true;
+  valResults[2] = true;
+  valResults[3] = false;
+  status = (testValidity(att, s, cats, valResults)) ? status : false;
+
+  std::cerr << prefix << " Testing Categories with {Z,b} :";
+  cats.insert("b");
+  cats.erase("A");
+  catResults[0] = true;
+  catResults[1] = true;
+  catResults[2] = true;
+  catResults[3] = false;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
+  std::cerr << prefix << " Testing Validity with {Z,b} :";
+  valResults[0] = false;
+  valResults[1] = true;
+  valResults[2] = false;
+  valResults[3] = true;
+  status = (testValidity(att, s, cats, valResults)) ? status : false;
+
+  std::cerr << prefix << " Testing Categories with {Z,c} :";
+  cats.insert("c");
+  cats.erase("b");
+  catResults[0] = true;
+  catResults[1] = false;
+  catResults[2] = true;
+  catResults[3] = false;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
+  std::cerr << prefix << " Testing Validity with {Z,c} :";
+  valResults[0] = false;
+  valResults[1] = true;
+  valResults[2] = false;
+  valResults[3] = true;
+  status = (testValidity(att, s, cats, valResults)) ? status : false;
+
+  std::cerr << prefix << " Testing Categories with {Z,d} :";
+  cats.insert("d");
+  cats.erase("c");
+  catResults[0] = false;
   catResults[1] = false;
   catResults[2] = false;
-  status = (testCategories(s, cats, catResults)) ? status : false;
-  std::cerr << prefix << " Testing Validity with {Z,A} :";
+  catResults[3] = false;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
+  std::cerr << prefix << " Testing Validity with {Z,d} :";
   valResults[0] = true;
   valResults[1] = true;
   valResults[2] = true;
   valResults[3] = true;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
-  std::cerr << prefix << " Testing Item Categories with {Z,A,b} :";
-  cats.insert("b");
+  std::cerr << prefix << " Testing Categories with {Z,d,e} :";
+  cats.insert("e");
   catResults[0] = true;
-  catResults[1] = true;
+  catResults[1] = false;
   catResults[2] = false;
-  status = (testCategories(s, cats, catResults)) ? status : false;
-  std::cerr << prefix << " Testing Validity with {Z,A,b} :";
+  catResults[3] = true;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
+  std::cerr << prefix << " Testing Validity with {Z,d,e} :";
   valResults[0] = false;
   valResults[1] = true;
-  valResults[2] = false;
-  valResults[3] = true;
-  status = (testValidity(att, s, cats, valResults)) ? status : false;
-
-  std::cerr << prefix << " Testing Item Categories with {Z,A,b,a} :";
-  cats.insert("a");
-  catResults[0] = true;
-  catResults[1] = true;
-  catResults[2] = true;
-  status = (testCategories(s, cats, catResults)) ? status : false;
-  std::cerr << prefix << " Testing Validity with {Z,A,b,a} :";
-  valResults[0] = false;
-  valResults[1] = true;
-  valResults[2] = false;
+  valResults[2] = true;
   valResults[3] = false;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
@@ -193,19 +244,19 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
 void setupAttributeResource(attribute::ResourcePtr& attRes)
 {
   DefinitionPtr A = attRes->createDefinition("A");
-  A->addLocalCategory("A");
+  A->localCategories().insert("A");
   StringItemDefinitionPtr sItemDef0 = A->addItemDefinition<StringItemDefinition>("s0");
-  sItemDef0->addLocalCategory("a");
-  sItemDef0->addLocalCategory("b");
+  sItemDef0->localCategories().insert("a");
+  sItemDef0->localCategories().insert("b");
   sItemDef0->setDefaultValue("foo");
   StringItemDefinitionPtr sItemDef1 = A->addItemDefinition<StringItemDefinition>("s1");
-  sItemDef1->addLocalCategory("b");
-  sItemDef1->addLocalCategory("c");
+  sItemDef1->localCategories().insert("b");
+  sItemDef1->localCategories().insert("c");
   sItemDef1->setIsOkToInherit(false);
   StringItemDefinitionPtr sItemDef2 = A->addItemDefinition<StringItemDefinition>("s2");
-  sItemDef2->addLocalCategory("a");
-  sItemDef2->addLocalCategory("b");
-  sItemDef2->setCategoryCheckMode(ItemDefinition::CategoryCheckMode::All);
+  sItemDef2->localCategories().insert("d");
+  sItemDef2->localCategories().insert("e");
+  sItemDef2->localCategories().setMode(Categories::Set::CombinationMode::All);
   attRes->finalizeDefinitions();
   attRes->createAttribute("TestAtt", "A");
 }

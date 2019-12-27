@@ -96,8 +96,8 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
       citems = idef->conditionalItems(ename);
       nItems = citems.size();
       // Lets see if there are any categories
-      cats = idef->enumCategories(ename);
-      nCats = cats.size();
+      const Categories::Set& cats = idef->enumCategories(ename);
+      nCats = cats.categoryNames().size();
       // Use the Structure Form if the enum has either
       // children item or explicit categories associated with it
       if (nItems || nCats)
@@ -122,7 +122,15 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
         if (nCats)
         {
           inodes = snode.append_child("Categories");
-          for (const auto& cat : cats)
+          if (cats.mode() == Categories::Set::CombinationMode::All)
+          {
+            inodes.append_attribute("CategoryCheckMode").set_value("All");
+          }
+          else
+          {
+            inodes.append_attribute("CategoryCheckMode").set_value("Any");
+          }
+          for (const auto& cat : cats.categoryNames())
           {
             inodes.append_child("Cat").text().set(cat.c_str());
           }
@@ -374,7 +382,7 @@ void XmlV2StringWriter::generateXml()
     }
     // We need to write the analyses so that an analysis's parent
     // is always saved before the analysis itself
-    std::vector<smtk::attribute::Analyses::Analysis*> alist;
+    std::vector<Analyses::Analysis*> alist;
     auto topLevelAnalyses = analyses.topLevel();
     alist.insert(alist.end(), topLevelAnalyses.begin(), topLevelAnalyses.end());
     while (!alist.empty())
@@ -463,7 +471,7 @@ void XmlV2StringWriter::generateXml()
 
 void XmlV2StringWriter::processAttributeInformation()
 {
-  std::vector<smtk::attribute::DefinitionPtr> baseDefs;
+  std::vector<DefinitionPtr> baseDefs;
   m_resource->findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   xml_node definitions, attributes;
@@ -473,7 +481,7 @@ void XmlV2StringWriter::processAttributeInformation()
   }
 }
 
-void XmlV2StringWriter::processDefinition(smtk::attribute::DefinitionPtr def)
+void XmlV2StringWriter::processDefinition(DefinitionPtr def)
 {
   if (m_includeDefinitions)
   {
@@ -499,7 +507,7 @@ void XmlV2StringWriter::processDefinition(smtk::attribute::DefinitionPtr def)
   if (m_includeInstances)
   {
     // Process all attributes based on this class
-    std::vector<smtk::attribute::AttributePtr> atts;
+    std::vector<AttributePtr> atts;
     m_resource->findDefinitionAttributes(def->type(), atts);
     std::size_t n = atts.size();
     for (std::size_t i = 0; i < n; i++)
@@ -523,7 +531,7 @@ void XmlV2StringWriter::processDefinition(smtk::attribute::DefinitionPtr def)
     }
   }
   // Now process all of its derived classes
-  std::vector<smtk::attribute::DefinitionPtr> defs;
+  std::vector<DefinitionPtr> defs;
   m_resource->derivedDefinitions(def, defs);
   std::size_t n = defs.size();
   for (std::size_t i = 0; i < n; i++)
@@ -532,8 +540,7 @@ void XmlV2StringWriter::processDefinition(smtk::attribute::DefinitionPtr def)
   }
 }
 
-void XmlV2StringWriter::processDefinitionInternal(
-  xml_node& definition, smtk::attribute::DefinitionPtr def)
+void XmlV2StringWriter::processDefinitionInternal(xml_node& definition, DefinitionPtr def)
 {
   definition.append_attribute("Type").set_value(def->type().c_str());
   if (!def->label().empty())
@@ -625,15 +632,13 @@ void XmlV2StringWriter::processDefinitionInternal(
   }
 }
 
-void XmlV2StringWriter::processItemDefinition(
-  xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+void XmlV2StringWriter::processItemDefinition(xml_node& node, ItemDefinitionPtr idef)
 {
   this->processItemDefinitionAttributes(node, idef);
   this->processItemDefinitionType(node, idef);
 }
 
-void XmlV2StringWriter::processItemDefinitionAttributes(
-  xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefinitionPtr idef)
 {
   xml_node child;
   node.append_attribute("Name").set_value(idef->name().c_str());
@@ -648,7 +653,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
     node.append_attribute("Optional").set_value("true");
     node.append_attribute("IsEnabledByDefault") = idef->isEnabledByDefault();
   }
-  if (idef->categoryCheckMode() == smtk::attribute::ItemDefinition::CategoryCheckMode::All)
+  if (idef->localCategories().mode() == Categories::Set::CombinationMode::All)
   {
     node.append_attribute("CategoryCheckMode").set_value("All");
   }
@@ -667,7 +672,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
   if (!idef->localCategories().empty())
   {
     xml_node cnode, catNodes = node.append_child("Categories");
-    for (auto& str : idef->localCategories())
+    for (auto& str : idef->localCategories().categoryNames())
     {
       catNodes.append_child("Cat").text().set(str.c_str());
     }
@@ -682,8 +687,7 @@ void XmlV2StringWriter::processItemDefinitionAttributes(
   }
 }
 
-void XmlV2StringWriter::processItemDefinitionType(
-  xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+void XmlV2StringWriter::processItemDefinitionType(xml_node& node, ItemDefinitionPtr idef)
 {
   switch (idef->type())
   {
@@ -793,8 +797,7 @@ void XmlV2StringWriter::processModelEntityDef(
   }
 }
 
-void XmlV2StringWriter::processValueDef(
-  pugi::xml_node& node, smtk::attribute::ValueItemDefinitionPtr idef)
+void XmlV2StringWriter::processValueDef(pugi::xml_node& node, ValueItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());
@@ -846,7 +849,7 @@ void XmlV2StringWriter::processValueDef(
     return;
   }
   xml_node itemDefNode, itemDefNodes = node.append_child("ChildrenDefinitions");
-  std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator iter;
+  std::map<std::string, ItemDefinitionPtr>::const_iterator iter;
   for (iter = idef->childrenItemDefinitions().begin();
        iter != idef->childrenItemDefinitions().end(); ++iter)
   {
@@ -1023,13 +1026,13 @@ void XmlV2StringWriter::processAttribute(xml_node& attributes, attribute::Attrib
   }
 }
 
-void XmlV2StringWriter::processItem(xml_node& node, smtk::attribute::ItemPtr item)
+void XmlV2StringWriter::processItem(xml_node& node, ItemPtr item)
 {
   this->processItemAttributes(node, item);
   this->processItemType(node, item);
 }
 
-void XmlV2StringWriter::processItemAttributes(xml_node& node, smtk::attribute::ItemPtr item)
+void XmlV2StringWriter::processItemAttributes(xml_node& node, ItemPtr item)
 {
   node.append_attribute("Name").set_value(item->name().c_str());
   if (item->isOptional())
@@ -1049,7 +1052,7 @@ void XmlV2StringWriter::processItemAttributes(xml_node& node, smtk::attribute::I
   }
 }
 
-void XmlV2StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr item)
+void XmlV2StringWriter::processItemType(xml_node& node, ItemPtr item)
 {
   switch (item->type())
   {
@@ -1108,8 +1111,8 @@ void XmlV2StringWriter::processValueItem(pugi::xml_node& node, attribute::ValueI
   if (item->numberOfChildrenItems())
   {
     xml_node childNode, childNodes = node.append_child("ChildrenItems");
-    std::map<std::string, smtk::attribute::ItemPtr>::const_iterator iter;
-    const std::map<std::string, smtk::attribute::ItemPtr>& childrenItems = item->childrenItems();
+    std::map<std::string, ItemPtr>::const_iterator iter;
+    const std::map<std::string, ItemPtr>& childrenItems = item->childrenItems();
     for (iter = childrenItems.begin(); iter != childrenItems.end(); iter++)
     {
       childNode = childNodes.append_child();

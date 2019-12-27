@@ -54,6 +54,11 @@ Item::Type GroupItem::type() const
 
 bool GroupItem::isValid(const std::set<std::string>& cats) const
 {
+  // Firdt lets see if the group itself would be filtered out based on the categories
+  if (!(cats.empty() || this->categories().passes(cats)))
+  {
+    return true;
+  }
   // If the item is not enabled or if all of its values are set then it is valid
   // else it is enabled and contains unset values making it invalid
   if (!this->isEnabled())

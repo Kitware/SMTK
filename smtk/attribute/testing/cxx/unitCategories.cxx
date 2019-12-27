@@ -119,7 +119,7 @@ bool testCategories(const ItemDefinitionPtr& idef, const std::string& prefix,
           std::string e = videf->discreteEnum(i);
           std::cerr << prefix << " Testing Item Definition:" << idef->name() << " enum = " << e
                     << "'s Categories: ";
-          if (!compareSets(videf->enumCategories(e), enumCats[i]))
+          if (!compareSets(videf->enumCategories(e).categoryNames(), enumCats[i]))
           {
             status = false;
           }
@@ -143,7 +143,7 @@ bool testCategories(const ItemDefinitionPtr& idef, const std::string& prefix,
   }
 
   std::cerr << prefix << " Testing Item Definition:" << idef->name() << "'s Categories: ";
-  if (!compareSets(idef->categories(), answers.at(idef->name())))
+  if (!compareSets(idef->categories().categoryNames(), answers.at(idef->name())))
   {
     status = false;
   }
@@ -164,7 +164,7 @@ bool testCategories(const DefinitionPtr& def, const std::string& prefix,
   }
 
   std::cerr << prefix << " Testing Definition:" << def->type() << "'s Categories: ";
-  if (!compareSets(def->categories(), answers.at(def->type())))
+  if (!compareSets(def->categories().categoryNames(), answers.at(def->type())))
   {
     status = false;
   }
@@ -196,13 +196,13 @@ bool testCategories(const attribute::ResourcePtr& attRes, const std::string& pre
 void setupAttributeResource(attribute::ResourcePtr& attRes)
 {
   DefinitionPtr A = attRes->createDefinition("A");
-  A->addLocalCategory("A");
+  A->localCategories().insert("A");
   GroupItemDefinitionPtr gItemDef0 = A->addItemDefinition<GroupItemDefinition>("g1");
-  gItemDef0->addLocalCategory("g1");
+  gItemDef0->localCategories().insert("g1");
   // Lets create a Discrete String Item with Enums having category and advance level info
   // assigned to some of them
   StringItemDefinitionPtr sItemDef0 = gItemDef0->addItemDefinition<StringItemDefinition>("s1");
-  sItemDef0->addLocalCategory("s1");
+  sItemDef0->localCategories().insert("s1");
   sItemDef0->addDiscreteValue("a", "e1");
   sItemDef0->addDiscreteValue("b", "e2");
   sItemDef0->addDiscreteValue("c", "e3");
@@ -211,26 +211,26 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   sItemDef0->setEnumAdvanceLevel("e1", 10);
   sItemDef0->setEnumAdvanceLevel("e3", 10);
   StringItemDefinitionPtr sItemDef1 = sItemDef0->addItemDefinition<StringItemDefinition>("s2");
-  sItemDef1->addLocalCategory("s2");
+  sItemDef1->localCategories().insert("s2");
   sItemDef1->setIsOkToInherit(false);
   VoidItemDefinitionPtr vItemDef = sItemDef1->addItemDefinition<VoidItemDefinition>("v1");
-  vItemDef->addLocalCategory("v1");
+  vItemDef->localCategories().insert("v1");
   GroupItemDefinitionPtr gItemDef1 = gItemDef0->addItemDefinition<GroupItemDefinition>("g2");
-  gItemDef1->addLocalCategory("g2");
+  gItemDef1->localCategories().insert("g2");
   gItemDef1->setIsOkToInherit(false);
   sItemDef0 = gItemDef1->addItemDefinition<StringItemDefinition>("s3");
-  sItemDef0->addLocalCategory("s3");
+  sItemDef0->localCategories().insert("s3");
   DefinitionPtr B = attRes->createDefinition("B", A);
-  B->addLocalCategory("B");
+  B->localCategories().insert("B");
   vItemDef = B->addItemDefinition<VoidItemDefinition>("v2");
-  vItemDef->addLocalCategory("v2");
+  vItemDef->localCategories().insert("v2");
   DefinitionPtr C = attRes->createDefinition("C", A);
-  C->addLocalCategory("C");
+  C->localCategories().insert("C");
   DefinitionPtr D = attRes->createDefinition("D", A);
   vItemDef = D->addItemDefinition<VoidItemDefinition>("v3");
-  vItemDef->addLocalCategory("v3");
+  vItemDef->localCategories().insert("v3");
   DefinitionPtr E = attRes->createDefinition("E");
-  E->addLocalCategory("E");
+  E->localCategories().insert("E");
   DefinitionPtr F = attRes->createDefinition("F");
   vItemDef = F->addItemDefinition<VoidItemDefinition>("v4");
   attRes->finalizeDefinitions();

@@ -17,6 +17,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
+#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/SearchStyle.h"
 #include <algorithm>
 #include <map>
@@ -146,14 +147,8 @@ public:
   bool isEnabled() const;
   void setIsEnabled(bool isEnabledValue) { m_isEnabled = isEnabledValue; }
 
-  bool isMemberOf(const std::string& category) const;
-  bool isMemberOf(const std::vector<std::string>& categories) const;
-
-  /// @{
-  /// \brief Checks to see if the item passes its definition's category checks.
-  bool passCategoryCheck(const std::string& category) const;
-  bool passCategoryCheck(const std::set<std::string>& categories) const;
-  /// @}
+  ///\brief return the categories associated with the item (via its Definition)
+  const smtk::attribute::Categories& categories() const;
 
   /// \brief Get the item 's advance level
   ///

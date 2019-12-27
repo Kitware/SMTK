@@ -235,23 +235,24 @@ std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string
   return citer->second;
 }
 
-void ValueItemDefinition::applyCategories(
-  const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent)
+void ValueItemDefinition::applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+  smtk::attribute::Categories& inheritedToParent)
 {
   // Lets first determine the set of categories this item definition could inherit
-  m_categories = m_localCategories;
+  m_categories.reset();
+  m_categories.insert(m_localCategories);
   if (m_isOkToInherit)
   {
-    m_categories.insert(inheritedFromParent.begin(), inheritedFromParent.end());
+    m_categories.insert(inheritedFromParent);
   }
 
   //Lets add the categories associated with its enums
   for (const auto& enumCatInfo : m_valueToCategoryAssociations)
   {
-    m_categories.insert(enumCatInfo.second.begin(), enumCatInfo.second.end());
+    m_categories.insert(enumCatInfo.second);
   }
 
-  std::set<std::string> myChildrenCats;
+  smtk::attribute::Categories myChildrenCats;
 
   // Now process the children item defs - this will also assembly the categories
   // this item def will inherit from its children based on their local categories
@@ -261,11 +262,11 @@ void ValueItemDefinition::applyCategories(
   }
 
   // Add the children categories to this one
-  m_categories.insert(myChildrenCats.begin(), myChildrenCats.end());
+  m_categories.insert(myChildrenCats);
   // update the set of categories being inherited by the owning item/attribute
   // definition
-  inheritedToParent.insert(m_localCategories.begin(), m_localCategories.end());
-  inheritedToParent.insert(myChildrenCats.begin(), myChildrenCats.end());
+  inheritedToParent.insert(m_localCategories);
+  inheritedToParent.insert(myChildrenCats);
 }
 
 void ValueItemDefinition::applyAdvanceLevels(
@@ -388,7 +389,7 @@ bool ValueItemDefinition::getEnumIndex(const std::string& enumVal, std::size_t& 
 }
 
 void ValueItemDefinition::setEnumCategories(
-  const std::string& enumValue, const std::set<std::string>& cats)
+  const std::string& enumValue, const smtk::attribute::Categories::Set& cats)
 {
   if (std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
     m_discreteValueEnums.end())
@@ -408,12 +409,13 @@ void ValueItemDefinition::addEnumCategory(const std::string& enumValue, const st
   m_valueToCategoryAssociations[enumValue].insert(cat);
 }
 
-std::set<std::string> ValueItemDefinition::enumCategories(const std::string& enumValue) const
+const smtk::attribute::Categories::Set& ValueItemDefinition::enumCategories(
+  const std::string& enumValue) const
 {
+  static smtk::attribute::Categories::Set dummy;
   auto result = m_valueToCategoryAssociations.find(enumValue);
   if (result == m_valueToCategoryAssociations.end())
   {
-    std::set<std::string> dummy;
     return dummy; // enum does not have explicit categories
   }
   return result->second;

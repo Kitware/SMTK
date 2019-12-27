@@ -54,6 +54,9 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("associatedModelEntityIds", &smtk::attribute::Attribute::associatedModelEntityIds)
     .def("associations", (smtk::attribute::ConstReferenceItemPtr (smtk::attribute::Attribute::*)() const) &smtk::attribute::Attribute::associations)
     .def("associations", (smtk::attribute::ReferenceItemPtr (smtk::attribute::Attribute::*)()) &smtk::attribute::Attribute::associations)
+    // NOTE that the Python form of this method is returning a copy since Python
+    // doessn't support const references
+    .def("categories", &smtk::attribute::Attribute::categories)
     .def("clearAllUserData", &smtk::attribute::Attribute::clearAllUserData)
     .def("clearUserData", &smtk::attribute::Attribute::clearUserData, py::arg("key"))
     .def("color", &smtk::attribute::Attribute::color)
@@ -94,8 +97,6 @@ PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attr
     .def("isObjectAssociated", (bool (smtk::attribute::Attribute::*)(::smtk::resource::PersistentObjectPtr const &) const) &smtk::attribute::Attribute::isObjectAssociated, py::arg("componentPtr"))
     .def("isEntityAssociated", (bool (smtk::attribute::Attribute::*)(::smtk::common::UUID const &) const) &smtk::attribute::Attribute::isEntityAssociated, py::arg("entity"))
     .def("isEntityAssociated", (bool (smtk::attribute::Attribute::*)(::smtk::model::EntityRef const &) const) &smtk::attribute::Attribute::isEntityAssociated, py::arg("entityref"))
-    .def("isMemberOf", (bool (smtk::attribute::Attribute::*)(::std::string const &) const) &smtk::attribute::Attribute::isMemberOf, py::arg("category"))
-    .def("isMemberOf", (bool (smtk::attribute::Attribute::*)(::std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > const &) const) &smtk::attribute::Attribute::isMemberOf, py::arg("categories"))
     .def("isValid", (bool (smtk::attribute::Attribute::*)() const) &smtk::attribute::Attribute::isValid)
     .def("isValid", (bool (smtk::attribute::Attribute::*)(std::set<std::string> const &) const) &smtk::attribute::Attribute::isValid, py::arg("categories"))
     .def("_item", &smtk::attribute::Attribute::item, py::arg("ith"))

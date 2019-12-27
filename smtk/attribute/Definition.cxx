@@ -620,17 +620,6 @@ void Definition::buildAttribute(Attribute* att) const
   }
 }
 
-bool Definition::isMemberOf(const std::vector<std::string>& inCategories) const
-{
-  std::size_t i, n = inCategories.size();
-  for (i = 0; i < n; i++)
-  {
-    if (this->isMemberOf(inCategories[i]))
-      return true;
-  }
-  return false;
-}
-
 bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
   // First see if there is a item by the same name
@@ -733,49 +722,36 @@ std::set<AttributePtr> Definition::attributes(
   return atts;
 }
 
-void Definition::addLocalCategory(const std::string& category)
+void Definition::applyCategories(smtk::attribute::Categories inherited)
 {
-  m_localCategories.insert(category);
-}
-
-void Definition::removeLocalCategory(const std::string& category)
-{
-  m_localCategories.erase(category);
-}
-
-void Definition::applyCategories(std::set<std::string> inherited)
-{
+  smtk::attribute::Categories inheritedFromItems;
   // First append the def's categories to those we have inherited
   // Note that we want to not modify the original list which is why
   // its passed by value
-  inherited.insert(m_localCategories.begin(), m_localCategories.end());
-  std::set<std::string> itemsCats;
+  inherited.insert(m_localCategories);
 
   // Lets go to each item and process its categories
   for (auto& item : m_itemDefs)
   {
-    item->applyCategories(inherited, itemsCats);
+    item->applyCategories(inherited, inheritedFromItems);
   }
 
   // Now we need to assign the categories to the def itself.
   // We start with all of the categories associated with the def's
   // base definition - note that we assume that the inherited set passed
   // in is contained within the base's categories
+  m_categories.reset();
   if (m_baseDefinition)
   {
-    m_categories = m_baseDefinition->m_categories;
-  }
-  else
-  {
-    m_categories.clear();
+    m_categories.insert(m_baseDefinition->m_categories);
   }
 
   // Next we add all local categories
-  m_categories.insert(m_localCategories.begin(), m_localCategories.end());
+  m_categories.insert(m_localCategories);
 
   // We need to add all of the categories that were locally defined
   // on the items contained within the definition
-  m_categories.insert(itemsCats.begin(), itemsCats.end());
+  m_categories.insert(inheritedFromItems);
 
   // Finally we need to process all definitions that are derived from this one
   auto attResource = m_resource.lock();
@@ -839,7 +815,7 @@ void Definition::applyAdvanceLevels(
     m_advanceLevel[1] = writeLevelFromParent;
   }
 
-  // Lets go to each item and process its categories
+  // Lets go to each item and process its advance levels
   for (auto& item : m_itemDefs)
   {
     item->applyAdvanceLevels(m_advanceLevel[0], m_advanceLevel[1]);

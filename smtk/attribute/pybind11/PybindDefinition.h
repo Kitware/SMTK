@@ -40,13 +40,10 @@ PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attribute_Def
     .def("setVersion", &smtk::attribute::Definition::setVersion, py::arg("myVersion"))
     .def("isAbstract", &smtk::attribute::Definition::isAbstract)
     .def("setIsAbstract", &smtk::attribute::Definition::setIsAbstract, py::arg("isAbstractValue"))
-    .def("numberOfCategories", &smtk::attribute::Definition::numberOfCategories)
-    .def("isMemberOf", (bool (smtk::attribute::Definition::*)(::std::string const &) const) &smtk::attribute::Definition::isMemberOf, py::arg("category"))
-    .def("isMemberOf", (bool (smtk::attribute::Definition::*)(::std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > const &) const) &smtk::attribute::Definition::isMemberOf, py::arg("categories"))
-    .def("localCategories", &smtk::attribute::Definition::localCategories)
-    .def("addLocalCategory", &smtk::attribute::Definition::addLocalCategory, py::arg("category"))
-    .def("removeLocalCategory", &smtk::attribute::Definition::removeLocalCategory, py::arg("category"))
+    // NOTE that the Python form of this method is returning a copy since Python
+    // doesn't support const references - oly non-const method of localCategories supported
     .def("categories", &smtk::attribute::Definition::categories)
+    .def("localCategories", (smtk::attribute::Categories::Set& (smtk::attribute::Definition::*)()) &smtk::attribute::Definition::localCategories)
     .def("advanceLevel", &smtk::attribute::Definition::advanceLevel, py::arg("mode") = 0)
     .def("setLocalAdvanceLevel", (void (smtk::attribute::Definition::*)(int, unsigned int)) &smtk::attribute::Definition::setLocalAdvanceLevel, py::arg("mode"), py::arg("level"))
     .def("setLocalAdvanceLevel", (void (smtk::attribute::Definition::*)(unsigned int)) &smtk::attribute::Definition::setLocalAdvanceLevel, py::arg("level"))

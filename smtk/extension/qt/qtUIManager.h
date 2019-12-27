@@ -10,6 +10,7 @@
 #ifndef __smtk_extension_qtUIManager_h
 #define __smtk_extension_qtUIManager_h
 
+#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseView.h" // Needed for ViewInfo definition
@@ -164,7 +165,8 @@ public:
   bool passAdvancedCheck(int level);
   bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
   bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
-  bool passCategoryCheck(const std::set<std::string>& categories);
+  bool passCategoryCheck(const smtk::attribute::Categories& categories);
+  bool passCategoryCheck(const smtk::attribute::Categories::Set& categories);
   void disableCategoryChecks();
   void enableCategoryChecks();
   void setTopLevelCategories(const std::set<std::string>& categories);

@@ -21,6 +21,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacroBase.
 
+#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Tag.h"
 
@@ -115,26 +116,15 @@ public:
 
   void setIsAbstract(bool isAbstractValue) { m_isAbstract = isAbstractValue; }
 
-  // The categories that the attribute applies to. Typically
-  // a category will be a simulation type like heat transfer, fluid flow, etc.
-  std::size_t numberOfCategories() const { return m_categories.size(); }
-
-  bool isMemberOf(const std::string& category) const
-  {
-    return (m_categories.find(category) != m_categories.end());
-  }
-
-  bool isMemberOf(const std::vector<std::string>& categories) const;
-
   ///\brief Returns the categories (both explicitly assigned and inherited) associated to the Definition
-  const std::set<std::string>& categories() const { return m_categories; }
-
-  void addLocalCategory(const std::string& category);
-
-  void removeLocalCategory(const std::string& category);
+  ///
+  /// The categories that the attribute applies to. Typically
+  /// a category will be a simulation type like heat transfer, fluid flow, etc.
+  const smtk::attribute::Categories& categories() const { return m_categories; }
 
   ///\brief Returns the categories explicitly assigned to the Definition
-  const std::set<std::string>& localCategories() const { return m_localCategories; }
+  smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
+  const smtk::attribute::Categories::Set& localCategories() const { return m_localCategories; }
   /**
    * @brief Given a container, filter item definitions in the definition by a lambda function
    * @param values a container which holds definitions
@@ -401,7 +391,7 @@ protected:
 
   ///\brief apply the local categories of the definition and its items.
   /// inherited is an initial set passed down from the definition's base.
-  void applyCategories(std::set<std::string> inherited);
+  void applyCategories(smtk::attribute::Categories inherited);
 
   // This method updates derived definitions when this
   // definition's items have been changed
@@ -420,8 +410,8 @@ protected:
   std::string m_type;
   std::string m_label;
   bool m_isNodal;
-  std::set<std::string> m_localCategories;
-  std::set<std::string> m_categories;
+  attribute::Categories::Set m_localCategories;
+  attribute::Categories m_categories;
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
   unsigned int m_advanceLevel[2];

@@ -144,16 +144,6 @@ bool Attribute::isA(const smtk::attribute::DefinitionPtr& def) const
   return m_definition->isA(def);
 }
 
-bool Attribute::isMemberOf(const std::string& category) const
-{
-  return m_definition->isMemberOf(category);
-}
-
-bool Attribute::isMemberOf(const std::vector<std::string>& categories) const
-{
-  return m_definition->isMemberOf(categories);
-}
-
 void Attribute::setLocalAdvanceLevel(int mode, unsigned int level)
 {
   if ((mode < 0) || (mode > 1))
@@ -252,6 +242,11 @@ smtk::attribute::ItemPtr Attribute::itemAtPath(
   return current;
 }
 
+const smtk::attribute::Categories& Attribute::categories() const
+{
+  return m_definition->categories();
+}
+
 /**\brief Validate the attribute against its definition.
   *
   * This method will only return true when every (required) item in the
@@ -267,6 +262,13 @@ bool Attribute::isValid() const
 
 bool Attribute::isValid(const std::set<std::string>& cats) const
 {
+  // First lest check the attribute itself to see if it would
+  // have been filtered out
+  if (!(cats.empty() || this->categories().passes(cats)))
+  {
+    return true;
+  }
+
   for (auto it = m_items.begin(); it != m_items.end(); ++it)
   {
     if (!(*it)->isValid(cats))

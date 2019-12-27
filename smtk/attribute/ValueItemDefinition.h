@@ -139,13 +139,10 @@ public:
 
   /// @{
   ///\brief Set/Get the set of categories associated with a value Enum
-  void setEnumCategories(const std::string& enumValue, const std::set<std::string>& cats);
+  void setEnumCategories(
+    const std::string& enumValue, const smtk::attribute::Categories::Set& cats);
   void addEnumCategory(const std::string& enumValue, const std::string& cat);
-  std::set<std::string> enumCategories(const std::string& enumValue) const;
-  const std::map<std::string, std::set<std::string> > enumCategoryInfo() const
-  {
-    return m_valueToCategoryAssociations;
-  }
+  const smtk::attribute::Categories::Set& enumCategories(const std::string& enumValue) const;
   /// @}
 
   /// @{
@@ -187,8 +184,8 @@ public:
 
 protected:
   void copyTo(ValueItemDefinitionPtr def, smtk::attribute::ItemDefinition::CopyInfo& info) const;
-  void applyCategories(const std::set<std::string>& inheritedFromParent,
-    std::set<std::string>& inheritedToParent) override;
+  void applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+    smtk::attribute::Categories& inheritedToParent) override;
   void applyAdvanceLevels(
     const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent) override;
 
@@ -207,7 +204,7 @@ protected:
   std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, std::set<std::string> > m_itemToValueAssociations;
   std::map<std::string, std::vector<std::string> > m_valueToItemAssociations;
-  std::map<std::string, std::set<std::string> > m_valueToCategoryAssociations;
+  std::map<std::string, smtk::attribute::Categories::Set> m_valueToCategoryAssociations;
   std::map<std::string, unsigned int> m_valueToAdvanceLevelAssociations;
 
 private:

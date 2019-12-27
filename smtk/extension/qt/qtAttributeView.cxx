@@ -1540,7 +1540,7 @@ void qtAttributeView::getAllDefinitions()
   {
     foreach (QString category, this->Internals->AttDefMap.keys())
     {
-      if (adef->isMemberOf(category.toStdString()) &&
+      if (adef->categories().passes(category.toStdString()) &&
         !this->Internals->AttDefMap[category].contains(adef))
       {
         this->Internals->AttDefMap[category].push_back(adef);

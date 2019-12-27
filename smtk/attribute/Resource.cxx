@@ -13,6 +13,7 @@
 #include "smtk/view/Configuration.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -449,7 +450,7 @@ void Resource::finalizeDefinitions()
   // We need to process the definitions that don't have
   // a base definition
   std::vector<DefinitionPtr> baseDefs;
-  std::set<std::string> initialCats;
+  smtk::attribute::Categories initialCats;
   this->findBaseDefinitions(baseDefs);
   // Lets apply their categories and their item definitions' categories
   for (auto& def : baseDefs)
@@ -462,7 +463,8 @@ void Resource::finalizeDefinitions()
   m_categories.clear();
   for (auto it = m_definitions.begin(); it != m_definitions.end(); it++)
   {
-    m_categories.insert(it->second->categories().begin(), it->second->categories().end());
+    std::set<std::string> catNames = it->second->categories().categoryNames();
+    m_categories.insert(catNames.begin(), catNames.end());
   }
 }
 
