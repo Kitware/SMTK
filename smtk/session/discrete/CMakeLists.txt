@@ -197,10 +197,8 @@ vtk_module_build(
   PACKAGE SMTKDiscreteModules
   INSTALL_EXPORT SMTKDiscreteModules
   CMAKE_DESTINATION ${SMTK_INSTALL_CONFIG_DIR}
-  TEST_DIRECTORY_NAME "NONE"
-  # Handled by SMTK macros. Used in preference to VTK's since SMTK also adds
-  # unit tests for each public header.
-  INSTALL_HEADERS OFF)
+  HEADERS_DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${PROJECT_VERSION}"
+  TEST_DIRECTORY_NAME "NONE")
 
 #set smtkDiscreteSession to publicly link to smtkCore and privately to vtkSMTKDiscreteModel
 target_link_libraries(smtkDiscreteSession
