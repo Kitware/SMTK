@@ -28,7 +28,7 @@ namespace internal
   * This class uses smtkEnableSharedPtr so that all entities may be
   * managed via one pool of shared pointers.
   */
-class vertex : public entity
+class SMTKPOLYGONSESSION_EXPORT vertex : public entity
 {
 public:
   smtkTypeMacro(vertex);
