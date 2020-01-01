@@ -37,7 +37,7 @@ using boost::regex_match;
 
 #include <boost/dll.hpp>
 
-#if WIN32
+#ifdef _WIN32
 #include <Python.h>
 extern __declspec(dllimport) int Py_NoSiteFlag;
 #endif
