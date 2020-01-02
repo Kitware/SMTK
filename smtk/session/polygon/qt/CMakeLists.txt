@@ -52,19 +52,12 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   vtkPolygonOperationsExt
   vtkSMTKSourceExt
   vtkSMTKFilterExt
-  ParaView::ClientServerCoreCore
   ParaView::pqApplicationComponents
   Qt5::Core
   Qt5::Widgets
   VTK::CommonCore
   VTK::DomainsChemistryOpenGL2
 LINK_PRIVATE
-  ParaView::ClientServer
-  ParaView::ClientServerCoreRendering
-  ParaView::ServerManagerCore
-  ParaView::ServerManagerDefault
-  ParaView::ServerManagerRendering
-  ParaView::VTKExtensionsCore
   VTK::CommonDataModel
   VTK::CommonExecutionModel
   VTK::InteractionWidgets
