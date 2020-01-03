@@ -98,6 +98,12 @@ public:
   template <typename ViewWidgetType>
   smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
+  /// a set of alternative constructor names
+  void setAltViewWidgetNames(const std::map<std::string, std::string>& altNames)
+  {
+    m_altViewWidgetNames = altNames;
+  }
+
   // ------ PhraseModel ------
   /// Register a resource identified by its class type.
   template <typename ResourceType>
@@ -245,6 +251,8 @@ private:
 
   /// A container for all registered ViewWidget constructors.
   std::map<std::string, ViewWidgetConstructor> m_viewWidgets;
+  /// Alternate type names for the constructors.
+  std::map<std::string, std::string> m_altViewWidgetNames;
 
   // ------ PhraseModel ------
   template <std::size_t I, typename Tuple>

@@ -46,6 +46,8 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceBrowser : public smtk::extension:
   typedef smtk::extension::qtResourceBrowser Superclass;
 
 public:
+  smtkTypenameMacro(pqSMTKResourceBrowser);
+
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
   pqSMTKResourceBrowser(const smtk::extension::ViewInfo& info);
   ~pqSMTKResourceBrowser() override;

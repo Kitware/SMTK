@@ -50,6 +50,16 @@ typedef std::tuple<qtAnalysisView, qtAssociationView, qtAttributeView, qtCategor
 void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->registerViewWidgets<ViewWidgetList>();
+  // a set of legacy constructor names to use for alternate lookup.
+  std::map<std::string, std::string> altNames = {
+    { "Analysis", "qtAnalysisView" }, { "Associations", "qtAssociationView" },
+    { "Attribute", "qtAttributeView" }, { "Group", "qtGroupView" },
+    { "Instanced", "qtInstancedView" }, { "Operation", "qtOperationView" },
+    { "Selector", "qtSelectorView" }, { "SimpleExpression", "qtSimpleExpressionView" },
+    { "Category", "qtCategorySelectorView" }, { "ModelEntity", "qtModelEntityAttributeView" },
+    { "ResourceBrowser", "qtResourceBrowser" },
+  };
+  viewManager->setAltViewWidgetNames(altNames);
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)

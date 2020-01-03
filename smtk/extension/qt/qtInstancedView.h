@@ -33,6 +33,8 @@ class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseAttributeView
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtInstancedView);
+
   static qtBaseView* createViewWidget(const ViewInfo& info);
 
   qtInstancedView(const ViewInfo& info);

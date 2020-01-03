@@ -57,6 +57,8 @@ class SMTKQTEXT_EXPORT qtOperationView : public qtBaseAttributeView
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtOperationView);
+
   static qtBaseView* createViewWidget(const ViewInfo& info);
 
   qtOperationView(const OperationViewInfo& info);

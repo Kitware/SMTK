@@ -79,6 +79,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/view/Configuration.h"
+#include "smtk/view/Manager.h"
 
 #include <cmath>
 
@@ -108,10 +109,11 @@ qtUIManager::qtUIManager(const smtk::attribute::ResourcePtr& resource)
   this->commonConstructor();
 }
 
-qtUIManager::qtUIManager(
-  const smtk::operation::OperationPtr& op, const smtk::resource::ManagerPtr& resourceManager)
+qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
+  const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
   : m_parentWidget(nullptr)
   , m_resourceManager(resourceManager)
+  , m_viewManager(viewManager)
   , m_operation(op)
 {
   if (!op)
@@ -952,15 +954,21 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
     return nullptr;
   }
 
-  std::map<std::string, widgetConstructor>::const_iterator it;
-  it = m_constructors.find(info.m_view->type());
-  if (it == m_constructors.end())
+  // std::map<std::string, widgetConstructor>::const_iterator it;
+  // it = m_constructors.find(info.m_view->type());
+  // if (it == m_constructors.end())
+  // {
+  //   // Constructor for that type could not be found)
+  //   std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
+  //   return nullptr;
+  // }
+  // qtBaseView* qtView = (it->second)(info);
+  qtBaseView* qtView = m_viewManager->createViewWidget(info.m_view->type(), info);
+  if (!qtView)
   {
     // Constructor for that type could not be found)
     std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
-    return nullptr;
   }
-  qtBaseView* qtView = (it->second)(info);
   return qtView;
 }
 

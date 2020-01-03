@@ -19,6 +19,7 @@
 #include <QtWidgets/QLayout>
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtViewInfoDialog.h"
 
@@ -66,6 +67,8 @@ class SMTKQTEXT_EXPORT qtBaseView : public QObject
   Q_OBJECT
 
 public:
+  smtkTypenameMacroBase(qtBaseView);
+
   qtBaseView(const ViewInfo& info);
   ~qtBaseView() override;
 

@@ -58,6 +58,21 @@
   virtual std::string typeName() const { return type_name; }
 ///@}
 
+///@{
+/**\brief Add typedefs to a class for identifcation.
+  *
+  * Similar to smtkTypeMacro(), but only adds a typeName, and no
+  * shared_ptr definitions. Useful for e.g. Qt classes, that have
+  * their own shared pointer definition.
+  */
+#define smtkTypenameMacro(...)                                                                     \
+  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
+  std::string typeName() const override { return type_name; }
+#define smtkTypenameMacroBase(...)                                                                 \
+  static constexpr const char* const type_name = #__VA_ARGS__;                                     \
+  virtual std::string typeName() const { return type_name; }
+///@}
+
 /**\brief Add a typedef to the superclass of this class.
   *
   * This adds typedefs named `Superclass` and `SuperclassPtr`

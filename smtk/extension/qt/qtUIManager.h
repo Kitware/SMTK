@@ -59,7 +59,7 @@ class SMTKQTEXT_EXPORT qtUIManager : public QObject
 public:
   qtUIManager(const smtk::attribute::ResourcePtr& resource);
   qtUIManager(const smtk::operation::OperationPtr& operation,
-    const smtk::resource::ManagerPtr& resourceManager = nullptr);
+    const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager);
   qtUIManager(
     const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager);
   virtual ~qtUIManager();

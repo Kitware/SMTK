@@ -29,6 +29,8 @@ class SMTKQTEXT_EXPORT qtGroupView : public qtBaseAttributeView
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtGroupView);
+
   static qtBaseView* createViewWidget(const ViewInfo& info);
   qtGroupView(const ViewInfo& info);
   virtual ~qtGroupView();
