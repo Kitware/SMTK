@@ -31,7 +31,7 @@ class SMTKOSCILLATORSESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::oscillator::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

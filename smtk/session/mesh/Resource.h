@@ -31,7 +31,7 @@ class SMTKMESHSESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::mesh::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

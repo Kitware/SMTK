@@ -32,7 +32,7 @@ class SMTKMULTISCALESESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::multiscale::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

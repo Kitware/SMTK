@@ -30,7 +30,7 @@ class MyResource : public smtk::resource::DerivedFrom<MyResource, smtk::resource
 public:
   smtkTypeMacro(MyResource);
   smtkCreateMacro(MyResource);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {

@@ -35,7 +35,7 @@ class SMTKPOLYGONSESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::polygon::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

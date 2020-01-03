@@ -37,7 +37,7 @@ class SMTKDISCRETESESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::discrete::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 
