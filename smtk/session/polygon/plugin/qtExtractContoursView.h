@@ -15,16 +15,20 @@
 #ifndef qtExtractContoursView_h
 #define qtExtractContoursView_h
 
+#include "smtk/session/polygon/Exports.h"
+
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
 class qtExtractContoursViewInternals;
 class pqPipelineSource;
 
-class qtExtractContoursView : public smtk::extension::qtBaseAttributeView
+class SMTKPOLYGONSESSION_EXPORT qtExtractContoursView : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtExtractContoursView);
+
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
   qtExtractContoursView(const smtk::extension::ViewInfo& info);

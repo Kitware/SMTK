@@ -55,8 +55,9 @@ function (smtk_add_plugin name)
       "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx"
       @ONLY)
     list(APPEND _smtk_plugin_sources "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx")
-  else ()
-    # More than one registrar, must have a unique generated filename.
+  endif ()
+  if (DEFINED _smtk_plugin_REGISTRARS)
+    # Additional registrars, must have a unique generated filename.
     foreach(_smtk_plugin_REGISTRAR ${_smtk_plugin_REGISTRARS})
       string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
       string(REPLACE "::" "_" _smtk_plugin_header_name "${_smtk_plugin_REGISTRAR}")

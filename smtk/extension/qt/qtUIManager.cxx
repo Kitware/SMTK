@@ -277,6 +277,11 @@ void qtUIManager::initializeUI(
   m_topView->setInitialCategory();
 }
 
+bool qtUIManager::hasViewConstructor(const std::string& vtype) const
+{
+  return m_viewManager ? m_viewManager->hasViewWidget(vtype) : false;
+}
+
 smtk::view::ConfigurationPtr qtUIManager::findOrCreateOperationView() const
 {
   smtk::view::ConfigurationPtr config;
@@ -963,6 +968,11 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
   //   return nullptr;
   // }
   // qtBaseView* qtView = (it->second)(info);
+  if (!m_viewManager)
+  {
+    std::cerr << "No viewManager for View Type: " << info.m_view->type() << " skipping view!\n";
+    return nullptr;
+  }
   qtBaseView* qtView = m_viewManager->createViewWidget(info.m_view->type(), info);
   if (!qtView)
   {

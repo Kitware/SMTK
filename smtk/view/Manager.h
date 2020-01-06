@@ -98,10 +98,13 @@ public:
   template <typename ViewWidgetType>
   smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
+  /// Can we find a ViewWidget to construct?
+  bool hasViewWidget(const std::string& typeName) const;
+
   /// a set of alternative constructor names
   void setAltViewWidgetNames(const std::map<std::string, std::string>& altNames)
   {
-    m_altViewWidgetNames = altNames;
+    m_altViewWidgetNames.insert(altNames.begin(), altNames.end());
   }
 
   // ------ PhraseModel ------
@@ -249,6 +252,8 @@ private:
     return true;
   }
 
+  /// utility, retrieve a matching ViewWidgetConstructor
+  ViewWidgetConstructor getViewWidgetConstructor(const std::string& typeName) const;
   /// A container for all registered ViewWidget constructors.
   std::map<std::string, ViewWidgetConstructor> m_viewWidgets;
   /// Alternate type names for the constructors.

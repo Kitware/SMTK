@@ -38,7 +38,16 @@ smtk::extension::qtBaseView* Manager::createViewWidget(
   const std::string& typeName, const smtk::extension::ViewInfo& info)
 {
   smtk::extension::qtBaseView* viewWidget = nullptr;
+  Manager::ViewWidgetConstructor constructor = this->getViewWidgetConstructor(typeName);
+  if (constructor)
+  {
+    viewWidget = constructor(info);
+  }
+  return viewWidget;
+}
 
+Manager::ViewWidgetConstructor Manager::getViewWidgetConstructor(const std::string& typeName) const
+{
   // Locate the constructor associated with this resource type
   auto iter = m_viewWidgets.find(typeName);
   if (iter == m_viewWidgets.end())
@@ -52,12 +61,16 @@ smtk::extension::qtBaseView* Manager::createViewWidget(
   }
   if (iter != m_viewWidgets.end())
   {
-    // Create the viewWidget, set its Manager
-    viewWidget = iter->second(info);
-    // viewWidget->m_manager = shared_from_this();
+    // found one
+    return iter->second;
   }
 
-  return viewWidget;
+  return nullptr;
+}
+
+bool Manager::hasViewWidget(const std::string& typeName) const
+{
+  return this->getViewWidgetConstructor(typeName) != nullptr;
 }
 
 bool Manager::unregisterPhraseModel(const std::string& typeName)

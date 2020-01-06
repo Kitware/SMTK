@@ -130,10 +130,7 @@ public:
   void registerViewConstructor(const std::string& vtype, widgetConstructor f);
   //Description:
   /// Check if view type string has a registered view construction function
-  bool hasViewConstructor(const std::string& vtype) const
-  {
-    return m_constructors.find(vtype) != m_constructors.end();
-  }
+  bool hasViewConstructor(const std::string& vtype) const;
 
   // Registers a qtItem construction function with a qtItem type string
   void registerItemConstructor(const std::string& vtype, qtItemConstructor f);

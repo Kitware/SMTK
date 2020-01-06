@@ -7,14 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME smtkAssignColorsView - UI component for assigning colors to entities
-// .SECTION Description
-// .SECTION See Also
-// qtSection
 
 #ifndef smtkAssignColorsView_h
 #define smtkAssignColorsView_h
 
+#include "smtk/extension/paraview/operators/Exports.h"
 #include "smtk/extension/qt/qtOperationView.h"
 #include <vtk_jsoncpp.h> // for Json::Value; must be in header due to VTK mangling
 
@@ -22,11 +19,15 @@ class QColor;
 class QIcon;
 class smtkAssignColorsViewInternals;
 
-class smtkAssignColorsView : public smtk::extension::qtBaseAttributeView
+/// UI component for assigning colors to entities
+class SMTKPQOPERATIONVIEWSPLUGIN_EXPORT smtkAssignColorsView
+  : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(smtkAssignColorsView);
+
   smtkAssignColorsView(const smtk::extension::OperationViewInfo& info);
   virtual ~smtkAssignColorsView();
 
@@ -41,8 +42,8 @@ public slots:
   void updateUI() override;
   void requestModelEntityAssociation() override;
   void onShowCategory() override;
-  // This will be triggered by selecting different type
-  // of construction method in create-edge op.
+  /// This will be triggered by selecting different type
+  /// of construction method in create-edge op.
   void valueChanged(smtk::attribute::ItemPtr optype) override;
 
 protected slots:
@@ -55,8 +56,8 @@ protected slots:
   virtual void processOpacityValue(double);
   virtual void removeColors();
   virtual void setDefaultPaletteAndApply();
-  // This slot is used to indicate that the underlying attribute
-  // for the operation should be checked for validity
+  /// This slot is used to indicate that the underlying attribute
+  /// for the operation should be checked for validity
   virtual void attributeModified();
 
 protected:

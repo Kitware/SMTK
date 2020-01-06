@@ -15,15 +15,20 @@
 #ifndef qtPolygonEdgeOperationView_h
 #define qtPolygonEdgeOperationView_h
 
+#include "smtk/session/polygon/Exports.h"
+
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
 class qtPolygonEdgeOperationViewInternals;
 
-class qtPolygonEdgeOperationView : public smtk::extension::qtBaseAttributeView
+class SMTKPOLYGONSESSION_EXPORT qtPolygonEdgeOperationView
+  : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtPolygonEdgeOperationView);
+
   static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
 
   qtPolygonEdgeOperationView(const smtk::extension::ViewInfo& info);
