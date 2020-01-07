@@ -302,6 +302,10 @@ void PhraseModel::handleExpunged(
   std::set<smtk::common::UUID> uuids;
   for (auto it = data->begin(); it != data->end(); ++it)
   {
+    if (it.isSet() == false)
+    {
+      continue;
+    }
     uuids.insert((*it)->id());
   }
 
