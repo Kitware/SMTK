@@ -101,8 +101,8 @@ void pqSMTKCloseWithActiveOperationBehavior::trackActiveOperations(
   m_weakManager = wrapper->smtkOperationManager();
 
   m_key = wrapper->smtkOperationManager()->observers().insert(
-    [](const smtk::operation::Operation& operation, smtk::operation::EventType event,
-      smtk::operation::Operation::Result result) -> int {
+    [](const smtk::operation::Operation&, smtk::operation::EventType event,
+      smtk::operation::Operation::Result) -> int {
       if (event == smtk::operation::EventType::WILL_OPERATE)
       {
         ++g_numberOfActiveOperations;
