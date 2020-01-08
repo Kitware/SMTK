@@ -695,6 +695,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/vxl/operators" \
   "@smtk_SOURCE_DIR@/smtk/extension/vxl/vtk" \
   "@smtk_SOURCE_DIR@/smtk/extension/vxl/widgets" \
+  "@smtk_SOURCE_DIR@/smtk/geometry" \
   "@smtk_SOURCE_DIR@/smtk/io" \
   "@smtk_SOURCE_DIR@/smtk/io/mesh" \
   "@smtk_SOURCE_DIR@/smtk/mesh" \
@@ -741,6 +742,7 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/extension/paraview/pluginsupport" \
   "@smtk_BINARY_DIR@/smtk/extension/qt" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk" \
+  "@smtk_BINARY_DIR@/smtk/geometry" \
   "@smtk_BINARY_DIR@/smtk/io" \
   "@smtk_BINARY_DIR@/smtk/mesh" \
   "@smtk_BINARY_DIR@/smtk/model" \
