@@ -9,6 +9,8 @@ set(sources
   pqSMTKCallObserversOnMainThreadBehavior.h
   pqSMTKCloseResourceBehavior.cxx
   pqSMTKCloseResourceBehavior.h
+  pqSMTKCloseWithActiveOperationBehavior.cxx
+  pqSMTKCloseWithActiveOperationBehavior.h
   pqSMTKColorByToolBar.cxx
   pqSMTKColorByToolBar.h
   pqSMTKColorByWidget.cxx
