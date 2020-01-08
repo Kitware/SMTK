@@ -14,6 +14,7 @@
 #include "smtk/extension/paraview/appcomponents/plugin/pqPluginSMTKViewBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKCallObserversOnMainThreadBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKCloseResourceBehavior.h"
+#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKCloseWithActiveOperationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKDisplayAttributeOnLoadBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKExportSimulationBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKImportIntoResourceBehavior.h"
@@ -99,6 +100,10 @@ void pqSMTKAppComponentsAutoStart::startup()
     {
       auto saveOnCloseResourceBehavior = pqSMTKSaveOnCloseResourceBehavior::instance(this);
       pqCore->registerManager("smtk save on close resource", saveOnCloseResourceBehavior);
+
+      auto closeWithActiveOperationBehavior =
+        pqSMTKCloseWithActiveOperationBehavior::instance(this);
+      pqCore->registerManager("smtk close with active operation", closeWithActiveOperationBehavior);
     }
     pqCore->registerManager("call observers on main thread", callObserversOnMainThread);
     pqCore->registerManager("smtk close resource", closeResourceBehavior);
@@ -135,6 +140,7 @@ void pqSMTKAppComponentsAutoStart::shutdown()
     if (!vtksys::SystemTools::GetEnv("DASHBOARD_TEST_FROM_CTEST"))
     {
       pqCore->unRegisterManager("smtk save on close resource");
+      pqCore->unRegisterManager("smtk close with active operation");
     }
     pqCore->unRegisterManager("call observers on main thread");
     pqCore->unRegisterManager("smtk close resource");
