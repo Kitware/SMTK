@@ -169,19 +169,6 @@ void qtUIManager::commonConstructor()
   m_selectionBit = 0;
   m_hoverBit = 0;
 
-  // Lets register some basic view constructors
-  this->registerViewConstructor("Analysis", qtAnalysisView::createViewWidget);
-  this->registerViewConstructor("Associations", qtAssociationView::createViewWidget);
-  this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
-  this->registerViewConstructor("Group", qtGroupView::createViewWidget);
-  this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
-  this->registerViewConstructor("Operation", qtOperationView::createViewWidget);
-  this->registerViewConstructor("Selector", qtSelectorView::createViewWidget);
-  this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
-  this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
-  this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
-  this->registerViewConstructor("ResourceBrowser", qtResourceBrowser::createViewWidget);
-
   qtSMTKUtilities::registerModelViewConstructor(
     "ResourceTree", qtResourceBrowser::createDefaultView);
 
@@ -199,8 +186,7 @@ void qtUIManager::commonConstructor()
   this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
   this->registerItemConstructor("qtVoidItem", qtVoidItem::createItemWidget);
 
-  // register view constructors coming from plugins.
-  qtSMTKUtilities::updateViewConstructors(this);
+  // register constructors coming from plugins.
   qtSMTKUtilities::updateItemConstructors(this);
 }
 
@@ -939,11 +925,6 @@ bool qtUIManager::updateTableItemCheckState(
     bEnabled = (checkState == Qt::Checked);
   }
   return bEnabled;
-}
-
-void qtUIManager::registerViewConstructor(const std::string& vtype, widgetConstructor f)
-{
-  m_constructors[vtype] = f;
 }
 
 void qtUIManager::registerItemConstructor(const std::string& itype, qtItemConstructor f)

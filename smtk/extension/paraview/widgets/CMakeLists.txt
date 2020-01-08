@@ -23,7 +23,11 @@ set(sources
   pqSMTKSplineItemWidget.cxx
   pqSMTKSplineItemWidget.h
   pqSMTKWidgetsAutoStart.cxx
-  pqSMTKWidgetsAutoStart.h)
+  pqSMTKWidgetsAutoStart.h
+  qtSimpleExpressionEvaluationView.cxx
+  qtSimpleExpressionEvaluationView.h
+  Registrar.cxx
+  Registrar.h)
 
 set(ui_files
   resources/pqConePropertyWidget.ui
@@ -34,22 +38,8 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 set(rc_files
   qtWidgetsIcons.qrc)
 
-set(views
-  qtSimpleExpressionEvaluationView)
-set(interfaces)
-foreach (view IN LISTS views)
-  smtk_plugin_add_ui_view(
-    CLASS_NAME "${view}"
-    VIEW_NAME "${view}"
-    INTERFACES view_interfaces
-    SOURCES view_sources)
-  list(APPEND interfaces
-    ${view_interfaces})
-  list(APPEND sources
-    "${view}.cxx"
-    "${view}.h"
-    ${view_sources})
-endforeach ()
+# for Qt methods
+set(CMAKE_AUTOMOC 1)
 
 paraview_plugin_add_auto_start(
   CLASS_NAME pqSMTKWidgetsAutoStart
@@ -60,15 +50,22 @@ list(APPEND interfaces
 list(APPEND sources
   ${auto_start_sources})
 
-paraview_add_plugin(smtkPQWidgetsPlugin
-  VERSION "1.0"
-  UI_INTERFACES ${interfaces}
-  UI_FILES ${ui_files}
-  UI_RESOURCES ${rc_files}
-  SOURCES ${sources})
+smtk_add_plugin(smtkPQWidgetsPlugin
+  REGISTRAR
+    smtk::extension::paraview::widgets::Registrar
+  MANAGERS
+    smtk::view::Manager
+  PARAVIEW_PLUGIN_ARGS
+    VERSION "1.0"
+    UI_INTERFACES ${interfaces}
+    UI_FILES ${ui_files}
+    UI_RESOURCES ${rc_files}
+    SOURCES ${sources})
 target_link_libraries(smtkPQWidgetsPlugin
   PRIVATE
     ParaView::pqApplicationComponents
     ParaView::ServerManagerRendering
     smtkQtExt
     vtkSMTKWidgetsExt)
+
+smtk_export_header(smtkPQWidgetsPlugin Exports.h)

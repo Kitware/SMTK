@@ -29,7 +29,6 @@ using qtModelViewConstructor = std::function<QTreeView*(QWidget*)>;
 }
 }
 
-typedef std::map<std::string, qtSMTKViewConstructor> SMTKViewConstructorMap;
 typedef std::map<std::string, smtk::extension::qtItemConstructor> SMTKItemConstructorMap;
 typedef std::map<std::string, smtk::extension::qtModelViewConstructor> SMTKModelViewConstructorMap;
 
@@ -39,12 +38,8 @@ class SMTKQTEXT_EXPORT qtSMTKUtilities
 {
 
 public:
-  static const SMTKViewConstructorMap& viewConstructors();
   static const SMTKItemConstructorMap& itemConstructors();
   static const SMTKModelViewConstructorMap& modelViewConstructors();
-
-  // this will overwrite the existing constructor if viewName exists in the map
-  static void registerViewConstructor(const std::string& viewName, qtSMTKViewConstructor viewc);
 
   // this will overwrite the existing constructor if viewName exists in the map
   static void registerItemConstructor(
@@ -54,7 +49,6 @@ public:
   static void registerModelViewConstructor(
     const std::string& viewName, smtk::extension::qtModelViewConstructor viewc);
 
-  static void updateViewConstructors(smtk::extension::qtUIManager* uiMan);
   static void updateItemConstructors(smtk::extension::qtUIManager* uiMan);
 
   // convenient method for qvariant - UUID/EntityRef conversion
@@ -65,7 +59,6 @@ public:
     QVariant variant, smtk::model::ResourcePtr mresource);
 
 private:
-  static SMTKViewConstructorMap s_viewConstructors;
   static SMTKItemConstructorMap s_itemConstructors;
   static SMTKModelViewConstructorMap s_modelViewConstructors;
 };

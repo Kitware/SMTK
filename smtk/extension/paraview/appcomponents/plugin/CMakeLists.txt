@@ -1,6 +1,4 @@
 set(sources
-  pqPluginSMTKViewBehavior.cxx
-  pqPluginSMTKViewBehavior.h
   pqSMTKAppComponentsAutoStart.cxx
   pqSMTKAppComponentsAutoStart.h
   pqSMTKAttributePanel.cxx

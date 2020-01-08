@@ -73,12 +73,14 @@ public:
   /// If this instance was constructed with an operation, return it.
   smtk::operation::OperationPtr operation() const { return m_operation; }
 
+  ///@{
   /// Use the given smtk::view::Configuration to construct widgets matching the specification.
   qtBaseView* setSMTKView(smtk::view::ConfigurationPtr v);
   qtBaseView* setSMTKView(
     smtk::view::ConfigurationPtr v, QWidget* pWidget, bool useInternalFileBrowser = true);
   qtBaseView* setSMTKView(const smtk::extension::ViewInfo& v, bool useInternalFileBrowser = true);
   smtk::view::ConfigurationPtr smtkView() const { return m_smtkView; }
+  ///}@
 
   smtk::resource::ManagerPtr resourceManager() const { return m_resourceManager; }
   void setResourceManager(smtk::resource::ManagerPtr mgr) { m_resourceManager = mgr; }
@@ -94,19 +96,23 @@ public:
   void setActiveModelView(smtk::extension::qtModelView*);
   smtk::extension::qtModelView* activeModelView();
 
-  // Description:
+  ///@{
   /// Set/Get the color used for indicating items with default values
   void setDefaultValueColor(const QColor& color);
   void setDefaultValueColorRgbF(const QVariantList& color);
   QColor defaultValueColor() const { return this->DefaultValueColor; }
   QVariantList defaultValueColorRgbF() const;
+  ///}@
 
+  ///@{
+  /// Set/Get the invalid value color
   void setInvalidValueColor(const QColor& color);
   void setInvalidValueColorRgbF(const QVariantList& color);
   QColor invalidValueColor() const { return this->InvalidValueColor; }
   QVariantList invalidValueColorRgbF() const;
+  ///}@
 
-  // Description:
+  ///@{
   /// Set the advanced values font to be bold and/or italic
   void setAdvanceFontStyleBold(bool val);
   bool advanceFontStyleBold() const;
@@ -117,24 +123,21 @@ public:
   bool advancedBold() { return this->AdvancedBold; }
   void setAdvancedItalic(bool i) { this->AdvancedItalic = i; }
   bool advancedItalic() { return this->AdvancedItalic; }
+  ///}@
 
-  //Description:
+  ///@{
   /// Set and Get Value Label Lengths
   int maxValueLabelLength() const { return m_maxValueLabelLength; }
   void setMaxValueLabelLength(int w) { m_maxValueLabelLength = w; }
   int minValueLabelLength() const { return m_minValueLabelLength; }
   void setMinValueLabelLength(int w) { m_minValueLabelLength = w; }
+  ///}@
 
-  //Description:
-  /// Registers a view construction function with a view type string
-  void registerViewConstructor(const std::string& vtype, widgetConstructor f);
-  //Description:
   /// Check if view type string has a registered view construction function
   bool hasViewConstructor(const std::string& vtype) const;
 
-  // Registers a qtItem construction function with a qtItem type string
+  /// Registers a qtItem construction function with a qtItem type string
   void registerItemConstructor(const std::string& vtype, qtItemConstructor f);
-  //Description:
   /// Check if view type string has a registered view construction function
   bool hasItemConstructor(const std::string& vtype) const
   {
@@ -302,7 +305,6 @@ private:
   void findDefinitionLongLabel(smtk::attribute::DefinitionPtr def, std::string& labelText);
   void getItemsLongLabel(
     const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, std::string& labelText);
-  std::map<std::string, widgetConstructor> m_constructors;
   std::map<std::string, qtItemConstructor> m_itemConstructors;
 
   smtk::view::SelectionPtr m_selection;

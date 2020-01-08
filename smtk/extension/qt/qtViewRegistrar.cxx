@@ -30,17 +30,6 @@ namespace extension
 {
 namespace
 {
-// this->registerViewConstructor("Analysis", qtAnalysisView::createViewWidget);
-// this->registerViewConstructor("Associations", qtAssociationView::createViewWidget);
-// this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
-// this->registerViewConstructor("Group", qtGroupView::createViewWidget);
-// this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
-// this->registerViewConstructor("Operation", qtOperationView::createViewWidget);
-// this->registerViewConstructor("Selector", qtSelectorView::createViewWidget);
-// this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
-// this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
-// this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
-// this->registerViewConstructor("ResourceBrowser", qtResourceBrowser::createViewWidget);
 typedef std::tuple<qtAnalysisView, qtAssociationView, qtAttributeView, qtCategorySelectorView,
   qtGroupView, qtInstancedView, qtModelEntityAttributeView, qtOperationView, qtResourceBrowser,
   qtSelectorView>
@@ -59,7 +48,7 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
     { "Category", "qtCategorySelectorView" }, { "ModelEntity", "qtModelEntityAttributeView" },
     { "ResourceBrowser", "qtResourceBrowser" },
   };
-  viewManager->setAltViewWidgetNames(altNames);
+  viewManager->addWidgetAliases(altNames);
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)

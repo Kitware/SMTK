@@ -4,10 +4,12 @@ find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 
 # set up sources to build
 set(srcs
+  Registrar.cxx
   smtkTerrainExtractionView.cxx
 )
 
 set(hdrs
+  Registrar.h
   smtkTerrainExtractionView.h
 )
 

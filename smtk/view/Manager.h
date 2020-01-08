@@ -102,9 +102,12 @@ public:
   bool hasViewWidget(const std::string& typeName) const;
 
   /// a set of alternative constructor names
-  void setAltViewWidgetNames(const std::map<std::string, std::string>& altNames)
+  void addWidgetAliases(const std::map<std::string, std::string>& altNames)
   {
-    m_altViewWidgetNames.insert(altNames.begin(), altNames.end());
+    for (auto& it : altNames)
+    {
+      m_altViewWidgetNames[it.first] = it.second;
+    }
   }
 
   // ------ PhraseModel ------

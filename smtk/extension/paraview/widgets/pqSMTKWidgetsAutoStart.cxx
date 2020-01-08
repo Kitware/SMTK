@@ -56,8 +56,6 @@ void pqSMTKWidgetsAutoStart::startup()
     "Sphere", pqSMTKSphereItemWidget::createSphereItemWidget);
   qtSMTKUtilities::registerItemConstructor(
     "Spline", pqSMTKSplineItemWidget::createSplineItemWidget);
-  qtSMTKUtilities::registerViewConstructor(
-    "SimpleExpression", qtSimpleExpressionEvaluationView::createViewWidget);
 }
 
 void pqSMTKWidgetsAutoStart::shutdown()

@@ -11,7 +11,6 @@
 
 #include "smtk/view/Selection.h"
 
-#include "smtk/extension/paraview/appcomponents/plugin/pqPluginSMTKViewBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKCallObserversOnMainThreadBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKCloseResourceBehavior.h"
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKCloseWithActiveOperationBehavior.h"
@@ -27,7 +26,6 @@
 #include "smtk/extension/paraview/appcomponents/plugin/vtkSMTKEncodeSelection.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKRenderResourceBehavior.h"
-#include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #include "smtk/extension/qt/qtSMTKUtilities.h"
@@ -61,7 +59,6 @@ vtkStandardNewMacro(vtkSMTKAppComponentsFactory);
 pqSMTKAppComponentsAutoStart::pqSMTKAppComponentsAutoStart(QObject* parent)
   : Superclass(parent)
 {
-  m_viewTracker = new pqPluginSMTKViewBehavior(parent);
 }
 
 pqSMTKAppComponentsAutoStart::~pqSMTKAppComponentsAutoStart() = default;
@@ -124,10 +121,6 @@ void pqSMTKAppComponentsAutoStart::startup()
     }
   }
   (void)rsrcMgr;
-
-  // Dynamic creation of the resource browser
-  qtSMTKUtilities::registerViewConstructor(
-    "pqSMTKResourceBrowser", pqSMTKResourceBrowser::createViewWidget);
 }
 
 void pqSMTKAppComponentsAutoStart::shutdown()

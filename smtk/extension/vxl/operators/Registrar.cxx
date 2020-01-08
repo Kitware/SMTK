@@ -9,37 +9,27 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/session/polygon/plugin/Registrar.h"
+#include "smtk/extension/vxl/operators/Registrar.h"
 
-#ifdef VTK_SUPPORT
-#include "smtk/session/polygon/plugin/qtExtractContoursView.h"
-#endif
-#include "smtk/session/polygon/plugin/qtPolygonEdgeOperationView.h"
+#include "smtk/extension/vxl/operators/smtkTerrainExtractionView.h"
 
 namespace smtk
 {
-namespace session
+namespace extension
 {
-namespace polygon
+namespace vxl
 {
-namespace plugin
+namespace operators
 {
 
 namespace
 {
-typedef std::tuple<
-#ifdef VTK_SUPPORT
-  qtExtractContoursView,
-#endif
-  qtPolygonEdgeOperationView>
-  ViewList;
+typedef std::tuple<smtkTerrainExtractionView> ViewList;
 }
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->registerViewWidgets<ViewList>();
-  viewManager->addWidgetAliases({ { "smtkPolygonEdgeView", "qtPolygonEdgeOperationView" },
-    { "smtkPolygonContourView", "qtExtractContoursView" } });
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
