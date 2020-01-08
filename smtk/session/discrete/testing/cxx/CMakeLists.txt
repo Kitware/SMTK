@@ -11,6 +11,7 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
+    VTK::IOXML
     VTK::RenderingGL2PSOpenGL2
     VTK::TestingRendering
   )
@@ -47,6 +48,7 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
+    VTK::IOXML
     VTK::RenderingGL2PSOpenGL2
     VTK::TestingRendering
     ${Boost_LIBRARIES}

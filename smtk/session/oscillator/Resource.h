@@ -13,9 +13,10 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/session/oscillator/Exports.h"
 
+#include "smtk/resource/DerivedFrom.h"
+
 #include "smtk/model/Resource.h"
 
-#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -30,7 +31,7 @@ class SMTKOSCILLATORSESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::oscillator::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

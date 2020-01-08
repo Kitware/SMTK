@@ -8,11 +8,15 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
+#include "smtk/extension/vtk/source/Backend.h"
+#include "smtk/extension/vtk/source/Geometry.h"
 
+#include "vtkDataObject.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
+#include "vtkSmartPointer.h"
 
 using UUID = smtk::common::UUID;
 using SequenceType = vtkResourceMultiBlockSource::SequenceType;
@@ -226,4 +230,45 @@ void vtkResourceMultiBlockSource::ClearCache()
     entry.second.Data->UnRegister(this);
   }
   this->Cache.clear();
+}
+
+int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request,
+  vtkInformationVector* outInfo, const smtk::extension::vtk::source::Geometry& geometry)
+{
+  (void)request;
+  auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
+  if (!output)
+  {
+    vtkErrorMacro("No output dataset");
+    return 0;
+  }
+
+  std::map<int, std::vector<vtkSmartPointer<vtkDataObject> > > blocks;
+  smtk::extension::vtk::source::Backend source(&geometry);
+  geometry.visit([&source, &geometry, &blocks](const smtk::resource::PersistentObject::Ptr& obj,
+    smtk::geometry::Geometry::GenerationNumber gen) {
+    (void)gen;
+    if (obj)
+    {
+      int dim = geometry.dimension(obj);
+      std::cout << "  " << obj->name() << " " << dim << "\n";
+      auto& geom = source.geometry(obj);
+      if (geom)
+      {
+        blocks[dim].push_back(geom);
+      }
+    }
+    return false;
+  });
+
+  output->SetNumberOfBlocks(BlockId::NumberOfBlocks);
+  vtkNew<vtkMultiBlockDataSet> compPerDim;
+  vtkNew<vtkMultiBlockDataSet> prototypes;
+  vtkNew<vtkMultiBlockDataSet> instances;
+  compPerDim->SetNumberOfBlocks(4);
+  output->SetBlock(BlockId::Components, compPerDim);
+  output->SetBlock(BlockId::Prototypes, prototypes);
+  output->SetBlock(BlockId::Instances, instances);
+
+  return 1;
 }

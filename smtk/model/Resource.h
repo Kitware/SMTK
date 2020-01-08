@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_model_Resource_h
-#define __smtk_model_Resource_h
+#ifndef smtk_model_Resource_h
+#define smtk_model_Resource_h
 /*!\file */
 
 #include "smtk/PublicPointerDefs.h"
@@ -28,9 +28,11 @@
 #include "smtk/model/StringData.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/common/UUID.h"
+#include "smtk/geometry/Resource.h"
 
 #include "smtk/resource/DerivedFrom.h"
+
+#include "smtk/common/UUID.h"
 
 #include "smtk/io/Logger.h"
 
@@ -89,7 +91,7 @@ typedef UUIDsToEntities::const_iterator UUIDWithConstEntityPtr;
   *
   */
 class SMTKCORE_EXPORT Resource
-  : public smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>
+  : public smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>
 {
 public:
   typedef UUIDsToEntities storage_type;
@@ -97,10 +99,10 @@ public:
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
   smtkTypeMacro(smtk::model::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   // typedef referring to the parent resource.
-  typedef smtk::resource::Resource ParentResource;
+  typedef smtk::geometry::Resource ParentResource;
 
   // Associations to other resources and components are managed internally using
   // smtk::resource::Links.
@@ -570,4 +572,4 @@ Collection Resource::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)
 } // model namespace
 } // smtk namespace
 
-#endif // __smtk_model_Resource_h
+#endif // smtk_model_Resource_h

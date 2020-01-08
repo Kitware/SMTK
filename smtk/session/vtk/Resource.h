@@ -13,9 +13,10 @@
 #include "smtk/session/vtk/Exports.h"
 #include "smtk/session/vtk/Session.h"
 
+#include "smtk/resource/DerivedFrom.h"
+
 #include "smtk/model/Resource.h"
 
-#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -30,7 +31,7 @@ class SMTKVTKSESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::vtk::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

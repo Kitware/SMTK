@@ -61,7 +61,7 @@ public:
   const std::string& typeName() const { return m_typeName; }
   const Resource::Index& index() const { return m_index; }
 
-  // Resource metadata holds inheritence information for its resource as a set
+  // Resource metadata holds inheritance information for its resource as a set
   // of parent indices.
   bool isOfType(const Resource::Index& index) const
   {

@@ -10,12 +10,15 @@
 #ifndef __smtk_session_polygon_internal_model_h
 #define __smtk_session_polygon_internal_model_h
 
-#include "smtk/PublicPointerDefs.h"
-#include "smtk/SharedFromThis.h"
+#include "smtk/session/polygon/Exports.h"
+
 #include "smtk/session/polygon/internal/Entity.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Vertex.h"
+
+#include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 
 #include <array>
 
@@ -28,7 +31,7 @@ namespace polygon
 namespace internal
 {
 
-class pmodel : public entity
+class SMTKPOLYGONSESSION_EXPORT pmodel : public entity
 {
 public:
   smtkTypeMacro(pmodel);

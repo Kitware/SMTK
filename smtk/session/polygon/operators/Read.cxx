@@ -18,6 +18,8 @@
 #include "smtk/session/polygon/Resource.h"
 #include "smtk/session/polygon/SessionIOJSON.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/Read_xml.h"
 
 using namespace smtk::model;
@@ -46,6 +48,11 @@ Read::Result Read::operateInternal()
   auto rsrc = smtk::session::polygon::Resource::create();
   smtk::session::polygon::SessionIOJSON::loadModelRecords(j, rsrc);
   rsrc->setLocation(filename);
+
+  operation::MarkGeometry markGeometry(rsrc);
+  smtk::resource::Component::Visitor visitor = [&markGeometry](
+    const resource::ComponentPtr& comp) { markGeometry.markModified(comp); };
+  rsrc->visit(visitor);
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 

@@ -34,7 +34,7 @@ namespace internal
 
 class pmodel;
 
-class edge : public entity
+class SMTKPOLYGONSESSION_EXPORT edge : public entity
 {
 public:
   smtkTypeMacro(edge);

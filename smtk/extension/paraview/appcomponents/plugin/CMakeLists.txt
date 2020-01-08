@@ -141,7 +141,7 @@ smtk_add_plugin(smtkPQComponentsPlugin
   REGISTRAR
     smtk::extension::paraview::server::Registrar
   MANAGERS
-    smtk::operation::Manager smtk::resource::Manager
+    smtk::operation::Manager smtk::resource::Manager smtk::geometry::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"
     REQUIRED_ON_SERVER
@@ -158,4 +158,5 @@ target_link_libraries(smtkPQComponentsPlugin
     smtkPVServerExt
     smtkCore
     smtkQtExt
+    vtkSMTKSourceExt
     vtkSMTKOperationsExt)

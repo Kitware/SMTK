@@ -19,7 +19,6 @@
 #include "smtk/model/Session.h"
 
 #include "vtkCellArray.h"
-#include "vtkGeometryFilter.h"
 #include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleKey.h"

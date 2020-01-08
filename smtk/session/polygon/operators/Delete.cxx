@@ -24,6 +24,8 @@
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -464,6 +466,8 @@ Delete::Result Delete::operateInternal()
   {
     modified->appendValue(m->component());
   }
+
+  operation::MarkGeometry(resource).markResult(result);
 
   smtkInfoMacro(this->log(), "Deleted " << m_expunged.size() << " of " << entities.size()
                                         << " requested entities");

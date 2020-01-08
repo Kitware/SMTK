@@ -13,9 +13,10 @@
 #include "smtk/session/discrete/Exports.h"
 #include "smtk/session/discrete/Session.h"
 
+#include "smtk/resource/DerivedFrom.h"
+
 #include "smtk/model/Resource.h"
 
-#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 class vtkModelItem;
@@ -36,7 +37,7 @@ class SMTKDISCRETESESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::discrete::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

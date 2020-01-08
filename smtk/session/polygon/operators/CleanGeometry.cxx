@@ -25,6 +25,8 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/CleanGeometry_xml.h"
 
 namespace smtk
@@ -915,6 +917,7 @@ CleanGeometry::Result CleanGeometry::operateInternal()
   {
     expungedItem->appendValue(e.component());
   }
+  operation::MarkGeometry(resource).markResult(opResult);
 
   return opResult;
 }

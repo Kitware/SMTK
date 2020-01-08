@@ -76,7 +76,7 @@ constexpr smtk::resource::Links::RoleType Resource::TessellationRole;
 //@{
 /// Create a default, empty model resource.
 Resource::Resource(smtk::resource::ManagerPtr mgr)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(mgr)
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(mgr)
   , m_topology(new UUIDsToEntities)
   , m_tessellations(new UUIDsToTessellations)
   , m_analysisMesh(new UUIDsToTessellations)
@@ -90,7 +90,7 @@ Resource::Resource(smtk::resource::ManagerPtr mgr)
 }
 
 Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(uid, mgr)
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(uid, mgr)
   , m_topology(new UUIDsToEntities)
   , m_tessellations(new UUIDsToTessellations)
   , m_analysisMesh(new UUIDsToTessellations)
@@ -107,7 +107,7 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
 Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTessellations> tess,
   shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<UUIDsToAttributeAssignments> attribs,
   const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(uid, mgr)
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(uid, mgr)
   , m_topology(inTopology)
   , m_tessellations(tess)
   , m_analysisMesh(analysismesh)

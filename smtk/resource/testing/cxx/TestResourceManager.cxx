@@ -22,7 +22,7 @@ class ResourceA : public smtk::resource::DerivedFrom<ResourceA, smtk::resource::
 public:
   smtkTypeMacro(ResourceA);
   smtkCreateMacro(ResourceA);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
@@ -49,7 +49,7 @@ class ResourceB : public smtk::resource::DerivedFrom<ResourceB, ResourceA>
 public:
   smtkTypeMacro(ResourceB);
   smtkCreateMacro(ResourceA);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   // typedef referring to the parent resource. This is necessary if the derived
   // resource is to be returned by both queries for resources of type <derived>
@@ -68,7 +68,7 @@ class ResourceC : public smtk::resource::DerivedFrom<ResourceC, ResourceB>
 public:
   smtkTypeMacro(ResourceC);
   smtkCreateMacro(ResourceA);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
 protected:
   ResourceC()

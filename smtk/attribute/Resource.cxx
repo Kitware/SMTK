@@ -37,12 +37,12 @@ constexpr smtk::resource::Links::RoleType Resource::AssociationRole;
 constexpr smtk::resource::Links::RoleType Resource::ReferenceRole;
 
 Resource::Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(myID, manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(myID, manager)
 {
 }
 
 Resource::Resource(smtk::resource::ManagerPtr manager)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(manager)
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(manager)
 {
 }
 

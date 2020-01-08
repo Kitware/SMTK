@@ -1,5 +1,7 @@
 set(classes
+  Backend
   PointCloudFromVTKAuxiliaryGeometry
+  Registrar
   SourceFromAttribute
   SourceFromMesh
   SourceFromModel
@@ -17,6 +19,7 @@ set(classes
 set(templates
   vtkModelAuxiliaryGeometry.txx)
 set(headers
+  Geometry.h
   SourceGenerator.h
   vtkTracksAllInstances.h)
 

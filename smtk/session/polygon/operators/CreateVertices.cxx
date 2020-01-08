@@ -16,6 +16,8 @@
 
 #include "smtk/model/Vertex.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -86,6 +88,8 @@ CreateVertices::Result CreateVertices::operateInternal()
 
     smtk::attribute::ComponentItem::Ptr modified = result->findComponent("modified");
     modified->setValue(model.component());
+
+    operation::MarkGeometry(resource).markModified(created);
   }
   if (!result)
   {

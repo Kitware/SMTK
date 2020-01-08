@@ -13,10 +13,10 @@
 
 #include "smtk/resource/Resource.h"
 
+#include "smtk/resource/Manager.h"
+
 #include "smtk/common/Paths.h"
 #include "smtk/common/UUIDGenerator.h"
-
-#include "smtk/resource/Manager.h"
 
 namespace smtk
 {

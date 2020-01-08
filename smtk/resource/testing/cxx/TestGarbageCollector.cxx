@@ -73,7 +73,7 @@ class ResourceA : public smtk::resource::DerivedFrom<ResourceA, smtk::resource::
 public:
   smtkTypeMacro(ResourceA);
   smtkCreateMacro(ResourceA);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   ComponentA::Ptr newComponent()
   {

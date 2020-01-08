@@ -17,7 +17,23 @@
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 
+#include <memory>
 #include <set>
+
+namespace smtk
+{
+namespace extension
+{
+namespace vtk
+{
+namespace source
+{
+
+class Geometry;
+}
+}
+}
+}
 
 /**\brief A VTK source for exposing smtk resources.
   *
@@ -128,6 +144,12 @@ public:
 protected:
   vtkResourceMultiBlockSource();
   ~vtkResourceMultiBlockSource() override;
+
+  /// If any subclass determines that the resource has an
+  /// appropriate geometry provider, it can call this method
+  /// for the body of its RequestData() implementation.
+  int RequestDataFromGeometry(vtkInformation* request, vtkInformationVector* outputData,
+    const smtk::extension::vtk::source::Geometry& provider);
 
   std::weak_ptr<smtk::resource::Resource> Resource;
   std::map<UUID, CacheEntry> Cache;

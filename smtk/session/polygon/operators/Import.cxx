@@ -33,6 +33,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/SessionRef.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/common/Paths.h"
 
 #include "smtk/extension/vtk/reader/vtkCMBGeometryReader.h"
@@ -544,6 +546,8 @@ Import::Result Import::operateInternal()
     smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
     created->setValue(model.component());
   }
+
+  operation::MarkGeometry(resource).markResult(result);
 
   polyOutput->Delete();
   return result;

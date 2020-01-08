@@ -38,7 +38,7 @@ class ResourceA : public smtk::resource::DerivedFrom<ResourceA, smtk::resource::
 public:
   smtkTypeMacro(ResourceA);
   smtkCreateMacro(ResourceA);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {
@@ -64,7 +64,7 @@ class ResourceB : public smtk::resource::DerivedFrom<ResourceB, ResourceA>
 {
 public:
   smtkTypeMacro(ResourceB);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
 protected:
   ResourceB()
@@ -77,7 +77,7 @@ class ResourceX : public smtk::resource::DerivedFrom<ResourceX, smtk::resource::
 {
 public:
   smtkTypeMacro(ResourceX);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   smtk::resource::ComponentPtr find(const smtk::common::UUID& /*compId*/) const override
   {

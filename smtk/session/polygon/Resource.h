@@ -13,9 +13,10 @@
 #include "smtk/session/polygon/Exports.h"
 #include "smtk/session/polygon/Session.h"
 
+#include "smtk/resource/DerivedFrom.h"
+
 #include "smtk/model/Resource.h"
 
-#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -34,7 +35,7 @@ class SMTKPOLYGONSESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::polygon::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

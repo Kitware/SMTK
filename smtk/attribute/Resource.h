@@ -7,14 +7,13 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Resource.h - the main class for storing attribute information
-// .SECTION Description
-// .SECTION See Also
 
-#ifndef __smtk_attribute_Resource_h
-#define __smtk_attribute_Resource_h
+#ifndef smtk_attribute_Resource_h
+#define smtk_attribute_Resource_h
 
 #include "smtk/common/UUID.h"
+
+#include "smtk/geometry/Resource.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/resource/DerivedFrom.h"
@@ -44,22 +43,28 @@ class Definition;
 
 /**\brief Store information about attribute definitions and instances.
   *
-  * This subclass of smtk::resource::Resource holds attribute data.
+  * This subclass of smtk::geometry::Resource holds attribute data.
   * The file contains at least a schema (definitions and item-definitions)
   * but may also contain attribute instances that conform to the schema
   * as well as information about how to present the attribute system
   * through a series of views.
+  *
+  * This class inherits smtk::geometry::Resource so that attributes may
+  * (if desired) provide geometric data via a plugin.
+  * By default, no geometry will be available since attributes
+  * model information that is not spatial in nature and are instead
+  * associated with geometric components from other resources.
   */
 class SMTKCORE_EXPORT Resource
-  : public smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>
+  : public smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>
 {
 public:
   smtkTypeMacro(smtk::attribute::Resource);
   smtkCreateMacro(smtk::attribute::Resource);
-  smtkSharedFromThisMacro(smtk::resource::Resource);
+  smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   // typedef referring to the parent resource.
-  typedef smtk::resource::Resource ParentResource;
+  typedef smtk::geometry::Resource ParentResource;
 
   enum CopyOptions
   {
@@ -324,4 +329,4 @@ inline std::vector<smtk::attribute::AttributePtr> Resource::findAttributes(
 } // end attribute namepsace
 } // end smtk namespace
 
-#endif /* __smtk_attribute_Resource_h */
+#endif /* smtk_attribute_Resource_h */

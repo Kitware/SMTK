@@ -13,9 +13,10 @@
 #include "smtk/session/mesh/Exports.h"
 #include "smtk/session/mesh/Session.h"
 
+#include "smtk/resource/DerivedFrom.h"
+
 #include "smtk/model/Resource.h"
 
-#include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
 
 namespace smtk
@@ -30,7 +31,7 @@ class SMTKMESHSESSION_EXPORT Resource
 {
 public:
   smtkTypeMacro(smtk::session::mesh::Resource);
-  smtkSharedPtrCreateMacro(smtk::resource::Resource);
+  smtkSharedPtrCreateMacro(smtk::resource::PersistentObject);
 
   virtual ~Resource() {}
 

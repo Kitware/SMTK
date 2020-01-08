@@ -18,6 +18,8 @@
 
 #include "smtk/model/Vertex.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -82,6 +84,8 @@ DemoteVertex::Result DemoteVertex::operateInternal()
     {
       expungedItem->appendValue(it->component());
     }
+
+    operation::MarkGeometry(resource).markResult(opResult);
   }
   else
   {

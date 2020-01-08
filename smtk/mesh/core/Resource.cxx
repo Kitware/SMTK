@@ -46,22 +46,21 @@ private:
 };
 
 Resource::Resource()
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
-      smtk::common::UUIDGenerator::instance().random())
+  : Superclass(smtk::common::UUIDGenerator::instance().random())
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
 }
 
 Resource::Resource(const smtk::common::UUID& resourceID)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(resourceID)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
 }
 
 Resource::Resource(smtk::mesh::InterfacePtr interface)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(
       smtk::common::UUIDGenerator::instance().random())
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
@@ -69,7 +68,7 @@ Resource::Resource(smtk::mesh::InterfacePtr interface)
 }
 
 Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
-  : smtk::resource::DerivedFrom<Resource, smtk::resource::Resource>(resourceID)
+  : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(resourceID)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {

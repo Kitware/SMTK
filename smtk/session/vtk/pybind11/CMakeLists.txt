@@ -8,18 +8,25 @@ target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
   )
 set(import_vtk_depends
-    VTK::IOExodus
-    VTK::IONetCDF
-    VTK::IOXML
-    VTK::ImagingCore
     VTK::FiltersGeneral
+    VTK::FiltersGeometry
+    VTK::ImagingCore
+    VTK::IOExodus
+    VTK::IOGeometry
     VTK::IOLegacy
+    VTK::IONetCDF
     VTK::IOParallel
     VTK::IOParallelExodus
-    VTK::IOGeometry
-    VTK::FiltersGeometry
+    VTK::IOXML
     )
-target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkVTKSession VTK::CommonDataModel LINK_PRIVATE ${iport_vtk_depends})
+target_link_libraries(${library_name}
+  LINK_PUBLIC
+    smtkCore
+    smtkVTKSession
+    VTK::CommonDataModel
+  LINK_PRIVATE
+    ${import_vtk_depends}
+)
 vtk_module_autoinit(
   TARGETS ${library_name}
   MODULES VTK::CommonDataModel

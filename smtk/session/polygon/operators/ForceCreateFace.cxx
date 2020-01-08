@@ -37,6 +37,8 @@
 #include "smtk/model/Resource.txx"
 #include "smtk/model/Tessellation.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/session/polygon/ForceCreateFace_xml.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
@@ -292,6 +294,7 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
   {
     createdItem->appendValue(c.component());
   }
+  operation::MarkGeometry(resource).markResult(result);
 
   return result;
 }

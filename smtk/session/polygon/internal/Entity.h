@@ -11,6 +11,7 @@
 #define __smtk_session_polygon_internal_Entity_h
 
 #include "smtk/SharedFromThis.h"
+#include "smtk/session/polygon/Exports.h"
 #include "smtk/session/polygon/PointerDefs.h"
 #include "smtk/session/polygon/internal/Config.h"
 
@@ -29,7 +30,7 @@ namespace internal
   * This class uses smtkEnableSharedPtr so that all entities may be
   * managed via one pool of shared pointers.
   */
-class entity : smtkEnableSharedPtr(entity)
+class SMTKPOLYGONSESSION_EXPORT entity : smtkEnableSharedPtr(entity)
 {
 public:
   smtkTypeMacroBase(entity);
