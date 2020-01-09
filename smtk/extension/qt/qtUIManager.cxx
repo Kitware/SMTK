@@ -506,31 +506,10 @@ bool qtUIManager::passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr
 
 bool qtUIManager::passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef)
 {
-  if (!m_categoryChecks)
-  {
-    // Been told not to filter on categories
-    return true;
-  }
-  else if (this->categoryEnabled())
-  {
-    return ItemDef->passCategoryCheck(this->currentCategory());
-  }
-  else if (!m_topLevelCategoriesSet)
-  {
-    // The top level view is not filtering on category and no one has
-    // explicilty specified a list categories that restricts what can be
-    // displayed
-    return true;
-  }
-  // If the set is empty then we always fail the test
-  if (m_topLevelCategories.empty())
-  {
-    return false;
-  }
-  return ItemDef->passCategoryCheck(m_topLevelCategories);
+  return this->passCategoryCheck(ItemDef->categories());
 }
 
-bool qtUIManager::passCategoryCheck(const std::set<std::string>& categories)
+bool qtUIManager::passCategoryCheck(const smtk::attribute::Categories& categories)
 {
   if (!m_categoryChecks)
   {
@@ -540,7 +519,7 @@ bool qtUIManager::passCategoryCheck(const std::set<std::string>& categories)
   else if (this->categoryEnabled())
   {
     // Ok see if the current category is in the set
-    return (categories.find(this->currentCategory()) != categories.end());
+    return (categories.passes(this->currentCategory()));
   }
   else if (!m_topLevelCategoriesSet)
   {
@@ -552,14 +531,32 @@ bool qtUIManager::passCategoryCheck(const std::set<std::string>& categories)
 
   // In this case we have been given an explicit set of categories that restrict
   // what can be displayed even if the top level is displaying its category widget
-  for (const auto& cat : m_topLevelCategories)
+  return (categories.passes(m_topLevelCategories));
+}
+
+bool qtUIManager::passCategoryCheck(const smtk::attribute::Categories::Set& categories)
+{
+  if (!m_categoryChecks)
   {
-    if (categories.find(cat) != categories.end())
-    {
-      return true;
-    }
+    // Been told not to filter on categories
+    return true;
   }
-  return false;
+  else if (this->categoryEnabled())
+  {
+    // Ok see if the current category is in the set
+    return (categories.passes(this->currentCategory()));
+  }
+  else if (!m_topLevelCategoriesSet)
+  {
+    // The top level view is not filtering on category and no one has
+    // explicilty specified a list categories that restricts what can be
+    // displayed
+    return true;
+  }
+
+  // In this case we have been given an explicit set of categories that restrict
+  // what can be displayed even if the top level is displaying its category widget
+  return (categories.passes(m_topLevelCategories));
 }
 
 bool qtUIManager::checkAttributeValidity(const smtk::attribute::Attribute* att)

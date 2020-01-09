@@ -76,7 +76,7 @@ set(attributeHeaders
   ${jsonAttributeHeaders}
   Analyses.h
   Attribute.h
-  Resource.h
+  Categories.h
   ComponentItem.h
   ComponentItemDefinition.h
   Definition.h
@@ -103,6 +103,7 @@ set(attributeHeaders
   ReferenceItem.h
   ReferenceItemDefinition.h
   Registrar.h
+  Resource.h
   ResourceItem.h
   ResourceItemDefinition.h
   SearchStyle.h
@@ -130,7 +131,7 @@ set(attributeSrcs
   ${jsonAttributeSrcs}
   Analyses.cxx
   Attribute.cxx
-  Resource.cxx
+  Categories.cxx
   ComponentItem.cxx
   ComponentItemDefinition.cxx
   DateTimeItem.cxx
@@ -156,6 +157,7 @@ set(attributeSrcs
   ReferenceItem.cxx
   ReferenceItemDefinition.cxx
   Registrar.cxx
+  Resource.cxx
   ResourceItem.cxx
   ResourceItemDefinition.cxx
   StringItem.cxx

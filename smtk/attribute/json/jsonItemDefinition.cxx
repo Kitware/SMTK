@@ -14,6 +14,8 @@
 #include "nlohmann/json.hpp"
 #include "smtk/CoreExports.h"
 
+#include "smtk/io/Logger.h"
+
 #include <string>
 
 /**\brief Provide a way to serialize itemPtr
@@ -38,14 +40,6 @@ SMTKCORE_EXPORT void to_json(
     j["Optional"] = true;
     j["isEnabledByDefault"] = itemDefPtr->isEnabledByDefault();
   }
-  if (itemDefPtr->categoryCheckMode() == smtk::attribute::ItemDefinition::CategoryCheckMode::All)
-  {
-    j["categoryCheckMode"] = "All";
-  }
-  else
-  {
-    j["categoryCheckMode"] = "Any";
-  }
   if (itemDefPtr->hasLocalAdvanceLevelInfo(0))
   {
     j["AdvanceReadLevel"] = itemDefPtr->localAdvanceLevel(0);
@@ -56,7 +50,16 @@ SMTKCORE_EXPORT void to_json(
   }
   if (!itemDefPtr->localCategories().empty())
   {
-    j["Categories"] = itemDefPtr->localCategories();
+    smtk::attribute::Categories::Set& localCats = itemDefPtr->localCategories();
+    if (localCats.mode() == smtk::attribute::Categories::Set::CombinationMode::All)
+    {
+      j["categoryCheckMode"] = "All";
+    }
+    else
+    {
+      j["categoryCheckMode"] = "Any";
+    }
+    j["Categories"] = localCats.categoryNames();
   }
   j["OkToInheritCategories"] = itemDefPtr->isOkToInherit();
   if (!itemDefPtr->briefDescription().empty())
@@ -97,18 +100,6 @@ SMTKCORE_EXPORT void from_json(
   {
     itemDefPtr->setIsEnabledByDefault(*result);
   }
-  result = j.find("categoryCheckMode");
-  if (result != j.end())
-  {
-    if (*result == "All")
-    {
-      itemDefPtr->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::All);
-    }
-    else
-    {
-      itemDefPtr->setCategoryCheckMode(smtk::attribute::ItemDefinition::CategoryCheckMode::Any);
-    }
-  }
   result = j.find("AdvanceLevel");
   if (result != j.end())
   {
@@ -142,9 +133,28 @@ SMTKCORE_EXPORT void from_json(
   auto categories = j.find("Categories");
   if (categories != j.end())
   {
+    smtk::attribute::Categories::Set& localCats = itemDefPtr->localCategories();
+    result = j.find("categoryCheckMode");
+    // If categoryCheckMode is not specified - assume the default value;
+    if (result != j.end())
+    {
+      if (*result == "All")
+      {
+        localCats.setMode(smtk::attribute::Categories::Set::CombinationMode::All);
+      }
+      else if (*result == "Any")
+      {
+        localCats.setMode(smtk::attribute::Categories::Set::CombinationMode::Any);
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, itemDefinition "
+            << itemDefPtr->name() << " has an invalid categoryCheckMode = " << *result);
+      }
+    }
     for (const auto& category : *categories)
     {
-      itemDefPtr->addLocalCategory(category);
+      localCats.insert(category);
     }
   }
   auto okToInherit = j.find("OkToInheritCategories");

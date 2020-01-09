@@ -147,14 +147,9 @@ bool Item::isEnabled() const
   return m_owningItem->isEnabled();
 }
 
-bool Item::isMemberOf(const std::string& category) const
+const smtk::attribute::Categories& Item::categories() const
 {
-  return this->definition()->isMemberOf(category);
-}
-
-bool Item::isMemberOf(const std::vector<std::string>& categories) const
-{
-  return this->definition()->isMemberOf(categories);
+  return this->definition()->categories();
 }
 
 void Item::reset()
@@ -233,16 +228,6 @@ bool Item::assign(ConstItemPtr& sourceItem, unsigned int /*unused*/)
     }
   } // for
   return true;
-}
-
-bool Item::passCategoryCheck(const std::string& category) const
-{
-  return m_definition->passCategoryCheck(category);
-}
-
-bool Item::passCategoryCheck(const std::set<std::string>& categories) const
-{
-  return m_definition->passCategoryCheck(categories);
 }
 
 std::string Item::type2String(Item::Type t)

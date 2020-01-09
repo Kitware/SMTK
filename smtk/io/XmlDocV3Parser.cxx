@@ -262,12 +262,25 @@ void XmlDocV3Parser::processDefinition(xml_node& defNode, smtk::attribute::Defin
   //need to process Categories and Tags added in V3
   this->XmlDocV2Parser::processDefinition(defNode, def);
 
+  xml_attribute ccm = defNode.attribute("CategoryCheckMode");
+  if (ccm)
+  {
+    std::string val = ccm.value();
+    if (val == "All")
+    {
+      def->localCategories().setMode(smtk::attribute::Categories::Set::CombinationMode::All);
+    }
+    else if (val == "Any")
+    {
+      def->localCategories().setMode(smtk::attribute::Categories::Set::CombinationMode::Any);
+    }
+  }
   xml_node catNodes = defNode.child("Categories");
   if (catNodes)
   {
     for (xml_node child = catNodes.first_child(); child; child = child.next_sibling())
     {
-      def->addLocalCategory(child.text().get());
+      def->localCategories().insert(child.text().get());
     }
   }
 

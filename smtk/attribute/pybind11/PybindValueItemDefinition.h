@@ -38,7 +38,6 @@ PySharedPtrClass< smtk::attribute::ValueItemDefinition, smtk::attribute::ItemDef
     .def("setEnumCategories", &smtk::attribute::ValueItemDefinition::setEnumCategories, py::arg("enumValue"), py::arg("categories"))
     .def("addEnumCategory", &smtk::attribute::ValueItemDefinition::addEnumCategory, py::arg("enumValue"), py::arg("category"))
     .def("enumCategories", &smtk::attribute::ValueItemDefinition::enumCategories, py::arg("enumValue"))
-    .def("enumCategoryInfo", &smtk::attribute::ValueItemDefinition::enumCategoryInfo)
     .def("setEnumAdvanceLevel", &smtk::attribute::ValueItemDefinition::setEnumAdvanceLevel, py::arg("enum"), py::arg("level"))
     .def("unsetEnumAdvanceLevel", &smtk::attribute::ValueItemDefinition::unsetEnumAdvanceLevel, py::arg("enumValue"))
     .def("enumAdvanceLevel", &smtk::attribute::ValueItemDefinition::enumAdvanceLevel, py::arg("enumValue"))

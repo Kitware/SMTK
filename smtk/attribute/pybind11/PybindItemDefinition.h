@@ -25,24 +25,21 @@ PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute
 {
   PySharedPtrClass< smtk::attribute::ItemDefinition > instance(m, "ItemDefinition");
   instance
-    .def("addLocalCategory", &smtk::attribute::ItemDefinition::addLocalCategory, py::arg("category"))
     .def("advanceLevel", &smtk::attribute::ItemDefinition::advanceLevel, py::arg("mode") = 0)
     .def("briefDescription", &smtk::attribute::ItemDefinition::briefDescription)
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ItemDefinition::*)(::smtk::attribute::Attribute *, int) const) &smtk::attribute::ItemDefinition::buildItem, py::arg("owningAttribute"), py::arg("itemPosition"))
     .def("buildItem", (smtk::attribute::ItemPtr (smtk::attribute::ItemDefinition::*)(::smtk::attribute::Item *, int, int) const) &smtk::attribute::ItemDefinition::buildItem, py::arg("owningItem"), py::arg("position"), py::arg("subGroupPosition"))
+    // NOTE that the Python form of this method is returning a copy since Python
+    // doesn't support const references - oly non-const method of localCategories supported
     .def("categories", &smtk::attribute::ItemDefinition::categories)
+    .def("localCategories", (smtk::attribute::Categories::Set& (smtk::attribute::ItemDefinition::*)()) &smtk::attribute::ItemDefinition::localCategories, py::return_value_policy::reference)
     .def("createCopy", &smtk::attribute::ItemDefinition::createCopy, py::arg("info"))
     .def("detailedDescription", &smtk::attribute::ItemDefinition::detailedDescription)
     .def("isEnabledByDefault", &smtk::attribute::ItemDefinition::isEnabledByDefault)
-    .def("isMemberOf", (bool (smtk::attribute::ItemDefinition::*)(::std::string const &) const) &smtk::attribute::ItemDefinition::isMemberOf, py::arg("category"))
-    .def("isMemberOf", (bool (smtk::attribute::ItemDefinition::*)(::std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > const &) const) &smtk::attribute::ItemDefinition::isMemberOf, py::arg("categories"))
     .def("isOkToInherit", &smtk::attribute::ItemDefinition::isOkToInherit)
     .def("isOptional", &smtk::attribute::ItemDefinition::isOptional)
     .def("label", &smtk::attribute::ItemDefinition::label)
-    .def("localCategories", &smtk::attribute::ItemDefinition::localCategories)
     .def("name", &smtk::attribute::ItemDefinition::name)
-    .def("numberOfCategories", &smtk::attribute::ItemDefinition::numberOfCategories)
-    .def("removeLocalCategory", &smtk::attribute::ItemDefinition::removeLocalCategory, py::arg("category"))
     .def("advanceLevel", &smtk::attribute::ItemDefinition::advanceLevel, py::arg("mode") = 0)
     .def("setLocalAdvanceLevel", (void (smtk::attribute::ItemDefinition::*)(int, unsigned int)) &smtk::attribute::ItemDefinition::setLocalAdvanceLevel, py::arg("mode"), py::arg("level"))
     .def("setLocalAdvanceLevel", (void (smtk::attribute::ItemDefinition::*)(unsigned int)) &smtk::attribute::ItemDefinition::setLocalAdvanceLevel, py::arg("level"))

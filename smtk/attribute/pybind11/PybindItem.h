@@ -40,10 +40,9 @@ PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::
     .def("isOptional", &smtk::attribute::Item::isOptional)
     .def("isEnabled", &smtk::attribute::Item::isEnabled)
     .def("setIsEnabled", &smtk::attribute::Item::setIsEnabled, py::arg("isEnabledValue"))
-    .def("isMemberOf", (bool (smtk::attribute::Item::*)(::std::string const &) const) &smtk::attribute::Item::isMemberOf, py::arg("category"))
-    .def("isMemberOf", (bool (smtk::attribute::Item::*)(::std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > > const &) const) &smtk::attribute::Item::isMemberOf, py::arg("categories"))
-    .def("passCategoryCheck", (bool (smtk::attribute::Item::*)(::std::string const &) const) &smtk::attribute::Item::passCategoryCheck, py::arg("category"))
-    .def("passCategoryCheck", (bool (smtk::attribute::Item::*)(std::set<std::string> const &) const) &smtk::attribute::Item::passCategoryCheck, py::arg("categories"))
+    // NOTE that the Python form of this method is returning a copy since Python
+    // doesn't support const references
+    .def("categories", &smtk::attribute::Item::categories)
     .def("advanceLevel", &smtk::attribute::Item::advanceLevel, py::arg("mode") = 0)
     .def("localAdvanceLevel", &smtk::attribute::Item::localAdvanceLevel, py::arg("mode") = 0)
     .def("setLocalAdvanceLevel", &smtk::attribute::Item::setLocalAdvanceLevel, py::arg("mode"), py::arg("level"))

@@ -77,7 +77,15 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
   }
   if (!defPtr->localCategories().empty())
   {
-    j["Categories"] = defPtr->localCategories();
+    if (defPtr->localCategories().mode() == smtk::attribute::Categories::Set::CombinationMode::All)
+    {
+      j["categoryCheckMode"] = "All";
+    }
+    else
+    {
+      j["categoryCheckMode"] = "Any";
+    }
+    j["Categories"] = defPtr->localCategories().categoryNames();
   }
   // Save Color Information
   if (defPtr->isNotApplicableColorSet())
@@ -187,9 +195,28 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   auto categories = j.find("Categories");
   if (categories != j.end())
   {
+    attribute::Categories::Set& localCats = defPtr->localCategories();
+    auto categoryCheckMode = j.find("categoryCheckMode");
+    // If categoryCheckMode is not specified - assume the default value;
+    if (categoryCheckMode != j.end())
+    {
+      if (*categoryCheckMode == "All")
+      {
+        localCats.setMode(smtk::attribute::Categories::Set::CombinationMode::All);
+      }
+      else if (*categoryCheckMode == "Any")
+      {
+        localCats.setMode(smtk::attribute::Categories::Set::CombinationMode::Any);
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, definition "
+            << defPtr->label() << " has an invalid categoryCheckMode = " << *categoryCheckMode);
+      }
+    }
     for (const auto& category : *categories)
     {
-      defPtr->addLocalCategory(category);
+      localCats.insert(category);
     }
   }
 

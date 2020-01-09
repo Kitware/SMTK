@@ -17,6 +17,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/json/jsonHelperFunction.h"
 #include "smtk/attribute/json/jsonItemDefinition.h"
+#include "smtk/io/Logger.h"
 
 #include "nlohmann/json.hpp"
 
@@ -47,14 +48,13 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
     size_t n = defPtr->numberOfDiscreteValues();
     std::string enumName;
     std::vector<std::string> conditionalItems;
-    std::set<std::string> categoryValues;
     // Loop through all discrete values
     for (size_t i = 0; i < n; i++)
     {
       enumName = defPtr->discreteEnum(i);
       // Check conditional items
       conditionalItems = defPtr->conditionalItems(enumName);
-      categoryValues = defPtr->enumCategories(enumName);
+      const smtk::attribute::Categories::Set& categoryValues = defPtr->enumCategories(enumName);
       json valueJson, structureJson, resultJson;
       if (conditionalItems.size() || categoryValues.size())
       {
@@ -69,7 +69,16 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
         }
         if (categoryValues.size())
         {
-          structureJson["Categories"] = categoryValues;
+          smtk::attribute::Categories::Set& localCats = defPtr->localCategories();
+          if (localCats.mode() == smtk::attribute::Categories::Set::CombinationMode::All)
+          {
+            structureJson["categoryCheckMode"] = "All";
+          }
+          else
+          {
+            structureJson["categoryCheckMode"] = "Any";
+          }
+          structureJson["Categories"] = categoryValues.categoryNames();
         }
         if (defPtr->hasEnumAdvanceLevel(enumName))
         {
@@ -179,7 +188,29 @@ static void processDerivedValueDefFromJson(
           }
           if (catsValue != structure->end())
           {
-            defPtr->setEnumCategories(discreteEnum, *catsValue);
+            smtk::attribute::Categories::Set localCats;
+            auto ccm = structure->find("categoryCheckMode");
+            smtk::attribute::Categories::Set::CombinationMode mode =
+              smtk::attribute::Categories::Set::CombinationMode::Any;
+            // If categoryCheckMode is not specified - assume the default value;
+            if (ccm != structure->end())
+            {
+              if (*ccm == "All")
+              {
+                mode = smtk::attribute::Categories::Set::CombinationMode::All;
+              }
+              else if (*ccm == "Any")
+              {
+                mode = smtk::attribute::Categories::Set::CombinationMode::Any;
+              }
+              else
+              {
+                smtkErrorMacro(smtk::io::Logger::instance(), "When converting json, Enum "
+                    << discreteEnum << " has an invalid categoryCheckMode = " << *ccm);
+              }
+            }
+            localCats.set(*catsValue, mode);
+            defPtr->setEnumCategories(discreteEnum, localCats);
           }
           if (advanceLevel != structure->end())
           {

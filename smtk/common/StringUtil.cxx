@@ -37,10 +37,8 @@ std::string& StringUtil::trim(std::string& s)
 /// Trim whitespace from start of string (in place).
 std::string& StringUtil::trimLeft(std::string& s)
 {
-  s.erase(s.begin(),
-    std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(
-                                       isspace //smtk::bind(std::isspace<char>, _1, safeLocale)
-                                       ))));
+  s.erase(
+    s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isspace(c); }));
   return s;
 }
 

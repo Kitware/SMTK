@@ -109,9 +109,6 @@ public:
   bool isColorSet() const { return m_isColorSet; }
   void unsetColor() { m_isColorSet = false; }
 
-  bool isMemberOf(const std::string& category) const;
-  bool isMemberOf(const std::vector<std::string>& categories) const;
-
   /// \brief Get the Attribute 's advance level
   ///
   /// if mode is 1 then the write access level is returned;
@@ -300,6 +297,10 @@ public:
   void setAppliesToBoundaryNodes(bool appliesValue) { m_appliesToBoundaryNodes = appliesValue; }
   bool appliesToInteriorNodes() const { return m_appliesToInteriorNodes; }
   void setAppliesToInteriorNodes(bool appliesValue) { m_appliesToInteriorNodes = appliesValue; }
+
+  ///\brief The categories that the attribute applies to. Typically
+  /// a category will be a simulation type like heat transfer, fluid flow, etc.
+  const smtk::attribute::Categories& categories() const;
 
   bool isValid() const;
   bool isValid(const std::set<std::string>& categories) const;

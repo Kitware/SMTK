@@ -103,7 +103,7 @@ void XmlV3StringWriter::generateXml()
   // Lets see if we have any exclusions or prerequisits constriants
   xml_node exNode, preNode, child, n;
   // First lets get the definitions in sorted order
-  std::vector<smtk::attribute::DefinitionPtr> defs;
+  std::vector<DefinitionPtr> defs;
   m_resource->definitions(defs, true);
 
   // Lets process the constraints
@@ -195,8 +195,7 @@ void XmlV3StringWriter::generateXml()
   }
 }
 
-void XmlV3StringWriter::processDefinitionInternal(
-  xml_node& definition, smtk::attribute::DefinitionPtr def)
+void XmlV3StringWriter::processDefinitionInternal(xml_node& definition, DefinitionPtr def)
 {
   if (!def->tags().empty())
   {
@@ -219,7 +218,15 @@ void XmlV3StringWriter::processDefinitionInternal(
   if (!def->localCategories().empty())
   {
     xml_node cnode, catNodes = definition.append_child("Categories");
-    for (auto& str : def->localCategories())
+    if (def->localCategories().mode() == Categories::Set::CombinationMode::All)
+    {
+      catNodes.append_attribute("CategoryCheckMode").set_value("All");
+    }
+    else
+    {
+      catNodes.append_attribute("CategoryCheckMode").set_value("Any");
+    }
+    for (auto& str : def->localCategories().categoryNames())
     {
       catNodes.append_child("Cat").text().set(str.c_str());
     }
@@ -228,8 +235,7 @@ void XmlV3StringWriter::processDefinitionInternal(
   XmlV2StringWriter::processDefinitionInternal(definition, def);
 }
 
-void XmlV3StringWriter::processItemDefinitionType(
-  xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+void XmlV3StringWriter::processItemDefinitionType(xml_node& node, ItemDefinitionPtr idef)
 {
   switch (idef->type())
   {
@@ -255,8 +261,7 @@ void XmlV3StringWriter::processItemDefinitionType(
   }
 }
 
-void XmlV3StringWriter::processDateTimeDef(
-  pugi::xml_node& node, smtk::attribute::DateTimeItemDefinitionPtr idef)
+void XmlV3StringWriter::processDateTimeDef(pugi::xml_node& node, DateTimeItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());
@@ -298,7 +303,7 @@ void XmlV3StringWriter::processDateTimeDef(
   //   }
 }
 
-void XmlV3StringWriter::processItemType(xml_node& node, smtk::attribute::ItemPtr item)
+void XmlV3StringWriter::processItemType(xml_node& node, ItemPtr item)
 {
   switch (item->type())
   {
@@ -367,8 +372,7 @@ void XmlV3StringWriter::processDateTimeItem(pugi::xml_node& node, attribute::Dat
   }
 }
 
-void XmlV3StringWriter::processReferenceDef(
-  pugi::xml_node& node, smtk::attribute::ReferenceItemDefinitionPtr idef)
+void XmlV3StringWriter::processReferenceDef(pugi::xml_node& node, ReferenceItemDefinitionPtr idef)
 {
   this->processReferenceDefCommon(node, idef, "ReferenceLabels");
 }
@@ -485,8 +489,7 @@ void XmlV3StringWriter::processReferenceItem(pugi::xml_node& node, attribute::Re
   }
 }
 
-void XmlV3StringWriter::processResourceDef(
-  pugi::xml_node& node, smtk::attribute::ResourceItemDefinitionPtr idef)
+void XmlV3StringWriter::processResourceDef(pugi::xml_node& node, ResourceItemDefinitionPtr idef)
 {
   this->processReferenceDefCommon(node, idef, "ResourceLabels");
 }
@@ -496,8 +499,7 @@ void XmlV3StringWriter::processResourceItem(pugi::xml_node& node, attribute::Res
   this->processReferenceItem(node, item);
 }
 
-void XmlV3StringWriter::processComponentDef(
-  pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
+void XmlV3StringWriter::processComponentDef(pugi::xml_node& node, ComponentItemDefinitionPtr idef)
 {
   this->processReferenceDefCommon(node, idef, "ComponentLabels");
 }
@@ -507,8 +509,8 @@ void XmlV3StringWriter::processComponentItem(pugi::xml_node& node, attribute::Co
   this->processReferenceItem(node, item);
 }
 
-void XmlV3StringWriter::processReferenceDefCommon(pugi::xml_node& node,
-  smtk::attribute::ReferenceItemDefinitionPtr idef, const std::string& labelName)
+void XmlV3StringWriter::processReferenceDefCommon(
+  pugi::xml_node& node, ReferenceItemDefinitionPtr idef, const std::string& labelName)
 {
   auto acceptableEntries = idef->acceptableEntries();
   xml_node accnode = node.append_child("Accepts");

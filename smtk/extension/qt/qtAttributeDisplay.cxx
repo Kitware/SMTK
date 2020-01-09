@@ -373,7 +373,8 @@ void qtAttributeDisplay::getDefinitionsWithAssociations()
     std::set<std::string>::const_iterator catit;
     for (catit = cats.begin(); catit != cats.end(); ++catit)
     {
-      if (attDef->isMemberOf(*catit) && !this->Internals->AttDefMap[*catit].contains(attDef))
+      if (attDef->categories().passes(*catit) &&
+        !this->Internals->AttDefMap[*catit].contains(attDef))
       {
         this->Internals->AttDefMap[*catit].push_back(attDef);
       }

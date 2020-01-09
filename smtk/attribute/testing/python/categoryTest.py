@@ -42,18 +42,18 @@ if __name__ == '__main__':
     # Lets add some item definitions
     iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
     base.addItemDefinition(iitemdef)
-    iitemdef.addLocalCategory("Flow")
+    iitemdef.localCategories().insert("Flow")
     iitemdef = smtk.attribute.IntItemDefinition.New("IntItem2")
     base.addItemDefinition(iitemdef)
     iitemdef.setDefaultValue(10)
-    iitemdef.addLocalCategory("Heat")
+    iitemdef.localCategories().insert("Heat")
 
     def1 = resource.createDefinition("Derived1", "BaseDef")
     # Lets add some item definitions
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1")
     def1.addItemDefinition(ditemdef)
     # Allow this one to hold an expression
-    ditemdef.addLocalCategory("Veg")
+    ditemdef.localCategories().insert("Veg")
     ditemdef.setExpressionDefinition(expDef)
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
@@ -62,33 +62,27 @@ if __name__ == '__main__':
     ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem2")
     def1.addItemDefinition(ditemdef)
     ditemdef.setDefaultValue(-35.2)
-    ditemdef.addLocalCategory("Constituent")
+    ditemdef.localCategories().insert("Constituent")
 
     def2 = resource.createDefinition("Derived2", "Derived1")
     # Lets add some item definitions
     sitemdef = smtk.attribute.StringItemDefinition.New("StringItem1")
     def2.addItemDefinition(sitemdef)
-    sitemdef.addLocalCategory("Flow")
+    sitemdef.localCategories().insert("Flow")
     sitemdef = smtk.attribute.StringItemDefinition.New("StringItem2")
     def2.addItemDefinition(sitemdef)
     sitemdef.setDefaultValue("Default")
-    sitemdef.addLocalCategory("General")
+    sitemdef.localCategories().insert("General")
 
     # Process Definition Information
     resource.finalizeDefinitions()
     # Lets see what categories the attribute definitions think they are
-    if expDef.numberOfCategories() != 0:
-        categories = expDef.categories()
-        print("ERROR: ExpDef's categories: ")
-        for it in categories:
-            print("\t \"%s\"" % it)
+    if expDef.categories().size() != 0:
+        print("ERROR: ExpDef has categories")
     else:
         print("ExpDef has no categories")
-    if def2.numberOfCategories() != 0:
-        categories = def2.categories()
-        print("Def2's categories: ")
-        for it in categories:
-            print("\t \"%s\"" % it)
+    if def2.categories().size() != 0:
+        print("Def2 has categories")
     else:
         print("ERROR: Def2 has no categories!")
     # Lets test creating an attribute by passing in the expression definition

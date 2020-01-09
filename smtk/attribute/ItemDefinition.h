@@ -20,6 +20,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacro.
+#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Item.h" // For Item Types.
 
 #include <queue>
@@ -83,50 +84,20 @@ public:
     m_isEnabledByDefault = isEnabledByDefaultValue;
   }
 
-  enum class CategoryCheckMode
-  {
-    Any = 0, //!< Check passes if any of the definition's categories are found (Default)
-    All = 1  //!< Check passes if all of the definition's categories are found
-  };
-
-  void setCategoryCheckMode(CategoryCheckMode mode) { m_categoryCheckMode = mode; }
-
-  CategoryCheckMode categoryCheckMode() const { return m_categoryCheckMode; }
-
-  /// @{
-  /// \brief Based on it's categoryCheckMode, checks to see if the definition's categories passes with respects to the input category/categories.
+  ///\brief Returns the categories (both explicitly assigned and inherited) associated to the Item Definition
   ///
-  /// If the mode is Any then if at least one of its categories is in the input then it passes, else if the mode is All then all of the
-  /// the definition's categories must be contained.  If the input set is empty then the check will always pass, else if the definition
-  /// has no categories then the check will always fail.
-  bool passCategoryCheck(const std::string& category) const;
-  bool passCategoryCheck(const std::set<std::string>& categories) const;
-  /// @}
+  /// The categories that the attribute applies to. Typically
+  /// a category will be a simulation type like heat transfer, fluid flow, etc.
+  const smtk::attribute::Categories& categories() const { return m_categories; }
 
-  std::size_t numberOfCategories() const { return m_categories.size(); }
-
-  ///\brief Returns the categories (both explicitly assigned and inherited) associated to the Definition
-  const std::set<std::string>& categories() const { return m_categories; }
-
-  bool isMemberOf(const std::string& category) const
-  {
-    return (m_categories.find(category) != m_categories.end());
-  }
-
-  bool isMemberOf(const std::vector<std::string>& categories) const;
-
+  ///\brief Returns the categories::Set explicitly assigned to the Items Definition
+  smtk::attribute::Categories::Set& localCategories() { return m_localCategories; }
+  const smtk::attribute::Categories::Set& localCategories() const { return m_localCategories; }
   ///\brief Indicates if the Definition can inherit categories based on it's
   /// parent Definition or its owning Attribute Definition.  The default is true.
   bool isOkToInherit() const { return m_isOkToInherit; }
 
   void setIsOkToInherit(bool isOkToInheritValue) { m_isOkToInherit = isOkToInheritValue; }
-
-  ///\brief Returns the categories explicitly assigned to the Definition
-  const std::set<std::string>& localCategories() const { return m_localCategories; }
-
-  virtual void addLocalCategory(const std::string& category);
-
-  virtual void removeLocalCategory(const std::string& category);
 
   //Get the item definition's advance level:
   //if mode is 1 then the write access level is returned;
@@ -171,8 +142,8 @@ protected:
   // in because that should never change.
   ItemDefinition(const std::string& myname);
   void copyTo(ItemDefinitionPtr def) const;
-  virtual void applyCategories(
-    const std::set<std::string>& inheritedFromParent, std::set<std::string>& inheritedToParent);
+  virtual void applyCategories(const smtk::attribute::Categories& inheritedFromParent,
+    smtk::attribute::Categories& inheritedToParent);
   virtual void applyAdvanceLevels(
     const unsigned int& readLevelFromParent, const unsigned int& writeLevelFromParent);
   int m_version;
@@ -180,11 +151,10 @@ protected:
   bool m_isEnabledByDefault;
   bool m_isOkToInherit;
   std::string m_label;
-  std::set<std::string> m_categories;
-  std::set<std::string> m_localCategories;
+  attribute::Categories::Set m_localCategories;
+  attribute::Categories m_categories;
   std::string m_detailedDescription;
   std::string m_briefDescription;
-  ItemDefinition::CategoryCheckMode m_categoryCheckMode;
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
   unsigned int m_advanceLevel[2];
