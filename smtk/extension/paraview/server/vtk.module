@@ -1,17 +1,16 @@
 NAME
   smtkPVServerExt
 DEPENDS
-  ParaView::ClientServerCoreRendering
-  ParaView::ServerManagerCore
   ParaView::ServerManagerRendering
+  # The new ParaView module layout needs this module instead.
+  #ParaView::RemotingViews
+  #ParaView::RemotingApplication
+  #ParaView::RemotingServerManager
   VTK::CommonCore
   VTK::CommonExecutionModel
   VTK::RenderingCore
 PRIVATE_DEPENDS
-  ParaView::ClientServer
   ParaView::ClientServerCoreCore
-  ParaView::VTKExtensionsCore
-  ParaView::VTKExtensionsDefault
   VTK::CommonDataModel
   VTK::CommonMath
   VTK::CommonTransforms

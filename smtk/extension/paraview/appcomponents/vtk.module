@@ -3,8 +3,6 @@ NAME
 DEPENDS
   ParaView::pqCore
 PRIVATE_DEPENDS
-  ParaView::ServerManagerCore
-  ParaView::VTKExtensionsDefault
   ParaView::pqApplicationComponents
   ParaView::pqComponents
   smtkPVServerExt
