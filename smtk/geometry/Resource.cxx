@@ -50,7 +50,9 @@ std::unique_ptr<Geometry>& Resource::geometry(const Backend& backend)
   if (it == m_geometry.end())
   {
     geometry::Generator geomGen;
-    std::unique_ptr<Geometry> provider = geomGen({ this->shared_from_this(), backend });
+    std::tuple<std::shared_ptr<smtk::geometry::Resource>, const smtk::geometry::Backend&> instance(
+      this->shared_from_this(), backend);
+    std::unique_ptr<Geometry> provider = geomGen(instance);
     if (provider)
     {
       m_geometry[backend.index()] = std::move(provider);
