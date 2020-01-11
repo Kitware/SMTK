@@ -12,3 +12,15 @@ Enums can now be filtered out based on the category and advance level informatio
 * Now inherits qtBaseView instead of QWidget, to allow configuration via a ViewInfo.
 * A default .json config specifies the default PhraseModel and SubphraseGenerator types to use.
 * The smtk::view::Manager class can dynamically construct PhraseModels and SubphraseGenerators based on typename.
+
+### Changes to qtAttributeView
+#### Added ability to hide the top row Create/Copy/Delete Buttons
+By using the **DisableTopButtons** the top buttons along with the attribute type selector combobox/label are not displayed.
+Here is an example:
+```xml
+    <View Type="Attribute" Title="Advance Level Test" TopLevel="true" DisableTopButtons="true">
+      <AttributeTypes>
+        <Att Type="A"/>
+      </AttributeTypes>
+    </View>
+```
