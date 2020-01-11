@@ -342,7 +342,8 @@ void qtDiscreteValueEditor::updateContents()
         item->activeChildItem(static_cast<int>(i))->definition();
       std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it =
         itemDef->childrenItemDefinitions().find(itDef->name());
-      if (it != itemDef->childrenItemDefinitions().end())
+      if ((it != itemDef->childrenItemDefinitions().end()) &&
+        uiManager->passCategoryCheck(itemDef->categories()))
       {
         activeChildDefs.push_back(it->second);
       }
@@ -360,7 +361,7 @@ void qtDiscreteValueEditor::updateContents()
         iiview->setFixedLabelWidth(tmpLen);
       }
     }
-
+    bool hasVisibleChildren = false;
     for (i = 0; i < m; i++)
     {
       auto citem = item->activeChildItem(static_cast<int>(i));
@@ -391,6 +392,7 @@ void qtDiscreteValueEditor::updateContents()
         connect(
           childItem, SIGNAL(modified()), this->Internals->m_inputItem, SLOT(onChildItemModified()));
         connect(childItem, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
+        hasVisibleChildren = true;
       }
     }
 
@@ -400,6 +402,7 @@ void qtDiscreteValueEditor::updateContents()
     }
     this->Internals->m_hintChildWidth = this->Internals->m_childrenFrame->width();
     this->Internals->m_hintChildHeight = this->Internals->m_childrenFrame->height();
+    this->Internals->m_childrenFrame->setVisible(hasVisibleChildren);
     if (this->Internals->m_childrenLayout)
     {
       this->Internals->m_childrenLayout->addWidget(this->Internals->m_childrenFrame);

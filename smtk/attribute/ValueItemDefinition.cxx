@@ -246,12 +246,6 @@ void ValueItemDefinition::applyCategories(const smtk::attribute::Categories& inh
     m_categories.insert(inheritedFromParent);
   }
 
-  //Lets add the categories associated with its enums
-  for (const auto& enumCatInfo : m_valueToCategoryAssociations)
-  {
-    m_categories.insert(enumCatInfo.second);
-  }
-
   smtk::attribute::Categories myChildrenCats;
 
   // Now process the children item defs - this will also assembly the categories
@@ -259,6 +253,12 @@ void ValueItemDefinition::applyCategories(const smtk::attribute::Categories& inh
   for (auto& i : m_itemDefs)
   {
     i.second->applyCategories(m_categories, myChildrenCats);
+  }
+
+  //Lets add the categories associated with its enums
+  for (const auto& enumCatInfo : m_valueToCategoryAssociations)
+  {
+    m_categories.insert(enumCatInfo.second);
   }
 
   // Add the children categories to this one
