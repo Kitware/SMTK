@@ -203,12 +203,12 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
         xatt = node.attribute("CategoryCheckMode");
         if (xatt)
         {
-          std::string val = xatt.value();
-          if (val == "All")
+          std::string ccm = xatt.value();
+          if (ccm == "All")
           {
             cats.setMode(Categories::Set::CombinationMode::All);
           }
-          else if (val == "Any")
+          else if (ccm == "Any")
           {
             cats.setMode(Categories::Set::CombinationMode::Any);
           }
@@ -1016,6 +1016,11 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
     !smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef))
   { // group item definitions don't get categories
     idef->localCategories().insert(m_defaultCategory);
+  }
+  xatt = node.attribute("ApplicationString");
+  if (xatt)
+  {
+    idef->setApplicationString(xatt.value());
   }
 }
 
