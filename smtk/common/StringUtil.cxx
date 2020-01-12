@@ -46,10 +46,7 @@ std::string& StringUtil::trimLeft(std::string& s)
 std::string& StringUtil::trimRight(std::string& s)
 {
   s.erase(
-    std::find_if(s.rbegin(), s.rend(),
-      std::not1(std::ptr_fun<int, int>(isspace //smtk::bind(std::isspace<char>, _1, safeLocale)
-        )))
-      .base(),
+    std::find_if(s.rbegin(), s.rend(), [](unsigned char c) { return !std::isspace(c); }).base(),
     s.end());
   return s;
 }
