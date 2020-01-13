@@ -62,6 +62,8 @@ LINK_PRIVATE
   VTK::CommonExecutionModel
   VTK::InteractionWidgets
   VTK::RenderingCore
+  ParaView::ServerManagerDefault
+  ParaView::ServerManagerRendering
 )
 
 smtk_export_header(smtkPolygonQtExt Exports.h)
