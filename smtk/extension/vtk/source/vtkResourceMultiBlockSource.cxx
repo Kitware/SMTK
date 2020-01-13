@@ -254,6 +254,7 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
       auto& data = source.geometry(obj);
       if (data)
       {
+        vtkResourceMultiBlockSource::SetDataObjectUUID(data->GetInformation(), obj->id());
         blocks[dim].push_back(data);
       }
     }
@@ -264,10 +265,30 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
   vtkNew<vtkMultiBlockDataSet> compPerDim;
   vtkNew<vtkMultiBlockDataSet> prototypes;
   vtkNew<vtkMultiBlockDataSet> instances;
-  compPerDim->SetNumberOfBlocks(4);
+  compPerDim->SetNumberOfBlocks(3);
   output->SetBlock(BlockId::Components, compPerDim);
   output->SetBlock(BlockId::Prototypes, prototypes);
   output->SetBlock(BlockId::Instances, instances);
+  for (auto dit = blocks.begin(); dit != blocks.end(); ++dit)
+  {
+    vtkNew<vtkMultiBlockDataSet> entries;
+    entries->SetNumberOfBlocks(static_cast<int>(dit->second.size()));
+    int bb = 0;
+    for (auto iit = dit->second.begin(); iit != dit->second.end(); ++iit, ++bb)
+    {
+      entries->SetBlock(bb, *iit);
+      vtkResourceMultiBlockSource::SetDataObjectUUID(entries->GetMetaData(bb),
+        vtkResourceMultiBlockSource::GetDataObjectUUID((*iit)->GetInformation()));
+    }
+    if (dit->first < 3)
+    {
+      compPerDim->SetBlock(dit->first, entries);
+    }
+    else
+    { // Handle volumetric (image) data separately.
+      output->SetBlock(BlockId::Images, entries);
+    }
+  }
 
   return 1;
 }

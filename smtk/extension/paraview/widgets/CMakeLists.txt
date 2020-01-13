@@ -64,6 +64,7 @@ smtk_add_plugin(smtkPQWidgetsPlugin
 target_link_libraries(smtkPQWidgetsPlugin
   PRIVATE
     ParaView::pqApplicationComponents
+    ParaView::RemotingViews
     smtkQtExt
     vtkSMTKWidgetsExt)
 

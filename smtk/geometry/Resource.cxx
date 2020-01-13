@@ -55,23 +55,17 @@ std::unique_ptr<Geometry>& Resource::geometry(const Backend& backend)
     std::unique_ptr<Geometry> provider = geomGen(instance);
     if (provider)
     {
-      std::cout << "Adding provider for " << backend.name() << " " << backend.index() << " to "
-                << this->name() << "\n";
       // Now, because the resource may not be empty at this point,
       // we want to discover which objects have geometry without
       // actually generating geometry...  so mark every component
       // plus the resource itself as modified.
       provider->markModified(shared_from_this());
       smtk::resource::Component::Visitor visitor = [&provider](
-        const resource::ComponentPtr& component) {
-        std::cout << "  Does " << component->name() << " have geom?\n";
-        provider->markModified(component);
-      };
+        const resource::ComponentPtr& component) { provider->markModified(component); };
       this->visit(visitor);
       // Move ownership of the geometry provider to the resource.
       m_geometry[backend.index()] = std::move(provider);
       it = m_geometry.find(backend.index());
-      std::cout << "  Did add ? " << (it == m_geometry.end() ? "N" : "Y") << "\n";
     }
     else
     {

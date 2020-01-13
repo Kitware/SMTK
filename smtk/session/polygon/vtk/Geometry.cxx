@@ -85,8 +85,6 @@ void preparePointsForBoost(
           yblo = pit->y();
         }
       }
-      internal::Point bdsLo = internal::Point(xblo, yblo);
-      internal::Point bdsHi = internal::Point(xbhi, ybhi);
       internal::Coord dx = xbhi;
       if (xblo < 0 && -xblo > dx)
       {
@@ -151,7 +149,7 @@ void Geometry::queryGeometry(
         this->updateVertex(polyModel, vert, entry);
         if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
         {
-          this->addColorArray(
+          Geometry::addColorArray(
             entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
         }
         return;
@@ -167,7 +165,7 @@ void Geometry::queryGeometry(
         this->updateEdge(polyModel, edge, entry);
         if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
         {
-          this->addColorArray(
+          Geometry::addColorArray(
             entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
         }
         return;
@@ -179,7 +177,8 @@ void Geometry::queryGeometry(
       this->updateFace(polyModel, ent, entry);
       if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
       {
-        this->addColorArray(entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+        Geometry::addColorArray(
+          entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
       }
       return;
       break;

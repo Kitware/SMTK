@@ -4,5 +4,6 @@ DESCRIPTION
   SMTK Qt components for ParaView
 REQUIRES_MODULES
   ParaView::pqApplicationComponents
+  ParaView::VTKExtensionsExtraction
   smtkPQComponentsExt
   vtkSMTKOperationsExt

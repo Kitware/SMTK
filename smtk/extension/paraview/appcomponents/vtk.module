@@ -5,4 +5,5 @@ DEPENDS
 PRIVATE_DEPENDS
   ParaView::pqApplicationComponents
   ParaView::pqComponents
+  ParaView::VTKExtensionsExtraction
   smtkPVServerExt

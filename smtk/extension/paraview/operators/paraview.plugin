@@ -3,4 +3,5 @@ NAME
 DESCRIPTION
   SMTK operation views for ParaView
 REQUIRES_MODULES
+  ParaView::pqComponents
   VTK::jsoncpp

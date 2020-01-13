@@ -2,3 +2,5 @@ NAME
   smtkPQWidgetsPlugin
 DESCRIPTION
   SMTK widgets for use in ParaView
+REQUIRES_MODULES
+  ParaView::RemotingViews
