@@ -251,11 +251,10 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
     if (obj)
     {
       int dim = geometry.dimension(obj);
-      std::cout << "  " << obj->name() << " " << dim << "\n";
-      auto& geom = source.geometry(obj);
-      if (geom)
+      auto& data = source.geometry(obj);
+      if (data)
       {
-        blocks[dim].push_back(geom);
+        blocks[dim].push_back(data);
       }
     }
     return false;

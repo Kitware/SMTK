@@ -281,13 +281,13 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
     lines = cells;
   }
   std::size_t numPts = ee->pointsSize();
-  points->SetNumberOfPoints(static_cast<vtkIdType>(numPts));
   internal::PointSeq::const_iterator ptIt;
   std::vector<vtkIdType> conn;
   conn.reserve(numPts);
-  conn.push_back(static_cast<int>(numPts));
+  // conn.push_back(static_cast<int>(numPts));
   bool isPeriodic = (*ee->pointsBegin() == *ee->pointsRBegin());
   std::size_t numUniquePts = isPeriodic ? numPts - 1 : numPts;
+  points->SetNumberOfPoints(static_cast<vtkIdType>(numUniquePts));
   std::size_t ii;
   for (ptIt = ee->pointsBegin(), ii = 0; ii < numUniquePts; ++ptIt, ++ii)
   {
@@ -298,10 +298,10 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
   }
   if (isPeriodic)
   {
-    conn.push_back(conn[1]); // repeat initial point instead of adding a duplicate.
+    conn.push_back(conn[0]); // repeat initial point instead of adding a duplicate.
   }
   lines->Reset();
-  lines->InsertNextCell(static_cast<vtkIdType>(numUniquePts), &conn[0]);
+  lines->InsertNextCell(static_cast<vtkIdType>(conn.size()), &conn[0]);
   polydata->Modified();
 }
 
@@ -423,6 +423,7 @@ public:
       auto provider = new Geometry(rsrc);
       return GeometryPtr(provider);
     }
+    throw std::invalid_argument("Not a polygon resource.");
     return nullptr;
   }
 };
