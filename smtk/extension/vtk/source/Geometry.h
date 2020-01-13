@@ -76,6 +76,10 @@ public:
   /// The VTK backend requires a purpose for each object's geometry.
   virtual Purpose purpose(const smtk::resource::PersistentObjectPtr& obj) const = 0;
 
+  /// A convenience to add a field-data color array to a cache entry (used to set object color).
+  static void addColorArray(vtkDataObject* data, const std::vector<double>& color,
+    const std::string& name = "entity color");
+
 protected:
   Backend m_backend;
 };

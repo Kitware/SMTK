@@ -140,7 +140,7 @@ void Geometry::queryGeometry(
   }
   auto resource = m_parent.lock();
   auto polyEnt = resource->findStorage<internal::entity>(ent->id());
-  auto polyModel = polyEnt->parentAs<internal::pmodel>();
+  auto polyModel = polyEnt ? polyEnt->parentAs<internal::pmodel>() : nullptr;
   switch (ent->dimension())
   {
     case 0:
@@ -149,6 +149,11 @@ void Geometry::queryGeometry(
       if (vert)
       {
         this->updateVertex(polyModel, vert, entry);
+        if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+        {
+          this->addColorArray(
+            entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+        }
         return;
       } // else this->eraseCache(ent->id()); ???
       break;
@@ -160,6 +165,11 @@ void Geometry::queryGeometry(
       if (edge)
       {
         this->updateEdge(polyModel, edge, entry);
+        if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+        {
+          this->addColorArray(
+            entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+        }
         return;
       }
       break;
@@ -167,6 +177,10 @@ void Geometry::queryGeometry(
     case 2:
     {
       this->updateFace(polyModel, ent, entry);
+      if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+      {
+        this->addColorArray(entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+      }
       return;
       break;
     }
@@ -230,7 +244,7 @@ void Geometry::updateVertex(
   entry.m_generation += 1; // This works even when m_generation is Invalid.
 
   vtkPoints* points;
-  auto polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
+  vtkSmartPointer<vtkPolyData> polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
   if (polydata)
   {
     points = polydata->GetPoints();
@@ -240,6 +254,8 @@ void Geometry::updateVertex(
     polydata = vtkSmartPointer<vtkPolyData>::New();
     entry.m_geometry = polydata;
     vtkNew<vtkPoints> pts;
+    vtkNew<vtkCellArray> verts;
+    polydata->SetVerts(verts);
     polydata->SetPoints(pts);
     pts->SetNumberOfPoints(1);
     vtkIdType ptid = 0;
@@ -263,7 +279,7 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
 
   vtkPoints* points;
   vtkCellArray* lines;
-  auto polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
+  vtkSmartPointer<vtkPolyData> polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
   if (polydata)
   {
     points = polydata->GetPoints();
@@ -317,7 +333,7 @@ void Geometry::updateFace(
 
   vtkPoints* points;
   vtkCellArray* polys;
-  auto polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
+  vtkSmartPointer<vtkPolyData> polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
   if (polydata)
   {
     points = polydata->GetPoints();
