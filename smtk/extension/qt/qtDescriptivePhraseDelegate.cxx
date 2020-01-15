@@ -264,10 +264,13 @@ void qtDescriptivePhraseDelegate::paint(
   }
 
   //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
+  // NOTE -  the following QPainter::save() and QPainter::restore() calls are a workaround to fix
+  // a crash with Qt - Need to check to see if future versions (> 5.12.6) still needs this.
+  painter->save();
   painter->drawPixmap(
     QPoint(iconRect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) / 2.),
     icon.pixmap(iconsize.width(), iconsize.height()));
-
+  painter->restore();
   if (!visicon.isNull())
     painter->drawPixmap(QPoint(option.rect.left(), colorRect.top()),
       visicon.pixmap(visiconsize.width(), visiconsize.height()));
