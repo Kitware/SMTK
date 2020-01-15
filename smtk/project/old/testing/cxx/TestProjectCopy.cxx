@@ -21,8 +21,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
-#include "smtk/project/Manager.h"
-#include "smtk/project/Project.h"
+#include "smtk/project/old/Manager.h"
+#include "smtk/project/old/Project.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 #include "smtk/session/vtk/Registrar.h"
@@ -42,17 +42,17 @@ const std::string COPY_ROOT = TEMP_ROOT + "/project-copy";
 class ProjectBuilder
 {
 public:
-  ProjectBuilder(smtk::project::ManagerPtr& projectManager);
+  ProjectBuilder(smtk::project::old::ManagerPtr& projectManager);
   void createProject();
   void copyProject();
 
 protected:
-  smtk::project::ManagerPtr m_projectManager;
-  smtk::project::ProjectPtr m_firstProject;
-  smtk::project::ProjectPtr m_secondProject;
+  smtk::project::old::ManagerPtr m_projectManager;
+  smtk::project::old::ProjectPtr m_firstProject;
+  smtk::project::old::ProjectPtr m_secondProject;
 }; // class ProjectBuilder
 
-ProjectBuilder::ProjectBuilder(smtk::project::ManagerPtr& manager)
+ProjectBuilder::ProjectBuilder(smtk::project::old::ManagerPtr& manager)
   : m_projectManager(manager)
 {
 }
@@ -113,7 +113,7 @@ int TestProjectCopy(int /*unused*/, char** const /*unused*/)
 
   auto resManager = smtk::resource::Manager::create();
   auto opManager = smtk::operation::Manager::create();
-  auto projectManager = smtk::project::Manager::create(resManager, opManager);
+  auto projectManager = smtk::project::old::Manager::create(resManager, opManager);
   {
     // Initialize smtk managers
     smtk::attribute::Registrar::registerTo(resManager);

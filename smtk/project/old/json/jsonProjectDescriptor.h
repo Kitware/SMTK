@@ -8,13 +8,13 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_project_jsonProjectDescriptor_h
-#define smtk_project_jsonProjectDescriptor_h
+#ifndef smtk_project_old_jsonProjectDescriptor_h
+#define smtk_project_old_jsonProjectDescriptor_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 
-#include "smtk/project/ProjectDescriptor.h"
+#include "smtk/project/old/ProjectDescriptor.h"
 
 #include "nlohmann/json.hpp"
 
@@ -26,10 +26,13 @@ namespace smtk
 {
 namespace project
 {
+namespace old
+{
 SMTKCORE_EXPORT void to_json(json& j, const ProjectDescriptor& pd);
 SMTKCORE_EXPORT void from_json(const json& j, ProjectDescriptor& pd);
 SMTKCORE_EXPORT std::string dump_json(const ProjectDescriptor& pd, int indent = 2);
 SMTKCORE_EXPORT void parse_json(const std::string& input, ProjectDescriptor& pd);
+} // namespace old
 } // namespace project
 } // namespace smtk
 

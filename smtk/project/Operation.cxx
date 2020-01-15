@@ -7,19 +7,23 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/Project.h"
+#include "smtk/project/Operation.h"
 
-#include "smtk/resource/Manager.h"
+#include "smtk/project/Manager.h"
 
 namespace smtk
 {
 namespace project
 {
-Project::Project(const std::string& typeName)
-  : m_resources(smtk::resource::Resource::m_manager)
-  , m_operations(std::weak_ptr<smtk::operation::Manager>())
-  , m_typeName(typeName)
+
+void Operation::setProjectManager(smtk::project::WeakManagerPtr managerPtr)
 {
+  m_projectManager = managerPtr;
+}
+
+smtk::project::ManagerPtr Operation::projectManager()
+{
+  return m_projectManager.lock();
 }
 } // namespace project
 } // namespace smtk

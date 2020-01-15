@@ -7,19 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/Project.h"
 
-#include "smtk/resource/Manager.h"
+#ifndef smtk_project_old_jsonResourceDescriptor_h
+#define smtk_project_old_jsonResourceDescriptor_h
+
+#include "smtk/CoreExports.h"
+#include "smtk/SystemConfig.h"
+
+#include "smtk/project/old/ResourceDescriptor.h"
+
+#include "nlohmann/json.hpp"
+
+#include <string>
+#include <vector>
+
+using json = nlohmann::json;
 
 namespace smtk
 {
 namespace project
 {
-Project::Project(const std::string& typeName)
-  : m_resources(smtk::resource::Resource::m_manager)
-  , m_operations(std::weak_ptr<smtk::operation::Manager>())
-  , m_typeName(typeName)
+namespace old
 {
-}
+SMTKCORE_EXPORT void to_json(json& j, const ResourceDescriptor& rd);
+SMTKCORE_EXPORT void from_json(const json& j, ResourceDescriptor& rd);
+} // namespace old
 } // namespace project
 } // namespace smtk
+
+#endif // smtk_project_old_jsonResourceDescriptor_h

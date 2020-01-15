@@ -18,8 +18,8 @@
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/Logger.h"
 #include "smtk/operation/Manager.h"
-#include "smtk/project/Manager.h"
-#include "smtk/project/Project.h"
+#include "smtk/project/old/Manager.h"
+#include "smtk/project/old/Project.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -29,21 +29,21 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass<smtk::project::Manager> pybind11_init_smtk_project_Manager(py::module& m)
+PySharedPtrClass<smtk::project::old::Manager> pybind11_init_smtk_project_Manager(py::module& m)
 {
-  PySharedPtrClass<smtk::project::Manager> instance(m, "Manager");
-  instance.def(py::init< ::smtk::project::Manager const&>())
-    .def_static("create", &smtk::project::Manager::create, py::arg("resourceManager"),
+  PySharedPtrClass<smtk::project::old::Manager> instance(m, "Manager");
+  instance.def(py::init< ::smtk::project::old::Manager const&>())
+    .def_static("create", &smtk::project::old::Manager::create, py::arg("resourceManager"),
       py::arg("operationManager"))
-    .def("getProjectSpecification", &smtk::project::Manager::getProjectSpecification)
-    .def("createProject", &smtk::project::Manager::createProject, py::arg("specification"),
+    .def("getProjectSpecification", &smtk::project::old::Manager::getProjectSpecification)
+    .def("createProject", &smtk::project::old::Manager::createProject, py::arg("specification"),
       py::arg("replaceExistingDirectory") = false, py::arg("logger") = smtk::io::Logger::instance())
-    .def("getCurrentProject", &smtk::project::Manager::getCurrentProject)
-    .def("saveProject", &smtk::project::Manager::saveProject,
+    .def("getCurrentProject", &smtk::project::old::Manager::getCurrentProject)
+    .def("saveProject", &smtk::project::old::Manager::saveProject,
       py::arg("logger") = smtk::io::Logger::instance())
-    .def("closeProject", &smtk::project::Manager::closeProject,
+    .def("closeProject", &smtk::project::old::Manager::closeProject,
       py::arg("logger") = smtk::io::Logger::instance())
-    .def("openProject", &smtk::project::Manager::openProject, py::arg("path"),
+    .def("openProject", &smtk::project::old::Manager::openProject, py::arg("path"),
       py::arg("logger") = smtk::io::Logger::instance());
   return instance;
 }

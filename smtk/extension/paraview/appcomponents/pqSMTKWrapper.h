@@ -72,6 +72,8 @@ public:
   smtk::view::SelectionPtr smtkSelection() const;
   /// Return the client-side project manager which mirrors the server version.
   smtk::project::ManagerPtr smtkProjectManager() const;
+  /// Return the client-side old project manager which mirrors the server version.
+  smtk::project::old::ManagerPtr smtkOldProjectManager() const;
   /// Return the client-side view manager which mirrors the server version.
   smtk::view::ManagerPtr smtkViewManager() const;
 

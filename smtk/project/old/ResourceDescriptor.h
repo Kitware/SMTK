@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_project_ResourceDescriptor_h
-#define smtk_project_ResourceDescriptor_h
+#ifndef smtk_project_old_ResourceDescriptor_h
+#define smtk_project_old_ResourceDescriptor_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -22,6 +22,8 @@
 namespace smtk
 {
 namespace project
+{
+namespace old
 {
 /// Class representing the persistent data stored for each
 /// resource used in a project. Primarily for internal use.
@@ -50,8 +52,8 @@ public:
   /// Resource UUID
   smtk::common::UUID m_uuid;
 }; // class smtk::project::ResourceDescriptor
-
+} // namespace old
 } // namespace project
 } // namespace smtk
 
-#endif // smtk_project_ResourceDescriptor_h
+#endif // smtk_project_old_ResourceDescriptor_h

@@ -63,6 +63,9 @@ public:
   /// Return the client-side project manager (mirrored on the server via this proxy).
   smtk::project::ManagerPtr GetProjectManager() const;
 
+  /// Return the client-side old project manager (mirrored on the server via this proxy).
+  smtk::project::old::ManagerPtr GetOldProjectManager() const;
+
   /// Return the client-side view manager (mirrored on the server via this proxy).
   smtk::view::ManagerPtr GetViewManager() const;
 

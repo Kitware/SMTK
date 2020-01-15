@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/project/json/jsonResourceDescriptor.h"
+#include "smtk/project/old/json/jsonResourceDescriptor.h"
 
 #include "smtk/common/UUID.h"
 
@@ -17,6 +17,8 @@ using json = nlohmann::json;
 namespace smtk
 {
 namespace project
+{
+namespace old
 {
 void to_json(json& j, const ResourceDescriptor& rd)
 {
@@ -37,6 +39,6 @@ void from_json(const json& j, ResourceDescriptor& rd)
   std::string uuidString = j.at("uuid").get<std::string>();
   rd.m_uuid = smtk::common::UUID(uuidString);
 } // from_json()
-
+} // namespace old
 } // namespace project
 } // namespace smtk

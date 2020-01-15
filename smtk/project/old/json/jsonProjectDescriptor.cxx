@@ -8,11 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/project/json/jsonProjectDescriptor.h"
+#include "smtk/project/old/json/jsonProjectDescriptor.h"
 
 #include "smtk/common/UUID.h"
-#include "smtk/project/ResourceDescriptor.h"
-#include "smtk/project/json/jsonResourceDescriptor.h"
+#include "smtk/project/old/ResourceDescriptor.h"
+#include "smtk/project/old/json/jsonResourceDescriptor.h"
 
 #include <sstream>
 #include <stdexcept>
@@ -23,6 +23,8 @@ using json = nlohmann::json;
 namespace smtk
 {
 namespace project
+{
+namespace old
 {
 void to_json(json& j, const ProjectDescriptor& pd)
 {
@@ -73,6 +75,6 @@ void parse_json(const std::string& input, ProjectDescriptor& pd)
   auto j = nlohmann::json::parse(input);
   pd = j;
 }
-
+} // namespace old
 } // namespace project
 } // namespace smtk

@@ -101,6 +101,11 @@ smtk::project::ManagerPtr pqSMTKWrapper::smtkProjectManager() const
   return this->smtkProxy() ? this->smtkProxy()->GetProjectManager() : nullptr;
 }
 
+smtk::project::old::ManagerPtr pqSMTKWrapper::smtkOldProjectManager() const
+{
+  return this->smtkProxy() ? this->smtkProxy()->GetOldProjectManager() : nullptr;
+}
+
 smtk::view::ManagerPtr pqSMTKWrapper::smtkViewManager() const
 {
   return this->smtkProxy() ? this->smtkProxy()->GetViewManager() : nullptr;

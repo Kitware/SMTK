@@ -7,29 +7,28 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef __smtk_project_Observer_h
+#define __smtk_project_Observer_h
 
-#ifndef smtk_project_jsonResourceDescriptor_h
-#define smtk_project_jsonResourceDescriptor_h
-
-#include "smtk/CoreExports.h"
-#include "smtk/SystemConfig.h"
-
-#include "smtk/project/ResourceDescriptor.h"
-
-#include "nlohmann/json.hpp"
-
-#include <string>
-#include <vector>
-
-using json = nlohmann::json;
+#include "smtk/common/Observers.h"
+#include "smtk/project/Project.h"
 
 namespace smtk
 {
 namespace project
 {
-SMTKCORE_EXPORT void to_json(json& j, const ResourceDescriptor& rd);
-SMTKCORE_EXPORT void from_json(const json& j, ResourceDescriptor& rd);
+
+/// Enumerate events that the project manager may encounter.
+enum class EventType
+{
+  ADDED,  //!< A new project's contents now available in memory.
+  REMOVED //!< An existing project's contents are being removed from memory.
+};
+
+typedef std::function<void(const Project&, EventType)> Observer;
+
+typedef smtk::common::Observers<Observer> Observers;
 } // namespace project
 } // namespace smtk
 
-#endif // smtk_project_jsonResourceDescriptor_h
+#endif

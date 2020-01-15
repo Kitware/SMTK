@@ -261,6 +261,12 @@ namespace project
 {
 class Manager;
 class Project;
+
+namespace old
+{
+class Manager;
+class Project;
+} // namespace old
 } // namespace project
 
 namespace resource
@@ -674,10 +680,18 @@ namespace project
 {
 /// @see smtk::project::Manager
 typedef smtk::shared_ptr<smtk::project::Manager> ManagerPtr;
+typedef smtk::weak_ptr<smtk::project::Manager> WeakManagerPtr;
 /// @see smtk::project::Project
 typedef smtk::shared_ptr<smtk::project::Project> ProjectPtr;
+typedef smtk::shared_ptr<const smtk::project::Project> ConstProjectPtr;
+namespace old
+{
+/// @see smtk::project::Manager
+typedef smtk::shared_ptr<smtk::project::old::Manager> ManagerPtr;
+/// @see smtk::project::Project
+typedef smtk::shared_ptr<smtk::project::old::Project> ProjectPtr;
+} // namespace old
 } // namespace project
-
 // These are used internally by SMTK
 namespace internal
 {

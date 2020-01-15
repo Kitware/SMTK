@@ -94,6 +94,8 @@ public:
   {
     return this->Managers->get<smtk::project::ManagerPtr>();
   }
+  /// Return the server's application-wide old project manager.
+  smtk::project::old::ManagerPtr GetOldProjectManager() const { return this->OldProjectManager; }
   /// Return the server's application-wide view manager.
   smtk::view::ManagerPtr GetViewManager() const
   {
@@ -157,6 +159,8 @@ protected:
   char* JSONRequest;
   char* JSONResponse;
   smtk::common::Managers::Ptr Managers;
+
+  smtk::project::old::ManagerPtr OldProjectManager;
 
   std::string SelectionSource;
   int HoveredValue;

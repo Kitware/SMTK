@@ -7,19 +7,32 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/Project.h"
 
-#include "smtk/resource/Manager.h"
+#ifndef smtk_project_Tags_h
+#define smtk_project_Tags_h
 
 namespace smtk
 {
 namespace project
 {
-Project::Project(const std::string& typeName)
-  : m_resources(smtk::resource::Resource::m_manager)
-  , m_operations(std::weak_ptr<smtk::operation::Manager>())
-  , m_typeName(typeName)
+
+/// Tags used to access Project data from multiindex arrays.
+struct IdTag
 {
-}
+};
+struct IndexTag
+{
+};
+struct LocationTag
+{
+};
+struct NameTag
+{
+};
+struct RoleTag
+{
+};
 } // namespace project
 } // namespace smtk
+
+#endif

@@ -7,19 +7,21 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/project/Project.h"
+#include "smtk/project/json/jsonOperationFactory.h"
 
-#include "smtk/resource/Manager.h"
-
+// Define how projects are serialized.
 namespace smtk
 {
 namespace project
 {
-Project::Project(const std::string& typeName)
-  : m_resources(smtk::resource::Resource::m_manager)
-  , m_operations(std::weak_ptr<smtk::operation::Manager>())
-  , m_typeName(typeName)
+void to_json(json& j, const OperationFactory& operationFactory)
 {
+  j["types"] = operationFactory.types();
+}
+
+void from_json(const json& j, OperationFactory& operationFactory)
+{
+  operationFactory.types() = j["types"].get<std::set<std::string>>();
 }
 } // namespace project
 } // namespace smtk
