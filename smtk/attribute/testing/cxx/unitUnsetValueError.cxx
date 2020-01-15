@@ -121,7 +121,7 @@ int unitUnsetValueError(int argc, char* argv[])
       std::cout << (*it)->name() << std::endl;
     }
   }
-  catch (smtk::attribute::UnsetValueError& e)
+  catch (smtk::attribute::UnsetValueError&)
   {
     errorCaught = true;
   }

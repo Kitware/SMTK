@@ -88,7 +88,6 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef)
     xml_node dnode, snode, inodes;
     std::string ename;
     std::vector<std::string> citems;
-    std::set<std::string> cats;
     for (i = 0; i < n; i++)
     {
       ename = idef->discreteEnum(i);
@@ -684,6 +683,10 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
   if (!idef->detailedDescription().empty())
   {
     node.append_child("DetailedDescription").text().set(idef->detailedDescription().c_str());
+  }
+  if (!idef->applicationString().empty())
+  {
+    node.append_attribute("ApplicationString").set_value(idef->applicationString().c_str());
   }
 }
 

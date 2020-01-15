@@ -70,6 +70,10 @@ SMTKCORE_EXPORT void to_json(
   {
     j["DetailedDescription"] = itemDefPtr->detailedDescription();
   }
+  if (!itemDefPtr->applicationString().empty())
+  {
+    j["ApplicationString"] = itemDefPtr->applicationString();
+  }
 }
 
 SMTKCORE_EXPORT void from_json(
@@ -161,6 +165,11 @@ SMTKCORE_EXPORT void from_json(
   if (okToInherit != j.end())
   {
     itemDefPtr->setIsOkToInherit(*okToInherit);
+  }
+  result = j.find("ApplicationString");
+  if (result != j.end())
+  {
+    itemDefPtr->setApplicationString(*result);
   }
 }
 }

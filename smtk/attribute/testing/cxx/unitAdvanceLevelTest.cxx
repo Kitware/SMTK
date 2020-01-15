@@ -339,10 +339,30 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   status &= testDefinitionValidity(def, false, true, 2, 1, 0, 1, prefix);
 
   ItemPtr item = att->find("sA0");
+  if (item->definition()->applicationString() != "Application Data Test")
+  {
+    std::cerr << prefix << "Failed - sA0 had incorrect application string:"
+              << item->definition()->applicationString() << std::endl;
+    status = false;
+  }
+  else
+  {
+    std::cerr << prefix << "sA0 Application String Passed\n";
+  }
   status &= testItemDefinitionValidity(item->definition(), false, false, 0, 0, 0, 1, prefix);
   status &= testItemValidity(item, false, false, 0, 0, 3, 4, prefix);
 
   GroupItemPtr gitem = att->findGroup("gA0");
+  if (!gitem->definition()->applicationString().empty())
+  {
+    std::cerr << prefix << "Failed - gA0 had incorrect application string:"
+              << gitem->definition()->applicationString() << std::endl;
+    status = false;
+  }
+  else
+  {
+    std::cerr << prefix << "gA0 Application String Passed\n";
+  }
   status &= testItemDefinitionValidity(gitem->definition(), true, false, 6, 0, 6, 1, prefix);
   status &= testItemValidity(gitem, false, false, 0, 0, 6, 4, prefix);
   item = gitem->item(0);
@@ -412,6 +432,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
 
   // Lets set some items
   StringItemDefinitionPtr sItemDef = A->addItemDefinition<StringItemDefinition>("sA0");
+  sItemDef->setApplicationString("Application Data Test");
   GroupItemDefinitionPtr gItemDef = A->addItemDefinition<GroupItemDefinition>("gA0");
   gItemDef->setLocalAdvanceLevel(0, 6);
   sItemDef = gItemDef->addItemDefinition<StringItemDefinition>("gA0s0");

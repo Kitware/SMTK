@@ -130,6 +130,11 @@ public:
   const std::string& briefDescription() const { return m_briefDescription; }
   void setBriefDescription(const std::string& text) { m_briefDescription = text; }
 
+  ///@{
+  ///\brief Set/Get an application supplied string associated with the ItemDefinition
+  void setApplicationString(const std::string& val) { m_appString = val; }
+  const std::string& applicationString() const { return m_appString; }
+  ///@}
   virtual smtk::attribute::ItemPtr buildItem(
     Attribute* owningAttribute, int itemPosition) const = 0;
   virtual smtk::attribute::ItemPtr buildItem(
@@ -158,6 +163,7 @@ protected:
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
   unsigned int m_advanceLevel[2];
+  std::string m_appString;
 
 private:
   // constant value that should never be changed

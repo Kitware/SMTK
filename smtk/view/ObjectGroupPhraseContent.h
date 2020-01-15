@@ -49,7 +49,7 @@ public:
   void children(DescriptivePhrases& container) const;
 
   bool displayable(ContentType attr) const override { return attr == TITLE ? true : false; }
-  bool editable(ContentType attr) const override { return false; }
+  bool editable(ContentType) const override { return false; }
 
   std::string stringValue(ContentType) const override { return m_title; }
 
