@@ -157,6 +157,7 @@ public:
   smtk::model::BitFlags m_modelEntityMask;
   std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
   QString m_alertIconPath;
+  bool m_showTopButtons;
 
   smtk::operation::Observers::Key m_observerKey;
 };
@@ -202,7 +203,8 @@ const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& qtAttributeView::at
 
 void qtAttributeView::createWidget()
 {
-  if (!this->getObject())
+  smtk::view::ConfigurationPtr view = this->getObject();
+  if (view == nullptr)
   {
     return;
   }
@@ -313,6 +315,11 @@ void qtAttributeView::createWidget()
   QHBoxLayout* buttonLayout = new QHBoxLayout(this->Internals->ButtonsFrame);
   buttonLayout->setMargin(0);
   this->Internals->ButtonsFrame->setSizePolicy(sizeFixedPolicy);
+  if (view)
+  {
+    this->Internals->m_showTopButtons = !view->details().attributeAsBool("DisableTopButtons");
+    this->Internals->ButtonsFrame->setVisible(this->Internals->m_showTopButtons);
+  }
 
   this->Internals->AddButton = new QPushButton("New", this->Internals->ButtonsFrame);
   this->Internals->AddButton->setSizePolicy(sizeFixedPolicy);
@@ -889,7 +896,7 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->AddButton->setEnabled(currentDefs.count() > 0);
 
   bool viewAtt = (viewBy == VIEWBY_Attribute);
-  this->Internals->ButtonsFrame->setVisible(viewAtt);
+  this->Internals->ButtonsFrame->setVisible(viewAtt && this->Internals->m_showTopButtons);
   this->Internals->ListTable->setVisible(viewAtt);
   this->Internals->ListTable->blockSignals(true);
   this->Internals->ListTable->clear();
