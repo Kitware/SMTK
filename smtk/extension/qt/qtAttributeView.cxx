@@ -826,8 +826,11 @@ void qtAttributeView::onDeleteSelected()
       this->attributeRemoved(selObject);
 
       QTableWidgetItem* selItem = this->getSelectedItem();
-      this->Internals->ListTable->removeRow(selItem->row());
-      emit this->numOfAttributesChanged();
+      if (selItem != nullptr)
+      {
+        this->Internals->ListTable->removeRow(selItem->row());
+        emit this->numOfAttributesChanged();
+      }
     }
     else
     {
