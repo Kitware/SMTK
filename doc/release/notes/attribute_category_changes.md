@@ -89,3 +89,7 @@ private:
    * Changed Methods
        * setEnumCategories - now takes in Categories::Set instead of a set of strings
        * enumCategories - now returns a const reference to a Categories::Set instead of a set of strings
+
+#### Notes
+##### Enum Category Constraints
+Category constraints placed on enums are inherited by the ValueItem but not by the ValueItem's children.
