@@ -355,7 +355,7 @@ private:
 };
 
 template <>
-bool ReferenceItem::iteratorIsSet<ReferenceItem::const_iterator>(
+SMTKCORE_EXPORT bool ReferenceItem::iteratorIsSet<ReferenceItem::const_iterator>(
   const ReferenceItem::const_iterator& iterator) const;
 
 template <typename I>
