@@ -170,4 +170,33 @@ int main()
   smtkTest((item == nullptr), "Could find using path: a/a-a/a-a-b when asking for active");
   item = att->itemAtPath("a/a-b/a-b-a", "/", true);
   smtkTest((item != nullptr), "Could not find using path: a/a-b/a-b-a when asking for active");
+
+  // Recurse through the children of a single item.
+  typedef smtk::attribute::StringItem MyItemType;
+  std::vector<MyItemType::Ptr> myItems;
+
+  struct RecursiveAccumulate
+  {
+    RecursiveAccumulate(std::vector<MyItemType::Ptr>& myItems)
+      : m_myItems(myItems)
+    {
+    }
+
+    void operator()(smtk::attribute::ItemPtr visited, bool activeChildren)
+    {
+      if (auto myItem = std::dynamic_pointer_cast<MyItemType>(visited))
+      {
+        m_myItems.push_back(myItem);
+      }
+      visited->visitChildren(*this, activeChildren);
+    }
+
+    std::vector<MyItemType::Ptr>& m_myItems;
+  };
+
+  item = att->find("a");
+  RecursiveAccumulate recursiveAccumulate(myItems);
+  item->visitChildren(recursiveAccumulate, true);
+  smtkTest(myItems.size() == 1, "Failed to recurse through a single item's children");
+  smtkTest((myItems[0]->name() == "a-b-a"), "Failed to find child item");
 }
