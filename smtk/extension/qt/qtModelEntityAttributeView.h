@@ -56,6 +56,8 @@ class SMTKQTEXT_EXPORT qtModelEntityAttributeView : public qtBaseAttributeView
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtModelEntityAttributeView);
+
   static qtBaseView* createViewWidget(const ViewInfo& info);
   qtModelEntityAttributeView(const ViewInfo& info);
   virtual ~qtModelEntityAttributeView();

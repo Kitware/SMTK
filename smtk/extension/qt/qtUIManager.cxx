@@ -79,6 +79,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/view/Configuration.h"
+#include "smtk/view/Manager.h"
 
 #include <cmath>
 
@@ -108,10 +109,11 @@ qtUIManager::qtUIManager(const smtk::attribute::ResourcePtr& resource)
   this->commonConstructor();
 }
 
-qtUIManager::qtUIManager(
-  const smtk::operation::OperationPtr& op, const smtk::resource::ManagerPtr& resourceManager)
+qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
+  const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
   : m_parentWidget(nullptr)
   , m_resourceManager(resourceManager)
+  , m_viewManager(viewManager)
   , m_operation(op)
 {
   if (!op)
@@ -167,19 +169,6 @@ void qtUIManager::commonConstructor()
   m_selectionBit = 0;
   m_hoverBit = 0;
 
-  // Lets register some basic view constructors
-  this->registerViewConstructor("Analysis", qtAnalysisView::createViewWidget);
-  this->registerViewConstructor("Associations", qtAssociationView::createViewWidget);
-  this->registerViewConstructor("Attribute", qtAttributeView::createViewWidget);
-  this->registerViewConstructor("Group", qtGroupView::createViewWidget);
-  this->registerViewConstructor("Instanced", qtInstancedView::createViewWidget);
-  this->registerViewConstructor("Operation", qtOperationView::createViewWidget);
-  this->registerViewConstructor("Selector", qtSelectorView::createViewWidget);
-  this->registerViewConstructor("SimpleExpression", qtSimpleExpressionView::createViewWidget);
-  this->registerViewConstructor("Category", qtCategorySelectorView::createViewWidget);
-  this->registerViewConstructor("ModelEntity", qtModelEntityAttributeView::createViewWidget);
-  this->registerViewConstructor("ResourceBrowser", qtResourceBrowser::createViewWidget);
-
   qtSMTKUtilities::registerModelViewConstructor(
     "ResourceTree", qtResourceBrowser::createDefaultView);
 
@@ -197,8 +186,7 @@ void qtUIManager::commonConstructor()
   this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
   this->registerItemConstructor("qtVoidItem", qtVoidItem::createItemWidget);
 
-  // register view constructors coming from plugins.
-  qtSMTKUtilities::updateViewConstructors(this);
+  // register constructors coming from plugins.
   qtSMTKUtilities::updateItemConstructors(this);
 }
 
@@ -273,6 +261,11 @@ void qtUIManager::initializeUI(
     m_topView->showAdvanceLevel(m_currentAdvLevel);
   }
   m_topView->setInitialCategory();
+}
+
+bool qtUIManager::hasViewConstructor(const std::string& vtype) const
+{
+  return m_viewManager ? m_viewManager->hasViewWidget(vtype) : false;
 }
 
 smtk::view::ConfigurationPtr qtUIManager::findOrCreateOperationView() const
@@ -931,11 +924,6 @@ bool qtUIManager::updateTableItemCheckState(
   return bEnabled;
 }
 
-void qtUIManager::registerViewConstructor(const std::string& vtype, widgetConstructor f)
-{
-  m_constructors[vtype] = f;
-}
-
 void qtUIManager::registerItemConstructor(const std::string& itype, qtItemConstructor f)
 {
   m_itemConstructors[itype] = f;
@@ -949,15 +937,26 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
     return nullptr;
   }
 
-  std::map<std::string, widgetConstructor>::const_iterator it;
-  it = m_constructors.find(info.m_view->type());
-  if (it == m_constructors.end())
+  // std::map<std::string, widgetConstructor>::const_iterator it;
+  // it = m_constructors.find(info.m_view->type());
+  // if (it == m_constructors.end())
+  // {
+  //   // Constructor for that type could not be found)
+  //   std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
+  //   return nullptr;
+  // }
+  // qtBaseView* qtView = (it->second)(info);
+  if (!m_viewManager)
+  {
+    std::cerr << "No viewManager for View Type: " << info.m_view->type() << " skipping view!\n";
+    return nullptr;
+  }
+  qtBaseView* qtView = m_viewManager->createViewWidget(info.m_view->type(), info);
+  if (!qtView)
   {
     // Constructor for that type could not be found)
     std::cerr << "Could not find View Type: " << info.m_view->type() << " skipping view!\n";
-    return nullptr;
   }
-  qtBaseView* qtView = (it->second)(info);
   return qtView;
 }
 

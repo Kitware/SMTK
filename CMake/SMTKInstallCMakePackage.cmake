@@ -41,8 +41,6 @@ set(smtk_cmake_module_files
   SMTKMacros.cmake
   SMTKOperationXML.cmake
   SMTKPluginMacros.cmake
-  qtSMTKViewImplementation.cxx.in
-  qtSMTKViewImplementation.h.in
   serverSource.cxx.in)
 
 set(smtk_cmake_files_to_install

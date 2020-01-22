@@ -22,6 +22,57 @@ Manager::Manager() = default;
 
 Manager::~Manager() = default;
 
+bool Manager::unregisterViewWidget(const std::string& typeName)
+{
+  auto iter = m_viewWidgets.find(typeName);
+  if (iter != m_viewWidgets.end())
+  {
+    m_viewWidgets.erase(iter);
+    return true;
+  }
+
+  return false;
+}
+
+smtk::extension::qtBaseView* Manager::createViewWidget(
+  const std::string& typeName, const smtk::extension::ViewInfo& info)
+{
+  smtk::extension::qtBaseView* viewWidget = nullptr;
+  Manager::ViewWidgetConstructor constructor = this->getViewWidgetConstructor(typeName);
+  if (constructor)
+  {
+    viewWidget = constructor(info);
+  }
+  return viewWidget;
+}
+
+Manager::ViewWidgetConstructor Manager::getViewWidgetConstructor(const std::string& typeName) const
+{
+  // Locate the constructor associated with this resource type
+  auto iter = m_viewWidgets.find(typeName);
+  if (iter == m_viewWidgets.end())
+  {
+    // If a literal type name doesn't work, try to use the alternate legacy constructor names.
+    auto nameIter = m_altViewWidgetNames.find(typeName);
+    if (nameIter != m_altViewWidgetNames.end())
+    {
+      iter = m_viewWidgets.find(nameIter->second);
+    }
+  }
+  if (iter != m_viewWidgets.end())
+  {
+    // found one
+    return iter->second;
+  }
+
+  return nullptr;
+}
+
+bool Manager::hasViewWidget(const std::string& typeName) const
+{
+  return this->getViewWidgetConstructor(typeName) != nullptr;
+}
+
 bool Manager::unregisterPhraseModel(const std::string& typeName)
 {
   auto iter = m_phraseModels.find(typeName);

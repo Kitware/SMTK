@@ -19,6 +19,7 @@
 #include <QtWidgets/QLayout>
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtViewInfoDialog.h"
 
@@ -43,22 +44,22 @@ public:
   {
   }
 
-  ViewInfo(smtk::view::ConfigurationPtr view, QWidget* parent, qtUIManager* uiman,
-    const std::map<std::string, QLayout*>& layoutDict)
-    : m_view(view)
-    , m_parent(parent)
-    , m_UIManager(uiman)
-    , m_layoutDict(layoutDict)
-  {
-  }
+  // ViewInfo(smtk::view::ConfigurationPtr view, QWidget* parent, qtUIManager* uiman,
+  //   const std::map<std::string, QLayout*>& layoutDict)
+  //   : m_view(view)
+  //   , m_parent(parent)
+  //   , m_UIManager(uiman)
+  //   , m_layoutDict(layoutDict)
+  // {
+  // }
 
   ViewInfo() {}
   virtual ~ViewInfo() {}
 
-  smtk::view::ConfigurationPtr m_view;          // View Definition
-  QWidget* m_parent;                            // Parent Widget of the View
-  qtUIManager* m_UIManager;                     // UI Manager
-  std::map<std::string, QLayout*> m_layoutDict; // Widget Layout Dictionary
+  smtk::view::ConfigurationPtr m_view; // View Definition
+  QWidget* m_parent;                   // Parent Widget of the View
+  qtUIManager* m_UIManager;            // UI Manager
+  // std::map<std::string, QLayout*> m_layoutDict; // Widget Layout Dictionary
 };
 
 class SMTKQTEXT_EXPORT qtBaseView : public QObject
@@ -66,6 +67,8 @@ class SMTKQTEXT_EXPORT qtBaseView : public QObject
   Q_OBJECT
 
 public:
+  smtkTypenameMacroBase(qtBaseView);
+
   qtBaseView(const ViewInfo& info);
   ~qtBaseView() override;
 

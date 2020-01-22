@@ -13,7 +13,6 @@
 #include <QObject>
 
 class vtkSMProxy;
-class pqPluginSMTKViewBehavior;
 
 class pqSMTKAppComponentsAutoStart : public QObject
 {
@@ -28,9 +27,6 @@ public:
 
   void startup();
   void shutdown();
-
-protected:
-  pqPluginSMTKViewBehavior* m_viewTracker;
 
 private:
   Q_DISABLE_COPY(pqSMTKAppComponentsAutoStart);

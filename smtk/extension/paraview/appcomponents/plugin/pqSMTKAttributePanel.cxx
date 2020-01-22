@@ -97,11 +97,13 @@ bool pqSMTKAttributePanel::displayPipelineSource(pqPipelineSource* psrc)
         // so that this->displayResource() below can make use of it.
         m_seln = wrapper->smtkSelection();
         m_opManager = wrapper->smtkOperationManager();
+        m_viewManager = wrapper->smtkViewManager();
       }
       else
       {
         m_seln = nullptr;
         m_opManager = nullptr;
+        m_viewManager = nullptr;
       }
       return this->displayResource(attrRsrc);
     }
@@ -139,8 +141,9 @@ bool pqSMTKAttributePanel::displayResource(const smtk::attribute::ResourcePtr& r
 
   m_attrUIMgr = new smtk::extension::qtUIManager(rsrc);
   m_attrUIMgr->setOperationManager(m_opManager); // Assign the operation manager
-  m_attrUIMgr->setSelection(m_seln);             // NB: m_seln may be null.
-  m_attrUIMgr->setSelectionBit(1);               // ToDo: should be set by application
+  m_attrUIMgr->setViewManager(m_viewManager);
+  m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
+  m_attrUIMgr->setSelectionBit(1);   // ToDo: should be set by application
 
   // Find or Create a value for highlight on hover
   if (m_seln)
@@ -229,11 +232,13 @@ bool pqSMTKAttributePanel::displayResourceOnServer(const smtk::attribute::Resour
       // so that this->displayResource() below can make use of it.
       m_seln = wrapper->smtkSelection();
       m_opManager = wrapper->smtkOperationManager();
+      m_viewManager = wrapper->smtkViewManager();
     }
     else
     {
       m_seln = nullptr;
       m_opManager = nullptr;
+      m_viewManager = nullptr;
     }
     return this->displayResource(rsrc);
   }

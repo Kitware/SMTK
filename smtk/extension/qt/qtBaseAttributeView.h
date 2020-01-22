@@ -31,6 +31,8 @@ class SMTKQTEXT_EXPORT qtBaseAttributeView : public qtBaseView
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtBaseAttributeView);
+
   qtBaseAttributeView(const ViewInfo& info);
   ~qtBaseAttributeView() override;
 

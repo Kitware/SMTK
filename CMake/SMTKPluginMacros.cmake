@@ -20,7 +20,7 @@ function (smtk_add_plugin name)
   cmake_parse_arguments(_smtk_plugin
     "_SKIP_DEPENDENCIES"
     "REGISTRAR;REGISTRAR_HEADER"
-    "MANAGERS;PARAVIEW_PLUGIN_ARGS"
+    "MANAGERS;REGISTRARS;PARAVIEW_PLUGIN_ARGS"
     ${ARGN})
 
   if (_smtk_plugin_UNPARSED_ARGUMENTS)
@@ -29,9 +29,9 @@ function (smtk_add_plugin name)
       "${_smtk_plugin_UNPARSED_ARGUMENTS}")
   endif ()
 
-  if (NOT DEFINED _smtk_plugin_REGISTRAR)
+  if (NOT DEFINED _smtk_plugin_REGISTRAR AND NOT DEFINED _smtk_plugin_REGISTRARS)
     message(FATAL_ERROR
-      "The `REGISTRAR` argument is required.")
+      "The `REGISTRAR` or `REGISTRARS` argument is required.")
   endif ()
 
   if (NOT DEFINED _smtk_plugin_MANAGERS)
@@ -41,23 +41,43 @@ function (smtk_add_plugin name)
 
   string(TOLOWER "${_smtk_plugin__SKIP_DEPENDENCIES}" _smtk_plugin__SKIP_DEPENDENCIES)
 
-  if (NOT DEFINED _smtk_plugin_REGISTRAR_HEADER)
-    string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
-    set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
-  endif ()
-
+  set(_smtk_plugin_sources "")
   string(REPLACE ";" ", " _smtk_plugin_managers "${_smtk_plugin_MANAGERS}")
-  configure_file(
-    "${_smtk_cmake_dir}/serverSource.cxx.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx"
-    @ONLY)
+
+  if (DEFINED _smtk_plugin_REGISTRAR)
+    if (NOT DEFINED _smtk_plugin_REGISTRAR_HEADER)
+      string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
+      set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
+    endif ()
+
+    configure_file(
+      "${_smtk_cmake_dir}/serverSource.cxx.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx"
+      @ONLY)
+    list(APPEND _smtk_plugin_sources "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx")
+  endif ()
+  if (DEFINED _smtk_plugin_REGISTRARS)
+    # Additional registrars, must have a unique generated filename.
+    foreach(_smtk_plugin_REGISTRAR ${_smtk_plugin_REGISTRARS})
+      string(REPLACE "::" "/" _smtk_plugin_header_path "${_smtk_plugin_REGISTRAR}")
+      string(REPLACE "::" "_" _smtk_plugin_header_name "${_smtk_plugin_REGISTRAR}")
+      set(_smtk_plugin_REGISTRAR_HEADER "${_smtk_plugin_header_path}.h")
+      set(_smtk_plugin_filename "${CMAKE_CURRENT_BINARY_DIR}/serverSource_${_smtk_plugin_header_name}.cxx")
+
+      configure_file(
+        "${_smtk_cmake_dir}/serverSource.cxx.in"
+        "${_smtk_plugin_filename}"
+        @ONLY)
+      list(APPEND _smtk_plugin_sources "${_smtk_plugin_filename}")
+    endforeach(_smtk_plugin_REGISTRAR)
+  endif ()
 
   # FIXME: This shouldn't really be necessary. Instead, SMTK should have its
   # own lightweight plugin macro setup like ParaView does. SMTK can then
   # provide convenience macros to create a ParaView plugin for the SMTK plugin
   # as well.
   paraview_add_plugin("${_smtk_plugin_name}"
-    SOURCES "${CMAKE_CURRENT_BINARY_DIR}/serverSource.cxx"
+    SOURCES ${_smtk_plugin_sources}
     ${_smtk_plugin_PARAVIEW_PLUGIN_ARGS})
   target_link_libraries("${_smtk_plugin_name}"
     PRIVATE

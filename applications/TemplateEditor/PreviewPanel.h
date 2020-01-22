@@ -73,7 +73,7 @@ private:
  * Definition is invalid. Make sure SMTK's specific View "types" are used on
  * View construction for it to construct/display correctly.
  *
- * \sa smtk::extension::qtUIManager qtUIManager::registerViewConstructor
+ * \sa smtk::extension::qtUIManager qtUIManager::createView
  */
   smtk::view::ConfigurationPtr createView(const smtk::attribute::DefinitionPtr& def);
 

@@ -40,13 +40,13 @@ public:
   {
   }
 
-  OperationViewInfo(smtk::view::ConfigurationPtr view,
-    smtk::operation::OperationPtr targetOperation, QWidget* parent, qtUIManager* uiman,
-    const std::map<std::string, QLayout*>& layoutDict)
-    : ViewInfo(view, parent, uiman, layoutDict)
-    , m_operator(targetOperation)
-  {
-  }
+  // OperationViewInfo(smtk::view::ConfigurationPtr view,
+  //   smtk::operation::OperationPtr targetOperation, QWidget* parent, qtUIManager* uiman,
+  //   const std::map<std::string, QLayout*>& layoutDict)
+  //   : ViewInfo(view, parent, uiman, layoutDict)
+  //   , m_operator(targetOperation)
+  // {
+  // }
 
   OperationViewInfo() {}
   smtk::operation::OperationPtr m_operator;
@@ -57,6 +57,8 @@ class SMTKQTEXT_EXPORT qtOperationView : public qtBaseAttributeView
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtOperationView);
+
   static qtBaseView* createViewWidget(const ViewInfo& info);
 
   qtOperationView(const OperationViewInfo& info);

@@ -1,6 +1,4 @@
 set(sources
-  pqPluginSMTKViewBehavior.cxx
-  pqPluginSMTKViewBehavior.h
   pqSMTKAppComponentsAutoStart.cxx
   pqSMTKAppComponentsAutoStart.h
   pqSMTKAttributePanel.cxx
@@ -140,10 +138,14 @@ list(APPEND sources
   ${operation_dock_sources})
 
 smtk_add_plugin(smtkPQComponentsPlugin
-  REGISTRAR
+  REGISTRARS
     smtk::extension::paraview::server::Registrar
+    smtk::extension::paraview::appcomponents::Registrar
   MANAGERS
-    smtk::operation::Manager smtk::resource::Manager smtk::geometry::Manager
+    smtk::operation::Manager
+    smtk::resource::Manager
+    smtk::geometry::Manager
+    smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION "1.0"
     REQUIRED_ON_SERVER

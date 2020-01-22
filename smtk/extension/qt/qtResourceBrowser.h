@@ -52,6 +52,8 @@ class SMTKQTEXT_EXPORT qtResourceBrowser : public qtBaseView
   typedef smtk::extension::qtBaseView Superclass;
 
 public:
+  smtkTypenameMacro(qtResourceBrowser);
+
   static qtBaseView* createViewWidget(const ViewInfo& info);
   qtResourceBrowser(const ViewInfo& info);
   ~qtResourceBrowser() override;

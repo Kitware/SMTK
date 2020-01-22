@@ -52,6 +52,8 @@ class SMTKQTEXT_EXPORT qtAssociationView : public qtBaseAttributeView
   Q_OBJECT
 
 public:
+  smtkTypenameMacro(qtAssociationView);
+
   static qtBaseView* createViewWidget(const ViewInfo& info);
   qtAssociationView(const ViewInfo& info);
   virtual ~qtAssociationView();

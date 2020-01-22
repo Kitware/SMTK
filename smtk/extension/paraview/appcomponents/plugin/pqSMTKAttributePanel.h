@@ -94,6 +94,7 @@ protected:
   smtk::extension::qtUIManager* m_attrUIMgr;
   std::weak_ptr<smtk::resource::Resource> m_rsrc;
   smtk::view::SelectionPtr m_seln;
+  smtk::view::ManagerPtr m_viewManager;
   smtk::operation::ManagerPtr m_opManager;
   smtk::resource::Observers::Key m_observer;
   pqPropertyLinks m_propertyLinks;
