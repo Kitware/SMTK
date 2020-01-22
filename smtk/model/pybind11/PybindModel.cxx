@@ -31,6 +31,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindCellEntity.h"
 #include "PybindChain.h"
 #include "PybindDefaultSession.h"
+#include "PybindDelete.h"
 #include "PybindEdge.h"
 #include "PybindEdgeUse.h"
 #include "PybindEntity.h"
@@ -154,6 +155,7 @@ PYBIND11_MODULE(_smtkPybindModel, model)
   PySharedPtrClass< smtk::model::AddAuxiliaryGeometry, smtk::operation::XMLOperation > smtk_model_AddAuxiliaryGeometry = pybind11_init_smtk_model_AddAuxiliaryGeometry(model);
   PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation > smtk_model_CloseModel = pybind11_init_smtk_model_CloseModel(model);
   PySharedPtrClass< smtk::model::CreateInstances, smtk::operation::XMLOperation > smtk_model_CreateInstances = pybind11_init_smtk_model_CreateInstances(model);
+  PySharedPtrClass< smtk::model::Delete, smtk::operation::XMLOperation > smtk_model_Delete = pybind11_init_smtk_model_Delete(model);
   PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > smtk_model_ExportModelJSON = pybind11_init_smtk_model_ExportModelJSON(model);
   PySharedPtrClass< smtk::model::SetProperty, smtk::operation::XMLOperation > smtk_model_SetProperty = pybind11_init_smtk_model_SetProperty(model);
 
