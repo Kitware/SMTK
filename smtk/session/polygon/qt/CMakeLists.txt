@@ -58,6 +58,8 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   VTK::CommonCore
   VTK::DomainsChemistryOpenGL2
 LINK_PRIVATE
+  ParaView::RemotingMisc
+  ParaView::RemotingViews
   VTK::CommonDataModel
   VTK::CommonExecutionModel
   VTK::InteractionWidgets
