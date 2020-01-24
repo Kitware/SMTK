@@ -24,7 +24,6 @@
 #include <QLineEdit>
 #include <QPointer>
 #include <QPushButton>
-#include <QSignalMapper>
 #include <QSizePolicy>
 #include <QTextEdit>
 #include <QToolButton>
@@ -86,7 +85,6 @@ public:
 
   // for extensible items
   QMap<QToolButton*, QPair<QPointer<QLayout>, QPointer<QWidget> > > ExtensibleMap;
-  QPointer<QSignalMapper> SignalMapper;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
 };
@@ -107,7 +105,6 @@ qtFileItem::qtFileItem(const qtAttributeItemInfo& info)
   this->Internals = new qtFileItemInternals;
   this->Internals->IsDirectory =
     (m_itemInfo.item()->type() == smtk::attribute::Item::DirectoryType);
-  this->Internals->SignalMapper = new QSignalMapper();
   m_isLeafItem = true;
   this->Internals->VectorItemOrient = Qt::Horizontal;
   this->createWidget();
@@ -294,62 +291,42 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
     m_itemInfo.uiManager()->setWidgetColorToInvalid(fileTextWidget);
   }
 
-  QObject::connect(
-    fileBrowserButton, SIGNAL(clicked()), this->Internals->SignalMapper, SLOT(map()));
-  this->Internals->SignalMapper->setMapping(fileBrowserButton, fileBrowserButton);
-
-  // We use a QSignalMapper here to connect our signal, which comes from one of
-  // potentially several lineEdits, fileCombos or fileBrowserButtons, to our
-  // slot, which is the method setActiveField(QWidget*). This way,
-  // setActiveField can tag the appropriate field to be used within
-  // onInputValueChanged().
-  //
-  // TODO: This may be handled more elegantly using lambda expressions as
-  // slots.
-
   if (lineEdit)
   {
-    QObject::connect(
-      lineEdit, SIGNAL(textChanged(const QString&)), this->Internals->SignalMapper, SLOT(map()));
-    this->Internals->SignalMapper->setMapping(lineEdit, lineEdit);
-    QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)), this,
-      SLOT(setActiveField(QWidget*)));
+    QObject::connect(lineEdit, &QLineEdit::textChanged, [=]() { setActiveField(lineEdit); });
+
     QObject::connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(onInputValueChanged()));
-    this->Internals->SignalMapper->setMapping(fileBrowserButton, lineEdit);
 
     if (this->Internals->fileExtCombo)
     {
-      QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentTextChanged(const QString&)),
-        this->Internals->SignalMapper, SLOT(map()));
-      QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentIndexChanged(int)),
-        this->Internals->SignalMapper, SLOT(map()));
-      this->Internals->SignalMapper->setMapping(this->Internals->fileExtCombo, lineEdit);
-      QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)), this,
-        SLOT(setActiveField(QWidget*)));
+      QObject::connect(this->Internals->fileExtCombo, &QComboBox::currentTextChanged,
+        [=]() { setActiveField(lineEdit); });
+      QObject::connect(this->Internals->fileExtCombo,
+        (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged,
+        [=]() { setActiveField(lineEdit); });
 
       QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentIndexChanged(int)), this,
         SLOT(onInputValueChanged()));
     }
+
+    QObject::connect(fileBrowserButton, &QPushButton::clicked, [=]() { setActiveField(lineEdit); });
   }
   else if (fileCombo)
   {
-    QObject::connect(fileCombo, SIGNAL(editTextChanged(const QString&)),
-      this->Internals->SignalMapper, SLOT(map()));
     QObject::connect(
-      fileCombo, SIGNAL(currentIndexChanged(int)), this->Internals->SignalMapper, SLOT(map()));
-    this->Internals->SignalMapper->setMapping(fileCombo, fileCombo);
-    QObject::connect(this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)), this,
-      SLOT(setActiveField(QWidget*)));
+      fileCombo, &QComboBox::currentTextChanged, [=]() { setActiveField(fileCombo); });
+    QObject::connect(fileCombo, (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged,
+      [=]() { setActiveField(fileCombo); });
 
     QObject::connect(
       fileCombo->lineEdit(), SIGNAL(editingFinished()), this, SLOT(onInputValueChanged()));
     QObject::connect(
       fileCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onInputValueChanged()));
-    this->Internals->SignalMapper->setMapping(fileBrowserButton, fileCombo);
+
+    QObject::connect(
+      fileBrowserButton, &QPushButton::clicked, [=]() { setActiveField(fileCombo); });
   }
 
-  QObject::connect(
-    this->Internals->SignalMapper, SIGNAL(mapped(QWidget*)), this, SLOT(setActiveField(QWidget*)));
   QObject::connect(fileBrowserButton, SIGNAL(clicked()), this, SLOT(onLaunchFileBrowser()));
 
   return frame;
