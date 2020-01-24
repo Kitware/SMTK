@@ -21,10 +21,14 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/extension/qt/qtViewRegistrar.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
+#include "smtk/resource/Manager.h"
 #include "smtk/view/Configuration.h"
+#include "smtk/view/Configuration.h"
+#include "smtk/view/Manager.h"
 
 #ifdef VTK_SESSION
 #include "smtk/session/vtk/Resource.h"
@@ -32,6 +36,10 @@
 #include "smtk/session/vtk/operators/Read.h"
 #endif
 
+// SMTK build tree includes
+#include "smtk/operation/Operation_xml.h"
+
+// Qt includes
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QCoreApplication>
@@ -62,11 +70,13 @@ int main(int argc, char* argv[])
   parser.setApplicationDescription("Load attribute template and display editor panel");
   parser.addHelpOption();
   parser.addPositionalArgument("attribute_filename", "Attribute file (.sbt)");
-  parser.addOptions({ { { "o", "output-file" }, "Output attribute file (.sbi)", "main" },
+  parser.addOptions({
 #ifdef VTK_SESSION
-    { { "m", "model-file" }, "Model file (using vtk session)", "main" },
+    { { "m", "model-file" }, "Model file (using vtk session)", "path" },
 #endif
-    { { "v", "view-name" }, "Specific View to display", "main" } });
+    { { "o", "output-file" }, "Output attribute file (.sbi)", "path" },
+    { { "p", "preload-operation" }, "Preload smtk operation template" },
+    { { "v", "view-name" }, "Specific View to display", "string" } });
 
   parser.process(app);
   if (!parser.parse(QCoreApplication::arguments()))
@@ -89,22 +99,45 @@ int main(int argc, char* argv[])
     return 1;
   }
 
+  // Initialize resource manager
+  auto resourceManager = smtk::resource::Manager::create();
+  resourceManager->registerResource<smtk::attribute::Resource>();
+
   // Instantiate and load attribute resource
   smtk::attribute::ResourcePtr attResource = smtk::attribute::Resource::create();
-  std::string inputPath = positionalArguments.first().toStdString();
-  qInfo() << "Loading simulation file:" << inputPath.c_str();
   smtk::io::AttributeReader reader;
   smtk::io::Logger inputLogger;
-  bool err = reader.read(attResource, inputPath, true, inputLogger);
+
+  if (parser.isSet("preload-operation"))
+  {
+    qInfo() << "Loading operation template";
+    bool opErr = reader.readContents(attResource, Operation_xml, inputLogger);
+    if (opErr)
+    {
+      qCritical() << "Error loading operation template -- exiting"
+                  << "\n";
+      qCritical() << QString::fromStdString(inputLogger.convertToString());
+      return 1;
+    }
+  }
+
+  QString inputPath = positionalArguments.first();
+  qInfo() << "Loading attribute file:" << inputPath;
+  bool err = reader.read(attResource, inputPath.toStdString(), true, inputLogger);
   if (err)
   {
-    qCritical() << "Error loading simulation file -- exiting"
+    qCritical() << "Error loading attribute file -- exiting"
                 << "\n";
     qCritical() << QString::fromStdString(inputLogger.convertToString());
     return 1;
   }
+  QFileInfo attFileInfo(inputPath);
+  attResource->setName(attFileInfo.baseName().toStdString());
+  resourceManager->add(attResource);
 
 #ifdef VTK_SESSION
+  resourceManager->registerResource<smtk::session::vtk::Resource>();
+
   // Load model if specified
   smtk::session::vtk::Resource::Ptr modelResource;
   if (parser.isSet("model-file"))
@@ -144,17 +177,17 @@ int main(int argc, char* argv[])
         loadOpResult->findResource("resource"));
 
     modelResource = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->value());
-
     if (!modelResource)
     {
-      qCritical() << "ERROR: Model file failed to import.\n";
+      qCritical() << "ERROR loading model file " << modelFile << "\n";
       return 1;
     }
+    bool added = resourceManager->add(modelResource);
 
     // If model resource loaded, then associate it to the attribute resource
     attResource->associate(modelResource);
   }
-#endif
+#endif // VTK_SESSION
 
   // Find view if specified
   smtk::view::ConfigurationPtr root;
@@ -217,7 +250,11 @@ int main(int argc, char* argv[])
   }
 
   // Instantiate smtk's qtUIManager
+  auto viewManager = smtk::view::Manager::create();
+  smtk::extension::qtViewRegistrar::registerTo(viewManager);
   smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(attResource);
+  uiManager->setResourceManager(resourceManager);
+  uiManager->setViewManager(viewManager);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget* widget = new QWidget();
