@@ -22,6 +22,7 @@ smtk_add_plugin(smtkPQOperationViewsPlugin
 target_link_libraries(smtkPQOperationViewsPlugin
   PRIVATE
     smtkQtExt
+    ParaView::pqComponents
     VTK::jsoncpp)
 
 smtk_export_header(smtkPQOperationViewsPlugin Exports.h)
