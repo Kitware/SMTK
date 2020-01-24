@@ -21,12 +21,14 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/extension/qt/qtViewRegistrar.h"
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/view/Configuration.h"
-#include "smtk/view/View.h"
+#include "smtk/view/Configuration.h"
+#include "smtk/view/Manager.h"
 
 #ifdef VTK_SESSION
 #include "smtk/session/vtk/Resource.h"
@@ -248,8 +250,11 @@ int main(int argc, char* argv[])
   }
 
   // Instantiate smtk's qtUIManager
+  auto viewManager = smtk::view::Manager::create();
+  smtk::extension::qtViewRegistrar::registerTo(viewManager);
   smtk::extension::qtUIManager* uiManager = new smtk::extension::qtUIManager(attResource);
   uiManager->setResourceManager(resourceManager);
+  uiManager->setViewManager(viewManager);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget* widget = new QWidget();
