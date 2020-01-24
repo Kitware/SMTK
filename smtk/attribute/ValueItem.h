@@ -100,8 +100,7 @@ public:
   virtual std::string valueAsString(std::size_t elementIndex) const = 0;
   virtual bool isSet(std::size_t elementIndex = 0) const
   {
-    assert(m_isSet.size() > elementIndex);
-    return m_isSet[elementIndex];
+    return m_isSet.size() > elementIndex ? m_isSet[elementIndex] : false;
   }
   virtual void unset(std::size_t elementIndex = 0);
   smtk::attribute::ComponentItemPtr expressionReference(std::size_t elementIndex = 0) const
