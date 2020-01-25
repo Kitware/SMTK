@@ -26,9 +26,12 @@ class Geometry;
 }
 }
 
-template class SMTKCORE_EXPORT
-  smtk::common::Generator<std::tuple<smtk::geometry::ResourcePtr, const smtk::geometry::Backend&>,
-    std::unique_ptr<smtk::geometry::Geometry> >;
+#ifndef SMTKCORE_EXPORT
+extern
+#endif
+  template class SMTKCORE_EXPORT
+    smtk::common::Generator<std::tuple<smtk::geometry::ResourcePtr, const smtk::geometry::Backend&>,
+      std::unique_ptr<smtk::geometry::Geometry> >;
 
 namespace smtk
 {

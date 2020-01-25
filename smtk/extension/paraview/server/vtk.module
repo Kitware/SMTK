@@ -8,6 +8,7 @@ DEPENDS
 PRIVATE_DEPENDS
   ParaView::RemotingApplication
   ParaView::RemotingServerManager
+  ParaView::VTKExtensionsExtraction
   VTK::CommonDataModel
   VTK::CommonMath
   VTK::CommonTransforms

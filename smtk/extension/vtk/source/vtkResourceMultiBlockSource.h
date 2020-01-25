@@ -69,6 +69,7 @@ public:
       Components,
       Prototypes,
       Instances,
+      Images,
       NumberOfBlocks
     };
   };

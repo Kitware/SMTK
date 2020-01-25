@@ -85,8 +85,6 @@ void preparePointsForBoost(
           yblo = pit->y();
         }
       }
-      internal::Point bdsLo = internal::Point(xblo, yblo);
-      internal::Point bdsHi = internal::Point(xbhi, ybhi);
       internal::Coord dx = xbhi;
       if (xblo < 0 && -xblo > dx)
       {
@@ -140,7 +138,7 @@ void Geometry::queryGeometry(
   }
   auto resource = m_parent.lock();
   auto polyEnt = resource->findStorage<internal::entity>(ent->id());
-  auto polyModel = polyEnt->parentAs<internal::pmodel>();
+  auto polyModel = polyEnt ? polyEnt->parentAs<internal::pmodel>() : nullptr;
   switch (ent->dimension())
   {
     case 0:
@@ -149,6 +147,11 @@ void Geometry::queryGeometry(
       if (vert)
       {
         this->updateVertex(polyModel, vert, entry);
+        if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+        {
+          Geometry::addColorArray(
+            entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+        }
         return;
       } // else this->eraseCache(ent->id()); ???
       break;
@@ -160,6 +163,11 @@ void Geometry::queryGeometry(
       if (edge)
       {
         this->updateEdge(polyModel, edge, entry);
+        if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+        {
+          Geometry::addColorArray(
+            entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+        }
         return;
       }
       break;
@@ -167,6 +175,11 @@ void Geometry::queryGeometry(
     case 2:
     {
       this->updateFace(polyModel, ent, entry);
+      if (entry.m_geometry && ent->properties().contains<std::vector<double> >("color"))
+      {
+        Geometry::addColorArray(
+          entry.m_geometry, ent->properties().at<std::vector<double> >("color"));
+      }
       return;
       break;
     }
@@ -230,7 +243,7 @@ void Geometry::updateVertex(
   entry.m_generation += 1; // This works even when m_generation is Invalid.
 
   vtkPoints* points;
-  auto polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
+  vtkSmartPointer<vtkPolyData> polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
   if (polydata)
   {
     points = polydata->GetPoints();
@@ -240,6 +253,8 @@ void Geometry::updateVertex(
     polydata = vtkSmartPointer<vtkPolyData>::New();
     entry.m_geometry = polydata;
     vtkNew<vtkPoints> pts;
+    vtkNew<vtkCellArray> verts;
+    polydata->SetVerts(verts);
     polydata->SetPoints(pts);
     pts->SetNumberOfPoints(1);
     vtkIdType ptid = 0;
@@ -263,7 +278,7 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
 
   vtkPoints* points;
   vtkCellArray* lines;
-  auto polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
+  vtkSmartPointer<vtkPolyData> polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
   if (polydata)
   {
     points = polydata->GetPoints();
@@ -281,13 +296,13 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
     lines = cells;
   }
   std::size_t numPts = ee->pointsSize();
-  points->SetNumberOfPoints(static_cast<vtkIdType>(numPts));
   internal::PointSeq::const_iterator ptIt;
   std::vector<vtkIdType> conn;
   conn.reserve(numPts);
-  conn.push_back(static_cast<int>(numPts));
+  // conn.push_back(static_cast<int>(numPts));
   bool isPeriodic = (*ee->pointsBegin() == *ee->pointsRBegin());
   std::size_t numUniquePts = isPeriodic ? numPts - 1 : numPts;
+  points->SetNumberOfPoints(static_cast<vtkIdType>(numUniquePts));
   std::size_t ii;
   for (ptIt = ee->pointsBegin(), ii = 0; ii < numUniquePts; ++ptIt, ++ii)
   {
@@ -298,10 +313,10 @@ void Geometry::updateEdge(const PolyModel& polyModel, const EdgePtr& ee, CacheEn
   }
   if (isPeriodic)
   {
-    conn.push_back(conn[1]); // repeat initial point instead of adding a duplicate.
+    conn.push_back(conn[0]); // repeat initial point instead of adding a duplicate.
   }
   lines->Reset();
-  lines->InsertNextCell(static_cast<vtkIdType>(numUniquePts), &conn[0]);
+  lines->InsertNextCell(static_cast<vtkIdType>(conn.size()), &conn[0]);
   polydata->Modified();
 }
 
@@ -317,7 +332,7 @@ void Geometry::updateFace(
 
   vtkPoints* points;
   vtkCellArray* polys;
-  auto polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
+  vtkSmartPointer<vtkPolyData> polydata = vtkPolyData::SafeDownCast(entry.m_geometry);
   if (polydata)
   {
     points = polydata->GetPoints();
@@ -423,6 +438,7 @@ public:
       auto provider = new Geometry(rsrc);
       return GeometryPtr(provider);
     }
+    throw std::invalid_argument("Not a polygon resource.");
     return nullptr;
   }
 };

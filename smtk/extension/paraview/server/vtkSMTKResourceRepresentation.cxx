@@ -14,12 +14,16 @@
 #include <vtkCompositePolyDataMapper2.h>
 #include <vtkFieldData.h>
 #include <vtkGlyph3DMapper.h>
+#include <vtkImageData.h>
+#include <vtkImageSliceRepresentation.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
+#include <vtkLookupTable.h>
 #include <vtkMath.h>
 #include <vtkMatrix4x4.h>
 #include <vtkMultiBlockDataSet.h>
 #include <vtkObjectFactory.h>
+#include <vtkPointData.h>
 #include <vtkProperty.h>
 #include <vtkRenderer.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
@@ -53,6 +57,10 @@
 #include "smtk/resource/Manager.h"
 
 #include "smtk/view/Selection.h"
+
+vtkCxxSetObjectMacro(vtkSMTKResourceRepresentation, SliceXY, vtkImageSliceRepresentation);
+vtkCxxSetObjectMacro(vtkSMTKResourceRepresentation, SliceYZ, vtkImageSliceRepresentation);
+vtkCxxSetObjectMacro(vtkSMTKResourceRepresentation, SliceXZ, vtkImageSliceRepresentation);
 
 namespace
 {
@@ -133,6 +141,9 @@ vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
   , SelectedEntities(vtkSmartPointer<vtkActor>::New())
   , GlyphEntities(vtkSmartPointer<vtkActor>::New())
   , SelectedGlyphEntities(vtkSmartPointer<vtkActor>::New())
+  , SliceXY(vtkImageSliceRepresentation::New())
+  , SliceYZ(vtkImageSliceRepresentation::New())
+  , SliceXZ(vtkImageSliceRepresentation::New())
   , EntitiesActorPickId(-1)
   , SelectedEntitiesActorPickId(-1)
   , GlyphEntitiesActorPickId(-1)
@@ -146,6 +157,9 @@ vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
 vtkSMTKResourceRepresentation::~vtkSMTKResourceRepresentation()
 {
   this->SetWrapper(nullptr);
+  this->SetSliceXY(nullptr);
+  this->SetSliceYZ(nullptr);
+  this->SetSliceXZ(nullptr);
 }
 
 void vtkSMTKResourceRepresentation::SetupDefaults()
@@ -254,6 +268,37 @@ int vtkSMTKResourceRepresentation::RequestData(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Prototypes));
     vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Instances));
+    vtkSmartPointer<vtkMultiBlockDataSet> imageMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
+      mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Images));
+
+    if (imageMultiBlock && imageMultiBlock->GetNumberOfBlocks() > 0)
+    {
+      vtkSmartPointer<vtkImageData> sliceVolume =
+        vtkImageData::SafeDownCast(imageMultiBlock->GetBlock(0));
+      std::string scalarName = "scalars";
+      auto scalars = sliceVolume->GetPointData()->GetScalars();
+      if (scalars)
+      {
+        scalarName = scalars->GetName();
+        auto lkup = sliceVolume->GetPointData()->GetScalars()->GetLookupTable();
+        this->SliceXY->SetLookupTable(lkup);
+        this->SliceYZ->SetLookupTable(lkup);
+        this->SliceXZ->SetLookupTable(lkup);
+      }
+      this->SliceXY->SetInputDataObject(0, sliceVolume);
+      this->SliceYZ->SetInputDataObject(0, sliceVolume);
+      this->SliceXZ->SetInputDataObject(0, sliceVolume);
+
+      this->SliceXY->SetSliceMode(vtkImageSliceRepresentation::XY_PLANE);
+      this->SliceYZ->SetSliceMode(vtkImageSliceRepresentation::YZ_PLANE);
+      this->SliceXZ->SetSliceMode(vtkImageSliceRepresentation::XZ_PLANE);
+      this->SliceXY->SetInputArrayToProcess(
+        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+      this->SliceYZ->SetInputArrayToProcess(
+        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+      this->SliceXZ->SetInputArrayToProcess(
+        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+    }
 
     // Glyph points (2) and prototypes (1)
     this->GlyphMapper->SetInputData(instanceMultiBlock);
@@ -278,6 +323,15 @@ int vtkSMTKResourceRepresentation::RequestData(
   // New input data requires updated block colors:
   this->UpdateColorBy = true;
   return Superclass::RequestData(request, inVec, outVec);
+}
+
+unsigned int vtkSMTKResourceRepresentation::Initialize(unsigned int minId, unsigned int maxId)
+{
+  unsigned int result = this->Superclass::Initialize(minId, maxId);
+  result = this->SliceXY->Initialize(result, maxId);
+  result = this->SliceYZ->Initialize(result, maxId);
+  result = this->SliceXZ->Initialize(result, maxId);
+  return result;
 }
 
 int vtkSMTKResourceRepresentation::ProcessViewRequest(
@@ -337,6 +391,8 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Components));
     vtkSmartPointer<vtkMultiBlockDataSet> instanceMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Instances));
+    vtkSmartPointer<vtkMultiBlockDataSet> imageMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
+      mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Images));
 
     {
       // In order to get consistent ordering for cell selection (and, therefore,
@@ -348,6 +404,20 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
       mbds2->SetBlock(vtkResourceMultiBlockSource::BlockId::Components, componentMultiBlock);
       this->EntityMapper->SetInputDataObject(mbds2);
       this->SelectedEntityMapper->SetInputDataObject(mbds2);
+    }
+
+    // Set up an internal slice representation for each image.
+    if (imageMultiBlock && imageMultiBlock->GetNumberOfBlocks() > 0)
+    {
+      this->SliceXY->SetVisibility(true);
+      this->SliceYZ->SetVisibility(true);
+      this->SliceXZ->SetVisibility(true);
+    }
+    else
+    {
+      this->SliceXY->SetVisibility(false);
+      this->SliceYZ->SetVisibility(false);
+      this->SliceXZ->SetVisibility(false);
     }
 
     this->UpdateColoringParameters(componentMultiBlock);
@@ -372,6 +442,10 @@ bool vtkSMTKResourceRepresentation::AddToView(vtkView* view)
   vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
   if (rview)
   {
+    rview->AddRepresentation(this->SliceXY);
+    rview->AddRepresentation(this->SliceYZ);
+    rview->AddRepresentation(this->SliceXZ);
+
     rview->GetRenderer()->AddActor(this->Entities);
     rview->GetRenderer()->AddActor(this->GlyphEntities);
     rview->GetRenderer()->AddActor(this->SelectedEntities);
@@ -402,6 +476,10 @@ bool vtkSMTKResourceRepresentation::RemoveFromView(vtkView* view)
   vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
   if (rview)
   {
+    rview->RemoveRepresentation(this->SliceXY);
+    rview->RemoveRepresentation(this->SliceYZ);
+    rview->RemoveRepresentation(this->SliceXZ);
+
     rview->GetRenderer()->RemoveActor(this->Entities);
     rview->GetRenderer()->RemoveActor(this->GlyphEntities);
     rview->GetRenderer()->RemoveActor(this->SelectedEntities);
@@ -419,6 +497,10 @@ bool vtkSMTKResourceRepresentation::RemoveFromView(vtkView* view)
 
 void vtkSMTKResourceRepresentation::SetVisibility(bool val)
 {
+  this->SliceXY->SetVisibility(val);
+  this->SliceYZ->SetVisibility(val);
+  this->SliceXZ->SetVisibility(val);
+
   this->Entities->SetVisibility(val);
   this->GlyphEntities->SetVisibility(val);
 

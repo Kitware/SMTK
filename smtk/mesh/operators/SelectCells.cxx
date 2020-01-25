@@ -43,7 +43,7 @@ SelectCells::Result SelectCells::operateInternal()
     smtk::attribute::StringItem::Ptr cellIdsItem = this->parameters()->findString("cell ids");
     for (auto cellIt = cellIdsItem->begin(); cellIt != cellIdsItem->end(); ++cellIt)
     {
-      cells.insert(std::stol(*cellIt));
+      cells.insert(std::stoll(*cellIt));
     }
   }
 

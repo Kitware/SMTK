@@ -158,6 +158,7 @@ smtk_add_plugin(smtkPQComponentsPlugin
 target_link_libraries(smtkPQComponentsPlugin
   PRIVATE
     ParaView::pqApplicationComponents
+    ParaView::VTKExtensionsExtraction
     smtkPQComponentsExt
     smtkPVServerExt
     smtkCore

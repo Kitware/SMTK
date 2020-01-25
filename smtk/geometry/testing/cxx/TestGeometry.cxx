@@ -28,6 +28,26 @@ namespace detail
 {
 class ResourceA;
 
+// Example of a custom "geometry" format for a backend.
+// We cannot use smtk::geometry::GeometryForBackend<int>
+// because integers are not automatically initialized.
+// Here, we just wrap an integer so that Format is
+// initialized by default and convertible to a bool.
+// Usually, you will GeometryForBackend a shared or
+// smart pointer to some more complex structure.
+struct Format
+{
+  int m_data = 0;
+  Format() = default;
+  Format(int data)
+    : m_data(data)
+  {
+  }
+  Format(const Format& other) = default;
+  operator bool() { return m_data <= 0; }
+  operator int() { return m_data <= 0 ? -1 : m_data; }
+};
+
 class Backend1 : public smtk::geometry::Backend
 {
 public:
@@ -51,7 +71,7 @@ public:
     int val;
     try
     {
-      const auto& provider = dynamic_cast<const smtk::geometry::GeometryForBackend<int>&>(*p);
+      const auto& provider = dynamic_cast<const smtk::geometry::GeometryForBackend<Format>&>(*p);
       val = provider.geometry(obj);
     }
     catch (std::bad_cast&)
@@ -149,25 +169,6 @@ private:
   std::unordered_set<ComponentA::Ptr> m_components;
 };
 
-// Example of a custom "geometry" format for a backend.
-// We cannot use smtk::geometry::GeometryForBackend<int>
-// because integers are not automatically initialized.
-// Here, we just wrap an integer so that Format is
-// initialized by default and convertible to a bool.
-// Usually, you will GeometryForBackend a shared or
-// smart pointer to some more complex structure.
-struct Format
-{
-  int m_data = 0;
-  Format() = default;
-  Format(int data)
-    : m_data(data)
-  {
-  }
-  Format(const Format& other) = default;
-  operator bool() { return m_data <= 0; }
-};
-
 class Geometry2
   : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>, Geometry2>
 {
@@ -210,6 +211,7 @@ public:
   // Ensure every component with renderable geometry has a cache entry.
   void update() const
   {
+    std::cout << "  Updating geometry before iteration\n";
     auto rsrc = m_parent.lock();
     if (rsrc)
     {
@@ -220,8 +222,15 @@ public:
         {
           m_cache[compA->id()] = CacheEntry{ Initial, compA->value() };
         }
+        else
+        {
+          m_cache.erase(compA->id());
+        }
       };
       rsrc->visit(visitor);
+      // Also erase the cache entry for the resource itself (since
+      // we know it does not have valid geometry).
+      m_cache.erase(rsrc->id());
     }
   }
 
@@ -245,6 +254,7 @@ public:
       auto provider = new Geometry2(rsrc);
       return smtk::geometry::GeometryPtr(provider);
     }
+    throw std::invalid_argument("Not a test resource.");
     return nullptr;
   }
 };
@@ -322,7 +332,9 @@ int TestGeometry(int /*unused*/, char** const /*unused*/)
       int geom = renderer.geometry(geomA2, obj);
 
       geomA2->bounds(obj, bbox);
-      std::cout << "  object \"" << obj->name() << "\" geometry " << geom << "\n";
+      std::cout << "    object \"" << obj->name() << "\" geometry " << geom << "\n";
+
+      smtkTest(geom > 0, "Did not expect to visit object with invalid geometry.");
       smtkTest(bbox[1] >= bbox[0], "Expected a valid bounding box.");
       ++count;
     }

@@ -217,6 +217,10 @@ public:
   /// the ThisClass::update() is a no-op. Otherwise,
   /// it is the subclass's duty to visit the resource's persistent
   /// objects and query each for an updated cache entry as needed.
+  ///
+  /// Visitors may erase the cache entry for the object they are
+  /// passed, but may not erase others as that may invalidate
+  /// iteration.
   virtual void visit(Visitor visitor) const override
   {
     auto& self = static_cast<const ThisClass&>(*this);
@@ -224,16 +228,18 @@ public:
     auto rsrc = this->resource();
     if (rsrc)
     {
-      for (const auto& entry : m_cache)
+      auto it = m_cache.begin();
+      for (auto entry = it; entry != m_cache.end(); entry = it)
       {
-        auto comp = rsrc->find(entry.first);
+        ++it;
+        auto comp = rsrc->find(entry->first);
         if (comp)
         {
-          visitor(comp, entry.second.m_generation);
+          visitor(comp, entry->second.m_generation);
         }
-        else if (entry.first == rsrc->id())
+        else if (entry->first == rsrc->id())
         {
-          visitor(rsrc, entry.second.m_generation);
+          visitor(rsrc, entry->second.m_generation);
         }
         // else remove cache entry?
       }

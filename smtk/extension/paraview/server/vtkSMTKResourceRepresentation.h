@@ -34,6 +34,7 @@ class vtkCompositeDataDisplayAttributes;
 class vtkCompositePolyDataMapper2;
 class vtkDataObject;
 class vtkGlyph3DMapper;
+class vtkImageSliceRepresentation;
 class vtkMapper;
 class vtkMultiBlockDataSet;
 class vtkScalarsToColors;
@@ -44,13 +45,14 @@ class vtkTexture;
  *  \brief Representation of an SMTK Resource. Renders the outputs of
  *  vtkSMTKResourceReader.
  *
- *  Input data arrives as a multiblock with three blocks:
+ *  Input data arrives as a multiblock with four blocks:
  *
  *  |       Block                  |    Mapper     |  Actor         |
  *  | :--------------------------- | :------------ | :------------- |
  *  |   Block 0: Components        |  EntityMapper | Entities       |
  *  |   Block 1: Glyph prototypes  |  GlyphMapper  | GlyphEntities  |
  *  |   Block 2: Glyph points      |  GlyphMapper  | GlyphEntities  |
+ *  |   Block 3: Images            |  Internal slice representation |
  *
  *  vtkSMSMTKResourceRepresentationProxy sets certain properties used as mapper
  *  inputs (GlyphPrototypes and GlyphPoints).
@@ -114,6 +116,7 @@ public:
   /**
    * \sa vtkPVDataRepresentation
    */
+  unsigned int Initialize(unsigned int minId, unsigned int maxId) override;
   int ProcessViewRequest(vtkInformationRequestKey* request_type, vtkInformation* inInfo,
     vtkInformation* outInfo) override;
   int RequestData(
@@ -317,6 +320,11 @@ public:
 
   /// Return the prop ID assigned to the actor that renders selected glyph components.
   int GetSelectedGlyphEntitiesActorPickId() const { return this->SelectedGlyphEntitiesActorPickId; }
+
+  void SetSliceXY(vtkImageSliceRepresentation* rep);
+  void SetSliceYZ(vtkImageSliceRepresentation* rep);
+  void SetSliceXZ(vtkImageSliceRepresentation* rep);
+
 protected:
   vtkSMTKResourceRepresentation();
   ~vtkSMTKResourceRepresentation();
@@ -422,6 +430,10 @@ protected:
   vtkSmartPointer<vtkActor> SelectedEntities;
   vtkSmartPointer<vtkActor> GlyphEntities;
   vtkSmartPointer<vtkActor> SelectedGlyphEntities;
+
+  vtkImageSliceRepresentation* SliceXY;
+  vtkImageSliceRepresentation* SliceYZ;
+  vtkImageSliceRepresentation* SliceXZ;
 
   // IDs assigned by vtkPVRenderView for hardware picking:
   int EntitiesActorPickId;

@@ -1240,6 +1240,60 @@
         composite mapper to better integrate with SMTKModel. Handles selection
         of SMTK components.
       </Documentation>
+      <SubProxy command="SetSliceXY">
+        <Proxy name="XYSliceRepresentation"
+          proxygroup="representations"
+          proxyname="ImageSliceRepresentation" />
+        <ExposedProperties>
+          <PropertyGroup label="Slicing">
+            <IntVectorProperty name="Slice"
+                               exposed_name="XYSlice"
+                               panel_visibility="always"
+                               default_values="50"
+                               number_of_elements="1">
+              <IntRangeDomain min="0" max="315" name="range" />
+              <Documentation>Sets the XY slice</Documentation>
+            </IntVectorProperty>
+            <Property name="SliceMode" exposed_name="XYSliceMode" panel_visibility="never"/>
+          </PropertyGroup>
+        </ExposedProperties>
+      </SubProxy>
+      <SubProxy command="SetSliceYZ">
+        <Proxy name="YZSliceRepresentation"
+          proxygroup="representations"
+          proxyname="ImageSliceRepresentation" />
+        <ExposedProperties>
+          <PropertyGroup label="Slicing">
+            <IntVectorProperty name="Slice"
+                               exposed_name="YZSlice"
+                               panel_visibility="always"
+                               default_values="50"
+                               number_of_elements="1">
+              <IntRangeDomain min="0" max="319" name="range" />
+              <Documentation>Sets the YZ slice</Documentation>
+            </IntVectorProperty>
+            <Property name="SliceMode" exposed_name="YZSliceMode" panel_visibility="never"/>
+          </PropertyGroup>
+        </ExposedProperties>
+      </SubProxy>
+      <SubProxy command="SetSliceXZ">
+        <Proxy name="XZSliceRepresentation"
+          proxygroup="representations"
+          proxyname="ImageSliceRepresentation" />
+        <ExposedProperties>
+          <PropertyGroup label="Slicing">
+            <IntVectorProperty name="Slice"
+                               exposed_name="XZSlice"
+                               panel_visibility="always"
+                               default_values="50"
+                               number_of_elements="1">
+              <IntRangeDomain min="0" max="479" name="range" />
+              <Documentation>Sets the XZ slice</Documentation>
+            </IntVectorProperty>
+            <Property name="SliceMode" exposed_name="XZSliceMode" panel_visibility="never"/>
+          </PropertyGroup>
+        </ExposedProperties>
+      </SubProxy>
       <IntVectorProperty command="SetVisibility"
                          default_values="1"
                          name="Visibility"
@@ -1864,6 +1918,16 @@
                       panel_visibility="never" />
             <Property name="DefaultEdgeColor"
                       panel_visibility="never" />
+          </PropertyGroup>
+          <PropertyGroup label="Slicing">
+            <Property label="XY slice" name="XYSlice" panel_visibility="never"/>
+            <Property name="XYSliceMode" panel_visibility="never"/>
+
+            <Property label="YZ slice" name="YZSlice" panel_visibility="never"/>
+            <Property name="YZSliceMode" panel_visibility="never"/>
+
+            <Property label="XZ slice" name="XZSlice" panel_visibility="never"/>
+            <Property name="XZSliceMode" panel_visibility="never"/>
           </PropertyGroup>
         </ExposedProperties>
       </SubProxy>
