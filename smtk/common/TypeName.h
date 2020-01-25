@@ -13,9 +13,19 @@
 
 #include "smtk/TupleTraits.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+#include <boost/type_index.hpp>
+
 #include <array>
+#include <deque>
+#include <forward_list>
+#include <list>
 #include <map>
+#include <memory>
+#include <queue>
 #include <set>
+#include <stack>
 #include <string>
 #include <tuple>
 #include <typeinfo>
@@ -27,42 +37,6 @@ namespace smtk
 {
 namespace common
 {
-namespace detail
-{
-static constexpr const char* const char_name = "char";
-static constexpr const char* const unsigned_char_name = "unsigned char";
-static constexpr const char* const signed_char_name = "signed char";
-static constexpr const char* const int_name = "int";
-static constexpr const char* const unsigned_int_name = "unsigned int";
-static constexpr const char* const signed_int_name = "signed int";
-static constexpr const char* const short_int_name = "short int";
-static constexpr const char* const unsigned_short_int_name = "unsigned short int";
-static constexpr const char* const signed_short_int_name = "signed short int";
-static constexpr const char* const long_int_name = "long int";
-static constexpr const char* const signed_long_int_name = "signed long int";
-static constexpr const char* const unsigned_long_int_name = "unsigned long int";
-static constexpr const char* const float_name = "float";
-static constexpr const char* const double_name = "double";
-static constexpr const char* const long_double_name = "long double";
-static constexpr const char* const wchar_t_name = "wchar_t";
-static constexpr const char* const std_string_name = "string";
-}
-
-/// For serialization across platforms, we define platform-neutral type names
-/// for plain-old-datatypes (PODs) and for std::string.
-typedef std::tuple<char, unsigned char, signed char, int, unsigned int, signed int, short int,
-  unsigned short int, signed short int, long int, signed long int, unsigned long int, float, double,
-  long double, wchar_t, std::string>
-  PODs;
-
-typedef std::array<const char* const, std::tuple_size<PODs>::value> PODNames_t;
-static constexpr PODNames_t PODNames = { { detail::char_name, detail::unsigned_char_name,
-  detail::signed_char_name, detail::int_name, detail::unsigned_int_name, detail::signed_int_name,
-  detail::short_int_name, detail::unsigned_short_int_name, detail::signed_short_int_name,
-  detail::long_int_name, detail::signed_long_int_name, detail::unsigned_long_int_name,
-  detail::float_name, detail::double_name, detail::long_double_name, detail::wchar_t_name,
-  detail::std_string_name } };
-
 /// @file TypeName.h \brief Named type functions.
 ///
 /// Resources and operations have a virtual method typeName(), but to access
@@ -90,142 +64,196 @@ public:
   using type = decltype(testNamed<T>(nullptr));
 };
 
-/// A compile-time test to check whether or not a type is in our list of PODs.
-template <typename T>
-struct is_pod
-{
-  using type = typename smtk::tuple_contains<T, PODs>::type;
-};
-
-/// A compile-time test to check whether or not a class has a `create()` method.
-template <typename T>
-class is_constructible
-{
-  template <typename X>
-  static std::true_type testConstructible(decltype(X::create())*);
-  template <typename X>
-  static std::false_type testConstructible(...);
-
-public:
-  using type = decltype(testConstructible<T>(nullptr));
-};
-
-/// The signature for our name-finding struct has four template parameters.
-template <typename Type, typename is_named, typename is_pod, typename is_constructible>
-struct name;
-
-/// @brief This partial template specialization deals with the case where
-/// \a Type has a type_name.
-template <typename Type, typename is_pod, typename is_constructible>
-struct name<Type, std::true_type, is_pod, is_constructible>
-{
-  static std::string value() { return Type::type_name; }
-};
-
-/// @brief This partial template specialization deals with the case where
-/// \a Type is a POD.
-template <typename Type, typename is_constructible>
-struct name<Type, std::false_type, std::true_type, is_constructible>
-{
-  static std::string value() { return std::string(PODNames.at(tuple_index<Type, PODs>::value)); }
-};
-
-/// @brief This partial template specialization deals with the case where
-/// \a Type does not have a type_name and is not a POD, but can be created.
 template <typename Type>
-struct name<Type, std::false_type, std::false_type, std::true_type>
+struct name
 {
-  static std::string value() { return Type::create()->typeName(); }
+  // If there's a user-defined type_name field, use it.
+  template <typename T>
+  static typename std::enable_if<is_named<T>::type::value, std::string>::type value_()
+  {
+    return T::type_name;
+  }
+
+  /// By default, we return the prettified type name for the type.
+  template <typename T>
+  static typename std::enable_if<!is_named<T>::type::value, std::string>::type value_()
+  {
+#ifdef SMTK_MSVC
+    // MSVC's implementation of type_name refers to classes as "class foo". To
+    // maintain parity with other compilers, we strip the preceding "class "
+    // away.
+    std::string pretty_name = boost::typeindex::type_id<Type>().pretty_name();
+    if (pretty_name.substr(0, 6) == "class ")
+    {
+      return pretty_name.substr(6);
+    }
+    return pretty_name;
+#else
+    return boost::typeindex::type_id<Type>().pretty_name();
+#endif
+  }
+
+  static std::string value() { return value_<Type>(); }
 };
 
-/// As a last resort, we return the machine-dependent name for the type.
-template <typename Type>
-struct name<Type, std::false_type, std::false_type, std::false_type>
+// Specialization for std::string.
+template <>
+struct name<std::string>
 {
-  static std::string value() { return typeid(Type).name(); }
+  static std::string value() { return "string"; }
 };
 
-/// @brief This partial template specialization provides support for vectors of named
-/// types.
-template <typename Type>
-struct name<std::vector<Type>, std::false_type, std::false_type, std::false_type>
+// Specialization for std::tuple.
+template <typename... Types>
+struct name<std::tuple<Types...> >
 {
   static std::string value()
   {
-    std::string subtype = name<Type, typename detail::is_named<Type>::type,
-      typename detail::is_pod<Type>::type, typename detail::is_constructible<Type>::type>::value();
-    return std::string("vector<" + subtype + ">");
+    std::string subtypes = subType<0, std::tuple<Types...> >();
+    return std::string("tuple<" + subtypes + ">");
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline static typename std::enable_if<I != std::tuple_size<Tuple>::value, std::string>::type
+  subType()
+  {
+    typedef typename std::tuple_element<I, Tuple>::type Type;
+    std::string subtype = name<Type>::value();
+
+    return (I != 0 ? std::string(", ") : std::string()) + subtype + subType<I + 1, Tuple>();
+  }
+
+  template <std::size_t I, typename Tuple>
+  inline static typename std::enable_if<I == std::tuple_size<Tuple>::value, std::string>::type
+  subType()
+  {
+    return std::string();
   }
 };
 
-/// @brief This partial template specialization provides support for sets of named
-/// types.
+// Specialization for std::array.
+template <typename Type, size_t N>
+struct name<std::array<Type, N> >
+{
+  static std::string value()
+  {
+    std::string subtype = name<Type>::value();
+    return std::string("array<" + subtype + "," + std::to_string(N) + ">");
+  }
+};
+
+// Specialization for std::priority_queue.
 template <typename Type>
-struct name<std::set<Type>, std::false_type, std::false_type, std::false_type>
+struct name<std::priority_queue<Type, std::vector<Type>, std::less<Type> > >
 {
   static std::string value()
   {
-    std::string subtype = name<Type, typename detail::is_named<Type>::type,
-      typename detail::is_pod<Type>::type, typename detail::is_constructible<Type>::type>::value();
-    return std::string("set<" + subtype + ">");
+    std::string subtype = name<Type>::value();
+
+    return std::string("priority_queue<" + subtype + ">");
   }
 };
 
-/// @brief This partial template specialization provides support for unordered sets of
-/// named types.
-template <typename Type>
-struct name<std::unordered_set<Type>, std::false_type, std::false_type, std::false_type>
-{
-  static std::string value()
-  {
-    std::string subtype = name<Type, typename detail::is_named<Type>::type,
-      typename detail::is_pod<Type>::type, typename detail::is_constructible<Type>::type>::value();
-    return std::string("unordered set<" + subtype + ">");
+// Specialization for smart pointers.
+#define name_single_argument_stl_pointer(POINTER)                                                  \
+  template <typename Type>                                                                         \
+  struct name<std::POINTER<Type> >                                                                 \
+  {                                                                                                \
+    static std::string value()                                                                     \
+    {                                                                                              \
+      std::string subtype = name<Type>::value();                                                   \
+      return std::string(#POINTER) + "<" + subtype + ">";                                          \
+    }                                                                                              \
   }
-};
 
-/// @brief This partial template specialization provides support for maps of named
-/// types.
-template <typename KeyType, typename ValueType>
-struct name<std::map<KeyType, ValueType>, std::false_type, std::false_type, std::false_type>
-{
-  static std::string value()
-  {
-    std::string keytype = name<KeyType, typename detail::is_named<KeyType>::type,
-      typename detail::is_pod<KeyType>::type,
-      typename detail::is_constructible<KeyType>::type>::value();
-    std::string valuetype = name<ValueType, typename detail::is_named<ValueType>::type,
-      typename detail::is_pod<ValueType>::type,
-      typename detail::is_constructible<ValueType>::type>::value();
-    return std::string("map<" + keytype + ", " + valuetype + ">");
-  }
-};
+name_single_argument_stl_pointer(shared_ptr);
+name_single_argument_stl_pointer(weak_ptr);
+name_single_argument_stl_pointer(unique_ptr);
 
-/// @brief This partial template specialization provides support for unordered maps of
-/// named types.
-template <typename KeyType, typename ValueType>
-struct name<std::unordered_map<KeyType, ValueType>, std::false_type, std::false_type,
-  std::false_type>
-{
-  static std::string value()
-  {
-    std::string keytype = name<KeyType, typename detail::is_named<KeyType>::type,
-      typename detail::is_pod<KeyType>::type,
-      typename detail::is_constructible<KeyType>::type>::value();
-    std::string valuetype = name<ValueType, typename detail::is_named<ValueType>::type,
-      typename detail::is_pod<ValueType>::type,
-      typename detail::is_constructible<ValueType>::type>::value();
-    return std::string("unordered map<" + keytype + ", " + valuetype + ">");
+// Specialization for containers with allocators.
+#undef name_single_argument_stl_container
+
+#define name_single_argument_stl_container(CONTAINER)                                              \
+  template <typename Type>                                                                         \
+  struct name<std::CONTAINER<Type, std::allocator<Type> > >                                        \
+  {                                                                                                \
+    static std::string value()                                                                     \
+    {                                                                                              \
+      std::string subtype = name<Type>::value();                                                   \
+      return std::string(#CONTAINER) + "<" + subtype + ">";                                        \
+    }                                                                                              \
   }
-};
+
+name_single_argument_stl_container(vector);
+name_single_argument_stl_container(deque);
+name_single_argument_stl_container(forward_list);
+name_single_argument_stl_container(list);
+
+#undef name_single_argument_stl_container
+
+// Specialization for containers with allocators and comparators.
+#define name_single_argument_sorted_stl_container(CONTAINER)                                       \
+  template <typename Type>                                                                         \
+  struct name<std::CONTAINER<Type, std::less<Type>, std::allocator<Type> > >                       \
+  {                                                                                                \
+    static std::string value()                                                                     \
+    {                                                                                              \
+      std::string subtype = name<Type>::value();                                                   \
+      return std::string(#CONTAINER) + "<" + subtype + ">";                                        \
+    }                                                                                              \
+  }
+
+name_single_argument_sorted_stl_container(set);
+name_single_argument_sorted_stl_container(multiset);
+name_single_argument_sorted_stl_container(unordered_set);
+name_single_argument_sorted_stl_container(unordered_multiset);
+
+#undef name_single_argument_sorted_stl_container
+
+// Specialization for containers that accept a type and container type.
+#define name_double_argument_stl_container(CONTAINER)                                              \
+  template <typename Type>                                                                         \
+  struct name<std::CONTAINER<Type, std::deque<Type> > >                                            \
+  {                                                                                                \
+    static std::string value()                                                                     \
+    {                                                                                              \
+      std::string type = name<Type>::value();                                                      \
+      return std::string(#CONTAINER) + "<" + type + ">";                                           \
+    }                                                                                              \
+  }
+
+name_double_argument_stl_container(queue);
+name_double_argument_stl_container(stack);
+
+#undef name_double_argument_stl_container
+
+// Specializaiton for containers that accept a key, value, comparator and allocator.
+#define name_double_argument_sorted_stl_container(CONTAINER)                                       \
+  template <typename KeyType, typename ValueType>                                                  \
+  struct name<std::CONTAINER<KeyType, ValueType, std::less<KeyType>,                               \
+    std::allocator<std::pair<const KeyType, ValueType> > > >                                       \
+  {                                                                                                \
+    static std::string value()                                                                     \
+    {                                                                                              \
+      std::string keytype = name<KeyType>::value();                                                \
+      std::string valuetype = name<ValueType>::value();                                            \
+      return std::string(#CONTAINER) + "<" + keytype + ", " + valuetype + ">";                     \
+    }                                                                                              \
+  }
+
+name_double_argument_sorted_stl_container(map);
+name_double_argument_sorted_stl_container(multimap);
+name_double_argument_sorted_stl_container(unordered_map);
+name_double_argument_sorted_stl_container(unordered_multimap);
+
+#undef name_double_argument_sorted_stl_container
 }
 
 /// Return the name of a class.
 template <typename Type>
 std::string typeName()
 {
-  return detail::name<Type, typename detail::is_named<Type>::type,
-    typename detail::is_pod<Type>::type, typename detail::is_constructible<Type>::type>::value();
+  return detail::name<Type>::value();
 }
 }
 }
