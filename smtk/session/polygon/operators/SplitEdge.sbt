@@ -55,14 +55,6 @@
   </Definitions>
 
   <Views>
-     <!-- The customized view "Type" needs to be the the same as in plugin macro
-      ADD_SMTK_UI_VIEW(
-        OUTIFACES
-        OUTSRCS
-        CLASS_NAME qtPolygonEdgeOperationView
-        VIEW_NAME smtkPolygonEdgeView
-        )
-      -->
     <View Type="smtkPolygonEdgeView" Title="Split Polygon Edge" UseSelectionManager="true">
       <AttributeTypes>
         <Att Type="split edge" />

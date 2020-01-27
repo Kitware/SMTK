@@ -38,14 +38,6 @@
   </Definitions>
 
   <Views>
-     <!-- The customized view "Type" needs to be the the same as in plugin macro
-      ADD_SMTK_UI_VIEW(
-        OUTIFACES
-        OUTSRCS
-        CLASS_NAME qtPolygonVertexOperationView
-        VIEW_NAME smtkPolygonVertexView
-        )
-      -->
     <View Type="smtkPolygonVertexView" Title="Demote Polygon Vertex"  UseSelectionManager="true">
       <AttributeTypes>
         <Att Type="demote vertex" />

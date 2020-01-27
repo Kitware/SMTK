@@ -69,14 +69,6 @@
   </Definitions>
 
   <Views>
-     <!-- The customized view "Type" needs to be the the same as in plugin macro
-      ADD_SMTK_UI_VIEW(
-        OUTIFACES
-        OUTSRCS
-        CLASS_NAME qtExtractContoursView
-        VIEW_NAME smtkPolygonContourView
-        )
-      -->
     <View Type="smtkPolygonContourView" Title="Extract Contour Edges" FilterByCategory="false" UseSelectionManager="true">
       <AttributeTypes>
         <Att Type="extract contours" />
