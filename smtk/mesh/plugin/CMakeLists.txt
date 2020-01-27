@@ -5,6 +5,3 @@ smtk_add_plugin(smtkMeshPlugin
             smtk::resource::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION 1.0)
-target_link_libraries(smtkMeshPlugin
-  PRIVATE
-    smtkMeshSession)
