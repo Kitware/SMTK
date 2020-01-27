@@ -37,7 +37,6 @@ target_link_libraries(smtkIOVTK
     VTK::IOGDAL
     VTK::IOGeometry
     VTK::IOImage
-    VTK::IOLAS
     VTK::IOLegacy
     VTK::IONetCDF
     VTK::IOPLY
@@ -61,7 +60,6 @@ vtk_module_autoinit(
           VTK::IOGDAL
           VTK::IOGeometry
           VTK::IOImage
-          VTK::IOLAS
           VTK::IOLegacy
           VTK::IONetCDF
           VTK::IOPLY
