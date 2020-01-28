@@ -49,6 +49,16 @@ function(smtk_private_headers)
   smtk_get_kit_name(name dir_prefix)
 endfunction(smtk_private_headers)
 
+# Optionally precompile headers to improve compilation speed.
+if(NOT SMTK_BUILD_PRECOMPILED_HEADERS OR ${CMAKE_VERSION} VERSION_LESS "3.16.0")
+  function(smtk_precompile_headers)
+  endfunction(smtk_precompile_headers)
+else()
+  function(smtk_precompile_headers)
+    target_precompile_headers(${ARGN})
+  endfunction(smtk_precompile_headers)
+endif()
+
 # Declare a library as needed to be installed
 # supports the signature
 #  smtk_install_library(target [DEPENDS <targets>])

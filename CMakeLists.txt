@@ -170,6 +170,10 @@ option(SMTK_RELOCATABLE_INSTALL
   "Do not embed hard-coded paths into the install" ON)
 mark_as_advanced(SMTK_RELOCATABLE_INSTALL)
 
+option(SMTK_BUILD_PRECOMPILED_HEADERS
+  "Precompile headers to improve build times" OFF)
+mark_as_advanced(SMTK_BUILD_PRECOMPILED_HEADERS)
+
 # SMTK_BUILD_DOCUMENTATION is an enumerated option:
 # never  == No documentation, and no documentation tools are required.
 # manual == Only build when requested; documentation tools (doxygen and
