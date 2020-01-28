@@ -1503,7 +1503,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <PropertyLink group="settings" type="ColorPalette" property="EdgeColor" unlink_if_modified="1" />
+          <PropertyLink group="settings" proxy="ColorPalette" property="EdgeColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <DoubleVectorProperty command="SetDefaultFaceColor"
@@ -1515,7 +1515,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <PropertyLink group="settings" type="ColorPalette" property="DefaultFaceColor" unlink_if_modified="1" />
+          <PropertyLink group="settings" proxy="ColorPalette" property="DefaultFaceColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <DoubleVectorProperty command="SetSelectionColor"
@@ -1527,7 +1527,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <PropertyLink group="settings" type="ColorPalette" property="SelectionColor" unlink_if_modified="1" />
+          <PropertyLink group="settings" proxy="ColorPalette" property="SelectionColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <DoubleVectorProperty command="SetHoverColor"
@@ -1539,7 +1539,7 @@
                            min="0 0 0"
                            name="range" />
         <Hints>
-          <PropertyLink group="settings" type="ColorPalette" property="SMTKHighlightColor" unlink_if_modified="1" />
+          <PropertyLink group="settings" proxy="ColorPalette" property="SMTKHighlightColor" unlink_if_modified="1" />
         </Hints>
       </DoubleVectorProperty>
       <IntVectorProperty command="SetPickable"
@@ -1999,9 +1999,6 @@
           min="0 0 0"
           name="range" />
         <Documentation>Color used to highlight model or mesh components.</Documentation>
-        <Hints>
-          <SaveInQSettings both="1"/>
-        </Hints>
       </DoubleVectorProperty>
 
       <DoubleVectorProperty
@@ -2014,9 +2011,6 @@
           min="0 0 0"
           name="range" />
         <Documentation>Default color for model or mesh faces.</Documentation>
-        <Hints>
-          <SaveInQSettings both="1"/>
-        </Hints>
       </DoubleVectorProperty>
 
       <DoubleVectorProperty
@@ -2029,9 +2023,6 @@
           min="0 0 0"
           name="range" />
         <Documentation>Color for attribute items holding default values.</Documentation>
-        <Hints>
-          <SaveInQSettings both="1"/>
-        </Hints>
       </DoubleVectorProperty>
 
       <DoubleVectorProperty
@@ -2044,9 +2035,6 @@
           min="0 0 0"
           name="range" />
         <Documentation>Color for attribute items holding invalid values.</Documentation>
-        <Hints>
-          <SaveInQSettings both="1"/>
-        </Hints>
       </DoubleVectorProperty>
 
       <PropertyGroup label="SMTK Colors">
