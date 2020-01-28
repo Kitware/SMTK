@@ -54,14 +54,16 @@ std::string& StringUtil::trimRight(std::string& s)
 /// Transform string to all-lowercase letters (in place).
 std::string& StringUtil::lower(std::string& s)
 {
-  std::transform(s.begin(), s.end(), s.begin(), smtk::bind(std::tolower<char>, _1, safeLocale));
+  std::transform(s.begin(), s.end(), s.begin(),
+    smtk::bind(std::tolower<char>, std::placeholders::_1, safeLocale));
   return s;
 }
 
 /// Transform string to all-uppercase letters (in place).
 std::string& StringUtil::upper(std::string& s)
 {
-  std::transform(s.begin(), s.end(), s.begin(), smtk::bind(std::toupper<char>, _1, safeLocale));
+  std::transform(s.begin(), s.end(), s.begin(),
+    smtk::bind(std::toupper<char>, std::placeholders::_1, safeLocale));
   return s;
 }
 
