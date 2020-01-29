@@ -1734,27 +1734,21 @@ void qtInputsItem::onChildItemModified()
 bool qtInputsItem::isFixedWidth() const
 {
   smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
+  // If there is no item then its fixed width
   if (!item)
   {
     return true;
   }
 
+  // If the item is discrete then its fixed width iff it have no children
   if (item->isDiscrete())
   {
-    if (item->numberOfChildrenItems())
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
+    return (item->numberOfChildrenItems() == 0);
   }
+
   int widthValue = 1;
   m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
-  if (widthValue > 0)
-  {
-    return true;
-  }
-  return false;
+  // If the item has an explicit FixedWidth Attribute set to something
+  // larger than 0 then its fixed width
+  return (widthValue > 0);
 }
