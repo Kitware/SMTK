@@ -14,9 +14,14 @@
 #include "smtk/common/CompilerInformation.h"
 
 #include <cassert>
-#include <iostream>
 #include <memory>
 #include <set>
+
+#define DEBUG_GENERATOR 0
+
+#if !defined(NDEBUG) && DEBUG_GENERATOR
+#include <iostream>
+#endif
 
 namespace smtk
 {
@@ -212,7 +217,7 @@ Output Generator<Input, Output, Base>::operator()(const Input& input)
     }
     catch (std::exception& e)
     {
-#ifndef NDEBUG
+#if !defined(NDEBUG) && DEBUG_GENERATOR
       std::cerr << "Exception caught: " << e.what() << std::endl;
 #else
       (void)e;
