@@ -18,7 +18,8 @@
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
         <String Name="items" Extensible="true" NumberOfRequiredValues="0" Optional="true"/>
-        <Component Name="expunged" Extensible="true" NumberOfRequiredValues="0">
+        <Component Name="expunged" Extensible="true"
+                   NumberOfRequiredValues="0" HoldReference="true">
           <Accepts><Resource Name="smtk::attribute::Resource" Filter="*"/></Accepts>
         </Component>
         <Void Name="update" Optional="True" IsEnableByDefault="false"/>
