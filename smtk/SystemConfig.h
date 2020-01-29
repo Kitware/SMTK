@@ -19,6 +19,7 @@
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
 #if !defined(SMTK_DISPLAY_INGORED_WIN_WARNINGS)
 #pragma warning(disable : 4251) /* missing DLL-interface */
+#pragma warning(disable : 4275) /* non DLL-interface base class */
 #pragma warning(disable : 4503) /* truncated decorated name */
 #endif                          //!defined(SMTK_DISPLAY_INGORED_WIN_WARNINGS)
 #endif                          //Windows specific stuff

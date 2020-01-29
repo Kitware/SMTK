@@ -12,6 +12,7 @@
 #define __smtk_attribute_Categories_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SystemConfig.h" // quiet dll-interface warnings on windows
 
 #include <set>
 #include <string>

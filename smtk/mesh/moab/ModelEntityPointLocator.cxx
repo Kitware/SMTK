@@ -145,7 +145,7 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
     box.compute_center(origin);
 
     // Create a RNG to sample points on the unit line
-    std::mt19937 mt(seed);
+    std::mt19937 mt(static_cast<unsigned int>(seed));
     std::uniform_real_distribution<double> dist(0., 1.0);
 
     // Moab's ray intersection algorithm requires a tolerance. So, here it is.
@@ -192,7 +192,7 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
       // bounding sphere, and offset the point according to the bounding
       // sphere's origin.
       std::array<double, 3> p = d;
-      for (std::size_t i = 0; i < 3; i++)
+      for (unsigned int i = 0; i < 3; i++)
       {
         p[i] += b[0] * tangent1[i] + b[1] * tangent2[i] + origin[i];
       }
@@ -209,7 +209,7 @@ bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
       if (!distanceOut.empty())
       {
         // We randomly select which intersection site to use as our sample point
-        std::size_t index = distanceOut.size() * dist(mt);
+        std::size_t index = static_cast<std::size_t>(distanceOut.size() * dist(mt));
         for (std::size_t i = 0; i < 3; i++)
         {
           points[3 * nComputed + i] = p[i] + distanceOut[index] * dir[i];
