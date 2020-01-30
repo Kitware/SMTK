@@ -84,12 +84,10 @@ set(unit_tests
   unitComponentItem.cxx
   unitComponentItemConstraints
   unitDateTimeItem.cxx
-  unitDetachReferenceItem.cxx
   unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
   unitPassCategories
   unitPathGrammar.cxx
-  unitUnsetValueError.cxx
 )
 
 set(unit_tests_which_require_data)
@@ -97,6 +95,10 @@ set(unit_tests_which_require_data)
 set(extra_libs)
 
 if(SMTK_ENABLE_POLYGON_SESSION)
+  list(APPEND unit_tests
+    unitDetachReferenceItem.cxx
+    unitUnsetValueError.cxx
+  )
   list(APPEND unit_tests_which_require_data
     unitJsonItems.cxx
     )

@@ -11,6 +11,7 @@
 #define smtk_attribute_UnsetValueError_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SystemConfig.h" // quiet dll-interface base class warnings on windows
 
 #include <stdexcept>
 
