@@ -46,12 +46,12 @@ public:
 
   virtual ~Manager();
 
-  /// Register a resource identified by its class type.
-  template <typename ResourceType>
+  /// Register an operation identified by its class type.
+  template <typename OperationType>
   bool registerOperation();
 
-  /// Register a resource identified by its class type and type name.
-  template <typename ResourceType>
+  /// Register an operation identified by its class type and type name.
+  template <typename OperationType>
   bool registerOperation(const std::string&);
 
   /// Register an operation identified by its type index.
@@ -72,8 +72,8 @@ public:
     return Manager::registerOperations<0, Tuple>(typeNames);
   }
 
-  /// Unegister a resource identified by its class type.
-  template <typename ResourceType>
+  /// Unegister an operation identified by its class type.
+  template <typename OperationType>
   bool unregisterOperation();
 
   /// Unregister an operation identified by its type name.
