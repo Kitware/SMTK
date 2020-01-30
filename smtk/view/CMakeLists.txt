@@ -5,6 +5,7 @@ set(viewSrcs
   ComponentPhraseModel.cxx
   DescriptivePhrase.cxx
   EmptySubphraseGenerator.cxx
+  IconFactory.cxx
   json/jsonView.cxx
   Manager.cxx
   ObjectGroupPhraseContent.cxx
@@ -31,6 +32,7 @@ set(viewHeaders
   ComponentPhraseModel.h
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
+  IconFactory.h
   Manager.h
   ObjectGroupPhraseContent.h
   PhraseListContent.h
