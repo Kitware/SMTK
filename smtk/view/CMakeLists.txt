@@ -3,7 +3,6 @@ set(viewSrcs
   AvailableOperations.cxx
   ComponentPhraseContent.cxx
   ComponentPhraseModel.cxx
-  #ComponentsByTypeGenerator.cxx
   DescriptivePhrase.cxx
   EmptySubphraseGenerator.cxx
   json/jsonView.cxx
@@ -30,7 +29,6 @@ set(viewHeaders
   AvailableOperations.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
-  #ComponentsByTypeGenerator.h
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
   Manager.h
