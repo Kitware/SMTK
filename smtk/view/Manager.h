@@ -53,12 +53,12 @@ public:
   virtual ~Manager();
 
   // ------ ViewWidget ------
-  /// Register a resource identified by its class type.
-  template <typename ResourceType>
+  /// Register a widget identified by its class type.
+  template <typename ViewWidgetType>
   bool registerViewWidget();
 
-  /// Register a resource identified by its class type and type name.
-  template <typename ResourceType>
+  /// Register a widget identified by its class type and type name.
+  template <typename ViewWidgetType>
   bool registerViewWidget(const std::string&);
 
   /// Register a tuple of views identified by their class types.
@@ -76,8 +76,8 @@ public:
     return Manager::registerViewWidgets<0, Tuple>(typeNames);
   }
 
-  /// Unregister a resource identified by its class type.
-  template <typename ResourceType>
+  /// Unregister a widget identified by its class type.
+  template <typename ViewWidgetType>
   bool unregisterViewWidget();
 
   /// Unregister a ViewWidget identified by its type name.
@@ -111,22 +111,22 @@ public:
   }
 
   // ------ PhraseModel ------
-  /// Register a resource identified by its class type.
-  template <typename ResourceType>
+  /// Register a PhraseModel identified by its class type.
+  template <typename PhraseModelType>
   bool registerPhraseModel();
 
-  /// Register a resource identified by its class type and type name.
-  template <typename ResourceType>
+  /// Register a PhraseModel identified by its class type and type name.
+  template <typename PhraseModelType>
   bool registerPhraseModel(const std::string&);
 
-  /// Register a tuple of views identified by their class types.
+  /// Register a tuple of PhraseModels identified by their class types.
   template <typename Tuple>
   bool registerPhraseModels()
   {
     return Manager::registerPhraseModels<0, Tuple>();
   }
 
-  /// Register a tuple of views identified by their class types and type
+  /// Register a tuple of PhraseModels identified by their class types and type
   /// names.
   template <typename Tuple>
   bool registerPhraseModels(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
@@ -134,8 +134,8 @@ public:
     return Manager::registerPhraseModels<0, Tuple>(typeNames);
   }
 
-  /// Unregister a resource identified by its class type.
-  template <typename ResourceType>
+  /// Unregister a PhraseModel identified by its class type.
+  template <typename PhraseModelType>
   bool unregisterPhraseModel();
 
   /// Unregister a PhraseModel identified by its type name.
@@ -155,16 +155,13 @@ public:
   template <typename PhraseModelType>
   smtk::shared_ptr<PhraseModelType> create();
 
-  /// Return a set of type names for all PhraseModels.
-  // std::set<std::string> availablePhraseModels() const;
-
   // ------ SubphraseGenerator ------
-  /// Register a resource identified by its class type.
-  template <typename ResourceType>
+  /// Register a SubphraseGenerator identified by its class type.
+  template <typename SubphraseGeneratorType>
   bool registerSubphraseGenerator();
 
-  /// Register a resource identified by its class type and type name.
-  template <typename ResourceType>
+  /// Register a SubphraseGenerator identified by its class type and type name.
+  template <typename SubphraseGeneratorType>
   bool registerSubphraseGenerator(const std::string&);
 
   /// Register a tuple of views identified by their class types.
@@ -183,8 +180,8 @@ public:
     return Manager::registerSubphraseGenerators<0, Tuple>(typeNames);
   }
 
-  /// Unregister a resource identified by its class type.
-  template <typename ResourceType>
+  /// Unregister a SubphraseGenerator identified by its class type.
+  template <typename SubphraseGeneratorType>
   bool unregisterSubphraseGenerator();
 
   /// Unregister a SubphraseGenerator identified by its type name.
