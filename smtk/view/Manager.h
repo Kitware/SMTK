@@ -18,6 +18,7 @@
 #include "smtk/common/TypeName.h"
 
 #include "smtk/view/Configuration.h"
+#include "smtk/view/IconFactory.h"
 
 #include <array>
 #include <string>
@@ -363,6 +364,13 @@ private:
 
   /// A container for all registered SubphraseGenerator constructors.
   std::map<std::string, SubphraseGeneratorConstructor> m_subphraseGenerators;
+
+public:
+  IconFactory& iconFactory() { return m_iconFactory; }
+  const IconFactory& iconFactory() const { return m_iconFactory; }
+
+private:
+  IconFactory m_iconFactory;
 };
 
 // ------ ViewWidget ------

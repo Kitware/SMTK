@@ -11,19 +11,17 @@
 #include "smtk/view/IconFactory.h"
 
 #include "smtk/common/Color.h"
+
+#include "smtk/resource/Component.h"
 #include "smtk/resource/PersistentObject.h"
+#include "smtk/resource/Resource.h"
+
+#include <numeric>
 
 namespace
 {
 // Key corresponding to the default icon constructor
 static const std::string defaultName = "_default";
-
-// Color is stored as a std::vector<double> property associated with this name
-static const std::string colorName = "color";
-
-// If an object has no color property, use black (following the convention of
-// smtk::model::EntityRef)
-static const std::string defaultFillColor = "#000000";
 }
 
 namespace smtk
@@ -48,35 +46,69 @@ bool IconFactory::unregisterIconConstructor(const std::string& typeName)
 }
 
 std::string IconFactory::createIcon(
-  const std::string& typeName, const std::string& lineColor, const std::string& fillColor) const
+  const smtk::resource::PersistentObject& object, const std::string& secondaryColor) const
 {
-  auto constructor = m_iconConstructors.find(typeName);
-  if (constructor == m_iconConstructors.end())
-  {
-    constructor = m_iconConstructors.find(defaultName);
-  }
-
+  // If there is an IconConstructor registered directly to this
+  // PersistentObject, use it.
+  auto constructor = m_iconConstructors.find(object.typeName());
   if (constructor != m_iconConstructors.end())
   {
-    return constructor->second(lineColor, fillColor);
+    return constructor->second(object, secondaryColor);
   }
 
-  return "";
-}
-
-std::string IconFactory::createIcon(
-  const smtk::resource::PersistentObject& object, const std::string& lineColor) const
-{
-  if (object.properties().contains<std::vector<double> >(colorName))
+  // If there is no IconConstructor directly registered to this
+  // PersistentObject, check if <object> is a Resource or Component.
+  const smtk::resource::Resource* resource;
+  if (const smtk::resource::Component* component =
+        dynamic_cast<const smtk::resource::Component*>(&object))
   {
-    return createIcon(
-      object.typeName(), lineColor, smtk::common::Color::floatRGBToString(
-                                      &object.properties().at<std::vector<double> >(colorName)[0]));
+    resource = component->resource().get();
+
+    // Check if the Resource that owns <object> has an IconConstructor
+    // registered directly to it.
+    auto constructor = m_iconConstructors.find(resource->typeName());
+    if (constructor != m_iconConstructors.end())
+    {
+      return constructor->second(object, secondaryColor);
+    }
   }
   else
   {
-    return createIcon(object.typeName(), lineColor, defaultFillColor);
+    resource = dynamic_cast<const smtk::resource::Resource*>(&object);
   }
+
+  // If <object> is a resource or component, check if any of the available
+  // IconConstructors are assigned to an appropriate parent Resource.
+  if (resource != nullptr)
+  {
+    std::string typeName;
+    int nGenerations = std::accumulate(m_iconConstructors.begin(), m_iconConstructors.end(),
+      std::numeric_limits<int>::max(),
+      [&typeName, resource](int i, const std::pair<std::string, IconConstructor>& constructor) {
+        int numberOfGenerations = resource->numberOfGenerationsFromBase(constructor.first);
+        if (numberOfGenerations >= 0 && numberOfGenerations < i)
+        {
+          typeName = constructor.first;
+          return numberOfGenerations;
+        }
+        return i;
+      });
+
+    if (nGenerations < std::numeric_limits<int>::max())
+    {
+      return m_iconConstructors.at(typeName)(object, secondaryColor);
+    }
+  }
+
+  // If we still haven't found an IconConstructor, use the default one.
+  constructor = m_iconConstructors.find(defaultName);
+  if (constructor != m_iconConstructors.end())
+  {
+    return constructor->second(object, secondaryColor);
+  }
+
+  // If we don't have a default IconConstructor, there's not much we can do.
+  return std::string();
 }
 }
 }
