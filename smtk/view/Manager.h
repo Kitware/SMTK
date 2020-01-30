@@ -25,9 +25,6 @@
 #include <type_traits>
 #include <typeinfo>
 
-// class smtk::extension::qtBaseView;
-// class smtk::extension::ViewInfo;
-
 namespace smtk
 {
 namespace extension
@@ -45,14 +42,12 @@ public:
   smtkTypeMacroBase(smtk::view::Manager);
   smtkCreateMacro(smtk::view::Manager);
 
-  using PhraseModelConstructor = std::function<PhraseModelPtr(void)>;
-  using SubphraseGeneratorConstructor = std::function<SubphraseGeneratorPtr(void)>;
-  using ViewWidgetConstructor =
-    std::function<smtk::extension::qtBaseView*(const smtk::extension::ViewInfo& info)>;
-
   virtual ~Manager();
 
   // ------ ViewWidget ------
+  using ViewWidgetConstructor =
+    std::function<smtk::extension::qtBaseView*(const smtk::extension::ViewInfo& info)>;
+
   /// Register a widget identified by its class type.
   template <typename ViewWidgetType>
   bool registerViewWidget();
@@ -110,102 +105,7 @@ public:
     }
   }
 
-  // ------ PhraseModel ------
-  /// Register a PhraseModel identified by its class type.
-  template <typename PhraseModelType>
-  bool registerPhraseModel();
-
-  /// Register a PhraseModel identified by its class type and type name.
-  template <typename PhraseModelType>
-  bool registerPhraseModel(const std::string&);
-
-  /// Register a tuple of PhraseModels identified by their class types.
-  template <typename Tuple>
-  bool registerPhraseModels()
-  {
-    return Manager::registerPhraseModels<0, Tuple>();
-  }
-
-  /// Register a tuple of PhraseModels identified by their class types and type
-  /// names.
-  template <typename Tuple>
-  bool registerPhraseModels(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
-  {
-    return Manager::registerPhraseModels<0, Tuple>(typeNames);
-  }
-
-  /// Unregister a PhraseModel identified by its class type.
-  template <typename PhraseModelType>
-  bool unregisterPhraseModel();
-
-  /// Unregister a PhraseModel identified by its type name.
-  bool unregisterPhraseModel(const std::string&);
-
-  // Unregister a tuple of PhraseModels identified by their class types.
-  template <typename Tuple>
-  bool unregisterPhraseModels()
-  {
-    return Manager::unregisterPhraseModels<0, Tuple>();
-  }
-
-  /// Construct a PhraseModel identified by its type name.
-  std::shared_ptr<smtk::view::PhraseModel> create(const std::string&);
-
-  /// Construct a PhraseModel identified by its class type.
-  template <typename PhraseModelType>
-  smtk::shared_ptr<PhraseModelType> create();
-
-  // ------ SubphraseGenerator ------
-  /// Register a SubphraseGenerator identified by its class type.
-  template <typename SubphraseGeneratorType>
-  bool registerSubphraseGenerator();
-
-  /// Register a SubphraseGenerator identified by its class type and type name.
-  template <typename SubphraseGeneratorType>
-  bool registerSubphraseGenerator(const std::string&);
-
-  /// Register a tuple of views identified by their class types.
-  template <typename Tuple>
-  bool registerSubphraseGenerators()
-  {
-    return Manager::registerSubphraseGenerators<0, Tuple>();
-  }
-
-  /// Register a tuple of views identified by their class types and type
-  /// names.
-  template <typename Tuple>
-  bool registerSubphraseGenerators(
-    const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
-  {
-    return Manager::registerSubphraseGenerators<0, Tuple>(typeNames);
-  }
-
-  /// Unregister a SubphraseGenerator identified by its class type.
-  template <typename SubphraseGeneratorType>
-  bool unregisterSubphraseGenerator();
-
-  /// Unregister a SubphraseGenerator identified by its type name.
-  bool unregisterSubphraseGenerator(const std::string&);
-
-  // Unregister a tuple of SubphraseGenerators identified by their class types.
-  template <typename Tuple>
-  bool unregisterSubphraseGenerators()
-  {
-    return Manager::unregisterSubphraseGenerators<0, Tuple>();
-  }
-
-  /// Construct a SubphraseGenerator identified by its type name.
-  std::shared_ptr<smtk::view::SubphraseGenerator> createSubphrase(const std::string&);
-
-  /// Construct a SubphraseGenerator identified by its class type.
-  template <typename SubphraseGeneratorType>
-  smtk::shared_ptr<SubphraseGeneratorType> createSubphrase();
-
-protected:
-  Manager();
-
 private:
-  // ------ ViewWidget ------
   template <std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
   registerViewWidgets()
@@ -259,6 +159,55 @@ private:
   /// Alternate type names for the constructors.
   std::map<std::string, std::string> m_altViewWidgetNames;
 
+public:
+  // ------ PhraseModel ------
+  using PhraseModelConstructor = std::function<PhraseModelPtr(void)>;
+
+  /// Register a PhraseModel identified by its class type.
+  template <typename PhraseModelType>
+  bool registerPhraseModel();
+
+  /// Register a PhraseModel identified by its class type and type name.
+  template <typename PhraseModelType>
+  bool registerPhraseModel(const std::string&);
+
+  /// Register a tuple of PhraseModels identified by their class types.
+  template <typename Tuple>
+  bool registerPhraseModels()
+  {
+    return Manager::registerPhraseModels<0, Tuple>();
+  }
+
+  /// Register a tuple of PhraseModels identified by their class types and type
+  /// names.
+  template <typename Tuple>
+  bool registerPhraseModels(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
+  {
+    return Manager::registerPhraseModels<0, Tuple>(typeNames);
+  }
+
+  /// Unregister a PhraseModel identified by its class type.
+  template <typename PhraseModelType>
+  bool unregisterPhraseModel();
+
+  /// Unregister a PhraseModel identified by its type name.
+  bool unregisterPhraseModel(const std::string&);
+
+  // Unregister a tuple of PhraseModels identified by their class types.
+  template <typename Tuple>
+  bool unregisterPhraseModels()
+  {
+    return Manager::unregisterPhraseModels<0, Tuple>();
+  }
+
+  /// Construct a PhraseModel identified by its type name.
+  std::shared_ptr<smtk::view::PhraseModel> create(const std::string&);
+
+  /// Construct a PhraseModel identified by its class type.
+  template <typename PhraseModelType>
+  smtk::shared_ptr<PhraseModelType> create();
+
+private:
   // ------ PhraseModel ------
   template <std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
@@ -309,6 +258,59 @@ private:
   /// A container for all registered phrasemodel constructors.
   std::map<std::string, PhraseModelConstructor> m_phraseModels;
 
+public:
+  // ------ SubphraseGenerator ------
+  using SubphraseGeneratorConstructor = std::function<SubphraseGeneratorPtr(void)>;
+
+  /// Register a SubphraseGenerator identified by its class type.
+  template <typename SubphraseGeneratorType>
+  bool registerSubphraseGenerator();
+
+  /// Register a SubphraseGenerator identified by its class type and type name.
+  template <typename SubphraseGeneratorType>
+  bool registerSubphraseGenerator(const std::string&);
+
+  /// Register a tuple of views identified by their class types.
+  template <typename Tuple>
+  bool registerSubphraseGenerators()
+  {
+    return Manager::registerSubphraseGenerators<0, Tuple>();
+  }
+
+  /// Register a tuple of views identified by their class types and type
+  /// names.
+  template <typename Tuple>
+  bool registerSubphraseGenerators(
+    const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
+  {
+    return Manager::registerSubphraseGenerators<0, Tuple>(typeNames);
+  }
+
+  /// Unregister a SubphraseGenerator identified by its class type.
+  template <typename SubphraseGeneratorType>
+  bool unregisterSubphraseGenerator();
+
+  /// Unregister a SubphraseGenerator identified by its type name.
+  bool unregisterSubphraseGenerator(const std::string&);
+
+  // Unregister a tuple of SubphraseGenerators identified by their class types.
+  template <typename Tuple>
+  bool unregisterSubphraseGenerators()
+  {
+    return Manager::unregisterSubphraseGenerators<0, Tuple>();
+  }
+
+  /// Construct a SubphraseGenerator identified by its type name.
+  std::shared_ptr<smtk::view::SubphraseGenerator> createSubphrase(const std::string&);
+
+  /// Construct a SubphraseGenerator identified by its class type.
+  template <typename SubphraseGeneratorType>
+  smtk::shared_ptr<SubphraseGeneratorType> createSubphrase();
+
+protected:
+  Manager();
+
+private:
   // ------ SubphraseGenerator ------
   template <std::size_t I, typename Tuple>
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
@@ -362,6 +364,7 @@ private:
   /// A container for all registered SubphraseGenerator constructors.
   std::map<std::string, SubphraseGeneratorConstructor> m_subphraseGenerators;
 };
+
 // ------ ViewWidget ------
 template <typename ViewWidgetType>
 bool Manager::unregisterViewWidget()
