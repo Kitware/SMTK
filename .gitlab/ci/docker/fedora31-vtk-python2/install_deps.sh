@@ -11,6 +11,7 @@ dnf install -y \
 dnf install -y \
     gcc-c++ \
     qt5-qtbase-devel \
+    qt5-qtsvg-devel \
     qt5-qttools-devel \
     qt5-qtx11extras-devel \
     qt5-qtxmlpatterns-devel \
