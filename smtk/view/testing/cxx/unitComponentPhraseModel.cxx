@@ -29,7 +29,8 @@
 
 #include "smtk/model/SessionRef.h"
 #include "smtk/model/operators/EntityGroupOperation.h"
-#include "smtk/model/operators/SetProperty.h"
+
+#include "smtk/operation/operators/SetProperty.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
@@ -226,7 +227,7 @@ int unitComponentPhraseModel(int argc, char* argv[])
       // IV.b. Test that modification reorders phrases properly.
       // Change entity names in non-alphabetical ways.
       // (i) Move from middle to end of list:
-      auto op = operMgr->create<smtk::model::SetProperty>();
+      auto op = operMgr->create<smtk::operation::SetProperty>();
       auto pm = op->parameters();
       auto value = pm->findString("string value");
       pm->associate(faces[0]);

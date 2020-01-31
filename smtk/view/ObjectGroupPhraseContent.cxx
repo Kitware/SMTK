@@ -21,7 +21,6 @@
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/operators/SetProperty.h"
 
 #include "smtk/operation/Manager.h"
 

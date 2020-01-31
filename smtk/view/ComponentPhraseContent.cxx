@@ -24,9 +24,9 @@
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/operators/SetProperty.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/operators/SetProperty.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -158,10 +158,10 @@ resource::FloatList ComponentPhraseContent::colorValue(ContentType contentType) 
     {
       case PhraseContent::COLOR:
       {
-        auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(component);
-        if (ent)
+        if (component->properties().get<resource::FloatList>().contains("color") &&
+          component->properties().get<resource::FloatList>().at("color").size() == 4)
         {
-          return ent->referenceAs<smtk::model::EntityRef>().color();
+          return component->properties().get<resource::FloatList>().at("color");
         }
       }
       break;
@@ -194,52 +194,25 @@ bool ComponentPhraseContent::editStringValue(ContentType contentType, const std:
     }
     if (contentType == TITLE)
     {
-      auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
-      if (modelComponent)
+      smtk::operation::SetProperty::Ptr op;
+      if (opManager)
       {
-        smtk::model::SetProperty::Ptr op;
-        if (opManager)
-        {
-          op = opManager->create<smtk::model::SetProperty>();
-        }
-        else
-        {
-          op = smtk::model::SetProperty::create();
-        }
-
-        if (op->parameters()->associate(modelComponent))
-        {
-          op->parameters()->findString("name")->setValue("name");
-          op->parameters()->findString("string value")->appendValue(val);
-          auto res = op->operate();
-          if (res->findInt("outcome")->value() ==
-            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-          {
-            return true;
-          }
-        }
+        op = opManager->create<smtk::operation::SetProperty>();
       }
-      auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(component);
-      if (meshComponent)
+      else
       {
-        smtk::mesh::SetMeshName::Ptr op;
-        if (opManager)
+        op = smtk::operation::SetProperty::create();
+      }
+
+      if (op->parameters()->associate(component))
+      {
+        op->parameters()->findString("name")->setValue("name");
+        op->parameters()->findString("string value")->appendValue(val);
+        auto res = op->operate();
+        if (res->findInt("outcome")->value() ==
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
-          op = opManager->create<smtk::mesh::SetMeshName>();
-        }
-        if (op == nullptr)
-        {
-          op = smtk::mesh::SetMeshName::create();
-        }
-        if (op && op->parameters()->associate(meshComponent))
-        {
-          op->parameters()->findString("name")->setValue(val);
-          auto res = op->operate();
-          if (res->findInt("outcome")->value() ==
-            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-          {
-            return true;
-          }
+          return true;
         }
       }
     }
@@ -271,28 +244,24 @@ bool ComponentPhraseContent::editColorValue(ContentType contentType, const resou
     }
     if (contentType == COLOR)
     {
-      auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
-      if (modelComponent)
+      smtk::operation::SetProperty::Ptr op;
+      if (opManager)
       {
-        smtk::model::SetProperty::Ptr op;
-        if (opManager)
+        op = opManager->create<smtk::operation::SetProperty>();
+      }
+      else
+      {
+        op = smtk::operation::SetProperty::create();
+      }
+      if (op->parameters()->associate(component))
+      {
+        op->parameters()->findString("name")->setValue("color");
+        op->parameters()->findDouble("float value")->setValues(val.begin(), val.end());
+        auto res = op->operate();
+        if (res->findInt("outcome")->value() ==
+          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
-          op = opManager->create<smtk::model::SetProperty>();
-        }
-        else
-        {
-          op = smtk::model::SetProperty::create();
-        }
-        if (op->parameters()->associate(modelComponent))
-        {
-          op->parameters()->findString("name")->setValue("color");
-          op->parameters()->findDouble("float value")->setValues(val.begin(), val.end());
-          auto res = op->operate();
-          if (res->findInt("outcome")->value() ==
-            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-          {
-            return true;
-          }
+          return true;
         }
       }
     }

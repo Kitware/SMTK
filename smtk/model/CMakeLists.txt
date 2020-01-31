@@ -13,7 +13,6 @@ set(modelOps
   GroupAuxiliaryGeometry
   MergeInstances
   SetInstancePrototype
-  SetProperty
   TerrainExtraction
 )
 

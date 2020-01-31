@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the model "SetProperty" Operation -->
+<!-- Description of the "SetProperty" Operation -->
 <SMTK_AttributeResource Version="3">
   <Definitions>
     <!-- Operation -->
     <include href="smtk/operation/Operation.xml"/>
-    <AttDef Type="set property" Label="Entities - Set Property" BaseType="operation" AdvanceLevel="10">
-      <!-- TODO: When Mesh work is done, set NumberOfRequiredValues="1" -->
-      <AssociationsDef Name="Entities" NumberOfRequiredValues="0" Extensible="true">
-        <Accepts><Resource Name="smtk::model::Resource"/></Accepts>
+    <AttDef Type="set property" Label="Set Property" BaseType="operation" AdvanceLevel="10">
+      <AssociationsDef Name="Entities" NumberOfRequiredValues="1" Extensible="true">
+        <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
       </AssociationsDef>
       <BriefDescription>
-        Set (or remove) a property value on a set of entities. Because this op can also
-        take MeshEntity as input, so NumberOfRequiredValues for model associatons is 0.
+        Set (or remove) a property value on a set of entities.
       </BriefDescription>
       <DetailedDescription>
         Set (or remove) a property value on a set of entities.
@@ -20,13 +18,11 @@
         All that are specified are set; those unspecified are removed.
 
         For example, specifying both a string and an integer value for
-        the "foo" property would set those values in the model resource's
+        the "foo" property would set those values in the resource's
         string and integer maps while removing "foo" from the associated
         entities' floating-point map.
       </DetailedDescription>
       <ItemDefinitions>
-        <MeshEntity Name="meshes" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11">
-        </MeshEntity>
         <String Name="name" NumberOfRequiredValues="1">
           <BriefDescription>The name of the property to set.</BriefDescription>
         </String>
@@ -43,11 +39,6 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(set property)" BaseType="result">
-      <ItemDefinitions>
-        <!-- The modified entities are stored in the base result's "modified" item. -->
-        <MeshEntity Name="mesh_modified" NumberOfRequiredValues="0" Extensible="true" AdvanceLevel="11"/>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(set property)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

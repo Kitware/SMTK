@@ -122,6 +122,7 @@ int unitDescriptivePhrase(int argc, char* argv[])
       {
         std::cout << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
         smtk::resource::FloatList rgba = p->relatedColor();
+        smtkTest(rgba.size() == 4, "Unexpected size for color vector: " << rgba.size());
         if (rgba[3] >= 0.)
         {
           std::cout << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3]
