@@ -39,9 +39,9 @@ public:
   void setInitialCategory() override;
 
   /// Determines if an item should be displayed
-  virtual bool displayItem(smtk::attribute::ItemPtr);
+  virtual bool displayItem(smtk::attribute::ItemPtr) const;
   /// Determines if an item can be modified
-  virtual bool isItemWriteable(smtk::attribute::ItemPtr);
+  virtual bool isItemWriteable(smtk::attribute::ItemPtr) const;
   virtual void getDefinitions(
     smtk::attribute::DefinitionPtr attDef, QList<smtk::attribute::DefinitionPtr>& defs);
   int fixedLabelWidth() { return m_fixedLabelWidth; }
@@ -50,9 +50,9 @@ public:
   bool advanceLevelVisible() { return m_advOverlayVisible; }
   bool useSelectionManager() const { return m_useSelectionManager; }
 
-  int advanceLevel() override;
-  bool categoryEnabled() override;
-  std::string currentCategory() override;
+  int advanceLevel() const override;
+  bool categoryEnabled() const override;
+  std::string currentCategory() const override;
 
   void setTopLevelCategories(const std::set<std::string>& categories) override;
 
@@ -96,11 +96,11 @@ protected:
 
   /// \brief Test for category filtering.
   /// Returns true if the item's categories pass
-  virtual bool categoryTest(smtk::attribute::ItemPtr);
+  virtual bool categoryTest(smtk::attribute::ItemPtr) const;
 
   /// \brief Test for advance level filtering.
   /// Returns true if the item's advance level pass
-  virtual bool advanceLevelTest(smtk::attribute::ItemPtr);
+  virtual bool advanceLevelTest(smtk::attribute::ItemPtr) const;
 
   void topLevelPrepCategories(
     const smtk::view::ConfigurationPtr& view, const smtk::attribute::ResourcePtr& attResource);

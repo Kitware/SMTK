@@ -77,9 +77,9 @@ public:
   QWidget* parentWidget() const { return m_viewInfo.m_parent; }
   qtUIManager* uiManager() const { return m_viewInfo.m_UIManager; }
 
-  virtual int advanceLevel() { return 0; }
-  virtual bool categoryEnabled() { return false; }
-  virtual std::string currentCategory() { return ""; }
+  virtual int advanceLevel() const { return 0; }
+  virtual bool categoryEnabled() const { return false; }
+  virtual std::string currentCategory() const { return ""; }
   // When category filtering is requested to be either on by default or is requested to be
   // on permanently, we need to have a mechanism to force the views to display info based on
   // the initial category.  This method will check to see if this is the case and call the

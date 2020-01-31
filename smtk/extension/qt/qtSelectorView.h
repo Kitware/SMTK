@@ -63,6 +63,8 @@ public:
   virtual void addChildView(qtBaseView*, int viewEnumIndex);
   virtual void clearChildViews();
   const QList<qtBaseView*>& childViews() const;
+  //Returns true if the view does not contain any information to display
+  bool isEmpty() const override;
 
 public slots:
   void updateUI() override;
@@ -70,6 +72,7 @@ public slots:
   void updateModelAssociation() override;
   void onShowCategory() override;
   void selectionChanged();
+  void refreshSelector();
 
 protected:
   void createWidget() override;

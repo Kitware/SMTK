@@ -33,13 +33,11 @@ public:
   ~VoidItem() override;
   Item::Type type() const override;
 
-  using Item::isValid;
-  bool isValid(const std::set<std::string>& categories) const override;
-
 protected:
   VoidItem(Attribute* owningAttribute, int itemPosition);
   VoidItem(Item* owningItem, int myPosition, int mySubGroupPosition);
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
+  bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
 
 private:
 };

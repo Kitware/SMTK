@@ -36,7 +36,7 @@ public:
   static QIcon renderPaletteSwatch(const QList<QColor>& color, int width, int radius);
   static QIcon renderInvalidSwatch(int radius);
 
-  bool displayItem(smtk::attribute::ItemPtr) override;
+  bool displayItem(smtk::attribute::ItemPtr) const override;
 
 public slots:
   void updateUI() override;

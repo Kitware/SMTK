@@ -36,9 +36,6 @@ public:
   ~FileSystemItem() override;
   Item::Type type() const override = 0;
 
-  using Item::isValid;
-  bool isValid(const std::set<std::string>& categories) const override;
-
   bool shouldBeRelative() const;
   bool shouldExist() const;
   std::size_t numberOfValues() const { return m_values.size(); }
@@ -84,6 +81,7 @@ protected:
   FileSystemItem(Attribute* owningAttribute, int itemPosition);
   FileSystemItem(Item* owningItem, int position, int subGroupPosition);
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef) override;
+  bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
   std::vector<std::string> m_values;
   std::vector<bool> m_isSet;
 

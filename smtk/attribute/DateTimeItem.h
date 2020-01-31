@@ -34,9 +34,6 @@ public:
   ~DateTimeItem() override;
   Item::Type type() const override;
 
-  using Item::isValid;
-  bool isValid(const std::set<std::string>& categories) const override;
-
   std::size_t numberOfValues() const { return m_values.size(); }
   bool setNumberOfValues(std::size_t newSize);
   std::size_t numberOfRequiredValues() const;
@@ -64,6 +61,7 @@ protected:
   DateTimeItem(Item* owningItem, int myPosition, int mySubGroupPosition);
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
   ConstDateTimeItemDefinitionPtr itemDefinition() const;
+  bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
   std::vector< ::smtk::common::DateTimeZonePair> m_values;
   std::vector<bool> m_isSet;
 

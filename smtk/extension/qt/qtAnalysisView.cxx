@@ -119,7 +119,7 @@ void qtAnalysisView::analysisChanged()
   this->uiManager()->setTopLevelCategories(cats);
 }
 
-bool qtAnalysisView::categoryTest(smtk::attribute::ItemPtr /*unused*/)
+bool qtAnalysisView::categoryTest(smtk::attribute::ItemPtr /*unused*/) const
 {
   // Analysis View contents ignores category filtering
   return true;

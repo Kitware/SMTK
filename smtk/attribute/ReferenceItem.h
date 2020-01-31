@@ -122,14 +122,6 @@ public:
   /// Indicate we are a reference to a persistent object.
   Item::Type type() const override { return Item::ReferenceType; }
 
-  /**\brief Return whether the item is in a valid state.
-    *
-    * If the item is not enabled or if all of its values are set then it is valid.
-    * If it is enabled and contains unset values then it is invalid.
-    */
-  bool isValid(const std::set<std::string>& categories) const override;
-  using Item::isValid;
-
   /// Return the size of the item (number of entities associated with the item).
   std::size_t numberOfValues() const;
   /// Set the number of entities to be associated with this item (returns true if permitted).
@@ -329,6 +321,8 @@ protected:
 
   /// Construct a link between the attribute that owns this item and \a val.
   Key linkTo(const PersistentObjectPtr& val);
+
+  bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
 
   std::vector<Key> m_keys;
   /// In order to clean up its links when being deleted the item needs to track its

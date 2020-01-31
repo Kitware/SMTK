@@ -52,10 +52,10 @@ Item::Type GroupItem::type() const
   return GroupType;
 }
 
-bool GroupItem::isValid(const std::set<std::string>& cats) const
+bool GroupItem::isValidInternal(bool useCategories, const std::set<std::string>& categories) const
 {
   // Firdt lets see if the group itself would be filtered out based on the categories
-  if (!(cats.empty() || this->categories().passes(cats)))
+  if (useCategories && !this->categories().passes(categories))
   {
     return true;
   }
@@ -69,9 +69,19 @@ bool GroupItem::isValid(const std::set<std::string>& cats) const
   {
     for (auto it1 = (*it).begin(); it1 != (*it).end(); ++it1)
     {
-      if (!*it1 || !(*it1)->isValid(cats))
+      if (useCategories)
       {
-        return false;
+        if (!*it1 || !(*it1)->isValid(categories))
+        {
+          return false;
+        }
+      }
+      else
+      {
+        if (!*it1 || !(*it1)->isValid())
+        {
+          return false;
+        }
       }
     }
   }

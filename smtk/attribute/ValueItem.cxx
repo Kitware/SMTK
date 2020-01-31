@@ -95,13 +95,13 @@ void ValueItem::unset(std::size_t elementIndex)
   m_activeChildrenItems.clear();
 }
 
-bool ValueItem::isValid(const std::set<std::string>& cats) const
+bool ValueItem::isValidInternal(bool useCategories, const std::set<std::string>& categories) const
 {
   // If we have been given categories we need to see if the item passes its
   // category checks - if it doesn't it means its not be taken into account
   // for validity checking so just return true
 
-  if (!(cats.empty() || this->categories().passes(cats)))
+  if (useCategories && !this->categories().passes(categories))
   {
     return true;
   }
@@ -122,18 +122,38 @@ bool ValueItem::isValid(const std::set<std::string>& cats) const
     // Is this using an expression?
     if (this->allowsExpressions() && (m_expressions[i]->value() != nullptr))
     {
-      if (!m_expressions[i]->isValid(cats))
+      if (useCategories)
       {
-        return false;
+        if (!m_expressions[i]->isValid(categories))
+        {
+          return false;
+        }
+      }
+      else
+      {
+        if (!m_expressions[i]->isValid())
+        {
+          return false;
+        }
       }
     }
   }
   // Now we need to check the active items
   for (auto it = m_activeChildrenItems.begin(); it != m_activeChildrenItems.end(); ++it)
   {
-    if (!(*it)->isValid(cats))
+    if (useCategories)
     {
-      return false;
+      if (!(*it)->isValid(categories))
+      {
+        return false;
+      }
+    }
+    else
+    {
+      if (!(*it)->isValid())
+      {
+        return false;
+      }
     }
   }
   return true;

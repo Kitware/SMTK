@@ -37,31 +37,45 @@ class SMTKQTEXT_EXPORT qtAttribute : public QObject
 
 public:
   qtAttribute(smtk::attribute::AttributePtr, const smtk::view::Configuration::Component& comp,
-    QWidget* parent, qtBaseView* view);
+    QWidget* parent, qtBaseView* view, bool createWidgetWhenEmpty = false);
   virtual ~qtAttribute();
 
+  ///\brief Return the SMTK attribute referenced by the instance
   smtk::attribute::AttributePtr attribute();
+  ///\brief Return the QT widget that visualizes the attribute
   QWidget* widget() { return m_widget; }
+  ///\brief Return the QT parent widget
   QWidget* parentWidget();
 
+  ///\brief Add a qtItem to the instance
   virtual void addItem(qtItem*);
+  ///\brief Return all of the qtItems stored in the instance
   QList<qtItem*>& items() const;
   virtual void showAdvanceLevelOverlay(bool show);
   bool useSelectionManager() const { return m_useSelectionManager; }
 
-  // A basic layout for an attribute
+  ///\brief A basic layout for an attribute
   void createBasicLayout(bool includeAssociations);
 
-  //Returns true if it does not display any of its items
+  ///\brief Returns true if it does not display any of its items
   bool isEmpty() const;
 
+  ///\brief Remove all qtItems contained in the qtAttribute.  This allows
+  /// createBasicLayout to be called multiple times.
+  void removeItems();
+
 signals:
-  // Signal indicates that the underlying item has been modified
+  ///\brief Signal indicates that the underlying item has been modified
   void modified();
   void itemModified(qtItem*);
 
 protected:
-  virtual void createWidget();
+  ///\briefMethod for creating the widget for the qtAttribute.
+  ///
+  /// If the underlying attribute would have been filtered out by
+  /// categories or advanced level a nullptr is returned unless
+  /// createWidgetWhenEmpty is true.
+  virtual void createWidget(bool createWidgetWhenEmpty = false);
 
   QPointer<QWidget> m_widget;
 

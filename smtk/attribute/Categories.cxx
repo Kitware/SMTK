@@ -40,11 +40,6 @@ bool Categories::Set::passes(const std::string& category) const
 
 bool Categories::Set::passes(const std::set<std::string>& categories) const
 {
-  // if check list is empty then we always pass
-  if (categories.empty())
-  {
-    return true;
-  }
   // If there are no values which means there are no categories
   // associated then fail
   if (m_categoryNames.empty())
@@ -121,11 +116,6 @@ bool Categories::passes(const std::string& category) const
 
 bool Categories::passes(const std::set<std::string>& categories) const
 {
-  if (categories.empty())
-  {
-    return true;
-  }
-
   // If there are no sets which means there are no categories
   // associated then fail
   if (m_sets.empty())

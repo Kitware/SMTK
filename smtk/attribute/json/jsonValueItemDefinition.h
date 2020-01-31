@@ -69,8 +69,7 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
         }
         if (categoryValues.size())
         {
-          smtk::attribute::Categories::Set& localCats = defPtr->localCategories();
-          if (localCats.mode() == smtk::attribute::Categories::Set::CombinationMode::All)
+          if (categoryValues.mode() == smtk::attribute::Categories::Set::CombinationMode::All)
           {
             structureJson["categoryCheckMode"] = "All";
           }
