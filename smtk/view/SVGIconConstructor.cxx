@@ -36,9 +36,8 @@ namespace
 // the following keyword.
 static const std::string colorProperty = "color";
 
-// If there is no color property on the object, default to coloring it black
-// (in keeping with the precedent set by smtk::model::EntityRef).
-static const std::string defaultFillColor = "#000000";
+// If there is no color property on the object, default to coloring it gray.
+static const std::string defaultFillColor = "#808080";
 }
 
 namespace smtk
@@ -113,6 +112,7 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
       case smtk::model::SHELL_ENTITY:
       case smtk::model::GROUP_ENTITY:
       case smtk::model::MODEL_ENTITY:
+        return model_svg;
       case smtk::model::INSTANCE_ENTITY:
       case smtk::model::AUX_GEOM_ENTITY:
       case smtk::model::SESSION:
@@ -122,7 +122,7 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
   }
   else
   {
-    return face_svg;
+    return model_svg;
   }
 }
 }

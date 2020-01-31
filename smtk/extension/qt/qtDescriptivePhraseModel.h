@@ -61,8 +61,8 @@ public:
   {
     TitleTextRole = Qt::UserRole + 100,    //!< Phrase title (usu. user-editable component name)
     SubtitleTextRole = Qt::UserRole + 101, //!< Phrase subtitle (usu. type of phrase)
-    PhraseIconRole = Qt::UserRole + 102,   //!< Phrase type icon
-    PhraseInvertedIconRole = Qt::UserRole + 103, //!< Phrase type icon (color inverted)
+    PhraseIconRole_LightBG = Qt::UserRole + 102, //!< Phrase type icon on light background
+    PhraseIconRole_DarkBG = Qt::UserRole + 103,  //!< Phrase type icon on dark background
     PhraseColorRole = Qt::UserRole + 104,        //!< Phrase-specific color (e.g., component color)
     PhraseVisibilityRole = Qt::UserRole + 105,   //!< Visibility of phrase's subject
     PhraseCleanRole = Qt::UserRole + 106,        //!< Is resource clean (0), dirty (1), or N/A (-1)?
@@ -93,13 +93,9 @@ public:
   bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex()) override;
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
-  // void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
-
   Qt::ItemFlags flags(const QModelIndex& index) const override;
 
   void setDeleteOnRemoval(bool del) { m_deleteOnRemoval = del; }
-
-  static QIcon lookupIconForPhraseFlags(view::DescriptivePhrasePtr item, QColor color);
 
   view::DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
   QModelIndex indexFromPath(const std::vector<int>& path) const;

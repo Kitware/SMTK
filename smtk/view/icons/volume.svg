@@ -1,0 +1,6 @@
+<svg width="64" height="64">
+<path d="M26.4,21.3v37.8l32.1-14V11.7L26.4,21.3z" style="fill:green;stroke:black;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"/>
+<polygon class="st0" points="33.4,3.4 58.5,11.7 26.4,21.3 5,10.1 " style="fill:green;stroke:black;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"/>
+<polygon class="st0" points="33.4,3.4 5,10.1 5,43.5 26.4,59.1 58.5,45.1 58.5,11.7" style="fill:green;stroke:black;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"/>
+<path class="st0" d="M26.4,59.1V21.3V59.1z" style="fill:none;stroke:black;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"/>
+</svg>

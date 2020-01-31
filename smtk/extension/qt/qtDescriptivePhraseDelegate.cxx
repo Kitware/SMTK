@@ -24,7 +24,6 @@ namespace extension
 
 qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
   : QStyledItemDelegate(owner)
-  , m_swatchSize(16)
   , m_titleFontSize(14)
   , m_subtitleFontSize(10)
   , m_titleFontWeight(2)
@@ -34,16 +33,6 @@ qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
   , m_visibilityMode(false)
   , m_highlightOnHover(false)
 {
-}
-
-int qtDescriptivePhraseDelegate::swatchSize() const
-{
-  return m_swatchSize;
-}
-
-void qtDescriptivePhraseDelegate::setSwatchSize(int sfs)
-{
-  m_swatchSize = sfs;
 }
 
 int qtDescriptivePhraseDelegate::titleFontSize() const
@@ -129,7 +118,7 @@ void qtDescriptivePhraseDelegate::setHighlightOnHover(bool highlightOnHover)
 QSize qtDescriptivePhraseDelegate::sizeHint(
   const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
+  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
@@ -149,7 +138,7 @@ QSize qtDescriptivePhraseDelegate::sizeHint(
     minHeight = iconsize.height();
   }
 
-  return (QSize(iconsize.width() + m_swatchSize, minHeight));
+  return (QSize(iconsize.width(), minHeight));
 }
 
 void qtDescriptivePhraseDelegate::paint(
@@ -185,11 +174,11 @@ void qtDescriptivePhraseDelegate::paint(
     if ((setBackground && background.lightness() >= 128) ||
       (!setBackground && option.palette.color(QPalette::Background).lightness() >= 128))
     {
-      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
+      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
     }
     else
     {
-      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseInvertedIconRole));
+      icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_DarkBG));
     }
   }
   else
@@ -221,31 +210,15 @@ void qtDescriptivePhraseDelegate::paint(
   }
   QString subtitleText =
     qvariant_cast<QString>(idx.data(qtDescriptivePhraseModel::SubtitleTextRole));
-  //std::cout << "Paint " << idx.internalPointer() << " " << idx.row() << " " << titleText.toStdString().c_str() << "\n";
-  QColor swatchColor = qvariant_cast<QColor>(idx.data(qtDescriptivePhraseModel::PhraseColorRole));
-
-  if (!swatchColor.isValid())
-  {
-    swatchColor = background;
-  }
 
   QRect titleRect = option.rect;
   QRect subtitleRect = option.rect;
   QRect iconRect = option.rect;
-  QRect colorRect = option.rect;
-  // visible icon
   QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
   QSize visiconsize = visicon.actualSize(option.decorationSize);
 
-  colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
-  colorRect.setRight(colorRect.left() + m_swatchSize - 1);
-  colorRect.setTop(colorRect.top() + 1);
-  // colorRect.setTop(colorRect.top() + 2);
-  int swdelta = (colorRect.height() - m_swatchSize) / 2;
-  swdelta = (swdelta < 0 ? 0 : swdelta);
-  colorRect.adjust(0, swdelta, 0, -swdelta);
-  iconRect.setLeft(colorRect.left());
-  iconRect.setRight(iconRect.left() + iconsize.width() + 15);
+  iconRect.setLeft(iconRect.left() + visiconsize.width() + 7);
+  iconRect.setRight(iconRect.left() + iconsize.width() + 7);
   iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
@@ -253,15 +226,6 @@ void qtDescriptivePhraseDelegate::paint(
   titleRect.setBottom(titleRect.top() +
     (m_drawSubtitle ? titleFM.height() : option.rect.height() - m_textVerticalPad));
   subtitleRect.setTop(titleRect.bottom() + m_textVerticalPad);
-
-  if (swatchColor.isValid())
-  {
-    painter->save();
-    painter->setBrush(swatchColor);
-    painter->setPen(Qt::NoPen);
-    painter->drawRect(colorRect);
-    painter->restore();
-  }
 
   //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
   // NOTE -  the following QPainter::save() and QPainter::restore() calls are a workaround to fix
@@ -272,8 +236,11 @@ void qtDescriptivePhraseDelegate::paint(
     icon.pixmap(iconsize.width(), iconsize.height()));
   painter->restore();
   if (!visicon.isNull())
-    painter->drawPixmap(QPoint(option.rect.left(), colorRect.top()),
+  {
+    painter->drawPixmap(
+      QPoint(option.rect.left(), iconRect.top() + (option.rect.height() - iconsize.height()) / 2.),
       visicon.pixmap(visiconsize.width(), visiconsize.height()));
+  }
 
   if (setBackground && background.lightness() < 128)
   {
@@ -314,7 +281,7 @@ QWidget* qtDescriptivePhraseDelegate::createEditor(
 void qtDescriptivePhraseDelegate::updateEditorGeometry(
   QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex& idx) const
 {
-  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole));
+  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
@@ -342,18 +309,11 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
 
   QRect titleRect = option.rect;
   QRect iconRect = option.rect;
-  QRect colorRect = option.rect;
-  // visible icon
   QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
   QSize visiconsize = visicon.actualSize(option.decorationSize);
 
-  colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
-  colorRect.setRight(colorRect.left() + m_swatchSize);
-  int swdelta = (colorRect.height() - m_swatchSize) / 2;
-  swdelta = (swdelta < 0 ? 0 : swdelta);
-  colorRect.adjust(0, swdelta, 0, -swdelta);
-  iconRect.setLeft(colorRect.left());
-  iconRect.setRight(iconRect.left() + iconsize.width() + 15);
+  iconRect.setLeft(iconRect.left() + visiconsize.width() + 7);
+  iconRect.setRight(iconRect.left() + iconsize.width() + 7);
   iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
 
@@ -396,8 +356,9 @@ std::string qtDescriptivePhraseDelegate::determineAction(
     return res;
   }
   // with the help of styles, return where the pPos is on:
-  // the eye-ball, or the color swatch
-  // visible icon
+  // the eyeball or the icon
+  QIcon icon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseIconRole_LightBG));
+  QSize iconsize = icon.actualSize(option.decorationSize);
   QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
   QSize visiconsize = visicon.actualSize(option.decorationSize);
   int px = pPos.x();
@@ -410,8 +371,8 @@ std::string qtDescriptivePhraseDelegate::determineAction(
   }
   if (!bvis && idx.data(qtDescriptivePhraseModel::ColorMutableRole).toBool())
   {
-    bcolor = px > (option.rect.left() + visiconsize.width() + 2) &&
-      px < (option.rect.left() + visiconsize.width() + 2 + m_swatchSize) &&
+    bcolor = px > (option.rect.left() + visiconsize.width() + 7) &&
+      px < (option.rect.left() + visiconsize.width() + iconsize.width() + 7) &&
       py > option.rect.top() && py < (option.rect.top() + option.rect.height());
   }
 

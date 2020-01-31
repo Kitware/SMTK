@@ -72,6 +72,7 @@ set(iconFiles
   icons/mesh.svg
   icons/model.svg
   icons/vertex.svg
+  icons/volume.svg
 )
 
 include(EncodeStringFunctions)

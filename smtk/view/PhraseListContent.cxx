@@ -60,7 +60,8 @@ bool PhraseListContent::displayable(ContentType attr) const
       return true;
     case PhraseContent::VISIBILITY:
     case PhraseContent::COLOR:
-    case PhraseContent::ICON:
+    case PhraseContent::ICON_LIGHTBG:
+    case PhraseContent::ICON_DARKBG:
     default:
       break;
   }
@@ -85,7 +86,8 @@ std::string PhraseListContent::stringValue(ContentType attr) const
     // We will not provide strings for these:
     case PhraseContent::COLOR:
     case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
+    case PhraseContent::ICON_LIGHTBG:
+    case PhraseContent::ICON_DARKBG:
     default:
       break;
   }
@@ -100,9 +102,8 @@ int PhraseListContent::flagValue(ContentType attr) const
     case PhraseContent::TITLE:
     case PhraseContent::SUBTITLE:
     case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
-    // This should return non-default values once we allow icons to be registered
-    // for components by their metadata.
+    case PhraseContent::ICON_LIGHTBG:
+    case PhraseContent::ICON_DARKBG:
     default:
       break;
   }
@@ -120,7 +121,8 @@ resource::FloatList PhraseListContent::colorValue(ContentType attr) const
     case PhraseContent::TITLE:
     case PhraseContent::SUBTITLE:
     case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON:
+    case PhraseContent::ICON_LIGHTBG:
+    case PhraseContent::ICON_DARKBG:
     default:
       break;
   }

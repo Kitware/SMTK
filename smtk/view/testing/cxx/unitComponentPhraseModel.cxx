@@ -143,7 +143,8 @@ int unitComponentPhraseModel(int argc, char* argv[])
   {
     PhraseContent::ContentType attribs[] = { PhraseContent::ContentType::TITLE,
       PhraseContent::ContentType::SUBTITLE, PhraseContent::ContentType::COLOR,
-      PhraseContent::ContentType::VISIBILITY, PhraseContent::ContentType::ICON };
+      PhraseContent::ContentType::VISIBILITY, PhraseContent::ContentType::ICON_LIGHTBG,
+      PhraseContent::ContentType::ICON_DARKBG };
     int editable = 0;
     for (auto attrib : attribs)
     {

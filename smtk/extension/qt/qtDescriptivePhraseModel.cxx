@@ -37,6 +37,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QVariant>
 
+#include <QIconEngine>
+#include <QPainter>
+#include <QSvgRenderer>
+
 #include <deque>
 #include <iomanip>
 #include <map>
@@ -65,6 +69,51 @@ static void cleanupIconResource()
   {
     Q_CLEANUP_RESOURCE(qtDescriptivePhraseModelIcons);
   }
+}
+
+class SVGIconEngine : public QIconEngine
+{
+
+  QByteArray data;
+
+public:
+  explicit SVGIconEngine(const std::string& iconBuffer);
+  void paint(QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State state) override;
+  QIconEngine* clone() const override;
+  QPixmap pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state) override;
+};
+
+SVGIconEngine::SVGIconEngine(const std::string& iconBuffer)
+{
+  data = QByteArray::fromStdString(iconBuffer);
+}
+
+void SVGIconEngine::paint(
+  QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State state)
+{
+  QSvgRenderer renderer(data);
+  renderer.render(painter, rect);
+}
+
+QIconEngine* SVGIconEngine::clone() const
+{
+  return new SVGIconEngine(*this);
+}
+
+QPixmap SVGIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state)
+{
+  // This function is necessary to create an EMPTY pixmap. It's called always
+  // before paint()
+
+  QImage img(size, QImage::Format_ARGB32);
+  img.fill(qRgba(0, 0, 0, 0));
+  QPixmap pix = QPixmap::fromImage(img, Qt::NoFormatConversion);
+  {
+    QPainter painter(&pix);
+    QRect r(QPoint(0.0, 0.0), size);
+    this->paint(&painter, r, mode, state);
+  }
+  return pix;
 }
 
 using namespace smtk::model;
@@ -297,48 +346,15 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       {
         return QVariant(item->subtitle().c_str());
       }
-      else if (role == PhraseIconRole || role == PhraseInvertedIconRole)
+      else if (role == PhraseIconRole_LightBG)
       {
-        // get luminance
-        QColor color;
-        FloatList rgba = item->relatedColor();
-        if (rgba.size() >= 4 && rgba[3] < 0)
-        {
-          if (role == PhraseIconRole)
-          {
-            // return white by default
-            color = QColor(255, 255, 255, 255);
-          }
-          else
-          {
-            // return black by default
-            color = QColor(0, 0, 0, 255);
-          }
-        }
-        else
-        {
-          // Color may be luminance, luminance+alpha, rgb, or rgba:
-          switch (rgba.size())
-          {
-            case 0:
-              color = QColor(0, 0, 0, 0);
-              break;
-            case 1:
-              color.setHslF(0., 0., rgba[0], 1.);
-              break;
-            case 2:
-              color.setHslF(0., 0., rgba[0], rgba[1]);
-              break;
-            case 3:
-              color.setRgbF(rgba[0], rgba[1], rgba[2], 1.);
-              break;
-            case 4:
-            default:
-              color.setRgbF(rgba[0], rgba[1], rgba[2], rgba[3]);
-              break;
-          }
-        }
-        return QVariant(qtDescriptivePhraseModel::lookupIconForPhraseFlags(item, color));
+        return QVariant(QIcon(new SVGIconEngine(
+          item->content()->stringValue(smtk::view::PhraseContent::ICON_LIGHTBG))));
+      }
+      else if (role == PhraseIconRole_DarkBG)
+      {
+        return QVariant(QIcon(
+          new SVGIconEngine(item->content()->stringValue(smtk::view::PhraseContent::ICON_DARKBG))));
       }
       else if (role == PhraseVisibilityRole)
       {
@@ -539,175 +555,6 @@ Qt::ItemFlags qtDescriptivePhraseModel::flags(const QModelIndex& idx) const
     */
   return itemFlags;
 }
-
-QIcon qtDescriptivePhraseModel::lookupIconForPhraseFlags(
-  view::DescriptivePhrasePtr item, QColor color)
-{
-  // REFERENCE: https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
-  double lightness = 0.2126 * color.redF() + 0.7152 * color.greenF() + 0.0722 * color.blueF();
-  auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
-  auto attComp = dynamic_pointer_cast<smtk::attribute::Attribute>(item->relatedComponent());
-  auto meshComp = dynamic_pointer_cast<smtk::mesh::Component>(item->relatedComponent());
-  std::ostringstream resourceName;
-  resourceName << ":/icons/entityTypes/";
-  if (item->phraseType() == smtk::view::DescriptivePhraseType::COMPONENT_LIST ||
-    item->phraseType() == smtk::view::DescriptivePhraseType::LIST)
-  {
-    resourceName << "list";
-  }
-  else if (modelComp)
-  {
-    smtk::model::BitFlags flags = modelComp->entityFlags();
-    bool dimBits = true;
-    switch (flags & ENTITY_MASK)
-    {
-      case CELL_ENTITY:
-        resourceName << "cell";
-        break;
-      case USE_ENTITY:
-        resourceName << "use";
-        break;
-      case SHELL_ENTITY:
-        resourceName << "shell";
-        break;
-      case GROUP_ENTITY:
-        resourceName << "group";
-        break;
-      case MODEL_ENTITY:
-        resourceName << "model";
-        break;
-      case INSTANCE_ENTITY:
-        resourceName << "instance";
-        break;
-      case AUX_GEOM_ENTITY:
-        resourceName << "aux_geom";
-        break;
-      case SESSION:
-        resourceName << "model"; //  every session has a model
-        break;
-      default:
-        // Sometimes group entities have other bits set.
-        // Otherwise... it's garbage-in, garbage-out
-        resourceName << (flags & GROUP_ENTITY ? "group" : "invalid");
-        dimBits = false;
-        break;
-    }
-
-    if (dimBits && ((flags & ENTITY_MASK) == CELL_ENTITY))
-    {
-      resourceName << "_" << std::setbase(16) << std::fixed << std::setw(2) << std::setfill('0')
-                   << (flags & ANY_DIMENSION);
-    }
-  }
-  else if (attComp)
-  {
-    resourceName << "attribute";
-  }
-  else if (meshComp)
-  {
-    resourceName << "meshset";
-  }
-  else if (item->relatedComponent() == nullptr)
-  {
-    auto relatedResource = item->relatedResource();
-    // Lets check the resource
-    if (dynamic_pointer_cast<smtk::model::Resource>(relatedResource) != nullptr)
-    {
-      resourceName << "modelResource";
-    }
-    else if (dynamic_pointer_cast<smtk::attribute::Resource>(relatedResource) != nullptr)
-    {
-      resourceName << "attributeResource";
-    }
-    else if (dynamic_pointer_cast<smtk::mesh::Resource>(relatedResource))
-    {
-      resourceName << "meshResource";
-    }
-    else
-    {
-      resourceName << "invalid";
-    }
-  }
-  else
-  {
-    resourceName << "invalid";
-  }
-
-  // lightness controls black/white icon
-  if (lightness >= 0.179)
-  {
-    resourceName << "_b";
-  }
-  else // if (lightness < 0.179)
-  {
-    resourceName << "_w";
-  }
-
-  resourceName << ".png";
-
-  QFile rsrc(resourceName.str().c_str());
-  if (!rsrc.exists())
-  { // FIXME: Replace with the path of a "generic entity" or "invalid" icon.
-    if (lightness >= 0.179)
-    {
-      return QIcon(":/icons/entityTypes/generic_entity_b.png");
-    }
-    else
-    {
-      return QIcon(":/icons/entityTypes/generic_entity_w.png");
-    }
-  }
-  return QIcon(resourceName.str().c_str());
-}
-
-/**\brief Sort the UUIDs being displayed using the given ordered container.
-  *
-  * The ordered container's comparator is used to insertion-sort the UUIDs
-  * displayed. Then, the \a order is used to either forward- or reverse-iterator
-  * over the container to obtain a new ordering for the UUIDs.
-template<typename T>
-void qtDescriptivePhraseModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
-{
-  smtk::common::UUIDArray::iterator ai;
-  // Insertion into the set sorts the UUIDs.
-  for (ai = m_phrases.begin(); ai != m_phrases.end(); ++ai)
-    {
-    sorter.insert(*ai);
-    }
-  // Now we reset m_phrases and m_reverse and recreate based on the sorter's order.
-  m_phrases.clear();
-  m_reverse.clear();
-  int i;
-  if (order == Qt::AscendingOrder)
-    {
-    typename T::iterator si;
-    for (i = 0, si = sorter.begin(); si != sorter.end(); ++si, ++i)
-      {
-      m_phrases.push_back(*si);
-      m_reverse[*si] = i;
-      / *
-      std::cout << i << "  " << *si << "  " <<
-        (m_manager->hasStringProperty(*si, "name") ?
-         m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
-         * /
-      }
-    }
-  else
-    {
-    typename T::reverse_iterator si;
-    for (i = 0, si = sorter.rbegin(); si != sorter.rend(); ++si, ++i)
-      {
-      m_phrases.push_back(*si);
-      m_reverse[*si] = i;
-      / *
-      std::cout << i << "  " << *si << "  " <<
-        (m_manager->hasStringProperty(*si, "name") ?
-         m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
-         * /
-      }
-    }
-}
-  */
 
 /// A utility function to retrieve the view::DescriptivePhrasePtr associated with a model index.
 view::DescriptivePhrasePtr qtDescriptivePhraseModel::getItem(const QModelIndex& idx) const

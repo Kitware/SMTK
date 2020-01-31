@@ -122,7 +122,30 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
       // We will not provide strings for these:
       case PhraseContent::COLOR:
       case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON:
+      case PhraseContent::ICON_LIGHTBG:
+      {
+        if (DescriptivePhrasePtr location = m_location.lock())
+        {
+          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          {
+            // TODO: propagate secondary color instead of hard-coding it here
+            return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+          }
+        }
+      }
+      break;
+      case PhraseContent::ICON_DARKBG:
+      {
+        if (DescriptivePhrasePtr location = m_location.lock())
+        {
+          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          {
+            // TODO: propagate secondary color instead of hard-coding it here
+            return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+          }
+        }
+      }
+      break;
       default:
         break;
     }
@@ -140,9 +163,8 @@ int ComponentPhraseContent::flagValue(ContentType contentType) const
       case PhraseContent::TITLE:
       case PhraseContent::SUBTITLE:
       case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON:
-      // This should return non-default values once we allow icons to be registered
-      // for components by their metadata.
+      case PhraseContent::ICON_LIGHTBG:
+      case PhraseContent::ICON_DARKBG:
       default:
         break;
     }
@@ -168,7 +190,8 @@ resource::FloatList ComponentPhraseContent::colorValue(ContentType contentType) 
       case PhraseContent::TITLE:
       case PhraseContent::SUBTITLE:
       case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON:
+      case PhraseContent::ICON_LIGHTBG:
+      case PhraseContent::ICON_DARKBG:
       default:
         break;
     }
