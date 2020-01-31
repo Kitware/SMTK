@@ -103,7 +103,7 @@ int unitDescriptivePhrase(int argc, char* argv[])
   auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
   auto phraseModel = smtk::view::ResourcePhraseModel::create();
-  phraseModel->addSource(rsrcMgr, operMgr, nullptr);
+  phraseModel->addSource(rsrcMgr, operMgr, nullptr, nullptr);
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {
