@@ -10,8 +10,6 @@
 #ifndef smtk_session_polygon_plugin_Registrar_h
 #define smtk_session_polygon_plugin_Registrar_h
 
-#include "smtk/session/polygon/Exports.h"
-
 #include "smtk/view/Manager.h"
 
 namespace smtk
@@ -23,7 +21,7 @@ namespace polygon
 namespace plugin
 {
 
-class SMTKPOLYGONSESSION_EXPORT Registrar
+class Registrar
 {
 public:
   static void registerTo(const smtk::view::Manager::Ptr&);

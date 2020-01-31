@@ -15,14 +15,12 @@
 #ifndef qtExtractContoursView_h
 #define qtExtractContoursView_h
 
-#include "smtk/session/polygon/Exports.h"
-
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
 class qtExtractContoursViewInternals;
 class pqPipelineSource;
 
-class SMTKPOLYGONSESSION_EXPORT qtExtractContoursView : public smtk::extension::qtBaseAttributeView
+class qtExtractContoursView : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 

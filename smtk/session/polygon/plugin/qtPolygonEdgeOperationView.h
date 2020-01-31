@@ -15,14 +15,11 @@
 #ifndef qtPolygonEdgeOperationView_h
 #define qtPolygonEdgeOperationView_h
 
-#include "smtk/session/polygon/Exports.h"
-
 #include "smtk/extension/qt/qtBaseAttributeView.h"
 
 class qtPolygonEdgeOperationViewInternals;
 
-class SMTKPOLYGONSESSION_EXPORT qtPolygonEdgeOperationView
-  : public smtk::extension::qtBaseAttributeView
+class qtPolygonEdgeOperationView : public smtk::extension::qtBaseAttributeView
 {
   Q_OBJECT
 
