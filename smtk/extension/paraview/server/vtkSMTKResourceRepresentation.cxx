@@ -275,29 +275,32 @@ int vtkSMTKResourceRepresentation::RequestData(
     {
       vtkSmartPointer<vtkImageData> sliceVolume =
         vtkImageData::SafeDownCast(imageMultiBlock->GetBlock(0));
-      std::string scalarName = "scalars";
-      auto scalars = sliceVolume->GetPointData()->GetScalars();
-      if (scalars)
+      if (sliceVolume)
       {
-        scalarName = scalars->GetName();
-        auto lkup = sliceVolume->GetPointData()->GetScalars()->GetLookupTable();
-        this->SliceXY->SetLookupTable(lkup);
-        this->SliceYZ->SetLookupTable(lkup);
-        this->SliceXZ->SetLookupTable(lkup);
-      }
-      this->SliceXY->SetInputDataObject(0, sliceVolume);
-      this->SliceYZ->SetInputDataObject(0, sliceVolume);
-      this->SliceXZ->SetInputDataObject(0, sliceVolume);
+        std::string scalarName = "scalars";
+        auto scalars = sliceVolume->GetPointData()->GetScalars();
+        if (scalars)
+        {
+          scalarName = scalars->GetName();
+          auto lkup = sliceVolume->GetPointData()->GetScalars()->GetLookupTable();
+          this->SliceXY->SetLookupTable(lkup);
+          this->SliceYZ->SetLookupTable(lkup);
+          this->SliceXZ->SetLookupTable(lkup);
+        }
+        this->SliceXY->SetInputDataObject(0, sliceVolume);
+        this->SliceYZ->SetInputDataObject(0, sliceVolume);
+        this->SliceXZ->SetInputDataObject(0, sliceVolume);
 
-      this->SliceXY->SetSliceMode(vtkImageSliceRepresentation::XY_PLANE);
-      this->SliceYZ->SetSliceMode(vtkImageSliceRepresentation::YZ_PLANE);
-      this->SliceXZ->SetSliceMode(vtkImageSliceRepresentation::XZ_PLANE);
-      this->SliceXY->SetInputArrayToProcess(
-        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
-      this->SliceYZ->SetInputArrayToProcess(
-        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
-      this->SliceXZ->SetInputArrayToProcess(
-        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+        this->SliceXY->SetSliceMode(vtkImageSliceRepresentation::XY_PLANE);
+        this->SliceYZ->SetSliceMode(vtkImageSliceRepresentation::YZ_PLANE);
+        this->SliceXZ->SetSliceMode(vtkImageSliceRepresentation::XZ_PLANE);
+        this->SliceXY->SetInputArrayToProcess(
+          0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+        this->SliceYZ->SetInputArrayToProcess(
+          0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+        this->SliceXZ->SetInputArrayToProcess(
+          0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+      }
     }
 
     // Glyph points (2) and prototypes (1)

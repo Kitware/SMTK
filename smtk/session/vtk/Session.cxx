@@ -20,6 +20,8 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Tessellation.h"
 
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
+
 #include "vtkCellArray.h"
 #include "vtkGeometryFilter.h"
 #include "vtkImageData.h"
@@ -48,7 +50,6 @@ vtkInformationKeyMacro(Session, SMTK_VISIBILITY, Integer);
 vtkInformationKeyMacro(Session, SMTK_GROUP_TYPE, Integer);
 vtkInformationKeyMacro(Session, SMTK_PEDIGREE, Integer);
 vtkInformationKeyMacro(Session, SMTK_OUTER_LABEL, Integer);
-vtkInformationKeyMacro(Session, SMTK_UUID_KEY, String);
 vtkInformationKeyMacro(Session, SMTK_CHILDREN, ObjectBaseVector);
 vtkInformationKeyMacro(Session, SMTK_LABEL_VALUE, Double);
 
@@ -420,11 +421,6 @@ SessionInfoBits Session::transcribeInternal(
     // FIXME: Todo.
     actual |= smtk::model::SESSION_ATTRIBUTE_ASSOCIATIONS;
   }
-  if (requestedInfo & smtk::model::SESSION_TESSELLATION)
-  {
-    if (this->addTessellation(entity, handle))
-      actual |= smtk::model::SESSION_TESSELLATION;
-  }
   if (requestedInfo & smtk::model::SESSION_PROPERTIES)
   {
     // Set properties.
@@ -590,69 +586,6 @@ static void AddBoxToTessellation(vtkImageData* img, smtk::model::Tessellation& t
   }
 }
 
-bool Session::addTessellation(const smtk::model::EntityRef& entityref, const EntityHandle& handle)
-{
-  if (entityref.hasTessellation())
-  {
-    return true; // no need to recompute.
-  }
-
-  vtkDataObject* data = handle.object<vtkDataObject>();
-  if (!data)
-  {
-    return false; // Can't squeeze triangles from a NULL
-  }
-
-  if (vtkMultiBlockDataSet::SafeDownCast(data))
-  {
-    return false; // Don't try to tessellate parent groups of leaf nodes.
-  }
-
-  // Don't tessellate image data that is serving as a label map.
-  EntityType etype = static_cast<EntityType>(data->GetInformation()->Get(SMTK_GROUP_TYPE()));
-  if (etype == EXO_LABEL_MAP)
-    return false;
-
-  vtkSmartPointer<vtkPolyData> bdy;
-  if (etype == EXO_LABEL)
-  {
-    bdy = vtkPolyData::SafeDownCast(data);
-  }
-  else
-  {
-    vtkNew<vtkGeometryFilter> bdyFilter;
-    bdyFilter->MergingOff();
-    bdyFilter->SetInputDataObject(data);
-    bdyFilter->Update();
-    bdy = bdyFilter->GetOutput();
-  }
-
-  if (!bdy)
-    return SESSION_NOTHING;
-
-  smtk::model::Tessellation tess;
-  std::map<vtkIdType, int> vertMap;
-  vtkPoints* pts = bdy->GetPoints();
-  AddCellsToTessellation(pts, bdy->GetVerts(), SMTK_ROLE_VERTS, vertMap, tess);
-  AddCellsToTessellation(pts, bdy->GetLines(), SMTK_ROLE_LINES, vertMap, tess);
-  if (data->GetInformation()->Get(Session::SMTK_OUTER_LABEL()))
-  { // In many/most label maps, there is an outermost label that will have an empty tessellation. Mark it with an outline.
-    AddBoxToTessellation(handle.parent().object<vtkImageData>(), tess);
-  }
-  AddCellsToTessellation(pts, bdy->GetPolys(), SMTK_ROLE_POLYS, vertMap, tess);
-  if (bdy->GetStrips() && bdy->GetStrips()->GetNumberOfCells() > 0)
-  {
-    std::cerr << "Warning: Triangle strips in discrete cells are unsupported. Ignoring.\n";
-  }
-  if (!tess.coords().empty())
-  {
-    smtk::model::EntityRef mutableEnt(entityref);
-    mutableEnt.setTessellationAndBoundingBox(&tess);
-  }
-
-  return true;
-}
-
 size_t Session::numberOfModels() const
 {
   return this->m_models.size();
@@ -700,15 +633,11 @@ smtk::common::UUID Session::uuidOfHandleObject(vtkDataObject* obj) const
     return uid;
   }
 
-  const char* uuidChar = obj->GetInformation()->Get(SMTK_UUID_KEY());
-  if (!uuidChar)
+  uid = vtkResourceMultiBlockSource::GetDataObjectUUID(obj->GetInformation());
+  if (!uid)
   { // We have not assigned a UUID yet. Do so now.
     uid = smtk::common::UUIDGenerator::instance().random();
-    obj->GetInformation()->Set(SMTK_UUID_KEY(), uid.toString().c_str());
-  }
-  else
-  {
-    uid = smtk::common::UUID(uuidChar);
+    vtkResourceMultiBlockSource::SetDataObjectUUID(obj->GetInformation(), uid);
   }
   return uid;
 }

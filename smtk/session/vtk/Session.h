@@ -150,7 +150,6 @@ public:
   static vtkInformationIntegerKey* SMTK_GROUP_TYPE();
   static vtkInformationIntegerKey* SMTK_PEDIGREE();
   static vtkInformationIntegerKey* SMTK_OUTER_LABEL();
-  static vtkInformationStringKey* SMTK_UUID_KEY();
   static vtkInformationObjectBaseVectorKey* SMTK_CHILDREN();
   static vtkInformationDoubleKey* SMTK_LABEL_VALUE();
 
@@ -160,8 +159,6 @@ public:
   std::string defaultFileExtension(const smtk::model::Model& model) const override;
 
   bool ensureChildParentMapEntry(vtkDataObject* child, vtkDataObject* parent, int idxInParent);
-
-  bool addTessellation(const smtk::model::EntityRef&, const EntityHandle&);
 
   ReverseIdMap_t& reverseIdMap() { return m_revIdMap; }
 

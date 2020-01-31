@@ -22,6 +22,8 @@
 #include "smtk/session/vtk/json/jsonResource.h"
 #include "smtk/session/vtk/operators/Export.h"
 
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
+
 #include "smtk/common/Paths.h"
 
 #include "smtk/model/SessionIOJSON.h"
@@ -40,7 +42,7 @@ void RetrievePreservedUUID(vtkDataObject* data, std::vector<smtk::common::UUID>&
     return;
 
   vtkInformation* info = data->GetInformation();
-  uuids.emplace_back(std::string(info->Get(smtk::session::vtk::Session::SMTK_UUID_KEY())));
+  uuids.emplace_back(vtkResourceMultiBlockSource::GetDataObjectUUID(info).toString());
 }
 
 void RetrievePreservedUUIDsRecursive(vtkDataObject* data, std::vector<smtk::common::UUID>& uuids)
