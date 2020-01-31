@@ -1,4 +1,5 @@
 set(vtkSrcs
+  Geometry.cxx
   Registrar.cxx
   Resource.cxx
   Session.cxx
@@ -12,6 +13,7 @@ set(vtkSrcs
 )
 
 set(vtkHeaders
+  Geometry.h
   Registrar.h
   Resource.h
   Session.h
@@ -40,22 +42,23 @@ foreach(lib IN ITEMS
 endforeach()
 
 set(import_vtk_depends
-    VTK::IOExodus
-    VTK::IONetCDF
-    VTK::IOXML
-    VTK::ImagingCore
-    VTK::FiltersGeneral
-    VTK::IOLegacy
-    VTK::IOParallel
-    VTK::IOParallelExodus
-    VTK::IOGeometry
-    VTK::FiltersGeometry
-    )
+  VTK::IOExodus
+  VTK::IONetCDF
+  VTK::IOXML
+  VTK::ImagingCore
+  VTK::FiltersGeneral
+  VTK::IOLegacy
+  VTK::IOParallel
+  VTK::IOParallelExodus
+  VTK::IOGeometry
+  VTK::FiltersGeometry
+)
 
 target_link_libraries(smtkVTKSession
   LINK_PUBLIC
     smtkCore
     smtkIOVTK
+    vtkSMTKSourceExt
     VTK::CommonDataModel
   LINK_PRIVATE
     ${import_vtk_depends}

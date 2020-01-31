@@ -139,6 +139,12 @@ void Geometry::queryGeometry(
   auto resource = m_parent.lock();
   auto polyEnt = resource->findStorage<internal::entity>(ent->id());
   auto polyModel = polyEnt ? polyEnt->parentAs<internal::pmodel>() : nullptr;
+  if (std::dynamic_pointer_cast<internal::pmodel>(polyEnt))
+  {
+    // The model itself does not have geometry; its children do.
+    entry.m_generation = Invalid;
+    return;
+  }
   switch (ent->dimension())
   {
     case 0:

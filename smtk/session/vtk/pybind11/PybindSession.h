@@ -81,7 +81,6 @@ PySharedPtrClass< smtk::session::vtk::Session, smtk::model::Session > pybind11_i
     .def_static("SMTK_LABEL_VALUE", &smtk::session::vtk::Session::SMTK_LABEL_VALUE)
     .def_static("SMTK_OUTER_LABEL", &smtk::session::vtk::Session::SMTK_OUTER_LABEL)
     .def_static("SMTK_PEDIGREE", &smtk::session::vtk::Session::SMTK_PEDIGREE)
-    .def_static("SMTK_UUID_KEY", &smtk::session::vtk::Session::SMTK_UUID_KEY)
     .def_static("SMTK_VISIBILITY", &smtk::session::vtk::Session::SMTK_VISIBILITY)
     .def("addModel", &smtk::session::vtk::Session::addModel, py::arg("model"), py::arg("requestedInfo"))
     .def("allSupportedInformation", &smtk::session::vtk::Session::allSupportedInformation)

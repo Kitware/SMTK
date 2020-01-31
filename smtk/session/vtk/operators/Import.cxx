@@ -13,6 +13,8 @@
 #include "smtk/session/vtk/Resource.h"
 #include "smtk/session/vtk/Session.h"
 
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
@@ -21,12 +23,15 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/model/Group.h"
 #include "smtk/model/Model.h"
 
 #include "smtk/common/Paths.h"
+#include "smtk/common/UUID.h"
 
 #include "vtkContourFilter.h"
 #include "vtkDataArray.h"
@@ -153,11 +158,12 @@ static void AddPreservedUUID(vtkDataObject* data, int& curId, vtkDataObject* par
 
   // Assign the preserved UUID to the data's information.
   vtkInformation* info = data->GetInformation();
-  info->Set(Session::SMTK_UUID_KEY(), uuids.at(curId).toString().c_str());
+  vtkResourceMultiBlockSource::SetDataObjectUUID(
+    info, smtk::common::UUID(uuids.at(curId).toString()));
   EntityHandle handle(modelNumber, data, parentData, idxInParent, session);
   EntityRef eref(resource, uuids.at(curId));
   session->reverseIdMap()[eref] = handle;
-  session->addTessellation(eref, handle);
+  smtk::operation::MarkGeometry(resource).markModified(eref.component());
   ++curId;
 }
 
@@ -204,7 +210,7 @@ static smtk::model::Model addModel(vtkSmartPointer<vtkMultiBlockDataSet>& modelO
       // First set the UUID on the multiblock dataset representing the model.
       // This way, the resulting smtk model will have the right UUID.
       vtkInformation* info = modelOut->GetInformation();
-      info->Set(Session::SMTK_UUID_KEY(), uuids.at(0).toString().c_str());
+      vtkResourceMultiBlockSource::SetDataObjectUUID(info, uuids.at(0));
       smtkModelOut = session->addModel(modelOut, smtk::model::SESSION_EVERYTHING);
     }
 
@@ -263,15 +269,16 @@ static void MarkMeshInfo(
   info->Set(Session::SMTK_GROUP_TYPE(), etype);
   info->Set(vtkCompositeDataSet::NAME(), name);
 
-  const char* existingUUID = info->Get(Session::SMTK_UUID_KEY());
-  if (!existingUUID || !existingUUID[0])
+  auto existingUUID = vtkResourceMultiBlockSource::GetDataObjectUUID(info);
+  if (!existingUUID)
   {
     // ++ 1 ++
     // If a UUID has been saved to field data, we should copy it to the info object here.
     vtkStringArray* uuidArr =
       vtkStringArray::SafeDownCast(data->GetFieldData()->GetAbstractArray("UUID"));
     if (uuidArr && uuidArr->GetNumberOfTuples() > 0)
-      info->Set(Session::SMTK_UUID_KEY(), uuidArr->GetValue(0).c_str());
+      vtkResourceMultiBlockSource::SetDataObjectUUID(
+        info, smtk::common::UUID(uuidArr->GetValue(0).c_str()));
     // -- 1 --
   }
 
