@@ -591,11 +591,11 @@ bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(smtk::view::SelectionPtr s
       auto assoc = attr->associations();
       if (assoc)
       {
-        for (auto obj : *assoc)
-        {
+        assoc->visit([&](const smtk::resource::PersistentObjectPtr& obj) {
           atLeastOneSelected |=
             self->SelectComponentFootprint(obj, /*selnBit TODO*/ 1, renderables);
-        }
+          return true;
+        });
       }
     }
     else
