@@ -3,9 +3,9 @@ set(viewSrcs
   AvailableOperations.cxx
   ComponentPhraseContent.cxx
   ComponentPhraseModel.cxx
-  #ComponentsByTypeGenerator.cxx
   DescriptivePhrase.cxx
   EmptySubphraseGenerator.cxx
+  IconFactory.cxx
   json/jsonView.cxx
   Manager.cxx
   ObjectGroupPhraseContent.cxx
@@ -18,6 +18,7 @@ set(viewSrcs
   Selection.cxx
   SelectionPhraseModel.cxx
   SubphraseGenerator.cxx
+  SVGIconConstructor.cxx
   TwoLevelSubphraseGenerator.cxx
   Configuration.cxx
   VisibilityContent.cxx
@@ -30,9 +31,9 @@ set(viewHeaders
   AvailableOperations.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
-  #ComponentsByTypeGenerator.h
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
+  IconFactory.h
   Manager.h
   ObjectGroupPhraseContent.h
   PhraseListContent.h
@@ -49,6 +50,7 @@ set(viewHeaders
   SelectionPhraseModel.h
   SubphraseGenerator.h
   SubphraseGenerator.txx
+  SVGIconConstructor.h
   TwoLevelSubphraseGenerator.h
   Configuration.h
   VisibilityContent.h
@@ -61,6 +63,25 @@ endif()
 
 #install the headers
 smtk_public_headers(smtkCore ${viewHeaders})
+
+set(iconFiles
+  icons/attribute.svg
+  icons/attributeResource.svg
+  icons/edge.svg
+  icons/face.svg
+  icons/mesh.svg
+  icons/model.svg
+  icons/vertex.svg
+  icons/volume.svg
+)
+
+include(EncodeStringFunctions)
+
+foreach (iconFile ${iconFiles})
+  get_filename_component(genFileBase "${iconFile}" NAME_WE)
+  set(genFile "${CMAKE_CURRENT_BINARY_DIR}/icons/${genFileBase}_svg.h")
+  configureFileAsCVariable("${CMAKE_CURRENT_SOURCE_DIR}/${iconFile}" "${genFile}" "${genFileBase}_svg" "")
+endforeach()
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   set_property(GLOBAL APPEND

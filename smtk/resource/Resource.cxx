@@ -16,6 +16,7 @@
 #include "smtk/resource/Manager.h"
 
 #include "smtk/common/Paths.h"
+#include "smtk/common/TypeName.h"
 #include "smtk/common/UUIDGenerator.h"
 
 namespace smtk
@@ -69,6 +70,11 @@ bool Resource::isOfType(const Resource::Index& index) const
 bool Resource::isOfType(const std::string& typeName) const
 {
   return smtk::common::typeName<Resource>() == typeName;
+}
+
+int Resource::numberOfGenerationsFromBase(const std::string& typeName) const
+{
+  return (typeName == smtk::common::typeName<Resource>() ? 0 : std::numeric_limits<int>::lowest());
 }
 
 bool Resource::setId(const smtk::common::UUID& myId)

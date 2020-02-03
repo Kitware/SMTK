@@ -284,8 +284,8 @@ void pqSMTKResourceBrowser::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServe
   {
     return;
   }
-  this->addSource(
-    wrapper->smtkResourceManager(), wrapper->smtkOperationManager(), wrapper->smtkSelection());
+  this->addSource(wrapper->smtkResourceManager(), wrapper->smtkOperationManager(),
+    wrapper->smtkViewManager(), wrapper->smtkSelection());
 }
 
 void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server)
@@ -294,7 +294,8 @@ void pqSMTKResourceBrowser::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer*
   {
     return;
   }
-  this->removeSource(mgr->smtkResourceManager(), mgr->smtkOperationManager(), mgr->smtkSelection());
+  this->removeSource(mgr->smtkResourceManager(), mgr->smtkOperationManager(),
+    mgr->smtkViewManager(), mgr->smtkSelection());
 }
 
 void pqSMTKResourceBrowser::activeViewChanged(pqView* view)

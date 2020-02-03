@@ -21,6 +21,7 @@ set(operationSrcs
   operators/ImportResource.cxx
   operators/ReadResource.cxx
   operators/RemoveResource.cxx
+  operators/SetProperty.cxx
   operators/WriteResource.cxx
 )
 
@@ -51,6 +52,7 @@ set(operationHeaders
   operators/ImportResource.h
   operators/ReadResource.h
   operators/RemoveResource.h
+  operators/SetProperty.h
   operators/WriteResource.h
 )
 
@@ -62,6 +64,7 @@ set(operationXML
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveResource.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" defOpXML)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

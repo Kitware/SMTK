@@ -22,3 +22,10 @@ Example:
   // modify the SubphraseGenerator type
   config->details().child(0).child(0).setAttribute("Type", "smtk::view::TwoLevelSubphraseGenerator");
 ```
+
+### Changes to Icons
+#### Replaced Resource and Component icons with SVG representations
+Icons for Resources and Components are now represented by SVG images, rather than PNG. The use of vectorized images makes icons scale with high retina desplays, and the programmatic instantation of these images allows for true color representations.
+
+#### Added registration system for Resource and Component icons
+Consuming applications can now register icon sets for Resources and Components, providing for more customization options and the use of icons that more closely reflect the entities they represent.

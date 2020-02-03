@@ -11,6 +11,7 @@
 
 #include <cctype>
 #include <cmath>
+#include <cstdio>
 
 namespace smtk
 {
@@ -91,5 +92,17 @@ bool Color::stringToFloatRGBA(double* rgba, const std::string& colorSpec, double
   return ok;
 }
 
+std::string Color::floatRGBToString(const double* rgb)
+{
+  int rgb_[3];
+  for (int i = 0; i < 3; i++)
+  {
+    rgb_[i] = 255 * rgb[i];
+  }
+
+  char hexcol[8];
+  snprintf(hexcol, sizeof hexcol, "#%02x%02x%02x", rgb_[0], rgb_[1], rgb_[2]);
+  return std::string(hexcol);
+}
 } // namespace common
 } // namespace smtk

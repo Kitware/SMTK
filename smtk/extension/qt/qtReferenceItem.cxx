@@ -411,6 +411,7 @@ void qtReferenceItem::updateUI()
   // TODO: this need to connect to the right managers
   auto rsrcMgr = m_itemInfo.uiManager()->resourceManager();
   auto operMgr = m_itemInfo.uiManager()->operationManager();
+  auto viewMgr = m_itemInfo.uiManager()->viewManager();
   auto seln = m_itemInfo.uiManager()->selection();
 
   auto phraseModel = this->createPhraseModel();
@@ -436,7 +437,7 @@ void qtReferenceItem::updateUI()
   m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL);
   if (m_p->m_phraseModel)
   {
-    m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);
+    m_p->m_phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
     QPointer<qtReferenceItem> guardedObject(this);
     m_p->m_modelObserverId = m_p->m_phraseModel->observers().insert(
       [guardedObject](smtk::view::DescriptivePhrasePtr phr, smtk::view::PhraseModelEvent evt,

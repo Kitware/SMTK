@@ -103,7 +103,7 @@ int unitDescriptivePhrase(int argc, char* argv[])
   auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
   auto phraseModel = smtk::view::ResourcePhraseModel::create();
-  phraseModel->addSource(rsrcMgr, operMgr, nullptr);
+  phraseModel->addSource(rsrcMgr, operMgr, nullptr, nullptr);
   smtk::resource::ResourceArray rsrcs;
   for (int i = 1; i < argc; i++)
   {
@@ -122,6 +122,7 @@ int unitDescriptivePhrase(int argc, char* argv[])
       {
         std::cout << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
         smtk::resource::FloatList rgba = p->relatedColor();
+        smtkTest(rgba.size() == 4, "Unexpected size for color vector: " << rgba.size());
         if (rgba[3] >= 0.)
         {
           std::cout << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3]

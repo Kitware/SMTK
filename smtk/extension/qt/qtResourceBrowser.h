@@ -82,9 +82,9 @@ public slots:
   virtual void sendSMTKSelectionToPanel(const std::string& src, smtk::view::SelectionPtr seln);
 
   virtual void addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::SelectionPtr seln);
+    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
   virtual void removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::SelectionPtr seln);
+    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
 
 protected slots:
   virtual void hoverRow(const QModelIndex& idx);

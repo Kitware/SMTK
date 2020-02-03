@@ -27,7 +27,6 @@ class qtDescriptivePhraseModel;
 class SMTKQTEXT_EXPORT qtDescriptivePhraseDelegate : public QStyledItemDelegate
 {
   Q_OBJECT
-  Q_PROPERTY(int swatchSize READ swatchSize WRITE setSwatchSize)
   Q_PROPERTY(int titleFontSize READ titleFontSize WRITE setTitleFontSize)
   Q_PROPERTY(int subtitleFontSize READ subtitleFontSize WRITE setSubtitleFontSize)
   Q_PROPERTY(int titleFontWeight READ titleFontWeight WRITE setTitleFontWeight)
@@ -42,7 +41,6 @@ public:
   int subtitleFontSize() const;
   int titleFontWeight() const;
   int subtitleFontWeight() const;
-  int swatchSize() const;
   int textVerticalPad() const;
   bool drawSubtitle() const;
   bool highlightOnHover() const;
@@ -53,7 +51,6 @@ public slots:
   void setSubtitleFontSize(int sfs);
   void setTitleFontWeight(int tfs);
   void setSubtitleFontWeight(int sfs);
-  void setSwatchSize(int sws);
   void setTextVerticalPad(int tvp);
   void setDrawSubtitle(bool includeSubtitle);
   void setVisibilityMode(bool allEditsChangeVisibility);
@@ -88,7 +85,6 @@ protected:
   bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option,
     const QModelIndex& index) override;
 
-  int m_swatchSize;
   int m_titleFontSize;
   int m_subtitleFontSize;
   int m_titleFontWeight;

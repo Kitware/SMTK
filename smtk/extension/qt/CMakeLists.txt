@@ -1,4 +1,4 @@
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Svg Widgets)
 
 # set up sources to build
 set(QAttrLibSrcs
@@ -170,6 +170,7 @@ target_link_libraries(smtkQtExt
   LINK_PUBLIC
   smtkCore
   Qt5::Core
+  Qt5::Svg
   Qt5::Widgets
   LINK_PRIVATE
   Threads::Threads

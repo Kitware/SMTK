@@ -141,11 +141,12 @@ PhraseModel::~PhraseModel()
 }
 
 bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-  smtk::view::SelectionPtr seln)
+  smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln)
 {
   for (const auto& source : m_sources)
   {
-    if (source.m_rsrcMgr == rsrcMgr && source.m_operMgr == operMgr && source.m_seln == seln)
+    if (source.m_rsrcMgr == rsrcMgr && source.m_operMgr == operMgr && source.m_viewMgr == viewMgr &&
+      source.m_seln == seln)
     {
       return false; // Do not add what we already have
     }
@@ -179,16 +180,18 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         true, // observeImmediately
         description.str() + "Update phrases when selection changes.")
     : smtk::view::SelectionObservers::Key();
-  m_sources.emplace_back(rsrcMgr, operMgr, seln, rsrcHandle, operHandle, selnHandle);
+  m_sources.emplace_back(rsrcMgr, operMgr, viewMgr, seln, rsrcHandle, operHandle, selnHandle);
   return true;
 }
 
 bool PhraseModel::removeSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
+  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
+  smtk::view::SelectionPtr seln)
 {
   for (auto it = m_sources.begin(); it != m_sources.end(); ++it)
   {
-    if (it->m_rsrcMgr == rsrcMgr && it->m_operMgr == operMgr && it->m_seln == seln)
+    if (it->m_rsrcMgr == rsrcMgr && it->m_operMgr == operMgr && it->m_viewMgr == viewMgr &&
+      it->m_seln == seln)
     {
       if (it->m_rsrcHandle != smtk::resource::Observers::Key())
       {
@@ -215,7 +218,7 @@ bool PhraseModel::resetSources()
   while (!m_sources.empty())
   {
     auto src = m_sources.begin();
-    if (this->removeSource(src->m_rsrcMgr, src->m_operMgr, src->m_seln))
+    if (this->removeSource(src->m_rsrcMgr, src->m_operMgr, src->m_viewMgr, src->m_seln))
     {
       removedAny = true;
     }
@@ -231,7 +234,7 @@ void PhraseModel::visitSources(SourceVisitor visitor)
 {
   for (const auto& src : m_sources)
   {
-    if (!visitor(src.m_rsrcMgr, src.m_operMgr, src.m_seln))
+    if (!visitor(src.m_rsrcMgr, src.m_operMgr, src.m_viewMgr, src.m_seln))
     {
       break;
     }

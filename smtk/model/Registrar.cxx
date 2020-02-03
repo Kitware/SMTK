@@ -25,7 +25,6 @@
 #include "smtk/model/operators/GroupAuxiliaryGeometry.h"
 #include "smtk/model/operators/MergeInstances.h"
 #include "smtk/model/operators/SetInstancePrototype.h"
-#include "smtk/model/operators/SetProperty.h"
 #include "smtk/model/operators/TerrainExtraction.h"
 
 #include "smtk/operation/groups/InternalGroup.h"
@@ -40,7 +39,7 @@ namespace
 {
 typedef std::tuple<AddAuxiliaryGeometry, AddImage, AssignColors, CloseModel, CreateInstances,
   Delete, DivideInstance, EntityGroupOperation, ExportModelJSON, GroupAuxiliaryGeometry,
-  MergeInstances, SetInstancePrototype, SetProperty, TerrainExtraction>
+  MergeInstances, SetInstancePrototype, TerrainExtraction>
   OperationList;
 }
 

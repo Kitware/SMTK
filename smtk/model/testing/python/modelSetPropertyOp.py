@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 """
 Try running a "universal" operator on an imported model.
 """
@@ -18,6 +18,7 @@ import sys
 import smtk
 import smtk.io
 import smtk.model
+import smtk.operation
 import smtk.testing
 from uuid import uuid4
 import unittest
@@ -47,7 +48,7 @@ class TestModelSetPropertyOp(unittest.TestCase):
         [smtk.model.Model(x).setSession(session) for x in models]
         print('Applying operator to %d model(s)' % len(models))
 
-        op = smtk.model.SetProperty.create()
+        op = smtk.operation.SetProperty.create()
         op.parameters().find('name').setValue('superduperness')
         op.parameters().find('integer value').setNumberOfValues(1)
         op.parameters().find('integer value').setValue(42)

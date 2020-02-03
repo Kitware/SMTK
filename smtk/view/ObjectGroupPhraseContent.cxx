@@ -21,7 +21,6 @@
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
-#include "smtk/model/operators/SetProperty.h"
 
 #include "smtk/operation/Manager.h"
 
@@ -80,39 +79,39 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
     return;
   }
 
-  model->visitSources(
-    [this, &container, &location](const smtk::resource::ManagerPtr& rsrcMgr,
-      const smtk::operation::ManagerPtr& /*unused*/, const smtk::view::SelectionPtr &
-      /*unused*/) -> bool {
-      if (!rsrcMgr)
+  model->visitSources([this, &container, &location](const smtk::resource::ManagerPtr& rsrcMgr,
+                        const smtk::operation::ManagerPtr& /*unused*/,
+                        const smtk::view::ManagerPtr& /*unused*/, const smtk::view::SelectionPtr &
+                        /*unused*/) -> bool {
+    if (!rsrcMgr)
+    {
+      return true;
+    }
+    auto rsrcs = rsrcMgr->find(m_resourceFilter);
+    for (const auto& rsrc : rsrcs)
+    {
+      if (m_componentFilter.empty())
       {
-        return true;
+        auto phr = ResourcePhraseContent::createPhrase(
+          rsrc, PhraseContent::ContentType::EVERYTHING, location);
+        container.push_back(phr);
       }
-      auto rsrcs = rsrcMgr->find(m_resourceFilter);
-      for (const auto& rsrc : rsrcs)
+      else
       {
-        if (m_componentFilter.empty())
+        auto comps = rsrc->find(m_componentFilter);
+        std::cout << "ObjectGroupPhraseContent: Find " << comps.size() << " Components"
+                                                                          " with filter="
+                  << m_componentFilter << std::endl;
+        for (const auto& comp : comps)
         {
-          auto phr = ResourcePhraseContent::createPhrase(
-            rsrc, PhraseContent::ContentType::EVERYTHING, location);
+          auto phr = ComponentPhraseContent::createPhrase(
+            comp, PhraseContent::ContentType::EVERYTHING, location);
           container.push_back(phr);
         }
-        else
-        {
-          auto comps = rsrc->find(m_componentFilter);
-          std::cout << "ObjectGroupPhraseContent: Find " << comps.size() << " Components"
-                                                                            " with filter="
-                    << m_componentFilter << std::endl;
-          for (const auto& comp : comps)
-          {
-            auto phr = ComponentPhraseContent::createPhrase(
-              comp, PhraseContent::ContentType::EVERYTHING, location);
-            container.push_back(phr);
-          }
-        }
       }
-      return true;
-    });
+    }
+    return true;
+  });
   // TODO: sort phrases
 }
 

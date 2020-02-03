@@ -255,7 +255,8 @@ void qtResourceBrowser::sendSMTKSelectionToPanel(
 }
 
 void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
+  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
+  smtk::view::SelectionPtr seln)
 {
   m_p->m_seln = seln;
   if (m_p->m_seln)
@@ -273,11 +274,12 @@ void qtResourceBrowser::addSource(smtk::resource::ManagerPtr rsrcMgr,
       },
       "qtResourceBrowser: Update from SMTK selection.");
   }
-  m_p->m_phraseModel->addSource(rsrcMgr, operMgr, seln);
+  m_p->m_phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
 }
 
 void qtResourceBrowser::removeSource(smtk::resource::ManagerPtr rsrcMgr,
-  smtk::operation::ManagerPtr operMgr, smtk::view::SelectionPtr seln)
+  smtk::operation::ManagerPtr operMgr, smtk::view::ManagerPtr viewMgr,
+  smtk::view::SelectionPtr seln)
 {
   if (m_p->m_seln == seln)
   {
@@ -285,7 +287,7 @@ void qtResourceBrowser::removeSource(smtk::resource::ManagerPtr rsrcMgr,
   }
   m_p->m_seln = nullptr;
 
-  m_p->m_phraseModel->removeSource(rsrcMgr, operMgr, seln);
+  m_p->m_phraseModel->removeSource(rsrcMgr, operMgr, viewMgr, seln);
 }
 
 void qtResourceBrowser::hoverRow(const QModelIndex& idx)

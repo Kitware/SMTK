@@ -10,6 +10,7 @@
 #include "smtk/view/ResourcePhraseContent.h"
 
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/PhraseModel.h"
 
 #include "smtk/attribute/Attribute.h"
 
@@ -80,7 +81,28 @@ std::string ResourcePhraseContent::stringValue(ContentType contentType) const
       // We will not provide strings for these:
       case PhraseContent::COLOR:
       case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON:
+      case PhraseContent::ICON_LIGHTBG:
+      {
+        if (DescriptivePhrasePtr location = m_location.lock())
+        {
+          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          {
+            return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+          }
+        }
+      }
+      break;
+      case PhraseContent::ICON_DARKBG:
+      {
+        if (DescriptivePhrasePtr location = m_location.lock())
+        {
+          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          {
+            return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+          }
+        }
+      }
+      break;
       default:
         break;
     }
@@ -98,9 +120,8 @@ int ResourcePhraseContent::flagValue(ContentType contentType) const
       case PhraseContent::TITLE:
       case PhraseContent::SUBTITLE:
       case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON:
-      // This should return non-default values once we allow icons to be registered
-      // for components by their metadata.
+      case PhraseContent::ICON_LIGHTBG:
+      case PhraseContent::ICON_DARKBG:
       default:
         break;
     }
@@ -120,7 +141,8 @@ resource::FloatList ResourcePhraseContent::colorValue(ContentType contentType) c
       case PhraseContent::TITLE:
       case PhraseContent::SUBTITLE:
       case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON:
+      case PhraseContent::ICON_LIGHTBG:
+      case PhraseContent::ICON_DARKBG:
       default:
         break;
     }
@@ -145,7 +167,8 @@ bool ResourcePhraseContent::editStringValue(ContentType contentType, const std::
       // We will not provide strings for these:
       case PhraseContent::COLOR:
       case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON:
+      case PhraseContent::ICON_LIGHTBG:
+      case PhraseContent::ICON_DARKBG:
       default:
         break;
     }

@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
   ModelBrowser* qview = new ModelBrowser;
   auto config = smtk::view::Configuration::New("ModelBrowser", "SMTK Model");
   auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
-  phraseModel->addSource(resourceManager, operationManager, nullptr);
+  phraseModel->addSource(resourceManager, operationManager, nullptr, nullptr);
   qmodel->setPhraseModel(phraseModel);
   qview->setup(resourceManager, qmodel, qdelegate);
 

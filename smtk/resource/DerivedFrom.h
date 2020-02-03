@@ -54,6 +54,12 @@ public:
     return smtk::common::typeName<Self>() == typeName ? true : ParentResource::isOfType(typeName);
   }
 
+  virtual int numberOfGenerationsFromBase(const std::string& typeName) const override
+  {
+    return (smtk::common::typeName<Self>() == typeName ? 0 : 1 +
+          ParentResource::numberOfGenerationsFromBase(typeName));
+  }
+
 protected:
   /// Forward all constructor arguments to the parent class.
   template <typename... T>

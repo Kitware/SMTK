@@ -14,6 +14,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModelObserver.h"
 #include "smtk/view/Selection.h"
 
@@ -57,8 +58,9 @@ public:
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
   /// Subclasses (and others) may wish to invoke functions on the sources of data for the phrases.
-  using SourceVisitor = std::function<bool(const smtk::resource::ManagerPtr&,
-    const smtk::operation::ManagerPtr&, const smtk::view::SelectionPtr&)>;
+  using SourceVisitor =
+    std::function<bool(const smtk::resource::ManagerPtr&, const smtk::operation::ManagerPtr&,
+      const smtk::view::ManagerPtr&, const smtk::view::SelectionPtr&)>;
 
   using Operation = smtk::operation::Operation;
   using OperationPtr = smtk::operation::Operation::Ptr;
@@ -85,10 +87,10 @@ public:
   ///@{
   /// Indicate a resource and operation manager that should be monitored for changes.
   bool addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::SelectionPtr seln);
+    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
   /// Indicate a resource and operation manager that should no longer be monitored for changes.
   bool removeSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,
-    smtk::view::SelectionPtr seln);
+    smtk::view::ManagerPtr viewMgr, smtk::view::SelectionPtr seln);
   /// Stop listening for changes from all sources.
   bool resetSources();
   /// Invoke the visitor on each source that has been added to the model.
@@ -239,16 +241,18 @@ protected:
   {
     smtk::resource::ManagerPtr m_rsrcMgr;
     smtk::operation::ManagerPtr m_operMgr;
+    smtk::view::ManagerPtr m_viewMgr;
     smtk::view::SelectionPtr m_seln;
     smtk::resource::Observers::Key m_rsrcHandle;
     smtk::operation::Observers::Key m_operHandle;
     smtk::view::SelectionObservers::Key m_selnHandle;
     Source() {}
-    Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om,
+    Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm,
       smtk::view::SelectionPtr sn, smtk::resource::Observers::Key rh,
       smtk::operation::Observers::Key oh, smtk::view::SelectionObservers::Key sh)
       : m_rsrcMgr(rm)
       , m_operMgr(om)
+      , m_viewMgr(vm)
       , m_seln(sn)
       , m_rsrcHandle(rh)
       , m_operHandle(oh)

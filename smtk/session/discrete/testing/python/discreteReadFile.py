@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 from __future__ import print_function
 import os
 import sys
@@ -46,7 +46,7 @@ class TestDiscreteSession(smtk.testing.TestCase):
           SetEntityProperty(edge, 'name', as_string='edge 20')
           SetEntityProperty(body, 'visited', as_int='edge 20')
         """
-        spr = smtk.model.SetProperty.create()
+        spr = smtk.operation.SetProperty.create()
         if hasattr(ents, '__iter__'):
             [spr.parameters().associate(ent.component()) for ent in ents]
         else:

@@ -1,39 +1,4 @@
 <RCC>
-  <qresource prefix="/icons/entityTypes">
-    <file alias = "list_b.png">icons/list_b.png</file>
-    <file alias = "list_w.png">icons/list_w.png</file>
-    <file alias = "attribute_b.png">icons/attribute_b.png</file>
-    <file alias = "attribute_w.png">icons/attribute_w.png</file>
-    <file alias = "attributeResource_b.png">icons/attributeResource_b.png</file>
-    <file alias = "attributeResource_w.png">icons/attributeResource_w.png</file>
-    <file alias = "cell_01_b.png">icons/cell_01_b.png</file>
-    <file alias = "cell_01_w.png">icons/cell_01_w.png</file>
-    <file alias = "cell_02_b.png">icons/cell_02_b.png</file>
-    <file alias = "cell_02_w.png">icons/cell_02_w.png</file>
-    <file alias = "cell_04_b.png">icons/cell_04_b.png</file>
-    <file alias = "cell_04_w.png">icons/cell_04_w.png</file>
-    <file alias = "cell_08_b.png">icons/cell_08_b.png</file>
-    <file alias = "cell_08_w.png">icons/cell_08_w.png</file>
-    <file alias = "generic_entity_b.png">icons/generic_entity_b.png</file>
-    <file alias = "generic_entity_w.png">icons/generic_entity_w.png</file>
-    <file alias = "cell_04.png">icons/cell_04.png</file>
-    <file alias = "model_b.png">icons/model_b.png</file>
-    <file alias = "model_w.png">icons/model_w.png</file>
-    <file alias = "modelResource_b.png">icons/modelResource_b.png</file>
-    <file alias = "modelResource_w.png">icons/modelResource_w.png</file>
-    <file alias = "group_b.png">icons/group_b.png</file>
-    <file alias = "group_w.png">icons/group_w.png</file>
-    <file alias = "aux_geom_b.png">icons/aux_geom_b.png</file>
-    <file alias = "aux_geom_w.png">icons/aux_geom_w.png</file>
-    <file alias = "meshset_b.png">icons/meshset_b.png</file>
-    <file alias = "meshset_w.png">icons/meshset_w.png</file>
-    <file alias = "meshResource_b.png">icons/meshResource_b.png</file>
-    <file alias = "meshResource_w.png">icons/meshResource_w.png</file>
-    <file alias = "instance_b.png">icons/instance_b.png</file>
-    <file alias = "instance_b@2x.png">icons/instance_b@2x.png</file>
-    <file alias = "instance_w.png">icons/instance_w.png</file>
-    <file alias = "instance_w@2x.png">icons/instance_w@2x.png</file>
-  </qresource>
 
   <qresource prefix="/icons/display">
     <file alias = "eyeball.png">icons/eyeball.png</file>
