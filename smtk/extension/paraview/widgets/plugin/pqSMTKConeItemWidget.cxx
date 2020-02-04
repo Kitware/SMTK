@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/pqSMTKConeItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqConePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKConeItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqConePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
 #include "smtk/attribute/DoubleItem.h"

@@ -11,7 +11,7 @@
 #define smtk_extension_paraview_widgets_Registrar_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/paraview/widgets/Exports.h"
+#include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 #include "smtk/view/Manager.h"
 
 namespace smtk
@@ -23,7 +23,7 @@ namespace paraview
 namespace widgets
 {
 
-class SMTKPQWIDGETSPLUGIN_EXPORT Registrar
+class SMTKPQWIDGETSEXT_EXPORT Registrar
 {
 public:
   static void registerTo(const smtk::view::Manager::Ptr&);

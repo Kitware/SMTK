@@ -5,7 +5,8 @@ add_subdirectory(pluginsupport)
 
 set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/appcomponents/vtk.module"
-  "${CMAKE_CURRENT_SOURCE_DIR}/server/vtk.module")
+  "${CMAKE_CURRENT_SOURCE_DIR}/server/vtk.module"
+  "${CMAKE_CURRENT_SOURCE_DIR}/widgets/vtk.module")
 vtk_module_scan(
   MODULE_FILES ${module_files}
   PROVIDES_MODULES vtk_modules
@@ -25,7 +26,7 @@ if (TARGET ParaView::pqApplicationComponents)
   list(APPEND plugin_files
     appcomponents/plugin/paraview.plugin
     operators/paraview.plugin
-    widgets/paraview.plugin)
+    widgets/plugin/paraview.plugin)
 endif ()
 
 paraview_plugin_scan(

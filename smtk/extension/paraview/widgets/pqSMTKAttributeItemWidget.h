@@ -10,6 +10,7 @@
 #ifndef smtk_extension_paraview_widgets_pqSMTKAttributeItemWidget_h
 #define smtk_extension_paraview_widgets_pqSMTKAttributeItemWidget_h
 
+#include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 #include "smtk/extension/qt/qtItem.h"
 
 class vtkSMProxy;
@@ -28,7 +29,7 @@ class pqInteractivePropertyWidget;
   * if the item's IsOptional flag is true, it creates a label showing
   * the item's title, etc.
   */
-class pqSMTKAttributeItemWidget : public smtk::extension::qtItem
+class SMTKPQWIDGETSEXT_EXPORT pqSMTKAttributeItemWidget : public smtk::extension::qtItem
 {
   Q_OBJECT
 public:

@@ -7,6 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef smtk_extension_paraview_appcomponents_pqSMTKAttributePanel_h
+#define smtk_extension_paraview_appcomponents_pqSMTKAttributePanel_h
+
+#include "smtk/extension/paraview/appcomponents/smtkPQComponentsExtModule.h"
+
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/resource/Observer.h"
@@ -29,7 +34,7 @@ class pqPipelineSource;
   * This panel will create a new SMTK attribute UI manager each time the
   * resource to be displayed is switched for a different resource.
   */
-class pqSMTKAttributePanel : public QDockWidget
+class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKAttributePanel : public QDockWidget
 {
   Q_OBJECT
   typedef QDockWidget Superclass;
@@ -99,3 +104,5 @@ protected:
   smtk::resource::Observers::Key m_observer;
   pqPropertyLinks m_propertyLinks;
 };
+
+#endif // smtk_extension_paraview_appcomponents_pqSMTKAttributePanel_h

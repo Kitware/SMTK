@@ -1,0 +1,9 @@
+NAME
+  smtkPQWidgetsExt
+DEPENDS
+  ParaView::pqCore
+PRIVATE_DEPENDS
+  ParaView::pqApplicationComponents
+  ParaView::pqComponents
+  ParaView::VTKExtensionsExtraction
+  smtkPVServerExt

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/pqSMTKInfiniteCylinderItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKInfiniteCylinderItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
 
 #include "smtk/attribute/DoubleItem.h"
