@@ -74,12 +74,7 @@ pqSMTKCloseWithActiveOperationBehavior::pqSMTKCloseWithActiveOperationBehavior(Q
           {
             ret = pqSMTKCloseWithActiveOperationBehavior::showDialog(g_numberOfActiveOperations);
           }
-          // closeEvent->setAccepted(ret == QMessageBox::Close);
-          if (ret == QMessageBox::Close)
-          {
-            closeEvent->accept();
-          }
-          else
+          if (ret != QMessageBox::Close)
           {
             closeEvent->ignore();
           }
