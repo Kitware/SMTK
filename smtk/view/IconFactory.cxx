@@ -21,7 +21,7 @@
 namespace
 {
 // Key corresponding to the default icon constructor
-static const std::string defaultName = "_default";
+const std::string defaultName = "_default";
 }
 
 namespace smtk

@@ -89,7 +89,7 @@ SVGIconEngine::SVGIconEngine(const std::string& iconBuffer)
 }
 
 void SVGIconEngine::paint(
-  QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State state)
+  QPainter* painter, const QRect& rect, QIcon::Mode /*mode*/, QIcon::State /*state*/)
 {
   QSvgRenderer renderer(data);
   renderer.render(painter, rect);
