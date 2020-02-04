@@ -35,10 +35,10 @@ namespace
 {
 // PersistentObjects' colors are held as a std::vector<double> property using
 // the following keyword.
-static const std::string colorProperty = "color";
+const std::string colorProperty = "color";
 
 // If there is no color property on the object, default to coloring it gray.
-static const std::string defaultFillColor = "#808080";
+const std::string defaultFillColor = "#808080";
 }
 
 namespace smtk
@@ -64,7 +64,7 @@ std::string SVGIconConstructor::operator()(
 }
 
 std::string DefaultIconConstructor::operator()(
-  const smtk::resource::PersistentObject&, const std::string& secondaryColor) const
+  const smtk::resource::PersistentObject&, const std::string&) const
 {
   return "";
 }
