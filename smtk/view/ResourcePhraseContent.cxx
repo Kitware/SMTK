@@ -85,9 +85,12 @@ std::string ResourcePhraseContent::stringValue(ContentType contentType) const
       {
         if (DescriptivePhrasePtr location = m_location.lock())
         {
-          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          if (location->phraseModel())
           {
-            return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+            if (ManagerPtr viewManager = location->phraseModel()->manager())
+            {
+              return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+            }
           }
         }
       }
@@ -96,9 +99,12 @@ std::string ResourcePhraseContent::stringValue(ContentType contentType) const
       {
         if (DescriptivePhrasePtr location = m_location.lock())
         {
-          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          if (location->phraseModel())
           {
-            return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+            if (ManagerPtr viewManager = location->phraseModel()->manager())
+            {
+              return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+            }
           }
         }
       }
