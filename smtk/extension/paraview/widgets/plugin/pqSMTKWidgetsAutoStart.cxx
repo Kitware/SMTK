@@ -7,18 +7,18 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/pqSMTKWidgetsAutoStart.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKWidgetsAutoStart.h"
 
 #include "smtk/view/Selection.h"
 
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKConeItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKInfiniteCylinderItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKLineItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKPlaneItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKPointItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKSphereItemWidget.h"
+#include "smtk/extension/paraview/widgets/plugin/pqSMTKSplineItemWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKBoxItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqSMTKConeItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqSMTKInfiniteCylinderItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqSMTKLineItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqSMTKPlaneItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqSMTKPointItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqSMTKSphereItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqSMTKSplineItemWidget.h"
 #include "smtk/extension/paraview/widgets/qtSimpleExpressionEvaluationView.h"
 
 #include "smtk/extension/qt/qtSMTKUtilities.h"

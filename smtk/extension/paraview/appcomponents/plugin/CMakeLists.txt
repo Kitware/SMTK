@@ -1,8 +1,6 @@
 set(sources
   pqSMTKAppComponentsAutoStart.cxx
   pqSMTKAppComponentsAutoStart.h
-  pqSMTKAttributePanel.cxx
-  pqSMTKAttributePanel.h
   pqSMTKCallObserversOnMainThreadBehavior.cxx
   pqSMTKCallObserversOnMainThreadBehavior.h
   pqSMTKCloseResourceBehavior.cxx

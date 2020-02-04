@@ -10,7 +10,7 @@
 #include "smtk/extension/paraview/appcomponents/plugin/pqSMTKDisplayAttributeOnLoadBehavior.h"
 
 // SMTK
-#include "smtk/extension/paraview/appcomponents/plugin/pqSMTKAttributePanel.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKAttributePanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"

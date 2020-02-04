@@ -1,5 +1,6 @@
 set(classes
   Registrar
+  pqSMTKAttributePanel
   pqSMTKBehavior
   pqSMTKRenderResourceBehavior
   pqSMTKResource

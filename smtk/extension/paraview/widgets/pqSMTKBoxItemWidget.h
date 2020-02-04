@@ -11,6 +11,7 @@
 #define smtk_extension_paraview_widgets_pqSMTKBoxItemWidget_h
 
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidget.h"
+#include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
 class QCheckBox;
 
@@ -31,7 +32,7 @@ class QCheckBox;
   * determine a default box based on model geometry loaded into ParaView,
   * as the underlying widget supports this.
   */
-class pqSMTKBoxItemWidget : public pqSMTKAttributeItemWidget
+class SMTKPQWIDGETSEXT_EXPORT pqSMTKBoxItemWidget : public pqSMTKAttributeItemWidget
 {
   Q_OBJECT
 public:
