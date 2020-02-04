@@ -26,6 +26,7 @@
 #include "smtk/view/icons/mesh_svg.h"
 #include "smtk/view/icons/model_svg.h"
 #include "smtk/view/icons/vertex_svg.h"
+#include "smtk/view/icons/volume_svg.h"
 
 #include <regex>
 #include <vector>
@@ -104,7 +105,7 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
           case smtk::model::FACE:
             return face_svg;
           case smtk::model::VOLUME:
-          //          return volume_svg;
+            return volume_svg;
           default:
             break;
         }
