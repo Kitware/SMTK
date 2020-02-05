@@ -45,8 +45,8 @@ public:
 
   std::string typeName() const { return m_typeName; }
   Index index() const { return m_index; }
-  const smtk::common::UUID& id() const { return m_id; }
-  const std::string& location() const { return m_location; }
+  const smtk::common::UUID& id() const;
+  const std::string& location() const;
 
   /// Return the resource for which the instance is a surrogate.
   ResourcePtr resource() const;
