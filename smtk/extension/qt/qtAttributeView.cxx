@@ -374,13 +374,10 @@ void qtAttributeView::createWidget()
   this->updateAssociationEnableState(smtk::attribute::AttributePtr());
   BottomLayout->addWidget(this->Internals->AssociationsWidget);
 
-  this->Internals->ListTable->horizontalHeader()->setSectionResizeMode(
-    QHeaderView::ResizeToContents);
   this->Internals->ValuesTable->horizontalHeader()->setSectionResizeMode(
     QHeaderView::ResizeToContents);
   this->Internals->ValuesTable->verticalHeader()->setSectionResizeMode(
     QHeaderView::ResizeToContents);
-  this->Internals->ListTable->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
   this->Internals->ValuesTable->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
 
   // signals/slots
@@ -909,7 +906,18 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->ListTable->setHorizontalHeaderItem(status_column, new QTableWidgetItem(""));
   this->Internals->ListTable->setHorizontalHeaderItem(
     name_column, new QTableWidgetItem(viewAtt ? "Name" : "Property"));
+  // Lets set up the column behavior
+  // The Type and Status Columns should be size to fit their contents while
+  // the Name field should stretch to take up the space
   this->Internals->ListTable->setHorizontalHeaderItem(type_column, new QTableWidgetItem("Type"));
+  this->Internals->ListTable->horizontalHeader()->setSectionResizeMode(
+    status_column, QHeaderView::ResizeToContents);
+  this->Internals->ListTable->horizontalHeader()->setSectionResizeMode(
+    name_column, QHeaderView::Stretch);
+  this->Internals->ListTable->horizontalHeader()->setSectionResizeMode(
+    type_column, QHeaderView::ResizeToContents);
+  this->Internals->ListTable->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+  this->Internals->ListTable->horizontalHeader()->setStretchLastSection(false);
   if (this->Internals->AllDefs.size() == 1)
   {
     // If there is only one attribute type then there is no reason to
@@ -960,11 +968,6 @@ void qtAttributeView::onViewBy(int viewBy)
     }
   }
   this->Internals->ListTable->blockSignals(false);
-  // Only resize the table if we are showing the type column
-  if (this->Internals->AllDefs.size() != 1)
-  {
-    this->Internals->ListTable->resizeColumnsToContents();
-  }
 
   QSplitter* frame = qobject_cast<QSplitter*>(this->Widget);
   if (viewAtt)
