@@ -776,7 +776,8 @@ endif()
 # for an example of a plugin contract file.
 ################################################################################
 
-if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILE_URLS AND NOT SMTK_ENABLE_SANITIZER)
+if (SMTK_ENABLE_TESTING AND SMTK_PLUGIN_CONTRACT_FILE_URLS AND
+    NOT SMTK_ENABLE_SANITIZER AND NOT SMTK_ENABLE_COVERAGE)
   include(CMake/SMTKPluginTestingMacros.cmake)
 
   list(REMOVE_DUPLICATES SMTK_PLUGIN_CONTRACT_FILE_URLS)

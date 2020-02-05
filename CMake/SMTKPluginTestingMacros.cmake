@@ -37,11 +37,18 @@ function(smtk_test_plugin test_plugin_file_url)
   # Derive a test name from the contract file name.
   get_filename_component(test_name ${test_plugin_file_url} NAME_WE)
 
+  set(ctest_extra_args)
+  if (CMAKE_MAKE_PROGRAM)
+    list(APPEND ctest_extra_args
+      --build-makeprogram "${CMAKE_MAKE_PROGRAM}")
+  endif ()
+
   # Add a test that builds and tests the plugin, but does not install it.
   add_test(NAME ${test_name}
     COMMAND ${CMAKE_CTEST_COMMAND}
     --build-and-test ${src_dir} ${build_dir}
     --build-generator ${CMAKE_GENERATOR}
+    ${ctest_extra_args}
     --build-options
       -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
       -DENABLE_TESTING=ON
