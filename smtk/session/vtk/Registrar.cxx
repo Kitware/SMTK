@@ -64,7 +64,7 @@ public:
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
   resourceManager->registerResource<smtk::session::vtk::Resource>(read, write);
-  static bool vtkBackend = RegisterVTKBackend::registerClass();
+  RegisterVTKBackend::registerClass();
 }
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)

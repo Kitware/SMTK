@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
       qCritical() << "ERROR loading model file " << modelFile << "\n";
       return 1;
     }
-    bool added = resourceManager->add(modelResource);
+    resourceManager->add(modelResource);
 
     // If model resource loaded, then associate it to the attribute resource
     attResource->associate(modelResource);

@@ -460,9 +460,9 @@ void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCell
     if (cellPnts[0] == lastPid)
     {
       // OK we are traversing the polyline from first to last
-      for (vtkIdType i = 1; i < nPnts; i++)
+      for (vtkIdType ii = 1; ii < nPnts; ii++)
       {
-        ids->InsertNextId(cellPnts[i]);
+        ids->InsertNextId(cellPnts[ii]);
       }
       pid = cellPnts[nPnts - 1];
     }
@@ -485,11 +485,11 @@ void vtkCleanPolylines::TraversePolyLine(vtkIdType startPid, vtkIdType startCell
     input->GetPointCells(pid, nCells, pntCells);
     // Find the next cell that has not been rejected or moved
     cell = -1;
-    for (vtkIdType i = 0; i < nCells; i++)
+    for (vtkIdType ii = 0; ii < nCells; ii++)
     {
-      if (marks[pntCells[i]] == 1)
+      if (marks[pntCells[ii]] == 1)
       {
-        cell = pntCells[i];
+        cell = pntCells[ii];
         break;
       }
     }
