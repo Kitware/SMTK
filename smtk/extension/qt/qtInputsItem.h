@@ -46,6 +46,7 @@ public:
   /// \brief Forces the object to act as if the underlying item was modified.
   /// Used mainly by helper classes like qtDiscreteValueEditor
   void forceUpdate();
+  bool isFixedWidth() const override;
 
 public slots:
   void setOutputOptional(int);

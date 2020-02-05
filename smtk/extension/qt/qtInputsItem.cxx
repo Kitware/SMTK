@@ -1730,3 +1730,31 @@ void qtInputsItem::onChildItemModified()
 {
   emit this->modified();
 }
+
+bool qtInputsItem::isFixedWidth() const
+{
+  smtk::attribute::ValueItemPtr item = m_itemInfo.itemAs<ValueItem>();
+  if (!item)
+  {
+    return true;
+  }
+
+  if (item->isDiscrete())
+  {
+    if (item->numberOfChildrenItems())
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+  int widthValue = 1;
+  m_itemInfo.component().attributeAsInt("FixedWidth", widthValue);
+  if (widthValue > 0)
+  {
+    return true;
+  }
+  return false;
+}

@@ -421,11 +421,14 @@ void qtGroupItem::addItemsToTable(int index)
   if (!this->Internals->ItemsTable)
   {
     this->Internals->ItemsTable = new qtTableWidget(this->Internals->ChildrensFrame);
-    this->Internals->ItemsTable->horizontalHeader()->setStretchLastSection(true);
     this->Internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     this->Internals->ItemsTable->setColumnCount(1); // for minus button
     this->Internals->ItemsTable->setHorizontalHeaderItem(0, new QTableWidgetItem(" "));
+    this->Internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
+      0, QHeaderView::ResizeToContents);
+    this->Internals->ItemsTable->verticalHeader()->setSectionResizeMode(
+      QHeaderView::ResizeToContents);
     frameLayout->addWidget(this->Internals->ItemsTable);
   }
 
@@ -433,6 +436,14 @@ void qtGroupItem::addItemsToTable(int index)
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QList<qtItem*> itemList;
   int added = 0;
+  // We need to determine if the last column needs to stretch to fill extra space.
+  // The conditions are:
+  // 1. All of the qtItems are of fixedWidth or number of qtItems are 0
+  // 2. The last column is not of fixed width - there seems to be a bug in
+  // QT when setting the last column to be Interactive - The table does not
+  // properly expand to fill the area provided.  Setting the last column to
+  // stretch seems to fix this.
+  bool stretchLastColumn = true;
   for (j = 0; j < m; j++)
   {
     auto citem = item->item(index, static_cast<int>(j));
@@ -465,6 +476,17 @@ void qtGroupItem::addItemsToTable(int index)
         std::string strItemLabel = citem->label().empty() ? citem->name() : citem->label();
         this->Internals->ItemsTable->setHorizontalHeaderItem(
           numCols + 1, new QTableWidgetItem(strItemLabel.c_str()));
+        if (childItem->isFixedWidth())
+        {
+          this->Internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
+            numCols + 1, QHeaderView::ResizeToContents);
+        }
+        else
+        {
+          this->Internals->ItemsTable->horizontalHeader()->setSectionResizeMode(
+            numCols + 1, QHeaderView::Interactive);
+          stretchLastColumn = false;
+        }
       }
       childItem->setLabelVisible(false);
       this->Internals->ItemsTable->setCellWidget(index, added + 1, childItem->widget());
@@ -475,6 +497,13 @@ void qtGroupItem::addItemsToTable(int index)
       connect(childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()));
     }
   }
+  // Check to see if the last column is not fixed width and set the  table to stretch
+  // the last column if that is the case
+  if (!(itemList.isEmpty() || itemList.back()->isFixedWidth()))
+  {
+    stretchLastColumn = true;
+  }
+  this->Internals->ItemsTable->horizontalHeader()->setStretchLastSection(stretchLastColumn);
   QToolButton* minusButton = nullptr;
   // if there are items
   if (added > 0)
@@ -504,7 +533,17 @@ void qtGroupItem::onChildWidgetSizeChanged()
 {
   if (this->Internals->ItemsTable)
   {
-    this->Internals->ItemsTable->resizeColumnsToContents();
+    // There seems to be a bug in QT - if you ask the table to
+    // resize all of its columns to fit their data, the table may
+    // not fill up the space provided.  resizing each column seperately
+    // does not seem to have this issue.
+    int i, n = this->Internals->ItemsTable->columnCount();
+    for (i = 0; i < n; i++)
+    {
+      this->Internals->ItemsTable->resizeColumnToContents(i);
+    }
+    // We need to resize the height of the cell incase the
+    // child's height has changed
     this->Internals->ItemsTable->resizeRowsToContents();
     emit this->widgetSizeChanged();
   }

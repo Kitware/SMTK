@@ -75,6 +75,7 @@ public:
   bool isLeafItem() { return m_isLeafItem; }
 
   virtual void setLabelVisible(bool) { ; }
+  virtual bool isFixedWidth() const;
 
   void showAdvanceLevelOverlay(bool);
   bool useSelectionManager() const { return m_useSelectionManager; }
