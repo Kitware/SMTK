@@ -144,12 +144,27 @@ bool qtSelectorView::createSelector()
   this->setFixedLabelWidth(labelWidth);
   smtk::view::Configuration::Component comp; // Right now not being used
   this->Internals->m_qtSelectorAttribute =
-    new qtAttribute(this->Internals->m_selectorAttribute, comp, this->widget(), this);
+    new qtAttribute(this->Internals->m_selectorAttribute, comp, this->widget(), this, true);
   this->Internals->m_qtSelectorAttribute->createBasicLayout(true);
   layout->addWidget(this->Internals->m_qtSelectorAttribute->widget());
   QObject::connect(
     this->Internals->m_qtSelectorAttribute, SIGNAL(modified()), this, SLOT(selectionChanged()));
   return true;
+}
+
+void qtSelectorView::refreshSelector()
+{
+  if (this->Internals->m_qtSelectorAttribute == nullptr)
+  {
+    return; // there is nothing to refresh
+  }
+  this->Internals->m_qtSelectorAttribute->removeItems();
+  this->Internals->m_qtSelectorAttribute->createBasicLayout(true);
+}
+
+bool qtSelectorView::isEmpty() const
+{
+  return !this->displayItem(this->Internals->m_selectorItem);
 }
 
 bool qtSelectorView::createChildren()
@@ -282,6 +297,7 @@ void qtSelectorView::clearChildViews()
 
 void qtSelectorView::updateUI()
 {
+  this->refreshSelector();
   foreach (qtBaseView* childView, this->Internals->ChildViews)
   {
     childView->updateUI();
@@ -290,6 +306,7 @@ void qtSelectorView::updateUI()
 
 void qtSelectorView::onShowCategory()
 {
+  this->refreshSelector();
   foreach (qtBaseView* childView, this->Internals->ChildViews)
   {
     childView->onShowCategory();
@@ -299,6 +316,7 @@ void qtSelectorView::onShowCategory()
 
 void qtSelectorView::showAdvanceLevelOverlay(bool show)
 {
+  this->refreshSelector();
   foreach (qtBaseView* childView, this->Internals->ChildViews)
   {
     childView->showAdvanceLevelOverlay(show);
@@ -322,9 +340,20 @@ void qtSelectorView::selectionChanged()
   // Lets iterate over the views and set the proper visibility
   int newIndex = this->Internals->m_selectorItem->discreteIndex();
   int i, n = this->Internals->ChildViews.size();
-  for (i = 0; i < n; i++)
+  if (this->Internals->m_selectorItem->isSet())
   {
-    this->Internals->ChildViews.at(i)->widget()->setVisible(
-      this->Internals->m_viewEnumIdices.at(i) == newIndex);
+    for (i = 0; i < n; i++)
+    {
+      this->Internals->ChildViews.at(i)->widget()->setVisible(
+        this->Internals->m_viewEnumIdices.at(i) == newIndex);
+    }
+  }
+  else // In this case the selector item has not been set so there is
+       // nothing to be displayed.
+  {
+    for (i = 0; i < n; i++)
+    {
+      this->Internals->ChildViews.at(i)->widget()->setVisible(false);
+    }
   }
 }

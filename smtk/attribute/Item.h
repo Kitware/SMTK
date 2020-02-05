@@ -80,13 +80,16 @@ public:
   /// @{
   /// \brief tests the validity of an item
   ///
-  /// Returns true if the item is considered valid.  If a non-empty
-  /// set of categories is passed into the method then they are used to
+  /// Returns true if the item is considered valid.  If a set of categories is
+  /// passed into the method then they are used to
   /// "filter" the item.  This means the item will check to see if it passes
   /// its passCategoryCheck method and if it fails (indicating the item is to
   /// be passed over) isValid will return true regardless of the item's contents.
   bool isValid() const;
-  virtual bool isValid(const std::set<std::string>& categories) const = 0;
+  bool isValid(const std::set<std::string>& categories) const
+  {
+    return this->isValidInternal(true, categories);
+  }
   /// @}
 
   /// @{
@@ -218,7 +221,10 @@ protected:
   // Internal method for rotate()
   template <typename T>
   bool rotateVector(std::vector<T>& v, std::size_t fromPosition, std::size_t toPosition);
-
+  ///\brief Internal implementation of calculating the validity of the item.  If useCategories
+  /// is true then the set of categories will be taken into consideration.
+  virtual bool isValidInternal(
+    bool useCategories, const std::set<std::string>& categories) const = 0;
   Attribute* m_attribute;
   Item* m_owningItem;
   int m_position;

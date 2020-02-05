@@ -58,7 +58,7 @@ AttributePtr Item::attribute() const
 bool Item::isValid() const
 {
   std::set<std::string> cats;
-  return this->isValid(cats);
+  return this->isValidInternal(false, cats);
 }
 
 std::string Item::name() const

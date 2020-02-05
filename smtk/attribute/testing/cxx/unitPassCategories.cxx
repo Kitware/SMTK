@@ -44,7 +44,7 @@ bool testCategories(
     std::cerr << att->name() << ":failed ";
     status = false;
   }
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 4; i++)
   {
     if (s[i]->categories().passes(cats) == result[i + 1])
     {
@@ -81,7 +81,7 @@ bool testValidity(
     status = false;
   }
 
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 4; i++)
   {
     if (s[i]->isValid(cats) == result[i + 1])
     {
@@ -109,18 +109,19 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   // Lets find the Attribute and its Items
   AttributePtr att = attRes->findAttribute("TestAtt");
   smtkTest(att != nullptr, "Could not find attribute!");
-  ItemPtr s[3];
-  bool catResults[4], valResults[4];
+  ItemPtr s[4];
+  bool catResults[5], valResults[5];
   std::set<std::string> cats;
   bool status = true;
   s[0] = att->find("s0");
   s[1] = att->find("s1");
   s[2] = att->find("s2");
+  s[3] = att->find("s3");
 
   std::cerr << "TestAtt Categories: ";
   att->categories().print();
 
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 4; i++)
   {
     smtkTest(s[i] != nullptr, "Could not find s" << i << "!");
     std::cerr << "s" << i << " Categories: ";
@@ -131,24 +132,28 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   // s0 should pass if given A, a, b, or nothing
   // s1 should pass if given b, c or nothing
   // s2 should pass if only given nothing or A or (d and e)
+  // s3 should pass if only given nothing or A or (a and b) or (c or d)
 
   // Passing Validity checks
   // A should pass if  given A or a or Z - only s0 has a default value
   // s0 should pass always
   // s1 should pass if not given b or c
   // s2 should pass if not given {A or (d and e)}
+  // s3 should pass if not given {A or (a and b) or (c or d)}
 
   std::cerr << prefix << " Testing Categories with {} :";
-  catResults[0] = true;
-  catResults[1] = true;
-  catResults[2] = true;
-  catResults[3] = true;
+  catResults[0] = false;
+  catResults[1] = false;
+  catResults[2] = false;
+  catResults[3] = false;
+  catResults[4] = false;
   status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {} :";
-  valResults[0] = false;
+  valResults[0] = true;
   valResults[1] = true;
-  valResults[2] = false;
-  valResults[3] = false;
+  valResults[2] = true;
+  valResults[3] = true;
+  valResults[4] = true;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
   std::cerr << prefix << " Testing Categories with {Z} :";
@@ -157,12 +162,14 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   catResults[1] = false;
   catResults[2] = false;
   catResults[3] = false;
+  catResults[4] = false;
   status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {Z} :";
   valResults[0] = true;
   valResults[1] = true;
   valResults[2] = true;
   valResults[3] = true;
+  valResults[4] = true;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
   std::cerr << prefix << " Testing Categories with {Z,A} :";
@@ -171,12 +178,14 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   catResults[1] = true;
   catResults[2] = false;
   catResults[3] = true;
+  catResults[4] = true;
   status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {Z,A} :";
   valResults[0] = false;
   valResults[1] = true;
   valResults[2] = true;
   valResults[3] = false;
+  valResults[4] = false;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
   std::cerr << prefix << " Testing Categories with {Z,b} :";
@@ -186,27 +195,48 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   catResults[1] = true;
   catResults[2] = true;
   catResults[3] = false;
+  catResults[4] = false;
   status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {Z,b} :";
   valResults[0] = false;
   valResults[1] = true;
   valResults[2] = false;
   valResults[3] = true;
+  valResults[4] = true;
+  status = (testValidity(att, s, cats, valResults)) ? status : false;
+
+  std::cerr << prefix << " Testing Categories with {Z,a,b} :";
+  cats.insert("a");
+  catResults[0] = true;
+  catResults[1] = true;
+  catResults[2] = true;
+  catResults[3] = false;
+  catResults[4] = true;
+  status = (testCategories(att, s, cats, catResults)) ? status : false;
+  std::cerr << prefix << " Testing Validity with {Z,a,b} :";
+  valResults[0] = false;
+  valResults[1] = true;
+  valResults[2] = false;
+  valResults[3] = true;
+  valResults[4] = false;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
   std::cerr << prefix << " Testing Categories with {Z,c} :";
   cats.insert("c");
+  cats.erase("a");
   cats.erase("b");
   catResults[0] = true;
   catResults[1] = false;
   catResults[2] = true;
   catResults[3] = false;
+  catResults[4] = true;
   status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {Z,c} :";
   valResults[0] = false;
   valResults[1] = true;
   valResults[2] = false;
   valResults[3] = true;
+  valResults[4] = false;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
   std::cerr << prefix << " Testing Categories with {Z,d} :";
@@ -216,12 +246,14 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   catResults[1] = false;
   catResults[2] = false;
   catResults[3] = false;
+  catResults[4] = true;
   status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {Z,d} :";
   valResults[0] = true;
   valResults[1] = true;
   valResults[2] = true;
   valResults[3] = true;
+  valResults[4] = false;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
   std::cerr << prefix << " Testing Categories with {Z,d,e} :";
@@ -230,12 +262,14 @@ bool testResource(const attribute::ResourcePtr& attRes, const std::string& prefi
   catResults[1] = false;
   catResults[2] = false;
   catResults[3] = true;
+  catResults[4] = true;
   status = (testCategories(att, s, cats, catResults)) ? status : false;
   std::cerr << prefix << " Testing Validity with {Z,d,e} :";
   valResults[0] = false;
   valResults[1] = true;
   valResults[2] = true;
   valResults[3] = false;
+  valResults[4] = false;
   status = (testValidity(att, s, cats, valResults)) ? status : false;
 
   return status;
@@ -257,6 +291,19 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   sItemDef2->localCategories().insert("d");
   sItemDef2->localCategories().insert("e");
   sItemDef2->localCategories().setMode(Categories::Set::CombinationMode::All);
+  StringItemDefinitionPtr sItemDef3 = A->addItemDefinition<StringItemDefinition>("s3");
+  sItemDef3->addDiscreteValue("a", "e1");
+  sItemDef3->addDiscreteValue("b", "e2");
+  smtk::attribute::Categories::Set es;
+  es.insert("a");
+  es.insert("b");
+  es.setMode(Categories::Set::CombinationMode::All);
+  sItemDef3->setEnumCategories("e1", es);
+  es.reset();
+  es.insert("c");
+  es.insert("d");
+  es.setMode(Categories::Set::CombinationMode::Any);
+  sItemDef3->setEnumCategories("e2", es);
   attRes->finalizeDefinitions();
   attRes->createAttribute("TestAtt", "A");
 }

@@ -34,13 +34,14 @@ Item::Type DateTimeItem::type() const
   return Item::DateTimeType;
 }
 
-bool DateTimeItem::isValid(const std::set<std::string>& cats) const
+bool DateTimeItem::isValidInternal(
+  bool useCategories, const std::set<std::string>& categories) const
 {
   // If we have been given categories we need to see if the item passes its
   // category checks - if it doesn't it means its not be taken into account
   // for validity checking so just return true
 
-  if (!(cats.empty() || this->categories().passes(cats)))
+  if (useCategories && !this->categories().passes(categories))
   {
     return true;
   }

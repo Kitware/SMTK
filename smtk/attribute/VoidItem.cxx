@@ -43,7 +43,7 @@ Item::Type VoidItem::type() const
   return VoidType;
 }
 
-bool VoidItem::isValid(const std::set<std::string>& /*categories*/) const
+bool VoidItem::isValidInternal(bool, const std::set<std::string>&) const
 {
   return true;
 }

@@ -33,3 +33,18 @@ Icons for Resources and Components are now represented by SVG images, rather tha
 
 #### Added registration system for Resource and Component icons
 Consuming applications can now register icon sets for Resources and Components, providing for more customization options and the use of icons that more closely reflect the entities they represent.
+### Changes to qtSelectorView
+* Now properly works with Analysis categories
+* The view is considered empty if the selector item does not pass its category checks
+
+### qtBaseView and qtBaseAttributeView Changes
+* Made the following methods const
+  * displayItem
+  * isItemWriteable
+  * advanceLevel
+  * categoryEnabled
+  * currentCategory
+
+### qtAttribute Changes
+* Added a removeItems methods - this removes all of the qtItems from the qtAttribute and allows createBasicLayout to be called again
+* Added an option to createWidget that will allow a widget to be created even if the attribute's items are filtered out by categories and/or advanced level filtering.

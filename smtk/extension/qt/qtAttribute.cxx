@@ -70,24 +70,20 @@ public:
 };
 
 qtAttribute::qtAttribute(smtk::attribute::AttributePtr myAttribute,
-  const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView)
+  const smtk::view::Configuration::Component& comp, QWidget* p, qtBaseView* myView,
+  bool createWidgetWhenEmpty)
 {
   m_internals = new qtAttributeInternals(myAttribute, comp, p, myView);
   m_widget = nullptr;
   m_useSelectionManager = false;
-  this->createWidget();
+  this->createWidget(createWidgetWhenEmpty);
   m_isEmpty = true;
 }
 
 qtAttribute::~qtAttribute()
 {
   // First Clear all the items
-  for (int i = 0; i < m_internals->m_items.count(); i++)
-  {
-    m_internals->m_items.value(i)->markForDeletion();
-  }
-
-  m_internals->m_items.clear();
+  this->removeItems();
   if (m_widget)
   {
     delete m_widget;
@@ -96,7 +92,17 @@ qtAttribute::~qtAttribute()
   delete m_internals;
 }
 
-void qtAttribute::createWidget()
+void qtAttribute::removeItems()
+{
+  for (int i = 0; i < m_internals->m_items.count(); i++)
+  {
+    m_internals->m_items.value(i)->markForDeletion();
+  }
+
+  m_internals->m_items.clear();
+}
+
+void qtAttribute::createWidget(bool createWidgetWhenEmpty)
 {
   // Initially there are no items being displayed
   m_isEmpty = true;
@@ -128,7 +134,7 @@ void qtAttribute::createWidget()
   {
     numShowItems = static_cast<int>(att->associations() ? n + 1 : n);
   }
-  if (numShowItems == 0)
+  if ((numShowItems == 0) && !createWidgetWhenEmpty)
   {
     return;
   }

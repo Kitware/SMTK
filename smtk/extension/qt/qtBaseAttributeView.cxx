@@ -109,7 +109,7 @@ void qtBaseAttributeView::getDefinitions(
   }
 }
 
-bool qtBaseAttributeView::displayItem(smtk::attribute::ItemPtr item)
+bool qtBaseAttributeView::displayItem(smtk::attribute::ItemPtr item) const
 {
   if (!item)
   {
@@ -118,17 +118,17 @@ bool qtBaseAttributeView::displayItem(smtk::attribute::ItemPtr item)
   return this->advanceLevelTest(item) && this->categoryTest(item);
 }
 
-bool qtBaseAttributeView::categoryTest(smtk::attribute::ItemPtr item)
+bool qtBaseAttributeView::categoryTest(smtk::attribute::ItemPtr item) const
 {
   return m_ignoreCategories || this->uiManager()->passItemCategoryCheck(item->definition());
 }
 
-bool qtBaseAttributeView::isItemWriteable(smtk::attribute::ItemPtr item)
+bool qtBaseAttributeView::isItemWriteable(smtk::attribute::ItemPtr item) const
 {
   return this->uiManager()->passAdvancedCheck(item->advanceLevel(1));
 }
 
-bool qtBaseAttributeView::advanceLevelTest(smtk::attribute::ItemPtr item)
+bool qtBaseAttributeView::advanceLevelTest(smtk::attribute::ItemPtr item) const
 {
   return this->uiManager()->passAdvancedCheck(item->advanceLevel(0));
 }
@@ -640,13 +640,13 @@ void qtBaseAttributeView::enableShowBy(int enable)
   this->onShowCategory();
 }
 
-std::string qtBaseAttributeView::currentCategory()
+std::string qtBaseAttributeView::currentCategory() const
 {
   return this->categoryEnabled() ? this->Internals->ShowCategoryCombo->currentText().toStdString()
                                  : "";
 }
 
-bool qtBaseAttributeView::categoryEnabled()
+bool qtBaseAttributeView::categoryEnabled() const
 {
   return this->Internals->ShowCategoryCombo && this->Internals->ShowCategoryCombo->isEnabled();
 }
@@ -663,7 +663,7 @@ void qtBaseAttributeView::onAdvanceLevelChanged(int levelIdx)
   this->showAdvanceLevel(level);
 }
 
-int qtBaseAttributeView::advanceLevel()
+int qtBaseAttributeView::advanceLevel() const
 {
   return this->Internals->AdvLevelCombo->currentIndex();
 }

@@ -200,7 +200,7 @@ void processDerivedValueDef(pugi::xml_node& node, ItemDefType idef, Logger& logg
       if (items)
       {
         Categories::Set cats;
-        xatt = node.attribute("CategoryCheckMode");
+        xatt = items.attribute("CategoryCheckMode");
         if (xatt)
         {
           std::string ccm = xatt.value();
@@ -2088,10 +2088,13 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node& node, attribute::ValueItem
   }
   if (numRequiredVals == 1) // Special Common Case
   {
-    if (!item->setDiscreteIndex(node.text().as_int()))
+    if (!node.text().empty())
     {
-      smtkErrorMacro(m_logger, "Discrete Index " << index << " for  ith value : " << i
-                                                 << " is not valid for Item: " << item->name());
+      if (!item->setDiscreteIndex(node.text().as_int()))
+      {
+        smtkErrorMacro(m_logger, "Discrete Index " << index << " for  ith value : " << i
+                                                   << " is not valid for Item: " << item->name());
+      }
     }
     return;
   }

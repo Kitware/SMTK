@@ -37,9 +37,6 @@ public:
   ~ValueItem() override;
   virtual std::size_t numberOfValues() const { return m_isSet.size(); }
 
-  using Item::isValid;
-  bool isValid(const std::set<std::string>& categories) const override;
-
   std::size_t numberOfRequiredValues() const;
   std::size_t maxNumberOfValues() const;
 
@@ -152,6 +149,7 @@ protected:
     const std::string& name, SearchStyle style) const override;
   virtual void updateDiscreteValue(std::size_t elementIndex) = 0;
   virtual void updateActiveChildrenItems();
+  bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
   std::vector<int> m_discreteIndices;
   std::vector<bool> m_isSet;
   std::vector<smtk::attribute::ComponentItemPtr> m_expressions;

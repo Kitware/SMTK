@@ -256,15 +256,22 @@ const smtk::attribute::Categories& Attribute::categories() const
   */
 bool Attribute::isValid() const
 {
-  std::set<std::string> cats;
-  return this->isValid(cats);
+  for (auto it = m_items.begin(); it != m_items.end(); ++it)
+  {
+    if (!(*it)->isValid())
+    {
+      return false;
+    }
+  }
+  // also check associations
+  return !(m_associatedObjects && !m_associatedObjects->isValid());
 }
 
 bool Attribute::isValid(const std::set<std::string>& cats) const
 {
   // First lest check the attribute itself to see if it would
   // have been filtered out
-  if (!(cats.empty() || this->categories().passes(cats)))
+  if (!this->categories().passes(cats))
   {
     return true;
   }

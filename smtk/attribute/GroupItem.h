@@ -57,9 +57,6 @@ public:
   ~GroupItem() override;
   Item::Type type() const override;
 
-  using Item::isValid;
-  bool isValid(const std::set<std::string>& categories) const override;
-
   std::size_t numberOfRequiredGroups() const;
   std::size_t maxNumberOfGroups() const;
   /**
@@ -145,6 +142,7 @@ protected:
   // This method will detach all of the items directly owned by
   // this group
   void detachAllItems();
+  bool isValidInternal(bool useCategories, const std::set<std::string>& categories) const override;
   std::vector<std::vector<smtk::attribute::ItemPtr> > m_items;
 
 private:
