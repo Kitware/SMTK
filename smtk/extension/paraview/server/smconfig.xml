@@ -1240,9 +1240,13 @@
         composite mapper to better integrate with SMTKModel. Handles selection
         of SMTK components.
       </Documentation>
-     <InputProperty
-        name="Input"
-        command="SetInputConnection" />
+      <InputProperty command="SetInputConnection"
+                     name="Input">
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkMultiBlockDataSet"/>
+        </DataTypeDomain>
+          <Documentation>SMTK Resource input.</Documentation>
+      </InputProperty>
 
       <SubProxy command="SetSliceXY">
         <Proxy name="XYSliceRepresentation"
@@ -1295,13 +1299,6 @@
         <Documentation>Get/Set the visibility of the
         representation.</Documentation>
       </IntVectorProperty>
-      <InputProperty command="SetInputConnection"
-                     name="Input">
-        <DataTypeDomain name="input_type">
-          <DataType value="vtkMultiBlockDataSet"/>
-        </DataTypeDomain>
-          <Documentation>SMTK Resource input.</Documentation>
-      </InputProperty>
       <StringVectorProperty command="SetInputArrayToProcess"
                             element_types="0 0 0 0 2"
                             name="ColorArrayName"
