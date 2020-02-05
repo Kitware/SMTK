@@ -42,8 +42,6 @@
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
-        CMAKE: cmake
-        CTEST: ctest
         CMAKE_CONFIGURATION: fedora31_plain
         GIT_CLONE_PATH: $CI_BUILDS_DIR/gitlab-kitware-sciviz-ci
 
@@ -107,6 +105,13 @@
         CTEST_COVERAGE: 1
         CMAKE_GENERATOR: Unix Makefiles
 
+before_script:
+    - .gitlab/ci/cmake.sh
+    - .gitlab/ci/ninja.sh
+    - export PATH=$PWD/.gitlab:$PWD/.gitlab/cmake/bin:$PATH
+    - cmake --version
+    - ninja --version
+
 .cmake_build_unix: &cmake_build_unix
     stage: build
     only: *only_settings
@@ -118,12 +123,10 @@
 
     script:
         - .gitlab/ci/sccache.sh
-        - export PATH=$PATH:$PWD/.gitlab
         - sccache --start-server
         - sccache --show-stats
-        - "$CMAKE --version"
-        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_configure.cmake"
-        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_build.cmake"
+        - "$LAUNCHER ctest -VV -S .gitlab/ci/ctest_configure.cmake"
+        - "$LAUNCHER ctest -VV -S .gitlab/ci/ctest_build.cmake"
         - sccache --show-stats
 
     artifacts:
@@ -192,7 +195,7 @@
         - linux
 
     script:
-        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_test.cmake"
+        - "$LAUNCHER ctest -VV -S .gitlab/ci/ctest_test.cmake"
 
     interruptible: true
 
@@ -214,7 +217,7 @@
         - linux
 
     script:
-        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_memcheck.cmake"
+        - "$LAUNCHER ctest -VV -S .gitlab/ci/ctest_memcheck.cmake"
 
     interruptible: true
 
@@ -245,7 +248,7 @@
         - linux
 
     script:
-        - "$LAUNCHER $CTEST -V -S .gitlab/ci/ctest_coverage.cmake"
+        - "$LAUNCHER ctest -V -S .gitlab/ci/ctest_coverage.cmake"
     coverage: '/Percentage Coverage: \d+.\d+%/'
 
     interruptible: true
@@ -353,12 +356,10 @@ build:fedora31-tidy:
     script:
         - dnf install -y --setopt=install_weak_deps=False clang-tools-extra
         - .gitlab/ci/sccache.sh
-        - export PATH=$PATH:$PWD/.gitlab
         - sccache --start-server
         - sccache --show-stats
-        - "$CMAKE --version"
-        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_configure.cmake"
-        - "$LAUNCHER $CTEST -VV -S .gitlab/ci/ctest_build.cmake"
+        - "$LAUNCHER ctest -VV -S .gitlab/ci/ctest_configure.cmake"
+        - "$LAUNCHER ctest -VV -S .gitlab/ci/ctest_build.cmake"
         - sccache --show-stats
     interruptible: true
 
