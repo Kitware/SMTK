@@ -45,6 +45,7 @@
         CMAKE: cmake
         CTEST: ctest
         CMAKE_CONFIGURATION: fedora31_plain
+        GIT_CLONE_PATH: $CI_BUILDS_DIR/gitlab-kitware-sciviz-ci
 
 .fedora31_vtk: &fedora31_vtk
     extends: .fedora31
