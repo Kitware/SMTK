@@ -62,14 +62,15 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-qtBaseView* qtSimpleExpressionEvaluationView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtSimpleExpressionEvaluationView::createViewWidget(const smtk::view::Information& info)
 {
   qtSimpleExpressionEvaluationView* view = new qtSimpleExpressionEvaluationView(info);
   view->buildUI();
   return view;
 }
 
-qtSimpleExpressionEvaluationView::qtSimpleExpressionEvaluationView(const ViewInfo& info)
+qtSimpleExpressionEvaluationView::qtSimpleExpressionEvaluationView(
+  const smtk::view::Information& info)
   : qtSimpleExpressionView(info)
 {
 }

@@ -184,7 +184,7 @@ public:
   std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
 };
 
-qtBaseView* qtModelEntityAttributeView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtModelEntityAttributeView::createViewWidget(const smtk::view::Information& info)
 {
   // TO DO Need to deal with Selections
   qtModelEntityAttributeView* view = new qtModelEntityAttributeView(info);
@@ -192,7 +192,7 @@ qtBaseView* qtModelEntityAttributeView::createViewWidget(const ViewInfo& info)
   return view;
 }
 
-qtModelEntityAttributeView::qtModelEntityAttributeView(const ViewInfo& info)
+qtModelEntityAttributeView::qtModelEntityAttributeView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtModelEntityAttributeViewInternals;

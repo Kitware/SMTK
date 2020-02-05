@@ -56,9 +56,9 @@ class SMTKQTEXT_EXPORT qtAnalysisView : public qtBaseAttributeView
 public:
   smtkTypenameMacro(qtAnalysisView);
 
-  /// \brief Factory method to create a qtAnalysisView from a ViewInfo
-  static qtBaseView* createViewWidget(const ViewInfo& info);
-  qtAnalysisView(const ViewInfo& info);
+  /// \brief Factory method to create a qtAnalysisView from a smtk::view::Information
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
+  qtAnalysisView(const smtk::view::Information& info);
   virtual ~qtAnalysisView();
 
 public slots:

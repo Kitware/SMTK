@@ -140,14 +140,14 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
   }
 }
 
-qtBaseView* qtGroupView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtGroupView::createViewWidget(const smtk::view::Information& info)
 {
   qtGroupView* view = new qtGroupView(info);
   view->buildUI();
   return view;
 }
 
-qtGroupView::qtGroupView(const ViewInfo& info)
+qtGroupView::qtGroupView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtGroupViewInternals;

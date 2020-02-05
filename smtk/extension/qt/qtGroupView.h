@@ -31,8 +31,8 @@ class SMTKQTEXT_EXPORT qtGroupView : public qtBaseAttributeView
 public:
   smtkTypenameMacro(qtGroupView);
 
-  static qtBaseView* createViewWidget(const ViewInfo& info);
-  qtGroupView(const ViewInfo& info);
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
+  qtGroupView(const smtk::view::Information& info);
   virtual ~qtGroupView();
 
   qtBaseView* getChildView(int pageIndex);

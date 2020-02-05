@@ -26,9 +26,9 @@ class qtPolygonEdgeOperationView : public smtk::extension::qtBaseAttributeView
 public:
   smtkTypenameMacro(qtPolygonEdgeOperationView);
 
-  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
 
-  qtPolygonEdgeOperationView(const smtk::extension::ViewInfo& info);
+  qtPolygonEdgeOperationView(const smtk::view::Information& info);
   virtual ~qtPolygonEdgeOperationView();
 
 public slots:

@@ -24,8 +24,8 @@ class SMTKPQWIDGETSEXT_EXPORT qtSimpleExpressionEvaluationView
 {
   Q_OBJECT
 public:
-  static qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
-  qtSimpleExpressionEvaluationView(const smtk::extension::ViewInfo& info);
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
+  qtSimpleExpressionEvaluationView(const smtk::view::Information& info);
   virtual ~qtSimpleExpressionEvaluationView();
 
 public slots:

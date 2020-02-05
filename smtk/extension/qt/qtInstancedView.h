@@ -35,9 +35,9 @@ class SMTKQTEXT_EXPORT qtInstancedView : public qtBaseAttributeView
 public:
   smtkTypenameMacro(qtInstancedView);
 
-  static qtBaseView* createViewWidget(const ViewInfo& info);
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
 
-  qtInstancedView(const ViewInfo& info);
+  qtInstancedView(const smtk::view::Information& info);
   virtual ~qtInstancedView();
   // Returns true if all attributes in the view are valid
   bool isValid() const;

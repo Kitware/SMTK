@@ -50,8 +50,8 @@ class SMTKQTEXT_EXPORT qtCategorySelectorView : public qtBaseAttributeView
 public:
   smtkTypenameMacro(qtCategorySelectorView);
 
-  static qtBaseView* createViewWidget(const ViewInfo& info);
-  qtCategorySelectorView(const ViewInfo& info);
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
+  qtCategorySelectorView(const smtk::view::Information& info);
   virtual ~qtCategorySelectorView();
 
   void getChildView(const std::string& viewType, QList<qtBaseView*>& views);

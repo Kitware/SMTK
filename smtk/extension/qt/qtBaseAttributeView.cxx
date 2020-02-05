@@ -73,7 +73,7 @@ public:
   QPointer<QLabel> m_configurationLabel;
 };
 
-qtBaseAttributeView::qtBaseAttributeView(const ViewInfo& info)
+qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
   : qtBaseView(info)
   , m_topLevelCanCreateConfigurations(false)
 {

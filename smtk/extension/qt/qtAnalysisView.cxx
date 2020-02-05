@@ -37,14 +37,14 @@
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-qtBaseView* qtAnalysisView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtAnalysisView::createViewWidget(const smtk::view::Information& info)
 {
   qtAnalysisView* view = new qtAnalysisView(info);
   view->buildUI();
   return view;
 }
 
-qtAnalysisView::qtAnalysisView(const ViewInfo& info)
+qtAnalysisView::qtAnalysisView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
   , m_qtAnalysisAttribute(nullptr)
 {

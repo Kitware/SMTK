@@ -51,14 +51,14 @@ public:
   smtk::operation::Observers::Key m_observerKey;
 };
 
-qtBaseView* qtInstancedView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtInstancedView::createViewWidget(const smtk::view::Information& info)
 {
   qtInstancedView* view = new qtInstancedView(info);
   view->buildUI();
   return view;
 }
 
-qtInstancedView::qtInstancedView(const ViewInfo& info)
+qtInstancedView::qtInstancedView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtInstancedViewInternals;

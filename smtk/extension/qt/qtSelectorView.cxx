@@ -50,14 +50,14 @@ public:
   smtk::attribute::ValueItemPtr m_selectorItem;
 };
 
-qtBaseView* qtSelectorView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtSelectorView::createViewWidget(const smtk::view::Information& info)
 {
   qtSelectorView* view = new qtSelectorView(info);
   view->buildUI();
   return view;
 }
 
-qtSelectorView::qtSelectorView(const ViewInfo& info)
+qtSelectorView::qtSelectorView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtSelectorViewInternals;

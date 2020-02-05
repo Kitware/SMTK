@@ -27,9 +27,9 @@ class qtExtractContoursView : public smtk::extension::qtBaseAttributeView
 public:
   smtkTypenameMacro(qtExtractContoursView);
 
-  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
 
-  qtExtractContoursView(const smtk::extension::ViewInfo& info);
+  qtExtractContoursView(const smtk::view::Information& info);
   virtual ~qtExtractContoursView();
 
 public slots:

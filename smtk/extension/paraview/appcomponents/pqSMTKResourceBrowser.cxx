@@ -126,14 +126,14 @@ const std::string pqSMTKResourceBrowser::getJSONConfiguration()
 }
 
 smtk::extension::qtBaseView* pqSMTKResourceBrowser::createViewWidget(
-  const smtk::extension::ViewInfo& info)
+  const smtk::view::Information& info)
 {
   pqSMTKResourceBrowser* view = new pqSMTKResourceBrowser(info);
   view->buildUI();
   return view;
 }
 
-pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::extension::ViewInfo& info)
+pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::view::Information& info)
   : Superclass(info)
 {
   // The superclass has initialized m_p;

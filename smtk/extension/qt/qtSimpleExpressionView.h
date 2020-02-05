@@ -66,8 +66,8 @@ class SMTKQTEXT_EXPORT qtSimpleExpressionView : public qtBaseAttributeView
   Q_OBJECT
 
 public:
-  static qtBaseView* createViewWidget(const ViewInfo& info);
-  qtSimpleExpressionView(const ViewInfo& info);
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
+  qtSimpleExpressionView(const smtk::view::Information& info);
   virtual ~qtSimpleExpressionView();
 
   void buildSimpleExpression(QString& funcExpr, QString& funcVals, int numberOfComponents);

@@ -22,6 +22,8 @@
 #include "smtk/SharedFromThis.h"
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtViewInfoDialog.h"
+#include "smtk/view/BaseView.h"
+#include "smtk/view/Information.h"
 
 class QScrollArea;
 
@@ -34,11 +36,12 @@ class qtItem;
 class qtViewInfoDialog;
 
 // This struct is used to initialize qtView-based classes
-class SMTKQTEXT_EXPORT ViewInfo
+class SMTKQTEXT_EXPORT ViewInfo : public smtk::view::Information
 {
 public:
   ViewInfo(smtk::view::ConfigurationPtr view, QWidget* parent, qtUIManager* uiman)
-    : m_view(view)
+    : smtk::view::Information()
+    , m_view(view)
     , m_parent(parent)
     , m_UIManager(uiman)
   {
@@ -62,14 +65,19 @@ public:
   // std::map<std::string, QLayout*> m_layoutDict; // Widget Layout Dictionary
 };
 
-class SMTKQTEXT_EXPORT qtBaseView : public QObject
+class SMTKQTEXT_EXPORT qtBaseView : public QObject, public smtk::view::BaseView
 {
   Q_OBJECT
 
 public:
-  smtkTypenameMacroBase(qtBaseView);
+  smtkTypenameMacro(qtBaseView);
 
   qtBaseView(const ViewInfo& info);
+  qtBaseView(const smtk::view::Information& info)
+    : qtBaseView(dynamic_cast<const ViewInfo&>(info))
+  {
+  }
+
   ~qtBaseView() override;
 
   smtk::view::ConfigurationPtr getObject() const { return m_viewInfo.m_view; }

@@ -45,14 +45,14 @@ using namespace smtk::extension;
 
 std::string qtResourceBrowser::s_configurationJSON = ResourcePanelConfiguration_xml;
 
-qtBaseView* qtResourceBrowser::createViewWidget(const ViewInfo& info)
+qtBaseView* qtResourceBrowser::createViewWidget(const smtk::view::Information& info)
 {
   qtResourceBrowser* view = new qtResourceBrowser(info);
   view->buildUI();
   return view;
 }
 
-qtResourceBrowser::qtResourceBrowser(const ViewInfo& info)
+qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
   : qtBaseView(info)
 {
   m_p = new Internal;

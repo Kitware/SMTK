@@ -105,14 +105,14 @@ public:
   std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
 };
 
-qtBaseView* qtAssociationView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtAssociationView::createViewWidget(const smtk::view::Information& info)
 {
   qtAssociationView* view = new qtAssociationView(info);
   view->buildUI();
   return view;
 }
 
-qtAssociationView::qtAssociationView(const ViewInfo& info)
+qtAssociationView::qtAssociationView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtAssociationViewInternals;
