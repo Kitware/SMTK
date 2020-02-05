@@ -197,32 +197,6 @@ public:
   }
 };
 
-void labelShellWithMaterial(const smtk::mesh::ResourcePtr& c, const smtk::mesh::MeshSet& shell)
-{
-  //for each material we iterate the meshsets
-  typedef std::vector<smtk::mesh::Domain> DomainVecType;
-  typedef DomainVecType::const_iterator dom_cit;
-
-  DomainVecType domains = c->domains();
-
-  for (dom_cit dom = domains.begin(); dom != domains.end(); ++dom)
-  {
-    smtk::mesh::MeshSet domainMeshes = c->meshes(*dom);
-
-    //find all cells in the shell that share a point in common
-    //with domain volume
-    smtk::mesh::CellSet contactCells =
-      smtk::mesh::point_intersect(domainMeshes.cells(), shell.cells(), smtk::mesh::FullyContained);
-    if (!contactCells.is_empty())
-    {
-      //create a new meshset that represents the section of exterior shell
-      //that has this domain
-      smtk::mesh::MeshSet contactD = c->createMesh(contactCells);
-      c->setDomainOnMeshes(contactD, *dom);
-    }
-  }
-}
-
 int nextDirId = 0;
 
 bool labelIntersection(

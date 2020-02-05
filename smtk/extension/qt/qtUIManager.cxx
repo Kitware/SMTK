@@ -113,8 +113,8 @@ qtUIManager::qtUIManager(const smtk::operation::OperationPtr& op,
   const smtk::resource::ManagerPtr& resourceManager, const smtk::view::ManagerPtr& viewManager)
   : m_parentWidget(nullptr)
   , m_resourceManager(resourceManager)
-  , m_viewManager(viewManager)
   , m_operation(op)
+  , m_viewManager(viewManager)
 {
   if (!op)
   {

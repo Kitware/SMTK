@@ -92,7 +92,6 @@ std::string ModelIconConstructor::svg(const smtk::resource::PersistentObject& ob
   {
     smtk::model::BitFlags flags = entity->entityFlags();
 
-    bool dimBits = true;
     switch (flags & smtk::model::ENTITY_MASK)
     {
       case smtk::model::CELL_ENTITY:

@@ -66,7 +66,7 @@ std::string IconFactory::createIcon(
 
     // Check if the Resource that owns <object> has an IconConstructor
     // registered directly to it.
-    auto constructor = m_iconConstructors.find(resource->typeName());
+    constructor = m_iconConstructors.find(resource->typeName());
     if (constructor != m_iconConstructors.end())
     {
       return constructor->second(object, secondaryColor);
