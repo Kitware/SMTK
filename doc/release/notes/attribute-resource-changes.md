@@ -69,8 +69,14 @@ was only true for ReferenceItems representing associations). The ReferenceItems'
 caches remain populated after detachment to support the
 ReferenceItems' API once its parent attribute is removed from its
 Resource.
+
 ### Other Changes
 #### Attribute::isValid and Item::isValid Methods
 * Passing an empty set of categories to Attribute::isValid or Item::isValid no longer means don't filter on categories.  Instead the methods will always return false.  If you don't want category filtering call the isValid methods that don't take in the set.
 * Item::isValid method that taken in categories is no longer virtual
 * A new virtual method Item::isValidInternal which performs the actual check has been added
+
+### isSet() no longer asserts or exhibit undefined behavior
+Previously calling isSet() for items that had its numberOfValues() == 0 would either result in an assert or indexing a vector of size 0.  This has been fixed so calling the method for an index that doesn't exist will always return false.
+### unset() will now assert for indices that don't exist
+Previously some Items would exhibit undefined behavior but will now simply assert.

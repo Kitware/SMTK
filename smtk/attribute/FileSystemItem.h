@@ -17,6 +17,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
+#include <cassert>
 #include <string>
 #include <vector>
 
@@ -62,8 +63,16 @@ public:
     return this->valueAsString(0, format);
   }
   virtual std::string valueAsString(std::size_t element, const std::string& format = "") const;
-  virtual bool isSet(std::size_t element = 0) const { return m_isSet[element]; }
-  virtual void unset(std::size_t element = 0) { m_isSet[element] = false; }
+  virtual bool isSet(std::size_t element = 0) const
+  {
+    return m_isSet.size() > element ? m_isSet[element] : false;
+  }
+
+  virtual void unset(std::size_t element = 0)
+  {
+    assert(m_isSet.size() > element);
+    m_isSet[element] = false;
+  }
 
   // Iterator-style access to values:
   const_iterator begin() const;

@@ -49,8 +49,16 @@ public:
   virtual bool isUsingDefault(std::size_t elementIndex) const;
   // This method tests all of the values of the items w/r the default value
   virtual bool isUsingDefault() const;
-  virtual bool isSet(std::size_t element = 0) const { return m_isSet[element]; }
-  virtual void unset(std::size_t element = 0) { m_isSet[element] = false; }
+  virtual bool isSet(std::size_t element = 0) const
+  {
+    return m_isSet.size() > element ? m_isSet[element] : false;
+  }
+
+  virtual void unset(std::size_t element = 0)
+  {
+    assert(m_isSet.size() > element);
+    m_isSet[element] = false;
+  }
 
   // Assigns this item to be equivalent to another. Options are processed by derived item classes.
   // The options are defined in Item.h. Returns true if success and false if a problem occured.
