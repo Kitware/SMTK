@@ -52,8 +52,11 @@ std::string SVGIconConstructor::operator()(
 
   if (object.properties().contains<std::vector<double> >(colorProperty))
   {
-    fill = smtk::common::Color::floatRGBToString(
-      &object.properties().at<std::vector<double> >(colorProperty)[0]);
+    auto& vec = object.properties().at<std::vector<double> >(colorProperty);
+    if (vec.size() >= 3)
+    {
+      fill = smtk::common::Color::floatRGBToString(vec.data());
+    }
   }
 
   std::string svg =
