@@ -55,6 +55,20 @@ public:
     GenerationNumber m_generation; //!< A generation number or Invalid.
     DataType m_geometry;           //!< Geometry held by the cache.
 
+    CacheEntry()
+      : m_generation(Invalid)
+    {
+    }
+
+    CacheEntry(CacheEntry&&) = default;
+    CacheEntry(const CacheEntry&) = default;
+    CacheEntry(GenerationNumber gen, const DataType& data)
+      : m_generation(gen)
+      , m_geometry(data)
+    {
+    }
+    CacheEntry& operator=(const CacheEntry&) = default;
+
     bool isValid() const { return m_generation != Invalid; }
   };
 
