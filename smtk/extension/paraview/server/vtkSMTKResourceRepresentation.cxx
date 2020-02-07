@@ -302,6 +302,12 @@ int vtkSMTKResourceRepresentation::RequestData(
           0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
       }
     }
+    else
+    {
+      this->SliceXY->SetVisibility(false);
+      this->SliceYZ->SetVisibility(false);
+      this->SliceXZ->SetVisibility(false);
+    }
 
     // Glyph points (2) and prototypes (1)
     this->GlyphMapper->SetInputData(instanceMultiBlock);

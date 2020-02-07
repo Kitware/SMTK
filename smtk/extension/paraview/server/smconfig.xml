@@ -1240,23 +1240,28 @@
         composite mapper to better integrate with SMTKModel. Handles selection
         of SMTK components.
       </Documentation>
+      <InputProperty command="SetInputConnection"
+                     name="Input">
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkMultiBlockDataSet"/>
+        </DataTypeDomain>
+          <Documentation>SMTK Resource input.</Documentation>
+      </InputProperty>
+
       <SubProxy command="SetSliceXY">
         <Proxy name="XYSliceRepresentation"
           proxygroup="representations"
-          proxyname="ImageSliceRepresentation" />
+          proxyname="ImageSliceRepresentation">
+        </Proxy>
         <ExposedProperties>
           <PropertyGroup label="Slicing">
-            <IntVectorProperty name="Slice"
-                               exposed_name="XYSlice"
-                               panel_visibility="always"
-                               default_values="50"
-                               number_of_elements="1">
-              <IntRangeDomain min="0" max="315" name="range" />
-              <Documentation>Sets the XY slice</Documentation>
-            </IntVectorProperty>
-            <Property name="SliceMode" exposed_name="XYSliceMode" panel_visibility="never"/>
+            <Property name="SliceMode" exposed_name="XYSliceMode" panel_visibility="never" default_values="5"/>
+            <Property name="Slice" exposed_name="XYSlice" panel_visibility="advanced"/>
           </PropertyGroup>
         </ExposedProperties>
+        <LinkProperties>
+          <Property name="Input" with_property="Input" />
+        </LinkProperties>
       </SubProxy>
       <SubProxy command="SetSliceYZ">
         <Proxy name="YZSliceRepresentation"
@@ -1264,17 +1269,13 @@
           proxyname="ImageSliceRepresentation" />
         <ExposedProperties>
           <PropertyGroup label="Slicing">
-            <IntVectorProperty name="Slice"
-                               exposed_name="YZSlice"
-                               panel_visibility="always"
-                               default_values="50"
-                               number_of_elements="1">
-              <IntRangeDomain min="0" max="319" name="range" />
-              <Documentation>Sets the YZ slice</Documentation>
-            </IntVectorProperty>
-            <Property name="SliceMode" exposed_name="YZSliceMode" panel_visibility="never"/>
+            <Property name="SliceMode" exposed_name="YZSliceMode" panel_visibility="never" default_values="6"/>
+            <Property name="Slice" exposed_name="YZSlice" panel_visibility="advanced"/>
           </PropertyGroup>
         </ExposedProperties>
+        <LinkProperties>
+          <Property name="Input" with_property="Input" />
+        </LinkProperties>
       </SubProxy>
       <SubProxy command="SetSliceXZ">
         <Proxy name="XZSliceRepresentation"
@@ -1282,17 +1283,13 @@
           proxyname="ImageSliceRepresentation" />
         <ExposedProperties>
           <PropertyGroup label="Slicing">
-            <IntVectorProperty name="Slice"
-                               exposed_name="XZSlice"
-                               panel_visibility="always"
-                               default_values="50"
-                               number_of_elements="1">
-              <IntRangeDomain min="0" max="479" name="range" />
-              <Documentation>Sets the XZ slice</Documentation>
-            </IntVectorProperty>
-            <Property name="SliceMode" exposed_name="XZSliceMode" panel_visibility="never"/>
+            <Property name="SliceMode" exposed_name="XZSliceMode" panel_visibility="never" default_values="7"/>
+            <Property name="Slice" exposed_name="XZSlice" panel_visibility="advanced"/>
           </PropertyGroup>
         </ExposedProperties>
+        <LinkProperties>
+          <Property name="Input" with_property="Input" />
+        </LinkProperties>
       </SubProxy>
       <IntVectorProperty command="SetVisibility"
                          default_values="1"
@@ -1302,13 +1299,6 @@
         <Documentation>Get/Set the visibility of the
         representation.</Documentation>
       </IntVectorProperty>
-      <InputProperty command="SetInputConnection"
-                     name="Input">
-        <DataTypeDomain name="input_type">
-          <DataType value="vtkMultiBlockDataSet"/>
-        </DataTypeDomain>
-          <Documentation>SMTK Resource input.</Documentation>
-      </InputProperty>
       <StringVectorProperty command="SetInputArrayToProcess"
                             element_types="0 0 0 0 2"
                             name="ColorArrayName"
@@ -1920,13 +1910,13 @@
                       panel_visibility="never" />
           </PropertyGroup>
           <PropertyGroup label="Slicing">
-            <Property label="XY slice" name="XYSlice" panel_visibility="never"/>
+            <Property label="XY slice" name="XYSlice" panel_visibility="advanced"/>
             <Property name="XYSliceMode" panel_visibility="never"/>
 
-            <Property label="YZ slice" name="YZSlice" panel_visibility="never"/>
+            <Property label="YZ slice" name="YZSlice" panel_visibility="advanced"/>
             <Property name="YZSliceMode" panel_visibility="never"/>
 
-            <Property label="XZ slice" name="XZSlice" panel_visibility="never"/>
+            <Property label="XZ slice" name="XZSlice" panel_visibility="advanced"/>
             <Property name="XZSliceMode" panel_visibility="never"/>
           </PropertyGroup>
         </ExposedProperties>
