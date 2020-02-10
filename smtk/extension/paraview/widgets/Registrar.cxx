@@ -31,7 +31,7 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->registerViewWidgets<ViewWidgetList>();
   // Note this should override the default for SimpleExpression
-  viewManager->addWidgetAliases({ { "SimpleExpression", "qtSimpleExpressionEvaluationView" } });
+  viewManager->addWidgetAlias<qtSimpleExpressionEvaluationView>("SimpleExpression");
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)

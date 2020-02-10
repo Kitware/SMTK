@@ -51,7 +51,7 @@ public:
   std::atomic<std::size_t> m_activeOperations;
 };
 
-qtBaseView* qtOperationView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtOperationView::createViewWidget(const smtk::view::Information& info)
 {
   const OperationViewInfo* opinfo = dynamic_cast<const OperationViewInfo*>(&info);
   qtOperationView* view;

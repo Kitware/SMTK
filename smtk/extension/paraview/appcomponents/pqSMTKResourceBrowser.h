@@ -48,8 +48,8 @@ class SMTKPQCOMPONENTSEXT_EXPORT pqSMTKResourceBrowser : public smtk::extension:
 public:
   smtkTypenameMacro(pqSMTKResourceBrowser);
 
-  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
-  pqSMTKResourceBrowser(const smtk::extension::ViewInfo& info);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
+  pqSMTKResourceBrowser(const smtk::view::Information& info);
   ~pqSMTKResourceBrowser() override;
 
   /// This method may be used by other ParaView plugins that wish to expose

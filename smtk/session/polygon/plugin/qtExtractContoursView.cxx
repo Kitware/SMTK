@@ -113,14 +113,14 @@ public:
   QPointer<pqPipelineSource> CurrentImage;
 };
 
-qtBaseView* qtExtractContoursView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtExtractContoursView::createViewWidget(const smtk::view::Information& info)
 {
   qtExtractContoursView* view = new qtExtractContoursView(info);
   view->buildUI();
   return view;
 }
 
-qtExtractContoursView::qtExtractContoursView(const ViewInfo& info)
+qtExtractContoursView::qtExtractContoursView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtExtractContoursViewInternals;

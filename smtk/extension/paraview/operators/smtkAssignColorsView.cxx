@@ -151,7 +151,7 @@ bool smtkAssignColorsView::displayItem(smtk::attribute::ItemPtr item) const
   return this->qtBaseAttributeView::displayItem(item);
 }
 
-qtBaseView* smtkAssignColorsView::createViewWidget(const ViewInfo& info)
+qtBaseView* smtkAssignColorsView::createViewWidget(const smtk::view::Information& info)
 {
   const OperationViewInfo* opinfo = dynamic_cast<const OperationViewInfo*>(&info);
   smtkAssignColorsView* view;

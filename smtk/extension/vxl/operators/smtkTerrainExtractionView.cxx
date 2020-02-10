@@ -78,7 +78,7 @@ public:
   QPointer<QWidget> terrainExtraction;
 };
 
-smtkTerrainExtractionView::smtkTerrainExtractionView(const smtk::extension::ViewInfo& info)
+smtkTerrainExtractionView::smtkTerrainExtractionView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new smtkTerrainExtractionViewInternals;
@@ -107,7 +107,7 @@ smtkTerrainExtractionView::~smtkTerrainExtractionView()
   delete this->TerrainExtractionManager;
 }
 
-qtBaseView* smtkTerrainExtractionView::createViewWidget(const smtk::extension::ViewInfo& info)
+qtBaseView* smtkTerrainExtractionView::createViewWidget(const smtk::view::Information& info)
 {
   smtkTerrainExtractionView* view = new smtkTerrainExtractionView(info);
   view->buildUI();

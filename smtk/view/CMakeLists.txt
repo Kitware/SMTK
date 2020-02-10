@@ -1,11 +1,13 @@
 # set up sources to build
 set(viewSrcs
   AvailableOperations.cxx
+  BaseView.cxx
   ComponentPhraseContent.cxx
   ComponentPhraseModel.cxx
   DescriptivePhrase.cxx
   EmptySubphraseGenerator.cxx
   IconFactory.cxx
+  Information.cxx
   json/jsonView.cxx
   Manager.cxx
   ObjectGroupPhraseContent.cxx
@@ -29,11 +31,13 @@ set (jsonViewHeaders
   )
 set(viewHeaders
   AvailableOperations.h
+  BaseView.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
   DescriptivePhrase.h
   EmptySubphraseGenerator.h
   IconFactory.h
+  Information.h
   Manager.h
   ObjectGroupPhraseContent.h
   PhraseListContent.h

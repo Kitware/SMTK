@@ -33,7 +33,7 @@ class SMTKQTEXT_EXPORT qtBaseAttributeView : public qtBaseView
 public:
   smtkTypenameMacro(qtBaseAttributeView);
 
-  qtBaseAttributeView(const ViewInfo& info);
+  qtBaseAttributeView(const smtk::view::Information& info);
   ~qtBaseAttributeView() override;
 
   void setInitialCategory() override;

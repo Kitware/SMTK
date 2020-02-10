@@ -21,6 +21,7 @@
 #include "smtk/extension/qt/qtOperationView.h"
 #include "smtk/extension/qt/qtResourceBrowser.h"
 #include "smtk/extension/qt/qtSelectorView.h"
+#include "smtk/extension/qt/qtSimpleExpressionView.h"
 
 #include <tuple>
 
@@ -32,23 +33,25 @@ namespace
 {
 typedef std::tuple<qtAnalysisView, qtAssociationView, qtAttributeView, qtCategorySelectorView,
   qtGroupView, qtInstancedView, qtModelEntityAttributeView, qtOperationView, qtResourceBrowser,
-  qtSelectorView>
+  qtSelectorView, qtSimpleExpressionView>
   ViewWidgetList;
 }
 
 void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->registerViewWidgets<ViewWidgetList>();
-  // a set of legacy constructor names to use for alternate lookup.
-  std::map<std::string, std::string> altNames = {
-    { "Analysis", "qtAnalysisView" }, { "Associations", "qtAssociationView" },
-    { "Attribute", "qtAttributeView" }, { "Group", "qtGroupView" },
-    { "Instanced", "qtInstancedView" }, { "Operation", "qtOperationView" },
-    { "Selector", "qtSelectorView" }, { "SimpleExpression", "qtSimpleExpressionView" },
-    { "Category", "qtCategorySelectorView" }, { "ModelEntity", "qtModelEntityAttributeView" },
-    { "ResourceBrowser", "qtResourceBrowser" },
-  };
-  viewManager->addWidgetAliases(altNames);
+  // a set of user-friendly constructor names to use for alternate lookup.
+  viewManager->addWidgetAlias<qtAnalysisView>("Analysis");
+  viewManager->addWidgetAlias<qtAssociationView>("Associations");
+  viewManager->addWidgetAlias<qtAttributeView>("Attribute");
+  viewManager->addWidgetAlias<qtGroupView>("Group");
+  viewManager->addWidgetAlias<qtInstancedView>("Instanced");
+  viewManager->addWidgetAlias<qtOperationView>("Operation");
+  viewManager->addWidgetAlias<qtSelectorView>("Selector");
+  viewManager->addWidgetAlias<qtSimpleExpressionView>("SimpleExpression");
+  viewManager->addWidgetAlias<qtCategorySelectorView>("Category");
+  viewManager->addWidgetAlias<qtModelEntityAttributeView>("ModelEntity");
+  viewManager->addWidgetAlias<qtResourceBrowser>("ResourceBrowser");
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)

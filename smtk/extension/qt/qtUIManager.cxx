@@ -951,7 +951,8 @@ qtBaseView* qtUIManager::createView(const ViewInfo& info)
     std::cerr << "No viewManager for View Type: " << info.m_view->type() << " skipping view!\n";
     return nullptr;
   }
-  qtBaseView* qtView = m_viewManager->createViewWidget(info.m_view->type(), info);
+  qtBaseView* qtView =
+    dynamic_cast<qtBaseView*>(m_viewManager->createViewWidget(info.m_view->type(), info));
   if (!qtView)
   {
     // Constructor for that type could not be found)

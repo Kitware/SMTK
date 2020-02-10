@@ -41,8 +41,8 @@ class SMTKQTEXT_EXPORT qtAttributeView : public qtBaseAttributeView
 public:
   smtkTypenameMacro(qtAttributeView);
 
-  static qtBaseView* createViewWidget(const ViewInfo& info);
-  qtAttributeView(const ViewInfo& info);
+  static qtBaseView* createViewWidget(const smtk::view::Information& info);
+  qtAttributeView(const smtk::view::Information& info);
   virtual ~qtAttributeView();
   const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& attDefinitionMap() const;
 

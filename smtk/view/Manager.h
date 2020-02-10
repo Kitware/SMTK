@@ -17,8 +17,10 @@
 
 #include "smtk/common/TypeName.h"
 
+#include "smtk/view/BaseView.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/IconFactory.h"
+#include "smtk/view/Information.h"
 
 #include <array>
 #include <string>
@@ -28,11 +30,6 @@
 
 namespace smtk
 {
-namespace extension
-{
-class qtBaseView;
-class ViewInfo;
-}
 namespace view
 {
 /// A view Manager is responsible for creating new views (eventually) as well as
@@ -47,15 +44,15 @@ public:
 
   // ------ ViewWidget ------
   using ViewWidgetConstructor =
-    std::function<smtk::extension::qtBaseView*(const smtk::extension::ViewInfo& info)>;
+    std::function<smtk::view::BaseView*(const smtk::view::Information& info)>;
 
   /// Register a widget identified by its class type.
   template <typename ViewWidgetType>
   bool registerViewWidget();
 
-  /// Register a widget identified by its class type and type name.
+  /// Register a widget identified by its class type and type index.
   template <typename ViewWidgetType>
-  bool registerViewWidget(const std::string&);
+  bool registerViewWidget(std::size_t);
 
   /// Register a tuple of views identified by their class types.
   template <typename Tuple>
@@ -65,19 +62,20 @@ public:
   }
 
   /// Register a tuple of views identified by their class types and type
-  /// names.
+  /// indices.
   template <typename Tuple>
-  bool registerViewWidgets(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
+  bool registerViewWidgets(
+    const std::array<std::size_t, std::tuple_size<Tuple>::value>& typeIndices)
   {
-    return Manager::registerViewWidgets<0, Tuple>(typeNames);
+    return Manager::registerViewWidgets<0, Tuple>(typeIndices);
   }
 
   /// Unregister a widget identified by its class type.
   template <typename ViewWidgetType>
   bool unregisterViewWidget();
 
-  /// Unregister a ViewWidget identified by its type name.
-  bool unregisterViewWidget(const std::string&);
+  /// Unregister a ViewWidget identified by its type index.
+  bool unregisterViewWidget(std::size_t);
 
   // Unregister a tuple of ViewWidgets identified by their class types.
   template <typename Tuple>
@@ -86,25 +84,28 @@ public:
     return Manager::unregisterViewWidgets<0, Tuple>();
   }
 
-  /// Construct a ViewWidget identified by its type name.
-  smtk::extension::qtBaseView* createViewWidget(
-    const std::string&, const smtk::extension::ViewInfo& info);
-
   /// Construct a ViewWidget identified by its class type.
   template <typename ViewWidgetType>
-  smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
+  smtk::view::BaseView* createViewWidget(const smtk::view::Information& info);
+
+  /// Construct a ViewWidget identified by its type index.
+  smtk::view::BaseView* createViewWidget(std::size_t, const smtk::view::Information& info);
+
+  /// Construct a ViewWidget identified by its alias.
+  smtk::view::BaseView* createViewWidget(
+    const std::string& alias, const smtk::view::Information& info);
 
   /// Can we find a ViewWidget to construct?
-  bool hasViewWidget(const std::string& typeName) const;
+  bool hasViewWidget(const std::string&) const;
 
-  /// a set of alternative constructor names
-  void addWidgetAliases(const std::map<std::string, std::string>& altNames)
+  template <typename ViewWidgetType>
+  void addWidgetAlias(const std::string& alias)
   {
-    for (auto& it : altNames)
-    {
-      m_altViewWidgetNames[it.first] = it.second;
-    }
+    addWidgetAlias(smtk::view::typeIndex<ViewWidgetType>(), alias);
   }
+
+  /// Add an alternative constructor name for a view widget.
+  void addWidgetAlias(std::size_t, const std::string&);
 
 private:
   template <std::size_t I, typename Tuple>
@@ -118,22 +119,6 @@ private:
   template <std::size_t I, typename Tuple>
   inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
   registerViewWidgets()
-  {
-    return true;
-  }
-
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  registerViewWidgets(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
-  {
-    bool registered =
-      this->registerViewWidget<typename std::tuple_element<I, Tuple>::type>(typeNames.at(I));
-    return registered && Manager::registerViewWidgets<I + 1, Tuple>(typeNames);
-  }
-
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  registerViewWidgets(const std::array<std::string, std::tuple_size<Tuple>::value>&)
   {
     return true;
   }
@@ -154,11 +139,13 @@ private:
   }
 
   /// utility, retrieve a matching ViewWidgetConstructor
-  ViewWidgetConstructor getViewWidgetConstructor(const std::string& typeName) const;
+  ViewWidgetConstructor getViewWidgetConstructor(const std::string& alias) const;
+  /// utility, retrieve a matching ViewWidgetConstructor
+  ViewWidgetConstructor getViewWidgetConstructor(std::size_t typeIndex) const;
   /// A container for all registered ViewWidget constructors.
-  std::map<std::string, ViewWidgetConstructor> m_viewWidgets;
+  std::map<std::size_t, ViewWidgetConstructor> m_viewWidgets;
   /// Alternate type names for the constructors.
-  std::map<std::string, std::string> m_altViewWidgetNames;
+  std::map<std::string, std::size_t> m_altViewWidgetNames;
 
 public:
   // ------ PhraseModel ------
@@ -377,30 +364,35 @@ private:
 template <typename ViewWidgetType>
 bool Manager::unregisterViewWidget()
 {
-  return this->unregisterViewWidget(smtk::common::typeName<ViewWidgetType>());
+  return this->unregisterViewWidget(smtk::view::typeIndex<ViewWidgetType>());
 }
 
 template <typename ViewWidgetType>
-smtk::extension::qtBaseView* Manager::createViewWidget(const smtk::extension::ViewInfo& info)
+smtk::view::BaseView* Manager::createViewWidget(const smtk::view::Information& info)
 {
-  return this->createViewWidget(smtk::common::typeName<ViewWidgetType>(), info);
+  return this->createViewWidget(smtk::view::typeIndex<ViewWidgetType>(), info);
 }
 
 template <typename ViewWidgetType>
 bool Manager::registerViewWidget()
 {
-  return Manager::registerViewWidget<ViewWidgetType>(smtk::common::typeName<ViewWidgetType>());
+  return Manager::registerViewWidget<ViewWidgetType>(smtk::view::typeIndex<ViewWidgetType>());
 }
 
 template <typename ViewWidgetType>
-bool Manager::registerViewWidget(const std::string& typeName)
+bool Manager::registerViewWidget(std::size_t typeIndex)
 {
   // see if already exists:
-  if (m_viewWidgets.find(typeName) == m_viewWidgets.end())
+  if (m_viewWidgets.find(typeIndex) == m_viewWidgets.end())
   {
-    // Must wrap: m_viewWidgets[typeName] = ViewWidgetType::createViewWidget;
-    m_viewWidgets[typeName] = [](
-      const smtk::extension::ViewInfo& info) { return ViewWidgetType::createViewWidget(info); };
+    m_viewWidgets[typeIndex] = [](
+      const smtk::view::Information& info) { return ViewWidgetType::createViewWidget(info); };
+    std::string alias = smtk::common::typeName<ViewWidgetType>();
+    auto nameIter = m_altViewWidgetNames.find(alias);
+    if (nameIter == m_altViewWidgetNames.end())
+    {
+      m_altViewWidgetNames[alias] = typeIndex;
+    }
     return true;
   }
   return false;

@@ -31,7 +31,7 @@ public:
   smtkAssignColorsView(const smtk::extension::OperationViewInfo& info);
   virtual ~smtkAssignColorsView();
 
-  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
   static QIcon renderColorSwatch(const QColor& color, int radius);
   static QIcon renderPaletteSwatch(const QList<QColor>& color, int width, int radius);
   static QIcon renderInvalidSwatch(int radius);

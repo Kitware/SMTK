@@ -79,14 +79,14 @@ const char* qtSimpleExpressionView::qtSimpleExpressionViewInternals::getFunction
   return this->FunctionParserDescription;
 }
 
-qtBaseView* qtSimpleExpressionView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtSimpleExpressionView::createViewWidget(const smtk::view::Information& info)
 {
   qtSimpleExpressionView* view = new qtSimpleExpressionView(info);
   view->buildUI();
   return view;
 }
 
-qtSimpleExpressionView::qtSimpleExpressionView(const ViewInfo& info)
+qtSimpleExpressionView::qtSimpleExpressionView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtSimpleExpressionViewInternals;

@@ -33,9 +33,9 @@ class SMTKVXLOPERATIONVIEWSEXT_EXPORT smtkTerrainExtractionView
   Q_OBJECT
 
 public:
-  smtkTerrainExtractionView(const smtk::extension::ViewInfo& info);
+  smtkTerrainExtractionView(const smtk::view::Information& info);
   virtual ~smtkTerrainExtractionView();
-  static smtk::extension::qtBaseView* createViewWidget(const smtk::extension::ViewInfo& info);
+  static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
 
   // virtual bool displayItem(smtk::attribute::ItemPtr);
 

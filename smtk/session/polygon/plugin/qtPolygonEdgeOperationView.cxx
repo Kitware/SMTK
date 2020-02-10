@@ -108,7 +108,7 @@ public:
   bool m_useSelectionManager;
 };
 
-qtBaseView* qtPolygonEdgeOperationView::createViewWidget(const ViewInfo& info)
+qtBaseView* qtPolygonEdgeOperationView::createViewWidget(const smtk::view::Information& info)
 {
   qtPolygonEdgeOperationView* view = new qtPolygonEdgeOperationView(info);
   view->buildUI();
@@ -121,7 +121,7 @@ void qtPolygonEdgeOperationView::attributeModified()
     this->Internals->CurrentAtt->attribute()->isValid());
 }
 
-qtPolygonEdgeOperationView::qtPolygonEdgeOperationView(const ViewInfo& info)
+qtPolygonEdgeOperationView::qtPolygonEdgeOperationView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   this->Internals = new qtPolygonEdgeOperationViewInternals(m_useSelectionManager);
