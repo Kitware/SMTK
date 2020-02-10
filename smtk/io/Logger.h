@@ -23,6 +23,12 @@
 #undef DEBUG // Some libraries publicly export this define when built in debug mode
 // That messes up the DEBUG enumeration in Severity.
 #endif
+#ifdef ERROR // Same
+#undef ERROR
+#endif
+#ifdef WARNING // Same
+#undef WARNING
+#endif
 
 /**\brief Write the expression \a x to \a logger as an error message.
   *
