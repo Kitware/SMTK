@@ -30,7 +30,7 @@ std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
 
   // Access the promise's associated future before moving the promise onto the
   // subthread.
-  std::future<smtk::operation::Operation::Result> future = promise.get_future();
+  std::shared_future<smtk::operation::Operation::Result> future = promise.get_future();
 
   // Set the result handler's future
   handler->m_future = future;
@@ -46,7 +46,7 @@ std::shared_ptr<ResultHandler> qtOperationLauncher::operator()(
   /// by the time this function returns. Passing a lamda to invokeMethod and
   /// using QueuedConnection will allow the emit to happen after the current
   /// path of execution.
-  invokeMethod(
+  QMetaObject::invokeMethod(
     this, [handler, result]() { emit handler->resultReady(result); }, Qt::QueuedConnection);
 
 #else
