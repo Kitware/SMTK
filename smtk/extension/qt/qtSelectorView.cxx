@@ -186,8 +186,6 @@ bool qtSelectorView::createChildren()
   smtk::view::Configuration::Component& viewsComp = view->details().child(viewsIndex);
   std::size_t i, n = viewsComp.numberOfChildren();
   smtk::view::ConfigurationPtr v;
-  bool hasDefaultIndex = selItemDef->hasDefault();
-  int defaultIndex = (hasDefaultIndex ? selItemDef->defaultDiscreteIndex() : -1);
   qtBaseView* qtView;
 
   for (i = 0; i < n; i++)
@@ -232,8 +230,8 @@ bool qtSelectorView::createChildren()
     {
       this->addChildView(qtView, static_cast<int>(enumIndex));
       // Should this view be visible?
-      qtView->widget()->setVisible(
-        hasDefaultIndex && (defaultIndex == static_cast<int>(enumIndex)));
+      qtView->widget()->setVisible(this->Internals->m_selectorItem->isSet() &&
+        (this->Internals->m_selectorItem->discreteIndex() == static_cast<int>(enumIndex)));
     }
   }
   return true;

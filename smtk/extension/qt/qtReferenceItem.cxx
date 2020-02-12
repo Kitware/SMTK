@@ -481,7 +481,7 @@ void qtReferenceItem::updateUI()
   if (itm->isOptional())
   {
     m_p->m_optional = new QCheckBox(m_itemInfo.parentWidget());
-    m_p->m_optional->setChecked(itm->isEnabled());
+    m_p->m_optional->setChecked(itm->localEnabledState());
     m_p->m_optional->setText(" ");
     m_p->m_optional->setSizePolicy(sizeFixedPolicy);
     padding = m_p->m_optional->iconSize().width() + 3; // 6 is for layout spacing
@@ -591,7 +591,7 @@ void qtReferenceItem::updateUI()
   }
   if (itm->isOptional())
   {
-    this->setOutputOptional(itm->isEnabled() ? 1 : 0);
+    this->setOutputOptional(itm->localEnabledState() ? 1 : 0);
   }
   this->synchronize(UpdateSource::GUI_FROM_ITEM);
 

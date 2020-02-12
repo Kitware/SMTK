@@ -137,7 +137,7 @@ void qtGroupItem::createWidget()
   if (item->isOptional())
   {
     groupBox->setCheckable(true);
-    groupBox->setChecked(item->isEnabled());
+    groupBox->setChecked(item->localEnabledState());
     this->Internals->ChildrensFrame->setVisible(item->isEnabled());
     connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(setEnabledState(bool)));
   }
@@ -152,7 +152,7 @@ void qtGroupItem::setEnabledState(bool checked)
     return;
   }
 
-  if (checked != item->isEnabled())
+  if (checked != item->localEnabledState())
   {
     item->setIsEnabled(checked);
     emit this->modified();
@@ -561,11 +561,17 @@ void qtGroupItem::calculateTableHeight()
   {
     return;
   }
+  int numRows = -1; // Set the height to be the entire table
+  m_itemInfo.component().attributeAsInt("MinNumberOfRows", numRows);
 
-  int n = this->Internals->ItemsTable->verticalHeader()->count();
+  if (numRows == -1)
+  {
+    numRows = this->Internals->ItemsTable->verticalHeader()->count();
+  }
+
   int totalHeight = this->Internals->ItemsTable->horizontalScrollBar()->height() +
     this->Internals->ItemsTable->horizontalHeader()->height();
-  for (int i = 0; i < n; i++)
+  for (int i = 0; i < numRows; i++)
   {
     totalHeight += this->Internals->ItemsTable->verticalHeader()->sectionSize(i);
   }

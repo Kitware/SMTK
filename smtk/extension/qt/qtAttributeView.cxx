@@ -121,8 +121,7 @@ public:
 
   QFrame* FiltersFrame;
   QFrame* ButtonsFrame;
-  QFrame* TopFrame;    // top
-  QFrame* BottomFrame; // bottom
+  QFrame* TopFrame; // top
 
   QComboBox* ViewByCombo;
   QComboBox* PropDefsCombo;
@@ -236,18 +235,17 @@ void qtAttributeView::createWidget()
   frame->setOrientation(Qt::Vertical);
 
   QFrame* TopFrame = new QFrame(frame);
-  QFrame* BottomFrame = new QFrame(frame);
+  this->Internals->AttFrame = new QFrame(frame);
 
   this->Internals->TopFrame = TopFrame;
-  this->Internals->BottomFrame = BottomFrame;
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QVBoxLayout* TopLayout = new QVBoxLayout(TopFrame);
   TopLayout->setMargin(0);
   TopFrame->setSizePolicy(sizeFixedPolicy);
-  QVBoxLayout* BottomLayout = new QVBoxLayout(BottomFrame);
-  BottomLayout->setMargin(0);
-  BottomFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  QVBoxLayout* AttFrameLayout = new QVBoxLayout(this->Internals->AttFrame);
+  AttFrameLayout->setMargin(0);
+  this->Internals->AttFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   // create a filter-frame with ViewBy-combo
   this->Internals->FiltersFrame = new QFrame(frame);
@@ -356,23 +354,22 @@ void qtAttributeView::createWidget()
   TopLayout->addWidget(this->Internals->FiltersFrame);
   TopLayout->addWidget(this->Internals->ButtonsFrame);
   TopLayout->addWidget(this->Internals->ListTable);
-
-  BottomLayout->addWidget(this->Internals->ValuesTable);
+  // REMOVED THIS TO SIMPLY LAYOUT FOR VIEW BY ATTRIBUTES
+  // MODE - SHOULD BE REMOVED IF WE FACTOR OUT THE VIEW BY PROPERTY MODE
+  //BottomLayout->addWidget(this->Internals->ValuesTable);
   this->Internals->ValuesTable->setVisible(false);
 
   // Attribte frame
   this->Internals->AttFrame = new QFrame(frame);
   new QVBoxLayout(this->Internals->AttFrame);
-  BottomLayout->addWidget(this->Internals->AttFrame);
-  //  this->Internals->AttFrame->setVisible(0);
 
   frame->addWidget(TopFrame);
-  frame->addWidget(BottomFrame);
+  frame->addWidget(this->Internals->AttFrame);
 
   // the association widget
   this->Internals->AssociationsWidget = new qtAssociationWidget(frame, this);
   this->updateAssociationEnableState(smtk::attribute::AttributePtr());
-  BottomLayout->addWidget(this->Internals->AssociationsWidget);
+  frame->addWidget(this->Internals->AssociationsWidget);
 
   this->Internals->ValuesTable->horizontalHeader()->setSectionResizeMode(
     QHeaderView::ResizeToContents);

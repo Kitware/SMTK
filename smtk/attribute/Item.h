@@ -148,6 +148,10 @@ public:
   /// 2. If it's owning item is enabled and  either
   /// it is not optional or it has been explicitly enabled
   bool isEnabled() const;
+
+  /// Return the state of the instance's isEnabled state
+  bool localEnabledState() const { return m_isEnabled; }
+  /// Set the instance's local enabled state
   void setIsEnabled(bool isEnabledValue) { m_isEnabled = isEnabledValue; }
 
   ///\brief return the categories associated with the item (via its Definition)

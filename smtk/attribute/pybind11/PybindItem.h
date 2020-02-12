@@ -40,6 +40,7 @@ PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::
     .def("isOptional", &smtk::attribute::Item::isOptional)
     .def("isEnabled", &smtk::attribute::Item::isEnabled)
     .def("setIsEnabled", &smtk::attribute::Item::setIsEnabled, py::arg("isEnabledValue"))
+    .def("localEnabledState", &smtk::attribute::Item::localEnabledState)
     // NOTE that the Python form of this method is returning a copy since Python
     // doesn't support const references
     .def("categories", &smtk::attribute::Item::categories)

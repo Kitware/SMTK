@@ -1086,6 +1086,16 @@ int qtUIManager::getWidthOfItemsMaxLabel(
 #endif
 }
 
+int qtUIManager::getWidthOfText(const std::string& w, const QFont& font)
+{
+  QFontMetrics fontsize(font);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+  return fontsize.horizontalAdvance(w.c_str());
+#else
+  return fontsize.width(text.c_str());
+#endif
+}
+
 void qtUIManager::findDefinitionsLongLabels()
 {
   this->Def2LongLabel.clear();

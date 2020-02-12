@@ -80,3 +80,4 @@ Resource.
 Previously calling isSet() for items that had its numberOfValues() == 0 would either result in an assert or indexing a vector of size 0.  This has been fixed so calling the method for an index that doesn't exist will always return false.
 ### unset() will now assert for indices that don't exist
 Previously some Items would exhibit undefined behavior but will now simply assert.
+### Added Item::localEnabledState() method - this method returns the the value of the Item's enabled flag. **Note** This is different from Item::isEnabled() method that also takes into consideration the enabled state of the Item's parent.
