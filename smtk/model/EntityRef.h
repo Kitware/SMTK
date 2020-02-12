@@ -26,6 +26,7 @@
 #include "smtk/model/IntegerData.h"          // for Integer, IntegerData, ...
 #include "smtk/model/StringData.h"           // for String, StringData, ...
 
+#include <array>
 #include <iostream>
 #include <set>
 #include <vector>
@@ -210,6 +211,8 @@ public:
   std::vector<double> boundingBox() const;
   std::vector<double> unionBoundingBox(
     const std::vector<double>& b1, const std::vector<double>& b2) const;
+  std::vector<double> unionBoundingBox(
+    const std::vector<double>& b1, const std::array<double, 6>& b2) const;
 
   EntityRefs lowerDimensionalBoundaries(int lowerDimension);
   EntityRefs higherDimensionalBordants(int higherDimension);

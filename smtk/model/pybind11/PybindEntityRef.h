@@ -171,7 +171,7 @@ py::class_< smtk::model::EntityRef > pybind11_init_smtk_model_EntityRef(py::modu
     .def("stringPropertyNames", &smtk::model::EntityRef::stringPropertyNames)
     .def("tessellationGeneration", &smtk::model::EntityRef::tessellationGeneration)
     .def("unembedEntity", &smtk::model::EntityRef::unembedEntity, py::arg("thingToUnembed"))
-    .def("unionBoundingBox", &smtk::model::EntityRef::unionBoundingBox, py::arg("b1"), py::arg("b2"))
+    .def("unionBoundingBox", (std::vector<double> (smtk::model::EntityRef::*)(const std::vector<double>&, const std::vector<double>&) const) &smtk::model::EntityRef::unionBoundingBox, py::arg("b1"), py::arg("b2"))
     .def("visible", &smtk::model::EntityRef::visible)
     ;
   return instance;

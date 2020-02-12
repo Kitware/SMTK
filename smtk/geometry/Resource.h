@@ -43,6 +43,26 @@ public:
   /// to a library that can provide data in a format acceptable to the backend.
   std::unique_ptr<Geometry>& geometry(const Backend& backend);
 
+  /// Return the first geometry provider (for any backend).
+  ///
+  /// This may return null if (a) neither the resource nor anything it contains
+  /// is capable of providing geometry or (b) the application is not linked
+  /// to a library that can provide data in a format acceptable to the backend.
+  ///
+  /// Use this method when querying for the existence of geometry or for object
+  /// bounds, since it terminates earlier than visitGeometry(). Note, however,
+  /// that:
+  /// 1. It assumes geometry objects for multiple backends will provide geometry
+  ///    and bounds identically for the same set of persistent objects.
+  /// 2. It assumes that the resource has been added to a resource manager
+  ///    that has a geometry manager observing it and that some generator for
+  ///    this resource type and any backend was registered with the geometry
+  ///    manager *before* this resource was added to the resource manager.
+  ///    Otherwise, no geometry object will have been constructed and there
+  ///    is no way to obtain the geometry manager from the resource manager to
+  ///    attempt construction if iteration of existing Geometry objects fails.
+  std::unique_ptr<Geometry>& geometry();
+
   /// Visit all existing geometry providers for this resource.
   ///
   /// This will invoke the given \a visitor function on each provider.
@@ -58,7 +78,7 @@ public:
   ///   }
   /// );
   /// ```
-  /// (Note: the pattern above is used by smtk::operation::GeometryMarkup; you
+  /// (Note: the pattern above is used by smtk::operation::MarkGeometry; you
   /// should use that class rather than directly copy the code above to mark
   /// geometry as modified.)
   void visitGeometry(std::function<void(std::unique_ptr<Geometry>&)> visitor);

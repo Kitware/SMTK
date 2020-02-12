@@ -67,5 +67,17 @@ void Manager::registerResourceManager(const smtk::resource::Manager::Ptr& manage
   }
 }
 
+void Manager::constructGeometry(
+  const std::shared_ptr<smtk::resource::Manager>& resourceManager, Backend& backend)
+{
+  for (const auto& resource : resourceManager->resources())
+  {
+    if (auto geomResource = std::dynamic_pointer_cast<smtk::geometry::Resource>(resource))
+    {
+      geomResource->geometry(backend);
+    }
+  }
+}
+
 } // namespace geometry
 } // namespace smtk

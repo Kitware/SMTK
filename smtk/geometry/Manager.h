@@ -61,6 +61,10 @@ public:
     if (m_backends.find(entry->index()) == m_backends.end())
     {
       m_backends[entry->index()] = entry;
+      if (auto resourceManager = m_resourceManager.lock())
+      {
+        this->constructGeometry(resourceManager, *entry);
+      }
       return true;
     }
     return false;
@@ -85,6 +89,11 @@ public:
 
   /// Watch the given resource manager and add geometry objects to its resources as possible.
   void registerResourceManager(const smtk::resource::Manager::Ptr& manager);
+
+protected:
+  /// For any resources in \a resourceManager, attempt to construct geometry for \a backend.
+  void constructGeometry(
+    const std::shared_ptr<smtk::resource::Manager>& resourceManager, Backend& backend);
 
 private:
   Manager() = default;

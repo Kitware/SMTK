@@ -28,6 +28,13 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
+#include "smtk/geometry/Cache.h"
+#include "smtk/geometry/Generator.h"
+#include "smtk/geometry/Geometry.h"
+#include "smtk/geometry/Manager.h"
+
+#include "smtk/resource/Manager.h"
+
 #include <fstream>
 #include <sstream>
 
@@ -35,6 +42,109 @@ using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 using namespace smtk::io;
+
+namespace
+{
+
+using TestResource = smtk::model::Resource;
+
+// Example of a custom "geometry" format for a backend.
+// We cannot use smtk::geometry::GeometryForBackend<int>
+// because integers are not automatically initialized.
+// Here, we just wrap an integer so that Format is
+// initialized by default and convertible to a bool.
+// Usually, you will GeometryForBackend a shared or
+// smart pointer to some more complex structure.
+struct Format
+{
+  int m_data = 0;
+  Format() = default;
+  Format(int data)
+    : m_data(data)
+  {
+  }
+  Format(const Format& other) = default;
+
+  // This *must* return false when m_data is the default value.
+  // It *may* return false under other conditions.
+  operator bool() { return m_data > 0; }
+
+  // Return some nonsense "geometry":
+  operator int() { return m_data <= 0 ? -1 : m_data; }
+};
+
+class TestBackend : public smtk::geometry::Backend
+{
+public:
+  TestBackend() = default;
+  ~TestBackend() override = default;
+
+  std::string name() const override { return "TestBackend"; }
+};
+
+class TestGeometry
+  : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>, TestGeometry>
+{
+public:
+  TestGeometry(const TestResource::Ptr& parent)
+    : m_parent(parent)
+  {
+  }
+  ~TestGeometry() override = default;
+
+  const smtk::geometry::Backend& backend() const override
+  {
+    static TestBackend data;
+    return data;
+  }
+
+  smtk::geometry::Resource::Ptr resource() const override { return m_parent.lock(); }
+
+  void queryGeometry(
+    const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const override
+  {
+    if (obj)
+    {
+      entry.m_generation = Initial;
+      entry.m_geometry = Format(1);
+    }
+    else
+    {
+      entry.m_generation = Invalid;
+    }
+  }
+
+  void geometricBounds(const int& value, BoundingBox& bds) const
+  {
+    bds[0] = bds[2] = bds[4] = +0.0;
+    bds[1] = bds[3] = bds[5] = static_cast<double>(value);
+  }
+
+  // Ensure every component with renderable geometry has a cache entry.
+  void update() const {}
+
+  TestResource::WeakPtr m_parent;
+};
+
+class RegisterTestResourceToBackend : public smtk::geometry::Supplier<RegisterTestResourceToBackend>
+{
+public:
+  bool valid(const smtk::geometry::Specification& in) const override
+  {
+    TestBackend backend;
+    auto rsrc = std::dynamic_pointer_cast<TestResource>(std::get<0>(in));
+    return rsrc && std::get<1>(in).index() == backend.index();
+  }
+
+  smtk::geometry::GeometryPtr operator()(const smtk::geometry::Specification& in) override
+  {
+    auto rsrc = std::dynamic_pointer_cast<TestResource>(std::get<0>(in));
+    auto provider = new TestGeometry(rsrc);
+    return smtk::geometry::GeometryPtr(provider);
+  }
+};
+
+} // anonymous namespace
 
 static int numberOfInclusionsRemoved = 0;
 static int numberOfFreeCellsRemoved = 0;
@@ -64,8 +174,74 @@ int didRemove(ResourceEventType event, const EntityRef& /*unused*/, const Entity
   return 0;
 }
 
+void testBoundingBoxFromTessellation(const smtk::model::Model& model)
+{
+  std::cout << "testBoundingBoxFromTessellation\n";
+  {
+    auto& geom = model.resource()->geometry();
+    std::cout << "  Geometry " << geom.get() << " (should be null).\n";
+    test(geom == nullptr, "Null geometry expected.");
+  }
+  std::vector<double> bbox = model.boundingBox();
+  std::cout << "  Bounds (via property) " << bbox[0] << " " << bbox[2] << " " << bbox[4] << " -- "
+            << bbox[1] << " " << bbox[3] << " " << bbox[5] << "\n";
+  test(bbox.size() == 6, "Bounds not sized properly.");
+  test(bbox[1] >= bbox[0], "Bounds invalid.");
+
+  // Now erase the bounding box property and ensure that
+  // the bbox is now reported as invalid.
+  smtk::model::Model mutableModel(model);
+  mutableModel.removeFloatProperty(SMTK_BOUNDING_BOX_PROP);
+  for (auto cell : model.cells())
+  {
+    cell.removeFloatProperty(SMTK_BOUNDING_BOX_PROP);
+  }
+  bbox = model.boundingBox();
+  test(bbox.size() == 6, "Bounds not sized properly.");
+  test(bbox[1] < bbox[0], "Bounds should not be valid.");
+
+  // Now, re-run the bounding box query but this time,
+  // force it to use a Geometry object instead of the
+  // property system to fetch bounds. (Using a property
+  // to hold bounds is being phased out along with
+  // smtk::model::Tessellation in favor of Geometry.)
+  //
+  // Create resource and geometry managers.
+  auto resourceManager = smtk::resource::Manager::create();
+  auto geometryManager = smtk::geometry::Manager::create();
+  geometryManager->registerResourceManager(resourceManager);
+
+  // Register resource type and then add resource to manager:
+  bool didRegisterResource = resourceManager->registerResource<TestResource>();
+  test(didRegisterResource, "Could not register TestResource type.");
+  bool didAddResource = resourceManager->add(model.resource());
+  test(didAddResource, "Could not add resource to manager.");
+
+  // Register geometry backend type and then register generator for resource type:
+  // Note: We must register the generator (geometryRegistered) before the backend
+  // (didRegisterBackend) in order for geometry to be constructed. This is required
+  // because the generator registration has no knowledge of the geometry or resource
+  // managers that reference it.
+  bool geometryRegistered = RegisterTestResourceToBackend::registerClass();
+  test(geometryRegistered, "Could not register geometry provider for backend.");
+  bool didRegisterBackend = geometryManager->registerBackend<TestBackend>();
+  test(didRegisterBackend, "Could not register TestBackend type.");
+  {
+    auto& geom = model.resource()->geometry();
+    std::cout << "  Geometry " << geom.get() << " (should be non-null).\n";
+    test(!!geom, "Non-null geometry expected.");
+  }
+  bbox = model.boundingBox();
+  std::cout << "  Bounds (via geometry) " << bbox[0] << " " << bbox[2] << " " << bbox[4] << " -- "
+            << bbox[1] << " " << bbox[3] << " " << bbox[5] << "\n";
+  test(bbox.size() == 6, "Bounds not sized properly.");
+  test(bbox[1] >= bbox[0], "Bounds invalid.");
+  std::cout << "testBoundingBoxFromTessellation... done\n\n";
+}
+
 void testComplexVertexChain()
 {
+  std::cout << "testComplexVertexChain\n";
   ResourcePtr sm = Resource::create();
   Vertices verts;
   VertexUses vu;
@@ -107,10 +283,12 @@ void testComplexVertexChain()
     }
     */
   test(eun.vertexUses() == rvu, "Complex chain traversal failed (reversed).");
+  std::cout << "testComplexVertexChain... done\n\n";
 }
 
 void testMiscConstructionMethods()
 {
+  std::cout << "testMiscConstructionMethods\n";
   ResourcePtr sm = Resource::create();
   Vertices verts;
   Edges edges;
@@ -145,10 +323,13 @@ void testMiscConstructionMethods()
   // Should not include duplicates:
   test(edges[0].relationsAs<EntityRefs>().size() == 2,
     "Expected relationsAs<EntityRefs> (a set) to remove duplicates.");
+
+  std::cout << "testMiscConstructionMethods... done\n\n";
 }
 
 void testVolumeEntityRef()
 {
+  std::cout << "testVolumeEntityRef\n";
   ResourcePtr sm = Resource::create();
   createTet(sm);
   Volumes vols = sm->entitiesMatchingFlagsAs<Volumes>(VOLUME, true);
@@ -159,10 +340,12 @@ void testVolumeEntityRef()
   test(vol.use().isValid(), "Expected a valid volume use.");
   Shells shells = vol.shells();
   test(shells.size() == 1, "Expected a single shell (use) in the test model.");
+  std::cout << "testVolumeEntityRef... done\n\n";
 }
 
 void testModelMethods()
 {
+  std::cout << "testModelMethods\n";
   // Test methods specific to the Model subclass of EntityRef
   ResourcePtr sm = Resource::create();
   Session::Ptr session = Session::create();
@@ -175,13 +358,15 @@ void testModelMethods()
 
   Model m1 = sm->addModel();
   m0.addSubmodel(m1);
-  std::cout << "m1 " << m1.name() << " m0 " << m0.name() << " m1p " << m1.parent().name() << "\n";
-  std::cout << "m1 " << m1.session().name() << " m0 " << m0.session().name() << "\n";
+  std::cout << "  m1 " << m1.name() << " m0 " << m0.name() << " m1p " << m1.parent().name() << "\n";
+  std::cout << "  m1 " << m1.session().name() << " m0 " << m0.session().name() << "\n";
   test(m1.session() == m0.session(), "Expected sessions to match for model and its submodel.");
+  std::cout << "testModelMethods... done\n\n";
 }
 
 void testResourceComponentConversion()
 {
+  std::cout << "testResourceComponentConversion\n";
   ResourcePtr sm = Resource::create();
   Session::Ptr session = Session::create();
   sm->registerSession(session);
@@ -194,6 +379,7 @@ void testResourceComponentConversion()
   smtk::resource::ComponentPtr cmp = m0.component();
   test(cmp == smtk::dynamic_pointer_cast<smtk::resource::Component>(mep),
     "Component/Entity mismatch.");
+  std::cout << "testResourceComponentConversion... done\n\n";
 }
 
 int main(int argc, char* argv[])
@@ -211,6 +397,7 @@ int main(int argc, char* argv[])
 
     UUIDArray uids = createTet(sm);
 
+    std::cout << "testConstruction\n";
     Model model = sm->addModel(3, 3, "TestModel");
     // Test Model::parent()
     test(!model.parent().isValid(), "Toplevel model should have an invalid parent.");
@@ -251,7 +438,7 @@ int main(int argc, char* argv[])
     sm->assignDefaultNames();
     EntityRefs entities;
     EntityRef::EntityRefsFromUUIDs(entities, sm, uids);
-    std::cout << uids.size() << " uids, " << entities.size() << " entities\n";
+    std::cout << "  " << uids.size() << " uids, " << entities.size() << " entities\n";
     test(uids.size() == entities.size(),
       "Translation from UUIDs to entityrefs should not omit entries");
     Group bits = sm->addGroup(0, "Bits'n'pieces");
@@ -268,7 +455,7 @@ int main(int argc, char* argv[])
     CellEntities groupCells = bits.members<CellEntities>();
     UseEntities groupUses = bits.members<UseEntities>();
     ShellEntities groupShells = bits.members<ShellEntities>();
-    std::cout << uids.size() << " entities = " << groupCells.size() << " cells + "
+    std::cout << "  " << uids.size() << " entities = " << groupCells.size() << " cells + "
               << groupUses.size() << " uses + " << groupShells.size() << " shells\n";
     test(groupCells.size() == 22, "Cell group has wrong number of members.");
     test(groupUses.size() == 30, "Use group has wrong number of members.");
@@ -317,8 +504,8 @@ int main(int argc, char* argv[])
 
     UseEntity use = entity.as<UseEntity>();
     Vertex vert = entity.as<Vertex>();
-    std::cout << vert << "\n";
-    //std::cout << vert.coordinates().transpose() << "\n";
+    std::cout << "  " << vert << "\n";
+    //std::cout << "  " << vert.coordinates().transpose() << "\n";
     test(cell.isValid(), "CellEntity::isValid() incorrect");
     test(!use.isValid(), "UseEntity::isValid() incorrect");
     // Test obtaining uses from cells. Currently returns an empty set
@@ -336,7 +523,11 @@ int main(int argc, char* argv[])
       entities = entity.lowerDimensionalBoundaries(dim);
       test(entities.size() == sm->lowerDimensionalBoundaries(uids[21], dim).size());
     }
+    std::cout << "testConstruction... done\n\n";
 
+    testBoundingBoxFromTessellation(model);
+
+    std::cout << "testProperties\n";
     entity.setFloatProperty("perpendicular", 1.57);
     test(entity.floatProperty("perpendicular").size() == 1 &&
       entity.floatProperty("perpendicular")[0] == 1.57);
@@ -349,7 +540,7 @@ int main(int argc, char* argv[])
     test(
       entity.integerProperty("7beef").size() == 1 && entity.integerProperty("7beef")[0] == 507631);
 
-    std::cout << entity << "\n";
+    std::cout << "  " << entity << "\n";
 
     // Test exclusion properties
     test(
@@ -393,7 +584,9 @@ int main(int argc, char* argv[])
     test(!entity.hasFloatProperty("perpendicular"));
     test(!entity.hasStringProperty("name"));
     test(!entity.hasIntegerProperty("7beef"));
+    std::cout << "testProperties... done\n\n";
 
+    std::cout << "testModeling\n";
     // Test that face entity was created with invalid (but present) face uses.
     Face f(sm, uids[20]);
     test(f.volumes().size() == 1 && f.volumes()[0].isVolume());
@@ -404,7 +597,7 @@ int main(int argc, char* argv[])
     Vertex v = sm->addVertex();
     sm->addVertexUse(v, 0);
     v.setStringProperty("name", "Loopy");
-    std::cout << v << "\n";
+    std::cout << "  " << v << "\n";
     sm->findOrAddInclusionToCellOrModel(uids[21], v.entity());
     // Now perform the same operation another way to ensure that
     // the existing arrangement blocks the new one from being
@@ -545,6 +738,7 @@ int main(int argc, char* argv[])
     }
     test(n6 == 4, "4 corner vertex-uses should have 6 chains each.");
     test(n4 == 3, "3 inner-face vertex-uses should have 4 chains each.");
+    std::cout << "testModeling... done\n\n";
 
     testComplexVertexChain();
     testMiscConstructionMethods();

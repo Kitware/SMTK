@@ -76,6 +76,18 @@ std::unique_ptr<Geometry>& Resource::geometry(const Backend& backend)
   return it->second;
 }
 
+std::unique_ptr<Geometry>& Resource::geometry()
+{
+  auto it = m_geometry.begin();
+  if (it != m_geometry.end())
+  {
+    return it->second;
+  }
+
+  static std::unique_ptr<Geometry> empty;
+  return empty;
+}
+
 void Resource::visitGeometry(std::function<void(std::unique_ptr<Geometry>&)> visitor)
 {
   for (auto& entry : m_geometry)
