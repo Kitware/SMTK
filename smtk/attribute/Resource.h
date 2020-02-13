@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <map>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -235,6 +236,38 @@ public:
   void setDirectoryInfo(const DirectoryInfo& dinfo) { m_directoryInfo = dinfo; }
   const DirectoryInfo& directoryInfo() const { return m_directoryInfo; }
 
+  class GuardedLinks
+  {
+  public:
+    GuardedLinks(std::mutex& mutex, const smtk::resource::Resource::Links& links)
+      : m_guard(mutex)
+      , m_links(links)
+    {
+    }
+
+    const smtk::resource::Resource::Links* operator->() const { return &m_links; }
+
+    smtk::resource::Resource::Links* operator->()
+    {
+      return const_cast<smtk::resource::Resource::Links*>(&m_links);
+    }
+
+  private:
+    std::unique_lock<std::mutex> m_guard;
+    const smtk::resource::Resource::Links& m_links;
+  };
+
+  // Attributes are uniquely used outside of an operation context, where they
+  // are not guarded from concurrency issues. Specifically, ReferenceItems use
+  // ResourceLinks to store references to other resources, and the
+  // Resource::Links and Component::Links API is not thread-safe. This API
+  // ensures thread safety when manipulating smtk::attribute::(Resource,Attribute
+  // Links.
+  const GuardedLinks guardedLinks() const;
+  GuardedLinks guardedLinks();
+
+  std::mutex& mutex() const { return m_mutex; }
+
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);
   Resource(smtk::resource::ManagerPtr manager = nullptr);
@@ -266,6 +299,7 @@ protected:
   std::set<smtk::resource::Links::RoleType> m_roles;
 
 private:
+  mutable std::mutex m_mutex;
 };
 
 inline smtk::view::ConfigurationPtr Resource::findView(const std::string& name) const

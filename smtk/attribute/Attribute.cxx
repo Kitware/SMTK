@@ -864,3 +864,13 @@ smtk::attribute::ConstComponentItemPtr Attribute::findComponent(const std::strin
 {
   return smtk::dynamic_pointer_cast<const ComponentItem>(this->find(nameStr));
 }
+
+const smtk::attribute::Attribute::GuardedLinks Attribute::guardedLinks() const
+{
+  return GuardedLinks(this->attributeResource()->mutex(), this->links());
+}
+
+smtk::attribute::Attribute::GuardedLinks Attribute::guardedLinks()
+{
+  return GuardedLinks(this->attributeResource()->mutex(), this->links());
+}

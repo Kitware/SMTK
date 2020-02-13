@@ -332,6 +332,36 @@ public:
 
   std::size_t includeIndex() const { return m_includeIndex; }
 
+  class GuardedLinks
+  {
+  public:
+    GuardedLinks(std::mutex& mutex, const smtk::resource::Component::Links& links)
+      : m_guard(mutex)
+      , m_links(links)
+    {
+    }
+
+    const smtk::resource::Component::Links* operator->() const { return &m_links; }
+
+    smtk::resource::Component::Links* operator->()
+    {
+      return const_cast<smtk::resource::Component::Links*>(&m_links);
+    }
+
+  private:
+    std::unique_lock<std::mutex> m_guard;
+    const smtk::resource::Component::Links& m_links;
+  };
+
+  // Attributes are uniquely used outside of an operation context, where they
+  // are not guarded from concurrency issues. Specifically, ReferenceItems use
+  // ResourceLinks to store references to other resources, and the
+  // Resource::Links and Component::Links API is not thread-safe. This API
+  // ensures thread safety when manipulating smtk::attribute::(Resource,Attribute
+  // Links.
+  const GuardedLinks guardedLinks() const;
+  GuardedLinks guardedLinks();
+
 protected:
   Attribute(const std::string& myName, const smtk::attribute::DefinitionPtr& myDefinition,
     const smtk::common::UUID& myId);
@@ -502,7 +532,6 @@ void Attribute::filterItems(
     }
     // Only items which have children would have a non-empty visitChildren method
     item->visitChildren(visitor, activeChildrenLocal);
-
   };
 
   for (std::size_t index = 0; index < this->numberOfItems(); ++index)
