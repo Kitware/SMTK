@@ -29,6 +29,8 @@
 #include "smtk/mesh/core/MeshSet.h"
 #include "smtk/mesh/core/Resource.h"
 
+#include "smtk/geometry/Geometry.h"
+
 #include <boost/functional/hash.hpp>
 #include <cfloat>
 
@@ -537,13 +539,34 @@ std::vector<double> EntityRef::boundingBox() const
     dummy.push_back(tmp);
   }
 
+  ResourcePtr rsrc = m_resource.lock();
+  if (!rsrc)
+  {
+    return dummy;
+  }
+
+  auto ent = this->entityRecord();
+  if (!ent)
+  {
+    return dummy;
+  }
+
+  auto& geom = rsrc->geometry();
+
+  std::array<double, 6> bounds;
   if (this->isCellEntity())
   {
-    // assume that only volume do not have boundingBox as float property
+    // Generally only volumes do not have boundingBox as float property
     if (this->hasFloatProperty(SMTK_BOUNDING_BOX_PROP)) // vertex/edge/face
     {
       smtk::model::FloatList currentBBox(this->floatProperty(SMTK_BOUNDING_BOX_PROP));
       bBox = this->unionBoundingBox(bBox, currentBBox);
+    }
+    else if (geom &&
+      geom->generationNumber(ent) != smtk::geometry::Geometry::Invalid) // vertex/edge/face
+    {
+      geom->bounds(ent, bounds);
+      bBox = this->unionBoundingBox(bBox, bounds);
       return bBox;
     }
     else
@@ -552,9 +575,15 @@ std::vector<double> EntityRef::boundingBox() const
       EntityRefs children = this->boundaryEntities(this->dimension() - 1);
       for (EntityRefs::iterator child = children.begin(); child != children.end(); ++child)
       {
+        auto childEnt = child->entityRecord();
         if (child->hasFloatProperty(SMTK_BOUNDING_BOX_PROP))
         {
           bBox = this->unionBoundingBox(bBox, child->floatProperty(SMTK_BOUNDING_BOX_PROP));
+        }
+        else if (geom && geom->generationNumber(childEnt) != smtk::geometry::Geometry::Invalid)
+        {
+          geom->bounds(childEnt, bounds);
+          bBox = this->unionBoundingBox(bBox, bounds);
         }
       }
       return bBox;
@@ -623,6 +652,7 @@ std::vector<double> EntityRef::boundingBox() const
   {
     return dummy;
   }
+  return bBox;
 }
 
 std::vector<double> EntityRef::unionBoundingBox(
@@ -637,6 +667,20 @@ std::vector<double> EntityRef::unionBoundingBox(
   resultBBox.push_back(std::max(b1[5], b2[5]));
   return resultBBox;
 }
+
+std::vector<double> EntityRef::unionBoundingBox(
+  const std::vector<double>& b1, const std::array<double, 6>& b2) const
+{
+  std::vector<double> resultBBox;
+  resultBBox.push_back(std::min(b1[0], b2[0]));
+  resultBBox.push_back(std::max(b1[1], b2[1]));
+  resultBBox.push_back(std::min(b1[2], b2[2]));
+  resultBBox.push_back(std::max(b1[3], b2[3]));
+  resultBBox.push_back(std::min(b1[4], b2[4]));
+  resultBBox.push_back(std::max(b1[5], b2[5]));
+  return resultBBox;
+}
+
 EntityRefs EntityRef::lowerDimensionalBoundaries(int lowerDimension)
 {
   EntityRefs result;
