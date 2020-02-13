@@ -250,7 +250,7 @@ void qtDateTimeItem::setOutputOptional(int state)
     cwidget->setVisible(enable);
   }
 
-  if (enable != item->isEnabled())
+  if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
     auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());
@@ -400,7 +400,7 @@ void qtDateTimeItem::updateUI()
   if (dataObj->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(m_itemInfo.parentWidget());
-    optionalCheck->setChecked(dataObj->isEnabled());
+    optionalCheck->setChecked(dataObj->localEnabledState());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
@@ -461,7 +461,7 @@ void qtDateTimeItem::updateUI()
   }
   if (dataObj->isOptional())
   {
-    this->setOutputOptional(dataObj->isEnabled() ? 1 : 0);
+    this->setOutputOptional(dataObj->localEnabledState() ? 1 : 0);
   }
 }
 

@@ -611,7 +611,7 @@ void qtInputsItem::updateUI()
   if (dataObj->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
-    optionalCheck->setChecked(dataObj->isEnabled());
+    optionalCheck->setChecked(dataObj->localEnabledState());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
@@ -633,7 +633,14 @@ void qtInputsItem::updateUI()
   label->setSizePolicy(sizeFixedPolicy);
   if (iview)
   {
-    label->setFixedWidth(iview->fixedLabelWidth() - padding);
+    int requiredLen = m_itemInfo.uiManager()->getWidthOfText(
+      dataObj->label(), m_itemInfo.uiManager()->advancedFont());
+    int labLen = iview->fixedLabelWidth();
+    if ((requiredLen / 2) > labLen)
+    {
+      labLen = requiredLen;
+    }
+    label->setFixedWidth(labLen - padding);
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -685,7 +692,7 @@ void qtInputsItem::updateUI()
   }
   if (dataObj->isOptional())
   {
-    this->setOutputOptional(dataObj->isEnabled() ? 1 : 0);
+    this->setOutputOptional(dataObj->localEnabledState() ? 1 : 0);
   }
 }
 
@@ -721,7 +728,7 @@ void qtInputsItem::setOutputOptional(int state)
   }
 
   //  this->Internals->EntryFrame->setEnabled(enable);
-  if (enable != item->isEnabled())
+  if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
     auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());

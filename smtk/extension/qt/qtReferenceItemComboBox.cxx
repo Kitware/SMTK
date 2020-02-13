@@ -184,7 +184,7 @@ void qtReferenceItemComboBox::createWidget()
   if (item->isOptional())
   {
     QCheckBox* optionalCheck = new QCheckBox(m_itemInfo.parentWidget());
-    optionalCheck->setChecked(item->isEnabled());
+    optionalCheck->setChecked(item->localEnabledState());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
@@ -243,7 +243,7 @@ void qtReferenceItemComboBox::createWidget()
   }
   if (item->isOptional())
   {
-    this->setOutputOptional(item->isEnabled() ? 1 : 0);
+    this->setOutputOptional(item->localEnabledState() ? 1 : 0);
   }
 }
 
@@ -748,7 +748,7 @@ void qtReferenceItemComboBox::setOutputOptional(int state)
   }
   bool enable = state != 0;
   this->Internals->comboBox->setVisible(enable);
-  if (enable != item->isEnabled())
+  if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
     auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());

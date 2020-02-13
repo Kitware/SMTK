@@ -107,7 +107,7 @@ void qtVoidItem::updateItemData()
   {
     return;
   }
-  this->Internals->optionalCheck->setChecked(dataObj->isEnabled());
+  this->Internals->optionalCheck->setChecked(dataObj->localEnabledState());
   this->qtItem::updateItemData();
 }
 
@@ -115,7 +115,7 @@ void qtVoidItem::setOutputOptional(int state)
 {
   bool enable = state != 0;
   auto item = m_itemInfo.item();
-  if (enable != item->isEnabled())
+  if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
     auto iview = dynamic_cast<qtBaseAttributeView*>(m_itemInfo.baseView().data());

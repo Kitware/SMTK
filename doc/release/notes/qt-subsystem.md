@@ -48,3 +48,44 @@ Consuming applications can now register icon sets for Resources and Components, 
 ### qtAttribute Changes
 * Added a removeItems methods - this removes all of the qtItems from the qtAttribute and allows createBasicLayout to be called again
 * Added an option to createWidget that will allow a widget to be created even if the attribute's items are filtered out by categories and/or advanced level filtering.
+
+### qtAttributeView Changes
+* There is now a splitter between the attribute editing area and the association information area.
+
+### qtUIManager Changes
+* There is now a method to return the size of a string based on the font being used
+
+### qtInputItem Changes
+* If the space reserved for the label width is less than 1/2 the space required. The size hint is ignored and enough space for the entire label is used.
+
+### qtGroupItem Changes
+#### Added the ability to limit the min size of an extensible group's table
+Added MinNumberOfRows="n" to restrict the size.  Note that if n = -1 (the default) the size is set to the total number of rows.
+
+```xml
+<SMTK_AttributeResource Version="3">
+  <Definitions>
+    <AttDef Type="fn.initial-condition.temperature" BaseType="" Label="Temperature">
+      <ItemDefinitions>
+        <Group Name="tabular-data" Label="Tabular Data" Extensible="true" NumberOfRequiredGroups="2">
+          <ItemDefinitions>
+            <Double Name="X" Label="Indep. Variable" NumberOfRequiredValues="1"></Double>
+            <Double Name="Value" Label="Temperature" NumberOfRequiredValues="1"></Double>
+          </ItemDefinitions>
+        </Group>
+      </ItemDefinitions>
+    </AttDef>
+  </Definitions>
+  <Views>
+    <View Type="Instanced" Title="Test" TopLevel="true">
+      <InstancedAttributes>
+        <Att Name="temp" Type="fn.initial-condition.temperature">
+          <ItemViews>
+            <View Path="/tabular-data" MinNumberOfRows="9" />
+          </ItemViews>
+        </Att>
+      </InstancedAttributes>
+    </View>
+  </Views>
+</SMTK_AttributeResource>
+```
