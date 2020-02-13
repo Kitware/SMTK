@@ -97,7 +97,7 @@ std::string Color::floatRGBToString(const double* rgb)
   int rgb_[3];
   for (int i = 0; i < 3; i++)
   {
-    rgb_[i] = 255 * rgb[i];
+    rgb_[i] = int(255 * rgb[i]);
   }
 
   char hexcol[8];

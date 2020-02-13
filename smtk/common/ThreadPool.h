@@ -13,6 +13,8 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include <atomic>
 #include <condition_variable>
 #include <functional>
@@ -32,7 +34,7 @@ namespace common
 /// complete before being destroyed. The \a ReturnType is a default-constructible
 /// type that tasks return via std::future.
 template <typename ReturnType = void>
-class ThreadPool
+class SMTK_ALWAYS_EXPORT ThreadPool
 {
   static_assert(
     std::is_same<ReturnType, void>::value || std::is_default_constructible<ReturnType>::value,
@@ -58,6 +60,9 @@ protected:
   std::future<ReturnType> appendToQueue(std::function<ReturnType()>&& task);
 
   /// Run by a worker thread: poll the task queue for tasks to perform.
+  /// NOTE: the single layer of misdirection ensures that we launch a thread
+  ///       using the correct method address.
+  void execute() { return this->exec(); }
   virtual void exec();
 
   std::condition_variable m_condition;
@@ -78,7 +83,7 @@ ThreadPool<ReturnType>::ThreadPool(unsigned int maxThreads)
 
   for (unsigned int i = 0; i < nThreads; ++i)
   {
-    m_threads.push_back(std::thread(&ThreadPool::exec, this));
+    m_threads.push_back(std::thread(&ThreadPool::execute, this));
   }
 }
 

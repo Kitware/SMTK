@@ -12,6 +12,7 @@
 #define smtk_view_IconFactory_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SystemConfig.h"
 
 #include "smtk/common/TypeName.h"
 
