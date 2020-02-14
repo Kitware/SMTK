@@ -41,6 +41,24 @@ Surrogate::Surrogate(const ResourcePtr& resource)
 {
 }
 
+const smtk::common::UUID& Surrogate::id() const
+{
+  if (auto resource = m_resource.lock())
+  {
+    return resource->id();
+  }
+  return m_id;
+}
+
+const std::string& Surrogate::location() const
+{
+  if (auto resource = m_resource.lock())
+  {
+    return resource->location();
+  }
+  return m_location;
+}
+
 ResourcePtr Surrogate::resource() const
 {
   return m_resource.lock();
