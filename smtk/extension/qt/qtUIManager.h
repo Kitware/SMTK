@@ -196,7 +196,7 @@ public:
   virtual int getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def, const QFont& font);
   virtual int getWidthOfItemsMaxLabel(
     const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs, const QFont& font);
-  virtual int getWidthOfText(const std::string& s, const QFont& font);
+  virtual int getWidthOfText(const std::string& text, const QFont& font);
 
   ///Mechanism for creating new GUI view based on registered factory functions
   qtBaseView* createView(const ViewInfo& info);
