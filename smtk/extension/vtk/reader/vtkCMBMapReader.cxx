@@ -28,7 +28,6 @@
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
-#include <set>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
