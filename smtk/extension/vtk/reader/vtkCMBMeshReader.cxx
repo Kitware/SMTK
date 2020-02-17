@@ -36,7 +36,7 @@ vtkStandardNewMacro(vtkCMBMeshReader);
 
 struct vtkCMBMeshReaderInternals
 {
-  ifstream* Stream{ nullptr };
+  std::ifstream* Stream{ nullptr };
   std::stringstream* Line{ nullptr };
 
   vtkCMBMeshReaderInternals() = default;
@@ -101,7 +101,7 @@ int vtkCMBMeshReader::RequestData(vtkInformation* /*request*/,
     return 0;
   }
 
-  this->Internals->Stream = new ifstream(this->FileName, ios::in | ios::binary);
+  this->Internals->Stream = new std::ifstream(this->FileName, ios::in | ios::binary);
   if (this->Internals->Stream->fail())
   {
     vtkErrorMacro(<< "Unable to open file: " << this->FileName);
@@ -308,7 +308,7 @@ int vtkCMBMeshReader::CanReadFile(const char* fname)
   }
 
   std::string card;
-  ifstream file(fname, ios::in | ios::binary);
+  std::ifstream file(fname, ios::in | ios::binary);
   if (!file.fail())
   {
     // Get file declaration card and capitalize for comparison

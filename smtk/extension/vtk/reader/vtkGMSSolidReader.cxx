@@ -33,7 +33,7 @@ vtkStandardNewMacro(vtkGMSSolidReader);
 
 struct vtkGMSSolidReaderInternals
 {
-  ifstream* Stream{ nullptr };
+  std::ifstream* Stream{ nullptr };
 
   vtkGMSSolidReaderInternals() = default;
   ~vtkGMSSolidReaderInternals() { this->DeleteStream(); }
@@ -79,7 +79,7 @@ int vtkGMSSolidReader::RequestData(vtkInformation* /*request*/,
     return 0;
   }
 
-  this->Internals->Stream = new ifstream(this->FileName, ios::in);
+  this->Internals->Stream = new std::ifstream(this->FileName, ios::in);
   if (this->Internals->Stream->fail())
   {
     vtkErrorMacro(<< "Unable to open file: " << this->FileName);

@@ -215,7 +215,7 @@ int vtkLIDARReader::RequestData(vtkInformation* /*request*/, vtkInformationVecto
     return 1; // just scanning to get file info, which already done in ReadFileInfo
   }
 
-  ifstream fin;
+  std::ifstream fin;
 
   // always open in binary mode, because we want tellg/seekg to work
   // "correctly" on all platforms
@@ -430,7 +430,7 @@ int vtkLIDARReader::ReadFileInfo()
     return READ_OK;
   }
 
-  ifstream fin;
+  std::ifstream fin;
 
   // always open in binary mode, because we want tellg/seekg to work
   // "correctly" on all platforms
@@ -479,7 +479,7 @@ int vtkLIDARReader::ReadFileInfo()
   return res;
 }
 
-int vtkLIDARReader::GetPointInfo(ifstream& fin)
+int vtkLIDARReader::GetPointInfo(std::ifstream& fin)
 {
   if ((this->ValuesPerLine > 0) || this->BytesPerPoint > 0)
   {
@@ -565,7 +565,7 @@ int vtkLIDARReader::GetPointInfo(ifstream& fin)
   return VTK_OK;
 }
 
-int vtkLIDARReader::ReadPiece(ifstream& fin, int pieceIndex, int onRatio, long totalNumPts,
+int vtkLIDARReader::ReadPiece(std::ifstream& fin, int pieceIndex, int onRatio, long totalNumPts,
   vtkPoints* newPts, vtkCellArray* newVerts, vtkUnsignedCharArray* scalars,
   vtkFloatArray* intensityArray, vtkUnsignedCharArray* pieceIndexArray)
 {
@@ -747,7 +747,7 @@ int vtkLIDARReader::ReadPiece(ifstream& fin, int pieceIndex, int onRatio, long t
 }
 
 //  attempt to move to specified piece
-int vtkLIDARReader::MoveToStartOfPiece(ifstream& fin, int pieceIndex)
+int vtkLIDARReader::MoveToStartOfPiece(std::ifstream& fin, int pieceIndex)
 {
   if (this->CompleteFileHasBeenRead && pieceIndex >= static_cast<int>(this->LIDARPieces.size()))
   {

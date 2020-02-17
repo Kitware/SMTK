@@ -24,6 +24,7 @@
 #include "vtkSmartPointer.h"
 
 #include "vtkBoundingBox.h"
+#include <fstream>
 #include <map>
 #include <vector>
 
@@ -163,13 +164,13 @@ protected:
 
   int RequestInformation(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
   int RequestData(vtkInformation*, vtkInformationVector**, vtkInformationVector*) override;
-  int MoveToStartOfPiece(ifstream& fin, int pieceIndex);
+  int MoveToStartOfPiece(std::ifstream& fin, int pieceIndex);
 
-  int ReadPiece(ifstream& fin, int pieceIndex, int onRatio, long totalNumPts, vtkPoints* newPts,
-    vtkCellArray* newVerts, vtkUnsignedCharArray* scalars, vtkFloatArray* intensityArray,
-    vtkUnsignedCharArray* pieceIndexArray);
+  int ReadPiece(std::ifstream& fin, int pieceIndex, int onRatio, long totalNumPts,
+    vtkPoints* newPts, vtkCellArray* newVerts, vtkUnsignedCharArray* scalars,
+    vtkFloatArray* intensityArray, vtkUnsignedCharArray* pieceIndexArray);
 
-  int GetPointInfo(ifstream& fin);
+  int GetPointInfo(std::ifstream& fin);
   vtkIdType GetEstimatedNumOfOutPoints();
 
   char* FileName;

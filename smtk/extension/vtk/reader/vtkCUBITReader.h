@@ -19,6 +19,8 @@
 #include "smtk/extension/vtk/reader/vtkSMTKReaderExtModule.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 
+#include <fstream>
+
 class VTKSMTKREADEREXT_EXPORT vtkCUBITReader : public vtkPolyDataAlgorithm
 {
 public:
@@ -41,7 +43,7 @@ protected:
 
   // Description:
   // Get next line of data (and put in lineStream); skips over comments or blank lines
-  int GetNextLineOfData(ifstream& fin, std::stringstream& lineStream);
+  int GetNextLineOfData(std::ifstream& fin, std::stringstream& lineStream);
 
 private:
   vtkCUBITReader(const vtkCUBITReader&); // Not implemented.

@@ -44,7 +44,7 @@ int vtkCUBITReader::RequestData(vtkInformation* /*request*/, vtkInformationVecto
   // get the ouptut
   vtkPolyData* output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
-  ifstream fin(this->FileName);
+  std::ifstream fin(this->FileName);
   if (!fin)
   {
     vtkErrorMacro(<< "File " << this->FileName << " not found");
@@ -126,7 +126,7 @@ int vtkCUBITReader::RequestData(vtkInformation* /*request*/, vtkInformationVecto
   return 1;
 }
 
-int vtkCUBITReader::GetNextLineOfData(ifstream& fin, std::stringstream& lineStream)
+int vtkCUBITReader::GetNextLineOfData(std::ifstream& fin, std::stringstream& lineStream)
 {
   // clear the string for the line
   lineStream.str("");

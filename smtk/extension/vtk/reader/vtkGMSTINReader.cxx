@@ -33,7 +33,7 @@ vtkStandardNewMacro(vtkGMSTINReader);
 
 struct vtkGMSTINReaderInternals
 {
-  ifstream* Stream{ nullptr };
+  std::ifstream* Stream{ nullptr };
 
   vtkGMSTINReaderInternals() = default;
   ~vtkGMSTINReaderInternals() { this->DeleteStream(); }
@@ -79,7 +79,7 @@ int vtkGMSTINReader::RequestData(vtkInformation* /*request*/,
     return 0;
   }
 
-  this->Internals->Stream = new ifstream(this->FileName, ios::in);
+  this->Internals->Stream = new std::ifstream(this->FileName, ios::in);
   if (this->Internals->Stream->fail())
   {
     vtkErrorMacro(<< "Unable to open file: " << this->FileName);

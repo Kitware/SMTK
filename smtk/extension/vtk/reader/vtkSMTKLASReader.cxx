@@ -191,7 +191,7 @@ vtkTransform* vtkSMTKLASReader::GetTransform(int index)
 
 int vtkSMTKLASReader::ReadHeaderBlock()
 {
-  ifstream fin(this->FileName, ios::binary);
+  std::ifstream fin(this->FileName, ios::binary);
   if (!fin)
   {
     vtkErrorMacro(<< "File " << this->FileName << " not found");
@@ -384,7 +384,7 @@ int vtkSMTKLASReader::ReadPoints(vtkMultiBlockDataSet* output)
   this->UpdateProgress(0);
 
   // We already succesfully read the header, so know file exists
-  ifstream fin(this->FileName, ios::binary);
+  std::ifstream fin(this->FileName, ios::binary);
   fin.seekg(this->Header.OffsetToPointData, ios::beg);
 
   vtkTypeInt32* ptRaw;

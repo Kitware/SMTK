@@ -83,7 +83,7 @@ int vtkCMBMapReader::RequestData(vtkInformation* /*request*/,
   }
 
   //Open File
-  ifstream file(fileNameStr.c_str(), ios::in | ios::binary);
+  std::ifstream file(fileNameStr.c_str(), ios::in | ios::binary);
   if (!file)
   {
     vtkErrorMacro("Unable to open file: " << fileNameStr);
