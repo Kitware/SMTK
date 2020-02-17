@@ -24,6 +24,7 @@
 #include "vtkPoints.h"
 #include "vtkUnstructuredGrid.h"
 
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <sys/stat.h>

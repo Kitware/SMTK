@@ -23,6 +23,8 @@
 #include "vtkPolyDataConnectivityFilter.h"
 #include "vtkSTLReader.h"
 
+#include <fstream>
+
 vtkStandardNewMacro(vtkCMBSTLReader);
 
 vtkCMBSTLReader::vtkCMBSTLReader()

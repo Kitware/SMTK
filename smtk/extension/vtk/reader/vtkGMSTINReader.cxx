@@ -25,6 +25,7 @@
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkStringArray.h"
+#include <fstream>
 #include <string>
 #include <sys/stat.h>
 

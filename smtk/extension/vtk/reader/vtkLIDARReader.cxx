@@ -29,6 +29,8 @@
 #include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
 
+#include <fstream>
+
 //#define LIDAR_PREVIEW_PIECE_NUM_POINTS 10000
 #define LIDAR_BINARY_POINT_SIZE (sizeof(double) * 3)
 
