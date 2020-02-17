@@ -25,6 +25,7 @@
 #include "vtkStringArray.h"
 #include "vtkUnsignedCharArray.h"
 
+#include <fstream>
 #include <string>
 #include <sys/stat.h>
 

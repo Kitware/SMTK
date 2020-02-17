@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
 
+#include <fstream>
 #include <set>
 
 //Turns on the old map file cell data

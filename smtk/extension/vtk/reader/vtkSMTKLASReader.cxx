@@ -34,6 +34,7 @@
 #include <sys/types.h>
 #include <vtksys/SystemTools.hxx>
 
+#include <fstream>
 #include <sstream>
 
 //#define LIDAR_PREVIEW_PIECE_NUM_POINTS 10000
