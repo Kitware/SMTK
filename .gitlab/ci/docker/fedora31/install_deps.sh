@@ -17,6 +17,7 @@ dnf install -y \
     qt5-qtxmlpatterns-devel \
     cmake \
     git-core \
+    git-lfs \
     ninja-build \
     make
 
