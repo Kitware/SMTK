@@ -21,6 +21,8 @@
 #include "vtkPolyData.h"
 #include "vtkUnsignedCharArray.h"
 
+#include <fstream>
+
 #define LIDAR_ASCII_SEPERATOR " "
 
 enum FileWritingStatus
@@ -46,7 +48,7 @@ vtkLIDARPtsWriter::~vtkLIDARPtsWriter()
 
 void vtkLIDARPtsWriter::WriteData()
 {
-  ofstream* outfile = this->OpenOutputFile();
+  std::ofstream* outfile = this->OpenOutputFile();
 
   if (!outfile)
   {
@@ -63,7 +65,7 @@ void vtkLIDARPtsWriter::WriteData()
   this->CloseFile(outfile);
 }
 
-int vtkLIDARPtsWriter::WriteFile(ofstream& ofp)
+int vtkLIDARPtsWriter::WriteFile(std::ofstream& ofp)
 {
   int numInputs = this->GetNumberOfInputConnections(0);
   int returnValue = WRITE_OK;
@@ -134,7 +136,7 @@ int vtkLIDARPtsWriter::ComputeRequiredAxisPrecision(double min, double max)
   return minPrecision;
 }
 
-int vtkLIDARPtsWriter::WritePoints(ofstream& ofp, vtkPolyData* inputPoly)
+int vtkLIDARPtsWriter::WritePoints(std::ofstream& ofp, vtkPolyData* inputPoly)
 {
   vtkDataArray* scalars =
     inputPoly->GetPointData() ? inputPoly->GetPointData()->GetScalars("Color") : nullptr;
@@ -214,7 +216,7 @@ int vtkLIDARPtsWriter::WritePoints(ofstream& ofp, vtkPolyData* inputPoly)
   return WRITE_OK;
 }
 
-ofstream* vtkLIDARPtsWriter::OpenOutputFile()
+std::ofstream* vtkLIDARPtsWriter::OpenOutputFile()
 {
   if (!this->FileName || !this->FileName[0])
   {
@@ -222,15 +224,15 @@ ofstream* vtkLIDARPtsWriter::OpenOutputFile()
     return nullptr;
   }
 
-  ofstream* fptr = nullptr;
+  std::ofstream* fptr = nullptr;
   if (this->IsBinaryType(this->FileName))
   {
-    fptr = new ofstream(this->FileName, ios::out | ios::binary);
+    fptr = new std::ofstream(this->FileName, ios::out | ios::binary);
     this->OutputIsBinary = 1;
   }
   else
   {
-    fptr = new ofstream(this->FileName, ios::out);
+    fptr = new std::ofstream(this->FileName, ios::out);
     this->OutputIsBinary = 0;
   }
 

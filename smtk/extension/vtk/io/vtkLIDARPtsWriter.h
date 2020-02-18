@@ -15,6 +15,7 @@
 
 #include "smtk/extension/vtk/io/IOVTKExports.h" // For export macro
 #include "vtkWriter.h"
+#include <fstream>
 #include <map>
 
 class vtkPolyData;
@@ -62,11 +63,11 @@ protected:
   // Actual writing.
   void WriteData() override;
   // return write_status: OK, Abort, or Error
-  int WriteFile(ofstream& ofp);
+  int WriteFile(std::ofstream& ofp);
   int ComputeRequiredAxisPrecision(double min, double max);
-  int WritePoints(ofstream& ofp, vtkPolyData* inputPoly);
+  int WritePoints(std::ofstream& ofp, vtkPolyData* inputPoly);
 
-  ofstream* OpenOutputFile();
+  std::ofstream* OpenOutputFile();
   bool IsBinaryType(const char* filename);
 
   void CloseFile(ios* fp);
