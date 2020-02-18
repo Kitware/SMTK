@@ -37,16 +37,20 @@ public:
 
   Item::Type type() const override;
   bool isValueValid(const std::string& val) const override;
-  // return the index of the filter that accepts val, or -1 if the value is
-  // invalid
+  /// return the index of the filter that accepts val, or -1 if the value is
+  /// invalid
   int filterId(const std::string& val) const;
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(
     Item* owningItem, int position, int subGroupPosition) const override;
 
+  //@{
+  /// A string describing file filters in the Qt format. For example:
+  /// "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3);;All (*.*)"
   const std::string& getFileFilters() const { return m_fileFilters; }
   void setFileFilters(const std::string& filters) { m_fileFilters = filters; }
+  //@}
 
   smtk::attribute::ItemDefinitionPtr createCopy(
     smtk::attribute::ItemDefinition::CopyInfo& info) const override;
@@ -54,8 +58,6 @@ public:
 protected:
   FileItemDefinition(const std::string& myName);
 
-  // A string describing file filters in the Qt format. For example:
-  // "Ext1 (*.ex1);;Ext2 or 3 (*.ex2 *.ex3);;All (*.*)"
   std::string m_fileFilters;
 
 private:
