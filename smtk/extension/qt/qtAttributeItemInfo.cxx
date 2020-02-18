@@ -163,5 +163,16 @@ bool qtAttributeItemInfo::createNewDictionary(std::map<std::string, qtAttributeI
       }
     }
   }
+
+  // Now add any new ItemView Information declared in this item's configuration
+  // Does the component representing the attribute contain a Style block?
+  int sindex = m_component.findChild("ItemViews");
+  if (sindex == -1)
+  {
+    return true;
+  }
+  auto iviews = m_component.child(sindex);
+  buildFromComponent(iviews, m_baseView, dict);
+
   return true;
 }

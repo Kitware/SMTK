@@ -96,14 +96,18 @@ public:
     QPointer<qtBaseView> view, std::map<std::string, qtAttributeItemInfo>& dict);
 
   /// \brief A  method that can construct a dictionary from the qtAttributeItemInfo's
-  /// children view infromation.
+  /// children view information as well as from its configuration component.
   ///
-  /// For each entry in m_childViewInfo, the root item is extracted from the key.
+  /// For each entry in m_childenViewInfo, the root item is extracted from the key.
   /// If the root item is not in the new dictionary then a new qtAttributeItemInfo is inserted using
   /// the root item name as the key and sets its baseView.  If the remainder of the path is empty
   /// the associated Component is assigned to the corresponding qtAttributeItemInfo, else
   /// the new path and the Component are inserted into the qtAttributeItemInfo's
   /// children view information.
+  ///
+  /// If the instance's m_component contains an "ItemView" section, the section's contents
+  /// are then added to the dictionary.  This allows an Item's configuration to override
+  /// configurations inherited from it's parent.
 
   bool createNewDictionary(std::map<std::string, qtAttributeItemInfo>& dict);
 
