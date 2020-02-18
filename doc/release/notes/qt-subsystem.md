@@ -89,3 +89,27 @@ Added MinNumberOfRows="n" to restrict the size.  Note that if n = -1 (the defaul
   </Views>
 </SMTK_AttributeResource>
 ```
+### Overriding ItemViews
+You can now specify ItemViews with an Item's Configuration.  If there was already an ItemView for a specific Item, it will be overridden.  Below is an example."
+
+```xml
+        <Att Name="Test Attribute" Type="test">
+          <ItemViews>
+            <View Item="a" Type="Default" Option="SpinBox"/>
+            <View Path="/b" ReadOnly="true"/>
+            <View Path="/c">
+              <ItemViews>
+                <View Path="/d" FixedWidth="20"/>
+                <View Item="e" Option="SpinBox"/>
+              </ItemViews>
+            </View>
+            <View Path="/f/f-a" Option="SpinBox"/>
+            <View Path="/f/f-b" FixedWidth="10"/>
+            <View Path="/f/f-c/f.d" FixedWidth="0"/>
+            <View Path="/f/f-c/f.e" Option="SpinBox"/>
+            <View Path="/f/f-c/f.f/f.f.g" ReadOnly="true"/>
+            <View Path="/f/f-c/f.f/f.f.h" FixedWidth="0"/>
+          </ItemViews>
+        </Att>
+```
+Note that item /c contain ItemView for its children.

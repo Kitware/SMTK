@@ -176,7 +176,7 @@ int main(int argc, char** argv)
     std::string sbi2FileName;
     {
       // Removing the copied resource location in order to match the original .sbi
-      bool ok = copiedResource->setLocation("");
+      copiedResource->setLocation("");
       // Resolving links to update Surrogate instances
       copiedResource->links().resolve(copiedResource);
 
