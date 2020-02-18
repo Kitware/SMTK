@@ -139,12 +139,26 @@ void pqImportIntoResourceReaction::importIntoResource()
   if (fileDialog.exec() == QDialog::Accepted)
   {
     QList<QStringList> files = fileDialog.getAllSelectedFiles();
-    for (auto cit = files.constBegin(); cit != files.constEnd(); ++cit)
+    auto fileItem = importIntoOp->parameters()->findFile(fileItemDef->name());
+    if (fileItemDef->isExtensible())
     {
-      importIntoOp->parameters()->findFile(fileItemDef->name())->setValue((*cit)[0].toStdString());
-
-      // Execute the import operation.
+      fileItem->setNumberOfValues(files.size());
+      std::size_t i = 0;
+      for (auto cit = files.constBegin(); cit != files.constEnd(); ++cit, ++i)
+      {
+        fileItem->setValue(i, (*cit)[0].toStdString());
+      }
+      // Execute the import operation for all files at once.
       auto result = importIntoOp->operate();
+    }
+    else
+    {
+      for (auto cit = files.constBegin(); cit != files.constEnd(); ++cit)
+      {
+        fileItem->setValue((*cit)[0].toStdString());
+        // Execute the import operation one file at a time.
+        auto result = importIntoOp->operate();
+      }
     }
 
     // Render the resource (also resets "Apply")
