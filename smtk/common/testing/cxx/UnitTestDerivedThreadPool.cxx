@@ -12,7 +12,6 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include <chrono>
-#include <iostream>
 
 namespace
 {
@@ -38,7 +37,8 @@ private:
 
         // Access a task from the queue.
         this->m_condition.wait(queueLock, [this] { return !this->m_queue.empty(); });
-        if (!static_cast<StoppableThreadPool*>(this)->m_stopped)
+
+        if (!m_stopped)
         {
           task = std::move(this->m_queue.front());
         }
