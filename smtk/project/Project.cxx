@@ -734,7 +734,7 @@ smtk::operation::OperationPtr Project::getExportOperator(smtk::io::Logger& logge
 }
 
 bool Project::populateExportOperator(
-  smtk::operation::OperationPtr exportOp, smtk::io::Logger& logger) const
+  smtk::operation::OperationPtr exportOp, smtk::io::Logger& /*logger*/) const
 {
   // Locate project attribute and model resources
   std::vector<smtk::resource::ResourcePtr> attResourceList;
@@ -771,12 +771,6 @@ bool Project::populateExportOperator(
     {
       attItem->setValue(attResourceList[0]);
     }
-    else
-    {
-      smtkWarningMacro(logger, "Unable to assign attribute resource because"
-                               " the number of attribute resources in project is "
-          << attResourceList.size());
-    }
   }
 
   auto modelItem = paramAttribute->findComponent("model");
@@ -785,12 +779,6 @@ bool Project::populateExportOperator(
     if (modelList.size() == 1)
     {
       modelItem->setValue(modelList[0]);
-    }
-    else
-    {
-      smtkWarningMacro(logger, "Unable to assign model because"
-                               " the number of models in the project is "
-          << modelList.size());
     }
   }
 
