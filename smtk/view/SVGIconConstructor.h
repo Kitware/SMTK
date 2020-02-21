@@ -12,6 +12,7 @@
 #define smtk_view_SVGIconConstructor_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SystemConfig.h"
 
 #include <string>
 

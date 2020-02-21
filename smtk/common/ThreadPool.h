@@ -13,6 +13,8 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include <atomic>
 #include <condition_variable>
 #include <functional>
@@ -32,7 +34,7 @@ namespace common
 /// complete before being destroyed. The \a ReturnType is a default-constructible
 /// type that tasks return via std::future.
 template <typename ReturnType = void>
-class ThreadPool
+class SMTK_ALWAYS_EXPORT ThreadPool
 {
   static_assert(
     std::is_same<ReturnType, void>::value || std::is_default_constructible<ReturnType>::value,
@@ -53,33 +55,33 @@ public:
   }
 
 protected:
+  void initialize();
+
   /// Append a functor with no inputs to the task queue. This is used in tandem
   /// with std::bind to construct the class's call method.
   std::future<ReturnType> appendToQueue(std::function<ReturnType()>&& task);
 
   /// Run by a worker thread: poll the task queue for tasks to perform.
+  /// NOTE: the single layer of misdirection ensures that we launch a thread
+  ///       using the correct method address.
+  void execute() { return this->exec(); }
   virtual void exec();
 
   std::condition_variable m_condition;
   std::mutex m_queueMutex;
   std::vector<std::thread> m_threads;
   std::queue<std::packaged_task<ReturnType()> > m_queue;
+  bool m_initialized;
   std::atomic<bool> m_active;
+  unsigned int m_maxThreads;
 };
 
 template <typename ReturnType>
 ThreadPool<ReturnType>::ThreadPool(unsigned int maxThreads)
-  : m_active(true)
+  : m_initialized(false)
+  , m_active(true)
+  , m_maxThreads(maxThreads == 0 ? std::thread::hardware_concurrency() : maxThreads)
 {
-  // The maximum number of threads is either defined at construction or (by
-  // default) the maximum number of threads the hardware is configured to run in
-  // parallel.
-  unsigned int nThreads = (maxThreads == 0 ? std::thread::hardware_concurrency() : maxThreads);
-
-  for (unsigned int i = 0; i < nThreads; ++i)
-  {
-    m_threads.push_back(std::thread(&ThreadPool::exec, this));
-  }
 }
 
 template <typename ReturnType>
@@ -105,6 +107,15 @@ ThreadPool<ReturnType>::~ThreadPool()
 }
 
 template <typename ReturnType>
+void ThreadPool<ReturnType>::initialize()
+{
+  for (unsigned int i = 0; i < m_maxThreads; ++i)
+  {
+    m_threads.push_back(std::thread(&ThreadPool<ReturnType>::execute, this));
+  }
+}
+
+template <typename ReturnType>
 std::future<ReturnType> ThreadPool<ReturnType>::appendToQueue(std::function<ReturnType()>&& task)
 {
   std::future<ReturnType> future;
@@ -112,6 +123,18 @@ std::future<ReturnType> ThreadPool<ReturnType>::appendToQueue(std::function<Retu
   // Scope access to the queue.
   {
     std::unique_lock<std::mutex> queueLock(m_queueMutex);
+
+    // If the thread pool is not yet active, initialize it.
+    // NOTE: we use lazy initialization here to allow derived thread pools to
+    //       have custom exec() logic, which is called upon the construction of
+    //       std::thread. The derived methods will only be available after
+    //       the base constructor has returned, so we cannot construct
+    //       std::thread instances in this class's constructor.
+    if (m_initialized == false)
+    {
+      m_initialized = true;
+      this->initialize();
+    }
 
     // Construct a packaged_task to launch the input task and access its
     // future.

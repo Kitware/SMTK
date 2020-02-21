@@ -12,22 +12,14 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include <chrono>
-#include <iostream>
-
-#if __has_attribute(no_sanitize)
-#define NO_UBSAN_VPTR __attribute__((no_sanitize("vptr")))
-#else
-#define NO_UBSAN_VPTR
-#endif
 
 namespace
 {
-template <typename ReturnType>
-class StoppableThreadPool : public smtk::common::ThreadPool<ReturnType>
+class StoppableThreadPool : public smtk::common::ThreadPool<bool>
 {
 public:
   StoppableThreadPool(unsigned int maxThreads = 0)
-    : smtk::common::ThreadPool<ReturnType>(maxThreads)
+    : smtk::common::ThreadPool<bool>(maxThreads)
   {
   }
 
@@ -35,26 +27,24 @@ public:
   void start() { m_stopped = false; }
 
 private:
-  // XXX(ubsan): UBSan detects that there is a vptr mismatch in the
-  // `this->m_condition.wait` call below. AFAICT, this is a false positive.
-  // Adding `SMTK_ALWAYS_EXPORT` to `ThreadPool` doesn't fix the issue.
-  NO_UBSAN_VPTR void exec() override
+  void exec() override
   {
     while (this->m_active)
     {
-      std::packaged_task<ReturnType()> task;
+      std::packaged_task<bool()> task;
       {
         std::unique_lock<std::mutex> queueLock(this->m_queueMutex);
 
         // Access a task from the queue.
         this->m_condition.wait(queueLock, [this] { return !this->m_queue.empty(); });
+
         if (!m_stopped)
         {
           task = std::move(this->m_queue.front());
         }
         else
         {
-          std::packaged_task<ReturnType()> emptyTask([]() { return ReturnType(); });
+          std::packaged_task<bool()> emptyTask([]() { return bool(); });
           task = std::move(emptyTask);
         }
 
@@ -72,7 +62,7 @@ private:
 
 int UnitTestDerivedThreadPool(int /*unused*/, char** const /*unused*/)
 {
-  StoppableThreadPool<bool> threadPool(2);
+  StoppableThreadPool threadPool(2);
   std::vector<std::future<bool> > futures;
   int n_threads = 2;
   std::this_thread::sleep_for(std::chrono::seconds(1));
