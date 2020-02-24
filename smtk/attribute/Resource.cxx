@@ -288,6 +288,11 @@ bool Resource::removeAttribute(smtk::attribute::AttributePtr att)
 
   att->detachItemsFromOwningResource();
 
+  if (m_attributes.find(att->name()) == m_attributes.end())
+  {
+    std::cerr << "Resource doesn't have attribute named: " << att->name() << std::endl;
+    return false;
+  }
   m_attributes.erase(att->name());
   m_attributeIdMap.erase(att->id());
   m_attributeClusters[att->type()].erase(att);
@@ -400,9 +405,14 @@ bool Resource::rename(smtk::attribute::AttributePtr att, const std::string& newN
   {
     return false;
   }
+  // To properly do the rename we need to remove the attribute from
+  // both the attributes dictionary (since its keyed off of its name)
+  // and the Clusters dictionary since the set is sorted based on its name.
   m_attributes.erase(att->name());
+  m_attributeClusters[att->type()].erase(att);
   att->setName(newName);
   m_attributes[newName] = att;
+  m_attributeClusters[att->type()].insert(att);
   this->setClean(false);
   return true;
 }
