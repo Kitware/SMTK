@@ -92,7 +92,7 @@ SetProperty::Result SetProperty::operateInternal()
       auto entity = std::dynamic_pointer_cast<smtk::model::Entity>(component);
       // if a model is in the changed entities and it is a submodel, we
       // want to label its parent model to be modified too.
-      if (entity->isModel() && entity->referenceAs<model::Model>().parent().isModel())
+      if (entity && entity->isModel() && entity->referenceAs<model::Model>().parent().isModel())
       {
         modifiedItem->appendValue(entity->referenceAs<model::Model>().parent().component());
       }

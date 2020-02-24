@@ -612,16 +612,18 @@ void SubphraseGenerator::componentsOfResource(
   }
   else if (attrRsrc)
   {
+    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
     std::vector<smtk::attribute::AttributePtr> attrs;
     attrRsrc->attributes(attrs);
     for (const auto& attr : attrs)
     {
-      result.push_back(ComponentPhraseContent::createPhrase(attr, 0, src));
+      result.push_back(ComponentPhraseContent::createPhrase(attr, mutability, src));
     }
   }
   else if (meshRsrc)
   {
-    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
+    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+      static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
     smtk::resource::Component::Visitor visitor = [&](const smtk::resource::Component::Ptr& entry) {
       result.push_back(ComponentPhraseContent::createPhrase(entry, mutability, src));
     };
