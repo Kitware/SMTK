@@ -12,6 +12,17 @@
 #include "smtk/common/testing/cxx/helpers.h"
 
 #include <chrono>
+#include <cstring>
+
+// ubsan is a fickle beast. This define circumvents the error "runtime error:
+// member access within address <> which does not point to an object of type
+// 'StoppableThreadPool'" when m_stopped is referenced in StoppableThreadPool's
+// exec() method, which we think is a false positive.
+#if __has_attribute(no_sanitize)
+#define NO_UBSAN_VPTR __attribute__((no_sanitize("vptr")))
+#else
+#define NO_UBSAN_VPTR
+#endif
 
 namespace
 {
@@ -27,7 +38,7 @@ public:
   void start() { m_stopped = false; }
 
 private:
-  void exec() override
+  NO_UBSAN_VPTR void exec() override
   {
     while (this->m_active)
     {
