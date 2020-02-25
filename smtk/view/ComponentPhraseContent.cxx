@@ -65,14 +65,19 @@ bool ComponentPhraseContent::editable(ContentType contentType) const
 {
   if (m_mutability & static_cast<int>(contentType))
   {
-    if (contentType == TITLE || contentType == COLOR)
+    if (contentType == COLOR)
+    {
+      // All components can have color.
+      return true;
+    }
+    else if (contentType == TITLE)
     {
       if (auto component = m_component.lock())
       {
         auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
         auto meshComponent = dynamic_pointer_cast<smtk::mesh::Component>(component);
-        // Models may be assigned a color and a name; meshes may be assigned a name.
-        return !!modelComponent || (contentType == TITLE && !!meshComponent);
+        // Models and meshes may be assigned a name.
+        return !!modelComponent || !!meshComponent;
       }
     }
   }
