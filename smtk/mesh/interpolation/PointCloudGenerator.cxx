@@ -10,10 +10,6 @@
 
 #include "smtk/mesh/interpolation/PointCloudGenerator.h"
 
-#include "smtk/common/CompilerInformation.h"
-
-#include "smtk/model/AuxiliaryGeometry.h"
-
 namespace smtk
 {
 namespace mesh

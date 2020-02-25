@@ -10,10 +10,6 @@
 
 #include "InverseDistanceWeighting.h"
 
-#include "smtk/mesh/core/PointLocator.h"
-#include "smtk/mesh/core/PointSet.h"
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/mesh/interpolation/PointCloud.h"
 #include "smtk/mesh/interpolation/StructuredGrid.h"
 
