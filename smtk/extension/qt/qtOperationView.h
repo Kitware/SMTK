@@ -66,6 +66,7 @@ public:
 
   QPointer<QPushButton> applyButton() const;
   smtk::operation::OperationPtr operation() const;
+  void showInfoButton(bool visible = true);
 
 public slots:
   void updateUI() override;

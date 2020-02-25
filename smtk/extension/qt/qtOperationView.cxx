@@ -119,6 +119,14 @@ smtk::operation::OperationPtr qtOperationView::operation() const
   return this->Internals->m_operator;
 }
 
+void qtOperationView::showInfoButton(bool visible)
+{
+  if (!this->Internals->m_infoButton.isNull())
+  {
+    this->Internals->m_infoButton->setVisible(visible);
+  }
+}
+
 void qtOperationView::createWidget()
 {
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*>(this->parentWidget()->layout());
