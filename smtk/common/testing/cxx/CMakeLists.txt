@@ -40,6 +40,7 @@ set(unit_tests
   UnitTestProperties
   UnitTestRegistry.cxx
   UnitTestThreadPool
+  UnitTestTypeName
 )
 
 set(unit_tests_which_require_data

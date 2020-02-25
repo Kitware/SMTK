@@ -113,6 +113,15 @@ target_link_libraries(smtkCore
   LINK_PUBLIC ${smtkCore_public_link_libraries}
   LINK_PRIVATE ${smtkCore_private_link_libraries})
 
+smtk_precompile_headers(smtkCore
+  PUBLIC
+    common/Properties.h
+    common/Links.h
+    common/Observers.h
+    common/TypeName.h
+    TupleTraits.h
+    )
+
 if (WIN32)
   # Boost 1.70 and above have CMake configuration provided by upstream. Usage
   # requirements are not quite resolved yet.
