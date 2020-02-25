@@ -54,6 +54,9 @@ public:
   /// Return project resources
   std::vector<smtk::resource::ResourcePtr> resources() const;
 
+  /// Indicates if all resources are in sync with their locations
+  bool clean() const;
+
   /// Return resource "import location", which is the location in the
   /// file system that was imported to create the resource. The return
   /// string might be empty (unknown).
@@ -89,6 +92,12 @@ protected:
 
   /// Load project from filesystem
   bool open(const std::string& path, smtk::io::Logger& logger = smtk::io::Logger::instance());
+
+  // Copy contents to a differnet project (for save-as functionality).
+  // Note that this method is *destructive* to the this project, which should
+  // be closed (and not saved) after this method is used.
+  bool copyTo(
+    ProjectPtr thatProject, smtk::io::Logger& logger = smtk::io::Logger::instance()) const;
 
   // Remaining calls are for internal use
 

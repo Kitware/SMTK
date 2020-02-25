@@ -20,6 +20,8 @@
 #include "smtk/operation/Manager.h"
 #include "smtk/resource/Manager.h"
 
+#include "boost/filesystem.hpp"
+
 namespace smtk
 {
 namespace project
@@ -67,6 +69,12 @@ smtk::attribute::AttributePtr Manager::getProjectSpecification()
 ProjectPtr Manager::createProject(smtk::attribute::AttributePtr specification,
   bool replaceExistingDirectory, smtk::io::Logger& logger)
 {
+  if (m_project)
+  {
+    smtkErrorMacro(logger, "Cannot initalize new project - must close current project first");
+    return ProjectPtr();
+  }
+
   auto newProject = this->initProject(logger);
   if (!newProject)
   {
@@ -93,6 +101,56 @@ bool Manager::saveProject(smtk::io::Logger& logger)
   }
 
   return m_project->save(logger);
+}
+
+ProjectPtr Manager::saveAsProject(const std::string& directory, smtk::io::Logger& logger)
+{
+  if (m_project == nullptr)
+  {
+    smtkErrorMacro(logger, "No current project to copy");
+    return nullptr;
+  }
+
+  auto projectPath = boost::filesystem::path(directory);
+  if (boost::filesystem::exists(projectPath) && !boost::filesystem::is_empty(projectPath))
+  {
+    smtkErrorMacro(logger, "Cannot copy project to non-empty directory: \"" << directory << "\"");
+    return nullptr;
+  } // if (projectPath exists)
+
+  if (!boost::filesystem::exists(projectPath) && !boost::filesystem::create_directory(projectPath))
+  {
+    smtkErrorMacro(logger, "Unable to create project directory: \"" << directory << "\"");
+    return nullptr;
+  }
+
+  // Build the new project
+  auto newProject = this->initProject(logger);
+  if (newProject == nullptr)
+  {
+    return nullptr;
+  }
+
+  // Set location and name
+  newProject->m_name = projectPath.filename().string();
+  newProject->m_directory = projectPath.string();
+
+  if (!m_project->copyTo(newProject, logger))
+  {
+    smtkErrorMacro(logger, "Failed copying project content");
+    return nullptr;
+  }
+
+  if (!newProject->save(logger))
+  {
+    return nullptr;
+  }
+
+  //Finally, close the current project and switch to the new project
+  m_project->close();
+  m_project = newProject;
+
+  return newProject;
 }
 
 bool Manager::closeProject(smtk::io::Logger& logger)
@@ -159,12 +217,6 @@ smtk::attribute::ResourcePtr Manager::getProjectTemplate()
 
 ProjectPtr Manager::initProject(smtk::io::Logger& logger)
 {
-  if (m_project)
-  {
-    smtkErrorMacro(logger, "Cannot initalize new project - must close current project first");
-    return ProjectPtr();
-  }
-
   auto resManager = m_resourceManager.lock();
   if (!resManager)
   {

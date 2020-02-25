@@ -59,6 +59,11 @@ public:
   /// Write project resources & metadata to the filesystem. Returns true on success
   bool saveProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
 
+  /// Copy the current project's contents and make the new project current.
+  /// Returns nullptr in case of error.
+  ProjectPtr saveAsProject(
+    const std::string& directory, smtk::io::Logger& logger = smtk::io::Logger::instance());
+
   /// Close the project resources. Returns true on success
   bool closeProject(smtk::io::Logger& logger = smtk::io::Logger::instance());
 

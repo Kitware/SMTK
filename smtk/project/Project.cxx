@@ -41,7 +41,10 @@
 
 #include <algorithm> // for std::transform
 #include <exception>
-#include <fstream>
+
+#ifndef NDEBUG
+#include <iostream>
+#endif
 
 namespace
 {
@@ -88,6 +91,19 @@ std::vector<smtk::resource::ResourcePtr> Project::resources() const
   return resourceList;
 }
 
+bool Project::clean() const
+{
+  auto resourceList = this->resources();
+  for (const auto& resource : resourceList)
+  {
+    if (not resource->clean())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::string Project::importLocation(smtk::resource::ResourcePtr res) const
 {
   auto resId = res->id();
@@ -110,8 +126,6 @@ bool Project::addModel(const std::string& location, const std::string& identifie
   auto model = this->findResource<smtk::model::Resource>(identifier);
   if (model != nullptr)
   {
-    std::cerr << "Cannot import model " << location
-              << " -- project already has model with identifier " << identifier << std::endl;
     return false;
   }
 
@@ -120,7 +134,9 @@ bool Project::addModel(const std::string& location, const std::string& identifie
   auto& logger = smtk::io::Logger::instance();
   if (!this->importModel(location, copyNativeFile, modelDescriptor, useVTKSession, logger))
   {
+#ifndef NDEBUG
     std::cerr << logger.convertToString() << std::endl;
+#endif
     return false;
   }
   modelDescriptor.m_identifier = identifier;
@@ -387,6 +403,88 @@ bool Project::open(const std::string& location, smtk::io::Logger& logger)
   return this->loadResources(directoryPath.string(), logger);
 } // open()
 
+bool Project::copyTo(ProjectPtr thatProject, smtk::io::Logger& logger) const
+{
+#ifndef NDEBUG
+  std::cout << "new project name: " << thatProject->name()
+            << "new project folder: " << thatProject->directory() << std::endl;
+#endif
+
+  thatProject->m_simulationCode = m_simulationCode;
+
+  // Modify my project resources for the target project
+  boost::filesystem::path thatProjectPath(thatProject->directory());
+  for (const auto& rd : m_resourceDescriptors)
+  {
+    auto resManager = m_resourceManager.lock();
+    if (resManager == nullptr)
+    {
+      smtkErrorMacro(logger, "resource manager is null");
+      return false;
+    }
+
+    auto resource = resManager->get(rd.m_uuid);
+    if (resource == nullptr)
+    {
+      smtkErrorMacro(logger, "Resource \"" << rd.m_filename << "\" is missing.");
+      return false;
+    }
+
+    // Change id and location
+    auto uuid = smtk::common::UUID::random();
+    resource->setId(uuid);
+
+    auto locationPath = thatProjectPath / rd.m_filename;
+    resource->setLocation(locationPath.string());
+
+    // Construct descriptor
+    ResourceDescriptor thatRD;
+    thatRD.m_filename = rd.m_filename;
+    thatRD.m_identifier = rd.m_identifier;
+    thatRD.m_importLocation = rd.m_importLocation;
+    thatRD.m_typeName = rd.m_typeName;
+    thatRD.m_uuid = uuid;
+
+    // Special handling for models
+    // If the import location is inside "this" project, copy the file to "that" project
+    if (resource->isOfType<smtk::model::Resource>())
+    {
+      // Check if native model was copied into this project
+      boost::filesystem::path thisProjectPath(m_directory);
+      boost::filesystem::path thisImportPath(rd.m_importLocation);
+      thisImportPath.remove_filename();
+      if (thisProjectPath == thisImportPath)
+      {
+        // Copy the native model file to that project
+        boost::filesystem::path thisImportPath(rd.m_importLocation);
+        boost::filesystem::path thatImportPath(thatProject->m_directory);
+        thatImportPath /= thisImportPath.filename();
+        boost::system::error_code errcode;
+        boost::filesystem::copy_file(
+          thisImportPath, thatImportPath, boost::filesystem::copy_option::none, errcode);
+        if (errcode)
+        {
+          smtkErrorMacro(logger, errcode.message());
+          return false;
+        }
+
+        // Update url in resource's model
+        auto modelResource = std::dynamic_pointer_cast<smtk::model::Resource>(resource);
+        auto modelList = modelResource->findEntitiesOfType(smtk::model::MODEL_ENTITY, true);
+        auto model = modelList.front();
+        modelResource->setStringProperty(model.entity(), "url", thatImportPath.string());
+
+        // Update import location in resource descriptor
+        thatRD.m_importLocation = thatImportPath.string();
+      } // if (copying native model)
+    }   // if (model resource)
+
+    thatProject->m_resourceDescriptors.push_back(thatRD);
+  } // for (resource descriptors)
+
+  return true;
+} // copyTo()
+
 bool Project::importModels(
   const smtk::attribute::AttributePtr specification, smtk::io::Logger& logger)
 {
@@ -485,12 +583,13 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   int outcome;
 
   // Run the import operator
-  importOp->parameters()->findFile("filename")->setValue(importPath);
+  std::string useImportPath = boostImportPath.string();
+  importOp->parameters()->findFile("filename")->setValue(useImportPath);
   auto importOpResult = importOp->operate();
   outcome = importOpResult->findInt("outcome")->value(0);
   if (outcome != SUCCEEDED)
   {
-    smtkErrorMacro(logger, "Error importing file " << importPath);
+    smtkErrorMacro(logger, "Error importing file " << useImportPath);
     return false;
   }
   auto modelResource = importOpResult->findResource("resource")->value(0);
@@ -503,7 +602,7 @@ bool Project::importModel(const std::string& importPath, bool copyNativeModel,
   // Update the descriptor
   descriptor.m_filename = modelFilename;
   descriptor.m_identifier = modelResource->name();
-  descriptor.m_importLocation = importPath;
+  descriptor.m_importLocation = useImportPath;
   descriptor.m_typeName = modelResource->typeName();
   descriptor.m_uuid = modelResource->id();
 
