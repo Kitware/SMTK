@@ -380,7 +380,7 @@ bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::Reference
   AttributePtr myAtt = this->m_referencedAttribute.lock();
   if ((myAtt != nullptr) && (i < m_cache->size()))
   {
-    myAtt->links().removeLink(m_keys[i]);
+    myAtt->guardedLinks()->removeLink(m_keys[i]);
     m_keys[i] = key;
     return true;
   }
@@ -419,12 +419,12 @@ ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
   // If the object is a component...
   if (auto component = std::dynamic_pointer_cast<smtk::resource::Component>(val))
   {
-    return myAtt->links().addLinkTo(component, def->role());
+    return myAtt->guardedLinks()->addLinkTo(component, def->role());
   }
   // If the object is a resource...
   else if (auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(val))
   {
-    return myAtt->links().addLinkTo(resource, def->role());
+    return myAtt->guardedLinks()->addLinkTo(resource, def->role());
   }
 
   // If the object cannot be cast to a resource or component, there's not much
@@ -443,7 +443,7 @@ bool ReferenceItem::setObjectValue(std::size_t i, const PersistentObjectPtr& val
   AttributePtr myAtt = this->m_referencedAttribute.lock();
   if (myAtt != nullptr)
   {
-    myAtt->links().removeLink(m_keys[i]);
+    myAtt->guardedLinks()->removeLink(m_keys[i]);
     m_keys[i] = this->linkTo(val);
   }
   else
@@ -517,7 +517,7 @@ bool ReferenceItem::removeValue(std::size_t i)
   {
     return false; // i can't be greater than the number of values
   }
-  myAtt->links().removeLink(m_keys[i]);
+  myAtt->guardedLinks()->removeLink(m_keys[i]);
   m_keys.erase(m_keys.begin() + i);
   (*m_cache).erase((*m_cache).begin() + i);
   return true;
@@ -534,7 +534,7 @@ void ReferenceItem::detachOwningResource()
     // Remove links to referenced items
     for (auto& key : m_keys)
     {
-      myAtt->links().removeLink(key);
+      myAtt->guardedLinks()->removeLink(key);
     }
   }
 
@@ -732,7 +732,7 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
   }
 
   // We first try to resolve the item as a component.
-  auto linkedObject = myAtt->links().linkedObject(key);
+  auto linkedObject = myAtt->guardedLinks()->linkedObject(key);
   if (linkedObject != nullptr)
   {
     // We can resolve the linked object.
@@ -741,9 +741,10 @@ smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceIt
   // If we cannot resolve the linked object, let's check to see if the object
   // is held by the same resource as this ReferenceItem. There's no need for
   // resource management in this event.
-  else if (!key.first.isNull() && myAtt->resource()->links().resolve(myAtt->resource()))
+  else if (!key.first.isNull() &&
+    myAtt->attributeResource()->guardedLinks()->resolve(myAtt->resource()))
   {
-    return myAtt->links().linkedObject(key);
+    return myAtt->guardedLinks()->linkedObject(key);
   }
   return PersistentObjectPtr();
 }

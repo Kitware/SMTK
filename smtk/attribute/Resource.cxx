@@ -1044,3 +1044,13 @@ const std::set<smtk::resource::Links::RoleType>& Resource::uniqueRoles() const
 {
   return m_roles;
 }
+
+const smtk::attribute::Resource::GuardedLinks Resource::guardedLinks() const
+{
+  return GuardedLinks(this->mutex(), this->links());
+}
+
+smtk::attribute::Resource::GuardedLinks Resource::guardedLinks()
+{
+  return GuardedLinks(this->mutex(), this->links());
+}
