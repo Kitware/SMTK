@@ -18,8 +18,10 @@
 // member access within address <> which does not point to an object of type
 // 'StoppableThreadPool'" when m_stopped is referenced in StoppableThreadPool's
 // exec() method, which we think is a false positive.
+#if defined(__has_attribute)
 #if __has_attribute(no_sanitize)
 #define NO_UBSAN_VPTR __attribute__((no_sanitize("vptr")))
+#endif
 #else
 #define NO_UBSAN_VPTR
 #endif
