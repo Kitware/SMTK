@@ -10,8 +10,6 @@
 
 #include "smtk/mesh/interpolation/StructuredGridGenerator.h"
 
-#include "smtk/common/CompilerInformation.h"
-
 namespace smtk
 {
 namespace mesh
