@@ -23,9 +23,12 @@ mark_as_advanced(SMTK_IGNORE_DELAUNAY_WARNINGS)
 if (SMTK_IGNORE_DELAUNAY_WARNINGS)
   set(ignore_rules_for_delaunay "")
 
-   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # disables: warning C4251: dll-interface warnings involving stl
     set(ignore_rules_for_delaunay "${ignore_rules_for_delaunay} /wd4251")
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+    # disables warnings for comparing integers of different types
+    set(ignore_rules_for_delaunay "${ignore_rules_for_delaunay} -Wno-sign-compare")
   endif()
 
   foreach(delaunay_target DelaunayDiscretization DelaunayMesh DelaunayMisc
