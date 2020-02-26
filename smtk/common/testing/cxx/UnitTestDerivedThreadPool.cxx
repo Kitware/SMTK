@@ -21,6 +21,8 @@
 #if defined(__has_attribute)
 #if __has_attribute(no_sanitize)
 #define NO_UBSAN_VPTR __attribute__((no_sanitize("vptr")))
+#else
+#define NO_UBSAN_VPTR
 #endif
 #else
 #define NO_UBSAN_VPTR
