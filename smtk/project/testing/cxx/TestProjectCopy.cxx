@@ -38,7 +38,6 @@ const std::string DATA_ROOT = SMTK_DATA_DIR;
 const std::string TEMP_ROOT = SMTK_SCRATCH_DIR;
 const std::string ORIG_ROOT = TEMP_ROOT + "/project-orig";
 const std::string COPY_ROOT = TEMP_ROOT + "/project-copy";
-const int OP_SUCCESS = static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
 
 class ProjectBuilder
 {
@@ -85,7 +84,7 @@ void ProjectBuilder::createProject()
 void ProjectBuilder::copyProject()
 {
   auto logger = smtk::io::Logger::instance();
-  auto m_secondProject = m_projectManager->saveAsProject(COPY_ROOT, logger);
+  m_secondProject = m_projectManager->saveAsProject(COPY_ROOT, logger);
   smtkTest(m_secondProject != nullptr, "failed to copy project");
   smtkTest(
     m_projectManager->getCurrentProject() == m_secondProject, "failed to update current project");
