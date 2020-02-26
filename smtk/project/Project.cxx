@@ -456,12 +456,12 @@ bool Project::copyTo(ProjectPtr thatProject, smtk::io::Logger& logger) const
       if (thisProjectPath == thisImportPath)
       {
         // Copy the native model file to that project
-        boost::filesystem::path thisImportPath(rd.m_importLocation);
-        boost::filesystem::path thatImportPath(thatProject->m_directory);
-        thatImportPath /= thisImportPath.filename();
+        boost::filesystem::path thisImportFilePath(rd.m_importLocation);
+        boost::filesystem::path thatImportFilePath(thatProject->m_directory);
+        thatImportFilePath /= thisImportFilePath.filename();
         boost::system::error_code errcode;
         boost::filesystem::copy_file(
-          thisImportPath, thatImportPath, boost::filesystem::copy_option::none, errcode);
+          thisImportFilePath, thatImportFilePath, boost::filesystem::copy_option::none, errcode);
         if (errcode)
         {
           smtkErrorMacro(logger, errcode.message());
@@ -472,10 +472,10 @@ bool Project::copyTo(ProjectPtr thatProject, smtk::io::Logger& logger) const
         auto modelResource = std::dynamic_pointer_cast<smtk::model::Resource>(resource);
         auto modelList = modelResource->findEntitiesOfType(smtk::model::MODEL_ENTITY, true);
         auto model = modelList.front();
-        modelResource->setStringProperty(model.entity(), "url", thatImportPath.string());
+        modelResource->setStringProperty(model.entity(), "url", thatImportFilePath.string());
 
         // Update import location in resource descriptor
-        thatRD.m_importLocation = thatImportPath.string();
+        thatRD.m_importLocation = thatImportFilePath.string();
       } // if (copying native model)
     }   // if (model resource)
 
