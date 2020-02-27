@@ -190,7 +190,12 @@ void vtkMeshMultiBlockSource::GenerateRepresentationForSingleMesh(const smtk::me
     }
     SequenceType curr = static_cast<SequenceType>(entityref.tessellationGeneration());
     SequenceType prev = this->GetCachedDataSequenceNumber(uid);
-    if (curr > prev || prev == vtkResourceMultiBlockSource::InvalidSequence)
+    // TODO: by redrawing every time the current sequence value is invalid, we
+    //       end up disabling caching for meshes that do not have models backing
+    //       them. We need to assign a sequence number to the meshset (or, better
+    //       yet, its component) when it is a free-standing mesh.
+    if (curr > prev || prev == vtkResourceMultiBlockSource::InvalidSequence ||
+      curr == vtkResourceMultiBlockSource::InvalidSequence)
     {
       smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
       exportVTKData(meshes, pd);
