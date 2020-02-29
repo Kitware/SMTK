@@ -56,6 +56,7 @@ set(meshSrcs
   operators/SelectCells.cxx
   operators/SetMeshName.cxx
   operators/Subtract.cxx
+  operators/Transform.cxx
   operators/UndoElevateMesh.cxx
   operators/Write.cxx
   operators/WriteResource.cxx
@@ -127,6 +128,7 @@ set(meshHeaders
   operators/SelectCells.h
   operators/SetMeshName.h
   operators/Subtract.h
+  operators/Transform.h
   operators/UndoElevateMesh.h
   operators/Write.h
   operators/WriteResource.h
@@ -159,6 +161,7 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defO
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SelectCells.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetMeshName.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Subtract.sbt" defOpXML)
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Transform.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoElevateMesh.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" defOpXML)
