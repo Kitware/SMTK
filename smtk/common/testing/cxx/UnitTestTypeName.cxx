@@ -14,6 +14,7 @@
 #include <iostream>
 #include <memory>
 
+#include <unordered_map>
 #include <vector>
 
 class ConstExprNamed
@@ -102,6 +103,10 @@ int UnitTestTypeName(int /*unused*/, char** const /*unused*/)
   test(smtk::common::typeName<map<ConstExprNamed, set<vector<FunctionNamed> > > >() ==
       "map<ConstExprNamed, set<vector<FunctionNamed>>>",
     "Complex type name failed.");
+
+  test(smtk::common::typeName<unordered_map<ConstExprNamed, set<vector<FunctionNamed> > > >() ==
+      "unordered_map<ConstExprNamed, set<vector<FunctionNamed>>>",
+    "unordered map type name failed.");
 
   return 0;
 }
