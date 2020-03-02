@@ -483,17 +483,17 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
     # location of the module's install).
     set(smtk_pythonpaths
       "${CMAKE_BINARY_DIR}/${SMTK_PYTHON_MODULEDIR}")
-    set(smtk_libpaths)
+    set(smtk_libpaths "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
 
     if (SMTK_ENABLE_PARAVIEW_SUPPORT)
       list(APPEND smtk_pythonpaths
         "${ParaView_PREFIX_PATH}/${PARAVIEW_PYTHONPATH}")
-      set(paraview_libpath
+      list(APPEND smtk_libpaths
         "${ParaView_PREFIX_PATH}/${CMAKE_INSTALL_BINDIR}")
     elseif (SMTK_ENABLE_VTK_SUPPORT)
       list(APPEND smtk_pythonpaths
         "${VTK_PREFIX_PATH}/${VTK_PYTHONPATH}")
-      set(vtk_libpath
+      list(APPEND smtk_libpaths
         "${VTK_PREFIX_PATH}/${CMAKE_INSTALL_BINDIR}")
     endif ()
 
