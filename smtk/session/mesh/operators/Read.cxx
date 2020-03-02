@@ -111,12 +111,16 @@ const char* Read::xmlDescription() const
 void Read::markModifiedResources(Read::Result& res)
 {
   auto resourceItem = res->findResource("resource");
-  for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
+  for (std::size_t ii = 0; ii < resourceItem->numberOfValues(); ++ii)
   {
-    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
+    if (resourceItem->isSet(ii))
+    {
+      auto resource =
+        std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->objectValue(ii));
 
-    // Set the resource as unmodified from its persistent (i.e. on-disk) state
-    resource->setClean(true);
+      // Set the resource as unmodified from its persistent (i.e. on-disk) state
+      resource->setClean(true);
+    }
   }
 }
 
