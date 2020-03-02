@@ -48,11 +48,6 @@ ModelEntityPointLocator::~ModelEntityPointLocator() = default;
 bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
   std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
 {
-  if (snapToPoint)
-  {
-    return false;
-  }
-
   // Attempt to access the entity's mesh tessellation
   smtk::mesh::MeshSet meshTessellation = entity.meshTessellation();
 
@@ -81,7 +76,37 @@ bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entit
     ::moab::EntityHandle triangleOut;
     for (std::size_t i = 0; i < sourcePoints.size(); i += 3)
     {
+      // Identify the nearest point and the associated triangle
       tree.closest_triangle(treeRootSet, &sourcePoints[i], &closestPoints[i], triangleOut);
+
+      // If point snapping is selected...
+      if (snapToPoint)
+      {
+        // ...access the three vertices of the nearest triangle
+        ::moab::Range connectivity;
+        interface->moabInterface()->get_connectivity(&triangleOut, 1, connectivity);
+        std::array<double, 9> coords;
+        interface->moabInterface()->get_coords(connectivity, coords.data());
+
+        // Compute the squared distance betwen the source point and the vertex
+        std::array<double, 3> dist2 = { { 0., 0., 0. } };
+        for (std::size_t j = 0; j < 3; j++)
+        {
+          for (std::size_t k = 0; k < 3; k++)
+          {
+            double tmp = coords[3 * j + k] - sourcePoints[i + k];
+            dist2[j] += tmp * tmp;
+          }
+        }
+
+        // Assign the closest point to the coordinates of the closest vertex
+        std::size_t index =
+          std::distance(dist2.begin(), std::min_element(dist2.begin(), dist2.end()));
+        for (std::size_t j = 0; j < 3; j++)
+        {
+          closestPoints[i + j] = coords[3 * index + j];
+        }
+      }
     }
     return true;
   }

@@ -59,6 +59,7 @@ set(modelSrcs
   json/jsonEntityIterator.cxx
   json/jsonResource.cxx
   json/jsonTessellation.cxx
+  utility/InterpolateField.cxx
 )
 
 set(modelHeaders
@@ -114,6 +115,7 @@ set(modelHeaders
   json/jsonEntityIterator.h
   json/jsonResource.h
   json/jsonTessellation.h
+  utility/InterpolateField.h
 )
 
 foreach (operator ${modelOps})
