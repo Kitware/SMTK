@@ -292,6 +292,12 @@ bool Project::save(smtk::io::Logger& logger) const
   for (const auto& rd : m_resourceDescriptors)
   {
     auto resource = resManager->get(rd.m_uuid);
+    // Check if resource is modified or attribute type. (Always save attribute
+    // resources because some edits don't mark the resource as modified.)
+    if (resource->clean() && !resource->isOfType<smtk::attribute::Resource>())
+    {
+      continue;
+    }
     auto writer = opManager->create<smtk::operation::WriteResource>();
     writer->parameters()->associate(resource);
     auto result = writer->operate();
