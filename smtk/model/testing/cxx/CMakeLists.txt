@@ -56,6 +56,11 @@ endif()
 
 set(additional_libs)
 
+if (SMTK_ENABLE_MESH_SESSION)
+  list(APPEND unit_tests_which_require_data TestInterpolateAnnotatedValues.cxx)
+  list(APPEND additional_libs smtkMeshSession)
+endif ()
+
 if (SMTK_ENABLE_DISCRETE_SESSION)
   list(APPEND unit_tests_which_require_data TestGroupPropertyQuery.cxx)
   list(APPEND additional_libs smtkDiscreteSession)
