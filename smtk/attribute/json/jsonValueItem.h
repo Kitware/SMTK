@@ -119,68 +119,81 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
   {
     // The node should have an attribute indicating how many values are
     // associated with the item
-    try
+
     {
-      n = j.at("NumberOfValues");
-      itemPtr->setNumberOfValues(n);
-    }
-    catch (std::exception& /*e*/)
-    {
+      auto query = j.find("NumberOfValues");
+      if (query != j.end())
+      {
+        n = *query;
+        itemPtr->setNumberOfValues(n);
+      }
     }
   }
   if (!n)
   {
     return;
   }
+
   json values;
-  try
   {
-    values = j.at("Values");
+    auto query = j.find("Values");
+    if (query != j.end())
+    {
+      values = *query;
+    }
   }
-  catch (std::exception& /*e*/)
-  {
-  }
+
   if (!values.is_null())
   {
     for (auto iter = values.begin(); iter != values.end(); iter++)
     {
-      try
       {
-        json dumy = iter->at("UnsetVal");
-        continue;
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
-      try
-      {
-        i = iter->at("Val").at("Ith");
-        BasicType currentValue = iter->at("Val").at("Name");
-        itemPtr->setValue(static_cast<int>(i), currentValue);
-      }
-      catch (std::exception& /*e*/)
-      {
-      }
-      if (allowsExpressions)
-      {
-        try
+        auto query = iter->find("UnsetVal");
+        if (query != iter->end())
         {
-          expName = iter->at("Expression").at("Name");
-          expAtt = resPtr->findAttribute(expName);
-          if (!expAtt)
+          continue;
+        }
+      }
+
+      {
+        auto query = iter->find("Val");
+        if (query != iter->end())
+        {
+          auto queryIth = query->find("Ith");
+          auto queryValue = query->find("Name");
+          if (queryIth != query->end() && queryValue != query->end())
           {
-            info.item = itemPtr;
-            info.pos = static_cast<int>(i);
-            info.expName = expName;
-            itemExpressionInfo.push_back(info);
-          }
-          else
-          {
-            itemPtr->setExpression(static_cast<int>(i), expAtt);
+            i = *queryIth;
+            BasicType currentValue = *queryValue;
+            itemPtr->setValue(static_cast<int>(i), currentValue);
           }
         }
-        catch (std::exception& /*e*/)
+      }
+
+      if (allowsExpressions)
+      {
         {
+          auto query = iter->find("Expression");
+          if (query != iter->end())
+          {
+            auto queryName = query->find("Name");
+            if (queryName != query->end())
+            {
+              expName = *queryName;
+              expAtt = resPtr->findAttribute(expName);
+              if (!expAtt)
+              {
+                info.item = itemPtr;
+                info.pos = static_cast<int>(i);
+                info.expName = expName;
+                itemExpressionInfo.push_back(info);
+              }
+              else
+              {
+                itemPtr->setExpression(static_cast<int>(i), expAtt);
+              }
+            }
+          }
         }
       }
     }
@@ -188,33 +201,34 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
   else if ((numRequiredVals == 1) && !itemPtr->isExtensible())
   {
     json noVal;
-    try
     {
-      noVal = j.at("UnsetVal");
+      auto query = j.find("UnsetVal");
+      if (query != j.end())
+      {
+        noVal = *query;
+      }
     }
-    catch (std::exception& /*e*/)
-    {
-    }
+
     if (noVal.is_null())
     {
       json expression;
-      try
       {
-        expression = j.at("Expression");
+        auto query = j.find("Expression");
+        if (query != j.end())
+        {
+          expression = *query;
+        }
       }
-      catch (std::exception& /*e*/)
-      {
-      }
+
       if (allowsExpressions && !expression.is_null())
       {
-        try
+        auto expNameQuery = j.find("ExpressionName");
+        if (expNameQuery != j.end())
         {
-          expName = j.at("ExpressionName");
+          expName = *expNameQuery;
           expAtt = resPtr->findAttribute(expName);
         }
-        catch (std::exception& /*e*/)
-        {
-        }
+
         if (!expAtt)
         {
           info.item = itemPtr;
@@ -227,13 +241,14 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
           itemPtr->setExpression(expAtt);
         }
       }
-      try
+
       {
-        BasicType currentValue = j.at("Val");
-        itemPtr->setValue(currentValue);
-      }
-      catch (std::exception& /*e*/)
-      {
+        auto query = j.find("Val");
+        if (query != j.end())
+        {
+          BasicType currentValue = *query;
+          itemPtr->setValue(currentValue);
+        }
       }
     }
   }
