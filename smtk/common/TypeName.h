@@ -227,7 +227,7 @@ name_double_argument_stl_container(stack);
 
 #undef name_double_argument_stl_container
 
-// Specializaiton for containers that accept a key, value, comparator and allocator.
+// Specialization for containers that accept a key, value, comparator and allocator.
 #define name_double_argument_sorted_stl_container(CONTAINER)                                       \
   template <typename KeyType, typename ValueType>                                                  \
   struct name<std::CONTAINER<KeyType, ValueType, std::less<KeyType>,                               \
@@ -243,10 +243,25 @@ name_double_argument_stl_container(stack);
 
 name_double_argument_sorted_stl_container(map);
 name_double_argument_sorted_stl_container(multimap);
-name_double_argument_sorted_stl_container(unordered_map);
-name_double_argument_sorted_stl_container(unordered_multimap);
 
-#undef name_double_argument_sorted_stl_container
+// Specialization for containers that accept a key, value, comparator and allocator.
+#define name_double_argument_hashed_stl_container(CONTAINER)                                       \
+  template <typename KeyType, typename ValueType>                                                  \
+  struct name<std::CONTAINER<KeyType, ValueType, std::hash<KeyType>, std::equal_to<KeyType>,       \
+    std::allocator<std::pair<const KeyType, ValueType> > > >                                       \
+  {                                                                                                \
+    static std::string value()                                                                     \
+    {                                                                                              \
+      std::string keytype = name<KeyType>::value();                                                \
+      std::string valuetype = name<ValueType>::value();                                            \
+      return std::string(#CONTAINER) + "<" + keytype + ", " + valuetype + ">";                     \
+    }                                                                                              \
+  }
+
+name_double_argument_hashed_stl_container(unordered_map);
+name_double_argument_hashed_stl_container(unordered_multimap);
+
+#undef name_double_argument_hashed_stl_container
 }
 
 /// Return the name of a class.
