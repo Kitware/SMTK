@@ -156,6 +156,9 @@ public:
   /// \brief Calculate the set of categories associated with an Analysis Attribute's settings.
   void getAnalysisAttributeCategories(
     smtk::attribute::ConstAttributePtr attribute, std::set<std::string>& cats);
+  std::set<std::string> getAnalysisAttributeCategories(
+    smtk::attribute::ConstAttributePtr attribute);
+
   /// \brief Destroys the Instance and deletes all Analysis Instances contained within.
   ~Analyses();
 

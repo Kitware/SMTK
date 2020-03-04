@@ -12,6 +12,7 @@
 #define pybind_smtk_attribute_Analyses_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "smtk/attribute/Analyses.h"
 
@@ -38,6 +39,7 @@ py::class_< smtk::attribute::Analyses > pybind11_init_smtk_attribute_Analyses(py
     .def("areTopLevelExclusive", &smtk::attribute::Analyses::areTopLevelExclusive)
     .def("setAnalysisParent", &smtk::attribute::Analyses::setAnalysisParent, py::arg("analysis"), py::arg("parent"))
     .def("buildAnalysesDefinition", &smtk::attribute::Analyses::buildAnalysesDefinition, py::arg("resource"), py::arg("type"), py::arg("label") = "Analysis")
+    .def("getAnalysisAttributeCategories", (std::set<std::string> (::smtk::attribute::Analyses::*)(smtk::attribute::ConstAttributePtr attribute)) &smtk::attribute::Analyses::getAnalysisAttributeCategories)
     ;
   py::class_< smtk::attribute::Analyses::Analysis, std::unique_ptr<smtk::attribute::Analyses::Analysis, py::nodelete>>(instance, "Analysis")
     .def(py::init<::smtk::attribute::Analyses::Analysis const &>())

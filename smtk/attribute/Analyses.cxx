@@ -368,3 +368,10 @@ void Analyses::getAnalysisAttributeCategories(
     this->getAnalysisItemCategories(attribute->item(i), cats, m_topLevelExclusive);
   }
 }
+
+std::set<std::string> Analyses::getAnalysisAttributeCategories(ConstAttributePtr attribute)
+{
+  std::set<std::string> cats;
+  this->getAnalysisAttributeCategories(attribute, cats);
+  return cats;
+}
