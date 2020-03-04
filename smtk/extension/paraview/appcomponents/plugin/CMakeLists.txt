@@ -161,5 +161,6 @@ target_link_libraries(smtkPQComponentsPlugin
     smtkPVServerExt
     smtkCore
     smtkQtExt
+    vtkSMTKMeshExt
     vtkSMTKSourceExt
     vtkSMTKOperationsExt)

@@ -1,0 +1,6 @@
+NAME
+  vtkSMTKMeshExt
+DEPENDS
+  VTK::CommonCore
+  VTK::CommonDataModel
+  vtkSMTKSourceExt

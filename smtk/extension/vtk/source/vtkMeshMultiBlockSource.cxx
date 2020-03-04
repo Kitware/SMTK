@@ -26,6 +26,8 @@
 #include "smtk/mesh/core/Resource.h"
 
 #include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
+#include "smtk/extension/vtk/source/Backend.h"
+#include "smtk/extension/vtk/source/Geometry.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -368,15 +370,31 @@ void vtkMeshMultiBlockSource::GenerateRepresentationFromMesh(vtkMultiBlockDataSe
 
 /// Generate polydata from an smtk::model with tessellation information.
 int vtkMeshMultiBlockSource::RequestData(
-  vtkInformation* /*request*/, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
+  vtkInformation* request, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
 {
-  auto resource = this->GetResource();
+  auto resource = this->GetMeshResource();
   m_UUID2BlockIdMap.clear();
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
   {
     vtkErrorMacro("No output dataset");
     return 0;
+  }
+
+  // Use the new rendering backend if the resource supports it:
+  smtk::extension::vtk::source::Backend vtk;
+  const auto& geom = resource->geometry(vtk);
+  if (geom)
+  {
+    try
+    {
+      const auto& properGeom = dynamic_cast<const smtk::extension::vtk::source::Geometry&>(*geom);
+      return this->RequestDataFromGeometry(request, outInfo, properGeom);
+    }
+    catch (std::bad_cast&)
+    {
+      // do nothing
+    }
   }
 
   // Destroy the cache if the parameters have changed since it was generated.

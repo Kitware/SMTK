@@ -13,6 +13,7 @@
 #include "smtk/session/mesh/Exports.h"
 
 #include "smtk/attribute/Registrar.h"
+#include "smtk/geometry/Manager.h"
 #include "smtk/mesh/resource/Registrar.h"
 #include "smtk/model/Registrar.h"
 #include "smtk/operation/Manager.h"
@@ -37,6 +38,9 @@ public:
 
   static void registerTo(const smtk::resource::Manager::Ptr&);
   static void unregisterFrom(const smtk::resource::Manager::Ptr&);
+
+  static void registerTo(const smtk::geometry::Manager::Ptr&);
+  static void unregisterFrom(const smtk::geometry::Manager::Ptr&);
 };
 }
 }
