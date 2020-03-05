@@ -183,7 +183,14 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Signal.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
+smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt"
+  HEADER_OUTPUT defOpXML
+  TARGET_OUTPUT targetName)
+# list(APPEND attributeHeaders ${defOpXML})
+# set(attributeDependencies "generate_${defOpXML}")
+message("Lovely: ${defOpXML} ${targetName}")
+set(attributeDependencies ${targetName} PARENT_SCOPE)
+# add_dependencies(smtkCore ${attributeDependencies})
 
 #install the headers
 smtk_public_headers(smtkCore ${attributeHeaders})

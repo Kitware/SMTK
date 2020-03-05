@@ -105,6 +105,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 add_library(smtkCore ${smtk_srcs})
+message("smtkCore ${attributeDependencies}")
+add_dependencies(smtkCore ${attributeDependencies})
+
 target_include_directories(smtkCore
   PUBLIC
   ${smtkCore_public_include_directories}

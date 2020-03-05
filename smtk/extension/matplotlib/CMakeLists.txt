@@ -12,7 +12,10 @@ set(matplotlibPySrcs
 set(matplotlib_pymodulefiles)
 
 set(matplotlib_pyxmlfiles)
-smtk_pyoperation_xml("${CMAKE_CURRENT_SOURCE_DIR}/render_mesh.sbt" matplotlib_pyxmlfiles)
+smtk_operation_xml(
+  "${CMAKE_CURRENT_SOURCE_DIR}/render_mesh.sbt" matplotlib_pyxmlfiles
+  EXT "py"
+  )
 
 foreach(pyfile ${matplotlibPySrcs})
   get_filename_component(filename ${pyfile} NAME)

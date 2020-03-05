@@ -172,7 +172,7 @@ public:
   typename T::ConstPtr findAs(const std::string& name, SearchStyle style = RECURSIVE_ACTIVE) const;
 
   /**
-   * @brief Given a container, file items in the attribute by a lambda function
+   * @brief Given a container, filter items in the attribute by a lambda function
    * @param values a container which holds items
    * @param test a lambda function which would be applied on children items
    * Example filter double and int items
