@@ -251,14 +251,15 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
   }
 
   std::map<int, std::vector<vtkSmartPointer<vtkDataObject> > > blocks;
-  smtk::extension::vtk::source::Backend source(&geometry);
-  geometry.visit([&source, &geometry, &blocks](const smtk::resource::PersistentObject::Ptr& obj,
+  // smtk::extension::vtk::source::Backend source(&geometry);
+  smtk::extension::vtk::source::Backend backend;
+  geometry.visit([&geometry, &blocks](const smtk::resource::PersistentObject::Ptr& obj,
     smtk::geometry::Geometry::GenerationNumber gen) {
     (void)gen;
     if (obj)
     {
       int dim = geometry.dimension(obj);
-      auto& data = source.geometry(obj);
+      auto& data = geometry.data(obj);
       if (data)
       {
         vtkResourceMultiBlockSource::SetDataObjectUUID(data->GetInformation(), obj->id());

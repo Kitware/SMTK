@@ -40,22 +40,9 @@ class Geometry;
 class VTKSMTKSOURCEEXT_EXPORT Backend : public smtk::geometry::Backend
 {
 public:
-  Backend();
-  Backend(const std::unique_ptr<smtk::geometry::Geometry>& provider);
-  Backend(const Geometry* provider);
-  virtual ~Backend() = default;
-
   using format_t = vtkSmartPointer<vtkDataObject>;
 
   virtual std::string name() const override { return "VTK"; }
-
-  format_t& geometry(const smtk::resource::PersistentObject::Ptr& obj);
-  format_t& geometry(const std::unique_ptr<smtk::geometry::Geometry>& p,
-    const smtk::resource::PersistentObject::Ptr& obj);
-
-protected:
-  static format_t s_empty;
-  const Geometry* m_provider;
 };
 
 } // namespace source
