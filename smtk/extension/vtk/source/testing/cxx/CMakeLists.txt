@@ -67,6 +67,7 @@ add_executable(displayModelToMesh MACOSX_BUNDLE displayModelToMesh.cxx)
 list(APPEND additional_source_tests displayModelToMesh)
 target_link_libraries(displayModelToMesh
   smtkCore
+  vtkSMTKMeshExt
   vtkSMTKSourceExt
   VTK::CommonCore
   VTK::CommonDataModel

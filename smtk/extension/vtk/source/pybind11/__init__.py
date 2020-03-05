@@ -14,30 +14,24 @@ from . import _smtkPybindVTKSourceFns as _srcfns
 from .._modules import vtkSMTKSourceExt
 
 
-class vtkMeshMultiBlockSource(vtkSMTKSourceExt.vtkMeshMultiBlockSource):
+class vtkResourceMultiBlockSource(vtkSMTKSourceExt.vtkResourceMultiBlockSource):
 
     @staticmethod
     def GetDataObjectUUID(info):
-        return _srcfns._vtkMeshMultiBlockSource_GetDataObjectUUID(info)
+        return _srcfns._vtkResourceMultiBlockSource_GetDataObjectUUID(info)
 
     @staticmethod
     def SetDataObjectUUID(info, uuid):
-        return _srcfns._vtkMeshMultiBlockSource_SetDataObjectUUID(info, uuid)
+        return _srcfns._vtkResourceMultiBlockSource_SetDataObjectUUID(info, uuid)
 
     def GetComponent(self, info):
-        return _srcfns._vtkMeshMultiBlockSource_GetComponent(self, info)
+        return _srcfns._vtkResourceMultiBlockSource_GetComponent(self, info)
 
-    def GetModelResource(self):
-        return _srcfns._vtkMeshMultiBlockSource_GetModelResource(self)
+    def GetResource(self):
+        return _srcfns._vtkResourceMultiBlockSource_GetResource(self)
 
-    def SetModelResource(self, resource):
-        return _srcfns._vtkMeshMultiBlockSource_SetModelResource(self, resource)
-
-    def GetMeshResource(self):
-        return _srcfns._vtkMeshMultiBlockSource_GetMeshResource(self)
-
-    def SetMeshResource(self, resource):
-        return _srcfns._vtkMeshMultiBlockSource_SetMeshResource(self, resource)
+    def SetResource(self, resource):
+        return _srcfns._vtkResourceMultiBlockSource_SetResource(self, resource)
 
 
 class vtkModelMultiBlockSource(vtkSMTKSourceExt.vtkModelMultiBlockSource):

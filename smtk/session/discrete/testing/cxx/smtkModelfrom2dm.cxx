@@ -48,7 +48,6 @@
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/session/discrete/Registrar.h"
 #include "smtk/session/discrete/Resource.h"
 #include "smtk/session/discrete/Session.h"

@@ -11,20 +11,27 @@
 #include "smtk/extension/vtk/source/Backend.h"
 #include "smtk/extension/vtk/source/Geometry.h"
 
+#include "smtk/geometry/Resource.h"
+
 #include "vtkDataObject.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
+#include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
 
 using UUID = smtk::common::UUID;
 using SequenceType = vtkResourceMultiBlockSource::SequenceType;
 
+vtkStandardNewMacro(vtkResourceMultiBlockSource);
 vtkInformationKeyMacro(vtkResourceMultiBlockSource, COMPONENT_ID, String);
 
 //----------------------------------------------------------------------------
-vtkResourceMultiBlockSource::vtkResourceMultiBlockSource() = default;
+vtkResourceMultiBlockSource::vtkResourceMultiBlockSource()
+{
+  this->SetNumberOfInputPorts(0);
+}
 
 //----------------------------------------------------------------------------
 vtkResourceMultiBlockSource::~vtkResourceMultiBlockSource()
@@ -291,4 +298,39 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
   }
 
   return 1;
+}
+
+int vtkResourceMultiBlockSource::RequestData(
+  vtkInformation* request, vtkInformationVector** /*inInfo*/, vtkInformationVector* outInfo)
+{
+  vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
+  if (!output)
+  {
+    vtkErrorMacro("No output dataset");
+    return 0;
+  }
+
+  auto resource = std::dynamic_pointer_cast<smtk::geometry::Resource>(this->GetResource());
+  if (!resource)
+  {
+    vtkErrorMacro("Input resource is not a geometry resource");
+    return 0;
+  }
+
+  smtk::extension::vtk::source::Backend vtk;
+  const auto& geom = resource->geometry(vtk);
+  if (!geom)
+  {
+    vtkErrorMacro("Input resource does not have geometry");
+    return 0;
+  }
+
+  const auto& properGeom = dynamic_cast<const smtk::extension::vtk::source::Geometry&>(*geom);
+  if (!geom)
+  {
+    vtkErrorMacro("Input resource's geometry is not a vtk geometry");
+    return 0;
+  }
+
+  return this->RequestDataFromGeometry(request, outInfo, properGeom);
 }

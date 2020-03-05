@@ -34,7 +34,8 @@
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+#include "smtk/extension/vtk/mesh/RegisterVTKBackend.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 using namespace smtk::model;
 using namespace smtk::io;
@@ -83,16 +84,17 @@ int main(int argc, char* argv[])
       std::cout << "number of meshes: " << numMeshes << std::endl;
       test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
 
+      smtk::extension::vtk::mesh::RegisterVTKBackend::registerClass();
+
       vtkNew<vtkActor> act;
-      vtkNew<vtkMeshMultiBlockSource> src;
+      vtkNew<vtkResourceMultiBlockSource> src;
       vtkNew<vtkCompositePolyDataMapper2> map;
       vtkNew<vtkRenderer> ren;
       vtkNew<vtkRenderWindow> win;
-      src->SetMeshResource(c);
+      src->SetResource(c);
       if (debug)
       {
         win->SetMultiSamples(16);
-        src->AllowNormalGenerationOn();
       }
       else
       {

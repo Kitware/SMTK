@@ -9,9 +9,9 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkPVModelSources.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "vtkCompositeDataIterator.h"
 #include "vtkMultiBlockDataSet.h"
@@ -63,7 +63,7 @@ class vtkPVModelSources::Internal
 {
 public:
   std::set<vtkSmartPointer<vtkModelMultiBlockSource> > m_modelSources;
-  std::set<vtkSmartPointer<vtkMeshMultiBlockSource> > m_meshSources;
+  std::set<vtkSmartPointer<vtkResourceMultiBlockSource> > m_meshSources;
 };
 
 vtkPVModelSources::vtkPVModelSources()
@@ -87,7 +87,7 @@ bool vtkPVModelSources::AddSource(vtkModelMultiBlockSource* ms)
   return m_p.m_modelSources.insert(ms).second;
 }
 
-bool vtkPVModelSources::AddSource(vtkMeshMultiBlockSource* ms)
+bool vtkPVModelSources::AddSource(vtkResourceMultiBlockSource* ms)
 {
   return m_p.m_meshSources.insert(ms).second;
 }
@@ -97,7 +97,7 @@ bool vtkPVModelSources::RemoveSource(vtkModelMultiBlockSource* ms)
   return m_p.m_modelSources.erase(ms) > 0;
 }
 
-bool vtkPVModelSources::RemoveSource(vtkMeshMultiBlockSource* ms)
+bool vtkPVModelSources::RemoveSource(vtkResourceMultiBlockSource* ms)
 {
   return m_p.m_meshSources.erase(ms) > 0;
 }
@@ -125,7 +125,7 @@ std::pair<vtkModelMultiBlockSource*, vtkIdType> vtkPVModelSources::findModelEnti
   return std::pair<vtkModelMultiBlockSource*, vtkIdType>(nullptr, -1);
 }
 
-std::pair<vtkMeshMultiBlockSource*, vtkIdType> vtkPVModelSources::findMeshSet(
+std::pair<vtkResourceMultiBlockSource*, vtkIdType> vtkPVModelSources::findMeshSet(
   const smtk::mesh::MeshSet& mesh)
 {
   std::map<smtk::mesh::MeshSet, vtkIdType> blockMap;
@@ -137,7 +137,7 @@ std::pair<vtkMeshMultiBlockSource*, vtkIdType> vtkPVModelSources::findMeshSet(
       return std::make_pair(src, blockMap->second);
     }
   }
-  return std::pair<vtkMeshMultiBlockSource*, vtkIdType>(nullptr, -1);
+  return std::pair<vtkResourceMultiBlockSource*, vtkIdType>(nullptr, -1);
 }
 */
 
@@ -176,12 +176,13 @@ std::pair<vtkMultiBlockDataSetAlgorithm*, vtkIdType> vtkPVModelSources::findMode
   return std::make_pair(source, blockId);
 }
 
-std::pair<vtkMeshMultiBlockSource*, vtkIdType> vtkPVModelSources::findMeshSetSource(
+/*
+std::pair<vtkResourceMultiBlockSource*, vtkIdType> vtkPVModelSources::findMeshSetSource(
   const smtk::mesh::MeshSet& mesh)
 {
-  vtkMeshMultiBlockSource* source = nullptr;
+  vtkResourceMultiBlockSource* source = nullptr;
   vtkIdType blockId = -1;
-  vtkMeshMultiBlockSource::visitInstances([mesh, &source, &blockId](vtkMeshMultiBlockSource* inst) {
+  vtkResourceMultiBlockSource::visitInstances([mesh, &source, &blockId](vtkResourceMultiBlockSource* inst) {
     std::map<smtk::common::UUID, vtkIdType> blockMap;
     inst->GetUUID2BlockIdMap(blockMap);
     std::map<smtk::common::UUID, vtkIdType>::const_iterator bit;
@@ -195,6 +196,7 @@ std::pair<vtkMeshMultiBlockSource*, vtkIdType> vtkPVModelSources::findMeshSetSou
   });
   return std::make_pair(source, blockId);
 }
+*/
 
 vtkDataObject* vtkPVModelSources::findModelEntity(const smtk::model::EntityRef& ent)
 {
@@ -228,9 +230,10 @@ vtkDataObject* vtkPVModelSources::findModelEntity(const smtk::model::EntityRef& 
   return nullptr;
 }
 
+/*
 vtkDataObject* vtkPVModelSources::findMeshSet(const smtk::mesh::MeshSet& mesh)
 {
-  std::pair<vtkMeshMultiBlockSource*, vtkIdType> result =
+  std::pair<vtkResourceMultiBlockSource*, vtkIdType> result =
     vtkPVModelSources::findMeshSetSource(mesh);
   if (!result.first)
   {
@@ -259,3 +262,4 @@ vtkDataObject* vtkPVModelSources::findMeshSet(const smtk::mesh::MeshSet& mesh)
   iter->Delete();
   return nullptr;
 }
+*/

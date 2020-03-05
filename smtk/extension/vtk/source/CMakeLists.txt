@@ -12,7 +12,6 @@ set(classes
   vtkCmbLayeredConeSource
   vtkConeFrustum
   vtkImplicitConeFrustum
-  vtkMeshMultiBlockSource
   vtkModelAuxiliaryGeometry
   vtkModelMultiBlockSource
   vtkModelView

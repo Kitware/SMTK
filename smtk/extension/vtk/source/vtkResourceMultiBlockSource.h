@@ -53,7 +53,8 @@ class Geometry;
 class VTKSMTKSOURCEEXT_EXPORT vtkResourceMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  vtkAbstractTypeMacro(vtkResourceMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkResourceMultiBlockSource, vtkMultiBlockDataSetAlgorithm);
+  static vtkResourceMultiBlockSource* New();
   void PrintSelf(ostream& os, vtkIndent indent) override;
 
   using UUID = smtk::common::UUID;
@@ -141,6 +142,9 @@ public:
   bool RemoveCacheEntriesExcept(const std::set<UUID>& exceptions);
   /// Remove all cache entries (releasing their VTK data objects).
   void ClearCache();
+
+  int RequestData(
+    vtkInformation* request, vtkInformationVector** inInfo, vtkInformationVector* outInfo) override;
 
 protected:
   vtkResourceMultiBlockSource();

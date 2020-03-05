@@ -24,8 +24,6 @@
 #include "smtk/mesh/utility/ExtractTessellation.h"
 #include "smtk/mesh/utility/Metrics.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
-
 #include "vtkAOSDataArrayTemplate.h"
 #include "vtkCell.h"
 #include "vtkCellArray.h"

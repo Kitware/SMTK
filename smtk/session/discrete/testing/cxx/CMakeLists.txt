@@ -11,6 +11,7 @@ if(SMTK_DATA_DIR)
     smtkCore
     smtkDiscreteSession
     vtkSMTKSourceExt
+    vtkSMTKMeshExt
     VTK::IOXML
     VTK::RenderingGL2PSOpenGL2
     VTK::TestingRendering

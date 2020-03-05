@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/extension/vtk/source/SourceFromMesh.h"
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/mesh/core/Resource.h"
 
@@ -43,9 +43,9 @@ vtkSmartPointer<vtkAlgorithm> SourceFromMesh::operator()(
   // will succeed. It doesn't hurt to be cautious, though.
   assert(meshResource);
 
-  // Create a vtkMeshMultiBlockSource for our mesh.
-  auto source = vtkSmartPointer<vtkMeshMultiBlockSource>::New();
-  source->SetMeshResource(meshResource);
+  // Create a vtkResourceMultiBlockSource for our mesh.
+  auto source = vtkSmartPointer<vtkResourceMultiBlockSource>::New();
+  source->SetResource(meshResource);
 
   return source;
 }
