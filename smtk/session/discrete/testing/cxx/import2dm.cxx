@@ -20,7 +20,8 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+#include "smtk/extension/vtk/mesh/RegisterVTKBackend.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/io/ModelToMesh.h"
 
@@ -122,16 +123,17 @@ int main(int argc, char* argv[])
   test((mr->meshes(smtk::mesh::Dims1)).size() == 10, "Expecting 10 edge mesh");
   test((mr->meshes(smtk::mesh::Dims0)).size() == 7, "Expecting 7 vertex mesh");
 
+  smtk::extension::vtk::mesh::RegisterVTKBackend::registerClass();
+
   vtkNew<vtkActor> act;
-  vtkNew<vtkMeshMultiBlockSource> src;
+  vtkNew<vtkResourceMultiBlockSource> src;
   vtkNew<vtkCompositePolyDataMapper2> map;
   vtkNew<vtkRenderer> ren;
   vtkNew<vtkRenderWindow> win;
-  src->SetMeshResource(mr);
+  src->SetResource(mr);
   if (debug)
   {
     win->SetMultiSamples(16);
-    src->AllowNormalGenerationOn();
   }
   else
   {

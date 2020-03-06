@@ -45,10 +45,10 @@ public:
 
   virtual ~GeometryForBackend() {}
 
-  /// Return the geometry associated with an object.
+  /// Return the data associated with an object.
   ///
   /// Only call this method after ensuring that generationNumber(obj) != Invalid.
-  virtual Format& geometry(const resource::PersistentObject::Ptr&) const = 0;
+  virtual Format& data(const resource::PersistentObject::Ptr&) const = 0;
 };
 
 } // namespace resource

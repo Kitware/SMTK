@@ -30,19 +30,14 @@ set(meshHeaders
   operators/Write.h
 )
 
+if (SMTK_ENABLE_VTK_SUPPORT)
+  list(APPEND meshSrcs
+    vtk/Geometry.cxx)
+  list(APPEND meshHeaders
+    vtk/Geometry.h)
+endif ()
+
 add_library(smtkMeshSession ${meshSrcs})
-
-target_link_libraries(smtkMeshSession
-  LINK_PUBLIC
-    smtkCore
-  LINK_PRIVATE
-    ${__dependencies}
-)
-
-smtk_export_header(smtkMeshSession Exports.h)
-
-#install the library and exports the library when used from a build tree
-smtk_install_library(smtkMeshSession)
 
 # Operations which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
@@ -60,6 +55,31 @@ smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" meshOperati
 
 # Install the headers
 smtk_public_headers(smtkMeshSession ${meshHeaders})
+
+set(vtk_dependencies)
+
+if (SMTK_ENABLE_VTK_SUPPORT)
+  target_compile_definitions(smtkMeshSession PUBLIC VTK_SUPPORT)
+
+  list(APPEND vtk_dependencies
+    VTK::CommonCore
+    VTK::CommonDataModel
+    vtkSMTKSourceExt
+    )
+endif ()
+
+target_link_libraries(smtkMeshSession
+  LINK_PUBLIC
+    smtkCore
+  LINK_PRIVATE
+    ${vtk_dependencies}
+    ${__dependencies}
+)
+
+smtk_export_header(smtkMeshSession Exports.h)
+
+#install the library and exports the library when used from a build tree
+smtk_install_library(smtkMeshSession)
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   set_property(GLOBAL APPEND

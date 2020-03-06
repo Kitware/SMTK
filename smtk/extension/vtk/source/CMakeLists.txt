@@ -1,5 +1,4 @@
 set(classes
-  Backend
   Geometry
   PointCloudFromVTKAuxiliaryGeometry
   Registrar
@@ -12,7 +11,6 @@ set(classes
   vtkCmbLayeredConeSource
   vtkConeFrustum
   vtkImplicitConeFrustum
-  vtkMeshMultiBlockSource
   vtkModelAuxiliaryGeometry
   vtkModelMultiBlockSource
   vtkModelView
@@ -20,6 +18,7 @@ set(classes
 set(templates
   vtkModelAuxiliaryGeometry.txx)
 set(headers
+  Backend.h
   SourceGenerator.h
   vtkTracksAllInstances.h)
 

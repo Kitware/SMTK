@@ -72,7 +72,7 @@ public:
     try
     {
       const auto& provider = dynamic_cast<const smtk::geometry::GeometryForBackend<Format>&>(*p);
-      val = provider.geometry(obj);
+      val = provider.data(obj);
     }
     catch (std::bad_cast&)
     {

@@ -12,7 +12,6 @@
 
 #include "smtk/extension/vtk/io/mesh/MeshIOVTK.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/view/Selection.h"

@@ -20,7 +20,7 @@
 class vtkDataObject;
 class vtkMultiBlockDataSetAlgorithm;
 class vtkModelMultiBlockSource;
-class vtkMeshMultiBlockSource;
+class vtkResourceMultiBlockSource;
 
 /**\brief Track instances of vtk{Model,Mesh}MultiBlockSource on the Paraview server.
   *
@@ -44,18 +44,22 @@ public:
 
   /*
   virtual bool AddSource(vtkModelMultiBlockSource*);
-  virtual bool AddSource(vtkMeshMultiBlockSource*);
+  virtual bool AddSource(vtkResourceMultiBlockSource*);
   virtual bool RemoveSource(vtkModelMultiBlockSource*);
-  virtual bool RemoveSource(vtkMeshMultiBlockSource*);
+  virtual bool RemoveSource(vtkResourceMultiBlockSource*);
   virtual bool RemoveAllSources();
   */
 
   static std::pair<vtkMultiBlockDataSetAlgorithm*, vtkIdType> findModelEntitySource(
     const smtk::model::EntityRef&);
-  static std::pair<vtkMeshMultiBlockSource*, vtkIdType> findMeshSetSource(
+  /*
+  static std::pair<vtkResourceMultiBlockSource*, vtkIdType> findMeshSetSource(
     const smtk::mesh::MeshSet&);
+*/
   static vtkDataObject* findModelEntity(const smtk::model::EntityRef&);
+  /*
   static vtkDataObject* findMeshSet(const smtk::mesh::MeshSet&);
+*/
 
 protected:
   vtkPVModelSources();

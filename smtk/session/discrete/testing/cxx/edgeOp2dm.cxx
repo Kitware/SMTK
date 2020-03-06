@@ -23,7 +23,7 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/io/ModelToMesh.h"
 
@@ -283,11 +283,11 @@ Model A, vertex 6  ff3c9b49-bf3f-4fd1-a906-3d40db14736b
     */
 
     vtkNew<vtkActor> act;
-    vtkNew<vtkMeshMultiBlockSource> src;
+    vtkNew<vtkResourceMultiBlockSource> src;
     vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetMeshResource(mr);
+    src->SetResource(mr);
     if (debug)
     {
       win->SetMultiSamples(16);

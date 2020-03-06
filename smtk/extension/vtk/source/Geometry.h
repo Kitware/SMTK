@@ -47,7 +47,7 @@ public:
   smtkTypeMacro(smtk::extension::vtk::source::Geometry);
   smtkSuperclassMacro(smtk::geometry::GeometryForBackend<DataType>);
   Geometry()
-    : m_backend(this)
+  // : m_backend(this)
   {
   }
   virtual ~Geometry() {}
@@ -60,11 +60,13 @@ public:
     Label //!< Geometry has a cell-scalar that indicates classification, possibly of multiple objects.
   };
 
+  const Backend& backend() const override { return m_backend; }
+
   /// VTK geometry providers are always for the VTK backend.
   ///
   /// The VTK backend provides additional, provider-agnostic accessors
   /// if initialized properly, so we maintain an instance.
-  const smtk::geometry::Backend& backend() const override { return m_backend; }
+  // const smtk::geometry::Backend& backend() const override { return m_backend; }
 
   /// The VTK backend requires the parametric dimension of each object's geometry.
   ///

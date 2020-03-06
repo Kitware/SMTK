@@ -172,7 +172,7 @@ public:
   }
 
   /// Provide access to the actual cached geometry reference.
-  DataType& geometry(const smtk::resource::PersistentObject::Ptr& obj) const override
+  DataType& data(const smtk::resource::PersistentObject::Ptr& obj) const override
   {
     if (obj)
     {

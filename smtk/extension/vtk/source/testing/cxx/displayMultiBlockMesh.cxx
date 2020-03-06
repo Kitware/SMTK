@@ -31,7 +31,7 @@
 #include "vtkStringArray.h"
 #include "vtkXMLMultiBlockDataWriter.h"
 
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 int main(int argc, char* argv[])
 {
@@ -49,14 +49,13 @@ int main(int argc, char* argv[])
     test(numMeshes != 0, "dataset once loaded should have more than zero meshes");
 
     vtkNew<vtkActor> act;
-    vtkNew<vtkMeshMultiBlockSource> src;
+    vtkNew<vtkResourceMultiBlockSource> src;
     vtkNew<vtkCompositePolyDataMapper2> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     if (debug)
     {
       win->SetMultiSamples(16);
-      src->AllowNormalGenerationOn();
     }
     else
     {

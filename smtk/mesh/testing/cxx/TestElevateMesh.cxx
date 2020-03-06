@@ -23,7 +23,6 @@
 
 #include "smtk/extension/vtk/source/PointCloudFromVTKAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/StructuredGridFromVTKAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/vtkMeshMultiBlockSource.h"
 
 #include "smtk/io/ExportMesh.h"
 
