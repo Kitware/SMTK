@@ -68,18 +68,14 @@ namespace
 void SetAttributeBlockColorToEntity(vtkCompositeDataDisplayAttributes* atts, vtkDataObject* block,
   const smtk::common::UUID& uuid, const smtk::resource::ResourcePtr& res)
 {
-  using namespace smtk::model;
-  auto modelResource = std::dynamic_pointer_cast<Resource>(res);
-  EntityRef entity;
-  if (modelResource != nullptr)
-  {
-    entity = EntityRef(modelResource, uuid);
-  }
-  FloatList color = entity.color();
-  color = color[3] < 0 ? FloatList({ 1., 1., 1., 1. }) : color;
+  std::vector<double> color = { { 1., 1., 1., 1. } };
 
-  // FloatList is a typedef for std::vector<double>, so it is safe to
-  // pass the raw pointer to its data.
+  auto component = res->find(uuid);
+  if (component != nullptr && component->properties().contains<std::vector<double> >("color"))
+  {
+    color = component->properties().at<std::vector<double> >("color");
+  }
+
   atts->SetBlockColor(block, color.data());
   if (color[3] < 1.0)
   {
