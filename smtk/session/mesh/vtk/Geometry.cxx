@@ -40,7 +40,15 @@ smtk::geometry::Resource::Ptr Geometry::resource() const
 void Geometry::queryGeometry(
   const smtk::resource::PersistentObject::Ptr& obj, CacheEntry& entry) const
 {
-  // Access the model's resource
+  // Do not draw the model (its tessellation contains all meshes in the resource)
+  auto ent = std::dynamic_pointer_cast<smtk::model::Entity>(obj);
+  if (!ent || ent->isModel())
+  {
+    entry.m_generation = Invalid;
+    return;
+  }
+
+  // Access the component's resource
   auto resource = m_parent.lock();
   if (resource == nullptr)
   {
