@@ -1,8 +1,5 @@
 set(classes
   Registrar
-  RespondToVTKSelection
-  VTKMeshCellSelection
-  VTKModelInstancePlacementSelection
   VTKSelectionResponderGroup
 
   smtkModelEntityPointLocator
@@ -19,13 +16,23 @@ set(classes
   vtkSMTKSettings
   vtkSMTKWrapper)
 
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/RespondToVTKSelection.sbt" smtkPVServerOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/VTKMeshCellSelection.sbt" smtkPVServerOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/VTKModelInstancePlacementSelection.sbt" smtkPVServerOperationXML)
+set(pvServerOps
+  RespondToVTKSelection
+  VTKMeshCellSelection
+  VTKModelInstancePlacementSelection
+)
+foreach (operator ${pvServerOps})
+  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND classes ${operator})
+  list(APPEND pvServerDependencies ${targetName})
+endforeach()
 
 vtk_module_add_module(smtkPVServerExt
   CLASSES ${classes}
   HEADERS_SUBDIR "smtk/extension/paraview/server")
+add_dependencies(smtkPVServerExt ${pvServerDependencies})
+
 vtk_module_link(smtkPVServerExt
   PUBLIC
     nlohmann_json

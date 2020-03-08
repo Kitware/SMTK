@@ -2,29 +2,41 @@ set(oscillatorSrcs
   Registrar.cxx
   Resource.cxx
   SimulationAttribute.cxx
-  operators/CreateModel.cxx
-  # operators/Delete.cxx
-  operators/EditDomain.cxx
-  operators/EditSource.cxx
-  operators/Export.cxx
-  operators/Read.cxx
-  operators/Write.cxx
 )
 
 set(oscillatorHeaders
   Registrar.h
   Resource.h
   SimulationAttribute.h
-  operators/CreateModel.h
-  # operators/Delete.h
-  operators/EditDomain.h
-  operators/EditSource.h
-  operators/Export.h
-  operators/Read.h
-  operators/Write.h
 )
 
+set(oscillatorOperators
+  CreateModel
+  # Delete
+  EditDomain
+  EditSource
+  Export
+  Read
+  Write
+  )
+
+# Operators which have XML descriptions in separate files
+# need to have it encoded as a string in a header.
+foreach (operator ${oscillatorOperators})
+  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND oscillatorSrcs operators/${operator}.cxx)
+  list(APPEND oscillatorHeaders operators/${operator}.h)
+  list(APPEND _oscillatorDependencies ${targetName})
+endforeach()
+# This is not an operation but a simulation attribute. However, we can use
+# the XML encoding the same way:
+smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/SimulationAttribute.sbt"
+  TARGET_OUTPUT targetName)
+list(APPEND _oscillatorDependencies ${targetName})
+
 add_library(smtkOscillatorSession ${oscillatorSrcs})
+add_dependencies(smtkOscillatorSession ${_oscillatorDependencies})
 target_link_libraries(smtkOscillatorSession
   PUBLIC
     smtkCore
@@ -33,22 +45,6 @@ target_link_libraries(smtkOscillatorSession
 )
 smtk_export_header(smtkOscillatorSession Exports.h)
 smtk_install_library(smtkOscillatorSession)
-
-# Operators which have XML descriptions in separate files
-# need to have it encoded as a string in a header.
-# We do not need the path to the generated header (appended
-# to oscillatorOperatorXML) since the operators themselves include
-# the header in their implementations.
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" oscillatorOperatorXML)
-# smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Delete.sbt" oscillatorOperatorXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditDomain.sbt" oscillatorOperatorXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EditSource.sbt" oscillatorOperatorXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" oscillatorOperatorXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" oscillatorOperatorXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" oscillatorOperatorXML)
-# This is not an operation but a simulation attribute. However, we can use
-# the XML encoding the same way:
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/SimulationAttribute.sbt" oscillatorOperatorXML)
 
 # Install the headers
 smtk_public_headers(smtkOscillatorSession ${oscillatorHeaders})

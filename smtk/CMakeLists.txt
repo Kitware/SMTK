@@ -105,8 +105,11 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 add_library(smtkCore ${smtk_srcs})
-message("smtkCore ${attributeDependencies}")
+# dependencies on generated files from subdirectories
 add_dependencies(smtkCore ${attributeDependencies})
+add_dependencies(smtkCore ${meshDependencies})
+add_dependencies(smtkCore ${modelDependencies})
+add_dependencies(smtkCore ${operationDependencies})
 
 target_include_directories(smtkCore
   PUBLIC

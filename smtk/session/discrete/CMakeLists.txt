@@ -116,23 +116,6 @@ set(discreteSessionSrcs
   Session.cxx
   Operation.cxx
   ArrangementHelper.cxx
-  operators/CreateEdgesOperation.cxx
-  operators/EntityGroupOperation.cxx
-  operators/ImportOperation.cxx
-  operators/LegacyReadResource.cxx
-  operators/MergeOperation.cxx
-  operators/ReadOperation.cxx
-  operators/ReadResource.cxx
-  operators/SplitFaceOperation.cxx
-  operators/WriteOperation.cxx
-  operators/WriteResource.cxx
-  operators/RemoveModel.cxx
-  operators/SetProperty.cxx
-  # TODO: These operators use the old MeshSelectionItem
-  # and need to be updated in order to be used
-  # operators/EdgeOperation.cxx
-  # operators/GrowOperation.cxx
-
 )
 
 set(discreteSessionHeaders
@@ -141,39 +124,40 @@ set(discreteSessionHeaders
   Session.h
   Operation.h
   ArrangementHelper.h
-  operators/CreateEdgesOperation.h
-  operators/EntityGroupOperation.h
-  operators/ImportOperation.h
-  operators/LegacyReadResource.h
-  operators/MergeOperation.h
-  operators/ReadOperation.h
-  operators/ReadResource.h
-  operators/SplitFaceOperation.h
-  operators/GrowOperation.h
-  operators/WriteOperation.h
-  operators/WriteResource.h
-  operators/RemoveModel.h
-  operators/EdgeOperation.h
-  operators/SetProperty.h
 )
 
+set(discreteSessionOperators
+  CreateEdgesOperation
+  EntityGroupOperation
+  ImportOperation
+  LegacyReadResource
+  MergeOperation
+  ReadOperation
+  ReadResource
+  RemoveModel
+  SetProperty
+  SplitFaceOperation
+  WriteOperation
+  WriteResource
+  # TODO: These operators use the old MeshSelectionItem
+  # and need to be updated in order to be used
+  # EdgeOperation
+  # GrowOperation
+  )
+
 include(SMTKOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgesOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LegacyReadResource.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitFaceOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ImportOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EntityGroupOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GrowOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveModel.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EdgeOperation.sbt" unitOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" unitOperationXML)
+
+# construct operator inputs
+foreach (operator ${discreteSessionOperators})
+  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND discreteSessionSrcs operators/${operator}.cxx)
+  list(APPEND discreteSessionHeaders operators/${operator}.h)
+  list(APPEND _discreteSessionDependencies ${targetName})
+endforeach()
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
+add_dependencies(smtkDiscreteSession ${_discreteSessionDependencies})
 
 set (__public_dependencies)
 set (__private_dependencies)

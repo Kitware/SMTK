@@ -43,7 +43,6 @@ function(smtk_operation_xml_new inOpSpecs)
 
   get_filename_component(_genFileBase "${inOpSpecs}" NAME_WE)
   set(_genFile "${CMAKE_CURRENT_BINARY_DIR}/${_genFileBase}${inType}.${inExt}")
-  message("_genFile: ${_genFile} depends ${_smtk_operation_xml_script_file} ${inOpSpecs} cmd ${CMAKE_COMMAND}"  )
 
   add_custom_command(
     OUTPUT  ${_genFile}
@@ -52,7 +51,7 @@ function(smtk_operation_xml_new inOpSpecs)
     COMMAND "${CMAKE_COMMAND}"
             "-DgenFileBase=${_genFileBase}"
             "-DgenFile=${_genFile}"
-            "-Dinclude_dirs=${_SMTK_op_INCLUDE_DIRS}"
+            "-Dinclude_dirs=\"${_SMTK_op_INCLUDE_DIRS}\""
             "-DopSpec=${inOpSpecs}"
             "-Dtype=${inType}"
             "-Dext=${inExt}"
@@ -70,13 +69,11 @@ function(smtk_operation_xml_new inOpSpecs)
     set("${_SMTK_op_HEADER_OUTPUT}"
       "${_genFile}"
       PARENT_SCOPE)
-    message("parent: " ${_genFile})
   endif ()
   if (DEFINED _SMTK_op_TARGET_OUTPUT)
     set("${_SMTK_op_TARGET_OUTPUT}"
       "${_targetName}"
       PARENT_SCOPE)
-    message("target: " ${_targetName})
   endif ()
 
 endfunction()

@@ -40,27 +40,6 @@ set(meshSrcs
   moab/Readers.cxx
   moab/Writers.cxx
 
-  operators/DeleteMesh.cxx
-  operators/ElevateMesh.cxx
-  operators/Export.cxx
-  operators/ExtractAdjacency.cxx
-  operators/ExtractByDihedralAngle.cxx
-  operators/ExtractSkin.cxx
-  operators/GenerateHotStartData.cxx
-  operators/Import.cxx
-  operators/InterpolateOntoMesh.cxx
-  operators/MergeCoincidentPoints.cxx
-  operators/PrintMeshInformation.cxx
-  operators/Read.cxx
-  operators/ReadResource.cxx
-  operators/SelectCells.cxx
-  operators/SetMeshName.cxx
-  operators/Subtract.cxx
-  operators/Transform.cxx
-  operators/UndoElevateMesh.cxx
-  operators/Write.cxx
-  operators/WriteResource.cxx
-
   resource/Registrar.cxx
   resource/Selection.cxx
 
@@ -112,27 +91,6 @@ set(meshHeaders
   moab/Interface.h
   moab/ModelEntityPointLocator.h
 
-  operators/DeleteMesh.h
-  operators/ElevateMesh.h
-  operators/Export.h
-  operators/ExtractAdjacency.h
-  operators/ExtractByDihedralAngle.h
-  operators/ExtractSkin.h
-  operators/GenerateHotStartData.h
-  operators/Import.h
-  operators/InterpolateOntoMesh.h
-  operators/MergeCoincidentPoints.h
-  operators/PrintMeshInformation.h
-  operators/Read.h
-  operators/ReadResource.h
-  operators/SelectCells.h
-  operators/SetMeshName.h
-  operators/Subtract.h
-  operators/Transform.h
-  operators/UndoElevateMesh.h
-  operators/Write.h
-  operators/WriteResource.h
-
   resource/Registrar.h
   resource/Selection.h
 
@@ -144,27 +102,38 @@ set(meshHeaders
   utility/Metrics.h
   utility/Reclassify.h
   )
+set(meshOperators
+  DeleteMesh
+  ElevateMesh
+  Export
+  ExtractAdjacency
+  ExtractByDihedralAngle
+  ExtractSkin
+  GenerateHotStartData
+  Import
+  InterpolateOntoMesh
+  MergeCoincidentPoints
+  PrintMeshInformation
+  Read
+  ReadResource
+  SelectCells
+  SetMeshName
+  Subtract
+  Transform
+  UndoElevateMesh
+  Write
+  WriteResource
+  )
 
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DeleteMesh.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ElevateMesh.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractAdjacency.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractByDihedralAngle.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractSkin.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/GenerateHotStartData.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/InterpolateOntoMesh.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/MergeCoincidentPoints.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PrintMeshInformation.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SelectCells.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetMeshName.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Subtract.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Transform.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/UndoElevateMesh.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" defOpXML)
+# construct operator inputs
+foreach (operator ${meshOperators})
+  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND meshSrcs operators/${operator}.cxx)
+  list(APPEND meshHeaders operators/${operator}.h)
+  list(APPEND _meshDependencies ${targetName})
+endforeach()
+set(meshDependencies ${_meshDependencies} PARENT_SCOPE)
 
 #install the headers
 smtk_public_headers(smtkCore ${meshHeaders})

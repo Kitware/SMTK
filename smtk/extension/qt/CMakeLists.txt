@@ -160,7 +160,8 @@ add_library(smtkQtExt
 )
 
 # put contents of this file in a string in a header. It's not xml, but it still works.
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json" qtResourcePanelJSON)
+smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
+  TARGET_OUTPUT rpJsonTarget)
 
 #we need to add the location of the moc files to the include dir for qtsmtk
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -175,6 +176,8 @@ target_link_libraries(smtkQtExt
   LINK_PRIVATE
   Threads::Threads
   )
+add_dependencies(smtkQtExt ${rpJsonTarget})
+
 smtk_export_header(smtkQtExt Exports.h)
 
 #install the library and exports the library when used from a build tree
