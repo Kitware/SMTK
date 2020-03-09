@@ -2,7 +2,7 @@ set(classes
   ExportEdgesToVTK
   vtkSMTKOperation)
 
-smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt"
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt"
   TARGET_OUTPUT optargetName)
 
 vtk_module_add_module(vtkSMTKOperationsExt

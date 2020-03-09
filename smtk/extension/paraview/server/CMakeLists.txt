@@ -22,7 +22,7 @@ set(pvServerOps
   VTKModelInstancePlacementSelection
 )
 foreach (operator ${pvServerOps})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt"
   TARGET_OUTPUT targetName)
   list(APPEND classes ${operator})
   list(APPEND pvServerDependencies ${targetName})

@@ -23,7 +23,7 @@ set(oscillatorOperators
 # Operators which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
 foreach (operator ${oscillatorOperators})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
   TARGET_OUTPUT targetName)
   list(APPEND oscillatorSrcs operators/${operator}.cxx)
   list(APPEND oscillatorHeaders operators/${operator}.h)
@@ -31,7 +31,7 @@ foreach (operator ${oscillatorOperators})
 endforeach()
 # This is not an operation but a simulation attribute. However, we can use
 # the XML encoding the same way:
-smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/SimulationAttribute.sbt"
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/SimulationAttribute.sbt"
   TARGET_OUTPUT targetName)
 list(APPEND _oscillatorDependencies ${targetName})
 

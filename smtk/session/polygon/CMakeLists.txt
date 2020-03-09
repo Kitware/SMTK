@@ -68,7 +68,7 @@ set(polygonOperators
 
 # construct operator inputs
 foreach (operator ${polygonOperators})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
   TARGET_OUTPUT targetName)
   list(APPEND polygonSrcs operators/${operator}.cxx)
   list(APPEND polygonHeaders operators/${operator}.h)
@@ -84,7 +84,7 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     Import
     )
   foreach (operator ${polygonOperators})
-    smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+    smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
     TARGET_OUTPUT targetName)
     list(APPEND polygonSrcs operators/${operator}.cxx)
     list(APPEND polygonHeaders operators/${operator}.h)

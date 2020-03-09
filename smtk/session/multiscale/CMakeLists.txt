@@ -18,7 +18,7 @@ set(multiscaleOperators
 # Operations which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
 foreach (operator ${multiscaleOperators})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
   TARGET_OUTPUT targetName)
   list(APPEND multiscaleSrcs operators/${operator}.cxx)
   list(APPEND multiscaleHeaders operators/${operator}.h)
@@ -84,8 +84,9 @@ configureStringAsPyVariable(AFRL_DIR
 list(APPEND multiscale_pyxmlfiles
   ${CMAKE_CURRENT_BINARY_DIR}/AFRLDir.py)
 
+# TODO consider updating to smtk_encode_file() if multiscale is re-enabled.
 smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pyxmlfiles
-  EXT "py"
+  PYTHON
   )
 
 foreach(pyfile ${multiscalePySrcs})

@@ -119,7 +119,7 @@ set(modelHeaders
 )
 
 foreach (operator ${modelOps})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
     TARGET_OUTPUT targetName)
   list(APPEND modelSrcs operators/${operator}.cxx)
   list(APPEND modelHeaders operators/${operator}.h)

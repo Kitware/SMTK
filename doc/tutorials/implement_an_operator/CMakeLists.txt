@@ -7,13 +7,13 @@ set(CMAKE_CXX_EXTENSIONS False)
 
 find_package(smtk)
 
-# The smtk_operation_xml_new() function writes a file to the current
+# The smtk_encode_file() function writes a file to the current
 # binary directory sharing the same name as the input file
 # but with "_xml.h" replacing the file extension. For this
 # example, that filename is "implement_an_operator_xml.h".
-# smtk_operation_xml_new() provides a target name that we can
+# smtk_encode_file() provides a target name that we can
 # add as a dependency so this file gets generated during the build.
-smtk_operation_xml_new(
+smtk_encode_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/implement_an_operator.xml"
   TARGET_OUTPUT targetName
 )

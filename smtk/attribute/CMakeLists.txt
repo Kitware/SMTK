@@ -172,7 +172,7 @@ set(attributeSrcs
 
 # construct operator inputs
 foreach (operator ${attributeOperators})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
   TARGET_OUTPUT targetName)
   list(APPEND attributeSrcs operators/${operator}.cxx)
   list(APPEND attributeHeaders operators/${operator}.h)

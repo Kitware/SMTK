@@ -160,7 +160,7 @@ add_library(smtkQtExt
 )
 
 # put contents of this file in a string in a header. It's not xml, but it still works.
-smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
   TARGET_OUTPUT rpJsonTarget)
 
 #we need to add the location of the moc files to the include dir for qtsmtk

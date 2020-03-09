@@ -60,11 +60,11 @@ set(operationOperators
   WriteResource
   )
 
-smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt"
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt"
   TARGET_OUTPUT targetName)
 list(APPEND _operationDependencies ${targetName})
 foreach (operator ${operationOperators})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
     TARGET_OUTPUT targetName)
   list(APPEND operationSrcs operators/${operator}.cxx)
   list(APPEND operationHeaders operators/${operator}.h)

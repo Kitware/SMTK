@@ -35,7 +35,7 @@ smtk_public_headers(smtkDelaunayExt ${delaunayHeaders})
 smtk_install_library(smtkDelaunayExt)
 
 foreach (operator ${delaunayOperators})
-  smtk_operation_xml_new("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
   TARGET_OUTPUT targetName)
   list(APPEND delaunayDependencies ${targetName})
 endforeach()
