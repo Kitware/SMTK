@@ -36,6 +36,9 @@ endif()
 # Build Multiscale session
 ################################################################################
 if (SMTK_ENABLE_MULTISCALE_SESSION)
+  message(FATAL_ERROR
+    "multiscale session must be updated to use smtk_add_plugin")
+
   set(SMTK_MULTISCALE_SESSION_ENABLED "True")
   add_subdirectory(multiscale)
 endif()

@@ -12,7 +12,12 @@ set(matplotlibPySrcs
 set(matplotlib_pymodulefiles)
 
 set(matplotlib_pyxmlfiles)
-smtk_pyoperation_xml("${CMAKE_CURRENT_SOURCE_DIR}/render_mesh.sbt" matplotlib_pyxmlfiles)
+# TODO consider updating to smtk_encode_file() if matplotlib is re-enabled.
+smtk_operation_xml(
+  "${CMAKE_CURRENT_SOURCE_DIR}/render_mesh.sbt" matplotlib_pyxmlfiles
+  PYTHON
+  )
+message("XXX Matplotlib ${matplotlib_pyxmlfiles}")
 
 foreach(pyfile ${matplotlibPySrcs})
   get_filename_component(filename ${pyfile} NAME)
@@ -33,6 +38,7 @@ foreach(pyfile ${matplotlib_pyxmlfiles})
     )
   list(APPEND matplotlib_pymodulefiles "${CMAKE_BINARY_DIR}/${relativefile}")
 endforeach()
+message("XXX Matplotlib ${matplotlib_pymodulefiles}")
 
 file(RELATIVE_PATH relativedir ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 install(

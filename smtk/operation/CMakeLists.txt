@@ -19,10 +19,6 @@ set(operationSrcs
   groups/WriterGroup.cxx
 
   operators/ImportResource.cxx
-  operators/ReadResource.cxx
-  operators/RemoveResource.cxx
-  operators/SetProperty.cxx
-  operators/WriteResource.cxx
 )
 
 set(operationHeaders
@@ -50,10 +46,6 @@ set(operationHeaders
   groups/WriterGroup.h
 
   operators/ImportResource.h
-  operators/ReadResource.h
-  operators/RemoveResource.h
-  operators/SetProperty.h
-  operators/WriteResource.h
 )
 
 set(operationXML
@@ -61,11 +53,24 @@ set(operationXML
   Result.xml
   )
 
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadResource.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RemoveResource.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/WriteResource.sbt" defOpXML)
+set(operationOperators
+  ReadResource
+  RemoveResource
+  SetProperty
+  WriteResource
+  )
+
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt"
+  TARGET_OUTPUT targetName)
+list(APPEND _operationDependencies ${targetName})
+foreach (operator ${operationOperators})
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+    TARGET_OUTPUT targetName)
+  list(APPEND operationSrcs operators/${operator}.cxx)
+  list(APPEND operationHeaders operators/${operator}.h)
+  list(APPEND _operationDependencies ${targetName})
+endforeach()
+set(operationDependencies ${_operationDependencies} PARENT_SCOPE)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
 

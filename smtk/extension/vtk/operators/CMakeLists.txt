@@ -2,11 +2,14 @@ set(classes
   ExportEdgesToVTK
   vtkSMTKOperation)
 
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt" smtkVTKOperationXML)
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ExportEdgesToVTK.sbt"
+  TARGET_OUTPUT optargetName)
 
 vtk_module_add_module(vtkSMTKOperationsExt
   CLASSES ${classes}
   HEADERS_SUBDIR "smtk/extension/vtk/operators")
+add_dependencies(vtkSMTKOperationsExt ${optargetName})
+
 vtk_module_link(vtkSMTKOperationsExt
   PUBLIC
     smtkCore

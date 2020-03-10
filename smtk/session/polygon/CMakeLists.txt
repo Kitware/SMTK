@@ -14,22 +14,6 @@ set(polygonSrcs
   json/jsonModel.cxx
   json/jsonResource.cxx
   json/jsonVertex.cxx
-  operators/CleanGeometry.cxx
-  operators/CreateModel.cxx
-  operators/CreateVertices.cxx
-  operators/CreateEdge.cxx
-  operators/CreateEdgeFromPoints.cxx
-  operators/CreateEdgeFromVertices.cxx
-  operators/CreateFaces.cxx
-  operators/CreateFacesFromEdges.cxx
-  operators/Delete.cxx
-  operators/DemoteVertex.cxx
-  operators/ForceCreateFace.cxx
-  operators/LegacyRead.cxx
-  operators/Read.cxx
-  operators/SplitEdge.cxx
-  operators/TweakEdge.cxx
-  operators/Write.cxx
 )
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
@@ -56,22 +40,6 @@ set(polygonHeaders
   internal/Region.h
   internal/SweepEvent.h
   internal/Vertex.h
-  operators/CleanGeometry.h
-  operators/CreateModel.h
-  operators/CreateVertices.h
-  operators/CreateEdge.h
-  operators/CreateEdgeFromPoints.h
-  operators/CreateEdgeFromVertices.h
-  operators/CreateFaces.h
-  operators/CreateFacesFromEdges.h
-  operators/Delete.h
-  operators/DemoteVertex.h
-  operators/ForceCreateFace.h
-  operators/LegacyRead.h
-  operators/Read.h
-  operators/SplitEdge.h
-  operators/TweakEdge.h
-  operators/Write.h
 
   json/jsonEdge.h
   json/jsonModel.h
@@ -79,38 +47,49 @@ set(polygonHeaders
   json/jsonVertex.h
 )
 
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CleanGeometry.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/NewCreateModel.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateModel.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertices.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgeFromPoints.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgeFromVertices.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaces.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFacesFromEdges.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Delete.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/DemoteVertex.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ForceCreateFace.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LegacyRead.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SplitEdge.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TweakEdge.sbt" polygonOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" polygonOperationXML)
+set(polygonOperators
+  CleanGeometry
+  CreateModel
+  CreateVertices
+  CreateEdge
+  CreateEdgeFromPoints
+  CreateEdgeFromVertices
+  CreateFaces
+  CreateFacesFromEdges
+  Delete
+  DemoteVertex
+  ForceCreateFace
+  LegacyRead
+  Read
+  SplitEdge
+  TweakEdge
+  Write
+  )
+
+# construct operator inputs
+foreach (operator ${polygonOperators})
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND polygonSrcs operators/${operator}.cxx)
+  list(APPEND polygonHeaders operators/${operator}.h)
+  list(APPEND _polygonDependencies ${targetName})
+endforeach()
 
 set(import_vtk_depends)
 
 # The import operator is only available if there is VTK
 if(SMTK_ENABLE_VTK_SUPPORT)
-  set(polygonSrcs ${polygonSrcs}
-     operators/ExtractContours.cxx
-     operators/Import.cxx
-     )
-  set(polygonHeaders ${polygonHeaders}
-     operators/ExtractContours.h
-     operators/Import.h
-     )
-  smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ExtractContours.sbt" polygonOperationXML)
-  smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" polygonOperationXML)
+  set(polygonOperators
+    ExtractContours
+    Import
+    )
+  foreach (operator ${polygonOperators})
+    smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+    TARGET_OUTPUT targetName)
+    list(APPEND polygonSrcs operators/${operator}.cxx)
+    list(APPEND polygonHeaders operators/${operator}.h)
+    list(APPEND _polygonDependencies ${targetName})
+  endforeach()
   list(APPEND import_vtk_depends
     vtkSMTKReaderExt
     VTK::CommonCore
@@ -127,6 +106,8 @@ if(SMTK_ENABLE_VTK_SUPPORT)
 endif()
 
 add_library(smtkPolygonSession ${polygonSrcs})
+add_dependencies(smtkPolygonSession ${_polygonDependencies})
+
 if(SMTK_ENABLE_VTK_SUPPORT)
   target_compile_definitions(smtkPolygonSession PUBLIC VTK_SUPPORT)
 endif()

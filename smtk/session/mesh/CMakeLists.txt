@@ -4,14 +4,6 @@ set(meshSrcs
   Resource.cxx
   Session.cxx
   Topology.cxx
-  operators/CreateUniformGrid.cxx
-  operators/EulerCharacteristicRatio.cxx
-  operators/Export.cxx
-  operators/Import.cxx
-  operators/Merge.cxx
-  operators/Print.cxx
-  operators/Read.cxx
-  operators/Write.cxx
 )
 
 set(meshHeaders
@@ -20,14 +12,6 @@ set(meshHeaders
   Resource.h
   Session.h
   Topology.h
-  operators/CreateUniformGrid.h
-  operators/EulerCharacteristicRatio.h
-  operators/Export.h
-  operators/Import.h
-  operators/Merge.h
-  operators/Print.h
-  operators/Read.h
-  operators/Write.h
 )
 
 if (SMTK_ENABLE_VTK_SUPPORT)
@@ -37,21 +21,29 @@ if (SMTK_ENABLE_VTK_SUPPORT)
     vtk/Geometry.h)
 endif ()
 
-add_library(smtkMeshSession ${meshSrcs})
+set(meshOperators
+  CreateUniformGrid
+  EulerCharacteristicRatio
+  Export
+  Import
+  Merge
+  Print
+  Read
+  Write
+  )
 
 # Operations which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
-# We do not need the path to the generated header (appended
-# to meshOperationXML) since the operators themselves include
-# the header in their implementations.
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateUniformGrid.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/EulerCharacteristicRatio.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Merge.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Print.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" meshOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" meshOperationXML)
+foreach (operator ${meshOperators})
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND meshSrcs operators/${operator}.cxx)
+  list(APPEND meshHeaders operators/${operator}.h)
+  list(APPEND meshDependencies ${targetName})
+endforeach()
+
+add_library(smtkMeshSession ${meshSrcs})
+add_dependencies(smtkMeshSession ${meshDependencies})
 
 # Install the headers
 smtk_public_headers(smtkMeshSession ${meshHeaders})

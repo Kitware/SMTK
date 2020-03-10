@@ -5,11 +5,6 @@ set(vtkSrcs
   Session.cxx
   Operation.cxx
   json/jsonResource.cxx
-  operators/Export.cxx
-  operators/Import.cxx
-  operators/LegacyRead.cxx
-  operators/Read.cxx
-  operators/Write.cxx
 )
 
 set(vtkHeaders
@@ -19,16 +14,30 @@ set(vtkHeaders
   Session.h
   Operation.h
   json/jsonResource.h
-  operators/Export.h
-  operators/Import.h
-  operators/LegacyRead.h
-  operators/Read.h
-  operators/Write.h
 )
+
+set(vtkOperators
+  Export
+  Import
+  LegacyRead
+  Read
+  Write
+  )
+
+# Operations which have XML descriptions in separate files
+# need to have it encoded as a string in a header.
+foreach (operator ${vtkOperators})
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND vtkSrcs operators/${operator}.cxx)
+  list(APPEND vtkHeaders operators/${operator}.h)
+  list(APPEND _vtkDependencies ${targetName})
+endforeach()
 
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/session/vtk)
 
 add_library(smtkVTKSession ${vtkSrcs})
+add_dependencies(smtkVTKSession ${_vtkDependencies})
 
 #set smtkVTKSession to publicly link to smtkCore and VTK
 set(__dependencies)
@@ -82,17 +91,6 @@ install(
   FILE ${SMTK_EXPORT_SET}-targets.cmake
 )
 export(EXPORT ${SMTK_EXPORT_SET} FILE "${PROJECT_BINARY_DIR}/${SMTK_INSTALL_CONFIG_DIR}/${SMTK_EXPORT_SET}-targets.cmake")
-
-# Operations which have XML descriptions in separate files
-# need to have it encoded as a string in a header.
-# We do not need the path to the generated header (appended
-# to vtkOperationXML) since the operations themselves include
-# the header in their implementations.
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" vtkOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" vtkOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/LegacyRead.sbt" vtkOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" vtkOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" vtkOperationXML)
 
 # Install the headers
 smtk_public_headers(smtkVTKSession ${vtkHeaders})

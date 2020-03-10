@@ -72,6 +72,16 @@ set(jsonAttributeSrcs
   json/jsonVoidItemDefinition.cxx
 )
 
+set(attributeOperators
+  Associate
+  Dissociate
+  Export
+  Import
+  Read
+  Signal
+  Write
+  )
+
 set(attributeHeaders
   ${jsonAttributeHeaders}
   Analyses.h
@@ -117,14 +127,6 @@ set(attributeHeaders
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
-
-  operators/Associate.h
-  operators/Dissociate.h
-  operators/Export.h
-  operators/Import.h
-  operators/Read.h
-  operators/Signal.h
-  operators/Write.h
 )
 
 set(attributeSrcs
@@ -166,24 +168,17 @@ set(attributeSrcs
   ValueItemDefinition.cxx
   VoidItem.cxx
   VoidItemDefinition.cxx
-
-  operators/Associate.cxx
-  operators/Dissociate.cxx
-  operators/Export.cxx
-  operators/Import.cxx
-  operators/Read.cxx
-  operators/Signal.cxx
-  operators/Write.cxx
 )
 
-#construct operator inputs
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Associate.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Dissociate.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Export.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Import.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Signal.sbt" defOpXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Write.sbt" defOpXML)
+# construct operator inputs
+foreach (operator ${attributeOperators})
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND attributeSrcs operators/${operator}.cxx)
+  list(APPEND attributeHeaders operators/${operator}.h)
+  list(APPEND _attributeDependencies ${targetName})
+endforeach()
+set(attributeDependencies ${_attributeDependencies} PARENT_SCOPE)
 
 #install the headers
 smtk_public_headers(smtkCore ${attributeHeaders})

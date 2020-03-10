@@ -2,21 +2,33 @@ set(multiscaleSrcs
   Registrar.cxx
   Resource.cxx
   Session.cxx
-  operators/PartitionBoundaries.cxx
-  operators/Revolve.cxx
 )
 
 set(multiscaleHeaders
   Registrar.h
   Resource.h
   Session.h
-  operators/PartitionBoundaries.h
-  operators/Revolve.h
 )
+
+set(multiscaleOperators
+  PartitionBoundaries
+  Revolve
+  )
+
+# Operations which have XML descriptions in separate files
+# need to have it encoded as a string in a header.
+foreach (operator ${multiscaleOperators})
+  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+  TARGET_OUTPUT targetName)
+  list(APPEND multiscaleSrcs operators/${operator}.cxx)
+  list(APPEND multiscaleHeaders operators/${operator}.h)
+  list(APPEND _multiscaleDependencies ${targetName})
+endforeach()
 
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/session/multiscale)
 
 add_library(smtkMultiscaleSession ${multiscaleSrcs})
+add_dependencies(smtkMultiscaleSession ${_multiscaleDependencies})
 target_compile_definitions(smtkMultiscaleSession PRIVATE "AFRL_DIR=\"${AFRL_DIR}\"")
 target_compile_definitions(smtkMultiscaleSession PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 
@@ -45,14 +57,6 @@ smtk_export_header(smtkMultiscaleSession Exports.h)
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkMultiscaleSession)
 
-# Operations which have XML descriptions in separate files
-# need to have it encoded as a string in a header.
-# We do not need the path to the generated header (appended
-# to multiscaleOperationXML) since the operators themselves include
-# the header in their implementations.
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/PartitionBoundaries.sbt" multiscaleOperationXML)
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Revolve.sbt" multiscaleOperationXML)
-
 # Install the headers
 smtk_public_headers(smtkMultiscaleSession ${multiscaleHeaders})
 
@@ -80,7 +84,10 @@ configureStringAsPyVariable(AFRL_DIR
 list(APPEND multiscale_pyxmlfiles
   ${CMAKE_CURRENT_BINARY_DIR}/AFRLDir.py)
 
-smtk_pyoperation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pyxmlfiles)
+# TODO consider updating to smtk_encode_file() if multiscale is re-enabled.
+smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pyxmlfiles
+  PYTHON
+  )
 
 foreach(pyfile ${multiscalePySrcs})
   get_filename_component(filename ${pyfile} NAME)
