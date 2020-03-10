@@ -18,7 +18,7 @@ namespace smtk
 {
 namespace detail
 {
-/// If T is in Tuple, return std::tuple<T>. Otherwise, return std::tuple<>.
+/// If T is not in Tuple, return std::tuple<T>. Otherwise, return std::tuple<>.
 ///
 /// Examples:
 /// ```
@@ -47,6 +47,52 @@ template <typename T, typename... Ts>
 struct tuple_if_unique<T, std::tuple<T, Ts...> >
 {
   using type = std::tuple<>;
+};
+
+/// If T is not a base of any types in Tuple, return std::tuple<T>. Otherwise,
+/// return std::tuple<>.
+template <typename T, typename Tuple>
+struct tuple_if_not_base;
+
+/// @see tuple_if_not_base
+template <typename T>
+struct tuple_if_not_base<T, std::tuple<> >
+{
+  using type = std::tuple<T>;
+};
+
+/// @see tuple_if_not_base
+template <typename T, typename U, typename... Ts>
+struct tuple_if_not_base<T, std::tuple<U, Ts...> >
+{
+  using type = typename std::conditional<std::is_base_of<T, U>::value, std::tuple<>,
+    typename tuple_if_not_base<T, std::tuple<Ts...> >::type>::type;
+};
+
+/// Given a tuple, starting with the first parameter and moving to the last,
+/// remove the parameter from the tuple if it is a base of any of the parameters
+/// to the right.
+template <typename T, typename... Args>
+struct remove_bases_from_tuple_lr;
+
+template <>
+struct remove_bases_from_tuple_lr<std::tuple<> >
+{
+  using type = std::tuple<>;
+};
+
+template <typename T>
+struct remove_bases_from_tuple_lr<std::tuple<T> >
+{
+  using type = std::tuple<T>;
+};
+
+template <typename T, typename... Args>
+struct remove_bases_from_tuple_lr<std::tuple<T, Args...> >
+{
+  using type = decltype(std::tuple_cat(
+    std::declval<typename detail::tuple_if_not_base<T, std::tuple<Args...> >::type>(),
+    std::declval<typename remove_bases_from_tuple_lr<std::tuple<Args...> >::type>()));
 };
 
 /// If T is a tuple containing a single type, return the type it contians.
@@ -99,6 +145,14 @@ struct flatten_tuple<std::tuple<T, Args...> >
       std::declval<typename flatten_tuple<std::tuple<Args...> >::type>()));
 };
 
+/// @see my_flatten_tuple
+template <typename... TupleArgs, typename... Args>
+struct flatten_tuple<std::tuple<std::tuple<TupleArgs...>, Args...> >
+{
+  using type = decltype(std::tuple_cat(std::declval<std::tuple<TupleArgs...> >(),
+    std::declval<typename flatten_tuple<std::tuple<Args...> >::type>()));
+};
+
 /// Takes a tuple of potentially duplicate types and returns a tuple with the
 /// duplicate types removed.
 ///
@@ -131,6 +185,38 @@ struct unique_tuple<std::tuple<T, Args...> >
   using type = decltype(
     std::tuple_cat(std::declval<typename detail::tuple_if_unique<T, std::tuple<Args...> >::type>(),
       std::declval<typename unique_tuple<std::tuple<Args...> >::type>()));
+};
+
+/// Takes a tuple and reverses its arguments.
+///
+/// Examples:
+/// ```
+///   reverse_tuple<std::tuple<bool, int, float>>::type == std::tuple<float, int, bool>
+/// ```
+template <typename T>
+struct reverse_tuple;
+
+template <typename T>
+struct reverse_tuple<std::tuple<T> >
+{
+  using type = std::tuple<T>;
+};
+
+template <typename T, typename... Args>
+struct reverse_tuple<std::tuple<T, Args...> >
+{
+  using type = decltype(
+    std::tuple_cat(std::declval<typename reverse_tuple<std::tuple<Args...> >::type>(),
+      std::declval<std::tuple<T> >()));
+};
+
+/// Takes a tuple and removes any types that are bases of any other types in the
+/// tuple.
+template <typename T>
+struct remove_bases_from_tuple
+{
+  using type = typename detail::remove_bases_from_tuple_lr<typename reverse_tuple<typename detail::
+      remove_bases_from_tuple_lr<typename reverse_tuple<T>::type>::type>::type>::type;
 };
 
 /// Takes a type and a tuple of types and returns a tuple with all of the

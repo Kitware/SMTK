@@ -12,6 +12,8 @@
 
 #include "smtk/mesh/core/Component.h"
 
+#include "smtk/mesh/core/queries/BoundingBox.h"
+
 #include "smtk/mesh/moab/Interface.h"
 
 #include "smtk/common/UUIDGenerator.h"
@@ -45,11 +47,18 @@ private:
   smtk::mesh::InterfacePtr Interface;
 };
 
+namespace
+{
+typedef std::tuple<BoundingBox> QueryList;
+}
+
 Resource::Resource()
   : Superclass(smtk::common::UUIDGenerator::instance().random())
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
+  queries().registerQueries<QueryList>();
+  m_internals->mesh_iface()->registerQueries(*this);
 }
 
 Resource::Resource(const smtk::common::UUID& resourceID)
@@ -57,6 +66,8 @@ Resource::Resource(const smtk::common::UUID& resourceID)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl())
 {
+  queries().registerQueries<QueryList>();
+  m_internals->mesh_iface()->registerQueries(*this);
 }
 
 Resource::Resource(smtk::mesh::InterfacePtr interface)
@@ -65,6 +76,8 @@ Resource::Resource(smtk::mesh::InterfacePtr interface)
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
+  queries().registerQueries<QueryList>();
+  interface->registerQueries(*this);
 }
 
 Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePtr interface)
@@ -72,6 +85,8 @@ Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePt
   , m_nameCounter(-1)
   , m_internals(new InternalImpl(interface))
 {
+  queries().registerQueries<QueryList>();
+  interface->registerQueries(*this);
 }
 
 Resource::~Resource()

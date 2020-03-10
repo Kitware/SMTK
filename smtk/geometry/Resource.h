@@ -16,6 +16,8 @@
 
 #include "smtk/geometry/Backend.h"
 
+#include <memory>
+
 namespace smtk
 {
 namespace geometry

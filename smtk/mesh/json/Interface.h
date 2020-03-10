@@ -108,6 +108,8 @@ public:
 
   smtk::mesh::Handle getRoot() const override;
 
+  void registerQueries(smtk::mesh::Resource&) const override;
+
   //creates a mesh with that contains the input cells.
   //the mesh will have the root as its parent.
   //The mesh will be tagged with the GEOM_DIMENSION tag with a value that is

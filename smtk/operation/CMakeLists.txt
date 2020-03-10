@@ -46,6 +46,8 @@ set(operationHeaders
   groups/WriterGroup.h
 
   operators/ImportResource.h
+
+  queries/SynchronizedCache.h
 )
 
 set(operationXML

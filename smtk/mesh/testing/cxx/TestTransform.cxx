@@ -19,6 +19,8 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/geometry/queries/BoundingBox.h"
+
 #include "smtk/mesh/core/Component.h"
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/mesh/operators/Import.h"
@@ -67,7 +69,8 @@ int TestTransform(int, char* [])
     resource = std::dynamic_pointer_cast<smtk::mesh::Resource>(resourceItem->value());
   }
 
-  std::array<double, 6> extent = smtk::mesh::utility::extent(resource->meshes());
+  auto& boundingBox = resource->queries().get<smtk::geometry::BoundingBox>();
+  std::array<double, 6> extent = boundingBox(resource);
 
   {
     smtk::operation::Operation::Ptr transform = smtk::mesh::Transform::create();

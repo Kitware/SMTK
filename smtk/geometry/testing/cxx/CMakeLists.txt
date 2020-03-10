@@ -6,7 +6,7 @@ set(unit_tests
 )
 
 smtk_unit_tests(
-  Label "Geoemtry"
+  Label "Geometry"
   SOURCES ${unit_tests}
   LIBRARIES smtkCore
 )

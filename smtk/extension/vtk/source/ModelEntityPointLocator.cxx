@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/vtk/source/ModelEntityPointLocator.h"
-#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
+#include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
 
 #include "smtk/extension/vtk/geometry/Backend.h"
 #include "smtk/extension/vtk/geometry/Geometry.h"

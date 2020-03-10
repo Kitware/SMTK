@@ -15,6 +15,8 @@ set(resourceSrcs
   json/jsonLinkBase.cxx
   json/jsonResource.cxx
   json/jsonSurrogate.cxx
+  query/Factory.cxx
+  query/Query.cxx
 )
 
 set(resourceHeaders
@@ -41,6 +43,13 @@ set(resourceHeaders
   json/jsonLinkBase.h
   json/jsonResource.h
   json/jsonSurrogate.h
+  query/Cache.h
+  query/Container.h
+  query/Factory.h
+  query/DerivedFrom.h
+  query/Metadata.h
+  query/Queries.h
+  query/Query.h
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

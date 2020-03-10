@@ -6,7 +6,6 @@ set(classes
   Registrar
   VTKSelectionResponderGroup
 
-  vtkPVModelSources
   vtkSMSMTKResourceRepresentationProxy
   vtkSMSMTKWrapperProxy
   vtkSMTKResource

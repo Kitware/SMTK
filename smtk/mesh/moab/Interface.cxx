@@ -18,11 +18,14 @@
 #include "smtk/mesh/moab/Allocator.h"
 #include "smtk/mesh/moab/BufferedCellAllocator.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/ClosestPoint.h"
 #include "smtk/mesh/moab/ConnectivityStorage.h"
+#include "smtk/mesh/moab/DistanceTo.h"
 #include "smtk/mesh/moab/HandleRangeToRange.h"
 #include "smtk/mesh/moab/IncrementalAllocator.h"
 #include "smtk/mesh/moab/MergeMeshVertices.h"
 #include "smtk/mesh/moab/PointLocatorImpl.h"
+#include "smtk/mesh/moab/RandomPoint.h"
 
 #include "smtk/common/CompilerInformation.h"
 
@@ -309,6 +312,13 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(
 smtk::mesh::Handle Interface::getRoot() const
 {
   return m_iface->get_root_set();
+}
+
+void Interface::registerQueries(smtk::mesh::Resource& resource) const
+{
+  resource.queries().registerQuery<smtk::mesh::moab::ClosestPoint>();
+  resource.queries().registerQuery<smtk::mesh::moab::DistanceTo>();
+  resource.queries().registerQuery<smtk::mesh::moab::RandomPoint>();
 }
 
 bool Interface::createMesh(const smtk::mesh::HandleRange& cells, smtk::mesh::Handle& meshHandle)

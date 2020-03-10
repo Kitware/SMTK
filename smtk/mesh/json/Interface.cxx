@@ -93,6 +93,10 @@ smtk::mesh::PointLocatorImplPtr Interface::pointLocator(std::size_t /*numPoints*
   return smtk::mesh::PointLocatorImplPtr();
 }
 
+void Interface::registerQueries(smtk::mesh::Resource&) const
+{
+}
+
 smtk::mesh::Handle Interface::getRoot() const
 {
   return smtk::mesh::Handle(0);

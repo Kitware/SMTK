@@ -1,4 +1,7 @@
 set(classes
+  BoundingBox
+  ClosestPoint
+  DistanceTo
   Geometry
   Registrar
 )

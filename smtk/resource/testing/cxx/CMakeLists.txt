@@ -12,9 +12,11 @@ smtk_install_library(smtkCoreResourceTesting)
 ################################################################################
 set(unit_tests
   TestGarbageCollector.cxx
+  TestQuery.cxx
   TestResourceLinks.cxx
   TestResourceManager.cxx
   TestResourceProperties.cxx
+  TestResourceQueries.cxx
 )
 
 smtk_unit_tests(
