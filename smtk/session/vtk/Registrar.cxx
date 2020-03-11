@@ -18,9 +18,8 @@
 #include "smtk/session/vtk/operators/Write.h"
 
 #include "smtk/session/vtk/Geometry.h"
+#include "smtk/session/vtk/RegisterVTKBackend.h"
 #include "smtk/session/vtk/Resource.h"
-
-#include "smtk/geometry/Generator.h"
 
 #include "smtk/operation/groups/ExporterGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
@@ -37,28 +36,6 @@ namespace vtk
 namespace
 {
 typedef std::tuple<Export, Import, LegacyRead, Read, Write> OperationList;
-
-class RegisterVTKBackend : public smtk::geometry::Supplier<RegisterVTKBackend>
-{
-public:
-  bool valid(const Specification& in) const override
-  {
-    smtk::extension::vtk::geometry::Backend backend;
-    return std::get<1>(in).index() == backend.index();
-  }
-
-  GeometryPtr operator()(const Specification& in) override
-  {
-    auto rsrc = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(std::get<0>(in));
-    if (rsrc)
-    {
-      auto provider = new Geometry(rsrc);
-      return GeometryPtr(provider);
-    }
-    throw std::invalid_argument("Not a VTK-session resource.");
-    return nullptr;
-  }
-};
 }
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
