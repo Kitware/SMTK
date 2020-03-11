@@ -247,6 +247,9 @@ smtk::session::vtk::Resource::Ptr readVTKResource(const std::string& importFileP
 
 int TestInterpolateAnnotatedValues(int argc, char* argv[])
 {
+  (void)argc;
+  (void)argv;
+
   for (int testNumber = 0; testNumber < 2; ++testNumber)
   {
     std::string importFilePath(data_root);
