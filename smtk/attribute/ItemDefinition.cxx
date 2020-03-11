@@ -100,3 +100,57 @@ void ItemDefinition::copyTo(ItemDefinitionPtr def) const
   def->setDetailedDescription(m_detailedDescription);
   def->setBriefDescription(m_briefDescription);
 }
+
+const Tag* ItemDefinition::tag(const std::string& name) const
+{
+  const Tag* tag = nullptr;
+
+  auto t = m_tags.find(Tag(name));
+  if (t != m_tags.end())
+  {
+    tag = &(*t);
+  }
+
+  return tag;
+}
+
+Tag* ItemDefinition::tag(const std::string& name)
+{
+  const Tag* tag = nullptr;
+
+  auto t = m_tags.find(Tag(name));
+  if (t != m_tags.end())
+  {
+    tag = &(*t);
+  }
+
+  // Tags are ordered according to their name. This name is set at construction,
+  // and there is deliberately no API to modify the name after construction. Tag
+  // values are editable, however. Rather than make Tag values mutable, we
+  // perform a const_cast here to facilitate Tag value modification. This does
+  // not change the ordering of the Tag in the Tags set, so we do not break our
+  // contract with std::set.
+  return const_cast<Tag*>(tag);
+}
+
+bool ItemDefinition::addTag(const Tag& tag)
+{
+  auto t = m_tags.find(tag);
+  if (t == m_tags.end())
+  {
+    m_tags.insert(tag);
+    return true;
+  }
+  return false;
+}
+
+bool ItemDefinition::removeTag(const std::string& name)
+{
+  auto t = m_tags.find(Tag(name));
+  if (t != m_tags.end())
+  {
+    m_tags.erase(t);
+    return true;
+  }
+  return false;
+}

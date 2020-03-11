@@ -1017,11 +1017,6 @@ void XmlDocV1Parser::processItemDef(xml_node& node, ItemDefinitionPtr idef)
   { // group item definitions don't get categories
     idef->localCategories().insert(m_defaultCategory);
   }
-  xatt = node.attribute("ApplicationString");
-  if (xatt)
-  {
-    idef->setApplicationString(xatt.value());
-  }
 }
 
 void XmlDocV1Parser::processDoubleDef(pugi::xml_node& node, attribute::DoubleItemDefinitionPtr idef)

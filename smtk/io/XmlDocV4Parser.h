@@ -32,6 +32,8 @@ public:
   static pugi::xml_node getRootNode(pugi::xml_document& doc);
 
 protected:
+  void processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef) override;
+
 private:
 };
 }

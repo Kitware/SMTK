@@ -22,7 +22,7 @@ class TestDefinitionTags(smtk.testing.TestCase):
     def setUp(self):
         testInput = (
             "<?xml version=\"1.0\" encoding=\"utf-8\" ?>                                   "
-            "<SMTK_AttributeResource Version=\"3\">                                        "
+            "<SMTK_AttributeResource Version=\"4\">                                        "
             "  <Definitions>                                                               "
             "    <AttDef Type=\"att1\" BaseType=\"\">                                      "
             "      <Tags>                                                                  "
@@ -33,6 +33,10 @@ class TestDefinitionTags(smtk.testing.TestCase):
             "	  <String Name=\"normalString\" Extensible=\"0\"                           "
             "               NumberOfRequiredValues=\"1\">                                  "
             "         <DefaultValue>normal</DefaultValue>                                  "
+            "         <Tags>                                                                  "
+            "           <Tag Name=\"My Tag\" />                                               "
+            "           <Tag Name=\"My Tag with Values\">value1,value2,value3</Tag>           "
+            "         </Tags>                                                                 "
             "	  </String>                                                                "
             "      </ItemDefinitions>                                                      "
             "    </AttDef>                                                                 "
@@ -55,6 +59,7 @@ class TestDefinitionTags(smtk.testing.TestCase):
 
         att = atts[0]
         defn = att.definition()
+        idefn = defn.itemDefinition(0)
 
         self.assertEqual(len(defn.tags()), 2, 'Incorrect number of tags')
 
@@ -71,6 +76,25 @@ class TestDefinitionTags(smtk.testing.TestCase):
 
         tag = defn.tag('My Nonexistent Tag')
         self.assertTrue(tag == None, 'Found tag that does not exist')
+
+        self.assertEqual(len(idefn.tags()), 2,
+                         'Incorrect number of tags on ItemDefinition')
+
+        tag = idefn.tag('My Tag')
+        self.assertFalse(tag == None, 'Could not access tag on ItemDefinition')
+
+        tag = idefn.tag('My Tag with Values')
+        self.assertFalse(tag == None, 'Could not access tag on ItemDefinition')
+        self.assertEqual(len(tag.values()), 3,
+                         'Incorrect number of tag values on ItemDefinition')
+        value = ['value1', 'value2', 'value3']
+        for v in value:
+            self.assertTrue(tag.contains(
+                v), 'Could not find tag value on ItemDefinition')
+
+        tag = idefn.tag('My Nonexistent Tag')
+        self.assertTrue(
+            tag == None, 'Found tag that does not exist on ItemDefinition')
 
 
 if __name__ == '__main__':

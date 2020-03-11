@@ -85,15 +85,21 @@ public:
 
   smtk::attribute::ResourcePtr resource() const { return m_resource.lock(); }
 
+  ///\brief return the smtk::attribute::Tags associated with the Definition
   const Tags& tags() const { return m_tags; }
 
-  // Return a pointer to a const tag with a given name. If the tag does not
-  // exist, return a null pointer.
+  ///@{
+  ///\brief Return a pointer to a smtk::attribute::Tag with a given name. If the Tag does not
+  /// exist, return a null pointer.
   const Tag* tag(const std::string& name) const;
   Tag* tag(const std::string& name);
+  ///@}
 
+  ///@{
+  ///\brief Add/Remove a smtk::attribute::Tag from a Definition
   bool addTag(const Tag& tag);
   bool removeTag(const std::string& name);
+  ///@}
 
   // Returns the label if set else it will return the type
   const std::string& displayedTypeName() const { return m_label.empty() ? m_type : m_label; }

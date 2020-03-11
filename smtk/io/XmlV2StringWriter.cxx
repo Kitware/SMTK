@@ -684,10 +684,6 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
   {
     node.append_child("DetailedDescription").text().set(idef->detailedDescription().c_str());
   }
-  if (!idef->applicationString().empty())
-  {
-    node.append_attribute("ApplicationString").set_value(idef->applicationString().c_str());
-  }
 }
 
 void XmlV2StringWriter::processItemDefinitionType(xml_node& node, ItemDefinitionPtr idef)

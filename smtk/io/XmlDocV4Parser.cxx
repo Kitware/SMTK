@@ -9,6 +9,9 @@
 //=========================================================================
 
 #include "smtk/io/XmlDocV4Parser.h"
+
+#include "smtk/common/StringUtil.h"
+
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
@@ -65,4 +68,39 @@ pugi::xml_node XmlDocV4Parser::getRootNode(pugi::xml_document& doc)
 {
   xml_node amnode = doc.child("SMTK_AttributeResource");
   return amnode;
+}
+
+void XmlDocV4Parser::processItemDef(pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+{
+  this->XmlDocV3Parser::processItemDef(node, idef);
+  // Adding Tag support for item defs
+  xml_node tagsNode = node.child("Tags");
+  if (tagsNode)
+  {
+    for (xml_node tagNode = tagsNode.child("Tag"); tagNode; tagNode = tagNode.next_sibling("Tag"))
+    {
+      xml_attribute name_att = tagNode.attribute("Name");
+      std::string values = tagNode.text().get();
+      if (values.empty())
+      {
+        bool success = idef->addTag(smtk::attribute::Tag(name_att.value()));
+        if (!success)
+        {
+          smtkWarningMacro(m_logger, "Could not add tag \"" << name_att.value() << "\"");
+        }
+      }
+      else
+      {
+        xml_attribute sep_att = tagNode.attribute("Sep");
+        std::string sep = sep_att ? sep_att.value() : ",";
+        std::vector<std::string> vals = smtk::common::StringUtil::split(values, sep, false, false);
+        bool success = idef->addTag(
+          smtk::attribute::Tag(name_att.value(), std::set<std::string>(vals.begin(), vals.end())));
+        if (!success)
+        {
+          smtkWarningMacro(m_logger, "Could not add tag \"" << name_att.value() << "\"");
+        }
+      }
+    }
+  }
 }

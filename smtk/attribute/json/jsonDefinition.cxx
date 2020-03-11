@@ -130,6 +130,18 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
     }
     j["ItemDefinitions"] = itemDefs;
   }
+  //Write out tag information
+  const auto& tags = defPtr->tags();
+  if (!tags.empty())
+  {
+    std::map<std::string, std::set<std::string> > tagInfo;
+    for (const auto& tag : tags)
+    {
+      tagInfo[tag.name()] = tag.values();
+    }
+
+    j["Tags"] = tagInfo;
+  }
 }
 
 SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::DefinitionPtr& defPtr,
@@ -301,6 +313,17 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
   if (result != j.end())
   {
     defPtr->setRootName(*result);
+  }
+
+  result = j.find("Tags");
+  if (result != j.end())
+  {
+    std::map<std::string, std::set<std::string> > tagInfo = *result;
+    for (const auto& t : tagInfo)
+    {
+      smtk::attribute::Tag tag(t.first, t.second);
+      defPtr->addTag(tag);
+    }
   }
 }
 }
