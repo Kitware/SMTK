@@ -43,7 +43,7 @@ class RegisterVTKBackend : public smtk::geometry::Supplier<RegisterVTKBackend>
 public:
   bool valid(const Specification& in) const override
   {
-    smtk::extension::vtk::source::Backend backend;
+    smtk::extension::vtk::geometry::Backend backend;
     return std::get<1>(in).index() == backend.index();
   }
 

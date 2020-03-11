@@ -13,9 +13,9 @@
 
 #include "smtk/extension/vtk/mesh/vtkSMTKMeshExtModule.h"
 
+#include "smtk/extension/vtk/geometry/Backend.h"
+#include "smtk/extension/vtk/geometry/Registrar.h"
 #include "smtk/extension/vtk/mesh/Geometry.h"
-#include "smtk/extension/vtk/source/Backend.h"
-#include "smtk/extension/vtk/source/Registrar.h"
 #include "smtk/geometry/Generator.h"
 #include "smtk/geometry/Manager.h"
 #include "smtk/mesh/core/Resource.h"
@@ -35,7 +35,7 @@ class VTKSMTKMESHEXT_EXPORT RegisterVTKBackend : public smtk::geometry::Supplier
 public:
   bool valid(const smtk::geometry::Specification& in) const override
   {
-    smtk::extension::vtk::source::Backend backend;
+    smtk::extension::vtk::geometry::Backend backend;
     return std::get<1>(in).index() == backend.index();
   }
 

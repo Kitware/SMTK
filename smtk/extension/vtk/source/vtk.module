@@ -1,6 +1,7 @@
 NAME
   vtkSMTKSourceExt
 DEPENDS
+  vtkSMTKGeometryExt
   VTK::CommonCore
   VTK::CommonDataModel
   VTK::CommonExecutionModel

@@ -23,13 +23,13 @@ namespace mesh
 {
 void Registrar::registerTo(const smtk::geometry::Manager::Ptr& geometryManager)
 {
-  geometryManager->registerBackend<smtk::extension::vtk::source::Backend>();
+  geometryManager->registerBackend<smtk::extension::vtk::geometry::Backend>();
   RegisterVTKBackend::registerClass();
 }
 
 void Registrar::unregisterFrom(const smtk::geometry::Manager::Ptr& geometryManager)
 {
-  geometryManager->unregisterBackend<smtk::extension::vtk::source::Backend>();
+  geometryManager->unregisterBackend<smtk::extension::vtk::geometry::Backend>();
 }
 }
 }

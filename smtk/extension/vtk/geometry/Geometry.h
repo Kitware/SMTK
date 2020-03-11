@@ -8,10 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_vtk_Geometry_h
-#define smtk_vtk_Geometry_h
+#ifndef smtk_vtk_geometry_Geometry_h
+#define smtk_vtk_geometry_Geometry_h
 
-#include "smtk/extension/vtk/source/Backend.h"
+#include "smtk/extension/vtk/geometry/Backend.h"
 #include "smtk/geometry/GeometryForBackend.h"
 
 #include "vtkDataObject.h"
@@ -23,7 +23,7 @@ namespace extension
 {
 namespace vtk
 {
-namespace source
+namespace geometry
 {
 
 /**\brief A base class for geometry providers that will supply VTK data.
@@ -39,12 +39,12 @@ namespace source
   * This class defines additional virtual methods that providers
   * must implement so the backend can query for the information above.
   */
-class VTKSMTKSOURCEEXT_EXPORT Geometry
+class VTKSMTKGEOMETRYEXT_EXPORT Geometry
   : public smtk::geometry::GeometryForBackend<vtkSmartPointer<vtkDataObject> >
 {
 public:
   using DataType = vtkSmartPointer<vtkDataObject>;
-  smtkTypeMacro(smtk::extension::vtk::source::Geometry);
+  smtkTypeMacro(smtk::extension::vtk::geometry::Geometry);
   smtkSuperclassMacro(smtk::geometry::GeometryForBackend<DataType>);
   Geometry()
   // : m_backend(this)
@@ -86,9 +86,9 @@ protected:
   Backend m_backend;
 };
 
-} // namespace source
+} // namespace geometry
 } // namespace vtk
 } // namespace extension
 } // namespace smtk
 
-#endif // smtk_vtk_Geometry_h
+#endif // smtk_vtk_geometry_Geometry_h

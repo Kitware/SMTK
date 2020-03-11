@@ -9,8 +9,9 @@
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
-#include "smtk/extension/vtk/source/Backend.h"
-#include "smtk/extension/vtk/source/Geometry.h"
+#include "smtk/extension/vtk/geometry/Backend.h"
+#include "smtk/extension/vtk/geometry/Geometry.h"
+
 #include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
 #include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
@@ -975,13 +976,13 @@ int vtkModelMultiBlockSource::RequestData(
   }
 
   // Use the new rendering backend if the resource supports it:
-  smtk::extension::vtk::source::Backend vtk;
+  smtk::extension::vtk::geometry::Backend vtk;
   const auto& geom = resource->geometry(vtk);
   if (geom)
   {
     try
     {
-      const auto& properGeom = dynamic_cast<const smtk::extension::vtk::source::Geometry&>(*geom);
+      const auto& properGeom = dynamic_cast<const smtk::extension::vtk::geometry::Geometry&>(*geom);
       return this->RequestDataFromGeometry(request, outInfo, properGeom);
     }
     catch (std::bad_cast&)

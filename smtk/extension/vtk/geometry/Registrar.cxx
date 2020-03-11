@@ -9,9 +9,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/extension/vtk/source/Registrar.h"
+#include "smtk/extension/vtk/geometry/Registrar.h"
 
-#include "smtk/extension/vtk/source/Backend.h"
+#include "smtk/extension/vtk/geometry/Backend.h"
 
 #include "smtk/geometry/Generator.h"
 
@@ -23,16 +23,16 @@ namespace extension
 {
 namespace vtk
 {
-namespace source
+namespace geometry
 {
 void Registrar::registerTo(const smtk::geometry::Manager::Ptr& geometryManager)
 {
-  geometryManager->registerBackend<smtk::extension::vtk::source::Backend>();
+  geometryManager->registerBackend<smtk::extension::vtk::geometry::Backend>();
 }
 
 void Registrar::unregisterFrom(const smtk::geometry::Manager::Ptr& geometryManager)
 {
-  geometryManager->unregisterBackend<smtk::extension::vtk::source::Backend>();
+  geometryManager->unregisterBackend<smtk::extension::vtk::geometry::Backend>();
 }
 }
 }

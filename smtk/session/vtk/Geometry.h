@@ -12,7 +12,7 @@
 
 #include "smtk/session/vtk/Exports.h"
 
-#include "smtk/extension/vtk/source/Geometry.h"
+#include "smtk/extension/vtk/geometry/Geometry.h"
 
 #include "smtk/geometry/Cache.h"
 
@@ -31,10 +31,10 @@ class Resource;
   *
   */
 class SMTKVTKSESSION_EXPORT Geometry
-  : public smtk::geometry::Cache<smtk::extension::vtk::source::Geometry, Geometry>
+  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry, Geometry>
 {
 public:
-  using CacheBaseType = smtk::extension::vtk::source::Geometry;
+  using CacheBaseType = smtk::extension::vtk::geometry::Geometry;
   smtkTypeMacro(smtk::session::vtk::Geometry);
   smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType, Geometry>);
   using DataType = Superclass::DataType;

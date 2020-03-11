@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/vtk/source/Geometry.h"
+#include "smtk/extension/vtk/geometry/Geometry.h"
 
 #include "smtk/io/Logger.h"
 
@@ -21,7 +21,7 @@ namespace extension
 {
 namespace vtk
 {
-namespace source
+namespace geometry
 {
 
 void Geometry::addColorArray(
@@ -48,7 +48,7 @@ void Geometry::addColorArray(
   data->GetFieldData()->AddArray(colorArray.GetPointer());
 }
 
-} // namespace source
+} // namespace geometry
 } // namespace vtk
 } // namespace extension
 } // namespace smtk
