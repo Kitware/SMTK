@@ -85,9 +85,7 @@ list(APPEND multiscale_pyxmlfiles
   ${CMAKE_CURRENT_BINARY_DIR}/AFRLDir.py)
 
 # TODO consider updating to smtk_encode_file() if multiscale is re-enabled.
-smtk_operation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pyxmlfiles
-  PYTHON
-  )
+smtk_pyoperation_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/import_from_deform.sbt" multiscale_pyxmlfiles)
 
 foreach(pyfile ${multiscalePySrcs})
   get_filename_component(filename ${pyfile} NAME)

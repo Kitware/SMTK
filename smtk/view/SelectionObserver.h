@@ -22,10 +22,10 @@ namespace smtk
 namespace view
 {
 
-/// Events that alter the phrase model trigger callbacks of this type.
+/// Events that alter the selection trigger callbacks of this type.
 typedef std::function<void(const std::string&, SelectionPtr)> SelectionObserver;
 
-/// A class for holding SelectionObserver functors that observe phrase model events.
+/// A class for holding SelectionObserver functors that observe selection events.
 typedef smtk::common::Observers<SelectionObserver> SelectionObservers;
 }
 }
