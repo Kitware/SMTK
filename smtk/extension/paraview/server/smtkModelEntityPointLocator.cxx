@@ -14,6 +14,8 @@
 #include "smtk/extension/paraview/server/vtkPVModelSources.h"
 #include "smtk/model/AuxiliaryGeometry.h"
 
+#include "vtkCellLocator.h"
+#include "vtkGenericCell.h"
 #include "vtkNew.h"
 #include "vtkPointSet.h"
 #include "vtkSmartPointer.h"
@@ -25,11 +27,8 @@ smtkModelEntityPointLocator::~smtkModelEntityPointLocator() = default;
 bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
   std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
 {
-  if (!snapToPoint)
-  {
-    return false;
-  }
   vtkSmartPointer<vtkDataObject> cachedAuxData; // Keep here so it stays in scope
+
   // TODO: Handle composite data, not just vtkPointSet data.
   vtkPointSet* pdata = vtkPointSet::SafeDownCast(vtkPVModelSources::findModelEntity(entity));
   if (!pdata && entity.isAuxiliaryGeometry())
@@ -43,17 +42,44 @@ bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& e
       pdata = vtkPointSet::SafeDownCast(cachedAuxData);
     }
   }
-  if (pdata && pdata->GetNumberOfPoints() > 0)
+
+  if (snapToPoint)
   {
+    if (pdata && pdata->GetNumberOfPoints() > 0)
+    {
+      int npts = static_cast<int>(sourcePoints.size()) / 3;
+      closestPoints.resize(npts * 3);
+      for (int ii = 0; ii < npts; ++ii)
+      {
+        vtkIdType closestId = pdata->FindPoint(const_cast<double*>(&sourcePoints[3 * ii]));
+        pdata->GetPoint(closestId, &closestPoints[3 * ii]);
+      }
+      return true;
+    }
+  }
+  else
+  {
+    // Create the standard locator
+    vtkSmartPointer<vtkCellLocator> cellLocator = vtkSmartPointer<vtkCellLocator>::New();
+    cellLocator->SetDataSet(pdata);
+    cellLocator->BuildLocator();
+
+    vtkSmartPointer<vtkGenericCell> cell = vtkSmartPointer<vtkGenericCell>::New();
+
+    vtkIdType cellId;
+    int subId;
+    double dist2;
+
     int npts = static_cast<int>(sourcePoints.size()) / 3;
     closestPoints.resize(npts * 3);
     for (int ii = 0; ii < npts; ++ii)
     {
-      vtkIdType closestId = pdata->FindPoint(const_cast<double*>(&sourcePoints[3 * ii]));
-      pdata->GetPoint(closestId, &closestPoints[3 * ii]);
+      cellLocator->FindClosestPoint(const_cast<double*>(&sourcePoints[3 * ii]),
+        &closestPoints[3 * ii], cell, cellId, subId, dist2);
     }
     return true;
   }
+
   return false;
 }
 
