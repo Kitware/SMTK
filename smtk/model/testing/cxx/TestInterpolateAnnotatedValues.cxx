@@ -402,9 +402,9 @@ int TestInterpolateAnnotatedValues(int argc, char* argv[])
     smtk::mesh::for_each(gridResource->meshes().points(), histogramPointFieldData);
     histogram = histogramPointFieldData.histogram();
 
-    std::array<std::size_t, 10> expectedForMeshSession = { { 0, 300, 88, 106, 69, 54, 113, 102, 239,
+    std::array<std::size_t, 10> expectedForMeshSession = { { 0, 301, 84, 112, 69, 55, 109, 100, 241,
       0 } };
-    std::array<std::size_t, 10> expectedForVTKSession = { { 0, 301, 87, 105, 70, 54, 113, 104, 237,
+    std::array<std::size_t, 10> expectedForVTKSession = { { 0, 303, 81, 112, 70, 55, 109, 101, 240,
       0 } };
 
     std::size_t counter = 0;
