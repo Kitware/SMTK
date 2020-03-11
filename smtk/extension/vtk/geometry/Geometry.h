@@ -11,6 +11,8 @@
 #ifndef smtk_vtk_geometry_Geometry_h
 #define smtk_vtk_geometry_Geometry_h
 
+#include "smtk/extension/vtk/geometry/vtkSMTKGeometryExtModule.h"
+
 #include "smtk/extension/vtk/geometry/Backend.h"
 #include "smtk/geometry/GeometryForBackend.h"
 

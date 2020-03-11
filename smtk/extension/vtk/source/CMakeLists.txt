@@ -1,4 +1,5 @@
 set(classes
+  ModelEntityPointLocator
   PointCloudFromVTKAuxiliaryGeometry
   SourceFromAttribute
   SourceFromMesh

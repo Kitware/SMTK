@@ -56,9 +56,9 @@ endif()
 
 set(additional_libs)
 
-if (SMTK_ENABLE_MESH_SESSION)
+if (SMTK_ENABLE_MESH_SESSION AND SMTK_ENABLE_VTK_SESSION)
   list(APPEND unit_tests_which_require_data TestInterpolateAnnotatedValues.cxx)
-  list(APPEND additional_libs smtkMeshSession)
+  list(APPEND additional_libs smtkMeshSession smtkVTKSession)
 endif ()
 
 if (SMTK_ENABLE_DISCRETE_SESSION)

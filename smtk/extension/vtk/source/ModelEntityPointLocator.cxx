@@ -7,12 +7,16 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/server/smtkModelEntityPointLocator.h"
+#include "smtk/extension/vtk/source/ModelEntityPointLocator.h"
 #include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
 
+#include "smtk/extension/vtk/geometry/Backend.h"
+#include "smtk/extension/vtk/geometry/Geometry.h"
+
 #include "smtk/AutoInit.h"
-#include "smtk/extension/paraview/server/vtkPVModelSources.h"
+
 #include "smtk/model/AuxiliaryGeometry.h"
+#include "smtk/model/Resource.h"
 
 #include "vtkCellLocator.h"
 #include "vtkGenericCell.h"
@@ -20,17 +24,51 @@
 #include "vtkPointSet.h"
 #include "vtkSmartPointer.h"
 
-smtkModelEntityPointLocator::smtkModelEntityPointLocator() = default;
+namespace smtk
+{
+namespace extension
+{
+namespace vtk
+{
+namespace source
+{
 
-smtkModelEntityPointLocator::~smtkModelEntityPointLocator() = default;
+ModelEntityPointLocator::ModelEntityPointLocator() = default;
 
-bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
+ModelEntityPointLocator::~ModelEntityPointLocator() = default;
+
+bool ModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& entity,
   std::vector<double>& closestPoints, const std::vector<double>& sourcePoints, bool snapToPoint)
 {
+  smtk::extension::vtk::geometry::Backend vtk;
+  const auto& geometry = entity.resource()->geometry(vtk);
+  if (!geometry)
+  {
+    return false;
+  }
+
+  vtkDataSet* data = nullptr;
+  try
+  {
+    const auto& vtkGeometry =
+      dynamic_cast<const smtk::extension::vtk::geometry::Geometry&>(*geometry);
+
+    data = vtkDataSet::SafeDownCast(vtkGeometry.data(entity.component()));
+  }
+  catch (std::bad_cast&)
+  {
+    return false;
+  }
+
+  if (!data)
+  {
+    return false;
+  }
+
   vtkSmartPointer<vtkDataObject> cachedAuxData; // Keep here so it stays in scope
 
   // TODO: Handle composite data, not just vtkPointSet data.
-  vtkPointSet* pdata = vtkPointSet::SafeDownCast(vtkPVModelSources::findModelEntity(entity));
+  vtkPointSet* pdata = vtkPointSet::SafeDownCast(data);
   if (!pdata && entity.isAuxiliaryGeometry())
   { // It may be that we don't have a tessellation yet; create one if we can
     smtk::model::AuxiliaryGeometry aux(entity);
@@ -83,7 +121,7 @@ bool smtkModelEntityPointLocator::closestPointOn(const smtk::model::EntityRef& e
   return false;
 }
 
-bool smtkModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
+bool ModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& entity,
   const std::size_t nPoints, std::vector<double>& points, const std::size_t seed)
 {
   // TODO: fill me in!
@@ -93,8 +131,12 @@ bool smtkModelEntityPointLocator::randomPoint(const smtk::model::EntityRef& enti
   (void)seed;
   return false;
 }
+}
+}
+}
+}
 
-smtkDeclareExtension(
-  SMTKPVSERVEREXT_EXPORT, model_entity_point_locator, smtkModelEntityPointLocator);
+smtkDeclareExtension(VTKSMTKSOURCEEXT_EXPORT, vtk_model_entity_point_locator,
+  smtk::extension::vtk::source::ModelEntityPointLocator);
 
-smtkComponentInitMacro(smtk_model_entity_point_locator_extension);
+smtkComponentInitMacro(smtk_vtk_model_entity_point_locator_extension);
