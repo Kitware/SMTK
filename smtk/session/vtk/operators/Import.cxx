@@ -324,13 +324,21 @@ static vtkSmartPointer<vtkMultiBlockDataSet> FlattenBlocks(
 }
 
 static void FillAndMarkBlocksFromSrc(vtkMultiBlockDataSet* modelOut, vtkIdType& ii,
-  vtkMultiBlockDataSet* src, int srcDim, const char* srcName, EntityType srcType,
+  vtkMultiBlockDataSet* src, const char* srcName, EntityType srcType,
   std::function<int(vtkIdType)> pedigreeFn = [](vtkIdType zz) { return static_cast<int>(zz); })
 {
   vtkIdType nbi = src->GetNumberOfBlocks();
   for (vtkIdType jj = 0; jj < nbi; ++jj, ++ii)
   {
     auto blk = src->GetBlock(jj);
+    int srcDim = 0;
+    vtkDataSet* dataSet = vtkDataSet::SafeDownCast(blk);
+    {
+      if (dataSet != nullptr && dataSet->GetNumberOfCells() > 0)
+      {
+        srcDim = dataSet->GetCell(0)->GetCellDimension();
+      }
+    }
     modelOut->SetBlock(ii, blk);
     if (src->HasMetaData(jj))
     {
@@ -379,11 +387,11 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
   vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
     FlattenBlocks(blocks, sizeof(blocks) / sizeof(blocks[0]));
   vtkIdType ii = 0;
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], dim, "element block", EXO_BLOCK,
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], "element block", EXO_BLOCK,
     [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::ELEM_BLOCK, pp); });
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], dim - 1, "side set", EXO_SIDE_SET,
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], "side set", EXO_SIDE_SET,
     [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::SIDE_SET, pp); });
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[2], 0, "node set", EXO_NODE_SET,
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[2], "node set", EXO_NODE_SET,
     [&rdr](vtkIdType pp) { return rdr->GetObjectId(vtkExodusIIReader::NODE_SET, pp); });
 
   MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
@@ -443,8 +451,8 @@ Import::Result Import::importSLAC(const smtk::session::vtk::Resource::Ptr& resou
   vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
     FlattenBlocks(blocks, sizeof(blocks) / sizeof(blocks[0]));
   vtkIdType ii = 0;
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], 2, "surface", EXO_SIDE_SET);
-  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], 3, "volume", EXO_BLOCK);
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[0], "surface", EXO_SIDE_SET);
+  FillAndMarkBlocksFromSrc(modelOut, ii, blocks[1], "volume", EXO_BLOCK);
 
   MarkMeshInfo(
     modelOut.GetPointer(), 3, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);

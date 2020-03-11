@@ -1,5 +1,6 @@
 set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/filter/vtk.module"
+  "${CMAKE_CURRENT_SOURCE_DIR}/geometry/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/mesh/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/meshing/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/operators/vtk.module"
@@ -25,6 +26,7 @@ set_property(GLOBAL
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   set(vtk_python_wrappable_modules
+    vtkSMTKGeometryExt
     vtkSMTKOperationsExt
     vtkSMTKSourceExt
     vtkSMTKWidgetsExt)

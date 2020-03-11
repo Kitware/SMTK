@@ -7,21 +7,30 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_server_smtkModelEntityPointLocator_h
-#define smtk_extension_paraview_server_smtkModelEntityPointLocator_h
+#ifndef smtk_extension_vtk_source_ModelEntityPointLocator_h
+#define smtk_extension_vtk_source_ModelEntityPointLocator_h
 
-#include "smtk/extension/paraview/server/smtkPVServerExtModule.h"
+#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
 #include "smtk/model/PointLocatorExtension.h"
+
+namespace smtk
+{
+namespace extension
+{
+namespace vtk
+{
+namespace source
+{
 
 /**\brief A class that provides point-location based on the VTK tessellation of entities.
   */
-class SMTKPVSERVEREXT_EXPORT smtkModelEntityPointLocator : public smtk::model::PointLocatorExtension
+class VTKSMTKSOURCEEXT_EXPORT ModelEntityPointLocator : public smtk::model::PointLocatorExtension
 {
 public:
-  smtkTypeMacro(smtkModelEntityPointLocator);
+  smtkTypeMacro(smtk::extension::vtk::source::ModelEntityPointLocator);
   smtkCreateMacro(smtk::common::Extension);
   smtkSuperclassMacro(smtk::model::PointLocatorExtension);
-  virtual ~smtkModelEntityPointLocator();
+  virtual ~ModelEntityPointLocator();
 
   /// Overwrites \a closestPoints with points on \a entity closest to \a sourcePoints.
   bool closestPointOn(const smtk::model::EntityRef& entity, std::vector<double>& closestPoints,
@@ -31,7 +40,11 @@ public:
     std::vector<double>& points, const std::size_t seed) override;
 
 protected:
-  smtkModelEntityPointLocator();
+  ModelEntityPointLocator();
 };
+}
+}
+}
+}
 
 #endif

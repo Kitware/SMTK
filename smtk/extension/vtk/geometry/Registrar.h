@@ -7,11 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_vtk_source_Registrar_h
-#define smtk_extension_vtk_source_Registrar_h
+#ifndef smtk_extension_vtk_geometry_Registrar_h
+#define smtk_extension_vtk_geometry_Registrar_h
 #ifndef __VTK_WRAP__
 
-#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
+#include "smtk/extension/vtk/geometry/vtkSMTKGeometryExtModule.h"
 
 #include "smtk/geometry/Manager.h"
 
@@ -21,10 +21,10 @@ namespace extension
 {
 namespace vtk
 {
-namespace source
+namespace geometry
 {
 
-class VTKSMTKSOURCEEXT_EXPORT Registrar
+class VTKSMTKGEOMETRYEXT_EXPORT Registrar
 {
 public:
   static void registerTo(const smtk::geometry::Manager::Ptr&);
@@ -36,4 +36,4 @@ public:
 }
 
 #endif // __VTK_WRAP__
-#endif // smtk_extension_vtk_source_Registrar_h
+#endif // smtk_extension_vtk_geometry_Registrar_h

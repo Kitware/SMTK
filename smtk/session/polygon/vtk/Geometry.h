@@ -14,7 +14,7 @@
 
 #include "smtk/session/polygon/internal/Config.h"
 
-#include "smtk/extension/vtk/source/Geometry.h"
+#include "smtk/extension/vtk/geometry/Geometry.h"
 
 #include "smtk/geometry/Cache.h"
 
@@ -36,10 +36,10 @@ namespace vtk
   *
   */
 class VTKPOLYGONOPERATIONSEXT_EXPORT Geometry
-  : public smtk::geometry::Cache<smtk::extension::vtk::source::Geometry, Geometry>
+  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry, Geometry>
 {
 public:
-  using CacheBaseType = smtk::extension::vtk::source::Geometry;
+  using CacheBaseType = smtk::extension::vtk::geometry::Geometry;
   smtkTypeMacro(smtk::session::polygon::vtk::Geometry);
   smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType, Geometry>);
   using DataType = Superclass::DataType;

@@ -13,7 +13,7 @@
 
 #include "smtk/extension/vtk/mesh/vtkSMTKMeshExtModule.h"
 
-#include "smtk/extension/vtk/source/Registrar.h"
+#include "smtk/extension/vtk/geometry/Registrar.h"
 #include "smtk/geometry/Manager.h"
 #include "smtk/mesh/resource/Registrar.h"
 
@@ -29,7 +29,7 @@ namespace mesh
 class VTKSMTKMESHEXT_EXPORT Registrar
 {
 public:
-  using Dependencies = std::tuple<mesh::Registrar, vtk::source::Registrar>;
+  using Dependencies = std::tuple<mesh::Registrar, vtk::geometry::Registrar>;
 
   static void registerTo(const smtk::geometry::Manager::Ptr&);
   static void unregisterFrom(const smtk::geometry::Manager::Ptr&);

@@ -75,21 +75,22 @@ std::vector<Weights> computeWeights(
       bool computed = false;
 
       // Visit all extensions, attempting to cast them to a point locator
-      smtk::common::Extension::visitAll([&](
-        const std::string&, smtk::common::Extension::Ptr extension) {
-        bool success = false;
-        auto pointLocator =
-          smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
+      smtk::common::Extension::visitAll(
+        [&](const std::string&, smtk::common::Extension::Ptr extension) {
+          bool success = false;
+          auto pointLocator =
+            smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
 
-        if (pointLocator != nullptr)
-        {
-          // If we find a point locator, compute the closest point on the
-          // entity for each of our sample points
-          success = pointLocator->closestPointOn(entityRef, interpolatedPoints, samplePoints, true);
-          computed = success;
-        }
-        return std::make_pair(success, success);
-      });
+          if (pointLocator != nullptr)
+          {
+            // If we find a point locator, compute the closest point on the
+            // entity for each of our sample points
+            success =
+              pointLocator->closestPointOn(entityRef, interpolatedPoints, samplePoints, false);
+            computed = success;
+          }
+          return std::make_pair(success, success);
+        });
 
       // If the point locator call was successful...
       if (computed)

@@ -2,7 +2,6 @@ set(classes
   Registrar
   VTKSelectionResponderGroup
 
-  smtkModelEntityPointLocator
   vtkPVModelSources
   vtkSMSMTKResourceRepresentationProxy
   vtkSMSMTKWrapperProxy

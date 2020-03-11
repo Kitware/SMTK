@@ -8,8 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
-#include "smtk/extension/vtk/source/Backend.h"
-#include "smtk/extension/vtk/source/Geometry.h"
+
+#include "smtk/extension/vtk/geometry/Backend.h"
+#include "smtk/extension/vtk/geometry/Geometry.h"
 
 #include "smtk/geometry/Resource.h"
 
@@ -240,7 +241,7 @@ void vtkResourceMultiBlockSource::ClearCache()
 }
 
 int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request,
-  vtkInformationVector* outInfo, const smtk::extension::vtk::source::Geometry& geometry)
+  vtkInformationVector* outInfo, const smtk::extension::vtk::geometry::Geometry& geometry)
 {
   (void)request;
   auto output = vtkMultiBlockDataSet::GetData(outInfo, 0);
@@ -251,8 +252,8 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
   }
 
   std::map<int, std::vector<vtkSmartPointer<vtkDataObject> > > blocks;
-  // smtk::extension::vtk::source::Backend source(&geometry);
-  smtk::extension::vtk::source::Backend backend;
+  // smtk::extension::vtk::geometry::Backend source(&geometry);
+  smtk::extension::vtk::geometry::Backend backend;
   geometry.visit([&geometry, &blocks](const smtk::resource::PersistentObject::Ptr& obj,
     smtk::geometry::Geometry::GenerationNumber gen) {
     (void)gen;
@@ -318,7 +319,7 @@ int vtkResourceMultiBlockSource::RequestData(
     return 0;
   }
 
-  smtk::extension::vtk::source::Backend vtk;
+  smtk::extension::vtk::geometry::Backend vtk;
   const auto& geom = resource->geometry(vtk);
   if (!geom)
   {
@@ -326,7 +327,7 @@ int vtkResourceMultiBlockSource::RequestData(
     return 0;
   }
 
-  const auto& properGeom = dynamic_cast<const smtk::extension::vtk::source::Geometry&>(*geom);
+  const auto& properGeom = dynamic_cast<const smtk::extension::vtk::geometry::Geometry&>(*geom);
   if (!geom)
   {
     vtkErrorMacro("Input resource's geometry is not a vtk geometry");

@@ -12,7 +12,7 @@
 
 #include "smtk/session/mesh/Exports.h"
 
-#include "smtk/extension/vtk/source/Geometry.h"
+#include "smtk/extension/vtk/geometry/Geometry.h"
 
 #include "smtk/geometry/Cache.h"
 #include "smtk/geometry/Generator.h"
@@ -35,10 +35,10 @@ namespace vtk
   *
   */
 class SMTKMESHSESSION_EXPORT Geometry
-  : public smtk::geometry::Cache<smtk::extension::vtk::source::Geometry, Geometry>
+  : public smtk::geometry::Cache<smtk::extension::vtk::geometry::Geometry, Geometry>
 {
 public:
-  using CacheBaseType = smtk::extension::vtk::source::Geometry;
+  using CacheBaseType = smtk::extension::vtk::geometry::Geometry;
   smtkTypeMacro(smtk::session::mesh::vtk::Geometry);
   smtkSuperclassMacro(smtk::geometry::Cache<CacheBaseType, Geometry>);
 
@@ -64,7 +64,7 @@ class SMTKMESHSESSION_EXPORT RegisterVTKBackend
 public:
   bool valid(const Specification& in) const override
   {
-    smtk::extension::vtk::source::Backend backend;
+    smtk::extension::vtk::geometry::Backend backend;
     return std::get<1>(in).index() == backend.index();
   }
 

@@ -1,6 +1,5 @@
 NAME
-  vtkSMTKMeshExt
+  vtkSMTKGeometryExt
 DEPENDS
   VTK::CommonCore
   VTK::CommonDataModel
-  vtkSMTKGeometryExt

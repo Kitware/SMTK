@@ -26,7 +26,7 @@ namespace extension
 {
 namespace vtk
 {
-namespace source
+namespace geometry
 {
 
 class Geometry;
@@ -154,7 +154,7 @@ protected:
   /// appropriate geometry provider, it can call this method
   /// for the body of its RequestData() implementation.
   int RequestDataFromGeometry(vtkInformation* request, vtkInformationVector* outputData,
-    const smtk::extension::vtk::source::Geometry& provider);
+    const smtk::extension::vtk::geometry::Geometry& provider);
 
   std::weak_ptr<smtk::resource::Resource> Resource;
   std::map<UUID, CacheEntry> Cache;

@@ -9,6 +9,7 @@ set(vtkSrcs
 
 set(vtkHeaders
   Geometry.h
+  RegisterVTKBackend.h
   Registrar.h
   Resource.h
   Session.h
