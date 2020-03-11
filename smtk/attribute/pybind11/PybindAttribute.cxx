@@ -53,6 +53,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindSearchStyle.h"
 #include "PybindStringItem.h"
 #include "PybindStringItemDefinition.h"
+#include "PybindTag.h"
 #include "PybindResource.h"
 #include "PybindValueItem.h"
 #include "PybindValueItemDefinition.h"
@@ -72,6 +73,7 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
+  py::class_< smtk::attribute::Tag > smtk_attribute_Tag = pybind11_init_smtk_attribute_Tag(attribute);
   py::class_< smtk::attribute::Analyses > smtk_attribute_Analyses = pybind11_init_smtk_attribute_Analyses(attribute);
   pybind11_init_smtk_attribute_SearchStyle(attribute);
   PySharedPtrClass< smtk::attribute::Attribute > smtk_attribute_Attribute = pybind11_init_smtk_attribute_Attribute(attribute);
