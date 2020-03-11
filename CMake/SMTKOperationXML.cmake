@@ -78,7 +78,27 @@ function(smtk_encode_file inOpSpecs)
 
 endfunction()
 
+# the old implementation, warn users to update to new.
+function(smtk_operation_xml opSpecs genFiles)
+  message(DEPRECATION "smtk_operation_xml() is deprecated, please update to smtk_encode_file()")
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs INCLUDE_DIRS)
+  cmake_parse_arguments(SMTK_op "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  list(APPEND SMTK_op_INCLUDE_DIRS ${PROJECT_SOURCE_DIR})
+  if (smtk_PREFIX_PATH)
+    list(APPEND SMTK_op_INCLUDE_DIRS ${smtk_PREFIX_PATH}/${SMTK_OPERATION_INCLUDE_DIR})
+  endif ()
+  foreach (opSpec ${opSpecs})
+    get_filename_component(genFileBase "${opSpec}" NAME_WE)
+    set(genFile "${CMAKE_CURRENT_BINARY_DIR}/${genFileBase}_xml.h")
+    configureFileAsCVariable("${opSpec}" "${genFile}" "${genFileBase}_xml" "${SMTK_op_INCLUDE_DIRS}")
+    set(${genFiles} ${${genFiles}} "${genFile}" PARENT_SCOPE)
+  endforeach()
+endfunction()
+
 # the old implementation, should be replaced when the new one works.
+# users always call configure_file on our result - needs to be folded in.
 function(smtk_pyoperation_xml opSpecs genFiles)
   set(options "")
   set(oneValueArgs "TYPE")
@@ -104,7 +124,6 @@ endfunction()
 
 
 if (_smtk_operation_xml_run AND CMAKE_SCRIPT_MODE_FILE)
-  # message(WARNING "op includes: ${include_dirs}")
   if (ext STREQUAL "py")
     configureFileAsPyVariable("${opSpec}" "${genFile}" "${genFileBase}${type}" "${include_dirs}")
   else ()
