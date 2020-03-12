@@ -95,12 +95,10 @@ set(unit_tests_which_require_data)
 set(extra_libs)
 
 if(SMTK_ENABLE_POLYGON_SESSION)
-  list(APPEND unit_tests
-    unitDetachReferenceItem.cxx
-    unitUnsetValueError.cxx
-  )
   list(APPEND unit_tests_which_require_data
+    unitDetachReferenceItem.cxx
     unitJsonItems.cxx
+    unitUnsetValueError.cxx
     )
   list(APPEND extra_libs
     smtkPolygonSession
