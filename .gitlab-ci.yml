@@ -105,6 +105,13 @@
         CTEST_COVERAGE: 1
         CMAKE_GENERATOR: Unix Makefiles
 
+.fedora31_nodata: &fedora31_nodata
+    extends: .fedora31_paraview
+
+    variables:
+        CMAKE_CONFIGURATION: fedora31_nodata
+        GIT_LFS_SKIP_SMUDGE: 1
+
 before_script:
     - .gitlab/ci/cmake.sh
     - .gitlab/ci/ninja.sh
@@ -299,6 +306,20 @@ test:fedora31-paraview:
         - build:fedora31-paraview
     needs:
         - build:fedora31-paraview
+
+build:fedora31-nodata:
+    <<:
+        - *fedora31_nodata
+        - *cmake_build_unix
+
+test:fedora31-nodata:
+    <<:
+        - *fedora31_nodata
+        - *cmake_test_unix_x11
+    dependencies:
+        - build:fedora31-nodata
+    needs:
+        - build:fedora31-nodata
 
 build:fedora31-vtk-python2:
     <<:
