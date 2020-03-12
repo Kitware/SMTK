@@ -70,9 +70,18 @@ SMTKCORE_EXPORT void to_json(
   {
     j["DetailedDescription"] = itemDefPtr->detailedDescription();
   }
-  if (!itemDefPtr->applicationString().empty())
+
+  //Write out tag information
+  const auto& tags = itemDefPtr->tags();
+  if (!tags.empty())
   {
-    j["ApplicationString"] = itemDefPtr->applicationString();
+    std::map<std::string, std::set<std::string> > tagInfo;
+    for (const auto& tag : tags)
+    {
+      tagInfo[tag.name()] = tag.values();
+    }
+
+    j["Tags"] = tagInfo;
   }
 }
 
@@ -166,10 +175,15 @@ SMTKCORE_EXPORT void from_json(
   {
     itemDefPtr->setIsOkToInherit(*okToInherit);
   }
-  result = j.find("ApplicationString");
+  result = j.find("Tags");
   if (result != j.end())
   {
-    itemDefPtr->setApplicationString(*result);
+    std::map<std::string, std::set<std::string> > tagInfo = *result;
+    for (const auto& t : tagInfo)
+    {
+      smtk::attribute::Tag tag(t.first, t.second);
+      itemDefPtr->addTag(tag);
+    }
   }
 }
 }

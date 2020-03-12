@@ -10,7 +10,6 @@ set(attributeTests
   basicAttributeFindTest
   basicAttributeXMLWriterTest
   childrenItemsTest
-  definitionTagsTest
   discreteStringsWithDefaultTest
   expressionTest
   expressionTest2
@@ -84,6 +83,7 @@ set(unit_tests
   unitComponentItem.cxx
   unitComponentItemConstraints
   unitDateTimeItem.cxx
+  unitDefinitionTags
   unitAttributeExclusiveAnalysis
   unitJsonItemDefinitions.cxx
   unitPassCategories

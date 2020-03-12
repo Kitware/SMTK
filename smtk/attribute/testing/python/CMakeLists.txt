@@ -5,6 +5,7 @@ set(plainTests
   attributeFindItemTest
   basicAttributeDefinitionTest
   basicAttributeDerivationTest
+  definitionTagsTest
   unitAttributeBasics
   categoryTest
   datetimeitemTest

@@ -40,5 +40,28 @@ unsigned int XmlV4StringWriter::fileVersion() const
   return 4;
 }
 
+void XmlV4StringWriter::processItemDefinitionAttributes(
+  pugi::xml_node& node, smtk::attribute::ItemDefinitionPtr idef)
+{
+  XmlV3StringWriter::processItemDefinitionAttributes(node, idef);
+  // Add support for ItemDef Tags
+  if (!idef->tags().empty())
+  {
+    xml_node tagsNode = node.append_child();
+    tagsNode.set_name("Tags");
+
+    std::string sep; // TODO: The writer could accept a user-provided separator.
+    for (auto& tag : idef->tags())
+    {
+      xml_node tagNode = tagsNode.append_child();
+      tagNode.set_name("Tag");
+      tagNode.append_attribute("Name").set_value(tag.name().c_str());
+      if (!tag.values().empty())
+      {
+        tagNode.text().set(concatenate(tag.values(), sep, &m_logger).c_str());
+      }
+    }
+  }
+}
 } // namespace io
 } // namespace smtk

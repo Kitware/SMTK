@@ -93,6 +93,10 @@ PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attribute_Def
     .def("rootName", &smtk::attribute::Definition::rootName)
     .def("resetItemOffset", &smtk::attribute::Definition::resetItemOffset)
     .def("itemOffset", &smtk::attribute::Definition::itemOffset)
+    .def("tags", &smtk::attribute::Definition::tags, py::return_value_policy::reference_internal)
+    .def("tag", (smtk::attribute::Tag* (smtk::attribute::Definition::*)(const std::string&)) &smtk::attribute::Definition::tag, py::arg("name"), py::return_value_policy::reference_internal)
+    .def("addTag", &smtk::attribute::Definition::addTag)
+    .def("removeTag", &smtk::attribute::Definition::removeTag)
     ;
   return instance;
 }

@@ -22,6 +22,7 @@
 #include "smtk/SharedFromThis.h" // For smtkTypeMacro.
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Item.h" // For Item Types.
+#include "smtk/attribute/Tag.h"
 
 #include <queue>
 #include <set>
@@ -130,11 +131,22 @@ public:
   const std::string& briefDescription() const { return m_briefDescription; }
   void setBriefDescription(const std::string& text) { m_briefDescription = text; }
 
+  ///\brief return the smtk::attribute::Tags associated with the Definition
+  const Tags& tags() const { return m_tags; }
+
   ///@{
-  ///\brief Set/Get an application supplied string associated with the ItemDefinition
-  void setApplicationString(const std::string& val) { m_appString = val; }
-  const std::string& applicationString() const { return m_appString; }
+  ///\brief Return a pointer to a smtk::attribute::Tag with a given name. If the Tag does not
+  /// exist, return a null pointer.
+  const Tag* tag(const std::string& name) const;
+  Tag* tag(const std::string& name);
   ///@}
+
+  ///@{
+  ///\brief Add/Remove a smtk::attribute::Tag from a Definition
+  bool addTag(const Tag& tag);
+  bool removeTag(const std::string& name);
+  ///@}
+
   virtual smtk::attribute::ItemPtr buildItem(
     Attribute* owningAttribute, int itemPosition) const = 0;
   virtual smtk::attribute::ItemPtr buildItem(
@@ -163,7 +175,7 @@ protected:
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
   unsigned int m_advanceLevel[2];
-  std::string m_appString;
+  attribute::Tags m_tags;
 
 private:
   // constant value that should never be changed

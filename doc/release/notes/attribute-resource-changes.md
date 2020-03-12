@@ -80,4 +80,28 @@ Resource.
 Previously calling isSet() for items that had its numberOfValues() == 0 would either result in an assert or indexing a vector of size 0.  This has been fixed so calling the method for an index that doesn't exist will always return false.
 ### unset() will now assert for indices that don't exist
 Previously some Items would exhibit undefined behavior but will now simply assert.
-### Added Item::localEnabledState() method - this method returns the the value of the Item's enabled flag. **Note** This is different from Item::isEnabled() method that also takes into consideration the enabled state of the Item's parent.
+### Added Item::localEnabledState() method
+This method returns the the value of the Item's enabled flag. **Note** This is different from Item::isEnabled() method that also takes into consideration the enabled state of the Item's parent.
+### Added Tags support for ItemDefinitions
+This is identical to the functionality provided by Definitions.  Here is an example in XML.
+
+```xml
+ <Definitions>
+    <AttDef Type="att1" Label="att1" BaseType="" Version="0" Unique="false">
+      <Tags>
+        <Tag Name="My Tag" />
+        <Tag Name="My Tag with Values">value1,value2,value3</Tag>
+      </Tags>
+      <ItemDefinitions>
+        <String Name="str" Label="str" Version="0" OkToInheritCategories="true" CategoryCheckMode="Any" NumberOfRequiredValues="1">
+          <Tags>
+            <Tag Name="Empty Tag" />
+            <Tag Name="Str Tag with Values">v1,v2,v3</Tag>
+          </Tags>
+        </String>
+      </ItemDefinitions>
+    </AttDef>
+  </Definitions>
+```
+
+See smtk/attribute/testing/cxx/unitDefinitionTags.cxx and smtk/attribute/testing/python/definitionTagsTest.py for coding examples.

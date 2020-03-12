@@ -54,8 +54,10 @@ PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_attribute
     .def("setVersion", &smtk::attribute::ItemDefinition::setVersion, py::arg("myVersion"))
     .def("type", &smtk::attribute::ItemDefinition::type)
     .def("version", &smtk::attribute::ItemDefinition::version)
-    .def("applicationString", &smtk::attribute::ItemDefinition::applicationString)
-    .def("setApplicationString", &smtk::attribute::ItemDefinition::setApplicationString)
+    .def("tags", &smtk::attribute::ItemDefinition::tags, py::return_value_policy::reference_internal)
+    .def("tag", (smtk::attribute::Tag* (smtk::attribute::ItemDefinition::*)(const std::string&)) &smtk::attribute::ItemDefinition::tag, py::arg("name"), py::return_value_policy::reference_internal)
+    .def("addTag", &smtk::attribute::ItemDefinition::addTag)
+    .def("removeTag", &smtk::attribute::ItemDefinition::removeTag)
     ;
   PySharedPtrClass< smtk::attribute::ItemDefinition::CopyInfo >(instance, "CopyInfo")
     .def(py::init<::smtk::attribute::ResourcePtr>())
