@@ -60,136 +60,144 @@ void XmlV3StringWriter::generateXml()
   XmlV2StringWriter::generateXml();
   auto root = this->topRootNode();
 
-  // Do we have unique roles to save?
-  const std::set<smtk::resource::Links::RoleType>& roles = m_resource->uniqueRoles();
-  if (!roles.empty())
+  // Are we saving out the unique role information?
+  if (m_includeUniqueRoles)
   {
-    auto uNodes = root.append_child("UniqueRoles");
-    for (const auto& role : m_resource->uniqueRoles())
+    // Do we have unique roles to save?
+    const std::set<smtk::resource::Links::RoleType>& roles = m_resource->uniqueRoles();
+    if (!roles.empty())
     {
-      auto rNode = uNodes.append_child("Role");
-      rNode.append_attribute("ID").set_value(role);
+      auto uNodes = root.append_child("UniqueRoles");
+      for (const auto& role : m_resource->uniqueRoles())
+      {
+        auto rNode = uNodes.append_child("Role");
+        rNode.append_attribute("ID").set_value(role);
+      }
     }
   }
-
-  // Process Resource Association Info
-  auto associations = m_resource->associations();
-  // Find the XML to place this info
-  auto node = (this->topDefinitionsNode()
-      ? this->topDefinitionsNode()
-      : ((this->topAttributesNode() ? this->topAttributesNode() : this->topViewsNode())));
-  xml_node associationsNode;
-  if (node)
+  if (m_includeResourceAssociations)
   {
-    associationsNode = root.insert_child_before("Associations", node);
-  }
-  else
-  {
-    associationsNode = root.append_child("Associations");
-  }
-
-  for (const auto& association : associations)
-  {
-    xml_node associationNode = associationsNode.append_child("Association");
-    // Because resource links are not serialized into XML, we add enough data
-    // to each reference item to recreate the link.
-    associationNode.append_attribute("Index").set_value(
-      static_cast<unsigned int>(association->index()));
-    associationNode.append_attribute("TypeName").set_value(association->typeName().c_str());
-    associationNode.append_attribute("Id").set_value(association->id().toString().c_str());
-    associationNode.append_attribute("Location").set_value(association->location().c_str());
-  }
-
-  // Lets see if we have any exclusions or prerequisits constriants
-  xml_node exNode, preNode, child, n;
-  // First lets get the definitions in sorted order
-  std::vector<DefinitionPtr> defs;
-  m_resource->definitions(defs, true);
-
-  // Lets process the constraints
-  for (const auto& def : defs)
-  {
-    auto defType = def->type();
-    auto excludedTypes = def->excludedTypeNames();
-
-    // First lets process exclusions
-    if (!excludedTypes.empty())
+    // Process Resource Association Info
+    auto associations = m_resource->associations();
+    // Find the XML to place this info
+    auto node = (this->topDefinitionsNode()
+        ? this->topDefinitionsNode()
+        : ((this->topAttributesNode() ? this->topAttributesNode() : this->topViewsNode())));
+    xml_node associationsNode;
+    if (node)
     {
-      // First we need to see if we need to create the XML node
-      if (!exNode)
+      associationsNode = root.insert_child_before("Associations", node);
+    }
+    else
+    {
+      associationsNode = root.append_child("Associations");
+    }
+
+    for (const auto& association : associations)
+    {
+      xml_node associationNode = associationsNode.append_child("Association");
+      // Because resource links are not serialized into XML, we add enough data
+      // to each reference item to recreate the link.
+      associationNode.append_attribute("Index").set_value(
+        static_cast<unsigned int>(association->index()));
+      associationNode.append_attribute("TypeName").set_value(association->typeName().c_str());
+      associationNode.append_attribute("Id").set_value(association->id().toString().c_str());
+      associationNode.append_attribute("Location").set_value(association->location().c_str());
+    }
+  }
+  // Lets process the constraints if we are saving definition info
+  if (m_includeDefinitions)
+  {
+    // Lets see if we have any exclusions or prerequisites constraints
+    xml_node exNode, preNode, child, n, node;
+    // First lets get the definitions in sorted order
+    std::vector<DefinitionPtr> defs;
+    m_resource->definitions(defs, true);
+
+    for (const auto& def : defs)
+    {
+      auto defType = def->type();
+      auto excludedTypes = def->excludedTypeNames();
+
+      // First lets process exclusions
+      if (!excludedTypes.empty())
       {
-        // This should be right after the definitions section if there is
-        // one else it should be before prerequisites, attributes and views
-        node = this->topDefinitionsNode();
-        if (node)
+        // First we need to see if we need to create the XML node
+        if (!exNode)
         {
-          exNode = root.insert_child_after("Exclusions", node);
-        }
-        else
-        {
-          node = preNode ? preNode : ((this->topAttributesNode()) ? this->topAttributesNode()
-                                                                  : this->topViewsNode());
+          // This should be right after the definitions section if there is
+          // one else it should be before prerequisites, attributes and views
+          node = this->topDefinitionsNode();
           if (node)
           {
-            exNode = root.insert_child_before("Exclusions", node);
+            exNode = root.insert_child_after("Exclusions", node);
           }
           else
           {
-            exNode = root.append_child("Exclusions");
+            node = preNode ? preNode : ((this->topAttributesNode()) ? this->topAttributesNode()
+                                                                    : this->topViewsNode());
+            if (node)
+            {
+              exNode = root.insert_child_before("Exclusions", node);
+            }
+            else
+            {
+              exNode = root.append_child("Exclusions");
+            }
+          }
+        }
+        // We will now write out pair-wise rules starting with the
+        // first definition in the list that comes after this definition
+        // alphabetically - assuming all of the skipped rules have already been added
+        for (const auto& etype : excludedTypes)
+        {
+          if (etype > defType)
+          {
+            child = exNode.append_child("Rule");
+            n = child.append_child("Def");
+            n.text().set(defType.c_str());
+            n = child.append_child("Def");
+            n.text().set(etype.c_str());
           }
         }
       }
-      // We will now write out pair-wise rules starting with the
-      // first definition in the list that comes after this definition
-      // alphabetically - assuming all of the skipped rules have already been added
-      for (const auto& etype : excludedTypes)
-      {
-        if (etype > defType)
-        {
-          child = exNode.append_child("Rule");
-          n = child.append_child("Def");
-          n.text().set(defType.c_str());
-          n = child.append_child("Def");
-          n.text().set(etype.c_str());
-        }
-      }
-    }
-    // Now lets process prerequisites
-    auto prerequisitesTypes = def->prerequisiteTypeNames();
+      // Now lets process prerequisites
+      auto prerequisitesTypes = def->prerequisiteTypeNames();
 
-    if (!prerequisitesTypes.empty())
-    {
-      // First we need to see if we need to create the XML node
-      if (!preNode)
+      if (!prerequisitesTypes.empty())
       {
-        // This should be right after the exclusion or definitions section if there is
-        // one else it should be before attributes and views
-        node = (exNode) ? exNode : this->topDefinitionsNode();
-        if (node)
+        // First we need to see if we need to create the XML node
+        if (!preNode)
         {
-          preNode = root.insert_child_after("Prerequisites", node);
-        }
-        else
-        {
-          node = (this->topAttributesNode()) ? this->topAttributesNode() : this->topViewsNode();
+          // This should be right after the exclusion or definitions section if there is
+          // one else it should be before attributes and views
+          node = (exNode) ? exNode : this->topDefinitionsNode();
           if (node)
           {
-            preNode = root.insert_child_before("Prerequisites", node);
+            preNode = root.insert_child_after("Prerequisites", node);
           }
           else
           {
-            preNode = root.append_child("Prerequisites");
+            node = (this->topAttributesNode()) ? this->topAttributesNode() : this->topViewsNode();
+            if (node)
+            {
+              preNode = root.insert_child_before("Prerequisites", node);
+            }
+            else
+            {
+              preNode = root.append_child("Prerequisites");
+            }
           }
         }
-      }
-      child = preNode.append_child("Rule");
-      // set the xml type attribute
-      child.append_attribute("Type").set_value(defType.c_str());
-      // Write out all prerequisitesTypes
-      for (const auto& ptype : prerequisitesTypes)
-      {
-        n = child.append_child("Def");
-        n.text().set(ptype.c_str());
+        child = preNode.append_child("Rule");
+        // set the xml type attribute
+        child.append_attribute("Type").set_value(defType.c_str());
+        // Write out all prerequisitesTypes
+        for (const auto& ptype : prerequisitesTypes)
+        {
+          n = child.append_child("Def");
+          n.text().set(ptype.c_str());
+        }
       }
     }
   }

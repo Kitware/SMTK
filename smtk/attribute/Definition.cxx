@@ -115,7 +115,7 @@ bool Definition::removeTag(const std::string& name)
 
 bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
 {
-  // Walk up the inheritence tree until we either hit the root or
+  // Walk up the inheritance tree until we either hit the root or
   // encounter this definition
   const Definition* def = this;
   for (def = this; def; def = def->m_baseDefinition.get())

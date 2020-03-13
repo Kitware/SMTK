@@ -1,4 +1,5 @@
 set(ioTests
+  attributeLibraryTest
   extensibleAttributeIOTest
   fileItemTest
   loggerTest

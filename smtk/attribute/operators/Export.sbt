@@ -13,6 +13,12 @@
         <File Name="filename" NumberOfRequiredValues="1" ShouldExist="false"
               FileFilters="SMTK SimBuilder Instance Files (*.sbi);;All files (*.*)">
         </File>
+        <!-- Advanced option to export specified attribute types for reuse in other resources -->
+        <Group Name="attribute-collection" Label="Selected Attribute Types" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
+          <ItemDefinitions>
+            <String Name="types" Label="Attribute Types" Extensible="true" NumberOfRequiredValues="1" />
+          </ItemDefinitions>
+        </Group>
       </ItemDefinitions>
      </AttDef>
     <include href="smtk/operation/Result.xml"/>

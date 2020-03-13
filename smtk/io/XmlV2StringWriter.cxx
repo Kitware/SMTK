@@ -354,11 +354,16 @@ std::string XmlV2StringWriter::getString(std::size_t i, bool no_declaration)
 
 void XmlV2StringWriter::generateXml()
 {
-  auto uuidName = m_resource->id().toString();
   xml_node& root(m_internals->m_roots.at(0));
-  root.append_attribute("ID").set_value(uuidName.c_str());
+
+  if (m_includeResourceID)
+  {
+    auto uuidName = m_resource->id().toString();
+    root.append_attribute("ID").set_value(uuidName.c_str());
+  }
+
   Analyses& analyses = m_resource->analyses();
-  if (m_resource->numberOfCategories() || analyses.size())
+  if (m_resource->numberOfCategories() || (m_includeAnalyses && analyses.size()))
   {
     root.append_child(node_comment)
       .set_value("**********  Category and Analysis Information ***********");
@@ -372,7 +377,7 @@ void XmlV2StringWriter::generateXml()
       }
     }
   }
-  if (analyses.size())
+  if (m_includeAnalyses && analyses.size())
   {
     auto aNodes = root.append_child("Analyses");
     if (analyses.areTopLevelExclusive())
@@ -422,7 +427,7 @@ void XmlV2StringWriter::generateXml()
     }
   }
   // Write out the advance levels information
-  if (m_resource->numberOfAdvanceLevels())
+  if (m_includeAdvanceLevels && m_resource->numberOfAdvanceLevels())
   {
     xml_node cnode, catNodes = m_internals->m_roots.at(0).append_child("AdvanceLevels");
     std::map<int, std::string>::const_iterator it;
@@ -471,7 +476,14 @@ void XmlV2StringWriter::generateXml()
 void XmlV2StringWriter::processAttributeInformation()
 {
   std::vector<DefinitionPtr> baseDefs;
-  m_resource->findBaseDefinitions(baseDefs);
+  if (m_includedDefs.empty())
+  {
+    m_resource->findBaseDefinitions(baseDefs);
+  }
+  else
+  {
+    baseDefs = m_includedDefs;
+  }
   std::size_t i, n = baseDefs.size();
   xml_node definitions, attributes;
   for (i = 0; i < n; i++)
@@ -988,13 +1000,19 @@ void XmlV2StringWriter::processAttribute(xml_node& attributes, attribute::Attrib
     }
   }
   node.append_attribute("ID").set_value(att->id().toString().c_str());
-  // Save associated entities
-  auto assoc = att->associations();
-  if (assoc && assoc->numberOfValues() > 0)
+
+  // Are we saving attribute association information?
+  if (m_includeAttributeAssociations)
   {
-    xml_node assocNode = node.append_child("Associations");
-    this->processItem(assocNode, assoc);
+    // Save associated entities
+    auto assoc = att->associations();
+    if (assoc && assoc->numberOfValues() > 0)
+    {
+      xml_node assocNode = node.append_child("Associations");
+      this->processItem(assocNode, assoc);
+    }
   }
+
   // Save Color Information
   if (att->isColorSet())
   {
