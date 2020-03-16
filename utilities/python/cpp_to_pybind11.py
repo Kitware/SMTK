@@ -1,4 +1,4 @@
-#=========================================================================
+# =========================================================================
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
 #  See LICENSE.txt for details.
@@ -6,7 +6,7 @@
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
-#=========================================================================
+# =========================================================================
 
 """ cpp_to_pybind11.py:
 
@@ -248,7 +248,8 @@ def parse_file(filename, project_source_directory, include_directories,
         cflags='-std=c++11 -Wc++11-extensions')
 
     # Parse source file
-    decls = parser.parse([os.path.abspath(filename)], config)
+    decls = parser.parse([os.path.abspath(filename)], config,
+                         compilation_mode=parser.COMPILATION_MODE.ALL_AT_ONCE)
 
     # grab global namespace
     try:
