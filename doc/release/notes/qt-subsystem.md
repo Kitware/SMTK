@@ -113,3 +113,6 @@ You can now specify ItemViews with an Item's Configuration.  If there was alread
         </Att>
 ```
 Note that item /c contain ItemView for its children.
+
+### Changes to qtGroupView
+* GroupBox Style icon has been changed from a check box to a closed/expand icon pair.  This change reduces confusion between optional items and viewing control widgets.

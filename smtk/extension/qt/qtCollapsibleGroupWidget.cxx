@@ -26,6 +26,10 @@ qtCollapsibleGroupWidget::qtCollapsibleGroupWidget(QWidget* p)
 {
   m_internals = new qtCollapsibleGroupWidgetInternals;
   m_internals->setupUi(this);
+  QString style("QCheckBox::indicator { width:12px; height: 12px;} "
+                "QCheckBox::indicator:unchecked {image: url(:/icons/attribute/caret-right.svg);} "
+                "QCheckBox::indicator:checked {image: url(:/icons/attribute/caret-down.svg);} ");
+  m_internals->VisibilityControl->setStyleSheet(style);
 }
 
 qtCollapsibleGroupWidget::~qtCollapsibleGroupWidget()
