@@ -13,6 +13,7 @@
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include <QCheckBox>
+#include <QLabel>
 #include <QPointer>
 #include <QSizePolicy>
 #include <QVBoxLayout>
@@ -78,26 +79,45 @@ void qtVoidItem::createWidget()
   m_widget->layout()->setMargin(0);
   m_widget->layout()->setSpacing(0);
 
-  QCheckBox* optionalCheck = new QCheckBox(m_widget);
-  optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-  optionalCheck->setSizePolicy(sizeFixedPolicy);
-  QString txtLabel = dataObj->label().empty() ? dataObj->name().c_str() : dataObj->label().c_str();
-
-  if (dataObj->advanceLevel() > 0)
+  QString txtLabel = dataObj->label().c_str();
+  // If the item is optional then use a check-box else use a label
+  if (dataObj->isOptional())
   {
-    optionalCheck->setFont(m_itemInfo.uiManager()->advancedFont());
-  }
-  if (dataObj->definition()->briefDescription().length())
-  {
-    optionalCheck->setToolTip(dataObj->definition()->briefDescription().c_str());
-  }
+    QCheckBox* optionalCheck = new QCheckBox(m_widget);
+    optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
+    optionalCheck->setSizePolicy(sizeFixedPolicy);
 
-  optionalCheck->setText(txtLabel);
-  QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
-  this->Internals->optionalCheck = optionalCheck;
-  m_widget->layout()->addWidget(this->Internals->optionalCheck);
-  this->updateItemData();
+    if (dataObj->advanceLevel() > 0)
+    {
+      optionalCheck->setFont(m_itemInfo.uiManager()->advancedFont());
+    }
+    if (dataObj->definition()->briefDescription().length())
+    {
+      optionalCheck->setToolTip(dataObj->definition()->briefDescription().c_str());
+    }
+
+    optionalCheck->setText(txtLabel);
+    QObject::connect(optionalCheck, SIGNAL(stateChanged(int)), this, SLOT(setOutputOptional(int)));
+    this->Internals->optionalCheck = optionalCheck;
+    m_widget->layout()->addWidget(this->Internals->optionalCheck);
+    this->updateItemData();
+  }
+  else
+  {
+    auto l = new QLabel(m_widget);
+    l->setSizePolicy(sizeFixedPolicy);
+    if (dataObj->advanceLevel() > 0)
+    {
+      l->setFont(m_itemInfo.uiManager()->advancedFont());
+    }
+    if (dataObj->definition()->briefDescription().length())
+    {
+      l->setToolTip(dataObj->definition()->briefDescription().c_str());
+    }
+
+    l->setText(txtLabel);
+  }
 }
 
 void qtVoidItem::updateItemData()
