@@ -131,10 +131,13 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
       {
         if (DescriptivePhrasePtr location = m_location.lock())
         {
-          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          if (PhraseModelPtr phraseModel = location->phraseModel())
           {
-            // TODO: propagate secondary color instead of hard-coding it here
-            return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+            if (ManagerPtr viewManager = phraseModel->manager())
+            {
+              // TODO: propagate secondary color instead of hard-coding it here
+              return viewManager->iconFactory().createIcon(*relatedObject(), "#000000");
+            }
           }
         }
       }
@@ -143,10 +146,13 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
       {
         if (DescriptivePhrasePtr location = m_location.lock())
         {
-          if (ManagerPtr viewManager = location->phraseModel()->manager())
+          if (PhraseModelPtr phraseModel = location->phraseModel())
           {
-            // TODO: propagate secondary color instead of hard-coding it here
-            return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+            if (ManagerPtr viewManager = phraseModel->manager())
+            {
+              // TODO: propagate secondary color instead of hard-coding it here
+              return viewManager->iconFactory().createIcon(*relatedObject(), "#ffffff");
+            }
           }
         }
       }
