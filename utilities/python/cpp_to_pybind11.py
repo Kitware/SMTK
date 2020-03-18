@@ -527,8 +527,12 @@ def parse_class(class_, stream, top_level=True):
             continue
         if variable.access_type == "public":
             static = '_static' if variable.type_qualifiers.has_static else ''
-            stream("    .def_readwrite%s(\"%s\", &%s::%s)" %
-                   (static, variable.name, full_class_name_, variable.name))
+            if variable.type_qualifiers.has_const:
+                stream("    .def_readonly%s(\"%s\", &%s::%s)" %
+                       (static, variable.name, full_class_name_, variable.name))
+            else:
+                stream("    .def_readwrite%s(\"%s\", &%s::%s)" %
+                       (static, variable.name, full_class_name_, variable.name))
 
     stream("    ;")
 
