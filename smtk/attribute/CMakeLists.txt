@@ -121,6 +121,7 @@ set(attributeHeaders
   StringItemDefinition.h
   Tag.h
   UnsetValueError.h
+  Utilities.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
@@ -164,6 +165,7 @@ set(attributeSrcs
   ResourceItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
+  Utilities.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx

@@ -2,6 +2,7 @@
 set(viewSrcs
   AvailableOperations.cxx
   BaseView.cxx
+  ComponentItemPhraseModel.cxx
   ComponentPhraseContent.cxx
   ComponentPhraseModel.cxx
   DescriptivePhrase.cxx
@@ -32,6 +33,7 @@ set (jsonViewHeaders
 set(viewHeaders
   AvailableOperations.h
   BaseView.h
+  ComponentItemPhraseModel.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
   DescriptivePhrase.h

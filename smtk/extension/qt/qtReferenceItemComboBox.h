@@ -36,7 +36,7 @@ namespace extension
 /// a smtk::attribute::ReferenceItem that uses a Combo Box.
 ///
 /// This qtItem is used by smtk::extension::qtComponentItem and
-/// smtk::extension::qtResourceItem to provide a simplier UI for
+/// smtk::extension::qtResourceItem to provide a simpler UI for
 /// items that are not extensible and that hold a single value.
 /// This qtItem also provides two options:
 ///
@@ -61,8 +61,6 @@ public:
   void setDefinitionForCreation(smtk::attribute::DefinitionPtr& def);
   void setOkToCreate(bool val) { m_okToCreate = val; }
   smtk::resource::PersistentObjectPtr object(int index);
-  std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
-    const std::set<smtk::resource::PersistentObjectPtr>& objSet) const;
 public slots:
   void updateItemData() override;
   void highlightItem(int index);
@@ -82,12 +80,6 @@ protected slots:
 
 protected:
   void createWidget() override;
-  // Get a set of objects that could be associated with the current attribute.  If ignoreResource is specified
-  // the corresponding resource will not participate in determining which object can be associated.
-  // The main use case would be updating the widget because a resource is about to be removed from the
-  // system.  Since it is still in memory we needed a way to ignore it
-  std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
-    const smtk::common::UUID& ignoreResource = smtk::common::UUID::null()) const;
 
   // helper function to update available/current list after selection
   void updateListItemSelectionAfterChange(QList<QListWidgetItem*> selItems, QListWidget* list);

@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/view/ComponentItemPhraseModel.h"
 #include "smtk/view/ComponentPhraseModel.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
@@ -339,6 +340,10 @@ void qtReferenceItem::cleverlyShowButtons()
 smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 {
   auto showsWhat = this->acceptableTypes();
+  auto rsrcMgr = m_itemInfo.uiManager()->resourceManager();
+  auto operMgr = m_itemInfo.uiManager()->operationManager();
+  auto viewMgr = m_itemInfo.uiManager()->viewManager();
+  auto seln = m_itemInfo.uiManager()->selection();
   switch (showsWhat)
   {
     case COMPONENTS:
@@ -348,18 +353,36 @@ smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
       // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
       // to point back to the model (thus ensuring subphrases are decorated). This is required
       // since we need to decorate phrases to show+edit "visibility" as set membership:
-      auto phraseModel = smtk::view::ComponentPhraseModel::create(m_itemInfo.component());
-      phraseModel->root()->findDelegate()->setModel(phraseModel);
-      auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
-        m_itemInfo.item()->definition());
-      std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
-        ->setComponentFilters(def->acceptableEntries());
+      auto compItem = std::dynamic_pointer_cast<smtk::attribute::ComponentItem>(m_itemInfo.item());
+      smtk::view::PhraseModel::Ptr phraseModel;
+      if (compItem)
+      {
+        // If given a component item, use a ComponentItemPhraseModel
+        phraseModel = smtk::view::ComponentItemPhraseModel::create(m_itemInfo.component());
+        phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
+        phraseModel->root()->findDelegate()->setModel(phraseModel);
+        auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
+          m_itemInfo.item()->definition());
+        std::static_pointer_cast<smtk::view::ComponentItemPhraseModel>(phraseModel)
+          ->setComponentItem(compItem);
+      }
+      else
+      {
+        // ... otherwise stick with a ComponentPhraseModel.
+        phraseModel = smtk::view::ComponentPhraseModel::create(m_itemInfo.component());
+        phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
+        auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
+          m_itemInfo.item()->definition());
+        std::static_pointer_cast<smtk::view::ComponentPhraseModel>(phraseModel)
+          ->setComponentFilters(def->acceptableEntries());
+      }
       return phraseModel;
     }
     break;
     case RESOURCES:
     {
       auto phraseModel = smtk::view::ResourcePhraseModel::create(m_itemInfo.component());
+      phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
       phraseModel->root()->findDelegate()->setModel(phraseModel);
       auto def = std::dynamic_pointer_cast<const smtk::attribute::ReferenceItemDefinition>(
         m_itemInfo.item()->definition());
@@ -928,6 +951,8 @@ bool qtReferenceItem::synchronize(UpdateSource src)
         {
           if (!item->setObjectValue(idx, member.first.lock()))
           {
+            std::cerr << "qtReferenceItem: Failed to add " << member.first.lock()->name()
+                      << std::endl;
             return false; // Huh!?!
           }
           ++idx;
@@ -940,6 +965,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
     case UpdateSource::GUI_FROM_ITEM:
       m_p->m_members.clear();
       m_p->m_phraseModel->triggerDataChanged();
+      std::size_t i, n = item->numberOfValues();
       for (auto vit = item->begin(); vit != item->end(); ++vit)
       {
         // Only allow non-null pointers into the set of selected items;

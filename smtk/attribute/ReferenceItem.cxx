@@ -548,7 +548,20 @@ void ReferenceItem::detachOwningResource()
 
 void ReferenceItem::reset()
 {
+  // First remove all of the links being used
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if (myAtt != nullptr)
+  {
+    // Remove links to referenced items
+    for (auto& key : m_keys)
+    {
+      myAtt->guardedLinks()->removeLink(key);
+    }
+  }
+
+  // Flush keys
   m_keys.clear();
+
   (*m_cache).clear();
   if (this->numberOfRequiredValues() > 0)
   {
