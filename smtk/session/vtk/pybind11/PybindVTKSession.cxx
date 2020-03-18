@@ -23,6 +23,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindOperation.h"
 #include "PybindPointerDefs.h"
+#include "PybindResource.h"
 #include "PybindExport.h"
 #include "PybindImport.h"
 #include "PybindLegacyRead.h"
@@ -48,6 +49,7 @@ PYBIND11_MODULE(_smtkPybindVTKSession, vtk)
   pybind11_init_smtk_session_vtk_EntityTypeNameString(vtk);
   PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation > smtk_session_vtk_Operation = pybind11_init_smtk_session_vtk_Operation(vtk);
   PySharedPtrClass< smtk::session::vtk::Session, smtk::model::Session > smtk_session_vtk_Session = pybind11_init_smtk_session_vtk_Session(vtk);
+  PySharedPtrClass< smtk::session::vtk::Resource> smtk_session_vtk_Resource = pybind11_init_smtk_session_vtk_Resource(vtk);
   PySharedPtrClass< smtk::session::vtk::Import > smtk_session_vtk_Import = pybind11_init_smtk_session_vtk_Import(vtk, smtk_session_vtk_Operation);
   PySharedPtrClass< smtk::session::vtk::Export > smtk_session_vtk_Export = pybind11_init_smtk_session_vtk_Export(vtk, smtk_session_vtk_Operation);
   PySharedPtrClass< smtk::session::vtk::LegacyRead > smtk_session_vtk_LegacyRead = pybind11_init_smtk_session_vtk_LegacyRead(vtk, smtk_session_vtk_Operation);
