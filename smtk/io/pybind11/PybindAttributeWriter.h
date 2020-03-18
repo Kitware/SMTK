@@ -34,9 +34,18 @@ PySharedPtrClass< smtk::io::AttributeWriter > pybind11_init_smtk_io_AttributeWri
     // As per python convention, all strings passed to functions are immutable (see pybind11 FAQ).
 //    .def("writeContents", &smtk::io::AttributeWriter::writeContents, py::arg("resource"), py::arg("filecontents"), py::arg("logger"), py::arg("no_declaration") = false)
     .def("writeContents", [](smtk::io::AttributeWriter& writer, const smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger, bool no_declaration){ std::string filecontents; writer.writeContents(resource, filecontents, logger, no_declaration); return filecontents; }, py::arg("resource"), py::arg("logger"), py::arg("no_declaration") = false)
+    .def("includeAdvanceLevels", &smtk::io::AttributeWriter::includeAdvanceLevels, py::arg("val"))
+    .def("includeAnalyses", &smtk::io::AttributeWriter::includeAnalyses, py::arg("val"))
+    .def("includeAttributeAssociations", &smtk::io::AttributeWriter::includeAttributeAssociations, py::arg("val"))
     .def("includeDefinitions", &smtk::io::AttributeWriter::includeDefinitions, py::arg("val"))
     .def("includeInstances", &smtk::io::AttributeWriter::includeInstances, py::arg("val"))
+    .def("includeResourceAssociations", &smtk::io::AttributeWriter::includeResourceAssociations, py::arg("val"))
+    .def("includeResourceID", &smtk::io::AttributeWriter::includeResourceID, py::arg("val"))
+    .def("includeUniqueRoles", &smtk::io::AttributeWriter::includeUniqueRoles, py::arg("val"))
     .def("includeViews", &smtk::io::AttributeWriter::includeViews, py::arg("val"))
+    .def("treatAsLibrary", &smtk::io::AttributeWriter::treatAsLibrary, py::arg("vectorOfDefinitions"))
+    .def("setIncludedDefinitions", &smtk::io::AttributeWriter::setIncludedDefinitions, py::arg("vectorOfDefinitions"))
+    .def("includedDefinitions", &smtk::io::AttributeWriter::includedDefinitions)
     ;
   return instance;
 }

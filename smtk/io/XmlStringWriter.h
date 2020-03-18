@@ -35,9 +35,15 @@ class SMTKCORE_EXPORT XmlStringWriter
 public:
   XmlStringWriter(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger)
     : m_resource(resource)
+    , m_includeAdvanceLevels(true)
+    , m_includeAnalyses(true)
+    , m_includeAttributeAssociations(true)
     , m_includeDefinitions(true)
     , m_includeInstances(true)
+    , m_includeResourceAssociations(true)
+    , m_includeUniqueRoles(true)
     , m_includeViews(true)
+    , m_useDirectoryInfo(false)
     , m_logger(logger)
   {
   }
@@ -56,13 +62,32 @@ public:
 
   virtual void generateXml() = 0;
 
-  //Control which sections of the attribute resource should be writtern out
+  //Control which sections of the attribute resource should be written out
   // By Default all sections are processed.  These are advance options!!
-  // If val is false then defintions will not be saved (default is true)
+
+  // If val is false then Analyses will not be saved
+  void includeAnalyses(bool val) { m_includeAnalyses = val; }
+
+  // If val is false then Advance Levels will not be saved
+  void includeAdvanceLevels(bool val) { m_includeAdvanceLevels = val; }
+
+  // If val is false then Attribute Associations will not be saved
+  void includeAttributeAssociations(bool val) { m_includeAttributeAssociations = val; }
+
+  // If val is false then definitions will not be saved (default is true)
   void includeDefinitions(bool val) { m_includeDefinitions = val; }
 
-  // If val is false then instances will not be saved (default is true)
+  // If val is false then Attribute instances will not be saved (default is true)
   void includeInstances(bool val) { m_includeInstances = val; }
+
+  // If val is false then the Resource's associations will not be saved
+  void includeResourceAssociations(bool val) { m_includeResourceAssociations = val; }
+
+  // If val is false then the Resource's ID will not be saved
+  void includeResourceID(bool val) { m_includeResourceID = val; }
+
+  // If val is false then UniqueRoles will not be saved
+  void includeUniqueRoles(bool val) { m_includeUniqueRoles = val; }
 
   // If val is false then views will not be saved (default is true)
   void includeViews(bool val) { m_includeViews = val; }
@@ -71,12 +96,26 @@ public:
   // XML representations
   void useDirectoryInfo(bool val) { m_useDirectoryInfo = val; }
 
+  // Restricts the types of attribute instances written out to those derived from a
+  // specified list.  If the list is empty then all attributes will be saved.
+  void setIncludedDefinitions(const std::vector<smtk::attribute::DefinitionPtr>& includedDefs)
+  {
+    m_includedDefs = includedDefs;
+  }
+
 protected:
   smtk::attribute::ResourcePtr m_resource;
+  bool m_includeAnalyses;
+  bool m_includeAdvanceLevels;
+  bool m_includeAttributeAssociations;
   bool m_includeDefinitions;
   bool m_includeInstances;
+  bool m_includeResourceAssociations;
+  bool m_includeResourceID;
+  bool m_includeUniqueRoles;
   bool m_includeViews;
   bool m_useDirectoryInfo;
+  std::vector<smtk::attribute::DefinitionPtr> m_includedDefs;
 
   smtk::io::Logger& m_logger;
 };

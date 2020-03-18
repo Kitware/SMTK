@@ -29,8 +29,14 @@ namespace io
 
 AttributeWriter::AttributeWriter()
   : m_fileVersion(DEFAULT_FILE_VERSION)
+  , m_includeAdvanceLevels(true)
+  , m_includeAnalyses(true)
+  , m_includeAttributeAssociations(true)
   , m_includeDefinitions(true)
   , m_includeInstances(true)
+  , m_includeResourceAssociations(true)
+  , m_includeResourceID(true)
+  , m_includeUniqueRoles(true)
   , m_includeViews(true)
   , m_useDirectoryInfo(false)
 {
@@ -65,10 +71,17 @@ bool AttributeWriter::write(
   // Lets first clear the logger's error state
   logger.clearErrors();
   XmlStringWriter* theWriter = this->newXmlStringWriter(resource, logger);
+  theWriter->includeAnalyses(m_includeAnalyses);
+  theWriter->includeAdvanceLevels(m_includeAdvanceLevels);
+  theWriter->includeAttributeAssociations(m_includeAttributeAssociations);
   theWriter->includeDefinitions(m_includeDefinitions);
   theWriter->includeInstances(m_includeInstances);
+  theWriter->includeResourceAssociations(m_includeResourceAssociations);
+  theWriter->includeResourceID(m_includeResourceID);
+  theWriter->includeUniqueRoles(m_includeUniqueRoles);
   theWriter->includeViews(m_includeViews);
   theWriter->useDirectoryInfo(m_useDirectoryInfo);
+  theWriter->setIncludedDefinitions(m_includedDefs);
 
   std::string result = theWriter->convertToString();
   if (m_useDirectoryInfo && (!logger.hasErrors()))
@@ -130,9 +143,16 @@ bool AttributeWriter::writeContents(const smtk::attribute::ResourcePtr resource,
 {
   logger.clearErrors();
   XmlStringWriter* theWriter = this->newXmlStringWriter(resource, logger);
+  theWriter->includeAnalyses(m_includeAnalyses);
+  theWriter->includeAdvanceLevels(m_includeAdvanceLevels);
+  theWriter->includeAttributeAssociations(m_includeAttributeAssociations);
   theWriter->includeDefinitions(m_includeDefinitions);
   theWriter->includeInstances(m_includeInstances);
+  theWriter->includeUniqueRoles(m_includeUniqueRoles);
+  theWriter->includeResourceAssociations(m_includeResourceAssociations);
+  theWriter->includeResourceID(m_includeResourceID);
   theWriter->includeViews(m_includeViews);
+  theWriter->setIncludedDefinitions(m_includedDefs);
   theWriter->useDirectoryInfo(false);
   filecontents = theWriter->convertToString(no_declaration);
   delete theWriter;
@@ -155,6 +175,74 @@ XmlStringWriter* AttributeWriter::newXmlStringWriter(
       break;
   }
   return writer;
+}
+
+void AttributeWriter::setIncludedDefinitions(
+  const std::vector<smtk::attribute::DefinitionPtr>& includedDefs)
+{
+  // Lets make sure there are no redundant definitions - these would cause attribute
+  // instances to be written out multiple times
+  std::size_t i, j, n = includedDefs.size();
+  std::vector<bool> isRedundant;
+  isRedundant.resize(n, false);
+  for (i = 0; i < n; i++)
+  {
+    // Skip the i th def if it has been marked redundant
+    if (isRedundant[i])
+    {
+      continue;
+    }
+    // Mark and skip all nullptr Defs
+    if (includedDefs[i] == nullptr)
+    {
+      isRedundant[i] = true;
+      continue;
+    }
+
+    for (j = i + 1; j < includedDefs.size(); j++)
+    {
+      // Skip testing j if its redundant
+      if (isRedundant[j])
+      {
+        continue;
+      }
+      // If the i th definition is derived from the j th definition we can just skip it
+      if (includedDefs[i]->isA(includedDefs[j]))
+      {
+        isRedundant[i] = true;
+        break;
+      }
+      // If j th definition is derived from the i th then mark it redundant
+      if (includedDefs[j]->isA(includedDefs[i]))
+      {
+        isRedundant[j] = true;
+      }
+    }
+  }
+  // Now lets save all non-redundant definitions
+  m_includedDefs.clear();
+  for (i = 0; i < n; i++)
+  {
+    if (!isRedundant[i])
+    {
+      m_includedDefs.push_back(includedDefs[i]);
+    }
+  }
+}
+void AttributeWriter::treatAsLibrary(
+  const std::vector<smtk::attribute::DefinitionPtr>& includedDefs)
+{
+  // Lets turn off the appropriate sections
+  m_includeAnalyses = false;
+  m_includeAdvanceLevels = false;
+  m_includeAttributeAssociations = false;
+  m_includeDefinitions = false;
+  m_useDirectoryInfo = false;
+  m_includeResourceAssociations = false;
+  m_includeResourceID = false;
+  m_includeUniqueRoles = false;
+  m_includeViews = false;
+  this->setIncludedDefinitions(includedDefs);
 }
 
 } // namespace io

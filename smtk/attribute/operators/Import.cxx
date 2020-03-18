@@ -39,10 +39,25 @@ Import::Result Import::operateInternal()
     this->parameters()->findVoid("UseDirectoryInfo");
   bool useDirectoryInfo = directoryInfoItem->isEnabled();
 
-  // Construct an attribute resource to populate.
-  auto resource = smtk::attribute::Resource::create();
-  auto name = smtk::common::Paths::stem(filename);
-  resource->setName(name);
+  smtk::attribute::ResourcePtr resource;
+  // Check if attribute resource is specified
+  auto resourceItem = this->parameters()->findResource("use-resource");
+  if ((resourceItem != nullptr) && resourceItem->isEnabled())
+  {
+    resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->value(0));
+    if (resource == nullptr)
+    {
+      smtkErrorMacro(log(), "Failed to find specified attribute resource");
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+  }
+  else
+  {
+    // Construct an attribute resource to populate.
+    resource = smtk::attribute::Resource::create();
+    auto name = smtk::common::Paths::stem(filename);
+    resource->setName(name);
+  }
 
   // Populate the attribute resource with the contents of the file.
   smtk::io::AttributeReader reader;
