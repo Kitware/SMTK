@@ -258,7 +258,8 @@ def parse_file(filename, project_source_directory, include_directories,
         return []
 
     # output file preamble
-    fileguard = "pybind_" + filename.replace('.', '_').replace('/', '_')
+    fileguard = "pybind_" + \
+        filename.replace('.', '_').replace('/', '_').replace('-', '_')
 
     stream("""//=========================================================================
 //  Copyright (c) Kitware, Inc.
