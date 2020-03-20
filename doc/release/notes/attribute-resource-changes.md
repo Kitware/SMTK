@@ -105,3 +105,9 @@ This is identical to the functionality provided by Definitions.  Here is an exam
 ```
 
 See smtk/attribute/testing/cxx/unitDefinitionTags.cxx and smtk/attribute/testing/python/definitionTagsTest.py for coding examples.
+
+### smtk::attribute::Utilities Class
+Added a class for utility methods.  The current ones include:
+
+* associatableObjects - a method to return a set of persistent objects that can be assigned to a ReferenceItem
+* checkUniquenessCondition - a method that removes resource::Components from a set based on the uniqueness constraint associated with a ComponentItem

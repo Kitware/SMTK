@@ -26,6 +26,7 @@
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/Utilities.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
@@ -277,7 +278,10 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
 
   ResourcePtr attResource = attDef->resource();
   // Lets get a set of possible candidates that could be assigned to the item
-  auto objSet = this->associatableObjects(ignoreResource);
+  auto resManager = this->uiManager()->resourceManager();
+
+  auto objSet = smtk::attribute::Utilities::associatableObjects(
+    item, resManager, m_useAssociations, ignoreResource);
 
   // In the case of the uniqueness condition, the componentItem's value itself may not be in the set
   // returned (since adding that component would not be legal or perhaps an operation has assigned a
@@ -492,178 +496,6 @@ void qtReferenceItemComboBox::selectItem(int index)
   }
 }
 
-std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::associatableObjects(
-  const smtk::common::UUID& ignoreResource) const
-{
-  std::set<smtk::resource::PersistentObjectPtr> candidates;
-  auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
-  auto theAttribute = item->attribute();
-  auto attResource = theAttribute->attributeResource();
-  if (item == nullptr)
-  {
-    return candidates;
-  }
-
-  // There are 3 possible sources of Persistent Objects:
-  // 1. Those associated with the attribute this item is a member of
-  // 2. Based on the resources associated with the attribute resource the item's attribute
-  // is a component of
-  // 3. The resources contained in the resource manager associated with the UIManager
-  if (this->m_useAssociations)
-  {
-    // We must access elements of the association carefully, since this method is called
-    // in the middle of a resource's removal logic. By accessing the associations' keys
-    // instead of the associations themselves, we avoid triggering the association's
-    // resolve() method (which will attempt to read in the resource being removed).
-    auto associations = theAttribute->associations();
-    for (std::size_t i = 0; i < associations->numberOfValues(); ++i)
-    {
-      if (!associations->isSet(i))
-      {
-        continue;
-      }
-      attribute::ReferenceItem::Key key = theAttribute->associations()->objectKey(i);
-      auto& surrogate = theAttribute->resource()->links().data().value(key.first);
-      if (surrogate.id() != ignoreResource)
-      {
-        if (auto object = associations->objectValue(i))
-        {
-          candidates.insert(object);
-        }
-      }
-    }
-    return this->checkUniquenessCondition(candidates);
-  }
-
-  auto itemDef = item->definitionAs<attribute::ReferenceItemDefinition>();
-  auto assocMap = item->acceptableEntries();
-  auto resManager = this->uiManager()->resourceManager();
-
-  // Are we dealing with the case where the attribute resource has resources directly associated
-  // with it (or if we don't have a resource manager)
-  if (attResource->hasAssociations() || (resManager == nullptr))
-  {
-    auto resources = attResource->associations();
-    // we should always consider the attribute resource itself as well
-    resources.insert(attResource);
-    // Iterate over the acceptable entries
-    decltype(assocMap.equal_range("")) range;
-    for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
-    {
-      // Get the range for the current key
-      range = assocMap.equal_range(i->first);
-
-      // Lets see if any of the resources match this type
-      for (const auto& resource : resources)
-      {
-        if (resource->id() == ignoreResource)
-        {
-          continue;
-        }
-
-        if (resource->isOfType(i->first))
-        {
-          // We need to find all of the component types for
-          // this resource.  If a string is empty then the resource
-          // itself can be associated with the attribute
-          for (auto j = range.first; j != range.second; ++j)
-          {
-            if (j->second.empty())
-            {
-              candidates.insert(resource);
-            }
-            else
-            {
-              auto comps = resource->find(j->second);
-              for (auto comp = comps.begin(); comp != comps.end(); ++comp)
-              {
-                if (*comp)
-                {
-                  candidates.insert(*comp);
-                }
-              }
-              //candidates.insert(comps.begin(), comps.end());
-            }
-          }
-        }
-      }
-    }
-  }
-  else // we need to use the resource manager
-  {
-    decltype(assocMap.equal_range("")) range;
-    for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
-    {
-      // Get the range for the current key
-      range = assocMap.equal_range(i->first);
-
-      // As the resource manager to get all appropriate resources
-      auto resources = resManager->find(i->first);
-      // Need to process all of these resources
-      for (const auto& resource : resources)
-      {
-        if (resource->id() == ignoreResource)
-        {
-          continue;
-        }
-        // We need to find all of the component types for
-        // this resource.  If a string is empty then the resource
-        // itself can be associated with the attribute
-        for (auto j = range.first; j != range.second; ++j)
-        {
-          if (j->second.empty())
-          {
-            candidates.insert(resource);
-          }
-          else
-          {
-            auto comps = resource->find(j->second);
-            candidates.insert(comps.begin(), comps.end());
-          }
-        }
-      }
-    }
-  }
-  return this->checkUniquenessCondition(candidates);
-}
-
-std::set<smtk::resource::PersistentObjectPtr> qtReferenceItemComboBox::checkUniquenessCondition(
-  const std::set<smtk::resource::PersistentObjectPtr>& objSet) const
-{
-  auto compItem = m_itemInfo.itemAs<attribute::ComponentItem>();
-  // Uniqueness condition only applies to component items (not resource items)
-  if (compItem == nullptr)
-  {
-    return objSet;
-  }
-
-  auto theAttribute = compItem->attribute();
-  auto attResource = theAttribute->attributeResource();
-  auto compDef = compItem->definitionAs<ComponentItemDefinition>();
-  auto role = compDef->role();
-  if (!attResource->isRoleUnique(role))
-  {
-    return objSet;
-  }
-  std::set<smtk::resource::PersistentObjectPtr> result;
-  for (auto& obj : objSet)
-  {
-    auto comp = dynamic_pointer_cast<smtk::resource::Component>(obj);
-    if ((comp != nullptr) && compItem->isValueValid(comp))
-    {
-      result.insert(comp);
-    }
-    else if (comp != nullptr)
-    {
-#if !defined(NDEBUG)
-      auto otherAtt = attResource->findAttribute(comp, compDef->role());
-      std::cerr << "comboBox - comp:" << comp->name()
-                << " is not allowed due to: " << otherAtt->name() << std::endl;
-#endif
-    }
-  }
-  return result;
-}
 void qtReferenceItemComboBox::removeObservers()
 {
   if (m_operationObserverKey.assigned())

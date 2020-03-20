@@ -13,3 +13,7 @@ Ex. Show a list of components who has a string property as "selectable".
 Now PhraseContent and DescriptivePhrase classes learn the ability
 to get the undecoratedContent directly via undecoratedContent()
 function.
+
+## ComponentItemPhraseModel
+Added a phrase model that uses the associatable objects method in the new smtk::attribute::Utilities class.
+This method takes uniqueness into consideration.
