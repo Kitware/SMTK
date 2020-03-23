@@ -233,7 +233,7 @@ int TestMergeOp(int argc, char* argv[])
     smtk::operation::Operation::Ptr printOp =
       operationManager->create<smtk::session::mesh::Print>();
 
-    printOp->parameters()->associate(mergeOpResult->findComponent("created")->objectValue());
+    printOp->parameters()->associate(mergeOpResult->findComponent("created")->value());
 
     smtk::operation::Operation::Result printOpResult = printOp->operate();
 

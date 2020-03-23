@@ -55,9 +55,9 @@ public:
 
   /**\brief Append a value to the item if possible.
     *
-    * This method ensures compile-time type-safety while appendObjectValue() does not.
+    * This method ensures compile-time type-safety while appendValue() does not.
     */
-  bool appendValue(ResourcePtr value) { return this->appendObjectValue(value); }
+  bool appendValue(ResourcePtr value) { return ReferenceItem::appendValue(value); }
 
   /// Serialize the \a i-th value to a string.
   std::string valueAsString(std::size_t i) const override;

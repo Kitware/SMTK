@@ -373,7 +373,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
       {
         if (auto entity = association->find(uid))
         {
-          item->setObjectValue(static_cast<int>(i), entity);
+          item->setValue(static_cast<int>(i), entity);
           break;
         }
       }
@@ -389,7 +389,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
       {
         if (auto entity = association->find(uid))
         {
-          item->setObjectValue(0, entity);
+          item->setValue(0, entity);
           break;
         }
       }

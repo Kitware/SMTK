@@ -182,7 +182,7 @@ AddAuxiliaryGeometry::Result AddAuxiliaryGeometry::operateInternal()
   {
     auto tessItem = result->findComponent("tess_changed");
     tessItem->setNumberOfValues(1);
-    tessItem->setObjectValue(auxGeom.component());
+    tessItem->setValue(auxGeom.component());
   }
 
   return result;

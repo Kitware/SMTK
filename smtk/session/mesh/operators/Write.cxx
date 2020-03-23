@@ -61,7 +61,7 @@ Write::Result Write::operateInternal()
   auto resourceItem = this->parameters()->associations();
 
   smtk::session::mesh::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->objectValue());
+    std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->value());
 
   // Serialize resource into a set of JSON records:
   nlohmann::json j = resource;

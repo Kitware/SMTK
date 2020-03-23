@@ -156,7 +156,7 @@ const char* Export::xmlDescription() const
 bool exportResource(const smtk::resource::ResourcePtr& resource)
 {
   Export::Ptr exportResource = Export::create();
-  if (!exportResource->parameters()->associations()->setObjectValue(resource))
+  if (!exportResource->parameters()->associations()->setValue(resource))
   {
     return false;
   }

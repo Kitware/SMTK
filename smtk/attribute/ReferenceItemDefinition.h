@@ -130,9 +130,9 @@ protected:
   void copyTo(Ptr dst) const;
 
   /// Return whether a resource is accepted by this definition. Used internally by isValueValid().
-  bool checkResource(smtk::resource::ConstResourcePtr rsrc) const;
+  bool checkResource(const smtk::resource::Resource& rsrc) const;
   /// Return whether a component is accepted by this definition. Used internally by isValueValid().
-  bool checkComponent(smtk::resource::ConstComponentPtr comp) const;
+  bool checkComponent(const smtk::resource::Component& comp) const;
 
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;

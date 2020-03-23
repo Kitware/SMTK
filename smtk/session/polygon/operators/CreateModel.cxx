@@ -101,8 +101,7 @@ CreateModel::Result CreateModel::operateInternal()
     if (existingResourceItem->numberOfValues() > 0)
     {
       smtk::session::polygon::Resource::Ptr existingResource =
-        std::static_pointer_cast<smtk::session::polygon::Resource>(
-          existingResourceItem->objectValue());
+        std::static_pointer_cast<smtk::session::polygon::Resource>(existingResourceItem->value());
 
       session = existingResource->polygonSession();
 

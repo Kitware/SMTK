@@ -71,7 +71,7 @@ CreateEdgeFromVertices::Result CreateEdgeFromVertices::operateInternal()
   // Lets check to make sure the vertices are valid
   for (int i = 0; i < 2; i++)
   {
-    verts[i] = resource->findStorage<internal::vertex>(modelItem->objectValue(i)->id());
+    verts[i] = resource->findStorage<internal::vertex>(modelItem->value(i)->id());
     if (!verts[i])
     {
       smtkErrorMacro(this->log(), "When constructing an edge from vertices, Vertex "

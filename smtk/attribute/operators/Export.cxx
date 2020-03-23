@@ -38,7 +38,7 @@ Export::Result Export::operateInternal()
   // Access the attribute resource to export.
   auto resourceItem = this->parameters()->associations();
   smtk::attribute::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->objectValue());
+    std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->value());
 
   // Get the attribute collection option
   std::vector<DefinitionPtr> defnList;

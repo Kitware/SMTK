@@ -45,6 +45,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindItemDefinition.h"
 #include "PybindModelEntityItem.h"
 #include "PybindModelEntityItemDefinition.h"
+#include "PybindQueries.h"
 #include "PybindReferenceItem.h"
 #include "PybindReferenceItemDefinition.h"
 #include "PybindRegistrar.h"

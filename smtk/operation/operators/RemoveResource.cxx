@@ -51,8 +51,7 @@ RemoveResource::Result RemoveResource::operateInternal()
   for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
   {
     // ...access the resource...
-    auto resource =
-      std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->objectValue(i));
+    auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->value(i));
 
     // ...remove it from the manager...
     bool removed = resourceManager->remove(resource);

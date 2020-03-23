@@ -126,7 +126,7 @@ public:
     * the definition must exist at the time that queryOperation() is called.
     * This requirement allows faster repeated evaluation of the query.
     */
-  std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
+  std::function<bool(const smtk::resource::Component&)> queryOperation(
     const std::string&) const override;
   ///\brief Given an attribute definition, construct a valid query to retrive attributes of that type
   static std::string createAttributeQuery(const smtk::attribute::DefinitionPtr& def);

@@ -216,9 +216,7 @@ int TestElevateMeshOnStructuredGrid(int argc, char* argv[])
     // set input values for the elevate mesh operator
     elevateMesh->parameters()->associate(smtk::mesh::Component::create(mesh));
     elevateMesh->parameters()->findString("input data")->setToDefault();
-    elevateMesh->parameters()
-      ->findComponent("auxiliary geometry")
-      ->setObjectValue(auxGeo.component());
+    elevateMesh->parameters()->findComponent("auxiliary geometry")->setValue(auxGeo.component());
     elevateMesh->parameters()->findString("interpolation scheme")->setToDefault();
     elevateMesh->parameters()->findDouble("radius")->setValue(7.);
     elevateMesh->parameters()->findString("external point values")->setValue("set to value");

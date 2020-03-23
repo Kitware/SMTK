@@ -79,7 +79,7 @@ Import::Result Import::operateInternal()
   if (existingResourceItem->numberOfValues() > 0)
   {
     smtk::session::mesh::Resource::Ptr existingResource =
-      std::static_pointer_cast<smtk::session::mesh::Resource>(existingResourceItem->objectValue());
+      std::static_pointer_cast<smtk::session::mesh::Resource>(existingResourceItem->value());
 
     session = existingResource->session();
 

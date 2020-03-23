@@ -40,7 +40,7 @@ Write::Result Write::operateInternal()
   auto resourceItem = this->parameters()->associations();
 
   smtk::attribute::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->objectValue());
+    std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->value());
 
   // Serialize resource into a set of JSON records:
   nlohmann::json j;

@@ -371,15 +371,15 @@ ElevateMesh::Result ElevateMesh::operateInternal()
 
     smtk::mesh::utility::applyWarp(fn, mesh, true);
 
-    modified->appendObjectValue(meshComponent);
+    modified->appendValue(meshComponent);
 
     smtk::model::EntityRefArray entities;
     bool entitiesAreValid = mesh.modelEntities(entities);
     if (entitiesAreValid && !entities.empty())
     {
       smtk::model::Model model = entities[0].owningModel();
-      modified->appendObjectValue(model.component());
-      modifiedEntities->appendObjectValue(model.component());
+      modified->appendValue(model.component());
+      modifiedEntities->appendValue(model.component());
     }
   }
 

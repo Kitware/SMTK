@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_view_ComponentItemPhraseModel_h
-#define smtk_view_ComponentItemPhraseModel_h
+#ifndef smtk_view_ReferenceItemPhraseModel_h
+#define smtk_view_ReferenceItemPhraseModel_h
 
 #include "smtk/view/ComponentPhraseModel.h"
 
@@ -24,16 +24,16 @@ namespace view
   * asking the resource for all matching components each time
   * an operation runs.
   *
-  * The list is flat (i.e., no subphrase generator is provided by default).
+  * The list is flat (i.e., no sub-phrase generator is provided by default).
   * The model provides access to a user-selected subset as an smtk::view::Selection.
   */
-class SMTKCORE_EXPORT ComponentItemPhraseModel : public ComponentPhraseModel
+class SMTKCORE_EXPORT ReferenceItemPhraseModel : public ComponentPhraseModel
 {
 public:
-  smtkTypeMacro(smtk::view::ComponentItemPhraseModel);
+  smtkTypeMacro(smtk::view::ReferenceItemPhraseModel);
   smtkSuperclassMacro(smtk::view::ComponentPhraseModel);
   smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
-  virtual ~ComponentItemPhraseModel();
+  virtual ~ReferenceItemPhraseModel();
 
   /**\brief Create a model and configure it given a view description.
     *
@@ -43,16 +43,16 @@ public:
     */
   static PhraseModelPtr create(const smtk::view::Configuration::Component& viewComp);
   void setUseAttributeAssociations(bool val) { m_useAttributeAssociatons = val; }
-  void setComponentItem(smtk::attribute::ComponentItemPtr& compItem);
+  void setReferenceItem(smtk::attribute::ReferenceItemPtr& refItem);
 
 protected:
-  ComponentItemPhraseModel();
+  ReferenceItemPhraseModel();
 
   ///\brief Populate the root based on a set of appropriate resource components.
   void populateRoot() override;
-  void handleModified(
-    const Operation& op, const Operation::Result& res, const ComponentItemPtr& data) override;
-  smtk::attribute::ComponentItemPtr m_compItem;
+  void handleModified(const Operation& op, const Operation::Result& res,
+    const smtk::attribute::ComponentItemPtr& data) override;
+  smtk::attribute::ReferenceItemPtr m_refItem;
   bool m_useAttributeAssociatons;
 };
 }

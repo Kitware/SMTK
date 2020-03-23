@@ -128,8 +128,7 @@ ImportOperation::Result ImportOperation::operateInternal()
   if (existingResourceItem->numberOfValues() > 0)
   {
     smtk::session::discrete::Resource::Ptr existingResource =
-      std::static_pointer_cast<smtk::session::discrete::Resource>(
-        existingResourceItem->objectValue());
+      std::static_pointer_cast<smtk::session::discrete::Resource>(existingResourceItem->value());
 
     session = existingResource->discreteSession();
 

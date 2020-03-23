@@ -1027,8 +1027,7 @@ smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& uid) const
 
 /// Given a query string, return a functor that determines if a component is
 /// accepted by the query.
-std::function<bool(const ConstComponentPtr&)> Resource::queryOperation(
-  const std::string& queryString) const
+std::function<bool(const Component&)> Resource::queryOperation(const std::string& queryString) const
 {
   return smtk::model::Entity::filterStringToQueryFunctor(queryString);
 }

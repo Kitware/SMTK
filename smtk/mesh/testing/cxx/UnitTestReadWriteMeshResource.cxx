@@ -88,8 +88,8 @@ int UnitTestReadWriteMeshResource(int /*unused*/, char** const /*unused*/)
 
   //reload the written file and verify the number of meshes are the same as the
   //input mesh
-  smtk::mesh::ResourcePtr mr1 = std::dynamic_pointer_cast<smtk::mesh::Resource>(
-    result->findResource("resource")->objectValue());
+  smtk::mesh::ResourcePtr mr1 =
+    std::dynamic_pointer_cast<smtk::mesh::Resource>(result->findResource("resource")->value());
   test(mr1 != nullptr, "could not access read resource operation result");
 
   //remove the files from disk

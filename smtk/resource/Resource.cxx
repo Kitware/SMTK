@@ -51,7 +51,7 @@ ComponentSet Resource::find(const std::string& queryString) const
 
   // Visit each component and add it to the set if it satisfies the query
   smtk::resource::Component::Visitor visitor = [&](const ComponentPtr& component) {
-    if (queryOp(component))
+    if (queryOp(*component))
     {
       componentSet.insert(component);
     }

@@ -324,7 +324,7 @@ int polyLines2modelEdgesAndFaces(
         int ii = 0;
         for (const auto& ced : createdEds)
         {
-          assocs->setObjectValue(ii, ced.component());
+          assocs->setValue(ii, ced.component());
           ++ii;
         }
         //std::cout << "number of created new edges: " << createdEds.size() << std::endl;
@@ -339,7 +339,8 @@ int polyLines2modelEdgesAndFaces(
         if (faceResult->findInt("outcome")->value() !=
           static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
-          smtkDebugMacro(logger, "\"force create face\" op failed to creat face with given edges.");
+          smtkDebugMacro(
+            logger, "\"force create face\" op failed to create face with given edges.");
         }
         // Add a pedigree ID (if we have it, or -1 otherwise) to each face:
         smtk::model::EntityRef(faceResult->findComponent("created")->valueAs<smtk::model::Entity>())
@@ -474,7 +475,7 @@ Import::Result Import::operateInternal()
 
     if (existingResourceItem->numberOfValues() > 0)
     {
-      modOp->parameters()->associate(existingResourceItem->objectValue());
+      modOp->parameters()->associate(existingResourceItem->value());
       smtk::attribute::StringItem::Ptr sessionOnlyItem =
         this->parameters()->findString("session only");
       modOp->parameters()->findString("session only")->setValue(sessionOnlyItem->value());

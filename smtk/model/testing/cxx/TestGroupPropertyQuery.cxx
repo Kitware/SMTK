@@ -177,7 +177,7 @@ int TestGroupPropertyQuery(int argc, char* argv[])
   smtk::resource::Component::Visitor visitor = [&](const smtk::resource::ComponentPtr& component) {
     for (std::size_t i = 0; i < queries.size(); i++)
     {
-      if (queries[i](component))
+      if (queries[i](*component))
       {
         ++counts[i];
       }

@@ -51,7 +51,7 @@ CloseModel::Result CloseModel::operateInternal()
   smtk::attribute::ReferenceItem::Ptr modelItem = this->parameters()->associations();
 
   smtk::model::Resource::Ptr resource = std::static_pointer_cast<smtk::model::Resource>(
-    std::static_pointer_cast<smtk::resource::Component>(modelItem->objectValue())->resource());
+    std::static_pointer_cast<smtk::resource::Component>(modelItem->value())->resource());
 
   std::set<smtk::resource::ComponentPtr> expunged;
   bool success = true;

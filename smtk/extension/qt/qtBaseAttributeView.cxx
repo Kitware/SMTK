@@ -183,7 +183,7 @@ void signalAttribute(smtk::extension::qtUIManager* uiManager,
       auto signalOp = opManager->create<smtk::attribute::Signal>();
       if (signalOp)
       {
-        signalOp->parameters()->findComponent(itemName)->appendObjectValue(attr);
+        signalOp->parameters()->findComponent(itemName)->appendValue(attr);
         signalOp->parameters()->findString("items")->setValues(items.begin(), items.end());
         opManager->launchers()(signalOp);
       }

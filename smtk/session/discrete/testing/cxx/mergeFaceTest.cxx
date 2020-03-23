@@ -113,15 +113,15 @@ int main(int argc, char* argv[])
     smtk::session::discrete::MergeOperation::create();
   test(mergeOp != nullptr, "No merge face operator.");
   smtk::attribute::ReferenceItemPtr modelPtr = mergeOp->parameters()->findComponent("model");
-  test(modelPtr != nullptr && modelPtr->setObjectValue(modelCmb.component()),
-    "Could not associate model");
+  test(
+    modelPtr != nullptr && modelPtr->setValue(modelCmb.component()), "Could not associate model");
   modelPtr = mergeOp->parameters()->associations();
   modelPtr->setNumberOfValues(3);
   modelPtr->setValuesVia(
     faces.begin() + 2, faces.begin() + 5, [](const smtk::model::Face& f) { return f.component(); });
   test(modelPtr->numberOfValues() == 3, "Could not set source cells.");
   modelPtr = mergeOp->parameters()->findComponent("target cell");
-  test(modelPtr != nullptr && modelPtr->appendObjectValue(faces[5].component()),
+  test(modelPtr != nullptr && modelPtr->appendValue(faces[5].component()),
     "Could not set target cell");
   auto result = mergeOp->operate();
   test(result->findInt("outcome")->value() ==

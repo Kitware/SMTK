@@ -41,8 +41,12 @@ Item::Type ComponentItemDefinition::type() const
 
 bool ComponentItemDefinition::isValueValid(smtk::resource::ConstPersistentObjectPtr obj) const
 {
-  auto comp = std::dynamic_pointer_cast<const smtk::resource::Component>(obj);
-  return this->checkComponent(comp);
+  auto comp = dynamic_cast<const smtk::resource::Component*>(obj.get());
+  if (comp == nullptr)
+  {
+    return false;
+  }
+  return this->checkComponent(*comp);
 }
 
 smtk::attribute::ItemPtr ComponentItemDefinition::buildItem(

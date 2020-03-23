@@ -174,7 +174,7 @@ CreateEdge::Result CreateEdge::operateInternal()
         internal::Point curr;
         internal::Point prev;
         bool first = true;
-        edgeIsPeriodic = (modelItem->objectValue(edgeOffset) == modelItem->objectValue(edgeEnd));
+        edgeIsPeriodic = (modelItem->value(edgeOffset) == modelItem->value(edgeEnd));
         for (; edgeOffset < edgeEnd; ++edgeOffset, prev = curr)
         {
           auto evert = modelItem->valueAs<smtk::model::Entity>(edgeOffset);

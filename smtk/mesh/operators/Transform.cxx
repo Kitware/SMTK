@@ -146,8 +146,8 @@ smtk::mesh::Transform::Result Transform::operateInternal()
     if (entitiesAreValid && !entities.empty())
     {
       smtk::model::Model model = entities[0].owningModel();
-      modified->appendObjectValue(model.component());
-      modifiedEntities->appendObjectValue(model.component());
+      modified->appendValue(model.component());
+      modifiedEntities->appendValue(model.component());
     }
   }
 

@@ -36,8 +36,12 @@ Item::Type ResourceItemDefinition::type() const
 
 bool ResourceItemDefinition::isValueValid(smtk::resource::ConstPersistentObjectPtr obj) const
 {
-  auto rsrc = std::dynamic_pointer_cast<const smtk::resource::Resource>(obj);
-  return this->checkResource(rsrc);
+  auto rsrc = dynamic_cast<const smtk::resource::Resource*>(obj.get());
+  if (rsrc == nullptr)
+  {
+    return false;
+  }
+  return this->checkResource(*rsrc);
 }
 
 smtk::attribute::ItemPtr ResourceItemDefinition::buildItem(

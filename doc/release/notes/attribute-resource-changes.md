@@ -111,3 +111,12 @@ Added a class for utility methods.  The current ones include:
 
 * associatableObjects - a method to return a set of persistent objects that can be assigned to a ReferenceItem
 * checkUniquenessCondition - a method that removes resource::Components from a set based on the uniqueness constraint associated with a ComponentItem
+
+### Changes to ReferenceItem
+* Deprecated the following methods - note that the old methods are still available but will produce compiler warnings if used (C++14 feature)
+  * objectValue replaced by value
+  * setObjectValue replaced by setValue
+  * appendObjectValues replaced by appendValues
+  * setObjectValues replaced by setValues
+* Added Methods
+  * isValueValid - the validity of the item now factors in the state of the instance.  This is needed to support Unique Constraints

@@ -26,7 +26,7 @@
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Resource.h"
-#include "smtk/attribute/Utilities.h"
+#include "smtk/attribute/utility/Queries.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
@@ -280,7 +280,7 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   // Lets get a set of possible candidates that could be assigned to the item
   auto resManager = this->uiManager()->resourceManager();
 
-  auto objSet = smtk::attribute::Utilities::associatableObjects(
+  auto objSet = smtk::attribute::utility::associatableObjects(
     item, resManager, m_useAssociations, ignoreResource);
 
   // In the case of the uniqueness condition, the componentItem's value itself may not be in the set
@@ -288,13 +288,13 @@ void qtReferenceItemComboBox::updateChoices(const smtk::common::UUID& ignoreReso
   // component that would bypass the potential souurces of components.  For example, the component
   // may have been assigned from a resource that was not directly associated to the attribute resource.
   // Just to be safe lets add the item's current value (if set)
-  if (item->isSet() && item->objectValue())
+  if (item->isSet() && item->value())
   {
-    objSet.insert(item->objectValue());
+    objSet.insert(item->value());
   }
 
   std::vector<smtk::resource::PersistentObjectPtr> objects(objSet.begin(), objSet.end());
-  smtk::resource::PersistentObjectPtr selectObj = item->objectValue();
+  smtk::resource::PersistentObjectPtr selectObj = item->value();
   // Lets sort the list
   std::sort(std::begin(objects), std::end(objects),
     [](smtk::resource::PersistentObjectPtr a, smtk::resource::PersistentObjectPtr b) {
@@ -482,9 +482,9 @@ void qtReferenceItemComboBox::selectItem(int index)
   else // Will this change the item?
   {
     auto selectedObject = this->object(index);
-    if (selectedObject && !(item->isSet() && (item->objectValue() == selectedObject)))
+    if (selectedObject && !(item->isSet() && (item->value() == selectedObject)))
     {
-      item->setObjectValue(selectedObject);
+      item->setValue(selectedObject);
       emit this->modified();
     }
   }

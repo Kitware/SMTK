@@ -109,7 +109,7 @@ int unitUnsetValueError(int argc, char* argv[])
 
   for (std::size_t i = 0; i < referenceItem->numberOfValues() - 1; ++i)
   {
-    referenceItem->setObjectValue(i, allFaces[i].component());
+    referenceItem->setValue(i, allFaces[i].component());
   }
 
   bool errorCaught = false;

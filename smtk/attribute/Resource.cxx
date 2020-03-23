@@ -919,12 +919,12 @@ std::string Resource::createAttributeQuery(const std::string& defType)
   return s;
 }
 
-std::function<bool(const smtk::resource::ConstComponentPtr&)> Resource::queryOperation(
+std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(
   const std::string& filter) const
 {
   if (filter.empty() || filter == "any" || filter == "*")
   {
-    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
+    return [](const smtk::resource::Component& /*unused*/) { return true; };
   }
   const std::string attributeFilter("attribute");
   if (!filter.compare(0, attributeFilter.size(), attributeFilter))
@@ -939,14 +939,14 @@ std::function<bool(const smtk::resource::ConstComponentPtr&)> Resource::queryOpe
       smtk::attribute::DefinitionPtr defn = this->findDefinition(sdef);
       if (defn)
       {
-        return [defn](const smtk::resource::ConstComponentPtr& comp) {
-          auto attr = std::dynamic_pointer_cast<const Attribute>(comp);
+        return [defn](const smtk::resource::Component& comp) {
+          auto attr = dynamic_cast<const Attribute*>(&comp);
           return (attr && attr->isA(defn));
         };
       }
     }
   }
-  return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return false; };
+  return [](const smtk::resource::Component& /*unused*/) { return false; };
 }
 
 // visit all components in the resource.
