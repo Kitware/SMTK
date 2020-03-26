@@ -15,6 +15,7 @@
 #include "smtk/geometry/Resource.h"
 
 #include "vtkDataObject.h"
+#include "vtkImageData.h"
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
 #include "vtkInformationVector.h"
@@ -263,6 +264,11 @@ int vtkResourceMultiBlockSource::RequestDataFromGeometry(vtkInformation* request
       auto& data = geometry.data(obj);
       if (data)
       {
+        // only add image data to dim 3 list
+        if (dim == 3 && !vtkImageData::SafeDownCast(data))
+        {
+          return false;
+        }
         vtkResourceMultiBlockSource::SetDataObjectUUID(data->GetInformation(), obj->id());
         blocks[dim].push_back(data);
       }
