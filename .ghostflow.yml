@@ -1,0 +1,65 @@
+reformat:
+    - clang-format
+    - autopep8
+
+formatters:
+    clang-format:
+        formatter: /root/source-formatters/src/c/format.clang-format
+        config_files:
+            - ".clang-format"
+            - "**/.clang-format"
+        timeout: 5
+    autopep8:
+        formatter: /root/source-formatters/src/python/format.autopep8
+        config_files:
+            - "tox.ini"
+            - "setup.cfg"
+        timeout: 5
+checks:
+    - kind: "check_end_of_line"
+    - kind: "check_executable_permissions"
+      config:
+        extensions: [".bat", ".cmd", ".exe", ".com"]
+    - kind: "check_size"
+    - kind: "check_whitespace"
+    - kind: "commit_subject"
+      config:
+        check_wip: true
+        check_rebase_commands: true
+        min_length: 8
+        max_length: 78
+    - kind: "invalid_paths"
+      config:
+        enforce_windows_rules: true
+    - kind: "invalid_utf8"
+    - kind: "lfs_pointer"
+    - kind: "reject_conflict_paths"
+    - kind: "reject_separate_root"
+    - kind: "reject_symlinks"
+    - kind: "submodule_available"
+      config:
+        require_first_parent: true
+    - kind: "submodule_rewind"
+    - kind: "submodule_watch"
+      config:
+        reject_additions: true
+        reject_removals: true
+    - kind: "valid_name"
+      config:
+        full_name_policy: "preferred"
+        whitelisted_domains:
+            - gmail.com
+            - kitware.com
+            - users.noreply.github.com
+    - kind: "formatter"
+      config:
+        kind: "clang-format"
+    - kind: "formatter"
+      config:
+        kind: "autopep8"
+    - kind: "changelog/topic"
+      config:
+        style: "directory"
+        path: "doc/release/notes"
+        extension: "md"
+        required: false
