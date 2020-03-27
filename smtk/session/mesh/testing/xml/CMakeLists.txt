@@ -6,6 +6,7 @@ include(SMTKPVTestingMacros)
 #TODO: this should be set for the entire project's xml tests
 set(OpenExodusFile_USES_DIRECT_DATA ON)
 
+if (SMTK_DATA_DIR)
 smtk_add_client_tests(
 #  LABEL "pv_meshsession"
   TEST_SCRIPTS ${TESTS_WITH_BASELINES}
@@ -20,3 +21,4 @@ smtk_add_client_tests(
   DATA_DIRECTORY ${PROJECT_SOURCE_DIR}/data
   BASELINE_DIR ${PROJECT_SOURCE_DIR}/data/baseline/smtk/mesh
   )
+endif ()
