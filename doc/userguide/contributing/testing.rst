@@ -6,6 +6,9 @@ All new functionality added to SMTK should include tests.
 When you are preparing to write tests, consider the following
 
 * Unit tests should be present to provide coverage of new classes and methods.
+* Build-failure tests provide coverage for template metaprogramming by
+  attempting to build code that is expected to cause static assertions or
+  other compilation failures.
 * Integration tests should be present to ensure features work in combination
   with one another as intended; these tests should model how users are expected
   to exercise SMTK in a typical workflow.
@@ -16,6 +19,61 @@ When you are preparing to write tests, consider the following
   A contract test works by cloning, building, and testing an external project;
   if the external project's tests all succeed, then the contract test succeeds.
   Otherwise, the contract test fails.
+
+Unit tests
+----------
+
+SMTK provides a CMake macro named ``smtk_unit_tests`` that you should use to create unit tests.
+This macro will create a single executable that runs tests in multiple source files;
+this reduces the number of executables in SMTK and makes tests more uniform.
+Because there is a single executable, you should make your test a function whose name
+matches the name of your source file (e.g., ``int TestResource(int, const char* [])``)
+rather than ``int main(int, const char* [])``.
+The CMake macro also allows a LABEL to be assigned to each of the tests in the executable;
+this label can be used during development to run a subset of tests and during integration
+to identify areas related to test failures or timings in CDash.
+
+Build-failure tests
+-------------------
+
+Build-failure tests verify that code which is expected to cause a compiler error
+does actually cause an error.
+A CMake macro named ``smtk_build_failure_tests`` is
+provided in :file:`CMake/SMTKTestingMacros.cmake`.
+This macro generates tests that succeed when they fail to compile code you provide, as a way
+to improve coverage of template metaprogramming code.
+
+You can attempt to build the same source file multiple times; each time, a compiler macro named
+`SMTK_FAILURE_INDEX` is assigned an increasing integer so you can change what code is tested.
+Consider this example
+
+.. code-block:: c++
+
+   int main()
+   {
+   #if SMTK_FAILURE_INDEX < 1
+     static_assert(false, "Failure mode 1");
+   #elif SMTK_FAILURE_INDEX < 2
+     static_assert(false, "Failure mode 2");
+     //...
+   #endif
+
+     return 0;
+   }
+
+If this file was named `simple.cxx`, you could add tests for it with
+
+.. code-block:: cmake
+
+   smtk_build_failure_tests(
+     LABEL SomeLabel
+     TESTS
+       simple.cxx 2
+     LIBRARIES smtkCore
+   )
+
+This would create 2 tests that each try to compile `simple.cxx`
+with different `SMTK_FAILURE_INDEX` values (0 and 1).
 
 Contract tests
 --------------
