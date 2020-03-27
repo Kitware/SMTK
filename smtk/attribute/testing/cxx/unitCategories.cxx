@@ -284,7 +284,7 @@ int unitCategories(int /*unused*/, char* /*unused*/ [])
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
   attRes = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-    opresult->findResource("resource")->objectValue());
+    opresult->findResource("resource")->value());
   //Test the resource created using JSON
   smtkTest(
     testCategories(attRes, "JSON Pass - ", answers), "Failed checking Categories in JSON Pass");

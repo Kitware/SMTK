@@ -168,7 +168,7 @@ int main(int argc, char** argv)
       }
 
       copiedResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-        result->findResource("resource")->objectValue());
+        result->findResource("resource")->value());
     }
 
     // 5. Write the new resource to a .sbi file

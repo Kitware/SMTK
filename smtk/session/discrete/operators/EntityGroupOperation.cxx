@@ -280,12 +280,8 @@ EntityGroupOperation::Result EntityGroupOperation::operateInternal()
 vtkModelEntity* EntityGroupOperation::fetchCMBCell(
   smtk::session::discrete::Resource::Ptr& resource, const std::string& pname) const
 {
-  vtkModelItem* item =
-    resource->discreteSession()->entityForUUID(const_cast<EntityGroupOperation*>(this)
-                                                 ->parameters()
-                                                 ->findComponent(pname)
-                                                 ->objectValue()
-                                                 ->id());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(
+    const_cast<EntityGroupOperation*>(this)->parameters()->findComponent(pname)->value()->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   return cell;
@@ -294,7 +290,7 @@ vtkModelEntity* EntityGroupOperation::fetchCMBCell(
 vtkModelEntity* EntityGroupOperation::fetchCMBCell(smtk::session::discrete::Resource::Ptr& resource,
   const smtk::attribute::ComponentItemPtr& entItem, int idx) const
 {
-  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->objectValue(idx)->id());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->value(idx)->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   return cell;

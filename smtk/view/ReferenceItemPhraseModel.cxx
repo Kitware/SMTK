@@ -7,49 +7,50 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/view/ComponentItemPhraseModel.h"
+#include "smtk/view/ReferenceItemPhraseModel.h"
 
-#include "smtk/attribute/Utilities.h"
+#include "smtk/attribute/utility/Queries.h"
 
 #include "smtk/resource/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/ReferenceItem.h"
 
 #include "smtk/resource/Component.h"
 #include "smtk/view/ComponentPhraseContent.h"
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/ResourcePhraseContent.h"
 #include "smtk/view/SubphraseGenerator.h"
 
 #include <algorithm> // for std::sort
 
 using namespace smtk::view;
 
-PhraseModelPtr ComponentItemPhraseModel::create(
+PhraseModelPtr ReferenceItemPhraseModel::create(
   const smtk::view::Configuration::Component& itemViewSpec)
 {
   // Currently the itemViewSpec is not used but in the future it will contain information to
   // customize how the model should behave
   (void)itemViewSpec;
-  auto model = PhraseModel::Ptr(new ComponentItemPhraseModel);
+  auto model = PhraseModel::Ptr(new ReferenceItemPhraseModel);
   model->root()->findDelegate()->setModel(model);
   return model;
 }
 
-ComponentItemPhraseModel::ComponentItemPhraseModel()
+ReferenceItemPhraseModel::ReferenceItemPhraseModel()
 {
   m_useAttributeAssociatons = false;
 }
 
-ComponentItemPhraseModel::~ComponentItemPhraseModel() = default;
+ReferenceItemPhraseModel::~ReferenceItemPhraseModel() = default;
 
-void ComponentItemPhraseModel::setComponentItem(smtk::attribute::ComponentItemPtr& compItem)
+void ReferenceItemPhraseModel::setReferenceItem(smtk::attribute::ReferenceItemPtr& refItem)
 {
-  m_compItem = compItem;
+  m_refItem = refItem;
   this->populateRoot();
 }
 
-void ComponentItemPhraseModel::populateRoot()
+void ReferenceItemPhraseModel::populateRoot()
 {
   // FIXME: What should happen if m_componentFilters is empty?
   //        It seems like _all_ components (possibly just from the active resource)
@@ -68,27 +69,35 @@ void ComponentItemPhraseModel::populateRoot()
     return true;
   });
 
-  auto objSet = smtk::attribute::Utilities::associatableObjects(
-    m_compItem, resourceManager, m_useAttributeAssociatons);
+  auto objSet = smtk::attribute::utility::associatableObjects(
+    m_refItem, resourceManager, m_useAttributeAssociatons);
 
   // Turn each entry of comps into a decorated phrase, sort, and update.
   DescriptivePhrases children;
   for (const auto& obj : objSet)
   {
     const auto& comp = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
-    if (comp == nullptr)
+    if (comp != nullptr)
     {
-      continue;
+      children.push_back(
+        smtk::view::ComponentPhraseContent::createPhrase(comp, m_mutableAspects, m_root));
     }
-    children.push_back(
-      smtk::view::ComponentPhraseContent::createPhrase(comp, m_mutableAspects, m_root));
+    else
+    {
+      const auto& rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(obj);
+      if (rsrc != nullptr)
+      {
+        children.push_back(
+          smtk::view::ResourcePhraseContent::createPhrase(rsrc, m_mutableAspects, m_root));
+      }
+    }
   }
   std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
   this->root()->findDelegate()->decoratePhrases(children);
   this->updateChildren(m_root, children, std::vector<int>());
 }
 
-void ComponentItemPhraseModel::handleModified(
+void ReferenceItemPhraseModel::handleModified(
   const Operation& op, const Operation::Result& res, const ComponentItemPtr& data)
 {
   this->Superclass::handleModified(op, res, data);

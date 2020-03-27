@@ -108,7 +108,7 @@ int unitDetachReferenceItem(int argc, char* argv[])
 
   for (std::size_t i = 0; i < referenceItem->numberOfValues(); ++i)
   {
-    referenceItem->setObjectValue(i, allFaces[i].component());
+    referenceItem->setValue(i, allFaces[i].component());
   }
 
   std::vector<std::string> beforeDetach;

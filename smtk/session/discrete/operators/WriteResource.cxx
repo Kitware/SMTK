@@ -53,7 +53,7 @@ WriteResource::Result WriteResource::operateInternal()
   auto resourceItem = this->parameters()->associations();
 
   smtk::session::discrete::Resource::Ptr resource =
-    std::dynamic_pointer_cast<smtk::session::discrete::Resource>(resourceItem->objectValue());
+    std::dynamic_pointer_cast<smtk::session::discrete::Resource>(resourceItem->value());
 
   // Serialize resource into a set of JSON records:
   smtk::model::SessionIOJSON::json j = smtk::model::SessionIOJSON::saveJSON(resource);

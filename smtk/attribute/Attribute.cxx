@@ -489,7 +489,7 @@ bool Attribute::associate(smtk::resource::PersistentObjectPtr obj)
   }
 
   // Did it pass the association rules?
-  if ((m_associatedObjects != nullptr) && m_associatedObjects->appendObjectValue(obj))
+  if ((m_associatedObjects != nullptr) && m_associatedObjects->appendValue(obj))
   {
     return true;
   }
@@ -546,8 +546,7 @@ bool Attribute::associateEntity(const smtk::model::EntityRef& entityRef)
   if (res)
     return res;
 
-  res =
-    (m_associatedObjects) ? m_associatedObjects->appendObjectValue(entityRef.component()) : false;
+  res = (m_associatedObjects) ? m_associatedObjects->appendValue(entityRef.component()) : false;
   return res;
 }
 

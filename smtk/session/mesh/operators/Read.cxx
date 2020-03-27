@@ -115,8 +115,7 @@ void Read::markModifiedResources(Read::Result& res)
   {
     if (resourceItem->isSet(ii))
     {
-      auto resource =
-        std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->objectValue(ii));
+      auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->value(ii));
 
       // Set the resource as unmodified from its persistent (i.e. on-disk) state
       resource->setClean(true);

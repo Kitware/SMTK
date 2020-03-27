@@ -76,15 +76,15 @@ bool ReferenceItemDefinition::isValueValid(resource::ConstPersistentObjectPtr en
     return ok;
   }
 
-  smtk::resource::ConstResourcePtr rsrc;
-  smtk::resource::ConstComponentPtr comp;
-  if ((rsrc = std::dynamic_pointer_cast<const smtk::resource::Resource>(entity)))
+  const smtk::resource::Resource* rsrc;
+  const smtk::resource::Component* comp;
+  if ((rsrc = dynamic_cast<const smtk::resource::Resource*>(entity.get())))
   {
-    ok = this->checkResource(rsrc);
+    ok = this->checkResource(*rsrc);
   }
-  else if ((comp = std::dynamic_pointer_cast<const smtk::resource::Component>(entity)))
+  else if ((comp = dynamic_cast<const smtk::resource::Component*>(entity.get())))
   {
-    ok = this->checkComponent(comp);
+    ok = this->checkComponent(*comp);
   }
   return ok;
 }
@@ -209,14 +209,8 @@ void ReferenceItemDefinition::copyTo(Ptr dest) const
   }
 }
 
-bool ReferenceItemDefinition::checkResource(smtk::resource::ConstResourcePtr rsrc) const
+bool ReferenceItemDefinition::checkResource(const smtk::resource::Resource& rsrc) const
 {
-  // If the resource is invalid, then no filtering is needed.
-  if (!rsrc)
-  {
-    return false;
-  }
-
   // If there are no filter values, then we accept all resources.
   if (m_acceptable.empty())
   {
@@ -237,7 +231,7 @@ bool ReferenceItemDefinition::checkResource(smtk::resource::ConstResourcePtr rsr
     // ...we check if the resource in question is of that type. Acceptable
     // entries for resources do not have a filter string, so we check that
     // the filter string is empty.
-    if ((acceptable.second.empty() || m_onlyResources) && rsrc->isOfType(acceptable.first))
+    if ((acceptable.second.empty() || m_onlyResources) && rsrc.isOfType(acceptable.first))
     {
       return true;
     }
@@ -246,16 +240,10 @@ bool ReferenceItemDefinition::checkResource(smtk::resource::ConstResourcePtr rsr
   return false;
 }
 
-bool ReferenceItemDefinition::checkComponent(smtk::resource::ConstComponentPtr comp) const
+bool ReferenceItemDefinition::checkComponent(const smtk::resource::Component& comp) const
 {
-  // If the component is invalid, then no filtering is needed.
-  if (!comp)
-  {
-    return false;
-  }
-
   // All components are required to have resources in order to be valid.
-  auto rsrc = comp->resource();
+  auto rsrc = comp.resource();
   if (!rsrc)
   {
     return false;

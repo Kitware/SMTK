@@ -41,10 +41,10 @@ Signal::Result Signal::operateInternal()
   auto updateOut = params->findVoid("update");
 
   // Copy the inputs to the output.
-  creOut->setObjectValues(creIn->begin(), creIn->end());
-  modOut->setObjectValues(modIn->begin(), modIn->end());
+  creOut->setValues(creIn->begin(), creIn->end());
+  modOut->setValues(modIn->begin(), modIn->end());
   itemsOut->setValues(itemsIn->begin(), itemsIn->end());
-  expOut->setObjectValues(expIn->begin(), expIn->end());
+  expOut->setValues(expIn->begin(), expIn->end());
   updateOut->setIsEnabled(updateIn->isEnabled());
 
   return result;

@@ -121,13 +121,13 @@ set(attributeHeaders
   StringItemDefinition.h
   Tag.h
   UnsetValueError.h
-  Utilities.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
+  utility/Queries.h
 )
 
 set(attributeSrcs
@@ -165,11 +165,11 @@ set(attributeSrcs
   ResourceItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
-  Utilities.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx
   VoidItemDefinition.cxx
+  utility/Queries.cxx
 )
 
 # construct operator inputs

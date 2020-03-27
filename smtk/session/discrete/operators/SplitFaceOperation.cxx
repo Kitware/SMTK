@@ -201,7 +201,7 @@ int SplitFaceOperation::fetchCMBFaceId(smtk::session::discrete::Resource::Ptr& r
 int SplitFaceOperation::fetchCMBCellId(smtk::session::discrete::Resource::Ptr& resource,
   const smtk::attribute::ReferenceItemPtr& entItem, int idx) const
 {
-  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->objectValue(idx)->id());
+  vtkModelItem* item = resource->discreteSession()->entityForUUID(entItem->value(idx)->id());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
   if (cell)

@@ -49,7 +49,7 @@ Write::Result Write::operateInternal()
   auto resourceItem = this->parameters()->associations();
 
   smtk::session::polygon::Resource::Ptr rsrc =
-    std::dynamic_pointer_cast<smtk::session::polygon::Resource>(resourceItem->objectValue());
+    std::dynamic_pointer_cast<smtk::session::polygon::Resource>(resourceItem->value());
 
   // Serialize resource into a set of JSON records:
   smtk::session::polygon::SessionIOJSON::json j =

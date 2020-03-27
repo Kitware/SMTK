@@ -85,12 +85,12 @@ smtk::resource::ComponentPtr Resource::find(const smtk::common::UUID& compId) co
     Component::create(std::const_pointer_cast<smtk::mesh::Resource>(shared_from_this()), compId));
 }
 
-std::function<bool(const resource::ConstComponentPtr&)> Resource::queryOperation(
+std::function<bool(const resource::Component&)> Resource::queryOperation(
   const std::string& queryString) const
 {
   // TODO
   (void)queryString;
-  return [](const resource::ConstComponentPtr& /*unused*/) { return true; };
+  return [](const resource::Component& /*unused*/) { return true; };
 }
 
 // visit all components in the resource.

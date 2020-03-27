@@ -37,12 +37,12 @@ Item::Type ResourceItem::type() const
 
 smtk::resource::ResourcePtr ResourceItem::value(std::size_t ii) const
 {
-  return std::dynamic_pointer_cast<Resource>(this->objectValue(ii));
+  return std::dynamic_pointer_cast<Resource>(ReferenceItem::value(ii));
 }
 
 bool ResourceItem::setValue(std::size_t ii, ResourcePtr value)
 {
-  return this->setObjectValue(ii, value);
+  return ReferenceItem::setValue(ii, value);
 }
 
 std::string ResourceItem::valueAsString(std::size_t i) const

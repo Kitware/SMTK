@@ -502,31 +502,31 @@ int TestEntityQueryFunctor()
   int q6Count = 0;
   int q7Count = 0;
   smtk::resource::Component::Visitor visitor = [&](const smtk::resource::ComponentPtr& comp) {
-    if (qf(comp))
+    if (qf(*comp))
     {
       ++qfCount;
     }
-    if (q2(comp))
+    if (q2(*comp))
     {
       ++q2Count;
     }
-    if (q3(comp))
+    if (q3(*comp))
     {
       ++q3Count;
     }
-    if (q4(comp))
+    if (q4(*comp))
     {
       ++q4Count;
     }
-    if (q5(comp))
+    if (q5(*comp))
     {
       ++q5Count;
     }
-    if (q6(comp))
+    if (q6(*comp))
     {
       ++q6Count;
     }
-    if (q7(comp))
+    if (q7(*comp))
     {
       ++q7Count;
     }

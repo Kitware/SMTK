@@ -45,10 +45,10 @@ public:
     return smtk::resource::ComponentPtr();
   }
 
-  std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
+  std::function<bool(const smtk::resource::Component&)> queryOperation(
     const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
+    return [](const smtk::resource::Component& /*unused*/) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor& /*v*/) const override {}
@@ -84,10 +84,10 @@ public:
     return smtk::resource::ComponentPtr();
   }
 
-  std::function<bool(const smtk::resource::ConstComponentPtr&)> queryOperation(
+  std::function<bool(const smtk::resource::Component&)> queryOperation(
     const std::string& /*unused*/) const override
   {
-    return [](const smtk::resource::ConstComponentPtr& /*unused*/) { return true; };
+    return [](const smtk::resource::Component& /*unused*/) { return true; };
   }
 
   void visit(smtk::resource::Component::Visitor& /*v*/) const override {}

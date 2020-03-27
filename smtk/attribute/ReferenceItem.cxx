@@ -27,11 +27,11 @@ namespace smtk
 namespace attribute
 {
 
-/// Internally, ReferenceItems cache retreived PersistentObjects to speed up
+/// Internally, ReferenceItems cache retrieved PersistentObjects to speed up
 /// repeated calls to their contents. These PersistentObjects can be cached as
 /// std::shared_ptr-s or std::weak_ptr-s as determined by the flag
 /// "holdReference" in ReferenceItemDefinition. To accomplish this, we cache
-/// retreived values as a variant that accepts both types.
+/// retrieved values as a variant that accepts both types.
 struct ReferenceItem::Cache
   : std::vector<boost::variant<std::shared_ptr<smtk::resource::PersistentObject>,
       std::weak_ptr<smtk::resource::PersistentObject> > >
@@ -389,21 +389,26 @@ bool ReferenceItem::setObjectKey(std::size_t i, const smtk::attribute::Reference
 
 smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(std::size_t i) const
 {
+  return this->value(i);
+}
+
+smtk::resource::PersistentObjectPtr ReferenceItem::value(std::size_t i) const
+{
   if (i >= static_cast<std::size_t>(m_cache->size()))
     return nullptr;
 
   auto result = boost::apply_visitor(access_reference(), (*m_cache)[i]);
   if (result == nullptr)
   {
-    result = this->objectValue(m_keys[i]);
+    result = this->value(m_keys[i]);
     assignToCache(i, result);
   }
   return result;
 }
 
-bool ReferenceItem::setObjectValue(const PersistentObjectPtr& val)
+bool ReferenceItem::setValue(const PersistentObjectPtr& val)
 {
-  return this->setObjectValue(0, val);
+  return this->setValue(0, val);
 }
 
 ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
@@ -432,8 +437,64 @@ ReferenceItem::Key ReferenceItem::linkTo(const PersistentObjectPtr& val)
   return ReferenceItem::Key();
 }
 
-bool ReferenceItem::setObjectValue(std::size_t i, const PersistentObjectPtr& val)
+bool ReferenceItem::isValueValid(std::size_t i, const PersistentObjectPtr& val) const
 {
+  // is the size valid
+  if (i >= this->numberOfValues())
+  {
+    return false;
+  }
+  if (val == nullptr)
+  {
+    // This value is always valid
+    return true;
+  }
+  // Lets test its definition
+  auto def = this->definitionAs<ReferenceItemDefinition>();
+  if (!def->isValueValid(val))
+  {
+    return false;
+  }
+
+  // Is this the current value
+  if (this->isSet(i) && (this->value(i) == val))
+  {
+    return true;
+  }
+
+  auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(val);
+  if (comp == nullptr)
+  {
+    return true;
+  }
+
+  // Else we need to check to see if its role is unique - this is currently supported
+  // for resource component
+  auto att = m_referencedAttribute.lock();
+  if (att == nullptr)
+  {
+    return false;
+  }
+
+  auto attRes = att->attributeResource();
+  if (attRes == nullptr)
+  {
+    return false;
+  }
+
+  if (!attRes->isRoleUnique(def->role()))
+  {
+    return true;
+  }
+  return (attRes->findAttribute(comp, def->role()) == nullptr);
+}
+
+bool ReferenceItem::setValue(std::size_t i, const PersistentObjectPtr& val)
+{
+  if (!this->isValueValid(i, val))
+  {
+    return false;
+  }
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
   if ((i >= m_cache->size()) || (val != nullptr && !def->isValueValid(val)))
   {
@@ -455,7 +516,7 @@ bool ReferenceItem::setObjectValue(std::size_t i, const PersistentObjectPtr& val
   return true;
 }
 
-bool ReferenceItem::appendObjectValue(const PersistentObjectPtr& val)
+bool ReferenceItem::appendValue(const PersistentObjectPtr& val)
 {
   // First - is this value valid?
   auto def = static_cast<const ReferenceItemDefinition*>(this->definition().get());
@@ -469,7 +530,7 @@ bool ReferenceItem::appendObjectValue(const PersistentObjectPtr& val)
   bool foundEmpty = false;
   for (std::size_t i = 0; i < n; ++i)
   {
-    if (this->isSet(i) && (this->objectValue(i) == val))
+    if (this->isSet(i) && (this->value(i) == val))
     {
       return true;
     }
@@ -482,7 +543,7 @@ bool ReferenceItem::appendObjectValue(const PersistentObjectPtr& val)
   // If not, was there a space available?
   if (foundEmpty)
   {
-    return this->setObjectValue(emptyIndex, val);
+    return this->setValue(emptyIndex, val);
   }
   // Finally - are we allowed to change the number of values?
   if ((def->isExtensible() && def->maxNumberOfValues() &&
@@ -578,7 +639,7 @@ std::string ReferenceItem::valueAsString() const
 std::string ReferenceItem::valueAsString(std::size_t i) const
 {
   std::ostringstream result;
-  auto entry = this->objectValue(i);
+  auto entry = this->value(i);
   smtk::resource::ResourcePtr rsrc;
   smtk::resource::ComponentPtr comp;
   if ((rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(entry)))
@@ -605,7 +666,7 @@ bool ReferenceItem::isSet(std::size_t i) const
 
 void ReferenceItem::unset(std::size_t i)
 {
-  this->setObjectValue(i, PersistentObjectPtr());
+  this->setValue(i, PersistentObjectPtr());
 }
 
 bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
@@ -629,8 +690,8 @@ bool ReferenceItem::assign(ConstItemPtr& sourceItem, unsigned int options)
   {
     if (sourceReferenceItem->isSet(i))
     {
-      auto val = sourceReferenceItem->objectValue(i);
-      this->setObjectValue(i, val);
+      auto val = sourceReferenceItem->value(i);
+      this->setValue(i, val);
     }
     else
     {
@@ -736,7 +797,7 @@ bool ReferenceItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   return true;
 }
 
-smtk::resource::PersistentObjectPtr ReferenceItem::objectValue(const ReferenceItem::Key& key) const
+smtk::resource::PersistentObjectPtr ReferenceItem::value(const ReferenceItem::Key& key) const
 {
   AttributePtr myAtt = this->m_referencedAttribute.lock();
   if (myAtt == nullptr)
@@ -799,7 +860,7 @@ bool ReferenceItem::resolve() const
       (!def->holdReference() && (*key) != nullKey && myAtt->resource()->manager() != nullptr))
     {
       // ...set it equal to the object pointer accessed using its key.
-      auto newValue = this->objectValue(*key);
+      auto newValue = this->value(*key);
 
       if (def->holdReference())
       {

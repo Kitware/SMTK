@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
 
       auto faceToSplit = splitFaceOp->parameters()->associations();
       faceToSplit->setNumberOfValues(1);
-      faceToSplit->setObjectValue(f.component());
+      faceToSplit->setValue(f.component());
       splitFaceOp->parameters()->findComponent("model")->setValue(
         resource->entitiesMatchingFlagsAs<Models>(smtk::model::MODEL_ENTITY).front().component());
       splitFaceOp->parameters()->findDouble("feature angle")->setValue(15.0);

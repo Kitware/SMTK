@@ -175,7 +175,7 @@ void WriteResource::generateSummary(WriteResource::Result& res)
   std::ostringstream msg;
   int outcome = res->findInt("outcome")->value();
   auto resourceItem = this->parameters()->associations();
-  auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->objectValue());
+  auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->value());
   msg << this->parameters()->definition()->label();
 
   if (resource == nullptr)

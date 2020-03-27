@@ -88,7 +88,7 @@ Write::Result Write::operateInternal()
   auto resourceItem = this->parameters()->associations();
 
   smtk::session::vtk::Resource::Ptr rsrc =
-    std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->objectValue());
+    std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->value());
 
   // Serialize resource into a set of JSON records:
   smtk::model::SessionIOJSON::json j = rsrc;

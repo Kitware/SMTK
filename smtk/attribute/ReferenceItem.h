@@ -197,28 +197,90 @@ public:
   Key objectKey(std::size_t i = 0) const;
   bool setObjectKey(std::size_t i, const Key& key);
 
-  /// Return the \a i-th component stored in this item.
-  PersistentObjectPtr objectValue(std::size_t i = 0) const;
+  /// Return the \a i-th object stored in this item.
+  PersistentObjectPtr value(std::size_t i = 0) const;
   template <typename T>
   typename T::Ptr valueAs(std::size_t i = 0) const
   {
-    return std::dynamic_pointer_cast<T>(this->objectValue(i));
+    return std::dynamic_pointer_cast<T>(this->value(i));
   }
+  /** Return the \a i-th object stored in this item.
+    * \deprecated This method will go away in future versions of SMTK
+    * See instead value(std::size_t)
+    */
+  [[deprecated(
+    "ReferenceItem::objectValue has been replaced with ReferenceItem::value")]] PersistentObjectPtr
+  objectValue(std::size_t i = 0) const;
+
+  virtual bool isValueValid(std::size_t ii, const PersistentObjectPtr& entity) const;
+  bool isValueValid(const PersistentObjectPtr& entity) const
+  {
+    return this->isValueValid(0, entity);
+  }
+
   /**\brief Set the component stored with this item.
     *
     * This always sets the 0-th item and is a convenience method
     * for cases where only 1 value is needed.
     */
-  bool setObjectValue(const PersistentObjectPtr& val);
-  /// Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
-  //bool setObjectValue(std::size_t i, const PersistentObjectPtr& val);
-  bool setObjectValue(std::size_t i, const PersistentObjectPtr& val);
+  bool setValue(const PersistentObjectPtr& val);
+  /** Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
+    * bool setObjectValue(std::size_t i, const PersistentObjectPtr& val);
+    * Return the \a i-th object stored in this item.
+    */
+  bool setValue(std::size_t i, const PersistentObjectPtr& val);
+  /**\brief Set the component stored with this item.
+    *
+    * This always sets the 0-th item and is a convenience method
+    * for cases where only 1 value is needed.
+    * \deprecated This method will go away in future versions of SMTK
+    * See instead setValue()
+    */
+  [[deprecated(
+    "ReferenceItem::setObjectValue has been replaced with ReferenceItem::setValue")]] bool
+  setObjectValue(const PersistentObjectPtr& val)
+  {
+    return this - setValue(val);
+  }
+  /** Set the \a i-th value to the given item. This method does no checking to see if \a i is valid.
+    * bool setObjectValue(std::size_t i, const PersistentObjectPtr& val);
+    * Return the \a i-th object stored in this item.
+    * \deprecated This method will go away in future versions of SMTK
+    * See instead setValue(std::size_t, const PersistentObjectPtr&)
+    */
+  [[deprecated(
+    "ReferenceItem::setObjectValue has been replaced with ReferenceItem::setValue")]] bool
+  setObjectValue(std::size_t i, const PersistentObjectPtr& val)
+  {
+    return this->setValue(i, val);
+  }
+  [[deprecated(
+    "ReferenceItem::appendObjectValue has been replaced with ReferenceItem::appendValue")]] bool
+  appendObjectValue(const PersistentObjectPtr& val)
+  {
+    return this->appendValue(val);
+  }
 
   template <typename I>
-  bool setObjectValues(
-    I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0);
+  bool setValues(I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0);
   template <typename I>
-  bool appendObjectValues(I vbegin, I vend);
+  bool appendValues(I vbegin, I vend);
+
+  template <typename I>
+  [[deprecated(
+    "ReferenceItem::setObjectValues has been replaced with ReferenceItem::setValues")]] bool
+  setObjectValues(I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset = 0)
+  {
+    return this->setValues<I>(vbegin, vend, offset);
+  }
+
+  template <typename I>
+  [[deprecated(
+    "ReferenceItem::appendObjectValues has been replaced with ReferenceItem::appendValues")]] bool
+  appendObjectValues(I vbegin, I vend)
+  {
+    return this->appendValues<I>(vbegin, vend);
+  }
 
   template <typename I, typename T>
   bool setValuesVia(I vbegin, I vend, const T& converter,
@@ -234,7 +296,7 @@ public:
     * if there is an unset value anywhere in the allocated array, that will
     * be preferred to reallocation.
     */
-  bool appendObjectValue(const PersistentObjectPtr& val);
+  bool appendValue(const PersistentObjectPtr& val);
   /**\brief Remove the value at the \a i-th location.
     *
     * If the number of values may not be changed, then the \a i-th
@@ -313,7 +375,7 @@ protected:
   bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def) override;
 
   /// Return the object stored in this item associated with \a key.
-  PersistentObjectPtr objectValue(const ReferenceItem::Key& key) const;
+  PersistentObjectPtr value(const ReferenceItem::Key& key) const;
 
   /// Resolve the object pointers by accessing them using their associated keys.
   /// Return true if all object pointers were successfully resolved.
@@ -353,7 +415,7 @@ SMTKCORE_EXPORT bool ReferenceItem::iteratorIsSet<ReferenceItem::const_iterator>
   const ReferenceItem::const_iterator& iterator) const;
 
 template <typename I>
-bool ReferenceItem::setObjectValues(
+bool ReferenceItem::setValues(
   I vbegin, I vend, typename std::iterator_traits<I>::difference_type offset)
 {
   bool ok = false;
@@ -369,7 +431,7 @@ bool ReferenceItem::setObjectValues(
         continue;
       }
 
-      if (!this->setObjectValue(offset + i, *it))
+      if (!this->setValue(offset + i, *it))
       {
         ok = false;
         break;
@@ -385,9 +447,9 @@ bool ReferenceItem::setObjectValues(
 }
 
 template <typename I>
-bool ReferenceItem::appendObjectValues(I vbegin, I vend)
+bool ReferenceItem::appendValues(I vbegin, I vend)
 {
-  return this->setObjectValues(vbegin, vend, this->numberOfValues());
+  return this->setValues(vbegin, vend, this->numberOfValues());
 }
 
 template <typename I, typename T>
@@ -407,7 +469,7 @@ bool ReferenceItem::setValuesVia(
         continue;
       }
 
-      if (!this->setObjectValue(offset + i, converter(*it)))
+      if (!this->setValue(offset + i, converter(*it)))
       {
         ok = false;
         break;

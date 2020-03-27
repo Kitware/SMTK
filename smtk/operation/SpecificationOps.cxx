@@ -155,20 +155,19 @@ void resourcesFromItem(
   for (std::size_t i = 0; i < item->numberOfValues(); i++)
   {
     // (no need to look at items that cannot be resolved)
-    if (!item->isValid() || item->objectValue(i) == nullptr)
+    if (!item->isValid() || item->value(i) == nullptr)
     {
       continue;
     }
 
     // ...access the associated resource.
     smtk::resource::ResourcePtr resource =
-      std::dynamic_pointer_cast<smtk::resource::Resource>(item->objectValue(i));
+      std::dynamic_pointer_cast<smtk::resource::Resource>(item->value(i));
 
     // If the object is actually a component, access its associated resource.
     if (resource == nullptr)
     {
-      resource =
-        std::dynamic_pointer_cast<smtk::resource::Component>(item->objectValue(i))->resource();
+      resource = std::dynamic_pointer_cast<smtk::resource::Component>(item->value(i))->resource();
     }
 
     auto it = resourcesAndLockTypes.find(resource);

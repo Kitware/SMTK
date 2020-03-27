@@ -47,8 +47,8 @@ CreateModel::Result CreateModel::operateInternal()
   auto existingResourceItem = this->parameters()->associations();
   if (existingResourceItem && existingResourceItem->numberOfValues() > 0)
   {
-    resource = std::static_pointer_cast<smtk::session::oscillator::Resource>(
-      existingResourceItem->objectValue(0));
+    resource =
+      std::static_pointer_cast<smtk::session::oscillator::Resource>(existingResourceItem->value(0));
   }
 
   if (!resource)

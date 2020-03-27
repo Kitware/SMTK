@@ -54,13 +54,10 @@ public:
   /// Return the type of storage used by the item.
   Item::Type type() const override;
 
-  virtual bool isValueValid(std::size_t ii, const ComponentPtr entity) const;
-  bool isValueValid(const ComponentPtr entity) const { return this->isValueValid(0, entity); }
-
   /// Return the \a i-th value as a component.
   ComponentPtr value(std::size_t ii = 0) const
   {
-    return std::dynamic_pointer_cast<Component>(this->objectValue(ii));
+    return std::dynamic_pointer_cast<Component>(ReferenceItem::value(ii));
   }
 
   /// Set the \a i-th value as a component.
@@ -70,9 +67,9 @@ public:
 
   /**\brief Append a value to the item if possible.
     *
-    * This method ensures compile-time type-safety while appendObjectValue() does not.
+    * This method ensures compile-time type-safety while appendValue() does not.
     */
-  bool appendValue(ComponentPtr value) { return this->appendObjectValue(value); }
+  bool appendValue(ComponentPtr value) { return ReferenceItem::appendValue(value); }
 
   /// Serialize the \a i-th value to a string.
   std::string valueAsString(std::size_t ii) const override;

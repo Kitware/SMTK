@@ -100,7 +100,7 @@ Import::Result Import::operateInternal()
   if (existingReferenceItem && existingReferenceItem->numberOfValues() > 0)
   {
     smtk::session::vtk::Resource::Ptr existingResource =
-      std::static_pointer_cast<smtk::session::vtk::Resource>(existingReferenceItem->objectValue());
+      std::static_pointer_cast<smtk::session::vtk::Resource>(existingReferenceItem->value());
 
     session = existingResource->session();
 

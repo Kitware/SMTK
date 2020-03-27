@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/attribute/Utilities.h"
+#include "smtk/attribute/utility/Queries.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
@@ -21,7 +21,13 @@
 
 using namespace smtk::attribute;
 
-std::set<smtk::resource::PersistentObjectPtr> Utilities::checkUniquenessCondition(
+namespace smtk
+{
+namespace attribute
+{
+namespace utility
+{
+std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
   const ComponentItemPtr& compItem, const std::set<smtk::resource::PersistentObjectPtr>& objSet)
 {
   // Uniqueness condition only applies to component items (not resource items)
@@ -43,7 +49,7 @@ std::set<smtk::resource::PersistentObjectPtr> Utilities::checkUniquenessConditio
   std::set<smtk::resource::PersistentObjectPtr> result;
   for (auto& obj : objSet)
   {
-    auto comp = dynamic_pointer_cast<smtk::resource::Component>(obj);
+    auto comp = std::dynamic_pointer_cast<smtk::resource::Component>(obj);
     if ((comp != nullptr) && compItem->isValueValid(comp))
     {
       result.insert(comp);
@@ -58,7 +64,7 @@ std::set<smtk::resource::PersistentObjectPtr> Utilities::checkUniquenessConditio
 #if !defined(NDEBUG)
       else
       {
-        std::cerr << "attribute::Utilities::checkUniquenessCondition - comp:" << comp->name()
+        std::cerr << "attribute::utility::checkUniquenessCondition - comp:" << comp->name()
                   << " is not allowed due to: " << otherAtt->name() << std::endl;
       }
 #endif
@@ -67,9 +73,9 @@ std::set<smtk::resource::PersistentObjectPtr> Utilities::checkUniquenessConditio
   return result;
 }
 
-std::set<smtk::resource::PersistentObjectPtr> Utilities::associatableObjects(
-  const ReferenceItemPtr& refItem, smtk::resource::ManagerPtr& resManager,
-  bool useAttributeAssociations, const smtk::common::UUID& ignoreResource)
+std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const ReferenceItemPtr& refItem,
+  smtk::resource::ManagerPtr& resManager, bool useAttributeAssociations,
+  const smtk::common::UUID& ignoreResource)
 {
   std::set<smtk::resource::PersistentObjectPtr> candidates;
 
@@ -80,7 +86,7 @@ std::set<smtk::resource::PersistentObjectPtr> Utilities::associatableObjects(
 
   auto theAttribute = refItem->attribute();
   auto attResource = theAttribute->attributeResource();
-  auto compItem = std::dynamic_pointer_cast<attribute::ComponentItem>(refItem);
+  auto compItem = std::dynamic_pointer_cast<ComponentItem>(refItem);
   // There are 3 possible sources of Persistent Objects:
   // 1. Those associated with the attribute this refItem is a member of
   // 2. Based on the resources associated with the attribute resource the refItem's attribute
@@ -99,11 +105,11 @@ std::set<smtk::resource::PersistentObjectPtr> Utilities::associatableObjects(
       {
         continue;
       }
-      attribute::ReferenceItem::Key key = theAttribute->associations()->objectKey(i);
+      ReferenceItem::Key key = theAttribute->associations()->objectKey(i);
       auto& surrogate = theAttribute->resource()->links().data().value(key.first);
       if (surrogate.id() != ignoreResource)
       {
-        if (auto object = associations->objectValue(i))
+        if (auto object = associations->value(i))
         {
           candidates.insert(object);
         }
@@ -114,10 +120,10 @@ std::set<smtk::resource::PersistentObjectPtr> Utilities::associatableObjects(
       // There is no possible uniqueness condition to check
       return candidates;
     }
-    return Utilities::checkUniquenessCondition(compItem, candidates);
+    return checkUniquenessCondition(compItem, candidates);
   }
 
-  auto refItemDef = refItem->definitionAs<attribute::ReferenceItemDefinition>();
+  auto refItemDef = refItem->definitionAs<ReferenceItemDefinition>();
   auto assocMap = refItem->acceptableEntries();
 
   // Are we dealing with the case where the attribute resource has resources directly associated
@@ -210,5 +216,8 @@ std::set<smtk::resource::PersistentObjectPtr> Utilities::associatableObjects(
     // There is no possible uniqueness condition to check
     return candidates;
   }
-  return Utilities::checkUniquenessCondition(compItem, candidates);
+  return checkUniquenessCondition(compItem, candidates);
+}
+}
+}
 }

@@ -2,7 +2,6 @@
 set(viewSrcs
   AvailableOperations.cxx
   BaseView.cxx
-  ComponentItemPhraseModel.cxx
   ComponentPhraseContent.cxx
   ComponentPhraseModel.cxx
   DescriptivePhrase.cxx
@@ -15,6 +14,7 @@ set(viewSrcs
   PhraseListContent.cxx
   PhraseModel.cxx
   QueryFilterSubphraseGenerator.cxx
+  ReferenceItemPhraseModel.cxx
   Registrar.cxx
   ResourcePhraseContent.cxx
   ResourcePhraseModel.cxx
@@ -33,7 +33,6 @@ set (jsonViewHeaders
 set(viewHeaders
   AvailableOperations.h
   BaseView.h
-  ComponentItemPhraseModel.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
   DescriptivePhrase.h
@@ -47,6 +46,7 @@ set(viewHeaders
   PhraseModel.h
   PhraseModelObserver.h
   QueryFilterSubphraseGenerator.h
+  ReferenceItemPhraseModel.h
   Registrar.h
   ResourcePhraseContent.h
   ResourcePhraseModel.h

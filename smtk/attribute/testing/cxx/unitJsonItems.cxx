@@ -181,7 +181,7 @@ int unitJsonItems(int argc, char* argv[])
   std::cout << "Model " << modelRsrc->id().toString() << " has " << allFaces.size() << " faces\n";
   for (std::size_t i = 0; i < refItm->numberOfValues(); ++i)
   {
-    refItm->setObjectValue(i, allFaces[i].component());
+    refItm->setValue(i, allFaces[i].component());
   }
   json jsonRefItm2 = refItm;
   smtk::attribute::from_json(jsonRefItm2, refItm);

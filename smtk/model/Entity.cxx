@@ -1179,9 +1179,9 @@ int Entity::dimensionBitsToDimension(BitFlags dimBits)
 namespace
 {
 /// Given an entity and a mask, determine if the entity is accepted by the mask.
-bool IsValueValid(const smtk::resource::ConstComponentPtr& comp, smtk::model::BitFlags mask)
+bool IsValueValid(const smtk::resource::Component& comp, smtk::model::BitFlags mask)
 {
-  auto modelEnt = dynamic_pointer_cast<const smtk::model::Entity>(comp);
+  auto modelEnt = dynamic_cast<const smtk::model::Entity*>(&comp);
   if (modelEnt)
   {
     smtk::model::EntityRef c = modelEnt->referenceAs<smtk::model::EntityRef>();
@@ -1284,13 +1284,13 @@ Entity::QueryFunctor limitedQueryFunctor(
   smtk::model::BitFlags bitFlags, LimitingClause& limitClause)
 {
   LimitingClause clause(limitClause);
-  return [bitFlags, clause](const smtk::resource::ConstComponentPtr& comp) -> bool {
+  return [bitFlags, clause](const smtk::resource::Component& comp) -> bool {
     // See if the component matches the bitFlags:
     if (!IsValueValid(comp, bitFlags))
     {
       return false;
     }
-    auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(comp->resource());
+    auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(comp.resource());
     if (!modelRsrc)
     {
       return false;
@@ -1301,7 +1301,7 @@ Entity::QueryFunctor limitedQueryFunctor(
       case smtk::resource::PropertyType::FLOAT_PROPERTY:
       {
         const smtk::resource::ConstPropertiesOfType<std::vector<double> > floatProperties =
-          comp->properties().get<std::vector<double> >();
+          comp.properties().get<std::vector<double> >();
         if (floatProperties.empty())
         {
           return false;
@@ -1328,7 +1328,7 @@ Entity::QueryFunctor limitedQueryFunctor(
       case smtk::resource::PropertyType::STRING_PROPERTY:
       {
         const smtk::resource::ConstPropertiesOfType<std::vector<std::string> > stringProperties =
-          comp->properties().get<std::vector<std::string> >();
+          comp.properties().get<std::vector<std::string> >();
         if (stringProperties.empty())
         {
           return false;
@@ -1369,7 +1369,7 @@ Entity::QueryFunctor limitedQueryFunctor(
       case smtk::resource::PropertyType::INTEGER_PROPERTY:
       {
         const smtk::resource::ConstPropertiesOfType<std::vector<long> > intProperties =
-          comp->properties().get<std::vector<long> >();
+          comp.properties().get<std::vector<long> >();
         if (intProperties.empty())
         {
           return false;

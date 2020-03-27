@@ -224,9 +224,7 @@ int TestElevateMesh(int argc, char* argv[])
     // set input values for the elevate mesh operator
     elevateMesh->parameters()->associate(smtk::mesh::Component::create(mesh));
     elevateMesh->parameters()->findString("input data")->setToDefault();
-    elevateMesh->parameters()
-      ->findComponent("auxiliary geometry")
-      ->setObjectValue(auxGeo2dm.component());
+    elevateMesh->parameters()->findComponent("auxiliary geometry")->setValue(auxGeo2dm.component());
     elevateMesh->parameters()->findString("interpolation scheme")->setToDefault();
     elevateMesh->parameters()->findDouble("radius")->setValue(7.);
 

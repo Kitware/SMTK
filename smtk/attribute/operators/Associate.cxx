@@ -28,7 +28,7 @@ Associate::Result Associate::operateInternal()
 {
   // Access the attribute resource to associate.
   smtk::attribute::Resource::Ptr resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-    this->parameters()->associations()->objectValue());
+    this->parameters()->associations()->value());
 
   // Currently, we cannot specialize associations between resources and
   // components. This means an attribute component is allowed as an input. If we
@@ -37,7 +37,7 @@ Associate::Result Associate::operateInternal()
   {
     smtk::attribute::Attribute::Ptr attribute =
       std::dynamic_pointer_cast<smtk::attribute::Attribute>(
-        this->parameters()->associations()->objectValue());
+        this->parameters()->associations()->value());
 
     if (attribute != nullptr)
     {
@@ -60,7 +60,7 @@ Associate::Result Associate::operateInternal()
   for (std::size_t i = 0; i < associateToItem->numberOfValues(); i++)
   {
     smtk::resource::Resource::Ptr associated =
-      std::dynamic_pointer_cast<smtk::resource::Resource>(associateToItem->objectValue());
+      std::dynamic_pointer_cast<smtk::resource::Resource>(associateToItem->value());
 
     // Associate the resource to the attribute resource.
     bool success = resource->associate(associated);

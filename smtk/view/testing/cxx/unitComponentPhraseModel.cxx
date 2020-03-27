@@ -213,7 +213,7 @@ int unitComponentPhraseModel(int argc, char* argv[])
       pm->findString("group name")->setValue("everything");
       pm->findVoid("Face")->setIsEnabled(true);
       // pm->findModelEntity("cell to add")->setObjectValues(faces.begin(), faces.end());
-      pm->associations()->appendObjectValue(fmod);
+      pm->associations()->appendValue(fmod);
       auto res = op->operate();
       bool ok = (res->findInt("outcome")->value(0) ==
         static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED));

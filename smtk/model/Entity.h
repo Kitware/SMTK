@@ -49,7 +49,7 @@ class SMTKCORE_EXPORT Entity : public smtk::resource::Component
 
 public:
   using UUID = smtk::common::UUID;
-  using QueryFunctor = std::function<bool(const smtk::resource::ConstComponentPtr&)>;
+  using QueryFunctor = std::function<bool(const smtk::resource::Component&)>;
   //using ResourcePtr = smtk::resource::ResourcePtr;
 
   smtkTypeMacro(smtk::model::Entity);

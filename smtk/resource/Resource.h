@@ -129,8 +129,7 @@ public:
   /// given a std::string describing a query, return a functor for performing
   /// the query (accepts component as input, returns true if the component
   /// satisfies the query parameters).
-  virtual std::function<bool(const ConstComponentPtr&)> queryOperation(
-    const std::string&) const = 0;
+  virtual std::function<bool(const Component&)> queryOperation(const std::string&) const = 0;
 
   /// visit all components in a resource.
   virtual void visit(std::function<void(const ComponentPtr&)>& v) const = 0;
@@ -189,7 +188,7 @@ Collection Resource::findAs(const std::string& queryString) const
 
   // Visit each component and add it to the set if it satisfies the query
   smtk::resource::Component::Visitor visitor = [&](const ComponentPtr& component) {
-    if (queryOp(component))
+    if (queryOp(*component))
     {
       auto entry =
         std::dynamic_pointer_cast<typename Collection::value_type::element_type>(component);
