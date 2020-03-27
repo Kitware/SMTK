@@ -61,3 +61,70 @@ function(smtk_unit_tests)
     endforeach(test)
   endif (SMTK_ENABLE_TESTING)
 endfunction(smtk_unit_tests)
+
+# Add tests for code that is expected to fail to build.
+#
+# For each <test_source_file>, the compiler will be invoked <number_of_failures> times.
+# Each time, the macro SMTK_FAILURE_INDEX will be defined as a different integer,
+# starting with 1 and ending with <number_of_failures>.
+# Thus, the same source code can validate that failure occurs in several different ways.
+#
+# This macro was inspired by
+#   https://stackoverflow.com/questions/30155619/expected-build-failure-tests-in-cmake
+#
+# smtk_build_failure_tests(
+#   LABEL <prefix for all build-failure tests>
+#   TESTS <test_source_file> <number_of_failures> [<test_source_file> <number_of_failures> ...]
+#   LIBRARIES <dependent_library_list>
+# )
+function(smtk_build_failure_tests)
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs LABEL TESTS LIBRARIES)
+  cmake_parse_arguments(SMTK_bft
+    "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    ${ARGN}
+  )
+
+  list(LENGTH SMTK_bft_TESTS num_entries)
+  if(NOT ${num_entries})
+    return()
+  endif()
+
+  if (SMTK_ENABLE_TESTING)
+    smtk_get_kit_name(kit)
+    set(test_prog BuildFailure_${kit})
+
+    math(EXPR num_sources "${num_entries} / 2")
+    foreach(source_idx RANGE 0 ${num_sources} 2)
+      math(EXPR idx_file "2 * ${source_idx}")
+      math(EXPR idx_count "2 * ${source_idx} + 1")
+      list(GET SMTK_bft_TESTS ${idx_file} test_src)
+      list(GET SMTK_bft_TESTS ${idx_count} test_count)
+      math(EXPR trange "${test_count} - 1")
+      get_filename_component(thandle "${test_src}" NAME_WE)
+      foreach(attempt RANGE 0 ${trange})
+        set(tname "${test_prog}_${thandle}_${attempt}")
+        add_executable(${tname} ${test_src})
+        set_target_properties(${tname} PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+        target_link_libraries(${tname} LINK_PRIVATE ${SMTK_bft_LIBRARIES})
+        target_compile_definitions(${tname} PRIVATE "-DSMTK_FAILURE_INDEX=${attempt}")
+        target_include_directories(${tname}
+          PRIVATE
+            ${CMAKE_CURRENT_BINARY_DIR}
+            ${MOAB_INCLUDE_DIRS}
+            ${VTK_INCLUDE_DIRS}
+        )
+        add_test(
+          NAME ${tname}
+          COMMAND ${CMAKE_COMMAND} --build . --target ${tname} --config $<CONFIGURATION>
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
+        set_tests_properties(${tname} PROPERTIES TIMEOUT 120 WILL_FAIL TRUE)
+        if(SMTK_ut_LABEL)
+          set_tests_properties(${tname} PROPERTIES LABELS ${SMTK_ut_LABEL})
+        endif()
+      endforeach() # attempt
+    endforeach() # source_idx
+  endif (SMTK_ENABLE_TESTING)
+endfunction(smtk_build_failure_tests)
