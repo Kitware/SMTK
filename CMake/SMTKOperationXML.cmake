@@ -16,6 +16,13 @@ include("${CMAKE_CURRENT_LIST_DIR}/EncodeStringFunctions.cmake")
 #   TYPE "_json" (optional, defaults to "_xml", appended to file and var name)
 #   HEADER_OUTPUT (optional, filled in with full path of generated header)
 #   )
+# The caller must add the filename in HEADER_OUTPUT to a custom_target, if
+# the generated file is in a subdirectory (see https://gitlab.kitware.com/cmake/community/-/wikis/FAQ#how-can-i-add-a-dependency-to-a-source-file-which-is-generated-in-a-subdirectory).
+#
+# TARGET_OUTPUT can be used to generate a custom_target directly, but
+# it is not recommended because it causes long paths and extra targets
+# for make and VS projects on windows.
+#
 # use of add_custom_command() borrowed from vtkEncodeString.cmake
 function(smtk_encode_file inOpSpecs)
   set(options "PYTHON")
@@ -57,20 +64,24 @@ function(smtk_encode_file inOpSpecs)
             "-Dext=${inExt}"
             "-D_smtk_operation_xml_run=ON"
             -P "${_smtk_operation_xml_script_file}")
-  string(REPLACE "\\" "_" _targetName "generate_${_genFile}")
-  string(REPLACE "/" "_" _targetName "${_targetName}")
-  string(REPLACE ":" "" _targetName "${_targetName}")
-
-  add_custom_target(${_targetName} DEPENDS ${_genFile})
-
   set_source_files_properties(${_genFile} PROPERTIES GENERATED ON)
 
   if (DEFINED _SMTK_op_HEADER_OUTPUT)
+    message("Debug header: ${_genFile}")
     set("${_SMTK_op_HEADER_OUTPUT}"
       "${_genFile}"
       PARENT_SCOPE)
   endif ()
   if (DEFINED _SMTK_op_TARGET_OUTPUT)
+    # create a target name like: "generate_smtk_session_vtk_Read_xml.h"
+    file(RELATIVE_PATH _targetName ${CMAKE_BINARY_DIR} ${_genFile})
+    string(REPLACE "\\" "_" _targetName "generate_${_targetName}")
+    string(REPLACE "/" "_" _targetName "${_targetName}")
+    string(REPLACE ":" "" _targetName "${_targetName}")
+    message("Debug target: ${_targetName}")
+
+    add_custom_target(${_targetName} DEPENDS ${_genFile})
+
     set("${_SMTK_op_TARGET_OUTPUT}"
       "${_targetName}"
       PARENT_SCOPE)
