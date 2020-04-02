@@ -106,10 +106,7 @@ endif()
 
 add_library(smtkCore ${smtk_srcs})
 # dependencies on generated files from subdirectories
-add_dependencies(smtkCore ${attributeDependencies})
-add_dependencies(smtkCore ${meshDependencies})
-add_dependencies(smtkCore ${modelDependencies})
-add_dependencies(smtkCore ${operationDependencies})
+add_dependencies(smtkCore attibuteGenHeaders meshGenHeaders modelGenHeaders operationGenHeaders)
 
 target_include_directories(smtkCore
   PUBLIC

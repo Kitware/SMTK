@@ -24,19 +24,20 @@ set(oscillatorOperators
 # need to have it encoded as a string in a header.
 foreach (operator ${oscillatorOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND oscillatorSrcs operators/${operator}.cxx)
   list(APPEND oscillatorHeaders operators/${operator}.h)
-  list(APPEND _oscillatorDependencies ${targetName})
+  list(APPEND _oscillatorDependencies ${headerName})
 endforeach()
 # This is not an operation but a simulation attribute. However, we can use
 # the XML encoding the same way:
 smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/SimulationAttribute.sbt"
-  TARGET_OUTPUT targetName)
-list(APPEND _oscillatorDependencies ${targetName})
+  HEADER_OUTPUT headerName)
+list(APPEND _oscillatorDependencies ${headerName})
+add_custom_target(oscillatorSessionGenHeaders DEPENDS ${_oscillatorDependencies})
 
 add_library(smtkOscillatorSession ${oscillatorSrcs})
-add_dependencies(smtkOscillatorSession ${_oscillatorDependencies})
+add_dependencies(smtkOscillatorSession oscillatorSessionGenHeaders)
 target_link_libraries(smtkOscillatorSession
   PUBLIC
     smtkCore

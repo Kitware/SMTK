@@ -67,7 +67,6 @@ function(smtk_encode_file inOpSpecs)
   set_source_files_properties(${_genFile} PROPERTIES GENERATED ON)
 
   if (DEFINED _SMTK_op_HEADER_OUTPUT)
-    message("Debug header: ${_genFile}")
     set("${_SMTK_op_HEADER_OUTPUT}"
       "${_genFile}"
       PARENT_SCOPE)
@@ -78,7 +77,6 @@ function(smtk_encode_file inOpSpecs)
     string(REPLACE "\\" "_" _targetName "generate_${_targetName}")
     string(REPLACE "/" "_" _targetName "${_targetName}")
     string(REPLACE ":" "" _targetName "${_targetName}")
-    message("Debug target: ${_targetName}")
 
     add_custom_target(${_targetName} DEPENDS ${_genFile})
 

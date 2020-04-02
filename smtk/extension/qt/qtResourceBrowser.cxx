@@ -12,8 +12,8 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 #include "smtk/extension/qt/qtSMTKUtilities.h"
-// cmake puts the .json file contents into a static string, named _xml
-#include "smtk/extension/qt/ResourcePanelConfiguration_xml.h"
+// cmake puts the .json file contents into a static string in this header
+#include "smtk/extension/qt/ResourcePanelConfiguration_json.h"
 
 #include "smtk/view/DescriptivePhrase.h"
 #include "smtk/view/ResourcePhraseModel.h"
@@ -43,7 +43,7 @@
 
 using namespace smtk::extension;
 
-std::string qtResourceBrowser::s_configurationJSON = ResourcePanelConfiguration_xml;
+std::string qtResourceBrowser::s_configurationJSON = ResourcePanelConfiguration_json;
 
 qtBaseView* qtResourceBrowser::createViewWidget(const smtk::view::Information& info)
 {

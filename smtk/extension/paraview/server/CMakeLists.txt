@@ -22,15 +22,16 @@ set(pvServerOps
 )
 foreach (operator ${pvServerOps})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND classes ${operator})
-  list(APPEND pvServerDependencies ${targetName})
+  list(APPEND pvServerDependencies ${headerName})
 endforeach()
+# since generated headers are in this directory, we can add them without a custom target
 
 vtk_module_add_module(smtkPVServerExt
   CLASSES ${classes}
+  HEADERS ${pvServerDependencies}
   HEADERS_SUBDIR "smtk/extension/paraview/server")
-add_dependencies(smtkPVServerExt ${pvServerDependencies})
 
 vtk_module_link(smtkPVServerExt
   PUBLIC

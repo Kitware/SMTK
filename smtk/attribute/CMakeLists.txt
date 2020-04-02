@@ -175,12 +175,13 @@ set(attributeSrcs
 # construct operator inputs
 foreach (operator ${attributeOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND attributeSrcs operators/${operator}.cxx)
   list(APPEND attributeHeaders operators/${operator}.h)
-  list(APPEND _attributeDependencies ${targetName})
+  list(APPEND _attributeDependencies ${headerName})
 endforeach()
-set(attributeDependencies ${_attributeDependencies} PARENT_SCOPE)
+add_custom_target(attibuteGenHeaders DEPENDS ${_attributeDependencies})
+# set(attributeDependencies ${_attributeDependencies} PARENT_SCOPE)
 
 #install the headers
 smtk_public_headers(smtkCore ${attributeHeaders})

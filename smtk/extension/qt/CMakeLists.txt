@@ -143,6 +143,11 @@ set(QAttrLibHeaders
   qtViewRegistrar.h
 )
 
+# put contents of this file in a string in a header, ending _json.h
+smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
+  TYPE "_json"
+  HEADER_OUTPUT rpJsonHeader)
+
 #install the headers
 smtk_public_headers(smtkQtExt ${QAttrLibHeaders})
 
@@ -157,11 +162,8 @@ add_library(smtkQtExt
   qtDescriptivePhraseModelIcons.qrc
   qtReferenceItemIcons.qrc
   qtAttributeIcons.qrc
+  ${rpJsonHeader}
 )
-
-# put contents of this file in a string in a header. It's not xml, but it still works.
-smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
-  TARGET_OUTPUT rpJsonTarget)
 
 #we need to add the location of the moc files to the include dir for qtsmtk
 target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
@@ -176,7 +178,7 @@ target_link_libraries(smtkQtExt
   LINK_PRIVATE
   Threads::Threads
   )
-add_dependencies(smtkQtExt ${rpJsonTarget})
+# add_dependencies(smtkQtExt ${rpJsonTarget})
 
 smtk_export_header(smtkQtExt Exports.h)
 

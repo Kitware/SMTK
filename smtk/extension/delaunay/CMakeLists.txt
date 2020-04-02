@@ -36,10 +36,12 @@ smtk_install_library(smtkDelaunayExt)
 
 foreach (operator ${delaunayOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
-  list(APPEND delaunayDependencies ${targetName})
+  HEADER_OUTPUT headerName)
+  list(APPEND delaunayDependencies ${headerName})
 endforeach()
-add_dependencies(smtkDelaunayExt ${delaunayDependencies})
+add_custom_target("delaunayGenHeaders" DEPENDS ${delaunayDependencies})
+
+add_dependencies(smtkDelaunayExt "delaunayGenHeaders")
 
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   set_property(GLOBAL APPEND
