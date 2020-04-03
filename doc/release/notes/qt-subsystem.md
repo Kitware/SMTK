@@ -51,6 +51,9 @@ Consuming applications can now register icon sets for Resources and Components, 
 
 ### qtAttributeView Changes
 * There is now a splitter between the attribute editing area and the association information area.
+* Removed the old view by property mechanism to help simplify the code
+* qtAttributeView and qtAssociatioView now have virtual methods to create their association widgets that can get overridden - in the future they should use a widget factor to fetch it so you wouldn't have to create a new class to use a different association widget
+
 
 ### qtUIManager Changes
 * There is now a method to return the size of a string based on the font being used
@@ -116,3 +119,20 @@ Note that item /c contain ItemView for its children.
 
 ### Changes to qtGroupView
 * GroupBox Style icon has been changed from a check box to a closed/expand icon pair.  This change reduces confusion between optional items and viewing control widgets.
+
+### Changed to qtAssociation Widget
+* Added the ability to indicate that all persistent objects that can be associated to a particular type of attribute must be.
+* Re-factored qtAssociationWdiget into an abstract class and a concrete implementation called qtAssociation2ColumnWidget - this should allow for easier customization
+* Added the ability to customize the following aspects of qtAssociation2ColumnWidget
+  * Title Label
+  * Current Column Label
+  * Available Column Label
+* Added allAssociationMode to qtAssociation2ColumnWidget to indicate that all relevant persistent objects must be associated to a type of attribute else display the warning icon
+
+Here is an example of customizing the AssociationWidget for an AttributeView:
+```xml
+    <View Type="Attribute" Title="HT Boundary Conditions" Label="Boundary"
+      RequireAllAssociated="true" AvailableLabel="Surfaces that still require boundary conditions"
+      CurrentLabel="Surfaces associated with the current boundary condition"
+      AssociationTitle="Boundary condition association information">
+```

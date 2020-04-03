@@ -20,6 +20,7 @@ set(QAttrLibSrcs
   qtGroupView.cxx
   qtAnalysisView.cxx
   qtAssociationView.cxx
+  qtAssociation2ColumnWidget.cxx
   qtAttributeView.cxx
   qtInstancedView.cxx
   qtModelEntityAttributeView.cxx
@@ -35,7 +36,6 @@ set(QAttrLibSrcs
   qtViewInfoDialog.cxx
   qtFileItem.cxx
   qtTableWidget.cxx
-  qtAssociationWidget.cxx
   qtColorButton.cxx
   qtLineEdit.cxx
   qtDoubleLineEdit.cxx
@@ -76,6 +76,8 @@ set(QAttrLibMocHeaders
   qtActiveObjects.h
   qtAvailableOperations.h
   qtUIManager.h
+  qtAssociationWidget.h
+  qtAssociation2ColumnWidget.h
   qtAttribute.h
   qtAttributeDisplay.h
   qtAttributeEditorDialog.h
@@ -107,7 +109,6 @@ set(QAttrLibMocHeaders
   qtViewInfoDialog.h
   qtFileItem.h
   qtTableWidget.h
-  qtAssociationWidget.h
   qtColorButton.h
   qtLineEdit.h
   qtDoubleLineEdit.h

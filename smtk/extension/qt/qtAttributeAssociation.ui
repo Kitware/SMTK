@@ -15,33 +15,44 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QGroupBox" name="boundaryGroup">
-     <property name="title">
+    <widget class="QLabel" name="TitleLabel">
+     <property name="text">
       <string>Model Boundary and Attribute Associations</string>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="boundaryGroup">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelCurrent">
-        <property name="text">
-         <string>Current</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_2">
+      <item row="1" column="2">
+       <widget class="QLabel" name="AvailableLabel">
         <property name="text">
          <string>Available</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QListWidget" name="CurrentList">
         <property name="selectionMode">
          <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="2">
+       <widget class="QListWidget" name="AvailableList">
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="CurrentLabel">
+        <property name="text">
+         <string>Current</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
        <widget class="QFrame" name="ButtonsFrame">
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -104,13 +115,6 @@
           </spacer>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QListWidget" name="AvailableList">
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
        </widget>
       </item>
      </layout>
