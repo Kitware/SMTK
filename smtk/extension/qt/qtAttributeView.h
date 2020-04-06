@@ -34,6 +34,9 @@ namespace smtk
 {
 namespace extension
 {
+class qtAssociationWidget;
+class qtBaseView;
+
 class SMTKQTEXT_EXPORT qtAttributeView : public qtBaseAttributeView
 {
   Q_OBJECT
@@ -59,8 +62,8 @@ public:
     VIEWBY_PROPERTY
   };
 public slots:
-  void onViewBy(int);
-  void onViewByWithDefinition(int viewBy, smtk::attribute::DefinitionPtr attDef);
+  void onViewBy();
+  void onViewByWithDefinition(smtk::attribute::DefinitionPtr attDef);
   void updateUI() override;
   void onShowCategory() override;
   void onListBoxSelectionChanged();
@@ -73,9 +76,6 @@ public slots:
   void updateModelAssociation() override;
   void onListBoxClicked(QTableWidgetItem* item);
   void onAttributeCellChanged(int, int);
-  void onPropertyDefSelected();
-  void attributeFilterChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
-  void propertyFilterChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
   void childrenResized() override;
   void showAdvanceLevelOverlay(bool show) override;
   void associationsChanged();
@@ -90,9 +90,10 @@ signals:
 
 protected:
   void createWidget() override;
+  virtual smtk::extension::qtAssociationWidget* createAssociationWidget(
+    QWidget* parent, qtBaseView* view);
   smtk::attribute::AttributePtr getAttributeFromItem(QTableWidgetItem* item);
   smtk::attribute::Attribute* getRawAttributeFromItem(QTableWidgetItem* item);
-  smtk::attribute::ItemPtr getAttributeItemFromItem(QTableWidgetItem* item);
 
   smtk::attribute::AttributePtr getSelectedAttribute();
   QTableWidgetItem* addAttributeListItem(smtk::attribute::AttributePtr childData);
@@ -104,13 +105,7 @@ protected:
     smtk::attribute::ItemPtr linkedData, int& startRow, bool enabled);
   virtual void getAllDefinitions();
 
-  virtual void updateTableWithProperties();
-  virtual void removeComparativeProperty(const QString& propertyName);
-  void initSelectionFilters();
   void initSelectAttCombo(smtk::attribute::DefinitionPtr attDef);
-  void initSelectPropCombo(smtk::attribute::DefinitionPtr attDef);
-  void addComparativeAttribute(smtk::attribute::AttributePtr att);
-  void removeComparativeAttribute(smtk::attribute::AttributePtr att);
   void insertTableColumn(
     QTableWidget* wTable, int insertCol, const QString& title, int advancedlevel);
   // Determines if an alert icon should be displayed next to the attribute in the list
@@ -121,7 +116,7 @@ protected:
     smtk::operation::EventType event, smtk::operation::Operation::Result result);
 
 private:
-  qtAttributeViewInternals* Internals;
+  qtAttributeViewInternals* m_internals;
   bool m_hideAssociations;
 
 }; // class

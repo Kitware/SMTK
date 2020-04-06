@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/qt/qtAssociationWidget.h"
+#include "smtk/extension/qt/qtAssociation2ColumnWidget.h"
 #include "smtk/extension/qt/qtActiveObjects.h"
 
 #include "smtk/extension/qt/qtAttribute.h"
@@ -65,30 +65,49 @@ class qtAttributeAssociation;
 using namespace smtk::attribute;
 using namespace smtk::extension;
 
-class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
+class qtAssociation2ColumnWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
-  qtAssociationWidgetInternals() = default;
+  qtAssociation2ColumnWidgetInternals() = default;
   WeakAttributePtr currentAtt;
   QPointer<qtBaseView> view;
   QListWidgetItem* lastHighlightedItem{ nullptr };
   QBrush normalBackground;
 };
 
-qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
-  : QWidget(_p)
+qtAssociation2ColumnWidget::qtAssociation2ColumnWidget(QWidget* _p, qtBaseView* bview)
+  : qtAssociationWidget(_p, bview)
 {
-  this->Internals = new qtAssociationWidgetInternals;
-  this->Internals->setupUi(this);
-  this->Internals->view = bview;
+  m_allAssociatedWarning =
+    "There are still components not associated to any of the above attributes.";
+  m_internals = new qtAssociation2ColumnWidgetInternals;
+  m_internals->setupUi(this);
   this->initWidget();
+
+  // Are there any customizations?
+  const smtk::view::Configuration::Component& config = m_view->getObject()->details();
+  m_allAssociatedMode = config.attributeAsBool("RequireAllAssociated");
+  std::string val;
+  if (config.attribute("AvailableLabel", val))
+  {
+    this->setAvailableLabel(val);
+  }
+  if (config.attribute("CurrentLabel", val))
+  {
+    this->setCurrentLabel(val);
+  }
+  if (config.attribute("AssociationTitle", val))
+  {
+    this->setTitleLabel(val);
+  }
+
   std::ostringstream receiverSource;
-  receiverSource << "qtAssociationWidget_" << this;
+  receiverSource << "qtAssociation2ColumnWidget_" << this;
   m_selectionSourceName = receiverSource.str();
-  auto uiManager = this->Internals->view->uiManager();
+  auto uiManager = m_view->uiManager();
   if (uiManager == nullptr)
   {
-    std::cerr << "qtAssociationWidget: Could not find UI Manager!\n";
+    std::cerr << "qtAssociation2ColumnWidget: Could not find UI Manager!\n";
     return;
   }
 
@@ -97,7 +116,7 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
     uiManager, SIGNAL(highlightOnHoverChanged(bool)), this, SLOT(highlightOnHoverChanged(bool)));
 
   auto opManager = uiManager->operationManager();
-  QPointer<qtAssociationWidget> guardedObject(this);
+  QPointer<qtAssociation2ColumnWidget> guardedObject(this);
   if (opManager != nullptr)
   {
     m_operationObserverKey = opManager->observers().insert(
@@ -109,13 +128,13 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
         }
         return guardedObject->handleOperationEvent(oper, event, result);
       },
-      "qtAssociationWidget: Refresh widget when resources are modified.");
+      "qtAssociation2ColumnWidget: Refresh widget when resources are modified.");
   }
   else
   {
-    std::cerr << "qtAssociationWidget: Could not find Operation Manager!\n";
+    std::cerr << "qtAssociation2ColumnWidget: Could not find Operation Manager!\n";
   }
-  auto resManager = this->Internals->view->uiManager()->resourceManager();
+  auto resManager = m_view->uiManager()->resourceManager();
   if (resManager != nullptr)
   {
     m_resourceObserverKey = resManager->observers().insert(
@@ -126,93 +145,104 @@ qtAssociationWidget::qtAssociationWidget(QWidget* _p, qtBaseView* bview)
         }
         return guardedObject->handleResourceEvent(resource, event);
       },
-      "qtAssociationWidget: Refresh widget when resources are removed.");
+      "qtAssociation2ColumnWidget: Refresh widget when resources are removed.");
   }
   else
   {
-    std::cerr << "qtAssociationWidget: Could not find Resource Manager!\n";
+    std::cerr << "qtAssociation2ColumnWidget: Could not find Resource Manager!\n";
   }
-  QObject::connect(this->Internals->view, SIGNAL(aboutToDestroy()), this, SLOT(removeObservers()));
-  QObject::connect(this->Internals->CurrentList,
+  QObject::connect(m_view, SIGNAL(aboutToDestroy()), this, SLOT(removeObservers()));
+  QObject::connect(m_internals->CurrentList,
     SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
     SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)), Qt::QueuedConnection);
 
-  QObject::connect(this->Internals->AvailableList,
+  QObject::connect(m_internals->AvailableList,
     SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
     SLOT(onCurrentItemChanged(QListWidgetItem*, QListWidgetItem*)), Qt::QueuedConnection);
 
-  this->Internals->lastHighlightedItem = nullptr;
+  m_internals->lastHighlightedItem = nullptr;
+  m_internals->AvailableLabel->setWordWrap(true);
+  m_internals->CurrentLabel->setWordWrap(true);
+  m_internals->TitleLabel->setWordWrap(true);
 }
 
-qtAssociationWidget::~qtAssociationWidget()
+qtAssociation2ColumnWidget::~qtAssociation2ColumnWidget()
 {
   this->removeObservers();
-  delete this->Internals;
+  delete m_internals;
 }
 
-void qtAssociationWidget::initWidget()
+void qtAssociation2ColumnWidget::initWidget()
 {
   // Set up icons on buttons
   QString arrowRight(":/icons/attribute/arrowRight.png");
   QString arrowLeft(":/icons/attribute/arrowLeft.png");
-  this->Internals->MoveToRight->setIcon(QIcon(arrowRight));
-  this->Internals->MoveToLeft->setIcon(QIcon(arrowLeft));
-  this->Internals->AlertLabel->setText("<img src=\":/icons/attribute/errorAlert.png\">");
-  this->Internals->AlertLabel->hide();
+  m_internals->MoveToRight->setIcon(QIcon(arrowRight));
+  m_internals->MoveToLeft->setIcon(QIcon(arrowLeft));
+  m_internals->AlertLabel->setText("<img src=\":/icons/attribute/errorAlert.png\">");
+  m_internals->AlertLabel->hide();
 
   // signals/slots
-  QObject::connect(this->Internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()),
+  QObject::connect(m_internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()),
     Qt::QueuedConnection);
-  QObject::connect(this->Internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()),
-    Qt::QueuedConnection);
-  this->Internals->CurrentList->setMouseTracking(true);   // Needed to receive hover events.
-  this->Internals->AvailableList->setMouseTracking(true); // Needed to receive hover events.
+  QObject::connect(
+    m_internals->MoveToLeft, SIGNAL(clicked()), this, SLOT(onAddAvailable()), Qt::QueuedConnection);
+  m_internals->CurrentList->setMouseTracking(true);   // Needed to receive hover events.
+  m_internals->AvailableList->setMouseTracking(true); // Needed to receive hover events.
 }
 
-bool qtAssociationWidget::hasSelectedItem()
+bool qtAssociation2ColumnWidget::hasSelectedItem()
 {
-  return !this->Internals->AvailableList->selectedItems().isEmpty();
+  return !m_internals->AvailableList->selectedItems().isEmpty();
 }
 
-void qtAssociationWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)
+void qtAssociation2ColumnWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)
 {
-  this->Internals->currentAtt = theAtt;
+  m_internals->currentAtt = theAtt;
   this->refreshAssociations();
 
-  // Lets store the normal backgound color of an item - we will
+  // Lets store the normal background color of an item - we will
   // need to use this when dealing with hovering
-  if (this->Internals->CurrentList->count())
+  if (m_internals->CurrentList->count())
   {
-    this->Internals->normalBackground = this->Internals->CurrentList->item(0)->background();
+    m_internals->normalBackground = m_internals->CurrentList->item(0)->background();
   }
-  else if (this->Internals->AvailableList->count())
+  else if (m_internals->AvailableList->count())
   {
-    this->Internals->normalBackground = this->Internals->AvailableList->item(0)->background();
+    m_internals->normalBackground = m_internals->AvailableList->item(0)->background();
   }
 }
 
-void qtAssociationWidget::updateAssociationStatus(const Attribute* attribute)
+bool qtAssociation2ColumnWidget::isValid() const
+{
+  return !m_internals->AlertLabel->isVisible();
+}
+
+void qtAssociation2ColumnWidget::updateAssociationStatus(const Attribute* attribute)
 {
   auto assocItem = attribute->associatedObjects();
-  if (assocItem->isValid())
+  bool assocValid = assocItem->isValid();
+  if (assocValid && !(m_allAssociatedMode && m_internals->AvailableList->count()))
   {
-    this->Internals->AlertLabel->hide();
+    m_internals->AlertLabel->hide();
+    return;
   }
-  else
+  m_internals->AlertLabel->show();
+  QString reason;
+
+  // Lets update the tool-tip to say why its not valid
+  if (!assocValid)
   {
-    this->Internals->AlertLabel->show();
-    // Lets update the tooltip to say why its not valid
     if (assocItem->isExtensible())
     {
       // Remember that an item may have the correct number of values
       // but they may not all be set
       if (assocItem->numberOfValues() <= assocItem->numberOfRequiredValues())
       {
-        QString reason("Attribute requires at least ");
+        reason = "Attribute requires at least ";
         QString count;
         count.setNum(assocItem->numberOfRequiredValues());
         reason.append(count).append(" objects associated to it");
-        this->Internals->AlertLabel->setToolTip(reason);
       }
       else
       {
@@ -221,7 +251,6 @@ void qtAssociationWidget::updateAssociationStatus(const Attribute* attribute)
         QString count;
         count.setNum(assocItem->maxNumberOfValues());
         reason.append(count).append(" objects associated to it");
-        this->Internals->AlertLabel->setToolTip(reason);
       }
     }
     else
@@ -230,30 +259,39 @@ void qtAssociationWidget::updateAssociationStatus(const Attribute* attribute)
       QString count;
       count.setNum(assocItem->numberOfRequiredValues());
       reason.append(count).append(" objects associated to it");
-      this->Internals->AlertLabel->setToolTip(reason);
     }
   }
+  if (m_allAssociatedMode && m_internals->AvailableList->count())
+  {
+    if (reason.isEmpty())
+    {
+      reason = m_allAssociatedWarning;
+    }
+    else
+    {
+      reason.append("\n").append(m_allAssociatedWarning);
+    }
+  }
+  m_internals->AlertLabel->setToolTip(reason);
 }
-void qtAssociationWidget::refreshAssociations(const smtk::common::UUID& ignoreResource)
+void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& ignoreResource)
 {
-  this->Internals->CurrentList->blockSignals(true);
-  this->Internals->AvailableList->blockSignals(true);
-  this->Internals->CurrentList->clear();
-  this->Internals->AvailableList->clear();
+  m_internals->CurrentList->blockSignals(true);
+  m_internals->AvailableList->blockSignals(true);
+  m_internals->CurrentList->clear();
+  m_internals->AvailableList->clear();
 
-  auto theAttribute = this->Internals->currentAtt.lock();
+  auto theAttribute = m_internals->currentAtt.lock();
 
   if (!theAttribute)
   {
-    this->Internals->CurrentList->blockSignals(false);
-    this->Internals->AvailableList->blockSignals(false);
-    this->Internals->AlertLabel->hide();
+    m_internals->CurrentList->blockSignals(false);
+    m_internals->AvailableList->blockSignals(false);
+    m_internals->AlertLabel->hide();
     return;
   }
 
   attribute::DefinitionPtr attDef = theAttribute->definition();
-  // Lets see if the attribute's associations are currently valid
-  this->updateAssociationStatus(theAttribute.get());
   ResourcePtr attResource = attDef->resource();
   auto objects = this->associatableObjects(ignoreResource);
   smtk::attribute::DefinitionPtr preDef;
@@ -263,50 +301,54 @@ void qtAssociationWidget::refreshAssociations(const smtk::common::UUID& ignoreRe
   {
     if (theAttribute->isObjectAssociated(obj))
     {
-      this->addObjectAssociationListItem(this->Internals->CurrentList, obj, false, true);
+      this->addObjectAssociationListItem(m_internals->CurrentList, obj, false, true);
     }
     else
     {
       auto result = attDef->canBeAssociated(obj, conAtt, preDef);
       if (result == smtk::attribute::Definition::AssociationResultType::Valid)
       {
-        this->addObjectAssociationListItem(this->Internals->AvailableList, obj, false);
+        this->addObjectAssociationListItem(m_internals->AvailableList, obj, false);
       }
     }
   }
 
-  this->Internals->CurrentList->sortItems();
-  this->Internals->AvailableList->sortItems();
-  this->Internals->CurrentList->blockSignals(false);
-  this->Internals->AvailableList->blockSignals(false);
+  m_internals->CurrentList->sortItems();
+  m_internals->AvailableList->sortItems();
+  // Lets see if the attribute's associations are currently valid
+  this->updateAssociationStatus(theAttribute.get());
+  m_internals->CurrentList->blockSignals(false);
+  m_internals->AvailableList->blockSignals(false);
 }
 
-smtk::attribute::AttributePtr qtAssociationWidget::getSelectedAttribute(QListWidgetItem* item)
+smtk::attribute::AttributePtr qtAssociation2ColumnWidget::getSelectedAttribute(
+  QListWidgetItem* item)
 {
   return this->getAttribute(item);
 }
 
-smtk::attribute::AttributePtr qtAssociationWidget::getAttribute(QListWidgetItem* item)
+smtk::attribute::AttributePtr qtAssociation2ColumnWidget::getAttribute(QListWidgetItem* item)
 {
   Attribute* rawPtr =
     item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
   return rawPtr ? rawPtr->shared_from_this() : smtk::attribute::AttributePtr();
 }
 
-smtk::resource::PersistentObjectPtr qtAssociationWidget::selectedObject(QListWidgetItem* item)
+smtk::resource::PersistentObjectPtr qtAssociation2ColumnWidget::selectedObject(
+  QListWidgetItem* item)
 {
   return this->object(item);
 }
 
-std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableObjects(
+std::set<smtk::resource::PersistentObjectPtr> qtAssociation2ColumnWidget::associatableObjects(
   const smtk::common::UUID& ignoreResource) const
 {
   std::set<smtk::resource::PersistentObjectPtr> result;
   smtk::resource::ResourceSet resources;
-  auto theAttribute = this->Internals->currentAtt.lock();
+  auto theAttribute = m_internals->currentAtt.lock();
   auto attResource = theAttribute->attributeResource();
   auto associationItem = theAttribute->associatedObjects();
-  auto resManager = this->Internals->view->uiManager()->resourceManager();
+  auto resManager = m_view->uiManager()->resourceManager();
   if (associationItem == nullptr)
   {
     return result;
@@ -393,7 +435,7 @@ std::set<smtk::resource::PersistentObjectPtr> qtAssociationWidget::associatableO
   return result;
 }
 
-smtk::resource::PersistentObjectPtr qtAssociationWidget::object(QListWidgetItem* item)
+smtk::resource::PersistentObjectPtr qtAssociation2ColumnWidget::object(QListWidgetItem* item)
 {
   if (item == nullptr)
   {
@@ -404,7 +446,7 @@ smtk::resource::PersistentObjectPtr qtAssociationWidget::object(QListWidgetItem*
   return item->data(Qt::UserRole).value<smtk::resource::PersistentObjectPtr>();
 }
 
-QList<QListWidgetItem*> qtAssociationWidget::getSelectedItems(QListWidget* theList) const
+QList<QListWidgetItem*> qtAssociation2ColumnWidget::getSelectedItems(QListWidget* theList) const
 {
   if (theList->selectedItems().count())
   {
@@ -418,7 +460,7 @@ QList<QListWidgetItem*> qtAssociationWidget::getSelectedItems(QListWidget* theLi
   return result;
 }
 
-void qtAssociationWidget::removeItem(QListWidget* theList, QListWidgetItem* selItem)
+void qtAssociation2ColumnWidget::removeItem(QListWidget* theList, QListWidgetItem* selItem)
 {
   if (theList && selItem)
   {
@@ -426,7 +468,7 @@ void qtAssociationWidget::removeItem(QListWidget* theList, QListWidgetItem* selI
   }
 }
 
-QListWidgetItem* qtAssociationWidget::addObjectAssociationListItem(QListWidget* theList,
+QListWidgetItem* qtAssociation2ColumnWidget::addObjectAssociationListItem(QListWidget* theList,
   const smtk::resource::PersistentObjectPtr& object, bool sort, bool appendResourceName)
 {
   std::string name;
@@ -455,7 +497,7 @@ QListWidgetItem* qtAssociationWidget::addObjectAssociationListItem(QListWidget* 
   return item;
 }
 
-QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
+QListWidgetItem* qtAssociation2ColumnWidget::addAttributeAssociationItem(
   QListWidget* theList, smtk::attribute::AttributePtr att, bool sort)
 {
   QString txtLabel(att->name().c_str());
@@ -472,19 +514,19 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
   return item;
 }
 
-void qtAssociationWidget::onRemoveAssigned()
+void qtAssociation2ColumnWidget::onRemoveAssigned()
 {
-  auto att = this->Internals->currentAtt.lock();
+  auto att = m_internals->currentAtt.lock();
   if (att == nullptr)
   {
     return; // there is nothing to do
   }
 
-  this->Internals->CurrentList->blockSignals(true);
-  this->Internals->AvailableList->blockSignals(true);
+  m_internals->CurrentList->blockSignals(true);
+  m_internals->AvailableList->blockSignals(true);
 
   QListWidgetItem* selItem = nullptr;
-  QListWidget* theList = this->Internals->CurrentList;
+  QListWidget* theList = m_internals->CurrentList;
   QList<QListWidgetItem*> selItems = this->getSelectedItems(theList);
   foreach (QListWidgetItem* item, selItems)
   {
@@ -495,7 +537,7 @@ void qtAssociationWidget::onRemoveAssigned()
       if (att->disassociate(currentItem, probAtt))
       {
         this->removeItem(theList, item);
-        selItem = this->addObjectAssociationListItem(this->Internals->AvailableList, currentItem);
+        selItem = this->addObjectAssociationListItem(m_internals->AvailableList, currentItem);
       }
       else
       {
@@ -509,31 +551,31 @@ void qtAssociationWidget::onRemoveAssigned()
     }
   }
 
-  this->Internals->CurrentList->blockSignals(false);
-  this->Internals->AvailableList->blockSignals(false);
+  m_internals->CurrentList->blockSignals(false);
+  m_internals->AvailableList->blockSignals(false);
   if (selItem)
   {
     emit this->attAssociationChanged();
-    this->updateAssociationStatus(att.get());
     // highlight selected item in AvailableList
-    this->updateListItemSelectionAfterChange(selItems, this->Internals->AvailableList);
-    this->Internals->CurrentList->setCurrentItem(nullptr);
-    this->Internals->CurrentList->clearSelection();
+    this->updateListItemSelectionAfterChange(selItems, m_internals->AvailableList);
+    m_internals->CurrentList->setCurrentItem(nullptr);
+    m_internals->CurrentList->clearSelection();
+    this->updateAssociationStatus(att.get());
   }
 }
 
-void qtAssociationWidget::onAddAvailable()
+void qtAssociation2ColumnWidget::onAddAvailable()
 {
-  auto att = this->Internals->currentAtt.lock();
+  auto att = m_internals->currentAtt.lock();
   if (att == nullptr)
   {
     return; // Nothing to do
   }
 
-  this->Internals->CurrentList->blockSignals(true);
-  this->Internals->AvailableList->blockSignals(true);
+  m_internals->CurrentList->blockSignals(true);
+  m_internals->AvailableList->blockSignals(true);
   QListWidgetItem* selItem = nullptr;
-  QListWidget* theList = this->Internals->AvailableList;
+  QListWidget* theList = m_internals->AvailableList;
   QList<QListWidgetItem*> selItems = this->getSelectedItems(theList);
   foreach (QListWidgetItem* item, selItems)
   {
@@ -544,7 +586,7 @@ void qtAssociationWidget::onAddAvailable()
       {
         this->removeItem(theList, item);
         selItem =
-          this->addObjectAssociationListItem(this->Internals->CurrentList, currentItem, true, true);
+          this->addObjectAssociationListItem(m_internals->CurrentList, currentItem, true, true);
       }
       else // failed to associate with new entity
       {
@@ -554,32 +596,32 @@ void qtAssociationWidget::onAddAvailable()
     }
   }
 
-  this->Internals->CurrentList->blockSignals(false);
-  this->Internals->AvailableList->blockSignals(false);
+  m_internals->CurrentList->blockSignals(false);
+  m_internals->AvailableList->blockSignals(false);
   if (selItem)
   {
-    this->updateAssociationStatus(att.get());
     emit this->attAssociationChanged();
     // highlight selected item in CurrentList
-    this->updateListItemSelectionAfterChange(selItems, this->Internals->CurrentList);
-    this->Internals->AvailableList->setCurrentItem(nullptr);
-    this->Internals->AvailableList->clearSelection();
+    this->updateListItemSelectionAfterChange(selItems, m_internals->CurrentList);
+    m_internals->AvailableList->setCurrentItem(nullptr);
+    m_internals->AvailableList->clearSelection();
+    this->updateAssociationStatus(att.get());
   }
 }
 
-void qtAssociationWidget::removeObservers()
+void qtAssociation2ColumnWidget::removeObservers()
 {
-  if (m_operationObserverKey.assigned() && this->Internals->view)
+  if (m_operationObserverKey.assigned() && m_view)
   {
-    auto opManager = this->Internals->view->uiManager()->operationManager();
+    auto opManager = m_view->uiManager()->operationManager();
     if (opManager != nullptr)
     {
       opManager->observers().erase(m_operationObserverKey);
     }
   }
-  if (m_resourceObserverKey.assigned() && this->Internals->view)
+  if (m_resourceObserverKey.assigned() && m_view)
   {
-    auto resManager = this->Internals->view->uiManager()->resourceManager();
+    auto resManager = m_view->uiManager()->resourceManager();
     if (resManager != nullptr)
     {
       resManager->observers().erase(m_resourceObserverKey);
@@ -587,7 +629,7 @@ void qtAssociationWidget::removeObservers()
   }
 }
 
-void qtAssociationWidget::updateListItemSelectionAfterChange(
+void qtAssociation2ColumnWidget::updateListItemSelectionAfterChange(
   QList<QListWidgetItem*> selItems, QListWidget* list)
 {
   list->blockSignals(true);
@@ -602,7 +644,7 @@ void qtAssociationWidget::updateListItemSelectionAfterChange(
   list->blockSignals(false);
 }
 
-int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
+int qtAssociation2ColumnWidget::handleOperationEvent(const smtk::operation::Operation& /*unused*/,
   smtk::operation::EventType event, smtk::operation::Operation::Result result)
 {
   if (event != smtk::operation::EventType::DID_OPERATE)
@@ -622,7 +664,7 @@ int qtAssociationWidget::handleOperationEvent(const smtk::operation::Operation& 
   return 0;
 }
 
-int qtAssociationWidget::handleResourceEvent(
+int qtAssociation2ColumnWidget::handleResourceEvent(
   const smtk::resource::Resource& resource, smtk::resource::EventType event)
 {
   if (event == smtk::resource::EventType::REMOVED)
@@ -633,14 +675,14 @@ int qtAssociationWidget::handleResourceEvent(
   return 0;
 }
 
-void qtAssociationWidget::leaveEvent(QEvent* evt)
+void qtAssociation2ColumnWidget::leaveEvent(QEvent* evt)
 {
   this->resetHover();
   // Now let the superclass do what it wants:
   QWidget::leaveEvent(evt);
 }
 
-void qtAssociationWidget::hoverRow(const QModelIndex& idx)
+void qtAssociation2ColumnWidget::hoverRow(const QModelIndex& idx)
 {
   QListWidget* const listWidget = qobject_cast<QListWidget*>(QObject::sender());
   if (!listWidget)
@@ -650,27 +692,27 @@ void qtAssociationWidget::hoverRow(const QModelIndex& idx)
 
   int row = idx.row();
   QListWidgetItem *item, *curItem;
-  if (listWidget == this->Internals->CurrentList)
+  if (listWidget == m_internals->CurrentList)
   {
-    item = this->Internals->CurrentList->item(row);
-    curItem = this->Internals->CurrentList->currentItem();
+    item = m_internals->CurrentList->item(row);
+    curItem = m_internals->CurrentList->currentItem();
   }
-  else if (listWidget == this->Internals->AvailableList)
+  else if (listWidget == m_internals->AvailableList)
   {
-    item = this->Internals->AvailableList->item(row);
-    curItem = this->Internals->AvailableList->currentItem();
+    item = m_internals->AvailableList->item(row);
+    curItem = m_internals->AvailableList->currentItem();
   }
   else
   {
     return;
   }
 
-  if ((item == this->Internals->lastHighlightedItem) || (item == curItem))
+  if ((item == m_internals->lastHighlightedItem) || (item == curItem))
   {
     return;
   }
 
-  auto uiManager = this->Internals->view->uiManager();
+  auto uiManager = m_view->uiManager();
   if (uiManager == nullptr)
   {
     return;
@@ -686,9 +728,9 @@ void qtAssociationWidget::hoverRow(const QModelIndex& idx)
   // If there was a previously highlighted item and it is still using the
   // hover color then reset its background;
 
-  if (ALLOW_LIST_HIGHLIGHTING && (this->Internals->lastHighlightedItem != nullptr))
+  if (ALLOW_LIST_HIGHLIGHTING && (m_internals->lastHighlightedItem != nullptr))
   {
-    this->Internals->lastHighlightedItem->setBackground(this->Internals->normalBackground);
+    m_internals->lastHighlightedItem->setBackground(m_internals->normalBackground);
   }
 
   // Discover what is currently hovered
@@ -701,8 +743,8 @@ void qtAssociationWidget::hoverRow(const QModelIndex& idx)
   if (ALLOW_LIST_HIGHLIGHTING && item)
   {
     item->setBackground(
-      QBrush(this->Internals->CurrentList->palette().highlight().color().lighter(125)));
-    this->Internals->lastHighlightedItem = item;
+      QBrush(m_internals->CurrentList->palette().highlight().color().lighter(125)));
+    m_internals->lastHighlightedItem = item;
   }
   // Add new hover state
   auto hoverMask = uiManager->hoverBit();
@@ -715,18 +757,18 @@ void qtAssociationWidget::hoverRow(const QModelIndex& idx)
     objs, m_selectionSourceName, sv, smtk::view::SelectionAction::UNFILTERED_REPLACE, true);
 }
 
-void qtAssociationWidget::resetHover()
+void qtAssociation2ColumnWidget::resetHover()
 {
-  auto uiManager = this->Internals->view->uiManager();
+  auto uiManager = m_view->uiManager();
   if (uiManager == nullptr)
   {
     return;
   }
 
-  if (ALLOW_LIST_HIGHLIGHTING && (this->Internals->lastHighlightedItem != nullptr))
+  if (ALLOW_LIST_HIGHLIGHTING && (m_internals->lastHighlightedItem != nullptr))
   {
-    this->Internals->lastHighlightedItem->setBackground(this->Internals->normalBackground);
-    this->Internals->lastHighlightedItem = nullptr;
+    m_internals->lastHighlightedItem->setBackground(m_internals->normalBackground);
+    m_internals->lastHighlightedItem = nullptr;
   }
   auto selection = uiManager->selection();
   if (selection == nullptr)
@@ -736,44 +778,45 @@ void qtAssociationWidget::resetHover()
   selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
 }
 
-void qtAssociationWidget::highlightOnHoverChanged(bool shouldHighlight)
+void qtAssociation2ColumnWidget::highlightOnHoverChanged(bool shouldHighlight)
 {
   if (shouldHighlight)
   {
-    QObject::connect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
+    QObject::connect(m_internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
       SLOT(hoverRow(const QModelIndex&)), Qt::QueuedConnection);
-    QObject::connect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
+    QObject::connect(m_internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
       SLOT(hoverRow(const QModelIndex&)), Qt::QueuedConnection);
   }
   else
   {
-    QObject::disconnect(this->Internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
+    QObject::disconnect(m_internals->CurrentList, SIGNAL(entered(const QModelIndex&)), this,
       SLOT(hoverRow(const QModelIndex&)));
-    QObject::disconnect(this->Internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
+    QObject::disconnect(m_internals->AvailableList, SIGNAL(entered(const QModelIndex&)), this,
       SLOT(hoverRow(const QModelIndex&)));
     this->resetHover();
   }
 }
 
-void qtAssociationWidget::onCurrentItemChanged(QListWidgetItem* item, QListWidgetItem* prevItem)
+void qtAssociation2ColumnWidget::onCurrentItemChanged(
+  QListWidgetItem* item, QListWidgetItem* prevItem)
 {
   // When something is selected we need to make sure that the
   // previous selected item is no longer using the hover background color
   // Also we need to make sure that the last highlighted item is set
   // to null so the next time hover row is called it knows there is
   // no item needing its background cleared.
-  if (item == this->Internals->lastHighlightedItem)
+  if (item == m_internals->lastHighlightedItem)
   {
-    auto uiManager = this->Internals->view->uiManager();
+    auto uiManager = m_view->uiManager();
     if (uiManager == nullptr)
     {
       return;
     }
     if (ALLOW_LIST_HIGHLIGHTING && (prevItem != nullptr))
     {
-      prevItem->setBackground(this->Internals->normalBackground);
+      prevItem->setBackground(m_internals->normalBackground);
     }
-    this->Internals->lastHighlightedItem = nullptr;
+    m_internals->lastHighlightedItem = nullptr;
     auto selection = uiManager->selection();
     if (selection == nullptr)
     {
@@ -781,4 +824,17 @@ void qtAssociationWidget::onCurrentItemChanged(QListWidgetItem* item, QListWidge
     }
     selection->resetSelectionBits(m_selectionSourceName, uiManager->hoverBit());
   }
+}
+
+void qtAssociation2ColumnWidget::setCurrentLabel(const std::string& message)
+{
+  m_internals->CurrentLabel->setText(message.c_str());
+}
+void qtAssociation2ColumnWidget::setAvailableLabel(const std::string& message)
+{
+  m_internals->AvailableLabel->setText(message.c_str());
+}
+void qtAssociation2ColumnWidget::setTitleLabel(const std::string& message)
+{
+  m_internals->TitleLabel->setText(message.c_str());
 }

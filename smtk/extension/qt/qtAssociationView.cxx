@@ -11,7 +11,7 @@
 #include "smtk/extension/qt/qtAssociationView.h"
 
 #include "smtk/extension/qt/qtActiveObjects.h"
-#include "smtk/extension/qt/qtAssociationWidget.h"
+#include "smtk/extension/qt/qtAssociation2ColumnWidget.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -129,6 +129,12 @@ const QMap<QString, QList<smtk::attribute::DefinitionPtr> >& qtAssociationView::
   return this->Internals->AttDefMap;
 }
 
+smtk::extension::qtAssociationWidget* qtAssociationView::createAssociationWidget(
+  QWidget* parent, qtBaseView* view)
+{
+  return new qtAssociation2ColumnWidget(parent, view);
+}
+
 void qtAssociationView::createWidget()
 {
   // this->Internals->AttDefMap has to be initialized before getAllDefinitions()
@@ -153,7 +159,7 @@ void qtAssociationView::createWidget()
 
   // the association widget
   this->Internals->AssociationsWidget =
-    new qtAssociationWidget(this->Internals->associations, this);
+    this->createAssociationWidget(this->Internals->associations, this);
   this->Internals->mainLayout->addWidget(this->Internals->AssociationsWidget);
   // signals/slots
   QObject::connect(this->Internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,

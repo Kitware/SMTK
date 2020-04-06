@@ -31,6 +31,8 @@ namespace smtk
 {
 namespace extension
 {
+class qtAssociationWidget;
+class qtBaseView;
 /**\brief A View that provides a GUI to edit an attribute's association information.
   *
   * The JSON and XML format for this View is the same as the one used for qtAttributeView with the
@@ -73,6 +75,8 @@ signals:
 
 protected:
   void createWidget() override;
+  virtual smtk::extension::qtAssociationWidget* createAssociationWidget(
+    QWidget* parent, qtBaseView* view);
   virtual void getAllDefinitions();
   smtk::attribute::AttributePtr getAttributeFromIndex(int index);
 
