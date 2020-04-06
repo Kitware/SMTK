@@ -150,14 +150,15 @@ include(SMTKOperationXML)
 # construct operator inputs
 foreach (operator ${discreteSessionOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND discreteSessionSrcs operators/${operator}.cxx)
   list(APPEND discreteSessionHeaders operators/${operator}.h)
-  list(APPEND _discreteSessionDependencies ${targetName})
+  list(APPEND _discreteSessionDependencies ${headerName})
 endforeach()
+add_custom_target(discreteSessionGenHeaders DEPENDS ${_discreteSessionDependencies})
 
 add_library(smtkDiscreteSession ${_module_src} ${discreteSessionSrcs})
-add_dependencies(smtkDiscreteSession ${_discreteSessionDependencies})
+add_dependencies(smtkDiscreteSession discreteSessionGenHeaders)
 
 set (__public_dependencies)
 set (__private_dependencies)

@@ -128,11 +128,12 @@ set(meshOperators
 # construct operator inputs
 foreach (operator ${meshOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND meshSrcs operators/${operator}.cxx)
   list(APPEND meshHeaders operators/${operator}.h)
-  list(APPEND _meshDependencies ${targetName})
+  list(APPEND _meshDependencies ${headerName})
 endforeach()
+add_custom_target(meshGenHeaders DEPENDS ${_meshDependencies})
 set(meshDependencies ${_meshDependencies} PARENT_SCOPE)
 
 #install the headers

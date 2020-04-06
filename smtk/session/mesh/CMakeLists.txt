@@ -36,14 +36,15 @@ set(meshOperators
 # need to have it encoded as a string in a header.
 foreach (operator ${meshOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND meshSrcs operators/${operator}.cxx)
   list(APPEND meshHeaders operators/${operator}.h)
-  list(APPEND meshDependencies ${targetName})
+  list(APPEND meshSessionDependencies ${headerName})
 endforeach()
+add_custom_target("meshSessionGenHeaders" DEPENDS ${meshSessionDependencies})
 
 add_library(smtkMeshSession ${meshSrcs})
-add_dependencies(smtkMeshSession ${meshDependencies})
+add_dependencies(smtkMeshSession "meshSessionGenHeaders")
 
 # Install the headers
 smtk_public_headers(smtkMeshSession ${meshHeaders})

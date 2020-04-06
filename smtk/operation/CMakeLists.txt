@@ -61,16 +61,17 @@ set(operationOperators
   )
 
 smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt"
-  TARGET_OUTPUT targetName)
-list(APPEND _operationDependencies ${targetName})
+  HEADER_OUTPUT headerName)
+list(APPEND _operationDependencies ${headerName})
 foreach (operator ${operationOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-    TARGET_OUTPUT targetName)
+    HEADER_OUTPUT headerName)
   list(APPEND operationSrcs operators/${operator}.cxx)
   list(APPEND operationHeaders operators/${operator}.h)
-  list(APPEND _operationDependencies ${targetName})
+  list(APPEND _operationDependencies ${headerName})
 endforeach()
-set(operationDependencies ${_operationDependencies} PARENT_SCOPE)
+add_custom_target(operationGenHeaders DEPENDS ${_operationDependencies})
+# set(operationDependencies ${_operationDependencies} PARENT_SCOPE)
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
 

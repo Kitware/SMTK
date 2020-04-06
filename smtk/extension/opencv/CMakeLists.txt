@@ -8,7 +8,8 @@ if(SMTK_ENABLE_POLYGON_SESSION)
     )
 
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/SurfaceExtractContours.sbt"
-    TARGET_OUTPUT secTarget)
+    HEADER_OUTPUT headerName)
+  add_custom_target(opencvGenHeaders DEPENDS ${headerName})
 
   set(import_vtk_depends)
 
@@ -29,7 +30,7 @@ if(SMTK_ENABLE_POLYGON_SESSION)
   endif()
 
   add_library(smtkOpenCVExt ${opencvSrcs})
-  add_dependencies(smtkOpenCVExt ${secTarget})
+  add_dependencies(smtkOpenCVExt opencvGenHeaders)
   target_link_libraries(smtkOpenCVExt
     LINK_PUBLIC
     smtkCore

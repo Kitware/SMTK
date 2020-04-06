@@ -19,16 +19,17 @@ set(multiscaleOperators
 # need to have it encoded as a string in a header.
 foreach (operator ${multiscaleOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND multiscaleSrcs operators/${operator}.cxx)
   list(APPEND multiscaleHeaders operators/${operator}.h)
-  list(APPEND _multiscaleDependencies ${targetName})
+  list(APPEND _multiscaleDependencies ${headerName})
 endforeach()
+add_custom_target(multiscaleSessionGenHeaders DEPENDS ${_multiscaleDependencies})
 
 install(FILES PointerDefs.h DESTINATION include/smtk/${SMTK_VERSION}/smtk/session/multiscale)
 
 add_library(smtkMultiscaleSession ${multiscaleSrcs})
-add_dependencies(smtkMultiscaleSession ${_multiscaleDependencies})
+add_dependencies(smtkMultiscaleSession multiscaleSessionGenHeaders)
 target_compile_definitions(smtkMultiscaleSession PRIVATE "AFRL_DIR=\"${AFRL_DIR}\"")
 target_compile_definitions(smtkMultiscaleSession PRIVATE "SMTK_SCRATCH_DIR=\"${CMAKE_BINARY_DIR}/Testing/Temporary\"")
 

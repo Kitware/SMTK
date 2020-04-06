@@ -120,12 +120,13 @@ set(modelHeaders
 
 foreach (operator ${modelOps})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-    TARGET_OUTPUT targetName)
+    HEADER_OUTPUT headerName)
   list(APPEND modelSrcs operators/${operator}.cxx)
   list(APPEND modelHeaders operators/${operator}.h)
-  list(APPEND _modelDependencies ${targetName})
+  list(APPEND _modelDependencies ${headerName})
 endforeach()
-set(modelDependencies ${_modelDependencies} PARENT_SCOPE)
+add_custom_target(modelGenHeaders DEPENDS ${_modelDependencies})
+# set(modelDependencies ${_modelDependencies} PARENT_SCOPE)
 
 #install the headers
 smtk_public_headers(smtkCore ${modelHeaders})

@@ -69,10 +69,10 @@ set(polygonOperators
 # construct operator inputs
 foreach (operator ${polygonOperators})
   smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-  TARGET_OUTPUT targetName)
+  HEADER_OUTPUT headerName)
   list(APPEND polygonSrcs operators/${operator}.cxx)
   list(APPEND polygonHeaders operators/${operator}.h)
-  list(APPEND _polygonDependencies ${targetName})
+  list(APPEND _polygonDependencies ${headerName})
 endforeach()
 
 set(import_vtk_depends)
@@ -85,10 +85,10 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     )
   foreach (operator ${polygonOperators})
     smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-    TARGET_OUTPUT targetName)
+    HEADER_OUTPUT headerName)
     list(APPEND polygonSrcs operators/${operator}.cxx)
     list(APPEND polygonHeaders operators/${operator}.h)
-    list(APPEND _polygonDependencies ${targetName})
+    list(APPEND _polygonDependencies ${headerName})
   endforeach()
   list(APPEND import_vtk_depends
     vtkSMTKReaderExt
@@ -105,8 +105,10 @@ if(SMTK_ENABLE_VTK_SUPPORT)
     )
 endif()
 
+add_custom_target(polygonSessionGenHeaders DEPENDS ${_polygonDependencies})
+
 add_library(smtkPolygonSession ${polygonSrcs})
-add_dependencies(smtkPolygonSession ${_polygonDependencies})
+add_dependencies(smtkPolygonSession polygonSessionGenHeaders)
 
 if(SMTK_ENABLE_VTK_SUPPORT)
   target_compile_definitions(smtkPolygonSession PUBLIC VTK_SUPPORT)
