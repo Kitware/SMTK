@@ -41,7 +41,7 @@ public:
   virtual ~qtAttribute();
 
   ///\brief Return the SMTK attribute referenced by the instance
-  smtk::attribute::AttributePtr attribute();
+  smtk::attribute::AttributePtr attribute() const;
   ///\brief Return the QT widget that visualizes the attribute
   QWidget* widget() { return m_widget; }
   ///\brief Return the QT parent widget
@@ -59,6 +59,9 @@ public:
 
   ///\brief Returns true if it does not display any of its items
   bool isEmpty() const;
+
+  ///\brief Returns true if the underlying attribute is valid
+  bool isValid() const;
 
   ///\brief Remove all qtItems contained in the qtAttribute.  This allows
   /// createBasicLayout to be called multiple times.

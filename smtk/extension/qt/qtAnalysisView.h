@@ -61,6 +61,8 @@ public:
   qtAnalysisView(const smtk::view::Information& info);
   virtual ~qtAnalysisView();
 
+  virtual bool isValid() const override;
+
 public slots:
   /// \brief Slot used to update the category filtering based on the state of the Analysis Attribute
   void analysisChanged();

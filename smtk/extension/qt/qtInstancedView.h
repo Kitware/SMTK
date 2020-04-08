@@ -40,7 +40,7 @@ public:
   qtInstancedView(const smtk::view::Information& info);
   virtual ~qtInstancedView();
   // Returns true if all attributes in the view are valid
-  bool isValid() const;
+  bool isValid() const override;
 
   bool isEmpty() const override;
 
@@ -51,7 +51,6 @@ public slots:
 
 signals:
   // emitted when an attribute is modified
-  void modified();
   void itemModified(qtItem*);
 
 protected:

@@ -59,6 +59,7 @@ public:
   int m_currentTabSelected{ 0 };
   QTabWidget::TabPosition m_tabPosition{ QTabWidget::East };
   std::string m_savedViewName;
+  QIcon m_alertIcon;
 };
 
 void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mfunc)
@@ -115,7 +116,14 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
       if (m_PageIcons.at(i).isNull())
       {
         QString secTitle = child->getObject()->label().c_str();
-        tabWidget->addTab(m_PageWidgets.at(i), secTitle);
+        if (child->isValid())
+        {
+          tabWidget->addTab(m_PageWidgets.at(i), secTitle);
+        }
+        else
+        {
+          tabWidget->addTab(m_PageWidgets.at(i), gview->alertIcon(), secTitle);
+        }
       }
       else
       {
@@ -150,18 +158,49 @@ qtBaseView* qtGroupView::createViewWidget(const smtk::view::Information& info)
 qtGroupView::qtGroupView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
-  this->Internals = new qtGroupViewInternals;
+  m_internals = new qtGroupViewInternals;
+  QPixmap image = this->uiManager()->alertPixmap();
+  QMatrix transform;
+  std::string val;
+  auto view = this->getObject();
+  transform.scale(0.5, 0.5);
+  if (view)
+  {
+    if (view->details().attribute("TabPosition", val))
+    {
+      std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+      if (val == "north")
+      {
+        m_internals->m_tabPosition = QTabWidget::North;
+      }
+      else if (val == "south")
+      {
+        m_internals->m_tabPosition = QTabWidget::South;
+      }
+      else if (val == "west")
+      {
+        m_internals->m_tabPosition = QTabWidget::West;
+        transform.rotate(90);
+      }
+      else
+      {
+        // The default is east
+        transform.rotate(-90);
+      }
+    }
+  }
+  m_internals->m_alertIcon = image.transformed(transform);
 }
 
 qtGroupView::~qtGroupView()
 {
   this->clearChildViews();
-  delete this->Internals;
+  delete m_internals;
 }
 
 void qtGroupView::updateCurrentTab(int ithTab)
 {
-  this->Internals->m_currentTabSelected = ithTab;
+  m_internals->m_currentTabSelected = ithTab;
   if (ithTab == -1)
   {
     //Clear the active tab info since nothing is selected
@@ -189,15 +228,15 @@ void qtGroupView::createWidget()
     std::transform(val.begin(), val.end(), val.begin(), ::tolower);
     if (val == "tiled")
     {
-      this->Internals->m_style = qtGroupViewInternals::TILED;
+      m_internals->m_style = qtGroupViewInternals::TILED;
     }
     else if (val == "tabbed")
     {
-      this->Internals->m_style = qtGroupViewInternals::TABBED;
+      m_internals->m_style = qtGroupViewInternals::TABBED;
     }
     else if (val == "groupbox")
     {
-      this->Internals->m_style = qtGroupViewInternals::GROUP_BOX;
+      m_internals->m_style = qtGroupViewInternals::GROUP_BOX;
     }
     else
     {
@@ -206,33 +245,16 @@ void qtGroupView::createWidget()
     }
   }
   this->clearChildViews();
-  if (this->Internals->m_style != qtGroupViewInternals::TABBED)
+  if (m_internals->m_style != qtGroupViewInternals::TABBED)
   {
     this->Widget = new QFrame(this->parentWidget());
   }
   else
   {
-    if (view->details().attribute("TabPosition", val))
-    {
-      std::transform(val.begin(), val.end(), val.begin(), ::tolower);
-      if (val == "north")
-      {
-        this->Internals->m_tabPosition = QTabWidget::North;
-      }
-      else if (val == "south")
-      {
-        this->Internals->m_tabPosition = QTabWidget::South;
-      }
-      else if (val == "west")
-      {
-        this->Internals->m_tabPosition = QTabWidget::West;
-      }
-      //Else leave it as the default which is East
-    }
     QTabWidget* tab = new QTabWidget(this->parentWidget());
     // If we have previously created a widget for this view
     // lets get the name of the last selected tab View name
-    this->Internals->m_savedViewName = this->uiManager()->activeTabInfo(this->getObject()->name());
+    m_internals->m_savedViewName = this->uiManager()->activeTabInfo(this->getObject()->name());
     tab->setUsesScrollButtons(true);
     this->Widget = tab;
   }
@@ -286,48 +308,58 @@ void qtGroupView::createWidget()
       this->addChildView(qtView);
     }
   }
-  if (QTabWidget* tabWidget = qobject_cast<QTabWidget*>(this->Widget))
+  QTabWidget* tabWidget = qobject_cast<QTabWidget*>(this->Widget);
+  if (tabWidget != nullptr)
   {
-    tabWidget->setCurrentIndex(this->Internals->m_currentTabSelected);
+    tabWidget->setCurrentIndex(m_internals->m_currentTabSelected);
     tabWidget->setIconSize(QSize(24, 24));
-    tabWidget->setTabPosition(this->Internals->m_tabPosition);
+    tabWidget->setTabPosition(m_internals->m_tabPosition);
     // If there is no currently saved View then lets set it to the currently selected tab
-    if (this->Internals->m_savedViewName.empty())
+    if (m_internals->m_savedViewName.empty())
     {
-      qtBaseView* currView = this->getChildView(this->Internals->m_currentTabSelected);
+      qtBaseView* currView = this->getChildView(m_internals->m_currentTabSelected);
       if (currView)
       {
         this->uiManager()->setActiveTabInfo(
           this->getObject()->name(), currView->getObject()->name());
-        this->Internals->m_savedViewName = currView->getObject()->name();
+        m_internals->m_savedViewName = currView->getObject()->name();
       }
     }
-  }
-  if (this->Internals->m_style == qtGroupViewInternals::TABBED)
-  {
-    QObject::connect(this->Widget, SIGNAL(currentChanged(int)), this, SLOT(updateCurrentTab(int)));
+    QObject::connect(tabWidget, &QTabWidget::currentChanged, this, &qtGroupView::updateCurrentTab);
   }
 }
 
 qtBaseView* qtGroupView::getChildView(int pageIndex)
 {
-  if (pageIndex >= 0 && pageIndex < this->Internals->m_TabbedViews.count())
+  if (pageIndex >= 0 && pageIndex < m_internals->m_TabbedViews.count())
   {
-    return this->Internals->m_TabbedViews.value(pageIndex);
+    return m_internals->m_TabbedViews.value(pageIndex);
   }
   return nullptr;
 }
 
+bool qtGroupView::isValid() const
+{
+  foreach (qtBaseView* childView, m_internals->m_TabbedViews)
+  {
+    if (!childView->isValid())
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 void qtGroupView::addChildView(qtBaseView* child)
 {
-  if (!this->Internals->m_ChildViews.contains(child))
+  if (!m_internals->m_ChildViews.contains(child))
   {
-    this->Internals->m_ChildViews.append(child);
-    if (this->Internals->m_style == qtGroupViewInternals::TILED)
+    m_internals->m_ChildViews.append(child);
+    if (m_internals->m_style == qtGroupViewInternals::TILED)
     {
       this->addTileEntry(child);
     }
-    else if (this->Internals->m_style == qtGroupViewInternals::GROUP_BOX)
+    else if (m_internals->m_style == qtGroupViewInternals::GROUP_BOX)
     {
       this->addGroupBoxEntry(child);
     }
@@ -340,36 +372,36 @@ void qtGroupView::addChildView(qtBaseView* child)
 
 const QList<qtBaseView*>& qtGroupView::childViews() const
 {
-  return this->Internals->m_ChildViews;
+  return m_internals->m_ChildViews;
 }
 
 void qtGroupView::clearChildViews()
 {
-  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
+  foreach (qtBaseView* childView, m_internals->m_ChildViews)
   {
     delete childView;
   }
-  this->Internals->m_ChildViews.clear();
-  this->Internals->m_Labels.clear();
-  this->Internals->m_PageWidgets.clear();
-  this->Internals->m_PageIcons.clear();
-  this->Internals->m_TabbedViews.clear();
+  m_internals->m_ChildViews.clear();
+  m_internals->m_Labels.clear();
+  m_internals->m_PageWidgets.clear();
+  m_internals->m_PageIcons.clear();
+  m_internals->m_TabbedViews.clear();
 }
 
 void qtGroupView::updateUI()
 {
-  this->Internals->updateChildren(this, &qtBaseView::updateUI);
+  m_internals->updateChildren(this, &qtBaseView::updateUI);
 }
 
 void qtGroupView::onShowCategory()
 {
-  this->Internals->updateChildren(this, &qtBaseView::onShowCategory);
+  m_internals->updateChildren(this, &qtBaseView::onShowCategory);
   this->qtBaseAttributeView::onShowCategory();
 }
 
 void qtGroupView::showAdvanceLevelOverlay(bool show)
 {
-  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
+  foreach (qtBaseView* childView, m_internals->m_ChildViews)
   {
     childView->showAdvanceLevelOverlay(show);
   }
@@ -427,26 +459,34 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   }
 
   // Save the page widget and icon
-  this->Internals->m_PageWidgets.push_back(tabPage);
-  this->Internals->m_PageIcons.push_back(icon);
+  m_internals->m_PageWidgets.push_back(tabPage);
+  m_internals->m_PageIcons.push_back(icon);
+  QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
 
   if (!child->isEmpty())
   {
     int index;
     if (icon.isNull())
     {
-      index = tabWidget->addTab(tabPage, secTitle);
+      if (child->isValid())
+      {
+        index = tabWidget->addTab(tabPage, secTitle);
+      }
+      else
+      {
+        index = tabWidget->addTab(tabPage, m_internals->m_alertIcon, secTitle);
+      }
     }
     else
     {
       index = tabWidget->addTab(tabPage, icon, "");
     }
 
-    this->Internals->m_TabbedViews.append(child);
+    m_internals->m_TabbedViews.append(child);
     tabWidget->setTabToolTip(index, secTitle);
-    if (child->getObject()->name() == this->Internals->m_savedViewName)
+    if (child->getObject()->name() == m_internals->m_savedViewName)
     {
-      this->Internals->m_currentTabSelected = index;
+      m_internals->m_currentTabSelected = index;
     }
   }
   else
@@ -457,6 +497,34 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   vLayout->setAlignment(Qt::AlignTop);
 }
 
+void qtGroupView::childModified()
+{
+  auto child = dynamic_cast<qtBaseView*>(this->sender());
+  if (child == nullptr)
+  {
+    return;
+  }
+  QTabWidget* tabWidget = dynamic_cast<QTabWidget*>(this->Widget);
+  if (tabWidget != nullptr)
+  {
+    int i, n = m_internals->m_TabbedViews.count();
+    for (i = 0; i < n; i++)
+    {
+      if (m_internals->m_TabbedViews.value(i) == child)
+      {
+        if (child->isValid())
+        {
+          tabWidget->setTabIcon(i, QIcon());
+        }
+        else
+        {
+          tabWidget->setTabIcon(i, m_internals->m_alertIcon);
+        }
+      }
+    }
+  }
+  emit qtBaseView::modified();
+}
 void qtGroupView::addGroupBoxEntry(qtBaseView* child)
 {
   QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
@@ -479,7 +547,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
     return;
   }
   QLabel* label = new QLabel(child->getObject()->label().c_str(), this->Widget);
-  this->Internals->m_Labels.append(label);
+  m_internals->m_Labels.append(label);
   QFont titleFont;
   titleFont.setBold(true);
   titleFont.setItalic(true);
@@ -499,7 +567,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
 
 void qtGroupView::updateModelAssociation()
 {
-  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
+  foreach (qtBaseView* childView, m_internals->m_ChildViews)
   {
     auto iview = dynamic_cast<qtBaseAttributeView*>(childView);
     if (iview)
@@ -511,7 +579,7 @@ void qtGroupView::updateModelAssociation()
 
 bool qtGroupView::isEmpty() const
 {
-  foreach (qtBaseView* childView, this->Internals->m_ChildViews)
+  foreach (qtBaseView* childView, m_internals->m_ChildViews)
   {
     if (!childView->isEmpty())
     {
@@ -519,4 +587,9 @@ bool qtGroupView::isEmpty() const
     }
   }
   return true;
+}
+
+const QIcon& qtGroupView::alertIcon() const
+{
+  return m_internals->m_alertIcon;
 }

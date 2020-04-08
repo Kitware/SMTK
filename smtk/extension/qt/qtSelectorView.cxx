@@ -60,13 +60,13 @@ qtBaseView* qtSelectorView::createViewWidget(const smtk::view::Information& info
 qtSelectorView::qtSelectorView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
-  this->Internals = new qtSelectorViewInternals;
+  m_internals = new qtSelectorViewInternals;
 }
 
 qtSelectorView::~qtSelectorView()
 {
   this->clearChildViews();
-  delete this->Internals;
+  delete m_internals;
 }
 
 void qtSelectorView::createWidget()
@@ -105,8 +105,8 @@ bool qtSelectorView::createSelector()
   view->details().attribute("SelectorType", defName);
 
   smtk::attribute::DefinitionPtr attDef;
-  this->Internals->m_selectorAttribute = resource->findAttribute(attName);
-  if (!this->Internals->m_selectorAttribute)
+  m_internals->m_selectorAttribute = resource->findAttribute(attName);
+  if (!m_internals->m_selectorAttribute)
   {
     attDef = resource->findDefinition(defName);
     if (!attDef)
@@ -114,24 +114,23 @@ bool qtSelectorView::createSelector()
       std::cerr << "Selector Type: " << defName << " could not be found!\n";
       return false;
     }
-    this->Internals->m_selectorAttribute = resource->createAttribute(attName, attDef);
-    this->attributeCreated(this->Internals->m_selectorAttribute);
+    m_internals->m_selectorAttribute = resource->createAttribute(attName, attDef);
+    this->attributeCreated(m_internals->m_selectorAttribute);
   }
   else
   {
-    attDef = this->Internals->m_selectorAttribute->definition();
+    attDef = m_internals->m_selectorAttribute->definition();
   }
 
   // Is the first item discrete?
-  if (!this->Internals->m_selectorAttribute->numberOfItems())
+  if (!m_internals->m_selectorAttribute->numberOfItems())
   {
     std::cerr << "Selector Attribute: " << attName << " has no items!\n";
     return false;
   }
-  this->Internals->m_selectorItem =
-    dynamic_pointer_cast<ValueItem>(this->Internals->m_selectorAttribute->item(0));
-  if ((this->Internals->m_selectorItem == nullptr) ||
-    (!this->Internals->m_selectorItem->isDiscrete()))
+  m_internals->m_selectorItem =
+    dynamic_pointer_cast<ValueItem>(m_internals->m_selectorAttribute->item(0));
+  if ((m_internals->m_selectorItem == nullptr) || (!m_internals->m_selectorItem->isDiscrete()))
   {
     std::cerr << "Selector Attribute: " << attName << " does not have a discrete item!\n";
     return false;
@@ -143,28 +142,28 @@ bool qtSelectorView::createSelector()
 
   this->setFixedLabelWidth(labelWidth);
   smtk::view::Configuration::Component comp; // Right now not being used
-  this->Internals->m_qtSelectorAttribute =
-    new qtAttribute(this->Internals->m_selectorAttribute, comp, this->widget(), this, true);
-  this->Internals->m_qtSelectorAttribute->createBasicLayout(true);
-  layout->addWidget(this->Internals->m_qtSelectorAttribute->widget());
-  QObject::connect(
-    this->Internals->m_qtSelectorAttribute, SIGNAL(modified()), this, SLOT(selectionChanged()));
+  m_internals->m_qtSelectorAttribute =
+    new qtAttribute(m_internals->m_selectorAttribute, comp, this->widget(), this, true);
+  m_internals->m_qtSelectorAttribute->createBasicLayout(true);
+  layout->addWidget(m_internals->m_qtSelectorAttribute->widget());
+  QObject::connect(m_internals->m_qtSelectorAttribute, &qtAttribute::modified, this,
+    &qtSelectorView::selectionChanged);
   return true;
 }
 
 void qtSelectorView::refreshSelector()
 {
-  if (this->Internals->m_qtSelectorAttribute == nullptr)
+  if (m_internals->m_qtSelectorAttribute == nullptr)
   {
     return; // there is nothing to refresh
   }
-  this->Internals->m_qtSelectorAttribute->removeItems();
-  this->Internals->m_qtSelectorAttribute->createBasicLayout(true);
+  m_internals->m_qtSelectorAttribute->removeItems();
+  m_internals->m_qtSelectorAttribute->createBasicLayout(true);
 }
 
 bool qtSelectorView::isEmpty() const
 {
-  return !this->displayItem(this->Internals->m_selectorItem);
+  return !this->displayItem(m_internals->m_selectorItem);
 }
 
 bool qtSelectorView::createChildren()
@@ -174,7 +173,7 @@ bool qtSelectorView::createChildren()
 
   // We need the selector item's definition in order to get the enumeration info
   auto selItemDef =
-    dynamic_pointer_cast<const ValueItemDefinition>(this->Internals->m_selectorItem->definition());
+    dynamic_pointer_cast<const ValueItemDefinition>(m_internals->m_selectorItem->definition());
 
   int viewsIndex;
   viewsIndex = view->details().findChild("Views");
@@ -230,8 +229,8 @@ bool qtSelectorView::createChildren()
     {
       this->addChildView(qtView, static_cast<int>(enumIndex));
       // Should this view be visible?
-      qtView->widget()->setVisible(this->Internals->m_selectorItem->isSet() &&
-        (this->Internals->m_selectorItem->discreteIndex() == static_cast<int>(enumIndex)));
+      qtView->widget()->setVisible(m_internals->m_selectorItem->isSet() &&
+        (m_internals->m_selectorItem->discreteIndex() == static_cast<int>(enumIndex)));
     }
   }
   return true;
@@ -239,7 +238,7 @@ bool qtSelectorView::createChildren()
 
 void qtSelectorView::getChildView(const std::string& viewType, QList<qtBaseView*>& views)
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, m_internals->ChildViews)
   {
     if (childView->getObject()->type() == viewType)
     {
@@ -254,19 +253,19 @@ void qtSelectorView::getChildView(const std::string& viewType, QList<qtBaseView*
 
 qtBaseView* qtSelectorView::getChildView(int pageIndex)
 {
-  if (pageIndex >= 0 && pageIndex < this->Internals->ChildViews.count())
+  if (pageIndex >= 0 && pageIndex < m_internals->ChildViews.count())
   {
-    return this->Internals->ChildViews.value(pageIndex);
+    return m_internals->ChildViews.value(pageIndex);
   }
   return nullptr;
 }
 
 void qtSelectorView::addChildView(qtBaseView* child, int viewEnumIndex)
 {
-  if (!this->Internals->ChildViews.contains(child))
+  if (!m_internals->ChildViews.contains(child))
   {
-    this->Internals->ChildViews.append(child);
-    this->Internals->m_viewEnumIdices.append(viewEnumIndex);
+    m_internals->ChildViews.append(child);
+    m_internals->m_viewEnumIdices.append(viewEnumIndex);
     QFrame* frame = dynamic_cast<QFrame*>(this->Widget);
     if (!frame || !child || !child->getObject())
     {
@@ -276,27 +275,28 @@ void qtSelectorView::addChildView(qtBaseView* child, int viewEnumIndex)
     QLayout* vLayout = this->Widget->layout();
     vLayout->addWidget(child->widget());
     vLayout->setAlignment(Qt::AlignTop);
+    QObject::connect(child, &qtBaseView::modified, this, &qtBaseView::modified);
   }
 }
 
 const QList<qtBaseView*>& qtSelectorView::childViews() const
 {
-  return this->Internals->ChildViews;
+  return m_internals->ChildViews;
 }
 
 void qtSelectorView::clearChildViews()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, m_internals->ChildViews)
   {
     delete childView;
   }
-  this->Internals->ChildViews.clear();
+  m_internals->ChildViews.clear();
 }
 
 void qtSelectorView::updateUI()
 {
   this->refreshSelector();
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, m_internals->ChildViews)
   {
     childView->updateUI();
   }
@@ -305,7 +305,7 @@ void qtSelectorView::updateUI()
 void qtSelectorView::onShowCategory()
 {
   this->refreshSelector();
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, m_internals->ChildViews)
   {
     childView->onShowCategory();
   }
@@ -315,7 +315,7 @@ void qtSelectorView::onShowCategory()
 void qtSelectorView::showAdvanceLevelOverlay(bool show)
 {
   this->refreshSelector();
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, m_internals->ChildViews)
   {
     childView->showAdvanceLevelOverlay(show);
   }
@@ -324,7 +324,7 @@ void qtSelectorView::showAdvanceLevelOverlay(bool show)
 
 void qtSelectorView::updateModelAssociation()
 {
-  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  foreach (qtBaseView* childView, m_internals->ChildViews)
   {
     auto iview = dynamic_cast<qtBaseAttributeView*>(childView);
     if (iview)
@@ -336,14 +336,14 @@ void qtSelectorView::updateModelAssociation()
 void qtSelectorView::selectionChanged()
 {
   // Lets iterate over the views and set the proper visibility
-  int newIndex = this->Internals->m_selectorItem->discreteIndex();
-  int i, n = this->Internals->ChildViews.size();
-  if (this->Internals->m_selectorItem->isSet())
+  int newIndex = m_internals->m_selectorItem->discreteIndex();
+  int i, n = m_internals->ChildViews.size();
+  if (m_internals->m_selectorItem->isSet())
   {
     for (i = 0; i < n; i++)
     {
-      this->Internals->ChildViews.at(i)->widget()->setVisible(
-        this->Internals->m_viewEnumIdices.at(i) == newIndex);
+      m_internals->ChildViews.at(i)->widget()->setVisible(
+        m_internals->m_viewEnumIdices.at(i) == newIndex);
     }
   }
   else // In this case the selector item has not been set so there is
@@ -351,7 +351,28 @@ void qtSelectorView::selectionChanged()
   {
     for (i = 0; i < n; i++)
     {
-      this->Internals->ChildViews.at(i)->widget()->setVisible(false);
+      m_internals->ChildViews.at(i)->widget()->setVisible(false);
     }
   }
+  emit qtBaseView::modified();
+}
+
+bool qtSelectorView::isValid() const
+{
+  // If the selector itself is not set then the view
+  // is not valid - else we need to test all visible views
+  if (!m_internals->m_selectorAttribute->isValid())
+  {
+    return false;
+  }
+  int i, n = m_internals->ChildViews.size();
+  for (i = 0; i < n; i++)
+  {
+    if (m_internals->ChildViews.at(i)->widget()->isVisible() &&
+      !m_internals->ChildViews.at(i)->isValid())
+    {
+      return false;
+    }
+  }
+  return true;
 }

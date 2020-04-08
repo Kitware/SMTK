@@ -334,4 +334,5 @@ void qtAssociationView::associationsChanged()
 
   emit this->modified(att->associations());
   emit this->attAssociationChanged();
+  emit qtBaseView::modified();
 }

@@ -65,7 +65,7 @@ public:
   const QList<qtBaseView*>& childViews() const;
   //Returns true if the view does not contain any information to display
   bool isEmpty() const override;
-
+  bool isValid() const override;
 public slots:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
@@ -80,7 +80,7 @@ protected:
   bool createChildren();
 
 private:
-  qtSelectorViewInternals* Internals;
+  qtSelectorViewInternals* m_internals;
 
 }; // class
 }; // namespace attribute

@@ -147,7 +147,7 @@ public:
   bool m_okToCreateModelEntities;
   smtk::model::BitFlags m_modelEntityMask;
   std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
-  QString m_alertIconPath;
+  QIcon m_alertIcon;
   bool m_showTopButtons;
 
   smtk::operation::Observers::Key m_observerKey;
@@ -164,7 +164,7 @@ qtAttributeView::qtAttributeView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
 {
   m_internals = new qtAttributeViewInternals;
-  m_internals->m_alertIconPath = ":/icons/attribute/errorAlert.png";
+  m_internals->m_alertIcon = QIcon(this->uiManager()->alertPixmap());
   smtk::view::ConfigurationPtr view = this->getObject();
   m_hideAssociations = false;
   if (view)
@@ -327,6 +327,9 @@ void qtAttributeView::createWidget()
   // signals/slots
   QObject::connect(m_internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,
     SLOT(associationsChanged()));
+
+  QObject::connect(
+    m_internals->AssociationsWidget, SIGNAL(availableChanged()), this, SIGNAL(modified()));
 
   // We want the signals that may change the attribute to be displayed Queued instead of
   // Direct so that QLineEdit::edittingFinished signals are processed prior to these.
@@ -633,6 +636,7 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
     m_internals->ListTable->selectRow(item->row());
   }
   emit this->numOfAttributesChanged();
+  emit qtBaseView::modified();
 }
 
 void qtAttributeView::onCopySelected()
@@ -653,6 +657,7 @@ void qtAttributeView::onCopySelected()
       m_internals->ListTable->selectRow(item->row());
     }
     emit this->numOfAttributesChanged();
+    emit qtBaseView::modified();
   }
 }
 
@@ -674,6 +679,7 @@ void qtAttributeView::onDeleteSelected()
       {
         m_internals->ListTable->removeRow(selItem->row());
         emit this->numOfAttributesChanged();
+        emit qtBaseView::modified();
       }
     }
     else
@@ -714,7 +720,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   if (!this->uiManager()->checkAttributeValidity(childData.get()))
   {
     QTableWidgetItem* statusItem =
-      new QTableWidgetItem(QIcon(m_internals->m_alertIconPath), "", smtk_USER_DATA_TYPE);
+      new QTableWidgetItem(m_internals->m_alertIcon, "", smtk_USER_DATA_TYPE);
     m_internals->ListTable->setItem(numRows - 1, status_column, statusItem);
   }
 
@@ -1089,6 +1095,7 @@ void qtAttributeView::associationsChanged()
   this->valueChanged(m_internals->CurrentAtt->attribute()->associations());
   emit this->modified(m_internals->CurrentAtt->attribute()->associations());
   emit this->attAssociationChanged();
+  emit qtBaseView::modified();
   std::vector<std::string> items;
   items.emplace_back("_associations");
   this->attributeChanged(m_internals->CurrentAtt->attribute(), items);
@@ -1140,7 +1147,7 @@ void qtAttributeView::updateAttributeStatus(Attribute* att)
       else
       {
         QTableWidgetItem* statusItem =
-          new QTableWidgetItem(QIcon(m_internals->m_alertIconPath), "", smtk_USER_DATA_TYPE);
+          new QTableWidgetItem(m_internals->m_alertIcon, "", smtk_USER_DATA_TYPE);
         m_internals->ListTable->setItem(i, status_column, statusItem);
       }
     }
@@ -1237,4 +1244,20 @@ int qtAttributeView::handleOperationEvent(const smtk::operation::Operation& op,
     }
   }
   return 0;
+}
+
+bool qtAttributeView::isValid() const
+{
+  for (int i = 0; i < m_internals->ListTable->rowCount(); i++)
+  {
+    if (m_internals->ListTable->item(i, status_column) != nullptr)
+    {
+      return false;
+    }
+  }
+  if (m_internals->AssociationsWidget->isVisible())
+  {
+    return m_internals->AssociationsWidget->isValid();
+  }
+  return true;
 }

@@ -227,7 +227,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
   }
 }
 
-smtk::attribute::AttributePtr qtAttribute::attribute()
+smtk::attribute::AttributePtr qtAttribute::attribute() const
 {
   return m_internals->m_attribute.lock();
 }
@@ -258,4 +258,14 @@ void qtAttribute::onItemModified()
 bool qtAttribute::isEmpty() const
 {
   return m_isEmpty;
+}
+
+bool qtAttribute::isValid() const
+{
+  auto att = this->attribute();
+  if (att)
+  {
+    return att->isValid();
+  }
+  return true;
 }

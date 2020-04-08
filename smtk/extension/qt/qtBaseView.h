@@ -7,8 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtBaseView - a base class for all view types
-// .SECTION Description
 
 #ifndef smtk_extension_qtBaseView_h
 #define smtk_extension_qtBaseView_h
@@ -65,6 +63,7 @@ public:
   // std::map<std::string, QLayout*> m_layoutDict; // Widget Layout Dictionary
 };
 
+///\brief A base class for all view types implemented using Qt
 class SMTKQTEXT_EXPORT qtBaseView : public QObject, public smtk::view::BaseView
 {
   Q_OBJECT
@@ -88,10 +87,10 @@ public:
   virtual int advanceLevel() const { return 0; }
   virtual bool categoryEnabled() const { return false; }
   virtual std::string currentCategory() const { return ""; }
-  // When category filtering is requested to be either on by default or is requested to be
-  // on permanently, we need to have a mechanism to force the views to display info based on
-  // the initial category.  This method will check to see if this is the case and call the
-  // onShowCategory method
+  /// When category filtering is requested to be either on by default or is requested to be
+  /// on permanently, we need to have a mechanism to force the views to display info based on
+  /// the initial category.  This method will check to see if this is the case and call the
+  /// onShowCategory method
   virtual void setInitialCategory() { ; }
 
   bool isTopLevel() const { return m_isTopLevel; }
@@ -102,8 +101,12 @@ public:
   /// unless they have specific knowledge that the view is vacuous.
   virtual bool isEmpty() const { return true; }
 
+  ///\brief Return true if the view's contents are valid.
+  virtual bool isValid() const { return true; }
+
 signals:
   void aboutToDestroy();
+  void modified();
 
 public slots:
   ///\brief Have the view update its contents
@@ -122,19 +125,17 @@ public slots:
   virtual void onShowCategory() {}
 
 protected:
-  /// Creates the UI related to the view and properly assigns it
+  ///\brief Creates the UI related to the view and properly assigns it
   /// to the parent widget.
   virtual void buildUI() { ; }
-  /// Creates the main QT Widget that is associated with a View.  Typically this
+  ///\brief Creates the main QT Widget that is associated with a View.  Typically this
   /// is the only method a derived View needs to override.
   virtual void createWidget() { ; }
 
-  // Description:
-  // Adds properties associated with respects to a top level view
+  ///\brief Adds properties associated with respects to a top level view
   virtual void makeTopLevel();
 
-  // Description:
-  // Set the information to be displayed in the ViewInfoDialog
+  ///\brief Set the information to be displayed in the ViewInfoDialog
   virtual void setInfoToBeDisplayed();
 
   QWidget* Widget;

@@ -53,6 +53,7 @@ public:
   int currentViewBy();
   virtual void createNewAttribute(smtk::attribute::DefinitionPtr attDef);
   bool isEmpty() const override;
+  bool isValid() const override;
 
   smtk::attribute::DefinitionPtr getCurrentDef() const;
 

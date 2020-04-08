@@ -17,6 +17,7 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtBaseAttributeView.h"
+#include <QIcon>
 
 class qtGroupViewInternals;
 
@@ -44,12 +45,15 @@ public:
   //Returns true if the view does not contain any information to display - the default
   // behavior is to return false
   virtual bool isEmpty() const override;
+  virtual bool isValid() const override;
+  const QIcon& alertIcon() const;
 
 public slots:
   void updateUI() override;
   void showAdvanceLevelOverlay(bool show) override;
   void updateModelAssociation() override;
   void onShowCategory() override;
+  void childModified();
 
 protected:
   void createWidget() override;
@@ -61,7 +65,7 @@ protected slots:
   void updateCurrentTab(int);
 
 private:
-  qtGroupViewInternals* Internals;
+  qtGroupViewInternals* m_internals;
 
 }; // class
 }; // namespace attribute
