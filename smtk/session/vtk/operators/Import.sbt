@@ -25,6 +25,7 @@
         </String>
         <File Name="filename" NumberOfRequiredValues="1"
           ShouldExist="true"
+          Extensible="1"
           FileFilters="Exodus II Datasets (*.e *.exo *.ex2);; Genesis files (*.gen);; Label maps (*.vti);; NetCDF files (*.nc *.ncdf);;All files (*.*)">
         </File>
         <String Name="filetype" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false"/>
