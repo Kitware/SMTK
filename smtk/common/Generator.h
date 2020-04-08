@@ -77,6 +77,7 @@ namespace common
 /// };
 /// ```
 /// (GenerateFoo.cxx)
+/// The .cxx must exist to generate the right symbols.
 /// ```
 /// template class Generator<std::string, Foo>;
 ///

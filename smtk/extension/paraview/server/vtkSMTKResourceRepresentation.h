@@ -276,7 +276,7 @@ public:
   void GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata);
   bool SetEntityVisibility(smtk::resource::PersistentObjectPtr ent, bool visible);
 
-  /**\brief Provide a function that alters a representation's appearance based on a selection.
+  /**\brief Look for generator functions that alters a representation's appearance based on a selection.
     *
     * This is used to update block display attributes (per-block color, visibility,
     * and opacity) on all of the representation's actors based on the active selection.
@@ -284,14 +284,14 @@ public:
     * instead it is called the next time the representation is about to be rendered.
     * (This way, representations which are not visible do no work maintaining visual properties.)
     *
-    * This function is never null; if SetSelectionStyle() is passed a null pointer,
-    * then the default handler is used.
+    * New style function suppliers are registered with vtkSMTKRepresentationStyleSupplier.
+    * If there are none, then the default handler is used.
     *
     * The default value of this function is vtkSMTKResourceRepresentation::ApplyDefaultStyle().
     */
-  void SetSelectionStyle(StyleFromSelectionFunction);
-
-  /// The default selection-style function (i.e., the default value of ApplyStyle).
+  bool ApplyStyle(smtk::view::SelectionPtr seln, RenderableDataMap& renderables,
+    vtkSMTKResourceRepresentation* rep);
+  /// The default selection-style function
   static bool ApplyDefaultStyle(smtk::view::SelectionPtr seln, RenderableDataMap& renderables,
     vtkSMTKResourceRepresentation* rep);
 
@@ -483,11 +483,6 @@ protected:
   vtkTimeStamp SelectionTime;
   /// Timestamp for when highlighting styles related to the selection were last applied.
   vtkTimeStamp ApplyStyleTime;
-
-  /// A function that, given (1) a selected resource or component,
-  /// and (2) the selection value; updates the display attributes
-  /// for associated RenderableData.
-  StyleFromSelectionFunction ApplyStyle;
 
 private:
   vtkSMTKResourceRepresentation(const vtkSMTKResourceRepresentation&) = delete;
