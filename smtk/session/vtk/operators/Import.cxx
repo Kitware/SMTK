@@ -31,6 +31,7 @@
 #include "smtk/model/Model.h"
 
 #include "smtk/common/Paths.h"
+#include "smtk/common/ThreadPool.h"
 #include "smtk/common/UUID.h"
 
 #include "vtkContourFilter.h"
@@ -351,16 +352,12 @@ static void FillAndMarkBlocksFromSrc(vtkMultiBlockDataSet* modelOut, vtkIdType& 
   }
 }
 
-Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& resource)
+namespace
 {
-  auto& session = resource->session();
-
-  smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
-
-  std::string filename = filenameItem->value();
-
+vtkSmartPointer<vtkMultiBlockDataSet> importExodusInternal(const std::string filename)
+{
   vtkNew<vtkExodusIIReader> rdr;
-  rdr->SetFileName(filenameItem->value(0).c_str());
+  rdr->SetFileName(filename.c_str());
   rdr->UpdateInformation();
   // Turn on all side and node sets.
   vtkExodusIIReader::ObjectType set_types[] = { vtkExodusIIReader::SIDE_SET,
@@ -377,8 +374,7 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
   auto topIn = vtkMultiBlockDataSet::SafeDownCast(rdr->GetOutputDataObject(0));
   if (!topIn || !vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(0)))
   {
-    smtkErrorMacro(this->log(), "Error:Associated file " << filename << " is not valid!");
-    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    return vtkSmartPointer<vtkMultiBlockDataSet>();
   }
 
   vtkMultiBlockDataSet* blocks[] = { vtkMultiBlockDataSet::SafeDownCast(topIn->GetBlock(0)),
@@ -397,29 +393,79 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
   MarkMeshInfo(modelOut, dim, path(filename).stem().string<std::string>().c_str(), EXO_MODEL, -1);
   AddBlockChildrenAsModelChildren(modelOut);
 
-  smtk::model::Model smtkModelOut = addModel(modelOut, this->m_preservedUUIDs, session, resource);
-  if (this->m_preservedUUIDs.empty())
+  return modelOut;
+}
+}
+
+Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& resource)
+{
+  auto& session = resource->session();
+
+  smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
+
+  if (filenameItem->numberOfValues() > 1 && !this->m_preservedUUIDs.empty())
   {
-    smtkModelOut.setStringProperty("url", filename);
-    smtkModelOut.setStringProperty("type", "exodus");
+    smtkErrorMacro(this->log(), "UUID-preserving import from multiple files is not yet supported.");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > modelsOut(filenameItem->numberOfValues());
+  if (filenameItem->numberOfValues() > 1)
+  {
+    smtk::common::ThreadPool<vtkSmartPointer<vtkMultiBlockDataSet> > threadPool;
+    std::vector<std::future<vtkSmartPointer<vtkMultiBlockDataSet> > > futures;
+
+    for (std::size_t i = 0; i < modelsOut.size(); ++i)
+    {
+      std::string filename = filenameItem->value();
+      futures.push_back(threadPool(std::bind(importExodusInternal, filename)));
+    }
+
+    for (std::size_t i = 0; i < modelsOut.size(); ++i)
+    {
+      modelsOut[i] = futures[i].get();
+
+      if (modelsOut[i] == nullptr)
+      {
+        smtkErrorMacro(
+          this->log(), "Error:Associated file " << filenameItem->value(i) << " is not valid!");
+        return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+      }
+    }
+  }
+  else
+  {
+    std::string filename = filenameItem->value();
+    modelsOut[0] = importExodusInternal(filename);
   }
 
   // Now set model for session and transcribe everything.
   Import::Result result = this->createResult(Import::Outcome::SUCCEEDED);
 
+  for (std::size_t i = 0; i < modelsOut.size(); ++i)
   {
-    smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
-    resultModels->appendValue(smtkModelOut.component());
+    smtk::model::Model smtkModelOut =
+      addModel(modelsOut[i], this->m_preservedUUIDs, session, resource);
+    if (this->m_preservedUUIDs.empty())
+    {
+      smtkModelOut.setStringProperty("url", filenameItem->value(i));
+      smtkModelOut.setStringProperty("type", "exodus");
+    }
+
+    {
+      smtk::attribute::ComponentItem::Ptr resultModels = result->findComponent("model");
+      resultModels->appendValue(smtkModelOut.component());
+    }
+
+    {
+      smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
+      created->appendValue(smtkModelOut.component());
+    }
   }
 
   {
     smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
     created->appendValue(resource);
-  }
-
-  {
-    smtk::attribute::ComponentItem::Ptr created = result->findComponent("created");
-    created->appendValue(smtkModelOut.component());
   }
 
   return result;
