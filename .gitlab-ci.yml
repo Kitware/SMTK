@@ -110,6 +110,7 @@
 
     variables:
         CMAKE_CONFIGURATION: fedora31_nodata
+        GIT_STRATEGY: clone
         GIT_LFS_SKIP_SMUDGE: 1
 
 before_script:
