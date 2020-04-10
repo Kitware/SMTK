@@ -23,6 +23,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/utility/Queries.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
@@ -293,7 +294,13 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
 
   attribute::DefinitionPtr attDef = theAttribute->definition();
   ResourcePtr attResource = attDef->resource();
-  auto objects = this->associatableObjects(ignoreResource);
+  // Lets get the objects that can possibly be associated with the attribute
+  auto associationItem = theAttribute->associatedObjects();
+  auto resManager = m_view->uiManager()->resourceManager();
+
+  auto objects =
+    attribute::utility::associatableObjects(associationItem, resManager, false, ignoreResource);
+
   smtk::attribute::DefinitionPtr preDef;
   smtk::attribute::AttributePtr conAtt;
   // Now lets see if the objects are associated with this attribute or can be
@@ -338,101 +345,6 @@ smtk::resource::PersistentObjectPtr qtAssociation2ColumnWidget::selectedObject(
   QListWidgetItem* item)
 {
   return this->object(item);
-}
-
-std::set<smtk::resource::PersistentObjectPtr> qtAssociation2ColumnWidget::associatableObjects(
-  const smtk::common::UUID& ignoreResource) const
-{
-  std::set<smtk::resource::PersistentObjectPtr> result;
-  smtk::resource::ResourceSet resources;
-  auto theAttribute = m_internals->currentAtt.lock();
-  auto attResource = theAttribute->attributeResource();
-  auto associationItem = theAttribute->associatedObjects();
-  auto resManager = m_view->uiManager()->resourceManager();
-  if (associationItem == nullptr)
-  {
-    return result;
-  }
-  auto assocMap = associationItem->acceptableEntries();
-
-  // First we need to determine if the attribute resource has resources associated with it
-  // if not we need to go to resource manager to get the information
-  if (attResource->hasAssociations() || (resManager == nullptr))
-  {
-    resources = attResource->associations();
-    // we should always consider the attribute resource itself as well
-    resources.insert(attResource);
-    // Iterate over the acceptable entries
-    decltype(assocMap.equal_range("")) range;
-    for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
-    {
-      // Get the range for the current key
-      range = assocMap.equal_range(i->first);
-
-      // Lets see if any of the resources match this type
-      for (const auto& resource : resources)
-      {
-        if (resource->id() == ignoreResource)
-        {
-          continue;
-        }
-        if (resource->isOfType(i->first))
-        {
-          // We need to find all of the component types for
-          // this resource.  If a string is empty then the resource
-          // itself can be associated with the attribute
-          for (auto j = range.first; j != range.second; ++j)
-          {
-            if (j->second.empty())
-            {
-              result.insert(resource);
-            }
-            else
-            {
-              auto comps = resource->find(j->second);
-              result.insert(comps.begin(), comps.end());
-            }
-          }
-        }
-      }
-    }
-  }
-  else // we need to use the resource manager
-  {
-    decltype(assocMap.equal_range("")) range;
-    for (auto i = assocMap.begin(); i != assocMap.end(); i = range.second)
-    {
-      // Get the range for the current key
-      range = assocMap.equal_range(i->first);
-
-      // As the resource manager to get all appropriate resources
-      resources = resManager->find(i->first);
-      // Need to process all of these resources
-      for (const auto& resource : resources)
-      {
-        if (resource->id() == ignoreResource)
-        {
-          continue;
-        }
-        // We need to find all of the component types for
-        // this resource.  If a string is empty then the resource
-        // itself can be associated with the attribute
-        for (auto j = range.first; j != range.second; ++j)
-        {
-          if (j->second.empty())
-          {
-            result.insert(resource);
-          }
-          else
-          {
-            auto comps = resource->find(j->second);
-            result.insert(comps.begin(), comps.end());
-          }
-        }
-      }
-    }
-  }
-  return result;
 }
 
 smtk::resource::PersistentObjectPtr qtAssociation2ColumnWidget::object(QListWidgetItem* item)

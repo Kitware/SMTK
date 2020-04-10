@@ -22,7 +22,12 @@ namespace py = pybind11;
 void pybind11_init_smtk_attribute_queries(py::module &m)
 {
   m.def("checkUniquenessCondition", &smtk::attribute::utility::checkUniquenessCondition);
-  m.def("associatableObjects", &smtk::attribute::utility::associatableObjects);
+  m.def("associatableObjects", (std::set<smtk::resource::PersistentObjectPtr> (*)(const smtk::attribute::ConstReferenceItemDefinitionPtr&,
+    smtk::attribute::ResourcePtr&, smtk::resource::ManagerPtr&, const smtk::common::UUID&)) &smtk::attribute::utility::associatableObjects, py::arg("refItemDef"),
+    py::arg("attResource"), py::arg("resManager"), py::arg("ignoreResource"));
+  m.def("associatableObjects", (std::set<smtk::resource::PersistentObjectPtr> (*)(const smtk::attribute::ReferenceItemPtr&,
+    smtk::resource::ManagerPtr&, bool useAttributeAssociations, const smtk::common::UUID&)) &smtk::attribute::utility::associatableObjects, py::arg("refItem"),
+    py::arg("resManager"), py::arg("useAttributeAssociations"), py::arg("ignoreResourceUUID"));
 }
 
 #endif
