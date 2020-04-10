@@ -158,6 +158,7 @@ void qtUIManager::commonConstructor()
   m_topLevelCategoriesSet = false;
   m_categoryChecks = true;
   m_highlightOnHover = true;
+  m_alertPixmap = QPixmap(":/icons/attribute/errorAlert.png");
 
   // default settings
   this->advFont.setBold(true);

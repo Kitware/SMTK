@@ -49,6 +49,11 @@ Consuming applications can now register icon sets for Resources and Components, 
 * Added a removeItems methods - this removes all of the qtItems from the qtAttribute and allows createBasicLayout to be called again
 * Added an option to createWidget that will allow a widget to be created even if the attribute's items are filtered out by categories and/or advanced level filtering.
 
+### Changes to qtBaseView
+* Added a virtual isValid method to indicate if a view is valid
+* Added a modified signal so that qtBaseViews can indicate they have been changed
+
+
 ### qtAttributeView Changes
 * There is now a splitter between the attribute editing area and the association information area.
 * Removed the old view by property mechanism to help simplify the code
@@ -119,6 +124,7 @@ Note that item /c contain ItemView for its children.
 
 ### Changes to qtGroupView
 * GroupBox Style icon has been changed from a check box to a closed/expand icon pair.  This change reduces confusion between optional items and viewing control widgets.
+* Tabbed Group Views now show indicate invalid children views in their tabs using the alert icon
 
 ### Changed to qtAssociation Widget
 * Added the ability to indicate that all persistent objects that can be associated to a particular type of attribute must be.

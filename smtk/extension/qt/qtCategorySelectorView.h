@@ -60,6 +60,7 @@ public:
   virtual void addChildView(qtBaseView*, const std::string& category);
   virtual void clearChildViews();
   const QList<qtBaseView*>& childViews() const;
+  bool isValid() const override;
 
 public slots:
   void updateUI() override;

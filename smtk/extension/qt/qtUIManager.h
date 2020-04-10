@@ -18,6 +18,7 @@
 #include <QColor>
 #include <QFont>
 #include <QMap>
+#include <QPixmap>
 #include <QPointer>
 #include <QTextEdit>
 #include <QVariant>
@@ -228,6 +229,9 @@ public:
 
   static qtItem* defaultItemConstructor(const qtAttributeItemInfo& info);
 
+  ///\brief Return the pixmap used for alert icons
+  const QPixmap& alertPixmap() const { return m_alertPixmap; }
+
 #ifdef _WIN32
 #define LINE_BREAKER_STRING "\n";
 #else
@@ -322,6 +326,7 @@ private:
   bool m_topLevelCategoriesSet;
   std::set<std::string> m_topLevelCategories;
   std::map<std::string, std::string> m_activeTabInfo;
+  QPixmap m_alertPixmap;
 
 }; // class
 

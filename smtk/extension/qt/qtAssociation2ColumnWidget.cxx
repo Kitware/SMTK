@@ -179,7 +179,7 @@ void qtAssociation2ColumnWidget::initWidget()
   QString arrowLeft(":/icons/attribute/arrowLeft.png");
   m_internals->MoveToRight->setIcon(QIcon(arrowRight));
   m_internals->MoveToLeft->setIcon(QIcon(arrowLeft));
-  m_internals->AlertLabel->setText("<img src=\":/icons/attribute/errorAlert.png\">");
+  m_internals->AlertLabel->setPixmap(m_view->uiManager()->alertPixmap());
   m_internals->AlertLabel->hide();
 
   // signals/slots
@@ -661,6 +661,7 @@ int qtAssociation2ColumnWidget::handleOperationEvent(const smtk::operation::Oper
 
   // The simplest solution is just to refresh the widget
   this->refreshAssociations();
+  emit this->availableChanged();
   return 0;
 }
 
@@ -671,6 +672,7 @@ int qtAssociation2ColumnWidget::handleResourceEvent(
   {
     // The simplest solution is just to refresh the widget
     this->refreshAssociations(resource.id());
+    emit this->availableChanged();
   }
   return 0;
 }

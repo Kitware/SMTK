@@ -178,6 +178,7 @@ void qtCategorySelectorView::addChildView(qtBaseView* child, const std::string& 
     QLayout* vLayout = this->Widget->layout();
     vLayout->addWidget(child->widget());
     vLayout->setAlignment(Qt::AlignTop);
+    QObject::connect(child, &qtBaseView::modified, this, &qtBaseView::modified);
   }
 }
 
@@ -237,4 +238,16 @@ void qtCategorySelectorView::updateModelAssociation()
       iview->updateModelAssociation();
     }
   }
+}
+
+bool qtCategorySelectorView::isValid() const
+{
+  foreach (qtBaseView* childView, this->Internals->ChildViews)
+  {
+    if (childView->widget()->isVisible() && !childView->isValid())
+    {
+      return false;
+    }
+  }
+  return true;
 }

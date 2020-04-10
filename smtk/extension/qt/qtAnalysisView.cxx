@@ -117,10 +117,17 @@ void qtAnalysisView::analysisChanged()
   }
   attRes->analyses().getAnalysisAttributeCategories(m_analysisAttribute, cats);
   this->uiManager()->setTopLevelCategories(cats);
+  // We shouldn't need to modified since this should have caused all the Qt views to
+  // update
 }
 
 bool qtAnalysisView::categoryTest(smtk::attribute::ItemPtr /*unused*/) const
 {
   // Analysis View contents ignores category filtering
   return true;
+}
+
+bool qtAnalysisView::isValid() const
+{
+  return m_analysisAttribute->isValid();
 }

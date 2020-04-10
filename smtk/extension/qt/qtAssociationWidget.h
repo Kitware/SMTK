@@ -53,6 +53,7 @@ public slots:
 
 signals:
   void attAssociationChanged();
+  void availableChanged();
 
 protected:
   QPointer<qtBaseView> m_view;
