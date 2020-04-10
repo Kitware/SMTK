@@ -45,6 +45,20 @@ SMTKCORE_EXPORT
 std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const ReferenceItemPtr& refItem,
   smtk::resource::ManagerPtr& resourceManager, bool useAttributeAssociations = false,
   const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
+///\brief Get a set of objects that could be assigned based on a reference item definition.
+///
+/// If ignoreResource is specified the corresponding resource will not participate in determining
+/// which objects can be associated. The main use case would be updating the widget because a
+/// resource is about to be removed from the system.  Since it is still in memory we needed a way to ignore it.
+/// There are 2 possible sources of PersistentObjects:
+/// If a resourceManager is not provided or if the Attribute has Resources associated with it
+/// then only those Resources will be considered.
+/// Else the Resources within the Resource Manager are considered.
+SMTKCORE_EXPORT
+std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
+  const ConstReferenceItemDefinitionPtr& refItemDef, smtk::attribute::ResourcePtr& attResource,
+  smtk::resource::ManagerPtr& resManager,
+  const smtk::common::UUID& ignoreResource = smtk::common::UUID::null());
 } // namespace utility
 } // namespace attribute
 } // namespace smtk

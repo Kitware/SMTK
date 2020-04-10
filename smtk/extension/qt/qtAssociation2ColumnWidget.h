@@ -79,12 +79,6 @@ protected:
 
   smtk::resource::PersistentObjectPtr object(QListWidgetItem* item);
   smtk::resource::PersistentObjectPtr selectedObject(QListWidgetItem*);
-  // Get a set of objects that could be associated with the current attribute.  If ignoreResource is specified
-  // the corresponding resource will not participate in determining which object can be associated.
-  // The main use case would be updating the widget because a resource is about to be removed from the
-  // system.  Since it is still in memory we needed a way to ignore it
-  std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
-    const smtk::common::UUID& ignoreResource = smtk::common::UUID::null()) const;
   //returns the Item it has added to the widget
   //ownership of the item is handled by the widget so no need to delete
   //for now we append model name to currentList

@@ -73,58 +73,12 @@ std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
   return result;
 }
 
-std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const ReferenceItemPtr& refItem,
-  smtk::resource::ManagerPtr& resManager, bool useAttributeAssociations,
-  const smtk::common::UUID& ignoreResource)
+std::set<smtk::resource::PersistentObjectPtr> associatableObjects(
+  const ConstReferenceItemDefinitionPtr& refItemDef, smtk::attribute::ResourcePtr& attResource,
+  smtk::resource::ManagerPtr& resManager, const smtk::common::UUID& ignoreResource)
 {
+  auto assocMap = refItemDef->acceptableEntries();
   std::set<smtk::resource::PersistentObjectPtr> candidates;
-
-  if (refItem == nullptr)
-  {
-    return candidates;
-  }
-
-  auto theAttribute = refItem->attribute();
-  auto attResource = theAttribute->attributeResource();
-  auto compItem = std::dynamic_pointer_cast<ComponentItem>(refItem);
-  // There are 3 possible sources of Persistent Objects:
-  // 1. Those associated with the attribute this refItem is a member of
-  // 2. Based on the resources associated with the attribute resource the refItem's attribute
-  // is a component of
-  // 3. The resources contained in the resource manager associated with the UIManager
-  if (useAttributeAssociations)
-  {
-    // We must access elements of the association carefully, since this method could be called
-    // in the middle of a resource's removal logic. By accessing the associations' keys
-    // instead of the associations themselves, we avoid triggering the association's
-    // resolve() method (which will attempt to read in the resource being removed).
-    auto associations = theAttribute->associations();
-    for (std::size_t i = 0; i < associations->numberOfValues(); ++i)
-    {
-      if (!associations->isSet(i))
-      {
-        continue;
-      }
-      ReferenceItem::Key key = theAttribute->associations()->objectKey(i);
-      auto& surrogate = theAttribute->resource()->links().data().value(key.first);
-      if (surrogate.id() != ignoreResource)
-      {
-        if (auto object = associations->value(i))
-        {
-          candidates.insert(object);
-        }
-      }
-    }
-    if (compItem == nullptr)
-    {
-      // There is no possible uniqueness condition to check
-      return candidates;
-    }
-    return checkUniquenessCondition(compItem, candidates);
-  }
-
-  auto refItemDef = refItem->definitionAs<ReferenceItemDefinition>();
-  auto assocMap = refItem->acceptableEntries();
 
   // Are we dealing with the case where the attribute resource has resources directly associated
   // with it (or if we don't have a resource manager)
@@ -211,6 +165,67 @@ std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const Referenc
       }
     }
   }
+  return candidates;
+}
+
+std::set<smtk::resource::PersistentObjectPtr> associatableObjects(const ReferenceItemPtr& refItem,
+  smtk::resource::ManagerPtr& resManager, bool useAttributeAssociations,
+  const smtk::common::UUID& ignoreResource)
+{
+  std::set<smtk::resource::PersistentObjectPtr> candidates;
+
+  if (refItem == nullptr)
+  {
+    return candidates;
+  }
+
+  auto theAttribute = refItem->attribute();
+
+  if (theAttribute == nullptr)
+  {
+    return candidates;
+  }
+
+  auto attResource = theAttribute->attributeResource();
+  auto compItem = std::dynamic_pointer_cast<ComponentItem>(refItem);
+  // There are 3 possible sources of Persistent Objects:
+  // 1. Those associated with the attribute this refItem is a member of
+  // 2. Based on the resources associated with the attribute resource the refItem's attribute
+  // is a component of
+  // 3. The resources contained in the resource manager associated with the UIManager
+  if (useAttributeAssociations)
+  {
+    // We must access elements of the association carefully, since this method could be called
+    // in the middle of a resource's removal logic. By accessing the associations' keys
+    // instead of the associations themselves, we avoid triggering the association's
+    // resolve() method (which will attempt to read in the resource being removed).
+    auto associations = theAttribute->associations();
+    for (std::size_t i = 0; i < associations->numberOfValues(); ++i)
+    {
+      if (!associations->isSet(i))
+      {
+        continue;
+      }
+      ReferenceItem::Key key = theAttribute->associations()->objectKey(i);
+      auto& surrogate = theAttribute->resource()->links().data().value(key.first);
+      if (surrogate.id() != ignoreResource)
+      {
+        if (auto object = associations->value(i))
+        {
+          candidates.insert(object);
+        }
+      }
+    }
+    if (compItem == nullptr)
+    {
+      // There is no possible uniqueness condition to check
+      return candidates;
+    }
+    return checkUniquenessCondition(compItem, candidates);
+  }
+
+  auto refItemDef = refItem->definitionAs<ReferenceItemDefinition>();
+  candidates = associatableObjects(refItemDef, attResource, resManager, ignoreResource);
   if (compItem == nullptr)
   {
     // There is no possible uniqueness condition to check
