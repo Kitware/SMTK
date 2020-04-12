@@ -629,6 +629,19 @@ void SubphraseGenerator::componentsOfResource(
     };
     meshRsrc->visit(visitor);
   }
+  else
+  { // Some random resource...
+    // By default, make names and colors editable but not visibility
+    // as that is handled by modelbuilder/paraview on a per-view basis.
+    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
+      static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
+    smtk::resource::Component::Visitor visitor = [&mutability, &result, &src](
+      const smtk::resource::Component::Ptr& component) {
+      result.push_back(ComponentPhraseContent::createPhrase(component, mutability, src));
+    };
+    rsrc->visit(visitor);
+    std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTitle);
+  }
 }
 
 void SubphraseGenerator::itemsOfAttribute(
