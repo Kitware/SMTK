@@ -71,6 +71,7 @@ class qtAssociation2ColumnWidgetInternals : public Ui::qtAttributeAssociation
 public:
   qtAssociation2ColumnWidgetInternals() = default;
   WeakAttributePtr currentAtt;
+  WeakDefinitionPtr currentDef;
   QPointer<qtBaseView> view;
   QListWidgetItem* lastHighlightedItem{ nullptr };
   QBrush normalBackground;
@@ -79,6 +80,7 @@ public:
 qtAssociation2ColumnWidget::qtAssociation2ColumnWidget(QWidget* _p, qtBaseView* bview)
   : qtAssociationWidget(_p, bview)
 {
+  m_isValid = true;
   m_allAssociatedWarning =
     "There are still components not associated to any of the above attributes.";
   m_internals = new qtAssociation2ColumnWidgetInternals;
@@ -181,7 +183,7 @@ void qtAssociation2ColumnWidget::initWidget()
   m_internals->MoveToRight->setIcon(QIcon(arrowRight));
   m_internals->MoveToLeft->setIcon(QIcon(arrowLeft));
   m_internals->AlertLabel->setPixmap(m_view->uiManager()->alertPixmap());
-  m_internals->AlertLabel->hide();
+  this->setIsValid(true);
 
   // signals/slots
   QObject::connect(m_internals->MoveToRight, SIGNAL(clicked()), this, SLOT(onRemoveAssigned()),
@@ -200,6 +202,7 @@ bool qtAssociation2ColumnWidget::hasSelectedItem()
 void qtAssociation2ColumnWidget::showEntityAssociation(smtk::attribute::AttributePtr theAtt)
 {
   m_internals->currentAtt = theAtt;
+  m_internals->currentDef.reset();
   this->refreshAssociations();
 
   // Lets store the normal background color of an item - we will
@@ -214,54 +217,84 @@ void qtAssociation2ColumnWidget::showEntityAssociation(smtk::attribute::Attribut
   }
 }
 
+void qtAssociation2ColumnWidget::showEntityAssociation(smtk::attribute::DefinitionPtr theDef)
+{
+  m_internals->currentAtt.reset();
+  m_internals->currentDef = theDef;
+  this->refreshAssociations();
+
+  // Lets store the normal background color of an item - we will
+  // need to use this when dealing with hovering
+  if (m_internals->AvailableList->count())
+  {
+    m_internals->normalBackground = m_internals->AvailableList->item(0)->background();
+  }
+}
+
+void qtAssociation2ColumnWidget::setIsValid(bool val)
+{
+  m_isValid = val;
+  m_internals->AlertLabel->setVisible(!val);
+}
+
 bool qtAssociation2ColumnWidget::isValid() const
 {
-  return !m_internals->AlertLabel->isVisible();
+  return m_isValid;
 }
 
 void qtAssociation2ColumnWidget::updateAssociationStatus(const Attribute* attribute)
 {
-  auto assocItem = attribute->associatedObjects();
-  bool assocValid = assocItem->isValid();
-  if (assocValid && !(m_allAssociatedMode && m_internals->AvailableList->count()))
-  {
-    m_internals->AlertLabel->hide();
-    return;
-  }
-  m_internals->AlertLabel->show();
   QString reason;
-
-  // Lets update the tool-tip to say why its not valid
-  if (!assocValid)
+  if (attribute)
   {
-    if (assocItem->isExtensible())
+    auto assocItem = attribute->associatedObjects();
+    bool assocValid = assocItem->isValid();
+    if (assocValid && !(m_allAssociatedMode && m_internals->AvailableList->count()))
     {
-      // Remember that an item may have the correct number of values
-      // but they may not all be set
-      if (assocItem->numberOfValues() <= assocItem->numberOfRequiredValues())
+      this->setIsValid(true);
+      return;
+    }
+    // Lets update the tool-tip to say why its not valid
+    if (!assocValid)
+    {
+      if (assocItem->isExtensible())
       {
-        reason = "Attribute requires at least ";
+        // Remember that an item may have the correct number of values
+        // but they may not all be set
+        if (assocItem->numberOfValues() <= assocItem->numberOfRequiredValues())
+        {
+          reason = "Attribute requires at least ";
+          QString count;
+          count.setNum(assocItem->numberOfRequiredValues());
+          reason.append(count).append(" objects associated to it");
+        }
+        else
+        {
+          //Must have exceeded max number
+          QString reason("Attribute requires no more than ");
+          QString count;
+          count.setNum(assocItem->maxNumberOfValues());
+          reason.append(count).append(" objects associated to it");
+        }
+      }
+      else
+      {
+        QString reason("Attribute requires ");
         QString count;
         count.setNum(assocItem->numberOfRequiredValues());
         reason.append(count).append(" objects associated to it");
       }
-      else
-      {
-        //Must have exceeded max number
-        QString reason("Attribute requires no more than ");
-        QString count;
-        count.setNum(assocItem->maxNumberOfValues());
-        reason.append(count).append(" objects associated to it");
-      }
-    }
-    else
-    {
-      QString reason("Attribute requires ");
-      QString count;
-      count.setNum(assocItem->numberOfRequiredValues());
-      reason.append(count).append(" objects associated to it");
     }
   }
+  else if (!(m_allAssociatedMode && m_internals->AvailableList->count()))
+  {
+    this->setIsValid(true);
+    return;
+  }
+
+  // If we are here there is a problems
+  this->setIsValid(false);
+
   if (m_allAssociatedMode && m_internals->AvailableList->count())
   {
     if (reason.isEmpty())
@@ -283,34 +316,69 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
   m_internals->AvailableList->clear();
 
   auto theAttribute = m_internals->currentAtt.lock();
+  attribute::DefinitionPtr attDef;
 
-  if (!theAttribute)
+  // If we are dealing with an attribute we need to turn on the
+  // buttons that change association info - else they need to be off
+  if (theAttribute)
+  {
+    attDef = theAttribute->definition();
+    m_internals->MoveToRight->setEnabled(true);
+    m_internals->MoveToLeft->setEnabled(true);
+  }
+  else
+  {
+    attDef = m_internals->currentDef.lock();
+    m_internals->MoveToRight->setEnabled(false);
+    m_internals->MoveToLeft->setEnabled(false);
+  }
+
+  // If there is no attribute definition we just return
+  if (!attDef)
   {
     m_internals->CurrentList->blockSignals(false);
     m_internals->AvailableList->blockSignals(false);
-    m_internals->AlertLabel->hide();
+    this->setIsValid(true);
     return;
   }
 
-  attribute::DefinitionPtr attDef = theAttribute->definition();
   ResourcePtr attResource = attDef->resource();
-  // Lets get the objects that can possibly be associated with the attribute
-  auto associationItem = theAttribute->associatedObjects();
   auto resManager = m_view->uiManager()->resourceManager();
-
-  auto objects =
-    attribute::utility::associatableObjects(associationItem, resManager, false, ignoreResource);
-
-  smtk::attribute::DefinitionPtr preDef;
-  smtk::attribute::AttributePtr conAtt;
-  // Now lets see if the objects are associated with this attribute or can be
-  for (const auto& obj : objects)
+  // Lets get the objects that can possibly be associated with the attribute/definition
+  if (theAttribute)
   {
-    if (theAttribute->isObjectAssociated(obj))
+    auto associationItem = theAttribute->associatedObjects();
+    auto objects =
+      attribute::utility::associatableObjects(associationItem, resManager, false, ignoreResource);
+
+    smtk::attribute::DefinitionPtr preDef;
+    smtk::attribute::AttributePtr conAtt;
+    // Now lets see if the objects are associated with this attribute or can be
+    for (const auto& obj : objects)
     {
-      this->addObjectAssociationListItem(m_internals->CurrentList, obj, false, true);
+      if (theAttribute->isObjectAssociated(obj))
+      {
+        this->addObjectAssociationListItem(m_internals->CurrentList, obj, false, true);
+      }
+      else
+      {
+        auto result = attDef->canBeAssociated(obj, conAtt, preDef);
+        if (result == smtk::attribute::Definition::AssociationResultType::Valid)
+        {
+          this->addObjectAssociationListItem(m_internals->AvailableList, obj, false);
+        }
+      }
     }
-    else
+  }
+  else // We are dealing with potential associations based on a definition onlu
+  {
+    auto associationItemDef = attDef->associationRule();
+    smtk::attribute::DefinitionPtr preDef;
+    smtk::attribute::AttributePtr conAtt;
+    auto objects = attribute::utility::associatableObjects(
+      associationItemDef, attResource, resManager, ignoreResource);
+    // Now lets see if the objects can be associated with this type of attribute
+    for (const auto& obj : objects)
     {
       auto result = attDef->canBeAssociated(obj, conAtt, preDef);
       if (result == smtk::attribute::Definition::AssociationResultType::Valid)
@@ -319,7 +387,6 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
       }
     }
   }
-
   m_internals->CurrentList->sortItems();
   m_internals->AvailableList->sortItems();
   // Lets see if the attribute's associations are currently valid

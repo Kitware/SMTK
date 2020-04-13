@@ -171,6 +171,7 @@ qtAttributeView::qtAttributeView(const smtk::view::Information& info)
   {
     view->details().attributeAsBool("HideAssociations", m_hideAssociations);
   }
+  m_allAssociatedMode = view->details().attributeAsBool("RequireAllAssociated");
 }
 
 qtAttributeView::~qtAttributeView()
@@ -422,16 +423,29 @@ smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
 {
-  bool avisible = false;
-  if (theAtt && (!m_hideAssociations))
+  if (m_hideAssociations)
   {
-    if (theAtt->definition()->associationRule())
+    m_internals->AssociationsWidget->setVisible(false);
+    return;
+  }
+  if (theAtt)
+  {
+    bool showAssocs = (theAtt->definition()->associationRule() != nullptr);
+    if (showAssocs)
     {
-      avisible = true;
       m_internals->AssociationsWidget->showEntityAssociation(theAtt);
     }
+    m_internals->AssociationsWidget->setVisible(showAssocs);
+    return;
   }
-  m_internals->AssociationsWidget->setVisible(avisible);
+
+  if (m_allAssociatedMode && !m_internals->AllDefs.empty())
+  {
+    m_internals->AssociationsWidget->showEntityAssociation(m_internals->AllDefs.at(0));
+    m_internals->AssociationsWidget->setVisible(true);
+    return;
+  }
+  m_internals->AssociationsWidget->setVisible(false);
 }
 
 void qtAttributeView::onListBoxSelectionChanged()
@@ -1255,7 +1269,7 @@ bool qtAttributeView::isValid() const
       return false;
     }
   }
-  if (m_internals->AssociationsWidget->isVisible())
+  if (m_internals->AssociationsWidget != nullptr)
   {
     return m_internals->AssociationsWidget->isValid();
   }

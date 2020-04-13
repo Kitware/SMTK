@@ -119,9 +119,9 @@ protected:
 private:
   qtAttributeViewInternals* m_internals;
   bool m_hideAssociations;
-
-}; // class
-}; // namespace attribute
-}; // namespace smtk
+  bool m_allAssociatedMode; //!< Indicates that all potential objects that can be associated must be
+};                          // class
+};                          // namespace attribute
+};                          // namespace smtk
 
 #endif

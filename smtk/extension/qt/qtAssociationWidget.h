@@ -51,6 +51,9 @@ public slots:
   ///\brief Display/Modify the association information to a specific attribute
   virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt) = 0;
 
+  ///\brief Display/Modify the association information to a specific attribute definition
+  virtual void showEntityAssociation(smtk::attribute::DefinitionPtr theDef) = 0;
+
 signals:
   void attAssociationChanged();
   void availableChanged();

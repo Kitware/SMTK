@@ -54,6 +54,8 @@ public:
 public slots:
   // Display the association information to a specific attribute
   void showEntityAssociation(smtk::attribute::AttributePtr theAtt) override;
+  // Display the association information to a specific definition
+  void showEntityAssociation(smtk::attribute::DefinitionPtr theDef) override;
   // Refresh the association information for the current attribute.  If ignoreResource is specified
   // the corresponding resource will not participate in determining which object can be associated.
   // The main use case would be updating the widget because a resource is about to be removed from the
@@ -106,12 +108,16 @@ protected:
   // Used to determine if an alert icon should be displayed and why
   void updateAssociationStatus(const smtk::attribute::Attribute* att);
 
+  // Sets the validity of the widget
+  void setIsValid(bool val);
+
 private:
   qtAssociation2ColumnWidgetInternals* m_internals;
   std::string m_selectionSourceName;
   smtk::operation::Observers::Key m_operationObserverKey;
   smtk::resource::Observers::Key m_resourceObserverKey;
   bool m_allAssociatedMode;
+  bool m_isValid;
   QString m_allAssociatedWarning;
 
 }; // class
