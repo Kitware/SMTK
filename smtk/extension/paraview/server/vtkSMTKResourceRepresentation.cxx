@@ -225,6 +225,8 @@ bool vtkSMTKResourceRepresentation::GetModelBounds()
     bbox.GetBounds(this->DataBounds);
     return true;
   }
+  // must be uninitialized, or bounds will be treated as zero.
+  vtkMath::UninitializeBounds(this->DataBounds);
   return false;
 }
 

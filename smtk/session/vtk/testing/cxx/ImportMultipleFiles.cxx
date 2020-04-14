@@ -25,7 +25,7 @@ namespace
 std::string dataRoot = SMTK_DATA_DIR;
 }
 
-int ImportMultipleFiles(int argc, char* argv[])
+int ImportMultipleFiles(int /*argc*/, char* /*argv*/ [])
 {
   std::vector<std::string> files({ "/model/3d/exodus/disk_out_ref.ex2", "/model/3d/exodus/knee.ex2",
     "/model/3d/exodus/sx_bar_hex.exo" });
