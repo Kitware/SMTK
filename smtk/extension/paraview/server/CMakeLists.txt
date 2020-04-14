@@ -9,7 +9,6 @@ set(classes
   vtkPVModelSources
   vtkSMSMTKResourceRepresentationProxy
   vtkSMSMTKWrapperProxy
-  vtkSMTKRepresentationStyleGenerator
   vtkSMTKResource
   vtkSMTKResourceCreator
   vtkSMTKResourceGenerator
