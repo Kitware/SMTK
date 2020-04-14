@@ -37,58 +37,54 @@ namespace common
 /// conditions for generation have been satisfied. Here is an example of an
 /// implementation that accepts std::string and outputs type Foo:
 ///
-/// (GenerateFoo_1.h)
+/// (RegisterGenerateFoo.h)
+/// This class can exist external to smtk, like in a plugin (RGG, for example).
 /// ```
-/// class GenerateFoo_1 : public GeneratorType<std::string, Foo, GenerateFoo_1>
+/// class RegisterGenerateFoo : public GeneratorType<std::string, Foo, RegisterGenerateFoo>
 /// {
 /// public:
 ///   bool valid(const std::string&) const override;
 ///   Foo operator()(const std::string&) override;
 /// };
 /// ```
-/// (GenerateFoo_1.cxx)
+/// (RegisterGenerateFoo.cxx)
+/// Note that `valid()` and `operator()` may be defined in the header, and
+/// `registerClass()` may be called in another .cxx file, like smtk's `Registrar.cxx` files.
 /// ```
 /// namespace
 /// {
-/// static bool registered_Foo_1 = GenerateFoo_1::registerClass();
+/// static bool registered_Foo_1 = RegisterGenerateFoo::registerClass();
 /// }
 ///
-/// bool GenerateFoo_1::valid(const std::string& input) const
+/// bool RegisterGenerateFoo::valid(const std::string& input) const
 /// {
-///   return <Logic to decide if input1 is useable by GenerateFoo_1>
+///   return <Logic to decide if input1 is useable by RegisterGenerateFoo>
 /// }
 ///
-/// Foo GenerateFoo_1::operator()(const std::string& input)
+/// Foo RegisterGenerateFoo::operator()(const std::string& input)
 /// {
 ///   return <a generated Foo>
 /// }
 /// ```
 /// (GenerateFoo.h)
+/// Note: the macros used here are different and depend on the smtk module, here IOVTK
 /// ```
-/// #ifndef EXPORT
+/// #ifndef smtkIOVTK_EXPORTS
 /// extern
 /// #endif
-/// template class Generator<std::string, Foo>;
+/// template class SMTKIOVTK_EXPORT Generator<std::string, Foo>;
 ///
-/// class GenerateFoo : public Generator<std::string, Foo>
-/// {
-/// public:
-///   virtual ~GenerateFoo();
-/// };
+/// using GenerateFoo = Generator<std::string, Foo>;
 /// ```
 /// (GenerateFoo.cxx)
-/// The .cxx must exist to generate the right symbols.
+/// The .cxx must exist to generate the right symbols to link against.
 /// ```
 /// template class Generator<std::string, Foo>;
-///
-/// GenerateFoo::~GenerateFoo()
-/// {
-/// }
 /// ```
 /// (Implementation.cxx)
 /// ```
 /// ...
-/// std::string foo_string = <input for GenerateFoo_1>;
+/// std::string foo_string = "<input for GenerateFoo>";
 /// GenerateFoo generateFoo;
 /// Foo foo = generateFoo(foo_string);
 /// ...

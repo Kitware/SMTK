@@ -26,7 +26,7 @@ class Geometry;
 }
 }
 
-#ifndef SMTKCORE_EXPORT
+#ifndef smtkCore_EXPORTS
 extern
 #endif
   template class SMTKCORE_EXPORT
