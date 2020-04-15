@@ -36,6 +36,7 @@
 
 #include "vtkDataObjectTreeIterator.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKRepresentationStyleGenerator.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceReader.h"
 #include "smtk/extension/paraview/server/vtkSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
@@ -144,7 +145,6 @@ vtkSMTKResourceRepresentation::vtkSMTKResourceRepresentation()
   , SelectedEntitiesActorPickId(-1)
   , GlyphEntitiesActorPickId(-1)
   , SelectedGlyphEntitiesActorPickId(-1)
-  , ApplyStyle(ApplyDefaultStyle)
 {
   this->SetupDefaults();
   this->SetNumberOfInputPorts(3);
@@ -572,6 +572,29 @@ bool vtkSMTKResourceRepresentation::SetEntityVisibility(
     }
   }
   return didChange;
+}
+
+bool vtkSMTKResourceRepresentation::ApplyStyle(smtk::view::SelectionPtr seln,
+  RenderableDataMap& renderables, vtkSMTKResourceRepresentation* self)
+{
+  // See if any plugins have registered a generator, and use that.
+  auto resource = this->GetResource();
+  if (resource)
+  {
+    vtkSMTKRepresentationStyleGenerator generator;
+    StyleFromSelectionFunction doApplyStyle = generator(resource);
+    if (doApplyStyle)
+    {
+      doApplyStyle(seln, renderables, self);
+    }
+    else
+    {
+      // otherwise use the default.
+      vtkSMTKResourceRepresentation::ApplyDefaultStyle(seln, renderables, self);
+    }
+    return true;
+  }
+  return false;
 }
 
 bool vtkSMTKResourceRepresentation::ApplyDefaultStyle(smtk::view::SelectionPtr seln,
