@@ -58,6 +58,7 @@ Consuming applications can now register icon sets for Resources and Components, 
 * There is now a splitter between the attribute editing area and the association information area.
 * Removed the old view by property mechanism to help simplify the code
 * qtAttributeView and qtAssociatioView now have virtual methods to create their association widgets that can get overridden - in the future they should use a widget factor to fetch it so you wouldn't have to create a new class to use a different association widget
+* XML Option RequireAllAssociated="true" will now display the qtAssociationWidget even if no attributes exists and display a warning if there are persistent objects that match the definition requirements but are not associated to any attribute.
 
 
 ### qtUIManager Changes
@@ -129,6 +130,7 @@ Note that item /c contain ItemView for its children.
 ### Changed to qtAssociation Widget
 * Added the ability to indicate that all persistent objects that can be associated to a particular type of attribute must be.
 * Re-factored qtAssociationWdiget into an abstract class and a concrete implementation called qtAssociation2ColumnWidget - this should allow for easier customization
+* Added a pure virtual method to indicate the widget should display available persistent objects based on a definition - useful if you want the widget to indicate what still needs to associated to an attribute if no attribute is selected.
 * Added the ability to customize the following aspects of qtAssociation2ColumnWidget
   * Title Label
   * Current Column Label
