@@ -269,6 +269,7 @@ int vtkSMTKResourceRepresentation::RequestData(
     vtkSmartPointer<vtkMultiBlockDataSet> imageMultiBlock = vtkMultiBlockDataSet::SafeDownCast(
       mbds->GetBlock(vtkResourceMultiBlockSource::BlockId::Images));
 
+    this->UseSliceReps = false;
     if (imageMultiBlock && imageMultiBlock->GetNumberOfBlocks() > 0)
     {
       vtkSmartPointer<vtkImageData> sliceVolume =
@@ -298,9 +299,10 @@ int vtkSMTKResourceRepresentation::RequestData(
           0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
         this->SliceXZ->SetInputArrayToProcess(
           0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, scalarName.c_str());
+        this->UseSliceReps = true;
       }
     }
-    else
+    if (!this->UseSliceReps)
     {
       this->SliceXY->SetVisibility(false);
       this->SliceYZ->SetVisibility(false);
@@ -413,8 +415,8 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
       this->SelectedEntityMapper->SetInputDataObject(mbds2);
     }
 
-    // Set up an internal slice representation for each image.
-    if (imageMultiBlock && imageMultiBlock->GetNumberOfBlocks() > 0)
+    // Show an internal slice representation for an image.
+    if (this->UseSliceReps)
     {
       this->SliceXY->SetVisibility(true);
       this->SliceYZ->SetVisibility(true);
@@ -504,9 +506,13 @@ bool vtkSMTKResourceRepresentation::RemoveFromView(vtkView* view)
 
 void vtkSMTKResourceRepresentation::SetVisibility(bool val)
 {
-  this->SliceXY->SetVisibility(val);
-  this->SliceYZ->SetVisibility(val);
-  this->SliceXZ->SetVisibility(val);
+  if (this->UseSliceReps)
+  {
+    // these reps produce a warning if they are made visible without input data.
+    this->SliceXY->SetVisibility(val);
+    this->SliceYZ->SetVisibility(val);
+    this->SliceXZ->SetVisibility(val);
+  }
 
   this->Entities->SetVisibility(val);
   this->GlyphEntities->SetVisibility(val);
