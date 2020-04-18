@@ -418,6 +418,7 @@ protected:
   int ColorBy = FIELD;
   bool UpdateColorBy = false;
   bool UseInternalAttributes = false;
+  bool UseSliceReps = false;
 
   vtkNew<vtkMultiBlockDataSet> CurrentData;
   vtkSmartPointer<vtkCompositePolyDataMapper2> EntityMapper;
