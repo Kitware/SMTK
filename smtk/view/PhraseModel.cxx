@@ -133,6 +133,7 @@ PhraseModel::PhraseModel()
   , m_mutableAspects(PhraseContent::EVERYTHING)
 {
   m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
+  m_badges.setOrder({ "Visibility", "Color" });
 }
 
 PhraseModel::~PhraseModel()

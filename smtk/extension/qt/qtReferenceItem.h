@@ -84,6 +84,7 @@ protected slots:
     * not hide.
     */
   void popupClosing();
+
   /**\brief Link this item to the "hovered" selection bit.
     *
     * This should set up the initial state, observe changes to the item, and update

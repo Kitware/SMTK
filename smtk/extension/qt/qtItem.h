@@ -7,8 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME qtItem - an abstract UI class for attribute item
-// .SECTION Description
 
 #ifndef __smtk_extension_qtItem_h
 #define __smtk_extension_qtItem_h
@@ -51,6 +49,7 @@ class qtUIManager;
 #define smtk_DOUBLE_CONSTRAINT_PRECISION 0.000001
 #define smtk_USER_DATA_TYPE 10000
 
+/// an abstract UI class for attribute item
 class SMTKQTEXT_EXPORT qtItem : public QObject
 {
   Q_OBJECT
@@ -92,14 +91,14 @@ public slots:
   // due to other criteria
   // virtual void setUseSelectionManager(bool mode) { m_useSelectionManager = mode; }
 
-  // Tell the qtItem to update itself based on changes to its underlying
-  // attribute item
+  /// Tell the qtItem to update itself based on changes to its underlying
+  /// attribute item
   virtual void updateItemData();
 
 signals:
-  /// /brief Signal indicates that the underlying widget's size has been modified
+  /// Signal indicates that the underlying widget's size has been modified
   void widgetSizeChanged();
-  // Signal indicates that the underlying item has been modified
+  /// Signal indicates that the underlying item has been modified
   void modified();
 
 protected slots:
@@ -123,8 +122,8 @@ protected:
 
 private:
   qtItemInternals* Internals;
-}; // class
-}; // namespace extension
-}; // namespace smtk
+};
+}
+}
 
 #endif

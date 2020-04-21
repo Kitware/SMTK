@@ -14,6 +14,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/view/Badge.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModelObserver.h"
 #include "smtk/view/Selection.h"
@@ -173,6 +174,8 @@ public:
   ManagerPtr manager() const { return m_manager.lock(); }
   friend Manager;
 
+  std::vector<BadgePtr> getBadges() const { return m_badges.getBadges(); }
+
 protected:
   friend class VisibilityContent;
   PhraseModel();
@@ -265,6 +268,8 @@ protected:
   Observers m_observers;
 
   PhraseDecorator m_decorator;
+
+  BadgeSet m_badges;
 
   int m_mutableAspects;
 

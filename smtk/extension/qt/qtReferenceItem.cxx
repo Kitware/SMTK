@@ -927,7 +927,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
     case UpdateSource::GUI_FROM_ITEM:
       m_p->m_members.clear();
       m_p->m_phraseModel->triggerDataChanged();
-      std::size_t i, n = item->numberOfValues();
+      std::size_t n = item->numberOfValues();
       for (auto vit = item->begin(); vit != item->end(); ++vit)
       {
         // Only allow non-null pointers into the set of selected items;

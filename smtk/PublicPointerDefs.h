@@ -226,7 +226,9 @@ typedef std::vector<smtk::model::VolumeUse> VolumeUses;
 namespace view
 {
 class AvailableOperations;
+class Badge;
 class ComponentPhraseContent;
+class Configuration;
 class DescriptivePhrase;
 class Manager;
 class PhraseContent;
@@ -235,7 +237,6 @@ class PhraseModel;
 class ResourcePhraseContent;
 class Selection;
 class SubphraseGenerator;
-class Configuration;
 class VisibilityContent;
 }
 
@@ -592,6 +593,8 @@ namespace view
 typedef smtk::shared_ptr<smtk::view::AvailableOperations> AvailableOperationsPtr;
 /// @see smtk::view::AvailableOperations
 typedef smtk::weak_ptr<smtk::view::AvailableOperations> WeakAvailableOperationsPtr;
+/// @see smtk::view::Badge
+typedef smtk::shared_ptr<smtk::view::Badge> BadgePtr;
 /// @see smtk::view::DescriptivePhrase
 typedef smtk::shared_ptr<smtk::view::DescriptivePhrase> DescriptivePhrasePtr;
 /// @see smtk::view::DescriptivePhrase

@@ -32,6 +32,7 @@ set (jsonViewHeaders
   )
 set(viewHeaders
   AvailableOperations.h
+  Badges.h
   BaseView.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
