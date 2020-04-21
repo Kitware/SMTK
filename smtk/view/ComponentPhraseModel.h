@@ -38,36 +38,13 @@ public:
   smtkTypeMacro(smtk::view::ComponentPhraseModel);
   smtkSuperclassMacro(smtk::view::PhraseModel);
   smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
+
+  ComponentPhraseModel();
+  ComponentPhraseModel(const Configuration*, Manager* mgr);
   virtual ~ComponentPhraseModel();
 
   /// Return the root phrase of the hierarchy.
   DescriptivePhrasePtr root() const override;
-
-  /**\brief Create a model and configure it given a view description.
-    *
-    * Note that this method, unlike the version with no parameters,
-    * properly initializes its subphrase generator with a reference to
-    * the created model so that subphrases are properly decorated.
-    */
-  static PhraseModelPtr create(const smtk::view::Configuration::Component& viewComp);
-
-  /// Return the active resource (i.e., the one resource whose components should be displayed).
-  smtk::resource::ResourcePtr activeResource() const { return m_activeResource; }
-
-  /// Set the active resource (i.e., the one resource whose components should be displayed).
-  bool setActiveResource(smtk::resource::ResourcePtr rsrc);
-
-  /// Return whether this model should *only* display components from the active resource.
-  bool onlyShowActiveResourceComponents() const { return m_onlyShowActiveResourceComponents; }
-
-  /** Set whether this model should *only* display components from the active resource.
-    *
-    * The default is false (i.e., all matching components for every resource detected
-    * from every source added (see addSource()) will be displayed).
-    *
-    * This returns true when the value was changed and false otherwise.
-    */
-  bool setOnlyShowActiveResourceComponents(bool limitToActiveResource);
 
   /**\brief Set the specification for what components are allowed to be \a src.
     *
@@ -90,8 +67,6 @@ public:
   void visitComponentFilters(std::function<int(const std::string&, const std::string&)> fn) const;
 
 protected:
-  ComponentPhraseModel();
-
   /*
   virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln);
   virtual void handleResourceEvent(Resource::Ptr rsrc, smtk::resource::Event event);
@@ -111,8 +86,6 @@ protected:
   std::set<std::weak_ptr<smtk::resource::Resource>,
     std::owner_less<std::weak_ptr<smtk::resource::Resource> > >
     m_resources;
-  smtk::resource::ResourcePtr m_activeResource;
-  bool m_onlyShowActiveResourceComponents;
   std::multimap<std::string, std::string> m_componentFilters;
 };
 }

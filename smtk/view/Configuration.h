@@ -80,6 +80,7 @@ public:
     std::size_t numberOfChildren() const { return m_children.size(); }
 
     Component& child(std::size_t i) { return m_children[i]; }
+    const Component& child(std::size_t i) const { return m_children[i]; }
 
     // Returns -1 if there is no child by that name
     int findChild(const std::string& compName) const;
@@ -120,6 +121,7 @@ public:
   void setIconName(const std::string& iname) { m_iconName = iname; }
 
   Component& details() { return m_details; }
+  const Component& details() const { return m_details; }
 
   bool operator==(const Configuration& other) const
   {

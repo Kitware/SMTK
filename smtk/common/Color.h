@@ -36,6 +36,7 @@ public:
     return Color::stringToFloatRGBA(&rgba[0], colorSpec, defaultAlpha);
   }
   static std::string floatRGBToString(const double* rgb);
+  static std::string floatRGBToString(const float* rgb);
 };
 
 } // namespace common

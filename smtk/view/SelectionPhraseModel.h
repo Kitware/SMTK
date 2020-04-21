@@ -29,7 +29,9 @@ public:
   smtkTypeMacro(smtk::view::SelectionPhraseModel);
   smtkSuperclassMacro(smtk::view::PhraseModel);
   smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
-  static PhraseModelPtr create(const ConfigurationPtr& view);
+
+  SelectionPhraseModel();
+  SelectionPhraseModel(const Configuration*, Manager*);
   virtual ~SelectionPhraseModel();
 
   /// Return the root phrase of the hierarchy.
@@ -41,8 +43,6 @@ public:
   int selectionBit() const { return m_selectionBit; }
 
 protected:
-  SelectionPhraseModel();
-
   virtual void handleSelectionEvent(const std::string& src, Selection::Ptr seln) override;
 
   void populateRoot(const std::string& src, Selection::Ptr seln);

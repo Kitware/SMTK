@@ -57,6 +57,8 @@ public:
   ViewInfo() {}
   virtual ~ViewInfo() {}
 
+  const smtk::view::Configuration* configuration() const override { return m_view.get(); }
+
   smtk::view::ConfigurationPtr m_view; // View Definition
   QWidget* m_parent;                   // Parent Widget of the View
   qtUIManager* m_UIManager;            // UI Manager

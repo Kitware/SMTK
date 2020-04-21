@@ -11,9 +11,9 @@
 #ifndef smtk_view_Badge_h
 #define smtk_view_Badge_h
 
-#include "smtk/CoreExports.h"
-#include "smtk/PublicPointerDefs.h"
+#include "smtk/view/Configuration.h"
 
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
 #include <array>
@@ -22,64 +22,49 @@ namespace smtk
 {
 namespace view
 {
+
+/**\brief A base class for descriptive-phrase badges.
+  *
+  * A badge is responsible for
+  * + determining whether it applies to a descriptive phrase;
+  * + providing a tooltip string indicating its purpose to a user;
+  * + providing a string of SVG to render (if it applies); and
+  * + performing an action when clicked (which may do nothing).
+  */
 class SMTKCORE_EXPORT Badge : smtkEnableSharedPtr(Badge)
 {
 public:
   smtkTypeMacroBase(Badge);
+  Badge() {}
+  Badge(const Badge&) = delete;
+  void operator=(const Badge&) = delete;
+  virtual ~Badge() {}
 
-  // Badge(
-  //   const std::string name,
-  //   const std::array<float, 4>& background,
-  //   const std::string& icon);
+  /// Returns true if the badge should appear next to the given phrase:
+  virtual bool appliesToPhrase(const DescriptivePhrase* phrase) const { return false; }
 
-  virtual ~Badge() = 0;
+  /// Return a tool-tip string for the badge that is relevant to this phrase.
+  ///
+  /// An empty string (the default) indicates that no tooltip should be shown.
+  /// If a non-empty string is returned, it should describe the meaning of the
+  /// badge to the user. If the badge changes its SVG based on application state,
+  /// the tip should be specific to its current state.
+  ///
+  /// For example, a badge that controls visibility of a phrase's subject in a render-window
+  /// should say either "Click to show <title>" when the phrase's subject is hidden
+  /// or "Click to hide <title>" when the phrase's subject is visible.
+  virtual std::string tooltip(const DescriptivePhrase* phrase) const { return std::string(); }
 
-  std::string name() const { return m_name; }
-  std::size_t hash() const { return std::hash<std::string>{}(m_name); }
-  virtual std::string svg(DescriptivePhrasePtr phrase, bool lightBackground = true) const
-  {
-    return m_icon;
-  }
-  std::array<float, 4> background() const { return m_background; }
+  /// Returns an SVG string for rendering the badge icon.
+  ///
+  /// The SVG icon may change depending on
+  /// (1) the state of the phrase or its parent view,
+  /// (2) the background color of the phrase.
+  virtual std::string svg(
+    const DescriptivePhrase* phrase, const std::array<float, 4>& background) const = 0;
 
-  /// take an action when the badge is clicked.
-  virtual bool onClick(DescriptivePhrasePtr phrase) { return false; }
-
-private:
-  std::string m_name;
-  std::array<float, 4> m_background;
-  std::string m_icon;
-};
-
-class SMTKCORE_EXPORT BadgeSet
-{
-public:
-  BadgeSet(const smtk::view::ConfigurationPtr& viewSpec, const smtk::view::ManagerPtr& manager);
-
-  bool addBadge(const std::string& name, Badge::Ptr badge)
-  {
-    m_badges[name] = badge;
-    return true;
-  }
-  void setOrder(const std::vector<std::string>& names) { m_order = names; }
-  /// return ordered list of badge ptrs, ignoring any names without a matching badge.
-  std::vector<Badge::Ptr> getBadges() const
-  {
-    std::vector<Badge::Ptr> ret;
-    for (auto name : m_order)
-    {
-      auto iter = m_badges.find(name);
-      if (iter != m_badges.end())
-      {
-        ret.push_back(iter->second);
-      }
-    }
-    return ret;
-  }
-
-private:
-  std::map<std::string, Badge::Ptr> m_badges;
-  std::vector<std::string> m_order;
+  /// Take an action when the badge is clicked.
+  virtual void action(const DescriptivePhrase* phrase) const {}
 };
 }
 }

@@ -29,20 +29,6 @@
 
 using namespace smtk::view;
 
-PhraseModelPtr SelectionPhraseModel::create(const smtk::view::ConfigurationPtr& viewSpec)
-{
-  (void)viewSpec;
-  auto model = SelectionPhraseModel::Ptr(new SelectionPhraseModel);
-  model->root()->findDelegate()->setModel(model);
-  int selnBit;
-  if (!viewSpec->details().attributeAsInt("SelectionValue", selnBit))
-  {
-    selnBit = ~0; // Listen to all selection bits by default.
-  }
-  model->setSelectionBit(selnBit);
-  return model;
-}
-
 SelectionPhraseModel::SelectionPhraseModel()
   : m_root(DescriptivePhrase::create())
   , m_selectionBit(~0)
@@ -52,6 +38,33 @@ SelectionPhraseModel::SelectionPhraseModel()
   // By default, do not show children of selected objects.
   auto generator = smtk::view::EmptySubphraseGenerator::create();
   m_root->setDelegate(generator);
+}
+
+SelectionPhraseModel::SelectionPhraseModel(const Configuration* config, Manager* manager)
+  : Superclass(config, manager)
+  , m_root(DescriptivePhrase::create())
+  , m_selectionBit(~0)
+  , m_componentMutability(0)
+  , m_resourceMutability(0)
+{
+  auto generator = PhraseModel::configureSubphraseGenerator(config, manager);
+  m_root->setDelegate(generator);
+
+  int selnBit;
+  int phraseIndex;
+  if (config && (phraseIndex = config->details().findChild("PhraseModel")) >= 0)
+  {
+    const auto& phraseConfig = config->details().child(phraseIndex);
+    if (!phraseConfig.attributeAsInt("SelectionValue", selnBit))
+    {
+      selnBit = ~0; // Listen to all bits by default.
+    }
+  }
+  else
+  {
+    selnBit = ~0; // Listen to all bits by default.
+  }
+  this->setSelectionBit(selnBit);
 }
 
 SelectionPhraseModel::~SelectionPhraseModel()

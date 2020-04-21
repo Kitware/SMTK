@@ -33,21 +33,22 @@ public:
   smtkTypeMacro(smtk::view::ReferenceItemPhraseModel);
   smtkSuperclassMacro(smtk::view::ComponentPhraseModel);
   smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
+
+  ReferenceItemPhraseModel();
+  ReferenceItemPhraseModel(const Configuration*, Manager*);
   virtual ~ReferenceItemPhraseModel();
 
   /**\brief Create a model and configure it given a view description.
     *
-    * Note that this method, unlike the version with no parameters,
-    * properly initializes its subphrase generator with a reference to
-    * the created model so that subphrases are properly decorated.
+    * Note that this method, unlike the version that takes a
+    * smtk::view::Configuration, is used by qtReferenceItem (where
+    * the PhraseModel is a "sub-view" of the qtItem's view).
     */
   static PhraseModelPtr create(const smtk::view::Configuration::Component& viewComp);
   void setUseAttributeAssociations(bool val) { m_useAttributeAssociatons = val; }
   void setReferenceItem(smtk::attribute::ReferenceItemPtr& refItem);
 
 protected:
-  ReferenceItemPhraseModel();
-
   ///\brief Populate the root based on a set of appropriate resource components.
   void populateRoot() override;
   void handleModified(const Operation& op, const Operation::Result& res,

@@ -9,8 +9,10 @@
 //=========================================================================
 #include "smtk/view/PhraseModel.h"
 
+#include "smtk/view/BadgeSet.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/PhraseListContent.h"
 #include "smtk/view/SubphraseGenerator.h"
@@ -108,37 +110,89 @@ smtk::operation::ManagerPtr PhraseModel::operationManager() const
   return nullptr;
 }
 
-PhraseModelPtr PhraseModel::create(
-  const smtk::view::ConfigurationPtr& viewSpec, const smtk::view::ManagerPtr& manager)
-{
-  if (!manager || !viewSpec || viewSpec->name().empty() || viewSpec->name() != "ResourceBrowser")
-  {
-    return nullptr;
-  }
-  // Look at viewSpec child, should be "PhraseModel", look for its Type attribute
-  std::string typeName;
-  if ((viewSpec->details().numberOfChildren() != 1) ||
-    (viewSpec->details().child(0).name() != "PhraseModel"))
-  {
-    return nullptr;
-  }
-  viewSpec->details().child(0).attribute("Type", typeName);
-
-  // find things that match the Type, and create one.
-  return manager->create(typeName);
-}
-
 PhraseModel::PhraseModel()
   : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
   , m_mutableAspects(PhraseContent::EVERYTHING)
 {
   m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
-  m_badges.setOrder({ "Visibility", "Color" });
+}
+
+PhraseModel::PhraseModel(const Configuration* config, Manager* manager)
+  : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
+  , m_mutableAspects(PhraseContent::EVERYTHING)
+  , m_badges(config, manager->shared_from_this())
+  , m_manager(manager->shared_from_this())
+{
+  m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
 }
 
 PhraseModel::~PhraseModel()
 {
   this->resetSources();
+}
+
+SubphraseGeneratorPtr PhraseModel::configureSubphraseGenerator(
+  const Configuration* config, Manager* manager)
+{
+  SubphraseGeneratorPtr result;
+  int modelIndex = -1;
+  int subphraseIndex = -1;
+  if (config && (modelIndex = config->details().findChild("PhraseModel")) >= 0)
+  {
+    const auto& modelConfig = config->details().child(modelIndex);
+    if ((subphraseIndex = modelConfig.findChild("SubphraseGenerator")) >= 0)
+    {
+      const auto& subphraseConfig = modelConfig.child(subphraseIndex);
+      std::string spType;
+      subphraseConfig.attribute("Type", spType);
+      if (spType.empty() || spType == "default")
+      {
+        spType = "smtk::view::SubphraseGenerator";
+      }
+      result = manager->createSubphrase(&subphraseConfig);
+    }
+  }
+  if (!result)
+  {
+    result = smtk::view::EmptySubphraseGenerator::create();
+  }
+  return result;
+}
+
+std::multimap<std::string, std::string> PhraseModel::configureFilterStrings(
+  const Configuration* config, Manager*)
+{
+  std::multimap<std::string, std::string> result;
+  int modelIndex = -1;
+  int filterIndex = -1;
+  if (config && (modelIndex = config->details().findChild("PhraseModel")) >= 0)
+  {
+    const auto& modelConfig = config->details().child(modelIndex);
+    if ((filterIndex = modelConfig.findChild("Accepts")) >= 0)
+    {
+      const auto& filterConfig = modelConfig.child(filterIndex);
+      for (int ii = 0; ii < filterConfig.numberOfChildren(); ++ii)
+      {
+        const auto& acceptConfig = filterConfig.child(ii);
+        if (acceptConfig.name() == "Resource")
+        {
+          std::pair<std::string, std::string> filterPair;
+          bool haveName = acceptConfig.attribute("Name", filterPair.first);
+          acceptConfig.attribute("Filter", filterPair.second);
+          if (haveName)
+          {
+            result.insert(filterPair);
+          }
+          else
+          {
+            smtkWarningMacro(smtk::io::Logger::instance(),
+              "A \"Resource\" entry did not have a \"Name\" attribute.");
+          }
+        }
+      }
+    }
+  }
+  return result;
 }
 
 bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation::ManagerPtr operMgr,

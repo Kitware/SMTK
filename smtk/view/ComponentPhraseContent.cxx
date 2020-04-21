@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/view/ComponentPhraseContent.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModel.h"
 
 #include "smtk/view/DescriptivePhrase.h"

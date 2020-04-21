@@ -14,6 +14,8 @@
 
 #include "smtk/view/Configuration.h"
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/Manager.h"
+#include "smtk/view/Registrar.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/VisibilityContent.h"
@@ -170,19 +172,29 @@ int unitQtComponentItem(int argc, char* argv[])
 
   auto rsrcMgr = smtk::resource::Manager::create();
   auto operMgr = smtk::operation::Manager::create();
+  auto viewMgr = smtk::view::Manager::create();
   // Ensure operations whose results include resources have
   // those resources registered with rsrcMgr:
   operMgr->registerResourceManager(rsrcMgr);
 
   auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
     smtk::operation::Manager>(rsrcMgr, operMgr);
+  smtk::view::Registrar::registerTo(viewMgr);
 
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
   // to point back to the model (thus ensuring subphrases are decorated). This is required
   // since we need to decorate phrases to show+edit "visibility" as set membership:
-  auto config = smtk::view::Configuration::New("ComponentItem", "stuff");
-  auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
-  phraseModel->root()->findDelegate()->setModel(phraseModel);
+  auto config = smtk::view::Configuration::New("smtk::view::ComponentItem", "stuff");
+  auto& phraseModelConfig = config->details().addChild("PhraseModel");
+  phraseModelConfig.setAttribute("Type", "smtk::view::ComponentPhraseModel");
+  auto& generatorConfig = phraseModelConfig.addChild("SubphraseGenerator");
+  generatorConfig.setAttribute("Type", "smtk::view::SubphraseGenerator");
+  auto& acceptsConfig = phraseModelConfig.addChild("Accepts");
+  auto& entryConfig = acceptsConfig.addChild("Resource");
+  entryConfig.setAttribute("Name", "smtk::model::Resource");
+  entryConfig.setAttribute("Filter", "edge|face");
+
+  auto phraseModel = viewMgr->phraseModelFactory().createFromConfiguration(config.get());
 
   std::map<smtk::resource::ComponentPtr, int>
     m_visibleThings; // Our internal state of what is selected.
@@ -279,7 +291,7 @@ int unitQtComponentItem(int argc, char* argv[])
     }
   };
 
-  phraseModel->addSource(rsrcMgr, operMgr, nullptr, nullptr);
+  phraseModel->addSource(rsrcMgr, operMgr, viewMgr, nullptr);
   phraseModel->setDecorator([&m_visibleThings](smtk::view::DescriptivePhrasePtr phr) {
     smtk::view::VisibilityContent::decoratePhrase(
       phr, [&m_visibleThings](smtk::view::VisibilityContent::Query qq, int val,

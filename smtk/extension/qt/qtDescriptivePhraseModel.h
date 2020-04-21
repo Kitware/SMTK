@@ -70,7 +70,8 @@ public:
     ModelActiveRole = Qt::UserRole + 108,        //!< Is resource the active resource?
     TitleTextMutableRole = Qt::UserRole + 109,   //!< Is the title editable?
     ColorMutableRole = Qt::UserRole + 110,       //!< Is the subject's color editable?
-    PhrasePtrRole = Qt::UserRole + 111           //!< Grab the whole descriptive phrase!
+    PhrasePtrRole = Qt::UserRole + 111,          //!< Grab the whole descriptive phrase!
+    BadgesRole = Qt::UserRole + 112              //!< Grab the set of badges for this phrase.
   };
 
   void setPhraseModel(smtk::view::PhraseModelPtr model);

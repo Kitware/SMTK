@@ -2,6 +2,7 @@
 set(viewSrcs
   AvailableOperations.cxx
   BaseView.cxx
+  BadgeSet.cxx
   ComponentPhraseContent.cxx
   ComponentPhraseModel.cxx
   DescriptivePhrase.cxx
@@ -11,8 +12,10 @@ set(viewSrcs
   json/jsonView.cxx
   Manager.cxx
   ObjectGroupPhraseContent.cxx
+  ObjectIconBadge.cxx
   PhraseListContent.cxx
   PhraseModel.cxx
+  PhraseModelFactory.cxx
   QueryFilterSubphraseGenerator.cxx
   ReferenceItemPhraseModel.cxx
   Registrar.cxx
@@ -32,7 +35,9 @@ set (jsonViewHeaders
   )
 set(viewHeaders
   AvailableOperations.h
-  Badges.h
+  Badge.h
+  BadgeFactory.h
+  BadgeSet.h
   BaseView.h
   ComponentPhraseContent.h
   ComponentPhraseModel.h
@@ -42,9 +47,11 @@ set(viewHeaders
   Information.h
   Manager.h
   ObjectGroupPhraseContent.h
+  ObjectIconBadge.h
   PhraseListContent.h
   PhraseContent.h
   PhraseModel.h
+  PhraseModelFactory.h
   PhraseModelObserver.h
   QueryFilterSubphraseGenerator.h
   ReferenceItemPhraseModel.h

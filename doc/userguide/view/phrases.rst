@@ -17,6 +17,8 @@ are split across several classes:
   * determine how to notify user interfaces of those
     changes in terms of deleted, added, re-ordered, and
     modified phrases.
+  * mark each descriptive phrase with optional, clickable
+    badge icons.
 * Descriptive phrases are only responsible for storing
   child phrases and, optionally, a reference to a
   subphrase generator that can create or update
@@ -35,24 +37,21 @@ are split across several classes:
   the same face but present one of the face's properties
   as its topic.
 
-  Phrase content classes may optionally reference another
-  phrase content instance, which they decorate.
-  For example, the :smtk:`VisibilityContent` class holds
-  a reference to a :smtk:`ResourcePhraseContent`
-  or :smtk:`ComponentPhraseContent` and simply overrides
-  the visibility of the underlying resource or component
-  with an application-specific visibility.
-
-  Thus, each descriptive phrase holds a reference to the head
-  of a singly-linked list of :smtk:`PhraseContent` instances
-  that decorate the instance at the tail of the list.
-
 Phrase Models
 -------------
 
 .. todo:: Describe the base phrase model class
 
-There are two phrase model subclasses:
+There are several phrase model subclasses:
+
+:smtk:`ReferenceItemPhraseModel <smtk::view::ReferenceItemPhraseModel>`,
+  which lists components available for use in a
+  :smtk:`ReferenceItem <smtk::attribute::ReferenceItem>`.
+  The top-level phrases it presents are persistent objects that either
+  are or may be added to a ReferenceItem that you provide to the phrase
+  model during configuration.
+  It is used by the :smtk:`qtReferenceItem` class to present
+  components that may be selected by a user in order to populate some item.
 
 :smtk:`ResourcePhraseModel <smtk::view::ResourcePhraseModel>`,
   which lists resources matching a given set of filters at its top level.
@@ -61,8 +60,13 @@ There are two phrase model subclasses:
 
 :smtk:`ComponentPhraseModel <smtk::view::ComponentPhraseModel>`,
   which lists components matching a given set of filters at its top level.
-  It is used by the :smtk:`qtComponentItem` class to present
-  components that may be selected by a user in order to populate some item.
+
+:smtk:`SelectionPhraseModel <smtk::view::SelectionPhraseModel>`,
+  which lists objects held by a `Selection <smtk::view::Selection>`
+  (which you provide at configuration time).
+  By default, it will list all selected objects, regardless of the
+  selection value. However, you may optionally specify a bit mask so
+  that only objects whose selection values match the mask are shown.
 
 Phrase Content Types
 --------------------
@@ -73,3 +77,15 @@ Subphrase Generators
 --------------------
 
 .. todo:: Describe the base subphrase generator class and its children
+
+Badges
+------
+
+Each phrase model owns a :smtk:`BadgeSet <smtk::view::BadgeSet>` used to
+decorate phrases.
+User interfaces that present phrases can ask the badge set for an array
+of :smtk:`Badges <smtk::view::Badge>` that apply to a given phrase.
+The returned array of badges will be ordered consistently.
+Each badge has an SVG string to use as an icon, an optional tool tip,
+and an "action" method used to perform some task when users click on
+the badge.

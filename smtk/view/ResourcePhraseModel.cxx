@@ -28,14 +28,6 @@
 
 using namespace smtk::view;
 
-PhraseModelPtr ResourcePhraseModel::create(const smtk::view::ConfigurationPtr& viewSpec)
-{
-  (void)viewSpec;
-  auto model = PhraseModel::Ptr(new ResourcePhraseModel);
-  model->root()->findDelegate()->setModel(model);
-  return model;
-}
-
 PhraseModelPtr ResourcePhraseModel::create(const smtk::view::Configuration::Component& viewSpec)
 {
   (void)viewSpec;
@@ -51,6 +43,20 @@ ResourcePhraseModel::ResourcePhraseModel()
   m_mutableAspects &= ~static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
   auto generator = smtk::view::SubphraseGenerator::create();
   m_root->setDelegate(generator);
+}
+
+ResourcePhraseModel::ResourcePhraseModel(const Configuration* config, Manager* manager)
+  : Superclass(config, manager)
+  , m_root(DescriptivePhrase::create())
+{
+  // Do not allow color of resources to be mutable by default.
+  m_mutableAspects &= ~static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
+  auto generator = PhraseModel::configureSubphraseGenerator(
+    config, manager); // , "smtk::view::SubphraseGenerator");
+  m_root->setDelegate(generator);
+  std::multimap<std::string, std::string> filters =
+    PhraseModel::configureFilterStrings(config, manager);
+  this->setResourceFilters(filters);
 }
 
 ResourcePhraseModel::~ResourcePhraseModel()

@@ -42,6 +42,12 @@ ReferenceItemPhraseModel::ReferenceItemPhraseModel()
   m_useAttributeAssociatons = false;
 }
 
+ReferenceItemPhraseModel::ReferenceItemPhraseModel(const Configuration* config, Manager* manager)
+  : Superclass(config, manager)
+{
+  m_useAttributeAssociatons = false;
+}
+
 ReferenceItemPhraseModel::~ReferenceItemPhraseModel() = default;
 
 void ReferenceItemPhraseModel::setReferenceItem(smtk::attribute::ReferenceItemPtr& refItem)

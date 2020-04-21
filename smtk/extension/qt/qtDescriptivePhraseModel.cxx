@@ -476,6 +476,13 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       {
         return QVariant(item->isRelatedColorMutable());
       }
+      else if (role == BadgesRole)
+      {
+        auto badgeList = m_model->badges().badgesFor(item.get());
+        QVariant result;
+        result.setValue(badgeList);
+        return result;
+      }
     }
   }
   return QVariant();

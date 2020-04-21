@@ -9,7 +9,6 @@
 //=========================================================================
 
 #include "smtk/view/Manager.h"
-#include "smtk/view/PhraseModel.h"
 #include "smtk/view/QueryFilterSubphraseGenerator.h"
 #include "smtk/view/SubphraseGenerator.h"
 
@@ -18,7 +17,10 @@ namespace smtk
 namespace view
 {
 
-Manager::Manager() = default;
+Manager::Manager()
+  : m_phraseModelFactory(this)
+{
+}
 
 Manager::~Manager() = default;
 
@@ -91,34 +93,6 @@ void Manager::addWidgetAlias(std::size_t typeIndex, const std::string& alias)
   m_altViewWidgetNames[alias] = typeIndex;
 }
 
-bool Manager::unregisterPhraseModel(const std::string& typeName)
-{
-  auto iter = m_phraseModels.find(typeName);
-  if (iter != m_phraseModels.end())
-  {
-    m_phraseModels.erase(iter);
-    return true;
-  }
-
-  return false;
-}
-
-std::shared_ptr<PhraseModel> Manager::create(const std::string& typeName)
-{
-  std::shared_ptr<PhraseModel> phraseModel;
-
-  // Locate the constructor associated with this resource type
-  auto iter = m_phraseModels.find(typeName);
-  if (iter != m_phraseModels.end())
-  {
-    // Create the phraseModel, set its manager
-    phraseModel = iter->second();
-    phraseModel->m_manager = shared_from_this();
-  }
-
-  return phraseModel;
-}
-
 bool Manager::unregisterSubphraseGenerator(const std::string& typeName)
 {
   auto iter = m_subphraseGenerators.find(typeName);
@@ -129,6 +103,23 @@ bool Manager::unregisterSubphraseGenerator(const std::string& typeName)
   }
 
   return false;
+}
+
+std::shared_ptr<SubphraseGenerator> Manager::createSubphrase(const Configuration::Component* config)
+{
+  std::shared_ptr<SubphraseGenerator> result;
+  if (!config)
+  {
+    return result;
+  }
+  std::string sgType;
+  bool haveType = config->attribute("Type", sgType);
+  if (!haveType || sgType.empty() || sgType == "default")
+  {
+    sgType = "smtk::view::SubphraseGenerator";
+  }
+  result = this->createSubphrase(sgType);
+  return result;
 }
 
 std::shared_ptr<SubphraseGenerator> Manager::createSubphrase(const std::string& typeName)

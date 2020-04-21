@@ -14,6 +14,8 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 
+#include "smtk/view/PhraseModelFactory.h"
+
 namespace smtk
 {
 namespace extension

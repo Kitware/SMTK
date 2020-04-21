@@ -21,6 +21,12 @@
               "Attributes": {
                 "Type": "default"
               }
+            },
+            {
+              "Name": "Badges",
+              "Children": [
+                { "Name": "Badge", "Attributes": { "Type": "smtk::view::ObjectIconBadge" } }
+              ]
             }
           ]
         }

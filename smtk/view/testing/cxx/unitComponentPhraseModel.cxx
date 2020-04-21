@@ -166,15 +166,6 @@ int unitComponentPhraseModel(int argc, char* argv[])
 
   if (!dataArgs.empty())
   {
-    // III. Test that we can set an explicit "active" resource that
-    //      serves as the only source of components.
-    phraseModel->setOnlyShowActiveResourceComponents(true);
-    std::cout << "---\n";
-    // III.a. A null "active" resource
-    smtkTest(phraseModel->root()->subphrases().empty(),
-      "Expected an empty list with a null active resource.");
-    // III.b. A non-null "active" resource
-    phraseModel->setActiveResource(rsrc);
     std::cout << "---\n";
     phraseModel->root()->visitChildren(printer);
     smtkTest(!phraseModel->root()->subphrases().empty(),

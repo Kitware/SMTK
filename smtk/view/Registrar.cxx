@@ -17,8 +17,10 @@
 
 #include "smtk/view/ComponentPhraseModel.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
+#include "smtk/view/ObjectIconBadge.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/QueryFilterSubphraseGenerator.h"
+#include "smtk/view/ReferenceItemPhraseModel.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SVGIconConstructor.h"
 #include "smtk/view/SelectionPhraseModel.h"
@@ -33,7 +35,8 @@ namespace view
 {
 namespace
 {
-typedef std::tuple<PhraseModel, ResourcePhraseModel, ComponentPhraseModel, SelectionPhraseModel>
+typedef std::tuple<ResourcePhraseModel, ComponentPhraseModel, ReferenceItemPhraseModel,
+  SelectionPhraseModel>
   PhraseModelList;
 typedef std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator, EmptySubphraseGenerator,
   QueryFilterSubphraseGenerator>
@@ -42,19 +45,23 @@ typedef std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator, EmptySubphras
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->registerPhraseModels<PhraseModelList>();
+  viewManager->phraseModelFactory().registerTypes<PhraseModelList>();
   viewManager->registerSubphraseGenerators<SubphraseGeneratorList>();
 
   viewManager->iconFactory().registerIconConstructor<smtk::attribute::Resource>(
     AttributeIconConstructor());
   viewManager->iconFactory().registerIconConstructor<smtk::mesh::Resource>(MeshIconConstructor());
   viewManager->iconFactory().registerIconConstructor<smtk::model::Resource>(ModelIconConstructor());
+
+  viewManager->badgeFactory().registerBadge<ObjectIconBadge>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->unregisterPhraseModels<PhraseModelList>();
+  viewManager->phraseModelFactory().unregisterTypes<PhraseModelList>();
   viewManager->unregisterSubphraseGenerators<SubphraseGeneratorList>();
+
+  viewManager->badgeFactory().unregisterBadge<ObjectIconBadge>();
 }
 }
 }

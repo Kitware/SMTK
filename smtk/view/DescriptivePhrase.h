@@ -27,6 +27,7 @@ namespace smtk
 namespace view
 {
 
+class Badge;
 class DescriptivePhrase;
 class SubphraseGenerator;
 typedef smtk::shared_ptr<SubphraseGenerator> SubphraseGeneratorPtr;
@@ -87,6 +88,7 @@ public:
     * return 0 to continue iterating, 1 to skip children of this phrase, or 2 to terminate immediately.
     */
   using Visitor = std::function<int(DescriptivePhrasePtr, std::vector<int>&)>;
+  using Badges = std::vector<const Badge*>;
 
   smtkTypeMacroBase(DescriptivePhrase);
   smtkCreateMacro(DescriptivePhrase);
@@ -102,6 +104,11 @@ public:
   PhraseContentPtr content() const;
   /// Return the content free of any decoration (i.e., the bottom-most content)
   PhraseContentPtr undecoratedContent() const;
+  /// Return an ordered subset of badges that apply to this phrase.
+  ///
+  /// It is better to ask the PhraseModel directly than to invoke this
+  /// method (which must ascend the tree of phrases to find the model.
+  Badges badges() const;
 
   /**\brief Convenience functions to fetch and modify content.
     */
