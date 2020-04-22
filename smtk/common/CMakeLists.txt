@@ -27,6 +27,7 @@ set(commonHeaders
   DateTimeZonePair.h
   Environment.h
   Extension.h
+  Factory.h
   FileLocation.h
   Generator.h
   GeometryUtilities.h
