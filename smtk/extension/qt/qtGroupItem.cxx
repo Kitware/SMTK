@@ -138,6 +138,8 @@ void qtGroupItem::createWidget()
   {
     groupBox->setCheckable(true);
     groupBox->setChecked(item->localEnabledState());
+    //Hides empty frame when not enabled.
+    groupBox->setStyleSheet("QGroupBox::unchecked {border: none;}");
     this->Internals->ChildrensFrame->setVisible(item->isEnabled());
     connect(groupBox, SIGNAL(toggled(bool)), this, SLOT(setEnabledState(bool)));
   }
@@ -167,7 +169,12 @@ void qtGroupItem::setEnabledState(bool checked)
 void qtGroupItem::updateItemData()
 {
   this->clearChildItems();
-  qDeleteAll(this->Internals->ChildrensFrame->findChildren<QWidget*>("groupitem_frame"));
+  auto myChildren = this->Internals->ChildrensFrame->findChildren<QWidget*>("groupitem_frame");
+  for (auto myChild : myChildren)
+  {
+    myChild->deleteLater();
+  }
+
   auto item = m_itemInfo.itemAs<attribute::GroupItem>();
   if (!item || (!item->numberOfGroups() && !item->isExtensible()))
   {
