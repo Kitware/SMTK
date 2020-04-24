@@ -167,11 +167,15 @@ qtAttributeView::qtAttributeView(const smtk::view::Information& info)
   m_internals->m_alertIcon = QIcon(this->uiManager()->alertPixmap());
   smtk::view::ConfigurationPtr view = this->getObject();
   m_hideAssociations = false;
+  m_allAssociatedMode = false;
+  m_disableNameField = false;
+
   if (view)
   {
     view->details().attributeAsBool("HideAssociations", m_hideAssociations);
+    m_allAssociatedMode = view->details().attributeAsBool("RequireAllAssociated");
+    view->details().attributeAsBool("DisableNameField", m_disableNameField);
   }
-  m_allAssociatedMode = view->details().attributeAsBool("RequireAllAssociated");
 }
 
 qtAttributeView::~qtAttributeView()
@@ -710,11 +714,10 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::Attribu
   QTableWidgetItem* item =
     new QTableWidgetItem(QString::fromUtf8(childData->name().c_str()), smtk_USER_DATA_TYPE);
   Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
+  Qt::ItemFlags itemFlags(nonEditableFlags | (m_disableNameField ? 0x0 : Qt::ItemIsEditable));
   QVariant vdata;
   vdata.setValue(static_cast<void*>(childData.get()));
-  item->setData(Qt::UserRole, vdata);
-  item->setFlags(nonEditableFlags | Qt::ItemIsEditable);
+  item->setFlags(itemFlags);
 
   int numRows = m_internals->ListTable->rowCount();
   m_internals->ListTable->setRowCount(++numRows);

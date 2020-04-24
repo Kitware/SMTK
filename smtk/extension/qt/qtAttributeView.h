@@ -120,6 +120,7 @@ private:
   qtAttributeViewInternals* m_internals;
   bool m_hideAssociations;
   bool m_allAssociatedMode; //!< Indicates that all potential objects that can be associated must be
+  bool m_disableNameField;  //!< Indicates that attribute names can not be modified
 };                          // class
 };                          // namespace attribute
 };                          // namespace smtk

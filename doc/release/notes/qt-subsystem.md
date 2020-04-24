@@ -59,6 +59,7 @@ Consuming applications can now register icon sets for Resources and Components, 
 * Removed the old view by property mechanism to help simplify the code
 * qtAttributeView and qtAssociatioView now have virtual methods to create their association widgets that can get overridden - in the future they should use a widget factor to fetch it so you wouldn't have to create a new class to use a different association widget
 * XML Option RequireAllAssociated="true" will now display the qtAssociationWidget even if no attributes exists and display a warning if there are persistent objects that match the definition requirements but are not associated to any attribute.
+* Added XML Option DisableNameField="true" that indicates that the attribute's name should not be changed.
 
 
 ### qtUIManager Changes
