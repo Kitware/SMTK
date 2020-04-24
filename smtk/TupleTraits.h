@@ -227,6 +227,22 @@ struct identity
 {
   typedef T type;
 };
+
+template <std::size_t...>
+struct sequence
+{
+};
+
+template <std::size_t N, std::size_t... S>
+struct index_sequence : index_sequence<N - 1, N - 1, S...>
+{
+};
+
+template <std::size_t... S>
+struct index_sequence<0, S...>
+{
+  typedef sequence<S...> type;
+};
 }
 
 #endif
