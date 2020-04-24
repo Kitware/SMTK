@@ -1288,7 +1288,7 @@ std::set<std::string> EntityRef::floatPropertyNames() const
   if (comp != nullptr)
   {
     const auto& floatProperties = comp->properties().get<std::vector<double> >();
-    floatProperties.keys();
+    return floatProperties.keys();
   }
   return std::set<std::string>();
 }
@@ -1388,7 +1388,7 @@ std::set<std::string> EntityRef::stringPropertyNames() const
   if (comp != nullptr)
   {
     const auto& stringProperties = comp->properties().get<std::vector<std::string> >();
-    stringProperties.keys();
+    return stringProperties.keys();
   }
   return std::set<std::string>();
 }
@@ -1488,7 +1488,7 @@ std::set<std::string> EntityRef::integerPropertyNames() const
   if (comp != nullptr)
   {
     const auto& integerProperties = comp->properties().get<std::vector<long> >();
-    integerProperties.keys();
+    return integerProperties.keys();
   }
   return std::set<std::string>();
 }
