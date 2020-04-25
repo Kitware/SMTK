@@ -198,7 +198,8 @@ int UnitTestFactory(int /*unused*/, char** const /*unused*/)
     test(!factory.contains<test_space::two_parameters::Derived>(),
       "Factory instance should not have type registered to it");
 
-    factory.registerType<test_space::two_parameters::Derived>();
+    typedef std::tuple<test_space::two_parameters::Derived> Types;
+    factory.registerTypes<Types>();
 
     test(factory.contains<test_space::two_parameters::Derived>(),
       "Factory instance should have type registered to it");
@@ -216,7 +217,7 @@ int UnitTestFactory(int /*unused*/, char** const /*unused*/)
         (my_derived_wstring->value2 == 2),
       "Type not created properly");
 
-    factory.unregisterType<test_space::two_parameters::Derived>();
+    factory.unregisterTypes<Types>();
 
     test(!factory.contains<test_space::two_parameters::Derived>(),
       "Factory instance should not have type registered to it");

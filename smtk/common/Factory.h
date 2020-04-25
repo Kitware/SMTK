@@ -459,10 +459,10 @@ private:
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
   {
     bool unregistered = this->unregisterType<typename std::tuple_element<I, Tuple>::type>();
-    return unregistered && unregisterType<I + 1, Tuple>();
+    return unregistered && unregisterTypes<I + 1, Tuple>();
   }
   template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterType()
+  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
   {
     return true;
   }
