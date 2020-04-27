@@ -279,7 +279,7 @@ class SMTK_ALWAYS_EXPORT Factory
 
   // A convenience Interface is provided that singles out one of the three modes
   // of creation: by type, by type name and by type index.
-  template <typename TagType, bool = true>
+  template <typename TagType, bool>
   class Interface;
 
 public:
@@ -383,9 +383,9 @@ public:
   /// Access a convenience Interface for creating objects that singles out one of
   /// the three modes of creation: by type, by type name and by type index.
   template <typename TagType>
-  Interface<TagType> get() const
+  Interface<TagType, true> get() const
   {
-    return Interface<TagType>(*this);
+    return Interface<TagType, true>(*this);
   }
 
 private:
