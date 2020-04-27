@@ -136,4 +136,4 @@ def __lldb_init_module(debugger, internal_dict):
         'command script add -f shared_ptr.useCountTrace useCountTrace')
     debugger.HandleCommand(
         'command script add -f shared_ptr.useCountWatch useCountWatch')
-    print 'The "useCountTrace" and "useCountWatch" python commands have been installed.'
+    # print('The "useCountTrace" and "useCountWatch" python commands have been installed.')
