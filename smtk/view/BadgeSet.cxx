@@ -58,22 +58,30 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
   {
     std::string badgeName;
     auto& configComp(badgeList->child(ii));
-    if (configComp.attribute("Type", badgeName))
+    if (configComp.name() == "Badge")
     {
-      // Populate the m_order map from values in viewSpec
-      // WARNING: This *must* come before m_badges.insert() below or the badge will
-      //          not be inserted in the correct order.
-      m_order[badgeName] = static_cast<int>(ii);
-      // Construct a badge with that name via the view manager:
-      auto badge = manager->badgeFactory().create(badgeName, *this, configComp);
-      if (badge)
+      if (configComp.attribute("Type", badgeName))
       {
-        m_badges.insert(badge);
+        // Populate the m_order map from values in viewSpec
+        // WARNING: This *must* come before m_badges.insert() below or the badge will
+        //          not be inserted in the correct order.
+        m_order[badgeName] = static_cast<int>(ii);
+        // Construct a badge with that name via the view manager:
+        auto badge = manager->badgeFactory().create(badgeName, *this, configComp);
+        if (badge)
+        {
+          m_badges.insert(badge);
+        }
+      }
+      else
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "Badge " << ii << " must have a type.");
       }
     }
-    else
+    else if (configComp.name() != "Comment")
     {
-      smtkErrorMacro(smtk::io::Logger::instance(), "Badge " << ii << " must have a type.");
+      smtkWarningMacro(smtk::io::Logger::instance(), "Unknown Badges entry "
+          << configComp.name() << " (" << ii << ") will be ignored.");
     }
   }
 }

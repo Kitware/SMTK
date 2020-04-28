@@ -18,6 +18,8 @@
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/view/json/jsonView.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -89,6 +91,7 @@ int BadgeB::testCounter = 0;
 
 int unitBadge(int argc, char* argv[])
 {
+  smtk::io::Logger::instance().setFlushToStdout(true);
   auto viewManager = smtk::view::Manager::create();
   viewManager->badgeFactory().registerBadge<BadgeA>();
   viewManager->badgeFactory().registerBadge<BadgeB>();
@@ -104,8 +107,9 @@ int unitBadge(int argc, char* argv[])
                 { { "Name", "Badges" },
                   { "Children",
                     {
-                      { { "Name", "ignored" }, { "Attributes", { { "Type", "BadgeA" } } } },
-                      { { "Name", "ignored" }, { "Attributes", { { "Type", "BadgeB" } } } },
+                      { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeA" } } } },
+                      { { "Name", "Comment" }, { "Text", "Test that comments are allowed." } },
+                      { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeB" } } } },
                     } } } } } } } } } } };
   smtk::view::ConfigurationPtr viewConfig = j;
   auto phraseModel = loadTestData(argc, argv, viewManager, *viewConfig, dataArgs);
