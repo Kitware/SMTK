@@ -42,6 +42,6 @@ if (NOT WIN32 AND SMTK_DATA_DIR)
     COMMAND
       $<TARGET_FILE:browseModel>
       "${SMTK_DATA_DIR}/model/2d/smtk/test2D.json"
-      0xffffffff
+      "test"
   )
 endif()

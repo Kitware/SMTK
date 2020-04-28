@@ -11,11 +11,18 @@
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
 
 #include "smtk/view/Configuration.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModel.h"
+#include "smtk/view/PhraseModelFactory.h"
+#include "smtk/view/Registrar.h"
 #include "smtk/view/ResourcePhraseModel.h"
+#include "smtk/view/json/jsonView.h"
 
+#include "smtk/model/Registrar.h"
 #include "smtk/model/Resource.h"
 #include "smtk/model/json/jsonResource.h"
+
+#include "smtk/attribute/Registrar.h"
 
 #include "smtk/extension/qt/examples/cxx/ModelBrowser.h"
 
@@ -40,21 +47,66 @@ int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
   const char* filename = argc > 1 ? argv[1] : "smtkModel.json";
-  int debug = argc > 2 ? 1 : 0;
+  bool debug = (argc > 2 && argv[2][0] != '0');
+  const char* configname = argc > 3 ? argv[3] : nullptr;
 
   std::ifstream file(filename);
   if (!file.good())
   {
     cout << "Could not open file \"" << filename << "\".\n\n"
-         << "Usage:\n  " << argv[0] << " [[filename] debug]\n"
+         << "Usage:\n  " << argv[0] << " [[[filename] debug] viewconf]\n"
          << "where\n"
-         << "  filename is the path to a JSON model.\n"
-         << "  debug    is any character, indicating a debug session.\n\n";
+         << "  filename   is the path to a JSON model.\n"
+         << "  debug      is any character other than '0', indicating a debug session.\n\n"
+         << "  viewconf   is the path to a JSON view-configuration file.\n"
+         << "             If no config is provided, a default is used.\n";
     return 1;
   }
 
   auto operationManager = smtk::operation::Manager::create();
   auto resourceManager = smtk::resource::Manager::create();
+  auto viewManager = smtk::view::Manager::create();
+  smtk::view::Registrar::registerTo(viewManager);
+  smtk::model::Registrar::registerTo(resourceManager);
+  smtk::attribute::Registrar::registerTo(resourceManager);
+
+  nlohmann::json jconfig;
+  if (configname)
+  {
+    std::ifstream configFile(configname);
+    if (!configFile.good())
+    {
+      cout << "Could not open configuration file \"" << configname << "\".\n\n";
+      return 1;
+    }
+    std::string json_str(
+      (std::istreambuf_iterator<char>(configFile)), (std::istreambuf_iterator<char>()));
+    jconfig = nlohmann::json::parse(json_str);
+  }
+  else
+  {
+    jconfig = { { "Name", "Test" }, { "Type", "smtk::view::ResourcePhraseModel" },
+      { "Component",
+        { { "Name", "Details" }, { "Type", "smtk::view::ResourcePhraseModel" },
+          { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+          { "Children",
+            { { { "Name", "PhraseModel" },
+              { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
+              { "Children",
+                { { { "Name", "SubphraseGenerator" }, { "Attributes", { { "Type", "default" } } } },
+                  { { "Name", "Badges" },
+                    { "Children",
+                      {
+                        { { "Name", "Badge" },
+                          { "Attributes", { { "Type", "smtk::view::ObjectIconBadge" } } } },
+                      } } },
+                  { { "Name", "Accepts" },
+                    { "Children", {
+                                    { { "Name", "Resource" },
+                                      { "Attributes", { { "Name", "smtk::resource::Resource" },
+                                                        { "Filter", "any" } } } },
+                                  } } } } } } } } } } };
+  }
 
   std::string json_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
   nlohmann::json json = nlohmann::json::parse(json_str);
@@ -77,9 +129,9 @@ int main(int argc, char* argv[])
   qdelegate->setSubtitleFontSize(10);
   qdelegate->setSubtitleFontWeight(1);
   ModelBrowser* qview = new ModelBrowser;
-  auto config = smtk::view::Configuration::New("ModelBrowser", "SMTK Model");
-  auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
-  phraseModel->addSource(resourceManager, operationManager, nullptr, nullptr);
+  smtk::view::ConfigurationPtr config = jconfig;
+  auto phraseModel = viewManager->phraseModelFactory().createFromConfiguration(config.get());
+  phraseModel->addSource(resourceManager, operationManager, viewManager, nullptr);
   qmodel->setPhraseModel(phraseModel);
   qview->setup(resourceManager, qmodel, qdelegate);
 
