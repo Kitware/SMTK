@@ -119,8 +119,8 @@ PhraseModel::PhraseModel()
 
 PhraseModel::PhraseModel(const Configuration* config, Manager* manager)
   : m_observers(std::bind(notify, std::placeholders::_1, this->root()))
-  , m_mutableAspects(PhraseContent::EVERYTHING)
   , m_badges(config, manager->shared_from_this())
+  , m_mutableAspects(PhraseContent::EVERYTHING)
   , m_manager(manager->shared_from_this())
 {
   m_decorator = [](smtk::view::DescriptivePhrasePtr /*unused*/) {};
@@ -171,7 +171,7 @@ std::multimap<std::string, std::string> PhraseModel::configureFilterStrings(
     if ((filterIndex = modelConfig.findChild("Accepts")) >= 0)
     {
       const auto& filterConfig = modelConfig.child(filterIndex);
-      for (int ii = 0; ii < filterConfig.numberOfChildren(); ++ii)
+      for (std::size_t ii = 0; ii < filterConfig.numberOfChildren(); ++ii)
       {
         const auto& acceptConfig = filterConfig.child(ii);
         if (acceptConfig.name() == "Resource")

@@ -118,7 +118,7 @@ int unitBadge(int argc, char* argv[])
 
   const auto& badgeSet = phraseModel->badges();
   phraseModel->root()->visitChildren(
-    [&phraseModel, &badgeSet](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {
+    [&badgeSet](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {
       int indent = static_cast<int>(idx.size()) * 2;
       if (p)
       {
