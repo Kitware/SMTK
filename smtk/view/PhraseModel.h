@@ -14,7 +14,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
-#include "smtk/view/Manager.h"
+#include "smtk/view/BadgeSet.h"
 #include "smtk/view/PhraseModelObserver.h"
 #include "smtk/view/Selection.h"
 
@@ -26,6 +26,7 @@
 
 #include <functional>
 #include <list>
+#include <map>
 
 namespace smtk
 {
@@ -53,8 +54,6 @@ public:
   using Observer = PhraseModelObserver;
   /// A collection of observers with runtime-modifiable call behaviors.
   using Observers = PhraseModelObservers;
-  /// Subclasses of PhraseModel register their type information with a constructor of this type.
-  using ModelConstructor = std::function<PhraseModelPtr(const ConfigurationPtr&)>;
   /// Applications may have a model decorate its phrases by providing a method with this signature.
   using PhraseDecorator = std::function<void(smtk::view::DescriptivePhrasePtr)>;
   /// Subclasses (and others) may wish to invoke functions on the sources of data for the phrases.
@@ -68,12 +67,20 @@ public:
 
   using Resource = smtk::resource::Resource;
 
-  static PhraseModelPtr create(
-    const smtk::view::ConfigurationPtr& viewSpec, const smtk::view::ManagerPtr& manager);
-
   smtkTypeMacroBase(smtk::view::PhraseModel);
   smtkCreateMacro(smtk::view::PhraseModel);
   virtual ~PhraseModel();
+
+  /// A method subclasses may call to prepare a subphrase generator.
+  ///
+  /// PhraseModel's constructor does not call it since it does not
+  /// create the root DescriptivePhrase to which the subphrase generator
+  /// is attached.
+  static SubphraseGeneratorPtr configureSubphraseGenerator(const Configuration*, Manager*);
+
+  /// A method subclasses may call to obtain filter strings.
+  static std::multimap<std::string, std::string> configureFilterStrings(
+    const Configuration* config, Manager* manager);
 
   /** \brief Manage sources of information to display as phrases.
     *
@@ -173,9 +180,13 @@ public:
   ManagerPtr manager() const { return m_manager.lock(); }
   friend Manager;
 
+  /// Return the badges that may apply to phrases in this model.
+  const BadgeSet& badges() const { return m_badges; }
+
 protected:
   friend class VisibilityContent;
   PhraseModel();
+  PhraseModel(const Configuration* config, Manager* manager);
 
   /// A method called when a selection is modified.
   virtual void handleSelectionEvent(const std::string& src, smtk::view::SelectionPtr seln);
@@ -265,6 +276,8 @@ protected:
   Observers m_observers;
 
   PhraseDecorator m_decorator;
+
+  BadgeSet m_badges;
 
   int m_mutableAspects;
 

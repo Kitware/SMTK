@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/view/DescriptivePhrase.h"
 
+#include "smtk/view/Badge.h"
+#include "smtk/view/BadgeSet.h"
 #include "smtk/view/PhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 
@@ -106,6 +108,17 @@ PhraseContentPtr DescriptivePhrase::content() const
 PhraseContentPtr DescriptivePhrase::undecoratedContent() const
 {
   return m_content->undecoratedContent();
+}
+
+DescriptivePhrase::Badges DescriptivePhrase::badges() const
+{
+  DescriptivePhrase::Badges result;
+  auto model = this->phraseModel();
+  if (model)
+  {
+    result = model->badges().badgesFor(this);
+  }
+  return result;
 }
 
 DescriptivePhrases& DescriptivePhrase::subphrases()

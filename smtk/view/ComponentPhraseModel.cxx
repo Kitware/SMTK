@@ -26,23 +26,23 @@
 
 using namespace smtk::view;
 
-PhraseModelPtr ComponentPhraseModel::create(
-  const smtk::view::Configuration::Component& itemViewSpec)
-{
-  // Currently the itemViewSpec is not used but in the future it wll contain information to
-  // customize how the model should behave
-  (void)itemViewSpec;
-  auto model = PhraseModel::Ptr(new ComponentPhraseModel);
-  model->root()->findDelegate()->setModel(model);
-  return model;
-}
-
 ComponentPhraseModel::ComponentPhraseModel()
   : m_root(DescriptivePhrase::create())
-  , m_onlyShowActiveResourceComponents(false)
 {
   auto generator = smtk::view::EmptySubphraseGenerator::create();
   m_root->setDelegate(generator);
+}
+
+ComponentPhraseModel::ComponentPhraseModel(const Configuration* config, Manager* manager)
+  : Superclass(config, manager)
+  , m_root(DescriptivePhrase::create())
+{
+  auto generator = PhraseModel::configureSubphraseGenerator(config, manager);
+  m_root->setDelegate(generator);
+
+  std::multimap<std::string, std::string> filters =
+    PhraseModel::configureFilterStrings(config, manager);
+  this->setComponentFilters(filters);
 }
 
 ComponentPhraseModel::~ComponentPhraseModel()
@@ -53,30 +53,6 @@ ComponentPhraseModel::~ComponentPhraseModel()
 DescriptivePhrasePtr ComponentPhraseModel::root() const
 {
   return m_root;
-}
-
-bool ComponentPhraseModel::setActiveResource(smtk::resource::ResourcePtr rsrc)
-{
-  if (rsrc == m_activeResource)
-  {
-    return false;
-  }
-
-  m_activeResource = rsrc;
-  this->populateRoot();
-  return true;
-}
-
-bool ComponentPhraseModel::setOnlyShowActiveResourceComponents(bool limitToActiveResource)
-{
-  if (limitToActiveResource == m_onlyShowActiveResourceComponents)
-  {
-    return false;
-  }
-
-  m_onlyShowActiveResourceComponents = limitToActiveResource;
-  this->populateRoot();
-  return true;
 }
 
 bool ComponentPhraseModel::setComponentFilters(const std::multimap<std::string, std::string>& src)
@@ -163,64 +139,33 @@ void ComponentPhraseModel::processResource(const smtk::resource::ResourcePtr& rs
         children.end());
       this->updateChildren(m_root, children, std::vector<int>());
     }
-    if (rsrc == m_activeResource)
-    {
-      // Reset the active resource
-      m_activeResource = smtk::resource::ResourcePtr();
-      // If the resource was the active resource, then we have an issue since
-      // now we have no context for what should be displayed. The thing most
-      // developers would expect is to show all matching components from all
-      // resources. This may not be what users expect, so perhaps we should
-      // give some observer a way to respond to the situation here?
-      this->populateRoot();
-    }
   }
 }
 
 void ComponentPhraseModel::populateRoot()
 {
   // FIXME: What should happen if m_componentFilters is empty?
-  //        It seems like _all_ components (possibly just from the active resource)
-  //        should be displayed. If so, we need to handle it here. On the other hand
+  //        It seems like _all_ components should be displayed.
+  //        If so, we need to handle it here. On the other hand
   //        if nothing should be displayed, then no action is needed.
   smtk::resource::ComponentSet comps;
-  if (m_onlyShowActiveResourceComponents)
+  for (const auto& rsrc : m_resources)
   {
-    if (m_activeResource)
+    auto resource = rsrc.lock();
+    if (resource == nullptr)
     {
-      for (const auto& filter : m_componentFilters)
-      {
-        // Skip filters that do not apply to this resource.
-        if (!m_activeResource->isOfType(filter.first))
-        {
-          continue;
-        }
-
-        auto entries = m_activeResource->find(filter.second);
-        comps.insert(entries.begin(), entries.end());
-      }
+      continue;
     }
-  }
-  else
-  {
-    for (const auto& rsrc : m_resources)
+
+    for (const auto& filter : m_componentFilters)
     {
-      auto resource = rsrc.lock();
-      if (resource == nullptr)
+      if (!resource->isOfType(filter.first))
       {
         continue;
       }
 
-      for (const auto& filter : m_componentFilters)
-      {
-        if (!resource->isOfType(filter.first))
-        {
-          continue;
-        }
-
-        auto entries = resource->find(filter.second);
-        comps.insert(entries.begin(), entries.end());
-      }
+      auto entries = resource->find(filter.second);
+      comps.insert(entries.begin(), entries.end());
     }
   }
 

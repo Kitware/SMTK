@@ -16,6 +16,8 @@
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/view/Manager.h"
+#include "smtk/view/PhraseModelFactory.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/VisibilityContent.h"
@@ -67,8 +69,12 @@ smtk::view::PhraseModelPtr qtResourceItem::createPhraseModel() const
   // Constructing the PhraseModel with a View properly initializes the SubphraseGenerator
   // to point back to the model (thus ensuring subphrases are decorated). This is required
   // since we need to decorate phrases to show+edit "visibility" as set membership:
-  auto config = smtk::view::Configuration::New("ResourceItem", "stuff");
-  auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
+  //
+  // auto config = smtk::view::Configuration::New("ResourceItem", "stuff");
+  // auto phraseModel = smtk::view::ResourcePhraseModel::create(config);
+  auto phraseModel =
+    m_itemInfo.uiManager()->viewManager()->phraseModelFactory().createFromConfiguration(
+      m_itemInfo.baseView()->getObject().get());
   phraseModel->root()->findDelegate()->setModel(phraseModel);
   auto def = std::dynamic_pointer_cast<const smtk::attribute::ResourceItemDefinition>(
     m_itemInfo.item()->definition());

@@ -31,7 +31,12 @@ public:
   smtkTypeMacro(smtk::view::ResourcePhraseModel);
   smtkSuperclassMacro(smtk::view::PhraseModel);
   smtkSharedPtrCreateMacro(smtk::view::PhraseModel);
+
+  ResourcePhraseModel();
+  ResourcePhraseModel(const Configuration*, Manager*);
   virtual ~ResourcePhraseModel();
+
+  static Ptr create(const Configuration*, Manager*);
 
   /// Return the root phrase of the hierarchy.
   DescriptivePhrasePtr root() const override;
@@ -42,8 +47,6 @@ public:
   bool setResourceFilters(const std::multimap<std::string, std::string>& src);
 
 protected:
-  ResourcePhraseModel();
-
   /*
   void handleSelectionEvent(const std::string& src, Selection::Ptr seln) override;
   */

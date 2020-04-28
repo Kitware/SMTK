@@ -16,6 +16,8 @@
 #include "smtk/extension/qt/ResourcePanelConfiguration_json.h"
 
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/Manager.h"
+#include "smtk/view/PhraseModelFactory.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/TwoLevelSubphraseGenerator.h"
@@ -64,7 +66,7 @@ qtResourceBrowser::qtResourceBrowser(const smtk::view::Information& info)
     // empty Widget attribute is OK, will use default.
     m_viewInfo.m_view->details().attribute("Widget", modelViewType);
     smtk::view::ManagerPtr manager = m_viewInfo.m_UIManager->viewManager();
-    phraseModel = smtk::view::PhraseModel::create(m_viewInfo.m_view, manager);
+    phraseModel = manager->phraseModelFactory().createFromConfiguration(m_viewInfo.configuration());
     qtPhraseModel = new smtk::extension::qtDescriptivePhraseModel;
   }
   m_p->setup(this, phraseModel, modelViewType, qtPhraseModel, m_viewInfo.m_parent);

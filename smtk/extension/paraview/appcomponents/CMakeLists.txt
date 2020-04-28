@@ -13,6 +13,7 @@ set(CMAKE_AUTOMOC 1)
 
 vtk_module_add_module(smtkPQComponentsExt
   CLASSES ${classes}
+  HEADERS VisibilityBadge.h
   HEADERS_SUBDIR "smtk/extension/paraview/appcomponents")
 vtk_module_link(smtkPQComponentsExt
   PUBLIC

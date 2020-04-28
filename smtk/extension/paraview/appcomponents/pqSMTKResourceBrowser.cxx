@@ -142,9 +142,9 @@ pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::view::Information& info
   // I. Decorate phrases with visibility related to representations in the active view.
   m_p->m_phraseModel->setDecorator([this](smtk::view::DescriptivePhrasePtr phr) {
     smtk::view::VisibilityContent::decoratePhrase(
-      phr, [this](smtk::view::VisibilityContent::Query qq, int val,
+      phr, [this](smtk::view::VisibilityContent::Query query, int val,
              smtk::view::ConstPhraseContentPtr data) {
-        return pqSMTKResourceBrowser::panelPhraseDecorator(qq, val, data, m_p->m_visibleThings);
+        return pqSMTKResourceBrowser::panelPhraseDecorator(query, val, data, m_p->m_visibleThings);
       });
   });
 
@@ -180,23 +180,20 @@ pqSMTKResourceBrowser::~pqSMTKResourceBrowser()
   QObject::disconnect(this);
 }
 
-int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Query qq, int val,
+int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Query query, int val,
   smtk::view::ConstPhraseContentPtr data, std::map<smtk::common::UUID, int>& visibleThings)
 {
   auto comp = data->relatedComponent();
   auto rsrc = data->relatedResource();
 
-  smtk::model::EntityPtr ent =
-    data ? std::dynamic_pointer_cast<smtk::model::Entity>(comp) : nullptr;
-  smtk::model::ResourcePtr modelRsrc = ent
-    ? ent->modelResource()
-    : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(rsrc) : nullptr);
+  smtk::model::EntityPtr ent = std::dynamic_pointer_cast<smtk::model::Entity>(comp);
+  smtk::model::ResourcePtr modelRsrc =
+    ent ? ent->modelResource() : std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
 
-  smtk::mesh::ComponentPtr msh =
-    data ? std::dynamic_pointer_cast<smtk::mesh::Component>(comp) : nullptr;
+  smtk::mesh::ComponentPtr msh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);
   smtk::mesh::ResourcePtr meshRsrc = msh
     ? std::dynamic_pointer_cast<smtk::mesh::Resource>(msh->resource())
-    : (data ? std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc) : nullptr);
+    : std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
 
   auto smtkBehavior = pqSMTKBehavior::instance();
 
@@ -213,7 +210,7 @@ int pqSMTKResourceBrowser::panelPhraseDecorator(smtk::view::VisibilityContent::Q
   //       However, that gets expensive.
   bool validView = pqActiveObjects::instance().activeView() != nullptr;
 
-  switch (qq)
+  switch (query)
   {
     case smtk::view::VisibilityContent::DISPLAYABLE:
       return validView && (ent || (!ent && modelRsrc) || (msh || (!ent && meshRsrc))) ? 1 : 0;

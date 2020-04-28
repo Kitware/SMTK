@@ -271,7 +271,7 @@ void qtAssociation2ColumnWidget::updateAssociationStatus(const Attribute* attrib
         else
         {
           //Must have exceeded max number
-          QString reason("Attribute requires no more than ");
+          reason = "Attribute requires no more than ";
           QString count;
           count.setNum(assocItem->maxNumberOfValues());
           reason.append(count).append(" objects associated to it");
@@ -279,7 +279,7 @@ void qtAssociation2ColumnWidget::updateAssociationStatus(const Attribute* attrib
       }
       else
       {
-        QString reason("Attribute requires ");
+        reason = "Attribute requires ";
         QString count;
         count.setNum(assocItem->numberOfRequiredValues());
         reason.append(count).append(" objects associated to it");

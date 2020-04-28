@@ -8,14 +8,10 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
-
-#include "smtk/session/polygon/Registrar.h"
-
-#include "smtk/common/Registry.h"
-
-#include "smtk/operation/operators/ReadResource.h"
+#include "smtk/view/testing/cxx/utility.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -28,7 +24,7 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
-#include "smtk/AutoInit.h"
+#include "smtk/view/json/jsonView.h"
 
 #include <fstream>
 #include <iostream>
@@ -37,6 +33,7 @@
 #include <cstdlib>
 #include <cstring>
 
+using json = nlohmann::json;
 using namespace smtk::common;
 using namespace smtk::view;
 using namespace smtk::io;
@@ -44,7 +41,7 @@ using namespace smtk::io;
 static int maxIndent = 6;
 static std::vector<char*> dataArgs;
 
-void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
+void testUpdateChildren(smtk::view::PhraseModel::Ptr phraseModel)
 {
   auto root = phraseModel->root();
   auto phrResources = root->subphrases();
@@ -85,34 +82,18 @@ void testUpdateChildren(smtk::view::ResourcePhraseModel::Ptr phraseModel)
 
 int unitDescriptivePhrase(int argc, char* argv[])
 {
-  if (argc < 2)
-  {
-    std::string testFile;
-    testFile = SMTK_DATA_DIR;
-    testFile += "/model/2d/smtk/epic-trex-drummer.smtk";
-    dataArgs.push_back(argv[0]);
-    dataArgs.push_back(strdup(testFile.c_str()));
-    dataArgs.push_back(nullptr);
-    argc = 2;
-    argv = &dataArgs[0];
-  }
-  auto rsrcMgr = smtk::resource::Manager::create();
-  auto operMgr = smtk::operation::Manager::create();
-  operMgr->registerResourceManager(rsrcMgr);
-
-  auto registry = smtk::common::Registry<smtk::session::polygon::Registrar, smtk::resource::Manager,
-    smtk::operation::Manager>(rsrcMgr, operMgr);
-  auto phraseModel = smtk::view::ResourcePhraseModel::create();
-  phraseModel->addSource(rsrcMgr, operMgr, nullptr, nullptr);
-  smtk::resource::ResourceArray rsrcs;
-  for (int i = 1; i < argc; i++)
-  {
-    auto rdr = operMgr->create<smtk::operation::ReadResource>();
-    rdr->parameters()->findFile("filename")->setValue(argv[i]);
-    rdr->operate();
-    // rsrcs.push_back(rsrcMgr->read<smtk::session::polygon::Resource>(argv[1]));
-  }
-
+  json j = { { "Name", "Test" }, { "Type", "smtk::view::ResourcePhraseModel" },
+    { "Component",
+      { { "Name", "Details" }, { "Type", "smtk::view::ResourcePhraseModel" },
+        { "Attributes", { { "TopLevel", true }, { "Title", "Resources" } } },
+        { "Children",
+          { { { "Name", "PhraseModel" },
+            { "Attributes", { { "Type", "smtk::view::ResourcePhraseModel" } } },
+            { "Children", { { { "Name", "SubphraseGenerator" },
+                            { "Attributes", { { "Type", "default" } } } } } } } } } } } };
+  auto viewManager = smtk::view::Manager::create();
+  smtk::view::ConfigurationPtr viewConfig = j;
+  auto phraseModel = loadTestData(argc, argv, viewManager, *viewConfig, dataArgs);
   test(phraseModel->root()->root() == phraseModel->root(),
     "Model's root phrase was not root of tree.");
   phraseModel->root()->visitChildren(

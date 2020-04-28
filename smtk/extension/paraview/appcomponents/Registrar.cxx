@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/extension/paraview/appcomponents/Registrar.h"
 
+#include "smtk/extension/paraview/appcomponents/VisibilityBadge.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceBrowser.h"
 
 namespace smtk
@@ -30,11 +31,13 @@ typedef std::tuple<pqSMTKResourceBrowser> ViewWidgetList;
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->registerViewWidgets<ViewWidgetList>();
+  viewManager->badgeFactory().registerBadge<VisibilityBadge>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->unregisterViewWidgets<ViewWidgetList>();
+  viewManager->badgeFactory().unregisterBadge<VisibilityBadge>();
 }
 }
 }

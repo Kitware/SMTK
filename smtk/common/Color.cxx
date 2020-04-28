@@ -104,5 +104,38 @@ std::string Color::floatRGBToString(const double* rgb)
   snprintf(hexcol, sizeof hexcol, "#%02x%02x%02x", rgb_[0], rgb_[1], rgb_[2]);
   return std::string(hexcol);
 }
+
+std::string Color::floatRGBToString(const float* rgb)
+{
+  int rgb_[3];
+  for (int i = 0; i < 3; i++)
+  {
+    rgb_[i] = int(255 * rgb[i]);
+  }
+
+  char hexcol[8];
+  snprintf(hexcol, sizeof hexcol, "#%02x%02x%02x", rgb_[0], rgb_[1], rgb_[2]);
+  return std::string(hexcol);
+}
+
+double Color::floatRGBToLightness(const double* rgb)
+{
+  // Alternatively, this is faster but less accurate: (0.299*R + 0.587*G + 0.114*B)
+  double r2 = rgb[0] * rgb[0];
+  double g2 = rgb[1] * rgb[1];
+  double b2 = rgb[2] * rgb[2];
+  double lightness = sqrt(0.299 * r2 + 0.587 * g2 + 0.114 * b2);
+  return lightness;
+}
+
+float Color::floatRGBToLightness(const float* rgb)
+{
+  // Alternatively, this is faster but less accurate: (0.299*R + 0.587*G + 0.114*B)
+  float r2 = rgb[0] * rgb[0];
+  float g2 = rgb[1] * rgb[1];
+  float b2 = rgb[2] * rgb[2];
+  float lightness = sqrt(0.299 * r2 + 0.587 * g2 + 0.114 * b2);
+  return lightness;
+}
 } // namespace common
 } // namespace smtk

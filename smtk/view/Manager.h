@@ -17,10 +17,12 @@
 
 #include "smtk/common/TypeName.h"
 
+#include "smtk/view/BadgeFactory.h"
 #include "smtk/view/BaseView.h"
 #include "smtk/view/Configuration.h"
 #include "smtk/view/IconFactory.h"
 #include "smtk/view/Information.h"
+#include "smtk/view/PhraseModelFactory.h"
 
 #include <array>
 #include <string>
@@ -149,102 +151,12 @@ private:
 
 public:
   // ------ PhraseModel ------
-  using PhraseModelConstructor = std::function<PhraseModelPtr(void)>;
-
-  /// Register a PhraseModel identified by its class type.
-  template <typename PhraseModelType>
-  bool registerPhraseModel();
-
-  /// Register a PhraseModel identified by its class type and type name.
-  template <typename PhraseModelType>
-  bool registerPhraseModel(const std::string&);
-
-  /// Register a tuple of PhraseModels identified by their class types.
-  template <typename Tuple>
-  bool registerPhraseModels()
-  {
-    return Manager::registerPhraseModels<0, Tuple>();
-  }
-
-  /// Register a tuple of PhraseModels identified by their class types and type
-  /// names.
-  template <typename Tuple>
-  bool registerPhraseModels(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
-  {
-    return Manager::registerPhraseModels<0, Tuple>(typeNames);
-  }
-
-  /// Unregister a PhraseModel identified by its class type.
-  template <typename PhraseModelType>
-  bool unregisterPhraseModel();
-
-  /// Unregister a PhraseModel identified by its type name.
-  bool unregisterPhraseModel(const std::string&);
-
-  // Unregister a tuple of PhraseModels identified by their class types.
-  template <typename Tuple>
-  bool unregisterPhraseModels()
-  {
-    return Manager::unregisterPhraseModels<0, Tuple>();
-  }
-
-  /// Construct a PhraseModel identified by its type name.
-  std::shared_ptr<smtk::view::PhraseModel> create(const std::string&);
-
-  /// Construct a PhraseModel identified by its class type.
-  template <typename PhraseModelType>
-  smtk::shared_ptr<PhraseModelType> create();
+  PhraseModelFactory& phraseModelFactory() { return m_phraseModelFactory; }
+  const PhraseModelFactory& phraseModelFactory() const { return m_phraseModelFactory; }
 
 private:
   // ------ PhraseModel ------
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  registerPhraseModels()
-  {
-    bool registered = this->registerPhraseModel<typename std::tuple_element<I, Tuple>::type>();
-    return registered && Manager::registerPhraseModels<I + 1, Tuple>();
-  }
-
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  registerPhraseModels()
-  {
-    return true;
-  }
-
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  registerPhraseModels(const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
-  {
-    bool registered =
-      this->registerPhraseModel<typename std::tuple_element<I, Tuple>::type>(typeNames.at(I));
-    return registered && Manager::registerPhraseModels<I + 1, Tuple>(typeNames);
-  }
-
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  registerPhraseModels(const std::array<std::string, std::tuple_size<Tuple>::value>&)
-  {
-    return true;
-  }
-
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  unregisterPhraseModels()
-  {
-    bool unregistered = this->unregisterPhraseModel<typename std::tuple_element<I, Tuple>::type>();
-    return unregistered && Manager::unregisterPhraseModels<I + 1, Tuple>();
-  }
-
-  template <std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  unregisterPhraseModels()
-  {
-    return true;
-  }
-
-  /// A container for all registered phrasemodel constructors.
-  std::map<std::string, PhraseModelConstructor> m_phraseModels;
+  PhraseModelFactory m_phraseModelFactory;
 
 public:
   // ------ SubphraseGenerator ------
@@ -287,6 +199,9 @@ public:
   {
     return Manager::unregisterSubphraseGenerators<0, Tuple>();
   }
+
+  /// Construct a SubphraseGenerator from a configuration component.
+  std::shared_ptr<smtk::view::SubphraseGenerator> createSubphrase(const Configuration::Component*);
 
   /// Construct a SubphraseGenerator identified by its type name.
   std::shared_ptr<smtk::view::SubphraseGenerator> createSubphrase(const std::string&);
@@ -353,6 +268,15 @@ private:
   std::map<std::string, SubphraseGeneratorConstructor> m_subphraseGenerators;
 
 public:
+  // ------ Badges for phrase models ------
+  BadgeFactory& badgeFactory() { return m_badgeFactory; }
+  const BadgeFactory& badgeFactory() const { return m_badgeFactory; }
+
+private:
+  BadgeFactory m_badgeFactory;
+
+public:
+  // ------ Icons for persistent object classes ------
   IconFactory& iconFactory() { return m_iconFactory; }
   const IconFactory& iconFactory() const { return m_iconFactory; }
 
@@ -393,39 +317,6 @@ bool Manager::registerViewWidget(std::size_t typeIndex)
     {
       m_altViewWidgetNames[alias] = typeIndex;
     }
-    return true;
-  }
-  return false;
-}
-
-// ------ PhraseModel ------
-template <typename PhraseModelType>
-bool Manager::unregisterPhraseModel()
-{
-  return this->unregisterPhraseModel(smtk::common::typeName<PhraseModelType>());
-}
-
-template <typename PhraseModelType>
-smtk::shared_ptr<PhraseModelType> Manager::create()
-{
-  return smtk::static_pointer_cast<PhraseModelType>(
-    this->create(smtk::common::typeName<PhraseModelType>()));
-}
-
-template <typename PhraseModelType>
-bool Manager::registerPhraseModel()
-{
-  return Manager::registerPhraseModel<PhraseModelType>(smtk::common::typeName<PhraseModelType>());
-}
-
-template <typename PhraseModelType>
-bool Manager::registerPhraseModel(const std::string& typeName)
-{
-  // see if already exists:
-  if (m_phraseModels.find(typeName) == m_phraseModels.end())
-  {
-    // Must wrap: m_phraseModels[typeName] = PhraseModelType::create;
-    m_phraseModels[typeName] = []() { return PhraseModelType::create(); };
     return true;
   }
   return false;

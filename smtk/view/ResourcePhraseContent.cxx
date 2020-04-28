@@ -10,6 +10,7 @@
 #include "smtk/view/ResourcePhraseContent.h"
 
 #include "smtk/view/DescriptivePhrase.h"
+#include "smtk/view/Manager.h"
 #include "smtk/view/PhraseModel.h"
 
 #include "smtk/attribute/Attribute.h"

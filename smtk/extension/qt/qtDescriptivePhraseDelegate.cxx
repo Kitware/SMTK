@@ -10,6 +10,7 @@
 #include "smtk/extension/qt/qtDescriptivePhraseDelegate.h"
 
 #include "smtk/extension/qt/qtDescriptivePhraseModel.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
 
 #include <QAbstractProxyModel>
 #include <QApplication>
@@ -167,6 +168,12 @@ void qtDescriptivePhraseDelegate::paint(
   }
 
   painter->save();
+
+  // Fetch the badges for this QModelIndex:
+  auto badges = qvariant_cast<std::vector<const smtk::view::Badge*> >(
+    idx.data(qtDescriptivePhraseModel::BadgesRole));
+
+  // TODO: Rip out all the icon-related stuff below and use badges to paint SVG.
 
   QIcon icon;
   if (idx.data(qtDescriptivePhraseModel::PhraseLockRole).toInt() == 0)

@@ -29,7 +29,7 @@ PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_View(py::m
     .def("type", &smtk::view::Configuration::type)
     .def("iconName", &smtk::view::Configuration::iconName)
     .def("setIconName", &smtk::view::Configuration::setIconName, py::arg("name"))
-    .def("details", &smtk::view::Configuration::details, py::return_value_policy::reference)
+    .def("details", (smtk::view::Configuration::Component& (smtk::view::Configuration::*)()) &smtk::view::Configuration::details, py::return_value_policy::reference)
     ;
   py::class_< smtk::view::Configuration::Component >(instance, "Component")
     .def(py::init<::std::string const &>())
@@ -50,7 +50,7 @@ PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_View(py::m
     .def("attributes", &smtk::view::Configuration::Component::attributes)
     .def("addChild", &smtk::view::Configuration::Component::addChild, py::arg("childName"), py::return_value_policy::reference)
     .def("numberOfChildren", &smtk::view::Configuration::Component::numberOfChildren)
-    .def("child", &smtk::view::Configuration::Component::child, py::arg("i"), py::return_value_policy::reference)
+    .def("child", (smtk::view::Configuration::Component& (smtk::view::Configuration::Component::*)(std::size_t)) &smtk::view::Configuration::Component::child, py::arg("i"), py::return_value_policy::reference)
     .def("findChild", &smtk::view::Configuration::Component::findChild, py::arg("compName"))
     ;
   return instance;
