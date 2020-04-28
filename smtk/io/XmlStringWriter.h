@@ -35,8 +35,8 @@ class SMTKCORE_EXPORT XmlStringWriter
 public:
   XmlStringWriter(smtk::attribute::ResourcePtr resource, smtk::io::Logger& logger)
     : m_resource(resource)
-    , m_includeAdvanceLevels(true)
     , m_includeAnalyses(true)
+    , m_includeAdvanceLevels(true)
     , m_includeAttributeAssociations(true)
     , m_includeDefinitions(true)
     , m_includeInstances(true)

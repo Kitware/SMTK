@@ -339,7 +339,6 @@ void qtReferenceItem::cleverlyShowButtons()
 
 smtk::view::PhraseModelPtr qtReferenceItem::createPhraseModel() const
 {
-  auto showsWhat = this->acceptableTypes();
   auto rsrcMgr = m_itemInfo.uiManager()->resourceManager();
   auto operMgr = m_itemInfo.uiManager()->operationManager();
   auto viewMgr = m_itemInfo.uiManager()->viewManager();
@@ -927,7 +926,6 @@ bool qtReferenceItem::synchronize(UpdateSource src)
     case UpdateSource::GUI_FROM_ITEM:
       m_p->m_members.clear();
       m_p->m_phraseModel->triggerDataChanged();
-      std::size_t n = item->numberOfValues();
       for (auto vit = item->begin(); vit != item->end(); ++vit)
       {
         // Only allow non-null pointers into the set of selected items;
