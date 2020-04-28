@@ -13,12 +13,12 @@ are split across several classes:
 * Phrase models are responsible for determining which
   descriptive phrases belong at the root of the tree.
   They also provide utilities used to
-  * watch for events that may change the tree and
-  * determine how to notify user interfaces of those
-    changes in terms of deleted, added, re-ordered, and
-    modified phrases.
-  * mark each descriptive phrase with optional, clickable
-    badge icons.
+    * watch for events that may change the tree and
+    * determine how to notify user interfaces of those
+      changes in terms of deleted, added, re-ordered, and
+      modified phrases.
+    * mark each descriptive phrase with optional, clickable
+      badge icons.
 * Descriptive phrases are only responsible for storing
   child phrases and, optionally, a reference to a
   subphrase generator that can create or update

@@ -41,7 +41,7 @@ public:
   virtual ~Badge() {}
 
   /// Returns true if the badge should appear next to the given phrase:
-  virtual bool appliesToPhrase(const DescriptivePhrase* phrase) const { return false; }
+  virtual bool appliesToPhrase(const DescriptivePhrase*) const { return false; }
 
   /// Return a tool-tip string for the badge that is relevant to this phrase.
   ///
@@ -53,7 +53,7 @@ public:
   /// For example, a badge that controls visibility of a phrase's subject in a render-window
   /// should say either "Click to show <title>" when the phrase's subject is hidden
   /// or "Click to hide <title>" when the phrase's subject is visible.
-  virtual std::string tooltip(const DescriptivePhrase* phrase) const { return std::string(); }
+  virtual std::string tooltip(const DescriptivePhrase*) const { return std::string(); }
 
   /// Returns an SVG string for rendering the badge icon.
   ///
@@ -64,7 +64,7 @@ public:
     const DescriptivePhrase* phrase, const std::array<float, 4>& background) const = 0;
 
   /// Take an action when the badge is clicked.
-  virtual void action(const DescriptivePhrase* phrase) const {}
+  virtual void action(const DescriptivePhrase*) const {}
 };
 }
 }

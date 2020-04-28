@@ -24,6 +24,6 @@ Phrase views
 ------------
 
 These views appear in 2 types of widgets in SMTK:
-panels holding tree views (such as the resource panel) and
-widgets for selecting components or resources, where only
-a flat list is presented.
+panels holding tree views (such as the :smtk:`resource panel <smtk::extension::qtResourceBrowser>`)
+and widgets for selecting components or resources, where only a flat list is presented
+(such as the :smtk:`reference item widget <smtk::extension::qtReferenceItem>`).

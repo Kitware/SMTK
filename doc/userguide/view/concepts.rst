@@ -11,17 +11,21 @@ views and trees of descriptive phrases.
   * phrase views, which allow users to inspect and edit any resource by interacting with
     a tree of one-line summary information related to a resource or component.
 
-:smtk:`DescriptivePhrase <smtk::view::DescriptivePhrase>`
-  instances represent a single piece of information that can be presented
-  with a title string and an optional subtitle string.
-  Phrases may be queried for a related resource, component, color, visibility,
-  property name/value/type, and — most importantly — a list of child phrases
+:smtk:`PhraseModel <smtk::view::PhraseModel>`
+  instances represent a tree of descriptive phrases that together
+  summarize information about resources and/or components.
+  Each entry in the tree is a descriptive phrase that represents a
+  single piece of information via a title string, an optional subtitle string,
+  and optionally a set of badge icons.
+  Phrases may be queried for a related resource or component, what badges (if
+  any) apply to the phrase, and — most importantly — a list of child phrases
   that provide further details.
 
   Consider an example where we wish to present information about a model face.
   The face itself could be a phrase whose title is the user-provided name of
   the face, whose subtitle might indicate whether the face is planar or curved,
-  whose color and visibility reflect user choices for display in a render window,
+  that might have a badge showing the face's color, another badge showing its
+  visibility in a 3-d view,
   and whose child phrases could include details about the face such as
   (1) a list of edges bounding the face,
   (2) properties defined on the face such as user annotation, and
