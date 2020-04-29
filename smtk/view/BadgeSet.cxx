@@ -21,7 +21,6 @@ namespace view
 void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::ManagerPtr& manager)
 {
   m_badges.clear();
-  m_order.clear();
   if (!viewSpec)
   {
     return;
@@ -62,15 +61,16 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
     {
       if (configComp.attribute("Type", badgeName))
       {
-        // Populate the m_order map from values in viewSpec
-        // WARNING: This *must* come before m_badges.insert() below or the badge will
-        //          not be inserted in the correct order.
-        m_order[badgeName] = static_cast<int>(ii);
         // Construct a badge with that name via the view manager:
         auto badge = manager->badgeFactory().create(badgeName, *this, configComp);
         if (badge)
         {
-          m_badges.insert(badge);
+          m_badges.push_back(std::move(badge));
+        }
+        else
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(), "Badge " << ii << " (" << badgeName
+                                                                << ") could not be constructed.");
         }
       }
       else
@@ -103,17 +103,6 @@ std::vector<const Badge*> BadgeSet::badgesFor(const DescriptivePhrase* phrase) c
     }
   }
   return result;
-}
-
-/// Return an index for a badge representing its order in the container.
-int BadgeSet::badgeIndex(const Badge::Ptr& badge) const
-{
-  auto it = m_order.find(badge->typeName());
-  if (it == m_order.end())
-  {
-    return -1;
-  }
-  return it->second;
 }
 }
 }

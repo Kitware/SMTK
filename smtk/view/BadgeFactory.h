@@ -41,7 +41,8 @@ namespace view
 class SMTKCORE_EXPORT BadgeFactory
 {
 public:
-  using BadgeConstructor = std::function<Badge::Ptr(BadgeSet&, const Configuration::Component&)>;
+  using BadgeConstructor =
+    std::function<std::unique_ptr<Badge>(BadgeSet&, const Configuration::Component&)>;
 
   /// Register a badge type.
   template <typename BadgeType>
@@ -52,7 +53,7 @@ public:
 
     return this->registerBadge(
       name, [](BadgeSet& parent, const smtk::view::Configuration::Component& config) {
-        auto badge = std::shared_ptr<Badge>(new BadgeType(parent, config));
+        auto badge = std::unique_ptr<Badge>(new BadgeType(parent, config));
         return badge;
       });
   }
@@ -84,13 +85,13 @@ public:
   /// represents.
   bool unregisterBadge(const std::string& typeName) { return m_badges.erase(typeName) > 0; }
 
-  Badge::Ptr create(const std::string& typeName, smtk::view::BadgeSet& parent,
+  std::unique_ptr<Badge> create(const std::string& typeName, smtk::view::BadgeSet& parent,
     const smtk::view::Configuration::Component& config) const
   {
     auto it = m_badges.find(typeName);
     if (it == m_badges.end())
     {
-      return Badge::Ptr();
+      return nullptr;
     }
     auto badge = it->second(parent, config);
     return badge;
