@@ -44,7 +44,7 @@ public:
     : m_parent(nullptr)
   {
   }
-  VisibilityBadge(smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component& config)
+  VisibilityBadge(smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component&)
     : m_icon("<svg id=\"Layer_1\" data-name=\"Layer 1\" xmlns=\"http://www.w3.org/2000/svg\" "
              "viewBox=\"0 0 64 64\"><title>SVG_Artboards</title><path "
              "d=\"M59.94,31.86S47.49,14.37,31.31,14.37c-16.81,0-28.1,17.49-28.1,17.49S14.5,49.35,"
@@ -82,18 +82,17 @@ public:
 
   ~VisibilityBadge() override {}
 
-  std::string tooltip(const DescriptivePhrase* phrase) const override
+  std::string tooltip(const DescriptivePhrase*) const override
   {
     return std::string("Click to toggle visibility");
   }
-  std::string svg(
-    const DescriptivePhrase* phrase, const std::array<float, 4>& background) const override
+  std::string icon(const DescriptivePhrase*, const std::array<float, 4>&) const override
   {
     return m_icon;
   }
 
   /// take an action when the badge is clicked.
-  void action(const DescriptivePhrase* phrase) const override {}
+  void action(const DescriptivePhrase*) const override {}
 private:
   // borrowed from paraview Qt/Components
   std::string m_icon;

@@ -65,7 +65,7 @@ public:
   /// Returns an SVG string for rendering the badge icon.
   ///
   /// The badge is an exclamation mark subtracted from a red circle.
-  std::string svg(
+  std::string icon(
     const DescriptivePhrase* phrase, const std::array<float, 4>& background) const override;
 
   // No action is taken when the badge is clicked.

@@ -128,7 +128,7 @@ std::string AssociationBadge::tooltip(const DescriptivePhrase* phrase) const
   return result;
 }
 
-std::string AssociationBadge::svg(
+std::string AssociationBadge::icon(
   const DescriptivePhrase*, const std::array<float, 4>& background) const
 {
   std::string icon = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

@@ -40,7 +40,7 @@ public:
   /// Returns an SVG string for rendering the badge icon.
   ///
   /// This uses an IconFactory.
-  std::string svg(
+  std::string icon(
     const DescriptivePhrase* phrase, const std::array<float, 4>& background) const override;
 
   // No action is taken when the badge is clicked.
