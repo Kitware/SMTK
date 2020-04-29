@@ -55,12 +55,15 @@ public:
   /// or "Click to hide <title>" when the phrase's subject is visible.
   virtual std::string tooltip(const DescriptivePhrase*) const { return std::string(); }
 
-  /// Returns an SVG string for rendering the badge icon.
+  /// Returns a string for rendering the badge icon.
   ///
-  /// The SVG icon may change depending on
+  /// The string is currently interpreted by qtDescriptivePhraseDelegate::paint()
+  /// as scalable vector graphics (SVG).
+  ///
+  /// The icon may change depending on
   /// (1) the state of the phrase or its parent view,
   /// (2) the background color of the phrase.
-  virtual std::string svg(
+  virtual std::string icon(
     const DescriptivePhrase* phrase, const std::array<float, 4>& background) const = 0;
 
   /// Take an action when the badge is clicked.

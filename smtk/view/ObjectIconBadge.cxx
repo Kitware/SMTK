@@ -67,7 +67,7 @@ std::string ObjectIconBadge::tooltip(const DescriptivePhrase* phrase) const
   return obj->typeName();
 }
 
-std::string ObjectIconBadge::svg(
+std::string ObjectIconBadge::icon(
   const DescriptivePhrase* phrase, const std::array<float, 4>& background) const
 {
   std::string icon;

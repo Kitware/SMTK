@@ -81,7 +81,7 @@ public:
     return phrase ? !static_cast<bool>(phrase->relatedComponent()) : false;
   }
   std::string tooltip(const DescriptivePhrase*) const override { return "B"; }
-  std::string svg(const DescriptivePhrase* phrase, const std::array<float, 4>&) const override
+  std::string icon(const DescriptivePhrase* phrase, const std::array<float, 4>&) const override
   {
     return phrase ? "yes" : "no";
   }
