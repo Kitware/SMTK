@@ -31,15 +31,11 @@ class SMTKCORE_EXPORT BadgeSet
 {
 public:
   /// Remove this once view::Manager uses the new factory method to construct PhraseModel with arguments.
-  BadgeSet()
-    : m_badges(Comparator(this))
-  {
-  }
+  BadgeSet() {}
 
   /// Construct and configure a set of badges for a view.
   BadgeSet(const Configuration* viewSpec, const ManagerPtr& manager)
     : m_manager(manager)
-    , m_badges(Comparator(this))
   {
     this->configure(viewSpec, manager);
   }
@@ -52,9 +48,6 @@ public:
   /// Return ordered list of badge ptrs, ignoring any names without a matching badge.
   std::vector<const Badge*> badgesFor(const DescriptivePhrase* phrase) const;
 
-  /// Return an index for a badge representing its order in the container.
-  int badgeIndex(const Badge::Ptr& badge) const;
-
   /// Return the manager (if any) used to create this badge-set.
   ///
   /// Some badges may need access to the manager to function.
@@ -63,25 +56,8 @@ public:
   smtk::view::ManagerPtr manager() const { return m_manager.lock(); }
 
 private:
-  /// Sort badges according to external configuration
-  struct Comparator
-  {
-    Comparator(const BadgeSet* parent)
-      : m_parent(parent)
-    {
-    }
-
-    bool operator()(const Badge::Ptr& a, const Badge::Ptr& b) const
-    {
-      return m_parent->badgeIndex(a) < m_parent->badgeIndex(b);
-    }
-
-    const BadgeSet* m_parent;
-  };
-
   std::weak_ptr<Manager> m_manager;
-  std::set<Badge::Ptr, Comparator> m_badges;
-  std::map<std::string, int> m_order;
+  std::vector<std::unique_ptr<Badge> > m_badges;
 };
 }
 }
