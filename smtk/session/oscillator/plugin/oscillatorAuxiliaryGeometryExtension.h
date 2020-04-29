@@ -12,7 +12,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
+#include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
 
 #include "vtkSmartPointer.h"
 

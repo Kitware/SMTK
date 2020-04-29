@@ -7,11 +7,11 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_vtk_ModelAuxiliaryGeometry_h
-#define __smtk_vtk_ModelAuxiliaryGeometry_h
+#ifndef __smtk_extension_vtk_model_ModelAuxiliaryGeometry_h
+#define __smtk_extension_vtk_model_ModelAuxiliaryGeometry_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
+#include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
 #include "smtk/extension/vtk/source/vtkTracksAllInstances.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
@@ -28,7 +28,7 @@ class vtkPolyDataNormals;
   * \a AuxiliaryEntityID and generates a vtkMultiBlockDataSet, which could include polydata,
   * imagedata, unstructured grid, or multiblock depending which reader is used.
   */
-class VTKSMTKSOURCEEXT_EXPORT vtkModelAuxiliaryGeometry : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTKMODELEXT_EXPORT vtkModelAuxiliaryGeometry : public vtkMultiBlockDataSetAlgorithm
 {
 public:
   smtkDeclareTracksAllInstances(vtkModelAuxiliaryGeometry);
@@ -77,4 +77,4 @@ private:
   void operator=(const vtkModelAuxiliaryGeometry&);            // Not implemented.
 };
 
-#endif // __smtk_vtk_ModelAuxiliaryGeometry_h
+#endif

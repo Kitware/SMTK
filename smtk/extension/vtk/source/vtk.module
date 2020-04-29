@@ -8,6 +8,7 @@ DEPENDS
   VTK::ViewsInfovis
 PRIVATE_DEPENDS
   vtkSMTKFilterExt
+  vtkSMTKModelExt
   VTK::CommonTransforms
   VTK::FiltersCore
   VTK::FiltersGeneral
@@ -16,6 +17,5 @@ PRIVATE_DEPENDS
   VTK::IOImage
   VTK::IOPLY
   VTK::IOXML
-  VTK::ImagingCore
   VTK::RenderingCore
   VTK::vtksys

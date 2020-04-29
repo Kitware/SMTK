@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/extension/paraview/server/vtkSMTKResourceCreator.h"
 
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
-
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/attribute/Attribute.h"

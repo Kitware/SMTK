@@ -16,9 +16,13 @@
 #include "smtk/attribute/ReferenceItem.h"
 #include "smtk/attribute/Resource.h"
 
+#include "smtk/geometry/queries/DistanceTo.h"
+
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/PointLocatorExtension.h"
+
+#include "smtk/resource/Resource.h"
 
 #include <array>
 #include <cmath>
@@ -54,6 +58,8 @@ std::vector<Weights> computeWeights(
     attributeResource->findAttributes(definition, attributes);
   }
 
+  smtk::geometry::DistanceTo* distanceTo = nullptr;
+
   for (const auto& attribute : attributes)
   {
     // Access the attribute's associations
@@ -66,49 +72,28 @@ std::vector<Weights> computeWeights(
       }
 
       // Cast the association to a model EntityRef
-      smtk::model::EntityRef entityRef(referenceItem->valueAs<smtk::model::Entity>(i));
-      if (!entityRef.isValid())
+      smtk::model::Entity::Ptr entity(referenceItem->valueAs<smtk::model::Entity>(i));
+      if (!entity)
       {
         continue;
       }
 
-      bool computed = false;
-
-      // Visit all extensions, attempting to cast them to a point locator
-      smtk::common::Extension::visitAll(
-        [&](const std::string&, smtk::common::Extension::Ptr extension) {
-          bool success = false;
-          auto pointLocator =
-            smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
-
-          if (pointLocator != nullptr)
-          {
-            // If we find a point locator, compute the closest point on the
-            // entity for each of our sample points
-            success =
-              pointLocator->closestPointOn(entityRef, interpolatedPoints, samplePoints, false);
-            computed = success;
-          }
-          return std::make_pair(success, success);
-        });
-
-      // If the point locator call was successful...
-      if (computed)
+      if (!distanceTo)
       {
-        // ...convert each computed point into a distance weighting and pair it
-        // with a pointer to the attribute.
-        std::size_t counter = 0;
-        for (std::size_t j = 0; j < samplePoints.size(); j += 3)
+        if (!entity->resource()->queries().contains<smtk::geometry::DistanceTo>())
         {
-          double dist = 0;
-          for (std::size_t k = 0; k < 3; k++)
-          {
-            double tmp = interpolatedPoints[j + k] - samplePoints[j + k];
-            dist += tmp * tmp;
-          }
-          dist = std::sqrt(dist);
-          pointProfiles[counter++].push_back(std::make_pair(dist, attribute.get()));
+          continue;
         }
+        distanceTo = &(entity->resource()->queries().get<smtk::geometry::DistanceTo>());
+      }
+
+      std::size_t counter = 0;
+      for (std::size_t i = 0; i < samplePoints.size(); i += 3)
+      {
+        std::array<double, 3> input{ { samplePoints[i], samplePoints[i + 1],
+          samplePoints[i + 2] } };
+        double distance = (*distanceTo)(entity, input).first;
+        pointProfiles[counter++].push_back(std::make_pair(distance, attribute.get()));
       }
     }
   }

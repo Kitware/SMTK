@@ -20,6 +20,8 @@
 #include "smtk/resource/PersistentObject.h"
 #include "smtk/resource/ResourceLinks.h"
 
+#include "smtk/resource/query/Queries.h"
+
 #include <string>
 #include <typeindex>
 #include <unordered_map>
@@ -55,6 +57,7 @@ public:
   typedef smtk::resource::Metadata Metadata;
   typedef detail::ResourceLinks Links;
   typedef detail::ResourceProperties Properties;
+  typedef query::Queries Queries;
 
   friend class Manager;
 
@@ -150,6 +153,9 @@ public:
   Properties& properties() override { return m_properties; }
   const Properties& properties() const override { return m_properties; }
 
+  const Queries& queries() const { return m_queries; }
+  Queries& queries() { return m_queries; }
+
   /// classes that are granted permission to the key may retrieve the resource's
   /// lock.
   Lock& lock(Key()) const { return m_lock; }
@@ -172,6 +178,7 @@ private:
 
   Links m_links;
   Properties m_properties;
+  Queries m_queries;
   mutable Lock m_lock;
 
   WeakManagerPtr m_manager;

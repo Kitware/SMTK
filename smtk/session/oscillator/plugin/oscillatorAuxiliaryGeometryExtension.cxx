@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/session/oscillator/plugin/oscillatorAuxiliaryGeometryExtension.h"
 
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 
 #include "smtk/AutoInit.h"

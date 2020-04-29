@@ -294,6 +294,8 @@ public:
 
   virtual smtk::mesh::Handle getRoot() const = 0;
 
+  virtual void registerQueries(smtk::mesh::Resource&) const = 0;
+
   //creates a mesh with that contains the input cells.
   //the mesh will have the root as its parent.
   //Will fail if the HandleRange is empty or doesn't contain valid

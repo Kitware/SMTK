@@ -28,15 +28,19 @@ set(meshSrcs
   json/jsonResource.cxx
 
   moab/Allocator.cxx
-  moab/CellTypeToType.cxx
   moab/BufferedCellAllocator.cxx
+  moab/CellTypeToType.cxx
+  moab/ClosestPoint.cxx
+  moab/DistanceTo.cxx
   moab/HandleRangeToRange.cxx
   moab/IncrementalAllocator.cxx
   moab/Interface.cxx
   moab/ConnectivityStorage.cxx
   moab/MergeMeshVertices.cxx
   moab/ModelEntityPointLocator.cxx
+  moab/PointLocatorCache.cxx
   moab/PointLocatorImpl.cxx
+  moab/RandomPoint.cxx
   moab/Readers.cxx
   moab/Writers.cxx
 
@@ -70,6 +74,8 @@ set(meshHeaders
   core/PointSet.h
   core/QueryTypes.h
   core/TypeSet.h
+
+  core/queries/BoundingBox.h
 
   interpolation/InverseDistanceWeighting.h
   interpolation/PointCloud.h

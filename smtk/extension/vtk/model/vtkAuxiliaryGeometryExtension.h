@@ -7,21 +7,21 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_vtk_source_vtkAuxiliaryGeometryExtension_h
-#define smtk_extension_vtk_source_vtkAuxiliaryGeometryExtension_h
+#ifndef smtk_extension_vtk_model_vtkAuxiliaryGeometryExtension_h
+#define smtk_extension_vtk_model_vtkAuxiliaryGeometryExtension_h
 #ifndef __VTK_WRAP__
 
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/AuxiliaryGeometryExtension.h"
 
-#include "smtk/extension/vtk/source/vtkSMTKSourceExtModule.h"
+#include "smtk/extension/vtk/model/vtkSMTKModelExtModule.h"
 
 #include "vtkSmartPointer.h"
 
 class vtkDataObject;
 
-class VTKSMTKSOURCEEXT_EXPORT vtkAuxiliaryGeometryExtension
+class VTKSMTKMODELEXT_EXPORT vtkAuxiliaryGeometryExtension
   : public smtk::model::AuxiliaryGeometryExtension
 {
 public:

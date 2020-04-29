@@ -12,9 +12,7 @@
 #include "smtk/extension/vtk/geometry/Backend.h"
 #include "smtk/extension/vtk/geometry/Geometry.h"
 
-#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
+#include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
 
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 

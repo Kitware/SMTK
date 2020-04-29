@@ -11,6 +11,10 @@ set(geometryHeaders
   GeometryForBackend.h
   Manager.h
   Resource.h
+  queries/BoundingBox.h
+  queries/ClosestPoint.h
+  queries/DistanceTo.h
+  queries/RandomPoint.h
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

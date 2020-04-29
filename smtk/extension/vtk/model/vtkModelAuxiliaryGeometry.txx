@@ -7,10 +7,10 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_vtk_source_vtkModelAuxiliaryGeometry_txx
-#define smtk_extension_vtk_source_vtkModelAuxiliaryGeometry_txx
+#ifndef smtk_extension_vtk_model_vtkModelAuxiliaryGeometry_txx
+#define smtk_extension_vtk_model_vtkModelAuxiliaryGeometry_txx
 
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
+#include "smtk/extension/vtk/model/vtkModelAuxiliaryGeometry.h"
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "vtkTransform.h"
 #include "vtkTransformFilter.h"

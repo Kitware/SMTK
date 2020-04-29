@@ -11,6 +11,11 @@
 //=============================================================================
 #include "smtk/session/mesh/Resource.h"
 
+#include "smtk/session/mesh/queries/BoundingBox.h"
+#include "smtk/session/mesh/queries/ClosestPoint.h"
+#include "smtk/session/mesh/queries/DistanceTo.h"
+#include "smtk/session/mesh/queries/RandomPoint.h"
+
 namespace smtk
 {
 namespace session
@@ -18,14 +23,21 @@ namespace session
 namespace mesh
 {
 
+namespace
+{
+typedef std::tuple<BoundingBox, ClosestPoint, DistanceTo, RandomPoint> QueryList;
+}
+
 Resource::Resource(const smtk::common::UUID& id, smtk::resource::Manager::Ptr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::model::Resource>(id, manager)
 {
+  queries().registerQueries<QueryList>();
 }
 
 Resource::Resource(smtk::resource::Manager::Ptr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::model::Resource>(manager)
 {
+  queries().registerQueries<QueryList>();
 }
 
 void Resource::setSession(const Session::Ptr& session)

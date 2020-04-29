@@ -7,11 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/vtk/source/vtkAuxiliaryGeometryExtension.h"
-#include "smtk/extension/vtk/source/vtkCmbLayeredConeSource.h"
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.h"
-#include "smtk/extension/vtk/source/vtkModelAuxiliaryGeometry.txx"
-#include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
+#include "smtk/extension/vtk/model/vtkAuxiliaryGeometryExtension.h"
 
 #include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
@@ -502,6 +498,5 @@ bool vtkAuxiliaryGeometryExtension::updateBoundsFromDataSet(smtk::model::Auxilia
   return false;
 }
 
-smtkDeclareExtension(
-  VTKSMTKSOURCEEXT_EXPORT, vtk_auxiliary_geometry, vtkAuxiliaryGeometryExtension);
+smtkDeclareExtension(VTKSMTKMODELEXT_EXPORT, vtk_auxiliary_geometry, vtkAuxiliaryGeometryExtension);
 smtkComponentInitMacro(smtk_vtk_auxiliary_geometry_extension);

@@ -12,6 +12,10 @@ set(meshHeaders
   Resource.h
   Session.h
   Topology.h
+  queries/BoundingBox.h
+  queries/ClosestPoint.h
+  queries/DistanceTo.h
+  queries/RandomPoint.h
 )
 
 if (SMTK_ENABLE_VTK_SUPPORT)

@@ -12,4 +12,6 @@ smtk_add_plugin(smtkOscillatorSessionPlugin
 target_link_libraries(smtkOscillatorSessionPlugin
   PRIVATE
     smtkOscillatorSession
-    vtkSMTKSourceExt)
+    vtkSMTKGeometryExt
+    vtkSMTKModelExt
+    VTK::FiltersSources)

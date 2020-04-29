@@ -12,6 +12,8 @@
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/SpecificationOps.h"
 
+#include "smtk/operation/queries/SynchronizedCache.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItem.h"
@@ -363,6 +365,15 @@ void Operation::markModifiedResources(Operation::Result& result)
     if (resource != nullptr)
     {
       resource->setClean(false);
+
+      // Allow synchronized query caches to update according to this result.
+      for (auto& cache : resource->queries().caches())
+      {
+        if (auto synchronizedCache = dynamic_cast<SynchronizedCache*>(cache.second.get()))
+        {
+          synchronizedCache->synchronize(*this, result);
+        }
+      }
     }
   }
 }

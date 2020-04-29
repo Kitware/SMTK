@@ -6,23 +6,18 @@ set(classes
   SourceFromModel
   StructuredGridFromVTKAuxiliaryGeometry
   vtkAttributeMultiBlockSource
-  vtkAuxiliaryGeometryExtension
   vtkCmbLayeredConeSource
   vtkConeFrustum
   vtkImplicitConeFrustum
-  vtkModelAuxiliaryGeometry
   vtkModelMultiBlockSource
   vtkModelView
   vtkResourceMultiBlockSource)
-set(templates
-  vtkModelAuxiliaryGeometry.txx)
 set(headers
   SourceGenerator.h
   vtkTracksAllInstances.h)
 
 vtk_module_add_module(vtkSMTKSourceExt
   CLASSES ${classes}
-  TEMPLATES ${templates}
   HEADERS ${headers}
   HEADERS_SUBDIR "smtk/extension/vtk/source")
 

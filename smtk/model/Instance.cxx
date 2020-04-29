@@ -9,9 +9,12 @@
 //=========================================================================
 #include "smtk/model/Instance.h"
 
+#include "smtk/geometry/queries/ClosestPoint.h"
+#include "smtk/geometry/queries/DistanceTo.h"
+#include "smtk/geometry/queries/RandomPoint.h"
+
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/EntityRefArrangementOps.h"
-#include "smtk/model/PointLocatorExtension.h"
 #include "smtk/model/Resource.h"
 
 #include <random>
@@ -115,24 +118,18 @@ static void GenerateRandomOnSurfaceTessellation(Instance& inst, Tessellation* pl
   std::size_t npts = numPts[0];
   unsigned iseed = static_cast<unsigned>(seed[0]);
 
-  std::vector<double> points;
+  auto sampleSurfaceEntity = sampleSurface.entityRecord();
 
-  smtk::common::Extension::visitAll(
-    [&](const std::string& /*unused*/, smtk::common::Extension::Ptr extension) {
-      bool success = false;
-      auto snapper = smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
-
-      if (snapper != nullptr)
-      {
-        success = snapper->randomPoint(sampleSurface, npts, points, iseed);
-        success &= (points.size() == npts);
-      }
-      return std::make_pair(success, success);
-    });
-
-  for (std::size_t i = 0; i < npts; ++i)
+  if (inst.resource()->queries().contains<smtk::geometry::RandomPoint>())
   {
-    placements->addPoint(&points[3 * i]);
+    auto& randomPoint = inst.resource()->queries().get<smtk::geometry::RandomPoint>();
+
+    randomPoint.seed(seed[0]);
+
+    for (std::size_t i = 0; i < npts; ++i)
+    {
+      placements->addPoint(randomPoint(sampleSurfaceEntity).data());
+    }
   }
 }
 
@@ -159,23 +156,43 @@ static void SnapPlacementsTo(const Instance& inst, const EntityRefs& snaps, Tess
     smtkWarningMacro(inst.resource()->log(), "No rule for how to perform snap.");
     return;
   }
-  bool snapToPoint = false;
+
+  auto snapEntity = (*snaps.begin()).entityRecord();
+
   if (snapRule == "snap to point")
   {
-    snapToPoint = true;
-  }
-  smtk::common::Extension::visitAll(
-    [&](const std::string& /*unused*/, smtk::common::Extension::Ptr extension) {
-      bool success = false;
-      auto snapper = smtk::dynamic_pointer_cast<smtk::model::PointLocatorExtension>(extension);
-
-      if (snapper != nullptr)
+    if (inst.resource()->queries().contains<smtk::geometry::ClosestPoint>())
+    {
+      auto& closestPoint = inst.resource()->queries().get<smtk::geometry::ClosestPoint>();
+      auto& coords = tess->coords();
+      for (std::size_t i = 0; i < tess->coords().size(); i += 3)
       {
-        success =
-          snapper->closestPointOn(*snaps.begin(), tess->coords(), tess->coords(), snapToPoint);
+        std::array<double, 3> input{ { coords[i], coords[i + 1], coords[i + 2] } };
+        std::array<double, 3> closest = closestPoint(snapEntity, input);
+        for (int j = 0; j < 3; j++)
+        {
+          coords[i + j] = closest[j];
+        }
       }
-      return std::make_pair(success, success);
-    });
+    }
+  }
+  else
+  {
+    if (inst.resource()->queries().contains<smtk::geometry::DistanceTo>())
+    {
+      auto& distanceTo = inst.resource()->queries().get<smtk::geometry::DistanceTo>();
+      auto& coords = tess->coords();
+      for (std::size_t i = 0; i < tess->coords().size(); i += 3)
+      {
+        std::array<double, 3> input{ { coords[i], coords[i + 1], coords[i + 2] } };
+        std::array<double, 3> closest = distanceTo(snapEntity, input).second;
+        for (int j = 0; j < 3; j++)
+        {
+          coords[i + j] = closest[j];
+        }
+      }
+    }
+  }
 }
 
 static void ComputeBounds(Tessellation* tess, const std::vector<double>& pbox, double bbox[6])
