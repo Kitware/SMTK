@@ -15,6 +15,7 @@
 #include "smtk/mesh/core/Resource.h"
 #include "smtk/model/Resource.h"
 
+#include "smtk/view/AssociationBadge.h"
 #include "smtk/view/ComponentPhraseModel.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
 #include "smtk/view/ObjectIconBadge.h"
@@ -53,6 +54,7 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
   viewManager->iconFactory().registerIconConstructor<smtk::mesh::Resource>(MeshIconConstructor());
   viewManager->iconFactory().registerIconConstructor<smtk::model::Resource>(ModelIconConstructor());
 
+  viewManager->badgeFactory().registerBadge<AssociationBadge>();
   viewManager->badgeFactory().registerBadge<ObjectIconBadge>();
 }
 
@@ -61,6 +63,7 @@ void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
   viewManager->phraseModelFactory().unregisterTypes<PhraseModelList>();
   viewManager->unregisterSubphraseGenerators<SubphraseGeneratorList>();
 
+  viewManager->badgeFactory().unregisterBadge<AssociationBadge>();
   viewManager->badgeFactory().unregisterBadge<ObjectIconBadge>();
 }
 }

@@ -18,6 +18,13 @@
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Registrar.h"
+#include "smtk/attribute/Resource.h"
+
+#include "smtk/resource/Manager.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/view/json/jsonView.h"
@@ -110,15 +117,57 @@ int unitBadge(int argc, char* argv[])
                       { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeA" } } } },
                       { { "Name", "Comment" }, { "Text", "Test that comments are allowed." } },
                       { { "Name", "Badge" }, { "Attributes", { { "Type", "BadgeB" } } } },
+                      { { "Name", "Badge" },
+                        { "Attributes", { { "Type", "smtk::view::AssociationBadge" } } },
+                        { "Children",
+                          { {
+                              { "Name", "AppliesTo" },
+                              { "Attributes", { { "Resource", "smtk::model::Resource" },
+                                                { "Component", "edge" } } },
+                            },
+                            {
+                              { "Name", "Requires" },
+                              { "Attributes", { { "Definition", "BoundaryCondition" } } },
+                            } } } },
                     } } } } } } } } } } };
   smtk::view::ConfigurationPtr viewConfig = j;
   auto phraseModel = loadTestData(argc, argv, viewManager, *viewConfig, dataArgs);
   // BadgeSet& badgeSet(const_cast<BadgeSet&>(phraseModel->badges()));
   // badgeSet.configure(viewConfig, viewManager);
+  auto resource = phraseModel->root()->subphrases()[0]->relatedResource();
+  auto resourceManager = resource->manager();
+  smtk::attribute::Registrar::registerTo(resourceManager);
+  auto attRsrc = resourceManager->create<smtk::attribute::Resource>();
+  auto defBC = attRsrc->createDefinition("BoundaryCondition");
+  auto assoc = defBC->createLocalAssociationRule();
+  assoc->setAcceptsEntries("smtk::model::Resource", "edge", true);
+  assoc->setIsExtensible(true);
+  assoc->setMaxNumberOfValues(0);
+  auto defDBC = attRsrc->createDefinition("Dirichlet", "BoundaryCondition");
+  auto defNBC = attRsrc->createDefinition("Neumann", "BoundaryCondition");
+  auto attDBC = attRsrc->createAttribute(defDBC);
+  auto attNBC = attRsrc->createAttribute(defNBC);
+  auto edges = resource->find("edge");
+  // Associate all but 2 edges with a boundary condition
+  for (const auto& edge : edges)
+  {
+    if (edge->name() != "edge 0" && edge->name() != "edge 9")
+    {
+      if (edge->name() < "edge 20")
+      {
+        attDBC->associate(edge);
+      }
+      else
+      {
+        attNBC->associate(edge);
+      }
+    }
+  }
+  int bcBadgeCounter = 0;
 
   const auto& badgeSet = phraseModel->badges();
   phraseModel->root()->visitChildren(
-    [&badgeSet](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {
+    [&badgeSet, &bcBadgeCounter](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {
       int indent = static_cast<int>(idx.size()) * 2;
       if (p)
       {
@@ -127,7 +176,14 @@ int unitBadge(int argc, char* argv[])
                   << " badges:";
         for (const auto& badge : badges)
         {
-          std::cout << " " << badge->tooltip(p.get());
+          std::string tip = badge->tooltip(p.get());
+          std::cout << " " << tip;
+          // Verify that the AssociationBadge works by counting the number
+          // of times edge 0 and edge 9 are listed:
+          if (tip.find("BoundaryCondition") != std::string::npos)
+          {
+            ++bcBadgeCounter;
+          }
           // Exercise each badge's action:
           badge->action(p.get());
         }
@@ -145,10 +201,12 @@ int unitBadge(int argc, char* argv[])
 
   std::cout << "BadgeA action count " << BadgeA::testCounter << "\n";
   std::cout << "BadgeB action count " << BadgeB::testCounter << "\n";
+  std::cout << "AssociationBadge applied count " << bcBadgeCounter << "\n";
   if (!dataArgs.empty())
   {
-    smtkTest(BadgeA::testCounter == 96, "Expected 96 clicks on BadgeA");
-    smtkTest(BadgeB::testCounter == 1, "Expected 1 click on BadgeB");
+    smtkTest(BadgeA::testCounter == 98, "Expected 98 clicks on BadgeA.");
+    smtkTest(BadgeB::testCounter == 2, "Expected 2 clicks on BadgeB.");
+    smtkTest(bcBadgeCounter == 4, "Expected 4 association warnings.");
 
     // Don't leak
     free(dataArgs[1]);

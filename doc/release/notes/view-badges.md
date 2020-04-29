@@ -12,5 +12,8 @@ simplifies how PhraseModel subclasses are constructed and configured.
     + constructors take and use a view::Configuration object that they
       use to prepare themselves and objects they own (namely, BadgeSet
       and (indirectly) SubphraseGenerator).
-+ Add a badge showing icons based on the phrase's subject.
++ Add a badge (ObjectIconBadge) showing icons based on the phrase's subject.
   This uses the view-manager's icon factory.
++ Add a badge (AssociationBadge) showing an exclamation mark when
+  matching persistent objects are not associated to attributes with a
+  given set of definitions.

@@ -1,5 +1,6 @@
 # set up sources to build
 set(viewSrcs
+  AssociationBadge.cxx
   AvailableOperations.cxx
   BaseView.cxx
   BadgeSet.cxx
@@ -34,6 +35,7 @@ set (jsonViewHeaders
   json/jsonView.h
   )
 set(viewHeaders
+  AssociationBadge.h
   AvailableOperations.h
   Badge.h
   BadgeFactory.h
