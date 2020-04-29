@@ -119,8 +119,7 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
     [&handleTmp, &manager](const smtk::operation::Operation& op, smtk::operation::EventType event,
       smtk::operation::Operation::Result /*unused*/) -> int {
       std::cout << "[x] " << op.typeName() << " event " << static_cast<int>(event)
-                << " testing that an observer (" << handleTmp.first << " " << handleTmp.second
-                << ") can remove itself.\n";
+                << " testing that an observer can remove itself.\n";
       manager->observers().erase(handleTmp);
       return 0;
     });
@@ -156,9 +155,7 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
       return 1;
     });
 
-  smtkTest(handle != another, "Expected one handle (" << handle.first << " " << handle.second
-                                                      << ") and another (" << another.first << " "
-                                                      << another.second << ") to be distinct");
+  smtkTest(handle != another, "Expected handles to be distinct");
   smtkTest(
     static_cast<int>(manager->observers().erase(another)), "Could not unregister second observer");
 
@@ -168,11 +165,9 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
   testOp->m_outcome = smtk::operation::Operation::Outcome::FAILED;
   auto result = testOp->operate();
   // After the first operation, handleTmp should have been erased. Verify:
-  smtkTest(!manager->observers().find(handleTmp), "Observer ("
-      << handleTmp.first << " " << handleTmp.second
-      << ") could not remove itself during its callback.");
-  std::cout << "[x]                observer (" << handleTmp.first << " " << handleTmp.second
-            << ") could remove itself.\n";
+  smtkTest(
+    !manager->observers().find(handleTmp), "Observer could not remove itself during its callback.");
+  std::cout << "[x]                observer could remove itself.\n";
 
   // This generates no events since ableToOperate() fails
   testOp->m_outcome = smtk::operation::Operation::Outcome::UNABLE_TO_OPERATE;
@@ -182,8 +177,8 @@ int unitOperation(int /*unused*/, char* /*unused*/ [])
   result = testOp->operate();
   result = testOp->operate();
 
-  smtkTest(static_cast<int>(manager->observers().erase(handle)),
-    "Could not remove operation observer (" << handle.first << " " << handle.second << ")");
+  smtkTest(
+    static_cast<int>(manager->observers().erase(handle)), "Could not remove operation observer");
 
   smtkTest(obs == sizeof(expectedObservations) / sizeof(expectedObservations[0]), "Observed "
       << obs << " events,"

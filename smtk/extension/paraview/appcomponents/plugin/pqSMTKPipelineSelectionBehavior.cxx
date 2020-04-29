@@ -131,7 +131,7 @@ void pqSMTKPipelineSelectionBehavior::observeSelectionOnServer(
       }
     },
     "pqSMTKPipelineSelectionBehavior: Select ParaView pipeline representing SMTK selection.");
-  m_selectionObservers[seln] = observerId;
+  m_selectionObservers[seln] = std::move(observerId);
 }
 
 void pqSMTKPipelineSelectionBehavior::unobserveSelectionOnServer(

@@ -118,9 +118,9 @@ int TestThreadSafeLazyEvaluation(int /*unused*/, char** const /*unused*/)
     // Add an observer that accesses the operation's parameters from a separate
     // thread.
     smtk::operation::Operation::Parameters parametersFromObserver = nullptr;
-    operationManager->observers().insert(
-      [&](const smtk::operation::Operation& op, smtk::operation::EventType eventType,
-        smtk::operation::Operation::Result /*unused*/) -> int {
+    operationManager->observers()
+      .insert([&](const smtk::operation::Operation& op, smtk::operation::EventType eventType,
+                smtk::operation::Operation::Result /*unused*/) -> int {
         if (eventType == smtk::operation::EventType::WILL_OPERATE)
         {
           std::thread t([&]() {
@@ -130,7 +130,8 @@ int TestThreadSafeLazyEvaluation(int /*unused*/, char** const /*unused*/)
           t.detach();
         }
         return 0;
-      });
+      })
+      .release();
 
     // Register MyOperation
     operationManager->registerOperation<MyOperation>("MyOperation");

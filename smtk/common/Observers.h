@@ -13,6 +13,7 @@
 #include <functional>
 #include <limits>
 #include <map>
+#include <mutex>
 #include <set>
 #include <string>
 #include <type_traits>
@@ -56,32 +57,132 @@ namespace common
 /// Observer functors are simply called in sequence, and for Observer functions
 /// with a binary return value, where the observer results are aggregated via a
 /// bitwise OR operator.
+///
+/// When an Observer functor is added to an instance of Observers, a
+/// non-copyable Key is returned. The key can be used to remove the Observer
+/// functor, and the Observer functor is also scoped by the Key (when the Key
+/// goes out of scope, the Observer functor is removed from the Observers
+/// instance) by default. To decouple the Key's lifetime from that of the
+/// Observer functor, use the Key's release() method.
 template <typename Observer>
 class Observers
 {
+  friend class Key;
+
 public:
   /// A value to indicate the relative order in which an observer should be
   /// called. Larger is higher priority.
   typedef int Priority;
 
+private:
   /// A key by which an Observer can be accessed within the Observers instance.
-  struct Key : std::pair<int, int>
+  struct InternalKey : std::pair<int, int>
   {
     // By default, construct a null key.
-    Key()
+    InternalKey()
       : std::pair<Priority, int>(std::numeric_limits<Priority>::lowest(), -1)
     {
     }
-    Key(int i, int j)
+    InternalKey(int i, int j)
       : std::pair<int, int>(i, j)
     {
     }
+    ~InternalKey() = default;
+
     bool assigned() const { return this->second != -1; }
 
-    bool operator<(const Key& rhs) const
+    bool operator<(const InternalKey& rhs) const
     {
       return this->first == rhs.first ? this->second < rhs.second : rhs.first < this->first;
     }
+  };
+
+public:
+  class Key final : InternalKey
+  {
+    friend class Observers;
+
+  public:
+    Key()
+      : InternalKey()
+      , m_observers(nullptr)
+    {
+    }
+
+    Key(const Key&) = delete;
+    Key& operator=(const Key&) = delete;
+
+    Key(Key&& key)
+      : InternalKey(std::move(key))
+    {
+      m_observers = key.m_observers;
+      if (m_observers)
+      {
+        std::unique_lock<std::mutex> lock(m_observers->m_mutex);
+        m_observers->m_keys[*this] = this;
+        key.m_observers = nullptr;
+      }
+    }
+
+    Key& operator=(Key&& key)
+    {
+      if (m_observers)
+      {
+        std::unique_lock<std::mutex> lock(m_observers->m_mutex);
+        m_observers->erase(*this);
+      }
+
+      static_cast<InternalKey&>(*this) = std::move(static_cast<InternalKey&>(key));
+      m_observers = key.m_observers;
+
+      if (m_observers)
+      {
+        std::unique_lock<std::mutex> lock(m_observers->m_mutex);
+        m_observers->m_keys[*this] = this;
+        key.m_observers = nullptr;
+      }
+      return *this;
+    }
+
+    ~Key()
+    {
+      if (m_observers)
+      {
+        m_observers->erase(*this);
+        m_observers = nullptr;
+      }
+    }
+
+    bool operator==(const Key& rhs)
+    {
+      return this->first == rhs.first && this->second == rhs.second;
+    }
+    bool operator!=(const Key& rhs) { return !((*this) == rhs); }
+
+    bool assigned() const { return this->InternalKey::assigned(); }
+
+    void release()
+    {
+      if (m_observers)
+      {
+        std::unique_lock<std::mutex> lock(m_observers->m_mutex);
+        m_observers->m_keys.erase(*this);
+      }
+      m_observers = nullptr;
+    }
+
+  private:
+    Key(const InternalKey& key, Observers* observers)
+      : InternalKey(key)
+      , m_observers(observers)
+    {
+      if (m_observers)
+      {
+        m_observers->m_keys[key] = this;
+      }
+    }
+
+    Observers* m_observers;
   };
 
   /// A functor to optionally initialize Observers as they are inserted into the
@@ -97,6 +198,15 @@ public:
     : m_initializer(initializer)
     , m_observing(false)
   {
+  }
+
+  ~Observers()
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    for (auto& keypair : m_keys)
+    {
+      keypair.second->m_observers = nullptr;
+    }
   }
 
   /// The call operator calls each of its Observer functors in sequence if there
@@ -141,7 +251,7 @@ public:
     // Remove observers that were marked for erasure during observation.
     for (auto& toErase : m_toErase)
     {
-      m_observers.erase(toErase);
+      erase(toErase);
     }
     m_toErase.clear();
 
@@ -179,7 +289,7 @@ public:
     // Remove observers that were marked for erasure during observation.
     for (auto& toErase : m_toErase)
     {
-      m_observers.erase(toErase);
+      erase(toErase);
     }
     m_toErase.clear();
   }
@@ -211,10 +321,10 @@ public:
       // at the requested priority. To do this, we first access the first
       // observer at the priority lower than the requested priority. We then
       // access the observer before it.
-      typename std::map<Key, Observer>::iterator upper;
+      typename std::map<InternalKey, Observer>::iterator upper;
       if (priority != std::numeric_limits<Priority>::lowest())
       {
-        auto key = Key(priority - 1, -1);
+        auto key = InternalKey(priority - 1, -1);
         upper = m_observers.upper_bound(key);
 
         // If the found observer is the first observer in the map, the incident
@@ -238,15 +348,14 @@ public:
       // level.
       handleId = (upper->first.first == priority ? upper->first.second + 1 : 0);
     }
-    Key handle = Key(priority, handleId);
+    InternalKey handle = InternalKey(priority, handleId);
     if (initialize && m_initializer)
     {
       m_initializer(fn);
     }
 
     m_descriptions.insert(std::make_pair(handle, description));
-
-    return m_observers.insert(std::make_pair(handle, fn)).second ? handle : Key();
+    return m_observers.insert(std::make_pair(handle, fn)).second ? Key(handle, this) : Key();
   }
 
   Key insert(Observer fn, std::string description = "")
@@ -256,18 +365,20 @@ public:
 
   /// Indicate that an observer should no longer be called. Returns the number
   /// of remaining observers.
-  std::size_t erase(Key handle)
+  std::size_t erase(Key& handle)
   {
+    handle.release();
+
     if (m_observing)
     {
       m_toErase.insert(handle);
       return m_observers.size() - m_toErase.size();
     }
-    return m_observers.erase(handle);
+    return erase(static_cast<InternalKey&>(handle));
   }
 
   /// Return the observer for the given key if one exists or nullptr otherwise.
-  Observer find(Key handle) const
+  Observer find(const Key& handle) const
   {
     auto entry = m_observers.find(handle);
     return entry == m_observers.end() ? nullptr : entry->second;
@@ -294,12 +405,12 @@ protected:
   // A map of observers. The observers are held in a map so that they can be
   // referenced (and therefore removed) at a later time using the observer's
   // associated key.
-  std::map<Key, Observer> m_observers;
+  std::map<InternalKey, Observer> m_observers;
 
   // A map of descriptions. A descriptions can be manually added to an observer
   // during its insertion, or it can automatically refer to the location of the
   // observer's insertion in the source code if the ADD_OBSERVER macro is used.
-  std::map<Key, std::string> m_descriptions;
+  std::map<InternalKey, std::string> m_descriptions;
 
   // A functor to override the default behavior of the Observers' call method.
   Observer m_override;
@@ -308,8 +419,18 @@ protected:
   Initializer m_initializer;
 
 private:
+  std::size_t erase(const InternalKey& key)
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_keys.erase(key);
+    return m_observers.erase(key);
+  }
+
   bool m_observing;
-  std::set<Key> m_toErase;
+  std::set<InternalKey> m_toErase;
+
+  std::mutex m_mutex;
+  std::map<InternalKey, Key*> m_keys;
 };
 }
 }

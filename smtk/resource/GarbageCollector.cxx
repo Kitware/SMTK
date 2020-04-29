@@ -26,10 +26,10 @@ GarbageCollector::GarbageCollector() = default;
 
 GarbageCollector::~GarbageCollector()
 {
-  for (const auto& entry : m_observers)
+  for (auto& entry : m_observers)
   {
     auto manager = entry.first.lock();
-    auto observer = entry.second;
+    auto& observer = entry.second;
     if (observer.assigned() && manager)
     {
       manager->observers().erase(observer);
@@ -76,7 +76,7 @@ bool GarbageCollector::add(const smtk::operation::OperationPtr& deleter)
       },
       /* priority */ 0,
       /* initialize */ false);
-    m_observers.insert(std::pair<WeakManagerPtr, Key>(manager, key));
+    m_observers.insert(std::pair<WeakManagerPtr, Key>(manager, std::move(key)));
   }
 
   auto status = GarbageCollector::checkOperation(&*deleter);

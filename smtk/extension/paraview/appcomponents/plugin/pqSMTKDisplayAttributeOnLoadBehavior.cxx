@@ -99,7 +99,7 @@ void pqSMTKDisplayAttributeOnLoadBehavior::observeResourcesOnServer(
     0,    // assign a neutral priority
     true, // immediatelyNotify
     "pqSMTKDisplayAttributeOnLoadBehavior: Display new attribute resource in panel.");
-  m_resourceManagerObservers[rsrcMgr] = observerKey;
+  m_resourceManagerObservers[rsrcMgr] = std::move(observerKey);
 }
 
 void pqSMTKDisplayAttributeOnLoadBehavior::unobserveResourcesOnServer(

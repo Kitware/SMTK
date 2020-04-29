@@ -61,20 +61,22 @@ void testUpdateChildren(smtk::view::PhraseModel::Ptr phraseModel)
   idx.push_back(0);
   idx.push_back(1);
   int numObservations = 0;
-  phraseModel->observers().insert(
-    [&numObservations](DescriptivePhrasePtr pp, PhraseModelEvent pe, const std::vector<int>& src,
-      const std::vector<int>& dst, const std::vector<int>& delta) {
-      (void)src;
-      (void)dst;
-      std::cout << "Phrase event " << static_cast<int>(pe) << " " << pp->title() << " " << delta[0]
-                << " " << delta[1] << "\n";
-      smtkTest(delta.size() == 2, "Expecting phrase update to specify range of removed entries.");
-      smtkTest(delta[0] == 2 && delta[1] == 4, "Expecting delta = [2, 4].");
-      ++numObservations;
-    },
-    0,    // assign a neutral priority
-    false // Do not immediately notify of existing items.
-    );
+  phraseModel->observers()
+    .insert(
+      [&numObservations](DescriptivePhrasePtr pp, PhraseModelEvent pe, const std::vector<int>& src,
+        const std::vector<int>& dst, const std::vector<int>& delta) {
+        (void)src;
+        (void)dst;
+        std::cout << "Phrase event " << static_cast<int>(pe) << " " << pp->title() << " "
+                  << delta[0] << " " << delta[1] << "\n";
+        smtkTest(delta.size() == 2, "Expecting phrase update to specify range of removed entries.");
+        smtkTest(delta[0] == 2 && delta[1] == 4, "Expecting delta = [2, 4].");
+        ++numObservations;
+      },
+      0,    // assign a neutral priority
+      false // Do not immediately notify of existing items.
+      )
+    .release();
   phraseModel->updateChildren(phrModelSummary[3], phrFaces, idx);
   smtkTest(numObservations == 2, "Expected to observe removal of rows in 2 steps.");
   std::cout << "There are " << phrModelSummary[3]->subphrases().size() << " entries remaining.\n";

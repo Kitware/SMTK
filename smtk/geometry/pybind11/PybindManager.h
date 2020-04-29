@@ -21,8 +21,6 @@ PySharedPtrClass< smtk::geometry::Manager > pybind11_init_smtk_geometry_Manager(
 {
   PySharedPtrClass< smtk::geometry::Manager > instance(m, "Manager");
   instance
-    .def(py::init<::smtk::geometry::Manager const &>())
-    .def("deepcopy", (smtk::geometry::Manager & (smtk::geometry::Manager::*)(::smtk::geometry::Manager const &)) &smtk::geometry::Manager::operator=)
     .def_static("create", (std::shared_ptr<smtk::geometry::Manager> (*)()) &smtk::geometry::Manager::create)
     .def_static("create", (std::shared_ptr<smtk::geometry::Manager> (*)(::std::shared_ptr<smtk::geometry::Manager> &)) &smtk::geometry::Manager::create, py::arg("ref"))
     .def("registerResourceManager", &smtk::geometry::Manager::registerResourceManager, py::arg("manager"))
