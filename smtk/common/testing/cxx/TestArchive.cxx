@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/common/Archive.h"
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -86,7 +87,12 @@ int TestArchive(int /*unused*/, char** const /*unused*/)
 
     for (auto& name : contents)
     {
+#if defined(SMTK_CLANG) || (defined(SMTK_GCC) && __GNUC__ > 4) || defined(SMTK_MSVC)
       std::ifstream readFile(archive.get(name));
+#else
+      std::ifstream readFile;
+      archive.get(name, readFile);
+#endif
 
       std::ifstream testFile(filesAndContents[name].first);
 

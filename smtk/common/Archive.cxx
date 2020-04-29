@@ -354,6 +354,7 @@ std::set<std::string> Archive::contents() const
 
 std::ifstream Archive::get(const std::string& archivedFilePath)
 {
+#if defined(SMTK_CLANG) || (defined(SMTK_GCC) && __GNUC__ > 4) || defined(SMTK_MSVC)
   // if there are any files archived, extract them first
   if (m_internals->archived)
   {
@@ -368,9 +369,30 @@ std::ifstream Archive::get(const std::string& archivedFilePath)
     // return a stream to that file
     return std::ifstream(filepath->second);
   }
+#else
+  throw std::ios_base::failure("This method cannot be used with GCC < 5 due to a bug in GCC (see "
+                               "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53626)");
+#endif
 
   // we were unable to find an associated file; return the empty stream
   return std::ifstream();
+}
+
+void Archive::get(const std::string& archivedFilePath, std::ifstream& stream)
+{
+  // if there are any files archived, extract them first
+  if (m_internals->archived)
+  {
+    this->extract();
+  }
+
+  // find the file whose filename corresponds to the query
+  auto filepath = m_internals->filePaths.find(archivedFilePath);
+
+  if (filepath != m_internals->filePaths.end())
+  {
+    stream.open(filepath->second);
+  }
 }
 }
 }

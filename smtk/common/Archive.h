@@ -64,7 +64,18 @@ public:
 
   /// Acquire a stream to a file in the archive, accessed by its archived file
   /// path.
+  ///
+  /// This method cannot be used on GCC < 5 due to a bug (see
+  /// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53626). However, since we
+  /// put paths where they should be and not where people walk, this API will
+  /// remain in place.
   std::ifstream get(const std::string& archivedFilePath);
+
+  /// Acquire a stream to a file in the archive, accessed by its archived file
+  /// path. This method is functionally equivalent to the above get() method,
+  /// but is provided as a workaround for a bug in GCC <5 (see
+  /// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53626).
+  void get(const std::string& archivedFilePath, std::ifstream&);
 
 private:
   struct Internals;
