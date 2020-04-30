@@ -116,6 +116,12 @@ class SMTK_ALWAYS_EXPORT Factory
     }
 
     template <typename Type>
+    BaseType* operator()(InputType& args) const
+    {
+      return new Type(args);
+    }
+
+    template <typename Type>
     BaseType* operator()(const InputType& args) const
     {
       return new Type(args);
@@ -127,29 +133,23 @@ class SMTK_ALWAYS_EXPORT Factory
   template <typename... XInputTypes, bool dummy>
   class CreateWithInput<std::tuple<XInputTypes...>, dummy>
   {
-    template <typename Type, std::size_t... S>
-    BaseType* exec(identity<Type>, sequence<S...>, std::tuple<XInputTypes...>&& args) const
-    {
-      return new Type(std::get<S>(args)...);
-    }
-
-    template <typename Type, std::size_t... S>
-    BaseType* exec(identity<Type>, sequence<S...>, const std::tuple<XInputTypes...>& args) const
-    {
-      return new Type(std::get<S>(args)...);
-    }
-
   public:
     template <typename Type>
-    BaseType* operator()(std::tuple<XInputTypes...>&& args) const
+    BaseType* operator()(XInputTypes&&... args) const
     {
-      return exec(identity<Type>(), typename index_sequence<sizeof...(XInputTypes)>::type(), args);
+      return new Type(std::forward<XInputTypes>(args)...);
     }
 
     template <typename Type>
-    BaseType* operator()(const std::tuple<XInputTypes...>& args) const
+    BaseType* operator()(XInputTypes&... args) const
     {
-      return exec(identity<Type>(), typename index_sequence<sizeof...(XInputTypes)>::type(), args);
+      return new Type(args...);
+    }
+
+    template <typename Type>
+    BaseType* operator()(const XInputTypes&... args) const
+    {
+      return new Type(args...);
     }
   };
 
@@ -187,7 +187,8 @@ class SMTK_ALWAYS_EXPORT Factory
     template <typename Type>
     MetadataForInput(identity<Type>)
       : m_rcreate([](InputType&& args) -> BaseType* {
-        return CreateWithInput<InputType>().template operator()<Type>(args);
+        return CreateWithInput<InputType>().template operator()<Type>(
+          std::forward<InputType>(args));
       })
       , m_lcreate([](const InputType& args) -> BaseType* {
         return CreateWithInput<InputType>().template operator()<Type>(args);
@@ -203,6 +204,24 @@ class SMTK_ALWAYS_EXPORT Factory
   private:
     std::function<BaseType*(InputType&&)> m_rcreate;
     std::function<BaseType*(const InputType&)> m_lcreate;
+  };
+
+  template <typename... XInputTypes, bool dummy>
+  class MetadataForInput<std::tuple<XInputTypes...>, dummy>
+  {
+  public:
+    template <typename Type>
+    MetadataForInput(identity<Type>)
+      : m_create([](XInputTypes&... args) -> BaseType* {
+        return CreateWithInput<std::tuple<XInputTypes...> >().template operator()<Type>(args...);
+      })
+    {
+    }
+
+    BaseType* create(XInputTypes&... args) const { return m_create(args...); }
+
+  private:
+    std::function<BaseType*(XInputTypes&...)> m_create;
   };
 
   // A specialization for default constructors that accept no parameters, since
@@ -255,7 +274,8 @@ class SMTK_ALWAYS_EXPORT Factory
 
   // Our Metadata type has an unwieldy name, so we create a convenience typedef
   // for readability.
-  typedef MetadataForInputs<typename std::decay<InputTypes>::type...> Metadata;
+  typedef MetadataForInputs<typename recursive<std::remove_reference, InputTypes>::type...>
+    Metadata;
 
   // Internally, we hold our metadata instances using a boost multiindex array.
   // This allows us to access metadata in constant time using either the type
@@ -420,8 +440,8 @@ private:
     {
       const Metadata& metadata = *search;
       return std::unique_ptr<BaseType>{
-        static_cast<const MetadataForInput<typename std::decay<Arg>::type>&>(metadata).create(
-          std::forward<Arg>(arg))
+        static_cast<const MetadataForInput<typename std::remove_reference<Arg>::type>&>(metadata)
+          .create(std::forward<Arg>(arg))
       };
     }
     return std::unique_ptr<BaseType>();
@@ -435,9 +455,10 @@ private:
     if (search != byIndex.end())
     {
       return std::unique_ptr<BaseType>{
-        static_cast<const MetadataForInput<std::tuple<typename std::decay<Args>::type...> >&>(
+        static_cast<
+          const MetadataForInput<std::tuple<typename std::remove_reference<Args>::type...> >&>(
           *search)
-          .create(std::make_tuple(args...))
+          .create(args...)
       };
     }
     return std::unique_ptr<BaseType>();

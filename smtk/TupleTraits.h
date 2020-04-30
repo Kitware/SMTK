@@ -210,6 +210,27 @@ struct reverse_tuple<std::tuple<T, Args...> >
       std::declval<std::tuple<T> >()));
 };
 
+/// Takes a template class and a tuple and returns a tuple of elements
+/// transformed by the template class, recursing through nested tuples if
+/// necessary.
+///
+/// Examples:
+/// ```
+///   recursive<std::remove_reference, std::tuple<bool&, std::tuple<int&, float&> >::type ==
+///    std::tuple<bool, std::tuple<int, float> >
+/// ```
+template <template <typename> class X, typename T>
+struct recursive
+{
+  using type = typename X<T>::type;
+};
+
+template <template <typename> class X, typename... Args>
+struct recursive<X, std::tuple<Args...> >
+{
+  using type = typename X<std::tuple<typename recursive<X, Args>::type...> >::type;
+};
+
 /// Takes a tuple and removes any types that are bases of any other types in the
 /// tuple.
 template <typename T>
