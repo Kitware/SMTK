@@ -50,6 +50,9 @@ public:
   }
   static QColor defaultPhraseColor(const std::string& entityType);
 
+  /// make a QIcon from an svg string buffer.
+  static QIcon getSVGIcon(const std::string& iconBuffer);
+
   /// Set and get the icons to be used when visibility is to be drawn
   std::string visibleIconURL() const { return m_visibleIconURL; }
   std::string invisibleIconURL() const { return m_invisibleIconURL; }

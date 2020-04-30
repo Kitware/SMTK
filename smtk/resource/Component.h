@@ -7,11 +7,6 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Component.h - Abstract base class for SMTK Resource Components
-// .SECTION Description
-//   A SMTK Component is a piece of a Resource such as an Attribute, ModelEntity,
-//  or MeshEntity
-// .SECTION See Also
 
 #ifndef smtk_resource_Component_h
 #define smtk_resource_Component_h
@@ -28,6 +23,10 @@ namespace resource
 {
 class Resource;
 
+/// Abstract base class for SMTK Resource Components
+///
+/// A SMTK Component is a piece of a Resource such as an Attribute, ModelEntity,
+/// or MeshEntity
 class SMTKCORE_EXPORT Component : public PersistentObject
 {
   friend class Resource;

@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/extension/qt/qtViewRegistrar.h"
 
+#include "smtk/extension/qt/TypeAndColorBadge.h"
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
@@ -35,6 +36,7 @@ typedef std::tuple<qtAnalysisView, qtAssociationView, qtAttributeView, qtCategor
   qtGroupView, qtInstancedView, qtModelEntityAttributeView, qtOperationView, qtResourceBrowser,
   qtSelectorView, qtSimpleExpressionView>
   ViewWidgetList;
+using BadgeList = std::tuple<smtk::extension::qt::TypeAndColorBadge>;
 }
 
 void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
@@ -52,6 +54,8 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtCategorySelectorView>("Category");
   manager->viewWidgetFactory().addAlias<qtModelEntityAttributeView>("ModelEntity");
   manager->viewWidgetFactory().addAlias<qtResourceBrowser>("ResourceBrowser");
+
+  manager->badgeFactory().registerTypes<BadgeList>();
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& manager)

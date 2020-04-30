@@ -77,8 +77,8 @@ public:
 
   // return which icon the Point position is on
   // 'visible', 'color', or empty string;
-  std::string determineAction(
-    const QPoint& pPos, const QModelIndex& idx, const QStyleOptionViewItem& option) const;
+  // std::string determineAction(
+  //   const QPoint& pPos, const QModelIndex& idx, const QStyleOptionViewItem& option) const;
 
 protected:
   bool eventFilter(QObject* editor, QEvent* event) override;

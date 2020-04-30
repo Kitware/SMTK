@@ -319,6 +319,11 @@ QVariant qtDescriptivePhraseModel::headerData(
   return QVariant();
 }
 
+QIcon qtDescriptivePhraseModel::getSVGIcon(const std::string& iconBuffer)
+{
+  return QIcon(new SVGIconEngine(iconBuffer));
+}
+
 /// Relate information, by its \a role, from a \a DescriptivePhrasePtr to the Qt model.
 QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
 {

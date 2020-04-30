@@ -58,6 +58,7 @@ set(QAttrLibSrcs
   qtSMTKUtilities.cxx
   qtDateTimeItem.cxx
   RedirectOutput.cxx
+  TypeAndColorBadge.cxx
   )
 
 set(QAttrLibUIs
