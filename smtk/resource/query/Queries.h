@@ -93,8 +93,7 @@ public:
     catch (BadTypeError&)
     {
       auto& queries = m_queries.data();
-      auto inserted =
-        queries.emplace(std::make_pair(index, std::move(m_factory.create(index)))).first;
+      auto inserted = queries.emplace(std::make_pair(index, m_factory.create(index))).first;
       return static_cast<QueryType&>(*(inserted->second));
     }
   }

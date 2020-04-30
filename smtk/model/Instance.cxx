@@ -116,7 +116,6 @@ static void GenerateRandomOnSurfaceTessellation(Instance& inst, Tessellation* pl
     seed = inst.integerProperty("seed");
   }
   std::size_t npts = numPts[0];
-  unsigned iseed = static_cast<unsigned>(seed[0]);
 
   auto sampleSurfaceEntity = sampleSurface.entityRecord();
 

@@ -91,6 +91,10 @@ Resource::Resource(const smtk::common::UUID& resourceID, smtk::mesh::InterfacePt
 
 Resource::~Resource()
 {
+  // Our interface query caches should be flushed before our interface goes out
+  // of scope.
+  queries().caches().clear();
+
   delete m_internals;
 }
 

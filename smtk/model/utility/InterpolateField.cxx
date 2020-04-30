@@ -88,10 +88,10 @@ std::vector<Weights> computeWeights(
       }
 
       std::size_t counter = 0;
-      for (std::size_t i = 0; i < samplePoints.size(); i += 3)
+      for (std::size_t j = 0; j < samplePoints.size(); j += 3)
       {
-        std::array<double, 3> input{ { samplePoints[i], samplePoints[i + 1],
-          samplePoints[i + 2] } };
+        std::array<double, 3> input{ { samplePoints[j], samplePoints[j + 1],
+          samplePoints[j + 2] } };
         double distance = (*distanceTo)(entity, input).first;
         pointProfiles[counter++].push_back(std::make_pair(distance, attribute.get()));
       }

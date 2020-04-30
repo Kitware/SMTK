@@ -42,7 +42,7 @@ public:
   template <typename QueryType>
   bool registerQuery()
   {
-    return registerQuery(std::move(Metadata(identity<QueryType>())));
+    return registerQuery(Metadata(identity<QueryType>()));
   }
 
   /// Register a Query type using a provided priority functor. Queries must be
@@ -50,7 +50,7 @@ public:
   template <typename QueryType>
   bool registerQuery(std::function<int(const std::size_t&)> priority)
   {
-    return registerQuery(std::move(Metadata(identity<QueryType>(), priority)));
+    return registerQuery(Metadata(identity<QueryType>(), priority));
   }
 
   /// Register a Query type using the Query type's Metadata.
