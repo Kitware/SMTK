@@ -25,19 +25,20 @@ namespace appcomponents
 
 namespace
 {
-typedef std::tuple<pqSMTKResourceBrowser> ViewWidgetList;
+using ViewWidgetList = std::tuple<pqSMTKResourceBrowser>;
+using BadgeList = std::tuple<VisibilityBadge>;
 }
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->registerViewWidgets<ViewWidgetList>();
-  viewManager->badgeFactory().registerBadge<VisibilityBadge>();
+  viewManager->badgeFactory().registerTypes<BadgeList>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
   viewManager->unregisterViewWidgets<ViewWidgetList>();
-  viewManager->badgeFactory().unregisterBadge<VisibilityBadge>();
+  viewManager->badgeFactory().unregisterTypes<BadgeList>();
 }
 }
 }

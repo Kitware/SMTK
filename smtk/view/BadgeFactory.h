@@ -13,6 +13,7 @@
 #include "smtk/view/BadgeSet.h"
 #include "smtk/view/Configuration.h"
 
+#include "smtk/common/Factory.h"
 #include "smtk/common/TypeName.h"
 
 #include <functional>
@@ -39,67 +40,9 @@ namespace view
   * Configuration::Component.
   */
 class SMTKCORE_EXPORT BadgeFactory
+  : public smtk::common::Factory<Badge, void,
+      smtk::common::factory::Inputs<BadgeSet&, const Configuration::Component&> >
 {
-public:
-  using BadgeConstructor =
-    std::function<std::unique_ptr<Badge>(BadgeSet&, const Configuration::Component&)>;
-
-  /// Register a badge type.
-  template <typename BadgeType>
-  bool registerBadge()
-  {
-    BadgeType temporaryBadge;
-    std::string name = temporaryBadge.typeName();
-
-    return this->registerBadge(
-      name, [](BadgeSet& parent, const smtk::view::Configuration::Component& config) {
-        auto badge = std::unique_ptr<Badge>(new BadgeType(parent, config));
-        return badge;
-      });
-  }
-
-  bool registerBadge(const std::string& typeName, const BadgeConstructor& ctor)
-  {
-    if (typeName.empty() || !ctor)
-    {
-      return false;
-    }
-
-    m_badges[typeName] = ctor;
-    return true;
-  }
-
-  template <typename BadgeType>
-  bool unregisterBadge()
-  {
-    BadgeType temporaryBadge;
-    std::string name = temporaryBadge.typeName();
-    if (name.empty())
-    {
-      return false;
-    }
-
-    return m_badges.erase(name) > 0;
-  }
-
-  /// represents.
-  bool unregisterBadge(const std::string& typeName) { return m_badges.erase(typeName) > 0; }
-
-  std::unique_ptr<Badge> create(const std::string& typeName, smtk::view::BadgeSet& parent,
-    const smtk::view::Configuration::Component& config) const
-  {
-    auto it = m_badges.find(typeName);
-    if (it == m_badges.end())
-    {
-      return nullptr;
-    }
-    auto badge = it->second(parent, config);
-    return badge;
-  }
-
-private:
-  /// A container for all registered badge constructors.
-  std::map<std::string, BadgeConstructor> m_badges;
 };
 }
 }
