@@ -30,7 +30,7 @@ class SMTKCORE_EXPORT Metadata
   friend class Factory;
 
   Metadata(std::size_t index, std::function<int(const std::size_t&)> priorityFunctor,
-    std::function<Query* const()> createFunctor)
+    std::function<Query*()> createFunctor)
     : create(createFunctor)
     , priority(priorityFunctor)
     , m_index(index)
@@ -44,7 +44,7 @@ class SMTKCORE_EXPORT Metadata
   }
 
   template <typename QueryType>
-  Metadata(identity<QueryType> qt)
+  Metadata(identity<QueryType>)
     : Metadata(QueryType::type_index,
         [](const std::size_t& typeIndex) {
           return QueryType::numberOfGenerationsFromType(typeIndex);
@@ -55,7 +55,7 @@ class SMTKCORE_EXPORT Metadata
 
   const std::size_t& index() const { return m_index; }
 
-  std::function<Query* const()> create = []() { return nullptr; };
+  std::function<Query*()> create = []() { return nullptr; };
   std::function<int(const std::size_t&)> priority = [](
     const std::size_t&) { return std::numeric_limits<int>::lowest(); };
 

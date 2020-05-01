@@ -22,6 +22,7 @@ constexpr double EPSILON = 1.e-8;
 
 struct QueryA : smtk::resource::query::DerivedFrom<QueryA, smtk::resource::query::Query>
 {
+  virtual ~QueryA() = default;
   virtual double foo() const { return 2.; }
 };
 
