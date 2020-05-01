@@ -12,10 +12,4 @@ PRIVATE_DEPENDS
   VTK::CommonTransforms
   VTK::FiltersCore
   VTK::FiltersGeneral
-  VTK::IOGDAL
-  VTK::IOGeometry
-  VTK::IOImage
-  VTK::IOPLY
-  VTK::IOXML
-  VTK::RenderingCore
   VTK::vtksys
