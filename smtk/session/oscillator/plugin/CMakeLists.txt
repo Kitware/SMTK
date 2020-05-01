@@ -14,4 +14,5 @@ target_link_libraries(smtkOscillatorSessionPlugin
     smtkOscillatorSession
     vtkSMTKGeometryExt
     vtkSMTKModelExt
+    VTK::FiltersGeneral
     VTK::FiltersSources)

@@ -34,7 +34,6 @@
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataNormals.h"
-#include "vtkProperty.h"
 #include "vtkStringArray.h"
 #include "vtkSuperquadricSource.h"
 #include "vtkTransform.h"
