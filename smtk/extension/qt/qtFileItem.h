@@ -84,7 +84,7 @@ protected:
   virtual void clearChildWidgets();
 
 private:
-  qtFileItemInternals* Internals;
+  qtFileItemInternals* m_internals;
 
 }; // class
 }; // namespace attribute
