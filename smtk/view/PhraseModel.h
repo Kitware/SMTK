@@ -259,15 +259,15 @@ protected:
     smtk::view::SelectionObservers::Key m_selnHandle;
     Source() {}
     Source(smtk::resource::ManagerPtr rm, smtk::operation::ManagerPtr om, smtk::view::ManagerPtr vm,
-      smtk::view::SelectionPtr sn, smtk::resource::Observers::Key rh,
-      smtk::operation::Observers::Key oh, smtk::view::SelectionObservers::Key sh)
+      smtk::view::SelectionPtr sn, smtk::resource::Observers::Key&& rh,
+      smtk::operation::Observers::Key&& oh, smtk::view::SelectionObservers::Key&& sh)
       : m_rsrcMgr(rm)
       , m_operMgr(om)
       , m_viewMgr(vm)
       , m_seln(sn)
-      , m_rsrcHandle(rh)
-      , m_operHandle(oh)
-      , m_selnHandle(sh)
+      , m_rsrcHandle(std::move(rh))
+      , m_operHandle(std::move(oh))
+      , m_selnHandle(std::move(sh))
     {
     }
   };

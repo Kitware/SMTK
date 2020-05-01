@@ -21,12 +21,10 @@
 
 namespace py = pybind11;
 
-PySharedPtrClass< smtk::resource::Manager > pybind11_init_smtk_resource_Manager(py::module &m)
+PySharedPtrClass<smtk::resource::Manager> pybind11_init_smtk_resource_Manager(py::module& m)
 {
-  PySharedPtrClass< smtk::resource::Manager > instance(m, "Manager");
+  PySharedPtrClass<smtk::resource::Manager> instance(m, "Manager");
   instance
-    .def(py::init<::smtk::resource::Manager const &>())
-    .def("deepcopy", (smtk::resource::Manager & (smtk::resource::Manager::*)(::smtk::resource::Manager const &)) &smtk::resource::Manager::operator=)
     .def("add", (bool (smtk::resource::Manager::*)(const smtk::resource::Resource::Index&, const std::shared_ptr<smtk::resource::Resource>&)) &smtk::resource::Manager::add)
     .def("add", (bool (smtk::resource::Manager::*)(const std::shared_ptr<smtk::resource::Resource>&)) &smtk::resource::Manager::add)
     .def_static("create", (std::shared_ptr<smtk::resource::Manager> (*)()) &smtk::resource::Manager::create)

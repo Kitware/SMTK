@@ -235,7 +235,8 @@ bool PhraseModel::addSource(smtk::resource::ManagerPtr rsrcMgr, smtk::operation:
         true, // observeImmediately
         description.str() + "Update phrases when selection changes.")
     : smtk::view::SelectionObservers::Key();
-  m_sources.emplace_back(rsrcMgr, operMgr, viewMgr, seln, rsrcHandle, operHandle, selnHandle);
+  m_sources.emplace_back(rsrcMgr, operMgr, viewMgr, seln, std::move(rsrcHandle),
+    std::move(operHandle), std::move(selnHandle));
   return true;
 }
 
@@ -248,18 +249,6 @@ bool PhraseModel::removeSource(smtk::resource::ManagerPtr rsrcMgr,
     if (it->m_rsrcMgr == rsrcMgr && it->m_operMgr == operMgr && it->m_viewMgr == viewMgr &&
       it->m_seln == seln)
     {
-      if (it->m_rsrcHandle != smtk::resource::Observers::Key())
-      {
-        it->m_rsrcMgr->observers().erase(it->m_rsrcHandle);
-      }
-      if (it->m_operHandle != smtk::operation::Observers::Key())
-      {
-        it->m_operMgr->observers().erase(it->m_operHandle);
-      }
-      if (it->m_selnHandle != smtk::view::SelectionObservers::Key())
-      {
-        it->m_seln->observers().erase(it->m_selnHandle);
-      }
       m_sources.erase(it);
       return true;
     }
