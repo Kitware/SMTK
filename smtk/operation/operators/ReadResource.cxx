@@ -90,7 +90,7 @@ ReadResource::Result ReadResource::operateInternal()
       try
       {
         j = json::parse(file);
-        type = j.at("type");
+        type = j.at("type").get<std::string>();
         fileTypeKnown = true;
       }
       catch (std::exception&)
@@ -106,7 +106,7 @@ ReadResource::Result ReadResource::operateInternal()
             auto jtype = it->find("type");
             if (jtype != it->end() && jtype.value() == "session")
             {
-              type = it->find("name").value();
+              type = it->find("name").value().get<std::string>();
               fileTypeKnown = true;
             }
           }

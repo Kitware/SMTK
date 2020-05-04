@@ -67,14 +67,14 @@ void from_json(const json& j, OperationFilterSortPtr& ofs, smtk::operation::Mana
   for (auto entry : j.at("filterList"))
   {
     auto& filter = filterList[meta.find(entry.at("operation"))->index()];
-    filter.name = entry.at("name");
+    filter.name = entry.at("name").get<std::string>();
     if (entry.find("description") != entry.end())
     {
-      filter.description = entry.at("description");
+      filter.description = entry.at("description").get<std::string>();
     }
     if (entry.find("iconName") != entry.end())
     {
-      filter.iconName = entry.at("iconName");
+      filter.iconName = entry.at("iconName").get<std::string>();
     }
     if (entry.find("precedence") != entry.end())
     {

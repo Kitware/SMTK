@@ -11,7 +11,7 @@
 #ifndef smtk_session_mesh_BoundingBox_h
 #define smtk_session_mesh_BoundingBox_h
 
-#include "smtk/CoreExports.h"
+#include "smtk/session/mesh/Exports.h"
 
 #include "smtk/geometry/queries/BoundingBox.h"
 
@@ -29,7 +29,7 @@ namespace mesh
 /**\brief An API for computing the bounding box for a geometric resource
   * or component.
   */
-struct SMTKCORE_EXPORT BoundingBox
+struct SMTKMESHSESSION_EXPORT BoundingBox
   : public smtk::resource::query::DerivedFrom<BoundingBox, smtk::geometry::BoundingBox>
 {
   virtual std::array<double, 6> operator()(const smtk::resource::PersistentObjectPtr& object) const

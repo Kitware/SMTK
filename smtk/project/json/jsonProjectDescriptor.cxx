@@ -49,9 +49,9 @@ void from_json(const json& j, ProjectDescriptor& pd)
     throw std::runtime_error(ss.str());
   }
 
-  pd.m_simulationCode = j.at("simulationCode");
-  pd.m_name = j.at("projectName");
-  pd.m_directory = j.at("projectDirectory");
+  pd.m_simulationCode = j.at("simulationCode").get<std::string>();
+  pd.m_name = j.at("projectName").get<std::string>();
+  pd.m_directory = j.at("projectDirectory").get<std::string>();
   auto jDescriptors = j.at("resources");
   for (auto& jDescriptor : jDescriptors)
   {

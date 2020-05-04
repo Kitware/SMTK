@@ -39,13 +39,13 @@ class SMTKCORE_EXPORT Metadata
 
   template <typename QueryType>
   Metadata(identity<QueryType>, std::function<int(const std::size_t&)> priorityFunctor)
-    : Metadata(QueryType::type_index, priorityFunctor, []() { return new QueryType; })
+    : Metadata(QueryType::typeIndex(), priorityFunctor, []() { return new QueryType; })
   {
   }
 
   template <typename QueryType>
   Metadata(identity<QueryType>)
-    : Metadata(QueryType::type_index,
+    : Metadata(QueryType::typeIndex(),
         [](const std::size_t& typeIndex) {
           return QueryType::numberOfGenerationsFromType(typeIndex);
         },

@@ -27,12 +27,12 @@ void to_json(json& j, const ResourceDescriptor& rd)
 
 void from_json(const json& j, ResourceDescriptor& rd)
 {
-  rd.m_filename = j.at("filename");
-  rd.m_identifier = j.at("identifier");
-  rd.m_importLocation = j.at("importLocation");
-  rd.m_typeName = j.at("typeName");
+  rd.m_filename = j.at("filename").get<std::string>();
+  rd.m_identifier = j.at("identifier").get<std::string>();
+  rd.m_importLocation = j.at("importLocation").get<std::string>();
+  rd.m_typeName = j.at("typeName").get<std::string>();
 
-  std::string uuidString = j.at("uuid");
+  std::string uuidString = j.at("uuid").get<std::string>();
   rd.m_uuid = smtk::common::UUID(uuidString);
 } // from_json()
 

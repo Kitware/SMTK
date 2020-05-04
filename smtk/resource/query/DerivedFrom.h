@@ -31,7 +31,7 @@ namespace query
 /// all have an associated type_index and to facilitate type walking for the
 /// default priority algorithm.
 template <typename SelfType, typename ParentType>
-class DerivedFrom : public ParentType
+class SMTK_ALWAYS_EXPORT DerivedFrom : public ParentType
 {
   static_assert(std::is_base_of<Query, ParentType>::value,
     "Queries must inherit from smtk::resource::query::Query or its children");
@@ -39,7 +39,7 @@ class DerivedFrom : public ParentType
   friend class Metadata;
 
 public:
-  static const std::size_t type_index;
+  static std::size_t typeIndex() { return typeid(SelfType).hash_code(); }
 
 protected:
   typedef ParentType Parent;
@@ -49,14 +49,10 @@ protected:
   /// unrelated.
   static int numberOfGenerationsFromType(const std::size_t index)
   {
-    return (DerivedFrom<SelfType, Parent>::type_index == index ? 0 : 1 +
+    return (DerivedFrom<SelfType, Parent>::typeIndex() == index ? 0 : 1 +
           Parent::numberOfGenerationsFromType(index));
   }
 };
-
-template <typename SelfType, typename ParentType>
-const std::size_t DerivedFrom<SelfType, ParentType>::type_index =
-  std::type_index(typeid(SelfType)).hash_code();
 }
 }
 }

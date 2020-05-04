@@ -284,7 +284,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::attribute::Definit
     auto assocName = result->find("Name");
     if (assocName != result->end())
     {
-      aname = *assocName;
+      aname = assocName->get<std::string>();
     }
     else
     {

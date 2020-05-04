@@ -44,6 +44,21 @@ struct SMTKCORE_EXPORT PointLocatorCache : public smtk::operation::SynchronizedC
     ::moab::AdaptiveKDTree m_tree;
   };
 
+  PointLocatorCache() = default;
+  ~PointLocatorCache() = default;
+  PointLocatorCache(const PointLocatorCache&) = delete;
+  PointLocatorCache(PointLocatorCache&& rhs)
+    : m_caches(std::move(rhs.m_caches))
+  {
+  }
+
+  PointLocatorCache& operator=(const PointLocatorCache&) = delete;
+  PointLocatorCache& operator=(PointLocatorCache&& rhs)
+  {
+    m_caches = std::move(rhs.m_caches);
+    return *this;
+  }
+
   void synchronize(const smtk::operation::Operation&, const smtk::operation::Operation::Result&);
 
   std::unordered_map<smtk::common::UUID, std::unique_ptr<CacheForIndex> > m_caches;
