@@ -36,12 +36,11 @@ namespace view
 {
 namespace
 {
-typedef std::tuple<ResourcePhraseModel, ComponentPhraseModel, ReferenceItemPhraseModel,
-  SelectionPhraseModel>
-  PhraseModelList;
-typedef std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator, EmptySubphraseGenerator,
-  QueryFilterSubphraseGenerator>
-  SubphraseGeneratorList;
+using PhraseModelList = std::tuple<ResourcePhraseModel, ComponentPhraseModel,
+  ReferenceItemPhraseModel, SelectionPhraseModel>;
+using SubphraseGeneratorList = std::tuple<SubphraseGenerator, TwoLevelSubphraseGenerator,
+  EmptySubphraseGenerator, QueryFilterSubphraseGenerator>;
+using BadgeList = std::tuple<AssociationBadge, ObjectIconBadge>;
 }
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
@@ -54,8 +53,7 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
   viewManager->iconFactory().registerIconConstructor<smtk::mesh::Resource>(MeshIconConstructor());
   viewManager->iconFactory().registerIconConstructor<smtk::model::Resource>(ModelIconConstructor());
 
-  viewManager->badgeFactory().registerBadge<AssociationBadge>();
-  viewManager->badgeFactory().registerBadge<ObjectIconBadge>();
+  viewManager->badgeFactory().registerTypes<BadgeList>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
@@ -63,8 +61,7 @@ void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
   viewManager->phraseModelFactory().unregisterTypes<PhraseModelList>();
   viewManager->unregisterSubphraseGenerators<SubphraseGeneratorList>();
 
-  viewManager->badgeFactory().unregisterBadge<AssociationBadge>();
-  viewManager->badgeFactory().unregisterBadge<ObjectIconBadge>();
+  viewManager->badgeFactory().unregisterTypes<BadgeList>();
 }
 }
 }

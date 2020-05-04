@@ -31,6 +31,8 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include <tuple>
+
 static int maxIndent = 6;
 static std::vector<char*> dataArgs;
 
@@ -100,8 +102,7 @@ int unitBadge(int argc, char* argv[])
 {
   smtk::io::Logger::instance().setFlushToStdout(true);
   auto viewManager = smtk::view::Manager::create();
-  viewManager->badgeFactory().registerBadge<BadgeA>();
-  viewManager->badgeFactory().registerBadge<BadgeB>();
+  viewManager->badgeFactory().registerTypes<std::tuple<BadgeA, BadgeB> >();
   json j = { { "Name", "Test" }, { "Type", "smtk::view::ResourcePhraseModel" },
     { "Component",
       { { "Name", "Details" }, { "Type", "smtk::view::ResourcePhraseModel" },

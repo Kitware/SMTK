@@ -62,7 +62,7 @@ void BadgeSet::configure(const Configuration* viewSpec, const smtk::view::Manage
       if (configComp.attribute("Type", badgeName))
       {
         // Construct a badge with that name via the view manager:
-        auto badge = manager->badgeFactory().create(badgeName, *this, configComp);
+        auto badge = manager->badgeFactory().createFromName(badgeName, *this, configComp);
         if (badge)
         {
           m_badges.push_back(std::move(badge));
