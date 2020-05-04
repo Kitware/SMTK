@@ -191,7 +191,7 @@ void from_json(const json& j, smtk::session::polygon::Resource::Ptr& resource)
       std::string etype;
       try
       {
-        etype = (*entry).at("type");
+        etype = (*entry).at("type").get<std::string>();
       }
       catch (std::exception&)
       {

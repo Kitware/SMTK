@@ -33,6 +33,22 @@ public:
   Queries() {}
   virtual ~Queries() {}
 
+  Queries(const Queries&) = delete;
+  Queries(Queries&& rhs)
+    : m_caches(std::move(rhs.m_caches))
+    , m_queries(std::move(rhs.m_queries))
+    , m_factory(std::move(rhs.m_factory))
+  {
+  }
+  Queries& operator=(const Queries&) = delete;
+  Queries& operator=(Queries&& rhs)
+  {
+    m_caches = std::move(rhs.m_caches);
+    m_queries = std::move(rhs.m_queries);
+    m_factory = std::move(rhs.m_factory);
+    return *this;
+  }
+
   /// Register a Query type using the default priority functor. Queries must be
   /// default constructible.
   template <typename QueryType>

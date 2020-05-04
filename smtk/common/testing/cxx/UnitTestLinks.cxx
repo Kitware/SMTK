@@ -35,7 +35,7 @@ void to_json(nlohmann::json& j, const MyBase& myBase)
 
 void from_json(const nlohmann::json& j, MyBase& myBase)
 {
-  myBase.value = j["value"];
+  myBase.value = j["value"].get<std::string>();
 }
 
 void UnitTest()

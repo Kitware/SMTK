@@ -179,7 +179,7 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
             auto queryName = query->find("Name");
             if (queryName != query->end())
             {
-              expName = *queryName;
+              expName = queryName->get<std::string>();
               expAtt = resPtr->findAttribute(expName);
               if (!expAtt)
               {
@@ -225,7 +225,7 @@ static void processDerivedValueFromJson(const json& j, ItemType itemPtr,
         auto expNameQuery = j.find("ExpressionName");
         if (expNameQuery != j.end())
         {
-          expName = *expNameQuery;
+          expName = expNameQuery->get<std::string>();
           expAtt = resPtr->findAttribute(expName);
         }
 

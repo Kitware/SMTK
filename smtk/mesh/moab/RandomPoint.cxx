@@ -133,7 +133,7 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
     if (m_seed != mersenneTwisterCache.seed)
     {
       mersenneTwisterCache.seed = m_seed;
-      mersenneTwisterCache.mt.seed(m_seed);
+      mersenneTwisterCache.mt.seed(static_cast<unsigned int>(m_seed));
     }
 
     std::uniform_real_distribution<double> dist(0., 1.0);

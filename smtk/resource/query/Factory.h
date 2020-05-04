@@ -68,7 +68,7 @@ public:
   template <typename QueryType>
   bool unregisterQuery()
   {
-    return unregisterQuery(QueryType::type_index);
+    return unregisterQuery(QueryType::typeIndex());
   }
 
   /// Unregister a Query type using its type index.

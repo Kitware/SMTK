@@ -91,7 +91,7 @@ SMTKCORE_EXPORT void processFromRefItemSpec(
         continue;
       }
 
-      attName = *iter;
+      attName = iter->get<std::string>();
       att = resPtr->findAttribute(attName);
       if (att == nullptr)
       {
@@ -111,7 +111,7 @@ SMTKCORE_EXPORT void processFromRefItemSpec(
     auto val = j.find("Val");
     if (val != j.end())
     {
-      attName = *val;
+      attName = val->get<std::string>();
       att = resPtr->findAttribute(attName);
       if (!att)
       {

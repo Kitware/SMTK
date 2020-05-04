@@ -70,6 +70,8 @@ protected:
   };
 
   GarbageCollector();
+  GarbageCollector(const GarbageCollector&) = delete;
+  GarbageCollector& operator=(const GarbageCollector&) = delete;
 
   int collectGarbage(const smtk::operation::Operation&, smtk::operation::EventType,
     smtk::operation::Operation::Result);

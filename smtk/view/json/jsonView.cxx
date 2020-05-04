@@ -55,7 +55,7 @@ SMTKCORE_EXPORT void from_json(const nlohmann::json& j, smtk::view::Configuratio
       std::string val;
       if (attribute.value().is_string())
       {
-        val = attribute.value();
+        val = attribute.value().get<std::string>();
       }
       else
       {
