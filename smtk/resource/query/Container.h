@@ -54,7 +54,9 @@ public:
     auto search = m_container.find(typeid(Type).hash_code());
     if (search == m_container.end())
     {
-      search = m_container.emplace(std::make_pair(typeid(Type).hash_code(), new Type)).first;
+      search =
+        m_container.emplace(std::make_pair(typeid(Type).hash_code(), std::unique_ptr<T>(new Type)))
+          .first;
     }
 
     return static_cast<Type&>(*(search->second));
