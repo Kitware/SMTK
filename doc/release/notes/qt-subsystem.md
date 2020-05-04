@@ -17,7 +17,8 @@ qtGroupItem's Table to determine proper resize behavior
 * A default .json config specifies the default PhraseModel and SubphraseGenerator types to use.
 * The smtk::view::Manager class can dynamically construct PhraseModels and SubphraseGenerators based on typename.
 Example:
-```
+
+```c++
   // get the default config.
   nlohmann::json j = nlohmann::json::parse(pqSMTKResourceBrowser::getJSONConfiguration());
   smtk::view::ViewPtr config = j[0];
@@ -60,6 +61,37 @@ Consuming applications can now register icon sets for Resources and Components, 
 * qtAttributeView and qtAssociatioView now have virtual methods to create their association widgets that can get overridden - in the future they should use a widget factor to fetch it so you wouldn't have to create a new class to use a different association widget
 * XML Option RequireAllAssociated="true" will now display the qtAssociationWidget even if no attributes exists and display a warning if there are persistent objects that match the definition requirements but are not associated to any attribute.
 * Added XML Option DisableNameField="true" that indicates that the attribute's name should not be changed.
+* The top widget is now based on a qtTableView instead of a qtTableWidget and provides searching capabilities.
+* Added the ability to search attributes by name (both case sensitive and insensitive) - the search box's visibility can be controlled in the View's configuration using **DisplaySearchBox** as in the following example:
+
+```xml
+    <View Type="Attribute" Title="testDef" Label="Atts to be Associated"
+      DisplaySearchBox="false">
+      <AttributeTypes>
+        <Att Type="testDef" />
+      </AttributeTypes>
+    </View>
+```
+* Added the ability to set the string in the search box when the user has entered no text.  This can be set by using **SearchBoxText** as in the following example:
+
+```xml
+    <View Type="Attribute" Title="A" Label="A Atts"
+      SearchBoxText="Search by name...">
+      <AttributeTypes>
+        <Att Type="A" />
+      </AttributeTypes>
+    </View>
+```
+* Added the following methods to set/get the View's modes
+  * Mode for displaying Association Wdiget
+     * void setHideAssociations(bool mode);
+     * bool hideAssociations() const;
+  * Mode for requiring all associatable object must be associated with an attribute
+     * void setRequireAllAssociated(bool mode);
+     * bool requireAllAssociated() const;
+  *  Mode to indicate that attribute names are not allowed to be changed.
+     * void setAttributeNamesConstant(bool mode);
+     * bool attributeNamesConstant() const;
 
 
 ### qtUIManager Changes
@@ -139,6 +171,7 @@ Note that item /c contain ItemView for its children.
 * Added allAssociationMode to qtAssociation2ColumnWidget to indicate that all relevant persistent objects must be associated to a type of attribute else display the warning icon
 
 Here is an example of customizing the AssociationWidget for an AttributeView:
+
 ```xml
     <View Type="Attribute" Title="HT Boundary Conditions" Label="Boundary"
       RequireAllAssociated="true" AvailableLabel="Surfaces that still require boundary conditions"

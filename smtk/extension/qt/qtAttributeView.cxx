@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtNotEditableDelegate.h"
 #include "smtk/extension/qt/qtTableWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtVoidItem.h"
@@ -36,24 +37,30 @@
 #include "smtk/operation/Operation.h"
 #include "smtk/view/Configuration.h"
 
+#include <QAbstractItemDelegate>
 #include <QBrush>
+#include <QCheckBox>
 #include <QColorDialog>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QLineEdit>
 #include <QListWidget>
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QModelIndexList>
 #include <QPointer>
 #include <QPushButton>
+#include <QSortFilterProxyModel>
 #include <QSplitter>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
+#include <QTableView>
 #include <QTableWidgetItem>
+#include <QToolBar>
 #include <QVBoxLayout>
 #include <QVariant>
 
@@ -110,18 +117,23 @@ public:
     return defs;
   }
 
-  qtTableWidget* ListTable;
+  QTableView* ListTable;
+  QStandardItemModel* ListTableModel;
+  QSortFilterProxyModel* ListTableProxyModel;
   qtTableWidget* ValuesTable;
 
-  QPushButton* AddButton;
   QComboBox* DefsCombo;
   QLabel* DefLabel;
-  QPushButton* DeleteButton;
-  QPushButton* CopyButton;
+
+  QPointer<QToolBar> TopToolBar;
+
+  QAction* AddAction;
+  QAction* DeleteAction;
+  QAction* CopyAction;
 
   QFrame* ButtonsFrame;
-  QFrame* TopFrame; // top
-
+  QFrame* TopFrame;           // top
+  QPointer<QFrame> SearchBox; //Frame holding searching capability
   QPointer<qtAssociationWidget> AssociationsWidget;
 
   // <category, AttDefinitions>
@@ -148,6 +160,7 @@ public:
   smtk::model::BitFlags m_modelEntityMask;
   std::map<std::string, smtk::view::Configuration::Component> m_attCompMap;
   QIcon m_alertIcon;
+  QSize m_alertSize;
   bool m_showTopButtons;
 
   smtk::operation::Observers::Key m_observerKey;
@@ -165,16 +178,21 @@ qtAttributeView::qtAttributeView(const smtk::view::Information& info)
 {
   m_internals = new qtAttributeViewInternals;
   m_internals->m_alertIcon = QIcon(this->uiManager()->alertPixmap());
+  m_internals->m_alertSize = this->uiManager()->alertPixmap().size();
   smtk::view::ConfigurationPtr view = this->getObject();
   m_hideAssociations = false;
   m_allAssociatedMode = false;
   m_disableNameField = false;
+  m_searchBoxVisibility = true;
+  m_searchBoxText = "Search attributes...";
 
   if (view)
   {
     view->details().attributeAsBool("HideAssociations", m_hideAssociations);
-    m_allAssociatedMode = view->details().attributeAsBool("RequireAllAssociated");
+    view->details().attributeAsBool("RequireAllAssociated", m_allAssociatedMode);
     view->details().attributeAsBool("DisableNameField", m_disableNameField);
+    view->details().attributeAsBool("DisplaySearchBox", m_searchBoxVisibility);
+    view->details().attribute("SearchBoxText", m_searchBoxText);
   }
 }
 
@@ -252,10 +270,18 @@ void qtAttributeView::createWidget()
 
   QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   // create a list box for all the entries
-  m_internals->ListTable = new qtTableWidget(frame);
+  m_internals->ListTable = new QTableView(frame);
   m_internals->ListTable->setSelectionMode(QAbstractItemView::SingleSelection);
   m_internals->ListTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   m_internals->ListTable->setSizePolicy(tableSizePolicy);
+  m_internals->ListTable->setItemDelegateForColumn(
+    status_column, new qtNotEditableDelegate(m_internals->ListTable));
+
+  m_internals->ListTableProxyModel = new QSortFilterProxyModel(m_internals->ListTable);
+  m_internals->ListTableModel = new QStandardItemModel(m_internals->ListTable);
+  m_internals->ListTableProxyModel->setSourceModel(m_internals->ListTableModel);
+  m_internals->ListTableProxyModel->setFilterKeyColumn(name_column);
+  m_internals->ListTable->setModel(m_internals->ListTableProxyModel);
 
   // Buttons frame
   m_internals->ButtonsFrame = new QFrame(frame);
@@ -268,12 +294,37 @@ void qtAttributeView::createWidget()
     m_internals->ButtonsFrame->setVisible(m_internals->m_showTopButtons);
   }
 
-  m_internals->AddButton = new QPushButton("New", m_internals->ButtonsFrame);
-  m_internals->AddButton->setSizePolicy(sizeFixedPolicy);
-  m_internals->DeleteButton = new QPushButton("Delete", m_internals->ButtonsFrame);
-  m_internals->DeleteButton->setSizePolicy(sizeFixedPolicy);
-  m_internals->CopyButton = new QPushButton("Copy", m_internals->ButtonsFrame);
-  m_internals->CopyButton->setSizePolicy(sizeFixedPolicy);
+  m_internals->TopToolBar = new QToolBar(m_internals->ButtonsFrame);
+  m_internals->TopToolBar->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+  m_internals->TopToolBar->setStyleSheet(R"(
+    QToolButton {
+      border: 1px solid palette(mid);
+      border-radius: 3px;
+      background-color: palette(button);
+    }
+
+    QToolButton:hover {
+      border: 1px solid palette(mid);
+      border-radius: 3px;
+      background-color: palette(light);
+    }
+
+    QToolButton:pressed {
+      border: 1px solid palette(mid);
+      border-radius: 3px;
+      background-color: palette(midlight);
+    }
+  )");
+
+  m_internals->AddAction = new QAction("New");
+  m_internals->DeleteAction = new QAction("Delete");
+  m_internals->CopyAction = new QAction("Copy");
+
+  m_internals->TopToolBar->addAction(m_internals->AddAction);
+
+  m_internals->TopToolBar->addAction(m_internals->CopyAction);
+
+  m_internals->TopToolBar->addAction(m_internals->DeleteAction);
 
   //If we have more than 1 def then create a combo box for selecting a def,
   // else just create a label
@@ -292,19 +343,47 @@ void qtAttributeView::createWidget()
     buttonLayout->addWidget(m_internals->DefLabel);
     m_internals->DefsCombo = nullptr;
   }
-  buttonLayout->addWidget(m_internals->AddButton);
-  buttonLayout->addWidget(m_internals->CopyButton);
-  buttonLayout->addWidget(m_internals->DeleteButton);
+
+  //Add toolbar
+  buttonLayout->addWidget(m_internals->TopToolBar);
 
   // Attribute table
   m_internals->ValuesTable = new qtTableWidget(frame);
   m_internals->ValuesTable->setSizePolicy(tableSizePolicy);
 
+  m_internals->SearchBox = new QFrame(TopFrame);
+  QHBoxLayout* searchLayout = new QHBoxLayout(m_internals->SearchBox);
+  searchLayout->setMargin(0);
+
+  QLineEdit* searchBar = new QLineEdit(m_internals->SearchBox);
+  searchBar->setPlaceholderText(m_searchBoxText.c_str());
+  searchBar->setClearButtonEnabled(true);
+
+  QCheckBox* caseSensitivity = new QCheckBox("Ignore Case", m_internals->SearchBox);
+  connect(caseSensitivity, &QCheckBox::stateChanged, [this](int val) {
+    if (val)
+    {
+      this->m_internals->ListTableProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    }
+    else
+    {
+      this->m_internals->ListTableProxyModel->setFilterCaseSensitivity(Qt::CaseSensitive);
+    }
+  });
+  caseSensitivity->setChecked(true);
+
+  searchLayout->addWidget(searchBar);
+  searchLayout->addWidget(caseSensitivity);
+  m_internals->SearchBox->setContentsMargins(0, 0, 0, 0);
+  m_internals->SearchBox->setVisible(m_searchBoxVisibility);
+
   TopLayout->addWidget(m_internals->ButtonsFrame);
+  TopLayout->addWidget(m_internals->SearchBox);
   TopLayout->addWidget(m_internals->ListTable);
-  // REMOVED THIS TO SIMPLY LAYOUT FOR VIEW BY ATTRIBUTES
-  // MODE - SHOULD BE REMOVED IF WE FACTOR OUT THE VIEW BY PROPERTY MODE
-  //BottomLayout->addWidget(m_internals->ValuesTable);
+
+  connect(searchBar, &QLineEdit::textEdited, m_internals->ListTableProxyModel,
+    &QSortFilterProxyModel::setFilterFixedString);
+
   m_internals->ValuesTable->setVisible(false);
 
   // Attribte frame
@@ -330,35 +409,36 @@ void qtAttributeView::createWidget()
   }
 
   // signals/slots
-  QObject::connect(m_internals->AssociationsWidget, SIGNAL(attAssociationChanged()), this,
-    SLOT(associationsChanged()));
+  connect(m_internals->AssociationsWidget, &qtAssociationWidget::attAssociationChanged, this,
+    &qtAttributeView::associationsChanged);
 
-  QObject::connect(
-    m_internals->AssociationsWidget, SIGNAL(availableChanged()), this, SIGNAL(modified()));
+  connect(m_internals->AssociationsWidget, SIGNAL(availableChanged()), this, SIGNAL(modified()));
 
-  // We want the signals that may change the attribute to be displayed Queued instead of
-  // Direct so that QLineEdit::edittingFinished signals are processed prior to these.
-  QObject::connect(m_internals->ListTable, SIGNAL(itemClicked(QTableWidgetItem*)), this,
-    SLOT(onListBoxClicked(QTableWidgetItem*)), Qt::QueuedConnection);
-  QObject::connect(m_internals->ListTable, SIGNAL(itemSelectionChanged()), this,
-    SLOT(onListBoxSelectionChanged()), Qt::QueuedConnection);
-  QObject::connect(m_internals->ListTable, SIGNAL(itemChanged(QTableWidgetItem*)), this,
-    SLOT(onAttributeNameChanged(QTableWidgetItem*)));
+  //TODO: Reconnect these if view's item model is ever replaced
+  connect(m_internals->ListTable, &QAbstractItemView::clicked, this,
+    &qtAttributeView::onListBoxClicked, Qt::QueuedConnection);
+  connect(m_internals->ListTable->selectionModel(), &QItemSelectionModel::selectionChanged, this,
+    [this](const QItemSelection&, const QItemSelection&) { this->onListBoxSelectionChanged(); },
+    Qt::QueuedConnection);
+  connect(m_internals->ListTableModel, &QStandardItemModel::itemChanged, this,
+    &qtAttributeView::onAttributeNameChanged);
+
   // we need this so that the attribute name will also be changed
   // when a recorded test is play back, which is using setText
   // on the underline QLineEdit of the cell.
-  QObject::connect(m_internals->ListTable, SIGNAL(cellChanged(int, int)), this,
-    SLOT(onAttributeCellChanged(int, int)), Qt::QueuedConnection);
+  connect(m_internals->ListTableModel, &QStandardItemModel::dataChanged, this,
+    [this](const QModelIndex& topLeft, const QModelIndex&, const QVector<int>&) {
+      auto item = m_internals->ListTableModel->itemFromIndex(topLeft);
+      this->onAttributeItemChanged(item);
+    },
+    Qt::QueuedConnection);
 
-  QObject::connect(m_internals->AddButton, SIGNAL(clicked()), this, SLOT(onCreateNew()));
-  QObject::connect(m_internals->CopyButton, SIGNAL(clicked()), this, SLOT(onCopySelected()));
-  QObject::connect(m_internals->DeleteButton, SIGNAL(clicked()), this, SLOT(onDeleteSelected()));
+  connect(m_internals->AddAction, &QAction::triggered, this, &qtAttributeView::onCreateNew);
+  connect(m_internals->CopyAction, &QAction::triggered, this, &qtAttributeView::onCopySelected);
+  connect(m_internals->DeleteAction, &QAction::triggered, this, &qtAttributeView::onDeleteSelected);
 
-  QObject::connect(m_internals->ValuesTable, SIGNAL(itemChanged(QTableWidgetItem*)), this,
-    SLOT(onAttributeValueChanged(QTableWidgetItem*)));
-  //QObject::connect(m_internals->ValuesTable,
-  //  SIGNAL(keyPressed (QKeyEvent *)),
-  //  this, SLOT(onAttributeTableKeyPress(QKeyEvent * )));
+  connect(m_internals->ValuesTable, &QTableWidget::itemChanged, this,
+    &qtAttributeView::onAttributeValueChanged);
   m_internals->ValuesTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   m_internals->ValuesTable->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -390,12 +470,12 @@ void qtAttributeView::updateModelAssociation()
   this->updateUI();
 }
 
-smtk::attribute::Attribute* qtAttributeView::getRawAttributeFromItem(QTableWidgetItem* item)
+smtk::attribute::Attribute* qtAttributeView::getRawAttributeFromItem(const QStandardItem* item)
 {
   return (item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr);
 }
 
-smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(QTableWidgetItem* item)
+smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(const QStandardItem* item)
 {
   smtk::attribute::Attribute* raw = this->getRawAttributeFromItem(item);
   if (raw == nullptr)
@@ -406,18 +486,27 @@ smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(QTableWidget
   return raw->shared_from_this();
 }
 
-QTableWidgetItem* qtAttributeView::getSelectedItem()
+QStandardItem* qtAttributeView::getSelectedItem()
 {
-  auto selectedItems = m_internals->ListTable->selectedItems();
-  int n = selectedItems.count();
-  for (int i = 0; i < n; i++)
+  QStandardItem* item = nullptr;
+
+  //This is a proxy model index
+  QModelIndex selectedIndex = m_internals->ListTable->currentIndex();
+
+  //Trust nobody
+  if (selectedIndex.isValid())
   {
-    if (selectedItems.value(i)->column() == name_column)
+    //Map back to source model index
+    QModelIndex srcIndex = m_internals->ListTableProxyModel->mapToSource(selectedIndex);
+
+    if (srcIndex.isValid())
     {
-      return selectedItems.value(i);
+      item = m_internals->ListTableModel->itemFromIndex(srcIndex);
     }
   }
-  return nullptr;
+
+  //Don't forget nullptr checking on the other end
+  return item;
 }
 
 smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
@@ -427,7 +516,7 @@ smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 
 void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr theAtt)
 {
-  if (m_hideAssociations)
+  if (this->hideAssociations())
   {
     m_internals->AssociationsWidget->setVisible(false);
     return;
@@ -443,7 +532,7 @@ void qtAttributeView::updateAssociationEnableState(smtk::attribute::AttributePtr
     return;
   }
 
-  if (m_allAssociatedMode && !m_internals->AllDefs.empty())
+  if (this->requireAllAssociated() && !m_internals->AllDefs.empty())
   {
     m_internals->AssociationsWidget->showEntityAssociation(m_internals->AllDefs.at(0));
     m_internals->AssociationsWidget->setVisible(true);
@@ -458,7 +547,7 @@ void qtAttributeView::onListBoxSelectionChanged()
   m_internals->ValuesTable->clear();
   m_internals->ValuesTable->setRowCount(0);
   m_internals->ValuesTable->setColumnCount(0);
-  QTableWidgetItem* current = this->getSelectedItem();
+  QStandardItem* current = this->getSelectedItem();
 
   if (current)
   {
@@ -484,7 +573,7 @@ void qtAttributeView::onListBoxSelectionChanged()
   m_internals->ValuesTable->update();
 }
 
-void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
+void qtAttributeView::onAttributeNameChanged(QStandardItem* item)
 {
   smtk::attribute::AttributePtr aAttribute = this->getAttributeFromItem(item);
   if (aAttribute && item->text().toStdString() != aAttribute->name())
@@ -509,11 +598,15 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
   }
 }
 
-void qtAttributeView::onAttributeCellChanged(int row, int col)
+void qtAttributeView::onAttributeItemChanged(QStandardItem* item)
 {
-  if (col == 0)
+  if (item == nullptr)
   {
-    QTableWidgetItem* item = m_internals->ListTable->item(row, col);
+    return;
+  }
+
+  if (item->index().column() == 0)
+  {
     this->onAttributeNameChanged(item);
   }
 }
@@ -648,10 +741,19 @@ void qtAttributeView::createNewAttribute(smtk::attribute::DefinitionPtr attDef)
 
   smtk::attribute::AttributePtr newAtt = attResource->createAttribute(attDef->type());
   this->attributeCreated(newAtt);
-  QTableWidgetItem* item = this->addAttributeListItem(newAtt);
+  QStandardItem* item = this->addAttributeListItem(newAtt);
   if (item)
   {
+    // Select the newly created attribute
     m_internals->ListTable->selectRow(item->row());
+    QModelIndex index = item->index().sibling(item->row(), name_column);
+    QModelIndex mappedIndex = m_internals->ListTableProxyModel->mapFromSource(index);
+    m_internals->ListTable->setCurrentIndex(mappedIndex);
+    //Automatically trigger name edit if allowed
+    if (!this->attributeNamesConstant())
+    {
+      m_internals->ListTable->edit(mappedIndex);
+    }
   }
   emit this->numOfAttributesChanged();
   emit qtBaseView::modified();
@@ -669,7 +771,7 @@ void qtAttributeView::onCopySelected()
   newObject = attResource->copyAttribute(selObject);
   if (newObject)
   {
-    QTableWidgetItem* item = this->addAttributeListItem(newObject);
+    QStandardItem* item = this->addAttributeListItem(newObject);
     if (item)
     {
       m_internals->ListTable->selectRow(item->row());
@@ -682,6 +784,11 @@ void qtAttributeView::onCopySelected()
 void qtAttributeView::onDeleteSelected()
 {
   smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
+  if (selObject == nullptr)
+  {
+    return; // nothing to be deleted
+  }
+
   if (selObject != nullptr)
   {
     if (this->deleteAttribute(selObject))
@@ -690,10 +797,10 @@ void qtAttributeView::onDeleteSelected()
       m_internals->AttSelections.remove(keyName);
       this->attributeRemoved(selObject);
 
-      QTableWidgetItem* selItem = this->getSelectedItem();
+      QStandardItem* selItem = this->getSelectedItem();
       if (selItem != nullptr)
       {
-        m_internals->ListTable->removeRow(selItem->row());
+        m_internals->ListTableModel->removeRow(selItem->row());
         emit this->numOfAttributesChanged();
         emit qtBaseView::modified();
       }
@@ -721,36 +828,36 @@ bool smtk::extension::qtAttributeView::deleteAttribute(smtk::attribute::Attribut
   return status;
 }
 
-QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::AttributePtr childData)
+QStandardItem* qtAttributeView::addAttributeListItem(smtk::attribute::AttributePtr childData)
 {
-  QTableWidgetItem* item =
-    new QTableWidgetItem(QString::fromUtf8(childData->name().c_str()), smtk_USER_DATA_TYPE);
+  QStandardItem* item = new QStandardItem(QString::fromUtf8(childData->name().c_str()));
   Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  Qt::ItemFlags itemFlags(nonEditableFlags | (m_disableNameField ? 0x0 : Qt::ItemIsEditable));
+  Qt::ItemFlags itemFlags(
+    nonEditableFlags | (this->attributeNamesConstant() ? 0x0 : Qt::ItemIsEditable));
   QVariant vdata;
   vdata.setValue(static_cast<void*>(childData.get()));
+  item->setData(vdata, Qt::UserRole);
   item->setFlags(itemFlags);
 
-  int numRows = m_internals->ListTable->rowCount();
-  m_internals->ListTable->setRowCount(++numRows);
-  m_internals->ListTable->setItem(numRows - 1, name_column, item);
+  int numRows = m_internals->ListTableModel->rowCount();
+  m_internals->ListTableModel->setRowCount(++numRows);
+  m_internals->ListTableModel->setItem(numRows - 1, name_column, item);
 
   // add the type column too.
   std::string txtDef = childData->definition()->displayedTypeName();
 
-  QTableWidgetItem* defitem =
-    new QTableWidgetItem(QString::fromUtf8(txtDef.c_str()), smtk_USER_DATA_TYPE);
+  QStandardItem* defitem = new QStandardItem(QString::fromUtf8(txtDef.c_str()));
   defitem->setFlags(nonEditableFlags);
-  m_internals->ListTable->setItem(numRows - 1, type_column, defitem);
+  m_internals->ListTableModel->setItem(numRows - 1, type_column, defitem);
 
   // ToDo: Reactivate Color Option when we are ready to use it
   // Lets see if we need to show an alert icon cause the attribute is not
   // valid
   if (!this->uiManager()->checkAttributeValidity(childData.get()))
   {
-    QTableWidgetItem* statusItem =
-      new QTableWidgetItem(m_internals->m_alertIcon, "", smtk_USER_DATA_TYPE);
-    m_internals->ListTable->setItem(numRows - 1, status_column, statusItem);
+    QStandardItem* statusItem = new QStandardItem(m_internals->m_alertIcon, "");
+    statusItem->setSizeHint(m_internals->m_alertSize);
+    m_internals->ListTableModel->setItem(numRows - 1, status_column, statusItem);
   }
 
   return item;
@@ -765,24 +872,24 @@ void qtAttributeView::onViewBy()
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     m_internals->getCurrentDefs(this->uiManager(), m_ignoreCategories);
-  m_internals->AddButton->setEnabled(currentDefs.count() > 0);
+
+  m_internals->AddAction->setEnabled(currentDefs.count() > 0);
 
   m_internals->ButtonsFrame->setVisible(m_internals->m_showTopButtons);
   m_internals->ListTable->setVisible(true);
   m_internals->ListTable->blockSignals(true);
-  m_internals->ListTable->clear();
-  m_internals->ListTable->setRowCount(0);
+  m_internals->ListTableModel->removeRows(0, m_internals->ListTableModel->rowCount());
 
   // ToDo: Reactivate Color Option when we are ready to use it
   //int numCols = viewAtt ? 4 : 3;
   int numCols = 3;
-  m_internals->ListTable->setColumnCount(numCols);
-  m_internals->ListTable->setHorizontalHeaderItem(status_column, new QTableWidgetItem(""));
-  m_internals->ListTable->setHorizontalHeaderItem(name_column, new QTableWidgetItem("Name"));
+  m_internals->ListTableModel->setColumnCount(numCols);
+  m_internals->ListTableModel->setHorizontalHeaderItem(status_column, new QStandardItem(""));
+  m_internals->ListTableModel->setHorizontalHeaderItem(name_column, new QStandardItem("Name"));
   // Lets set up the column behavior
   // The Type and Status Columns should be size to fit their contents while
   // the Name field should stretch to take up the space
-  m_internals->ListTable->setHorizontalHeaderItem(type_column, new QTableWidgetItem("Type"));
+  m_internals->ListTableModel->setHorizontalHeaderItem(type_column, new QStandardItem("Type"));
   m_internals->ListTable->horizontalHeader()->setSectionResizeMode(
     status_column, QHeaderView::ResizeToContents);
   m_internals->ListTable->horizontalHeader()->setSectionResizeMode(
@@ -799,7 +906,7 @@ void qtAttributeView::onViewBy()
   }
   if (numCols == 4)
   {
-    m_internals->ListTable->setHorizontalHeaderItem(color_column, new QTableWidgetItem("Color"));
+    m_internals->ListTableModel->setHorizontalHeaderItem(color_column, new QStandardItem("Color"));
   }
   if (m_internals->AllDefs.size() == 1)
   {
@@ -828,7 +935,7 @@ void qtAttributeView::onViewBy()
   m_internals->ListTable->blockSignals(false);
 
   QSplitter* frame = qobject_cast<QSplitter*>(this->Widget);
-  if (m_internals->ListTable->rowCount() && !this->getSelectedItem())
+  if (m_internals->ListTableModel->rowCount() && !this->getSelectedItem())
   {
     // so switch tabs would not reset selection
     if (!m_internals->AssociationsWidget->hasSelectedItem())
@@ -858,14 +965,15 @@ void qtAttributeView::onViewByWithDefinition(smtk::attribute::DefinitionPtr attD
       {
         continue;
       }
-      QTableWidgetItem* item = this->addAttributeListItem(*it);
+      QStandardItem* item = this->addAttributeListItem(*it);
       if ((*it)->definition()->advanceLevel())
       {
         item->setFont(this->uiManager()->advancedFont());
       }
       if (currentAtt == (*it))
       {
-        m_internals->ListTable->setCurrentItem(item);
+        auto index = m_internals->ListTableProxyModel->mapFromSource(item->index());
+        m_internals->ListTable->setCurrentIndex(index);
       }
     }
   }
@@ -915,14 +1023,14 @@ void qtAttributeView::updateTableWithAttribute(smtk::attribute::AttributePtr att
     if (m_internals->CurrentAtt->widget())
     {
       m_internals->AttFrame->layout()->addWidget(m_internals->CurrentAtt->widget());
-      QObject::connect(m_internals->CurrentAtt, SIGNAL(itemModified(qtItem*)), this,
-        SLOT(onItemChanged(qtItem*)), Qt::QueuedConnection);
+      connect(m_internals->CurrentAtt, &qtAttribute::itemModified, this,
+        &qtAttributeView::onItemChanged, Qt::QueuedConnection);
       if (this->advanceLevelVisible())
       {
         m_internals->CurrentAtt->showAdvanceLevelOverlay(true);
       }
     }
-    m_internals->DeleteButton->setEnabled(
+    m_internals->DeleteAction->setEnabled(
       this->uiManager()->passAdvancedCheck(att->advanceLevel(1)));
   }
 }
@@ -1062,12 +1170,21 @@ void qtAttributeView::getAllDefinitions()
   }
 }
 
-void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
+void qtAttributeView::onListBoxClicked(const QModelIndex& index)
 {
+  auto mappedIndex = m_internals->ListTableProxyModel->mapToSource(index);
+
+  QStandardItem* item = m_internals->ListTableModel->itemFromIndex(mappedIndex);
+
+  if (item == nullptr)
+  {
+    return;
+  }
+
   bool isColor = item->column() == color_column;
   if (isColor)
   {
-    QTableWidgetItem* selItem = m_internals->ListTable->item(item->row(), 0);
+    QStandardItem* selItem = m_internals->ListTableModel->item(item->row(), 0);
     smtk::attribute::AttributePtr selAtt = this->getAttributeFromItem(selItem);
     QBrush bgBrush = item->background();
     QColor color = QColorDialog::getColor(
@@ -1079,10 +1196,13 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
       selAtt->setColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
       emit this->attColorChanged();
     }
-    if (!selItem->isSelected())
+    auto mappedCurrent =
+      m_internals->ListTableProxyModel->mapToSource(m_internals->ListTable->currentIndex());
+    if (mappedCurrent != selItem->index())
     {
-      m_internals->ListTable->setCurrentItem(selItem);
-      selItem->setSelected(true);
+      mappedCurrent = m_internals->ListTableProxyModel->mapFromSource(selItem->index());
+      m_internals->ListTable->setCurrentIndex(mappedCurrent);
+      m_internals->ListTable->selectRow(selItem->row());
     }
   }
 }
@@ -1152,15 +1272,16 @@ void qtAttributeView::onItemChanged(qtItem* qitem)
   items.push_back(item->name());
   this->attributeChanged(attribute, items);
 }
+
 void qtAttributeView::updateAttributeStatus(Attribute* att)
 {
   if (att == nullptr)
   {
     return;
   }
-  for (int i = 0; i < m_internals->ListTable->rowCount(); i++)
+  for (int i = 0; i < m_internals->ListTableModel->rowCount(); i++)
   {
-    QTableWidgetItem* item = m_internals->ListTable->item(i, name_column);
+    QStandardItem* item = m_internals->ListTableModel->item(i, name_column);
     Attribute* listAtt =
       item ? static_cast<Attribute*>(item->data(Qt::UserRole).value<void*>()) : nullptr;
     if (listAtt == nullptr)
@@ -1171,13 +1292,13 @@ void qtAttributeView::updateAttributeStatus(Attribute* att)
     {
       if (this->uiManager()->checkAttributeValidity(att))
       {
-        m_internals->ListTable->setItem(i, status_column, nullptr);
+        m_internals->ListTableModel->setItem(i, status_column, nullptr);
       }
       else
       {
-        QTableWidgetItem* statusItem =
-          new QTableWidgetItem(m_internals->m_alertIcon, "", smtk_USER_DATA_TYPE);
-        m_internals->ListTable->setItem(i, status_column, statusItem);
+        QStandardItem* statusItem = new QStandardItem(m_internals->m_alertIcon, "");
+        statusItem->setSizeHint(m_internals->m_alertSize);
+        m_internals->ListTableModel->setItem(i, status_column, statusItem);
       }
     }
   }
@@ -1231,14 +1352,14 @@ int qtAttributeView::handleOperationEvent(const smtk::operation::Operation& op,
     {
       if (compItem->isSet(i))
       {
-        int row, numRows = m_internals->ListTable->rowCount();
+        int row, numRows = m_internals->ListTableModel->rowCount();
         for (row = 0; row < numRows; ++row)
         {
-          QTableWidgetItem* item = m_internals->ListTable->item(row, name_column);
+          QStandardItem* item = m_internals->ListTableModel->item(row, name_column);
           smtk::attribute::Attribute* att = this->getRawAttributeFromItem(item);
           if (compItem->value(i).get() == att)
           {
-            m_internals->ListTable->removeRow(row);
+            m_internals->ListTableModel->removeRow(row);
             break;
           }
         }
@@ -1277,9 +1398,9 @@ int qtAttributeView::handleOperationEvent(const smtk::operation::Operation& op,
 
 bool qtAttributeView::isValid() const
 {
-  for (int i = 0; i < m_internals->ListTable->rowCount(); i++)
+  for (int i = 0; i < m_internals->ListTableModel->rowCount(); i++)
   {
-    if (m_internals->ListTable->item(i, status_column) != nullptr)
+    if (m_internals->ListTableModel->item(i, status_column) != nullptr)
     {
       return false;
     }
@@ -1289,4 +1410,54 @@ bool qtAttributeView::isValid() const
     return m_internals->AssociationsWidget->isValid();
   }
   return true;
+}
+
+QToolBar* smtk::extension::qtAttributeView::toolBar()
+{
+  return m_internals->TopToolBar;
+}
+
+QAction* smtk::extension::qtAttributeView::addAction()
+{
+  return m_internals->AddAction;
+}
+
+QAction* smtk::extension::qtAttributeView::copyAction()
+{
+  return m_internals->CopyAction;
+}
+
+QAction* smtk::extension::qtAttributeView::deleteAction()
+{
+  return m_internals->DeleteAction;
+}
+
+void smtk::extension::qtAttributeView::setTableItemDelegate(QAbstractItemDelegate* delegate)
+{
+  m_internals->ListTable->setItemDelegate(delegate);
+}
+
+void smtk::extension::qtAttributeView::setTableColumnItemDelegate(
+  int column, QAbstractItemDelegate* delegate)
+{
+  m_internals->ListTable->setItemDelegateForColumn(column, delegate);
+}
+
+void smtk::extension::qtAttributeView::setTableRowItemDelegate(
+  int row, QAbstractItemDelegate* delegate)
+{
+  m_internals->ListTable->setItemDelegateForRow(row, delegate);
+}
+
+void smtk::extension::qtAttributeView::triggerEdit(const QModelIndex& index)
+{
+  if (index.column() == name_column)
+  {
+    m_internals->ListTable->edit(index);
+  }
+}
+
+int smtk::extension::qtAttributeView::numOfAttributes()
+{
+  return m_internals->ListTableModel->rowCount();
 }
