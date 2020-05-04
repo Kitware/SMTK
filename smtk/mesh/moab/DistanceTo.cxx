@@ -65,16 +65,12 @@ std::pair<double, std::array<double, 3> > DistanceTo::operator()(
       // This option restricts the KD tree from subdividing too much
       ::moab::FileOptions treeOptions("MAX_DEPTH=13");
 
-      // PointLocatorCache::CacheForIndex cache(
-      //   interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions);
-
-      // search =
-      //   pointLocatorCache.m_caches.emplace(std::make_pair(meshset.id(), std::move(cache))).first;
-      search = pointLocatorCache.m_caches
-                 .emplace(std::make_pair(
-                   meshset.id(), new PointLocatorCache::CacheForIndex(interface->moabInterface(),
-                                   smtkToMOABRange(meshset.cells().range()), &treeOptions)))
-                 .first;
+      search =
+        pointLocatorCache.m_caches
+          .emplace(std::make_pair(meshset.id(),
+            std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
+              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))))
+          .first;
     }
 
     ::moab::EntityHandle triangleOut;

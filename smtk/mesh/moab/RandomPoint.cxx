@@ -105,11 +105,12 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
       // This option restricts the KD tree from subdividing too much
       ::moab::FileOptions treeOptions("MAX_DEPTH=13");
 
-      search = pointLocatorCache.m_caches
-                 .emplace(std::make_pair(
-                   meshset.id(), new PointLocatorCache::CacheForIndex(interface->moabInterface(),
-                                   smtkToMOABRange(meshset.cells().range()), &treeOptions)))
-                 .first;
+      search =
+        pointLocatorCache.m_caches
+          .emplace(std::make_pair(meshset.id(),
+            std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
+              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))))
+          .first;
     }
 
     ::moab::AdaptiveKDTree& tree = search->second->m_tree;
