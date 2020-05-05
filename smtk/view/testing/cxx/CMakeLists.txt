@@ -1,4 +1,5 @@
 set(unit_tests
+  unitPhraseModel.cxx
 )
 
 set(unit_tests_which_require_data

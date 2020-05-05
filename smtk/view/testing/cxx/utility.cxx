@@ -31,6 +31,8 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
+#include <iostream>
+
 namespace smtk
 {
 namespace view
@@ -42,7 +44,11 @@ PhraseModel::Ptr loadTestData(int argc, char* argv[], const ManagerPtr& viewMana
   if (argc < 2)
   {
     std::string testFile;
+#ifdef SMTK_DATA_DIR
     testFile = SMTK_DATA_DIR;
+#else
+    std::cerr << "ERROR: Test data not available. Cannot load test data.\n";
+#endif
     testFile += "/model/2d/smtk/epic-trex-drummer.smtk";
     dataArgs.push_back(argv[0]);
     dataArgs.push_back(strdup(testFile.c_str()));
