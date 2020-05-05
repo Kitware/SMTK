@@ -354,7 +354,7 @@ std::set<std::string> Archive::contents() const
 
 std::ifstream Archive::get(const std::string& archivedFilePath)
 {
-#if defined(SMTK_CLANG) || (defined(SMTK_GCC) && __GNUC__ > 4) || defined(SMTK_MSVC)
+#if !defined(SMTK_GCC) || (__GNUC__ >= 5)
   // if there are any files archived, extract them first
   if (m_internals->archived)
   {
