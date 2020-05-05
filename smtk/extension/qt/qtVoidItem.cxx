@@ -117,6 +117,7 @@ void qtVoidItem::createWidget()
     }
 
     l->setText(txtLabel);
+    m_widget->layout()->addWidget(l);
   }
 }
 
