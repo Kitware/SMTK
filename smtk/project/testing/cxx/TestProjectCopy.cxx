@@ -65,7 +65,8 @@ void ProjectBuilder::createProject()
   spec->findString("project-folder")->setValue("project-orig");
 
   boost::filesystem::path dataRoot(DATA_ROOT);
-  boost::filesystem::path templatePath = dataRoot / "simulation-workflows/Truchas/Truchas.sbt";
+  boost::filesystem::path templatePath =
+    dataRoot / "attribute/attribute_collection/Basic2DFluid.sbt";
   boost::filesystem::path modelPath = dataRoot / "model/3d/genesis/casting-mesh1.gen";
 
   spec->findFile("simulation-template")->setValue(templatePath.string());
@@ -75,7 +76,6 @@ void ProjectBuilder::createProject()
   modelGroupItem->findAs<smtk::attribute::VoidItem>("copy-file")->setIsEnabled(true);
 
   // Create the project
-  auto logger = smtk::io::Logger::instance();
   m_firstProject = m_projectManager->createProject(spec);
   smtkTest(m_firstProject != nullptr, "failed to create first project");
   smtkTest(m_projectManager->saveProject(), "failed to save first project");
