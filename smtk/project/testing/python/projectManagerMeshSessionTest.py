@@ -83,7 +83,7 @@ class TestProjectManager(unittest.TestCase):
         spec.findString('project-folder').setValue(0, project_name)
 
         sim_template = os.path.join(
-            smtk.testing.DATA_DIR, 'simulation-workflows', 'ACE3P', 'ACE3P.sbt')
+            smtk.testing.DATA_DIR, 'attribute', 'attribute_collection', 'Basic2DFluid.sbt')
         spec.findFile('simulation-template').setValue(0, sim_template)
 
         model_group_item = spec.findGroup('model-group')
@@ -125,7 +125,7 @@ class TestProjectManager(unittest.TestCase):
             path = os.path.join(project_folder, f)
             self.assertTrue(os.path.exists(path), '{}'.format(path))
 
-        self.assertEqual(self.project.simulationCode(), 'ace3p')
+        self.assertEqual(self.project.simulationCode(), 'basic2dfluid')
         self.assertEqual(self.project.name(), project_name)
         self.assertEqual(self.project.directory(), project_folder)
 
@@ -138,18 +138,16 @@ class TestProjectManager(unittest.TestCase):
         # Add 3 material attributes
         defn = att_resource.findDefinition('Material')
         att = att_resource.createAttribute(defn)
-        att.findDouble('Epsilon').setValue(0.987)
+        att.findDouble('Density').setValue(17.5e3)
 
-        defn = att_resource.findDefinition('TEM3PElasticMaterial')
+        defn = att_resource.findDefinition('Material')
         att = att_resource.createAttribute(defn)
-        type_item = att.findString('Material')
-        type_item.setValue(0, 'Custom')
-        density_item = type_item.findChild(
-            'Density', smtk.attribute.SearchStyle.ACTIVE_CHILDREN).setValue(0, 1.95e11)
+        att.findDouble('Viscosity').setValue(5.01e-3)
 
-        defn = att_resource.findDefinition('TEM3PThermalMaterial')
+        defn = att_resource.findDefinition('Velocity')
         att = att_resource.createAttribute(defn)
-        type_item = att.findString('NonlinearMaterial').setValue(0, 'AL6061')
+        type_item = att.findDouble('Velocity').setValue(0, 3.14159)
+        type_item = att.findDouble('Velocity').setValue(1, 2.71828)
 
         after_count = len(att_resource.attributes())
         self.assertEqual(after_count - before_count, 3)
@@ -198,7 +196,7 @@ class TestProjectManager(unittest.TestCase):
         project = self.pm.openProject(path, logger)
         self.assertIsNotNone(project, msg=logger.convertToString())
 
-        self.assertEqual(project.simulationCode(), 'ace3p')
+        self.assertEqual(project.simulationCode(), 'basic2dfluid')
         self.assertEqual(project.name(), PROJECT1)
         self.assertEqual(project.directory(), path)
 

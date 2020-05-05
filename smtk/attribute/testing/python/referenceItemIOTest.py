@@ -1,4 +1,4 @@
-#=============================================================================
+# =============================================================================
 #
 #  Copyright (c) Kitware, Inc.
 #  All rights reserved.
@@ -8,7 +8,7 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.  See the above copyright notice for more information.
 #
-#=============================================================================
+# =============================================================================
 
 from __future__ import print_function
 import os
@@ -94,9 +94,9 @@ class TestReadReferenceItem(unittest.TestCase):
 
     def load_simatts(self, assign=True, write=True):
         """"""
-        # Load ace3p simulation template
+        # Load simulation template
         sim_template = os.path.join(
-            smtk.testing.DATA_DIR, 'simulation-workflows', 'ACE3P', 'ACE3P.sbt')
+            smtk.testing.DATA_DIR, 'attribute', 'attribute_collection', 'Basic2DFluid.sbt')
         self.sim_atts = self.read_xml(sim_template)
         self.res_manager.add(self.sim_atts)
 
@@ -243,6 +243,7 @@ class TestReadReferenceItem(unittest.TestCase):
             raise
         finally:
             self.remove_temp_files([SIMATTS_FILENAME, EXPATTS_FILENAME])
+
 
 if __name__ == '__main__':
     smtk.testing.process_arguments()
