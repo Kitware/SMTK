@@ -43,6 +43,7 @@ set(resourceHeaders
   json/jsonLinkBase.h
   json/jsonResource.h
   json/jsonSurrogate.h
+  query/BadTypeError.h
   query/Cache.h
   query/Container.h
   query/Factory.h
