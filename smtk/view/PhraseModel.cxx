@@ -615,6 +615,12 @@ void PhraseModel::updateChildren(
         smtkErrorMacro(smtk::io::Logger::instance(), "Mismatched entries in descriptive phrase.");
         break;
       }
+      else if (mv == ni)
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(), "Comparing same phrases yielded different results.");
+        break;
+      }
       else
       {
         // We have a start and destination location; see if we
@@ -625,10 +631,39 @@ void PhraseModel::updateChildren(
         {
           // Do nothing (advancing to find batch size)
         }
+
+        // Roll back mv to find the phrase in "next" just _before_ our destination.
+        --mv;
+        auto di = bi;
+        for (; di != orig.end() && *di != *mv; ++di)
+        {
+          // Do nothing (advancing to find insertion point in orig that matches location in next)
+        }
+#if SMTK_PHRASE_DEBUG
+        std::cout << "        oi " << (oi - orig.begin()) << " " << (*oi)->title() << "\n"
+                  << "        ni " << (ni - next.begin()) << " " << (*ni)->title() << "\n"
+                  << "        mv " << (mv - next.begin()) << " " << (*mv)->title() << "\n"
+                  << "        bi " << (bi - orig.begin()) << " " << (*bi)->title() << "\n"
+                  << "        ci " << (ci - next.begin()) << " " << (*ci)->title() << "\n"
+                  << "        di " << (di - orig.begin()) << " " << (*di)->title() << "\n";
+#endif
+        ++mv;
+        if (di != orig.end())
+        {
+          ++di;
+        }
         std::vector<int> moveRange(3);
         moveRange[0] = static_cast<int>(oi - orig.begin());
         moveRange[1] = static_cast<int>(bi == orig.end() ? orig.size() : bi - orig.begin()) - 1;
-        moveRange[2] = static_cast<int>((mv - next.begin()) + (moveRange[1] - moveRange[0]) + 1);
+        moveRange[2] = static_cast<int>((di - orig.begin()));
+        // Now if there are things we failed to insert, we don't want to get stuck in
+        // an infinite loop trying to reorder things to accommodate them. This will
+        // manifest itself as trying to move all of the remaining items in orig
+        // to the end of the orig.
+        if (di == orig.end() && (moveRange[1] == static_cast<int>(orig.size() - 1)))
+        {
+          break;
+        }
         this->trigger(src, PhraseModelEvent::ABOUT_TO_MOVE, idx, idx, moveRange);
         // Copy batch to destination (which must be *after* source)
         DescriptivePhrases moved(orig.begin() + moveRange[0], orig.begin() + moveRange[1] + 1);
