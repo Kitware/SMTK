@@ -89,6 +89,8 @@ set(attributeHeaders
   Categories.h
   ComponentItem.h
   ComponentItemDefinition.h
+  CustomItem.h
+  CustomItemDefinition.h
   Definition.h
   DateTimeItem.h
   DateTimeItemDefinition.h

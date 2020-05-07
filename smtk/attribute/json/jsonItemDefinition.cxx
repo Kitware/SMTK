@@ -29,7 +29,8 @@ SMTKCORE_EXPORT void to_json(
 {
   j = {
     { "Type", smtk::attribute::Item::type2String(itemDefPtr->type()) },
-    { "Name", itemDefPtr->name() }, { "Version", itemDefPtr->version() },
+    { "Name", itemDefPtr->name() }, { "TypeName", itemDefPtr->typeName() },
+    { "Version", itemDefPtr->version() },
   };
   if (itemDefPtr->label() != itemDefPtr->name())
   {

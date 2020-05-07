@@ -82,6 +82,7 @@ set(unit_tests
   unitCategories
   unitComponentItem.cxx
   unitComponentItemConstraints
+  unitCustomItem
   unitDateTimeItem.cxx
   unitDefinitionTags
   unitAttributeExclusiveAnalysis
@@ -92,7 +93,7 @@ set(unit_tests
 
 set(unit_tests_which_require_data)
 
-set(extra_libs)
+set(extra_libs ${Boost_LIBRARIES})
 
 if(SMTK_ENABLE_POLYGON_SESSION)
   list(APPEND unit_tests_which_require_data

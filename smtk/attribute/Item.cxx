@@ -265,7 +265,7 @@ std::string Item::type2String(Item::Type t)
     case ResourceType:
       return "Resource";
     default:
-      return "";
+      return "Custom";
   }
   return "Error!";
 }

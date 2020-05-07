@@ -19,8 +19,6 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index_container.hpp>
-
-#include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <memory>
@@ -33,6 +31,15 @@ namespace common
 {
 namespace factory
 {
+namespace detail
+{
+template <typename Type>
+struct TypeHash
+{
+  std::size_t operator()() const { return typeid(Type).hash_code(); }
+};
+}
+
 /// Tags for using Factory's convenience Interfaces.
 struct SMTKCORE_EXPORT Type
 {
@@ -120,12 +127,6 @@ class SMTK_ALWAYS_EXPORT Factory
     {
       return new Type(args);
     }
-
-    template <typename Type>
-    BaseType* operator()(const InputType& args) const
-    {
-      return new Type(args);
-    }
   };
 
   // Create functors are specialized for tuple inputs. Tuples are used to convey
@@ -145,35 +146,6 @@ class SMTK_ALWAYS_EXPORT Factory
     {
       return new Type(args...);
     }
-
-    template <typename Type>
-    BaseType* operator()(const XInputTypes&... args) const
-    {
-      return new Type(args...);
-    }
-  };
-
-  // A specialization for Types that are serializable using nlohmann::json
-  // (since this is a common requirement in SMTK).
-  template <bool dummy>
-  class CreateWithInput<nlohmann::json, dummy>
-  {
-  public:
-    template <typename Type>
-    BaseType* operator()(nlohmann::json&& args) const
-    {
-      Type* type = new Type;
-      (*type) = args.get<Type>();
-      return type;
-    }
-
-    template <typename Type>
-    BaseType* operator()(const nlohmann::json& args) const
-    {
-      Type* type = new Type;
-      (*type) = args.get<Type>();
-      return type;
-    }
   };
 
   // A Metdata class that holds the create methods for a spcecific construction
@@ -190,7 +162,7 @@ class SMTK_ALWAYS_EXPORT Factory
         return CreateWithInput<InputType>().template operator()<Type>(
           std::forward<InputType>(args));
       })
-      , m_lcreate([](const InputType& args) -> BaseType* {
+      , m_lcreate([](InputType& args) -> BaseType* {
         return CreateWithInput<InputType>().template operator()<Type>(args);
       })
     {
@@ -199,11 +171,11 @@ class SMTK_ALWAYS_EXPORT Factory
     // Support for lvalue and rvalue input parameters requires the use of two
     // functors.
     BaseType* create(InputType&& args) const { return m_rcreate(std::forward<InputType>(args)); }
-    BaseType* create(const InputType& args) const { return m_lcreate(args); }
+    BaseType* create(InputType& args) const { return m_lcreate(args); }
 
   private:
     std::function<BaseType*(InputType&&)> m_rcreate;
-    std::function<BaseType*(const InputType&)> m_lcreate;
+    std::function<BaseType*(InputType&)> m_lcreate;
   };
 
   template <typename... XInputTypes, bool dummy>

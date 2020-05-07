@@ -11,6 +11,7 @@
 #ifndef smtk_attribute_Resource_h
 #define smtk_attribute_Resource_h
 
+#include "smtk/common/Factory.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/geometry/Resource.h"
@@ -35,12 +36,19 @@
 #include <string>
 #include <vector>
 
+namespace pugi
+{
+class xml_node;
+}
+
 namespace smtk
 {
 namespace attribute
 {
 class Attribute;
 class Definition;
+
+typedef smtk::common::Factory<ItemDefinition, std::string> CustomItemDefinitionFactory;
 
 /**\brief Store information about attribute definitions and instances.
   *
@@ -236,6 +244,16 @@ public:
   void setDirectoryInfo(const DirectoryInfo& dinfo) { m_directoryInfo = dinfo; }
   const DirectoryInfo& directoryInfo() const { return m_directoryInfo; }
 
+  CustomItemDefinitionFactory& customItemDefinitionFactory()
+  {
+    return m_customItemDefinitionFactory;
+  }
+
+  const CustomItemDefinitionFactory& customItemDefinitionFactory() const
+  {
+    return m_customItemDefinitionFactory;
+  }
+
   class GuardedLinks
   {
   public:
@@ -297,6 +315,8 @@ protected:
   std::map<int, std::vector<double> > m_advLevelColors;
   DirectoryInfo m_directoryInfo;
   std::set<smtk::resource::Links::RoleType> m_roles;
+
+  CustomItemDefinitionFactory m_customItemDefinitionFactory;
 
 private:
   mutable std::mutex m_mutex;
