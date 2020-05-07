@@ -184,34 +184,6 @@ int ComponentPhraseContent::flagValue(ContentType contentType) const
   return -1;
 }
 
-resource::FloatList ComponentPhraseContent::colorValue(ContentType contentType) const
-{
-  if (auto component = m_component.lock())
-  {
-    switch (contentType)
-    {
-      case PhraseContent::COLOR:
-      {
-        if (component->properties().get<resource::FloatList>().contains("color") &&
-          component->properties().get<resource::FloatList>().at("color").size() == 4)
-        {
-          return component->properties().get<resource::FloatList>().at("color");
-        }
-      }
-      break;
-      case PhraseContent::TITLE:
-      case PhraseContent::SUBTITLE:
-      case PhraseContent::VISIBILITY:
-      case PhraseContent::ICON_LIGHTBG:
-      case PhraseContent::ICON_DARKBG:
-      default:
-        break;
-    }
-  }
-  smtk::resource::FloatList rgba({ 0., 0., 0., -1.0 });
-  return rgba;
-}
-
 bool ComponentPhraseContent::editStringValue(ContentType contentType, const std::string& val)
 {
   if (auto component = m_component.lock())
@@ -264,48 +236,6 @@ bool ComponentPhraseContent::editFlagValue(ContentType contentType, int val)
 {
   (void)contentType;
   (void)val;
-  return false;
-}
-
-bool ComponentPhraseContent::editColorValue(ContentType contentType, const resource::FloatList& val)
-{
-  if (auto component = m_component.lock())
-  {
-    // Lets try to get the local operation manager
-    auto dp = this->location();
-    smtk::operation::ManagerPtr opManager;
-    if (dp != nullptr)
-    {
-      auto model = dp->phraseModel();
-      if (model != nullptr)
-      {
-        opManager = model->operationManager();
-      }
-    }
-    if (contentType == COLOR)
-    {
-      smtk::operation::SetProperty::Ptr op;
-      if (opManager)
-      {
-        op = opManager->create<smtk::operation::SetProperty>();
-      }
-      else
-      {
-        op = smtk::operation::SetProperty::create();
-      }
-      if (op->parameters()->associate(component))
-      {
-        op->parameters()->findString("name")->setValue("color");
-        op->parameters()->findDouble("float value")->setValues(val.begin(), val.end());
-        auto res = op->operate();
-        if (res->findInt("outcome")->value() ==
-          static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
-        {
-          return true;
-        }
-      }
-    }
-  }
   return false;
 }
 

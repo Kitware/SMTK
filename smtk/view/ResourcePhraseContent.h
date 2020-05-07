@@ -45,11 +45,9 @@ public:
 
   std::string stringValue(ContentType contentType) const override;
   int flagValue(ContentType contentType) const override;
-  resource::FloatList colorValue(ContentType contentType) const override;
 
   bool editStringValue(ContentType contentType, const std::string& val) override;
   bool editFlagValue(ContentType contentType, int val) override;
-  bool editColorValue(ContentType contentType, const resource::FloatList& val) override;
 
   smtk::resource::PersistentObjectPtr relatedObject() const override;
   smtk::resource::ResourcePtr relatedResource() const override;

@@ -123,11 +123,6 @@ public:
   {
     return m_decorator ? m_decorator->flagValue(attr) : 0;
   }
-  /// Return a color vector that reflects the given \a attr value.
-  virtual resource::FloatList colorValue(ContentType attr) const
-  {
-    return m_decorator ? m_decorator->colorValue(attr) : resource::FloatList({ 0., 0., 0., -1. });
-  }
 
   /// Edit the \a attr value to become the given string (or returns false if no-change/invalid).
   virtual bool editStringValue(ContentType attr, const std::string& val)
@@ -138,11 +133,6 @@ public:
   virtual bool editFlagValue(ContentType attr, int val)
   {
     return m_decorator ? m_decorator->editFlagValue(attr, val) : false;
-  }
-  /// Edit the \a attr value to become the given color (or returns false if no-change/invalid).
-  virtual bool editColorValue(ContentType attr, const resource::FloatList& val)
-  {
-    return m_decorator ? m_decorator->editColorValue(attr, val) : false;
   }
 
   /// Return the resource related to this phrase (or nullptr if not well defined).

@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #ifndef __smtk_extension_qt_TypeAndColorBadge_h
-#define __smtk_extension_RedirectOutput_h
+#define __smtk_extension_qt_TypeAndColorBadge_h
 
 #include "smtk/PublicPointerDefs.h"
 

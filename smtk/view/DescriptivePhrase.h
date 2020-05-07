@@ -176,25 +176,6 @@ public:
   }
 
   /// Returns true if the visibility value should be illustrated; false otherwise.
-  bool displayRelatedColor() const
-  {
-    return m_content ? m_content->displayable(PhraseContent::COLOR) : false;
-  }
-  /// If this phrase has a related color, return it; otherwise return an array with -1 for opacity.
-  virtual resource::FloatList relatedColor() const
-  {
-    return m_content ? m_content->colorValue(PhraseContent::COLOR)
-                     : resource::FloatList({ 0, 0, 0, -1 });
-  }
-  /// Return true if users should be allowed to change the color of the phrase.
-  virtual bool isRelatedColorMutable() const { return m_content->editable(PhraseContent::COLOR); }
-  /// A method user interfaces may call to change the color (if it was marked mutable).
-  virtual bool setRelatedColor(const resource::FloatList& rgba)
-  {
-    return m_content->editColorValue(PhraseContent::COLOR, rgba);
-  }
-
-  /// Returns true if the visibility value should be illustrated; false otherwise.
   bool displayVisibility() const
   {
     return m_content ? m_content->displayable(PhraseContent::VISIBILITY) : false;

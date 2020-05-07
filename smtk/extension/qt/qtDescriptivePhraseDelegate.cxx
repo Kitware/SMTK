@@ -385,7 +385,7 @@ bool qtDescriptivePhraseDelegate::eventFilter(QObject* editor, QEvent* evt)
   return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
-int determineAction(const QPoint& pPos, const QModelIndex& idx, const QStyleOptionViewItem& option,
+int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
   const std::vector<const smtk::view::Badge*> badges, const smtk::view::DescriptivePhrase* phrase)
 {
 
@@ -442,7 +442,7 @@ bool qtDescriptivePhraseDelegate::editorEvent(
     idx.data(qtDescriptivePhraseModel::BadgesRole));
   auto phrase =
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
-  int badgeIndex = determineAction(e->pos(), idx, option, badges, phrase.get());
+  int badgeIndex = determineAction(e->pos(), option, badges, phrase.get());
 
   if (badgeIndex >= 0)
   {

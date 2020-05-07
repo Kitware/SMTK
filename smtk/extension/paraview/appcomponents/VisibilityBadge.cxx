@@ -90,7 +90,7 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
 }
 
 std::string VisibilityBadge::icon(
-  const DescriptivePhrase* phrase, const std::array<float, 4>& background) const
+  const DescriptivePhrase* phrase, const std::array<float, 4>& /*background*/) const
 {
   if (phraseVisibility(phrase))
     return m_icon;

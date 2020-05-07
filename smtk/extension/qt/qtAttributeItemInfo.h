@@ -67,7 +67,7 @@ public:
   QPointer<QWidget> parentWidget() const { return m_parentWidget; }
   ///@}
 
-  /// \brief Methd to return the qtBaseView that requested the creation of the qtItem
+  /// \brief Method to return the qtBaseView that requested the creation of the qtItem
   QPointer<qtBaseView> baseView() const { return m_baseView; }
 
   /// \brief Method to return the qtUIManager that is being used to generate the UI.

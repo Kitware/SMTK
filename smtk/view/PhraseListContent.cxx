@@ -110,26 +110,6 @@ int PhraseListContent::flagValue(ContentType attr) const
   return -1;
 }
 
-resource::FloatList PhraseListContent::colorValue(ContentType attr) const
-{
-  switch (attr)
-  {
-    case PhraseContent::COLOR:
-      // Here is where we could look up a default color based on m_unionFlags/m_commonFlags.
-      // This seems application- or context-specific, so perhaps it is best done in a decorator?
-      break;
-    case PhraseContent::TITLE:
-    case PhraseContent::SUBTITLE:
-    case PhraseContent::VISIBILITY:
-    case PhraseContent::ICON_LIGHTBG:
-    case PhraseContent::ICON_DARKBG:
-    default:
-      break;
-  }
-  smtk::resource::FloatList rgba(4, -1);
-  return rgba;
-}
-
 bool PhraseListContent::editStringValue(ContentType attr, const std::string& val)
 {
   // This should create and call a "set entity property" operator on the
@@ -141,15 +121,6 @@ bool PhraseListContent::editStringValue(ContentType attr, const std::string& val
 
 bool PhraseListContent::editFlagValue(ContentType attr, int val)
 {
-  (void)attr;
-  (void)val;
-  return false;
-}
-
-bool PhraseListContent::editColorValue(ContentType attr, const resource::FloatList& val)
-{
-  // This should create and call a "set entity property" operator on the
-  // related component's color for attr == COLOR.
   (void)attr;
   (void)val;
   return false;

@@ -375,65 +375,65 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
         else
           return QVariant(QIcon(m_invisibleIconURL.c_str()));
       }
-      else if (role == PhraseColorRole &&
-        (item->relatedComponent() || item->phraseType() == smtk::view::DescriptivePhraseType::LIST))
-      {
-        QColor color;
-        FloatList rgba = item->relatedColor();
-        bool gotColor = false;
-        if (rgba.size() >= 4 && rgba[3] < 0)
-        {
-          auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
-          if (modelComp)
-          {
-            smtk::model::EntityRef ent(modelComp);
-            if (ent.isFace())
-            {
-              color = qtDescriptivePhraseModel::defaultPhraseColor("Face");
-              gotColor = true;
-            }
-            else if (ent.isEdge())
-            {
-              color = qtDescriptivePhraseModel::defaultPhraseColor("Edge");
-              gotColor = true;
-            }
-            else if (ent.isVertex())
-            {
-              color = qtDescriptivePhraseModel::defaultPhraseColor("Vertex");
-              gotColor = true;
-            }
-          }
-          if (!gotColor)
-          {
-            // return an invalid color by default
-            color = QColor();
-          }
-        }
-        else
-        {
-          // Color may be luminance, luminance+alpha, rgb, or rgba:
-          switch (rgba.size())
-          {
-            case 0:
-              color = QColor(0, 0, 0, 0);
-              break;
-            case 1:
-              color.setHslF(0., 0., rgba[0], 1.);
-              break;
-            case 2:
-              color.setHslF(0., 0., rgba[0], rgba[1]);
-              break;
-            case 3:
-              color.setRgbF(rgba[0], rgba[1], rgba[2], 1.);
-              break;
-            case 4:
-            default:
-              color.setRgbF(rgba[0], rgba[1], rgba[2], rgba[3]);
-              break;
-          }
-        }
-        return color;
-      }
+      // else if (role == PhraseColorRole &&
+      //   (item->relatedComponent() || item->phraseType() == smtk::view::DescriptivePhraseType::LIST))
+      // {
+      //   QColor color;
+      //   FloatList rgba = item->relatedColor();
+      //   bool gotColor = false;
+      //   if (rgba.size() >= 4 && rgba[3] < 0)
+      //   {
+      //     auto modelComp = dynamic_pointer_cast<smtk::model::Entity>(item->relatedComponent());
+      //     if (modelComp)
+      //     {
+      //       smtk::model::EntityRef ent(modelComp);
+      //       if (ent.isFace())
+      //       {
+      //         color = qtDescriptivePhraseModel::defaultPhraseColor("Face");
+      //         gotColor = true;
+      //       }
+      //       else if (ent.isEdge())
+      //       {
+      //         color = qtDescriptivePhraseModel::defaultPhraseColor("Edge");
+      //         gotColor = true;
+      //       }
+      //       else if (ent.isVertex())
+      //       {
+      //         color = qtDescriptivePhraseModel::defaultPhraseColor("Vertex");
+      //         gotColor = true;
+      //       }
+      //     }
+      //     if (!gotColor)
+      //     {
+      //       // return an invalid color by default
+      //       color = QColor();
+      //     }
+      //   }
+      //   else
+      //   {
+      //     // Color may be luminance, luminance+alpha, rgb, or rgba:
+      //     switch (rgba.size())
+      //     {
+      //       case 0:
+      //         color = QColor(0, 0, 0, 0);
+      //         break;
+      //       case 1:
+      //         color.setHslF(0., 0., rgba[0], 1.);
+      //         break;
+      //       case 2:
+      //         color.setHslF(0., 0., rgba[0], rgba[1]);
+      //         break;
+      //       case 3:
+      //         color.setRgbF(rgba[0], rgba[1], rgba[2], 1.);
+      //         break;
+      //       case 4:
+      //       default:
+      //         color.setRgbF(rgba[0], rgba[1], rgba[2], rgba[3]);
+      //         break;
+      //     }
+      //   }
+      //   return color;
+      // }
       else if (role == PhraseCleanRole)
       {
         int clean = -1;
@@ -476,10 +476,6 @@ QVariant qtDescriptivePhraseModel::data(const QModelIndex& idx, int role) const
       else if (role == TitleTextMutableRole)
       {
         return QVariant(item->isTitleMutable());
-      }
-      else if (role == ColorMutableRole)
-      {
-        return QVariant(item->isRelatedColorMutable());
       }
       else if (role == BadgesRole)
       {
@@ -526,17 +522,17 @@ bool qtDescriptivePhraseModel::setData(const QModelIndex& idx, const QVariant& v
       std::string sval = value.value<QString>().toStdString();
       didChange = phrase->setSubtitle(sval);
     }
-    else if (role == PhraseColorRole && phrase->isRelatedColorMutable() &&
-      phrase->relatedComponent())
-    {
-      QColor color = value.value<QColor>();
-      FloatList rgba(4);
-      rgba[0] = color.redF();
-      rgba[1] = color.greenF();
-      rgba[2] = color.blueF();
-      rgba[3] = color.alphaF();
-      didChange = phrase->setRelatedColor(rgba);
-    }
+    // else if (role == PhraseColorRole && phrase->isRelatedColorMutable() &&
+    //   phrase->relatedComponent())
+    // {
+    //   QColor color = value.value<QColor>();
+    //   FloatList rgba(4);
+    //   rgba[0] = color.redF();
+    //   rgba[1] = color.greenF();
+    //   rgba[2] = color.blueF();
+    //   rgba[3] = color.alphaF();
+    //   didChange = phrase->setRelatedColor(rgba);
+    // }
     else if (role == PhraseVisibilityRole && phrase->relatedComponent())
     {
       /*
