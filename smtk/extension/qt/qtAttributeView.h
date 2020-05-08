@@ -96,6 +96,9 @@ protected:
   smtk::attribute::AttributePtr getAttributeFromItem(QTableWidgetItem* item);
   smtk::attribute::Attribute* getRawAttributeFromItem(QTableWidgetItem* item);
 
+  ///\brief Method used to delete an attribute from its resource
+  virtual bool deleteAttribute(smtk::attribute::AttributePtr att);
+
   smtk::attribute::AttributePtr getSelectedAttribute();
   QTableWidgetItem* addAttributeListItem(smtk::attribute::AttributePtr childData);
   void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem);

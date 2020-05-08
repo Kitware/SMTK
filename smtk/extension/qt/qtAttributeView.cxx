@@ -684,9 +684,7 @@ void qtAttributeView::onDeleteSelected()
   smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
   if (selObject != nullptr)
   {
-    attribute::DefinitionPtr attDef = selObject->definition();
-    ResourcePtr attResource = attDef->resource();
-    if (attResource->removeAttribute(selObject))
+    if (this->deleteAttribute(selObject))
     {
       std::string keyName = selObject->name();
       m_internals->AttSelections.remove(keyName);
@@ -707,6 +705,20 @@ void qtAttributeView::onDeleteSelected()
       QMessageBox::warning(this->parentWidget(), tr("Failure to Remove Attribute"), s.c_str());
     }
   }
+}
+
+bool smtk::extension::qtAttributeView::deleteAttribute(smtk::attribute::AttributePtr att)
+{
+  bool status = false;
+
+  if (att != nullptr)
+  {
+    attribute::DefinitionPtr attDef = att->definition();
+    ResourcePtr attResource = attDef->resource();
+    status = attResource->removeAttribute(att);
+  }
+
+  return status;
 }
 
 QTableWidgetItem* qtAttributeView::addAttributeListItem(smtk::attribute::AttributePtr childData)
