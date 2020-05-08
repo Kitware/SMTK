@@ -10,7 +10,7 @@
 #ifndef __smtk_attribute_operators_Read_h
 #define __smtk_attribute_operators_Read_h
 
-#include "smtk/operation/XMLOperation.h"
+#include "smtk/operation/ResourceManagerOperation.h"
 
 namespace smtk
 {
@@ -19,13 +19,13 @@ namespace attribute
 
 /**\brief Read an attribute resource.
   */
-class SMTKCORE_EXPORT Read : public smtk::operation::XMLOperation
+class SMTKCORE_EXPORT Read : public smtk::operation::ResourceManagerOperation
 {
 public:
   smtkTypeMacro(smtk::attribute::Read);
   smtkCreateMacro(Read);
   smtkSharedFromThisMacro(smtk::operation::Operation);
-  smtkSuperclassMacro(smtk::operation::XMLOperation);
+  smtkSuperclassMacro(smtk::operation::ResourceManagerOperation);
 
 protected:
   Result operateInternal() override;

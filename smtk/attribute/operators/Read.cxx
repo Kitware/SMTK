@@ -22,6 +22,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/resource/Manager.h"
+
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
 SMTK_THIRDPARTY_POST_INCLUDE
@@ -73,12 +75,34 @@ Read::Result Read::operateInternal()
     }
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
-  // Create an attribute resource.
-  smtk::attribute::Resource::Ptr resource = smtk::attribute::Resource::create();
+
+  // Create an attribute resource. If available, use the resource manager to
+  // create the resource and add logic to handle custom items to it.
+  smtk::attribute::Resource::Ptr resource;
+  if (auto resourceManager = this->resourceManager())
+  {
+    resource = resourceManager->create<smtk::attribute::Resource>();
+  }
+  else
+  {
+    resource = smtk::attribute::Resource::create();
+  }
 
   // Copy the contents of the json object into the attribute resource.
   smtk::attribute::from_json(j, resource);
   resource->setLocation(filename);
+
+  // If the resource manager was used to create the resource, then the resource
+  // will have already been added to the manager. Now that the resource's
+  // contents are read into memory, manually resolve its surrogates.
+  if (auto resourceManager = this->resourceManager())
+  {
+    for (auto& rsrc : resourceManager->resources())
+    {
+      resource->links().resolve(rsrc);
+      rsrc->links().resolve(resource);
+    }
+  }
 
   // Create a result object.
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);

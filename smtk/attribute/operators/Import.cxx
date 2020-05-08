@@ -24,6 +24,8 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
+#include "smtk/resource/Manager.h"
+
 namespace smtk
 {
 namespace attribute
@@ -53,8 +55,16 @@ Import::Result Import::operateInternal()
   }
   else
   {
-    // Construct an attribute resource to populate.
-    resource = smtk::attribute::Resource::create();
+    // Create an attribute resource. If available, use the resource manager to
+    // create the resource and add logic to handle custom items to it.
+    if (auto resourceManager = this->resourceManager())
+    {
+      resource = resourceManager->create<smtk::attribute::Resource>();
+    }
+    else
+    {
+      resource = smtk::attribute::Resource::create();
+    }
     auto name = smtk::common::Paths::stem(filename);
     resource->setName(name);
   }
@@ -65,6 +75,18 @@ Import::Result Import::operateInternal()
   {
     smtkErrorMacro(log(), "Encountered errors while reading \"" << filename << "\".");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
+  // If the resource manager was used to create the resource, then the resource
+  // will have already been added to the manager. Now that the resource's
+  // contents are read into memory, manually resolve its surrogates.
+  if (auto resourceManager = this->resourceManager())
+  {
+    for (auto& rsrc : resourceManager->resources())
+    {
+      resource->links().resolve(rsrc);
+      rsrc->links().resolve(resource);
+    }
   }
 
   // Create a result object.
