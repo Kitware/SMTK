@@ -70,6 +70,13 @@ public:
   std::pair<PersistentObjectPtr, RoleType> linkedObjectAndRole(const Key&) const;
   PersistentObjectPtr linkedObject(const Key& key) const { return linkedObjectAndRole(key).first; }
 
+  /// Given a Link key, return the id and role to which this object is linked,
+  /// or return a null id if no link exists with this link id. This method is
+  /// similar to linkedObjectAndRole() but does not require the link to
+  /// successfully resolve to return a non-null value.
+  std::pair<smtk::common::UUID, RoleType> linkedIdAndRole(const Key&) const;
+  smtk::common::UUID linkedId(const Key& key) const { return linkedIdAndRole(key).first; }
+
 protected:
   virtual Resource* leftHandSideResource() = 0;
   virtual const Resource* leftHandSideResource() const = 0;
@@ -99,6 +106,8 @@ private:
 
   std::pair<PersistentObjectPtr, Links::RoleType> linkedObjectAndRole(
     const Resource*, const Key&) const;
+
+  std::pair<smtk::common::UUID, Links::RoleType> linkedIdAndRole(const Resource*, const Key&) const;
 };
 }
 }

@@ -728,17 +728,15 @@ ReferenceItem::const_iterator ReferenceItem::end() const
 
 std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
 {
-  std::ptrdiff_t idx = 0;
-  for (auto it = this->begin(); it != this->end(); ++it, ++idx)
+  AttributePtr myAtt = this->m_referencedAttribute.lock();
+  if (myAtt != nullptr)
   {
-    if (!it.isSet())
+    for (std::size_t i = 0; i < m_keys.size(); ++i)
     {
-      continue;
-    }
-
-    if ((*it) && (*it)->id() == uid)
-    {
-      return idx;
+      if (uid == myAtt->guardedLinks()->linkedId(m_keys[i]))
+      {
+        return i;
+      }
     }
   }
   return -1;
@@ -746,24 +744,7 @@ std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
 
 std::ptrdiff_t ReferenceItem::find(const PersistentObjectPtr& comp) const
 {
-  std::ptrdiff_t idx = 0;
-  for (auto it = this->begin(); it != this->end(); ++it, ++idx)
-  {
-    if (!it.isSet())
-    {
-      continue;
-    }
-
-    if ((*it) == comp)
-    {
-      return idx;
-    }
-    if ((*it) && (*it)->id() == comp->id())
-    {
-      std::cerr << "PROBLEM!!!  Found comp: " << comp->name() << " by ID\n";
-    }
-  }
-  return -1;
+  return (comp ? this->find(comp->id()) : -1);
 }
 
 smtk::resource::LockType ReferenceItem::lockType() const

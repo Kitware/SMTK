@@ -80,6 +80,11 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(const
   return this->linkedObjectAndRole(this->leftHandSideResource(), key);
 }
 
+std::pair<smtk::common::UUID, Links::RoleType> Links::linkedIdAndRole(const Key& key) const
+{
+  return this->linkedIdAndRole(this->leftHandSideResource(), key);
+}
+
 PersistentObjectSet Links::linkedTo(const RoleType& role) const
 {
   return this->linkedTo(this->leftHandSideResource(), this->leftHandSideComponentId(), role);
@@ -375,6 +380,30 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
     }
 
     return std::make_pair(resourceLink.resource()->find(componentLink.right), componentLink.role);
+  }
+}
+
+std::pair<smtk::common::UUID, Links::RoleType> Links::linkedIdAndRole(
+  const Resource* lhs1, const Links::Key& key) const
+{
+  typedef Resource::Links::ResourceLinkData ResourceLinkData;
+  const ResourceLinkData& resourceLinkData = lhs1->links().data();
+  if (!resourceLinkData.contains(key.first))
+  {
+    return std::make_pair(smtk::common::UUID::null(), Component::Links::Data::undefinedRole);
+  }
+
+  auto& resourceLink = resourceLinkData.value(key.first);
+  auto& componentLink = resourceLink.at(key.second);
+
+  if (componentLink.right != linkToResource)
+  {
+    return std::make_pair(componentLink.right, componentLink.role);
+  }
+  else
+  {
+    auto& link = resourceLinkData.at(key.first);
+    return std::make_pair(link.right, link.role);
   }
 }
 
