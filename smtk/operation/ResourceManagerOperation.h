@@ -34,8 +34,6 @@ public:
   void setResourceManager(smtk::resource::WeakManagerPtr);
   smtk::resource::ManagerPtr resourceManager();
 
-  virtual bool ableToOperate() override;
-
 private:
   smtk::resource::WeakManagerPtr m_resourceManager;
 };

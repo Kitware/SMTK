@@ -25,21 +25,5 @@ smtk::resource::ManagerPtr ResourceManagerOperation::resourceManager()
 {
   return m_resourceManager.lock();
 }
-
-bool ResourceManagerOperation::ableToOperate()
-{
-  if (!this->Superclass::ableToOperate())
-  {
-    return false;
-  }
-
-  // To create a resource, we must have a resource manager that can read
-  // resources.
-  if (this->resourceManager() == nullptr)
-  {
-    return false;
-  }
-  return true;
-}
 }
 }

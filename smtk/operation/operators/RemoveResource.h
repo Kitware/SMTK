@@ -31,6 +31,8 @@ public:
 protected:
   RemoveResource();
 
+  virtual bool ableToOperate() override;
+
   Result operateInternal() override;
 
   virtual const char* xmlDescription() const override;
