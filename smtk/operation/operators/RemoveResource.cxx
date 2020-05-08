@@ -28,6 +28,22 @@ namespace operation
 
 RemoveResource::RemoveResource() = default;
 
+bool RemoveResource::ableToOperate()
+{
+  if (!this->Superclass::ableToOperate())
+  {
+    return false;
+  }
+
+  // To create a resource, we must have a resource manager that can read
+  // resources.
+  if (this->resourceManager() == nullptr)
+  {
+    return false;
+  }
+  return true;
+}
+
 RemoveResource::Result RemoveResource::operateInternal()
 {
   // Access the resource manager (provided by the operation manager that created
