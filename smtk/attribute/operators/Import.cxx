@@ -41,15 +41,10 @@ Import::Result Import::operateInternal()
 
   smtk::attribute::ResourcePtr resource;
   // Check if attribute resource is specified
-  auto resourceItem = this->parameters()->findResource("use-resource");
-  if ((resourceItem != nullptr) && resourceItem->isEnabled())
+  smtk::attribute::ReferenceItem::Ptr existingResourceItem = this->parameters()->associations();
+  if (existingResourceItem->numberOfValues() > 0)
   {
-    resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->value(0));
-    if (resource == nullptr)
-    {
-      smtkErrorMacro(log(), "Failed to find specified attribute resource");
-      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
-    }
+    resource = std::static_pointer_cast<smtk::attribute::Resource>(existingResourceItem->value());
   }
   else
   {
