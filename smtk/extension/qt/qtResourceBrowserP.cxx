@@ -112,14 +112,6 @@ void qtResourceBrowser::Internal::setup(qtResourceBrowser* self,
   m_view->setItemDelegate(m_delegate);
   m_view->setMouseTracking(true); // Needed to receive hover events.
   // Connect signals
-  if (dpmodel)
-  {
-    QObject::connect(m_delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), dpmodel,
-      SLOT(toggleVisibility(const QModelIndex&)));
-  }
-  // QObject::connect(m_delegate, SIGNAL(requestColorChange(const QModelIndex&)), m_self,
-  //   SLOT(editObjectColor(const QModelIndex&)));
-
   QObject::connect(m_view->selectionModel(),
     SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), m_self,
     SLOT(sendPanelSelectionToSMTK(const QItemSelection&, const QItemSelection&)));

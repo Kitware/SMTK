@@ -22,6 +22,7 @@ namespace smtk
 {
 namespace extension
 {
+const int padding = 7;
 
 qtDescriptivePhraseDelegate::qtDescriptivePhraseDelegate(QWidget* owner)
   : QStyledItemDelegate(owner)
@@ -232,7 +233,6 @@ void qtDescriptivePhraseDelegate::paint(
   QRect iconRect = option.rect;
   iconRect.setTop(iconRect.top() + 1);
   // make zero size if there are no badges.
-  const int padding = 7;
   iconRect.setRight(iconRect.left() + padding);
 
   for (auto badge : badges)
@@ -325,7 +325,7 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
   QFont titleFont = QApplication::font();
   QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(m_titleFontSize);
-  /// add a method to set/get title font
+  // add a method to set/get title font
   titleFont.setBold(this->titleFontWeight() > 1);
   // bold the active model title
   if (idx.data(qtDescriptivePhraseModel::ModelActiveRole).toBool())
@@ -348,12 +348,22 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
 
   QRect titleRect = option.rect;
   QRect iconRect = option.rect;
-  QIcon visicon = qvariant_cast<QIcon>(idx.data(qtDescriptivePhraseModel::PhraseVisibilityRole));
-  QSize visiconsize = visicon.actualSize(option.decorationSize);
-
-  iconRect.setLeft(iconRect.left() + visiconsize.width() + 7);
-  iconRect.setRight(iconRect.left() + iconsize.width() + 7);
-  iconRect.setTop(iconRect.top() + 1);
+  auto badges = qvariant_cast<std::vector<const smtk::view::Badge*> >(
+    idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto phrase =
+    idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
+  std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
+  // find out the size of each badge, so we can shift the editor over correctly.
+  for (auto badge : badges)
+  {
+    QIcon badgeIcon =
+      qtDescriptivePhraseModel::getSVGIcon(badge->icon(phrase.get(), backgroundArray));
+    QSize iconsize = badgeIcon.actualSize(option.decorationSize);
+    // shift each icon to the right, adding some padding.
+    iconRect.setRight(iconRect.left() + iconsize.width() + padding);
+    // painting would be here...
+    iconRect.setLeft(iconRect.right());
+  }
   titleRect.setLeft(iconRect.right());
 
   editor->setGeometry(titleRect);
@@ -399,7 +409,6 @@ int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
   QRect iconRect = option.rect;
   iconRect.setTop(iconRect.top() + 1);
   // make zero size if there are no badges.
-  const int padding = 7;
   iconRect.setRight(iconRect.left() + padding);
   std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
   int px = pPos.x();
@@ -412,8 +421,7 @@ int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
     QSize iconsize = badgeIcon.actualSize(option.decorationSize);
     // shift each icon to the right, adding some padding.
     iconRect.setRight(iconRect.left() + iconsize.width() + padding);
-    if (px > iconRect.left() && px < iconRect.right() && py > iconRect.top() &&
-      py < iconRect.bottom())
+    if (iconRect.contains(px, py))
     {
       badgeIndex = i;
       break;
@@ -451,6 +459,5 @@ bool qtDescriptivePhraseDelegate::editorEvent(
 
   return res;
 }
-
-} // namespace model
-} // namespace smtk
+}
+}

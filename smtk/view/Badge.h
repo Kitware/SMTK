@@ -67,7 +67,7 @@ public:
     const DescriptivePhrase* phrase, const std::array<float, 4>& background) const = 0;
 
   /// Take an action when the badge is clicked.
-  virtual void action(DescriptivePhrase*) const {}
+  virtual void action(const DescriptivePhrase*) const {}
 };
 }
 }

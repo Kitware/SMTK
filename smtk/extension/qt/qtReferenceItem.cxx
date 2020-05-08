@@ -563,8 +563,8 @@ void qtReferenceItem::updateUI()
   m_p->m_editBtn->setMaximumSize(QSize(16, 20));
 
   QObject::connect(m_p->m_editBtn->menu(), SIGNAL(aboutToHide()), this, SLOT(popupClosing()));
-  QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
-    m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
+  // QObject::connect(m_p->m_qtDelegate, SIGNAL(requestVisibilityChange(const QModelIndex&)),
+  //   m_p->m_qtModel, SLOT(toggleVisibility(const QModelIndex&)));
 
   m_p->m_grid->addLayout(labelLayout, 0, 0);
   m_p->m_grid->addLayout(entryLayout, 0, 1);
@@ -760,7 +760,7 @@ void qtReferenceItem::toggleCurrentItem()
                 .value<smtk::view::DescriptivePhrasePtr>();
   if (cphr)
   {
-    auto currentMembership = cphr->relatedVisibility();
+    int currentMembership = 0; // cphr->relatedVisibility();
     // Selecting a new item when only 1 is allowed should reset all other membership.
     if (!currentMembership && !m_p->m_members.empty())
     {
@@ -771,7 +771,7 @@ void qtReferenceItem::toggleCurrentItem()
         m_p->m_phraseModel->triggerDataChanged();
       }
     }
-    cphr->setRelatedVisibility(!currentMembership);
+    // cphr->setRelatedVisibility(!currentMembership);
     this->updateSynopsisLabels();
   }
 }

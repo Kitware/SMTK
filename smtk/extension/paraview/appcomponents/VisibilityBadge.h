@@ -55,7 +55,7 @@ public:
   std::string icon(const DescriptivePhrase* phrase, const std::array<float, 4>&) const override;
 
   /// take an action when the badge is clicked.
-  void action(DescriptivePhrase* phrase) const override;
+  void action(const DescriptivePhrase* phrase) const override;
 
 private:
   bool phraseVisibility(const DescriptivePhrase* phrase) const;

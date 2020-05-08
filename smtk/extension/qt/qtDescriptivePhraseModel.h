@@ -66,7 +66,7 @@ public:
     SubtitleTextRole = Qt::UserRole + 101, //!< Phrase subtitle (usu. type of phrase)
     PhraseIconRole_LightBG = Qt::UserRole + 102, //!< Phrase type icon on light background
     PhraseIconRole_DarkBG = Qt::UserRole + 103,  //!< Phrase type icon on dark background
-    // PhraseColorRole = Qt::UserRole + 104,        //!< Phrase-specific color (e.g., component color)
+    // PhraseColorRole = Qt::UserRole + 104, //!< Phrase-specific color (e.g., component color)
     PhraseVisibilityRole = Qt::UserRole + 105, //!< Visibility of phrase's subject
     PhraseCleanRole = Qt::UserRole + 106,      //!< Is resource clean (0), dirty (1), or N/A (-1)?
     PhraseLockRole = Qt::UserRole + 107,       //!< Is resource free (0) or locked (1)?
@@ -93,7 +93,7 @@ public:
   QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
   QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
-  //bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex()) override;
+  // bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex()) override;
   bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex()) override;
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
@@ -114,10 +114,6 @@ public:
   void rebuildSubphrases(const QModelIndex& qidx);
 
   Qt::DropActions supportedDropActions() const override;
-
-public slots:
-  virtual void toggleVisibility(const QModelIndex& idx);
-  virtual void editColor(const QModelIndex& idx);
 
 signals:
   void phraseTitleChanged(const QModelIndex&);

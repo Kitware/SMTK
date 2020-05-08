@@ -1,3 +1,5 @@
+
+
 //=========================================================================
 //  Copyright (c) Kitware, Inc.
 //  All rights reserved.
@@ -37,9 +39,7 @@ namespace extension
 namespace qt
 {
 
-TypeAndColorBadge::TypeAndColorBadge()
-{
-}
+TypeAndColorBadge::TypeAndColorBadge() = default;
 
 TypeAndColorBadge::TypeAndColorBadge(
   smtk::view::BadgeSet& parent, const smtk::view::Configuration::Component& comp)
@@ -60,7 +60,7 @@ smtk::resource::FloatList colorValue(smtk::resource::ComponentPtr component)
   return rgba;
 }
 
-QColor getPhraseColor(smtk::view::DescriptivePhrase* item)
+QColor getPhraseColor(const smtk::view::DescriptivePhrase* item)
 {
   QColor color;
   if (!(item->relatedComponent() || item->phraseType() == smtk::view::DescriptivePhraseType::LIST))
@@ -159,7 +159,7 @@ bool editColorValue(smtk::view::PhraseModelPtr model, smtk::resource::ComponentP
   return false;
 }
 
-void TypeAndColorBadge::action(smtk::view::DescriptivePhrase* phrase) const
+void TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase) const
 {
   if (phrase->phraseModel() == nullptr)
   {

@@ -115,7 +115,7 @@ public:
   ///@{
 
   /// Return the title text that should be displayed.
-  virtual std::string title()
+  virtual std::string title() const
   {
     return m_content ? m_content->stringValue(PhraseContent::TITLE) : std::string();
   }
@@ -173,22 +173,6 @@ public:
   virtual smtk::resource::PropertyType relatedPropertyType() const
   {
     return smtk::resource::INVALID_PROPERTY;
-  }
-
-  /// Returns true if the visibility value should be illustrated; false otherwise.
-  bool displayVisibility() const
-  {
-    return m_content ? m_content->displayable(PhraseContent::VISIBILITY) : false;
-  }
-  /// If this phrase has a related visibility value, return it; otherwise return -1.
-  int relatedVisibility() const
-  {
-    return m_content ? m_content->flagValue(PhraseContent::VISIBILITY) : 0;
-  }
-  /// A method user interfaces may call to change the visibility.
-  virtual bool setRelatedVisibility(int visibility)
-  {
-    return m_content ? m_content->editFlagValue(PhraseContent::VISIBILITY, visibility) : false;
   }
 
   ///@}

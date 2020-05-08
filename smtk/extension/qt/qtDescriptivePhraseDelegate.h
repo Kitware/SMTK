@@ -56,10 +56,6 @@ public slots:
   void setVisibilityMode(bool allEditsChangeVisibility);
   void setHighlightOnHover(bool highlightOnMouseover);
 
-signals:
-  void requestVisibilityChange(const QModelIndex&);
-  void requestColorChange(const QModelIndex&);
-
 public:
   QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 

@@ -452,8 +452,8 @@ int unitQtComponentItem(int argc, char* argv[])
   // combo->setView(listView);
   // combo->setRootModelIndex(comboRoot);
   listView->setRootIndex(comboRoot);
-  QObject::connect(delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), qmodel,
-    SLOT(toggleVisibility(const QModelIndex&)));
+  // QObject::connect(delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), qmodel,
+  //   SLOT(toggleVisibility(const QModelIndex&)));
 
   //dlog->show();
 

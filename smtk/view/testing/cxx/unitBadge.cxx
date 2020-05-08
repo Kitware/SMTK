@@ -57,7 +57,7 @@ public:
     std::string tip = "A"; // "A(" + this->ObjectIconBadge::tooltip(phrase) + ")";
     return tip;
   }
-  void action(DescriptivePhrase* phrase) const override
+  void action(const DescriptivePhrase* phrase) const override
   {
     if (phrase && phrase->relatedComponent())
     {
@@ -87,7 +87,7 @@ public:
   {
     return phrase ? "yes" : "no";
   }
-  void action(DescriptivePhrase* phrase) const override
+  void action(const DescriptivePhrase* phrase) const override
   {
     if (phrase && !phrase->relatedComponent() && phrase->relatedResource())
     {
