@@ -153,6 +153,8 @@ public:
     return (it != m_components.end() ? *it : smtk::resource::ComponentPtr());
   }
 
+  void remove(const ComponentB::Ptr& component) { m_components.erase(component); }
+
   std::function<bool(const smtk::resource::Component&)> queryOperation(
     const std::string& /*unused*/) const override
   {
@@ -288,6 +290,32 @@ int TestResourceLinks(int /*unused*/, char** const /*unused*/)
   TestLink<ResourceA, ComponentB>(resourceA, componentB);
   TestLink<ComponentA, ResourceB>(componentA, resourceB);
   TestLink<ComponentA, ComponentB>(componentA, componentB);
+
+  {
+    smtk::resource::Links::RoleType role1 = 1;
+
+    // Add a link from component A to component B.
+    smtk::resource::Links::Key key = componentA->links().addLinkTo(componentB, role1);
+
+    // Remove component B from resource B.
+    resourceB->remove(componentB);
+
+    // Test that component A is still linked to component B.
+    smtkTest(componentA->links().isLinkedTo(componentB, role1) == true,
+      "Component A should be linked to component B even after component B \n"
+      "is removed from Resource B.");
+
+    // Access the linked object through the link.
+    typename ComponentB::Ptr linkedObjectB =
+      std::static_pointer_cast<ComponentB>(componentA->links().linkedObject(key));
+
+    // Test that the accessed object is invalid.
+    smtkTest(linkedObjectB == nullptr, "Link-accessed component should no longer be accessible.");
+
+    // Test that the accessed object id is correct.
+    smtkTest(componentB->id() == componentA->links().linkedId(key),
+      "Link-accessed id should be accessible.");
+  }
 
   return 0;
 }
