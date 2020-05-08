@@ -102,11 +102,10 @@ qtItem* qtFileItem::createItemWidget(const qtAttributeItemInfo& info)
 qtFileItem::qtFileItem(const qtAttributeItemInfo& info)
   : qtItem(info)
 {
-  this->Internals = new qtFileItemInternals;
-  this->Internals->IsDirectory =
-    (m_itemInfo.item()->type() == smtk::attribute::Item::DirectoryType);
+  m_internals = new qtFileItemInternals;
+  m_internals->IsDirectory = (m_itemInfo.item()->type() == smtk::attribute::Item::DirectoryType);
   m_isLeafItem = true;
-  this->Internals->VectorItemOrient = Qt::Horizontal;
+  m_internals->VectorItemOrient = Qt::Horizontal;
   this->createWidget();
   if (m_itemInfo.uiManager())
   {
@@ -141,17 +140,17 @@ QString extractFileTypeExtension(const std::string& fileTypeDescription)
 
 qtFileItem::~qtFileItem()
 {
-  delete this->Internals;
+  delete m_internals;
 }
 
 void qtFileItem::setLabelVisible(bool visible)
 {
-  this->Internals->theLabel->setVisible(visible);
+  m_internals->theLabel->setVisible(visible);
 }
 
 bool qtFileItem::isDirectory()
 {
-  return this->Internals->IsDirectory;
+  return m_internals->IsDirectory;
 }
 
 // Although you *can* disable this feature, it is not recommended.
@@ -161,15 +160,15 @@ void qtFileItem::enableFileBrowser(bool state)
 {
   if (!state)
   {
-    this->Internals->FileBrowser->setParent(nullptr);
-    delete this->Internals->FileBrowser;
-    this->Internals->FileBrowser = nullptr;
+    m_internals->FileBrowser->setParent(nullptr);
+    delete m_internals->FileBrowser;
+    m_internals->FileBrowser = nullptr;
   }
-  else if (nullptr == this->Internals->FileBrowser)
+  else if (nullptr == m_internals->FileBrowser)
   {
-    this->Internals->FileBrowser = new QFileDialog(m_widget);
-    this->Internals->FileBrowser->setObjectName("Select File Dialog");
-    this->Internals->FileBrowser->setDirectory(QDir::currentPath());
+    m_internals->FileBrowser = new QFileDialog(m_widget);
+    m_internals->FileBrowser->setObjectName("Select File Dialog");
+    m_internals->FileBrowser->setDirectory(QDir::currentPath());
   }
 }
 
@@ -194,7 +193,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
       fileCombo = new QComboBox(frame);
       fileCombo->setEditable(true);
       fileTextWidget = fileCombo;
-      this->Internals->fileCombo = fileCombo;
+      m_internals->fileCombo = fileCombo;
     }
 
     if (!fDef.shouldExist())
@@ -204,16 +203,15 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
       sregex_token_iterator it(filters.begin(), filters.end(), re, -1), last;
       if (it != last && std::next(it) != last)
       {
-        this->Internals->fileExtCombo = new QComboBox(frame);
-        this->Internals->fileExtCombo->setEditable(false);
+        m_internals->fileExtCombo = new QComboBox(frame);
+        m_internals->fileExtCombo->setEditable(false);
         for (; it != last; ++it)
         {
-          this->Internals->fileExtCombo->addItem(extractFileTypeName(it->str()));
-          this->Internals->fileExtensions.push_back(extractFileTypeExtension(it->str()));
+          m_internals->fileExtCombo->addItem(extractFileTypeName(it->str()));
+          m_internals->fileExtensions.push_back(extractFileTypeExtension(it->str()));
         }
-        this->Internals->fileExtCombo->setMinimumContentsLength(8);
-        this->Internals->fileExtCombo->setSizeAdjustPolicy(
-          QComboBox::AdjustToMinimumContentsLength);
+        m_internals->fileExtCombo->setMinimumContentsLength(8);
+        m_internals->fileExtCombo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
       }
     }
   }
@@ -251,9 +249,9 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
   QHBoxLayout* layout = new QHBoxLayout(frame);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(fileTextWidget);
-  if (this->Internals->fileExtCombo)
+  if (m_internals->fileExtCombo)
   {
-    layout->addWidget(this->Internals->fileExtCombo);
+    layout->addWidget(m_internals->fileExtCombo);
   }
   layout->addWidget(fileBrowserButton);
   layout->setAlignment(Qt::AlignCenter);
@@ -297,15 +295,15 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
 
     QObject::connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(onInputValueChanged()));
 
-    if (this->Internals->fileExtCombo)
+    if (m_internals->fileExtCombo)
     {
-      QObject::connect(this->Internals->fileExtCombo, &QComboBox::currentTextChanged,
+      QObject::connect(m_internals->fileExtCombo, &QComboBox::currentTextChanged,
         [=]() { setActiveField(lineEdit); });
-      QObject::connect(this->Internals->fileExtCombo,
+      QObject::connect(m_internals->fileExtCombo,
         (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged,
         [=]() { setActiveField(lineEdit); });
 
-      QObject::connect(this->Internals->fileExtCombo, SIGNAL(currentIndexChanged(int)), this,
+      QObject::connect(m_internals->fileExtCombo, SIGNAL(currentIndexChanged(int)), this,
         SLOT(onInputValueChanged()));
     }
 
@@ -335,9 +333,9 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx,
 void qtFileItem::onInputValueChanged()
 {
   QLineEdit* editBox = nullptr;
-  if (this->Internals->fileCombo)
+  if (m_internals->fileCombo)
   {
-    editBox = this->Internals->fileCombo->lineEdit();
+    editBox = m_internals->fileCombo->lineEdit();
   }
   if (!editBox)
   {
@@ -357,22 +355,22 @@ void qtFileItem::onInputValueChanged()
   {
     auto fSystemItemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
     auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
-    if (fItemDef && this->Internals->fileExtCombo)
+    if (fItemDef && m_internals->fileExtCombo)
     {
       int filterId = fItemDef->filterId(value);
       if (filterId != -1)
       {
         // the value has a suffix that matches our definition, so we set the
         // file type combobox to reflect the update.
-        assert(this->Internals->fileExtCombo != nullptr);
-        this->Internals->fileExtCombo->setCurrentIndex(filterId);
+        assert(m_internals->fileExtCombo != nullptr);
+        m_internals->fileExtCombo->setCurrentIndex(filterId);
       }
     }
     // Lets see if we need to append a suffix
-    if ((!fSystemItemDef->isValueValid(value)) && this->Internals->fileExtCombo)
+    if ((!fSystemItemDef->isValueValid(value)) && m_internals->fileExtCombo)
     {
-      value += this->Internals->fileExtensions.at(this->Internals->fileExtCombo->currentIndex())
-                 .toStdString();
+      value +=
+        m_internals->fileExtensions.at(m_internals->fileExtCombo->currentIndex()).toStdString();
 
       // If the value is still not valid color the widget accordingly and just return
       if (!fSystemItemDef->isValueValid(value))
@@ -433,7 +431,7 @@ void qtFileItem::onInputValueChanged()
 bool qtFileItem::onLaunchFileBrowser()
 {
   // If we are not using local file browser, just emit signal and return
-  if (!this->Internals->FileBrowser)
+  if (!m_internals->FileBrowser)
   {
     return emit launchFileBrowser();
   }
@@ -442,27 +440,37 @@ bool qtFileItem::onLaunchFileBrowser()
   auto item = m_itemInfo.itemAs<attribute::FileSystemItem>();
 
   QString filters;
+  QString title;
   QFileDialog::FileMode mode = QFileDialog::AnyFile;
-  if (this->Internals->IsDirectory)
+  if (m_internals->IsDirectory)
   {
     mode = QFileDialog::Directory;
     auto itemDef = item->definitionAs<attribute::FileSystemItemDefinition>();
-    this->Internals->FileBrowser->setOption(QFileDialog::ShowDirsOnly, itemDef->shouldExist());
+    m_internals->FileBrowser->setOption(QFileDialog::ShowDirsOnly, itemDef->shouldExist());
+    title = "Find Directory";
   }
   else
   {
     auto fItemDef = item->definitionAs<attribute::FileItemDefinition>();
     filters = fItemDef->getFileFilters().c_str();
     mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile : QFileDialog::AnyFile;
+    title = "Select File";
   }
-  this->Internals->FileBrowser->setFileMode(mode);
+  m_internals->FileBrowser->setFileMode(mode);
+  m_internals->FileBrowser->setWindowTitle(title);
   QStringList name_filters = filters.split(";;");
-  this->Internals->FileBrowser->setNameFilters(name_filters);
-
-  this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
-  if (this->Internals->FileBrowser->exec() == QDialog::Accepted)
+  m_internals->FileBrowser->setNameFilters(name_filters);
+  // This is needed for Macs since mode alone is not enough to allow the user to
+  // chose a non-existent file
+  if (mode == QFileDialog::AnyFile)
   {
-    QStringList files = this->Internals->FileBrowser->selectedFiles();
+    m_internals->FileBrowser->setAcceptMode(QFileDialog::AcceptSave);
+    m_internals->FileBrowser->setLabelText(QFileDialog::FileName, "File name:");
+  }
+  m_internals->FileBrowser->setLabelText(QFileDialog::Accept, "Accept");
+  if (m_internals->FileBrowser->exec() == QDialog::Accepted)
+  {
+    QStringList files = m_internals->FileBrowser->selectedFiles();
     this->setInputValue(files[0]);
     return true;
   }
@@ -471,29 +479,29 @@ bool qtFileItem::onLaunchFileBrowser()
 
 void qtFileItem::updateFileComboList(const QString& newFile)
 {
-  if (this->Internals->fileCombo)
+  if (m_internals->fileCombo)
   {
-    this->Internals->fileCombo->blockSignals(true);
-    QString currentFile = this->Internals->fileCombo->currentText();
-    this->Internals->fileCombo->clear();
+    m_internals->fileCombo->blockSignals(true);
+    QString currentFile = m_internals->fileCombo->currentText();
+    m_internals->fileCombo->clear();
     auto fItem = m_itemInfo.itemAs<attribute::FileItem>();
     fItem->addRecentValue(newFile.toStdString());
     std::vector<std::string>::const_iterator it;
     for (it = fItem->recentValues().begin(); it != fItem->recentValues().end(); ++it)
     {
-      this->Internals->fileCombo->addItem((*it).c_str());
+      m_internals->fileCombo->addItem((*it).c_str());
     }
-    this->Internals->fileCombo->setCurrentIndex(this->Internals->fileCombo->findText(currentFile));
-    this->Internals->fileCombo->blockSignals(false);
+    m_internals->fileCombo->setCurrentIndex(m_internals->fileCombo->findText(currentFile));
+    m_internals->fileCombo->blockSignals(false);
   }
 }
 
 void qtFileItem::setInputValue(const QString& val)
 {
   QLineEdit* lineEdit = nullptr;
-  if (this->Internals->fileCombo)
+  if (m_internals->fileCombo)
   {
-    lineEdit = this->Internals->fileCombo->lineEdit();
+    lineEdit = m_internals->fileCombo->lineEdit();
   }
   else
   {
@@ -508,7 +516,7 @@ void qtFileItem::setInputValue(const QString& val)
 
   // For files, check if the extension in val is valid. If it is not, append a
   // valid extension to it.
-  if (!value.isEmpty() && !this->Internals->IsDirectory)
+  if (!value.isEmpty() && !m_internals->IsDirectory)
   {
     smtk::attribute::ItemPtr item = m_itemInfo.item();
 
@@ -586,8 +594,8 @@ void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& it
     QPair<QPointer<QLayout>, QPointer<QWidget> > pair;
     pair.first = editorLayout;
     pair.second = editBox;
-    this->Internals->ExtensibleMap[minusButton] = pair;
-    this->Internals->MinusButtonIndices.push_back(minusButton);
+    m_internals->ExtensibleMap[minusButton] = pair;
+    m_internals->MinusButtonIndices.push_back(minusButton);
   }
 
   if (n != 1 && itemDef.hasValueLabels())
@@ -605,27 +613,27 @@ void qtFileItem::addInputEditor(int i, const smtk::attribute::FileSystemItem& it
   editorLayout->addWidget(editBox);
 
   // always going vertical for discrete and extensible items
-  if (this->Internals->VectorItemOrient == Qt::Vertical || item.isExtensible())
+  if (m_internals->VectorItemOrient == Qt::Vertical || item.isExtensible())
   {
     int row = 2 * i;
     // The "Add New Value" button is in first row, so take that into account
     row = item.isExtensible() ? row + 1 : row;
-    this->Internals->EntryLayout->addLayout(editorLayout, row, 1);
+    m_internals->EntryLayout->addLayout(editorLayout, row, 1);
 
     // there could be conditional children, so we need another layout
     // so that the combobox will stay TOP-left when there are multiple
     // combo boxes.
     if (childLayout)
     {
-      this->Internals->EntryLayout->addLayout(childLayout, row + 1, 0, 1, 2);
+      m_internals->EntryLayout->addLayout(childLayout, row + 1, 0, 1, 2);
     }
   }
   else // going horizontal
   {
-    this->Internals->EntryLayout->addLayout(editorLayout, 0, i + 1);
+    m_internals->EntryLayout->addLayout(editorLayout, 0, i + 1);
   }
 
-  this->Internals->ChildrenMap[editBox] = childLayout;
+  m_internals->ChildrenMap[editBox] = childLayout;
   this->updateExtensibleState();
 }
 
@@ -640,19 +648,19 @@ void qtFileItem::loadInputValues(const smtk::attribute::FileSystemItem& item,
 
   if (item.isExtensible())
   {
-    if (!this->Internals->AddItemButton)
+    if (!m_internals->AddItemButton)
     {
       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-      this->Internals->AddItemButton = new QToolButton(m_widget);
+      m_internals->AddItemButton = new QToolButton(m_widget);
       QString iconName(":/icons/attribute/plus.png");
-      this->Internals->AddItemButton->setText("Add New Value");
-      this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+      m_internals->AddItemButton->setText("Add New Value");
+      m_internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
-      //      this->Internals->AddItemButton->setFixedSize(QSize(12, 12));
-      this->Internals->AddItemButton->setIcon(QIcon(iconName));
-      this->Internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
-      connect(this->Internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddNewValue()));
-      this->Internals->EntryLayout->addWidget(this->Internals->AddItemButton, 0, 1);
+      //      m_internals->AddItemButton->setFixedSize(QSize(12, 12));
+      m_internals->AddItemButton->setIcon(QIcon(iconName));
+      m_internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
+      connect(m_internals->AddItemButton, SIGNAL(clicked()), this, SLOT(onAddNewValue()));
+      m_internals->EntryLayout->addWidget(m_internals->AddItemButton, 0, 1);
     }
   }
 
@@ -681,10 +689,10 @@ void qtFileItem::updateUI()
   {
     m_widget->setEnabled(false);
   }
-  this->Internals->EntryLayout = new QGridLayout(m_widget);
-  this->Internals->EntryLayout->setMargin(0);
-  this->Internals->EntryLayout->setSpacing(0);
-  this->Internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  m_internals->EntryLayout = new QGridLayout(m_widget);
+  m_internals->EntryLayout->setMargin(0);
+  m_internals->EntryLayout->setSpacing(0);
+  m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
@@ -738,7 +746,7 @@ void qtFileItem::updateUI()
     label->setFont(m_itemInfo.uiManager()->advancedFont());
   }
   labelLayout->addWidget(label);
-  this->Internals->theLabel = label;
+  m_internals->theLabel = label;
 
   this->loadInputValues(*item, *itemDef);
 
@@ -749,8 +757,8 @@ void qtFileItem::updateUI()
   //  vTLlayout->setSpacing(0);
   //  vTLlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   //  vTLlayout->addLayout(labelLayout);
-  this->Internals->EntryLayout->addLayout(labelLayout, 0, 0);
-  //  layout->addWidget(this->Internals->EntryFrame, 0, 1);
+  m_internals->EntryLayout->addLayout(labelLayout, 0, 0);
+  //  layout->addWidget(m_internals->EntryFrame, 0, 1);
   if (m_itemInfo.parentWidget() && m_itemInfo.parentWidget()->layout())
   {
     m_itemInfo.parentWidget()->layout()->addWidget(m_widget);
@@ -771,19 +779,19 @@ void qtFileItem::setOutputOptional(int state)
   bool enable = state != 0;
   if (item->isExtensible())
   {
-    if (this->Internals->AddItemButton)
+    if (m_internals->AddItemButton)
     {
-      this->Internals->AddItemButton->setVisible(enable);
+      m_internals->AddItemButton->setVisible(enable);
     }
-    foreach (QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+    foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
     {
       tButton->setVisible(enable);
     }
   }
 
-  foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+  foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
   {
-    QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);
+    QLayout* childLayout = m_internals->ChildrenMap.value(cwidget);
     if (childLayout)
     {
       for (int i = 0; i < childLayout->count(); ++i)
@@ -792,7 +800,7 @@ void qtFileItem::setOutputOptional(int state)
     cwidget->setVisible(enable);
   }
 
-  //  this->Internals->EntryFrame->setEnabled(enable);
+  //  m_internals->EntryFrame->setEnabled(enable);
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
@@ -816,7 +824,7 @@ void qtFileItem::onAddNewValue()
   if (item->setNumberOfValues(item->numberOfValues() + 1))
   {
     //    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
-    //      this->Internals->EntryFrame->layout());
+    //      m_internals->EntryFrame->layout());
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1, *item, *itemDef);
     emit this->modified();
   }
@@ -825,12 +833,12 @@ void qtFileItem::onAddNewValue()
 void qtFileItem::onRemoveValue()
 {
   QToolButton* const minusButton = qobject_cast<QToolButton*>(QObject::sender());
-  if (!minusButton || !this->Internals->ExtensibleMap.contains(minusButton))
+  if (!minusButton || !m_internals->ExtensibleMap.contains(minusButton))
   {
     return;
   }
 
-  int gIdx = this->Internals->MinusButtonIndices.indexOf(
+  int gIdx = m_internals->MinusButtonIndices.indexOf(
     minusButton); //minusButton->property("SubgroupIndex").toInt();
   auto item = m_itemInfo.itemAs<FileSystemItem>();
   if (!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
@@ -838,8 +846,8 @@ void qtFileItem::onRemoveValue()
     return;
   }
 
-  QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
-  QLayout* childLayout = this->Internals->ChildrenMap.value(childwidget);
+  QWidget* childwidget = m_internals->ExtensibleMap.value(minusButton).second;
+  QLayout* childLayout = m_internals->ChildrenMap.value(childwidget);
   if (childLayout)
   {
     QLayoutItem* child;
@@ -850,9 +858,9 @@ void qtFileItem::onRemoveValue()
     delete childLayout;
   }
   delete childwidget;
-  delete this->Internals->ExtensibleMap.value(minusButton).first;
-  this->Internals->ExtensibleMap.remove(minusButton);
-  this->Internals->MinusButtonIndices.removeOne(minusButton);
+  delete m_internals->ExtensibleMap.value(minusButton).first;
+  m_internals->ExtensibleMap.remove(minusButton);
+  m_internals->MinusButtonIndices.removeOne(minusButton);
   delete minusButton;
 
   item->removeValue(gIdx);
@@ -877,11 +885,11 @@ void qtFileItem::updateExtensibleState()
   }
   bool maxReached =
     (item->maxNumberOfValues() > 0) && (item->maxNumberOfValues() == item->numberOfValues());
-  this->Internals->AddItemButton->setEnabled(!maxReached);
+  m_internals->AddItemButton->setEnabled(!maxReached);
 
   bool minReached = (item->numberOfRequiredValues() > 0) &&
     (item->numberOfRequiredValues() == item->numberOfValues());
-  foreach (QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+  foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
   {
     tButton->setEnabled(!minReached);
   }
@@ -898,20 +906,20 @@ void qtFileItem::clearChildWidgets()
   if (item->isExtensible())
   {
     //clear mapping
-    foreach (QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+    foreach (QToolButton* tButton, m_internals->ExtensibleMap.keys())
     {
-      // will delete later from this->Internals->ChildrenMap
-      //      delete this->Internals->ExtensibleMap.value(tButton).second;
-      delete this->Internals->ExtensibleMap.value(tButton).first;
+      // will delete later from m_internals->ChildrenMap
+      //      delete m_internals->ExtensibleMap.value(tButton).second;
+      delete m_internals->ExtensibleMap.value(tButton).first;
       delete tButton;
     }
-    this->Internals->ExtensibleMap.clear();
-    this->Internals->MinusButtonIndices.clear();
+    m_internals->ExtensibleMap.clear();
+    m_internals->MinusButtonIndices.clear();
   }
 
-  foreach (QWidget* cwidget, this->Internals->ChildrenMap.keys())
+  foreach (QWidget* cwidget, m_internals->ChildrenMap.keys())
   {
-    QLayout* childLayout = this->Internals->ChildrenMap.value(cwidget);
+    QLayout* childLayout = m_internals->ChildrenMap.value(cwidget);
     if (childLayout)
     {
       QLayoutItem* child;
@@ -923,5 +931,5 @@ void qtFileItem::clearChildWidgets()
     }
     delete cwidget;
   }
-  this->Internals->ChildrenMap.clear();
+  m_internals->ChildrenMap.clear();
 }
