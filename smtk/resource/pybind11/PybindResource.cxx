@@ -28,7 +28,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindManager.h"
 #include "PybindObserver.h"
 #include "PybindPersistentObject.h"
-#include "PybindSet.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -46,5 +45,4 @@ PYBIND11_MODULE(_smtkPybindResource, resource)
   py::class_< smtk::resource::Manager > smtk_resource_Manager = pybind11_init_smtk_resource_Manager(resource);
   py::class_< smtk::resource::Observers > smtk_resource_Observers = pybind11_init_smtk_resource_Observers(resource);
   pybind11_init_smtk_resource_EventType(resource);
-  py::class_< smtk::resource::Set > smtk_resource_Set = pybind11_init_smtk_resource_Set(resource);
 }

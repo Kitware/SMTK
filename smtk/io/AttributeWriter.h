@@ -28,9 +28,6 @@ class SetWriter;
 class XmlStringWriter;
 class SMTKCORE_EXPORT AttributeWriter
 {
-  // Make ResourceSetWriter friend so it can call newXmlStringWriter()
-  friend class ResourceSetWriter;
-
 public:
   AttributeWriter();
 

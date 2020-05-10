@@ -44,7 +44,6 @@
 #include "smtk/model/VolumeUse.h"
 #include "smtk/resource/Resource.h"
 #include "smtk/resource/Component.h"
-#include "smtk/resource/Set.h"
 
 namespace py = pybind11;
 
@@ -187,7 +186,6 @@ PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resource(py::m
     .def("removeStringProperty", &smtk::model::Resource::removeStringProperty, py::arg("entity"), py::arg("propName"))
     .def("removeTessellation", &smtk::model::Resource::removeTessellation, py::arg("cellId"), py::arg("removeGen") = false)
     .def("index", (std::type_index (smtk::model::Resource::*)() const) &smtk::model::Resource::index)
-    .def("resources", &smtk::model::Resource::resources, py::arg("skipUpdate") = false)
     .def("sessionData", &smtk::model::Resource::sessionData, py::arg("sessRef"))
     .def("sessionOwningEntity", &smtk::model::Resource::sessionOwningEntity, py::arg("uid"))
     .def("sessions", &smtk::model::Resource::sessions)
