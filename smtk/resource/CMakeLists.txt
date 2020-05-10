@@ -10,7 +10,6 @@ set(resourceSrcs
   Properties.cxx
   Resource.cxx
   ResourceLinks.cxx
-  Set.cxx
   Surrogate.cxx
   json/jsonLinkBase.cxx
   json/jsonResource.cxx
@@ -38,7 +37,6 @@ set(resourceHeaders
   Registrar.h
   Resource.h
   ResourceLinks.h
-  Set.h
   Surrogate.h
   json/jsonLinkBase.h
   json/jsonResource.h

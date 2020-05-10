@@ -4,7 +4,6 @@ set(ioTests
   fileItemTest
   loggerTest
   loggerThreadTest
-  ResourceSetTest
 )
 
 foreach (test ${ioTests})
@@ -15,7 +14,6 @@ foreach (test ${ioTests})
   set_tests_properties(${test} PROPERTIES SKIP_RETURN_CODE 125)
 endforeach()
 
-# ResourceSetWriterTest uses input files in SMTKTestData
 if (SMTK_DATA_DIR)
   foreach(test ${ioDataTests})
     add_executable(${test} ${test}.cxx)

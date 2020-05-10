@@ -136,12 +136,6 @@ public:
   /// Remove all entities and properties from this object. Does not change id or emit signals.
   void clear();
 
-  smtk::resource::SetPtr resources(bool skipUpdate = false)
-  {
-    (void)skipUpdate;
-    return m_resources;
-  }
-
   const UUIDsToAttributeAssignments& attributeAssignments() const;
 
   BitFlags type(const smtk::common::UUID& ofEntity) const;
@@ -498,7 +492,6 @@ protected:
   smtk::shared_ptr<UUIDsToTessellations> m_analysisMesh;
   smtk::shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::shared_ptr<UUIDsToSessions> m_sessions;
-  smtk::shared_ptr<resource::Set> m_resources;
   typedef std::owner_less<smtk::attribute::WeakResourcePtr> ResourceLessThan;
   typedef std::set<smtk::attribute::WeakResourcePtr, ResourceLessThan> WeakResourceSet;
   WeakResourceSet m_attributeResources; // weak references to attribute resources

@@ -40,7 +40,6 @@
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Metadata.h"
-#include "smtk/resource/Set.h"
 
 #include <cfloat>
 
@@ -82,7 +81,6 @@ Resource::Resource(smtk::resource::ManagerPtr mgr)
   , m_analysisMesh(new UUIDsToTessellations)
   , m_attributeAssignments(new UUIDsToAttributeAssignments)
   , m_sessions(new UUIDsToSessions)
-  , m_resources(new Set)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
@@ -96,7 +94,6 @@ Resource::Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr mgr
   , m_analysisMesh(new UUIDsToTessellations)
   , m_attributeAssignments(new UUIDsToAttributeAssignments)
   , m_sessions(new UUIDsToSessions)
-  , m_resources(new Set)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   // TODO: throw() when topology == NULL?
@@ -113,7 +110,6 @@ Resource::Resource(shared_ptr<UUIDsToEntities> inTopology, shared_ptr<UUIDsToTes
   , m_analysisMesh(analysismesh)
   , m_attributeAssignments(attribs)
   , m_sessions(new UUIDsToSessions)
-  , m_resources(new Set)
   , m_globalCounters(2, 1) // first entry is session counter, second is model counter
 {
   this->properties().insertPropertyType<smtk::common::UUID>();
@@ -213,7 +209,6 @@ void Resource::clear()
   }
   m_attributeAssignments->clear();
   m_sessions->clear();
-  // m_resources->clear(); TODO
   m_attributeResources.clear();
   m_defaultSession = nullptr;
   m_globalCounters.clear();

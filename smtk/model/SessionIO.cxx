@@ -9,8 +9,6 @@
 //=========================================================================
 #include "smtk/model/SessionIO.h"
 
-#include "smtk/resource/Set.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/IntItem.h"
