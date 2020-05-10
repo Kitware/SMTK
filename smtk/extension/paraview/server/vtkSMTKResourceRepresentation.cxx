@@ -31,6 +31,7 @@
 #include <vtkTransform.h>
 #include <vtksys/SystemTools.hxx>
 
+#include <vtkPVConfig.h>
 #include <vtkPVRenderView.h>
 #include <vtkPVTrivialProducer.h>
 
@@ -58,6 +59,8 @@
 #include "smtk/resource/Manager.h"
 
 #include "smtk/view/Selection.h"
+
+#include <type_traits>
 
 vtkCxxSetObjectMacro(vtkSMTKResourceRepresentation, SliceXY, vtkImageSliceRepresentation);
 vtkCxxSetObjectMacro(vtkSMTKResourceRepresentation, SliceYZ, vtkImageSliceRepresentation);
@@ -121,6 +124,35 @@ void AddRenderables(
     renderables[uid] = obj;
   }
   mbit->Delete();
+}
+
+// The API of vtkPVRenderView has changed. Report whether the API is
+// new (value == true) or old (value == false) in a struct:
+template <typename RenderView>
+struct HasNewAPI
+{
+  template <typename U>
+  static char test(typename U::SetOrderedCompositingConfiguration*);
+  template <typename U>
+  static long test(U*);
+  static constexpr bool value = sizeof(test<RenderView>(nullptr)) == 1;
+};
+
+// Use HasNewAPI to enable one of the MarkRedistributable functions below:
+// 1. New API:
+template <typename RenderView, typename Info, typename Representation>
+typename std::enable_if<HasNewAPI<RenderView>::value, void>::type MarkRedistributable(
+  Info* inInfo, Representation* self)
+{
+  RenderView::SetOrderedCompositingConfiguration(inInfo, self, RenderView::DATA_IS_REDISTRIBUTABLE);
+}
+
+// 2. Old API:
+template <typename RenderView, typename Info, typename Representation>
+typename std::enable_if<!HasNewAPI<RenderView>::value, void>::type MarkRedistributable(
+  Info* inInfo, Representation* self)
+{
+  RenderView::MarkAsRedistributable(inInfo, self);
 }
 
 } // anonymous namespace
@@ -365,7 +397,7 @@ int vtkSMTKResourceRepresentation::ProcessViewRequest(
     // Since we are rendering polydata, it can be redistributed when ordered
     // compositing is needed. So let the view know that it can feel free to
     // redistribute data as and when needed.
-    vtkPVRenderView::MarkAsRedistributable(inInfo, this);
+    MarkRedistributable<vtkPVRenderView>(inInfo, this);
 
     // Tell the view if this representation needs ordered compositing. We need
     // ordered compositing when rendering translucent geometry. We need to extend
