@@ -733,7 +733,7 @@ std::ptrdiff_t ReferenceItem::find(const smtk::common::UUID& uid) const
   {
     for (std::size_t i = 0; i < m_keys.size(); ++i)
     {
-      if (uid == myAtt->guardedLinks()->linkedId(m_keys[i]))
+      if (uid == myAtt->guardedLinks()->linkedObjectId(m_keys[i]))
       {
         return i;
       }

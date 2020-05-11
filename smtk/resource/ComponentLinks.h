@@ -28,6 +28,10 @@ class Resource;
 
 namespace detail
 {
+struct SMTKCORE_EXPORT ComponentLinkBase
+{
+  virtual ~ComponentLinkBase() = default;
+};
 
 /// The ComponentLinks class is a component-specific API for maninpulating
 /// unidirectional links from a component to other Resources and Components.
@@ -36,7 +40,9 @@ namespace detail
 class SMTKCORE_EXPORT ComponentLinks : public Links
 {
 public:
-  typedef smtk::common::Links<smtk::common::UUID> Data;
+  typedef smtk::common::Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int,
+    ComponentLinkBase>
+    Data;
 
   friend class smtk::resource::Component;
 

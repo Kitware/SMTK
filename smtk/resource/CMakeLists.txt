@@ -11,8 +11,9 @@ set(resourceSrcs
   Resource.cxx
   ResourceLinks.cxx
   Surrogate.cxx
-  json/jsonLinkBase.cxx
+  json/jsonComponentLinkBase.cxx
   json/jsonResource.cxx
+  json/jsonResourceLinkBase.cxx
   json/jsonSurrogate.cxx
   query/Factory.cxx
   query/Query.cxx
@@ -24,6 +25,7 @@ set(resourceHeaders
   Container.h
   DerivedFrom.h
   GarbageCollector.h
+  LinkInformation.h
   Links.h
   Lock.h
   Manager.h
@@ -38,8 +40,9 @@ set(resourceHeaders
   Resource.h
   ResourceLinks.h
   Surrogate.h
-  json/jsonLinkBase.h
+  json/jsonComponentLinkBase.h
   json/jsonResource.h
+  json/jsonResourceLinkBase.h
   json/jsonSurrogate.h
   query/BadTypeError.h
   query/Cache.h

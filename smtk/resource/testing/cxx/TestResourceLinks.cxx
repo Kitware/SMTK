@@ -11,6 +11,7 @@
 #include "smtk/common/UUIDGenerator.h"
 #include "smtk/resource/Component.h"
 #include "smtk/resource/DerivedFrom.h"
+#include "smtk/resource/LinkInformation.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/PersistentObject.h"
 
@@ -297,6 +298,19 @@ int TestResourceLinks(int /*unused*/, char** const /*unused*/)
     // Add a link from component A to component B.
     smtk::resource::Links::Key key = componentA->links().addLinkTo(componentB, role1);
 
+    {
+      // Access information about the linked object.
+      smtk::resource::LinkInformation information =
+        componentA->links().linkedObjectInformation(key);
+
+      smtkTest(information.type == smtk::resource::LinkInformation::Type::Component,
+        "Incorrectly identified link type.");
+      smtkTest(information.status == smtk::resource::LinkInformation::Status::Valid,
+        "Incorrectly identified link status.");
+      smtkTest(information.id == componentB->id(), "Incorrectly identified linked object id.");
+      smtkTest(information.role == role1, "Incorrectly identified linked object role.");
+    }
+
     // Remove component B from resource B.
     resourceB->remove(componentB);
 
@@ -313,8 +327,39 @@ int TestResourceLinks(int /*unused*/, char** const /*unused*/)
     smtkTest(linkedObjectB == nullptr, "Link-accessed component should no longer be accessible.");
 
     // Test that the accessed object id is correct.
-    smtkTest(componentB->id() == componentA->links().linkedId(key),
+    smtkTest(componentB->id() == componentA->links().linkedObjectId(key),
       "Link-accessed id should be accessible.");
+
+    {
+      // Access information about the linked object.
+      smtk::resource::LinkInformation information =
+        componentA->links().linkedObjectInformation(key);
+
+      smtkTest(information.type == smtk::resource::LinkInformation::Type::Component,
+        "Incorrectly identified link type.");
+      smtkTest(information.status == smtk::resource::LinkInformation::Status::Invalid,
+        "Incorrectly identified link status.");
+      smtkTest(information.id == componentB->id(), "Incorrectly identified linked object id.");
+      smtkTest(information.role == role1, "Incorrectly identified linked object role.");
+    }
+
+    resourceManager->remove(resourceB);
+    smtk::common::UUID componentB_id = componentB->id();
+    componentB.reset();
+    resourceB.reset();
+
+    {
+      // Access information about the linked object.
+      smtk::resource::LinkInformation information =
+        componentA->links().linkedObjectInformation(key);
+
+      smtkTest(information.type == smtk::resource::LinkInformation::Type::Component,
+        "Incorrectly identified link type.");
+      smtkTest(information.status == smtk::resource::LinkInformation::Status::Unknown,
+        "Incorrectly identified link status.");
+      smtkTest(information.id == componentB_id, "Incorrectly identified linked object id.");
+      smtkTest(information.role == role1, "Incorrectly identified linked object role.");
+    }
   }
 
   return 0;

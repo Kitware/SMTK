@@ -19,7 +19,6 @@ namespace resource
 {
 namespace detail
 {
-
 ComponentLinks::ComponentLinks(const Component* component)
   : m_component(component)
 {

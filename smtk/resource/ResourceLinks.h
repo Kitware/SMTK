@@ -32,32 +32,32 @@ class Resource;
 
 namespace detail
 {
-class LinkBase : public Surrogate, public ComponentLinks::Data
+class ResourceLinkBase : public Surrogate, public ComponentLinks::Data
 {
 public:
-  LinkBase(const LinkBase&) = default;
-  LinkBase(LinkBase&&) = default;
+  ResourceLinkBase(const ResourceLinkBase&) = default;
+  ResourceLinkBase(ResourceLinkBase&&) = default;
 
-  LinkBase(const std::size_t& index, const std::string& typeName, const smtk::common::UUID& id,
-    const std::string& location)
+  ResourceLinkBase(const std::size_t& index, const std::string& typeName,
+    const smtk::common::UUID& id, const std::string& location)
     : Surrogate(index, typeName, id, location)
     , ComponentLinks::Data()
   {
   }
 
-  LinkBase(const ResourcePtr& resource)
+  ResourceLinkBase(const ResourcePtr& resource)
     : Surrogate(resource)
     , ComponentLinks::Data()
   {
   }
 
-  LinkBase(Surrogate&& surrogate)
+  ResourceLinkBase(Surrogate&& surrogate)
     : Surrogate(surrogate)
     , ComponentLinks::Data()
   {
   }
 
-  virtual ~LinkBase() {}
+  virtual ~ResourceLinkBase() {}
 };
 
 /// The ResourceLinks class is a resource-specific API for manipulating
@@ -69,13 +69,13 @@ public:
 class SMTKCORE_EXPORT ResourceLinks : public Links
 {
   typedef detail::ComponentLinks::Data ComponentLinkData;
-  typedef detail::LinkBase LinkBase;
+  typedef detail::ResourceLinkBase ResourceLinkBase;
 
 public:
   friend class smtk::resource::Resource;
 
   typedef smtk::common::Links<smtk::common::UUID, smtk::common::UUID, smtk::common::UUID, int,
-    LinkBase>
+    ResourceLinkBase>
     ResourceLinkData;
 
   typedef ResourceLinkData::Link Link;

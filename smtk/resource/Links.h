@@ -21,6 +21,8 @@ namespace resource
 class Component;
 class Resource;
 
+class LinkInformation;
+
 /// Links is a virtual class describing the API for connecting one
 /// resource/component to another resource/component.
 class SMTKCORE_EXPORT Links
@@ -74,8 +76,13 @@ public:
   /// or return a null id if no link exists with this link id. This method is
   /// similar to linkedObjectAndRole() but does not require the link to
   /// successfully resolve to return a non-null value.
-  std::pair<smtk::common::UUID, RoleType> linkedIdAndRole(const Key&) const;
-  smtk::common::UUID linkedId(const Key& key) const { return linkedIdAndRole(key).first; }
+  std::pair<smtk::common::UUID, RoleType> linkedObjectIdAndRole(const Key&) const;
+  smtk::common::UUID linkedObjectId(const Key& key) const
+  {
+    return linkedObjectIdAndRole(key).first;
+  }
+
+  LinkInformation linkedObjectInformation(const Key& key) const;
 
 protected:
   virtual Resource* leftHandSideResource() = 0;
@@ -107,7 +114,10 @@ private:
   std::pair<PersistentObjectPtr, Links::RoleType> linkedObjectAndRole(
     const Resource*, const Key&) const;
 
-  std::pair<smtk::common::UUID, Links::RoleType> linkedIdAndRole(const Resource*, const Key&) const;
+  std::pair<smtk::common::UUID, Links::RoleType> linkedObjectIdAndRole(
+    const Resource*, const Key&) const;
+
+  LinkInformation linkedObjectInformation(const Resource*, const Key&) const;
 };
 }
 }
