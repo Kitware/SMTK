@@ -120,3 +120,16 @@ Added a class for utility methods.  The current ones include:
   * setObjectValues replaced by setValues
 * Added Methods
   * isValueValid - the validity of the item now factors in the state of the instance.  This is needed to support Unique Constraints
+
+### Custom attribute item and definition types
+SMTK's attribute system now supports the registration of user-defined attribute items and definitions by overloading `smtk::attribute::CustomItem` and `smtk::attribute::CustomItemDefinition`, respectively. The registration of custom item definition types must occur before the attribute is serialized. Custom item definitions can be listed in plugins' Registrar implementations as follows:
+
+```c++
+void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
+{
+  typedef std::tuple<CustomItemDefinition1, CustomItemDefinition2> CustomItemDefinitions;
+
+  smtk::attribute::CustomItemDefinitions(resourceManager)
+    .registerDefinitions<CustomItemDefinitions>();
+}
+```

@@ -16,15 +16,22 @@
 #include "smtk/attribute/CustomItemDefinition.h"
 #include "smtk/attribute/Item.h"
 
+#include "smtk/common/CompilerInformation.h"
+
+SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
 
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
+SMTK_THIRDPARTY_POST_INCLUDE
 
 namespace smtk
 {
 namespace attribute
 {
+
+/// A base class for custom (i.e. user-defined) items. This class defines the
+/// requisite API for custom items.
 class SMTKCORE_EXPORT CustomItemBase : public Item
 {
 public:
@@ -47,6 +54,8 @@ public:
   virtual CustomItemBase& operator<<(const pugi::xml_node& node) = 0;
 };
 
+/// Custom items inherit from a specialization of this template class, using the
+/// corresponding custom item type as the template parameter.
 template <typename ItemType>
 class CustomItem : public CustomItemBase
 {

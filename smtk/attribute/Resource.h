@@ -36,11 +36,6 @@
 #include <string>
 #include <vector>
 
-namespace pugi
-{
-class xml_node;
-}
-
 namespace smtk
 {
 namespace attribute
@@ -244,11 +239,11 @@ public:
   void setDirectoryInfo(const DirectoryInfo& dinfo) { m_directoryInfo = dinfo; }
   const DirectoryInfo& directoryInfo() const { return m_directoryInfo; }
 
+  // Access the factory for generating custom item defnitions
   CustomItemDefinitionFactory& customItemDefinitionFactory()
   {
     return m_customItemDefinitionFactory;
   }
-
   const CustomItemDefinitionFactory& customItemDefinitionFactory() const
   {
     return m_customItemDefinitionFactory;

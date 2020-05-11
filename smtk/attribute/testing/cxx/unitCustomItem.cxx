@@ -227,6 +227,8 @@ bool MyItem::setValue(const std::complex<double>& v)
   }
   return false;
 }
+
+typedef std::tuple<MyItemDefinition> CustomItemDefinitionsList;
 }
 
 int unitCustomItem(int /*unused*/, char* /*unused*/ [])
@@ -241,23 +243,8 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
     operationManager->registerResourceManager(resourceManager);
   }
 
-  // Create an observer that adds my custom item type to new attribute resources
-  auto registerCustomType = [](
-    const smtk::resource::Resource& resource, smtk::resource::EventType eventType) -> void {
-    if (eventType == smtk::resource::EventType::ADDED)
-    {
-      if (const smtk::attribute::Resource* attributeResource =
-            dynamic_cast<const smtk::attribute::Resource*>(&resource))
-      {
-        const_cast<smtk::attribute::Resource*>(attributeResource)
-          ->customItemDefinitionFactory()
-          .registerType<MyItemDefinition>();
-      }
-    }
-  };
-
-  auto key =
-    resourceManager->observers().insert(registerCustomType, "Register custom attribute types.");
+  smtk::attribute::CustomItemDefinitions(resourceManager)
+    .registerDefinitions<CustomItemDefinitionsList>();
 
   // 1. Construct an attribute with a custom item
 
@@ -449,8 +436,6 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
   {
     return status;
   }
-
-  std::cout << "Pass all file tests" << std::endl;
 
   return 0;
 }
