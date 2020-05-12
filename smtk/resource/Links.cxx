@@ -11,6 +11,7 @@
 #include "smtk/resource/ComponentLinks.h"
 
 #include "smtk/resource/Component.h"
+#include "smtk/resource/LinkInformation.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 
@@ -80,9 +81,14 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(const
   return this->linkedObjectAndRole(this->leftHandSideResource(), key);
 }
 
-std::pair<smtk::common::UUID, Links::RoleType> Links::linkedIdAndRole(const Key& key) const
+std::pair<smtk::common::UUID, Links::RoleType> Links::linkedObjectIdAndRole(const Key& key) const
 {
-  return this->linkedIdAndRole(this->leftHandSideResource(), key);
+  return this->linkedObjectIdAndRole(this->leftHandSideResource(), key);
+}
+
+LinkInformation Links::linkedObjectInformation(const Key& key) const
+{
+  return this->linkedObjectInformation(this->leftHandSideResource(), key);
 }
 
 PersistentObjectSet Links::linkedTo(const RoleType& role) const
@@ -383,7 +389,7 @@ std::pair<PersistentObjectPtr, Links::RoleType> Links::linkedObjectAndRole(
   }
 }
 
-std::pair<smtk::common::UUID, Links::RoleType> Links::linkedIdAndRole(
+std::pair<smtk::common::UUID, Links::RoleType> Links::linkedObjectIdAndRole(
   const Resource* lhs1, const Links::Key& key) const
 {
   typedef Resource::Links::ResourceLinkData ResourceLinkData;
@@ -405,6 +411,72 @@ std::pair<smtk::common::UUID, Links::RoleType> Links::linkedIdAndRole(
     auto& link = resourceLinkData.at(key.first);
     return std::make_pair(link.right, link.role);
   }
+}
+
+LinkInformation Links::linkedObjectInformation(const Resource* lhs1, const Links::Key& key) const
+{
+  // Construct an information object
+  LinkInformation information;
+
+  typedef Resource::Links::ResourceLinkData ResourceLinkData;
+  const ResourceLinkData& resourceLinkData = lhs1->links().data();
+  if (!resourceLinkData.contains(key.first))
+  {
+    information.status = LinkInformation::Status::Invalid;
+    return information;
+  }
+
+  auto& resourceLink = resourceLinkData.at(key.first);
+  auto& componentLink = resourceLink.at(key.second);
+
+  // Refresh the link using the manager, if one is available
+  //
+  // TODO: This should be removed once we have accounted for all of the
+  // shared pointers to resoruces
+  // if (resourceLink.resource() == nullptr && lhs1->manager() != nullptr)
+  if (lhs1->manager() != nullptr)
+  {
+    resourceLink.fetch(lhs1->manager());
+  }
+
+  // Initially, its status is unknown
+  information.status = LinkInformation::Status::Unknown;
+
+  // The object's location is provided by the surrogate
+  information.location = resourceLink.location();
+
+  // Without accessing the object, we can determine its role, type and id
+  information.role = componentLink.role;
+  if (componentLink.right == linkToResource)
+  {
+    information.type = LinkInformation::Type::Resource;
+    information.id = resourceLink.right;
+  }
+  else
+  {
+    information.type = LinkInformation::Type::Component;
+    information.id = componentLink.right;
+  }
+
+  // If we can access the object's resource, we can provide more accurate
+  // information
+  if (auto resource = resourceLink.resource())
+  {
+    if (componentLink.right == linkToResource)
+    {
+      information.status = LinkInformation::Status::Valid;
+    }
+    else if (auto component = resource->find(componentLink.right))
+    {
+      information.status = LinkInformation::Status::Valid;
+    }
+    else
+    {
+      information.status = LinkInformation::Status::Invalid;
+    }
+  }
+
+  return information;
 }
 
 } // namespace resource

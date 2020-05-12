@@ -401,7 +401,9 @@ bool Manager::registerResource(const std::function<ResourcePtr(const std::string
       Resource::Ptr resource = ResourceType::create();
       resource->setId(id);
       return resource;
-    }), read, write));
+    }),
+    (read ? read : [](const std::string&){ return ResourcePtr(); }),
+    (write ? write : [](const ResourcePtr&){ return false; })));
 }
 }
 }

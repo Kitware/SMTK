@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/resource/json/jsonResource.h"
 
-#include "smtk/resource/json/jsonLinkBase.h"
+#include "smtk/resource/json/jsonResourceLinkBase.h"
 
 #include "smtk/common/json/jsonLinks.h"
 #include "smtk/common/json/jsonProperties.h"

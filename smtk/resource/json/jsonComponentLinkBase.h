@@ -7,21 +7,28 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_resource_json_jsonLinkBase_h
-#define smtk_resource_json_jsonLinkBase_h
+#ifndef smtk_resource_json_jsonComponentLinkBase_h
+#define smtk_resource_json_jsonComponentLinkBase_h
 
-#include "smtk/resource/ResourceLinks.h"
+#include "smtk/CoreExports.h"
+
+#include "smtk/resource/ComponentLinks.h"
 
 #include "nlohmann/json.hpp"
 
-namespace nlohmann
+namespace smtk
 {
-template <>
-struct adl_serializer<smtk::resource::detail::LinkBase>
+namespace resource
 {
-  static smtk::resource::detail::LinkBase from_json(const json&);
-  static void to_json(json&, const smtk::resource::detail::LinkBase&);
-};
+namespace detail
+{
+using json = nlohmann::json;
+
+SMTKCORE_EXPORT void from_json(const json&, smtk::resource::detail::ComponentLinkBase&);
+
+SMTKCORE_EXPORT void to_json(json&, const smtk::resource::detail::ComponentLinkBase&);
+}
+}
 }
 
 #endif
