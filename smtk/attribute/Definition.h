@@ -225,11 +225,11 @@ public:
     * when it does not have a local association rule specified.
     */
   ConstReferenceItemDefinitionPtr associationRule() const;
-  // sets an association rule that overides the base definition rule
+  // return the local association rule if one is set
   ReferenceItemDefinitionPtr localAssociationRule() const;
   // Create a new local association rule (if needed) and returns it
   ReferenceItemDefinitionPtr createLocalAssociationRule();
-  // Local the local Assoicate Rule for the definition
+  // Set the local Association Rule for the definition that overrides the base definition rule
   virtual void setLocalAssociationRule(ReferenceItemDefinitionPtr);
   // Returns the association mask used by the definition for model association
   //Note that this may come from the base definition if there is no local

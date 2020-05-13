@@ -348,6 +348,8 @@ void qtAssociation2ColumnWidget::refreshAssociations(const smtk::common::UUID& i
   if (theAttribute)
   {
     auto associationItem = theAttribute->associatedObjects();
+    // Lets make sure the association item is clear of invalid objects
+    associationItem->removeInvalidValues();
     auto objects =
       attribute::utility::associatableObjects(associationItem, resManager, false, ignoreResource);
 

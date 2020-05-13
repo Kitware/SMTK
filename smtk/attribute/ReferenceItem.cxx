@@ -15,6 +15,7 @@
 #include "smtk/attribute/UnsetValueError.h"
 
 #include "smtk/resource/Component.h"
+#include "smtk/resource/LinkInformation.h"
 
 #include <boost/variant.hpp>
 
@@ -883,6 +884,29 @@ void ReferenceItem::appendToCache(const PersistentObjectPtr& obj) const
   std::size_t i = m_cache->size();
   m_cache->push_back(Cache::value_type());
   return assignToCache(i, obj);
+}
+
+bool ReferenceItem::removeInvalidValues()
+{
+  bool valuesRemoved = false;
+  smtk::attribute::AttributePtr att = this->attribute();
+  if (att == nullptr)
+  {
+    return valuesRemoved; // there is nothing to be done - no attribute
+  }
+  // Since removing a value can cause the vector to contract (in the case of an
+  // extensible item), lets scan the item in reverse
+  for (auto i = this->numberOfValues(); i > 0; --i)
+  {
+    smtk::resource::LinkInformation information =
+      att->links().linkedObjectInformation(m_keys[i - 1]);
+    if (information.status == smtk::resource::LinkInformation::Status::Invalid)
+    {
+      this->removeValue(i - 1); // Remove the invalid link
+      valuesRemoved = true;
+    }
+  }
+  return valuesRemoved;
 }
 
 template <>
