@@ -369,13 +369,14 @@ std::ifstream Archive::get(const std::string& archivedFilePath)
     // return a stream to that file
     return std::ifstream(filepath->second);
   }
+
+  // we were unable to find an associated file; return the empty stream
+  return std::ifstream();
+
 #else
   throw std::ios_base::failure("This method cannot be used with GCC < 5 due to a bug in GCC (see "
                                "https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53626)");
 #endif
-
-  // we were unable to find an associated file; return the empty stream
-  return std::ifstream();
 }
 
 void Archive::get(const std::string& archivedFilePath, std::ifstream& stream)
