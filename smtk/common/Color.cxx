@@ -124,7 +124,7 @@ double Color::floatRGBToLightness(const double* rgb)
   double r2 = rgb[0] * rgb[0];
   double g2 = rgb[1] * rgb[1];
   double b2 = rgb[2] * rgb[2];
-  double lightness = sqrt(0.299 * r2 + 0.587 * g2 + 0.114 * b2);
+  double lightness = std::sqrt(0.299 * r2 + 0.587 * g2 + 0.114 * b2);
   return lightness;
 }
 
@@ -134,7 +134,7 @@ float Color::floatRGBToLightness(const float* rgb)
   float r2 = rgb[0] * rgb[0];
   float g2 = rgb[1] * rgb[1];
   float b2 = rgb[2] * rgb[2];
-  float lightness = sqrt(0.299 * r2 + 0.587 * g2 + 0.114 * b2);
+  float lightness = std::sqrt(0.299 * r2 + 0.587 * g2 + 0.114 * b2);
   return lightness;
 }
 } // namespace common
