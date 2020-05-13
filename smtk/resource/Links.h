@@ -21,7 +21,7 @@ namespace resource
 class Component;
 class Resource;
 
-class LinkInformation;
+struct LinkInformation;
 
 /// Links is a virtual class describing the API for connecting one
 /// resource/component to another resource/component.
