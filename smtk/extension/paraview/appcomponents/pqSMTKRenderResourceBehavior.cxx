@@ -42,6 +42,8 @@ public:
   ~Internal() = default;
 
   pqSMTKApplyBehavior ApplyBehavior;
+
+  smtk::resource::Observers::Key key;
 };
 
 static pqSMTKRenderResourceBehavior* g_instance = nullptr;
@@ -59,7 +61,7 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
 
     // ...add an observer to its resource manager that destroys the pipeline
     // source associated with a resource removed from the manager.
-    wrapper->smtkResourceManager()->observers().insert(
+    m_p->key = wrapper->smtkResourceManager()->observers().insert(
       [this](const smtk::resource::Resource& resource, smtk::resource::EventType eventType) {
         if (eventType == smtk::resource::EventType::REMOVED)
         {
