@@ -267,6 +267,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
   myItem->setValue(std::complex<double>(0., 1.));
 
   std::string write_root(SMTK_SCRATCH_DIR);
+  std::string unique_str = smtk::common::UUID::random().toString();
 
   // 2. Write the resource out to a new .sbi file (to ensure it is of the
   //    latest format)
@@ -275,8 +276,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
   {
     std::stringstream s;
     s << write_root << "/"
-      << "originalResource"
-      << ".sbi";
+      << "originalResource_" << unique_str << ".sbi";
     sbi1FileName = s.str();
 
     smtk::attribute::Export::Ptr exporter = operationManager->create<smtk::attribute::Export>();
@@ -318,8 +318,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
   {
     std::stringstream s;
     s << write_root << "/"
-      << "jsonResource"
-      << ".smtk";
+      << "jsonResource_" << unique_str << ".smtk";
     smtkFileName = s.str();
     resource->setLocation(smtkFileName);
 
@@ -375,8 +374,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/ [])
 
     std::stringstream s;
     s << write_root << "/"
-      << "jsonResource"
-      << ".sbi";
+      << "jsonResource_" << unique_str << ".sbi";
     sbi2FileName = s.str();
 
     smtk::io::Logger logger;
