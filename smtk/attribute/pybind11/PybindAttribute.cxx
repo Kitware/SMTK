@@ -63,6 +63,13 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindVoidItem.h"
 #include "PybindVoidItemDefinition.h"
 
+#include "PybindAssociate.h"
+#include "PybindDissociate.h"
+#include "PybindExport.h"
+#include "PybindImport.h"
+#include "PybindRead.h"
+#include "PybindWrite.h"
+
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
 PYBIND11_MODULE(_smtkPybindAttribute, attribute)
@@ -120,4 +127,14 @@ PYBIND11_MODULE(_smtkPybindAttribute, attribute)
 
   py::class_< smtk::attribute::Categories > smtk_attribute_Categories = pybind11_init_smtk_attribute_Categories(attribute);
   py::class_< smtk::attribute::Registrar > smtk_attribute_Registrar = pybind11_init_smtk_attribute_Registrar(attribute);
+
+  py::module::import("smtk.operation");
+
+  PySharedPtrClass< smtk::attribute::Associate, smtk::operation::XMLOperation > smtk_attribute_Associate = pybind11_init_smtk_attribute_Associate(attribute);
+  PySharedPtrClass< smtk::attribute::Dissociate, smtk::operation::XMLOperation > smtk_attribute_Dissociate = pybind11_init_smtk_attribute_Dissociate(attribute);
+  PySharedPtrClass< smtk::attribute::Import, smtk::operation::XMLOperation > smtk_attribute_Import = pybind11_init_smtk_attribute_Import(attribute);
+  PySharedPtrClass< smtk::attribute::Export, smtk::operation::XMLOperation > smtk_attribute_Export = pybind11_init_smtk_attribute_Export(attribute);
+  PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > smtk_attribute_Read = pybind11_init_smtk_attribute_Read(attribute);
+  PySharedPtrClass< smtk::attribute::Write, smtk::operation::XMLOperation > smtk_attribute_Write = pybind11_init_smtk_attribute_Write(attribute);
+
 }
