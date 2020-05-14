@@ -24,10 +24,12 @@
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "nlohmann/json.hpp"
-
-#define PUGIXML_HEADER_ONLY
-#include "pugixml/src/pugixml.cpp"
 SMTK_THIRDPARTY_POST_INCLUDE
+
+namespace pugi
+{
+class xml_node;
+}
 
 namespace smtk
 {

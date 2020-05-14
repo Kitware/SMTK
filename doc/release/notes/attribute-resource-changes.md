@@ -133,3 +133,5 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
     .registerDefinitions<CustomItemDefinitions>();
 }
 ```
+
+For an exmaple of its use, see smtk/attribute/testing/unitCustomItem.cxx.
