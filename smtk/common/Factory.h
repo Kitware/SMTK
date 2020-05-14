@@ -31,15 +31,6 @@ namespace common
 {
 namespace factory
 {
-namespace detail
-{
-template <typename Type>
-struct TypeHash
-{
-  std::size_t operator()() const { return typeid(Type).hash_code(); }
-};
-}
-
 /// Tags for using Factory's convenience Interfaces.
 struct SMTKCORE_EXPORT Type
 {
