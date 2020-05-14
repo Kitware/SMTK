@@ -84,17 +84,6 @@ public slots:
   /// Called by pqSMTKBehavior to remove resources as they are destroyed.
   virtual void removeResource(pqSMTKResource* rsrc);
 
-signals:
-  /// Emitted when a new resource is added to the manager.
-  void resourceAdded(pqSMTKResource* rsrc);
-  /// Emitted when a resource is removed from the manager.
-  void resourceRemoved(pqSMTKResource* rsrc);
-  /**\brief Signal that an operator \a op has been created, is about to run,
-    *       or has run with the included \a result.
-    */
-  void operationEvent(const smtk::operation::Operation& op, smtk::operation::EventType event,
-    smtk::operation::Operation::Result result);
-
 protected:
   std::set<QPointer<pqSMTKResource> > m_resources;
 
