@@ -10,6 +10,8 @@
 
 #include "smtk/common/Factory.h"
 
+#include "nlohmann/json.hpp"
+
 #include "smtk/common/testing/cxx/helpers.h"
 
 namespace test_space
@@ -48,6 +50,7 @@ struct Base
     : value(val)
   {
   }
+  Base(const nlohmann::json& json);
   virtual ~Base() = default;
   std::string value;
 };
@@ -61,6 +64,7 @@ public:
   {
     value += "_derived";
   }
+  Derived(const nlohmann::json& json);
 };
 
 void to_json(nlohmann::json& j, const Base& base)
@@ -81,6 +85,16 @@ void to_json(nlohmann::json& j, const Derived& derived)
 void from_json(const nlohmann::json& j, Derived& derived)
 {
   derived.value = j.at("value").get<std::string>();
+}
+
+Base::Base(const nlohmann::json& json)
+{
+  (*this) = json.get<Base>();
+}
+
+Derived::Derived(const nlohmann::json& json)
+{
+  (*this) = json.get<Derived>();
 }
 }
 

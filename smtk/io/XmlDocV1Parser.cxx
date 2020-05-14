@@ -17,6 +17,8 @@
 #include "smtk/attribute/Categories.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/CustomItem.h"
+#include "smtk/attribute/CustomItemDefinition.h"
 #include "smtk/attribute/DateTimeItem.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/Definition.h"
@@ -911,8 +913,20 @@ void XmlDocV1Parser::processDefinition(xml_node& defNode, DefinitionPtr def)
         break;
 
       default:
-        smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
-            << node.name() << " needed to create Definition: " << def->type());
+        auto typeName = node.attribute("TypeName");
+        if (typeName && m_resource->customItemDefinitionFactory().contains(typeName.value()))
+        {
+          idef = m_resource->customItemDefinitionFactory().createFromName(
+            typeName.value(), std::string(node.attribute("Name").value()));
+          (*static_cast<smtk::attribute::CustomItemBaseDefinition*>(idef.get())) << node;
+          def->addItemDefinition(idef);
+          this->processItemDef(node, idef);
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
+              << node.name() << " needed to create Definition: " << def->type());
+        }
     }
   }
 }
@@ -1356,8 +1370,21 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node& node, attribute::ValueItemD
         }
         break;
       default:
-        smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
-            << cinode.name() << " needed to create Definition: " << citype);
+        auto typeName = cinode.attribute("TypeName");
+        if (typeName && m_resource->customItemDefinitionFactory().contains(typeName.value()))
+        {
+          cidef = std::shared_ptr<smtk::attribute::ItemDefinition>(
+            m_resource->customItemDefinitionFactory().createFromName(
+              typeName.value(), std::string(cinode.attribute("Name").value())));
+          (*static_cast<smtk::attribute::CustomItemBaseDefinition*>(cidef.get())) << cinode;
+          idef->addItemDefinition(cidef);
+          this->processItemDef(node, idef);
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
+              << node.name() << " needed to create Definition: " << citype);
+        }
     }
   }
 }
@@ -1695,8 +1722,21 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node& node, attribute::GroupItemD
         this->processComponentDef(child, smtk::dynamic_pointer_cast<ComponentItemDefinition>(idef));
         break;
       default:
-        smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
-            << child.name() << " needed to create Group Definition: " << def->name());
+        auto typeName = child.attribute("TypeName");
+        if (typeName && m_resource->customItemDefinitionFactory().contains(typeName.value()))
+        {
+          idef = std::shared_ptr<smtk::attribute::ItemDefinition>(
+            m_resource->customItemDefinitionFactory().createFromName(
+              typeName.value(), std::string(child.attribute("Name").value())));
+          (*static_cast<smtk::attribute::CustomItemBaseDefinition*>(idef.get())) << child;
+          def->addItemDefinition(idef);
+          this->processItemDef(child, idef);
+        }
+        else
+        {
+          smtkErrorMacro(m_logger, "Unsupported Item definition Type: "
+              << child.name() << " needed to create Definition: " << def->name());
+        }
     }
   }
 }
@@ -1968,7 +2008,17 @@ void XmlDocV1Parser::processItem(xml_node& node, ItemPtr item)
       // Nothing to do!
       break;
     default:
-      smtkErrorMacro(m_logger, "Unsupported Item Type: " << Item::type2String(item->type()));
+    {
+      if (smtk::attribute::CustomItemBase* citem =
+            dynamic_cast<smtk::attribute::CustomItemBase*>(item.get()))
+      {
+        (*citem) << node;
+      }
+      else
+      {
+        smtkErrorMacro(m_logger, "Unsupported Item Type: " << Item::type2String(item->type()));
+      }
+    }
   }
 }
 

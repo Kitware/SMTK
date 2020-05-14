@@ -11,6 +11,8 @@
 #include "smtk/io/XmlV2StringWriter.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/CustomItem.h"
+#include "smtk/attribute/CustomItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
@@ -696,6 +698,14 @@ void XmlV2StringWriter::processItemDefinitionAttributes(xml_node& node, ItemDefi
   {
     node.append_child("DetailedDescription").text().set(idef->detailedDescription().c_str());
   }
+
+  // For definitions that do not have a corresponding type entry in Item::Type,
+  // record the definition's type name (a cross-plaform string identifying the
+  // definition type).
+  if (idef->type() == Item::NUMBER_OF_TYPES)
+  {
+    node.append_attribute("TypeName").set_value(idef->typeName().c_str());
+  }
 }
 
 void XmlV2StringWriter::processItemDefinitionType(xml_node& node, ItemDefinitionPtr idef)
@@ -729,8 +739,20 @@ void XmlV2StringWriter::processItemDefinitionType(xml_node& node, ItemDefinition
       break;
       break;
     default:
-      smtkErrorMacro(m_logger, "Unsupported Type: " << Item::type2String(idef->type())
-                                                    << " for Item Definition: " << idef->name());
+      // For definitions that do not have a corresponding type entry in
+      // Item::Type, attempt to handle them as custom definitions.
+      CustomItemBaseDefinition* customItemDefinition =
+        dynamic_cast<CustomItemBaseDefinition*>(idef.get());
+      if (customItemDefinition)
+      {
+        // Custom definitions have their own method for serializing to xml.
+        (*customItemDefinition) >> node;
+      }
+      else
+      {
+        smtkErrorMacro(m_logger, "Unsupported Type: " << Item::type2String(idef->type())
+                                                      << " for Item Definition: " << idef->name());
+      }
   }
 }
 
@@ -1098,8 +1120,19 @@ void XmlV2StringWriter::processItemType(xml_node& node, ItemPtr item)
       // Nothing to do!
       break;
     default:
-      smtkErrorMacro(m_logger, "Unsupported Type: " << Item::type2String(item->type())
-                                                    << " for Item: " << item->name());
+      // For definitions that do not have a corresponding type entry in
+      // Item::Type, attempt to handle them as custom definitions.
+      CustomItemBase* customItem = dynamic_cast<CustomItemBase*>(item.get());
+      if (customItem)
+      {
+        // Custom definitions have their own method for serializing to xml.
+        (*customItem) >> node;
+      }
+      else
+      {
+        smtkErrorMacro(m_logger, "Unsupported Type: " << Item::type2String(item->type())
+                                                      << " for Item: " << item->name());
+      }
   }
 }
 

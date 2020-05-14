@@ -68,6 +68,7 @@ int main(int argc, char** argv)
   }
 
   std::string write_root(SMTK_SCRATCH_DIR);
+  std::string unique_str = smtk::common::UUID::random().toString();
 
   for (int i = 1; i < argc; i++)
   {
@@ -102,8 +103,7 @@ int main(int argc, char** argv)
     {
       std::stringstream s;
       s << write_root << "/"
-        << "originalResource"
-        << ".sbi";
+        << "originalResource_" << unique_str << ".sbi";
       sbi1FileName = s.str();
 
       smtk::attribute::Export::Ptr exporter = smtk::attribute::Export::create();
@@ -126,8 +126,7 @@ int main(int argc, char** argv)
     {
       std::stringstream s;
       s << write_root << "/"
-        << "jsonResource"
-        << ".smtk";
+        << "jsonResource_" << unique_str << ".smtk";
       smtkFileName = s.str();
       resource->setLocation(smtkFileName);
 
@@ -182,8 +181,7 @@ int main(int argc, char** argv)
 
       std::stringstream s;
       s << write_root << "/"
-        << "jsonResource"
-        << ".sbi";
+        << "jsonResource_" << unique_str << ".sbi";
       sbi2FileName = s.str();
 
       smtk::io::Logger logger;

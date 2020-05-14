@@ -456,3 +456,13 @@ bool ValueItemDefinition::hasEnumAdvanceLevel(const std::string& enumValue) cons
   auto result = m_valueToAdvanceLevelAssociations.find(enumValue);
   return (result != m_valueToAdvanceLevelAssociations.end());
 }
+
+bool ValueItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
+{
+  if (this->hasChildItemDefinition(cdef->name()))
+  {
+    return false;
+  }
+  m_itemDefs[cdef->name()] = cdef;
+  return true;
+}

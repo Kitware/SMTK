@@ -11,6 +11,8 @@
 
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
+#include "smtk/attribute/CustomItem.h"
+#include "smtk/attribute/CustomItemDefinition.h"
 #include "smtk/attribute/DateTimeItemDefinition.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
@@ -204,7 +206,17 @@ void processItemDef(const nlohmann::json& itemDef, itemDefPtr& idef,
         smtk::attribute::from_json(itemDef, temp);
       }
       break;
-    default:;
+    default:
+      auto typeNameJson = itemDef.find("TypeName");
+      if (typeNameJson != itemDef.end() &&
+        resPtr->customItemDefinitionFactory().contains(typeNameJson->get<std::string>()))
+      {
+        cidef = std::shared_ptr<smtk::attribute::ItemDefinition>(
+          resPtr->customItemDefinitionFactory().createFromName(
+            typeNameJson->get<std::string>(), itemDef.at("Name").get<std::string>()));
+        (*static_cast<smtk::attribute::CustomItemBaseDefinition*>(cidef.get())) << itemDef;
+        idef->addItemDefinition(cidef);
+      }
   }
 }
 }
@@ -307,7 +319,15 @@ void JsonHelperFunction::processItemDefinitionTypeToJson(
       smtk::attribute::to_json(j, temp);
     }
     break;
-    default:;
+    default:
+      // For definitions that do not have a corresponding type entry in
+      // Item::Type, attempt to handle them as custom definitions.
+      const CustomItemBaseDefinition* customItemDefinition =
+        dynamic_cast<const CustomItemBaseDefinition*>(idef.get());
+      if (customItemDefinition)
+      {
+        (*customItemDefinition) >> j;
+      }
   }
 }
 
@@ -408,7 +428,14 @@ void JsonHelperFunction::processItemTypeToJson(nlohmann::json& j, const ItemPtr&
       smtk::attribute::to_json(j, temp);
     }
     break;
-    default:;
+    default:
+      // For items that do not have a corresponding type entry in
+      // Item::Type, attempt to handle them as custom items.
+      const CustomItemBase* customItem = dynamic_cast<const CustomItemBase*>(item.get());
+      if (customItem)
+      {
+        (*customItem) >> j;
+      }
   }
 }
 
@@ -519,7 +546,14 @@ void JsonHelperFunction::processItemTypeFromJson(const nlohmann::json& j, ItemPt
       smtk::attribute::from_json(j, temp);
     }
     break;
-    default:;
+    default:
+    {
+      if (smtk::attribute::CustomItemBase* item =
+            dynamic_cast<smtk::attribute::CustomItemBase*>(itemPtr.get()))
+      {
+        (*item) << j;
+      }
+    }
   }
 }
 }

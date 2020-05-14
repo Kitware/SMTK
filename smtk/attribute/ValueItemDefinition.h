@@ -161,6 +161,7 @@ public:
   // Create an item definition based on a given idName. If an item
   // with that name already exists then return a shared_pointer
   // that points to NULL.
+  bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
   template <typename T>
   typename smtk::internal::shared_ptr_type<T>::SharedPointerType addItemDefinition(
     const std::string& idName)
