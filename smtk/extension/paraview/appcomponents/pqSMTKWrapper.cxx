@@ -49,40 +49,6 @@ pqSMTKWrapper::pqSMTKWrapper(const QString& regGroup, const QString& regName, vt
 #if !defined(NDEBUG) && DEBUG_WRAPPER
   std::cout << "pqResourceManager ctor " << parent << "\n";
 #endif
-  // Listen for operation events and signal them.
-  // Note that what we **should** be doing is listening for these
-  // events on a client-side operation manager used to forward
-  // operations to the server. What we in fact do only works for
-  // the built-in mode. TODO: Fix this. Remove the need for me.
-  auto pxy = vtkSMSMTKWrapperProxy::SafeDownCast(this->getProxy());
-  auto wrapper = vtkSMTKWrapper::SafeDownCast(pxy->GetClientSideObject());
-  if (wrapper)
-  {
-    /*
-    wrapper->GetManager()->observe([this](
-        smtk::resource::Event event,
-        const smtk::resource::ResourcePtr& rsrc)
-      {
-        switch (event)
-        {
-        case smtk::resource::Event::RESOURCE_ADDED: emit resourceAdded(rsrc); break;
-        case smtk::resource::Event::RESOURCE_REMOVED: emit resourceRemoved(rsrc); break;
-        }
-      }
-    );
-    */
-    /*
-    wrapper->GetOperationManager()
-      ->observers()
-      .insert(
-        [this](const smtk::operation::Operation& oper, smtk::operation::EventType event,
-          smtk::operation::Operation::Result result) -> int {
-          emit operationEvent(oper, event, result);
-          return 0;
-        },
-        "pqSMTKWrapper: Emit a Qt signal for each operation event.");
-    */
-  }
   pqSMTKBehavior::instance()->addPQProxy(this);
 }
 
@@ -171,7 +137,6 @@ void pqSMTKWrapper::addResource(pqSMTKResource* rsrc)
   if (pxy)
   {
     pxy->AddResourceProxy(rsrc->getSourceProxy());
-    emit resourceAdded(rsrc);
   }
 }
 
@@ -181,7 +146,6 @@ void pqSMTKWrapper::removeResource(pqSMTKResource* rsrc)
   auto pxy = this->smtkProxy();
   if (pxy)
   {
-    emit resourceRemoved(rsrc);
     pxy->RemoveResourceProxy(rsrc->getSourceProxy());
   }
 }
