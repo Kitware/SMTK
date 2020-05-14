@@ -417,7 +417,11 @@ void pqSMTKSelectionFilterBehavior::installFilter()
           (entBits & smtk::model::INSTANCE_ENTITY) ||
           ((entBits & smtk::model::ANY_DIMENSION) & (modelFlags & smtk::model::ANY_DIMENSION));
       }
+      else
+      {
+        return false;
+      }
     }
-    return false;
+    return true; // If no filtering is requested, allow everything
   });
 }
