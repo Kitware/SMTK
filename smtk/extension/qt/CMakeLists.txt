@@ -96,6 +96,7 @@ set(QAttrLibMocHeaders
   qtAttributeView.h
   qtInstancedView.h
   qtModelEntityAttributeView.h
+  qtNotEditableDelegate.h
   qtReferenceItem.h
   qtReferenceItemComboBox.h
   qtReferenceItemData.h
