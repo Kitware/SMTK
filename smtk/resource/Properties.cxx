@@ -48,12 +48,12 @@ const smtk::common::UUID& ComponentProperties::id() const
   return m_component->id();
 }
 
-smtk::common::PropertiesContainer& ComponentProperties::properties()
+smtk::common::TypeMapBase<std::string>& ComponentProperties::properties()
 {
   return m_component->resource()->properties().data();
 }
 
-const smtk::common::PropertiesContainer& ComponentProperties::properties() const
+const smtk::common::TypeMapBase<std::string>& ComponentProperties::properties() const
 {
   return m_component->resource()->properties().data();
 }

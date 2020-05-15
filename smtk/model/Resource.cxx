@@ -411,7 +411,7 @@ SessionInfoBits Resource::hardErase(const EntityRef& eref, SessionInfoBits flags
     if (actual & SESSION_FLOAT_PROPERTIES)
     {
       this->properties().data().eraseIdForType<std::vector<double> >(uid);
-      if (this->properties().data().hasPropertyType<std::vector<double> >())
+      if (this->properties().data().containsType<std::vector<double> >())
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
@@ -419,7 +419,7 @@ SessionInfoBits Resource::hardErase(const EntityRef& eref, SessionInfoBits flags
     if (actual & SESSION_STRING_PROPERTIES)
     {
       this->properties().data().eraseIdForType<std::vector<std::string> >(uid);
-      if (this->properties().data().hasPropertyType<std::vector<std::string> >())
+      if (this->properties().data().containsType<std::vector<std::string> >())
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
@@ -427,7 +427,7 @@ SessionInfoBits Resource::hardErase(const EntityRef& eref, SessionInfoBits flags
     if (actual & SESSION_INTEGER_PROPERTIES)
     {
       this->properties().data().eraseIdForType<std::vector<long> >(uid);
-      if (this->properties().data().hasPropertyType<std::vector<long> >())
+      if (this->properties().data().containsType<std::vector<long> >())
       {
         actual &= ~SESSION_FLOAT_PROPERTIES;
       }
