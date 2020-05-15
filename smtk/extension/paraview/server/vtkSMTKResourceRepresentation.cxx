@@ -131,11 +131,12 @@ void AddRenderables(
 template <typename RenderView>
 struct HasNewAPI
 {
-  template <typename U>
-  static char test(typename U::SetOrderedCompositingConfiguration*);
-  template <typename U>
-  static long test(U*);
-  static constexpr bool value = sizeof(test<RenderView>(nullptr)) == 1;
+  template <typename Class>
+  static std::true_type test(decltype(&Class::SetOrderedCompositingConfiguration));
+  template <typename Class>
+  static std::false_type test(...);
+
+  static constexpr bool value = decltype(test<RenderView>(nullptr))::value;
 };
 
 // Use HasNewAPI to enable one of the MarkRedistributable functions below:
