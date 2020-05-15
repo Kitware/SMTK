@@ -94,6 +94,13 @@ if (NOT MOAB_FOUND)
   set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
 endif ()
 
+find_package(Threads ${_smtk_find_quietly})
+if (NOT Threads_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "Threads dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif()
+
 if (SMTK_ENABLE_QT_SUPPORT)
   find_package(Qt5 ${_smtk_find_quietly}
     COMPONENTS Core OpenGL Widgets)

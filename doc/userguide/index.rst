@@ -40,6 +40,7 @@ simulation domain.
    attribute/index.rst
    operation/index.rst
    model/index.rst
+   graph/index.rst
    mesh/index.rst
    simulation/index.rst
    view/index.rst
