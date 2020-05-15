@@ -20,11 +20,11 @@ namespace resource
 {
 namespace detail
 {
-void from_json(const json& j, smtk::resource::detail::ComponentLinkBase& linkBase)
+void from_json(const json&, smtk::resource::detail::ComponentLinkBase&)
 {
 }
 
-void to_json(json& j, const smtk::resource::detail::ComponentLinkBase& linkBase)
+void to_json(json&, const smtk::resource::detail::ComponentLinkBase&)
 {
 }
 }
