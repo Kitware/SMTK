@@ -52,7 +52,7 @@ class TypeMap;
 /// information, as well as serialization logic if the underlying type is
 /// serializable.
 template <typename KeyType, typename Type>
-class TypeMapEntry : public TypeMapEntryBase
+class SMTK_ALWAYS_EXPORT TypeMapEntry : public TypeMapEntryBase
 {
   friend class TypeMap<KeyType>;
 
@@ -142,7 +142,7 @@ private:
 /// methods to insert types (this functionality is delegated to the downstream
 /// TypeMap class).
 template <typename KeyType>
-class SMTKCORE_EXPORT TypeMapBase
+class SMTK_ALWAYS_EXPORT TypeMapBase
 {
 public:
   virtual ~TypeMapBase() = 0;
@@ -261,7 +261,7 @@ inline TypeMapBase<KeyType>::~TypeMapBase()
 /// functionality is only exposed at construction to enforce RAII (otherwise,
 /// serialization routines would have to bind type names to types).
 template <typename KeyType = std::string>
-class SMTKCORE_EXPORT TypeMap : public TypeMapBase<KeyType>
+class SMTK_ALWAYS_EXPORT TypeMap : public TypeMapBase<KeyType>
 {
 public:
   typedef KeyType key_type;
