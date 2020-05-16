@@ -10,6 +10,7 @@ set(classes
 set(operators
   CreateBox
   CreateResource
+  Cut
   Import
 )
 # This should be initialized with a list of standalone header files:

@@ -49,8 +49,8 @@ public:
   const TopoDS_Shape* findShape(const smtk::common::UUID& uid) const;
   TopoDS_Shape* findShape(const smtk::common::UUID& uid);
   smtk::common::UUID findID(const TopoDS_Shape& shape) const;
-  void addStorage(const smtk::common::UUID& uid, TopoDS_Shape& storage);
-  bool removeStorage(const smtk::common::UUID& uid);
+  void addShape(const smtk::common::UUID& uid, TopoDS_Shape& storage);
+  bool removeShape(const smtk::common::UUID& uid);
 
   /// Return the OpenCascade "document" for this session.
   ///

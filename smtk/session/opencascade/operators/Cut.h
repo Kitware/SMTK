@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_session_opencascade_CreateResource_h
-#define smtk_session_opencascade_CreateResource_h
+#ifndef smtk_session_opencascade_Cut_h
+#define smtk_session_opencascade_Cut_h
 
 #include "smtk/common/UUID.h"
 #include "smtk/graph/Component.h"
@@ -22,16 +22,14 @@ namespace session
 namespace opencascade
 {
 
-/**\brief Create an empty OpenCASCADE resource.
+/**\brief Cut one solid model with another.
   *
-  * Note that the resource is a `.smtk` file that will have a corresponding
-  * `.brep` file (holding the actual geometric data) when saved.
   */
-class SMTKOPENCASCADESESSION_EXPORT CreateResource : public Operation
+class SMTKOPENCASCADESESSION_EXPORT Cut : public Operation
 {
 public:
-  smtkTypeMacro(smtk::session::opencascade::CreateResource);
-  smtkCreateMacro(CreateResource);
+  smtkTypeMacro(smtk::session::opencascade::Cut);
+  smtkCreateMacro(Cut);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(Operation);
 
@@ -44,4 +42,4 @@ protected:
 } // namespace session
 } // namespace smtk
 
-#endif // smtk_session_opencascade_CreateResource_h
+#endif // smtk_session_opencascade_Cut_h

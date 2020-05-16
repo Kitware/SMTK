@@ -253,7 +253,7 @@ Import::Result Import::operateInternal()
     return result;
   }
   auto topNode = resource->create<Shape>();
-  session->addStorage(topNode->id(), shape);
+  session->addShape(topNode->id(), shape);
   operation::MarkGeometry geom(resource);
   created->appendValue(topNode);
   geom.markModified(topNode);

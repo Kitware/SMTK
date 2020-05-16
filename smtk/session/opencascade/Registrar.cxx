@@ -14,6 +14,7 @@
 #include "smtk/session/opencascade/Resource.h"
 #include "smtk/session/opencascade/operators/CreateBox.h"
 #include "smtk/session/opencascade/operators/CreateResource.h"
+#include "smtk/session/opencascade/operators/Cut.h"
 #include "smtk/session/opencascade/operators/Import.h"
 
 #include "smtk/operation/groups/CreatorGroup.h"
@@ -28,7 +29,7 @@ namespace opencascade
 
 namespace
 {
-using OperationList = std::tuple<CreateBox, CreateResource, Import>;
+using OperationList = std::tuple<CreateBox, CreateResource, Cut, Import>;
 }
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)

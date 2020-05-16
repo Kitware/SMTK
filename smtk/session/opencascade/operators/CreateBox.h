@@ -25,6 +25,12 @@ namespace opencascade
 class Resource;
 class Shape;
 
+/**\brief Create an axis-aligned, 3-d rectangular prism.
+  *
+  * You may specify the center and length along each axis.
+  * The box will be created in a new resource unless you
+  * associate the operation to an existing resource.
+  */
 class SMTKOPENCASCADESESSION_EXPORT CreateBox : public Operation
 {
 public:

@@ -59,7 +59,7 @@ smtk::common::UUID Session::findID(const TopoDS_Shape& shape) const
   return smtk::common::UUID::null();
 }
 
-void Session::addStorage(const smtk::common::UUID& uid, TopoDS_Shape& storage)
+void Session::addShape(const smtk::common::UUID& uid, TopoDS_Shape& storage)
 {
   if (uid.isNull() || storage.IsNull())
   {
@@ -70,7 +70,7 @@ void Session::addStorage(const smtk::common::UUID& uid, TopoDS_Shape& storage)
   m_reverse[storage] = uid;
 }
 
-bool Session::removeStorage(const smtk::common::UUID& uid)
+bool Session::removeShape(const smtk::common::UUID& uid)
 {
   if (uid.isNull())
   {

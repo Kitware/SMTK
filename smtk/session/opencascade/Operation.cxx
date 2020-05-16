@@ -46,6 +46,14 @@ void Operation::prepareResourceAndSession(
   if (assoc && assoc->isEnabled() && assoc->isSet(0))
   {
     resource = dynamic_pointer_cast<Resource>(assoc->value(0));
+    if (!resource)
+    {
+      auto comp = dynamic_pointer_cast<smtk::resource::Component>(assoc->value(0));
+      if (comp)
+      {
+        resource = dynamic_pointer_cast<Resource>(comp->resource());
+      }
+    }
     if (resource)
     {
       session = resource->session();
@@ -105,7 +113,7 @@ void Operation::iterateChildren(Shape& parent, Result& result)
           [](unsigned char c) { return std::tolower(c); });
         nodeName << topologyType << " " << session->shapeCounters()[shapeType]++;
         node->setName(nodeName.str());
-        session->addStorage(node->id(), childShape);
+        session->addShape(node->id(), childShape);
         geom.markModified(node);
         // created->appendValue(node); // This is problematic for large models.
         this->iterateChildren(*node, result);
