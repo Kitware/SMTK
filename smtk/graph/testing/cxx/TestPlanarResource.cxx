@@ -181,7 +181,7 @@ std::array<double, 2> Face::centroid() const
 }
 }
 
-int TestPlanarResource(int, char**)
+int TestPlanarResource(int, char* [])
 {
   // Construct our planar-graph resource.
   auto resource = smtk::graph::Resource<PlanarTraits>::create();

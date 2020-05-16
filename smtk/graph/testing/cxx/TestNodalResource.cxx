@@ -46,7 +46,7 @@ struct BasicTraits
 };
 }
 
-int TestNodalResource(int, char**)
+int TestNodalResource(int, char* [])
 {
   // Construct a graph resource with the graph and node types described in
   // BasicTraits.
