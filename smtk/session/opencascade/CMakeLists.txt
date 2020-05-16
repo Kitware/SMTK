@@ -1,12 +1,15 @@
 # Classes have both a header and a source file:
 set(classes
   IconConstructor
+  Operation
   Session
   Registrar
   Resource
 )
 # Operations have header, source, and sbt files:
 set(operators
+  CreateBox
+  CreateResource
   Import
 )
 # This should be initialized with a list of standalone header files:

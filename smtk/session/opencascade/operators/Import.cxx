@@ -83,43 +83,6 @@ namespace opencascade
 template <typename T>
 using handle = ::opencascade::handle<T>;
 
-void Import::iterateChildren(Shape& parent, Result& result, int& numItems)
-{
-  Resource* resource = dynamic_cast<Resource*>(parent.resource().get());
-  if (!resource)
-  {
-    return;
-  }
-
-  // auto created = result->findComponent("created");
-  auto session = resource->session();
-  auto shape = session->findShape(parent.id());
-  if (shape)
-  {
-    operation::MarkGeometry geom(resource->shared_from_this());
-    TopoDS_Iterator iter;
-    for (iter.Initialize(*shape); iter.More(); iter.Next())
-    {
-      TopoDS_Shape childShape = iter.Value();
-      if (session->findID(childShape).isNull())
-      {
-        auto node = resource->create<Shape>();
-        std::ostringstream nodeName;
-        std::string topologyType = TopAbs::ShapeTypeToString(childShape.ShapeType());
-        std::transform(topologyType.begin(), topologyType.end(), topologyType.begin(),
-          [](unsigned char c) { return std::tolower(c); });
-        nodeName << topologyType << " " << numItems;
-        node->setName(nodeName.str());
-        session->addStorage(node->id(), childShape);
-        geom.markModified(node);
-        ++numItems;
-        // created->appendValue(node); // This is problematic for large models.
-        this->iterateChildren(*node, result, numItems);
-      }
-    }
-  }
-}
-
 Import::Result Import::operateInternal()
 {
   smtk::session::opencascade::Resource::Ptr resource;
@@ -299,8 +262,7 @@ Import::Result Import::operateInternal()
   //   << " " << TopAbs::ShapeTypeToString(shape.ShapeType()) << "\n";
 
   // NB: This visits shared children multiple times (e.g., vertex bounding 2+ edges)
-  int numItems = 1;
-  this->iterateChildren(*topNode, result, numItems);
+  this->iterateChildren(*topNode, result);
 
   result->findInt("outcome")->setValue(static_cast<int>(Import::Outcome::SUCCEEDED));
   return result;

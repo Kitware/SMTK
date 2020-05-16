@@ -20,6 +20,8 @@
 #include "TDocStd_Document.hxx"
 #include "TopoDS_Shape.hxx"
 
+#include <array>
+
 namespace smtk
 {
 namespace session
@@ -57,6 +59,10 @@ public:
   const ::opencascade::handle<TDocStd_Document>& document() const { return m_document; }
   ::opencascade::handle<TDocStd_Document>& document() { return m_document; }
 
+  /// Return counters used to name opencascade TopoDS_Shape items uniquely
+  const std::array<std::size_t, 9>& shapeCounters() const { return m_shapeCounters; }
+  std::array<std::size_t, 9>& shapeCounters() { return m_shapeCounters; }
+
 protected:
   Session();
 
@@ -84,6 +90,7 @@ protected:
   std::map<smtk::common::UUID, TopoDS_Shape> m_storage;
   std::unordered_map<TopoDS_Shape, smtk::common::UUID, ShapeHash> m_reverse;
   ::opencascade::handle<TDocStd_Document> m_document;
+  std::array<std::size_t, 9> m_shapeCounters;
 
 private:
   Session(const Session&);        // Not implemented.

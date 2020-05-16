@@ -21,6 +21,7 @@ namespace opencascade
 
 Session::Session()
   : m_document(new TDocStd_Document(TCollection_ExtendedString(/* document format */ "smtk")))
+  , m_shapeCounters{ 0 }
 {
 }
 
