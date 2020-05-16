@@ -67,13 +67,9 @@ public:
   virtual ArcSet& arcs() = 0;
 
 protected:
-  ResourceBase(smtk::resource::ManagerPtr manager = nullptr)
-    : Superclass(manager)
-  {
-  }
-
-  ResourceBase(const smtk::common::UUID& uid, smtk::resource::ManagerPtr manager = nullptr)
-    : Superclass(uid, manager)
+  template <typename... Args>
+  ResourceBase(Args&&... args)
+    : Superclass(std::forward<Args>(args)...)
   {
   }
 
@@ -171,14 +167,9 @@ public:
   ResourceBase::ArcSet& arcs() override { return m_arcs; }
 
 protected:
-  Resource(smtk::resource::ManagerPtr manager = nullptr)
-    : Superclass(manager)
-    , m_arcs(identity<typename GraphTraits::ArcTypes>())
-  {
-  }
-
-  Resource(const smtk::common::UUID& uid, smtk::resource::ManagerPtr manager = nullptr)
-    : Superclass(uid, manager)
+  template <typename... Args>
+  Resource(Args&&... args)
+    : Superclass(std::forward<Args>(args)...)
     , m_arcs(identity<typename GraphTraits::ArcTypes>())
   {
   }
