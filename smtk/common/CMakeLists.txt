@@ -8,7 +8,6 @@ set(commonSrcs
   Extension.cxx
   FileLocation.cxx
   json/jsonLinks.cxx
-  json/jsonProperties.cxx
   json/jsonUUID.cxx
   Paths.cxx
   Registry.cxx
@@ -32,12 +31,11 @@ set(commonHeaders
   Generator.h
   GeometryUtilities.h
   json/jsonLinks.h
-  json/jsonProperties.h
+  json/jsonTypeMap.h
   json/jsonUUID.h
   Links.h
   Observers.h
   Paths.h
-  Properties.h
   RangeDetector.h
   Registry.h
   Singleton.h
@@ -45,11 +43,10 @@ set(commonHeaders
   ThreadPool.h
   TimeZone.h
   timezonespec.h
+  TypeMap.h
   TypeName.h
   UUID.h
   UUIDGenerator.h
-
-  json/jsonUUID.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )

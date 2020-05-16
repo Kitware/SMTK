@@ -7,10 +7,14 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef smtk_common_json_jsonTypeMap_h
+#define smtk_common_json_jsonTypeMap_h
 
-#include "smtk/common/json/jsonProperties.h"
+#include "smtk/CoreExports.h"
 
-#include <string>
+#include "smtk/common/TypeMap.h"
+
+#include "nlohmann/json.hpp"
 
 // We use either STL regex or Boost regex, depending on support. These flags
 // correspond to the equivalent logic used to determine the inclusion of Boost's
@@ -27,49 +31,55 @@ using boost::regex;
 using boost::regex_replace;
 #endif
 
+// Define how type maps are serialized.
 namespace smtk
 {
 namespace common
 {
-void to_json(nlohmann::json& j, const PropertiesContainer& properties)
+
+template <typename KeyType>
+void to_json(nlohmann::json& j, const TypeMapBase<KeyType>& typemap)
 {
-  for (auto& property : properties.data())
+  for (auto& entry : typemap.data())
   {
-    std::string propertyName = property.first;
-    const PropertiesBase& base = *property.second;
-    auto& base_j = j[propertyName];
+    std::string entryName = entry.first;
+    const TypeMapEntryBase& base = *entry.second;
+    auto& base_j = j[entryName];
     base.to_json(base_j);
     if (base_j == nullptr)
     {
-      j.erase(propertyName);
+      j.erase(entryName);
     }
   }
 }
 
-void from_json(const nlohmann::json& j, PropertiesContainer& properties)
+template <typename KeyType>
+void from_json(const nlohmann::json& j, TypeMapBase<KeyType>& typemap)
 {
-  for (auto& property : properties.data())
+  for (auto& entry : typemap.data())
   {
-    auto it = j.find(property.first);
+    auto it = j.find(entry.first);
     if (it != j.end())
     {
-      property.second->from_json(*it);
+      entry.second->from_json(*it);
     }
 
-    // This kludge provides us with backwards compatibility for properties on
+    // This kludge provides us with backwards compatibility for typemap on
     // resources and components.
     else
     {
-      std::string tmp = property.first;
+      std::string tmp = entry.first;
       tmp = regex_replace(tmp, regex("unordered_"), "unordered ");
 
       it = j.find(tmp);
       if (it != j.end())
       {
-        property.second->from_json(*it);
+        entry.second->from_json(*it);
       }
     }
   }
 }
 }
 }
+
+#endif

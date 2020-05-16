@@ -12,7 +12,7 @@
 #define smtk_resource_Properties_h
 
 #include "smtk/CoreExports.h"
-#include "smtk/common/Properties.h"
+#include "smtk/common/TypeMap.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/common/json/jsonUUID.h"
@@ -21,15 +21,15 @@ namespace smtk
 {
 namespace resource
 {
-/// The Properties classes defined in the resource namespace use the Properties
+/// The Properties classes defined in the resource namespace use the TypeMap
 /// classes defined in smtk::common, but provide a distinct API to transpose the
 /// UUID and property key for storage vs presentation; this is to prevent the
 /// creation of a map for each component within a resource.
 namespace detail
 {
-/// The Properties classes defined in this namespace closely correlate to their
-/// equivalently named counterparts in smtk::common, but are tailored to provide
-/// a UUID as an additional lookup parameter.
+/// The Properties classes defined in this namespace closely correlate to
+/// counterparts in smtk::common::TypeMap, but are tailored to provide a UUID as
+/// an additional lookup parameter.
 
 /// A common base class for resource properties. It is used to provide an API
 /// for removing properties associated with removed IDs to avoid having to
@@ -51,12 +51,12 @@ class PropertiesOfType;
 /// (needed for cleaning up after components are deleted).
 template <typename Type>
 class PropertiesOfType<std::unordered_map<smtk::common::UUID, Type> >
-  : public smtk::common::PropertiesOfType<std::unordered_map<smtk::common::UUID, Type> >,
+  : public smtk::common::TypeMapEntry<std::string, std::unordered_map<smtk::common::UUID, Type> >,
     public PropertiesBase
 {
   friend class Properties;
   PropertiesOfType()
-    : smtk::common::PropertiesOfType<std::unordered_map<smtk::common::UUID, Type> >()
+    : smtk::common::TypeMapEntry<std::string, std::unordered_map<smtk::common::UUID, Type> >()
     , PropertiesBase()
   {
   }
@@ -65,7 +65,6 @@ public:
   void eraseId(const smtk::common::UUID& id) override
   {
     for (auto& pair : this->data())
-    // this->smtk::common::PropertiesOfType<std::unordered_map<smtk::common::UUID, Type> >::data())
     {
       pair.second.erase(id);
     }
@@ -73,10 +72,10 @@ public:
 };
 
 /// Properties is a generalized container for storing and accessing data using a
-/// std::string key. This Properties differs from its equivalently named class
-/// in smtk::common by constructing custom PropertiesOfType<> that are tailored
-/// for use with additional UUID indexing.
-class SMTKCORE_EXPORT Properties : public smtk::common::PropertiesContainer
+/// std::string key. This Properties differs from smtk::common::TypeMapBase
+/// by constructing custom TypeMapEntries<> that are tailored for use with
+/// additional UUID indexing.
+class SMTKCORE_EXPORT Properties : public smtk::common::TypeMapBase<std::string>
 {
 public:
   Properties() {}
@@ -389,8 +388,8 @@ public:
 
 private:
   virtual const smtk::common::UUID& id() const = 0;
-  virtual smtk::common::PropertiesContainer& properties() = 0;
-  virtual const smtk::common::PropertiesContainer& properties() const = 0;
+  virtual smtk::common::TypeMapBase<std::string>& properties() = 0;
+  virtual const smtk::common::TypeMapBase<std::string>& properties() const = 0;
 };
 
 namespace detail
@@ -427,8 +426,8 @@ private:
   ResourceProperties(Resource* resource);
 
   const smtk::common::UUID& id() const override;
-  smtk::common::PropertiesContainer& properties() override { return m_data; }
-  const smtk::common::PropertiesContainer& properties() const override { return m_data; }
+  smtk::common::TypeMapBase<std::string>& properties() override { return m_data; }
+  const smtk::common::TypeMapBase<std::string>& properties() const override { return m_data; }
 
   Resource* m_resource;
   ResourcePropertiesData m_data;
@@ -445,8 +444,8 @@ class SMTKCORE_EXPORT ComponentProperties : public smtk::resource::Properties
   ~ComponentProperties();
 
   const smtk::common::UUID& id() const override;
-  smtk::common::PropertiesContainer& properties() override;
-  const smtk::common::PropertiesContainer& properties() const override;
+  smtk::common::TypeMapBase<std::string>& properties() override;
+  const smtk::common::TypeMapBase<std::string>& properties() const override;
 
   const Component* m_component;
 };

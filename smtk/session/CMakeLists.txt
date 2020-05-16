@@ -6,6 +6,7 @@ set(SMTK_POLYGON_SESSION_ENABLED "False")
 set(SMTK_MESH_SESSION_ENABLED "False")
 set(SMTK_MULTISCALE_SESSION_ENABLED "False")
 set(SMTK_VTK_SESSION_ENABLED "False")
+set(SMTK_OPENCASCADE_SESSION_ENABLED "False")
 set(SMTK_OSCILLATOR_SESSION_ENABLED "False")
 
 ################################################################################
@@ -49,6 +50,14 @@ endif()
 if (SMTK_ENABLE_VTK_SESSION)
   set(SMTK_VTK_SESSION_ENABLED "True")
   add_subdirectory(vtk)
+endif()
+
+################################################################################
+# Build Opencascade session
+################################################################################
+if (SMTK_ENABLE_OPENCASCADE_SESSION)
+  set(SMTK_OPENCASCADE_SESSION_ENABLED "True")
+  add_subdirectory(opencascade)
 endif()
 
 ################################################################################

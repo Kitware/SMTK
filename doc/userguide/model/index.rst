@@ -1,8 +1,8 @@
 .. _smtk-model-sys:
 
------------------------------
+-------------------------------
 SMTK's Geometric Model Resource
------------------------------
+-------------------------------
 
 SMTK's second major component is its geometric modeling resource,
 which allows you to interact with multiple modeling sessions

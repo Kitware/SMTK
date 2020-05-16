@@ -16,6 +16,7 @@ The following variables are provided by this module:
   * `SMTK_ENABLE_QT_SUPPORT`: Whether Qt support is available or not.
   * `SMTK_ENABLE_REMUS_SUPPORT`: Whether Remus support is available or not.
   * `SMTK_ENABLE_VTK_SUPPORT`: Whether VTK support is available or not.
+  * `SMTK_ENABLE_OPENCASCADE_SESSSION`: Whether OpenCASCADE is available or not.
 #]==]
 
 set(${CMAKE_FIND_PACKAGE_NAME}_CMAKE_PREFIX_PATH_save "${CMAKE_PREFIX_PATH}")
@@ -41,6 +42,7 @@ set(SMTK_ENABLE_PYTHON_WRAPPING "@SMTK_ENABLE_PYTHON_WRAPPING@")
 set(SMTK_ENABLE_QT_SUPPORT "@SMTK_ENABLE_QT_SUPPORT@")
 set(SMTK_ENABLE_REMUS_SUPPORT "@SMTK_ENABLE_REMUS_SUPPORT@")
 set(SMTK_ENABLE_VTK_SUPPORT "@SMTK_ENABLE_VTK_SUPPORT@")
+set(SMTK_ENABLE_OPENCASCADE_SESSION "@SMTK_ENABLE_OPENCASCADE_SESSION@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/smtk-find-package-helpers.cmake" OPTIONAL)
 
@@ -93,6 +95,13 @@ if (NOT MOAB_FOUND)
     "MOAB dependency not found")
   set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
 endif ()
+
+find_package(Threads ${_smtk_find_quietly})
+if (NOT Threads_FOUND)
+  list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+    "Threads dependency not found")
+  set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+endif()
 
 if (SMTK_ENABLE_QT_SUPPORT)
   find_package(Qt5 ${_smtk_find_quietly}
@@ -152,6 +161,11 @@ if (SMTK_ENABLE_VTK_SUPPORT)
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKPolygonExt-vtk-module-properties.cmake")
   endif ()
 
+  if (@SMTK_ENABLE_OPENCASCADE_SESSION@) # SMTK_ENABLE_OPENCASCADE_SESSION
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKOpencascadeExt-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/SMTKOpencascadeExt-vtk-module-properties.cmake")
+  endif ()
+
   if (@SMTK_ENABLE_DISCRETE_SESSION@) # SMTK_ENABLE_DISCRETE_SESSION
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKDiscreteModules-targets.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/SMTKDiscreteModules-vtk-module-properties.cmake")
@@ -174,6 +188,15 @@ if (SMTK_ENABLE_REMUS_SUPPORT)
   if (NOT Remus_FOUND)
     list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
       "Remus dependency not found")
+    set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
+  endif ()
+endif ()
+
+if (SMTK_ENABLE_OPENCASCADE_SESSION)
+  find_package(OpenCASCADE ${_smtk_find_quietly})
+  if (NOT OpenCASCADE_FOUND)
+    list(APPEND "${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE"
+      "OpenCASCADE dependency not found")
     set("${CMAKE_FIND_PACKAGE_NAME}_FOUND" 0)
   endif ()
 endif ()

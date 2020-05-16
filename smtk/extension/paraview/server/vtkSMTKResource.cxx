@@ -11,6 +11,7 @@
 #include "smtk/extension/paraview/server/vtkSMTKWrapper.h"
 
 #include "smtk/extension/vtk/source/SourceGenerator.h"
+#include "smtk/extension/vtk/source/vtkResourceMultiBlockSource.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -93,6 +94,13 @@ vtkAlgorithm* vtkSMTKResource::GetConverter()
   if (this->Converter == nullptr && this->GetResource() != nullptr)
   {
     this->Converter = smtk::extension::vtk::source::Generator()(this->GetResource());
+
+    if (!this->Converter)
+    {
+      auto source = vtkResourceMultiBlockSource::New();
+      source->SetResource(this->GetResource());
+      this->Converter = source;
+    }
   }
   return this->Converter;
 }

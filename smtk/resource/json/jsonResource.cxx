@@ -12,7 +12,7 @@
 #include "smtk/resource/json/jsonResourceLinkBase.h"
 
 #include "smtk/common/json/jsonLinks.h"
-#include "smtk/common/json/jsonProperties.h"
+#include "smtk/common/json/jsonTypeMap.h"
 #include "smtk/common/json/jsonUUID.h"
 
 // Define how resources are serialized.

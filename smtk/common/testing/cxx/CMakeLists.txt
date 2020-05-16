@@ -38,9 +38,9 @@ set(unit_tests
   UnitTestFactory
   UnitTestLinks
   UnitTestObservers
-  UnitTestProperties
   UnitTestRegistry.cxx
   UnitTestThreadPool
+  UnitTestTypeMap
   UnitTestTypeName
 )
 

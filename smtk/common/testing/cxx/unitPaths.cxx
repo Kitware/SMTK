@@ -96,5 +96,21 @@ int main(int argc, char* argv[])
   }
   test(testCount == 2, "Expected to find EnvTestA and EnvTestB in list above.");
 
+  // Test extraction of filename parts
+  std::string example("example.tar.gz");
+  auto extension = smtk::common::Paths::extension(example);
+  smtkTest(extension == ".gz", "Expected \".gz\" extension, got \"" << extension << "\".");
+  auto stem = smtk::common::Paths::stem(example);
+  smtkTest(stem == "example.tar", "Expected \"example\" stem, got \"" << stem << "\".");
+  auto filename = smtk::common::Paths::filename(example);
+  smtkTest(filename == example, "Expected filename and example path to match, got \"" << filename
+                                                                                      << "\".");
+  auto replacement = smtk::common::Paths::replaceExtension(example, ".bz2");
+  smtkTest(replacement == "example.tar.bz2", "Expected \"example.tar.bz2\", got \"" << replacement
+                                                                                    << "\".");
+  auto dir = smtk::common::Paths::directory(example);
+  smtkTest(dir.empty(), "Expected empty directory, got \"" << dir << "\".");
+  // TODO: Add more tests of directory (absolute and relative paths).
+
   return 0;
 }

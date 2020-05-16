@@ -12,6 +12,9 @@ smtk_source_group(resource)
 add_subdirectory(geometry)
 smtk_source_group(geometry)
 
+add_subdirectory(graph)
+smtk_source_group(graph)
+
 add_subdirectory(attribute)
 smtk_source_group(attribute)
 
@@ -43,6 +46,7 @@ set(smtk_headers
   ${commonHeaders}
   ${resourceHeaders}
   ${geometryHeaders}
+  ${graphHeaders}
   ${attributeHeaders}
   ${operationHeaders}
   ${meshHeaders}
@@ -57,6 +61,7 @@ set(smtk_srcs
   ${commonSrcs}
   ${resourceSrcs}
   ${geometrySrcs}
+  ${graphSrcs}
   ${attributeSrcs}
   ${operationSrcs}
   ${projectSrcs}
@@ -83,6 +88,7 @@ set(smtkCore_public_link_libraries
   ${moab_libs}
   nlohmann_json
   taocpp::pegtl
+  Threads::Threads
   )
 
 set(smtkCore_private_link_libraries
@@ -99,7 +105,6 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 
   list(APPEND smtkCore_private_link_libraries
     pybind11::embed
-    Threads::Threads
     )
   add_subdirectory(pybind11)
 endif()

@@ -7,22 +7,28 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_common_json_jsonProperties_h
-#define smtk_common_json_jsonProperties_h
 
-#include "smtk/CoreExports.h"
+#ifndef smtk_session_opencascade_IconConstructor_h
+#define smtk_session_opencascade_IconConstructor_h
 
-#include "smtk/common/Properties.h"
+#include "smtk/session/opencascade/Exports.h"
+#include "smtk/view/SVGIconConstructor.h"
 
-#include "nlohmann/json.hpp"
-
-// Define how properties are serialized.
 namespace smtk
 {
-namespace common
+namespace session
 {
-SMTKCORE_EXPORT void to_json(nlohmann::json& j, const PropertiesContainer& properties);
-SMTKCORE_EXPORT void from_json(const nlohmann::json& j, PropertiesContainer& properties);
+namespace opencascade
+{
+
+/**\brief Register icons for opencascade component types.
+  *
+  */
+class SMTKOPENCASCADESESSION_EXPORT IconConstructor : public smtk::view::SVGIconConstructor
+{
+  std::string svg(const smtk::resource::PersistentObject&) const override;
+};
+}
 }
 }
 
