@@ -15,6 +15,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/graph/arcs/Extensions.h"
 
 namespace smtk
@@ -28,7 +30,7 @@ namespace graph
 /// Furthermore, the arcs are ordered so that they are reported or visited in a
 /// consistent, user-specified order.
 template <typename from_type, typename to_type>
-class SMTKCORE_EXPORT OrderedArcs
+class SMTK_ALWAYS_EXPORT OrderedArcs
 {
 public:
   typedef from_type FromType;

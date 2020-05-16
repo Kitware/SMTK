@@ -11,6 +11,8 @@
 #ifndef smtk_graph_Arc_h
 #define smtk_graph_Arc_h
 
+#include "smtk/common/CompilerInformation.h"
+
 namespace smtk
 {
 namespace graph
@@ -21,7 +23,7 @@ namespace graph
 /// The endpoint nodes must be types derived from smtk::graph::Component and
 /// are specified as template parameters.
 template <typename from_type, typename to_type>
-class SMTKCORE_EXPORT Arc
+class SMTK_ALWAYS_EXPORT Arc
 {
 public:
   typedef to_type ToType;

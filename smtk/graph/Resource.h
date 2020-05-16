@@ -18,6 +18,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/common/CompilerInformation.h"
 #include "smtk/common/TypeMap.h"
 
 #include <memory>
@@ -85,7 +86,7 @@ protected:
 /// The arc types can be any type, and can represent a 1-to-1 or 1-to-many
 /// relationship between node types.
 template <typename GraphTraits>
-class SMTKCORE_EXPORT Resource
+class SMTK_ALWAYS_EXPORT Resource
   : public smtk::resource::DerivedFrom<Resource<GraphTraits>, ResourceBase>
 {
 public:
