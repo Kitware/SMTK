@@ -18,13 +18,23 @@ namespace
 /// Node inherits from smtk::graph::Component and uses its constructor.
 class Node : public smtk::graph::Component
 {
-  using smtk::graph::Component::Component;
+public:
+  template <typename... Args>
+  Node(Args&&... args)
+    : smtk::graph::Component::Component(std::forward<Args>(args)...)
+  {
+  }
 };
 
 /// Arc is a basic smtk::graph::Arc that connects from one node to another node.
 class Arc : public smtk::graph::Arc<Node, Node>
 {
-  using smtk::graph::Arc<Node, Node>::Arc;
+public:
+  template <typename... Args>
+  Arc(Args&&... args)
+    : smtk::graph::Arc<Node, Node>::Arc(std::forward<Args>(args)...)
+  {
+  }
 };
 
 /// A description of the node types and arc types that comprise our test
