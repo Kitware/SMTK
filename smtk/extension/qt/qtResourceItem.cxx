@@ -97,7 +97,7 @@ std::string qtResourceItem::synopsis(bool& ok) const
   std::size_t maxAllowed = (item->isExtensible() ? item->maxNumberOfValues() : numRequired);
   std::ostringstream label;
   std::size_t numSel = 0;
-  for (const auto& entry : m_p->m_members)
+  for (const auto& entry : this->members())
   {
     if (entry.second > 0)
     {
@@ -107,9 +107,9 @@ std::string qtResourceItem::synopsis(bool& ok) const
   ok = true;
   if (numRequired < 2 && maxAllowed == 1)
   {
-    auto resource = (m_p->m_members.empty()
-        ? smtk::resource::ResourcePtr()
-        : std::static_pointer_cast<smtk::resource::Resource>(m_p->m_members.begin()->first.lock()));
+    auto resource = (this->members().empty() ? smtk::resource::ResourcePtr()
+                                             : std::static_pointer_cast<smtk::resource::Resource>(
+                                                 this->members().begin()->first.lock()));
 
     if (resource != nullptr)
     {

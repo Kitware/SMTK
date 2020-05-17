@@ -57,7 +57,7 @@ public:
     std::string tip = "A"; // "A(" + this->ObjectIconBadge::tooltip(phrase) + ")";
     return tip;
   }
-  void action(const DescriptivePhrase* phrase) const override
+  void action(const DescriptivePhrase* phrase) override
   {
     if (phrase && phrase->relatedComponent())
     {
@@ -87,7 +87,7 @@ public:
   {
     return phrase ? "yes" : "no";
   }
-  void action(const DescriptivePhrase* phrase) const override
+  void action(const DescriptivePhrase* phrase) override
   {
     if (phrase && !phrase->relatedComponent() && phrase->relatedResource())
     {
@@ -166,7 +166,7 @@ int unitBadge(int argc, char* argv[])
   }
   int bcBadgeCounter = 0;
 
-  const auto& badgeSet = phraseModel->badges();
+  smtk::view::BadgeSet& badgeSet = phraseModel->badges();
   phraseModel->root()->visitChildren(
     [&badgeSet, &bcBadgeCounter](DescriptivePhrasePtr p, const std::vector<int>& idx) -> int {
       int indent = static_cast<int>(idx.size()) * 2;
@@ -175,7 +175,7 @@ int unitBadge(int argc, char* argv[])
         auto badges = badgeSet.badgesFor(p.get());
         std::cout << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << "): "
                   << " badges:";
-        for (const auto& badge : badges)
+        for (smtk::view::Badge* badge : badges)
         {
           std::string tip = badge->tooltip(p.get());
           std::cout << " " << tip;

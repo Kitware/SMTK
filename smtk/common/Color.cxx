@@ -134,7 +134,7 @@ float Color::floatRGBToLightness(const float* rgb)
   float r2 = rgb[0] * rgb[0];
   float g2 = rgb[1] * rgb[1];
   float b2 = rgb[2] * rgb[2];
-  float lightness = std::sqrt(0.299f * r2 + 0.587f * g2 + 0.114f * b2);
+  float lightness = std::sqrtf(0.299f * r2 + 0.587f * g2 + 0.114f * b2);
   return lightness;
 }
 } // namespace common

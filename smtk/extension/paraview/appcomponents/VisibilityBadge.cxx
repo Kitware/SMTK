@@ -268,7 +268,7 @@ std::string VisibilityBadge::icon(
   return m_iconClosed;
 }
 
-void VisibilityBadge::action(const DescriptivePhrase* phrase) const
+void VisibilityBadge::action(const DescriptivePhrase* phrase)
 {
   int newVal = !this->phraseVisibility(phrase) ? 1 : 0;
   // if (!phrase->setRelatedVisibility(!phraseVisibility(phrase)))
@@ -278,8 +278,7 @@ void VisibilityBadge::action(const DescriptivePhrase* phrase) const
   //     "\"");
   //   return;
   // }
-  vizQuery(Query::SET_VALUE, newVal, phrase->content(),
-    const_cast<VisibilityBadge*>(this)->m_visibleThings);
+  vizQuery(Query::SET_VALUE, newVal, phrase->content(), this->m_visibleThings);
   auto model = phrase->phraseModel();
   if (model)
   {

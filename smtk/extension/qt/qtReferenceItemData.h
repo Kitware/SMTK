@@ -74,10 +74,10 @@ public:
   QListView* m_popupList;
   bool m_alreadyClosingPopup; // Set when synchronizeAndHide() should **not** hide the QMenu.
 
-  // Selection state of items shown in m_phraseModel:
-  std::map<std::weak_ptr<smtk::resource::PersistentObject>, int,
-    std::owner_less<std::weak_ptr<smtk::resource::PersistentObject> > >
-    m_members;
+  // Selection state of items shown in m_phraseModel, from the MembershipBadge
+  // std::map<std::weak_ptr<smtk::resource::PersistentObject>, int,
+  //   std::owner_less<std::weak_ptr<smtk::resource::PersistentObject> > >
+  //   m_members;
 
   // Link between Qt and SMTK
   smtk::extension::qtDescriptivePhraseModel* m_qtModel;

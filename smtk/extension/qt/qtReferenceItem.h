@@ -11,6 +11,7 @@
 #define smtk_extension_qt_qtReferenceItem_h
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/extension/qt/MembershipBadge.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/view/PhraseModel.h"
 
@@ -116,6 +117,9 @@ protected slots:
   virtual void sneakilyHideButtons();
   virtual void cleverlyShowButtons();
 
+  /// Update our labels when the membership badge has changed.
+  void membershipChanged(int val);
+
 protected:
   /**\brief Subclasses override this to create a model of the appropriate type.
     *
@@ -154,6 +158,9 @@ protected:
 
   /// Children must implement this.
   virtual bool synchronize(UpdateSource src);
+
+  /// retrieve membership from the phraseModel's badge
+  smtk::extension::qt::MembershipBadge::MemberMap& members() const;
 
   void checkRemovedComponents(smtk::view::DescriptivePhrasePtr, smtk::view::PhraseModelEvent,
     const std::vector<int>&, const std::vector<int>&, const std::vector<int>&);

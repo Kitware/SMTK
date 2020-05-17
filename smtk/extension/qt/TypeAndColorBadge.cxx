@@ -159,7 +159,7 @@ bool editColorValue(smtk::view::PhraseModelPtr model, smtk::resource::ComponentP
   return false;
 }
 
-void TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase) const
+void TypeAndColorBadge::action(const smtk::view::DescriptivePhrase* phrase)
 {
   if (phrase->phraseModel() == nullptr)
   {

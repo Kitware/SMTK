@@ -88,7 +88,7 @@ public:
     * return 0 to continue iterating, 1 to skip children of this phrase, or 2 to terminate immediately.
     */
   using Visitor = std::function<int(DescriptivePhrasePtr, std::vector<int>&)>;
-  using Badges = std::vector<const Badge*>;
+  using Badges = std::vector<Badge*>;
 
   smtkTypeMacroBase(DescriptivePhrase);
   smtkCreateMacro(DescriptivePhrase);

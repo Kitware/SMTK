@@ -220,17 +220,16 @@ QModelIndex qtDescriptivePhraseModel::index(int row, int column, const QModelInd
   }
 
   view::DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
-  // std::string entName = ownerPhrase->relatedComponent().name();
+  // std::string entName = ownerPhrase->relatedComponent() ? ownerPhrase->relatedComponent()->name() : "no name";
   // std::cout << "Owner index for: " << entName << std::endl;
   view::DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
   {
-    //std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
-    //std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
-
     view::DescriptivePhrasePtr entry = subphrases[row];
     if (entry)
     {
+      // std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
+      // std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
       this->P->ptrs[entry->phraseId()] = entry;
       return this->createIndex(row, column, entry->phraseId());
     }

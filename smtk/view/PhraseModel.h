@@ -182,6 +182,7 @@ public:
 
   /// Return the badges that may apply to phrases in this model.
   const BadgeSet& badges() const { return m_badges; }
+  BadgeSet& badges() { return m_badges; }
 
 protected:
   friend class VisibilityContent;

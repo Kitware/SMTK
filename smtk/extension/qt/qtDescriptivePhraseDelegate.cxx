@@ -175,8 +175,8 @@ void qtDescriptivePhraseDelegate::paint(
   painter->save();
 
   // Fetch the badges for this QModelIndex:
-  auto badges = qvariant_cast<std::vector<const smtk::view::Badge*> >(
-    idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
   auto phrase =
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   std::array<float, 4> backgroundArray = { static_cast<float>(background.redF()),
@@ -348,8 +348,8 @@ void qtDescriptivePhraseDelegate::updateEditorGeometry(
 
   QRect titleRect = option.rect;
   QRect iconRect = option.rect;
-  auto badges = qvariant_cast<std::vector<const smtk::view::Badge*> >(
-    idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
   auto phrase =
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   std::array<float, 4> backgroundArray = { 1, 1, 1, 1 };
@@ -396,7 +396,7 @@ bool qtDescriptivePhraseDelegate::eventFilter(QObject* editor, QEvent* evt)
 }
 
 int determineAction(const QPoint& pPos, const QStyleOptionViewItem& option,
-  const std::vector<const smtk::view::Badge*> badges, const smtk::view::DescriptivePhrase* phrase)
+  const smtk::view::BadgeSet::BadgeList& badges, const smtk::view::DescriptivePhrase* phrase)
 {
 
   int badgeIndex = -1;
@@ -446,8 +446,8 @@ bool qtDescriptivePhraseDelegate::editorEvent(
     return res;
   }
 
-  auto badges = qvariant_cast<std::vector<const smtk::view::Badge*> >(
-    idx.data(qtDescriptivePhraseModel::BadgesRole));
+  auto badges =
+    qvariant_cast<smtk::view::BadgeSet::BadgeList>(idx.data(qtDescriptivePhraseModel::BadgesRole));
   auto phrase =
     idx.data(qtDescriptivePhraseModel::PhrasePtrRole).value<smtk::view::DescriptivePhrasePtr>();
   int badgeIndex = determineAction(e->pos(), option, badges, phrase.get());
