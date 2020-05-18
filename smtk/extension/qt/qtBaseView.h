@@ -71,6 +71,13 @@ class SMTKQTEXT_EXPORT qtBaseView : public QObject, public smtk::view::BaseView
   Q_OBJECT
 
 public:
+  // Views do not follow RAII. They require a call to the protected virtual
+  // method buildUI() to be initialized. Since objects that inherit from
+  // qtBaseView are only ever called by qtUIManager, we can code around this
+  // issue by making qtBaseView a friend of qtUIManager and by calling buildUI()
+  // immediately upon construction in qtUIManager.
+  friend class qtUIManager;
+
   smtkTypenameMacro(qtBaseView);
 
   qtBaseView(const ViewInfo& info);

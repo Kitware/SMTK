@@ -29,14 +29,14 @@ typedef std::tuple<qtSimpleExpressionEvaluationView> ViewWidgetList;
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->registerViewWidgets<ViewWidgetList>();
+  viewManager->viewWidgetFactory().registerTypes<ViewWidgetList>();
   // Note this should override the default for SimpleExpression
-  viewManager->addWidgetAlias<qtSimpleExpressionEvaluationView>("SimpleExpression");
+  viewManager->viewWidgetFactory().addAlias<qtSimpleExpressionEvaluationView>("SimpleExpression");
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->unregisterViewWidgets<ViewWidgetList>();
+  viewManager->viewWidgetFactory().unregisterTypes<ViewWidgetList>();
 }
 }
 }

@@ -29,12 +29,12 @@ typedef std::tuple<smtkTerrainExtractionView> ViewList;
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->registerViewWidgets<ViewList>();
+  viewManager->viewWidgetFactory().registerTypes<ViewList>();
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
-  viewManager->unregisterViewWidgets<ViewList>();
+  viewManager->viewWidgetFactory().unregisterTypes<ViewList>();
 }
 }
 }
