@@ -38,15 +38,14 @@ Resource::Resource(ManagerPtr manager)
 {
 }
 
-Resource::Resource(Resource&& rhs)
-  : m_id(std::move(rhs.m_id))
-  , m_location(std::move(rhs.m_location))
-  , m_name(std::move(rhs.m_name))
-  , m_clean(std::move(rhs.m_clean))
-  , m_links(std::move(rhs.m_links))
-  , m_properties(std::move(rhs.m_properties))
-  , m_queries(std::move(rhs.m_queries))
-  , m_manager(std::move(rhs.m_manager))
+Resource::Resource(Resource&& rhs) noexcept : m_id(std::move(rhs.m_id)),
+                                              m_location(std::move(rhs.m_location)),
+                                              m_name(std::move(rhs.m_name)),
+                                              m_clean(std::move(rhs.m_clean)),
+                                              m_links(std::move(rhs.m_links)),
+                                              m_properties(std::move(rhs.m_properties)),
+                                              m_queries(std::move(rhs.m_queries)),
+                                              m_manager(std::move(rhs.m_manager))
 {
 }
 

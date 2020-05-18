@@ -163,7 +163,7 @@ public:
   /// Anyone can query whether or not the resource is locked.
   LockType locked() const { return m_lock.state(); }
 
-  Resource(Resource&&);
+  Resource(Resource&&) noexcept;
 
 private:
   // Derived resources should inherit
