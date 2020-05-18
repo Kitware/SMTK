@@ -41,8 +41,6 @@ qtResourceBrowser::Internal::Internal()
 /// @relates smtk::extension::qtResourceBrowser::Internal
 qtResourceBrowser::Internal::~Internal()
 {
-  // Unregister our decorator before we become invalid.
-  m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr /*unused*/) {});
   delete m_view;
   m_view = nullptr;
   delete m_container;

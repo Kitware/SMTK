@@ -99,11 +99,6 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
       if (!rsrc)
       {
         PhraseContentPtr content = src->content();
-        if (content)
-        {
-          // Find the original content without any decoration
-          content = content->undecoratedContent();
-        }
         auto ogpc = std::dynamic_pointer_cast<smtk::view::ObjectGroupPhraseContent>(content);
         if (ogpc)
         {
@@ -134,7 +129,6 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
       // }
     }
   }
-  this->decoratePhrases(result);
   return result;
 }
 
@@ -148,31 +142,6 @@ bool SubphraseGenerator::setModel(PhraseModelPtr model)
 
   m_model = model;
   return true;
-}
-
-void SubphraseGenerator::decoratePhrase(DescriptivePhrase::Ptr& phrase)
-{
-  PhraseModelPtr mod = this->model();
-  if (!mod)
-  {
-    return;
-  }
-
-  mod->decoratePhrase(phrase);
-}
-
-void SubphraseGenerator::decoratePhrases(DescriptivePhrases& phrases)
-{
-  PhraseModelPtr mod = this->model();
-  if (!mod)
-  {
-    return;
-  }
-
-  for (const auto& phrase : phrases)
-  {
-    mod->decoratePhrase(phrase);
-  }
 }
 
 template <typename T>
@@ -261,14 +230,12 @@ void SubphraseGenerator::subphrasesForCreatedObjects(
         {
           child =
             ComponentPhraseContent::createPhrase(comp, MutabilityOfComponent(comp), actualParent);
-          this->decoratePhrase(child);
           resultingPhrases.insert(std::make_pair(childPath, child));
         }
       }
       else if ((rsrc = obj->as<smtk::resource::Resource>()))
       {
         child = ResourcePhraseContent::createPhrase(rsrc, MutabilityOfObject(rsrc), actualParent);
-        this->decoratePhrase(child);
         resultingPhrases.insert(std::make_pair(childPath, child));
       }
       else

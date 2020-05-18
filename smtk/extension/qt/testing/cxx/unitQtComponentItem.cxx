@@ -18,7 +18,6 @@
 #include "smtk/view/Registrar.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
-#include "smtk/view/VisibilityContent.h"
 
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/testing/cxx/helpers.h"
@@ -292,46 +291,6 @@ int unitQtComponentItem(int argc, char* argv[])
   };
 
   phraseModel->addSource(rsrcMgr, operMgr, viewMgr, nullptr);
-  phraseModel->setDecorator([&m_visibleThings](smtk::view::DescriptivePhrasePtr phr) {
-    smtk::view::VisibilityContent::decoratePhrase(
-      phr, [&m_visibleThings](smtk::view::VisibilityContent::Query qq, int val,
-             smtk::view::ConstPhraseContentPtr data) {
-        smtk::model::EntityPtr ent =
-          data ? std::dynamic_pointer_cast<smtk::model::Entity>(data->relatedComponent()) : nullptr;
-        smtk::model::ResourcePtr mResource = ent
-          ? ent->modelResource()
-          : (data ? std::dynamic_pointer_cast<smtk::model::Resource>(data->relatedResource())
-                  : nullptr);
-
-        switch (qq)
-        {
-          case smtk::view::VisibilityContent::DISPLAYABLE:
-            return (ent || (!ent && mResource)) ? 1 : 0;
-          case smtk::view::VisibilityContent::EDITABLE:
-            return (ent || (!ent && mResource)) ? 1 : 0;
-          case smtk::view::VisibilityContent::GET_VALUE:
-            if (ent)
-            {
-              auto valIt = m_visibleThings.find(ent);
-              if (valIt != m_visibleThings.end())
-              {
-                return valIt->second;
-              }
-              return 0; // visibility is assumed if there is no entry.
-            }
-            return 0; // visibility is false if the component is not a model entity or NULL.
-          case smtk::view::VisibilityContent::SET_VALUE:
-            if (ent)
-            {
-              m_visibleThings[ent] = val ? 1 : 0;
-              updater();
-              return 1;
-            }
-        }
-        return 0;
-      });
-    return 0;
-  });
 
   auto oper = operMgr->create<smtk::operation::ReadResource>();
   if (!oper)
@@ -440,7 +399,7 @@ int unitQtComponentItem(int argc, char* argv[])
                   .value<smtk::view::DescriptivePhrasePtr>();
     if (cphr)
     {
-      cphr->setRelatedVisibility(!cphr->relatedVisibility());
+      // cphr->setRelatedVisibility(!cphr->relatedVisibility());
       updater();
     }
   });
@@ -452,8 +411,6 @@ int unitQtComponentItem(int argc, char* argv[])
   // combo->setView(listView);
   // combo->setRootModelIndex(comboRoot);
   listView->setRootIndex(comboRoot);
-  // QObject::connect(delegate, SIGNAL(requestVisibilityChange(const QModelIndex&)), qmodel,
-  //   SLOT(toggleVisibility(const QModelIndex&)));
 
   //dlog->show();
 

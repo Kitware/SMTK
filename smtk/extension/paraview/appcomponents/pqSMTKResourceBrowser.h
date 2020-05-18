@@ -14,8 +14,6 @@
 
 #include "smtk/extension/qt/qtResourceBrowser.h"
 
-#include "smtk/view/VisibilityContent.h"
-
 #include "smtk/PublicPointerDefs.h"
 
 #include <QDockWidget>
@@ -51,11 +49,6 @@ public:
   static smtk::extension::qtBaseView* createViewWidget(const smtk::view::Information& info);
   pqSMTKResourceBrowser(const smtk::view::Information& info);
   ~pqSMTKResourceBrowser() override;
-
-  /// This method may be used by other ParaView plugins that wish to expose
-  /// per-active-view visibility decorations on qtResourceBrowser widgets.
-  static int panelPhraseDecorator(smtk::view::VisibilityContent::Query qq, int val,
-    smtk::view::ConstPhraseContentPtr data, std::map<smtk::common::UUID, int>& visibleThings);
 
   /// Return the string that represents the configuration for browser components,
   /// specialized from qtResourceBrowser version.

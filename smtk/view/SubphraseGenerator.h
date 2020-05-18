@@ -67,12 +67,6 @@ public:
   /// Return the phrase model (if any) used to adapt phrases to a user interface.
   PhraseModelPtr model() const { return m_model.lock(); }
 
-  /// If model() is non-null, ask it to decorate each phrase
-  void decoratePhrase(DescriptivePhrase::Ptr& phrase);
-
-  /// If model() is non-null, ask it to decorate each phrase
-  void decoratePhrases(DescriptivePhrases& phrases);
-
   /**\brief Append subphrases and their paths that the given set of created objects implies.
     *
     * After an operation, newly-created objects (components and resources) need to be

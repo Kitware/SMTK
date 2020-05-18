@@ -102,8 +102,6 @@ public:
   bool setContent(PhraseContentPtr content);
   /// Return the content (state) of the phrase.
   PhraseContentPtr content() const;
-  /// Return the content free of any decoration (i.e., the bottom-most content)
-  PhraseContentPtr undecoratedContent() const;
   /// Return an ordered subset of badges that apply to this phrase.
   ///
   /// It is better to ask the PhraseModel directly than to invoke this

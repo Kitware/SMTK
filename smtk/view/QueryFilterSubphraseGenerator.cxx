@@ -39,12 +39,6 @@ DescriptivePhrases QueryFilterSubphraseGenerator::subphrases(DescriptivePhrase::
       if (!rsrc)
       {
         PhraseContentPtr content = src->content();
-        if (content)
-        {
-          // Find the original content without any decoration
-          content = content->undecoratedContent();
-        }
-
         auto ogpc = std::dynamic_pointer_cast<smtk::view::ObjectGroupPhraseContent>(content);
         if (ogpc)
         {
@@ -57,8 +51,6 @@ DescriptivePhrases QueryFilterSubphraseGenerator::subphrases(DescriptivePhrase::
       }
     }
   }
-  // Enable the visibility eyeball
-  this->decoratePhrases(result);
   return result;
 }
 
@@ -76,7 +68,7 @@ SubphraseGenerator::Path QueryFilterSubphraseGenerator::indexOfObjectInParent(
     return result;
   }
   // Check if obj passes parent descriptive phrases filter. If so, prepare path.
-  auto content = parent->content()->undecoratedContent();
+  auto content = parent->content();
   auto objectGroupParent = std::dynamic_pointer_cast<smtk::view::ObjectGroupPhraseContent>(content);
   if (!objectGroupParent)
   {

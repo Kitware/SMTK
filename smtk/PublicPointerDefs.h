@@ -237,7 +237,6 @@ class PhraseModel;
 class ResourcePhraseContent;
 class Selection;
 class SubphraseGenerator;
-class VisibilityContent;
 }
 
 namespace workflow
@@ -631,8 +630,6 @@ typedef smtk::shared_ptr<smtk::view::PhraseListContent> PhraseListContentPtr;
 typedef smtk::shared_ptr<smtk::view::ComponentPhraseContent> ComponentPhraseContentPtr;
 /// @see smtk::view::ResourcePhraseContent
 typedef smtk::shared_ptr<smtk::view::ResourcePhraseContent> ResourcePhraseContentPtr;
-/// @see smtk::view::VisibilityContent
-typedef smtk::shared_ptr<smtk::view::VisibilityContent> VisibilityContentPtr;
 }
 
 namespace workflow

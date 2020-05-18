@@ -21,7 +21,6 @@
 #include "smtk/view/ReferenceItemPhraseModel.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
-#include "smtk/view/VisibilityContent.h"
 #include "smtk/view/json/jsonView.h"
 
 #include "smtk/attribute/ComponentItem.h"
@@ -115,7 +114,6 @@ qtReferenceItem::qtReferenceItem(const qtAttributeItemInfo& info)
 qtReferenceItem::~qtReferenceItem()
 {
   this->removeObservers();
-  // m_p->m_phraseModel->setDecorator([](smtk::view::DescriptivePhrasePtr /*unused*/) {});
   delete m_p;
   m_p = nullptr;
 }
@@ -426,18 +424,7 @@ void qtReferenceItem::updateUI()
   m_p->m_qtDelegate->setTitleFontWeight(1);
   m_p->m_qtDelegate->setDrawSubtitle(false);
   m_p->m_qtDelegate->setVisibilityMode(true);
-  // if (m_p->m_phraseModel)
-  // {
-  //   QPointer<qtReferenceItem> guardedObject(this);
-  //   m_p->m_phraseModel->setDecorator([guardedObject](smtk::view::DescriptivePhrasePtr phr) {
-  //     if (guardedObject)
-  //     {
-  //       guardedObject->decorateWithMembership(phr);
-  //     }
-  //   });
-  // }
-  // m_p->m_qtModel->setVisibleIconURL(m_p->m_selectedIconURL);
-  // m_p->m_qtModel->setInvisibleIconURL(m_p->m_unselectedIconURL);
+
   if (m_p->m_phraseModel)
   {
     m_p->m_phraseModel->addSource(rsrcMgr, operMgr, viewMgr, seln);
@@ -821,64 +808,6 @@ void qtReferenceItem::membershipChanged(int val)
   }
   this->updateSynopsisLabels();
   this->linkHoverTrue();
-}
-
-int qtReferenceItem::decorateWithMembership(smtk::view::DescriptivePhrasePtr phr)
-{
-  smtk::view::VisibilityContent::decoratePhrase(
-    phr, [this](smtk::view::VisibilityContent::Query qq, int val,
-           smtk::view::ConstPhraseContentPtr data) {
-      auto comp = data ? data->relatedComponent() : nullptr;
-      auto rsrc = comp ? comp->resource() : (data ? data->relatedResource() : nullptr);
-      auto pobj = comp ? std::dynamic_pointer_cast<smtk::resource::PersistentObject>(comp)
-                       : std::dynamic_pointer_cast<smtk::resource::PersistentObject>(rsrc);
-
-      switch (qq)
-      {
-        case smtk::view::VisibilityContent::DISPLAYABLE:
-          return pobj ? 1 : 0;
-        case smtk::view::VisibilityContent::EDITABLE:
-          return pobj ? 1 : 0;
-        case smtk::view::VisibilityContent::GET_VALUE:
-          if (pobj)
-          {
-            auto valIt = this->members().find(pobj);
-            if (valIt != this->members().end())
-            {
-              return valIt->second;
-            }
-            return 0; // visibility is assumed if there is no entry.
-          }
-          return 0; // visibility is false if the component is not a model entity or NULL.
-        case smtk::view::VisibilityContent::SET_VALUE:
-          if (pobj)
-          {
-            if (val && !this->members().empty())
-            {
-              auto item = m_itemInfo.itemAs<attribute::ReferenceItem>();
-              if (item->numberOfRequiredValues() <= 1 &&
-                (!item->isExtensible() || item->maxNumberOfValues() == 1))
-              { // Clear all other members since only 1 is allowed and the user just chose it.
-                this->members().clear();
-                m_p->m_phraseModel->triggerDataChanged();
-              }
-            }
-            if (val)
-            {
-              this->members()[pobj] = val ? 1 : 0; // FIXME: Use a bit specified by the application.
-            }
-            else
-            {
-              this->members().erase(pobj);
-            }
-            this->updateSynopsisLabels();
-            this->linkHoverTrue();
-            return 1;
-          }
-      }
-      return 0;
-    });
-  return 0;
 }
 
 void qtReferenceItem::checkRemovedComponents(smtk::view::DescriptivePhrasePtr phr,

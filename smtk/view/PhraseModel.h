@@ -112,39 +112,6 @@ public:
   virtual void updateChildren(
     smtk::view::DescriptivePhrasePtr plist, DescriptivePhrases& next, const std::vector<int>& idx);
 
-  /**\brief Decorate a descriptive phrase's content with helpers for a particular user interface.
-    *
-    * Subphrase generators will call this method as they prepare phrases in a hierarchy.
-    * Subclasses of PhraseModel may also call this method as they prepare top-level phrases.
-    *
-    * This is an opportunity for the phrase model (which will be instantiated to connect and
-    * manage a GUI element to SMTK subsystem state) to add application-specific helpers to
-    * phrases.
-    * For example, ModelBuilder's "SMTK Resource" panel ties the visibility of model entities
-    * in its tree view to their visibility in the active 3-D ParaView view.
-    * It does this by adding a decorator that overrides the value of the VISIBILITY attribute
-    * as well as the method used to change the visibility.
-    *
-    * This **must** be called on every descriptive phrase **before** updateChildren() is invoked
-    * on its parent, because updateChildren invokes the equality operator (==), which will not
-    * identify identical phrases properly if they aren't decorated identically.
-    */
-  void decoratePhrase(smtk::view::DescriptivePhrasePtr) const;
-
-  /**\brief Applications may decorate a model's phrases by providing a function.
-    *
-    * This function is invoked by the decoratePhrase() method and must be set
-    * before any phrases which might be decorated exist in the model.
-    * Otherwise, methods that compare phrases for equality will fail.
-    *
-    * The default function does nothing and setDecorator will not accept a NULL
-    * \a phraseDecorator argument (so that run-time validity checking can be avoided).
-    */
-  bool setDecorator(const PhraseDecorator& phraseDecorator);
-
-  /// Provide access to the existing decorator. You may chain decorators if you are careful.
-  PhraseDecorator decorator() const { return m_decorator; }
-
   /// Manually specify that all rows should be updated (but to keep the expanded/collapsed state).
   virtual void triggerDataChanged();
 
@@ -185,7 +152,6 @@ public:
   BadgeSet& badges() { return m_badges; }
 
 protected:
-  friend class VisibilityContent;
   PhraseModel();
   PhraseModel(const Configuration* config, Manager* manager);
 

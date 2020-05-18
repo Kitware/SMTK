@@ -99,7 +99,6 @@ void ReferenceItemPhraseModel::populateRoot()
     }
   }
   std::sort(children.begin(), children.end(), DescriptivePhrase::compareByTypeThenTitle);
-  this->root()->findDelegate()->decoratePhrases(children);
   this->updateChildren(m_root, children, std::vector<int>());
 }
 

@@ -142,13 +142,6 @@ protected:
   /// Called by eventFilter() when user hits space/enter in popup.
   virtual void toggleCurrentItem();
 
-  /**\brief This method is called by the m_p->m_phraseModel to decorate each phrase.
-    *
-    * This method ensures that each phrase's visibility corresponds to whether
-    * or not it is a member of the underlying attribute-system's reference item.
-    */
-  virtual int decorateWithMembership(smtk::view::DescriptivePhrasePtr phr);
-
   /// Indicate whether the GUI should be updated from the item it presents or vice versa.
   enum class UpdateSource
   {

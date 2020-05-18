@@ -28,7 +28,6 @@ set(viewSrcs
   SVGIconConstructor.cxx
   TwoLevelSubphraseGenerator.cxx
   Configuration.cxx
-  VisibilityContent.cxx
 )
 
 set (jsonViewHeaders
@@ -69,7 +68,6 @@ set(viewHeaders
   SVGIconConstructor.h
   TwoLevelSubphraseGenerator.h
   Configuration.h
-  VisibilityContent.h
   ${jsonViewHeaders}
 )
 

@@ -63,7 +63,6 @@ DescriptivePhrases TwoLevelSubphraseGenerator::subphrases(DescriptivePhrase::Ptr
       // In the 2-level view, components do not have children; they are leaves.
     }
   }
-  this->decoratePhrases(result);
   return result;
 }
 

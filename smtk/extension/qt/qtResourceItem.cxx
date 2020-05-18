@@ -20,7 +20,6 @@
 #include "smtk/view/PhraseModelFactory.h"
 #include "smtk/view/ResourcePhraseModel.h"
 #include "smtk/view/SubphraseGenerator.h"
-#include "smtk/view/VisibilityContent.h"
 
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/ResourceItemDefinition.h"

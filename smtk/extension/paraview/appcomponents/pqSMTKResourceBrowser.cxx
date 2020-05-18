@@ -26,7 +26,6 @@
 
 #include "smtk/view/SubphraseGenerator.h"
 #include "smtk/view/TwoLevelSubphraseGenerator.h"
-#include "smtk/view/VisibilityContent.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityIterator.h"
@@ -67,18 +66,11 @@ pqSMTKResourceBrowser::pqSMTKResourceBrowser(const smtk::view::Information& info
   // The superclass has initialized m_p;
   // now we must add ParaView-specific configuration:
 
-  // I. Decorate phrases with visibility related to representations in the active view.
-  // m_p->m_phraseModel->setDecorator([this](smtk::view::DescriptivePhrasePtr phr) {
-  //   smtk::view::VisibilityContent::decoratePhrase(
-  //     phr, [this](smtk::view::VisibilityContent::Query query, int val,
-  //            smtk::view::ConstPhraseContentPtr data) {
-  //       return pqSMTKResourceBrowser::panelPhraseDecorator(query, val, data, m_p->m_visibleThings);
-  //     });
-  // });
+  // I. Decorators have been removed.
 
   // II. Prepare the subphrase generator.
   //     This is important since otherwise m_p->m_phraseModel will
-  //     not be set properly and the decorator will not be invoked.
+  //     not be set properly.
   this->initSubphraseGenerator();
 
   // III. Ensure the phrase model is configured to listen to the proper managers.
