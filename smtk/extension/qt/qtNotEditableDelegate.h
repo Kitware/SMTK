@@ -34,8 +34,7 @@ public:
   }
 
 protected:
-  bool editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option,
-    const QModelIndex& index)
+  bool editorEvent(QEvent*, QAbstractItemModel*, const QStyleOptionViewItem&, const QModelIndex&)
   {
     return false;
   }
