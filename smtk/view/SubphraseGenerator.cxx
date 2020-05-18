@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/view/SubphraseGenerator.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/view/ComponentPhraseContent.h"
 #include "smtk/view/Manager.h"
 #include "smtk/view/ObjectGroupPhraseContent.h"
@@ -635,7 +637,15 @@ void SubphraseGenerator::componentsOfResource(
     // as that is handled by modelbuilder/paraview on a per-view basis.
     constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
       static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
+
+// MSVC cannot access constexpr PODs inside a lambda without explicit
+// capture rules. Other compilers consider the explicit rules unnecessary,
+// and they warn about it.
+#ifdef SMTK_MSVC
+    smtk::resource::Component::Visitor visitor = [mutability, &result, &src](
+#else
     smtk::resource::Component::Visitor visitor = [&result, &src](
+#endif
       const smtk::resource::Component::Ptr& component) {
       result.push_back(ComponentPhraseContent::createPhrase(component, mutability, src));
     };

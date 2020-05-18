@@ -163,6 +163,8 @@ public:
   /// Anyone can query whether or not the resource is locked.
   LockType locked() const { return m_lock.state(); }
 
+  Resource(Resource&&);
+
 private:
   // Derived resources should inherit
   // smtk::resource::DerivedFrom<Self, smtk::resource::Resource>. Resource's

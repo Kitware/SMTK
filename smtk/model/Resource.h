@@ -119,6 +119,7 @@ public:
   Resource(shared_ptr<UUIDsToEntities> topology, shared_ptr<UUIDsToTessellations> tess,
     shared_ptr<UUIDsToTessellations> analysismesh, shared_ptr<UUIDsToAttributeAssignments> attribs,
     const smtk::common::UUID& uid, smtk::resource::ManagerPtr = smtk::resource::ManagerPtr());
+  Resource(Resource&& rhs) = default;
   virtual ~Resource();
 
   UUIDsToEntities& topology();

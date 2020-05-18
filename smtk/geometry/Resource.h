@@ -15,6 +15,7 @@
 #include "smtk/resource/Resource.h"
 
 #include "smtk/geometry/Backend.h"
+#include "smtk/geometry/Geometry.h"
 
 #include <memory>
 
@@ -84,6 +85,8 @@ public:
   /// should use that class rather than directly copy the code above to mark
   /// geometry as modified.)
   void visitGeometry(std::function<void(std::unique_ptr<Geometry>&)> visitor);
+
+  Resource(Resource&&) = default;
 
 protected:
   Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr manager);

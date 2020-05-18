@@ -15,6 +15,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "smtk/common/CompilerInformation.h"
+
 #include "smtk/graph/arcs/Extensions.h"
 
 namespace smtk
@@ -26,7 +28,7 @@ namespace graph
 ///
 /// All arcs must have components with the same origin and destination types.
 template <typename from_type, typename to_type>
-class SMTKCORE_EXPORT Arcs
+class SMTK_ALWAYS_EXPORT Arcs
 {
   struct HashByUUID
   {

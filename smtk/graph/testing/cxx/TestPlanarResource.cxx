@@ -181,7 +181,7 @@ std::array<double, 2> Face::centroid() const
 }
 }
 
-int TestPlanarResource(int, char**)
+int TestPlanarResource(int, char* [])
 {
   // Construct our planar-graph resource.
   auto resource = smtk::graph::Resource<PlanarTraits>::create();
@@ -197,7 +197,7 @@ int TestPlanarResource(int, char**)
   auto edge3 = resource->create<Edge>(*vertex3, *vertex1);
 
   // Construct a face from the three edges.
-  auto face = resource->create<Face>(*edge1, *edge2, *edge3);
+  auto face1 = resource->create<Face>(*edge1, *edge2, *edge3);
 
   // For convenience, store these elements in arrays.
   std::array<const Vertex*, 3> vertices{ vertex1.get(), vertex2.get(), vertex3.get() };
@@ -234,14 +234,14 @@ int TestPlanarResource(int, char**)
     std::cout << " )" << std::endl;
   }
   std::cout << std::endl;
-  std::cout << "face: " << face->id() << std::endl;
+  std::cout << "face: " << face1->id() << std::endl;
   std::cout << "  edges: (";
-  for (const Edge& edge : face->get<Loop>())
+  for (const Edge& edge : face1->get<Loop>())
   {
     std::cout << " " << edge.id();
   }
   std::cout << " )" << std::endl;
-  auto centroid = face->centroid();
+  auto centroid = face1->centroid();
   std::cout << "  centroid: ( " << centroid[0] << ", " << centroid[1] << " )" << std::endl;
   std::cout << std::endl;
 

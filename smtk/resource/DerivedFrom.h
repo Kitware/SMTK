@@ -67,6 +67,13 @@ protected:
     : Parent(std::forward<T>(all)...)
   {
   }
+
+  DerivedFrom(DerivedFrom&& rhs)
+    : Parent(std::move(rhs))
+  {
+  }
+
+  DerivedFrom(const DerivedFrom&) = delete;
 };
 
 template <typename Self, typename Parent>
